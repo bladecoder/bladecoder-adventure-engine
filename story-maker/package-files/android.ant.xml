@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Create dist packages for Android" default="dist">
+	<property file="android.test.properties" />
+
+	<!-- TOOLS location -->
+	<property name="android.tools.dir" location="${sdk.dir}/tools" />
+	<property name="android.platform.tools.dir" location="${sdk.dir}/platform-tools" />
+	<condition property="exe" value=".exe" else="">
+		<os family="windows" />
+	</condition>
+	<condition property="bat" value=".bat" else="">
+		<os family="windows" />
+	</condition>
+	<property name="adb" location="${android.platform.tools.dir}/adb${exe}" />
+	<property name="zipalign" location="${android.tools.dir}/zipalign${exe}" />
+	<property name="lint" location="${android.tools.dir}/lint${bat}" />
+
+    <!-- DIRS -->
+	<property name="dist.abs.dir" location="${dist}" />
+    <property name="project.abs.dir" location="${project}" />
+	<property name="out.manifest.abs.file" location="${dist.abs.dir}/AndroidManifest.xml" />
+
+	<!-- jar file from where the tasks are loaded -->
+	<path id="android.antlibs">
+		<pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
+	</path>
+
+	<!-- Custom tasks -->
+	<taskdef resource="anttasks.properties" classpathref="android.antlibs" />
+
+
+	<!-- *************************** TARGETS ************************** -->
+	<target name="setup" depends="manifest">
+		<getbuildtools name="android.build.tools.dir" verbose="${verbose}" />
+		<property name="aidl" location="${android.build.tools.dir}/aidl${exe}" />
+		<property name="aapt" location="${android.build.tools.dir}/aapt${exe}" />
+		<property name="dx" location="${android.build.tools.dir}/dx${bat}" />
+	</target>
+
+	<target name="manifest">
+		<echo file="${out.manifest.abs.file}" append="false" ><![CDATA[<?xml version="1.0" encoding="utf-8"?>	    
+<manifest  xmlns:android="http://schemas.android.com/apk/res/android"
+	package="${project.app.package}" android:versionCode="${version.code}"
+	android:versionName="${version}">
+
+	<uses-sdk android:minSdkVersion="13"
+			android:targetSdkVersion="17" />
+
+	<uses-feature android:glEsVersion="0x00020000"
+			android:required="true" />
+
+	<application android:icon="@drawable/icon"
+			android:label="@string/app_name">
+		<activity android:name="org.bladecoder.engine.MainActivity"
+				android:label="@string/app_name" android:screenOrientation="landscape"
+				android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+	</application>
+</manifest>
+]]>
+		</echo>
+	</target>
+
+	<target name="gen-res">
+	    <mkdir dir="${dist.abs.dir}/res"/>
+	    <mkdir dir="${dist.abs.dir}/res/drawable-hdpi"/>
+	    <mkdir dir="${dist.abs.dir}/res/drawable-ldpi"/>
+	    <mkdir dir="${dist.abs.dir}/res/drawable-mdpi"/>
+	    <mkdir dir="${dist.abs.dir}/res/drawable-xhdpi"/>
+	    <mkdir dir="${dist.abs.dir}/res/drawable-xxhdpi"/>
+	    <mkdir dir="${dist.abs.dir}/res/layout"/>
+	    <mkdir dir="${dist.abs.dir}/res/values"/>
+
+<echo file="${dist.abs.dir}/res/values/strings.xml" append="false" ><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">${title}</string>
+</resources>
+]]>	
+</echo>    
+	    
+	    <!-- COPY ICONS -->
+	     <copy failonerror="false" file="${project.abs.dir}/assets/icons/icon144.png" tofile="${dist.abs.dir}/res/drawable-xxhdpi/icon.png"/>
+	     <copy failonerror="false" file="${project.abs.dir}/assets/icons/icon96.png" tofile="${dist.abs.dir}/res/drawable-xhdpi/icon.png"/>
+	     <copy failonerror="false" file="${project.abs.dir}/assets/icons/icon72.png" tofile="${dist.abs.dir}/res/drawable-hdpi/icon.png"/>
+	     <copy failonerror="false" file="${project.abs.dir}/assets/icons/icon48.png" tofile="${dist.abs.dir}/res/drawable-mdpi/icon.png"/>
+	     <copy failonerror="false" file="${project.abs.dir}/assets/icons/icon36.png" tofile="${dist.abs.dir}/res/drawable-ldpi/icon.png"/>	     
+
+	</target>
+	
+	<target name="aapt-pack" depends="setup, gen-res">
+ 		<exec executable="${aapt}" failonerror="true">
+ 		    <arg value="package"/>
+ 		    <arg value="-v"/>
+ 		    <arg value="-f"/>
+ 		    <arg value="-I"/>
+ 		    <arg value="${sdk.dir}/platforms/${target}/android.jar"/>
+ 		    
+    		<arg value="-M"/>
+    		<arg value="${dist.abs.dir}/AndroidManifest.xml"/>
+    		<arg value="-A"/>
+    		<arg value="${project.abs.dir}/assets"/>
+    		<arg value="-S"/>
+    		<arg value="${dist.abs.dir}/res"/>	
+    		<arg value="-m"/>
+    		<arg value="-J"/>
+    		<arg value="${dist.abs.dir}"/>
+    		<arg value="-F"/>
+    		<arg value="${dist.abs.dir}/resources.ap_"/>  		
+  		</exec>
+	</target>
+	
+	<target name="dex" depends="aapt-pack">
+ 		<exec executable="${dx}" failonerror="true">
+ 		    <arg value="--dex"/>
+ 		    <arg value="--output"/>
+ 		    <arg value="${dist.abs.dir}/classes.dex"/>
+ 		    
+    		<arg value="engine/blade-engine.jar"/>
+    		<arg value="engine/gdx-backend-android.jar"/>
+    		<arg value="engine/gdx-freetype.jar"/>
+    		<arg value="engine/gdx.jar"/>
+    		<arg value="engine/tween-engine-api.jar"/>
+    		<arg value="engine/engine-android.jar"/>
+    		<arg value="${project.abs.dir}/bin"/>  		
+  		</exec>
+	</target>
+	
+	<target name="aapt-add" depends="dex">
+ 		<!-- Add classes.dex -->
+ 		<exec executable="${aapt}" failonerror="true">
+ 		    <arg value="add"/>
+ 		    <arg value="-k"/>
+    		<arg value="${dist.abs.dir}/resources.ap_"/>  		
+    		<arg value="${dist.abs.dir}/classes.dex"/>
+  		</exec>
+  		
+ 		<!-- Add Native libs -->
+ 		<jar update="true" compress="false" destfile="${dist.abs.dir}/resources.ap_">
+ 		    <zipfileset dir="engine/native-libs" prefix="lib/"/>
+ 		</jar>
+ 		
+ 		<!-- Add no .class files from jar -->
+ 		<jar update="true" compress="false" destfile="${dist.abs.dir}/resources.ap_">
+ 		    <zipfileset includes="**/*.glsl" src="engine/blade-engine.jar" />
+ 		    <zipfileset includes="**/*.glsl **/arial*" src="engine/gdx.jar" />
+ 		</jar>
+	</target>
+	
+	<target name="sign" depends="aapt-add">
+ 		
+		<signapk
+                        input="${dist.abs.dir}/resources.ap_"
+                        output="${dist.abs.dir}/resources_signed.ap_"
+                        keystore="${key.store}"
+                        storepass="${key.store.password}"
+                        alias="${key.alias}"
+                        keypass="${key.alias.password}"/>	
+ 		
+	</target>
+	
+	<target name="align" depends="sign">
+
+        <zipalign
+                    executable="${zipalign}"
+                    input="${dist.abs.dir}/resources_signed.ap_"
+                    output="${dist.abs.dir}/${name}.apk"
+                    verbose="true" />		
+ 		
+	</target>	
+
+	<target name="dist" depends="align"> 
+	    <delete file="${dist.abs.dir}/resources_signed.ap_"/>
+	    <delete file="${dist.abs.dir}/resources.ap_"/>
+	    <delete file="${dist.abs.dir}/classes.dex"/>
+	    <delete file="${dist.abs.dir}/AndroidManifest.xml"/> 
+	    <delete dir="${dist.abs.dir}/res"/>     
+	</target>
+</project>

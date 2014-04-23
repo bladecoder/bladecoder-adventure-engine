@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="dist" name="Create dist packages for Desktop">
+	<property file="dist.ant.properties"/> 
+	<property name="jres.dir" location="../engine-dist"/>
+	<property name="launch4j.dir" location="${jres.dir}/launch4j" />
+
+	<target name="clean">
+	    <mkdir dir="dist"/>
+	    
+		<delete>
+			<fileset dir="dist" includes="**/*.zip" />
+			<fileset dir="dist" includes="**/*.jar" />
+			<fileset dir="dist" includes="**/*.exe" />
+			<fileset dir="dist" includes="**/*.sh" />
+			<fileset dir="dist" includes="**/*.tgz" />
+		</delete>
+	</target>
+
+	<target name="jar" depends="clean">
+		<jar destfile="dist/${name}.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="${main.class}" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Version" value="${version}" />
+			</manifest>
+			
+			<fileset dir="./bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="./lib/commons-io-2.1.jar"/>
+            <fileset dir="../engine/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="../engine/libs/gdx.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="../engine/libs/tween-engine-api.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="../engine/libs/gdx-freetype.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="./lib/gdx-backend-lwjgl-natives.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="./lib/gdx-backend-lwjgl.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="./lib/gdx-freetype-natives.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="./lib/gdx-natives.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="./lib/gdx-tools.jar"/>
+		</jar>
+	</target>
+
+	<target name="exe" depends="jar">
+		<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
+			classpath="${launch4j.dir}/launch4j.jar
+		    :${launch4j.dir}/lib/xstream.jar" />
+		<launch4j>
+			<config headerType="gui" outfile="dist/${name}.exe" errTitle="${name}"
+				chdir="." icon="${icon}" jarPath="${name}.jar"
+				dontWrapJar="true">
+				<jre minVersion="1.6.0" path="jre-win">
+<!-- 					<opt>-server</opt> -->
+				</jre>
+			</config>
+		</launch4j>
+	</target>
+
+	<target name="win" depends="exe">
+		<zip destfile="dist/${name}-win.zip">
+		    <zipfileset file="dist/${name}.exe" prefix="${name}/"/>
+			<zipfileset file="dist/${name}.jar"  prefix="${name}/"/>
+			<zipfileset dir="${jres.dir}/jre-win" prefix="${name}/jre-win"/>
+		</zip>
+	</target>
+
+	<target name="dist" depends="exe">
+		<echo file="dist/${name}-linux64.sh" append="false">#!/bin/sh
+cd "`dirname \"$0\"`"
+./jre-linux64/bin/java -server -Xmx1024M -jar ${name}.jar "${@}"
+		</echo>
+		
+		<echo file="dist/${name}-linux32.sh" append="false">#!/bin/sh
+cd "`dirname \"$0\"`"
+./jre-linux32/bin/java -server -Xmx1024M -jar ${name}.jar "${@}"
+		</echo> 	    
+			    
+		<tar destfile="dist/${name}.tgz" compression="gzip">
+			<tarfileset file="dist/${name}-linux64.sh" filemode="755" prefix="${name}/"/>
+			<tarfileset file="dist/${name}-linux32.sh" filemode="755" prefix="${name}/"/>
+			<tarfileset file="dist/${name}.jar" filemode="755" prefix="${name}/"/>
+					
+			<mappedresources>
+				<fileset dir="${jres.dir}/jre-linux64" excludes="bin/java"/>
+				<globmapper from="*" to="${name}/jre-linux64/*" />
+			</mappedresources>
+			
+			<tarfileset file="${jres.dir}/jre-linux64/bin/java" filemode="755" prefix="${name}/jre-linux64/bin/"/>
+			
+			<mappedresources>
+				<fileset dir="${jres.dir}/jre-linux32" excludes="bin/java"/>
+				<globmapper from="*" to="${name}/jre-linux32/*" />
+			</mappedresources>
+			
+			<tarfileset file="${jres.dir}/jre-linux32/bin/java" filemode="755" prefix="${name}/jre-linux32/bin/"/>
+			
+			<tarfileset file="dist/${name}.exe" prefix="${name}/"/>
+			<tarfileset dir="${jres.dir}/jre-win" prefix="${name}/jre-win"/>
+			
+			<tarfileset dir="package-files" prefix="${name}/package-files"/>			
+		</tar>
+		
+		<delete file="dist/${name}-linux32.sh"/>
+		<delete file="dist/${name}-linux64.sh"/>
+		<delete file="dist/${name}.exe"/>
+	</target>
+</project>
