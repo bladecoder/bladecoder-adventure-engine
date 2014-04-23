@@ -38,7 +38,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglAWTCanvas;
 public class MainWindow extends JFrame implements PropertyChangeListener {
 	public static final String VERSION_STR = "0.1.0 (Beta)";
 	public static final String COPYRIGHT_STR = "<html><p align=\"left\">2013 - Rafael García<br/>http://bladecoder.blogspot.com</p></html>";
-	public static final String TITLE = "Adventure Creator";
+	public static final String TITLE = "Story Maker";
 	
 
     private javax.swing.JPanel leftPanel;

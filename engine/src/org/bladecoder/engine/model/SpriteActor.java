@@ -9,6 +9,7 @@ import org.bladecoder.engine.anim.SpritePosTween;
 import org.bladecoder.engine.anim.TweenManagerSingleton;
 import org.bladecoder.engine.anim.WalkTween;
 import org.bladecoder.engine.assets.EngineAssetManager;
+import org.bladecoder.engine.pathfinder.PixTileMap;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
 
@@ -248,10 +249,13 @@ public abstract class SpriteActor extends BaseActor {
 
 		Vector2 p0 = getPosition();
 
-		ArrayList<Vector2> walkingPath = scene.getBackgroundMap().findPath(
-				scene, p0, pf);
+		ArrayList<Vector2> walkingPath = null;
+		PixTileMap bgMap = scene.getBackgroundMap();
+		
+		if(bgMap != null)
+			walkingPath = bgMap.findPath(scene, p0, pf);
 
-		if (walkingPath.size() == 0 ) {
+		if (walkingPath == null || walkingPath.size() == 0 ) {
 			// llamamos al callback aunque el camino esté vacío
 			if(cb != null)
 				cb.onEvent();
