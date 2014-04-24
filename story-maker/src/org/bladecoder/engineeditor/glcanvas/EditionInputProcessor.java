@@ -1,10 +1,10 @@
 package org.bladecoder.engineeditor.glcanvas;
 
-import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.model.BaseActor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.SpriteActor;
-import org.bladecoder.engine.model.SpriteAtlasActor;
+import org.bladecoder.engine.model.SpriteAtlasRenderer;
 import org.bladecoder.engineeditor.Ctx;
 import org.w3c.dom.Element;
 
@@ -180,83 +180,85 @@ public class EditionInputProcessor extends InputAdapter {
 			break;
 		case Keys.BACKSPACE:
 			break;
-		case Keys.UP:
-			setDY(1);
-			break;
-		case Keys.DOWN:
-			setDY(-1);
-			break;
-		case Keys.LEFT:
-			setDX(-1);
-			break;
-		case Keys.RIGHT:
-			setDX(1);
-			break;
-		case Keys.PAGE_UP:
-			setFrame(1);
-			break;
-		case Keys.PAGE_DOWN:
-			setFrame(-1);
-			break;
+//		case Keys.UP:
+//			setDY(1);
+//			break;
+//		case Keys.DOWN:
+//			setDY(-1);
+//			break;
+//		case Keys.LEFT:
+//			setDX(-1);
+//			break;
+//		case Keys.RIGHT:
+//			setDX(1);
+//			break;
+//		case Keys.PAGE_UP:
+//			setFrame(1);
+//			break;
+//		case Keys.PAGE_DOWN:
+//			setFrame(-1);
+//			break;
 		}
 
 		return false;
 	}
 
-	private void setFrame(int d) {
-		BaseActor actor = canvas.getActor();
-		
-		if (actor instanceof SpriteAtlasActor) {
-			SpriteAtlasActor sa = (SpriteAtlasActor) actor;
-			
-			int num = sa.getNumFrames();
-			int current = sa.getCurrentFrame();
-			
-			current += d;
-			
-			if(current >= 0 && current < num)
-				sa.setCurrentFrame(current);
-		}
-	}
-
-	private void setDX(int d) {
-		BaseActor actor = canvas.getActor();
-		
-		if (actor instanceof SpriteAtlasActor) {
-			FrameAnimation fa = ((SpriteAtlasActor) actor)
-					.getCurrentFrameAnimation();
-			
-			if(fa.inD != null)
-				fa.inD.x += d;
-			
-			if(fa.outD!=null)
-				fa.outD.x -= d;
-			
-			SpriteActor sa = (SpriteActor) actor;
-			Vector2 pos = sa.getPosition();
-			pos.x += d;
-			
-			// TODO Set in ActorDocument
-		}
-	}
-
-	private void setDY(int d) {
-		BaseActor actor = canvas.getActor();
-		
-		if (actor instanceof SpriteAtlasActor) {
-			FrameAnimation fa = ((SpriteAtlasActor) actor)
-					.getCurrentFrameAnimation();
-			if(fa.inD != null)
-				fa.inD.y += d;
-			
-			if(fa.outD != null)
-				fa.outD.y -= d;
-			
-			SpriteActor sa = (SpriteActor) actor;
-			Vector2 pos = sa.getPosition();
-			pos.y += d;
-			
-			// TODO Set in ActorDocument
-		}
-	}
+	// TODO RESTORE SETFRAME SETDX AND SETDY METHODS
+	
+//	private void setFrame(int d) {
+//		BaseActor actor = canvas.getActor();
+//		
+//		if (actor instanceof SpriteAtlasRenderer) {
+//			SpriteAtlasRenderer sa = (SpriteAtlasRenderer) actor;
+//			
+//			int num = sa.getNumFrames();
+//			int current = sa.getCurrentFrame();
+//			
+//			current += d;
+//			
+//			if(current >= 0 && current < num)
+//				sa.setCurrentFrame(current);
+//		}
+//	}
+//
+//	private void setDX(int d) {
+//		BaseActor actor = canvas.getActor();
+//		
+//		if (actor instanceof SpriteAtlasRenderer) {
+//			AtlasFrameAnimation fa = ((SpriteAtlasRenderer) actor)
+//					.getCurrentFrameAnimation();
+//			
+//			if(fa.inD != null)
+//				fa.inD.x += d;
+//			
+//			if(fa.outD!=null)
+//				fa.outD.x -= d;
+//			
+//			SpriteActor sa = (SpriteActor) actor;
+//			Vector2 pos = sa.getPosition();
+//			pos.x += d;
+//			
+//			// TODO Set in ActorDocument
+//		}
+//	}
+//
+//	private void setDY(int d) {
+//		BaseActor actor = canvas.getActor();
+//		
+//		if (actor instanceof SpriteAtlasRenderer) {
+//			AtlasFrameAnimation fa = ((SpriteAtlasRenderer) actor)
+//					.getCurrentFrameAnimation();
+//			if(fa.inD != null)
+//				fa.inD.y += d;
+//			
+//			if(fa.outD != null)
+//				fa.outD.y -= d;
+//			
+//			SpriteActor sa = (SpriteActor) actor;
+//			Vector2 pos = sa.getPosition();
+//			pos.y += d;
+//			
+//			// TODO Set in ActorDocument
+//		}
+//	}
 }

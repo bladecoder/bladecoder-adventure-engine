@@ -203,14 +203,14 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 
 				SpriteActor a = inventory.getItem(i);
 
-				if (!a.isLoaded()) {
-					EngineLogger.error("Inventory item NOT loaded: " + a.getId());
-					continue;
-				}
+//				if (!a.isLoaded()) {
+//					EngineLogger.error("Inventory item NOT loaded: " + a.getId());
+//					continue;
+//				}
 
 				float size = tileSize / a.getHeight() / a.getScale();
 
-				a.draw(batch, 
+				a.getRenderer().draw(batch, 
 						horizontal ? (i + itemsPos - scrollItemPos)	* tileSize : bbox.x, 
 						horizontal ? bbox.y : (i+ itemsPos - scrollItemPos) * tileSize, 
 								0, 0, size);
@@ -225,7 +225,7 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 			
 			float size = tileSize / h * 1.3f;
 			
-			draggedActor.draw(batch, inputX - w / 2,
+			draggedActor.getRenderer().draw(batch, inputX - w / 2,
 					inputY - h / 2,	w / 2, h / 2, size);
 			
 			

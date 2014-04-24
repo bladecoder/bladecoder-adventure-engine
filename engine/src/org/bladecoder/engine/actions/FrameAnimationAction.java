@@ -37,7 +37,7 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 	private float posx, posy;
 	private int setPos = NO_POS;
 	private boolean reverse = false;
-	private int repeat = EngineTween.REPEAT_DEFAULT;
+	private int repeat = EngineTween.FROM_FA;
 	private int count = 1;
 	private boolean wait = true;
 
@@ -79,7 +79,7 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 			} else if (repeatStr.equalsIgnoreCase("no_repeat")) {
 				repeat = EngineTween.NO_REPEAT;
 			} else {
-				repeat = EngineTween.REPEAT_DEFAULT;
+				repeat = EngineTween.FROM_FA;
 			}
 		}
 	}
@@ -93,9 +93,9 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId);
 		
 		if(wait) {
-			actor.startFrameAnimation(fa, repeat, count, reverse, this);
+			actor.startFrameAnimation(fa, repeat, count, this);
 		} else {
-			actor.startFrameAnimation(fa, repeat, count, reverse, null);
+			actor.startFrameAnimation(fa, repeat, count, null);
 			onEvent();
 		}		
 

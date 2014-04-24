@@ -6,7 +6,7 @@ import org.bladecoder.engine.actions.Param.Type;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.BaseActor;
 import org.bladecoder.engine.model.Scene;
-import org.bladecoder.engine.model.SpriteAtlasActor;
+import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.World;
 
 public class PickUpAction implements Action {
@@ -46,8 +46,8 @@ public class PickUpAction implements Action {
 		
 		scn.removeActor(actor);
 		
-		if (actor instanceof SpriteAtlasActor) {
-			SpriteAtlasActor a = (SpriteAtlasActor) actor;
+		if (actor instanceof SpriteActor) {
+			SpriteActor a = (SpriteActor) actor;
 
 			if(fa != null)
 				a.startFrameAnimation(fa, null);

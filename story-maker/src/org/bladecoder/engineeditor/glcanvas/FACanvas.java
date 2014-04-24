@@ -1,7 +1,7 @@
 package org.bladecoder.engineeditor.glcanvas;
 
 import org.bladecoder.engine.anim.EngineTween;
-import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.assets.EngineAssetManager;
 
 import aurelienribon.tweenengine.Tween;
@@ -19,7 +19,7 @@ public class FACanvas extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private AtlasFARenderer faRenderer;
 	
-	FrameAnimation fa;
+	AtlasFrameAnimation fa;
 	TextureAtlas ta;
 
 	@Override
@@ -44,7 +44,7 @@ public class FACanvas extends ApplicationAdapter {
 			if(typeStr.equals("yoyo"))
 				type = EngineTween.YOYO;			
 			
-			fa = new FrameAnimation(id, atlas, speed, 0.0f, Tween.INFINITY, type,
+			fa = new AtlasFrameAnimation(id, atlas, speed, 0.0f, Tween.INFINITY, type,
 					null, null, null);
 		}
 	}

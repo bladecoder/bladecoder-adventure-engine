@@ -11,9 +11,9 @@ import org.bladecoder.engine.anim.TweenManagerSingleton;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.BaseActor;
 import org.bladecoder.engine.model.Scene;
-import org.bladecoder.engine.model.Sprite3DActor;
+import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
-import org.bladecoder.engine.model.SpriteAtlasActor;
+import org.bladecoder.engine.model.SpriteAtlasRenderer;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.ui.UI;
 import org.bladecoder.engine.util.RectangleRenderer;
@@ -280,7 +280,7 @@ public class ScnCanvas extends ApplicationAdapter {
 			selFA = prjFA;
 			
 			if (scn != null && selectedActor != null && selectedActor instanceof SpriteActor) {
-				if(selectedActor instanceof SpriteAtlasActor)
+				if(((SpriteActor)selectedActor).getRenderer() instanceof SpriteAtlasRenderer)
 					setSpriteAtlasFA(prjFA);
 				else
 					setSprite3DFA(prjFA);				
@@ -299,10 +299,10 @@ public class ScnCanvas extends ApplicationAdapter {
 	}
 	
 	private void setSpriteAtlasFA(String selFA) {
-		SpriteAtlasActor s = (SpriteAtlasActor) selectedActor;
+		SpriteAtlasRenderer s = (SpriteAtlasRenderer) ((SpriteActor)selectedActor).getRenderer();
 
 		if (selFA == null || s.getFrameAnimation(selFA) == null) {
-			selFA = s.getInitFrameAnimation();
+			selFA = ((SpriteActor)selectedActor).getInitFrameAnimation();
 		}
 
 		if (selFA != null && s.getFrameAnimation(selFA) != null) {
@@ -311,8 +311,8 @@ public class ScnCanvas extends ApplicationAdapter {
 
 			if (showFAInScn.getState()
 					|| s.getCurrentFrameAnimation() == null
-					|| s.getInitFrameAnimation().equals(selFA)) {
-				s.startFrameAnimation(selFA, EngineTween.REPEAT,Tween.INFINITY, false, null);
+					|| ((SpriteActor)selectedActor).getInitFrameAnimation().equals(selFA)) {
+				((SpriteActor)selectedActor).startFrameAnimation(selFA, EngineTween.REPEAT,Tween.INFINITY, null);
 			}
 		} else {
 			faRenderer2.setFrameAnimation(selDoc, null, null);
@@ -321,17 +321,17 @@ public class ScnCanvas extends ApplicationAdapter {
 	
 	private void setSprite3DFA(String fa) {
 		
-		Sprite3DActor s = (Sprite3DActor) selectedActor;
+		Sprite3DRenderer s = (Sprite3DRenderer) ((SpriteActor)selectedActor).getRenderer();
 		
-		if (fa == null && s.getInitFrameAnimation() != null) 
-				fa = s.getInitFrameAnimation();
+		if (fa == null && ((SpriteActor)selectedActor).getInitFrameAnimation() != null) 
+				fa = ((SpriteActor)selectedActor).getInitFrameAnimation();
 		
 		faRenderer2.setFrameAnimation(selDoc, selElementActor, fa);
 		
 		if (showFAInScn.getState()
 //				|| s.getCurrentFrameAnimation() == null
-				|| (s.getInitFrameAnimation() != null && s.getInitFrameAnimation().equals(fa))) {
-			s.startFrameAnimation(fa, EngineTween.REPEAT_DEFAULT, -1, false, null);
+				|| ((SpriteActor)selectedActor).getInitFrameAnimation() != null && ((SpriteActor)selectedActor).getInitFrameAnimation().equals(fa)) {
+			s.startFrameAnimation(fa, EngineTween.FROM_FA, -1, null);
 
 		}
 	}
@@ -446,24 +446,24 @@ public class ScnCanvas extends ApplicationAdapter {
 			font.draw(batch, MessageFormat.format("({0}, {1})", (int) coords.x, (int) coords.y),
 					10, 45);
 
-			if (selectedActor instanceof SpriteAtlasActor
-					&& ((SpriteAtlasActor) selectedActor).getCurrentFrameAnimation() != null
-					&& ((SpriteAtlasActor) selectedActor).getCurrentFrameAnimation().regions != null) {
-				SpriteAtlasActor a = (SpriteAtlasActor) selectedActor;
-				// FrameAnimation fa = ((SpriteActor)
-				// selectedActor).getCurrentFrameAnimation();
-
-				// font.draw(batch,
-				// MessageFormat.format("Current Frame {4}/{5} IN({0}, {1}) OUT({2}, {3})",
-				// (int) fa.inDX, (int) fa.inDY, (int) fa.outDX, (int) fa.outDY,
-				// a.getCurrentFrame() + 1, a.getNumFrames()), 10,
-				// 22);
-
-				font.draw(
-						batch,
-						MessageFormat.format("Frame {0}/{1}", a.getCurrentFrame() + 1,
-								a.getNumFrames()), 10, 22);
-			}
+//			if (selectedActor instanceof SpriteAtlasRenderer
+//					&& ((SpriteAtlasRenderer) selectedActor).getCurrentFrameAnimation() != null
+//					&& ((SpriteAtlasRenderer) selectedActor).getCurrentFrameAnimation().regions != null) {
+//				SpriteAtlasRenderer a = (SpriteAtlasRenderer) selectedActor;
+//				// FrameAnimation fa = ((SpriteActor)
+//				// selectedActor).getCurrentFrameAnimation();
+//
+//				// font.draw(batch,
+//				// MessageFormat.format("Current Frame {4}/{5} IN({0}, {1}) OUT({2}, {3})",
+//				// (int) fa.inDX, (int) fa.inDY, (int) fa.outDX, (int) fa.outDY,
+//				// a.getCurrentFrame() + 1, a.getNumFrames()), 10,
+//				// 22);
+//
+//				font.draw(
+//						batch,
+//						MessageFormat.format("Frame {0}/{1}", a.getCurrentFrame() + 1,
+//								a.getNumFrames()), 10, 22);
+//			}
 
 			batch.end();
 		}
@@ -496,7 +496,6 @@ public class ScnCanvas extends ApplicationAdapter {
 			GL20 gl = Gdx.gl20;
 			gl.glViewport(0, 0, width, height);
 			resetCameras();
-			Sprite3DActor.resizeViewport();
 		}
 	}
 

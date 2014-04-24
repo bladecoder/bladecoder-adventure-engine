@@ -4,80 +4,106 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 
 import org.bladecoder.engine.actions.ActionCallback;
+import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.EngineTween;
-import org.bladecoder.engine.anim.FrameAnimation;
-import org.bladecoder.engine.anim.SpriteFATween;
 import org.bladecoder.engine.anim.TweenManagerSingleton;
 import org.bladecoder.engine.assets.EngineAssetManager;
+import org.bladecoder.engine.util.ActionCallbackSerialization;
 import org.bladecoder.engine.util.EngineLogger;
+import org.bladecoder.engine.util.RectangleRenderer;
 
-import aurelienribon.tweenengine.TweenManager;
-
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class SpriteAtlasActor extends SpriteActor {
+public class SpriteAtlasRenderer implements SpriteRenderer {
 
-	private HashMap<String, FrameAnimation> fanims = new HashMap<String, FrameAnimation>();
+	private HashMap<String, AtlasFrameAnimation> fanims = new HashMap<String, AtlasFrameAnimation>();
 
-	private int currentFrame = 0;
-	private FrameAnimation currentFrameAnimation;
+	private AtlasFrameAnimation currentFrameAnimation;
+	private Animation currentAnimation;
+	private float animationTime;
+	private ActionCallback animationCb = null;
+	private String animationCbSer = null;
 
 	/**
 	 * When the atlas is loaded for the current FA this var keeps track of it
 	 * for freeing when FA is changed
 	 */
 	private String notPreloadedAtlas;
+		
+	private TextureRegion tex;
+	private boolean flipX;
 
 	@Override
 	public void update(float delta) {
-		// TODO Auto-generated method stub
+		if(currentAnimation != null) {
+			animationTime += delta;
+			tex = currentAnimation.getKeyFrame(animationTime);
+			
+			if(currentAnimation.isAnimationFinished(animationTime) && (animationCb != null || animationCbSer != null)) {
+				
+				if (animationCb == null) {
+					animationCb = ActionCallbackSerialization.find(animationCbSer);
+					animationCbSer = null;
+				}
+				
+				ActionCallback cb2 = animationCb;
+				animationCb = null;
+				cb2.onEvent();
+			}
+		}
+	}
+	
+	@Override
+	public void draw(SpriteBatch batch, float x, float y, float originX,
+			float originY, float scale) {
+		
+		if(tex == null) {
+			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
+		}
+		
+		if (!flipX) {
+			batch.draw(tex, x, y, originX, originY, tex.getRegionWidth(),
+				tex.getRegionHeight(), scale, scale, 0);
+		} else {
+			batch.draw(tex, x +  tex.getRegionWidth() * scale, y, originX, originY, -tex.getRegionWidth(),
+					tex.getRegionHeight(), scale, scale, 0);
+		}
+	}
+	
+	@Override
+	public float getWidth() {
+		if (tex == null)
+			return 200;
+
+		return tex.getRegionWidth();
 	}
 
-	public FrameAnimation getCurrentFrameAnimation() {
+	@Override
+	public float getHeight() {
+		if (tex == null)
+			return 200;
+
+		return tex.getRegionHeight();
+	}
+
+	public AtlasFrameAnimation getCurrentFrameAnimation() {
 		return currentFrameAnimation;
 	}
 
-	public HashMap<String, FrameAnimation> getFrameAnimations() {
+	public HashMap<String, AtlasFrameAnimation> getFrameAnimations() {
 		return fanims;
 	}
 
-	private AtlasRegion getCurrentRegion() {
-		return currentFrameAnimation.regions.get(currentFrame);
-	}
 
-	public void setCurrentFrameAnimation(FrameAnimation fa) {
-		// EngineLogger.debug(getId() + ": Setting FrameAnimation " + id);
+	public void startFrameAnimation(String id, int repeatType, int count, ActionCallback cb) {
 
-		if (currentFrameAnimation != null) {
-			if (currentFrameAnimation.sound != null) {
-				stopSound(currentFrameAnimation.sound);
-			}
-
-			if (fa.outD != null) {
-				float s = EngineAssetManager.getInstance().getScale();
-
-				pos.x += currentFrameAnimation.outD.x * s;
-				pos.y += currentFrameAnimation.outD.y * s;
-			}
-		}
-
-		currentFrameAnimation = fa;
-
-		if (fa.inD != null) {
-			float s = EngineAssetManager.getInstance().getScale();
-			pos.x += fa.inD.x * s;
-			pos.y += fa.inD.y * s;
-		}
-	}
-
-	public void startFrameAnimation(String id, int repeatType, int count,
-			boolean reverse, ActionCallback cb) {
-
-		FrameAnimation fa = getFrameAnimation(id);
+		AtlasFrameAnimation fa = getFrameAnimation(id);
 
 		if (fa == null) {
 			EngineLogger.error("FrameAnimation not found: " + id);
@@ -85,30 +111,16 @@ public class SpriteAtlasActor extends SpriteActor {
 			return;
 		}
 
-		setCurrentFrameAnimation(fa);
-		startCurrentFrameAnimation(repeatType, count, reverse, cb);
-	}
-
-	public void setCurrentFrame(int f) {
-		currentFrame = f;
-
-		tex = getCurrentRegion();
-	}
-
-	public int getCurrentFrame() {
-		return currentFrame;
+		currentFrameAnimation = fa;
+		
+		startCurrentFrameAnimation(repeatType, count, cb);
 	}
 
 	public int getNumFrames() {
 		return currentFrameAnimation.regions.size;
 	}
 
-	private void startCurrentFrameAnimation(int repeatType, int count,
-			boolean reverse, ActionCallback cb) {
-
-		if (currentFrameAnimation.sound != null) {
-			playSound(currentFrameAnimation.sound);
-		}
+	private void startCurrentFrameAnimation(int repeatType, int count, ActionCallback cb) {
 
 		// free not pre loaded in scene atlas
 		if (notPreloadedAtlas != null
@@ -125,38 +137,57 @@ public class SpriteAtlasActor extends SpriteActor {
 
 		if (currentFrameAnimation == null
 				|| currentFrameAnimation.regions == null) {
-			if (bbox == null) {
-				bbox = new Rectangle(pos.x - 50, pos.y, 100, 100);
-			}
 
 			tex = null;
 
 			return;
 		}
-
-		TweenManager manager = TweenManagerSingleton.getInstance();
-
-		manager.killTarget(this, EngineTween.SPRITE_FA_TYPE);
-
-		if (!reverse)
-			setCurrentFrame(0);
-		else
-			setCurrentFrame(getNumFrames() - 1);
+		
+		currentAnimation = null;
+		animationTime = 0;
+		animationCb = cb;
 
 		if (currentFrameAnimation.regions.size <= 1
-				|| currentFrameAnimation.speed == 0.0) {
+				|| currentFrameAnimation.duration == 0.0) {
+			
+			tex = currentFrameAnimation.regions.first();
+			
 			if (cb != null) {
 				cb.onEvent();
 			}
 
 			return;
 		}
-		
-		SpriteFATween t = new SpriteFATween();
-		
-		t.start(this, repeatType, count, reverse, cb);
 
-		manager.add(t);
+		if(repeatType != EngineTween.FROM_FA) {
+			currentFrameAnimation.animationType = repeatType;
+			currentFrameAnimation.count = count;
+		}
+		
+		newCurrentAnimation(currentFrameAnimation.animationType, count);
+	}
+	
+	private void newCurrentAnimation(int repeatType, int count) {
+		int animationType = Animation.NORMAL;
+		// TODO: ADD COUNT SUPPORT
+		
+		switch(repeatType) {
+		case EngineTween.REPEAT:
+			animationType = Animation.LOOP;
+			break;
+		case EngineTween.YOYO:
+			animationType = Animation.LOOP_PINGPONG;
+			break;
+		case EngineTween.REVERSE:
+			animationType = Animation.REVERSED;
+			break;
+		case EngineTween.REVERSE_REPEAT:
+			animationType = Animation.LOOP_REVERSED;
+			break;
+		}		
+		
+		currentAnimation = new Animation(currentFrameAnimation.duration / getNumFrames(),
+				currentFrameAnimation.regions, animationType);
 	}
 
 	public String getFlipId(String id) {
@@ -174,6 +205,9 @@ public class SpriteAtlasActor extends SpriteActor {
 	}
 
 	public String getCurrentFrameAnimationId() {
+		if(currentFrameAnimation==null)
+			return null;
+		
 		String id = currentFrameAnimation.id;
 
 		if (flipX) {
@@ -184,30 +218,12 @@ public class SpriteAtlasActor extends SpriteActor {
 
 	}
 
-	public void addFrameAnimation(FrameAnimation fa) {
-		if (initFrameAnimation == null)
-			initFrameAnimation = fa.id;
-
+	public void addFrameAnimation(AtlasFrameAnimation fa) {
 		fanims.put(fa.id, fa);
 	}
 
-	@Override
-	public void retrieveAssets() {
-		super.retrieveAssets();
-
-		for (FrameAnimation fa : fanims.values()) {
-			retrieveFA(fa.id, fa == currentFrameAnimation);
-		}
-
-		if (currentFrameAnimation == null && initFrameAnimation != null) {
-			startFrameAnimation(initFrameAnimation, null);
-		} else {
-			tex = getCurrentRegion();
-		}
-	}
-
 	private void retrieveFA(String faId, boolean loadAtlas) {
-		FrameAnimation fa = fanims.get(faId);
+		AtlasFrameAnimation fa = fanims.get(faId);
 
 		if (!EngineAssetManager.getInstance().isAtlasLoaded(fa.atlas)) {
 
@@ -241,8 +257,6 @@ public class SpriteAtlasActor extends SpriteActor {
 	public String toString() {
 		StringBuffer sb = new StringBuffer(super.toString());
 
-		sb.append("  Sprite Bbox: ").append(getBBox().toString());
-
 		sb.append("\n  Anims:");
 
 		for (String v : fanims.keySet()) {
@@ -250,15 +264,14 @@ public class SpriteAtlasActor extends SpriteActor {
 		}
 
 		sb.append("\n  Current Anim: ").append(currentFrameAnimation.id);
-		sb.append("  Current Frame: ").append(currentFrame);
 
 		sb.append("\n");
 
 		return sb.toString();
 	}
 
-	public FrameAnimation getFrameAnimation(String id) {
-		FrameAnimation fa = fanims.get(id);
+	public AtlasFrameAnimation getFrameAnimation(String id) {
+		AtlasFrameAnimation fa = fanims.get(id);
 		flipX = false;
 
 		if (fa == null) {
@@ -273,16 +286,16 @@ public class SpriteAtlasActor extends SpriteActor {
 				// search for .left if .frontleft not found and viceversa
 				StringBuilder sb = new StringBuilder();
 
-				if (id.endsWith(SpriteActor.LEFT)) {
+				if (id.endsWith(SpriteRenderer.LEFT)) {
 					sb.append(id.substring(0, id.length() - 4));
 					sb.append("frontleft");
-				} else if (id.endsWith(SpriteActor.FRONTLEFT)) {
+				} else if (id.endsWith(SpriteRenderer.FRONTLEFT)) {
 					sb.append(id.substring(0, id.length() - 9));
 					sb.append("left");
-				} else if (id.endsWith(SpriteActor.RIGHT)) {
+				} else if (id.endsWith(SpriteRenderer.RIGHT)) {
 					sb.append(id.substring(0, id.length() - 5));
 					sb.append("frontright");
-				} else if (id.endsWith(SpriteActor.FRONTRIGHT)) {
+				} else if (id.endsWith(SpriteRenderer.FRONTRIGHT)) {
 					sb.append(id.substring(0, id.length() - 10));
 					sb.append("right");
 				}
@@ -307,8 +320,8 @@ public class SpriteAtlasActor extends SpriteActor {
 	}
 
 	@Override
-	public void lookat(Vector2 p) {
-		lookat(getFrameDirection(getPosition(), p));
+	public void lookat(Vector2 p0, Vector2 pf) {
+		lookat(getFrameDirection(p0, pf));
 	}
 
 	@Override
@@ -320,7 +333,7 @@ public class SpriteAtlasActor extends SpriteActor {
 
 		TweenManagerSingleton.getInstance().killTarget(this,
 				EngineTween.SPRITE_POS_TYPE);
-		startFrameAnimation(sb.toString(), null);
+		startFrameAnimation(sb.toString(), EngineTween.FROM_FA, 1, null);
 	}
 
 	@Override
@@ -332,7 +345,7 @@ public class SpriteAtlasActor extends SpriteActor {
 			standFA += getCurrentFrameAnimationId().substring(idx);
 		}
 
-		startFrameAnimation(standFA, null);
+		startFrameAnimation(standFA, EngineTween.FROM_FA, 1, null);
 	}
 
 	@Override
@@ -340,7 +353,7 @@ public class SpriteAtlasActor extends SpriteActor {
 		String currentDirection = getFrameDirection(p0, pf);
 		StringBuilder sb = new StringBuilder();
 		sb.append(WALK_ANIM).append('.').append(currentDirection);
-		startFrameAnimation(sb.toString(), null);
+		startFrameAnimation(sb.toString(), EngineTween.FROM_FA, 1, null);
 	}
 
 	private final static float DIRECTION_ASPECT_TOLERANCE = 2.5f;
@@ -389,12 +402,38 @@ public class SpriteAtlasActor extends SpriteActor {
 			}
 		}
 	}
+	
+	@Override
+	public void loadAssets() {
+		// SpriteAtlas are preloaded by Scene
+		// so it is not necessary to load the atlas here		
+	}
+	
+	@Override
+	public void retrieveAssets() {
+
+		for (AtlasFrameAnimation fa : fanims.values()) {
+			retrieveFA(fa.id, fa == currentFrameAnimation);
+		}
+		
+		if(currentFrameAnimation != null) {
+			
+			if(currentFrameAnimation.regions.size == 1)
+				tex = currentFrameAnimation.regions.first();
+			else {
+				newCurrentAnimation(currentFrameAnimation.animationType, currentFrameAnimation.count);
+				tex = currentAnimation.getKeyFrame(animationTime);
+			}
+			
+		} else if(fanims.size() == 1) {
+			String f = fanims.values().iterator().next().id;
+			startFrameAnimation(f,  EngineTween.FROM_FA, 1, null);
+		}
+	}
 
 	@Override
 	public void dispose() {
-		super.dispose();
-
-		// free not pre loaded atlas in scene
+		// free not pre-loaded atlas in scene
 		if (notPreloadedAtlas != null) {
 			EngineAssetManager.getInstance().disposeAtlas(notPreloadedAtlas);
 			notPreloadedAtlas = null;
@@ -403,10 +442,8 @@ public class SpriteAtlasActor extends SpriteActor {
 
 	@Override
 	public void write(Json json) {
-		super.write(json);
 
 		json.writeValue("fanims", fanims);
-		json.writeValue("currentFrame", currentFrame);
 
 		String currentFrameAnimationId = null;
 
@@ -415,21 +452,31 @@ public class SpriteAtlasActor extends SpriteActor {
 
 		json.writeValue("currentFrameAnimation", currentFrameAnimationId,
 				currentFrameAnimationId == null ? null : String.class);
+		
+		json.writeValue("flipX", flipX);
+				
+		json.writeValue("animationTime", animationTime);
+		json.writeValue("animationCb",
+				ActionCallbackSerialization.find(animationCb),
+				animationCb == null ? null : String.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
 
-		fanims = json.readValue("fanims", HashMap.class, FrameAnimation.class,
+		fanims = json.readValue("fanims", HashMap.class, AtlasFrameAnimation.class,
 				jsonData);
-		currentFrame = json.readValue("currentFrame", Integer.class, jsonData);
 
 		String currentFrameAnimationId = json.readValue(
 				"currentFrameAnimation", String.class, jsonData);
 
 		if (currentFrameAnimationId != null)
 			currentFrameAnimation = fanims.get(currentFrameAnimationId);
+		
+		flipX = json.readValue("flipX", Boolean.class, jsonData);
+		
+		animationTime = json.readValue("animationTime", Float.class, jsonData);		
+		animationCbSer = json.readValue("animationCb", String.class, jsonData);
 	}
 }

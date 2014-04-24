@@ -1,7 +1,6 @@
 package org.bladecoder.engineeditor.glcanvas;
 
 import org.bladecoder.engine.anim.EngineTween;
-import org.bladecoder.engine.model.Sprite3DActor;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
 import org.bladecoder.engine.util.RectangleRenderer;
@@ -44,7 +43,7 @@ public class FARenderer {
 		if (fa == null)
 			return;
 
-		if (actor instanceof Sprite3DActor)
+		if (actor instanceof SpriteActor)
 			actor.update(delta);
 	}
 
@@ -66,11 +65,11 @@ public class FARenderer {
 		RectangleRenderer.draw(batch, screenWidth - width, screenHeight
 				- HEIGHT - 50, width, HEIGHT, BG_COLOR);
 
-		actor.draw(batch, screenWidth - width, screenHeight - HEIGHT - 50, 0, 0, width / actorWidth);
+		actor.getRenderer().draw(batch, screenWidth - width, screenHeight - HEIGHT - 50, 0, 0, width / actorWidth);
 	}
 
 	public void play() {
 		actor.retrieveAssets();
-		actor.startFrameAnimation(fa, EngineTween.REPEAT, Tween.INFINITY, false, null);
+		actor.startFrameAnimation(fa, EngineTween.REPEAT, Tween.INFINITY, null);
 	}
 }

@@ -56,7 +56,7 @@ public class PosAnimationAction extends BaseCallbackAction implements Action {
 			} else if (repeatStr.equalsIgnoreCase("no_repeat")) {
 				repeat = EngineTween.NO_REPEAT;
 			} else {
-				repeat = EngineTween.REPEAT_DEFAULT;
+				repeat = EngineTween.FROM_FA;
 			}
 		}
 	}

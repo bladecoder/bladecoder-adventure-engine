@@ -2,7 +2,6 @@ package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.assets.AssetConsumer;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.model.Sprite3DActor;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.model.World.AssetState;
 import org.bladecoder.engine.util.Config;
@@ -253,9 +252,6 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 
 		if (screen != null)
 			screen.resize(camera.getViewport());
-		
-		// TODO Cleaup
-		Sprite3DActor.resizeViewport();
 	}
 
 	@Override

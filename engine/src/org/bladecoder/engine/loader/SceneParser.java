@@ -10,16 +10,16 @@ import org.bladecoder.engine.actions.Action;
 import org.bladecoder.engine.actions.ActionFactory;
 import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engine.anim.EngineTween;
-import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.model.Sprite3DActor;
+import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.BaseActor;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.Dialog;
 import org.bladecoder.engine.model.DialogOption;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
-import org.bladecoder.engine.model.SpriteAtlasActor;
+import org.bladecoder.engine.model.SpriteAtlasRenderer;
 import org.bladecoder.engine.model.Verb;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.I18NControl;
@@ -145,9 +145,14 @@ public class SceneParser extends DefaultHandler {
 			} else {
 				if (type.equals("sprite") || type.equals("foreground")) { // ATLAS
 																			// ACTOR
-					actor = new SpriteAtlasActor();
+					actor = new SpriteActor();
+					((SpriteActor)actor).setRenderer(new SpriteAtlasRenderer());
 				} else if (type.equals("sprite3d")) { // 3D ACTOR
-					actor = new Sprite3DActor();
+					actor = new SpriteActor();
+					Sprite3DRenderer r = new Sprite3DRenderer();
+					
+					
+					((SpriteActor)actor).setRenderer(r);
 
 					Vector3 camPos, camRot;
 					float fov = 67;
@@ -159,14 +164,14 @@ public class SceneParser extends DefaultHandler {
 						spriteSize.x *= scale;
 						spriteSize.y *= scale;
 
-						((Sprite3DActor) actor).setSpriteSize(spriteSize);
+						r.setSpriteSize(spriteSize);
 
 						if (atts.getValue("cam_pos") != null) {
 
 							camPos = Param.parseVector3(atts
 									.getValue("cam_pos"));
 
-							((Sprite3DActor) actor).setCameraPos(camPos.x,
+							r.setCameraPos(camPos.x,
 									camPos.y, camPos.z);
 						}
 
@@ -174,15 +179,15 @@ public class SceneParser extends DefaultHandler {
 							camRot = Param.parseVector3(atts
 									.getValue("cam_rot"));
 
-							((Sprite3DActor) actor).setCameraRot(camRot.x,
+							r.setCameraRot(camRot.x,
 									camRot.y, camRot.z);
 						}
 
 						fov = Float.parseFloat(atts.getValue("fov"));
-						((Sprite3DActor) actor).setCameraFOV(fov);
+						r.setCameraFOV(fov);
 
 						if (atts.getValue("camera_name") != null) {
-							((Sprite3DActor) actor).setCameraName(atts
+							r.setCameraName(atts
 									.getValue("camera_name"));
 						}
 
@@ -195,7 +200,7 @@ public class SceneParser extends DefaultHandler {
 
 					String model = atts.getValue("model");
 
-					((Sprite3DActor) actor).setModel(model);
+					r.setModel(model);
 				}
 
 				if (atts.getValue("walking_speed") != null
@@ -311,7 +316,7 @@ public class SceneParser extends DefaultHandler {
 
 		} else if (localName.equals("frame_animation")) {
 
-			if (actor == null || !(actor instanceof SpriteAtlasActor)) {
+			if (actor == null || !(actor instanceof SpriteActor)) {
 				SAXParseException e = new SAXParseException(
 						"'frame_animation' TAG must be inside actor of type 'sprite', 'player' or 'foreground'",
 						locator);
@@ -319,7 +324,7 @@ public class SceneParser extends DefaultHandler {
 				throw e;
 			}
 
-			if (!(actor instanceof SpriteAtlasActor)) {
+			if (!(((SpriteActor)actor).getRenderer() instanceof SpriteAtlasRenderer)) {
 				SAXParseException e2 = new SAXParseException(
 						"Only SpriteAtlasActors can have animations", locator);
 				error(e2);
@@ -402,10 +407,10 @@ public class SceneParser extends DefaultHandler {
 				animationType = EngineTween.NO_REPEAT;
 			}
 
-			FrameAnimation sa = new FrameAnimation(id, atlas, speed, delay,
+			AtlasFrameAnimation sa = new AtlasFrameAnimation(id, atlas, speed, delay,
 					count, animationType, soundId, inD, outD);
 
-			((SpriteAtlasActor) actor).addFrameAnimation(sa);
+			((SpriteAtlasRenderer)((SpriteActor) actor).getRenderer()).addFrameAnimation(sa);
 		} else if (localName.equals("verb")) {
 			parseVerb(localName, atts, actor != null ? actor : scene);
 		} else if (localName.equals("dialog")) {

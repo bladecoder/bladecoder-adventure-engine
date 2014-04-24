@@ -1,7 +1,7 @@
 package org.bladecoder.engineeditor.glcanvas;
 
 import org.bladecoder.engine.anim.EngineTween;
-import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
 
@@ -30,10 +30,10 @@ public class AtlasFARenderer {
 	private static final TweenManager tweenManager = new TweenManager();
 	private static final float HEIGHT = 200;
 
-	FrameAnimation currentFrameAnimation;
+	AtlasFrameAnimation currentFrameAnimation;
 	int currentFrame = 0;
 
-	public void setFrameAnimation(FrameAnimation fa) {
+	public void setFrameAnimation(AtlasFrameAnimation fa) {
 		this.currentFrameAnimation = fa;
 		
 		play();
@@ -75,7 +75,7 @@ public class AtlasFARenderer {
 		
 		if(currentFrameAnimation == null || currentFrameAnimation.regions == null || getNumFrames() <= 1) return;
 
-		Tween t = Tween.to(this, Accessor.FRAME, currentFrameAnimation.speed);
+		Tween t = Tween.to(this, Accessor.FRAME, currentFrameAnimation.duration);
 		t.target(getNumFrames() - 1);
 		
 		t.ease(Linear.INOUT); // TODO variable

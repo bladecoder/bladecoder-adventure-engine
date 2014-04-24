@@ -5,40 +5,27 @@ import java.util.ArrayList;
 
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.anim.EngineTween;
+import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.SpritePosTween;
 import org.bladecoder.engine.anim.TweenManagerSingleton;
 import org.bladecoder.engine.anim.WalkTween;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.pathfinder.PixTileMap;
 import org.bladecoder.engine.util.EngineLogger;
-import org.bladecoder.engine.util.RectangleRenderer;
 
 import aurelienribon.tweenengine.TweenManager;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public abstract class SpriteActor extends BaseActor {
-
-	public final static String BACK = "back";
-	public final static String FRONT = "front";
-	public final static String RIGHT = "right";
-	public final static String LEFT = "left";
-	public final static String BACKRIGHT = "backright";
-	public final static String BACKLEFT = "backleft";
-	public final static String FRONTRIGHT = "frontright";
-	public final static String FRONTLEFT = "frontleft";
-	public final static String STAND_ANIM = "stand";
-	public final static String WALK_ANIM = "walk";
-	public final static String TALK_ANIM = "talk";
-
+public class SpriteActor extends BaseActor {
 	private final static float DEFAULT_WALKING_SPEED = 700f; // Speed units:
 																// pix/sec.
+
+	private SpriteRenderer renderer;
 
 	public static enum DepthType {
 		NONE, MAP, VECTOR
@@ -46,19 +33,23 @@ public abstract class SpriteActor extends BaseActor {
 
 	protected Vector2 pos = new Vector2();
 	protected float scale = 1.0f;
-	protected boolean flipX;
 
 	/** Starts this anim the first time that the scene is loaded */
 	protected String initFrameAnimation;
-
-	/** The texture to draw */
-	protected TextureRegion tex = null;
 
 	/** Scale sprite acording to the scene depth map */
 	private DepthType depthType = DepthType.NONE;
 	protected Scene scene = null;
 
 	private float walkingSpeed = DEFAULT_WALKING_SPEED;
+
+	public void setRenderer(SpriteRenderer r) {
+		renderer = r;
+	}
+
+	public SpriteRenderer getRenderer() {
+		return renderer;
+	}
 
 	public void setWalkingSpeed(float s) {
 		walkingSpeed = s;
@@ -120,17 +111,11 @@ public abstract class SpriteActor extends BaseActor {
 	}
 
 	public float getWidth() {
-		if (tex == null)
-			return 200;
-
-		return tex.getRegionWidth() * scale;
+		return renderer.getWidth() * scale;
 	}
 
 	public float getHeight() {
-		if (tex == null)
-			return 200;
-
-		return tex.getRegionHeight() * scale;
+		return renderer.getHeight() * scale;
 	}
 
 	@Override
@@ -159,53 +144,60 @@ public abstract class SpriteActor extends BaseActor {
 		this.scale = scale;
 	}
 
-	public boolean isLoaded() {
-		return tex != null;
-	}
-
-	// public TextureRegion getTextureRegion() {
-	// return tex;
-	// }
-
-	public abstract void update(float delta);
-
-	public void draw(SpriteBatch batch, float x, float y, float originX,
-			float originY, float scale) {
-		batch.draw(tex, x, y, originX, originY, tex.getRegionWidth(),
-				tex.getRegionHeight(), scale, scale, 0);
+	public void update(float delta) {
+		renderer.update(delta);
 	}
 
 	public void draw(SpriteBatch batch) {
 		if (isVisible()) {
-			if (tex == null) {
-				if (bbox != null)
-					RectangleRenderer.draw(batch, pos.x - bbox.width / 2,
-							pos.y, bbox.width, bbox.height, Color.RED);
-				else
-					RectangleRenderer.draw(batch, pos.x - getWidth() / 2,
-							pos.y, getWidth(), getHeight(), Color.RED);
+			float x = pos.x - renderer.getWidth() / 2 * scale;
 
-				return;
-			}
-
-			if (flipX) {
-				float x = pos.x + tex.getRegionWidth() / 2 * scale;
-				batch.draw(tex, x, pos.y, 0, 0, -tex.getRegionWidth(),
-						tex.getRegionHeight(), scale, scale, 0.0f);
-			} else {
-				float x = pos.x - tex.getRegionWidth() / 2 * scale;
-				batch.draw(tex, x, pos.y, 0, 0, tex.getRegionWidth(),
-						tex.getRegionHeight(), scale, scale, 0.0f);
-			}
+			renderer.draw(batch, x, pos.y, 0, 0, scale);
 		}
 	}
 
 	public void startFrameAnimation(String id, ActionCallback cb) {
-		startFrameAnimation(id, EngineTween.REPEAT_DEFAULT, 1, false, cb);
+		startFrameAnimation(id, EngineTween.FROM_FA, 1, cb);
 	}
 
-	public abstract void startFrameAnimation(String id, int repeatType,
-			int count, boolean reverse, ActionCallback cb);
+	public void startFrameAnimation(String id, int repeatType, int count,
+			ActionCallback cb) {
+
+		FrameAnimation fa = renderer.getCurrentFrameAnimation();
+
+		if (fa != null) {
+			if (fa.getSound() != null) {
+				stopSound(fa.getSound());
+			}
+
+			Vector2 outD = fa.getOutD();
+
+			if (outD != null) {
+				float s = EngineAssetManager.getInstance().getScale();
+
+				pos.x += outD.x * s;
+				pos.y += outD.y * s;
+			}
+		}
+
+		renderer.startFrameAnimation(id, repeatType, count, cb);
+
+		fa = renderer.getCurrentFrameAnimation();
+
+		if (fa != null) {
+			if (fa.getSound() != null) {
+				playSound(fa.getSound());
+			}
+			
+			Vector2 inD = fa.getInD();
+			
+			if (inD != null) {
+				float s = EngineAssetManager.getInstance().getScale();
+				pos.x += inD.x * s;
+				pos.y += inD.y * s;
+			}
+		}
+	}
 
 	/**
 	 * Create position animation.
@@ -233,15 +225,29 @@ public abstract class SpriteActor extends BaseActor {
 		manager.add(t);
 	}
 
-	public abstract String getCurrentFrameAnimationId();
+	public String getCurrentFrameAnimationId() {
+		return renderer.getCurrentFrameAnimation().getId();
+	}
 
-	public abstract void lookat(Vector2 p);
+	public FrameAnimation getCurrentFrameAnimation() {
+		return renderer.getCurrentFrameAnimation();
+	}
 
-	public abstract void lookat(String direction);
+	public void lookat(Vector2 p) {
+		renderer.lookat(pos, p);
+	}
 
-	public abstract void stand();
+	public void lookat(String direction) {
+		renderer.lookat(direction);
+	}
 
-	public abstract void startWalkFA(Vector2 p0, Vector2 pf);
+	public void stand() {
+		renderer.stand();
+	}
+
+	public void startWalkFA(Vector2 p0, Vector2 pf) {
+		renderer.startWalkFA(p0, pf);
+	}
 
 	// WALKING SUPPORT
 	public void goTo(Vector2 pf, ActionCallback cb) {
@@ -251,15 +257,15 @@ public abstract class SpriteActor extends BaseActor {
 
 		ArrayList<Vector2> walkingPath = null;
 		PixTileMap bgMap = scene.getBackgroundMap();
-		
-		if(bgMap != null)
+
+		if (bgMap != null)
 			walkingPath = bgMap.findPath(scene, p0, pf);
 
-		if (walkingPath == null || walkingPath.size() == 0 ) {
+		if (walkingPath == null || walkingPath.size() == 0) {
 			// llamamos al callback aunque el camino esté vacío
-			if(cb != null)
+			if (cb != null)
 				cb.onEvent();
-			
+
 			return;
 		}
 
@@ -275,10 +281,36 @@ public abstract class SpriteActor extends BaseActor {
 	}
 
 	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer(super.toString());
+
+		sb.append("  Sprite Bbox: ").append(getBBox().toString());
+
+		sb.append(renderer);
+
+		return sb.toString();
+	}
+
+	@Override
+	public void loadAssets() {
+		renderer.loadAssets();
+	}
+
+	@Override
 	public void retrieveAssets() {
 		super.retrieveAssets();
 
-		// setPosition(getPosition().x, getPosition().y);
+		renderer.retrieveAssets();
+
+		if (renderer.getCurrentFrameAnimation() == null
+				&& initFrameAnimation != null) {
+			startFrameAnimation(initFrameAnimation, null);
+		}
+	}
+
+	@Override
+	public void dispose() {
+		renderer.dispose();
 	}
 
 	@Override
@@ -292,8 +324,6 @@ public abstract class SpriteActor extends BaseActor {
 		float worldScale = EngineAssetManager.getInstance().getScale();
 		Vector2 scaledPos = new Vector2(pos.x / worldScale, pos.y / worldScale);
 		json.writeValue("pos", scaledPos);
-
-		json.writeValue("flipX", flipX);
 
 		json.writeValue("walkingSpeed", walkingSpeed);
 	}
@@ -311,8 +341,6 @@ public abstract class SpriteActor extends BaseActor {
 		float worldScale = EngineAssetManager.getInstance().getScale();
 		pos.x *= worldScale;
 		pos.y *= worldScale;
-
-		flipX = json.readValue("flipX", Boolean.class, jsonData);
 
 		walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);
 	}

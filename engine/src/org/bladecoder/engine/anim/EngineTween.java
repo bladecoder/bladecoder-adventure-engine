@@ -25,7 +25,9 @@ public abstract class EngineTween extends BaseTween<EngineTween> implements
 	public final static int NO_REPEAT = 0;
 	public final static int REPEAT = 1;
 	public final static int YOYO = 2;
-	public final static int REPEAT_DEFAULT = 3;
+	public final static int FROM_FA = 3;
+	public final static int REVERSE = 4;
+	public final static int REVERSE_REPEAT = 5;
 
 	protected float savedTime;
 	protected ActionCallback cb;

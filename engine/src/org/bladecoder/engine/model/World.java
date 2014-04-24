@@ -373,7 +373,7 @@ public class World implements Serializable, AssetConsumer {
 			
 			spriteBatch.dispose();
 			
-			Sprite3DActor.disposeBatchs();
+			Sprite3DRenderer.disposeBatchs();
 
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage());

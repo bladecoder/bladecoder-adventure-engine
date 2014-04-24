@@ -9,14 +9,15 @@ import javax.xml.transform.TransformerException;
 
 import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engine.anim.EngineTween;
-import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.BaseActor;
 import org.bladecoder.engine.model.Scene;
-import org.bladecoder.engine.model.Sprite3DActor;
+import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
-import org.bladecoder.engine.model.SpriteAtlasActor;
+import org.bladecoder.engine.model.SpriteAtlasRenderer;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
+import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.util.EngineLogger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -46,10 +47,10 @@ public class SceneDocument extends BaseDocument {
 	 * must be retrieved from atlas by ScnCanvas.
 	 */
 	private HashMap<String, Integer> faFrames = new HashMap<String, Integer>();
-		
+
 	/**
-	 * Stores the 3d Animations. The XML doesn't have this information and
-	 * must be retrieved from model by ScnCanvas.
+	 * Stores the 3d Animations. The XML doesn't have this information and must
+	 * be retrieved from model by ScnCanvas.
 	 */
 	private HashMap<String, Array<Animation>> animations3d = new HashMap<String, Array<Animation>>();
 
@@ -200,8 +201,7 @@ public class SceneDocument extends BaseDocument {
 		Scene scn = new Scene();
 
 		scn.setId(getId());
-		
-		
+
 		scn.getCamera().create(wWidth, wHeight);
 
 		String atlases = getAtlases();
@@ -212,9 +212,9 @@ public class SceneDocument extends BaseDocument {
 		if (background != null && !background.isEmpty()) {
 			scn.setBackground(background, getLightmap());
 		}
-		
+
 		String depthVector = getRootAttr("depth_vector");
-		if(!depthVector.isEmpty())
+		if (!depthVector.isEmpty())
 			scn.setDepthVector(Param.parseVector2(depthVector));
 
 		// GET ACTORS
@@ -243,17 +243,22 @@ public class SceneDocument extends BaseDocument {
 			Element a = (Element) actors.item(i);
 			BaseActor ba = scn.getActor(getId(a), false, true);
 
-			if (ba instanceof SpriteAtlasActor) {
-				SpriteAtlasActor sa = (SpriteAtlasActor) ba;
-				for (FrameAnimation fa : sa.getFrameAnimations().values()) {
-					if (fa.regions == null)
-						setFANumFrames(a, fa.id, 0);
-					else
-						setFANumFrames(a, fa.id, fa.regions.size);
+			if (ba instanceof SpriteActor) {
+				SpriteRenderer r = ((SpriteActor) ba).getRenderer();
+
+				if (r instanceof SpriteAtlasRenderer) {
+					SpriteAtlasRenderer sa = (SpriteAtlasRenderer) r;
+					for (AtlasFrameAnimation fa : sa.getFrameAnimations()
+							.values()) {
+						if (fa.regions == null)
+							setFANumFrames(a, fa.id, 0);
+						else
+							setFANumFrames(a, fa.id, fa.regions.size);
+					}
+				} else if (r instanceof Sprite3DRenderer) {
+					Sprite3DRenderer sa = (Sprite3DRenderer) r;
+					animations3d.put(ba.getId(), sa.getAnimations());
 				}
-			} else if (ba instanceof Sprite3DActor) {
-				Sprite3DActor sa = (Sprite3DActor) ba;
-				animations3d.put(sa.getId(), sa.getAnimations());
 			}
 		}
 
@@ -384,7 +389,7 @@ public class SceneDocument extends BaseDocument {
 	public NodeList getFrameAnimations(Element e) {
 		return e.getElementsByTagName("frame_animation");
 	}
-	
+
 	public Array<Animation> getAnimations3d(String id) {
 		return animations3d.get(id);
 	}
@@ -408,13 +413,15 @@ public class SceneDocument extends BaseDocument {
 
 		String type = getType(e);
 
-		if (type.equals(SPRITE_ACTOR) || type.equals(FOREGROUND_ACTOR))
-			a = new SpriteAtlasActor();
-		else if (type.equals(SPRITE3D_ACTOR))
-			a = new Sprite3DActor();
-		else if (type.equals(BACKGROUND_ACTOR))
+		if (type.equals(SPRITE_ACTOR) || type.equals(FOREGROUND_ACTOR)) {
+			a = new SpriteActor();
+			((SpriteActor)a).setRenderer(new SpriteAtlasRenderer());
+		} else if (type.equals(SPRITE3D_ACTOR)) {
+			a = new SpriteActor();
+			((SpriteActor)a).setRenderer(new Sprite3DRenderer());
+		} else if (type.equals(BACKGROUND_ACTOR)) {
 			a = new BaseActor();
-		else {
+		} else {
 			EngineLogger.error(" Wrong actor Type defined in XML");
 			return null;
 		}
@@ -425,21 +432,23 @@ public class SceneDocument extends BaseDocument {
 		a.setDesc(e.getAttribute("desc"));
 
 		if (a instanceof SpriteActor) {
-
-			if (a instanceof SpriteAtlasActor) {
+			SpriteRenderer r = ((SpriteActor)a).getRenderer();
+			
+			if (r instanceof SpriteAtlasRenderer) {
 				NodeList faList = getFrameAnimations(e);
 
 				for (int i = 0; i < faList.getLength(); i++) {
 					Element faElement = (Element) faList.item(i);
 
-					FrameAnimation fa = getEngineFA(faElement);
+					AtlasFrameAnimation fa = getEngineFA(faElement);
 
-					((SpriteAtlasActor) a).addFrameAnimation(fa);
+					((SpriteAtlasRenderer) r).addFrameAnimation(fa);
 				}
 			} else {
-				Sprite3DActor a3d = (Sprite3DActor) a;
+				Sprite3DRenderer a3d = (Sprite3DRenderer) r;
 				a3d.setModel(e.getAttribute("model"));
-				a3d.setSpriteSize(Param.parseVector2(e.getAttribute("sprite_size")));
+				a3d.setSpriteSize(Param.parseVector2(e
+						.getAttribute("sprite_size")));
 			}
 
 			Vector2 pos = getPos(e);
@@ -448,18 +457,17 @@ public class SceneDocument extends BaseDocument {
 			if (!e.getAttribute("init_frame_animation").isEmpty()) {
 				((SpriteActor) a).setInitFrameAnimation(e
 						.getAttribute("init_frame_animation"));
-				
-				
+
 			}
-			
+
 			// PARSE DEPTH MAP USE
 			String depthType = e.getAttribute("depth_type");
 			((SpriteActor) a).setDepthType(DepthType.NONE);
-			
-			if ( !depthType.isEmpty()) {
-				if(depthType.equals("map"))
+
+			if (!depthType.isEmpty()) {
+				if (depthType.equals("map"))
 					((SpriteActor) a).setDepthType(DepthType.MAP);
-				else if(depthType.equals("vector"))
+				else if (depthType.equals("vector"))
 					((SpriteActor) a).setDepthType(DepthType.VECTOR);
 			}
 		}
@@ -467,9 +475,9 @@ public class SceneDocument extends BaseDocument {
 		return a;
 	}
 
-	public FrameAnimation getEngineFA(Element faElement) {
+	public AtlasFrameAnimation getEngineFA(Element faElement) {
 
-		FrameAnimation fa = new FrameAnimation();
+		AtlasFrameAnimation fa = new AtlasFrameAnimation();
 		fa.id = faElement.getAttribute("id");
 		fa.atlas = faElement.getAttribute("atlas");
 
@@ -485,7 +493,7 @@ public class SceneDocument extends BaseDocument {
 		}
 
 		if (!faElement.getAttribute("speed").isEmpty())
-			fa.speed = Float.parseFloat(faElement.getAttribute("speed"));
+			fa.duration = Float.parseFloat(faElement.getAttribute("speed"));
 
 		if (!faElement.getAttribute("delay").isEmpty())
 			fa.delay = Float.parseFloat(faElement.getAttribute("delay"));

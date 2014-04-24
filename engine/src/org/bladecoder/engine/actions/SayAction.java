@@ -6,7 +6,6 @@ import org.bladecoder.engine.actions.Param.Type;
 import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.model.BaseActor;
 import org.bladecoder.engine.model.SpriteActor;
-import org.bladecoder.engine.model.SpriteAtlasActor;
 import org.bladecoder.engine.model.Text;
 import org.bladecoder.engine.model.TextManager;
 import org.bladecoder.engine.model.World;
@@ -69,7 +68,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 		BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId);
 
 		if (type == Text.Type.TALK)
-			restoreStandPose((SpriteAtlasActor) actor);
+			restoreStandPose((SpriteActor) actor);
 
 		if (soundId != null)
 			actor.playSound(soundId);
@@ -93,9 +92,9 @@ public class SayAction extends BaseCallbackAction implements Action {
 			}
 
 			if (type == Text.Type.TALK) {
-				previousFA = ((SpriteAtlasActor) actor).getCurrentFrameAnimationId();
-				((SpriteAtlasActor) actor).startFrameAnimation(getTalkFA(previousFA),
-						EngineTween.REPEAT_DEFAULT, 0, false, null);
+				previousFA = ((SpriteActor) actor).getCurrentFrameAnimationId();
+				((SpriteActor) actor).startFrameAnimation(getTalkFA(previousFA),
+						EngineTween.FROM_FA, 0, null);
 			}
 
 			if (wait) {
@@ -112,15 +111,15 @@ public class SayAction extends BaseCallbackAction implements Action {
 	@Override
 	public void onEvent() {
 		if (this.type == Text.Type.TALK) {
-			SpriteAtlasActor actor = (SpriteAtlasActor) World.getInstance().getCurrentScene()
+			SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene()
 					.getActor(actorId);
-			actor.startFrameAnimation(previousFA, EngineTween.REPEAT_DEFAULT, 0, false, null);
+			actor.startFrameAnimation(previousFA, EngineTween.FROM_FA, 0, null);
 		}
 
 		super.onEvent();
 	}
 
-	private void restoreStandPose(SpriteAtlasActor a) {
+	private void restoreStandPose(SpriteActor a) {
 		if (a == null)
 			return;
 
