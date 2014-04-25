@@ -1,6 +1,6 @@
 package org.bladecoder.engine.ui;
 
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Transition;
 import org.bladecoder.engine.model.World;
@@ -27,7 +27,7 @@ public class SceneScreen implements Screen, CommandListener {
 	private DialogUI dialogUI;
 	private TextManagerUI textManagerUI;
 
-	private BaseActor selectedActor = null;
+	private Actor selectedActor = null;
 
 	private boolean pieMode;
 	boolean dragging = false;
@@ -57,7 +57,7 @@ public class SceneScreen implements Screen, CommandListener {
 
 		if (w.getCurrentDialog() == null && !w.inCutMode()) {
 
-			BaseActor a = null;
+			Actor a = null;
 
 			if (w.getInventory().isVisible()) {
 				Vector3 input = pointer.getPosition();
@@ -243,7 +243,7 @@ public class SceneScreen implements Screen, CommandListener {
 
 		Scene s = w.getCurrentScene();
 
-		BaseActor a = s.getActorAt(unprojectScroll.x, unprojectScroll.y);
+		Actor a = s.getActorAt(unprojectScroll.x, unprojectScroll.y);
 
 		if (a != null) {
 
@@ -271,7 +271,7 @@ public class SceneScreen implements Screen, CommandListener {
 		}
 	}
 
-	private void actorClick(BaseActor a) {
+	private void actorClick(Actor a) {
 			if (a.getVerb("leave") != null) {
 				if(recorder.isRecording()) {
 					recorder.add(a.getId(), "leave", null);
@@ -295,7 +295,7 @@ public class SceneScreen implements Screen, CommandListener {
 	public void runCommand(String command, Object param) {
 
 		if (command.equals(CommandListener.RUN_VERB_COMMAND)) {
-			selectedActor = (BaseActor) param;
+			selectedActor = (Actor) param;
 			actorClick(selectedActor);
 		} else if (command.equals(DialogUI.DIALOG_END_COMMAND)) {
 			World.getInstance().setCurrentDialog(null);

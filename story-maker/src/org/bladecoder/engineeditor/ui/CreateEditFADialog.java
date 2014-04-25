@@ -117,7 +117,7 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 
 		init(inputs, attrs, doc, parent, "frame_animation", e);
 		
-		LwjglAWTCanvas canvas = new LwjglAWTCanvas(faCanvas, true);
+		LwjglAWTCanvas canvas = new LwjglAWTCanvas(faCanvas);
 		try{
 			setInfoComponent(canvas.getCanvas());
 		} catch(Exception ex) {

@@ -17,8 +17,8 @@ import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resoluti
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.tools.imagepacker.TexturePacker2;
-import com.badlogic.gdx.tools.imagepacker.TexturePacker2.Settings;
+import com.badlogic.gdx.tools.texturepacker.TexturePacker;
+import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 
 @SuppressWarnings("serial")
 public class CreateAtlasDialog extends EditDialog {
@@ -173,7 +173,7 @@ public class CreateAtlasDialog extends EditDialog {
 					ImageUtils.scaleDirFiles(inDir, inTmpDir, scale);
 				}
 
-				TexturePacker2.process(settings, inTmpDir.getAbsolutePath(),
+				TexturePacker.process(settings, inTmpDir.getAbsolutePath(),
 						outdir + "/" + r.suffix, name + ".atlas");
 
 				if (r.portraitWidth != wWidth) {

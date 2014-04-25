@@ -2,7 +2,7 @@ package org.bladecoder.engine.util;
 
 import org.bladecoder.engine.actions.Action;
 import org.bladecoder.engine.actions.ActionCallback;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Verb;
 import org.bladecoder.engine.model.World;
@@ -29,7 +29,7 @@ public class ActionCallbackSerialization {
 		return null;
 	}
 
-	private static String find(ActionCallback cb, BaseActor a) {
+	private static String find(ActionCallback cb, Actor a) {
 		if(a == null) return null;
 		
 		String id = a.getId();
@@ -67,14 +67,14 @@ public class ActionCallbackSerialization {
 			return id;
 
 		// search in actors
-		for (BaseActor a : s.getActors().values()) {
+		for (Actor a : s.getActors().values()) {
 			id = find(cb, a);
 			if (id != null)
 				return id;
 		}
 
 		// search in defaultVerbs
-		for (Verb v : BaseActor.getDefaultVerbs().values()) {
+		for (Verb v : Actor.getDefaultVerbs().values()) {
 			id = find(cb, v);
 			if (id != null) {
 				StringBuilder stringBuilder = new StringBuilder("DEFAULT_VERB");
@@ -104,10 +104,10 @@ public class ActionCallbackSerialization {
 		
 		if (actorId.equals("DEFAULT_VERB")) {
 
-			v = BaseActor.getDefaultVerbs().get(verbId);
+			v = Actor.getDefaultVerbs().get(verbId);
 		} else {
 
-			BaseActor a;
+			Actor a;
 
 			if (actorId.equals(s.getId()))
 				a = s;

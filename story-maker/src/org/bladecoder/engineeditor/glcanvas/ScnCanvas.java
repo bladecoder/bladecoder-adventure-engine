@@ -9,7 +9,7 @@ import java.util.TimerTask;
 import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.TweenManagerSingleton;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
@@ -50,7 +50,7 @@ public class ScnCanvas extends ApplicationAdapter {
 	private Texture backgroundTexture;
 
 	private Scene scn = null;
-	private BaseActor selectedActor = null;
+	private Actor selectedActor = null;
 	
 	SceneDocument selDoc;
 	Element selElementActor;
@@ -143,7 +143,7 @@ public class ScnCanvas extends ApplicationAdapter {
 				} else if (e.getPropertyName().equals("bbox")) {
 					Element selActor = (Element) e.getNewValue();
 					String id = doc.getId(selActor);
-					BaseActor a = scn.getActor(id, false, true);
+					Actor a = scn.getActor(id, false, true);
 					if (a == null)
 						return;
 
@@ -151,7 +151,7 @@ public class ScnCanvas extends ApplicationAdapter {
 				} else if (e.getPropertyName().equals("pos")) {
 					Element selActor = (Element) e.getNewValue();
 					String id = doc.getId(selActor);
-					BaseActor a = scn.getActor(id, false, true);
+					Actor a = scn.getActor(id, false, true);
 					if (a == null)
 						return;
 					Vector2 p = doc.getPos(selActor);
@@ -221,7 +221,7 @@ public class ScnCanvas extends ApplicationAdapter {
 		return scn;
 	}
 
-	public BaseActor selectedActor() {
+	public Actor selectedActor() {
 		return selectedActor;
 	}
 
@@ -336,10 +336,10 @@ public class ScnCanvas extends ApplicationAdapter {
 		}
 	}
 
-	private BaseActor createActor(SceneDocument doc, Element e) {
+	private Actor createActor(SceneDocument doc, Element e) {
 
 		String type = doc.getType(e);
-		BaseActor a = doc.getEngineActor(e);
+		Actor a = doc.getEngineActor(e);
 
 		if (type.equals("foreground")) {
 			scn.addFgActor((SpriteActor) a);
@@ -355,7 +355,7 @@ public class ScnCanvas extends ApplicationAdapter {
 	}
 
 	private void removeActor(SceneDocument doc, Element e) {
-		BaseActor a = scn.getActor(doc.getId(e), false, true);
+		Actor a = scn.getActor(doc.getId(e), false, true);
 		if (a != null) {
 			scn.removeActor(a);
 
@@ -469,7 +469,7 @@ public class ScnCanvas extends ApplicationAdapter {
 		}
 	}
 	
-	public BaseActor getActor() {
+	public Actor getActor() {
 		return selectedActor;
 	}
 

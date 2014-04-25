@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class BaseActor implements Comparable<BaseActor>, Serializable, AssetConsumer {
+public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 
 	protected String id;
 	protected String desc;
@@ -45,6 +45,10 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 
 	public Rectangle getBBox() {
 		return bbox;
+	}
+	
+	public boolean hit(float x, float y) {
+		return getBBox().contains(x, y);
 	}
 
 	public boolean isActive() {
@@ -263,7 +267,7 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 	}
 
 	@Override
-	public int compareTo(BaseActor o) {
+	public int compareTo(Actor o) {
 		return (int) (o.getBBox().getY() - this.getBBox().getY());
 	}
 

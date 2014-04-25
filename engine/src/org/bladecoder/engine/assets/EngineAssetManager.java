@@ -48,8 +48,10 @@ public class EngineAssetManager {
 	public static final String OVERLAY_DIR = "overlays/";
 	public static final String SOUND_DIR = "sounds/";
 	private static final String MODEL3D_DIR = "3d/";
+	private static final String SPINE_DIR = "spine/";
 	
-	private static final String MODEL3D_EXT = ".g3db";	
+	private static final String MODEL3D_EXT = ".g3db";
+	private static final String SPINE_EXT = ".json";
 	
 	private static EngineAssetManager instance = null;
 
@@ -202,6 +204,13 @@ public class EngineAssetManager {
 
 		return region;
 	}
+	
+	public TextureAtlas getTextureAtlas(String atlas) {
+		TextureAtlas a = manager.get(ATLASES_DIR + atlas + ".atlas",
+				TextureAtlas.class);
+
+		return a;
+	}
 
 	public Array<AtlasRegion> getRegions(String atlas, String name) {
 		TextureAtlas a = manager.get(ATLASES_DIR + atlas + ".atlas",
@@ -265,6 +274,11 @@ public class EngineAssetManager {
 			manager.unload(SOUND_DIR + filename);
 	}
 	
+
+	public FileHandle getSpine(String name) {
+		return resResolver.baseResolve(SPINE_DIR + name + SPINE_EXT);
+	}
+	
 	public void loadModel3D(String name) {
 		manager.load(MODEL3D_DIR + name + MODEL3D_EXT, Model.class);
 	}
@@ -272,6 +286,7 @@ public class EngineAssetManager {
 	public Model getModel3D(String name) {
 		return manager.get(MODEL3D_DIR + name + MODEL3D_EXT, Model.class);
 	}
+		
 
 	public void disposeModel3D(String name) {
 		if (manager.isLoaded(MODEL3D_DIR + name + MODEL3D_EXT))

@@ -21,7 +21,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class SpriteActor extends BaseActor {
+public class SpriteActor extends Actor {
 	private final static float DEFAULT_WALKING_SPEED = 700f; // Speed units:
 																// pix/sec.
 

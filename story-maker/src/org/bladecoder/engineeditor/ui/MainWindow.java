@@ -117,7 +117,7 @@ public class MainWindow extends JFrame implements PropertyChangeListener {
         assetPanel = new AssetPanel();
         scenePanel = new ScenePanel();
 		versionLabel = new JLabel();
-		glCanvas = new LwjglAWTCanvas(new ScnCanvas(), true);
+		glCanvas = new LwjglAWTCanvas(new ScnCanvas());
 		actorPanel = new ActorPanel();
 		
 

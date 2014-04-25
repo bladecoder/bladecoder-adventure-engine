@@ -135,9 +135,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 				(int) VIEWPORT.width, (int) VIEWPORT.height);
 	}
 
-	private void drawModel() {
-		updateViewport();
-		
+	private void drawModel() {	
 		// DRAW SHADOW
 		floorBatch.begin(camera3d);
 		floorBatch.render(Utils3D.getFloor(), shadowEnvironment);
@@ -376,6 +374,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	public void update(float delta) {
 		if (controller.current != null && controller.current.loopCount != 0) {
 			controller.update(delta);
+			
+			updateViewport();
 
 			// GENERATE SHADOW MAP
 			genShadowMap();
@@ -511,6 +511,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void retrieveAssets() {
+		updateViewport();
+		
 		Model model3d = EngineAssetManager.getInstance().getModel3D(
 				modelFileName);
 		modelInstance = new ModelInstance(model3d);

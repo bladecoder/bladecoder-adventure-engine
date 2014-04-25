@@ -34,7 +34,7 @@ public class Main extends BladeEngine {
 		}
 		
 		cfg.title = p.getProperty(Config.TITLE_PROP, "Blade Engine Adventure");
-		cfg.useGL20 = true;
+//		cfg.useGL30 = true;
 
 		// cfg.width = World.getInstance().getWidth();
 		// cfg.height = World.getInstance().getHeight();

@@ -4,7 +4,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Verb;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.EngineLogger;
@@ -42,12 +42,12 @@ public class RunVerbAction implements Action {
 	 */
 	private void runVerb(String verb, String target) {
 
-		BaseActor a = World.getInstance().getCurrentScene().getActor(actorId);
+		Actor a = World.getInstance().getCurrentScene().getActor(actorId);
 		
 		Verb v = a.getVerb(verb, target);
 
 		if (v == null) {
-			v = BaseActor.getDefaultVerbs().get(verb);
+			v = Actor.getDefaultVerbs().get(verb);
 		}
 
 		if (v != null)
@@ -59,12 +59,12 @@ public class RunVerbAction implements Action {
 	}
 	
 	public void cancel() {
-		BaseActor a = World.getInstance().getCurrentScene().getActor(actorId);
+		Actor a = World.getInstance().getCurrentScene().getActor(actorId);
 		
 		Verb v = a.getVerb(verb, target);
 
 		if (v == null) {
-			v = BaseActor.getDefaultVerbs().get(verb);
+			v = Actor.getDefaultVerbs().get(verb);
 		}
 
 		if (v != null)

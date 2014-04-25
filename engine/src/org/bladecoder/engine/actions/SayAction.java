@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
 import org.bladecoder.engine.anim.EngineTween;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.Text;
 import org.bladecoder.engine.model.TextManager;
@@ -65,7 +65,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 	@Override
 	public void run() {
 		EngineLogger.debug("SAY ACTION");
-		BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId);
+		Actor actor = World.getInstance().getCurrentScene().getActor(actorId);
 
 		if (type == Text.Type.TALK)
 			restoreStandPose((SpriteActor) actor);

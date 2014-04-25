@@ -14,6 +14,7 @@ import org.bladecoder.engine.util.RectangleRenderer;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -168,21 +169,21 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 	}
 	
 	private void newCurrentAnimation(int repeatType, int count) {
-		int animationType = Animation.NORMAL;
+		PlayMode animationType = Animation.PlayMode.NORMAL;
 		// TODO: ADD COUNT SUPPORT
 		
 		switch(repeatType) {
 		case EngineTween.REPEAT:
-			animationType = Animation.LOOP;
+			animationType = Animation.PlayMode.LOOP;
 			break;
 		case EngineTween.YOYO:
-			animationType = Animation.LOOP_PINGPONG;
+			animationType = Animation.PlayMode.LOOP_PINGPONG;
 			break;
 		case EngineTween.REVERSE:
-			animationType = Animation.REVERSED;
+			animationType = Animation.PlayMode.REVERSED;
 			break;
 		case EngineTween.REVERSE_REPEAT:
-			animationType = Animation.LOOP_REVERSED;
+			animationType = Animation.PlayMode.LOOP_REVERSED;
 			break;
 		}		
 		

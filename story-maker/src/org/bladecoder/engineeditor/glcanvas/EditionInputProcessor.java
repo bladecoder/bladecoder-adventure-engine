@@ -1,7 +1,7 @@
 package org.bladecoder.engineeditor.glcanvas;
 
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteAtlasRenderer;
@@ -28,7 +28,7 @@ public class EditionInputProcessor extends InputAdapter {
 
 	private DraggingModes draggingMode = DraggingModes.NONE;
 	private Corners corner = Corners.BOTTOM_LEFT;
-	private BaseActor actor = null;
+	private Actor actor = null;
 	private Vector2 org = new Vector2();
 
 	public EditionInputProcessor(ScnCanvas canvas) {

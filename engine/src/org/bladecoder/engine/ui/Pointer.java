@@ -2,7 +2,7 @@ package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.assets.UIAssetConsumer;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Peripheral;
@@ -30,7 +30,7 @@ public class Pointer implements UIAssetConsumer {
 	private float scale = 1.0f;
 
 	private boolean showAction = true;
-	private BaseActor target = null;
+	private Actor target = null;
 
 	private boolean freezeHotSpot = false;
 	private Vector3 freezePos;
@@ -121,13 +121,13 @@ public class Pointer implements UIAssetConsumer {
 		}
 	}
 
-	public void setTarget(BaseActor target) {
+	public void setTarget(Actor target) {
 		if (!freezeHotSpot) {
 			this.target = target;
 		}
 	}
 
-	public BaseActor getTarget() {
+	public Actor getTarget() {
 		return target;
 	}
 

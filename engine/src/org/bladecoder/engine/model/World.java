@@ -26,7 +26,7 @@ import com.badlogic.gdx.utils.JsonValue;
 
 public class World implements Serializable, AssetConsumer {
 
-	private static final String GAMESTATE_FILENAME = "gamestate.v5";
+	private static final String GAMESTATE_FILENAME = "gamestate.v6";
 
 	public static enum AssetState {
 		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
@@ -488,7 +488,7 @@ public class World implements Serializable, AssetConsumer {
 		json.writeValue("inventory", inventory);
 		json.writeValue("timeOfGame", timeOfGame);
 		json.writeValue("cutmode", cutMode);
-		json.writeValue("defaultVerbs", BaseActor.defaultVerbs);
+		json.writeValue("defaultVerbs", Actor.defaultVerbs);
 		json.writeValue("timers", timers);
 		json.writeValue("textmanager", textManager);
 		json.writeValue("customProperties", customProperties);
@@ -527,7 +527,7 @@ public class World implements Serializable, AssetConsumer {
 		instance.timeOfGame = json.readValue("timeOfGame", Float.class,
 				jsonData);
 		instance.cutMode = json.readValue("cutmode", Boolean.class, jsonData);
-		BaseActor.defaultVerbs = json.readValue("defaultVerbs", HashMap.class,
+		Actor.defaultVerbs = json.readValue("defaultVerbs", HashMap.class,
 				Verb.class, jsonData);
 		instance.timers = json.readValue("timers", Timers.class, jsonData);
 

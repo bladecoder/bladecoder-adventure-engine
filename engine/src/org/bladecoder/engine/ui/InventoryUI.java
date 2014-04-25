@@ -1,7 +1,7 @@
 package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.assets.UIAssetConsumer;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Inventory;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.World;
@@ -321,7 +321,7 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 		Vector3 mousepos = World.getInstance().getSceneCamera()
 				.getInputUnProject(viewPort);
 		
-		BaseActor targetActor = World.getInstance().getCurrentScene()
+		Actor targetActor = World.getInstance().getCurrentScene()
 				.getActorAt(mousepos.x, mousepos.y);
 
 		// if targetActor is not found in scene search inventory
@@ -336,7 +336,7 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 		draggedActor = null;
 	}
 
-	private void use(BaseActor a1, BaseActor a2) {
+	private void use(Actor a1, Actor a2) {
 		if (a1.getVerb("use", a2.getId()) != null) {
 			if(recorder.isRecording()) {
 				recorder.add(a1.getId(), "use", a2.getId());
@@ -391,7 +391,7 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 			} else if (configBbox.contains(x, y)) {
 				l.runCommand(CommandListener.CONFIG_COMMAND, null);
 			} else {
-				BaseActor actor = getItemAt(x, y);
+				Actor actor = getItemAt(x, y);
 
 				if (actor != null) {
 					l.runCommand(CommandListener.RUN_VERB_COMMAND, actor);

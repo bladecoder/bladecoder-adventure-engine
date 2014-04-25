@@ -13,13 +13,14 @@ import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.Sprite3DRenderer;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.Dialog;
 import org.bladecoder.engine.model.DialogOption;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
 import org.bladecoder.engine.model.SpriteAtlasRenderer;
+import org.bladecoder.engine.model.SpriteSpineRenderer;
 import org.bladecoder.engine.model.Verb;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.I18NControl;
@@ -36,7 +37,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public class SceneParser extends DefaultHandler {
-	private BaseActor actor;
+	private Actor actor;
 	private Scene scene;
 
 	Verb currentVerb;
@@ -141,7 +142,7 @@ public class SceneParser extends DefaultHandler {
 			}
 
 			if (type.equals("background")) {
-				actor = new BaseActor();
+				actor = new Actor();
 			} else {
 				if (type.equals("sprite") || type.equals("foreground")) { // ATLAS
 																			// ACTOR
@@ -149,9 +150,7 @@ public class SceneParser extends DefaultHandler {
 					((SpriteActor)actor).setRenderer(new SpriteAtlasRenderer());
 				} else if (type.equals("sprite3d")) { // 3D ACTOR
 					actor = new SpriteActor();
-					Sprite3DRenderer r = new Sprite3DRenderer();
-					
-					
+					Sprite3DRenderer r = new Sprite3DRenderer();						
 					((SpriteActor)actor).setRenderer(r);
 
 					Vector3 camPos, camRot;
@@ -201,6 +200,13 @@ public class SceneParser extends DefaultHandler {
 					String model = atts.getValue("model");
 
 					r.setModel(model);
+				} else if (type.equals("spine")) { // SPINE RENDERER				
+					actor = new SpriteActor();
+					SpriteSpineRenderer r = new SpriteSpineRenderer();						
+					((SpriteActor)actor).setRenderer(r);
+					
+					String source = atts.getValue("source");
+					r.setSource(source);
 				}
 
 				if (atts.getValue("walking_speed") != null
@@ -496,7 +502,7 @@ public class SceneParser extends DefaultHandler {
 		scene.setPlayer((SpriteActor) scene.getActor(player));
 	}
 
-	private void parseSound(String localName, Attributes atts, BaseActor actor)
+	private void parseSound(String localName, Attributes atts, Actor actor)
 			throws SAXException {
 		String id = atts.getValue("id");
 		String filename = atts.getValue("filename");
@@ -524,7 +530,7 @@ public class SceneParser extends DefaultHandler {
 		actor.addSound(id, filename, loop, volume);
 	}
 
-	private void parseVerb(String localName, Attributes atts, BaseActor actor) {
+	private void parseVerb(String localName, Attributes atts, Actor actor) {
 
 		String id = atts.getValue("id");
 		String target = atts.getValue("target");
@@ -541,7 +547,7 @@ public class SceneParser extends DefaultHandler {
 		actor.addVerb(id, currentVerb);
 	}
 
-	private void parseAction(String localName, Attributes atts, BaseActor actor) {
+	private void parseAction(String localName, Attributes atts, Actor actor) {
 		String actionName = localName;
 		Action action = null;
 		HashMap<String, String> params = new HashMap<String, String>();

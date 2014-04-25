@@ -1,7 +1,7 @@
 package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.assets.UIAssetConsumer;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -25,7 +25,7 @@ public class PieMenu implements TouchEventListener, UIAssetConsumer  {
 	private float x=0, y=0;
 	private String selected;
 	
-	private BaseActor actor = null;
+	private Actor actor = null;
 	
 	private String rightVerb;
 	private String leftVerb;
@@ -107,7 +107,7 @@ public class PieMenu implements TouchEventListener, UIAssetConsumer  {
 		return visible;
 	}
 	
-	public void show(BaseActor a, float x, float y) {
+	public void show(Actor a, float x, float y) {
 		visible = true;
 		this.x = x;
 		this.y = y;

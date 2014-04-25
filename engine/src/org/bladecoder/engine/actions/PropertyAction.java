@@ -3,7 +3,7 @@ package org.bladecoder.engine.actions;
 import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.World;
 
 public class PropertyAction implements Action {
@@ -35,10 +35,10 @@ public class PropertyAction implements Action {
 		if(type.equals("world")) {
 			World.getInstance().setCustomProperty(prop, value);
 		} else if(type.equals("scene")) {
-			BaseActor actor = World.getInstance().getCurrentScene();
+			Actor actor = World.getInstance().getCurrentScene();
 			actor.setCustomProperty(prop, value);
 		} else {
-			BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId);
+			Actor actor = World.getInstance().getCurrentScene().getActor(actorId);
 			actor.setCustomProperty(prop, value);
 		}
 	}

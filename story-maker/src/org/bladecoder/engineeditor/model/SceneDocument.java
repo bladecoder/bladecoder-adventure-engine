@@ -11,7 +11,7 @@ import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
@@ -221,7 +221,7 @@ public class SceneDocument extends BaseDocument {
 		NodeList actors = getActors();
 		for (int i = 0; i < actors.getLength(); i++) {
 			Element a = (Element) actors.item(i);
-			BaseActor actor = getEngineActor(a);
+			Actor actor = getEngineActor(a);
 
 			if (getType(a).equals("foreground")) {
 				scn.addFgActor((SpriteActor) actor);
@@ -241,7 +241,7 @@ public class SceneDocument extends BaseDocument {
 		// SET FA NUMFRAMES OR ANIMATIONS3D
 		for (int i = 0; i < actors.getLength(); i++) {
 			Element a = (Element) actors.item(i);
-			BaseActor ba = scn.getActor(getId(a), false, true);
+			Actor ba = scn.getActor(getId(a), false, true);
 
 			if (ba instanceof SpriteActor) {
 				SpriteRenderer r = ((SpriteActor) ba).getRenderer();
@@ -408,8 +408,8 @@ public class SceneDocument extends BaseDocument {
 		return new Rectangle(x, y, width, height);
 	}
 
-	public BaseActor getEngineActor(Element e) {
-		BaseActor a = null;
+	public Actor getEngineActor(Element e) {
+		Actor a = null;
 
 		String type = getType(e);
 
@@ -420,7 +420,7 @@ public class SceneDocument extends BaseDocument {
 			a = new SpriteActor();
 			((SpriteActor)a).setRenderer(new Sprite3DRenderer());
 		} else if (type.equals(BACKGROUND_ACTOR)) {
-			a = new BaseActor();
+			a = new Actor();
 		} else {
 			EngineLogger.error(" Wrong actor Type defined in XML");
 			return null;

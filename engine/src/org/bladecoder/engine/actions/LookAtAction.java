@@ -3,7 +3,7 @@ package org.bladecoder.engine.actions;
 import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.model.Text;
@@ -46,7 +46,7 @@ public class LookAtAction implements Action {
 	@Override
 	public void run() {
 		EngineLogger.debug("LOOKAT ACTION");
-		BaseActor actor = (BaseActor) World.getInstance().getCurrentScene().getActor(actorId);
+		Actor actor = (Actor) World.getInstance().getCurrentScene().getActor(actorId);
 
 		SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
 		

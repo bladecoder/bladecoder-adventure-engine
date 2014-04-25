@@ -1,14 +1,13 @@
 package org.bladecoder.engineeditor.glcanvas;
 
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.SceneCamera;
 import org.bladecoder.engineeditor.Ctx;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
@@ -54,9 +53,9 @@ public class CanvasDrawer {
 	}
 
 	private void drawBoundingBox(float w, float h) {
-		Gdx.gl10.glLineWidth(1);
-		Gdx.gl10.glEnable(GL10.GL_BLEND);
-		Gdx.gl10.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl20.glLineWidth(1);
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
 		drawer.begin(ShapeRenderer.ShapeType.Line);
 		drawer.setColor(AXIS_COLOR);
@@ -65,9 +64,9 @@ public class CanvasDrawer {
 	}
 
 	private void drawMouseSelection(float x1, float y1, float x2, float y2) {
-		Gdx.gl10.glLineWidth(3);
-		Gdx.gl10.glEnable(GL10.GL_BLEND);
-		Gdx.gl10.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl20.glLineWidth(3);
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
 		Rectangle rect = new Rectangle(
 			Math.min(x1, x2), Math.min(y1, y2),
@@ -86,10 +85,10 @@ public class CanvasDrawer {
 	}
 
 
-	public void drawSelectedActor(BaseActor selectedActor) {
+	public void drawSelectedActor(Actor selectedActor) {
 		//Gdx.gl20.glLineWidth(3);
-		Gdx.gl20.glEnable(GL10.GL_BLEND);
-		Gdx.gl20.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
 		Rectangle rect = selectedActor.getBBox();
 		drawer.setProjectionMatrix(camera.combined);
@@ -114,8 +113,8 @@ public class CanvasDrawer {
 
 
 	public void drawBGBounds() {		
-		Gdx.gl20.glEnable(GL10.GL_BLEND);
-		Gdx.gl20.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
 		drawer.setProjectionMatrix(camera.combined);
 		drawer.setTransformMatrix(new Matrix4());

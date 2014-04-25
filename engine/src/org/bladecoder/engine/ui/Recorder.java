@@ -5,7 +5,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Dialog;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.World;
@@ -73,7 +73,7 @@ public class Recorder {
 					}
 				} else {
 
-					BaseActor a = s.getActor(v.actorId);
+					Actor a = s.getActor(v.actorId);
 
 					if (a != null) {
 						stringBuilder.append(v.verb);

@@ -8,7 +8,6 @@ import aurelienribon.tweenengine.Tween;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -68,7 +67,7 @@ public class FACanvas extends ApplicationAdapter {
 
 		GL20 gl = Gdx.gl20;
 		gl.glClearColor(.5f, .5f, .5f, 1);
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// SCREEN CAMERA
 		batch.setProjectionMatrix(screenCamera.combined);

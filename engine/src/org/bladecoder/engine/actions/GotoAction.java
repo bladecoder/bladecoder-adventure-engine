@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.World;
 
@@ -34,7 +34,7 @@ public class GotoAction extends BaseCallbackAction implements Action {
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId);
 		
 		if(targetId!=null) {
-			BaseActor target =  World.getInstance().getCurrentScene().getActor(targetId);
+			Actor target =  World.getInstance().getCurrentScene().getActor(targetId);
 			actor.goTo(new Vector2(target.getBBox().x, target.getBBox().y), wait?this:null);			
 		} else 
 			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), wait?this:null);
@@ -68,7 +68,7 @@ public class GotoAction extends BaseCallbackAction implements Action {
 	 * @param actor
 	 */
 	@SuppressWarnings("unused")
-	private void goNear(SpriteActor player, BaseActor actor) {
+	private void goNear(SpriteActor player, Actor actor) {
 		Rectangle rdest = actor.getBBox();
 
 		// Vector2 p0 = new Vector2(player.getSprite().getX(),

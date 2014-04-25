@@ -25,7 +25,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class Scene extends BaseActor implements Movers, Serializable,
+public class Scene extends Actor implements Movers, Serializable,
 		AssetConsumer {
 	
 	private static final Color ACTOR_BBOX_COLOR = new Color(0.2f, 0.2f, 0.8f,
@@ -37,7 +37,7 @@ public class Scene extends BaseActor implements Movers, Serializable,
 	/** 
 	 * All actors in the scene
 	 */
-	private HashMap<String, BaseActor> actors = new HashMap<String, BaseActor>();
+	private HashMap<String, Actor> actors = new HashMap<String, Actor>();
 
 	/**
 	 * Foreground actors. Non interactive. Always draw this actors in the
@@ -49,7 +49,7 @@ public class Scene extends BaseActor implements Movers, Serializable,
 	 * Temp list with the 'actors' list + player ordered by 'y' axis to draw in
 	 * depth order and to check for click
 	 */
-	private List<BaseActor> orderedActors = new ArrayList<BaseActor>();
+	private List<Actor> orderedActors = new ArrayList<Actor>();
 	
 	private ArrayList<String> preloadedAtlases = new ArrayList<String>();
 	private SceneCamera camera = new SceneCamera();
@@ -202,7 +202,7 @@ public class Scene extends BaseActor implements Movers, Serializable,
 			}
 		}
 
-		for (BaseActor a : orderedActors) {
+		for (Actor a : orderedActors) {
 			if(a instanceof SpriteActor)
 				((SpriteActor)a).update(delta);
 		}
@@ -227,7 +227,7 @@ public class Scene extends BaseActor implements Movers, Serializable,
 				backgroundMap.draw(spriteBatch, bbox.width, bbox.height);
 		}
 
-		for (BaseActor a : orderedActors) {
+		for (Actor a : orderedActors) {
 			if(a instanceof SpriteActor)
 				((SpriteActor)a).draw(spriteBatch);
 		}
@@ -261,7 +261,7 @@ public class Scene extends BaseActor implements Movers, Serializable,
 
 			StringBuilder sb = new StringBuilder();
 
-			for (BaseActor a : orderedActors) {
+			for (Actor a : orderedActors) {
 				Rectangle r = a.getBBox();
 				sb.setLength(0);
 				sb.append(a.getId());
@@ -283,7 +283,7 @@ public class Scene extends BaseActor implements Movers, Serializable,
 		renderer.begin(ShapeType.Line);
 		renderer.setColor(ACTOR_BBOX_COLOR);
 
-		for (BaseActor a : orderedActors) {
+		for (Actor a : orderedActors) {
 			Rectangle r = a.getBBox();
 
 			if (r == null) {
@@ -320,13 +320,13 @@ public class Scene extends BaseActor implements Movers, Serializable,
 		return transition;
 	}
 
-	public BaseActor getActor(String id) {
+	public Actor getActor(String id) {
 		return getActor(id, true, false);
 	}
 
-	public BaseActor getActor(String id, boolean searchInventory,
+	public Actor getActor(String id, boolean searchInventory,
 			boolean searchFG) {
-		BaseActor a = actors.get(id);
+		Actor a = actors.get(id);
 
 		if (a == null && searchInventory) {
 			a = World.getInstance().getInventory().getItem(id);
@@ -345,11 +345,11 @@ public class Scene extends BaseActor implements Movers, Serializable,
 		return a;
 	}
 
-	public HashMap<String, BaseActor> getActors() {
+	public HashMap<String, Actor> getActors() {
 		return actors;
 	}
 
-	public void addActor(BaseActor actor) {
+	public void addActor(Actor actor) {
 		actors.put(actor.getId(), actor);
 		orderedActors.add(actor);
 		
@@ -421,13 +421,13 @@ public class Scene extends BaseActor implements Movers, Serializable,
 		return tiles;
 	}
 
-	public BaseActor getActorAt(float x, float y) {
+	public Actor getActorAt(float x, float y) {
 		// Se recorre la lista al revés para quedarnos con el más cercano a la
 		// cámara
 		for (int i = orderedActors.size() - 1; i >= 0; i--) {
-			BaseActor a = orderedActors.get(i);
+			Actor a = orderedActors.get(i);
 
-			if (a.getBBox().contains(x, y) && !a.getId().equals(player)
+			if (a.hit(x, y) && !a.getId().equals(player)
 					&& a.hasInteraction()) {
 				return a;
 			}
@@ -436,19 +436,19 @@ public class Scene extends BaseActor implements Movers, Serializable,
 		return null;
 	}
 
-	public BaseActor getFullSearchActorAt(float x, float y) {
+	public Actor getFullSearchActorAt(float x, float y) {
 		// Se recorre la lista al revés para quedarnos con el más cercano a la
 		// cámara
 		for (int i = orderedActors.size() - 1; i >= 0; i--) {
-			BaseActor a = orderedActors.get(i);
+			Actor a = orderedActors.get(i);
 
-			if (a.getBBox().contains(x, y)) {
+			if (a.hit(x, y)) {
 				return a;
 			}
 		}
 
-		for (BaseActor a : fgActors) {
-			if (a.getBBox().contains(x, y)) {
+		for (Actor a : fgActors) {
+			if (a.hit(x, y)) {
 				return a;
 			}
 		}
@@ -485,8 +485,8 @@ public class Scene extends BaseActor implements Movers, Serializable,
 		this.backgroundMap = backgroundMap;
 	}
 
-	public void removeActor(BaseActor a) {
-		BaseActor res = null;
+	public void removeActor(Actor a) {
+		Actor res = null;
 
 		if (a.getId().equals(player)) {
 			player = null;
@@ -508,7 +508,7 @@ public class Scene extends BaseActor implements Movers, Serializable,
 	public boolean isBlocked(int x, int y) {
 		float size = backgroundMap.getTileSize();
 
-		for (BaseActor ba : orderedActors) {
+		for (Actor ba : orderedActors) {
 			if (!(ba instanceof SpriteActor))
 				continue;
 
@@ -615,7 +615,7 @@ public class Scene extends BaseActor implements Movers, Serializable,
 		if (musicFilename != null)
 			EngineAssetManager.getInstance().loadMusic(musicFilename);
 
-		for (BaseActor a : actors.values()) {
+		for (Actor a : actors.values()) {
 			a.loadAssets();
 		}
 
@@ -674,7 +674,7 @@ public class Scene extends BaseActor implements Movers, Serializable,
 		}
 
 		// RETRIEVE ACTORS
-		for (BaseActor a : actors.values()) {
+		for (Actor a : actors.values()) {
 			a.retrieveAssets();
 		}
 
@@ -717,7 +717,7 @@ public class Scene extends BaseActor implements Movers, Serializable,
 
 		// orderedActors.clear();
 
-		for (BaseActor a : actors.values()) {
+		for (Actor a : actors.values()) {
 			a.dispose();
 		}
 
@@ -790,13 +790,13 @@ public class Scene extends BaseActor implements Movers, Serializable,
 		preloadedAtlases = json.readValue("atlases", ArrayList.class,
 				String.class, jsonData);
 
-		actors = json.readValue("actors", HashMap.class, BaseActor.class,
+		actors = json.readValue("actors", HashMap.class, Actor.class,
 				jsonData);
 		fgActors = json.readValue("fgActors", ArrayList.class,
 				SpriteActor.class, jsonData);
 		player = json.readValue("player", String.class, jsonData);
 
-		for (BaseActor a : actors.values()) {
+		for (Actor a : actors.values()) {
 			orderedActors.add(a);
 
 			// set scene for SpriteActors

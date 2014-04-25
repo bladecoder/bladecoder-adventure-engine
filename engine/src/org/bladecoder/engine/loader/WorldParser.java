@@ -8,7 +8,7 @@ import java.util.ResourceBundle;
 import org.bladecoder.engine.actions.Action;
 import org.bladecoder.engine.actions.ActionFactory;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Verb;
 import org.bladecoder.engine.model.World;
@@ -162,7 +162,7 @@ public class WorldParser extends DefaultHandler {
 
 			currentVerb = new Verb(id);
 
-			BaseActor.addDefaultVerb(id, currentVerb);			
+			Actor.addDefaultVerb(id, currentVerb);			
 		}
 	}
 	

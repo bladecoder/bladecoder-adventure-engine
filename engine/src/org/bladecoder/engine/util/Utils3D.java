@@ -1,7 +1,7 @@
 package org.bladecoder.engine.util;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -44,7 +44,7 @@ public final class Utils3D {
 
 		ModelBuilder modelBuilder = new ModelBuilder();
 		modelBuilder.begin();
-		MeshPartBuilder mpb = modelBuilder.part("parts", GL10.GL_TRIANGLES,
+		MeshPartBuilder mpb = modelBuilder.part("parts", GL20.GL_TRIANGLES,
 				Usage.Position | Usage.Normal | Usage.Color, new Material(
 						ColorAttribute.createDiffuse(Color.WHITE)));
 		mpb.setColor(1f, 1f, 1f, 1f);
@@ -57,20 +57,20 @@ public final class Utils3D {
 		floorInstance = new ModelInstance(floorModel);
 		
 		// TODO Set only when FBO is active
-		floorInstance.materials.get(0).set(new BlendingAttribute(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA));
+		floorInstance.materials.get(0).set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA));
 	}
 
 	
 	private static void createAxes() {
 		ModelBuilder modelBuilder = new ModelBuilder();
 		modelBuilder.begin();
-		MeshPartBuilder builder = modelBuilder.part("grid", GL10.GL_LINES, Usage.Position | Usage.Color, new Material());
+		MeshPartBuilder builder = modelBuilder.part("grid", GL20.GL_LINES, Usage.Position | Usage.Color, new Material());
 		builder.setColor(Color.LIGHT_GRAY);
 		for (float t = GRID_MIN; t <= GRID_MAX; t+=GRID_STEP) {
 			builder.line(t, 0, GRID_MIN, t, 0, GRID_MAX);
 			builder.line(GRID_MIN, 0, t, GRID_MAX, 0, t);
 		}
-		builder = modelBuilder.part("axes", GL10.GL_LINES, Usage.Position | Usage.Color, new Material());
+		builder = modelBuilder.part("axes", GL20.GL_LINES, Usage.Position | Usage.Color, new Material());
 		builder.setColor(Color.RED);
 		builder.line(0, 0, 0, 10, 0, 0);
 		builder.setColor(Color.GREEN);

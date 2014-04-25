@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.EngineLogger;
@@ -31,7 +31,7 @@ public class DropItemAction implements Action {
 	public void run() {
 		float scale =  EngineAssetManager.getInstance().getScale();
 		
-		BaseActor actor = World.getInstance().getCurrentScene().getActor(itemId);
+		Actor actor = World.getInstance().getCurrentScene().getActor(itemId);
 		
 		if(actor==null) {
 			EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", itemId));

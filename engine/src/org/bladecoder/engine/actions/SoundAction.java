@@ -3,7 +3,7 @@ package org.bladecoder.engine.actions;
 import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
-import org.bladecoder.engine.model.BaseActor;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.World;
 
 public class SoundAction implements Action {
@@ -27,7 +27,7 @@ public class SoundAction implements Action {
 	@Override
 	public void run() {
 		
-		BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId);
+		Actor actor = World.getInstance().getCurrentScene().getActor(actorId);
 		
 		if(play!= null)	actor.playSound(play);
 		

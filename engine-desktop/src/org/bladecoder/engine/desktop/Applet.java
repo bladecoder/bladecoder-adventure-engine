@@ -8,6 +8,6 @@ public class Applet extends LwjglApplet {
 	private static final long serialVersionUID = 1L;
 
 	public Applet() {
-		super(new BladeEngine(), true);
+		super(new BladeEngine());
 	}
 }
