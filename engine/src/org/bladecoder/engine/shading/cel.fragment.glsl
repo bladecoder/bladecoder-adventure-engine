@@ -86,10 +86,8 @@ void main() {
 		
 		c.rgb *= u_pointLights[0].color;
 
-		if (intensity > 0.98)
-			c.rgb = 1.1 * diffuse.rgb;
-		else if (intensity < 0.1)
-			c.rgb = 0.5 * diffuse.rgb;
+		if (intensity < 0.2)
+			c.rgb = (intensity * 2.0) * diffuse.rgb;
 	
 		gl_FragColor = c;
 	#endif					

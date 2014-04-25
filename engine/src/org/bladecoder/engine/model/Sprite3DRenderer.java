@@ -46,7 +46,7 @@ import com.badlogic.gdx.utils.JsonValue;
 
 public class Sprite3DRenderer implements SpriteRenderer {
 
-	public final static boolean USE_FBO = true;
+	public final static boolean USE_FBO = false;
 	private final static int MAX_BONES = 40;
 	private final static Format FRAMEBUFFER_FORMAT = Format.RGBA4444;
 
@@ -110,6 +110,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	 * Render the 3D model into the texture
 	 */
 	private void renderTex() {
+		updateViewport();
+		
 		fb.begin();
 
 		Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -125,6 +127,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	 * GENERATE SHADOW MAP
 	 */
 	private void genShadowMap() {
+		updateViewport();
+		
 		shadowLight.begin(Vector3.Zero, camera3d.direction);
 		shadowBatch.begin(shadowLight.getCamera());
 		shadowBatch.render(modelInstance);
@@ -374,8 +378,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	public void update(float delta) {
 		if (controller.current != null && controller.current.loopCount != 0) {
 			controller.update(delta);
-			
-			updateViewport();
 
 			// GENERATE SHADOW MAP
 			genShadowMap();
@@ -400,22 +402,15 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	@Override
-	public float getWidth() {
-		if (tex == null)
-			return 200;
-			
+	public float getWidth() {	
 		return width;
 	}
 
 	@Override
-	public float getHeight() {
-		if (tex == null)
-			return 200;
-			
+	public float getHeight() {		
 		return height;
-
 	}
-
+	
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float originX,
 			float originY, float scale) {
@@ -423,28 +418,40 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			batch.draw(tex, x, y, originX, originY, width,
 					height, scale, scale, 0);
 		} else {
+			float p0x, p0y, pfx, pfy;
+			
+			Vector3 tmp = new Vector3(); // TODO Make static for performance?
+			updateViewport();
+			
+			// get screen coords for x and y
+			tmp.set(x,y,0);
+			tmp.prj(batch.getProjectionMatrix());
+			p0x =  VIEWPORT.width * (tmp.x + 1) / 2;
+			p0y =  VIEWPORT.height * (tmp.y + 1) / 2;
+			
+			tmp.set(x + width,y + height,0);
+			tmp.prj(batch.getProjectionMatrix());
+			pfx =  VIEWPORT.width * (tmp.x + 1) / 2;
+			pfy =  VIEWPORT.height * (tmp.y + 1) / 2;
+			
 			batch.end();
-			// TODO: NO FBO SUPPORT
 
-//			SceneCamera c = scene.getCamera();
-//			Vector3 p0 = c.scene2screen(pos.x, pos.y, VIEWPORT);
-//			Vector3 pf = c.scene2screen(pos.x + width,	pos.y + height, VIEWPORT);
-//
-//			Gdx.gl20.glViewport((int) (p0.x + VIEWPORT.x),
-//					(int) (p0.y + VIEWPORT.y), (int) (pf.x - p0.x),
-//					(int) (pf.y - p0.y));
-//
-//			Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT
-//					| (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV
-//							: 0));
-//
-//			drawModel();
-//
-//			Gdx.gl20.glViewport((int) VIEWPORT.x, (int) VIEWPORT.y,
-//					(int) VIEWPORT.width, (int) VIEWPORT.height);
+			Gdx.gl20.glViewport((int) (p0x + VIEWPORT.x),
+					(int) (p0y + VIEWPORT.y), (int) (pfx - p0x),
+					(int) (pfy - p0y));
+
+			Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT
+					| (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV
+							: 0));
+
+			drawModel();
+
+			Gdx.gl20.glViewport((int) VIEWPORT.x, (int) VIEWPORT.y,
+					(int) VIEWPORT.width, (int) VIEWPORT.height);
 			batch.begin();
 		}
 	}
+	
 
 	private void createEnvirontment() {
 		environment = new Environment();
@@ -511,8 +518,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void retrieveAssets() {
-		updateViewport();
-		
 		Model model3d = EngineAssetManager.getInstance().getModel3D(
 				modelFileName);
 		modelInstance = new ModelInstance(model3d);
@@ -534,7 +539,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		genShadowMap();
 
 		if (USE_FBO) {
-			fb = new FrameBuffer(FRAMEBUFFER_FORMAT, width, height, true) {
+			fb = new FrameBuffer(FRAMEBUFFER_FORMAT, width, height, false) {
 				@Override
 				protected void setupTexture() {
 					colorTexture = new Texture(width, height, format);
