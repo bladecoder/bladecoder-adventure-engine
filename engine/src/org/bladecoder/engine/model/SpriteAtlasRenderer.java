@@ -27,7 +27,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 	private HashMap<String, AtlasFrameAnimation> fanims = new HashMap<String, AtlasFrameAnimation>();
 
 	private AtlasFrameAnimation currentFrameAnimation;
-	private Animation currentAnimation;
+	private Animation animation;
 	private float animationTime;
 	private ActionCallback animationCb = null;
 	private String animationCbSer = null;
@@ -37,48 +37,70 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 	 * for freeing when FA is changed
 	 */
 	private String notPreloadedAtlas;
-		
+
 	private TextureRegion tex;
 	private boolean flipX;
 
+	private boolean isAnimationFinished() {
+		if (currentFrameAnimation.animationType == EngineTween.REPEAT
+				|| currentFrameAnimation.animationType == EngineTween.REVERSE_REPEAT ||
+				 currentFrameAnimation.animationType == EngineTween.YOYO) {
+			if (currentFrameAnimation.count > 0
+					&& animationTime > currentFrameAnimation.duration
+							* currentFrameAnimation.count)
+				return true;
+		} else if (animationTime > currentFrameAnimation.duration) {
+			return true;
+		}
+
+		return false;
+	}
+
 	@Override
 	public void update(float delta) {
-		if(currentAnimation != null) {
+		if (animation != null) {
 			animationTime += delta;
-			tex = currentAnimation.getKeyFrame(animationTime);
-			
-			if(currentAnimation.isAnimationFinished(animationTime) && (animationCb != null || animationCbSer != null)) {
+			tex = animation.getKeyFrame(animationTime);
+
+			if (isAnimationFinished()) {
 				
-				if (animationCb == null) {
-					animationCb = ActionCallbackSerialization.find(animationCbSer);
-					animationCbSer = null;
+				animation = null;
+
+				if (animationCb != null || animationCbSer != null) {
+
+					if (animationCb == null) {
+						animationCb = ActionCallbackSerialization
+								.find(animationCbSer);
+						animationCbSer = null;
+					}
+
+					ActionCallbackQueue.add(animationCb);
+					animationCb = null;
 				}
-				
-				ActionCallbackQueue.add(animationCb);
-				animationCb = null;
-				currentAnimation = null;
 			}
 		}
 	}
-	
+
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float originX,
 			float originY, float scale) {
-		
-		if(tex == null) {
-			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
+
+		if (tex == null) {
+			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight()
+					* scale, Color.RED);
 			return;
 		}
-		
+
 		if (!flipX) {
 			batch.draw(tex, x, y, originX, originY, tex.getRegionWidth(),
-				tex.getRegionHeight(), scale, scale, 0);
-		} else {
-			batch.draw(tex, x +  tex.getRegionWidth() * scale, y, originX, originY, -tex.getRegionWidth(),
 					tex.getRegionHeight(), scale, scale, 0);
+		} else {
+			batch.draw(tex, x + tex.getRegionWidth() * scale, y, originX,
+					originY, -tex.getRegionWidth(), tex.getRegionHeight(),
+					scale, scale, 0);
 		}
 	}
-	
+
 	@Override
 	public float getWidth() {
 		if (tex == null)
@@ -103,11 +125,11 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		return fanims;
 	}
 
-
-	public void startFrameAnimation(String id, int repeatType, int count, ActionCallback cb) {
+	public void startFrameAnimation(String id, int repeatType, int count,
+			ActionCallback cb) {
 		AtlasFrameAnimation fa = null;
-		
-		if(id==null) {
+
+		if (id == null) {
 			fa = fanims.values().iterator().next();
 		} else {
 			fa = getFrameAnimation(id);
@@ -120,7 +142,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		}
 
 		currentFrameAnimation = fa;
-		
+
 		startCurrentFrameAnimation(repeatType, count, cb);
 	}
 
@@ -128,9 +150,12 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		return currentFrameAnimation.regions.size;
 	}
 
-	private void startCurrentFrameAnimation(int repeatType, int count, ActionCallback cb) {
-		
+	private void startCurrentFrameAnimation(int repeatType, int count,
+			ActionCallback cb) {
+
 		animationCb = cb;
+		animation = null;
+		animationTime = 0;
 
 		// free not pre loaded in scene atlas
 		if (notPreloadedAtlas != null
@@ -152,36 +177,33 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 			return;
 		}
-		
-		currentAnimation = null;
-		animationTime = 0;
 
-		if (currentFrameAnimation.regions.size <= 1
+		if (currentFrameAnimation.regions.size == 1
 				|| currentFrameAnimation.duration == 0.0) {
-			
+
 			tex = currentFrameAnimation.regions.first();
-			
+
 			if (cb != null) {
 				ActionCallbackQueue.add(cb);
-//				cb.onEvent();
+				// cb.onEvent();
 			}
 
 			return;
 		}
 
-		if(repeatType != EngineTween.FROM_FA) {
+		if (repeatType != EngineTween.FROM_FA) {
 			currentFrameAnimation.animationType = repeatType;
 			currentFrameAnimation.count = count;
 		}
-		
-		newCurrentAnimation(currentFrameAnimation.animationType, count);
+
+		newCurrentAnimation(currentFrameAnimation.animationType, currentFrameAnimation.count);
 	}
-	
+
 	private void newCurrentAnimation(int repeatType, int count) {
 		PlayMode animationType = Animation.PlayMode.NORMAL;
 		// TODO: ADD COUNT SUPPORT
-		
-		switch(repeatType) {
+
+		switch (repeatType) {
 		case EngineTween.REPEAT:
 			animationType = Animation.PlayMode.LOOP;
 			break;
@@ -194,10 +216,10 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		case EngineTween.REVERSE_REPEAT:
 			animationType = Animation.PlayMode.LOOP_REVERSED;
 			break;
-		}		
-		
-		currentAnimation = new Animation(currentFrameAnimation.duration / getNumFrames(),
-				currentFrameAnimation.regions, animationType);
+		}
+
+		animation = new Animation(currentFrameAnimation.duration
+				/ getNumFrames(), currentFrameAnimation.regions, animationType);
 	}
 
 	public String getFlipId(String id) {
@@ -215,9 +237,9 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 	}
 
 	public String getCurrentFrameAnimationId() {
-		if(currentFrameAnimation==null)
+		if (currentFrameAnimation == null)
 			return null;
-		
+
 		String id = currentFrameAnimation.id;
 
 		if (flipX) {
@@ -412,32 +434,33 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 			}
 		}
 	}
-	
+
 	@Override
 	public void loadAssets() {
 		// SpriteAtlas are preloaded by Scene
-		// so it is not necessary to load the atlas here		
+		// so it is not necessary to load the atlas here
 	}
-	
+
 	@Override
 	public void retrieveAssets() {
 
 		for (AtlasFrameAnimation fa : fanims.values()) {
 			retrieveFA(fa.id, fa == currentFrameAnimation);
 		}
-		
-		if(currentFrameAnimation != null) {
-			
-			if(currentFrameAnimation.regions.size == 1)
+
+		if (currentFrameAnimation != null) {
+
+			if (currentFrameAnimation.regions.size == 1)
 				tex = currentFrameAnimation.regions.first();
 			else {
-				newCurrentAnimation(currentFrameAnimation.animationType, currentFrameAnimation.count);
-				tex = currentAnimation.getKeyFrame(animationTime);
+				newCurrentAnimation(currentFrameAnimation.animationType,
+						currentFrameAnimation.count);
+				tex = animation.getKeyFrame(animationTime);
 			}
-			
-		} else if(fanims.size() == 1) {
+
+		} else if (fanims.size() == 1) {
 			String f = fanims.values().iterator().next().id;
-			startFrameAnimation(f,  EngineTween.FROM_FA, 1, null);
+			startFrameAnimation(f, EngineTween.FROM_FA, 1, null);
 		}
 	}
 
@@ -462,9 +485,9 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 		json.writeValue("currentFrameAnimation", currentFrameAnimationId,
 				currentFrameAnimationId == null ? null : String.class);
-		
+
 		json.writeValue("flipX", flipX);
-				
+
 		json.writeValue("animationTime", animationTime);
 		json.writeValue("animationCb",
 				ActionCallbackSerialization.find(animationCb),
@@ -475,18 +498,18 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
-		fanims = json.readValue("fanims", HashMap.class, AtlasFrameAnimation.class,
-				jsonData);
+		fanims = json.readValue("fanims", HashMap.class,
+				AtlasFrameAnimation.class, jsonData);
 
 		String currentFrameAnimationId = json.readValue(
 				"currentFrameAnimation", String.class, jsonData);
 
 		if (currentFrameAnimationId != null)
 			currentFrameAnimation = fanims.get(currentFrameAnimationId);
-		
+
 		flipX = json.readValue("flipX", Boolean.class, jsonData);
-		
-		animationTime = json.readValue("animationTime", Float.class, jsonData);		
+
+		animationTime = json.readValue("animationTime", Float.class, jsonData);
 		animationCbSer = json.readValue("animationCb", String.class, jsonData);
 	}
 }
