@@ -201,7 +201,6 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 	private void newCurrentAnimation(int repeatType, int count) {
 		PlayMode animationType = Animation.PlayMode.NORMAL;
-		// TODO: ADD COUNT SUPPORT
 
 		switch (repeatType) {
 		case EngineTween.REPEAT:

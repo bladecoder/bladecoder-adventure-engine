@@ -18,7 +18,6 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 	public static final String INFO = "Sets an actor frame animation";
 	public static final Param[] PARAMS = {
 		new Param("frame_animation", "The FA to set", Type.STRING, true),	
-		new Param("reverse", "Sets the FA in reverse mode", Type.BOOLEAN),
 		new Param("count", "The times to repeat", Type.INTEGER),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
 		new Param("repeat", "The repeat mode", Type.STRING, true, "repeat", new String[]{"repeat", "yoyo", "no_repeat"}),
@@ -58,9 +57,6 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 			setPos = SET_POS_RELATIVE;
 		}
 		
-		if(params.get("reverse") != null) {
-			reverse = Boolean.parseBoolean(params.get("reverse"));
-		}
 		
 		if(params.get("count") != null) {
 			count = Integer.parseInt(params.get("count"));
@@ -70,14 +66,16 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 			wait = Boolean.parseBoolean(params.get("wait"));
 		}
 		
-		if(params.get("repeat") != null) {
-			String repeatStr = params.get("repeat");
+		if(params.get("animation_type") != null) {
+			String repeatStr = params.get("animation_type");
 			if (repeatStr.equalsIgnoreCase("repeat")) {
 				repeat = EngineTween.REPEAT;
 			} else if (repeatStr.equalsIgnoreCase("yoyo")) {
 				repeat = EngineTween.YOYO;
 			} else if (repeatStr.equalsIgnoreCase("no_repeat")) {
 				repeat = EngineTween.NO_REPEAT;
+			} else if (repeatStr.equalsIgnoreCase("reverse")) {
+				repeat = EngineTween.REVERSE;				
 			} else {
 				repeat = EngineTween.FROM_FA;
 			}

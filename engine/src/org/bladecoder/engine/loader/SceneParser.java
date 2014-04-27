@@ -407,6 +407,8 @@ public class SceneParser extends DefaultHandler {
 			if (animationTypestr == null || animationTypestr.isEmpty()
 					|| animationTypestr.equalsIgnoreCase("repeat")) {
 				animationType = EngineTween.REPEAT;
+			} else if (animationTypestr.equalsIgnoreCase("reverse")) {
+				animationType = EngineTween.REVERSE;
 			} else if (animationTypestr.equalsIgnoreCase("yoyo")) {
 				animationType = EngineTween.YOYO;
 			} else {
