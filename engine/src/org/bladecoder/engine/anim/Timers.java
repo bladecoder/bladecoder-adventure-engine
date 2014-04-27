@@ -3,6 +3,7 @@ package org.bladecoder.engine.anim;
 import java.util.ArrayList;
 
 import org.bladecoder.engine.actions.ActionCallback;
+import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 
 import com.badlogic.gdx.utils.Json;
@@ -35,7 +36,7 @@ public class Timers {
 			
 			if(t.currentTime >= t.time) {
 				timers.remove(i);
-				t.cb.onEvent();							
+				ActionCallbackQueue.add(t.cb);			
 				i--;
 			}
 		}

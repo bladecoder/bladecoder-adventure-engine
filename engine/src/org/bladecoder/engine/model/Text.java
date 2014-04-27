@@ -1,6 +1,7 @@
 package org.bladecoder.engine.model;
 
 import org.bladecoder.engine.actions.ActionCallback;
+import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 
 import com.badlogic.gdx.graphics.Color;
@@ -42,7 +43,7 @@ public class Text implements Serializable {
 	
 	public void callCb() {
 		if (cb != null) {
-			cb.onEvent();
+			ActionCallbackQueue.add(cb);
 		}
 	}
 	

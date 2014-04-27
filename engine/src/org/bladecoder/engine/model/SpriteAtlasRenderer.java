@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 
 import org.bladecoder.engine.actions.ActionCallback;
+import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.TweenManagerSingleton;
@@ -53,9 +54,9 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 					animationCbSer = null;
 				}
 				
-				ActionCallback cb2 = animationCb;
+				ActionCallbackQueue.add(animationCb);
 				animationCb = null;
-				cb2.onEvent();
+				currentAnimation = null;
 			}
 		}
 	}
@@ -66,6 +67,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		
 		if(tex == null) {
 			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
+			return;
 		}
 		
 		if (!flipX) {
@@ -103,8 +105,13 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 
 	public void startFrameAnimation(String id, int repeatType, int count, ActionCallback cb) {
-
-		AtlasFrameAnimation fa = getFrameAnimation(id);
+		AtlasFrameAnimation fa = null;
+		
+		if(id==null) {
+			fa = fanims.values().iterator().next();
+		} else {
+			fa = getFrameAnimation(id);
+		}
 
 		if (fa == null) {
 			EngineLogger.error("FrameAnimation not found: " + id);
@@ -122,6 +129,8 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 	}
 
 	private void startCurrentFrameAnimation(int repeatType, int count, ActionCallback cb) {
+		
+		animationCb = cb;
 
 		// free not pre loaded in scene atlas
 		if (notPreloadedAtlas != null
@@ -146,7 +155,6 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		
 		currentAnimation = null;
 		animationTime = 0;
-		animationCb = cb;
 
 		if (currentFrameAnimation.regions.size <= 1
 				|| currentFrameAnimation.duration == 0.0) {
@@ -154,7 +162,8 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 			tex = currentFrameAnimation.regions.first();
 			
 			if (cb != null) {
-				cb.onEvent();
+				ActionCallbackQueue.add(cb);
+//				cb.onEvent();
 			}
 
 			return;

@@ -3,6 +3,7 @@ package org.bladecoder.engine.model;
 import java.nio.IntBuffer;
 
 import org.bladecoder.engine.actions.ActionCallback;
+import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.Sprite3DFrameAnimation;
@@ -95,13 +96,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	String celLightName = "Light";
 
-	/**
-	 * CallCb is true when an animation ends and the animationCb must be called
-	 * in the next update loop This is necessary because we can't call the
-	 * animationCb in the 'animationListener' cause the onEvent method can put
-	 * another animation in the same object that is currently finishing.
-	 **/
-	private boolean callCb = false;
 	private ActionCallback animationCb = null;
 	private String animationCbSer = null;
 	
@@ -239,7 +233,12 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		@Override
 		public void onEnd(AnimationDesc animation) {
 			if (animationCb != null || animationCbSer != null) {
-				callCb = true;
+					if (animationCb == null) {
+						animationCb = ActionCallbackSerialization.find(animationCbSer);
+						animationCbSer = null;
+					}
+
+					ActionCallbackQueue.add(animationCb);
 			}
 		}
 	};
@@ -251,12 +250,13 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	public void startFrameAnimation(String id, int repeatType, int count, ActionCallback cb) {
 		boolean reverse = false;
 		
+		animationCb = cb;
+		
 		if(repeatType == EngineTween.REVERSE || repeatType == EngineTween.REVERSE_REPEAT )
 			reverse = true;
 
 		if (modelInstance.getAnimation(id) != null) {
 			animationCb = cb;
-			callCb = false;
 			controller.setAnimation(id, count, reverse ? -1 : 1,
 					animationListener);
 			return;
@@ -271,8 +271,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			lookat(dir);
 
 			if (modelInstance.getAnimation(s) != null) {
-				animationCb = cb;
-				callCb = false;
 				controller.setAnimation(s, count, reverse ? -1 : 1,
 						animationListener);
 
@@ -287,8 +285,9 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			EngineLogger.debug(a.id);
 		}
 
-		if (cb != null)
-			cb.onEvent();
+		if (cb != null) {
+			ActionCallbackQueue.add(cb);
+		}
 	}
 
 	public void setModel(String model) {
@@ -384,17 +383,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 			if (USE_FBO)
 				renderTex();
-		}
-
-		if (callCb) {
-			callCb = false;
-
-			if (animationCb == null) {
-				animationCb = ActionCallbackSerialization.find(animationCbSer);
-				animationCbSer = null;
-			}
-
-			animationCb.onEvent();
 		}
 
 		// lookat(modelRotation + 1);
@@ -591,7 +579,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 				: String.class);
 		json.writeValue("cameraFOV", cameraFOV);
 		json.writeValue("modelRotation", modelRotation);
-		json.writeValue("callCb", callCb);
 		json.writeValue("animationCb",
 				ActionCallbackSerialization.find(animationCb),
 				animationCb == null ? null : String.class);
@@ -611,7 +598,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		cameraName = json.readValue("cameraName", String.class, jsonData);
 		cameraFOV = json.readValue("cameraFOV", Float.class, jsonData);
 		modelRotation = json.readValue("modelRotation", Float.class, jsonData);
-		callCb = json.readValue("callCb", Boolean.class, jsonData);
 		animationCbSer = json.readValue("animationCb", String.class, jsonData);
 	}
 

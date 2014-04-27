@@ -1,6 +1,7 @@
 package org.bladecoder.engine.model;
 
 import org.bladecoder.engine.actions.ActionCallback;
+import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 import org.bladecoder.engine.util.RectangleRenderer;
 
@@ -28,9 +29,8 @@ public class Transition implements Serializable {
 		currentTime += delta;
 		
 		if(isFinish() && cb != null) {
-			ActionCallback cb2 = cb;
+			ActionCallbackQueue.add(cb);
 			cb = null;
-			cb2.onEvent();
 		}
 	}
 	

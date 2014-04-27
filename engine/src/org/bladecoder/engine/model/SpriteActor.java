@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 
 import org.bladecoder.engine.actions.ActionCallback;
+import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.SpritePosTween;
@@ -264,7 +265,7 @@ public class SpriteActor extends Actor {
 		if (walkingPath == null || walkingPath.size() == 0) {
 			// llamamos al callback aunque el camino esté vacío
 			if (cb != null)
-				cb.onEvent();
+				ActionCallbackQueue.add(cb);
 
 			return;
 		}
@@ -293,6 +294,8 @@ public class SpriteActor extends Actor {
 
 	@Override
 	public void loadAssets() {
+		super.loadAssets();
+		
 		renderer.loadAssets();
 	}
 
@@ -302,8 +305,7 @@ public class SpriteActor extends Actor {
 
 		renderer.retrieveAssets();
 
-		if (renderer.getCurrentFrameAnimation() == null
-				&& initFrameAnimation != null) {
+		if (renderer.getCurrentFrameAnimation() == null) {
 			startFrameAnimation(initFrameAnimation, null);
 		}
 	}

@@ -1,6 +1,7 @@
 package org.bladecoder.engine.model;
 
 import org.bladecoder.engine.actions.ActionCallback;
+import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 
@@ -33,9 +34,8 @@ public class OverlayImage implements Disposable, Serializable {
 		timer = timer - delta;
 		
 		if(isFinish() && cb != null) {
-			ActionCallback cb2 = cb;
+			ActionCallbackQueue.add(cb);
 			cb = null;
-			cb2.onEvent();
 		}
 	}
 	

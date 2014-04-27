@@ -1,6 +1,7 @@
 package org.bladecoder.engine.anim;
 
 import org.bladecoder.engine.actions.ActionCallback;
+import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 
 import aurelienribon.tweenengine.BaseTween;
@@ -96,7 +97,7 @@ public abstract class EngineTween extends BaseTween<EngineTween> implements
 		public void onEvent(int type, BaseTween<?> source) {
 
 			if (cb != null) {
-				cb.onEvent();
+				ActionCallbackQueue.add(cb);
 			}
 		}
 	};

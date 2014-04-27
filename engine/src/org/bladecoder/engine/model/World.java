@@ -7,6 +7,7 @@ import java.util.HashMap;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.bladecoder.engine.actions.ActionCallback;
+import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.anim.Timers;
 import org.bladecoder.engine.anim.TweenManagerSingleton;
 import org.bladecoder.engine.assets.AssetConsumer;
@@ -170,6 +171,7 @@ public class World implements Serializable, AssetConsumer {
 		textManager.update(delta);
 		timers.update(delta);
 		TweenManagerSingleton.getInstance().update(delta);
+		ActionCallbackQueue.run();
 	}
 
 	@Override

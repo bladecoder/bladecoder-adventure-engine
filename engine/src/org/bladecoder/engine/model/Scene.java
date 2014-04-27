@@ -3,6 +3,7 @@ package org.bladecoder.engine.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bladecoder.engine.assets.AssetConsumer;
@@ -202,7 +203,7 @@ public class Scene extends Actor implements Movers, Serializable,
 			}
 		}
 
-		for (Actor a : orderedActors) {
+		for (Actor a:orderedActors) {
 			if(a instanceof SpriteActor)
 				((SpriteActor)a).update(delta);
 		}
