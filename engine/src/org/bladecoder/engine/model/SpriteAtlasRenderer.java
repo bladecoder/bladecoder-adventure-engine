@@ -181,7 +181,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 			currentFrameAnimation.retrieveAssets();
 
 			if (currentFrameAnimation.regions == null || currentFrameAnimation.regions.size == 0) {
-				EngineLogger.error(currentFrameAnimation.id + " has no regions in ATLAS " + currentFrameAnimation.atlas);
+				EngineLogger.error(currentFrameAnimation.id + " has no regions in ATLAS " + currentFrameAnimation.source);
 				fanims.remove(currentFrameAnimation.id);
 			}
 		}

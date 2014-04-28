@@ -14,19 +14,19 @@ public class AtlasFrameAnimation extends FrameAnimation implements
 	@Override
 	public void dispose() {
 		if (regions != null) {
-			EngineAssetManager.getInstance().disposeAtlas(atlas);
+			EngineAssetManager.getInstance().disposeAtlas(source);
 			regions = null;
 		}
 	}
 
 	@Override
 	public void loadAssets() {
-		EngineAssetManager.getInstance().loadAtlas(atlas);
+		EngineAssetManager.getInstance().loadAtlas(source);
 	}
 
 	@Override
 	public void retrieveAssets() {
-		regions = EngineAssetManager.getInstance().getRegions(atlas, id);
+		regions = EngineAssetManager.getInstance().getRegions(source, id);
 	}
 
 }

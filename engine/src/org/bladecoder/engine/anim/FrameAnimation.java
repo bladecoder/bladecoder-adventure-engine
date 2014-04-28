@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class FrameAnimation {
 	public	String id;
-	public  String atlas;
+	public  String source;
 	public	float duration;
 	public	float delay;
 	public  Vector2 inD;
@@ -21,7 +21,7 @@ public class FrameAnimation {
 		
 	}
 	
-	public void set(String id, String atlas, float duration, 
+	public void set(String id, String source, float duration, 
 			float delay, int count, int animationType, String sound, 
 			Vector2 inD, Vector2 outD, boolean preload, boolean disposeWhenPlayed) {
 		this.id = id;
@@ -30,7 +30,7 @@ public class FrameAnimation {
 		this.animationType = animationType;
 		this.count = count;
 		
-		this.atlas = atlas;
+		this.source = source;
 		this.sound = sound;
 		
 		this.inD = inD;

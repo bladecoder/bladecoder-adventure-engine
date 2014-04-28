@@ -54,7 +54,7 @@ public class FACanvas extends ApplicationAdapter {
 			if(ta != null)
 				ta.dispose();
 			
-			ta = new TextureAtlas(EngineAssetManager.getInstance().getResAsset("atlases/" + fa.atlas + ".atlas"));
+			ta = new TextureAtlas(EngineAssetManager.getInstance().getResAsset("atlases/" + fa.source + ".atlas"));
 			
 			fa.regions =  ta.findRegions(fa.id);
 			faRenderer.setFrameAnimation(fa);

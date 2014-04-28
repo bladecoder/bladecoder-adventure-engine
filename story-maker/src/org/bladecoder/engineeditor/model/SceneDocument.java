@@ -464,7 +464,7 @@ public class SceneDocument extends BaseDocument {
 
 		AtlasFrameAnimation fa = new AtlasFrameAnimation();
 		fa.id = faElement.getAttribute("id");
-		fa.atlas = faElement.getAttribute("atlas");
+		fa.source = faElement.getAttribute("atlas");
 
 		if (faElement.getAttribute("animation_type").isEmpty()
 				|| faElement.getAttribute("animation_type").equalsIgnoreCase(
