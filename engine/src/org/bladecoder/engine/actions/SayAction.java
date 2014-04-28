@@ -92,7 +92,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 			}
 
 			if (type == Text.Type.TALK) {
-				previousFA = ((SpriteActor) actor).getCurrentFrameAnimationId();
+				previousFA = ((SpriteActor) actor).getRenderer().getCurrentFrameAnimationId();
 				((SpriteActor) actor).startFrameAnimation(getTalkFA(previousFA),
 						EngineTween.FROM_FA, 0, null);
 			}
@@ -123,7 +123,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 		if (a == null)
 			return;
 
-		String fa = a.getCurrentFrameAnimationId();
+		String fa = a.getRenderer().getCurrentFrameAnimationId();
 
 		if (fa.startsWith("talk.")) { // If the actor was already talking we
 										// restore the actor to the 'stand' pose

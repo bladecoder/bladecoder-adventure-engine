@@ -35,9 +35,6 @@ public class SpriteActor extends Actor {
 	protected Vector2 pos = new Vector2();
 	protected float scale = 1.0f;
 
-	/** Starts this anim the first time that the scene is loaded */
-	protected String initFrameAnimation;
-
 	/** Scale sprite acording to the scene depth map */
 	private DepthType depthType = DepthType.NONE;
 	protected Scene scene = null;
@@ -66,14 +63,6 @@ public class SpriteActor extends Actor {
 
 	public void setDepthType(DepthType v) {
 		depthType = v;
-	}
-
-	public void setInitFrameAnimation(String initFA) {
-		initFrameAnimation = initFA;
-	}
-
-	public String getInitFrameAnimation() {
-		return initFrameAnimation;
 	}
 
 	public void setPosition(float x, float y) {
@@ -163,40 +152,35 @@ public class SpriteActor extends Actor {
 
 	public void startFrameAnimation(String id, int repeatType, int count,
 			ActionCallback cb) {
-
+		
 		FrameAnimation fa = renderer.getCurrentFrameAnimation();
 
-		if (fa != null) {
-			if (fa.getSound() != null) {
-				stopSound(fa.getSound());
-			}
+		if (fa.sound != null) {
+			stopSound(fa.sound);
+		}
 
-			Vector2 outD = fa.getOutD();
+		Vector2 outD = fa.outD;
 
-			if (outD != null) {
-				float s = EngineAssetManager.getInstance().getScale();
+		if (outD != null) {
+			float s = EngineAssetManager.getInstance().getScale();
 
-				pos.x += outD.x * s;
-				pos.y += outD.y * s;
-			}
+			pos.x += outD.x * s;
+			pos.y += outD.y * s;
 		}
 
 		renderer.startFrameAnimation(id, repeatType, count, cb);
 
 		fa = renderer.getCurrentFrameAnimation();
+		if (fa.sound != null) {
+			playSound(fa.sound);
+		}
 
-		if (fa != null) {
-			if (fa.getSound() != null) {
-				playSound(fa.getSound());
-			}
-			
-			Vector2 inD = fa.getInD();
-			
-			if (inD != null) {
-				float s = EngineAssetManager.getInstance().getScale();
-				pos.x += inD.x * s;
-				pos.y += inD.y * s;
-			}
+		Vector2 inD = fa.inD;
+
+		if (inD != null) {
+			float s = EngineAssetManager.getInstance().getScale();
+			pos.x += inD.x * s;
+			pos.y += inD.y * s;
 		}
 	}
 
@@ -224,14 +208,6 @@ public class SpriteActor extends Actor {
 				cb);
 
 		manager.add(t);
-	}
-
-	public String getCurrentFrameAnimationId() {
-		return renderer.getCurrentFrameAnimation().getId();
-	}
-
-	public FrameAnimation getCurrentFrameAnimation() {
-		return renderer.getCurrentFrameAnimation();
 	}
 
 	public void lookat(Vector2 p) {
@@ -295,7 +271,7 @@ public class SpriteActor extends Actor {
 	@Override
 	public void loadAssets() {
 		super.loadAssets();
-		
+
 		renderer.loadAssets();
 	}
 
@@ -304,10 +280,6 @@ public class SpriteActor extends Actor {
 		super.retrieveAssets();
 
 		renderer.retrieveAssets();
-
-		if (renderer.getCurrentFrameAnimation() == null) {
-			startFrameAnimation(initFrameAnimation, null);
-		}
 	}
 
 	@Override
@@ -318,8 +290,6 @@ public class SpriteActor extends Actor {
 	@Override
 	public void write(Json json) {
 		super.write(json);
-
-		json.writeValue("initFrameAnimation", initFrameAnimation);
 
 		json.writeValue("scale", scale);
 
@@ -334,8 +304,6 @@ public class SpriteActor extends Actor {
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		initFrameAnimation = json.readValue("initFrameAnimation", String.class,
-				jsonData);
 
 		scale = json.readValue("scale", Float.class, jsonData);
 		pos = json.readValue("pos", Vector2.class, jsonData);

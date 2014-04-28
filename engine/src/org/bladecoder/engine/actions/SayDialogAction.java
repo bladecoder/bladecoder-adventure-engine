@@ -58,7 +58,7 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 			World.getInstance().getTextManager()
 					.addSubtitle(playerText, pos.x, pos.y + player.getHeight(), false, Text.Type.TALK, Color.BLACK, this);
 
-			previousFA = player.getCurrentFrameAnimationId(); 
+			previousFA = player.getRenderer().getCurrentFrameAnimationId(); 
 			player.startFrameAnimation(getTalkFA(previousFA), null);
 
 		} else {
@@ -91,7 +91,7 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 						.addSubtitle(responseText, pos.x, pos.y + actor.getHeight() , false, Text.Type.TALK,
 								Color.BLACK, this);
 
-				previousFA = actor.getCurrentFrameAnimationId(); 
+				previousFA = actor.getRenderer().getCurrentFrameAnimationId(); 
 				actor.startFrameAnimation(getTalkFA(previousFA), null);
 			} else {
 				super.onEvent();
@@ -105,7 +105,7 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 	private void restoreStandPose(SpriteActor a) {
 		if(a == null) return;
 		
-		String fa = a.getCurrentFrameAnimationId();
+		String fa = a.getRenderer().getCurrentFrameAnimationId();
 		
 		if(fa.startsWith("talk.")){ // If the actor was already talking we restore the actor to the 'stand' pose
 			int idx = fa.indexOf('.');

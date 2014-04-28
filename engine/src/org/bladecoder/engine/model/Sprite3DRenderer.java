@@ -1,6 +1,7 @@
 package org.bladecoder.engine.model;
 
 import java.nio.IntBuffer;
+import java.util.HashMap;
 
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.actions.ActionCallbackQueue;
@@ -55,7 +56,12 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	private final static IntBuffer VIEWPORT_RESULTS = BufferUtils
 			.newIntBuffer(16);
 	
-	private final Sprite3DFrameAnimation currentFA = new Sprite3DFrameAnimation();
+	private HashMap<String, Sprite3DFrameAnimation> fanims = new HashMap<String, Sprite3DFrameAnimation>();
+	
+	/** Starts this anim the first time that the scene is loaded */
+	protected String initFrameAnimation;
+
+	private Sprite3DFrameAnimation currentFrameAnimation;
 
 	private TextureRegion tex;
 
@@ -98,6 +104,26 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	private ActionCallback animationCb = null;
 	private String animationCbSer = null;
+	
+
+	@Override
+	public void setInitFrameAnimation(String fa) {
+		initFrameAnimation = fa;
+	}
+	
+	public String getInitFrameAnimation() {
+		return initFrameAnimation;
+	}
+
+	@Override
+	public FrameAnimation getCurrentFrameAnimation() {
+		return currentFrameAnimation;
+	}
+
+	@Override
+	public String getCurrentFrameAnimationId() {
+		return currentFrameAnimation.id;
+	}	
 	
 
 	/**
@@ -340,14 +366,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
 		lookat(p0, pf);
 		startFrameAnimation(WALK_ANIM, EngineTween.REPEAT, -1, null);
-	}
-
-	@Override
-	public FrameAnimation getCurrentFrameAnimation() {
-		if(currentFA.getId() == null)
-			return null;
-		
-		return currentFA;
 	}
 
 	@Override
@@ -600,5 +618,4 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		modelRotation = json.readValue("modelRotation", Float.class, jsonData);
 		animationCbSer = json.readValue("animationCb", String.class, jsonData);
 	}
-
 }

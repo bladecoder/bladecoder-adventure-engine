@@ -30,12 +30,17 @@ public interface SpriteRenderer extends Serializable, AssetConsumer {
 	public float getHeight();
 	
 	public FrameAnimation getCurrentFrameAnimation();
+	public String getCurrentFrameAnimationId();
+	
 	public void lookat(Vector2 p0, Vector2 pf);
 	public void lookat(String direction);
 	public void stand();
 	public void startWalkFA(Vector2 p0, Vector2 pf);
 	public void startFrameAnimation(String id, int repeatType,
 			int count, ActionCallback cb);
-
+	
+	
+	public void setInitFrameAnimation(String fa);
+	public String getInitFrameAnimation();
 }
 

@@ -455,7 +455,7 @@ public class SceneDocument extends BaseDocument {
 			((SpriteActor) a).setPosition(pos.x, pos.y);
 
 			if (!e.getAttribute("init_frame_animation").isEmpty()) {
-				((SpriteActor) a).setInitFrameAnimation(e
+				((SpriteActor) a).getRenderer().setInitFrameAnimation(e
 						.getAttribute("init_frame_animation"));
 
 			}

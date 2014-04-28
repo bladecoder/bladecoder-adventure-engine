@@ -204,9 +204,6 @@ public class SceneParser extends DefaultHandler {
 					actor = new SpriteActor();
 					SpriteSpineRenderer r = new SpriteSpineRenderer();						
 					((SpriteActor)actor).setRenderer(r);
-					
-					String source = atts.getValue("source");
-					r.setSource(source);
 				}
 
 				if (atts.getValue("walking_speed") != null
@@ -419,6 +416,8 @@ public class SceneParser extends DefaultHandler {
 					count, animationType, soundId, inD, outD);
 
 			((SpriteAtlasRenderer)((SpriteActor) actor).getRenderer()).addFrameAnimation(sa);
+			if(initFrameAnimation == null)
+				initFrameAnimation = sa.id;
 		} else if (localName.equals("verb")) {
 			parseVerb(localName, atts, actor != null ? actor : scene);
 		} else if (localName.equals("dialog")) {
@@ -495,7 +494,7 @@ public class SceneParser extends DefaultHandler {
 		else if (localName.equals("actor")) {
 			if (actor instanceof SpriteActor && initFrameAnimation != null
 					&& !initFrameAnimation.isEmpty()) {
-				((SpriteActor) actor).setInitFrameAnimation(initFrameAnimation);
+				((SpriteActor) actor).getRenderer().setInitFrameAnimation(initFrameAnimation);
 			}
 
 			actor = null;

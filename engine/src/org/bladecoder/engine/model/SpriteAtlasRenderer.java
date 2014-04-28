@@ -7,6 +7,7 @@ import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.EngineTween;
+import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.TweenManagerSingleton;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
@@ -25,12 +26,19 @@ import com.badlogic.gdx.utils.JsonValue;
 public class SpriteAtlasRenderer implements SpriteRenderer {
 
 	private HashMap<String, AtlasFrameAnimation> fanims = new HashMap<String, AtlasFrameAnimation>();
+	
+	/** Starts this anim the first time that the scene is loaded */
+	protected String initFrameAnimation;
 
 	private AtlasFrameAnimation currentFrameAnimation;
+	
 	private Animation animation;
 	private float animationTime;
 	private ActionCallback animationCb = null;
 	private String animationCbSer = null;
+	
+	private int currentCount;
+	private int currentAnimationType;
 
 	/**
 	 * When the atlas is loaded for the current FA this var keeps track of it
@@ -40,14 +48,25 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 	private TextureRegion tex;
 	private boolean flipX;
+	
+
+	@Override
+	public void setInitFrameAnimation(String fa) {
+		initFrameAnimation = fa;
+	}
+	
+	@Override
+	public String getInitFrameAnimation() {
+		return initFrameAnimation;
+	}
 
 	private boolean isAnimationFinished() {
-		if (currentFrameAnimation.animationType == EngineTween.REPEAT
-				|| currentFrameAnimation.animationType == EngineTween.REVERSE_REPEAT ||
-				 currentFrameAnimation.animationType == EngineTween.YOYO) {
-			if (currentFrameAnimation.count > 0
+		if (currentAnimationType == EngineTween.REPEAT
+				|| currentAnimationType == EngineTween.REVERSE_REPEAT ||
+						currentAnimationType == EngineTween.YOYO) {
+			if (currentCount > 0
 					&& animationTime > currentFrameAnimation.duration
-							* currentFrameAnimation.count)
+							* currentCount)
 				return true;
 		} else if (animationTime > currentFrameAnimation.duration) {
 			return true;
@@ -129,7 +148,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 			ActionCallback cb) {
 		AtlasFrameAnimation fa = null;
 
-		if (id == null) {
+		if (id == null && fanims.size() > 0) {
 			fa = fanims.values().iterator().next();
 		} else {
 			fa = getFrameAnimation(id);
@@ -191,12 +210,15 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 			return;
 		}
 
-		if (repeatType != EngineTween.FROM_FA) {
-			currentFrameAnimation.animationType = repeatType;
-			currentFrameAnimation.count = count;
+		if (repeatType == EngineTween.FROM_FA) {
+			currentAnimationType = currentFrameAnimation.animationType;
+			currentCount = currentFrameAnimation.count;
+		} else {
+			currentCount = count;
+			currentAnimationType = repeatType;
 		}
 
-		newCurrentAnimation(currentFrameAnimation.animationType, currentFrameAnimation.count);
+		newCurrentAnimation(currentAnimationType, currentCount);
 	}
 
 	private void newCurrentAnimation(int repeatType, int count) {
@@ -221,20 +243,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 				/ getNumFrames(), currentFrameAnimation.regions, animationType);
 	}
 
-	public String getFlipId(String id) {
-		StringBuilder sb = new StringBuilder();
-
-		if (id.endsWith("left")) {
-			sb.append(id.substring(0, id.length() - 4));
-			sb.append("right");
-		} else if (id.endsWith("right")) {
-			sb.append(id.substring(0, id.length() - 5));
-			sb.append("left");
-		}
-
-		return sb.toString();
-	}
-
+	@Override
 	public String getCurrentFrameAnimationId() {
 		if (currentFrameAnimation == null)
 			return null;
@@ -242,7 +251,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		String id = currentFrameAnimation.id;
 
 		if (flipX) {
-			id = getFlipId(id);
+			id = FrameAnimation.getFlipId(id);
 		}
 
 		return id;
@@ -307,7 +316,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 		if (fa == null) {
 			// Search for flipped
-			String flipId = getFlipId(id);
+			String flipId = FrameAnimation.getFlipId(id);
 
 			fa = fanims.get(flipId);
 
@@ -337,7 +346,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 				if (fa == null) {
 					// Search for flipped
-					flipId = getFlipId(s);
+					flipId = FrameAnimation.getFlipId(s);
 
 					fa = fanims.get(flipId);
 
@@ -452,14 +461,16 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 			if (currentFrameAnimation.regions.size == 1)
 				tex = currentFrameAnimation.regions.first();
 			else {
-				newCurrentAnimation(currentFrameAnimation.animationType,
-						currentFrameAnimation.count);
+				newCurrentAnimation(currentAnimationType,
+						currentCount);
 				tex = animation.getKeyFrame(animationTime);
 			}
 
 		} else if (fanims.size() == 1) {
 			String f = fanims.values().iterator().next().id;
 			startFrameAnimation(f, EngineTween.FROM_FA, 1, null);
+		} else {
+			startFrameAnimation(initFrameAnimation, EngineTween.FROM_FA, 1, null);
 		}
 	}
 
@@ -484,8 +495,12 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 		json.writeValue("currentFrameAnimation", currentFrameAnimationId,
 				currentFrameAnimationId == null ? null : String.class);
+		
+		json.writeValue("initFrameAnimation", initFrameAnimation);
 
 		json.writeValue("flipX", flipX);
+		json.writeValue("currentCount", currentCount);
+		json.writeValue("currentAnimationType", currentAnimationType);
 
 		json.writeValue("animationTime", animationTime);
 		json.writeValue("animationCb",
@@ -505,8 +520,13 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 		if (currentFrameAnimationId != null)
 			currentFrameAnimation = fanims.get(currentFrameAnimationId);
+		
+		initFrameAnimation = json.readValue("initFrameAnimation", String.class,
+				jsonData);
 
 		flipX = json.readValue("flipX", Boolean.class, jsonData);
+		currentCount = json.readValue("currentCount", Integer.class, jsonData);
+		currentAnimationType = json.readValue("currentAnimationType", Integer.class, jsonData);
 
 		animationTime = json.readValue("animationTime", Float.class, jsonData);
 		animationCbSer = json.readValue("animationCb", String.class, jsonData);

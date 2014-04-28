@@ -29,7 +29,7 @@ public class Timers {
 	
 	public void update(float delta) {
 		
-		for(int i = 0; i < timers.size(); i++) {
+		for(int i = timers.size() - 1; i >= 0 ; i--) {
 			Timer t = timers.get(i);
 			
 			t.currentTime += delta;

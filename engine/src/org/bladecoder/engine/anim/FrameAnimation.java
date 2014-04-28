@@ -2,20 +2,49 @@ package org.bladecoder.engine.anim;
 
 import com.badlogic.gdx.math.Vector2;
 
-public interface FrameAnimation {
-	public String getId();
+public class FrameAnimation {
+	public	String id;
+	public  String atlas;
+	public	float duration;
+	public	float delay;
+	public  Vector2 inD;
+	public  Vector2 outD;
+	public	int animationType;
+	public	int count;
 	
-	/**
-	 * Input Displacement: The Sprite is displaced when the FA is started.
-	 * @return
-	 */
-	public Vector2 getInD();
+	public String sound;
 	
-	/**
-	 * Output Displacement: The Sprite is displaced when the FA is replaced.
-	 * @return
-	 */	
-	public Vector2 getOutD();
+	public FrameAnimation() {
+		
+	}
 	
-	public String getSound();
+	public FrameAnimation(String id, String atlas, float duration, 
+			float delay, int count, int animationType, String sound, 
+			Vector2 inD, Vector2 outD) {
+		this.id = id;
+		this.duration = duration;
+		this.delay = delay;
+		this.animationType = animationType;
+		this.count = count;
+		
+		this.atlas = atlas;
+		this.sound = sound;
+		
+		this.inD = inD;
+		this.outD = outD;
+	}
+	
+	public static String getFlipId(String id) {
+		StringBuilder sb = new StringBuilder();
+
+		if (id.endsWith("left")) {
+			sb.append(id.substring(0, id.length() - 4));
+			sb.append("right");
+		} else if (id.endsWith("right")) {
+			sb.append(id.substring(0, id.length() - 5));
+			sb.append("left");
+		}
+
+		return sb.toString();
+	}
 }

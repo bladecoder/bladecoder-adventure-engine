@@ -90,13 +90,6 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId);
 		
-		if(wait) {
-			actor.startFrameAnimation(fa, repeat, count, this);
-		} else {
-			actor.startFrameAnimation(fa, repeat, count, null);
-			onEvent();
-		}		
-
 		if (setPos == SET_POS_ABSOLUTE)
 			actor.setPosition(posx * scale, posy * scale);
 		else if (setPos == SET_POS_RELATIVE) {
@@ -104,6 +97,13 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 			
 			actor.setPosition(p.x + posx * scale, p.y + posy * scale);
 		}
+		
+		if(wait) {
+			actor.startFrameAnimation(fa, repeat, count, this);
+		} else {
+			actor.startFrameAnimation(fa, repeat, count, null);
+			onEvent();
+		}		
 	}
 
 	@Override

@@ -176,7 +176,7 @@ public class ScnCanvas extends ApplicationAdapter {
 					selFA = null; // FORCE FA RELOAD
 				} else if (e.getPropertyName().equals("init_frame_animation")) {
 					Element actor = (Element) e.getNewValue();
-					((SpriteActor) selectedActor).setInitFrameAnimation(actor
+					((SpriteActor) selectedActor).getRenderer().setInitFrameAnimation(actor
 							.getAttribute("init_frame_animation"));
 					selFA = null; // FORCE FA RELOAD
 				} else if (e.getPropertyName().equals("actor")) {
@@ -302,7 +302,7 @@ public class ScnCanvas extends ApplicationAdapter {
 		SpriteAtlasRenderer s = (SpriteAtlasRenderer) ((SpriteActor)selectedActor).getRenderer();
 
 		if (selFA == null || s.getFrameAnimation(selFA) == null) {
-			selFA = ((SpriteActor)selectedActor).getInitFrameAnimation();
+			selFA = ((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation();
 		}
 
 		if (selFA != null && s.getFrameAnimation(selFA) != null) {
@@ -311,7 +311,7 @@ public class ScnCanvas extends ApplicationAdapter {
 
 			if (showFAInScn.getState()
 					|| s.getCurrentFrameAnimation() == null
-					|| ((SpriteActor)selectedActor).getInitFrameAnimation().equals(selFA)) {
+					|| ((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation().equals(selFA)) {
 				((SpriteActor)selectedActor).startFrameAnimation(selFA, EngineTween.REPEAT,Tween.INFINITY, null);
 			}
 		} else {
@@ -323,14 +323,15 @@ public class ScnCanvas extends ApplicationAdapter {
 		
 		Sprite3DRenderer s = (Sprite3DRenderer) ((SpriteActor)selectedActor).getRenderer();
 		
-		if (fa == null && ((SpriteActor)selectedActor).getInitFrameAnimation() != null) 
-				fa = ((SpriteActor)selectedActor).getInitFrameAnimation();
+		if (fa == null && ((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation() != null) 
+				fa = ((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation();
 		
 		faRenderer2.setFrameAnimation(selDoc, selElementActor, fa);
 		
 		if (showFAInScn.getState()
 //				|| s.getCurrentFrameAnimation() == null
-				|| ((SpriteActor)selectedActor).getInitFrameAnimation() != null && ((SpriteActor)selectedActor).getInitFrameAnimation().equals(fa)) {
+				|| ((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation() != null && 
+				((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation().equals(fa)) {
 			s.startFrameAnimation(fa, EngineTween.FROM_FA, -1, null);
 
 		}

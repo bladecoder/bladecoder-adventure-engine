@@ -78,16 +78,23 @@ void main() {
 		gl_FragColor = diffuse;
 	#else
 				
-		float intensity;
 		vec4 c;
-		intensity = dot(normalize(u_pointLights[0].position), normalize(v_normal));
+		float df = dot(normalize(u_pointLights[0].position), normalize(v_normal));
 		
 		c = diffuse;
 		
 		c.rgb *= u_pointLights[0].color;
-
-		if (intensity < 0.2)
-			c.rgb = (intensity * 2.0) * diffuse.rgb;
+		
+    	float E = 0.04;
+    	if (df > 0.5 - E && df < 0.5 + E)    {
+        	df = smoothstep(0.5 - E, 0.5 + E, df);
+    	} else if(df < 0.5) {
+        	df = 0.5;
+    	} else {
+    		df = 1.0;
+    	}
+    	    	
+    	c.rgb = df * diffuse.rgb;
 	
 		gl_FragColor = c;
 	#endif					

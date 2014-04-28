@@ -1,7 +1,10 @@
 package org.bladecoder.engine.model;
 
+import java.util.HashMap;
+
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.SpineFrameAnimation;
 import org.bladecoder.engine.assets.EngineAssetManager;
 
 import com.badlogic.gdx.Gdx;
@@ -20,6 +23,14 @@ import com.esotericsoftware.spine.SkeletonRenderer;
 
 public class SpriteSpineRenderer implements SpriteRenderer {
 	
+	private HashMap<String, SpineFrameAnimation> fanims = new HashMap<String, SpineFrameAnimation>();
+	
+	/** Starts this anim the first time that the scene is loaded */
+	protected String initFrameAnimation;
+	private SpineFrameAnimation currentFrameAnimation;
+	
+	private boolean flipX;
+	
 	private String source;
 	private TextureAtlas atlas;
 	private Skeleton skeleton;
@@ -28,8 +39,30 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 	private SkeletonRenderer renderer;
 	private SkeletonBounds bounds = new SkeletonBounds();
 	
-	public void setSource(String s) {
-		source = s;
+
+	@Override
+	public String getCurrentFrameAnimationId() {
+		if (currentFrameAnimation == null)
+			return null;
+
+		String id = currentFrameAnimation.id;
+
+		if (flipX) {
+			id = FrameAnimation.getFlipId(id);
+		}
+
+		return id;
+
+	}
+
+	@Override
+	public void setInitFrameAnimation(String fa) {
+		initFrameAnimation = fa;
+	}
+	
+	@Override
+	public String getInitFrameAnimation() {
+		return initFrameAnimation;
 	}
 
 	@Override
@@ -64,8 +97,7 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 
 	@Override
 	public FrameAnimation getCurrentFrameAnimation() {
-		// TODO Auto-generated method stub
-		return null;
+		return currentFrameAnimation;
 	}
 
 	@Override
@@ -141,5 +173,6 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 	public void read(Json json, JsonValue jsonData) {
 		// TODO Auto-generated method stub
 		
-	}	
+	}
+	
 }
