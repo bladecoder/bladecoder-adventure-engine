@@ -3,7 +3,6 @@ package org.bladecoder.engine.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.bladecoder.engine.assets.AssetConsumer;
@@ -52,7 +51,6 @@ public class Scene extends Actor implements Movers, Serializable,
 	 */
 	private List<Actor> orderedActors = new ArrayList<Actor>();
 	
-	private ArrayList<String> preloadedAtlases = new ArrayList<String>();
 	private SceneCamera camera = new SceneCamera();
 	
 	private Texture[] background;
@@ -123,40 +121,6 @@ public class Scene extends Actor implements Movers, Serializable,
 		musicFilename = filename;
 		initialMusicDelay = initialDelay;
 		repeatMusicDelay = repeatDelay;
-	}
-
-	public void setAtlases(String atlases) {
-		String[] list = atlases.split(",");
-
-		for (String a : list) {
-			if (!a.trim().isEmpty())
-				this.preloadedAtlases.add(a.trim());
-		}
-	}
-
-	/**
-	 * Method to support ResourceAction: dynamic atlas load/unload
-	 * 
-	 * @param atlas
-	 */
-	public void addAtlas(String atlas) {
-		preloadedAtlases.add(atlas);
-	}
-
-	/**
-	 * Method to support ResourceAction: dynamic atlas load/unload
-	 * 
-	 * @param atlas
-	 */
-	public void removeAtlas(String atlas) {
-		for (int i = 0; i < preloadedAtlases.size(); i++) {
-			String a = preloadedAtlases.get(i);
-
-			if (a.equals(atlas)) {
-				preloadedAtlases.remove(i);
-				break;
-			}
-		}
 	}
 
 	public void update(float delta) {
@@ -606,13 +570,6 @@ public class Scene extends Actor implements Movers, Serializable,
 			}
 		}
 
-		if (preloadedAtlases != null) {
-
-			for (String s : this.preloadedAtlases) {
-				EngineAssetManager.getInstance().loadAtlas(s.trim());
-			}
-		}
-
 		if (musicFilename != null)
 			EngineAssetManager.getInstance().loadMusic(musicFilename);
 
@@ -726,12 +683,6 @@ public class Scene extends Actor implements Movers, Serializable,
 			a.dispose();
 		}
 
-		if (preloadedAtlases != null) {
-			for (String s : preloadedAtlases) {
-				EngineAssetManager.getInstance().disposeAtlas(s.trim());
-			}
-		}
-
 		if (musicFilename != null && music != null) {
 			EngineAssetManager.getInstance().disposeMusic(musicFilename);
 			music = null;
@@ -748,7 +699,6 @@ public class Scene extends Actor implements Movers, Serializable,
 	@Override
 	public void write(Json json) {
 		super.write(json);
-		json.writeValue("atlases", preloadedAtlases);
 		json.writeValue("actors", actors);
 		json.writeValue("fgActors", fgActors);
 		json.writeValue("player", player,
@@ -788,8 +738,6 @@ public class Scene extends Actor implements Movers, Serializable,
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
-		preloadedAtlases = json.readValue("atlases", ArrayList.class,
-				String.class, jsonData);
 
 		actors = json.readValue("actors", HashMap.class, Actor.class,
 				jsonData);

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.SpineFrameAnimation;
+import org.bladecoder.engine.anim.Sprite3DFrameAnimation;
 import org.bladecoder.engine.assets.EngineAssetManager;
 
 import com.badlogic.gdx.Gdx;
@@ -39,7 +40,14 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 	private SkeletonRenderer renderer;
 	private SkeletonBounds bounds = new SkeletonBounds();
 	
-
+	@Override
+	public void addFrameAnimation(FrameAnimation fa) {
+		if(initFrameAnimation == null)
+			initFrameAnimation = fa.id; 
+			
+		fanims.put(fa.id, (SpineFrameAnimation)fa);
+	}
+	
 	@Override
 	public String getCurrentFrameAnimationId() {
 		if (currentFrameAnimation == null)

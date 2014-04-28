@@ -1,6 +1,5 @@
 package org.bladecoder.engine.model;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 
 import org.bladecoder.engine.actions.ActionCallback;
@@ -39,12 +38,6 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 	
 	private int currentCount;
 	private int currentAnimationType;
-
-	/**
-	 * When the atlas is loaded for the current FA this var keeps track of it
-	 * for freeing when FA is changed
-	 */
-	private String notPreloadedAtlas;
 
 	private TextureRegion tex;
 	private boolean flipX;
@@ -159,6 +152,9 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 			return;
 		}
+		
+		if(currentFrameAnimation != null && currentFrameAnimation.disposeWhenPlayed)
+			currentFrameAnimation.dispose();
 
 		currentFrameAnimation = fa;
 
@@ -176,21 +172,21 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		animation = null;
 		animationTime = 0;
 
-		// free not pre loaded in scene atlas
-		if (notPreloadedAtlas != null
-				&& !currentFrameAnimation.atlas.equals(notPreloadedAtlas)) {
-			EngineAssetManager.getInstance().disposeAtlas(notPreloadedAtlas);
-			notPreloadedAtlas = null;
-		}
-
-		// If the atlas is not loaded. Try to load it.
+		// If the atlas is not loaded. Load it.
 		if (currentFrameAnimation != null
 				&& currentFrameAnimation.regions == null) {
-			retrieveFA(currentFrameAnimation.id, true);
+			currentFrameAnimation.loadAssets();
+			EngineAssetManager.getInstance().getManager().finishLoading();
+
+			currentFrameAnimation.retrieveAssets();
+
+			if (currentFrameAnimation.regions == null || currentFrameAnimation.regions.size == 0) {
+				EngineLogger.error(currentFrameAnimation.id + " has no regions in ATLAS " + currentFrameAnimation.atlas);
+				fanims.remove(currentFrameAnimation.id);
+			}
 		}
 
-		if (currentFrameAnimation == null
-				|| currentFrameAnimation.regions == null) {
+		if (currentFrameAnimation == null) {
 
 			tex = null;
 
@@ -204,7 +200,6 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 			if (cb != null) {
 				ActionCallbackQueue.add(cb);
-				// cb.onEvent();
 			}
 
 			return;
@@ -258,39 +253,12 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 	}
 
-	public void addFrameAnimation(AtlasFrameAnimation fa) {
-		fanims.put(fa.id, fa);
-	}
-
-	private void retrieveFA(String faId, boolean loadAtlas) {
-		AtlasFrameAnimation fa = fanims.get(faId);
-
-		if (!EngineAssetManager.getInstance().isAtlasLoaded(fa.atlas)) {
-
-			if (loadAtlas) {
-				EngineLogger
-						.debug(MessageFormat
-								.format("{0} ATLAS NOT LOADED. Needed for Sprite {1}.LOADING...",
-										fa.atlas, fa.id));
-				EngineAssetManager.getInstance().loadAtlas(fa.atlas);
-				notPreloadedAtlas = fa.atlas;
-				EngineAssetManager.getInstance().getManager().finishLoading();
-			} else {
-				EngineLogger
-						.debug(MessageFormat
-								.format("{0} ATLAS NOT LOADED. Needed for Sprite {1}.NOT LOADING...",
-										fa.atlas, fa.id));
-				return;
-			}
-		}
-
-		fa.regions = EngineAssetManager.getInstance().getRegions(fa.atlas,
-				fa.id);
-
-		if (fa.regions == null || fa.regions.size == 0) {
-			EngineLogger.error(fa.id + " has no regions in ATLAS " + fa.atlas);
-			fanims.remove(fa.id);
-		}
+	@Override
+	public void addFrameAnimation(FrameAnimation fa) {
+		if(initFrameAnimation == null)
+			initFrameAnimation = fa.id; 
+			
+		fanims.put(fa.id, (AtlasFrameAnimation)fa);
 	}
 
 	@Override
@@ -445,24 +413,44 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 	@Override
 	public void loadAssets() {
-		// SpriteAtlas are preloaded by Scene
-		// so it is not necessary to load the atlas here
+		for (AtlasFrameAnimation fa : fanims.values()) {
+			if(fa.preload)
+				fa.loadAssets();
+		}
+		
+		if(currentFrameAnimation != null && !currentFrameAnimation.preload) {
+			currentFrameAnimation.loadAssets();
+		} else if(currentFrameAnimation == null && initFrameAnimation != null) {
+			AtlasFrameAnimation fa = fanims.get(initFrameAnimation);
+			
+			if(!fa.preload)
+				fa.loadAssets();		
+		}
 	}
 
 	@Override
 	public void retrieveAssets() {
-
 		for (AtlasFrameAnimation fa : fanims.values()) {
-			retrieveFA(fa.id, fa == currentFrameAnimation);
+			if(fa.preload)
+				fa.retrieveAssets();
+		}
+		
+		if(currentFrameAnimation != null && !currentFrameAnimation.preload) {
+			currentFrameAnimation.retrieveAssets();
+		} else if(currentFrameAnimation == null && initFrameAnimation != null) {
+			AtlasFrameAnimation fa = fanims.get(initFrameAnimation);
+			
+			if(!fa.preload)
+				fa.retrieveAssets();		
 		}
 
 		if (currentFrameAnimation != null) {
-
 			if (currentFrameAnimation.regions.size == 1)
 				tex = currentFrameAnimation.regions.first();
 			else {
 				newCurrentAnimation(currentAnimationType,
 						currentCount);
+				
 				tex = animation.getKeyFrame(animationTime);
 			}
 
@@ -476,10 +464,8 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 	@Override
 	public void dispose() {
-		// free not pre-loaded atlas in scene
-		if (notPreloadedAtlas != null) {
-			EngineAssetManager.getInstance().disposeAtlas(notPreloadedAtlas);
-			notPreloadedAtlas = null;
+		for (AtlasFrameAnimation fa : fanims.values()) {
+			fa.dispose();
 		}
 	}
 

@@ -104,7 +104,15 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	private ActionCallback animationCb = null;
 	private String animationCbSer = null;
-	
+
+
+	@Override
+	public void addFrameAnimation(FrameAnimation fa) {
+		if(initFrameAnimation == null)
+			initFrameAnimation = fa.id; 
+			
+		fanims.put(fa.id, (Sprite3DFrameAnimation)fa);
+	}
 
 	@Override
 	public void setInitFrameAnimation(String fa) {

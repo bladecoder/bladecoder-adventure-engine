@@ -15,8 +15,6 @@ import org.bladecoder.engineeditor.ui.components.PropertyTable.Types;
 
 @SuppressWarnings("serial")
 public class ScenePropsPanel extends JPanel {
-
-	public static final String ATLASES_PROP = "Atlases";
 	public static final String MUSIC_PROP = "Music filename";
 	public static final String LOOP_MUSIC_PROP = "Loop Music";
 	public static final String BACKGROUND_PROP = "Background";
@@ -69,7 +67,6 @@ public class ScenePropsPanel extends JPanel {
 		if (scn != null) {
 			model.addProperty(BACKGROUND_PROP, scn.getBackground());
 			model.addProperty(LIGHTMAP_PROP, scn.getLightmap());
-			model.addProperty(ATLASES_PROP, scn.getAtlases());
 			model.addProperty(MUSIC_PROP, scn.getMusic());
 			model.addProperty(LOOP_MUSIC_PROP, scn.getRootAttr("loop_music"), Types.BOOLEAN);
 			model.addProperty(INITIAL_MUSIC_DELAY_PROP, scn.getRootAttr("initial_music_delay"), Types.FLOAT);
@@ -80,9 +77,7 @@ public class ScenePropsPanel extends JPanel {
 	}
 
 	private void updateModel(String property, String value) {
-		if (property.equals(ATLASES_PROP)) {
-			scn.setAtlases(value);
-		} else if (property.equals(MUSIC_PROP)) {
+		if (property.equals(MUSIC_PROP)) {
 			scn.setRootAttr("music", value);
 		} else if (property.equals(LOOP_MUSIC_PROP)) {
 			scn.setRootAttr("loop_music", value);

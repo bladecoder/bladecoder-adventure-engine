@@ -14,13 +14,16 @@ public class FrameAnimation {
 	
 	public String sound;
 	
+	public boolean preload;
+	public boolean disposeWhenPlayed;
+	
 	public FrameAnimation() {
 		
 	}
 	
-	public FrameAnimation(String id, String atlas, float duration, 
+	public void set(String id, String atlas, float duration, 
 			float delay, int count, int animationType, String sound, 
-			Vector2 inD, Vector2 outD) {
+			Vector2 inD, Vector2 outD, boolean preload, boolean disposeWhenPlayed) {
 		this.id = id;
 		this.duration = duration;
 		this.delay = delay;
@@ -32,6 +35,9 @@ public class FrameAnimation {
 		
 		this.inD = inD;
 		this.outD = outD;
+		
+		this.preload = preload;
+		this.disposeWhenPlayed = disposeWhenPlayed;
 	}
 	
 	public static String getFlipId(String id) {

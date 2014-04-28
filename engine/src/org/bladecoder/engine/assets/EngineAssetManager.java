@@ -18,6 +18,7 @@ import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -62,6 +63,7 @@ public class EngineAssetManager {
 
 	protected EngineAssetManager() {
 		this(new InternalFileHandleResolver());
+		manager.getLogger().setLevel(Application.LOG_DEBUG);
 	}
 
 	protected EngineAssetManager(FileHandleResolver resolver) {
@@ -138,10 +140,7 @@ public class EngineAssetManager {
 	}
 
 	public void loadAtlas(String name) {
-		if (!isAtlasLoaded(name)) {
-			manager.load(ATLASES_DIR + name + ".atlas", TextureAtlas.class);
-			manager.update();
-		}
+		manager.load(ATLASES_DIR + name + ".atlas", TextureAtlas.class);
 	}
 
 	public boolean isAtlasLoaded(String name) {

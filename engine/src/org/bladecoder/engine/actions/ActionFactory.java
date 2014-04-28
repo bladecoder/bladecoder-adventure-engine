@@ -41,8 +41,6 @@ public class ActionFactory {
 				"org.bladecoder.engine.actions.DropItemAction");
 		actions.put("wait",
 				"org.bladecoder.engine.actions.WaitAction");
-		actions.put("resource",
-				"org.bladecoder.engine.actions.ResourceAction");
 		actions.put("talkto",
 				"org.bladecoder.engine.actions.TalktoAction");
 		actions.put("dialog_option",

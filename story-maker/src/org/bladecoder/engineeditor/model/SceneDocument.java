@@ -138,19 +138,8 @@ public class SceneDocument extends BaseDocument {
 		firePropertyChange(attr, old, value);
 	}
 
-	public String getAtlases() {
-		if (doc.getDocumentElement().getAttribute("atlases").trim().isEmpty())
-			return null;
-
-		return doc.getDocumentElement().getAttribute("atlases");
-	}
-
 	public String getMusic() {
 		return doc.getDocumentElement().getAttribute("music");
-	}
-
-	public void setAtlases(String value) {
-		setRootAttr("atlases", value);
 	}
 
 	public void setMusic(String filename, String loopMusic,
@@ -203,10 +192,6 @@ public class SceneDocument extends BaseDocument {
 		scn.setId(getId());
 
 		scn.getCamera().create(wWidth, wHeight);
-
-		String atlases = getAtlases();
-		if (atlases != null)
-			scn.setAtlases(atlases);
 
 		String background = getBackground();
 		if (background != null && !background.isEmpty()) {

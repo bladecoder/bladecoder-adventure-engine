@@ -43,8 +43,9 @@ public class FACanvas extends ApplicationAdapter {
 			if(typeStr.equals("yoyo"))
 				type = EngineTween.YOYO;			
 			
-			fa = new AtlasFrameAnimation(id, atlas, speed, 0.0f, Tween.INFINITY, type,
-					null, null, null);
+			fa = new AtlasFrameAnimation();
+			fa.set(id, atlas, speed, 0.0f, Tween.INFINITY, type,
+					null, null, null, true, false);
 		}
 	}
 	

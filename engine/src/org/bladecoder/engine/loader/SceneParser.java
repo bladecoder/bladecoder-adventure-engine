@@ -341,12 +341,16 @@ public class SceneParser extends DefaultHandler {
 			String soundId = atts.getValue("sound");
 			String inDstr = atts.getValue("inD");
 			String outDstr = atts.getValue("outD");
+			String preloadstr = atts.getValue("preload");
+			String disposewhenplayedstr = atts.getValue("dispose_when_played");
 
-			float speed;
-			float delay;
+			float speed = 1f;
+			float delay = 0f;
 			int animationType;
-			int count;
+			int count = Tween.INFINITY;
 			Vector2 inD = null, outD=null;
+			boolean preload = true;
+			boolean disposeWhenPlayed = false;
 
 			String id = atts.getValue("id");
 
@@ -371,20 +375,20 @@ public class SceneParser extends DefaultHandler {
 			}
 
 			try {
-				if (speedstr == null || speedstr.isEmpty())
-					speed = 1f;
-				else
+				if (speedstr != null && !speedstr.isEmpty())
 					speed = Float.parseFloat(speedstr);
 
-				if (delaystr == null || delaystr.isEmpty())
-					delay = 0f;
-				else
+				if (delaystr != null && !delaystr.isEmpty())
 					delay = Float.parseFloat(delaystr);
 
-				if (countstr == null || countstr.isEmpty())
-					count = Tween.INFINITY;
-				else
+				if (countstr  != null && !countstr.isEmpty())
 					count = Integer.parseInt(countstr);
+				
+				if (preloadstr  != null && !preloadstr.isEmpty())
+					preload = Boolean.parseBoolean(preloadstr);
+				
+				if (disposewhenplayedstr  != null && !disposewhenplayedstr.isEmpty())
+					disposeWhenPlayed = Boolean.parseBoolean(disposewhenplayedstr);
 
 				if (inDstr != null && !inDstr.isEmpty()) {
 					inD = Param.parseVector2(inDstr);
@@ -412,12 +416,12 @@ public class SceneParser extends DefaultHandler {
 				animationType = EngineTween.NO_REPEAT;
 			}
 
-			AtlasFrameAnimation sa = new AtlasFrameAnimation(id, atlas, speed, delay,
-					count, animationType, soundId, inD, outD);
+			AtlasFrameAnimation sa = new AtlasFrameAnimation();
+			
+			sa.set(id, atlas, speed, delay,
+					count, animationType, soundId, inD, outD, preload, disposeWhenPlayed);
 
 			((SpriteAtlasRenderer)((SpriteActor) actor).getRenderer()).addFrameAnimation(sa);
-			if(initFrameAnimation == null)
-				initFrameAnimation = sa.id;
 		} else if (localName.equals("verb")) {
 			parseVerb(localName, atts, actor != null ? actor : scene);
 		} else if (localName.equals("dialog")) {
@@ -451,10 +455,6 @@ public class SceneParser extends DefaultHandler {
 			}
 
 			scene.setId(idScn);
-
-			String atlases = atts.getValue("atlases");
-			if (atlases != null)
-				scene.setAtlases(atlases);
 
 			scene.setBackground(bgFilename, lightmap);
 
