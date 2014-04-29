@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.bladecoder.engine.actions.Param.Type;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.SpriteActor;
-import org.bladecoder.engine.model.SpriteRenderer;
+import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.model.Text;
 import org.bladecoder.engine.model.TextManager;
 import org.bladecoder.engine.model.World;
@@ -21,10 +21,10 @@ public class LookAtAction implements Action {
 		new Param("text", "The 'text' to show", Type.STRING),
 		new Param("direction", "The direction to lookat. If empty, the player lookat to the actor", 
 				Type.STRING, false, "", new String[] {"", 
-				SpriteRenderer.FRONT, SpriteRenderer.BACK,SpriteRenderer.LEFT,
-				SpriteRenderer.RIGHT,	SpriteRenderer.FRONTLEFT,
-				SpriteRenderer.FRONTRIGHT,SpriteRenderer.BACKLEFT,
-				SpriteRenderer.BACKRIGHT,})
+				FrameAnimation.FRONT, FrameAnimation.BACK,FrameAnimation.LEFT,
+				FrameAnimation.RIGHT,	FrameAnimation.FRONTLEFT,
+				FrameAnimation.FRONTRIGHT,FrameAnimation.BACKLEFT,
+				FrameAnimation.BACKRIGHT,})
 		};			
 
 	private String soundId;

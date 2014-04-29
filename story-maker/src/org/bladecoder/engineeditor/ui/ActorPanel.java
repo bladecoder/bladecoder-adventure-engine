@@ -20,7 +20,6 @@ public class ActorPanel extends javax.swing.JPanel {
 	private VerbListPanel verbList;
 	private DialogListPanel dialogList;
 	private FAListPanel faList;
-	private FA3DListPanel fa3DList;
 	private SoundListPanel soundList;
 	private ActorPropsPanel props;
 
@@ -30,7 +29,6 @@ public class ActorPanel extends javax.swing.JPanel {
 		verbList = new VerbListPanel();
 		dialogList = new DialogListPanel();
 		faList = new FAListPanel();
-		fa3DList = new FA3DListPanel();
 		props = new ActorPropsPanel();
 		soundList = new SoundListPanel();
 		props = new ActorPropsPanel();
@@ -53,7 +51,6 @@ public class ActorPanel extends javax.swing.JPanel {
 						SceneDocument doc = Ctx.project.getSelectedScene();
 
 						faList.addElements(doc, a, "frame_animation");
-						fa3DList.addAnimations(doc, a);
 						verbList.addElements(doc, a, "verb");
 						dialogList.addElements(doc, a, "dialog");
 						soundList.addElements(doc, a, "sound");
@@ -66,10 +63,8 @@ public class ActorPanel extends javax.swing.JPanel {
 
 							String type = doc.getType(a);
 
-							if (type.equals("sprite") || type.equals("foreground"))
+							if (!type.equals("background"))
 								tabPanel.add("Sprites", faList);
-							else if(type.equals("sprite3d"))
-								tabPanel.add("Sprites", fa3DList);
 
 							if (!type.equals("foreground")) {
 								tabPanel.add("Verbs", verbList);

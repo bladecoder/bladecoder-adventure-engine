@@ -7,7 +7,6 @@ import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.FrameAnimation;
-import org.bladecoder.engine.anim.TweenManagerSingleton;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 import org.bladecoder.engine.util.EngineLogger;
@@ -27,7 +26,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 	private HashMap<String, AtlasFrameAnimation> fanims = new HashMap<String, AtlasFrameAnimation>();
 	
 	/** Starts this anim the first time that the scene is loaded */
-	protected String initFrameAnimation;
+	private String initFrameAnimation;
 
 	private AtlasFrameAnimation currentFrameAnimation;
 	
@@ -139,13 +138,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 	public void startFrameAnimation(String id, int repeatType, int count,
 			ActionCallback cb) {
-		AtlasFrameAnimation fa = null;
-
-		if (id == null && fanims.size() > 0) {
-			fa = fanims.values().iterator().next();
-		} else {
-			fa = getFrameAnimation(id);
-		}
+		AtlasFrameAnimation fa = getFrameAnimation(id);
 
 		if (fa == null) {
 			EngineLogger.error("FrameAnimation not found: " + id);
@@ -157,16 +150,6 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 			currentFrameAnimation.dispose();
 
 		currentFrameAnimation = fa;
-
-		startCurrentFrameAnimation(repeatType, count, cb);
-	}
-
-	public int getNumFrames() {
-		return currentFrameAnimation.regions.size;
-	}
-
-	private void startCurrentFrameAnimation(int repeatType, int count,
-			ActionCallback cb) {
 
 		animationCb = cb;
 		animation = null;
@@ -216,6 +199,10 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		newCurrentAnimation(currentAnimationType, currentCount);
 	}
 
+	public int getNumFrames() {
+		return currentFrameAnimation.regions.size;
+	}
+
 	private void newCurrentAnimation(int repeatType, int count) {
 		PlayMode animationType = Animation.PlayMode.NORMAL;
 
@@ -234,6 +221,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 			break;
 		}
 
+		// TODO NO CREATE NEW INSTANCES OF ANIMATION, ONLY 1 INSTACE
 		animation = new Animation(currentFrameAnimation.duration
 				/ getNumFrames(), currentFrameAnimation.regions, animationType);
 	}
@@ -278,7 +266,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		return sb.toString();
 	}
 
-	public AtlasFrameAnimation getFrameAnimation(String id) {
+	private AtlasFrameAnimation getFrameAnimation(String id) {
 		AtlasFrameAnimation fa = fanims.get(id);
 		flipX = false;
 
@@ -294,16 +282,16 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 				// search for .left if .frontleft not found and viceversa
 				StringBuilder sb = new StringBuilder();
 
-				if (id.endsWith(SpriteRenderer.LEFT)) {
+				if (id.endsWith(FrameAnimation.LEFT)) {
 					sb.append(id.substring(0, id.length() - 4));
 					sb.append("frontleft");
-				} else if (id.endsWith(SpriteRenderer.FRONTLEFT)) {
+				} else if (id.endsWith(FrameAnimation.FRONTLEFT)) {
 					sb.append(id.substring(0, id.length() - 9));
 					sb.append("left");
-				} else if (id.endsWith(SpriteRenderer.RIGHT)) {
+				} else if (id.endsWith(FrameAnimation.RIGHT)) {
 					sb.append(id.substring(0, id.length() - 5));
 					sb.append("frontright");
-				} else if (id.endsWith(SpriteRenderer.FRONTRIGHT)) {
+				} else if (id.endsWith(FrameAnimation.FRONTRIGHT)) {
 					sb.append(id.substring(0, id.length() - 10));
 					sb.append("right");
 				}
@@ -329,24 +317,22 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 	@Override
 	public void lookat(Vector2 p0, Vector2 pf) {
-		lookat(getFrameDirection(p0, pf));
+		lookat(FrameAnimation.getFrameDirection(p0, pf));
 	}
 
 	@Override
 	public void lookat(String dir) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(STAND_ANIM);
+		sb.append(FrameAnimation.STAND_ANIM);
 		sb.append('.');
 		sb.append(dir);
 
-		TweenManagerSingleton.getInstance().killTarget(this,
-				EngineTween.SPRITE_POS_TYPE);
 		startFrameAnimation(sb.toString(), EngineTween.FROM_FA, 1, null);
 	}
 
 	@Override
 	public void stand() {
-		String standFA = STAND_ANIM;
+		String standFA = FrameAnimation.STAND_ANIM;
 		int idx = getCurrentFrameAnimationId().indexOf('.');
 
 		if (idx != -1) {
@@ -358,58 +344,13 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 	@Override
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
-		String currentDirection = getFrameDirection(p0, pf);
+		String currentDirection = FrameAnimation.getFrameDirection(p0, pf);
 		StringBuilder sb = new StringBuilder();
-		sb.append(WALK_ANIM).append('.').append(currentDirection);
+		sb.append(FrameAnimation.WALK_ANIM).append('.').append(currentDirection);
 		startFrameAnimation(sb.toString(), EngineTween.FROM_FA, 1, null);
 	}
 
-	private final static float DIRECTION_ASPECT_TOLERANCE = 2.5f;
 
-	private String getFrameDirection(Vector2 p0, Vector2 pf) {
-		float dx = pf.x - p0.x;
-		float dy = pf.y - p0.y;
-		float ratio = Math.abs(dx / dy);
-
-		if (ratio < 1.0)
-			ratio = 1.0f / ratio;
-
-		// EngineLogger.debug("P0: " + p0 + " PF: " + pf + " dx: " + dx +
-		// " dy: "
-		// + dy + " RATIO: " + ratio);
-
-		if (ratio < DIRECTION_ASPECT_TOLERANCE) { // DIAGONAL MOVEMENT
-			if (dy > 0) { // UP. MOVEMENT
-				if (dx > 0) { // TO THE RIGHT
-					return BACKRIGHT;
-				} else { // TO THE LEFT
-					return BACKLEFT;
-				}
-
-			} else { // DOWN. MOVEMENT
-				if (dx > 0) { // TO THE RIGHT
-					return FRONTRIGHT;
-				} else { // TO THE LEFT
-					return FRONTLEFT;
-				}
-			}
-		} else { // HOR OR VERT MOVEMENT
-			if (Math.abs(dx) > Math.abs(dy)) { // HOR. MOVEMENT
-				if (dx > 0) { // TO THE RIGHT
-					return RIGHT;
-				} else { // TO THE LEFT
-					return LEFT;
-				}
-
-			} else { // VERT. MOVEMENT
-				if (dy > 0) { // TO THE TOP
-					return BACK;
-				} else { // TO THE BOTTOM
-					return FRONT;
-				}
-			}
-		}
-	}
 
 	@Override
 	public void loadAssets() {
@@ -445,18 +386,15 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		}
 
 		if (currentFrameAnimation != null) {
+			
 			if (currentFrameAnimation.regions.size == 1)
 				tex = currentFrameAnimation.regions.first();
-			else {
+			else { 	// TODO Restore previous animation state
 				newCurrentAnimation(currentAnimationType,
 						currentCount);
 				
 				tex = animation.getKeyFrame(animationTime);
 			}
-
-		} else if (fanims.size() == 1) {
-			String f = fanims.values().iterator().next().id;
-			startFrameAnimation(f, EngineTween.FROM_FA, 1, null);
 		} else {
 			startFrameAnimation(initFrameAnimation, EngineTween.FROM_FA, 1, null);
 		}

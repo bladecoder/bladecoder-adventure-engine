@@ -7,7 +7,6 @@ import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.FrameAnimation;
-import org.bladecoder.engine.anim.Sprite3DFrameAnimation;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 import org.bladecoder.engine.util.EngineLogger;
@@ -41,7 +40,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -52,26 +50,21 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	private final static int MAX_BONES = 40;
 	private final static Format FRAMEBUFFER_FORMAT = Format.RGBA4444;
 
-	public static final Rectangle VIEWPORT = new Rectangle();
+	private static final Rectangle VIEWPORT = new Rectangle();
 	private final static IntBuffer VIEWPORT_RESULTS = BufferUtils
 			.newIntBuffer(16);
 	
-	private HashMap<String, Sprite3DFrameAnimation> fanims = new HashMap<String, Sprite3DFrameAnimation>();
+	private HashMap<String, FrameAnimation> fanims = new HashMap<String, FrameAnimation>();
 	
 	/** Starts this anim the first time that the scene is loaded */
-	protected String initFrameAnimation;
+	private String initFrameAnimation;
 
-	private Sprite3DFrameAnimation currentFrameAnimation;
+	private FrameAnimation currentFrameAnimation;
 
 	private TextureRegion tex;
 
-	private String modelFileName;
-
 	private Environment environment;
 	private Environment shadowEnvironment;
-
-	private ModelInstance modelInstance;
-	private AnimationController controller;
 
 	private FrameBuffer fb = null;
 
@@ -104,6 +97,15 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	private ActionCallback animationCb = null;
 	private String animationCbSer = null;
+	
+	private ModelCacheEntry currentModel;
+	private HashMap<String, ModelCacheEntry> modelCache = new HashMap<String, ModelCacheEntry>();
+
+	class ModelCacheEntry {
+		int refCounter;
+		ModelInstance modelInstance;
+		AnimationController controller;
+	}
 
 
 	@Override
@@ -111,7 +113,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		if(initFrameAnimation == null)
 			initFrameAnimation = fa.id; 
 			
-		fanims.put(fa.id, (Sprite3DFrameAnimation)fa);
+		fanims.put(fa.id,fa);
 	}
 
 	@Override
@@ -159,7 +161,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		
 		shadowLight.begin(Vector3.Zero, camera3d.direction);
 		shadowBatch.begin(shadowLight.getCamera());
-		shadowBatch.render(modelInstance);
+		shadowBatch.render(currentModel.modelInstance);
 		shadowBatch.end();
 		shadowLight.end();
 
@@ -180,7 +182,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 				&& EngineLogger.debugLevel == EngineLogger.DEBUG1)
 			modelBatch.render(Utils3D.getAxes(), environment);
 
-		modelBatch.render(modelInstance, environment);
+		modelBatch.render(currentModel.modelInstance, environment);
 
 		modelBatch.end();
 	}
@@ -216,7 +218,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 		if (cameraPos == null) {
 			// SET CAMERA POS FROM MODEL IF EXISTS
-			Node n = modelInstance.getNode(cameraName);
+			Node n = currentModel.modelInstance.getNode(cameraName);
 
 			if (n != null) {
 				cameraPos = n.translation;
@@ -227,7 +229,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 		if (cameraRot == null) {
 			// SET CAMERA ROT FROM MODEL IF EXISTS
-			Node n = modelInstance.getNode(cameraName);
+			Node n = currentModel.modelInstance.getNode(cameraName);
 
 			if (n != null) {
 				float rx = (float) (MathUtils.radiansToDegrees * Math.asin(2
@@ -277,9 +279,9 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		}
 	};
 
-	public Array<Animation> getAnimations() {
-		return modelInstance.animations;
-	}
+//	public Array<Animation> getAnimations() {
+//		return modelInstance.animations;
+//	}
 
 	public void startFrameAnimation(String id, int repeatType, int count, ActionCallback cb) {
 		boolean reverse = false;
@@ -289,9 +291,9 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		if(repeatType == EngineTween.REVERSE || repeatType == EngineTween.REVERSE_REPEAT )
 			reverse = true;
 
-		if (modelInstance.getAnimation(id) != null) {
+		if (currentModel.modelInstance.getAnimation(id) != null) {
 			animationCb = cb;
-			controller.setAnimation(id, count, reverse ? -1 : 1,
+			currentModel.controller.setAnimation(id, count, reverse ? -1 : 1,
 					animationListener);
 			return;
 		}
@@ -304,8 +306,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 			lookat(dir);
 
-			if (modelInstance.getAnimation(s) != null) {
-				controller.setAnimation(s, count, reverse ? -1 : 1,
+			if (currentModel.modelInstance.getAnimation(s) != null) {
+				currentModel.controller.setAnimation(s, count, reverse ? -1 : 1,
 						animationListener);
 
 				return;
@@ -315,7 +317,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		// ERROR CASE
 		EngineLogger.error("Animation NOT FOUND: " + id);
 
-		for (Animation a : modelInstance.animations) {
+		for (Animation a : currentModel.modelInstance.animations) {
 			EngineLogger.debug(a.id);
 		}
 
@@ -324,29 +326,25 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		}
 	}
 
-	public void setModel(String model) {
-		this.modelFileName = model;
-	}
-
 	@Override
 	public void lookat(String dir) {
 		EngineLogger.debug("LOOKAT DIRECTION - " + dir);
 
-		if (dir.equals(BACK))
+		if (dir.equals(FrameAnimation.BACK))
 			lookat(180);
-		else if (dir.equals(FRONT))
+		else if (dir.equals(FrameAnimation.FRONT))
 			lookat(0);
-		else if (dir.equals(LEFT))
+		else if (dir.equals(FrameAnimation.LEFT))
 			lookat(270);
-		else if (dir.equals(RIGHT))
+		else if (dir.equals(FrameAnimation.RIGHT))
 			lookat(90);
-		else if (dir.equals(BACKLEFT))
+		else if (dir.equals(FrameAnimation.BACKLEFT))
 			lookat(225);
-		else if (dir.equals(BACKRIGHT))
+		else if (dir.equals(FrameAnimation.BACKRIGHT))
 			lookat(135);
-		else if (dir.equals(FRONTLEFT))
+		else if (dir.equals(FrameAnimation.FRONTLEFT))
 			lookat(-45);
-		else if (dir.equals(FRONTRIGHT))
+		else if (dir.equals(FrameAnimation.FRONTRIGHT))
 			lookat(45);
 		else
 			EngineLogger.error("LOOKAT: Direction not found - " + dir);
@@ -361,19 +359,19 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	public void lookat(float angle) {
-		modelInstance.transform.setToRotation(Vector3.Y, angle);
+		currentModel.modelInstance.transform.setToRotation(Vector3.Y, angle);
 		modelRotation = angle;
 	}
 
 	@Override
 	public void stand() {
-		startFrameAnimation(STAND_ANIM, EngineTween.NO_REPEAT, 1, null);
+		startFrameAnimation(FrameAnimation.STAND_ANIM, EngineTween.NO_REPEAT, 1, null);
 	}
 
 	@Override
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
 		lookat(p0, pf);
-		startFrameAnimation(WALK_ANIM, EngineTween.REPEAT, -1, null);
+		startFrameAnimation(FrameAnimation.WALK_ANIM, EngineTween.REPEAT, -1, null);
 	}
 
 	@Override
@@ -382,13 +380,13 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 		sb.append("\n  Anims:");
 
-		for (Animation a : modelInstance.animations) {
+		for (Animation a : currentModel.modelInstance.animations) {
 			sb.append(" ").append(a.id);
 		}
 
-		if (controller.current != null)
+		if (currentModel.controller.current != null)
 			sb.append("\n  Current Anim: ").append(
-					controller.current.animation.id);
+					currentModel.controller.current.animation.id);
 
 		sb.append("\n");
 
@@ -401,8 +399,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	public void update(float delta) {
-		if (controller.current != null && controller.current.loopCount != 0) {
-			controller.update(delta);
+		if (currentModel.controller.current != null && currentModel.controller.current.loopCount != 0) {
+			currentModel.controller.update(delta);
 
 			// GENERATE SHADOW MAP
 			genShadowMap();
@@ -410,9 +408,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			if (USE_FBO)
 				renderTex();
 		}
-
-		// lookat(modelRotation + 1);
-		// renderTex();
 	}
 
 	@Override
@@ -477,7 +472,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		// -1f));
 
 		if (celLight == null) {
-			Node n = modelInstance.getNode(celLightName);
+			Node n = currentModel.modelInstance.getNode(celLightName);
 
 			if (n != null) {
 				celLight = new PointLight().set(1f, 1f, 1f, n.translation, 1f);
@@ -524,31 +519,90 @@ public class Sprite3DRenderer implements SpriteRenderer {
 						Gdx.files
 								.classpath("org/bladecoder/engine/shading/floor.fragment.glsl")));
 	}
+	
+	private void loadSource(String source) {
+		ModelCacheEntry entry = modelCache.get(source);
+		
+		if(entry == null) {
+			entry = new ModelCacheEntry();
+			modelCache.put(source, entry);
+		}
+
+		if (entry.refCounter == 0)
+			EngineAssetManager.getInstance().loadModel3D(source);
+
+		entry.refCounter++;
+	}
+
+	private void retrieveSource(String source) {
+		ModelCacheEntry entry = modelCache.get(source);
+		
+		if(entry.refCounter < 1) {
+			loadSource(source);
+			EngineAssetManager.getInstance().getManager().finishLoading();
+		}
+
+		if (entry.refCounter > 0) {
+			Model model3d = EngineAssetManager.getInstance().getModel3D(source);
+			entry.modelInstance = new ModelInstance(model3d);
+			entry.controller = new AnimationController(entry.modelInstance);
+		}
+	}
+	
+	public void disposeSource(String source) {
+		ModelCacheEntry entry = modelCache.get(source);
+
+		if (entry.refCounter == 1) {
+			EngineAssetManager.getInstance().disposeModel3D(source);
+			entry.modelInstance = null;
+		}
+
+		entry.refCounter--;
+	}	
 
 	@Override
 	public void loadAssets() {
-		EngineAssetManager.getInstance().loadModel3D(modelFileName);
+		for (FrameAnimation fa : fanims.values()) {
+			if (fa.preload)
+				loadSource(fa.source);
+		}
+
+		if (currentFrameAnimation != null && !currentFrameAnimation.preload) {
+			loadSource(currentFrameAnimation.source);
+		} else if (currentFrameAnimation == null && initFrameAnimation != null) {
+			FrameAnimation fa = fanims.get(initFrameAnimation);
+
+			if (!fa.preload)
+				loadSource(fa.source);
+		}
 	}
 
 	@Override
 	public void retrieveAssets() {
-		Model model3d = EngineAssetManager.getInstance().getModel3D(
-				modelFileName);
-		modelInstance = new ModelInstance(model3d);
+		for (String key : modelCache.keySet()) {
+			if(modelCache.get(key).refCounter > 0)
+				retrieveSource(key);
+		}
 
+		if (currentFrameAnimation != null) {
+			ModelCacheEntry entry = modelCache.get(currentFrameAnimation.source);
+			currentModel = entry;
+			
+			// TODO RESTORE CURRENT ANIMATION STATE
+
+		} else {
+			startFrameAnimation(initFrameAnimation, EngineTween.FROM_FA, 1,
+					null);
+			
+			lookat(modelRotation);
+		}	
+		
 		// create STATIC BATCHS if not created yet
 		if (modelBatch == null)
 			createBatchs();
 
 		createEnvirontment();
 		createCamera();
-
-		// SET ANIMATION
-		controller = new AnimationController(modelInstance);
-
-		// RESTORE FA
-
-		lookat(modelRotation);
 
 		genShadowMap();
 
@@ -573,11 +627,15 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void dispose() {
+		for (String key : modelCache.keySet()) {
+			EngineAssetManager.getInstance().disposeModel3D(key);
+		}
 
-		EngineAssetManager.getInstance().disposeModel3D(modelFileName);
-		// modelBatch.dispose();
-		// shadowBatch.dispose();
-		// floorBatch.dispose();
+		modelCache.clear();
+		currentModel = null;
+		environment = null;
+		shadowEnvironment = null;
+		camera3d = null;
 
 		if (USE_FBO)
 			fb.dispose();
@@ -594,7 +652,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	@Override
 	public void write(Json json) {
 
-		json.writeValue("model3d", modelFileName);
 		json.writeValue("width", width);
 		json.writeValue("height", height);
 		json.writeValue("cameraPos", cameraPos, cameraPos == null ? null
@@ -616,7 +673,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
-		modelFileName = json.readValue("model3d", String.class, jsonData);
 		width = json.readValue("width", Integer.class, jsonData);
 		height = json.readValue("height", Integer.class, jsonData);
 		cameraPos = json.readValue("cameraPos", Vector3.class, jsonData);

@@ -301,11 +301,11 @@ public class ScnCanvas extends ApplicationAdapter {
 	private void setSpriteAtlasFA(String selFA) {
 		SpriteAtlasRenderer s = (SpriteAtlasRenderer) ((SpriteActor)selectedActor).getRenderer();
 
-		if (selFA == null || s.getFrameAnimation(selFA) == null) {
+		if (selFA == null || s.getFrameAnimations().get(selFA) == null) {
 			selFA = ((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation();
 		}
 
-		if (selFA != null && s.getFrameAnimation(selFA) != null) {
+		if (selFA != null && s.getFrameAnimations().get(selFA) != null) {
 
 			faRenderer2.setFrameAnimation(selDoc, selElementActor, selFA);
 

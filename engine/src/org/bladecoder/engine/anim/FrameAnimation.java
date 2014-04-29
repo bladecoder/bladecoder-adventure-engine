@@ -3,6 +3,19 @@ package org.bladecoder.engine.anim;
 import com.badlogic.gdx.math.Vector2;
 
 public class FrameAnimation {
+	public final static String BACK = "back";
+	public final static String FRONT = "front";
+	public final static String RIGHT = "right";
+	public final static String LEFT = "left";
+	public final static String BACKRIGHT = "backright";
+	public final static String BACKLEFT = "backleft";
+	public final static String FRONTRIGHT = "frontright";
+	public final static String FRONTLEFT = "frontleft";
+	public final static String STAND_ANIM = "stand";
+	public final static String WALK_ANIM = "walk";
+	public final static String TALK_ANIM = "talk";	
+		
+	
 	public	String id;
 	public  String source;
 	public	float duration;
@@ -53,4 +66,51 @@ public class FrameAnimation {
 
 		return sb.toString();
 	}
+	
+	private final static float DIRECTION_ASPECT_TOLERANCE = 2.5f;
+
+	public static String getFrameDirection(Vector2 p0, Vector2 pf) {
+		float dx = pf.x - p0.x;
+		float dy = pf.y - p0.y;
+		float ratio = Math.abs(dx / dy);
+
+		if (ratio < 1.0)
+			ratio = 1.0f / ratio;
+
+		// EngineLogger.debug("P0: " + p0 + " PF: " + pf + " dx: " + dx +
+		// " dy: "
+		// + dy + " RATIO: " + ratio);
+
+		if (ratio < DIRECTION_ASPECT_TOLERANCE) { // DIAGONAL MOVEMENT
+			if (dy > 0) { // UP. MOVEMENT
+				if (dx > 0) { // TO THE RIGHT
+					return BACKRIGHT;
+				} else { // TO THE LEFT
+					return BACKLEFT;
+				}
+
+			} else { // DOWN. MOVEMENT
+				if (dx > 0) { // TO THE RIGHT
+					return FRONTRIGHT;
+				} else { // TO THE LEFT
+					return FRONTLEFT;
+				}
+			}
+		} else { // HOR OR VERT MOVEMENT
+			if (Math.abs(dx) > Math.abs(dy)) { // HOR. MOVEMENT
+				if (dx > 0) { // TO THE RIGHT
+					return RIGHT;
+				} else { // TO THE LEFT
+					return LEFT;
+				}
+
+			} else { // VERT. MOVEMENT
+				if (dy > 0) { // TO THE TOP
+					return BACK;
+				} else { // TO THE BOTTOM
+					return FRONT;
+				}
+			}
+		}
+	}	
 }

@@ -144,12 +144,11 @@ public class SceneParser extends DefaultHandler {
 			if (type.equals("background")) {
 				actor = new Actor();
 			} else {
-				if (type.equals("sprite") || type.equals("foreground")) { // ATLAS
-																			// ACTOR
-					actor = new SpriteActor();
+				actor = new SpriteActor();
+				
+				if (type.equals("atlas") || type.equals("foreground")) { // ATLAS ACTOR
 					((SpriteActor)actor).setRenderer(new SpriteAtlasRenderer());
-				} else if (type.equals("sprite3d")) { // 3D ACTOR
-					actor = new SpriteActor();
+				} else if (type.equals("3d")) { // 3D ACTOR
 					Sprite3DRenderer r = new Sprite3DRenderer();						
 					((SpriteActor)actor).setRenderer(r);
 
@@ -197,11 +196,7 @@ public class SceneParser extends DefaultHandler {
 						throw e2;
 					}
 
-					String model = atts.getValue("model");
-
-					r.setModel(model);
 				} else if (type.equals("spine")) { // SPINE RENDERER				
-					actor = new SpriteActor();
 					SpriteSpineRenderer r = new SpriteSpineRenderer();						
 					((SpriteActor)actor).setRenderer(r);
 				}
@@ -321,17 +316,10 @@ public class SceneParser extends DefaultHandler {
 
 			if (actor == null || !(actor instanceof SpriteActor)) {
 				SAXParseException e = new SAXParseException(
-						"'frame_animation' TAG must be inside actor of type 'sprite', 'player' or 'foreground'",
+						"'frame_animation' TAG must be inside sprite actors",
 						locator);
 				error(e);
 				throw e;
-			}
-
-			if (!(((SpriteActor)actor).getRenderer() instanceof SpriteAtlasRenderer)) {
-				SAXParseException e2 = new SAXParseException(
-						"Only SpriteAtlasActors can have animations", locator);
-				error(e2);
-				throw e2;
 			}
 
 			String speedstr = atts.getValue("speed");
@@ -366,10 +354,10 @@ public class SceneParser extends DefaultHandler {
 					&& id.charAt(0) == '@')
 				id = i18n.getString(id.substring(1));
 
-			String atlas = atts.getValue("atlas");
-			if (atlas == null || atlas.isEmpty()) {
+			String source = atts.getValue("source");
+			if (source == null || source.isEmpty()) {
 				SAXParseException e2 = new SAXParseException(
-						"Atlas name not found or empty", locator);
+						"Source name not found or empty", locator);
 				error(e2);
 				throw e2;
 			}
@@ -418,7 +406,7 @@ public class SceneParser extends DefaultHandler {
 
 			AtlasFrameAnimation sa = new AtlasFrameAnimation();
 			
-			sa.set(id, atlas, speed, delay,
+			sa.set(id, source, speed, delay,
 					count, animationType, soundId, inD, outD, preload, disposeWhenPlayed);
 
 			((SpriteAtlasRenderer)((SpriteActor) actor).getRenderer()).addFrameAnimation(sa);

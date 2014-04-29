@@ -124,15 +124,15 @@ public class FAListPanel extends ElementListPanel {
 
 		@Override
 		public String getInfo(Element e) {
-			String atlas = e.getAttribute("atlas");
+			String source = e.getAttribute("source");
 			String speed = e.getAttribute("speed");
 			String delay = e.getAttribute("delay");
 			String count = e.getAttribute("count");
 
 			StringBuilder sb = new StringBuilder();
 
-			if (!atlas.isEmpty())
-				sb.append("atlas: ").append(atlas);
+			if (!source.isEmpty())
+				sb.append("source: ").append(source);
 			if (!speed.isEmpty())
 				sb.append(" speed: ").append(speed);
 			if (!delay.isEmpty())
@@ -147,18 +147,13 @@ public class FAListPanel extends ElementListPanel {
 		@Override
 		public ImageIcon getImageIcon(Element e) {
 			URL u = null;	
-			int numFrames = ((SceneDocument)doc).getFANumFrames((Element)e.getParentNode(), e.getAttribute("id"));
 
-			if ((e.getAttribute("animation_type").equalsIgnoreCase("repeat") || e
-					.getAttribute("animation_type").isEmpty()) && numFrames > 1) {
+			if (e.getAttribute("animation_type").equalsIgnoreCase("repeat")) {
 				u = getClass().getResource(
 						"/res/images/ic_repeat.png");
 			} else if (e.getAttribute("animation_type").equalsIgnoreCase("yoyo")) {
 				u = getClass().getResource(
 						"/res/images/ic_yoyo.png");
-			} else if (numFrames > 1) {
-				u = getClass().getResource(
-						"/res/images/ic_animation.png");
 			} else {
 				u = getClass().getResource(
 						"/res/images/ic_sprite_actor.png");

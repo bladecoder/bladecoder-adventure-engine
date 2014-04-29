@@ -2,57 +2,44 @@ package org.bladecoder.engineeditor.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.bladecoder.engine.actions.Param;
-import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
+import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
-import org.bladecoder.engine.model.SpriteAtlasRenderer;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
+import org.bladecoder.engine.model.SpriteAtlasRenderer;
 import org.bladecoder.engine.model.SpriteRenderer;
+import org.bladecoder.engine.model.SpriteSpineRenderer;
 import org.bladecoder.engine.util.EngineLogger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import aurelienribon.tweenengine.Tween;
 
-import com.badlogic.gdx.graphics.g3d.model.Animation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 
 public class SceneDocument extends BaseDocument {
 
-	public static final String BACKGROUND_ACTOR = "background";
-	public static final String SPRITE_ACTOR = "sprite";
-	public static final String SPRITE3D_ACTOR = "sprite3d";
-	public static final String FOREGROUND_ACTOR = "foreground";
+	public static final String BACKGROUND_ACTOR_TYPE = "background";
+	public static final String ATLAS_ACTOR_TYPE = "atlas";
+	public static final String SPRITE3D_ACTOR_TYPE = "3d";
+	public static final String SPINE_ACTOR_TYPE = "spine";
+	public static final String FOREGROUND_ACTOR_TYPE = "foreground";
 
-	public static final String ACTOR_TYPES[] = { BACKGROUND_ACTOR,
-			SPRITE_ACTOR, SPRITE3D_ACTOR, FOREGROUND_ACTOR };
+	public static final String ACTOR_TYPES[] = { BACKGROUND_ACTOR_TYPE,
+			ATLAS_ACTOR_TYPE, SPINE_ACTOR_TYPE, SPRITE3D_ACTOR_TYPE, FOREGROUND_ACTOR_TYPE };
 
 	public static final String ANIMATION_TYPES[] = { "no_repeat", "repeat",
-			"yoyo" };
-
-	/**
-	 * Stores the FA num. of frames. The XML doesn't have this information and
-	 * must be retrieved from atlas by ScnCanvas.
-	 */
-	private HashMap<String, Integer> faFrames = new HashMap<String, Integer>();
-
-	/**
-	 * Stores the 3d Animations. The XML doesn't have this information and must
-	 * be retrieved from model by ScnCanvas.
-	 */
-	private HashMap<String, Array<Animation>> animations3d = new HashMap<String, Array<Animation>>();
+			"yoyo", "reverse" };
 
 	public SceneDocument(String modelPath) {
 		super();
@@ -94,7 +81,7 @@ public class SceneDocument extends BaseDocument {
 		setActorId(e, id);
 		e.setAttribute("type", type);
 
-		if (type.equals(BACKGROUND_ACTOR))
+		if (type.equals(BACKGROUND_ACTOR_TYPE))
 			setBbox(e, new Rectangle(0, 0, 100, 100));
 
 		modified = true;
@@ -223,30 +210,6 @@ public class SceneDocument extends BaseDocument {
 		EngineAssetManager.getInstance().getManager().finishLoading();
 		scn.retrieveAssets();
 
-		// SET FA NUMFRAMES OR ANIMATIONS3D
-		for (int i = 0; i < actors.getLength(); i++) {
-			Element a = (Element) actors.item(i);
-			Actor ba = scn.getActor(getId(a), false, true);
-
-			if (ba instanceof SpriteActor) {
-				SpriteRenderer r = ((SpriteActor) ba).getRenderer();
-
-				if (r instanceof SpriteAtlasRenderer) {
-					SpriteAtlasRenderer sa = (SpriteAtlasRenderer) r;
-					for (AtlasFrameAnimation fa : sa.getFrameAnimations()
-							.values()) {
-						if (fa.regions == null)
-							setFANumFrames(a, fa.id, 0);
-						else
-							setFANumFrames(a, fa.id, fa.regions.size);
-					}
-				} else if (r instanceof Sprite3DRenderer) {
-					Sprite3DRenderer sa = (Sprite3DRenderer) r;
-					animations3d.put(ba.getId(), sa.getAnimations());
-				}
-			}
-		}
-
 		return scn;
 	}
 
@@ -356,27 +319,8 @@ public class SceneDocument extends BaseDocument {
 		return getTranslation(e.getAttribute("desc"));
 	}
 
-	public int getFANumFrames(Element e, String id) {
-		int n;
-
-		if (faFrames.get(getId(e) + "." + id) == null)
-			return 0;
-
-		n = faFrames.get(getId(e) + "." + id);
-
-		return n;
-	}
-
-	public void setFANumFrames(Element e, String id, int n) {
-		faFrames.put(getId(e) + "." + id, n);
-	}
-
 	public NodeList getFrameAnimations(Element e) {
 		return e.getElementsByTagName("frame_animation");
-	}
-
-	public Array<Animation> getAnimations3d(String id) {
-		return animations3d.get(id);
 	}
 
 	public Rectangle getBBox(Element e) {
@@ -398,13 +342,16 @@ public class SceneDocument extends BaseDocument {
 
 		String type = getType(e);
 
-		if (type.equals(SPRITE_ACTOR) || type.equals(FOREGROUND_ACTOR)) {
+		if (type.equals(ATLAS_ACTOR_TYPE) || type.equals(FOREGROUND_ACTOR_TYPE)) {
 			a = new SpriteActor();
 			((SpriteActor)a).setRenderer(new SpriteAtlasRenderer());
-		} else if (type.equals(SPRITE3D_ACTOR)) {
+		} else if (type.equals(SPRITE3D_ACTOR_TYPE)) {
 			a = new SpriteActor();
 			((SpriteActor)a).setRenderer(new Sprite3DRenderer());
-		} else if (type.equals(BACKGROUND_ACTOR)) {
+		} else if (type.equals(SPINE_ACTOR_TYPE)) {
+			a = new SpriteActor();
+			((SpriteActor)a).setRenderer(new SpriteSpineRenderer());			
+		} else if (type.equals(BACKGROUND_ACTOR_TYPE)) {
 			a = new Actor();
 		} else {
 			EngineLogger.error(" Wrong actor Type defined in XML");
@@ -431,7 +378,6 @@ public class SceneDocument extends BaseDocument {
 				}
 			} else {
 				Sprite3DRenderer a3d = (Sprite3DRenderer) r;
-				a3d.setModel(e.getAttribute("model"));
 				a3d.setSpriteSize(Param.parseVector2(e
 						.getAttribute("sprite_size")));
 			}
@@ -464,7 +410,7 @@ public class SceneDocument extends BaseDocument {
 
 		AtlasFrameAnimation fa = new AtlasFrameAnimation();
 		fa.id = faElement.getAttribute("id");
-		fa.source = faElement.getAttribute("atlas");
+		fa.source = faElement.getAttribute("source");
 
 		if (faElement.getAttribute("animation_type").isEmpty()
 				|| faElement.getAttribute("animation_type").equalsIgnoreCase(

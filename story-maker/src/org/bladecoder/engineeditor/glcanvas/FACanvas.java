@@ -31,6 +31,14 @@ public class FACanvas extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		faRenderer = new AtlasFARenderer();
 	}
+	
+	public void setSource() {
+		
+	}
+	
+	public String[] getAnimations() {
+		return null;
+	}
 
 	public void setFrameAnimation(String atlas, String id, String speedStr, String typeStr) {
 		if (atlas!=null && id != null && !atlas.isEmpty() && !id.isEmpty()) {

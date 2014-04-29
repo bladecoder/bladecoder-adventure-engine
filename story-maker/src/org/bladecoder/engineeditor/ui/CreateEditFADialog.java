@@ -31,11 +31,11 @@ import com.badlogic.gdx.backends.lwjgl.LwjglAWTCanvas;
 public class CreateEditFADialog extends CreateEditElementDialog {
 	public static final String INFO = "Define sprites and frame animations";
 	
-	private String atlasesList[] = getAtlasesList();
+	private String atlasesList[] = getSources();
 
 	private InputPanel[] inputs = {
-			new InputPanel("Atlas", "<html>Select the atlas where the sprite is defined</html>", atlasesList),
-			new InputPanel("Sprite ID", "<html>Select the id of the sprite</html>", getSprites(atlasesList[0])),
+			new InputPanel("Source", "<html>Select the source where the sprite or animation is defined</html>", atlasesList),
+			new InputPanel("ID", "<html>Select the id of the animation</html>", getAtlasAnimations(atlasesList[0])),
 			new InputPanel("Animation type", "<html>Select the type of the animation</html>",
 					SceneDocument.ANIMATION_TYPES),
 			new InputPanel("Speed", "<html>Select the speed of the animation in secods</html>",
@@ -54,8 +54,8 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 
 	InputPanel typePanel = inputs[2];
 
-	String attrs[] = { "atlas", "id", "animation_type", "speed",  "delay", "count", "inD",
-			"outD", "sound" };
+	String attrs[] = { "source", "id", "animation_type", "speed",  "delay", "count", "inD",
+			"outD", "sound", "preload", "disposed_when_played"};
 	
 	FACanvas faCanvas = new FACanvas();
 
@@ -87,7 +87,7 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 				String atlas = (String) inputs[0].getText();
 				JComboBox<String> cb = (JComboBox<String>) inputs[1].getField();
 				cb.removeAllItems();
-				String[] ids = getSprites(atlas);
+				String[] ids = getAtlasAnimations(atlas);
 				
 				for(String s:ids)
 					cb.addItem(s);
@@ -133,33 +133,22 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 		
 		faCanvas.setFrameAnimation(atlas, id, speed, type);		
 	}
-
-	private String[] getAtlasesList() {
-		String atlases_path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
-				+ Ctx.project.getResDir();
-
-		File f = new File(atlases_path);
-
-		String atlases[] = f.list(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File arg0, String arg1) {
-				if (arg1.endsWith(".atlas"))
-					return true;
-
-				return false;
-			}
-		});
-
-		Arrays.sort(atlases);
+	
+	
+	private String[] getSpineAnimations(String source) {
+		String s[] = null;
 		
-		for(int i=0; i < atlases.length; i++)
-			atlases[i] = atlases[i].substring(0, atlases[i].length() - 6);
-
-		return atlases;
+		return s;
 	}
 	
-	private String[] getSprites(String atlas) {
+	private String[] getModel3dAnimations(String source) {
+		String s[] = null;
+		
+		return s;
+	}
+
+	
+	private String[] getAtlasAnimations(String atlas) {
 		String atlas_path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
 				+ Ctx.project.getResDir() + "/" + atlas + ".atlas";
 		
@@ -200,6 +189,46 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 		Arrays.sort(s);
 		
 		return s;
+	}
+	
+	String ext;
+	
+	private String[] getSources() {
+		String path = null;
+		String type = parent.getAttribute("type");
+		
+		if(type.equals(SceneDocument.FOREGROUND_ACTOR_TYPE) || type.equals(SceneDocument.ATLAS_ACTOR_TYPE)) {
+			path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
+				+ Ctx.project.getResDir();
+			ext = ".atlas";
+		} else if(type.equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
+			path = Ctx.project.getProjectPath() + Project.SPRITE3D_PATH;
+			ext = ".g3db";
+		} else if(type.equals(SceneDocument.SPINE_ACTOR_TYPE)) {
+			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
+			ext = ".spine";
+		}
+			
+
+		File f = new File(path);
+
+		String sources[] = f.list(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File arg0, String arg1) {
+				if (arg1.endsWith(ext))
+					return true;
+
+				return false;
+			}
+		});
+
+		Arrays.sort(sources);
+		
+		for(int i=0; i < sources.length; i++)
+			sources[i] = sources[i].substring(0, sources[i].length() - ext.length());
+
+		return sources;
 	}
 
 }

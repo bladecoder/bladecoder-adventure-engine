@@ -6,13 +6,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
 
-import javax.print.attribute.standard.MediaSize.Engineering;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.Project;
 import org.bladecoder.engineeditor.model.SceneDocument;
@@ -20,7 +18,6 @@ import org.bladecoder.engineeditor.ui.components.CreateEditElementDialog;
 import org.bladecoder.engineeditor.ui.components.ElementListCellRender;
 import org.bladecoder.engineeditor.ui.components.ElementListModel;
 import org.bladecoder.engineeditor.ui.components.ElementListPanel;
-import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.w3c.dom.Element;
 
 @SuppressWarnings("serial")
@@ -106,8 +103,10 @@ public class ActorListPanel extends ElementListPanel {
 		ElementListModel lm = (ElementListModel) list.getModel();
 		Element e = lm.getElementAt(pos);
 
-		if (e.getAttribute("type").equals(SceneDocument.SPRITE3D_ACTOR)
-				|| e.getAttribute("type").equals(SceneDocument.SPRITE_ACTOR)) {
+		if (e.getAttribute("type").equals(SceneDocument.SPRITE3D_ACTOR_TYPE)
+				|| e.getAttribute("type").equals(SceneDocument.ATLAS_ACTOR_TYPE)
+				|| e.getAttribute("type").equals(SceneDocument.SPINE_ACTOR_TYPE)
+				) {
 			String id = e.getAttribute("id");
 
 			scn.setRootAttr("player", id);
@@ -142,13 +141,16 @@ public class ActorListPanel extends ElementListPanel {
 
 			if (isPlayer) {
 				u = getClass().getResource("/res/images/ic_player.png");
-			} else if (type.equals(SceneDocument.FOREGROUND_ACTOR)) {
+			} else if (type.equals(SceneDocument.FOREGROUND_ACTOR_TYPE)) {
 				u = getClass().getResource("/res/images/ic_fg_actor.png");
-			} else if (type.equals(SceneDocument.SPRITE_ACTOR)) {
+			} else if (type.equals(SceneDocument.ATLAS_ACTOR_TYPE)) {
 				u = getClass().getResource("/res/images/ic_sprite_actor.png");
-			} else if (type.equals(SceneDocument.BACKGROUND_ACTOR)) {
+			} else if (type.equals(SceneDocument.BACKGROUND_ACTOR_TYPE)) {
 				u = getClass().getResource("/res/images/ic_base_actor.png");
-			} else if (type.equals(SceneDocument.SPRITE3D_ACTOR)) {
+			} else if (type.equals(SceneDocument.SPINE_ACTOR_TYPE)) {
+				u = getClass()
+						.getResource("/res/images/ic_character_actor.png");			
+			} else if (type.equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
 				u = getClass()
 						.getResource("/res/images/ic_character_actor.png");
 			}
