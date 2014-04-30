@@ -40,6 +40,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -53,13 +54,15 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	private static final Rectangle VIEWPORT = new Rectangle();
 	private final static IntBuffer VIEWPORT_RESULTS = BufferUtils
 			.newIntBuffer(16);
-	
+
 	private HashMap<String, FrameAnimation> fanims = new HashMap<String, FrameAnimation>();
-	
+
 	/** Starts this anim the first time that the scene is loaded */
 	private String initFrameAnimation;
 
 	private FrameAnimation currentFrameAnimation;
+	private int currentCount;
+	private int currentAnimationType;
 
 	private TextureRegion tex;
 
@@ -69,8 +72,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	private FrameBuffer fb = null;
 
 	private int width, height;
-
-	private PerspectiveCamera camera3d = null;
 
 	private Vector3 cameraPos;
 	private Vector3 cameraRot;
@@ -97,7 +98,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	private ActionCallback animationCb = null;
 	private String animationCbSer = null;
-	
+
 	private ModelCacheEntry currentModel;
 	private HashMap<String, ModelCacheEntry> modelCache = new HashMap<String, ModelCacheEntry>();
 
@@ -105,22 +106,23 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		int refCounter;
 		ModelInstance modelInstance;
 		AnimationController controller;
+		PerspectiveCamera camera3d;
 	}
-
 
 	@Override
 	public void addFrameAnimation(FrameAnimation fa) {
-		if(initFrameAnimation == null)
-			initFrameAnimation = fa.id; 
-			
-		fanims.put(fa.id,fa);
+		if (initFrameAnimation == null)
+			initFrameAnimation = fa.id;
+
+		fanims.put(fa.id, fa);
 	}
 
 	@Override
 	public void setInitFrameAnimation(String fa) {
 		initFrameAnimation = fa;
 	}
-	
+
+	@Override
 	public String getInitFrameAnimation() {
 		return initFrameAnimation;
 	}
@@ -133,15 +135,29 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	@Override
 	public String getCurrentFrameAnimationId() {
 		return currentFrameAnimation.id;
-	}	
-	
+	}
+
+	@Override
+	public String[] getInternalAnimations(String source) {
+		retrieveSource(source);
+
+		Array<Animation> animations = modelCache.get(source).modelInstance.animations;
+		String[] result = new String[animations.size];
+
+		for (int i = 0; i < animations.size; i++) {
+			Animation a = animations.get(i);
+			result[i] = a.id;
+		}
+
+		return result;
+	}
 
 	/**
 	 * Render the 3D model into the texture
 	 */
 	private void renderTex() {
 		updateViewport();
-		
+
 		fb.begin();
 
 		Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -158,8 +174,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	 */
 	private void genShadowMap() {
 		updateViewport();
-		
-		shadowLight.begin(Vector3.Zero, camera3d.direction);
+
+		shadowLight.begin(Vector3.Zero, currentModel.camera3d.direction);
 		shadowBatch.begin(shadowLight.getCamera());
 		shadowBatch.render(currentModel.modelInstance);
 		shadowBatch.end();
@@ -169,22 +185,25 @@ public class Sprite3DRenderer implements SpriteRenderer {
 				(int) VIEWPORT.width, (int) VIEWPORT.height);
 	}
 
-	private void drawModel() {	
-		// DRAW SHADOW
-		floorBatch.begin(camera3d);
-		floorBatch.render(Utils3D.getFloor(), shadowEnvironment);
-		floorBatch.end();
+	private void drawModel() {
+		if (currentModel != null) {
 
-		// DRAW MODEL
-		modelBatch.begin(camera3d);
+			// DRAW SHADOW
+			floorBatch.begin(currentModel.camera3d);
+			floorBatch.render(Utils3D.getFloor(), shadowEnvironment);
+			floorBatch.end();
 
-		if (EngineLogger.debugMode()
-				&& EngineLogger.debugLevel == EngineLogger.DEBUG1)
-			modelBatch.render(Utils3D.getAxes(), environment);
+			// DRAW MODEL
+			modelBatch.begin(currentModel.camera3d);
 
-		modelBatch.render(currentModel.modelInstance, environment);
+			if (EngineLogger.debugMode()
+					&& EngineLogger.debugLevel == EngineLogger.DEBUG1)
+				modelBatch.render(Utils3D.getAxes(), environment);
 
-		modelBatch.end();
+			modelBatch.render(currentModel.modelInstance, environment);
+
+			modelBatch.end();
+		}
 	}
 
 	public void setCameraPos(float x, float y, float z) {
@@ -213,12 +232,15 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		this.celLightName = name;
 	}
 
-	private void createCamera() {
-		camera3d = new PerspectiveCamera(cameraFOV, width, height);
+	private PerspectiveCamera getCamera(ModelInstance modelInstance) {
+		PerspectiveCamera camera3d = new PerspectiveCamera(cameraFOV, width,
+				height);
 
 		if (cameraPos == null) {
+			Node n = null;
+
 			// SET CAMERA POS FROM MODEL IF EXISTS
-			Node n = currentModel.modelInstance.getNode(cameraName);
+			n = modelInstance.getNode(cameraName);
 
 			if (n != null) {
 				cameraPos = n.translation;
@@ -228,8 +250,10 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		}
 
 		if (cameraRot == null) {
-			// SET CAMERA ROT FROM MODEL IF EXISTS
-			Node n = currentModel.modelInstance.getNode(cameraName);
+			Node n = null;
+
+			// SET CAMERA POS FROM MODEL IF EXISTS
+			n = modelInstance.getNode(cameraName);
 
 			if (n != null) {
 				float rx = (float) (MathUtils.radiansToDegrees * Math.asin(2
@@ -258,6 +282,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		camera3d.near = 0.1f;
 		camera3d.far = 30;
 		camera3d.update();
+
+		return camera3d;
 	}
 
 	private final AnimationListener animationListener = new AnimationListener() {
@@ -269,32 +295,65 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		@Override
 		public void onEnd(AnimationDesc animation) {
 			if (animationCb != null || animationCbSer != null) {
-					if (animationCb == null) {
-						animationCb = ActionCallbackSerialization.find(animationCbSer);
-						animationCbSer = null;
-					}
+				if (animationCb == null) {
+					animationCb = ActionCallbackSerialization
+							.find(animationCbSer);
+					animationCbSer = null;
+				}
 
-					ActionCallbackQueue.add(animationCb);
+				ActionCallbackQueue.add(animationCb);
 			}
 		}
 	};
 
-//	public Array<Animation> getAnimations() {
-//		return modelInstance.animations;
-//	}
+	// public Array<Animation> getAnimations() {
+	// return modelInstance.animations;
+	// }
 
-	public void startFrameAnimation(String id, int repeatType, int count, ActionCallback cb) {
-		boolean reverse = false;
-		
+	public void startFrameAnimation(String id, int repeatType, int count,
+			ActionCallback cb) {
+		FrameAnimation fa = fanims.get(id);
+
+		if (fa == null) {
+			EngineLogger.error("FrameAnimation not found: " + id);
+
+			return;
+		}
+
+		if (currentFrameAnimation != null
+				&& currentFrameAnimation.disposeWhenPlayed)
+			disposeSource(currentFrameAnimation.source);
+
+		currentFrameAnimation = fa;
+		currentModel = modelCache.get(fa.source);
 		animationCb = cb;
-		
-		if(repeatType == EngineTween.REVERSE || repeatType == EngineTween.REVERSE_REPEAT )
+
+		// If the source is not loaded. Load it.
+		if (currentModel != null && currentModel.refCounter < 1) {
+			loadSource(fa.source);
+			EngineAssetManager.getInstance().getManager().finishLoading();
+
+			retrieveSource(fa.source);
+		}
+
+		if (repeatType == EngineTween.FROM_FA) {
+			currentAnimationType = currentFrameAnimation.animationType;
+			currentCount = currentFrameAnimation.count;
+		} else {
+			currentCount = count;
+			currentAnimationType = repeatType;
+		}
+
+		boolean reverse = false;
+
+		if (currentAnimationType == EngineTween.REVERSE
+				|| currentAnimationType == EngineTween.REVERSE_REPEAT)
 			reverse = true;
 
 		if (currentModel.modelInstance.getAnimation(id) != null) {
 			animationCb = cb;
-			currentModel.controller.setAnimation(id, count, reverse ? -1 : 1,
-					animationListener);
+			currentModel.controller.setAnimation(id, currentCount, reverse ? -1
+					: 1, animationListener);
 			return;
 		}
 
@@ -307,8 +366,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			lookat(dir);
 
 			if (currentModel.modelInstance.getAnimation(s) != null) {
-				currentModel.controller.setAnimation(s, count, reverse ? -1 : 1,
-						animationListener);
+				currentModel.controller.setAnimation(s, count,
+						reverse ? -1 : 1, animationListener);
 
 				return;
 			}
@@ -365,13 +424,15 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void stand() {
-		startFrameAnimation(FrameAnimation.STAND_ANIM, EngineTween.NO_REPEAT, 1, null);
+		startFrameAnimation(FrameAnimation.STAND_ANIM, EngineTween.NO_REPEAT,
+				1, null);
 	}
 
 	@Override
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
 		lookat(p0, pf);
-		startFrameAnimation(FrameAnimation.WALK_ANIM, EngineTween.REPEAT, -1, null);
+		startFrameAnimation(FrameAnimation.WALK_ANIM, EngineTween.REPEAT, -1,
+				null);
 	}
 
 	@Override
@@ -399,7 +460,9 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	public void update(float delta) {
-		if (currentModel.controller.current != null && currentModel.controller.current.loopCount != 0) {
+
+		if (currentModel != null && currentModel.controller.current != null
+				&& currentModel.controller.current.loopCount != 0) {
 			currentModel.controller.update(delta);
 
 			// GENERATE SHADOW MAP
@@ -411,38 +474,38 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	@Override
-	public float getWidth() {	
+	public float getWidth() {
 		return width;
 	}
 
 	@Override
-	public float getHeight() {		
+	public float getHeight() {
 		return height;
 	}
-	
+
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float originX,
 			float originY, float scale) {
 		if (USE_FBO) {
-			batch.draw(tex, x, y, originX, originY, width,
-					height, scale, scale, 0);
+			batch.draw(tex, x, y, originX, originY, width, height, scale,
+					scale, 0);
 		} else {
 			float p0x, p0y, pfx, pfy;
-			
+
 			Vector3 tmp = new Vector3(); // TODO Make static for performance?
 			updateViewport();
-			
+
 			// get screen coords for x and y
-			tmp.set(x,y,0);
+			tmp.set(x, y, 0);
 			tmp.prj(batch.getProjectionMatrix());
-			p0x =  VIEWPORT.width * (tmp.x + 1) / 2;
-			p0y =  VIEWPORT.height * (tmp.y + 1) / 2;
-			
-			tmp.set(x + width,y + height,0);
+			p0x = VIEWPORT.width * (tmp.x + 1) / 2;
+			p0y = VIEWPORT.height * (tmp.y + 1) / 2;
+
+			tmp.set(x + width, y + height, 0);
 			tmp.prj(batch.getProjectionMatrix());
-			pfx =  VIEWPORT.width * (tmp.x + 1) / 2;
-			pfy =  VIEWPORT.height * (tmp.y + 1) / 2;
-			
+			pfx = VIEWPORT.width * (tmp.x + 1) / 2;
+			pfy = VIEWPORT.height * (tmp.y + 1) / 2;
+
 			batch.end();
 
 			Gdx.gl20.glViewport((int) (p0x + VIEWPORT.x),
@@ -460,7 +523,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			batch.begin();
 		}
 	}
-	
 
 	private void createEnvirontment() {
 		environment = new Environment();
@@ -472,8 +534,11 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		// -1f));
 
 		if (celLight == null) {
-			Node n = currentModel.modelInstance.getNode(celLightName);
+			Node n = null;
 
+			if (currentModel != null)
+				n = currentModel.modelInstance.getNode(celLightName);
+			
 			if (n != null) {
 				celLight = new PointLight().set(1f, 1f, 1f, n.translation, 1f);
 			} else {
@@ -519,37 +584,40 @@ public class Sprite3DRenderer implements SpriteRenderer {
 						Gdx.files
 								.classpath("org/bladecoder/engine/shading/floor.fragment.glsl")));
 	}
-	
+
 	private void loadSource(String source) {
 		ModelCacheEntry entry = modelCache.get(source);
-		
-		if(entry == null) {
+
+		if (entry == null) {
 			entry = new ModelCacheEntry();
 			modelCache.put(source, entry);
 		}
 
-		if (entry.refCounter == 0)
+		if (entry.refCounter == 0) {
 			EngineAssetManager.getInstance().loadModel3D(source);
+		}
 
 		entry.refCounter++;
 	}
 
 	private void retrieveSource(String source) {
 		ModelCacheEntry entry = modelCache.get(source);
-		
-		if(entry.refCounter < 1) {
+
+		if (entry == null || entry.refCounter < 1) {
 			loadSource(source);
 			EngineAssetManager.getInstance().getManager().finishLoading();
+			entry = modelCache.get(source);
 		}
 
-		if (entry.refCounter > 0) {
+		if (entry.modelInstance == null) {
 			Model model3d = EngineAssetManager.getInstance().getModel3D(source);
 			entry.modelInstance = new ModelInstance(model3d);
 			entry.controller = new AnimationController(entry.modelInstance);
+			entry.camera3d = getCamera(entry.modelInstance);
 		}
 	}
-	
-	public void disposeSource(String source) {
+
+	private void disposeSource(String source) {
 		ModelCacheEntry entry = modelCache.get(source);
 
 		if (entry.refCounter == 1) {
@@ -558,7 +626,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		}
 
 		entry.refCounter--;
-	}	
+	}
 
 	@Override
 	public void loadAssets() {
@@ -580,31 +648,33 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	@Override
 	public void retrieveAssets() {
 		for (String key : modelCache.keySet()) {
-			if(modelCache.get(key).refCounter > 0)
+			if (modelCache.get(key).refCounter > 0)
 				retrieveSource(key);
 		}
 
 		if (currentFrameAnimation != null) {
-			ModelCacheEntry entry = modelCache.get(currentFrameAnimation.source);
+			ModelCacheEntry entry = modelCache
+					.get(currentFrameAnimation.source);
 			currentModel = entry;
-			
+
 			// TODO RESTORE CURRENT ANIMATION STATE
 
-		} else {
+		} else if(initFrameAnimation != null){
 			startFrameAnimation(initFrameAnimation, EngineTween.FROM_FA, 1,
 					null);
-			
-			lookat(modelRotation);
-		}	
-		
+
+			if (currentFrameAnimation != null)
+				lookat(modelRotation);
+		}
+
 		// create STATIC BATCHS if not created yet
 		if (modelBatch == null)
 			createBatchs();
 
 		createEnvirontment();
-		createCamera();
 
-		genShadowMap();
+		if (currentModel != null)
+			genShadowMap();
 
 		if (USE_FBO) {
 			fb = new FrameBuffer(FRAMEBUFFER_FORMAT, width, height, false) {
@@ -635,7 +705,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		currentModel = null;
 		environment = null;
 		shadowEnvironment = null;
-		camera3d = null;
 
 		if (USE_FBO)
 			fb.dispose();

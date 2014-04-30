@@ -31,5 +31,7 @@ public interface SpriteRenderer extends Serializable, AssetConsumer {
 	public void addFrameAnimation(FrameAnimation fa);
 	public void setInitFrameAnimation(String fa);
 	public String getInitFrameAnimation();
+	
+	public String[] getInternalAnimations(String source);
 }
 

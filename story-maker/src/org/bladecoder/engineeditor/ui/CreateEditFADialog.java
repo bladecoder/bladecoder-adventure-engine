@@ -2,14 +2,9 @@ package org.bladecoder.engineeditor.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.Hashtable;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
@@ -31,11 +26,9 @@ import com.badlogic.gdx.backends.lwjgl.LwjglAWTCanvas;
 public class CreateEditFADialog extends CreateEditElementDialog {
 	public static final String INFO = "Define sprites and frame animations";
 	
-	private String atlasesList[] = getSources();
-
 	private InputPanel[] inputs = {
-			new InputPanel("Source", "<html>Select the source where the sprite or animation is defined</html>", atlasesList),
-			new InputPanel("ID", "<html>Select the id of the animation</html>", getAtlasAnimations(atlasesList[0])),
+			new InputPanel("Source", "<html>Select the source where the sprite or animation is defined</html>", new String[0]),
+			new InputPanel("ID", "<html>Select the id of the animation</html>", new String[0]),
 			new InputPanel("Animation type", "<html>Select the type of the animation</html>",
 					SceneDocument.ANIMATION_TYPES),
 			new InputPanel("Speed", "<html>Select the speed of the animation in secods</html>",
@@ -50,17 +43,22 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 							"<html>Select the distance in pixels to add to the actor position when the sprite is changed</html>",
 							Param.Type.VECTOR2, false),					
 			new InputPanel("Sound",
-					"<html>Select the sound ID that will be play when displayed</html>") };
+					"<html>Select the sound ID that will be play when displayed</html>"),
+			new InputPanel("Preload",
+							"<html>Preload the animation when the scene is loaded</html>", Param.Type.BOOLEAN, true, "true", null),
+			new InputPanel("Dispose When Played",
+									"<html>Dispose de animation when the animation is played</html>",Param.Type.BOOLEAN,  true, "false", null)							
+					};
 
 	InputPanel typePanel = inputs[2];
 
 	String attrs[] = { "source", "id", "animation_type", "speed",  "delay", "count", "inD",
 			"outD", "sound", "preload", "disposed_when_played"};
 	
-	FACanvas faCanvas = new FACanvas();
+	FACanvas faCanvas = new FACanvas(this);
 
 	@SuppressWarnings("unchecked")
-	public CreateEditFADialog(java.awt.Frame parentWindow, BaseDocument doc, Element parent, Element e) {
+	public CreateEditFADialog(java.awt.Frame parentWindow, BaseDocument doc, Element p, Element e) {
 		super(parentWindow);
 
 		setInfo(INFO);
@@ -84,16 +82,9 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 		((JComboBox<String>) inputs[0].getField()).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String atlas = (String) inputs[0].getText();
-				JComboBox<String> cb = (JComboBox<String>) inputs[1].getField();
-				cb.removeAllItems();
-				String[] ids = getAtlasAnimations(atlas);
+				EditorLogger.debug("CreateEditFADialog.setSource():" +  inputs[0].getText());
 				
-				for(String s:ids)
-					cb.addItem(s);
-				
-				
-				setCanvasFA();
+				faCanvas.setSource(parent.getAttribute("type"), inputs[0].getText());
 			}
 		});
 		
@@ -115,7 +106,7 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 		inputs[5].setVisible(false);
 
 
-		init(inputs, attrs, doc, parent, "frame_animation", e);
+		init(inputs, attrs, doc, p, "frame_animation", e);
 		
 		LwjglAWTCanvas canvas = new LwjglAWTCanvas(faCanvas);
 		try{
@@ -123,75 +114,45 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 		} catch(Exception ex) {
 			EditorLogger.error("ERROR ADDING LIBGDX/OPENGL CANVAS");
 		}
+		
+		addSources();
 	}
 	
 	private void setCanvasFA() {
-		String atlas = inputs[0].getText();
 		String id = inputs[1].getText();
 		String type = typePanel.getText();
 		String speed =  inputs[3].getText();
 		
-		faCanvas.setFrameAnimation(atlas, id, speed, type);		
+		faCanvas.setFrameAnimation(id, speed, type);		
 	}
 	
-	
-	private String[] getSpineAnimations(String source) {
-		String s[] = null;
+	public void fillAnimations(String []ids) {
+		EditorLogger.debug("CreateEditFADialog.fillAnimations()");
 		
-		return s;
-	}
-	
-	private String[] getModel3dAnimations(String source) {
-		String s[] = null;
+		@SuppressWarnings("unchecked")
+		JComboBox<String> cb = (JComboBox<String>) inputs[1].getField();
+		cb.removeAllItems();
 		
-		return s;
-	}
-
-	
-	private String[] getAtlasAnimations(String atlas) {
-		String atlas_path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
-				+ Ctx.project.getResDir() + "/" + atlas + ".atlas";
+		for(String s:ids)
+			cb.addItem(s);
 		
-		FileInputStream fstream;
-		BufferedReader br = null;
-		Hashtable<String,String> list = null; // Hashtable to avoid duplicates
 		
-		try {
-			fstream = new FileInputStream(atlas_path);
-			br = new BufferedReader(new InputStreamReader(fstream));
-			
-			list = new Hashtable<String,String>();
-			
-			String strLine;
-
-			br.readLine();
-			br.readLine();
-			while ((strLine = br.readLine()) != null)   {
-				if(!strLine.endsWith(".png") && strLine.length() > 0 && !(strLine.charAt(0) == ' ') && !(strLine.contains(":") )) {
-					list.put(strLine, strLine);
-				}
-			}			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if(br!=null)
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		}		
-		
-		if(list == null) return new String[0];
-		
-		String s[] = list.values().toArray(new String[0]);
-		
-		Arrays.sort(s);
-		
-		return s;
+		setCanvasFA();
 	}
 	
 	String ext;
+
+	private void addSources() {
+		@SuppressWarnings("unchecked")
+		JComboBox<String> cb = (JComboBox<String>) inputs[0].getField();
+		cb.removeAllItems();
+		String[] src = getSources();
+		
+		for(String s:src)
+			cb.addItem(s);
+
+	}
+	
 	
 	private String[] getSources() {
 		String path = null;

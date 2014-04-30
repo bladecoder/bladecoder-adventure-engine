@@ -45,7 +45,7 @@ public abstract class CreateEditElementDialog extends EditDialog {
 				
 			setTitle(MessageFormat.format("EDIT ELEMENT ''{0}''", s));
 			
-			for (int pos = 0; pos < attrs.length; pos++) {
+			for (int pos = 0; pos < attrs.length; pos++) {			
 				InputPanel i = inputs[pos];
 				i.setText(e.getAttribute(attrs[pos]));
 			}

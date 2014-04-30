@@ -9,6 +9,7 @@ import javax.xml.transform.TransformerException;
 import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.EngineTween;
+import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
@@ -36,7 +37,8 @@ public class SceneDocument extends BaseDocument {
 	public static final String FOREGROUND_ACTOR_TYPE = "foreground";
 
 	public static final String ACTOR_TYPES[] = { BACKGROUND_ACTOR_TYPE,
-			ATLAS_ACTOR_TYPE, SPINE_ACTOR_TYPE, SPRITE3D_ACTOR_TYPE, FOREGROUND_ACTOR_TYPE };
+			ATLAS_ACTOR_TYPE, SPINE_ACTOR_TYPE, SPRITE3D_ACTOR_TYPE,
+			FOREGROUND_ACTOR_TYPE };
 
 	public static final String ANIMATION_TYPES[] = { "no_repeat", "repeat",
 			"yoyo", "reverse" };
@@ -344,13 +346,13 @@ public class SceneDocument extends BaseDocument {
 
 		if (type.equals(ATLAS_ACTOR_TYPE) || type.equals(FOREGROUND_ACTOR_TYPE)) {
 			a = new SpriteActor();
-			((SpriteActor)a).setRenderer(new SpriteAtlasRenderer());
+			((SpriteActor) a).setRenderer(new SpriteAtlasRenderer());
 		} else if (type.equals(SPRITE3D_ACTOR_TYPE)) {
 			a = new SpriteActor();
-			((SpriteActor)a).setRenderer(new Sprite3DRenderer());
+			((SpriteActor) a).setRenderer(new Sprite3DRenderer());
 		} else if (type.equals(SPINE_ACTOR_TYPE)) {
 			a = new SpriteActor();
-			((SpriteActor)a).setRenderer(new SpriteSpineRenderer());			
+			((SpriteActor) a).setRenderer(new SpriteSpineRenderer());
 		} else if (type.equals(BACKGROUND_ACTOR_TYPE)) {
 			a = new Actor();
 		} else {
@@ -364,19 +366,19 @@ public class SceneDocument extends BaseDocument {
 		a.setDesc(e.getAttribute("desc"));
 
 		if (a instanceof SpriteActor) {
-			SpriteRenderer r = ((SpriteActor)a).getRenderer();
-			
-			if (r instanceof SpriteAtlasRenderer) {
-				NodeList faList = getFrameAnimations(e);
+			SpriteRenderer r = ((SpriteActor) a).getRenderer();
 
-				for (int i = 0; i < faList.getLength(); i++) {
-					Element faElement = (Element) faList.item(i);
+			NodeList faList = getFrameAnimations(e);
 
-					AtlasFrameAnimation fa = getEngineFA(faElement);
+			for (int i = 0; i < faList.getLength(); i++) {
+				Element faElement = (Element) faList.item(i);
 
-					((SpriteAtlasRenderer) r).addFrameAnimation(fa);
-				}
-			} else {
+				FrameAnimation fa = getEngineFA(type, faElement);
+
+				r.addFrameAnimation(fa);
+			}
+
+			if (r instanceof Sprite3DRenderer) {
 				Sprite3DRenderer a3d = (Sprite3DRenderer) r;
 				a3d.setSpriteSize(Param.parseVector2(e
 						.getAttribute("sprite_size")));
@@ -386,8 +388,8 @@ public class SceneDocument extends BaseDocument {
 			((SpriteActor) a).setPosition(pos.x, pos.y);
 
 			if (!e.getAttribute("init_frame_animation").isEmpty()) {
-				((SpriteActor) a).getRenderer().setInitFrameAnimation(e
-						.getAttribute("init_frame_animation"));
+				((SpriteActor) a).getRenderer().setInitFrameAnimation(
+						e.getAttribute("init_frame_animation"));
 
 			}
 
@@ -406,9 +408,15 @@ public class SceneDocument extends BaseDocument {
 		return a;
 	}
 
-	public AtlasFrameAnimation getEngineFA(Element faElement) {
+	public FrameAnimation getEngineFA(String type, Element faElement) {
+		FrameAnimation fa;
 
-		AtlasFrameAnimation fa = new AtlasFrameAnimation();
+		if(type.equals(ATLAS_ACTOR_TYPE)||type.equals(FOREGROUND_ACTOR_TYPE)) {
+			fa = new AtlasFrameAnimation();	
+		} else {
+			fa = new FrameAnimation();
+		}
+			
 		fa.id = faElement.getAttribute("id");
 		fa.source = faElement.getAttribute("source");
 
@@ -443,6 +451,14 @@ public class SceneDocument extends BaseDocument {
 
 		if (!faElement.getAttribute("outD").isEmpty()) {
 			fa.outD = Param.parseVector2(faElement.getAttribute("outD"));
+		}
+		
+		if (!faElement.getAttribute("preload").isEmpty()) {
+			fa.outD = Param.parseVector2(faElement.getAttribute("preload"));
+		}
+		
+		if (!faElement.getAttribute("dispose_when_played").isEmpty()) {
+			fa.outD = Param.parseVector2(faElement.getAttribute("dispose_when_played"));
 		}
 
 		// LOAD THE FA ATLAS AND REGIONS

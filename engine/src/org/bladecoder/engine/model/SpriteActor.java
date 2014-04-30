@@ -152,35 +152,41 @@ public class SpriteActor extends Actor {
 
 	public void startFrameAnimation(String id, int repeatType, int count,
 			ActionCallback cb) {
-		
+
 		FrameAnimation fa = renderer.getCurrentFrameAnimation();
 
-		if (fa.sound != null) {
-			stopSound(fa.sound);
-		}
+		if (fa != null) {
 
-		Vector2 outD = fa.outD;
+			if (fa.sound != null) {
+				stopSound(fa.sound);
+			}
 
-		if (outD != null) {
-			float s = EngineAssetManager.getInstance().getScale();
+			Vector2 outD = fa.outD;
 
-			pos.x += outD.x * s;
-			pos.y += outD.y * s;
+			if (outD != null) {
+				float s = EngineAssetManager.getInstance().getScale();
+
+				pos.x += outD.x * s;
+				pos.y += outD.y * s;
+			}
 		}
 
 		renderer.startFrameAnimation(id, repeatType, count, cb);
 
 		fa = renderer.getCurrentFrameAnimation();
-		if (fa.sound != null) {
-			playSound(fa.sound);
-		}
 
-		Vector2 inD = fa.inD;
+		if (fa != null) {
+			if (fa.sound != null) {
+				playSound(fa.sound);
+			}
 
-		if (inD != null) {
-			float s = EngineAssetManager.getInstance().getScale();
-			pos.x += inD.x * s;
-			pos.y += inD.y * s;
+			Vector2 inD = fa.inD;
+
+			if (inD != null) {
+				float s = EngineAssetManager.getInstance().getScale();
+				pos.x += inD.x * s;
+				pos.y += inD.y * s;
+			}
 		}
 	}
 
@@ -303,7 +309,6 @@ public class SpriteActor extends Actor {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
-
 
 		scale = json.readValue("scale", Float.class, jsonData);
 		pos = json.readValue("pos", Vector2.class, jsonData);

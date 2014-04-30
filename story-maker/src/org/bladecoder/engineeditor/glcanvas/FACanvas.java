@@ -1,47 +1,58 @@
 package org.bladecoder.engineeditor.glcanvas;
 
-import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
-import org.bladecoder.engine.assets.EngineAssetManager;
+import org.bladecoder.engine.anim.EngineTween;
+import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.model.Sprite3DRenderer;
+import org.bladecoder.engine.model.SpriteAtlasRenderer;
+import org.bladecoder.engine.model.SpriteRenderer;
+import org.bladecoder.engine.model.SpriteSpineRenderer;
+import org.bladecoder.engineeditor.model.SceneDocument;
+import org.bladecoder.engineeditor.ui.CreateEditFADialog;
 
 import aurelienribon.tweenengine.Tween;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 public class FACanvas extends ApplicationAdapter {
 	private OrthographicCamera screenCamera;
 	private SpriteBatch batch;
-	private AtlasFARenderer faRenderer;
+	private String source;
+	private FrameAnimation fa;
+	private String type;
+	private SpriteRenderer renderer;
+	CreateEditFADialog createEditFADialog;
 	
-	AtlasFrameAnimation fa;
-	TextureAtlas ta;
+	private boolean sourceChanged = false;
+	private boolean faChanged = false;
+	
+
+	public FACanvas(CreateEditFADialog createEditFADialog) {
+		this.createEditFADialog = createEditFADialog;
+	}
 
 	@Override
 	public void create() {
-//		Assets.inst().initialize();
-//		Tween.registerAccessor(Sprite.class, new SpriteAccessor());
-
 		screenCamera = new OrthographicCamera();
 
 		batch = new SpriteBatch();
-		faRenderer = new AtlasFARenderer();
 	}
 	
-	public void setSource() {
-		
+	public void setSource(String type, String source) {
+		this.source = source;
+		this.type = type;
+		this.sourceChanged = true;
 	}
 	
-	public String[] getAnimations() {
-		return null;
-	}
-
-	public void setFrameAnimation(String atlas, String id, String speedStr, String typeStr) {
-		if (atlas!=null && id != null && !atlas.isEmpty() && !id.isEmpty()) {
+	public void setFrameAnimation(String id, String speedStr, String typeStr) {
+		if (source!=null && id != null && !source.isEmpty() && !id.isEmpty()) {
+			faChanged = true;
+			
 			int type = EngineTween.REPEAT;
 			float speed = 2.0f;
 			
@@ -49,39 +60,73 @@ public class FACanvas extends ApplicationAdapter {
 				speed = Float.parseFloat(speedStr);
 			
 			if(typeStr.equals("yoyo"))
-				type = EngineTween.YOYO;			
+				type = EngineTween.YOYO;
 			
-			fa = new AtlasFrameAnimation();
-			fa.set(id, atlas, speed, 0.0f, Tween.INFINITY, type,
-					null, null, null, true, false);
+			if(renderer instanceof SpriteAtlasRenderer)
+				fa = new AtlasFrameAnimation();
+			else 
+				fa = new FrameAnimation();
+			
+			fa.set(id, source, speed, 0.0f, Tween.INFINITY, type,
+					null, null, null, true, false);			
 		}
 	}
 	
-	public void setFrameAnimationInternal() {
-		if (fa != null) {
-			if(ta != null)
-				ta.dispose();
+	private void testSourceChanged() {
+		if(sourceChanged) {
+			sourceChanged = false;
 			
-			ta = new TextureAtlas(EngineAssetManager.getInstance().getResAsset("atlases/" + fa.source + ".atlas"));
+			if(renderer != null) {
+				renderer.dispose();
+				renderer = null;
+			}
 			
-			fa.regions =  ta.findRegions(fa.id);
-			faRenderer.setFrameAnimation(fa);
-			fa = null;
+			
+			if(type.equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
+				renderer = new Sprite3DRenderer();
+			} else if(type.equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
+				renderer = new SpriteSpineRenderer();
+			} else {
+				renderer = new SpriteAtlasRenderer();
+			}
+			
+			createEditFADialog.fillAnimations(renderer.getInternalAnimations(source));			
+		}		
+	}
+	
+	private void testFaChanged() {
+		if(faChanged) {
+			faChanged = false;
+			
+			renderer.addFrameAnimation(fa);
+			
+			renderer.retrieveAssets();
+			
+			renderer.startFrameAnimation(fa.id, EngineTween.FROM_FA, 1, null);			
 		}
 	}
 
 	@Override
 	public void render() {
-		setFrameAnimationInternal();
-
+		testSourceChanged();
+		testFaChanged();
+		
+		if(renderer == null)
+			return;
+		
+		renderer.update(Gdx.graphics.getDeltaTime());
+		
 		GL20 gl = Gdx.gl20;
-		gl.glClearColor(.5f, .5f, .5f, 1);
+		gl.glClearColor(Color.MAGENTA.r, Color.MAGENTA.g, Color.MAGENTA.b, 1);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		float scalew =   Gdx.graphics.getWidth() /  renderer.getWidth();
+		float scaleh =   Gdx.graphics.getHeight() /  renderer.getHeight();
 
 		// SCREEN CAMERA
 		batch.setProjectionMatrix(screenCamera.combined);
 		batch.begin();
-		faRenderer.draw(batch);
+		renderer.draw(batch, 0f, 0f, 0f, 0f, scalew>scaleh?scaleh:scalew);
 		batch.end();
 	}
 
@@ -105,6 +150,6 @@ public class FACanvas extends ApplicationAdapter {
 	
 	@Override
 	public void dispose() {
-		ta.dispose();
+		renderer.dispose();
 	}
 }

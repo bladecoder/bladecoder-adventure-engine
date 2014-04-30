@@ -13,8 +13,10 @@ import org.bladecoder.engine.util.EngineLogger;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.spine.Animation;
 import com.esotericsoftware.spine.AnimationState;
 import com.esotericsoftware.spine.AnimationState.AnimationStateListener;
 import com.esotericsoftware.spine.AnimationStateData;
@@ -119,6 +121,21 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 	public String getInitFrameAnimation() {
 		return initFrameAnimation;
 	}
+	
+	@Override
+	public String[] getInternalAnimations(String source) {
+		retrieveSource(source);
+		
+		Array<Animation> animations = skeletonCache.get(source).skeleton.getData().getAnimations();
+		String[] result = new String[animations.size];
+		
+		for(int i = 0; i< animations.size; i++) {
+			Animation a = animations.get(i);
+			result[i] = a.getName();
+		}
+		
+		return result;
+	}	
 
 	@Override
 	public void update(float delta) {
@@ -209,7 +226,7 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 
 		animationCb = cb;
 
-		// If the atlas is not loaded. Load it.
+		// If the source is not loaded. Load it.
 		if (currentFrameAnimation != null
 				&& currentSkeleton.refCounter < 1) {
 			loadSource(fa.source);
@@ -296,12 +313,13 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 	private void retrieveSource(String source) {
 		SkeletonCacheEntry entry = skeletonCache.get(source);
 		
-		if(entry.refCounter < 1) {
+		if(entry == null || entry.refCounter < 1) {
 			loadSource(source);
 			EngineAssetManager.getInstance().getManager().finishLoading();
+			entry = skeletonCache.get(source);
 		}
 
-		if (entry.refCounter > 0) {
+		if (entry.skeleton == null) {
 			TextureAtlas atlas = EngineAssetManager.getInstance()
 					.getTextureAtlas(source);
 
@@ -362,7 +380,7 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 			
 			// TODO RESTORE CURRENT ANIMATION STATE
 
-		} else {
+		} else if(initFrameAnimation != null){
 			startFrameAnimation(initFrameAnimation, EngineTween.FROM_FA, 1,
 					null);
 		}
