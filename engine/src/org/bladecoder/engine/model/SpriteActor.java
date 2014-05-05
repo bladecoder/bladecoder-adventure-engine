@@ -140,9 +140,7 @@ public class SpriteActor extends Actor {
 
 	public void draw(SpriteBatch batch) {
 		if (isVisible()) {
-			float x = pos.x - renderer.getWidth() / 2 * scale;
-
-			renderer.draw(batch, x, pos.y, 0, 0, scale);
+			renderer.draw(batch, pos.x, pos.y, 0, 0, scale);
 		}
 	}
 

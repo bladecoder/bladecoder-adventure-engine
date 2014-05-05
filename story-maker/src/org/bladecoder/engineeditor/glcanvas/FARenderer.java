@@ -1,20 +1,23 @@
 package org.bladecoder.engineeditor.glcanvas;
 
-import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.EngineTween;
+import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Sprite3DRenderer;
+import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteAtlasRenderer;
 import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.model.SpriteSpineRenderer;
 import org.bladecoder.engine.util.RectangleRenderer;
-import org.bladecoder.engineeditor.model.SceneDocument;
+import org.bladecoder.engineeditor.utils.EditorLogger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
 /**
- * Frame Animation renderer. 
+ * Frame Animation renderer.
  * 
  * @author rgarcia
  */
@@ -23,28 +26,36 @@ public class FARenderer {
 	public static final Color BG_COLOR = Color.MAGENTA;
 	private static final float HEIGHT = 200;
 
-	AtlasFrameAnimation currentFrameAnimation;
+	FrameAnimation currentFrameAnimation;
 	private SpriteRenderer renderer;
 
-	public void setType(String type) {
+	public void setActor(Actor a) {
 		if (renderer != null) {
 			renderer.dispose();
 			renderer = null;
 		}
 
-		if (type.equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
-			renderer = new Sprite3DRenderer();
-		} else if (type.equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
-			renderer = new SpriteSpineRenderer();
-		} else {
-			renderer = new SpriteAtlasRenderer();
+		if (a instanceof SpriteActor) {
+			SpriteRenderer r = ((SpriteActor) a).getRenderer();
+
+			if (r instanceof Sprite3DRenderer) {
+				renderer = new Sprite3DRenderer();
+				((Sprite3DRenderer)renderer).setSpriteSize(new Vector2( r.getWidth(), r.getHeight()));
+			} else if (r instanceof SpriteSpineRenderer) {
+				renderer = new SpriteSpineRenderer();
+			} else {
+				renderer = new SpriteAtlasRenderer();
+			}
 		}
 	}
 
-	public void setFrameAnimation(AtlasFrameAnimation fa) {
+	public void setFrameAnimation(FrameAnimation fa) {
+		currentFrameAnimation = fa;
 
-		if (renderer != null) {
+		if (renderer != null && fa != null) {
 
+			renderer.getFrameAnimations().clear();
+			
 			renderer.addFrameAnimation(fa);
 
 			renderer.retrieveAssets();
@@ -54,26 +65,28 @@ public class FARenderer {
 	}
 
 	public void draw(SpriteBatch batch) {
-		if (currentFrameAnimation == null)
-			return;
+		if (renderer != null && currentFrameAnimation != null) {
 
-		if (currentFrameAnimation.regions == null) {
-			RectangleRenderer.draw(batch, 0, 0, 100, 100, Color.RED);
-			return;
+			float screenWidth = Gdx.graphics.getWidth();
+			float screenHeight = Gdx.graphics.getHeight();
+
+			float width = HEIGHT / renderer.getHeight() * renderer.getWidth();
+
+			RectangleRenderer.draw(batch, screenWidth - width - 5, screenHeight
+					- HEIGHT - 55, width + 10, HEIGHT + 10, Color.BLACK);
+			RectangleRenderer.draw(batch, screenWidth - width, screenHeight
+					- HEIGHT - 50, width, HEIGHT, BG_COLOR);
+
+			float scaleh = width / renderer.getWidth();
+			renderer.draw(batch, screenWidth - width/2, screenHeight - HEIGHT
+					- 50, 0, 0, scaleh);
 		}
+	}
 
-		float screenWidth = Gdx.graphics.getWidth();
-		float screenHeight = Gdx.graphics.getHeight();
-
-		float width = HEIGHT / renderer.getHeight() * renderer.getWidth();
-
-		RectangleRenderer.draw(batch, screenWidth - width - 5, screenHeight
-				- HEIGHT - 55, width + 10, HEIGHT + 10, Color.BLACK);
-		RectangleRenderer.draw(batch, screenWidth - width, screenHeight
-				- HEIGHT - 50, width, HEIGHT, BG_COLOR);
-		
-		float scaleh =   Gdx.graphics.getHeight() /  renderer.getHeight();
-		renderer.draw(batch, screenWidth - width, screenHeight - HEIGHT - 50, 0, 0, scaleh);
+	public void update(float delta) {
+		if (renderer != null && currentFrameAnimation != null) {
+			renderer.update(delta);
+		}
 	}
 
 }

@@ -123,7 +123,12 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 		String type = typePanel.getText();
 		String speed =  inputs[3].getText();
 		
-		faCanvas.setFrameAnimation(id, speed, type);		
+		@SuppressWarnings("unchecked")
+		JComboBox<String> cb = (JComboBox<String>) inputs[1].getField();
+
+		
+		if (e != null || cb.getSelectedIndex() != 0)
+			faCanvas.setFrameAnimation(id, speed, type);		
 	}
 	
 	public void fillAnimations(String []ids) {
@@ -132,6 +137,10 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 		@SuppressWarnings("unchecked")
 		JComboBox<String> cb = (JComboBox<String>) inputs[1].getField();
 		cb.removeAllItems();
+		
+		// When creating, give option to add all elements
+		if(e == null)
+			cb.addItem("<ADD ALL>");
 		
 		for(String s:ids)
 			cb.addItem(s);
@@ -167,7 +176,7 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 			ext = ".g3db";
 		} else if(type.equals(SceneDocument.SPINE_ACTOR_TYPE)) {
 			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
-			ext = ".spine";
+			ext = ".json";
 		}
 			
 
@@ -190,6 +199,28 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 			sources[i] = sources[i].substring(0, sources[i].length() - ext.length());
 
 		return sources;
+	}
+	
+	/**
+	 * Override to append all animations if selected.
+	 */
+	@Override
+	protected void ok() {
+		@SuppressWarnings("unchecked")
+		JComboBox<String> cb = (JComboBox<String>) inputs[1].getField();
+
+		
+		if (e == null && cb.getSelectedIndex() == 0) {
+			for(int i = 1; i<cb.getItemCount(); i++) {
+				create();
+				fill();
+				doc.setId(e, cb.getItemAt(i));
+			}
+			
+			dispose();
+		} else {
+			super.ok();
+		}
 	}
 
 }

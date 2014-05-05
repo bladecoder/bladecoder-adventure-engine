@@ -1,5 +1,7 @@
 package org.bladecoder.engine.model;
 
+import java.util.HashMap;
+
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.assets.AssetConsumer;
@@ -33,5 +35,6 @@ public interface SpriteRenderer extends Serializable, AssetConsumer {
 	public String getInitFrameAnimation();
 	
 	public String[] getInternalAnimations(String source);
+	public HashMap<String, FrameAnimation> getFrameAnimations();
 }
 

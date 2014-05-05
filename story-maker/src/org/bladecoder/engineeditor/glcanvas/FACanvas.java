@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
 public class FACanvas extends ApplicationAdapter {
 	private OrthographicCamera screenCamera;
@@ -68,7 +69,7 @@ public class FACanvas extends ApplicationAdapter {
 				fa = new FrameAnimation();
 			
 			fa.set(id, source, speed, 0.0f, Tween.INFINITY, type,
-					null, null, null, true, false);			
+					null, null, null, false, true);			
 		}
 	}
 	
@@ -84,7 +85,8 @@ public class FACanvas extends ApplicationAdapter {
 			
 			if(type.equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
 				renderer = new Sprite3DRenderer();
-			} else if(type.equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
+				((Sprite3DRenderer)renderer).setSpriteSize(new Vector2( Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+			} else if(type.equals(SceneDocument.SPINE_ACTOR_TYPE)) {
 				renderer = new SpriteSpineRenderer();
 			} else {
 				renderer = new SpriteAtlasRenderer();
@@ -100,9 +102,7 @@ public class FACanvas extends ApplicationAdapter {
 			
 			renderer.addFrameAnimation(fa);
 			
-			renderer.retrieveAssets();
-			
-			renderer.startFrameAnimation(fa.id, EngineTween.FROM_FA, 1, null);			
+			renderer.startFrameAnimation(fa.id, EngineTween.FROM_FA, 1, null);	
 		}
 	}
 
@@ -111,7 +111,7 @@ public class FACanvas extends ApplicationAdapter {
 		testSourceChanged();
 		testFaChanged();
 		
-		if(renderer == null)
+		if(renderer == null || renderer.getCurrentFrameAnimation() == null)
 			return;
 		
 		renderer.update(Gdx.graphics.getDeltaTime());
@@ -122,11 +122,12 @@ public class FACanvas extends ApplicationAdapter {
 		
 		float scalew =   Gdx.graphics.getWidth() /  renderer.getWidth();
 		float scaleh =   Gdx.graphics.getHeight() /  renderer.getHeight();
+		float scale = scalew>scaleh?scaleh:scalew;
 
 		// SCREEN CAMERA
 		batch.setProjectionMatrix(screenCamera.combined);
 		batch.begin();
-		renderer.draw(batch, 0f, 0f, 0f, 0f, scalew>scaleh?scaleh:scalew);
+		renderer.draw(batch, renderer.getWidth() * scale /2, 0f, 0f, 0f, scale);
 		batch.end();
 	}
 

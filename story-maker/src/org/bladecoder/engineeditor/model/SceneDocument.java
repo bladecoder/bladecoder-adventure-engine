@@ -349,7 +349,11 @@ public class SceneDocument extends BaseDocument {
 			((SpriteActor) a).setRenderer(new SpriteAtlasRenderer());
 		} else if (type.equals(SPRITE3D_ACTOR_TYPE)) {
 			a = new SpriteActor();
-			((SpriteActor) a).setRenderer(new Sprite3DRenderer());
+			Sprite3DRenderer r = new Sprite3DRenderer();
+			((SpriteActor) a).setRenderer(r);
+			r.setSpriteSize(Param.parseVector2(e
+					.getAttribute("sprite_size")));
+			
 		} else if (type.equals(SPINE_ACTOR_TYPE)) {
 			a = new SpriteActor();
 			((SpriteActor) a).setRenderer(new SpriteSpineRenderer());
@@ -376,12 +380,6 @@ public class SceneDocument extends BaseDocument {
 				FrameAnimation fa = getEngineFA(type, faElement);
 
 				r.addFrameAnimation(fa);
-			}
-
-			if (r instanceof Sprite3DRenderer) {
-				Sprite3DRenderer a3d = (Sprite3DRenderer) r;
-				a3d.setSpriteSize(Param.parseVector2(e
-						.getAttribute("sprite_size")));
 			}
 
 			Vector2 pos = getPos(e);

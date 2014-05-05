@@ -10,9 +10,11 @@ import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 import org.bladecoder.engine.util.EngineLogger;
+import org.bladecoder.engine.util.RectangleRenderer;
 import org.bladecoder.engine.util.Utils3D;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -47,7 +49,7 @@ import com.badlogic.gdx.utils.JsonValue;
 
 public class Sprite3DRenderer implements SpriteRenderer {
 
-	public final static boolean USE_FBO = false;
+	public final static boolean USE_FBO = true;
 	private final static int MAX_BONES = 40;
 	private final static Format FRAMEBUFFER_FORMAT = Format.RGBA4444;
 
@@ -71,7 +73,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	private FrameBuffer fb = null;
 
-	private int width, height;
+	private int width=200, height=200;
 
 	private Vector3 cameraPos;
 	private Vector3 cameraRot;
@@ -115,6 +117,11 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			initFrameAnimation = fa.id;
 
 		fanims.put(fa.id, fa);
+	}
+	
+	@Override
+	public HashMap<String, FrameAnimation> getFrameAnimations() {
+		return fanims;
 	}
 
 	@Override
@@ -310,6 +317,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	// return modelInstance.animations;
 	// }
 
+	@Override
 	public void startFrameAnimation(String id, int repeatType, int count,
 			ActionCallback cb) {
 		FrameAnimation fa = fanims.get(id);
@@ -328,12 +336,21 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		currentModel = modelCache.get(fa.source);
 		animationCb = cb;
 
-		// If the source is not loaded. Load it.
-		if (currentModel != null && currentModel.refCounter < 1) {
+		if (currentModel == null || currentModel.refCounter < 1) {
+			// If the source is not loaded. Load it.
 			loadSource(fa.source);
 			EngineAssetManager.getInstance().getManager().finishLoading();
 
 			retrieveSource(fa.source);
+			
+			currentModel = modelCache.get(fa.source);
+			
+			if(currentModel == null) {
+				EngineLogger.error("Could not load FrameAnimation: " + id);
+				currentFrameAnimation = null;
+
+				return;				
+			}
 		}
 
 		if (repeatType == EngineTween.FROM_FA) {
@@ -417,7 +434,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		lookat(angle);
 	}
 
-	public void lookat(float angle) {
+	private void lookat(float angle) {
 		currentModel.modelInstance.transform.setToRotation(Vector3.Y, angle);
 		modelRotation = angle;
 	}
@@ -459,6 +476,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		this.height = (int) size.y;
 	}
 
+	@Override
 	public void update(float delta) {
 
 		if (currentModel != null && currentModel.controller.current != null
@@ -486,6 +504,9 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float originX,
 			float originY, float scale) {
+		
+		x = x - getWidth() / 2 * scale;
+		
 		if (USE_FBO) {
 			batch.draw(tex, x, y, originX, originY, width, height, scale,
 					scale, 0);
@@ -677,7 +698,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			genShadowMap();
 
 		if (USE_FBO) {
-			fb = new FrameBuffer(FRAMEBUFFER_FORMAT, width, height, false) {
+			fb = new FrameBuffer(FRAMEBUFFER_FORMAT, width, height, true) {
 				@Override
 				protected void setupTexture() {
 					colorTexture = new Texture(width, height, format);

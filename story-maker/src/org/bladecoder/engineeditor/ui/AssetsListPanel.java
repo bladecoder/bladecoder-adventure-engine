@@ -44,7 +44,7 @@ import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resoluti
 @SuppressWarnings("serial")
 public class AssetsListPanel extends javax.swing.JPanel {
 	private static final String[] ASSET_TYPES = { "3d models", "backgrounds", "bg maps",
-			"atlases", "music", "sounds", "overlays" };
+			"atlases", "music", "sounds", "overlays", "spine" };
 
 	private EditToolbar editToolbar;
 	private JComboBox<String> assetTypes;
@@ -191,7 +191,9 @@ public class AssetsListPanel extends javax.swing.JPanel {
 		} else if (type.equals("overlays")) {
 			dir = Ctx.project.getProjectPath() + "/" + Project.OVERLAYS_PATH;
 		} else if (type.equals("3d models")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.SPRITE3D_PATH;			
+			dir = Ctx.project.getProjectPath() + "/" + Project.SPRITE3D_PATH;
+		} else if (type.equals("spine")) {
+			dir = Ctx.project.getProjectPath() + "/" + Project.SPINE_PATH;			
 		} else {
 			dir = Ctx.project.getProjectPath() + Project.ASSETS_PATH;
 		}

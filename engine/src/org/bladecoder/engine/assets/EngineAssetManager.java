@@ -107,9 +107,10 @@ public class EngineAssetManager {
 	/**
 	 * Creates a EngineAssetManager instance for edition. That is:
 	 * 
-	 * - Puts a PathResolver to locate the assets throws a absolute path - If
-	 * reswidth > 0 puts reswidth as fixed resolution: - For testmode reswidth =
-	 * 0 - For editmode reswidth = max resolution found
+	 * - Puts a PathResolver to locate the assets through an absolute path 
+	 * - If reswidth > 0 puts reswidth as fixed resolution: 
+	 * - For testmode reswidth = 0 
+	 * - For editmode reswidth = max resolution found
 	 * 
 	 * @param base
 	 * @param resWidth

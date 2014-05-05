@@ -22,14 +22,9 @@ import org.w3c.dom.Node;
 public class FAListPanel extends ElementListPanel {
 	
 	private JButton initBtn;
-	private JButton addAllBtn;
 	
 	public FAListPanel() {
 		super(true);
-		
-		addAllBtn = new JButton();
-		editToolbar.addToolBarButton(addAllBtn, "/res/images/ic_create_all.png", "Add sprites", "Add all sprites from atlas");
-		addAllBtn.setEnabled(true);
 		
 		initBtn = new JButton();
 		editToolbar.addToolBarButton(initBtn, "/res/images/ic_check.png", "Set init scene", "Set init scene");
@@ -58,18 +53,6 @@ public class FAListPanel extends ElementListPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setDefault();
-			}
-		});
-		
-		addAllBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				AddAllFAFromAtlasDialog d = new AddAllFAFromAtlasDialog(Ctx.window, doc, parent);
-				d.setVisible(true);
-				
-				if(!d.isCancel()) {
-					addElements(doc, parent, "frame_animation");
-				}
 			}
 		});
 	}

@@ -9,7 +9,9 @@ import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 import org.bladecoder.engine.util.EngineLogger;
+import org.bladecoder.engine.util.RectangleRenderer;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -34,10 +36,10 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 	/** Starts this anim the first time that the scene is loaded */
 	private String initFrameAnimation;
 	private FrameAnimation currentFrameAnimation;
-	
+
 	private ActionCallback animationCb = null;
 	private String animationCbSer = null;
-	
+
 	private int currentCount;
 	private int currentAnimationType;
 
@@ -55,14 +57,14 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 		Skeleton skeleton;
 		AnimationState animation;
 	}
-	
+
 	private AnimationStateListener animationListener = new AnimationStateListener() {
 		@Override
 		public void complete(int trackIndex, int loopCount) {
-			if(currentCount >= loopCount) {
-				// TODO Manage loopCount				
+			if (currentCount >= loopCount) {
+				// TODO Manage loopCount
 			}
-			
+
 			if (animationCb != null || animationCbSer != null) {
 
 				if (animationCb == null) {
@@ -73,7 +75,7 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 
 				ActionCallbackQueue.add(animationCb);
 				animationCb = null;
-			}			
+			}
 		}
 
 		@Override
@@ -86,8 +88,13 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 
 		@Override
 		public void start(int arg0) {
-		}		
+		}
 	};
+
+	@Override
+	public HashMap<String, FrameAnimation> getFrameAnimations() {
+		return fanims;
+	}
 
 	@Override
 	public void addFrameAnimation(FrameAnimation fa) {
@@ -121,40 +128,48 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 	public String getInitFrameAnimation() {
 		return initFrameAnimation;
 	}
-	
+
 	@Override
 	public String[] getInternalAnimations(String source) {
 		retrieveSource(source);
-		
-		Array<Animation> animations = skeletonCache.get(source).skeleton.getData().getAnimations();
+
+		Array<Animation> animations = skeletonCache.get(source).skeleton
+				.getData().getAnimations();
 		String[] result = new String[animations.size];
-		
-		for(int i = 0; i< animations.size; i++) {
+
+		for (int i = 0; i < animations.size; i++) {
 			Animation a = animations.get(i);
 			result[i] = a.getName();
 		}
-		
+
 		return result;
-	}	
+	}
 
 	@Override
 	public void update(float delta) {
-		currentSkeleton.animation.update(delta);
+		if (currentSkeleton != null) {
+			currentSkeleton.animation.update(delta);
 
-		currentSkeleton.animation.apply(currentSkeleton.skeleton);
-		currentSkeleton.skeleton.updateWorldTransform();
+			currentSkeleton.animation.apply(currentSkeleton.skeleton);
+			currentSkeleton.skeleton.updateWorldTransform();
 
-		bounds.update(currentSkeleton.skeleton, true);
+			bounds.update(currentSkeleton.skeleton, true);
+		}
 	}
 
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float originX,
 			float originY, float scale) {
 
-		currentSkeleton.skeleton.setX(x);
-		currentSkeleton.skeleton.setY(y);
+		if (currentSkeleton != null) {
+			currentSkeleton.skeleton.setX(x);
+			currentSkeleton.skeleton.setY(y);
 
-		renderer.draw(batch, currentSkeleton.skeleton);
+			renderer.draw(batch, currentSkeleton.skeleton);
+		} else {
+			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight()
+					* scale, Color.RED);
+		}
 	}
 
 	@Override
@@ -203,7 +218,8 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
 		String currentDirection = FrameAnimation.getFrameDirection(p0, pf);
 		StringBuilder sb = new StringBuilder();
-		sb.append(FrameAnimation.WALK_ANIM).append('.').append(currentDirection);
+		sb.append(FrameAnimation.WALK_ANIM).append('.')
+				.append(currentDirection);
 		startFrameAnimation(sb.toString(), EngineTween.FROM_FA, 1, null);
 	}
 
@@ -217,8 +233,9 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 
 			return;
 		}
-		
-		if(currentFrameAnimation != null && currentFrameAnimation.disposeWhenPlayed)
+
+		if (currentFrameAnimation != null
+				&& currentFrameAnimation.disposeWhenPlayed)
 			disposeSource(currentFrameAnimation.source);
 
 		currentFrameAnimation = fa;
@@ -227,12 +244,20 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 		animationCb = cb;
 
 		// If the source is not loaded. Load it.
-		if (currentFrameAnimation != null
-				&& currentSkeleton.refCounter < 1) {
+		if (currentSkeleton == null || currentSkeleton.refCounter < 1) {
 			loadSource(fa.source);
 			EngineAssetManager.getInstance().getManager().finishLoading();
 
 			retrieveSource(fa.source);
+
+			currentSkeleton = skeletonCache.get(fa.source);
+
+			if (currentSkeleton == null) {
+				EngineLogger.error("Could not load FrameAnimation: " + id);
+				currentFrameAnimation = null;
+
+				return;
+			}
 		}
 
 		if (repeatType == EngineTween.FROM_FA) {
@@ -244,9 +269,10 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 		}
 
 		currentSkeleton.skeleton.setFlipX(flipX);
-		currentSkeleton.animation.setAnimation(0, id, currentAnimationType == EngineTween.REPEAT);
+		currentSkeleton.animation.setAnimation(0, id,
+				currentAnimationType == EngineTween.REPEAT);
 	}
-	
+
 	private FrameAnimation getFrameAnimation(String id) {
 		FrameAnimation fa = fanims.get(id);
 		flipX = false;
@@ -294,12 +320,12 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 		}
 
 		return fa;
-	}	
+	}
 
 	private void loadSource(String source) {
 		SkeletonCacheEntry entry = skeletonCache.get(source);
-		
-		if(entry == null) {
+
+		if (entry == null) {
 			entry = new SkeletonCacheEntry();
 			skeletonCache.put(source, entry);
 		}
@@ -312,8 +338,8 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 
 	private void retrieveSource(String source) {
 		SkeletonCacheEntry entry = skeletonCache.get(source);
-		
-		if(entry == null || entry.refCounter < 1) {
+
+		if (entry == null || entry.refCounter < 1) {
 			loadSource(source);
 			EngineAssetManager.getInstance().getManager().finishLoading();
 			entry = skeletonCache.get(source);
@@ -327,18 +353,21 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 			SkeletonData skeletonData = json
 					.readSkeletonData(EngineAssetManager.getInstance()
 							.getSpine(source));
-			
-			entry.skeleton = new Skeleton(skeletonData);	
 
-			AnimationStateData stateData = new AnimationStateData(skeletonData); // Defines mixing between animations.
+			entry.skeleton = new Skeleton(skeletonData);
+
+			AnimationStateData stateData = new AnimationStateData(skeletonData); // Defines
+																					// mixing
+																					// between
+																					// animations.
 			stateData.setDefaultMix(0);
 
-			entry.animation = new AnimationState(stateData);			
+			entry.animation = new AnimationState(stateData);
 			entry.animation.addListener(animationListener);
 		}
 	}
-	
-	public void disposeSource(String source) {
+
+	private void disposeSource(String source) {
 		SkeletonCacheEntry entry = skeletonCache.get(source);
 
 		if (entry.refCounter == 1) {
@@ -370,17 +399,18 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 	@Override
 	public void retrieveAssets() {
 		for (String key : skeletonCache.keySet()) {
-			if(skeletonCache.get(key).refCounter > 0)
+			if (skeletonCache.get(key).refCounter > 0)
 				retrieveSource(key);
 		}
 
 		if (currentFrameAnimation != null) {
-			SkeletonCacheEntry entry = skeletonCache.get(currentFrameAnimation.source);
+			SkeletonCacheEntry entry = skeletonCache
+					.get(currentFrameAnimation.source);
 			currentSkeleton = entry;
-			
+
 			// TODO RESTORE CURRENT ANIMATION STATE
 
-		} else if(initFrameAnimation != null){
+		} else if (initFrameAnimation != null) {
 			startFrameAnimation(initFrameAnimation, EngineTween.FROM_FA, 1,
 					null);
 		}

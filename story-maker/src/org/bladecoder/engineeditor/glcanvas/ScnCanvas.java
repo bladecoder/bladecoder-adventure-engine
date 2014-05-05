@@ -11,9 +11,8 @@ import org.bladecoder.engine.anim.TweenManagerSingleton;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
-import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
-import org.bladecoder.engine.model.SpriteAtlasRenderer;
+import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.ui.UI;
 import org.bladecoder.engine.util.RectangleRenderer;
@@ -44,7 +43,7 @@ public class ScnCanvas extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private BitmapFont font;
 	private CanvasDrawer drawer;
-	private FARenderer faRenderer2;
+	private FARenderer faRenderer;
 	private InputMultiplexer input;
 
 	private Texture backgroundTexture;
@@ -85,7 +84,7 @@ public class ScnCanvas extends ApplicationAdapter {
 
 		batch = new SpriteBatch();
 		font = new BitmapFont();
-		faRenderer2 = new FARenderer();
+		faRenderer = new FARenderer();
 		drawer = new CanvasDrawer();
 
 		showFA = new OnOffComponent();
@@ -256,7 +255,7 @@ public class ScnCanvas extends ApplicationAdapter {
 			selElementActor = null;
 			selFA = null;
 			
-			faRenderer2.setFrameAnimation(prjDoc, null, null);
+			faRenderer.setFrameAnimation(null);
 			
 			resetCameras();
 		} else if (prjDoc != selDoc && msg == null) {
@@ -273,19 +272,17 @@ public class ScnCanvas extends ApplicationAdapter {
 				selectedActor = null;
 			}
 
-			faRenderer2.setFrameAnimation(prjDoc, null, null);
+			faRenderer.setActor(selectedActor);
+			faRenderer.setFrameAnimation(null);
 		}
 
 		if (prjDoc == selDoc && prjActor == selElementActor && prjFA != selFA && msg == null) {
 			selFA = prjFA;
 			
 			if (scn != null && selectedActor != null && selectedActor instanceof SpriteActor) {
-				if(((SpriteActor)selectedActor).getRenderer() instanceof SpriteAtlasRenderer)
-					setSpriteAtlasFA(prjFA);
-				else
-					setSprite3DFA(prjFA);				
+					setSpriteAtlasFA(prjFA);				
 			} else {
-				faRenderer2.setFrameAnimation(prjDoc, null, null);
+				faRenderer.setFrameAnimation(null);
 			}
 		}
 
@@ -299,7 +296,7 @@ public class ScnCanvas extends ApplicationAdapter {
 	}
 	
 	private void setSpriteAtlasFA(String selFA) {
-		SpriteAtlasRenderer s = (SpriteAtlasRenderer) ((SpriteActor)selectedActor).getRenderer();
+		SpriteRenderer s =((SpriteActor)selectedActor).getRenderer();
 
 		if (selFA == null || s.getFrameAnimations().get(selFA) == null) {
 			selFA = ((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation();
@@ -307,7 +304,7 @@ public class ScnCanvas extends ApplicationAdapter {
 
 		if (selFA != null && s.getFrameAnimations().get(selFA) != null) {
 
-			faRenderer2.setFrameAnimation(selDoc, selElementActor, selFA);
+			faRenderer.setFrameAnimation(s.getFrameAnimations().get(selFA));
 
 			if (showFAInScn.getState()
 					|| s.getCurrentFrameAnimation() == null
@@ -315,25 +312,7 @@ public class ScnCanvas extends ApplicationAdapter {
 				((SpriteActor)selectedActor).startFrameAnimation(selFA, EngineTween.REPEAT,Tween.INFINITY, null);
 			}
 		} else {
-			faRenderer2.setFrameAnimation(selDoc, null, null);
-		}
-	}
-	
-	private void setSprite3DFA(String fa) {
-		
-		Sprite3DRenderer s = (Sprite3DRenderer) ((SpriteActor)selectedActor).getRenderer();
-		
-		if (fa == null && ((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation() != null) 
-				fa = ((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation();
-		
-		faRenderer2.setFrameAnimation(selDoc, selElementActor, fa);
-		
-		if (showFAInScn.getState()
-//				|| s.getCurrentFrameAnimation() == null
-				|| ((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation() != null && 
-				((SpriteActor)selectedActor).getRenderer().getInitFrameAnimation().equals(fa)) {
-			s.startFrameAnimation(fa, EngineTween.FROM_FA, -1, null);
-
+			faRenderer.setFrameAnimation(null);
 		}
 	}
 
@@ -404,7 +383,7 @@ public class ScnCanvas extends ApplicationAdapter {
 			// WORLD CAMERA
 			scn.update(Gdx.graphics.getDeltaTime());
 			
-			faRenderer2.update(Gdx.graphics.getDeltaTime());
+			faRenderer.update(Gdx.graphics.getDeltaTime());
 
 			if (toggleAnim.getState()) {
 				TweenManagerSingleton.getInstance().update(Gdx.graphics.getDeltaTime());
@@ -431,7 +410,7 @@ public class ScnCanvas extends ApplicationAdapter {
 
 			//if (showFA.getState()) {
 			if (!showFAInScn.getState()) {
-				faRenderer2.draw(batch);
+				faRenderer.draw(batch);
 			}
 
 			RectangleRenderer
