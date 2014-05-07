@@ -4,7 +4,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -19,10 +18,6 @@ public class WorldDocument extends  BaseDocument {
 	public static final int DEFAULT_HEIGHT = 1080;
 	
 	public static final String NOTIFY_DOCUMENT_MODIFIED = "DOCUMENT_MODIFIED";
-	
-	private HashMap<String, SceneDocument> scenes = new HashMap<String, SceneDocument>();
-	
-	private Element currentChapter;
 	
     private PropertyChangeListener documentModifiedListener = new PropertyChangeListener() {	
 		@Override
@@ -56,34 +51,6 @@ public class WorldDocument extends  BaseDocument {
 		firePropertyChange();
 	}
 	
-	public void setCurrentChapter(String chapter) throws ParserConfigurationException, SAXException, IOException {
-		NodeList nl = doc.getDocumentElement().getElementsByTagName("chapter");
-		
-		for(int i = 0; i < nl.getLength(); i++) {
-			Element e =  (Element) nl.item(i);
-			String id = e.getAttribute("id");
-			
-			if(id.equals(chapter)) {
-				setCurrentChapter(e);
-				return;
-			}
-		}
-		
-		if(nl.getLength() > 0) {
-			setCurrentChapter((Element) nl.item(0));		
-		}
-	}
-	
-	public void setCurrentChapter(Element e) throws ParserConfigurationException, SAXException, IOException {
-		currentChapter = e;
-		
-		loadCurrentChapterScenes();
-	}
-	
-	public Element getCurrentChapter() {
-		return currentChapter;
-	}
-	
 	public NodeList getChapters() {
 		 return doc.getDocumentElement().getElementsByTagName("chapter");
 	}
@@ -107,139 +74,76 @@ public class WorldDocument extends  BaseDocument {
 		modified = true;
 		firePropertyChange();
 	}
-
-	public NodeList getSceneNodes() {
-		return currentChapter.getElementsByTagName("scene");
-	}
 	
-	public SceneDocument getScene(String id) {
-		return scenes.get(id);
-	}
-	
-	public HashMap<String, SceneDocument> getSceneMap() {
-		return scenes;
-	}
-	
-	@Override
-	public void load() throws ParserConfigurationException, SAXException, IOException {
-		super.load();
-		
-		String chapterId = getRootAttr("init_chapter");
-		
-		setCurrentChapter(chapterId);		
-	}
-	
-	public void loadCurrentChapterScenes() throws ParserConfigurationException, SAXException, IOException {
-		scenes.clear();
-		
-		NodeList nl = getSceneNodes();
-
-		for (int i = 0; i < nl.getLength(); i++) {
-			String filename = ((Element) nl.item(i)).getAttribute("filename");
-			SceneDocument scn = new SceneDocument(modelPath);
-			scn.setFilename(filename);
-			scn.load();
-			scenes.put(scn.getId(), scn);
-			scn.addPropertyChangeListener(documentModifiedListener);
-		}		
-	}
-	
-	public String getInitScene() {
-		String init = getRootAttr(currentChapter, "init_scene");
-		
-		if(init == null || init.isEmpty()) {
-			String filename = ((Element)getSceneNodes().item(0)).getAttribute("filename");
-					
-			init = 	getSceneByFilename(filename).getId();				
-		}
-		
-		return init;
-	}
-	
-	public void setInitScene(String id) {
-		setRootAttr(currentChapter, "init_scene", id);
+	public ChapterDocument loadChapter(String id) throws ParserConfigurationException, SAXException, IOException {
+			ChapterDocument chapter = new ChapterDocument(modelPath);
+			chapter.setFilename(id + ".chapter");
+			chapter.load();
+			chapter.addPropertyChangeListener(documentModifiedListener);
+			
+			return chapter;
 	}
 	
 	public String getInitChapter() {
 		String init = getRootAttr("init_chapter");
 		
 		if(init == null || init.isEmpty()) {
-			((Element)getChapters().item(0)).getAttribute("id");			
+			init = ((Element)getChapters().item(0)).getAttribute("id");			
 		}
 		
 		return init;
 	}
 	
-	public SceneDocument getSceneByFilename(String filename) {
-		for(SceneDocument scn:scenes.values()) {
-			if(scn.getFilename().equals(filename))
-				return scn;
-		}
-			
-		return null;
-	}
-
-	public void addSceneNode(SceneDocument scn) {
-		Element e = doc.createElement("scene");
+	public void addChapterNode(String id) {
+		Element e = doc.createElement("chapter");
 		
-		currentChapter.appendChild(e);
-		e.setAttribute("filename", scn.getFilename());
+		doc.getDocumentElement().appendChild(e);
+		e.setAttribute("id", id);
 		modified = true;
 		firePropertyChange();
 	}
 
-	public void removeSceneNode(SceneDocument scn) {
-		NodeList scenes = getSceneNodes();
-		String filename = scn.getFilename();
+	public void removeChapterNode(String id) {
 		
-		for(int i = 0; i < scenes.getLength(); i++) {
-			
-			if(scenes.item(i) instanceof Element) {
-				Element e = (Element) scenes.item(i);
-				
-				if(e.getAttribute("filename").equals(filename)) {
-					currentChapter.removeChild(e);
-					modified = true;
-					firePropertyChange();	
-					return;
-				}
+		NodeList chaptersNL = getChapters();
+		for (int j = 0; j < chaptersNL.getLength(); j++) {
+			Element e = (Element) chaptersNL.item(j);
+			if (id.equals(e.getAttribute("id"))) {
+				doc.getDocumentElement().removeChild(e);
 			}
 		}
 	}
 	
-	public SceneDocument createScene(String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
-		SceneDocument scn = new SceneDocument(modelPath);	
-		String checkedId = getSceneCheckedId(id);
+	public ChapterDocument createChapter(String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
+		ChapterDocument chapter = new ChapterDocument(modelPath);	
+		String checkedId = getChapterCheckedId(id);
 		
-		scn.create(checkedId);
+		chapter.create(checkedId);
 
-		getSceneMap().put(checkedId, scn);
-		addSceneNode(scn);
+		addChapterNode(id);
 		save();
 		
-		scn.addPropertyChangeListener(documentModifiedListener);
+		chapter.addPropertyChangeListener(documentModifiedListener);
 		
 		firePropertyChange();
 
-		return scn;
+		return chapter;
 	}
 	
-	public String getSceneCheckedId(String id) {
+	public String getChapterCheckedId(String id) {
 		boolean checked = false;
 		int i = 1;
 		
 		String idChecked = id;
 		
-		NodeList nl = getRootElement().getElementsByTagName("scene");
+		NodeList nl = getRootElement().getElementsByTagName("chapter");
 
 		while (!checked) {
 			checked = true;
 
 			for (int j = 0; j < nl.getLength(); j++) {
-				String filename = ((Element)nl.item(j)).getAttribute("filename");
-				
-				String id2 = filename.substring(0, filename.lastIndexOf('.'));
-				
+				String id2 = ((Element)nl.item(j)).getAttribute("id");
+						
 				if (id2.equals(idChecked)) {
 					i++;
 					idChecked = id + i;
@@ -251,60 +155,26 @@ public class WorldDocument extends  BaseDocument {
 		
 		return idChecked;
 	}
-	
-	public String getSceneCheckedIdOLD(String id) {
-		boolean checked = false;
-		int i = 1;
 		
-		String idChecked = id;
+	// TODO: Reload current chapter if the renamed chapter is the current chapter
+	public void renameChapter(String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
+		
+		removeChapterNode(id);
+		String checkedId = getChapterCheckedId(id);
+		
+		// TODO chapter.rename(checkedId);
 
-		while (!checked) {
-			checked = true;
-
-			for (SceneDocument s:scenes.values()) {
-				String id2 = s.getId();
-				
-				if (id2.equals(idChecked)) {
-					i++;
-					idChecked = id + i;
-					checked = false;
-					break;
-				}
-			}
-		}
-		
-		return idChecked;
-	}	
-	
-	public void renameScene(SceneDocument scn, String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
-		
-		getSceneMap().remove(scn.getId());
-		removeSceneNode(scn);
-		String checkedId = getSceneCheckedId(id);
-		
-		scn.rename(checkedId);
-
-		getSceneMap().put(checkedId, scn);
-		addSceneNode(scn);
+		addChapterNode(id);
 		save();
 		
 		firePropertyChange();
 	}
 	
-	public void removeScene(SceneDocument scn) throws FileNotFoundException, TransformerException {
-		getSceneMap().remove(scn.getId());
-		removeSceneNode(scn);
-		scn.deleteFiles();
+	public void removeChapter(String id) throws FileNotFoundException, TransformerException {
+		removeChapterNode(id);
+		// TODO chapter.deleteFiles();
 		save();
 		
 		firePropertyChange();
-	}
-	
-	public void saveAll() throws FileNotFoundException, TransformerException {
-		save();
-		
-		for (SceneDocument s:scenes.values()) {
-			s.save();
-		}
 	}
 }

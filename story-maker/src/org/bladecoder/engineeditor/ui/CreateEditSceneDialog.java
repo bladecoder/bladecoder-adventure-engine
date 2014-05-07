@@ -3,21 +3,17 @@ package org.bladecoder.engineeditor.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.JComboBox;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engineeditor.Ctx;
+import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.model.Project;
-import org.bladecoder.engineeditor.model.SceneDocument;
-import org.bladecoder.engineeditor.model.WorldDocument;
 import org.bladecoder.engineeditor.ui.components.CreateEditElementDialog;
 import org.bladecoder.engineeditor.ui.components.InputPanel;
 import org.bladecoder.engineeditor.utils.EditorLogger;
@@ -29,8 +25,6 @@ public class CreateEditSceneDialog extends CreateEditElementDialog {
 	public static final String INFO = "<html><br/><br/>An adventure is composed of many scenes (screens).<br/><br/>" +
 			"Inside a scene there are actors and a 'player'.<br/> The player/user can interact with the actors throught 'verbs'.<br/><br/>" +
 			"</html>";
-
-	WorldDocument w;
 	
 	private String bgList[] = getBgList();
 	private String musicList[] = getMusicList();
@@ -60,12 +54,10 @@ public class CreateEditSceneDialog extends CreateEditElementDialog {
 	String attrs[] = {"id", "background", "lightmap", "atlases", "depth_vector", "music", "loop_music", "initial_music_delay", "repeat_music_delay"};
 
 	@SuppressWarnings("unchecked")
-	public CreateEditSceneDialog(java.awt.Frame parentWindow, WorldDocument w, SceneDocument doc, Element parent,
+	public CreateEditSceneDialog(java.awt.Frame parentWindow, BaseDocument doc, Element parent,
 				Element e) {
 		
 		super(parentWindow);
-		
-		this.w = w;
 		
 		setInfo(INFO);
 		
@@ -144,31 +136,4 @@ public class CreateEditSceneDialog extends CreateEditElementDialog {
 
 		return musicFiles2;
 	}	
-	
-	@Override
-	protected void create() {
-		try {
-			SceneDocument scn = w.createScene(inputs[0].getText());
-			doc = scn;
-			e = scn.getElement();
-			
-			inputs[0].setText(scn.getId());
-		} catch (FileNotFoundException | TransformerException | ParserConfigurationException e) {
-			EditorLogger.error(e.getMessage());
-		}
-	}
-	
-	@Override
-	protected void fill() {
-		if(!inputs[0].getText().equals(e.getAttribute("id"))) {
-			
-			try {
-				w.renameScene((SceneDocument)doc, inputs[0].getText());
-			} catch (FileNotFoundException | TransformerException | ParserConfigurationException e1) {
-				EditorLogger.error(e1.getMessage());
-			}
-		}
-		
-		super.fill();
-	}
 }

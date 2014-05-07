@@ -7,6 +7,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JTabbedPane;
 
 import org.bladecoder.engineeditor.Ctx;
+import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.model.Project;
 import org.bladecoder.engineeditor.model.WorldDocument;
 import org.bladecoder.engineeditor.ui.components.HeaderPanel;
@@ -50,7 +51,9 @@ public class ProjectPanel extends javax.swing.JPanel {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
 				WorldDocument w = Ctx.project.getWorld();
+				ChapterDocument selectedChapter = Ctx.project.getSelectedChapter();
 				
+				sceneList.addElements(selectedChapter, selectedChapter.getElement(), "scene");
 				verbList.addElements(w, w.getElement(), "verb");
 				chapterList.addElements(w, w.getElement(), "chapter");
 				headerPanel.setTile("ADVENTURE " + Ctx.project.getTitle());

@@ -8,7 +8,7 @@ import javax.swing.JTabbedPane;
 
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.Project;
-import org.bladecoder.engineeditor.model.SceneDocument;
+import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.components.HeaderPanel;
 import org.w3c.dom.Element;
 
@@ -48,7 +48,7 @@ public class ActorPanel extends javax.swing.JPanel {
 					@Override
 					public void propertyChange(PropertyChangeEvent e) {
 						Element a = (Element) e.getNewValue();
-						SceneDocument doc = Ctx.project.getSelectedScene();
+						ChapterDocument doc = Ctx.project.getSelectedChapter();
 
 						faList.addElements(doc, a, "frame_animation");
 						verbList.addElements(doc, a, "verb");

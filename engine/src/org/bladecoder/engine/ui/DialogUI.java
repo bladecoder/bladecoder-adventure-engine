@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.assets.UIAssetConsumer;
+import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.model.Dialog;
 import org.bladecoder.engine.model.DialogOption;
 import org.bladecoder.engine.model.World;
@@ -60,13 +61,17 @@ public class DialogUI implements TouchEventListener, UIAssetConsumer  {
 		
 		for(int i = 0; i < options.size(); i++) {
 			DialogOption o = options.get(i);
+			String str = o.getText();
 			
+			if(str.charAt(0) == '@')
+				str = I18N.getString(str.substring(1));
+						
 			if(i == selected) {
 				font.setColor(Color.LIGHT_GRAY);
-				font.draw(batch, o.getText(), 10, y);				
+				font.draw(batch, str, 10, y);				
 			} else {
 				font.setColor(Color.WHITE);
-				font.draw(batch, o.getText(), 10, y);
+				font.draw(batch, str, 10, y);
 			}
 			
 			y-= lineHeight;

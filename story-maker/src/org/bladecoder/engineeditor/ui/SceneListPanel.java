@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.Box;
@@ -25,9 +24,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.bladecoder.engineeditor.Ctx;
-import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.model.Project;
-import org.bladecoder.engineeditor.model.SceneDocument;
 import org.bladecoder.engineeditor.model.WorldDocument;
 import org.bladecoder.engineeditor.ui.components.CreateEditElementDialog;
 import org.bladecoder.engineeditor.ui.components.ElementListCellRender;
@@ -50,7 +47,7 @@ public class SceneListPanel extends ElementListPanel {
 
 		chapters = new JComboBox<String>();
 		chapters.setAlignmentX(LEFT_ALIGNMENT);
-		
+
 		JPanel chapterPanel = new JPanel();
 		chapterPanel.setLayout(new BoxLayout(chapterPanel, BoxLayout.X_AXIS));
 		JLabel lbl = new JLabel("CHAPTER");
@@ -64,31 +61,27 @@ public class SceneListPanel extends ElementListPanel {
 		add(chapterPanel, 0);
 
 		FontMetrics fm = chapters.getFontMetrics(chapters.getFont());
-		chapters.setMaximumSize(new Dimension(chapters.getMaximumSize().width, fm.getHeight() + 10));
+		chapters.setMaximumSize(new Dimension(chapters.getMaximumSize().width,
+				fm.getHeight() + 10));
 
 		initBtn = new JButton();
-		editToolbar.addToolBarButton(initBtn, "/res/images/ic_check.png", "Set init scene",
-				"Set init scene");
-		initBtn.setDisabledIcon(new javax.swing.ImageIcon(getClass().getResource(
-				"/res/images/ic_check_disabled.png")));
+		editToolbar.addToolBarButton(initBtn, "/res/images/ic_check.png",
+				"Set init scene", "Set init scene");
+		initBtn.setDisabledIcon(new javax.swing.ImageIcon(getClass()
+				.getResource("/res/images/ic_check_disabled.png")));
 
 		initBtn.setEnabled(false);
 
 		list.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-			
 				int pos = list.getSelectedIndex();
-				EditorLogger.debug("SCENE SELECTION LISTENER " + pos);
 
 				if (pos == -1) {
-					Ctx.project.setSelectedScene((SceneDocument) null);
+					Ctx.project.setSelectedScene(null);
 				} else {
-					Element scn = list.getModel().getElementAt(pos);
-					if(Ctx.project.getSelectedScene() == null)
-						Ctx.project.setSelectedScene(scn.getAttribute("id"));
-					else if(Ctx.project.getSelectedScene() != null && !Ctx.project.getSelectedScene().getId().equals(scn.getAttribute("id")))
-						Ctx.project.setSelectedScene(scn.getAttribute("id"));
+					Element a = list.getModel().getElementAt(pos);
+					Ctx.project.setSelectedScene(a);
 				}
 
 				editToolbar.enableEdit(pos != -1);
@@ -117,48 +110,58 @@ public class SceneListPanel extends ElementListPanel {
 
 		chapters.addActionListener(actionListener);
 
-		Ctx.project.getWorld().addPropertyChangeListener(new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				EditorLogger.debug(evt.getPropertyName() + " NEW:" + evt.getNewValue() + " OLD:"
-						+ evt.getOldValue());
-				
-				if (evt.getPropertyName().equals("chapter")) {
-					chapters.removeActionListener(actionListener);
-					addChapters();
-					chapters.addActionListener(actionListener);
-				} else if (evt.getPropertyName().equals("ELEMENT_DELETED")) {
-					Element e = (Element) evt.getNewValue();
+		Ctx.project.getWorld().addPropertyChangeListener(
+				new PropertyChangeListener() {
+					@Override
+					public void propertyChange(PropertyChangeEvent evt) {
+						EditorLogger.debug(evt.getPropertyName() + " NEW:"
+								+ evt.getNewValue() + " OLD:"
+								+ evt.getOldValue());
 
-					if (e.getTagName().equals("chapter")) {
-						chapters.removeActionListener(actionListener);
-						addChapters();
-						chapters.addActionListener(actionListener);
+						if (evt.getPropertyName().equals("chapter")) {
+							chapters.removeActionListener(actionListener);
+							addChapters();
+							chapters.addActionListener(actionListener);
+						} else if (evt.getPropertyName().equals(
+								"ELEMENT_DELETED")) {
+							Element e = (Element) evt.getNewValue();
+
+							if (e.getTagName().equals("chapter")) {
+								chapters.removeActionListener(actionListener);
+								addChapters();
+								chapters.addActionListener(actionListener);
+							}
+						}
 					}
-				}
-			}
-		});
+				});
 	}
 
 	ActionListener actionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			WorldDocument w = Ctx.project.getWorld();
-			
-			// Save the project when changing chapter
-			try{
-				Ctx.project.saveProject();
-			} catch (IOException | TransformerException e1) {
-				JOptionPane.showMessageDialog(Ctx.window, "Error saving project");
-				EditorLogger.error(e1.getMessage());
-			}
-			
-			try {
-				String selChapter = (String) chapters.getSelectedItem();
-				w.setCurrentChapter(selChapter);
-				addElements(w, null, "scene");
-			} catch (ParserConfigurationException | SAXException | IOException e1) {
-				e1.printStackTrace();
+			String selChapter = (String) chapters.getSelectedItem();
+
+			if (selChapter != null && !selChapter.equals(Ctx.project.getSelectedChapter().getId())) {
+
+				// Save the project when changing chapter
+				try {
+					Ctx.project.saveProject();
+				} catch (IOException | TransformerException e1) {
+					JOptionPane.showMessageDialog(Ctx.window,
+							"Error saving project");
+					EditorLogger.error(e1.getMessage());
+				}
+
+				try {
+					if(selChapter != null)
+						Ctx.project.loadChapter(selChapter);
+					
+					addElements(w, null, "scene");
+				} catch (ParserConfigurationException | SAXException
+						| IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
 	};
@@ -174,89 +177,10 @@ public class SceneListPanel extends ElementListPanel {
 			chapters.addItem(e.getAttribute("id"));
 		}
 
-		chapters.setSelectedItem(w.getCurrentChapter().getAttribute("id"));
-	}
-
-	@Override
-	public void addElements(BaseDocument doc, Element parent, String tag) {
-		super.addElements(doc, parent, tag);
-
-		if (doc != null) {
-
-			ElementListModel lm = (ElementListModel) list.getModel();
-
-			for (SceneDocument scn : ((WorldDocument) doc).getSceneMap().values()) {
-				lm.addElement(scn.getElement());
-			}
-
-			if (lm.getSize() > 0) {
-				list.setSelectedIndex(0);
-			} else {
-				list.clearSelection();
-			}
-		}
-
-		editToolbar.enableCreate(doc != null);
-
-	}
-
-	@Override
-	protected void delete() {
-
-		int pos = list.getSelectedIndex();
-
-		if (pos == -1)
-			return;
-
-		ElementListModel lm = (ElementListModel) list.getModel();
-		SceneDocument scn = ((WorldDocument) doc).getScene(lm.getElementAt(pos).getAttribute("id"));
-
-		try {
-			Ctx.project.getWorld().removeScene(scn);
-		} catch (Exception e) {
-			String msg = "Something went wrong while deleting the scene.\n\n"
-					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			JOptionPane.showMessageDialog(Ctx.window, msg);
-
-			e.printStackTrace();
-		}
-
-		super.delete();
-	}
-
-	@Override
-	protected void paste() {
-		WorldDocument w = (WorldDocument) doc;
-
-		SceneDocument scn;
-		try {
-			scn = w.createScene(clipboard.getAttribute("id"));
-			String id = scn.getId();
-
-			Element newElement = scn.cloneNode(clipboard);
-
-			scn.getDocument().replaceChild(newElement, scn.getElement());
-			// scn.getDocument().appendChild(newElement);
-			scn.setModified(true);
-
-			newElement.setAttribute("id", id);
-
-			ElementListModel lm = (ElementListModel) list.getModel();
-			lm.addElement(newElement);
-			list.setSelectedValue(newElement, true);
-			doc.setModified(newElement);
-		} catch (FileNotFoundException | TransformerException | ParserConfigurationException e) {
-			String msg = "Something went wrong while pasting the scene.\n\n"
-					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			JOptionPane.showMessageDialog(Ctx.window, msg);
-
-			e.printStackTrace();
-		}
-
+		chapters.setSelectedItem(Ctx.project.getSelectedChapter().getId());
 	}
 
 	private void setDefault() {
-		WorldDocument w = (WorldDocument) doc;
 
 		int pos = list.getSelectedIndex();
 
@@ -266,31 +190,31 @@ public class SceneListPanel extends ElementListPanel {
 		ElementListModel lm = (ElementListModel) list.getModel();
 		String id = lm.getElementAt(pos).getAttribute("id");
 
-		w.setInitScene(id);
+		doc.setRootAttr((Element) lm.getElementAt(pos).getParentNode(),
+				"init_scene", id);
 
 		list.repaint();
 	}
 
 	@Override
-	protected CreateEditElementDialog getCreateEditElementDialogInstance(Element e) {
-		SceneDocument scn = null;
-
-		if (e != null)
-			scn = ((WorldDocument) doc).getScene(e.getAttribute("id"));
-
-		return new CreateEditSceneDialog(Ctx.window, (WorldDocument) doc, scn, parent, e);
+	protected CreateEditElementDialog getCreateEditElementDialogInstance(
+			Element e) {
+		return new CreateEditSceneDialog(Ctx.window, doc, parent, e);
 	}
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
-	private final ElementListCellRender listCellRenderer = new ElementListCellRender(true) {
+	private final ElementListCellRender listCellRenderer = new ElementListCellRender(
+			true) {
 
 		@Override
 		public String getName(Element e) {
 			String name = e.getAttribute("id");
 
-			String init = ((WorldDocument) doc).getInitScene();
+			Element chapter = (Element) e.getParentNode();
+
+			String init = chapter.getAttribute("init_scene");
 
 			if (init.equals(name))
 				name += " <init>";
@@ -306,8 +230,9 @@ public class SceneListPanel extends ElementListPanel {
 		@Override
 		public ImageIcon getImageIcon(Element e) {
 			String bg = e.getAttribute("background");
-			String bgPath = Ctx.project.getProjectPath() + Project.BACKGROUNDS_PATH + "/"
-					+ Ctx.project.getResDir() + "/" + bg;
+			String bgPath = Ctx.project.getProjectPath()
+					+ Project.BACKGROUNDS_PATH + "/" + Ctx.project.getResDir()
+					+ "/" + bg;
 
 			File f = new File(bgPath);
 
@@ -316,11 +241,13 @@ public class SceneListPanel extends ElementListPanel {
 			try {
 				ic = ImageUtils.getImageIcon(f.toURI().toURL(), 100);
 			} catch (IOException e1) {
-				ic = new ImageIcon(getClass().getResource("/res/images/ic_no_scene.png"));
+				ic = new ImageIcon(getClass().getResource(
+						"/res/images/ic_no_scene.png"));
 			}
 
 			if (ic == null)
-				ic = new ImageIcon(getClass().getResource("/res/images/ic_no_scene.png"));
+				ic = new ImageIcon(getClass().getResource(
+						"/res/images/ic_no_scene.png"));
 
 			return ic;
 		}

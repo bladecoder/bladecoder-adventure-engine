@@ -10,7 +10,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.bladecoder.engineeditor.Ctx;
-import org.bladecoder.engineeditor.model.SceneDocument;
+import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.components.CreateEditElementDialog;
 import org.bladecoder.engineeditor.ui.components.ElementListCellRender;
 import org.bladecoder.engineeditor.ui.components.ElementListModel;
@@ -58,7 +58,7 @@ public class FAListPanel extends ElementListPanel {
 	}
 	
 	private void setDefault() {
-		SceneDocument scn = (SceneDocument) doc;
+		ChapterDocument scn = (ChapterDocument) doc;
 
 		int pos = list.getSelectedIndex();
 

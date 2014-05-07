@@ -465,7 +465,7 @@ public class OptionTreePanel extends javax.swing.JPanel {
 
 			String text = e.getAttribute("text");
 
-			nameLabel.setText(Ctx.project.getSelectedScene().getTranslation(text));
+			nameLabel.setText(Ctx.project.getSelectedChapter().getTranslation(text));
 
 			StringBuilder sb = new StringBuilder();
 
@@ -478,7 +478,7 @@ public class OptionTreePanel extends javax.swing.JPanel {
 
 			if (!response.isEmpty())
 				sb.append("<html><b>R: ")
-						.append(Ctx.project.getSelectedScene().getTranslation(response))
+						.append(Ctx.project.getSelectedChapter().getTranslation(response))
 						.append("</b></html> ");
 
 			for (int i = 0; i < attr.getLength(); i++) {
@@ -490,7 +490,7 @@ public class OptionTreePanel extends javax.swing.JPanel {
 
 				String v = n.getNodeValue();
 				sb.append(name).append(':')
-						.append(Ctx.project.getSelectedScene().getTranslation(v)).append(' ');
+						.append(Ctx.project.getSelectedChapter().getTranslation(v)).append(' ');
 			}
 
 			infoLabel.setText(sb.toString());

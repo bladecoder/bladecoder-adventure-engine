@@ -7,7 +7,7 @@ import javax.swing.JComboBox;
 
 import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engineeditor.model.BaseDocument;
-import org.bladecoder.engineeditor.model.SceneDocument;
+import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.components.CreateEditElementDialog;
 import org.bladecoder.engineeditor.ui.components.InputPanel;
 import org.w3c.dom.Element;
@@ -27,7 +27,7 @@ public class CreateEditActorDialog extends CreateEditElementDialog {
 
 	private InputPanel[] inputs = {
 			new InputPanel("Actor Type",
-					"<html>Actors can be from different types</html>", SceneDocument.ACTOR_TYPES),
+					"<html>Actors can be from different types</html>", ChapterDocument.ACTOR_TYPES),
 			new InputPanel("Actor ID",
 					"<html>IDs can not contain '.' or '_' characters.</html>", true),
 			new InputPanel("Description",
@@ -78,7 +78,7 @@ public class CreateEditActorDialog extends CreateEditElementDialog {
 		inputs[9].setVisible(false);
 		inputs[10].setVisible(false);	
 		
-		if(SceneDocument.ACTOR_TYPES[i].equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
+		if(ChapterDocument.ACTOR_TYPES[i].equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
 			inputs[8].setVisible(true);
 			inputs[9].setVisible(true);
 			inputs[10].setVisible(true);
@@ -91,11 +91,11 @@ public class CreateEditActorDialog extends CreateEditElementDialog {
 	protected void fill(){
 		String type = typePanel.getText();
 		
-		if (type.equals(SceneDocument.BACKGROUND_ACTOR_TYPE) && ((SceneDocument)doc).getBBox(e) == null)
-			((SceneDocument)doc).setBbox(e, new Rectangle(0, 0, 100, 100));
+		if (type.equals(ChapterDocument.BACKGROUND_ACTOR_TYPE) && ((ChapterDocument)doc).getBBox(e) == null)
+			((ChapterDocument)doc).setBbox(e, new Rectangle(0, 0, 100, 100));
 		
-		if (!type.equals(SceneDocument.BACKGROUND_ACTOR_TYPE) && ((SceneDocument)doc).getPos(e) == null)
-			((SceneDocument)doc).setPos(e, new Vector2(0, 0));		
+		if (!type.equals(ChapterDocument.BACKGROUND_ACTOR_TYPE) && ((ChapterDocument)doc).getPos(e) == null)
+			((ChapterDocument)doc).setPos(e, new Vector2(0, 0));		
 		
 		super.fill();
 	}

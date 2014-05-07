@@ -152,16 +152,6 @@ public abstract class BaseDocument extends PropertyChange {
 		return doc.getDocumentElement().getAttribute(attr);
 	}
 
-	public void setRootAttr(String attr, String value) {
-		if (value != null && !value.isEmpty())
-			doc.getDocumentElement().setAttribute(attr, value);
-		else
-			doc.getDocumentElement().removeAttribute(attr);
-
-		modified = true;
-		firePropertyChange();
-	}
-
 	public String getElementAttr(String tag, String attr) {
 		NodeList nl = doc.getDocumentElement().getElementsByTagName(tag);
 
@@ -359,16 +349,9 @@ public abstract class BaseDocument extends PropertyChange {
 		return e.getAttribute("id");
 	}
 
-	// public void setId(Element e, String id) {
-	// setRootAttr(e, "id", id);
-	// }
-
 	public Element createElement(Element parent, String type) {
 		Element es = doc.createElement(type);
 		parent.appendChild(es);
-
-		// modified = true;
-		// firePropertyChange(type, es);
 
 		return es;
 	}

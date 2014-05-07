@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import org.bladecoder.engineeditor.model.SceneDocument;
+import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.components.PropertyTable;
 import org.bladecoder.engineeditor.ui.components.PropertyTable.PropertyTableModel;
 import org.bladecoder.engineeditor.ui.components.PropertyTable.Types;
@@ -35,7 +35,7 @@ public class ActorPropsPanel extends JPanel {
 	public static final String WALKING_SPEED_PROP = "Walking Speed";
 
 	private PropertyTable propertyTable;
-	private SceneDocument doc;
+	private ChapterDocument doc;
 	private Element actor;
 
 	TableModelListener tableModelListener = new TableModelListener() {
@@ -66,7 +66,7 @@ public class ActorPropsPanel extends JPanel {
 		model.addTableModelListener(tableModelListener);
 	}
 
-	public void setActorDocument(SceneDocument doc, Element a) {		
+	public void setActorDocument(ChapterDocument doc, Element a) {		
 		this.doc = doc;
 		this.actor = a;
 		PropertyTableModel model = (PropertyTableModel) propertyTable.getModel();

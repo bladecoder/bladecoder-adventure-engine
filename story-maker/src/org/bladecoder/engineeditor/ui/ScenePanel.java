@@ -8,7 +8,7 @@ import javax.swing.JTabbedPane;
 
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.Project;
-import org.bladecoder.engineeditor.model.SceneDocument;
+import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.components.HeaderPanel;
 import org.w3c.dom.Element;
 
@@ -46,19 +46,18 @@ public class ScenePanel extends javax.swing.JPanel {
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_SCENE_SELECTED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				SceneDocument s = (SceneDocument)evt.getNewValue();
-				Element e = null;
+				ChapterDocument doc = Ctx.project.getSelectedChapter();
+				Element scn = Ctx.project.getSelectedScene();
 				
-				if(s != null) {
-					e = s.getElement();									
-					headerPanel.setTile("SCENE " + s.getId());
+				if(scn != null) {								
+					headerPanel.setTile("SCENE " + doc.getId(scn));
 				} else {
 					headerPanel.setTile("SCENE");
 				}
 				
-				actorList.addElements(s, e, "actor");
-				verbList.addElements(s, e, "verb");		
-				scenePropsPanel.setSceneDocument(s);
+				actorList.addElements(doc, scn, "actor");
+				verbList.addElements(doc, scn, "verb");		
+				scenePropsPanel.setSceneDocument(doc, scn);
 			}
 		});	
 	}

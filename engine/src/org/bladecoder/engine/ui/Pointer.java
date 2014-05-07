@@ -2,6 +2,7 @@ package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.assets.UIAssetConsumer;
+import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.model.Actor;
 
 import com.badlogic.gdx.Gdx;
@@ -56,11 +57,16 @@ public class Pointer implements UIAssetConsumer {
 
 		Vector3 input = camera.getInputUnProject();
 
+		// DRAW TARGET DESCRIPTION
 		if (target != null && target.getDesc() != null) {
+			String str = target.getDesc();
+			
+			if(str.charAt(0) == '@')
+				str = I18N.getString(str.substring(1));
 
 			int margin = 40;
 
-			TextBounds b = font.getBounds(target.getDesc());
+			TextBounds b = font.getBounds(str);
 
 			float x0 = input.x;
 
@@ -77,7 +83,7 @@ public class Pointer implements UIAssetConsumer {
 			if (textX < 0)
 				textX = 0;
 
-			font.draw(batch, target.getDesc(), textX, textY);
+			font.draw(batch, str, textX, textY);
 
 			x0 = x0 - lookatIcon.getWidth() / 2;
 			y0 += margin / 4;

@@ -12,7 +12,7 @@ import org.bladecoder.engine.anim.Timers;
 import org.bladecoder.engine.anim.TweenManagerSingleton;
 import org.bladecoder.engine.assets.AssetConsumer;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.loader.XMLLoader;
+import org.bladecoder.engine.loader.WorldXMLLoader;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
 import org.bladecoder.engine.util.Utils3D;
@@ -229,7 +229,7 @@ public class World implements Serializable, AssetConsumer {
 		assetState = AssetState.LOAD_ASSETS;
 
 		long initTime = System.currentTimeMillis();
-		XMLLoader.loadWorld("world.xml", this, chapterName);
+		WorldXMLLoader.load("world.xml", this, chapterName);
 		EngineLogger.debug("XML LOADING TIME (ms): "
 				+ (System.currentTimeMillis() - initTime));
 	}

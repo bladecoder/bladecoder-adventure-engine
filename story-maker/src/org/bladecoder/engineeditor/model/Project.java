@@ -59,7 +59,8 @@ public class Project extends PropertyChange {
 	private final WorldDocument world = new WorldDocument();	
 	private Properties projectConfig;
 
-	private SceneDocument selectedScene;
+	private ChapterDocument selectedChapter;
+	private Element selectedScene;
 	private Element selectedActor;
 	private String selectedFA;
 
@@ -108,26 +109,14 @@ public class Project extends PropertyChange {
 		return editorConfig;
 	}
 
-	public void setSelectedScene(String id) {
-		setSelectedScene(world.getScene(id));
-	}
+	public void setSelectedScene(Element scn) {
+		Element old = null;
 
-	public void setSelectedScene(SceneDocument scn) {
-		SceneDocument old = null;
-
-		if (selectedScene != null)
-			old = selectedScene;
+		old = selectedScene;
 
 		selectedScene = scn;
-
-		setSelectedActor(null);
-		
-		// SAVE PREVIOUS SCENE
-//		try {
-//			saveProject();
-//		} catch (IOException | TransformerException e1) {
-//			EditorLogger.error(e1.getMessage());
-//		}
+		selectedActor = null;
+		selectedFA = null;
 
 		firePropertyChange(NOTIFY_SCENE_SELECTED, old, selectedScene);
 	}
@@ -143,8 +132,12 @@ public class Project extends PropertyChange {
 
 		firePropertyChange(NOTIFY_ACTOR_SELECTED, old, selectedActor);
 	}
+	
+	public ChapterDocument getSelectedChapter() {
+		return selectedChapter;
+	}
 
-	public SceneDocument getSelectedScene() {
+	public Element getSelectedScene() {
 		return selectedScene;
 	}
 
@@ -230,14 +223,15 @@ public class Project extends PropertyChange {
 
 	public void saveProject() throws IOException, TransformerException {
 		if (projectFile != null) {
-			world.saveAll();
-
-//			if (selectedScene != null) {
-//				selectedScene.save();
-//			}
+			world.save();
+			selectedChapter.save();
 			
 			projectConfig.store(new FileOutputStream(projectFile.getAbsolutePath()+ "/" + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME), null);
 		}
+	}
+	
+	public void closeProyect() {
+		this.projectFile = null;
 	}
 
 	public void loadProject(File projectFile) throws IOException, ParserConfigurationException,
@@ -258,6 +252,7 @@ public class Project extends PropertyChange {
 			
 			world.setModelPath(projectFile.getAbsolutePath() + "/" + MODEL_PATH);
 			world.load();
+			selectedChapter = world.loadChapter(world.getInitChapter());
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 						
 			projectConfig = new Properties();
@@ -291,7 +286,7 @@ public class Project extends PropertyChange {
 	}
 
 	public Element getActor(String id) {
-		return selectedScene.getActor(id);
+		return selectedChapter.getActor(selectedScene, id);
 	}
 
 	public List<Resolution> getResolutions() {
@@ -332,5 +327,15 @@ public class Project extends PropertyChange {
 
 	public String getProjectProperty(String titleProp) {
 		return projectConfig.getProperty(titleProp);
+	}
+
+	public void loadChapter(String selChapter) throws ParserConfigurationException, SAXException, IOException {
+		selectedChapter = world.loadChapter(selChapter);
+		
+//		if(selectedChapter != null) {
+//			NodeList scenes = selectedChapter.getScenes();
+//			if(scenes.getLength()>0)
+//				setSelectedScene((Element)scenes.item(0));
+//		}
 	}
 }

@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.bladecoder.engine.actions.ActionCallback;
+import org.bladecoder.engine.i18n.I18N;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
@@ -39,6 +40,10 @@ public class TextManager implements Serializable {
 
 	public void addSubtitle(String str, float x, float y, boolean quee, Text.Type type,
 			Color color, ActionCallback cb) {
+		
+		if(str.charAt(0) == '@')
+			str = I18N.getString(str.substring(1));
+		
 		String s = str.replace("\\n", "\n");
 		String[] text = s.split("\n\n");
 

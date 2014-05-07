@@ -3,6 +3,7 @@ package org.bladecoder.engine.model;
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.assets.EngineAssetManager;
+import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -50,6 +51,10 @@ public class OverlayImage implements Disposable, Serializable {
 		this.timer = timer;
 		this.closeOnClick = closeOnClick;
 		this.cb = cb;
+		
+		// I18N for overlays
+		if(filename.charAt(0) == '@')
+			this.filename = I18N.getString(filename.substring(1));
 		
 		retrieveAssets();
 	}

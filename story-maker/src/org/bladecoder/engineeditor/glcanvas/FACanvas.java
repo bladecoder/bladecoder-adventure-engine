@@ -7,7 +7,7 @@ import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteAtlasRenderer;
 import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.model.SpriteSpineRenderer;
-import org.bladecoder.engineeditor.model.SceneDocument;
+import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.CreateEditFADialog;
 
 import aurelienribon.tweenengine.Tween;
@@ -83,10 +83,10 @@ public class FACanvas extends ApplicationAdapter {
 			}
 			
 			
-			if(type.equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
+			if(type.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
 				renderer = new Sprite3DRenderer();
 				((Sprite3DRenderer)renderer).setSpriteSize(new Vector2( Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-			} else if(type.equals(SceneDocument.SPINE_ACTOR_TYPE)) {
+			} else if(type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
 				renderer = new SpriteSpineRenderer();
 			} else {
 				renderer = new SpriteAtlasRenderer();

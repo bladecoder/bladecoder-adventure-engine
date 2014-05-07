@@ -1,10 +1,8 @@
 package org.bladecoder.engineeditor.glcanvas;
 
-import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.SpriteActor;
-import org.bladecoder.engine.model.SpriteAtlasRenderer;
 import org.bladecoder.engineeditor.Ctx;
 import org.w3c.dom.Element;
 
@@ -54,7 +52,7 @@ public class EditionInputProcessor extends InputAdapter {
 		Element da = Ctx.project.getActor(actor.getId());
 		
 		if(Ctx.project.getSelectedActor() == null ||
-				!actor.getId().equals(Ctx.project.getSelectedScene().getId(Ctx.project.getSelectedActor())))
+				!actor.getId().equals(Ctx.project.getSelectedChapter().getId(Ctx.project.getSelectedActor())))
 			Ctx.project.setSelectedActor(da);
 
 		Rectangle bbox = actor.getBBox();
@@ -121,7 +119,7 @@ public class EditionInputProcessor extends InputAdapter {
 
 //				((SpriteActor) actor).setPosition(p.x + d.x, p.y + d.y);
 				
-				Ctx.project.getSelectedScene().setPos(Ctx.project.getSelectedActor(), new Vector2(p.x + d.x, p.y + d.y));
+				Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(), new Vector2(p.x + d.x, p.y + d.y));
 			} else {
 				Rectangle bbox = actor.getBBox(); // bbox will be an inmutable
 													// object
@@ -129,7 +127,7 @@ public class EditionInputProcessor extends InputAdapter {
 				bbox.y += d.y;
 //				actor.setBbox(bbox);
 				
-				Ctx.project.getSelectedScene().setBbox(Ctx.project.getSelectedActor(), bbox);
+				Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedActor(), bbox);
 			}
 		} else if (draggingMode == DraggingModes.DRAGING_BBOX) {
 			Rectangle bbox = actor.getBBox(); // bbox will be an inmutable
@@ -167,7 +165,7 @@ public class EditionInputProcessor extends InputAdapter {
 				bbox.y -= pos.y;
 			}
 			
-			Ctx.project.getSelectedScene().setBbox(Ctx.project.getSelectedActor(), bbox);
+			Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedActor(), bbox);
 		}
 
 		return false;

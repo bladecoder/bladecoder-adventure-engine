@@ -14,7 +14,7 @@ import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.glcanvas.FACanvas;
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.model.Project;
-import org.bladecoder.engineeditor.model.SceneDocument;
+import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.components.CreateEditElementDialog;
 import org.bladecoder.engineeditor.ui.components.InputPanel;
 import org.bladecoder.engineeditor.utils.EditorLogger;
@@ -30,7 +30,7 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 			new InputPanel("Source", "<html>Select the source where the sprite or animation is defined</html>", new String[0]),
 			new InputPanel("ID", "<html>Select the id of the animation</html>", new String[0]),
 			new InputPanel("Animation type", "<html>Select the type of the animation</html>",
-					SceneDocument.ANIMATION_TYPES),
+					ChapterDocument.ANIMATION_TYPES),
 			new InputPanel("Speed", "<html>Select the speed of the animation in secods</html>",
 					Param.Type.FLOAT, true),
 			new InputPanel("Delay", "<html>Select the delay between repeats in seconds</html>",
@@ -167,14 +167,14 @@ public class CreateEditFADialog extends CreateEditElementDialog {
 		String path = null;
 		String type = parent.getAttribute("type");
 		
-		if(type.equals(SceneDocument.FOREGROUND_ACTOR_TYPE) || type.equals(SceneDocument.ATLAS_ACTOR_TYPE)) {
+		if(type.equals(ChapterDocument.FOREGROUND_ACTOR_TYPE) || type.equals(ChapterDocument.ATLAS_ACTOR_TYPE)) {
 			path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
 				+ Ctx.project.getResDir();
 			ext = ".atlas";
-		} else if(type.equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
+		} else if(type.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
 			path = Ctx.project.getProjectPath() + Project.SPRITE3D_PATH;
 			ext = ".g3db";
-		} else if(type.equals(SceneDocument.SPINE_ACTOR_TYPE)) {
+		} else if(type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
 			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
 			ext = ".json";
 		}

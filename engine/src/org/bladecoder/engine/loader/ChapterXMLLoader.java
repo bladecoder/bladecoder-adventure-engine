@@ -1,29 +1,27 @@
 package org.bladecoder.engine.loader;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.List;
 
 import org.bladecoder.engine.actions.Action;
 import org.bladecoder.engine.actions.ActionFactory;
 import org.bladecoder.engine.actions.Param;
-import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
+import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.Actor;
-import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.Dialog;
 import org.bladecoder.engine.model.DialogOption;
 import org.bladecoder.engine.model.Scene;
+import org.bladecoder.engine.model.Sprite3DRenderer;
+import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
 import org.bladecoder.engine.model.SpriteAtlasRenderer;
 import org.bladecoder.engine.model.SpriteSpineRenderer;
 import org.bladecoder.engine.model.Verb;
 import org.bladecoder.engine.util.EngineLogger;
-import org.bladecoder.engine.util.I18NControl;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -36,41 +34,29 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-public class SceneParser extends DefaultHandler {
+public class ChapterXMLLoader extends DefaultHandler {
 	private Actor actor;
 	private Scene scene;
 
-	Verb currentVerb;
-	Dialog currentDialog;
-	DialogOption currentOption;
-	String initFrameAnimation = null;
-	String player = null;
+	private Verb currentVerb;
+	private Dialog currentDialog;
+	private DialogOption currentOption;
+	private String initFrameAnimation = null;
+	private String player = null;
 
-	float scale;
+	private float scale;
 
-	ResourceBundle i18n;
+	private Locator locator;
+	
+	private List<Scene> scenes = new ArrayList<Scene>();
+	private String initScene;
 
-	Locator locator;
-
-	public SceneParser(String i18nFilename) {
+	public ChapterXMLLoader() {
 		scale = EngineAssetManager.getInstance().getScale();
-		this.scene = new Scene();
-
-		Locale locale = Locale.getDefault();
-
-		try {
-			i18n = ResourceBundle.getBundle(i18nFilename, locale,
-					new I18NControl("ISO-8859-1"));
-		} catch (Exception e) {
-			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nFilename);
-		}
 	}
-
-	public SceneParser(ResourceBundle i18n) {
-		scale = EngineAssetManager.getInstance().getScale();
-		this.scene = new Scene();
-
-		this.i18n = i18n;
+	
+	public String getInitScene() {
+		return initScene;
 	}
 
 	public void startElement(String namespaceURI, String localName,
@@ -91,15 +77,6 @@ public class SceneParser extends DefaultHandler {
 			String responseText = atts.getValue("response_text");
 			String verb = atts.getValue("verb");
 			String next = atts.getValue("next");
-
-			if (i18n != null && text != null && text.length() > 0
-					&& text.charAt(0) == '@')
-				text = i18n.getString(text.substring(1));
-
-			if (i18n != null && responseText != null
-					&& responseText.length() > 0
-					&& responseText.charAt(0) == '@')
-				responseText = i18n.getString(responseText.substring(1));
 
 			if (verb != null && verb.trim().isEmpty())
 				verb = null;
@@ -280,15 +257,6 @@ public class SceneParser extends DefaultHandler {
 			String id = atts.getValue("id");
 			String desc = atts.getValue("desc");
 
-			if (i18n != null && desc != null && desc.length() > 0
-					&& desc.charAt(0) == '@') {
-				try {
-					desc = i18n.getString(desc.substring(1));
-				} catch (MissingResourceException e) {
-					EngineLogger.error("MISSING TRANSLATION KEY: " + desc);
-				}
-			}
-
 			String state = atts.getValue("state");
 
 			if (id == null || id.isEmpty()) {
@@ -348,11 +316,6 @@ public class SceneParser extends DefaultHandler {
 				error(e);
 				throw e;
 			}
-
-			// i18n images and animations
-			if (i18n != null && id != null && id.length() > 0
-					&& id.charAt(0) == '@')
-				id = i18n.getString(id.substring(1));
 
 			String source = atts.getValue("source");
 			if (source == null || source.isEmpty()) {
@@ -423,7 +386,15 @@ public class SceneParser extends DefaultHandler {
 			actor.addDialog(id, currentDialog);
 		} else if (localName.equals("sound")) {
 			parseSound(localName, atts, actor != null ? actor : scene);
+		} else if (localName.equals("chapter")) {
+			initScene = atts.getValue("init_scene");
 		} else if (localName.equals("scene")) {
+			this.scene = new Scene();
+			scenes.add(scene);
+			
+			if(initScene == null)
+				initScene = this.scene.getId();
+			
 			String idScn = atts.getValue("id");
 			String bgFilename = atts.getValue("background");
 			String lightmap = atts.getValue("lightmap");
@@ -549,15 +520,7 @@ public class SceneParser extends DefaultHandler {
 				actionClass = atts.getValue(attName);
 			} else {
 				String value = atts.getValue(attName);
-				if (i18n != null && value != null && value.length() > 0
-						&& value.charAt(0) == '@') {
-					try {
-						value = i18n.getString(value.substring(1));
-					} catch (MissingResourceException e) {
-						EngineLogger.error("MISSING TRANSLATION KEY: " + value);
-					}
-				}
-
+				
 				params.put(attName, value);
 			}
 		}
@@ -578,8 +541,8 @@ public class SceneParser extends DefaultHandler {
 		}
 	}
 
-	public Scene getScene() {
-		return scene;
+	public List<Scene> getScenes() {
+		return scenes;
 	}
 
 	@Override

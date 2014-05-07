@@ -8,10 +8,11 @@ import javax.swing.JPanel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import org.bladecoder.engineeditor.model.SceneDocument;
+import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.components.PropertyTable;
 import org.bladecoder.engineeditor.ui.components.PropertyTable.PropertyTableModel;
 import org.bladecoder.engineeditor.ui.components.PropertyTable.Types;
+import org.w3c.dom.Element;
 
 @SuppressWarnings("serial")
 public class ScenePropsPanel extends JPanel {
@@ -24,7 +25,8 @@ public class ScenePropsPanel extends JPanel {
 	
 	private PropertyTable propertyTable;
 	
-	SceneDocument scn;
+	ChapterDocument doc;
+	Element scn;
 	
 	TableModelListener tableModelListener = new TableModelListener() {
 		@Override
@@ -41,7 +43,7 @@ public class ScenePropsPanel extends JPanel {
 	PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {		
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {			
-			setSceneDocument(scn);			
+			setSceneDocument(doc, scn);			
 		}
 	};
 
@@ -55,9 +57,10 @@ public class ScenePropsPanel extends JPanel {
 		model.addTableModelListener(tableModelListener);
 	}
 
-	public void setSceneDocument(SceneDocument scn) {
+	public void setSceneDocument(ChapterDocument doc, Element scn) {
 
 		this.scn = scn;
+		this.doc = doc;
 		
 		PropertyTableModel model = (PropertyTableModel) propertyTable
 				.getModel();
@@ -65,30 +68,30 @@ public class ScenePropsPanel extends JPanel {
 		model.clear();
 
 		if (scn != null) {
-			model.addProperty(BACKGROUND_PROP, scn.getBackground());
-			model.addProperty(LIGHTMAP_PROP, scn.getLightmap());
-			model.addProperty(MUSIC_PROP, scn.getMusic());
-			model.addProperty(LOOP_MUSIC_PROP, scn.getRootAttr("loop_music"), Types.BOOLEAN);
-			model.addProperty(INITIAL_MUSIC_DELAY_PROP, scn.getRootAttr("initial_music_delay"), Types.FLOAT);
-			model.addProperty(REPEAT_MUSIC_DELAY_PROP, scn.getRootAttr("repeat_music_delay"), Types.FLOAT);
+			model.addProperty(BACKGROUND_PROP, doc.getBackground(scn));
+			model.addProperty(LIGHTMAP_PROP, doc.getLightmap(scn));
+			model.addProperty(MUSIC_PROP, doc.getMusic(scn));
+			model.addProperty(LOOP_MUSIC_PROP, doc.getRootAttr(scn,"loop_music"), Types.BOOLEAN);
+			model.addProperty(INITIAL_MUSIC_DELAY_PROP, doc.getRootAttr(scn,"initial_music_delay"), Types.FLOAT);
+			model.addProperty(REPEAT_MUSIC_DELAY_PROP, doc.getRootAttr(scn,"repeat_music_delay"), Types.FLOAT);
 			
-			this.scn.addPropertyChangeListener("scene", propertyChangeListener);
+			this.doc.addPropertyChangeListener("scene", propertyChangeListener);
 		}	
 	}
 
 	private void updateModel(String property, String value) {
 		if (property.equals(MUSIC_PROP)) {
-			scn.setRootAttr("music", value);
+			doc.setRootAttr(scn,"music", value);
 		} else if (property.equals(LOOP_MUSIC_PROP)) {
-			scn.setRootAttr("loop_music", value);
+			doc.setRootAttr(scn,"loop_music", value);
 		} else if (property.equals(BACKGROUND_PROP)) {
-			scn.setBackground(value);
+			doc.setBackground(scn,value);
 		} else if (property.equals(LIGHTMAP_PROP)) {
-			scn.setLightmap(value);			
+			doc.setLightmap(scn,value);			
 		} else if (property.equals(INITIAL_MUSIC_DELAY_PROP)) {
-			scn.setRootAttr("initial_music_delay", value);
+			doc.setRootAttr(scn,"initial_music_delay", value);
 		} else if (property.equals(REPEAT_MUSIC_DELAY_PROP)) {
-			scn.setRootAttr("repeat_music_delay", value);
+			doc.setRootAttr(scn,"repeat_music_delay", value);
 		}
 	}
 }

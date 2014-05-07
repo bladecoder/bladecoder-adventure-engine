@@ -13,7 +13,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.Project;
-import org.bladecoder.engineeditor.model.SceneDocument;
+import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.components.CreateEditElementDialog;
 import org.bladecoder.engineeditor.ui.components.ElementListCellRender;
 import org.bladecoder.engineeditor.ui.components.ElementListModel;
@@ -93,7 +93,7 @@ public class ActorListPanel extends ElementListPanel {
 	}
 
 	private void setPlayer() {
-		SceneDocument scn = (SceneDocument) doc;
+		ChapterDocument scn = (ChapterDocument) doc;
 
 		int pos = list.getSelectedIndex();
 
@@ -103,13 +103,13 @@ public class ActorListPanel extends ElementListPanel {
 		ElementListModel lm = (ElementListModel) list.getModel();
 		Element e = lm.getElementAt(pos);
 
-		if (e.getAttribute("type").equals(SceneDocument.SPRITE3D_ACTOR_TYPE)
-				|| e.getAttribute("type").equals(SceneDocument.ATLAS_ACTOR_TYPE)
-				|| e.getAttribute("type").equals(SceneDocument.SPINE_ACTOR_TYPE)
+		if (e.getAttribute("type").equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)
+				|| e.getAttribute("type").equals(ChapterDocument.ATLAS_ACTOR_TYPE)
+				|| e.getAttribute("type").equals(ChapterDocument.SPINE_ACTOR_TYPE)
 				) {
 			String id = e.getAttribute("id");
 
-			scn.setRootAttr("player", id);
+			scn.setRootAttr(parent, "player", id);
 
 			list.repaint();
 		}
@@ -141,16 +141,16 @@ public class ActorListPanel extends ElementListPanel {
 
 			if (isPlayer) {
 				u = getClass().getResource("/res/images/ic_player.png");
-			} else if (type.equals(SceneDocument.FOREGROUND_ACTOR_TYPE)) {
+			} else if (type.equals(ChapterDocument.FOREGROUND_ACTOR_TYPE)) {
 				u = getClass().getResource("/res/images/ic_fg_actor.png");
-			} else if (type.equals(SceneDocument.ATLAS_ACTOR_TYPE)) {
+			} else if (type.equals(ChapterDocument.ATLAS_ACTOR_TYPE)) {
 				u = getClass().getResource("/res/images/ic_sprite_actor.png");
-			} else if (type.equals(SceneDocument.BACKGROUND_ACTOR_TYPE)) {
+			} else if (type.equals(ChapterDocument.BACKGROUND_ACTOR_TYPE)) {
 				u = getClass().getResource("/res/images/ic_base_actor.png");
-			} else if (type.equals(SceneDocument.SPINE_ACTOR_TYPE)) {
+			} else if (type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
 				u = getClass()
 						.getResource("/res/images/ic_character_actor.png");			
-			} else if (type.equals(SceneDocument.SPRITE3D_ACTOR_TYPE)) {
+			} else if (type.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
 				u = getClass()
 						.getResource("/res/images/ic_character_actor.png");
 			}

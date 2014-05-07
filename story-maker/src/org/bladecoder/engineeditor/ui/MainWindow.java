@@ -92,11 +92,14 @@ public class MainWindow extends JFrame implements PropertyChangeListener {
 		
 		String lastProject = Ctx.project.getConfig().getProperty(Project.LAST_PROJECT_PROP, "");
 		
-		if(!lastProject.isEmpty()) {
+		if(!lastProject.isEmpty()&& new File(lastProject).exists()) {
 			try {
 				Ctx.project.loadProject(new File(lastProject));
 			} catch (IOException | ParserConfigurationException | SAXException e) {
 				EditorLogger.debug("Last project not found: " + lastProject + " " + e.getMessage());
+				Ctx.project.closeProyect();
+			} catch (Exception e) {
+				Ctx.project.closeProyect();
 			}
 		}
     }

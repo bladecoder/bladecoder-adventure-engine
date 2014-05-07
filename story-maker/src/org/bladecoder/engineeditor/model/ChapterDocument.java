@@ -28,7 +28,7 @@ import aurelienribon.tweenengine.Tween;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class SceneDocument extends BaseDocument {
+public class ChapterDocument extends BaseDocument {
 
 	public static final String BACKGROUND_ACTOR_TYPE = "background";
 	public static final String ATLAS_ACTOR_TYPE = "atlas";
@@ -43,22 +43,22 @@ public class SceneDocument extends BaseDocument {
 	public static final String ANIMATION_TYPES[] = { "no_repeat", "repeat",
 			"yoyo", "reverse" };
 
-	public SceneDocument(String modelPath) {
+	public ChapterDocument(String modelPath) {
 		super();
 		setModelPath(modelPath);
 	}
 
 	@Override
 	public String getRootTag() {
-		return "scene";
+		return "chapter";
 	}
 
 	public void setFilenameFromId() {
-		setFilename(getId() + ".scn");
+		setFilename(getId() + ".chapter");
 	}
 
-	public Element getActor(String id) {
-		NodeList actorsNL = getActors();
+	public Element getActor(Element scn, String id) {
+		NodeList actorsNL = getActors(scn);
 		for (int j = 0; j < actorsNL.getLength(); j++) {
 			Element e = (Element) actorsNL.item(j);
 			if (id.equals(e.getAttribute("id"))) {
@@ -69,43 +69,50 @@ public class SceneDocument extends BaseDocument {
 		return null;
 	}
 
-	public NodeList getActors() {
-		NodeList actors = doc.getDocumentElement()
+	public NodeList getActors(Element scn) {
+		NodeList actors = scn
 				.getElementsByTagName("actor");
 
 		return actors;
 	}
+	
+	public NodeList getScenes() {
+		NodeList s = getElement()
+				.getElementsByTagName("scene");
 
-	public void createActor(String id, String type) {
+		return s;
+	}
+
+	public void createActor(Element scn, String id, String type) {
 		Element e = doc.createElement("actor");
 
-		doc.getDocumentElement().appendChild(e);
-		setActorId(e, id);
+		scn.appendChild(e);
+		setActorId(scn, e, id);
 		e.setAttribute("type", type);
 
 		if (type.equals(BACKGROUND_ACTOR_TYPE))
 			setBbox(e, new Rectangle(0, 0, 100, 100));
 
 		modified = true;
-		firePropertyChange(SceneDocument.NOTIFY_ELEMENT_CREATED, e);
+		firePropertyChange(ChapterDocument.NOTIFY_ELEMENT_CREATED, e);
 	}
 
-	public void addActor(Element e) {
+	public void addActor(Element scn, Element e) {
 
-		doc.getDocumentElement().appendChild(e);
+		scn.appendChild(e);
 
 		modified = true;
-		firePropertyChange(SceneDocument.NOTIFY_ELEMENT_CREATED, e);
+		firePropertyChange(ChapterDocument.NOTIFY_ELEMENT_CREATED, e);
 	}
 
-	public void removeActor(String id) {
-		Element e = getActor(id);
+	public void removeActor(Element scn, String id) {
+		Element e = getActor(scn, id);
 
 		deleteElement(e);
 	}
 
-	public Element getPlayer() {
-		NodeList nl = doc.getDocumentElement().getElementsByTagName("player");
+	public Element getPlayer(Element scn) {
+		NodeList nl = scn.getElementsByTagName("player");
 
 		if (nl.getLength() == 0)
 			return null;
@@ -113,8 +120,8 @@ public class SceneDocument extends BaseDocument {
 			return (Element) nl.item(0);
 	}
 
-	public void setRootAttr(String attr, String value) {
-		Element e = doc.getDocumentElement();
+	public void setRootAttr(Element scn, String attr, String value) {
+		Element e = scn;
 
 		String old = e.getAttribute(attr);
 
@@ -127,64 +134,64 @@ public class SceneDocument extends BaseDocument {
 		firePropertyChange(attr, old, value);
 	}
 
-	public String getMusic() {
-		return doc.getDocumentElement().getAttribute("music");
+	public String getMusic(Element scn) {
+		return scn.getAttribute("music");
 	}
 
-	public void setMusic(String filename, String loopMusic,
+	public void setMusic(Element scn, String filename, String loopMusic,
 			String initialMusicDelay, String repeatMusicDelay) {
 		if (filename != null && !filename.isEmpty())
-			doc.getDocumentElement().setAttribute("music", filename);
+			scn.setAttribute("music", filename);
 		else
-			doc.getDocumentElement().removeAttribute("music");
+			scn.removeAttribute("music");
 
 		if (loopMusic != null && !loopMusic.isEmpty())
-			doc.getDocumentElement().setAttribute("loop_music", loopMusic);
+			scn.setAttribute("loop_music", loopMusic);
 		else
-			doc.getDocumentElement().removeAttribute("loop_music");
+			scn.removeAttribute("loop_music");
 
 		if (initialMusicDelay != null && !initialMusicDelay.isEmpty())
-			doc.getDocumentElement().setAttribute("initial_music_delay",
+			scn.setAttribute("initial_music_delay",
 					initialMusicDelay);
 		else
-			doc.getDocumentElement().removeAttribute("initial_music_delay");
+			scn.removeAttribute("initial_music_delay");
 
 		if (repeatMusicDelay != null && !repeatMusicDelay.isEmpty())
-			doc.getDocumentElement().setAttribute("repeat_music_delay",
+			scn.setAttribute("repeat_music_delay",
 					repeatMusicDelay);
 		else
-			doc.getDocumentElement().removeAttribute("repeat_music_delay");
+			scn.removeAttribute("repeat_music_delay");
 
 		modified = true;
-		firePropertyChange("music", doc.getDocumentElement());
+		firePropertyChange("music", scn);
 	}
 
-	public String getBackground() {
-		return doc.getDocumentElement().getAttribute("background");
+	public String getBackground(Element scn) {
+		return scn.getAttribute("background");
 	}
 
-	public String getLightmap() {
+	public String getLightmap(Element scn) {
 		return doc.getDocumentElement().getAttribute("lightmap");
 	}
 
-	public void setBackground(String value) {
-		setRootAttr("background", value);
+	public void setBackground(Element scn, String value) {
+		setRootAttr(scn, "background", value);
 	}
 
-	public void setLightmap(String value) {
-		setRootAttr("lightmap", value);
+	public void setLightmap(Element scn, String value) {
+		setRootAttr(scn, "lightmap", value);
 	}
 
-	public Scene getEngineScene(int wWidth, int wHeight) {
+	public Scene getEngineScene(Element s, int wWidth, int wHeight) {
 		Scene scn = new Scene();
 
 		scn.setId(getId());
 
 		scn.getCamera().create(wWidth, wHeight);
 
-		String background = getBackground();
+		String background = getBackground(s);
 		if (background != null && !background.isEmpty()) {
-			scn.setBackground(background, getLightmap());
+			scn.setBackground(background, getLightmap(s));
 		}
 
 		String depthVector = getRootAttr("depth_vector");
@@ -192,7 +199,7 @@ public class SceneDocument extends BaseDocument {
 			scn.setDepthVector(Param.parseVector2(depthVector));
 
 		// GET ACTORS
-		NodeList actors = getActors();
+		NodeList actors = getActors(s);
 		for (int i = 0; i < actors.getLength(); i++) {
 			Element a = (Element) actors.item(i);
 			Actor actor = getEngineActor(a);
@@ -256,7 +263,7 @@ public class SceneDocument extends BaseDocument {
 	}
 
 	public void setId(String id) {
-		setRootAttr("id", id);
+		setRootAttr(doc.getDocumentElement(), "id", id);
 	}
 
 	public Rectangle getBBox() {
@@ -271,12 +278,12 @@ public class SceneDocument extends BaseDocument {
 		setBbox(doc.getDocumentElement(), bbox);
 	}
 
-	public SceneDocument cloneScene() {
+	public ChapterDocument cloneScene() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public SceneDocument pasteScene() {
+	public ChapterDocument pasteScene() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -289,8 +296,8 @@ public class SceneDocument extends BaseDocument {
 	 * @param e
 	 * @param id
 	 */
-	public void setActorId(Element e, String id) {
-		NodeList actors = getActors();
+	public void setActorId(Element scn, Element e, String id) {
+		NodeList actors = getActors(scn);
 
 		boolean checked = false;
 
