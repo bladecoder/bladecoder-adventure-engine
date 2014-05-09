@@ -6,8 +6,7 @@ import java.text.MessageFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.bladecoder.engine.anim.EngineTween;
-import org.bladecoder.engine.anim.TweenManagerSingleton;
+import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
@@ -22,8 +21,6 @@ import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.w3c.dom.Element;
 
-import aurelienribon.tweenengine.Tween;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -33,7 +30,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -78,7 +74,6 @@ public class ScnCanvas extends ApplicationAdapter {
 	@Override
 	public void create() {
 		Assets.inst().initialize();
-		Tween.registerAccessor(Sprite.class, new SpriteAccessor());
 
 		screenCamera = new OrthographicCamera();
 		// resetCameras();
@@ -338,7 +333,7 @@ public class ScnCanvas extends ApplicationAdapter {
 					|| ((SpriteActor) selectedActor).getRenderer()
 							.getInitFrameAnimation().equals(selFA)) {
 				((SpriteActor) selectedActor).startFrameAnimation(selFA,
-						EngineTween.REPEAT, Tween.INFINITY, null);
+						Tween.REPEAT, Tween.INFINITY, null);
 			}
 		} else {
 			faRenderer.setFrameAnimation(null);
@@ -411,18 +406,11 @@ public class ScnCanvas extends ApplicationAdapter {
 			batch.end();
 
 			// WORLD CAMERA
-			scn.update(Gdx.graphics.getDeltaTime());
+			if (toggleAnim.getState()) {
+				scn.update(Gdx.graphics.getDeltaTime());
+			}
 
 			faRenderer.update(Gdx.graphics.getDeltaTime());
-
-			if (toggleAnim.getState()) {
-				TweenManagerSingleton.getInstance().update(
-						Gdx.graphics.getDeltaTime());
-
-				// if(selectedActor != null && selectedActor instanceof
-				// SpriteActor)
-				// ((SpriteActor)selectedActor).update(Gdx.graphics.getDeltaTime());
-			}
 
 			batch.setProjectionMatrix(scn.getCamera().combined);
 			batch.begin();

@@ -5,16 +5,14 @@ import java.util.HashMap;
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
-import org.bladecoder.engine.anim.EngineTween;
+import org.bladecoder.engine.anim.FATween;
 import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.util.ActionCallbackSerialization;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -24,7 +22,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class SpriteAtlasRenderer implements SpriteRenderer {
+public class AtlasRenderer implements SpriteRenderer {
 
 	private HashMap<String, FrameAnimation> fanims = new HashMap<String, FrameAnimation>();
 	
@@ -32,17 +30,12 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 	private String initFrameAnimation;
 
 	private AtlasFrameAnimation currentFrameAnimation;
-	
-	private Animation animation;
-	private float animationTime;
-	private ActionCallback animationCb = null;
-	private String animationCbSer = null;
-	
-	private int currentCount;
-	private int currentAnimationType;
 
 	private TextureRegion tex;
 	private boolean flipX;
+	private FATween faTween;
+	
+	private int currentFrameIndex;
 	
 	private HashMap<String, AtlasCacheEntry> atlasCache = new HashMap<String, AtlasCacheEntry>();
 
@@ -78,44 +71,20 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		return result;
 	}	
 
-	private boolean isAnimationFinished() {
-		if (currentAnimationType == EngineTween.REPEAT
-				|| currentAnimationType == EngineTween.REVERSE_REPEAT ||
-						currentAnimationType == EngineTween.YOYO) {
-			if (currentCount > 0
-					&& animationTime > currentFrameAnimation.duration
-							* currentCount)
-				return true;
-		} else if (animationTime > currentFrameAnimation.duration) {
-			return true;
-		}
-
-		return false;
-	}
 
 	@Override
 	public void update(float delta) {
-		if (animation != null) {
-			animationTime += delta;
-			tex = animation.getKeyFrame(animationTime);
-
-			if (isAnimationFinished()) {
-				
-				animation = null;
-
-				if (animationCb != null || animationCbSer != null) {
-
-					if (animationCb == null) {
-						animationCb = ActionCallbackSerialization
-								.find(animationCbSer);
-						animationCbSer = null;
-					}
-
-					ActionCallbackQueue.add(animationCb);
-					animationCb = null;
-				}
+		if(faTween != null) {
+			faTween.update(this, delta);
+			if(faTween.isComplete()) {
+				faTween = null;
 			}
 		}
+	}
+	
+	public void setFrame(int i) {
+		currentFrameIndex = i;
+		tex =  currentFrameAnimation.regions.get(i);
 	}
 
 	@Override
@@ -188,10 +157,6 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 
 		currentFrameAnimation = fa;
 
-		animationCb = cb;
-		animation = null;
-		animationTime = 0;
-
 		// If the source is not loaded. Load it.
 		if (currentFrameAnimation != null
 				&& currentFrameAnimation.regions == null) {
@@ -214,7 +179,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		if (currentFrameAnimation.regions.size == 1
 				|| currentFrameAnimation.duration == 0.0) {
 
-			tex = currentFrameAnimation.regions.first();
+			setFrame(0);
 
 			if (cb != null) {
 				ActionCallbackQueue.add(cb);
@@ -223,42 +188,17 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 			return;
 		}
 
-		if (repeatType == EngineTween.FROM_FA) {
-			currentAnimationType = currentFrameAnimation.animationType;
-			currentCount = currentFrameAnimation.count;
-		} else {
-			currentCount = count;
-			currentAnimationType = repeatType;
+		if (repeatType == Tween.FROM_FA) {
+			repeatType = currentFrameAnimation.animationType;
+			count = currentFrameAnimation.count;
 		}
-
-		newCurrentAnimation(currentAnimationType, currentCount);
+		
+		faTween = new FATween();
+		faTween.start(this, repeatType, count, currentFrameAnimation.duration, cb);
 	}
 
-	private int getNumFrames() {
+	public int getNumFrames() {
 		return currentFrameAnimation.regions.size;
-	}
-
-	private void newCurrentAnimation(int repeatType, int count) {
-		PlayMode animationType = Animation.PlayMode.NORMAL;
-
-		switch (repeatType) {
-		case EngineTween.REPEAT:
-			animationType = Animation.PlayMode.LOOP;
-			break;
-		case EngineTween.YOYO:
-			animationType = Animation.PlayMode.LOOP_PINGPONG;
-			break;
-		case EngineTween.REVERSE:
-			animationType = Animation.PlayMode.REVERSED;
-			break;
-		case EngineTween.REVERSE_REPEAT:
-			animationType = Animation.PlayMode.LOOP_REVERSED;
-			break;
-		}
-
-		// TODO NOT TO CREATE NEW INSTANCES OF ANIMATION, ONLY 1 INSTACE
-		animation = new Animation(currentFrameAnimation.duration
-				/ getNumFrames(), currentFrameAnimation.regions, animationType);
 	}
 
 	@Override
@@ -363,7 +303,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		sb.append('.');
 		sb.append(dir);
 
-		startFrameAnimation(sb.toString(), EngineTween.FROM_FA, 1, null);
+		startFrameAnimation(sb.toString(), Tween.FROM_FA, 1, null);
 	}
 
 	@Override
@@ -375,7 +315,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 			standFA += getCurrentFrameAnimationId().substring(idx);
 		}
 
-		startFrameAnimation(standFA, EngineTween.FROM_FA, 1, null);
+		startFrameAnimation(standFA, Tween.FROM_FA, 1, null);
 	}
 
 	@Override
@@ -383,7 +323,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		String currentDirection = FrameAnimation.getFrameDirection(p0, pf);
 		StringBuilder sb = new StringBuilder();
 		sb.append(FrameAnimation.WALK_ANIM).append('.').append(currentDirection);
-		startFrameAnimation(sb.toString(), EngineTween.FROM_FA, 1, null);
+		startFrameAnimation(sb.toString(), Tween.FROM_FA, 1, null);
 	}
 
 
@@ -459,18 +399,10 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 				retrieveFA(fa);		
 		}
 
-		if (currentFrameAnimation != null) {
-			
-			if (currentFrameAnimation.regions.size == 1)
-				tex = currentFrameAnimation.regions.first();
-			else { 	// TODO Restore previous animation state
-				newCurrentAnimation(currentAnimationType,
-						currentCount);
-				
-				tex = animation.getKeyFrame(animationTime);
-			}
+		if (currentFrameAnimation != null) {		
+			setFrame(currentFrameIndex);
 		} else if(initFrameAnimation != null){
-			startFrameAnimation(initFrameAnimation, EngineTween.FROM_FA, 1, null);
+			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1, null);
 		}
 	}
 
@@ -499,13 +431,7 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 		json.writeValue("initFrameAnimation", initFrameAnimation);
 
 		json.writeValue("flipX", flipX);
-		json.writeValue("currentCount", currentCount);
-		json.writeValue("currentAnimationType", currentAnimationType);
-
-		json.writeValue("animationTime", animationTime);
-		json.writeValue("animationCb",
-				ActionCallbackSerialization.find(animationCb),
-				animationCb == null ? null : String.class);
+		json.writeValue("currentFrameIndex", currentFrameIndex);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -525,10 +451,6 @@ public class SpriteAtlasRenderer implements SpriteRenderer {
 				jsonData);
 
 		flipX = json.readValue("flipX", Boolean.class, jsonData);
-		currentCount = json.readValue("currentCount", Integer.class, jsonData);
-		currentAnimationType = json.readValue("currentAnimationType", Integer.class, jsonData);
-
-		animationTime = json.readValue("animationTime", Float.class, jsonData);
-		animationCbSer = json.readValue("animationCb", String.class, jsonData);
+		currentFrameIndex = json.readValue("currentFrameIndex", Integer.class, jsonData);
 	}
 }

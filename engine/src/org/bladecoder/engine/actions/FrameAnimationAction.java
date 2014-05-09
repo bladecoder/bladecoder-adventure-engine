@@ -4,7 +4,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
-import org.bladecoder.engine.anim.EngineTween;
+import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.World;
@@ -36,7 +36,7 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 	private float posx, posy;
 	private int setPos = NO_POS;
 	private boolean reverse = false;
-	private int repeat = EngineTween.FROM_FA;
+	private int repeat = Tween.FROM_FA;
 	private int count = 1;
 	private boolean wait = true;
 
@@ -69,15 +69,15 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 		if(params.get("animation_type") != null) {
 			String repeatStr = params.get("animation_type");
 			if (repeatStr.equalsIgnoreCase("repeat")) {
-				repeat = EngineTween.REPEAT;
+				repeat = Tween.REPEAT;
 			} else if (repeatStr.equalsIgnoreCase("yoyo")) {
-				repeat = EngineTween.YOYO;
+				repeat = Tween.PINGPONG;
 			} else if (repeatStr.equalsIgnoreCase("no_repeat")) {
-				repeat = EngineTween.NO_REPEAT;
+				repeat = Tween.NO_REPEAT;
 			} else if (repeatStr.equalsIgnoreCase("reverse")) {
-				repeat = EngineTween.REVERSE;				
+				repeat = Tween.REVERSE;				
 			} else {
-				repeat = EngineTween.FROM_FA;
+				repeat = Tween.FROM_FA;
 			}
 		}
 	}

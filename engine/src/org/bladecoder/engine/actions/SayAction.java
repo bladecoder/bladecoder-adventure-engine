@@ -3,7 +3,7 @@ package org.bladecoder.engine.actions;
 import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
-import org.bladecoder.engine.anim.EngineTween;
+import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.Text;
@@ -94,7 +94,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 			if (type == Text.Type.TALK) {
 				previousFA = ((SpriteActor) actor).getRenderer().getCurrentFrameAnimationId();
 				((SpriteActor) actor).startFrameAnimation(getTalkFA(previousFA),
-						EngineTween.FROM_FA, 0, null);
+						Tween.FROM_FA, 0, null);
 			}
 
 			if (wait) {
@@ -113,7 +113,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 		if (this.type == Text.Type.TALK) {
 			SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene()
 					.getActor(actorId);
-			actor.startFrameAnimation(previousFA, EngineTween.FROM_FA, 0, null);
+			actor.startFrameAnimation(previousFA, Tween.FROM_FA, 0, null);
 		}
 
 		super.onEvent();

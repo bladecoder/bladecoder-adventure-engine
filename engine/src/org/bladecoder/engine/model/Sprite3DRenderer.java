@@ -5,16 +5,14 @@ import java.util.HashMap;
 
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.actions.ActionCallbackQueue;
-import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 import org.bladecoder.engine.util.EngineLogger;
-import org.bladecoder.engine.util.RectangleRenderer;
 import org.bladecoder.engine.util.Utils3D;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -353,7 +351,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			}
 		}
 
-		if (repeatType == EngineTween.FROM_FA) {
+		if (repeatType == Tween.FROM_FA) {
 			currentAnimationType = currentFrameAnimation.animationType;
 			currentCount = currentFrameAnimation.count;
 		} else {
@@ -363,8 +361,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 		boolean reverse = false;
 
-		if (currentAnimationType == EngineTween.REVERSE
-				|| currentAnimationType == EngineTween.REVERSE_REPEAT)
+		if (currentAnimationType == Tween.REVERSE
+				|| currentAnimationType == Tween.REVERSE_REPEAT)
 			reverse = true;
 
 		if (currentModel.modelInstance.getAnimation(id) != null) {
@@ -441,14 +439,14 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void stand() {
-		startFrameAnimation(FrameAnimation.STAND_ANIM, EngineTween.NO_REPEAT,
+		startFrameAnimation(FrameAnimation.STAND_ANIM, Tween.NO_REPEAT,
 				1, null);
 	}
 
 	@Override
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
 		lookat(p0, pf);
-		startFrameAnimation(FrameAnimation.WALK_ANIM, EngineTween.REPEAT, -1,
+		startFrameAnimation(FrameAnimation.WALK_ANIM, Tween.REPEAT, -1,
 				null);
 	}
 
@@ -681,7 +679,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			// TODO RESTORE CURRENT ANIMATION STATE
 
 		} else if(initFrameAnimation != null){
-			startFrameAnimation(initFrameAnimation, EngineTween.FROM_FA, 1,
+			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1,
 					null);
 
 			if (currentFrameAnimation != null)

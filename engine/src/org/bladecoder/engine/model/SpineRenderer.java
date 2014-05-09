@@ -4,8 +4,8 @@ import java.util.HashMap;
 
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.actions.ActionCallbackQueue;
-import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.util.ActionCallbackSerialization;
 import org.bladecoder.engine.util.EngineLogger;
@@ -29,7 +29,7 @@ import com.esotericsoftware.spine.SkeletonData;
 import com.esotericsoftware.spine.SkeletonJson;
 import com.esotericsoftware.spine.SkeletonRenderer;
 
-public class SpriteSpineRenderer implements SpriteRenderer {
+public class SpineRenderer implements SpriteRenderer {
 
 	private HashMap<String, FrameAnimation> fanims = new HashMap<String, FrameAnimation>();
 
@@ -199,7 +199,7 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 		sb.append('.');
 		sb.append(direction);
 
-		startFrameAnimation(sb.toString(), EngineTween.FROM_FA, 1, null);
+		startFrameAnimation(sb.toString(), Tween.FROM_FA, 1, null);
 	}
 
 	@Override
@@ -211,7 +211,7 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 			standFA += getCurrentFrameAnimationId().substring(idx);
 		}
 
-		startFrameAnimation(standFA, EngineTween.FROM_FA, 1, null);
+		startFrameAnimation(standFA, Tween.FROM_FA, 1, null);
 	}
 
 	@Override
@@ -220,7 +220,7 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 		StringBuilder sb = new StringBuilder();
 		sb.append(FrameAnimation.WALK_ANIM).append('.')
 				.append(currentDirection);
-		startFrameAnimation(sb.toString(), EngineTween.FROM_FA, 1, null);
+		startFrameAnimation(sb.toString(), Tween.FROM_FA, 1, null);
 	}
 
 	@Override
@@ -260,7 +260,7 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 			}
 		}
 
-		if (repeatType == EngineTween.FROM_FA) {
+		if (repeatType == Tween.FROM_FA) {
 			currentAnimationType = currentFrameAnimation.animationType;
 			currentCount = currentFrameAnimation.count;
 		} else {
@@ -270,7 +270,7 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 
 		currentSkeleton.skeleton.setFlipX(flipX);
 		currentSkeleton.animation.setAnimation(0, id,
-				currentAnimationType == EngineTween.REPEAT);
+				currentAnimationType == Tween.REPEAT);
 	}
 
 	private FrameAnimation getFrameAnimation(String id) {
@@ -411,7 +411,7 @@ public class SpriteSpineRenderer implements SpriteRenderer {
 			// TODO RESTORE CURRENT ANIMATION STATE
 
 		} else if (initFrameAnimation != null) {
-			startFrameAnimation(initFrameAnimation, EngineTween.FROM_FA, 1,
+			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1,
 					null);
 		}
 

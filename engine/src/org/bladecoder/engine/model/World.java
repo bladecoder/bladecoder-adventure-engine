@@ -9,7 +9,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.anim.Timers;
-import org.bladecoder.engine.anim.TweenManagerSingleton;
 import org.bladecoder.engine.assets.AssetConsumer;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.loader.WorldXMLLoader;
@@ -97,8 +96,6 @@ public class World implements Serializable, AssetConsumer {
 		cutMode = false;
 		timeOfGame = 0;
 
-		TweenManagerSingleton.getInstance().killAll();
-
 		customProperties = new HashMap<String, String>();
 		
 		spriteBatch = new SpriteBatch();
@@ -170,7 +167,6 @@ public class World implements Serializable, AssetConsumer {
 		getCurrentScene().update(delta);
 		textManager.update(delta);
 		timers.update(delta);
-		TweenManagerSingleton.getInstance().update(delta);
 		ActionCallbackQueue.run();
 	}
 
@@ -272,7 +268,6 @@ public class World implements Serializable, AssetConsumer {
 	public void setCurrentScene(Scene scene) {
 
 		if (currentScene != null) {
-			TweenManagerSingleton.getInstance().killAll();
 			textManager.reset();
 			timers.clear();
 			currentScene.stopMusic();
@@ -370,7 +365,6 @@ public class World implements Serializable, AssetConsumer {
 			EngineAssetManager.getInstance().dispose();
 			RectangleRenderer.dispose();
 			Utils3D.dispose();
-			TweenManagerSingleton.getInstance().killAll();
 			EngineLogger.dispose();
 			
 			spriteBatch.dispose();
@@ -398,7 +392,6 @@ public class World implements Serializable, AssetConsumer {
 
 	public void pause() {
 		paused = true;
-		TweenManagerSingleton.getInstance().pause();
 
 		if (currentScene != null)
 			currentScene.pauseMusic();
@@ -409,8 +402,6 @@ public class World implements Serializable, AssetConsumer {
 	public void resume() {
 		if (assetState == AssetState.LOADED) {
 			paused = false;
-
-			TweenManagerSingleton.getInstance().resume();
 
 			if (currentScene != null)
 				currentScene.resumeMusic();
@@ -502,8 +493,6 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("dialogActor", currentDialog.getActor());
 			json.writeValue("currentDialog", currentDialog.getId());
 		}
-
-		TweenManagerSingleton.write(json);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -547,8 +536,6 @@ public class World implements Serializable, AssetConsumer {
 					.getActor(actorId);
 			instance.currentDialog = actor.getDialog(dialogId);
 		}
-
-		TweenManagerSingleton.read(json, jsonData);
 	}
 
 }

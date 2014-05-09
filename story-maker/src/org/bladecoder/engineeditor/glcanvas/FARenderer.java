@@ -1,15 +1,14 @@
 package org.bladecoder.engineeditor.glcanvas;
 
-import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
-import org.bladecoder.engine.model.SpriteAtlasRenderer;
+import org.bladecoder.engine.model.AtlasRenderer;
 import org.bladecoder.engine.model.SpriteRenderer;
-import org.bladecoder.engine.model.SpriteSpineRenderer;
+import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.util.RectangleRenderer;
-import org.bladecoder.engineeditor.utils.EditorLogger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -41,10 +40,10 @@ public class FARenderer {
 			if (r instanceof Sprite3DRenderer) {
 				renderer = new Sprite3DRenderer();
 				((Sprite3DRenderer)renderer).setSpriteSize(new Vector2( r.getWidth(), r.getHeight()));
-			} else if (r instanceof SpriteSpineRenderer) {
-				renderer = new SpriteSpineRenderer();
+			} else if (r instanceof SpineRenderer) {
+				renderer = new SpineRenderer();
 			} else {
-				renderer = new SpriteAtlasRenderer();
+				renderer = new AtlasRenderer();
 			}
 		}
 	}
@@ -60,7 +59,7 @@ public class FARenderer {
 
 			renderer.retrieveAssets();
 
-			renderer.startFrameAnimation(fa.id, EngineTween.FROM_FA, 1, null);
+			renderer.startFrameAnimation(fa.id, Tween.FROM_FA, 1, null);
 		}
 	}
 

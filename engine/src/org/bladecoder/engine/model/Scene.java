@@ -171,6 +171,8 @@ public class Scene extends Actor implements Movers, Serializable,
 			if(a instanceof SpriteActor)
 				((SpriteActor)a).update(delta);
 		}
+		
+		camera.update(delta);
 	}
 
 	public void draw(SpriteBatch spriteBatch) {

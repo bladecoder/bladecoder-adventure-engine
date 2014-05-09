@@ -2,10 +2,7 @@ package org.bladecoder.engine.model;
 
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.anim.CameraTween;
-import org.bladecoder.engine.anim.EngineTween;
-import org.bladecoder.engine.anim.TweenManagerSingleton;
-
-import aurelienribon.tweenengine.TweenManager;
+import org.bladecoder.engine.anim.Tween;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -20,14 +17,16 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 	
 	private static final float START_SCROLLX = 0.1f;
 	private static final float START_SCROLLY = 0.2f;
+	
+	// to avoid create new vector when calling getPosition
+	private final static Vector2 tmpPos = new Vector2();
 
 	private float startScrollDistanceX;
 	private float startScrollDistanceY;
 
 	private float scrollingWidth, scrollingHeight;
 	
-	// to avoid create new vector when calling getPosition
-	private final Vector2 tmpPos = new Vector2();
+	private CameraTween cameraTween;
 	
 	public SceneCamera() {
 	}
@@ -59,6 +58,15 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		scrollingWidth = w;
 		scrollingHeight = h;
 	}
+	
+	public void update(float delta) {
+		if(cameraTween != null) {
+			cameraTween.update(delta, this);
+			if(cameraTween.isComplete()) {
+				cameraTween = null;
+			}
+		}
+	}	
 
 	public void setPosition(float x, float y) {
 
@@ -107,14 +115,9 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 	 * @param destY
 	 */
 	public void startAnimation(float destX, float destY, float zoom, float duration, ActionCallback cb) {
-		TweenManager manager = TweenManagerSingleton.getInstance();
-
-		manager.killTarget(this, EngineTween.CAMERA_TYPE);
-
-		CameraTween t = new CameraTween();
+		cameraTween = new CameraTween();
 		
-		t.start(EngineTween.NO_REPEAT, 1, new Vector2(destX, destY), zoom, duration, cb);
-		manager.add(t);
+		cameraTween.start(this, Tween.NO_REPEAT, 1, destX, destY, zoom, duration, cb);
 	}
 
 	public Vector3 getInputUnProject(Rectangle viewport) {
@@ -183,6 +186,7 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		json.writeValue("scrollingHeight", scrollingHeight);
 		json.writeValue("pos", getPosition());
 		json.writeValue("zoom", getZoom());
+		json.writeValue("cameraTween", cameraTween);
 	}
 
 	@Override
@@ -200,5 +204,7 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		create(viewportWidth, viewportHeight);
 		setPosition(pos.x, pos.y);
 		setZoom(z);
+
+		cameraTween = json.readValue("cameraTween", CameraTween.class, jsonData);
 	}	
 }

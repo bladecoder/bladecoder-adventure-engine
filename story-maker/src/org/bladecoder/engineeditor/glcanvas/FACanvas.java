@@ -1,16 +1,14 @@
 package org.bladecoder.engineeditor.glcanvas;
 
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
-import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.model.Sprite3DRenderer;
-import org.bladecoder.engine.model.SpriteAtlasRenderer;
+import org.bladecoder.engine.model.AtlasRenderer;
 import org.bladecoder.engine.model.SpriteRenderer;
-import org.bladecoder.engine.model.SpriteSpineRenderer;
+import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.CreateEditFADialog;
-
-import aurelienribon.tweenengine.Tween;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -54,16 +52,16 @@ public class FACanvas extends ApplicationAdapter {
 		if (source!=null && id != null && !source.isEmpty() && !id.isEmpty()) {
 			faChanged = true;
 			
-			int type = EngineTween.REPEAT;
+			int type = Tween.REPEAT;
 			float speed = 2.0f;
 			
 			if(!speedStr.isEmpty())
 				speed = Float.parseFloat(speedStr);
 			
 			if(typeStr.equals("yoyo"))
-				type = EngineTween.YOYO;
+				type = Tween.PINGPONG;
 			
-			if(renderer instanceof SpriteAtlasRenderer)
+			if(renderer instanceof AtlasRenderer)
 				fa = new AtlasFrameAnimation();
 			else 
 				fa = new FrameAnimation();
@@ -87,9 +85,9 @@ public class FACanvas extends ApplicationAdapter {
 				renderer = new Sprite3DRenderer();
 				((Sprite3DRenderer)renderer).setSpriteSize(new Vector2( Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 			} else if(type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
-				renderer = new SpriteSpineRenderer();
+				renderer = new SpineRenderer();
 			} else {
-				renderer = new SpriteAtlasRenderer();
+				renderer = new AtlasRenderer();
 			}
 			
 			createEditFADialog.fillAnimations(renderer.getInternalAnimations(source));			
@@ -102,7 +100,7 @@ public class FACanvas extends ApplicationAdapter {
 			
 			renderer.addFrameAnimation(fa);
 			
-			renderer.startFrameAnimation(fa.id, EngineTween.FROM_FA, 1, null);	
+			renderer.startFrameAnimation(fa.id, Tween.FROM_FA, 1, null);	
 		}
 	}
 

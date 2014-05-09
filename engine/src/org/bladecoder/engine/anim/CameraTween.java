@@ -1,81 +1,73 @@
 package org.bladecoder.engine.anim;
 
 import org.bladecoder.engine.actions.ActionCallback;
-import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.model.SceneCamera;
-
-import aurelienribon.tweenengine.TweenCallback;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 
 /**
- * Tween for frame animation
+ * Tween for camera position and zoom animation
  */
-public class CameraTween extends EngineTween implements
-		Serializable {
+public class CameraTween extends Tween {
 	
-	protected SceneCamera target;
+	private float startX, startY, startZoom;
+	private float targetX, targetY, targetZoom;
 	
 	public CameraTween() {
-		type = EngineTween.CAMERA_TYPE;
-		
-		startValues = new float[3];
-		targetValues = new float[3];
-		valueBuffer = new float[3];
 	}
 
-	public void start( int repeatType, int count, Vector2 targetPos, float targetZoom, float duration, ActionCallback cb) {
+	public void start( SceneCamera camera, int repeatType, int count, float targetX, float targetY, float targetZoom, float duration, ActionCallback cb) {
 		
-		target = World.getInstance().getSceneCamera();
+		Vector2 currentPos = camera.getPosition();
 		
-		Vector2 currentPos = target.getPosition();
+		startX = currentPos.x;
+		startY = currentPos.y;
+		startZoom = camera.getZoom();
+		this.targetX = targetX;
+		this.targetY = targetY;
+		this.targetZoom = targetZoom;
 		
-		startValues[0] = currentPos.x;
-		startValues[1] = currentPos.y;
-		startValues[2] = target.getZoom();
-		targetValues[0] = targetPos.x;
-		targetValues[1] = targetPos.y;
-		startValues[2] = targetZoom;
-		
-		this.duration = duration;
+		setDuration(duration);
+		setType(repeatType);
+		setCount(count);
 
 		if (cb != null) {
-			this.cb = cb;
-			setCallback(tweenCb);
-			setCallbackTriggers(TweenCallback.COMPLETE);
+			setCb(cb);
 		}
-
-		switch (repeatType) {
-		case REPEAT:
-			repeat(count, 0);
-			break;
-		case YOYO:
-			repeatYoyo(count, 0);
-			break;
-
-		}
-
-		start();
 	}
-
-	@Override
-	protected void setValues(float[] values) {
-		target.setPosition(values[0], values[1]);
-		target.setZoom(values[2]);
+	
+	public void update(float delta, SceneCamera camera) {
+		update(delta);
+		
+		camera.setPosition(startX + getPercent() * (targetX - startX),
+				startY + getPercent() * (targetY - startY));
+		
+		camera.setZoom(startZoom + getPercent() * (targetZoom- startZoom));
 	}
 	
 	@Override
-	protected Object getTarget() {
-		return target;
+	public void write(Json json) {
+		super.write(json);
+
+		json.writeValue("startX", startX);
+		json.writeValue("startY", startY);
+		json.writeValue("startZoom", startZoom);
+		json.writeValue("targetX", targetX);
+		json.writeValue("targetY", targetY);
+		json.writeValue("targetZoom", targetZoom);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);	
 		
-		target = World.getInstance().getSceneCamera();
+		startX = json.readValue("startX", Float.class, jsonData);
+		startY = json.readValue("startY", Float.class, jsonData);
+		startZoom = json.readValue("startZoom", Float.class, jsonData);
+		targetX = json.readValue("targetX", Float.class, jsonData);
+		targetY = json.readValue("targetY", Float.class, jsonData);
+		targetZoom = json.readValue("targetZoom", Float.class, jsonData);
 	}
 }

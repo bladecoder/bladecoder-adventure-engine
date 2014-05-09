@@ -8,22 +8,20 @@ import javax.xml.transform.TransformerException;
 
 import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
-import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
-import org.bladecoder.engine.model.SpriteAtlasRenderer;
+import org.bladecoder.engine.model.AtlasRenderer;
 import org.bladecoder.engine.model.SpriteRenderer;
-import org.bladecoder.engine.model.SpriteSpineRenderer;
+import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.util.EngineLogger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import aurelienribon.tweenengine.Tween;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -353,7 +351,7 @@ public class ChapterDocument extends BaseDocument {
 
 		if (type.equals(ATLAS_ACTOR_TYPE) || type.equals(FOREGROUND_ACTOR_TYPE)) {
 			a = new SpriteActor();
-			((SpriteActor) a).setRenderer(new SpriteAtlasRenderer());
+			((SpriteActor) a).setRenderer(new AtlasRenderer());
 		} else if (type.equals(SPRITE3D_ACTOR_TYPE)) {
 			a = new SpriteActor();
 			Sprite3DRenderer r = new Sprite3DRenderer();
@@ -363,7 +361,7 @@ public class ChapterDocument extends BaseDocument {
 			
 		} else if (type.equals(SPINE_ACTOR_TYPE)) {
 			a = new SpriteActor();
-			((SpriteActor) a).setRenderer(new SpriteSpineRenderer());
+			((SpriteActor) a).setRenderer(new SpineRenderer());
 		} else if (type.equals(BACKGROUND_ACTOR_TYPE)) {
 			a = new Actor();
 		} else {
@@ -428,12 +426,12 @@ public class ChapterDocument extends BaseDocument {
 		if (faElement.getAttribute("animation_type").isEmpty()
 				|| faElement.getAttribute("animation_type").equalsIgnoreCase(
 						"repeat")) {
-			fa.animationType = EngineTween.REPEAT;
+			fa.animationType = Tween.REPEAT;
 		} else if (faElement.getAttribute("animation_type").equalsIgnoreCase(
 				"yoyo")) {
-			fa.animationType = EngineTween.YOYO;
+			fa.animationType = Tween.PINGPONG;
 		} else {
-			fa.animationType = EngineTween.NO_REPEAT;
+			fa.animationType = Tween.NO_REPEAT;
 		}
 
 		if (!faElement.getAttribute("speed").isEmpty())

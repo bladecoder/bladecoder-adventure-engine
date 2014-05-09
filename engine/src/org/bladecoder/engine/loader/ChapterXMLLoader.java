@@ -9,7 +9,7 @@ import org.bladecoder.engine.actions.Action;
 import org.bladecoder.engine.actions.ActionFactory;
 import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
-import org.bladecoder.engine.anim.EngineTween;
+import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Dialog;
@@ -18,8 +18,8 @@ import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
-import org.bladecoder.engine.model.SpriteAtlasRenderer;
-import org.bladecoder.engine.model.SpriteSpineRenderer;
+import org.bladecoder.engine.model.AtlasRenderer;
+import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.model.Verb;
 import org.bladecoder.engine.util.EngineLogger;
 import org.xml.sax.Attributes;
@@ -27,8 +27,6 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import aurelienribon.tweenengine.Tween;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -124,7 +122,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 				actor = new SpriteActor();
 				
 				if (type.equals("atlas") || type.equals("foreground")) { // ATLAS ACTOR
-					((SpriteActor)actor).setRenderer(new SpriteAtlasRenderer());
+					((SpriteActor)actor).setRenderer(new AtlasRenderer());
 				} else if (type.equals("3d")) { // 3D ACTOR
 					Sprite3DRenderer r = new Sprite3DRenderer();						
 					((SpriteActor)actor).setRenderer(r);
@@ -174,7 +172,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 					}
 
 				} else if (type.equals("spine")) { // SPINE RENDERER				
-					SpriteSpineRenderer r = new SpriteSpineRenderer();						
+					SpineRenderer r = new SpineRenderer();						
 					((SpriteActor)actor).setRenderer(r);
 				}
 
@@ -358,13 +356,13 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			if (animationTypestr == null || animationTypestr.isEmpty()
 					|| animationTypestr.equalsIgnoreCase("repeat")) {
-				animationType = EngineTween.REPEAT;
+				animationType = Tween.REPEAT;
 			} else if (animationTypestr.equalsIgnoreCase("reverse")) {
-				animationType = EngineTween.REVERSE;
+				animationType = Tween.REVERSE;
 			} else if (animationTypestr.equalsIgnoreCase("yoyo")) {
-				animationType = EngineTween.YOYO;
+				animationType = Tween.PINGPONG;
 			} else {
-				animationType = EngineTween.NO_REPEAT;
+				animationType = Tween.NO_REPEAT;
 			}
 
 			AtlasFrameAnimation sa = new AtlasFrameAnimation();
@@ -372,7 +370,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			sa.set(id, source, speed, delay,
 					count, animationType, soundId, inD, outD, preload, disposeWhenPlayed);
 
-			((SpriteAtlasRenderer)((SpriteActor) actor).getRenderer()).addFrameAnimation(sa);
+			((AtlasRenderer)((SpriteActor) actor).getRenderer()).addFrameAnimation(sa);
 		} else if (localName.equals("verb")) {
 			parseVerb(localName, atts, actor != null ? actor : scene);
 		} else if (localName.equals("dialog")) {

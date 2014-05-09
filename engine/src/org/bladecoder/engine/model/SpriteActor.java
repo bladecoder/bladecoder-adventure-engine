@@ -5,16 +5,13 @@ import java.util.ArrayList;
 
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.actions.ActionCallbackQueue;
-import org.bladecoder.engine.anim.EngineTween;
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.SpritePosTween;
-import org.bladecoder.engine.anim.TweenManagerSingleton;
+import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.anim.WalkTween;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.pathfinder.PixTileMap;
 import org.bladecoder.engine.util.EngineLogger;
-
-import aurelienribon.tweenengine.TweenManager;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -27,6 +24,8 @@ public class SpriteActor extends Actor {
 																// pix/sec.
 
 	private SpriteRenderer renderer;
+	
+	Tween posTween;
 
 	public static enum DepthType {
 		NONE, MAP, VECTOR
@@ -136,6 +135,12 @@ public class SpriteActor extends Actor {
 
 	public void update(float delta) {
 		renderer.update(delta);
+		if(posTween != null) {
+			((SpritePosTween)posTween).update(this, delta);
+			if(posTween.isComplete()) {
+				posTween = null;
+			}
+		}
 	}
 
 	public void draw(SpriteBatch batch) {
@@ -145,7 +150,7 @@ public class SpriteActor extends Actor {
 	}
 
 	public void startFrameAnimation(String id, ActionCallback cb) {
-		startFrameAnimation(id, EngineTween.FROM_FA, 1, cb);
+		startFrameAnimation(id, Tween.FROM_FA, 1, cb);
 	}
 
 	public void startFrameAnimation(String id, int repeatType, int count,
@@ -201,17 +206,10 @@ public class SpriteActor extends Actor {
 	public void startPosAnimation(int repeatType, int count, float duration,
 			float destX, float destY, ActionCallback cb) {
 
-		TweenManager manager = TweenManagerSingleton.getInstance();
+		posTween = new SpritePosTween();
 
-		manager.killTarget(this, EngineTween.SPRITE_POS_TYPE);
-		manager.killTarget(this, EngineTween.WALK_TYPE);
-
-		SpritePosTween t = new SpritePosTween();
-
-		t.start(this, repeatType, count, new Vector2(destX, destY), duration,
+		((SpritePosTween)posTween).start(this, repeatType, count, destX, destY, duration,
 				cb);
-
-		manager.add(t);
 	}
 
 	public void lookat(Vector2 p) {
@@ -230,7 +228,12 @@ public class SpriteActor extends Actor {
 		renderer.startWalkFA(p0, pf);
 	}
 
-	// WALKING SUPPORT
+	/**
+	 * Walking Support
+	 * 
+	 * @param pf
+	 * @param cb
+	 */
 	public void goTo(Vector2 pf, ActionCallback cb) {
 		EngineLogger.debug(MessageFormat.format("GOTO {0},{1}", pf.x, pf.y));
 
@@ -250,15 +253,9 @@ public class SpriteActor extends Actor {
 			return;
 		}
 
-		TweenManager manager = TweenManagerSingleton.getInstance();
+		posTween = new WalkTween();
 
-		manager.killTarget(this);
-
-		WalkTween t = new WalkTween();
-
-		t.start(this, walkingPath, walkingSpeed, cb);
-
-		manager.add(t);
+		((WalkTween)posTween).start(this, walkingPath, walkingSpeed, cb);
 	}
 
 	@Override
@@ -302,6 +299,9 @@ public class SpriteActor extends Actor {
 		json.writeValue("pos", scaledPos);
 
 		json.writeValue("walkingSpeed", walkingSpeed);
+		json.writeValue("posTween", posTween);
+		json.writeValue("depthType", depthType);
+		json.writeValue("renderer", renderer);
 	}
 
 	@Override
@@ -316,5 +316,8 @@ public class SpriteActor extends Actor {
 		pos.y *= worldScale;
 
 		walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);
+		posTween = json.readValue("posTween", Tween.class, jsonData);
+		depthType = json.readValue("depthType", DepthType.class, jsonData);
+		renderer = json.readValue("renderer", SpriteRenderer.class, jsonData);
 	}
 }
