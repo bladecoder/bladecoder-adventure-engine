@@ -211,22 +211,21 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 				float size = tileSize / a.getHeight() / a.getScale();
 
 				a.getRenderer().draw(batch, 
-						horizontal ? (i + itemsPos - scrollItemPos)	* tileSize : bbox.x, 
+						horizontal ? (i + itemsPos - scrollItemPos)	* tileSize + a.getWidth() * size / 2: bbox.x + a.getWidth() * size / 2, 
 						horizontal ? bbox.y : (i+ itemsPos - scrollItemPos) * tileSize, 
-								0, 0, size);
+								size);
 			}
 		}
 
 		// DRAW DRAGGING
 		if (draggedActor != null) {
 			
-			float w = draggedActor.getWidth() / draggedActor.getScale();
 			float h = draggedActor.getHeight() / draggedActor.getScale();
 			
 			float size = tileSize / h * 1.3f;
 			
-			draggedActor.getRenderer().draw(batch, inputX - w / 2,
-					inputY - h / 2,	w / 2, h / 2, size);
+			draggedActor.getRenderer().draw(batch, inputX,
+					inputY - h * size / 2, size);
 			
 			
 			// Scroll the inventory if the draggedActor is over one inventory arrow

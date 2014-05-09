@@ -125,7 +125,7 @@ public class FACanvas extends ApplicationAdapter {
 		// SCREEN CAMERA
 		batch.setProjectionMatrix(screenCamera.combined);
 		batch.begin();
-		renderer.draw(batch, renderer.getWidth() * scale /2, 0f, 0f, 0f, scale);
+		renderer.draw(batch, renderer.getWidth() * scale /2, 0f, scale);
 		batch.end();
 	}
 

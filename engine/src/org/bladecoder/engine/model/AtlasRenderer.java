@@ -88,8 +88,7 @@ public class AtlasRenderer implements SpriteRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float originX,
-			float originY, float scale) {
+	public void draw(SpriteBatch batch, float x, float y, float scale) {
 		
 		x = x - getWidth() / 2 * scale;
 
@@ -100,11 +99,11 @@ public class AtlasRenderer implements SpriteRenderer {
 		}
 
 		if (!flipX) {
-			batch.draw(tex, x, y, originX, originY, tex.getRegionWidth(),
+			batch.draw(tex, x, y, 0, 0, tex.getRegionWidth(),
 					tex.getRegionHeight(), scale, scale, 0);
 		} else {
-			batch.draw(tex, x + tex.getRegionWidth() * scale, y, originX,
-					originY, -tex.getRegionWidth(), tex.getRegionHeight(),
+			batch.draw(tex, x + tex.getRegionWidth() * scale, y, 0,
+					0, -tex.getRegionWidth(), tex.getRegionHeight(),
 					scale, scale, 0);
 		}
 	}

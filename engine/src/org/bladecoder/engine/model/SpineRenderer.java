@@ -158,8 +158,7 @@ public class SpineRenderer implements SpriteRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float originX,
-			float originY, float scale) {
+	public void draw(SpriteBatch batch, float x, float y, float scale) {
 
 		if (currentSkeleton != null) {
 			currentSkeleton.skeleton.setX(x);

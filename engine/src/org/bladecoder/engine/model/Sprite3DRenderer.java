@@ -500,13 +500,12 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float originX,
-			float originY, float scale) {
+	public void draw(SpriteBatch batch, float x, float y,float scale) {
 		
 		x = x - getWidth() / 2 * scale;
 		
 		if (USE_FBO) {
-			batch.draw(tex, x, y, originX, originY, width, height, scale,
+			batch.draw(tex, x, y, 0, 0, width, height, scale,
 					scale, 0);
 		} else {
 			float p0x, p0y, pfx, pfy;

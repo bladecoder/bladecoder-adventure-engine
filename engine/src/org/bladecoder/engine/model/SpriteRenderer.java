@@ -13,8 +13,7 @@ import com.badlogic.gdx.utils.Json.Serializable;
 public interface SpriteRenderer extends Serializable, AssetConsumer {
 
 	public void update(float delta);
-	public void draw(SpriteBatch batch, float x, float y, float originX,
-			float originY, float scale);
+	public void draw(SpriteBatch batch, float x, float y, float scale);
 	
 	public float getWidth();
 	public float getHeight();
