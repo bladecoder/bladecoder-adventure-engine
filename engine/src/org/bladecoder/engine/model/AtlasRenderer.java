@@ -90,7 +90,7 @@ public class AtlasRenderer implements SpriteRenderer {
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale) {
 		
-		x = x - getWidth() / 2 * scale;
+		x = x - getWidth() / 2 * scale; // SET THE X ORIGIN TO THE CENTER OF THE SPRITE
 
 		if (tex == null) {
 			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight()
