@@ -34,8 +34,6 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 	private ScreenCamera camera;
 	
 	private Recorder recorder;
-	
-	private long lastMillis;
 
 	public enum State {
 		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, COMMAND_SCREEN, HELP_SCREEN, RESTART_SCREEN, CREDITS_SCREEN
@@ -51,7 +49,6 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 		pointer = new Pointer(camera);
 		
 		recorder = new Recorder();
-		lastMillis = System.currentTimeMillis();
 
 		// EngineInputProcessor inputProcessor = new EngineInputProcessor();
 		Gdx.input.setInputProcessor(new EngineInputProcessor(this));
@@ -155,14 +152,8 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 	}
 
 	public void update() {
-		long currentMillis = System.currentTimeMillis();
-		float delta = (currentMillis - lastMillis) / 1000f;
-		lastMillis = currentMillis;
-
-		// for long processing frames, limit delta to avoid skipping animations
-		// in only one frame
-		if (delta > 0.1)
-			delta = 0.1f;
+		// for long processing frames, limit delta to 1/30f to avoid skipping animations 
+		float delta = Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f);
 		
 		if(!World.getInstance().isDisposed()) {
 			World.getInstance().update(delta);
