@@ -10,7 +10,6 @@ import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.util.RectangleRenderer;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -27,6 +26,12 @@ public class FARenderer {
 
 	FrameAnimation currentFrameAnimation;
 	private SpriteRenderer renderer;
+	private float viewportW, viewportH;
+	
+	public void setViewport(float w, float h) {
+		viewportW = w;
+		viewportH = h;
+	}
 
 	public void setActor(Actor a) {
 		if (renderer != null) {
@@ -66,18 +71,16 @@ public class FARenderer {
 	public void draw(SpriteBatch batch) {
 		if (renderer != null && currentFrameAnimation != null) {
 
-			float screenWidth = Gdx.graphics.getWidth();
-			float screenHeight = Gdx.graphics.getHeight();
 
 			float width = HEIGHT / renderer.getHeight() * renderer.getWidth();
 
-			RectangleRenderer.draw(batch, screenWidth - width - 5, screenHeight
+			RectangleRenderer.draw(batch, viewportW - width - 5, viewportH
 					- HEIGHT - 55, width + 10, HEIGHT + 10, Color.BLACK);
-			RectangleRenderer.draw(batch, screenWidth - width, screenHeight
+			RectangleRenderer.draw(batch, viewportW - width, viewportH
 					- HEIGHT - 50, width, HEIGHT, BG_COLOR);
 
 			float scaleh = width / renderer.getWidth();
-			renderer.draw(batch, screenWidth - width/2, screenHeight - HEIGHT
+			renderer.draw(batch, viewportW - width/2, viewportH - HEIGHT
 					- 50, scaleh);
 		}
 	}

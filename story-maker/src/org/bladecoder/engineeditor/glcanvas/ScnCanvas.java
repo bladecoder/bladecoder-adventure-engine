@@ -14,35 +14,39 @@ import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.ui.UI;
-import org.bladecoder.engine.util.RectangleRenderer;
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.model.ChapterDocument;
+import org.bladecoder.engineeditor.ui.scene2d.ActorPanel;
+import org.bladecoder.engineeditor.ui.scene2d.ScenePanel;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class ScnCanvas extends ApplicationAdapter {
+	public static final String SKIN = "res/skin/HoloSkin/Holo-dark-ldpi.json";
+//	public static final String SKIN = "res/skin/uiskin.json";
+	
 	private OrthographicCamera screenCamera;
 	private SpriteBatch batch;
 	private BitmapFont font;
-	private CanvasDrawer drawer;
-	private FARenderer faRenderer;
-	private InputMultiplexer input;
-
-	private Texture backgroundTexture;
 
 	private Scene scn = null;
 	private Actor selectedActor = null;
@@ -51,15 +55,6 @@ public class ScnCanvas extends ApplicationAdapter {
 	Element selElementScene;
 	Element selElementActor;
 	String selFA;
-
-	private static final int[] zoomLevels = { 5, 10, 16, 25, 33, 50, 66, 100,
-			150, 200, 300, 400, 600, 800, 1000 };
-	private int zoomLevel = 100;
-
-	private OnOffComponent showFA;
-	private OnOffComponent showFAInScn;
-	private OnOffComponent toggleTestMode;
-	private OnOffComponent toggleAnim;
 
 	private boolean testMode = false;
 	private World world;
@@ -71,6 +66,14 @@ public class ScnCanvas extends ApplicationAdapter {
 	/** true when the selected actor must be created */
 	private boolean createActor = false;
 
+	/************************** SCENE 2D UI TESTING **************************/
+	Stage stage;
+	ScnWidget scnWidget;
+	CheckBox inSceneCb;
+	CheckBox animCb;
+	TextButton testButton;
+	Label coordsLbl;
+
 	@Override
 	public void create() {
 		Assets.inst().initialize();
@@ -80,60 +83,84 @@ public class ScnCanvas extends ApplicationAdapter {
 
 		batch = new SpriteBatch();
 		font = new BitmapFont();
-		faRenderer = new FARenderer();
-		drawer = new CanvasDrawer();
+		scnWidget = new ScnWidget();
 
-		showFA = new OnOffComponent();
-		showFA.setPos(150, 5);
-		showFA.setText("Sprites");
+		/*** STAGE SETUP ***/
+		stage = new Stage(new ScreenViewport());
+		// Skin skin = new Skin(Gdx.files.internal("res/skin/uiskin.json"));
+		Skin skin = new Skin(
+				Gdx.files.internal(SKIN));
+		
+		// Generate a 1x1 white texture and store it in the skin named "background".
+//		Pixmap pixmap = new Pixmap(1, 1, Format.RGBA8888);
+//		pixmap.setColor(Color.BLACK);
+//		pixmap.fill();
+//		skin.add("background", new Texture(pixmap));
+		
+		Table editorPanel = new Table(skin);
+		
+		ScenePanel scenePanel = new ScenePanel(skin);
+		ActorPanel actorPanel = new ActorPanel(skin);
+		
+		Table rightPanel = new Table();
+//		verticalGroup.fill();
+		rightPanel.add(scenePanel).expand().fill();
+		rightPanel.row();
+		rightPanel.add(actorPanel).expand().fill();
+				
+		SplitPane splitPane = new SplitPane(editorPanel, rightPanel, false, skin);
+		splitPane.setFillParent(true);
+		stage.addActor(splitPane);
+		
+		stage.setScrollFocus(scnWidget);
 
-		showFAInScn = new OnOffComponent();
-		showFAInScn.setPos(160 + showFA.getBbox().width, 5);
-		showFAInScn.setText("Sprites in Scene");
-		showFAInScn.setState(false);
+		inSceneCb = new CheckBox("In Scene Sprites", skin);
+		inSceneCb.setChecked(false);
+		animCb = new CheckBox("Animation", skin);
+		animCb.setChecked(true);
+		testButton = new TextButton("Test", skin);
+		coordsLbl = new Label("", skin);
+		editorPanel.add(scnWidget).expand().fill();
+		editorPanel.row();
+		
+		Table bottomTable = new Table(skin);
+//		bottomTable.setBackground("background");
+		editorPanel.add(bottomTable).fill();
 
-		toggleAnim = new OnOffComponent();
-		toggleAnim.setPos(showFAInScn.getBbox().x + showFAInScn.getBbox().width
-				+ 5, 5);
-		toggleAnim.setText("Anim.");
-		toggleAnim.setState(true);
+		bottomTable.add(coordsLbl);
+		bottomTable.add(inSceneCb);
+		bottomTable.add(animCb);
+		bottomTable.add(testButton);
+		
+		inSceneCb.addListener(new ChangeListener() {
 
-		toggleTestMode = new OnOffComponent();
-		toggleTestMode.setPos(toggleAnim.getBbox().x
-				+ toggleAnim.getBbox().width + 5, 5);
-		toggleTestMode.setText("Test");
-		toggleTestMode.setState(false);
+			@Override
+			public void changed(ChangeEvent event,
+					com.badlogic.gdx.scenes.scene2d.Actor actor) {
+				scnWidget.setInSceneSprites(inSceneCb.isChecked());
+			}
+		});
+		
+		animCb.addListener(new ChangeListener() {
 
-		backgroundTexture = Assets.inst().get(
-				"res/images/transparent-light.png", Texture.class);
-		backgroundTexture.setWrap(Texture.TextureWrap.Repeat,
-				Texture.TextureWrap.Repeat);
+			@Override
+			public void changed(ChangeEvent event,
+					com.badlogic.gdx.scenes.scene2d.Actor actor) {
+				scnWidget.setAnimation(animCb.isChecked());
+			}
+		});
 
-		input = new InputMultiplexer();
-		input.addProcessor(new PanZoomInputProcessor(this));
-		input.addProcessor(new EditionInputProcessor(this));
+		testButton.addListener(new ChangeListener() {
 
+			@Override
+			public void changed(ChangeEvent event,
+					com.badlogic.gdx.scenes.scene2d.Actor actor) {
+				setTestMode(true);
+
+			}
+		});
+		
 		setTestMode(false);
-
-		// Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
-		// @Override
-		// public void propertyChange(PropertyChangeEvent e) {
-		// if (e.getPropertyName().equals(Project.NOTIFY_SCENE_SELECTED)) {
-		// scnChanged = true;
-		// EditorLogger.debug("ScnCanvas Listener: NOTIFY_SCENE_SELECTED " +
-		// e.getNewValue());
-		// } else if (e.getPropertyName().equals(Project.NOTIFY_ACTOR_SELECTED))
-		// {
-		// actorChanged = true;
-		// EditorLogger.debug("ScnCanvas Listener: NOTIFY_ACTOR_SELECTED " +
-		// e.getNewValue());
-		// } else if (e.getPropertyName().equals(Project.NOTIFY_FA_SELECTED)) {
-		// faChanged = true;
-		// EditorLogger.debug("ScnCanvas Listener: NOTIFY_FA_SELECTED " +
-		// e.getNewValue());
-		// }
-		// }
-		// });
 
 		Ctx.project.getWorld().addPropertyChangeListener(
 				new PropertyChangeListener() {
@@ -171,6 +198,7 @@ public class ScnCanvas extends ApplicationAdapter {
 							scn.removeActor(scn.getActor(id));
 							selectedActor = null;
 							selElementActor = null;
+							scnWidget.setSelectedActor(selectedActor);
 						} else if (e.getPropertyName()
 								.equals("frame_animation")) {
 							// Element faElement = (Element) e.getNewValue();
@@ -206,31 +234,10 @@ public class ScnCanvas extends ApplicationAdapter {
 						}
 					}
 				});
+		
+
 	}
 
-	public void translate(Vector2 delta) {
-		scn.getCamera().translate(-delta.x, -delta.y, 0);
-		scn.getCamera().update();
-	}
-
-	public void zoom(int amount) {
-		if (zoomLevel == zoomLevels[0] && amount < 0) {
-			zoomLevel = zoomLevels[1];
-		} else if (zoomLevel == zoomLevels[zoomLevels.length - 1] && amount > 0) {
-			zoomLevel = zoomLevels[zoomLevels.length - 2];
-		} else {
-			for (int i = 1; i < zoomLevels.length - 1; i++) {
-				if (zoomLevels[i] == zoomLevel) {
-					zoomLevel = amount > 0 ? zoomLevels[i - 1]
-							: zoomLevels[i + 1];
-					break;
-				}
-			}
-		}
-
-		scn.getCamera().zoom = 100f / zoomLevel;
-		scn.getCamera().update();
-	}
 
 	public Scene getScene() {
 		return scn;
@@ -251,6 +258,7 @@ public class ScnCanvas extends ApplicationAdapter {
 			removeActor(prjDoc, prjActor);
 			selectedActor = createActor(prjDoc, prjActor);
 			createActor = false;
+			scnWidget.setSelectedActor(selectedActor);
 		}
 
 		if ((prjDoc != selDoc || prjScene != selElementScene) && msg != null) {
@@ -261,6 +269,7 @@ public class ScnCanvas extends ApplicationAdapter {
 			if (scn != null) {
 				scn.dispose();
 				scn = null;
+				scnWidget.setScene(scn);
 			}
 
 			if (world != null) {
@@ -270,13 +279,13 @@ public class ScnCanvas extends ApplicationAdapter {
 			setTestMode(false);
 
 			selectedActor = null;
+			scnWidget.setSelectedActor(selectedActor);
 			selElementActor = null;
 			selFA = null;
 
-			faRenderer.setFrameAnimation(null);
-
 			resetCameras();
-		} else if ((prjDoc != selDoc || prjScene != selElementScene) && msg == null) {
+		} else if ((prjDoc != selDoc || prjScene != selElementScene)
+				&& msg == null) {
 			msg = LOADING_MSG;
 		}
 
@@ -290,9 +299,8 @@ public class ScnCanvas extends ApplicationAdapter {
 			} else {
 				selectedActor = null;
 			}
-
-			faRenderer.setActor(selectedActor);
-			faRenderer.setFrameAnimation(null);
+			
+			scnWidget.setSelectedActor(selectedActor);
 		}
 
 		if (prjDoc == selDoc && prjActor == selElementActor && prjFA != selFA
@@ -301,9 +309,9 @@ public class ScnCanvas extends ApplicationAdapter {
 
 			if (scn != null && selectedActor != null
 					&& selectedActor instanceof SpriteActor) {
-				setSpriteAtlasFA(prjFA);
+				setFA(prjFA);
 			} else {
-				faRenderer.setFrameAnimation(null);
+				scnWidget.setFrameAnimation(null);
 			}
 		}
 
@@ -316,7 +324,7 @@ public class ScnCanvas extends ApplicationAdapter {
 
 	}
 
-	private void setSpriteAtlasFA(String selFA) {
+	private void setFA(String selFA) {
 		SpriteRenderer s = ((SpriteActor) selectedActor).getRenderer();
 
 		if (selFA == null || s.getFrameAnimations().get(selFA) == null) {
@@ -326,9 +334,9 @@ public class ScnCanvas extends ApplicationAdapter {
 
 		if (selFA != null && s.getFrameAnimations().get(selFA) != null) {
 
-			faRenderer.setFrameAnimation(s.getFrameAnimations().get(selFA));
+			scnWidget.setFrameAnimation(s.getFrameAnimations().get(selFA));
 
-			if (showFAInScn.getState()
+			if (inSceneCb.isChecked()
 					|| s.getCurrentFrameAnimation() == null
 					|| ((SpriteActor) selectedActor).getRenderer()
 							.getInitFrameAnimation().equals(selFA)) {
@@ -336,7 +344,7 @@ public class ScnCanvas extends ApplicationAdapter {
 						Tween.REPEAT, Tween.INFINITY, null);
 			}
 		} else {
-			faRenderer.setFrameAnimation(null);
+			scnWidget.setFrameAnimation(null);
 		}
 	}
 
@@ -365,13 +373,14 @@ public class ScnCanvas extends ApplicationAdapter {
 
 			a.dispose();
 			selectedActor = null;
+			scnWidget.setSelectedActor(selectedActor);
 		}
 	}
 
 	private void drawMsg() {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
-		
+
 		String tmp = msg;
 
 		GL20 gl = Gdx.gl20;
@@ -387,88 +396,19 @@ public class ScnCanvas extends ApplicationAdapter {
 	}
 
 	private void drawEditMode() {
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
 
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		if (scn != null) {
-
-			// BACKGROUND
-			batch.setProjectionMatrix(screenCamera.combined);
-			batch.begin();
-			batch.disableBlending();
-			float tw = backgroundTexture.getWidth();
-			float th = backgroundTexture.getHeight();
-			batch.draw(backgroundTexture, 0f, 0f, w, h, 0f, 0f, w / tw, h / th);
-			batch.enableBlending();
-			batch.end();
-
-			// WORLD CAMERA
-			if (toggleAnim.getState()) {
-				scn.update(Gdx.graphics.getDeltaTime());
-			}
-
-			faRenderer.update(Gdx.graphics.getDeltaTime());
-
-			batch.setProjectionMatrix(scn.getCamera().combined);
-			batch.begin();
-			scn.draw(batch);
-			batch.end();
-
-			drawer.drawBGBounds();
-			drawer.drawBBoxActors(scn);
-
-			if (selectedActor != null) {
-				drawer.drawSelectedActor(selectedActor);
-			}
-
-			// SCREEN CAMERA
-			batch.setProjectionMatrix(screenCamera.combined);
-			batch.begin();
-
-			// if (showFA.getState()) {
-			if (!showFAInScn.getState()) {
-				faRenderer.draw(batch);
-			}
-
-			RectangleRenderer.draw(batch, 0f, 0f,
-					(float) Gdx.graphics.getWidth(), 60f, Color.BLACK);
-			// showFA.draw(batch);
-			showFAInScn.draw(batch);
-			toggleAnim.draw(batch);
-			toggleTestMode.draw(batch);
-
-			font.setColor(Color.WHITE);
-
-			Vector2 coords = screenToWorld(Gdx.input.getX(), Gdx.input.getY());
-			font.draw(batch, MessageFormat.format("({0}, {1})", (int) coords.x,
-					(int) coords.y), 10, 45);
-
-			// if (selectedActor instanceof SpriteAtlasRenderer
-			// && ((SpriteAtlasRenderer)
-			// selectedActor).getCurrentFrameAnimation() != null
-			// && ((SpriteAtlasRenderer)
-			// selectedActor).getCurrentFrameAnimation().regions != null) {
-			// SpriteAtlasRenderer a = (SpriteAtlasRenderer) selectedActor;
-			// // FrameAnimation fa = ((SpriteActor)
-			// // selectedActor).getCurrentFrameAnimation();
-			//
-			// // font.draw(batch,
-			// //
-			// MessageFormat.format("Current Frame {4}/{5} IN({0}, {1}) OUT({2}, {3})",
-			// // (int) fa.inDX, (int) fa.inDY, (int) fa.outDX, (int) fa.outDY,
-			// // a.getCurrentFrame() + 1, a.getNumFrames()), 10,
-			// // 22);
-			//
-			// font.draw(
-			// batch,
-			// MessageFormat.format("Frame {0}/{1}", a.getCurrentFrame() + 1,
-			// a.getNumFrames()), 10, 22);
-			// }
-
-			batch.end();
+			Vector2 coords = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+			scnWidget.screenToWorldCoords(coords);
+			coordsLbl.setText(MessageFormat.format("({0}, {1})", (int) coords.x,
+					(int) coords.y));
+			
+			stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+			stage.draw();
+			Table.drawDebug(stage);
 		}
 	}
 
@@ -499,17 +439,18 @@ public class ScnCanvas extends ApplicationAdapter {
 			GL20 gl = Gdx.gl20;
 			gl.glViewport(0, 0, width, height);
 			resetCameras();
+			stage.getViewport().update(width, height, true);
 		}
 	}
 
 	public void setTestMode(boolean value) {
 		testMode = value;
-		toggleTestMode.setState(value);
 
 		if (value) {
 			if (scn != null) {
 				scn.dispose();
 				scn = null;
+				scnWidget.setScene(scn);
 			}
 
 			if (Ctx.project.getProjectDir() != null) {
@@ -531,7 +472,7 @@ public class ScnCanvas extends ApplicationAdapter {
 			ui = new UI();
 		} else {
 
-			Gdx.input.setInputProcessor(input);
+			Gdx.input.setInputProcessor(stage);
 
 			if (world != null) {
 				world.dispose();
@@ -550,7 +491,9 @@ public class ScnCanvas extends ApplicationAdapter {
 							Ctx.project.getSelectedScene(),
 							Ctx.project.getWorld().getWidth(),
 							Ctx.project.getWorld().getHeight());
-					drawer.setCamera(scn.getCamera());
+					
+					scnWidget.setScene(scn);
+					
 					resetCameras();
 				} catch (Exception e) {
 					msg = "COULD NOT CREATE SCENE\n" + e.getMessage();
@@ -559,6 +502,7 @@ public class ScnCanvas extends ApplicationAdapter {
 					if (scn != null) {
 						scn.dispose();
 						scn = null;
+						scnWidget.setScene(scn);
 					}
 
 					if (world != null)
@@ -588,18 +532,6 @@ public class ScnCanvas extends ApplicationAdapter {
 		}, millis);
 	}
 
-	public Vector2 screenToWorld(int x, int y) {
-		Vector3 v3 = new Vector3(x, y, 0);
-		scn.getCamera().unproject(v3);
-		return new Vector2(v3.x, v3.y);
-	}
-
-	public Vector2 toScreen(int x, int y) {
-		Vector3 v3 = new Vector3(x, y, 0);
-		screenCamera.unproject(v3);
-		return new Vector2(v3.x, v3.y);
-	}
-
 	private void resetCameras() {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
@@ -609,53 +541,5 @@ public class ScnCanvas extends ApplicationAdapter {
 		screenCamera.viewportHeight = h;
 		screenCamera.position.set(w / 2, h / 2, 0);
 		screenCamera.update();
-
-		// SETS WORLD CAMERA
-		if (Ctx.project.getProjectDir() != null) {
-
-			float aspect = w / h;
-
-			float width = Ctx.project.getWorld().getWidth();
-			float height = Ctx.project.getWorld().getHeight();
-			float aspectWorld = width / height;
-
-			if (aspectWorld > aspect) {
-				height = width / aspect;
-			} else {
-				width = height * aspect;
-			}
-
-			zoomLevel = 100;
-
-			if (scn != null) {
-				scn.getCamera().setToOrtho(false, width, height);
-				// worldCamera.translate(-width / 2, -height / 2, 0);
-				scn.getCamera().zoom = 1f;
-				scn.getCamera().update();
-				
-				translate(new Vector2(
-						(width - Ctx.project.getWorld().getWidth()) / 2,
-						(height - Ctx.project.getWorld().getHeight()) / 2));
-			}
-		}
-	}
-
-	public void click(float x, float y) {
-		showFA.click(x, y);
-
-		boolean old = showFAInScn.getState();
-		showFAInScn.click(x, y);
-		if (old != showFAInScn.getState()) {
-			selFA = null;
-		}
-
-		toggleTestMode.click(x, y);
-		toggleAnim.click(x, y);
-
-		if (testMode == true && toggleTestMode.getState() == false) {
-			setTestMode(false);
-		} else if (testMode == false && toggleTestMode.getState() == true) {
-			setTestMode(true);
-		}
 	}
 }
