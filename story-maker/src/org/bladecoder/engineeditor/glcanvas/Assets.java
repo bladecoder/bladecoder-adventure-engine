@@ -18,8 +18,7 @@ public class Assets extends AssetManager {
 		};
 
 		String[] texturesLinear = new String[] {
-			"res/images/on.png",
-			"res/images/off.png"
+
 		};
 
 		for (String tex : texturesNearest) load(tex, Texture.class);
