@@ -19,6 +19,7 @@ import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.scene2d.ActorPanel;
 import org.bladecoder.engineeditor.ui.scene2d.ScenePanel;
+
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.w3c.dom.Element;
 
@@ -30,14 +31,17 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class ScnCanvas extends ApplicationAdapter {
@@ -234,7 +238,6 @@ public class ScnCanvas extends ApplicationAdapter {
 						}
 					}
 				});
-		
 
 	}
 
@@ -299,7 +302,6 @@ public class ScnCanvas extends ApplicationAdapter {
 			} else {
 				selectedActor = null;
 			}
-			
 			scnWidget.setSelectedActor(selectedActor);
 		}
 
@@ -409,6 +411,7 @@ public class ScnCanvas extends ApplicationAdapter {
 			stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 			stage.draw();
 			Table.drawDebug(stage);
+
 		}
 	}
 
