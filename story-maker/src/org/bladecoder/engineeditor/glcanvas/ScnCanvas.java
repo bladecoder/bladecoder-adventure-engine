@@ -17,30 +17,40 @@ import org.bladecoder.engine.ui.UI;
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.model.ChapterDocument;
+import org.bladecoder.engineeditor.model.Project;
 import org.bladecoder.engineeditor.ui.scene2d.ActorPanel;
+import org.bladecoder.engineeditor.ui.scene2d.AssetPanel;
+import org.bladecoder.engineeditor.ui.scene2d.ProjectPanel;
+import org.bladecoder.engineeditor.ui.scene2d.ProjectToolbar;
 import org.bladecoder.engineeditor.ui.scene2d.ScenePanel;
 import org.bladecoder.engineeditor.utils.EditorLogger;
+import org.bladecoder.engineeditor.utils.Message;
 import org.w3c.dom.Element;
 
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class ScnCanvas extends ApplicationAdapter {
+public class ScnCanvas implements ApplicationListener {
 	public static final String SKIN = "res/skin/HoloSkin/Holo-dark-ldpi.json";
 //	public static final String SKIN = "res/skin/uiskin.json";
 	
@@ -76,7 +86,15 @@ public class ScnCanvas extends ApplicationAdapter {
 
 	@Override
 	public void create() {
+		// Skin skin = new Skin(Gdx.files.internal("res/skin/uiskin.json"));
+		Skin skin = new Skin(
+						Gdx.files.internal(SKIN));
+		
+		EditorLogger.setDebug();
+		EditorLogger.debug("CREATE");
 		Assets.inst().initialize();
+		Ctx.project = new Project();
+		Ctx.msg = new Message(skin);
 
 		screenCamera = new OrthographicCamera();
 		// resetCameras();
@@ -86,31 +104,44 @@ public class ScnCanvas extends ApplicationAdapter {
 		scnWidget = new ScnWidget();
 
 		/*** STAGE SETUP ***/
-		stage = new Stage(new ScreenViewport());
-		// Skin skin = new Skin(Gdx.files.internal("res/skin/uiskin.json"));
-		Skin skin = new Skin(
-				Gdx.files.internal(SKIN));
-		
-		// Generate a 1x1 white texture and store it in the skin named "background".
-//		Pixmap pixmap = new Pixmap(1, 1, Format.RGBA8888);
-//		pixmap.setColor(Color.BLACK);
-//		pixmap.fill();
-//		skin.add("background", new Texture(pixmap));
+		stage = new Stage(new ScreenViewport());				
 		
 		Table editorPanel = new Table(skin);
 		
+		// RIGHT PANEL		
 		ScenePanel scenePanel = new ScenePanel(skin);
 		ActorPanel actorPanel = new ActorPanel(skin);
 		
 		Table rightPanel = new Table();
-//		verticalGroup.fill();
+		
 		rightPanel.add(scenePanel).expand().fill();
 		rightPanel.row();
 		rightPanel.add(actorPanel).expand().fill();
 				
-		SplitPane splitPane = new SplitPane(editorPanel, rightPanel, false, skin);
-		splitPane.setFillParent(true);
-		stage.addActor(splitPane);
+		SplitPane splitPaneRight = new SplitPane(editorPanel, rightPanel, false, skin);
+		splitPaneRight.setFillParent(true);
+		
+		// LEFT PANEL		
+		ProjectPanel projectPanel = new ProjectPanel(skin);
+		AssetPanel assetPanel = new AssetPanel(skin);
+		Image img = new Image(Assets.inst().get("res/images/title.png", Texture.class));
+		img.setScaling(Scaling.none);
+		img.setAlign(Align.left);
+		
+		Table leftPanel = new Table();
+		leftPanel.top().left();
+		leftPanel.add(img).expandX().fill().padBottom(30).padTop(20);
+		leftPanel.row();
+		leftPanel.add(new ProjectToolbar(skin)).expandX().fill();
+		leftPanel.row();
+		leftPanel.add(projectPanel).expand().fill();
+		leftPanel.row();
+		leftPanel.add(assetPanel).expand().fill();
+				
+		SplitPane splitPaneLeft = new SplitPane(leftPanel, splitPaneRight, false, skin);
+		splitPaneLeft.setFillParent(true);
+		splitPaneLeft.setSplitAmount(0.3f);
+		stage.addActor(splitPaneLeft);	
 		
 		stage.setScrollFocus(scnWidget);
 
@@ -234,7 +265,6 @@ public class ScnCanvas extends ApplicationAdapter {
 						}
 					}
 				});
-		
 
 	}
 
@@ -299,7 +329,6 @@ public class ScnCanvas extends ApplicationAdapter {
 			} else {
 				selectedActor = null;
 			}
-			
 			scnWidget.setSelectedActor(selectedActor);
 		}
 
@@ -315,9 +344,7 @@ public class ScnCanvas extends ApplicationAdapter {
 			}
 		}
 
-		if (msg != null)
-			drawMsg();
-		else if (testMode)
+		if (testMode)
 			drawTestMode();
 		else
 			drawEditMode();
@@ -405,11 +432,12 @@ public class ScnCanvas extends ApplicationAdapter {
 			scnWidget.screenToWorldCoords(coords);
 			coordsLbl.setText(MessageFormat.format("({0}, {1})", (int) coords.x,
 					(int) coords.y));
-			
-			stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-			stage.draw();
-			Table.drawDebug(stage);
+
 		}
+		
+		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+		stage.draw();
+		Table.drawDebug(stage);
 	}
 
 	public Actor getActor() {
@@ -432,6 +460,7 @@ public class ScnCanvas extends ApplicationAdapter {
 
 	@Override
 	public void resize(int width, int height) {
+		EditorLogger.debug("RESIZE - w:" + width + " h:" + height);
 
 		if (testMode && ui != null)
 			ui.resize(width, height);
@@ -541,5 +570,26 @@ public class ScnCanvas extends ApplicationAdapter {
 		screenCamera.viewportHeight = h;
 		screenCamera.position.set(w / 2, h / 2, 0);
 		screenCamera.update();
+	}
+
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
 	}
 }

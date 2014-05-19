@@ -82,6 +82,7 @@ public class FARenderer {
 			float scaleh = width / renderer.getWidth();
 			renderer.draw(batch, viewportW - width/2, viewportH - HEIGHT
 					- 50, scaleh);
+
 		}
 	}
 

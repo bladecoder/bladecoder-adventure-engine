@@ -23,7 +23,7 @@ public class ScnWidget extends Widget {
 	private final Vector3 tmpV3 = new Vector3();
 	private final Vector2 tmpV2 = new Vector2();
 
-	private final SpriteBatch spriteBatch = new SpriteBatch();
+	private final SpriteBatch sceneBatch = new SpriteBatch();
 	private final CanvasDrawer drawer = new CanvasDrawer();
 	private final FARenderer faRenderer = new FARenderer();
 	private final ScnWidgetInputListener inputListner = new ScnWidgetInputListener(
@@ -79,7 +79,7 @@ public class ScnWidget extends Widget {
 	public void act(float delta) {
 		faRenderer.update(delta);
 
-		if (animation) {
+		if (scn != null && animation) {
 			scn.update(delta);
 		}
 	}
@@ -87,6 +87,9 @@ public class ScnWidget extends Widget {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		validate();
+		
+		Color tmp = batch.getColor();
+		batch.setColor(Color.WHITE);
 
 		// BACKGROUND
 		batch.disableBlending();
@@ -97,19 +100,23 @@ public class ScnWidget extends Widget {
 		batch.enableBlending();
 
 		if (scn != null) {
+			Vector3 v = new Vector3(getX(), getY(), 0);
+			v = v.prj(batch.getTransformMatrix());			
+			
 			batch.end();
 
-			Gdx.gl.glViewport((int) getX(), (int) getY(), (int) getWidth(),
+//			System.out.println("X: " + v.x+ " Y:" +  v.y);
+			Gdx.gl.glViewport((int) v.x, (int)v.y, (int) getWidth(),
 					(int) (getHeight()));
 
 			getStage().calculateScissors(bounds, scissors);
 			
 			if (ScissorStack.pushScissors(scissors)) {
 				// WORLD CAMERA
-				spriteBatch.setProjectionMatrix(scn.getCamera().combined);
-				spriteBatch.begin();
-				scn.draw(spriteBatch);
-				spriteBatch.end();
+				sceneBatch.setProjectionMatrix(scn.getCamera().combined);
+				sceneBatch.begin();
+				scn.draw(sceneBatch);
+				sceneBatch.end();
 				ScissorStack.popScissors();
 			}
 
@@ -128,6 +135,9 @@ public class ScnWidget extends Widget {
 			if (!inScene) {
 				faRenderer.draw((SpriteBatch) batch);
 			}
+			
+			
+			batch.setColor(tmp);
 
 		} else {
 			RectangleRenderer.draw((SpriteBatch) batch, getX(), getY(),
@@ -229,8 +239,11 @@ public class ScnWidget extends Widget {
 	}
 
 	public void screenToWorldCoords(Vector2 coords) {
+		tmpV2.set(0, 0);
+		localToStageCoordinates(tmpV2);
+//		getStage().stageToScreenCoordinates(tmpV2);
 		tmpV3.set(coords.x, coords.y, 0);
-		getScene().getCamera().unproject(tmpV3, getX(), getY(), getWidth(),
+		getScene().getCamera().unproject(tmpV3, tmpV2.x, tmpV2.y, getWidth(),
 				getHeight());
 		coords.set(tmpV3.x, tmpV3.y);
 	}

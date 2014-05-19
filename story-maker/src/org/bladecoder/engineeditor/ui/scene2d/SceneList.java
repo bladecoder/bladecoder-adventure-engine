@@ -35,8 +35,13 @@ public class SceneList extends ElementList {
 		super(skin, true);
 
 		chapters = new SelectBox<String>(skin);
+		clearChildren();
 		
-		addActorAt(0, chapters);
+		add(chapters).expandX().fillX();
+		row().fill();
+		add(toolbar).expandX().fillX();
+		row().fill();
+		add(container).expandY().fill();
 
 //		Label lbl = new Label("CHAPTER", skin);
 //		Font font = lbl.getFont();
@@ -135,7 +140,7 @@ public class SceneList extends ElementList {
 				try {
 					Ctx.project.saveProject();
 				} catch (IOException | TransformerException e1) {
-					JOptionPane.showMessageDialog(Ctx.window,
+					Ctx.msg.show(getStage(),
 							"Error saving project");
 					EditorLogger.error(e1.getMessage());
 				}

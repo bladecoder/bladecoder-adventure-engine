@@ -1,20 +1,20 @@
-package org.bladecoder.engineeditor.ui;
+package org.bladecoder.engineeditor.ui.scene2d;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.swing.JComboBox;
-
 import org.bladecoder.engineeditor.Ctx;
-import org.bladecoder.engineeditor.ui.components.EditDialog;
-import org.bladecoder.engineeditor.ui.components.FileInputPanel;
-import org.bladecoder.engineeditor.ui.components.InputPanel;
+import org.bladecoder.engineeditor.ui.components.scene2d.EditDialog;
+import org.bladecoder.engineeditor.ui.components.scene2d.FileInputPanel;
+import org.bladecoder.engineeditor.ui.components.scene2d.InputPanel;
 import org.bladecoder.engineeditor.utils.RunProccess;
 
-@SuppressWarnings("serial")
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+
 public class PackageDialog extends EditDialog {
 	private static final String ARCH_PROP = "package.arch";
 	private static final String DIR_PROP = "package.dir";
@@ -24,39 +24,59 @@ public class PackageDialog extends EditDialog {
 	private static final String[] TYPES = { "Bundle JRE", "Runnable jar" };
 	private static final String[] OSS = { "all", "windows", "linux64", "linux32", "macOSX" };
 
-	private InputPanel arch = new InputPanel("Architecture", "Select the target OS for the game",
-			ARCHS);
-	private InputPanel dir = new FileInputPanel("Output Directory",
-			"Select the output directory to put the package", true);
-	private InputPanel type = new InputPanel("Type", "Select the type of the package", TYPES);
-	private InputPanel os = new InputPanel("OS", "Select the OS of the package", OSS);
-	private InputPanel linux64JRE = new FileInputPanel("JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle", true);
-	private InputPanel linux32JRE = new FileInputPanel("JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle", true);
-	private InputPanel winJRE = new FileInputPanel("JRE.Windows", "Select the Windows JRE Location to bundle", true);
-	private InputPanel version = new InputPanel("Version", "Select the version of the package");
-	private InputPanel icon = new FileInputPanel("Icon", "The icon for the .exe file", false);
-	private InputPanel androidSDK = new FileInputPanel("SDK", "Select the Android SDK Location", true);
-	private InputPanel androidKeyStore = new FileInputPanel("KeyStore", "Select the Key Store Location", false);
-	private InputPanel androidKeyAlias = new InputPanel("KeyAlias", "Select the Key Alias Location");
-	private InputPanel androidKeyStorePassword = new InputPanel("KeyStorePasswd", "Key Store Password", false);
-	private InputPanel androidKeyAliasPassword = new InputPanel("KeyAliasPasswd", "Key Alias Password", false);	
+	private InputPanel arch;
+	private InputPanel dir;
+	private InputPanel type;
+	private InputPanel os;
+	private InputPanel linux64JRE;
+	private InputPanel linux32JRE;
+	private InputPanel winJRE;
+	private InputPanel version;
+	private InputPanel icon;
+	private InputPanel androidSDK;
+	private InputPanel androidKeyStore;
+	private InputPanel androidKeyAlias;
+	private InputPanel androidKeyStorePassword;
+	private InputPanel androidKeyAliasPassword;	
 
 	private InputPanel[] options = { type, os, linux64JRE, linux32JRE, winJRE, version, icon, androidSDK, androidKeyStore, androidKeyAlias };
 
-	@SuppressWarnings("unchecked")
-	public PackageDialog(java.awt.Frame parent) {
-		super(parent);
+	public PackageDialog(Skin skin) {
+		super("PACKAGE ADVENTURE", skin);
+		
+		arch = new InputPanel(skin, "Architecture", "Select the target OS for the game",
+				ARCHS);
+		dir = new FileInputPanel(skin, "Output Directory",
+				"Select the output directory to put the package", true);
+		type = new InputPanel(skin, "Type", "Select the type of the package", TYPES);
+		os = new InputPanel(skin, "OS", "Select the OS of the package", OSS);
+		linux64JRE = new FileInputPanel(skin, "JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle", true);
+		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle", true);
+		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle", true);
+		version = new InputPanel(skin, "Version", "Select the version of the package");
+		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", false);
+		androidSDK = new FileInputPanel(skin, "SDK", "Select the Android SDK Location", true);
+		androidKeyStore = new FileInputPanel(skin, "KeyStore", "Select the Key Store Location", false);
+		androidKeyAlias = new InputPanel(skin, "KeyAlias", "Select the Key Alias Location");
+		androidKeyStorePassword = new InputPanel(skin, "KeyStorePasswd", "Key Store Password", false);
+		androidKeyAliasPassword = new InputPanel(skin, "KeyAliasPasswd", "Key Alias Password", false);
+		
+		getCenterPanel().add(arch);
+		getCenterPanel().row().fill().expandX();
+		getCenterPanel().add(dir);
 
-		centerPanel.add(arch);
-		centerPanel.add(dir);
+
 		
 		for(InputPanel i: options) {
-			centerPanel.add(i);
+			getCenterPanel().row().fill().expandX();
+			getCenterPanel().add(i);
 			i.setMandatory(true);
 		}
 		
-		centerPanel.add(androidKeyStorePassword);
-		centerPanel.add(androidKeyAliasPassword);
+		getCenterPanel().row().fill().expandX();
+		getCenterPanel().add(androidKeyStorePassword);
+		getCenterPanel().row().fill().expandX();
+		getCenterPanel().add(androidKeyAliasPassword);
 		
 		dir.setMandatory(true);
 		
@@ -95,49 +115,42 @@ public class PackageDialog extends EditDialog {
 			}
 		}
 
-		setTitle("PACKAGE ADVENTURE");
 		setInfo(INFO);
 
-		((JComboBox<String>) (arch.getField())).addActionListener(new ActionListener() {
+		((SelectBox<String>) (arch.getField())).addListener(new ChangeListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void changed(ChangeEvent event, Actor actor) {
 				archChanged();
 			}
 		});
 
-		((JComboBox<String>) (type.getField())).addActionListener(new ActionListener() {
+		((SelectBox<String>) (type.getField())).addListener(new ChangeListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void changed(ChangeEvent event, Actor actor) {
 				typeChanged();
 			}
 		});
 
-		((JComboBox<String>) (os.getField())).addActionListener(new ActionListener() {
+		((SelectBox<String>) (os.getField())).addListener(new ChangeListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void changed(ChangeEvent event, Actor actor) {
 				osChanged();
 			}
 		});
 
-		init(parent);
+		init();
 		
 		archChanged();
 	}
 
 	@Override
 	protected void ok() {
-		dispose();
 
-		Ctx.window.getScnCanvas().setMsg("Generating package...");
+		Ctx.msg.show(getStage(), "Generating package...");
+	
+		String msg = packageAdv();
+		Ctx.msg.show(getStage(), msg, 2000);
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				String msg = packageAdv();
-				Ctx.window.getScnCanvas().setMsgWithTimer(msg, 2000);
-			}
-		}).start();
-		
 		Ctx.project.getConfig().setProperty(ARCH_PROP, arch.getText());
 		Ctx.project.getConfig().setProperty(DIR_PROP, dir.getText());
 		

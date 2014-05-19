@@ -55,7 +55,20 @@ public class Assets extends AssetManager {
 			"res/images/ic_repeat.png",
 			"res/images/ic_yoyo.png",
 			"res/images/ic_open.png",
-			"res/images/ic_closed.png"
+			"res/images/ic_closed.png",
+			"res/images/ic_new.png",
+			 "res/images/ic_load.png",
+			 "res/images/ic_save.png",
+			 "res/images/ic_exit.png",
+			 "res/images/ic_play.png",
+			 "res/images/ic_package.png",
+			 "res/images/ic_assets.png",
+			 "res/images/ic_atlases.png", 
+			 "res/images/ic_save_disabled.png",
+			 "res/images/ic_play_disabled.png",
+			 "res/images/ic_package_disabled.png",
+			 "res/images/ic_assets_disabled.png",
+			 "res/images/title.png"
 		};
 
 		String[] texturesLinear = new String[] {

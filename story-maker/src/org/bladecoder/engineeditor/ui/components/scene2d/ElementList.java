@@ -34,7 +34,7 @@ public abstract class ElementList extends EditList<Element> {
 		this.doc = doc;
 		this.parent = parent;
 
-		clear();
+		list.getItems().clear();
 
 		if (parent != null) {
 
@@ -60,9 +60,6 @@ public abstract class ElementList extends EditList<Element> {
 
 		toolbar.disableCreate(parent == null);
 		list.setWidth(getWidth());
-//		container.pack();
-//		list.pack();
-//		pack();
 		invalidateHierarchy();
 	}
 

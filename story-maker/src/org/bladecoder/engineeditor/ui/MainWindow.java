@@ -44,12 +44,6 @@ public class MainWindow extends JFrame implements PropertyChangeListener {
     private javax.swing.JPanel leftPanel;
     private javax.swing.JPanel rightPanel;
     
-    private ProjectToolbar projectToolbar;
-    private ProjectPanel projectPanel;
-    private AssetPanel assetPanel;
-    private ScenePanel scenePanel;
-    private ActorPanel actorPanel;
-    
     private LwjglAWTCanvas glCanvas;
     
     private javax.swing.JLabel labelLogo;
@@ -84,7 +78,7 @@ public class MainWindow extends JFrame implements PropertyChangeListener {
 			}
 			
 			@Override public void windowClosed(WindowEvent e) {
-					projectToolbar.exit();
+//					projectToolbar.exit();
 				}
 		});
 		
@@ -110,66 +104,5 @@ public class MainWindow extends JFrame implements PropertyChangeListener {
 
     private void initComponents() {
 
-        projectToolbar = new ProjectToolbar();
-    	leftPanel = new JPanel();
-        rightPanel = new JPanel();
-        creditsPanel = new JPanel();
-        labelLogo = new JLabel();
-        websiteLbl = new JLabel();
-        projectPanel = new ProjectPanel();
-        assetPanel = new AssetPanel();
-        scenePanel = new ScenePanel();
-		versionLabel = new JLabel();
-		glCanvas = new LwjglAWTCanvas(new ScnCanvas());
-		actorPanel = new ActorPanel();
-		
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle(TITLE);
-        
-        labelLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        jLabelLogo.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        labelLogo.setIcon(new ImageIcon(MainWindow.class.getResource("/res/images/title.png")));
-		versionLabel.setText(VERSION_STR);
-        websiteLbl.setText(COPYRIGHT_STR);
-        versionLabel.setFont(Theme.FONT_SMALL);
-        websiteLbl.setFont(Theme.FONT_SMALL);
-
-        creditsPanel.setOpaque(false);
-        creditsPanel.setLayout(new BoxLayout(creditsPanel, BoxLayout.X_AXIS));
-        creditsPanel.add(websiteLbl);
-        creditsPanel.add(versionLabel);
-
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setOpaque(false);
-        leftPanel.add(labelLogo);
-        leftPanel.add(Box.createVerticalStrut(20));
-        leftPanel.add(projectToolbar);
-        leftPanel.add(Box.createVerticalStrut(20));        
-        leftPanel.add(projectPanel);
-        leftPanel.add(Box.createVerticalStrut(20));        
-        leftPanel.add(assetPanel);
-        
-        leftPanel.add(creditsPanel);
-
-        
-        leftPanel.setPreferredSize(new Dimension(300, 200));
-        leftPanel.setBorder(new EmptyBorder(0, 10, 10, 10));
-        
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-        rightPanel.setOpaque(false);
-        
-        rightPanel.add(scenePanel);
-        rightPanel.add(Box.createVerticalStrut(20));
-        rightPanel.add(actorPanel);  
-        
-        rightPanel.setPreferredSize(new Dimension(300, 200));
-        rightPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        
-        setLayout(new BorderLayout());
-        add(leftPanel, BorderLayout.LINE_START);
-        add(glCanvas.getCanvas(),BorderLayout.CENTER);
-        add(rightPanel, BorderLayout.LINE_END);
-        pack();
     }
 }

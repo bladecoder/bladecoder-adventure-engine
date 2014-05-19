@@ -1,4 +1,4 @@
-package org.bladecoder.engineeditor.ui;
+package org.bladecoder.engineeditor.ui.scene2d;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,61 +6,52 @@ import java.io.IOException;
 import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.Project;
-import org.bladecoder.engineeditor.ui.components.EditDialog;
-import org.bladecoder.engineeditor.ui.components.InputPanel;
+import org.bladecoder.engineeditor.ui.components.scene2d.EditDialog;
+import org.bladecoder.engineeditor.ui.components.scene2d.InputPanel;
 import org.bladecoder.engineeditor.utils.ImageUtils;
 
-@SuppressWarnings("serial")
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
+
 public class CreateResolutionDialog extends EditDialog {
 
 	private static final String INFO = "Create a new resolution. Scale backgrounds and overlays from the world resolution.";
 
-	private InputPanel scale = new InputPanel("Scale",
-			"Scale relative to the world resolution", Param.Type.FLOAT, false);
+	private InputPanel scale;
+	
+	   protected ChangeListener listener;
 	
 	String atlasDir = Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH;
 	String bgDir = Ctx.project.getProjectPath() + "/" + Project.BACKGROUNDS_PATH;
 	String uiDir = Ctx.project.getProjectPath() + "/" + Project.UI_PATH;
 	String overlaysDir = Ctx.project.getProjectPath() + "/" + Project.OVERLAYS_PATH;
 
-	public CreateResolutionDialog(java.awt.Frame parent) {
-		super(parent);
+	public CreateResolutionDialog(Skin skin) {
+		super("CREATE RESOLUTION", skin);
+		
+		 scale = new InputPanel(skin, "Scale",
+					"Scale relative to the world resolution", Param.Type.FLOAT, true);
 
-		centerPanel.add(scale);
-
-		scale.setMandatory(true);
-
-		setTitle("CREATE RESOLUTION");
+		getCenterPanel().row().fill().expandX();
+		getCenterPanel().add(scale);
+		
 		setInfo(INFO);
 
-		init(parent);
+		init();
 	}
 
 	@Override
 	protected void ok() {
-		dispose();
-
-		Ctx.window.getScnCanvas().setMsg("Creating resolution...");
+		Ctx.msg.show(getStage(), "Creating resolution...");
 		
 		createResolution();
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				String msg = scaleImages();
-				Ctx.window.getScnCanvas().setMsgWithTimer(msg, 2000);
-			}
-		}).start();
-	}
-
-	@Override
-	protected boolean validateFields() {
-		boolean ok = true;
-
-		if (!scale.validateField())
-			ok = false;
-
-		return ok;
+		String msg = scaleImages();
+		Ctx.msg.show(getStage(), msg, 2000);
+		
+		if(listener != null)
+			listener.changed(new ChangeEvent(), this);
 	}
 	
 	private void createResolution() {
@@ -90,5 +81,19 @@ public class CreateResolutionDialog extends EditDialog {
 		}
 		
 		return null;
+	}
+
+	@Override
+	protected boolean validateFields() {
+		boolean ok = true;
+
+		if (!scale.validateField())
+			ok = false;
+
+		return ok;
+	}
+
+	public void setListener(ChangeListener changeListener) {
+		this.listener = changeListener;
 	}
 }

@@ -1,4 +1,4 @@
-package org.bladecoder.engineeditor.ui;
+package org.bladecoder.engineeditor.ui.scene2d;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.Project;
-import org.bladecoder.engineeditor.ui.components.EditDialog;
-import org.bladecoder.engineeditor.ui.components.FileInputPanel;
-import org.bladecoder.engineeditor.ui.components.InputPanel;
+import org.bladecoder.engineeditor.ui.components.scene2d.EditDialog;
+import org.bladecoder.engineeditor.ui.components.scene2d.FileInputPanel;
+import org.bladecoder.engineeditor.ui.components.scene2d.InputPanel;
 import org.bladecoder.engineeditor.utils.DesktopUtils;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.bladecoder.engineeditor.utils.ImageUtils;
@@ -17,10 +17,10 @@ import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resoluti
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 
-@SuppressWarnings("serial")
 public class CreateAtlasDialog extends EditDialog {
 
 	private static final String INFO = "Package all the images in the selected dir to a new atlas";
@@ -28,53 +28,49 @@ public class CreateAtlasDialog extends EditDialog {
 	private static final String[] FILTERS = { "Linear", "Nearest", "MipMap",
 			"MipMapLinearLinear", "MipMapLinearNearest", "MipMapNearestLinear",
 			"MipMapNearestNearest" };
+	
+	private InputPanel name;
+	private InputPanel dir;
+	private InputPanel filterMin;
+	private InputPanel filterMag;
 
-	private InputPanel name = new InputPanel("Atlas Name",
-			"The name of the sprite atlas");
-	private InputPanel dir = new FileInputPanel("Input Image Directory",
-			"Select the output directory with the images to create the Atlas",
-			true);
 
-	private InputPanel filterMin = new InputPanel("Min Filter",
-			"The filter when the texture is scaled down", FILTERS);
-	private InputPanel filterMag = new InputPanel("Mag Filter",
-			"The filter when the texture is scaled up", FILTERS);
+	public CreateAtlasDialog(Skin skin) {
+		super("CREATE ATLAS", skin);
+		
+		name = new InputPanel(skin, "Atlas Name",
+				"The name of the sprite atlas", true);
+		dir = new FileInputPanel(skin, "Input Image Directory",
+				"Select the output directory with the images to create the Atlas",
+				true);
 
-	public CreateAtlasDialog(java.awt.Frame parent) {
-		super(parent);
+		filterMin = new InputPanel(skin, "Min Filter",
+				"The filter when the texture is scaled down", FILTERS);
+		filterMag = new InputPanel(skin, "Mag Filter",
+				"The filter when the texture is scaled up", FILTERS);
 
-		centerPanel.add(name);
-		centerPanel.add(dir);
-		centerPanel.add(filterMin);
-		centerPanel.add(filterMag);
-
-		dir.setMandatory(true);
-		name.setMandatory(true);
+		getCenterPanel().add(name);
+		getCenterPanel().row().fill().expandX();
+		getCenterPanel().add(dir);
+		getCenterPanel().row().fill().expandX();
+		getCenterPanel().add(filterMin);
+		getCenterPanel().row().fill().expandX();
+		getCenterPanel().add(filterMag);
 
 		filterMin.setText(FILTERS[0]);
 		filterMag.setText(FILTERS[1]);
 
-		setTitle("CREATE ATLAS");
 		setInfo(INFO);
 
-		init(parent);
+		init();
 	}
 
 	@Override
 	protected void ok() {
-		dispose();
+		Ctx.msg.show(getStage(), "Generating atlas...");
 
-		Ctx.window.getScnCanvas().setMsg("Generating atlas...");
-
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				String msg = genAtlas();
-				Ctx.window.getScnCanvas().setMsgWithTimer(msg, 2000);
-			}
-		});
-		
-		t.start();
+		String msg = genAtlas();
+		Ctx.msg.show(getStage(), msg, 2000);
 	}
 
 	@Override
