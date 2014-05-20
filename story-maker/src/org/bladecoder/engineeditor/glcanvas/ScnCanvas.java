@@ -17,12 +17,15 @@ import org.bladecoder.engine.ui.UI;
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.model.ChapterDocument;
+
 import org.bladecoder.engineeditor.model.Project;
+
 import org.bladecoder.engineeditor.ui.scene2d.ActorPanel;
 import org.bladecoder.engineeditor.ui.scene2d.AssetPanel;
 import org.bladecoder.engineeditor.ui.scene2d.ProjectPanel;
 import org.bladecoder.engineeditor.ui.scene2d.ProjectToolbar;
 import org.bladecoder.engineeditor.ui.scene2d.ScenePanel;
+
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.bladecoder.engineeditor.utils.Message;
 import org.w3c.dom.Element;
@@ -37,17 +40,21 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+
 import com.badlogic.gdx.utils.Scaling;
+
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class ScnCanvas implements ApplicationListener {
@@ -432,7 +439,6 @@ public class ScnCanvas implements ApplicationListener {
 			scnWidget.screenToWorldCoords(coords);
 			coordsLbl.setText(MessageFormat.format("({0}, {1})", (int) coords.x,
 					(int) coords.y));
-
 		}
 		
 		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
