@@ -30,12 +30,18 @@ public class RunProccess {
 		return builder.toString();
 	}
 	
-	public static void runBladeEngine(String prjFolder) throws IOException {
+	public static void runBladeEngine(String prjFolder, String scene) throws IOException {
 		List<String> args = new ArrayList<String>();
 		args.add("-w");
-		args.add("-r");
 		args.add("-adv-dir");
 		args.add(prjFolder);
+		
+		if(scene != null) {
+			args.add("-t");
+			args.add(scene);
+		} else {
+			args.add("-r");			
+		}
 		
 		List<String> cp = new ArrayList<String>();
 		cp.add(System.getProperty("java.class.path") );

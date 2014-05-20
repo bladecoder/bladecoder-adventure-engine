@@ -1,0 +1,102 @@
+package org.bladecoder.engineeditor.ui.components;
+
+import org.bladecoder.engineeditor.ui.components.CustomList.ListStyle;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+
+public class CellRenderer<T> {
+	private ListStyle style;
+	private float itemHeight;
+	private float textOffsetX, textOffsetY;
+
+	public CellRenderer() {		
+	}
+
+	public void draw(Batch batch, float parentAlpha, T item, boolean selected, float x, float y, float width, float height) {
+		BitmapFont font = style.font;
+		Drawable selectedDrawable = style.selection;
+		Color fontColorSelected = style.fontColorSelected;
+		Color fontColorUnselected = style.fontColorUnselected;
+		
+		
+		
+		if (selected) {
+			selectedDrawable.draw(batch, x,
+					y - height, width,
+					height);
+			font.setColor(fontColorSelected.r, fontColorSelected.g,
+					fontColorSelected.b, fontColorSelected.a * parentAlpha);
+		} else {
+			font.setColor(fontColorUnselected.r, fontColorUnselected.g, fontColorUnselected.b, fontColorUnselected.a * parentAlpha);			
+		}
+		
+		if(hasImage()) {
+			TextureRegion r = getCellImage(item);
+			batch.draw(r, x, y - r.getRegionHeight());
+			x += r.getRegionWidth();
+		}
+		
+		
+		font.draw(batch, getCellTitle(item), x + textOffsetX,
+				y - textOffsetY);
+		
+		if(hasSubtitle()) {
+			if (selected) {
+				font.setColor(fontColorSelected.r, fontColorSelected.g,
+						fontColorSelected.b, fontColorSelected.a * parentAlpha * 0.5f);
+			} else {
+				font.setColor(fontColorUnselected.r, fontColorUnselected.g, fontColorUnselected.b, fontColorUnselected.a * parentAlpha * 0.5f);			
+			}			
+			
+			font.draw(batch, getCellSubTitle(item), x + textOffsetX,
+					y - textOffsetY - (font.getCapHeight() - font.getDescent() * 2));
+		}
+	}
+	
+	protected boolean hasSubtitle() {
+		return false;
+	}
+	
+	protected boolean hasImage() {
+		return false;
+	}
+	
+	public void layout(ListStyle style) {
+		this.style = style;
+		
+		final BitmapFont font = style.font;
+		final Drawable selectedDrawable = style.selection;
+
+		textOffsetX = selectedDrawable.getLeftWidth();
+		textOffsetY = selectedDrawable.getTopHeight() - font.getDescent();
+		
+		itemHeight = font.getCapHeight() - font.getDescent() * 2;
+		
+		if(hasSubtitle()) {
+			itemHeight *= 2;
+		}
+		
+		itemHeight += selectedDrawable.getTopHeight()
+				+ selectedDrawable.getBottomHeight();
+	}		
+
+	public float getItemHeight() {
+		return itemHeight;
+	}
+
+	protected String getCellTitle(T item) {
+		return item.toString();
+	}
+
+	protected String getCellSubTitle(T item) {
+		return null;
+	}
+
+	protected TextureRegion getCellImage(T item) {
+		return null;
+	}
+}

@@ -1,27 +1,25 @@
 package org.bladecoder.engineeditor.ui.components;
 
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import org.bladecoder.engine.actions.Param;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
-@SuppressWarnings("serial")
-public class Vector2Panel extends JPanel {
+public class Vector2Panel extends Table {
 	
-	JTextField x = new JTextField();
-	JTextField y = new JTextField();
+	TextField x;
+	TextField y;
 	
-	public Vector2Panel() {
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-    	setOpaque(false);
-    	
-    	add(new JLabel(" x "));
+	public Vector2Panel(Skin skin) {
+		x = new TextField("", skin);
+		y = new TextField("", skin);
+		
+    	add(new Label(" x ", skin));
     	add(x);
-    	add(new JLabel(" y "));
+    	add(new Label(" y ", skin));
     	add(y);
 	}
 	

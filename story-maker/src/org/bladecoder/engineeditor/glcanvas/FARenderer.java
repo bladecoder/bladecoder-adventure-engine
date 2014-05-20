@@ -91,5 +91,10 @@ public class FARenderer {
 			renderer.update(delta);
 		}
 	}
+	
+	public void dispose() {
+		if(renderer != null)
+			renderer.dispose();
+	}
 
 }

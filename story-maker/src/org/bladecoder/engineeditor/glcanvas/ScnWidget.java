@@ -1,11 +1,22 @@
 package org.bladecoder.engineeditor.glcanvas;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.bladecoder.engine.anim.FrameAnimation;
+import org.bladecoder.engine.anim.Tween;
+import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
+import org.bladecoder.engine.model.SpriteActor;
+import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.util.RectangleRenderer;
 import org.bladecoder.engineeditor.Ctx;
+import org.bladecoder.engineeditor.model.BaseDocument;
+import org.bladecoder.engineeditor.model.ChapterDocument;
+import org.bladecoder.engineeditor.model.Project;
 import org.bladecoder.engineeditor.utils.EditorLogger;
+import org.w3c.dom.Element;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -28,7 +39,7 @@ public class ScnWidget extends Widget {
 	private final FARenderer faRenderer = new FARenderer();
 	private final ScnWidgetInputListener inputListner = new ScnWidgetInputListener(
 			this);
-	
+
 	private final Rectangle bounds = new Rectangle();
 	private final Rectangle scissors = new Rectangle();
 
@@ -55,24 +66,90 @@ public class ScnWidget extends Widget {
 		setLayoutEnabled(true);
 
 		addListener(inputListner);
-	}
+		
+		Ctx.project.addPropertyChangeListener(
+				new PropertyChangeListener() {
+					@Override
+					public void propertyChange(PropertyChangeEvent e) {
+						if(e.getPropertyName().equals(Project.NOTIFY_SCENE_SELECTED)) {
+							setSelectedScene(Ctx.project.getSelectedScene());
+						} else if (e.getPropertyName().equals(Project.NOTIFY_ACTOR_SELECTED)) {
+							setSelectedActor(Ctx.project.getSelectedActor());
+						} else if (e.getPropertyName().equals(Project.NOTIFY_FA_SELECTED)) {
+							setSelectedFA(Ctx.project.getSelectedFA());
+						} else if (e.getPropertyName().equals(Project.NOTIFY_PROJECT_LOADED)) {
+							if(scn != null) {
+								scn.dispose();
+								scn = null;
+							}
+							
+							EngineAssetManager.createEditInstance(Ctx.project
+									.getProjectDir().getAbsolutePath() + "/assets",
+									Ctx.project.getWorld().getWidth());
+						}
+					}
+				});
 
-	public void setScene(Scene scn) {
-		this.scn = scn;
-		if (scn != null)
-			drawer.setCamera(scn.getCamera());
+		Ctx.project.getWorld().addPropertyChangeListener(
+				new PropertyChangeListener() {
+					@Override
+					public void propertyChange(PropertyChangeEvent e) {
+						EditorLogger.debug("Editor Listener: "
+								+ e.getPropertyName());
+						ChapterDocument doc = Ctx.project.getSelectedChapter();
 
-		invalidate();
-	}
+						if (e.getPropertyName().equals("scene")) {
+							setSelectedScene(Ctx.project.getSelectedScene());
+						} else if (e.getPropertyName().equals("bbox")) {
+							Element selActor = (Element) e.getNewValue();
+							String id = doc.getId(selActor);
+							Actor a = scn.getActor(id, false, true);
+							if (a == null)
+								return;
 
-	public void setSelectedActor(Actor a) {
-		selectedActor = a;
-		faRenderer.setActor(a);
-		setFrameAnimation(null);
-	}
+							a.setBbox(doc.getBBox(selActor));
+						} else if (e.getPropertyName().equals("pos")) {
+							Element selActor = (Element) e.getNewValue();
+							String id = doc.getId(selActor);
+							Actor a = scn.getActor(id, false, true);
+							if (a == null)
+								return;
+							Vector2 p = doc.getPos(selActor);
+							((SpriteActor) a).setPosition(p.x, p.y);
+						} else if (e.getPropertyName().equals("id")) {
+							String id = (String) e.getOldValue();
 
-	public Scene getScene() {
-		return scn;
+							if (selectedActor == null
+									|| !selectedActor.getId().equals(id))
+								return;
+
+							scn.removeActor(scn.getActor(id));
+							setSelectedActor(null);
+						} else if (e.getPropertyName()
+								.equals("frame_animation")) {
+							createAndSelectActor(Ctx.project.getSelectedActor());
+							setSelectedFA(null);
+						} else if (e.getPropertyName().equals(
+								"init_frame_animation")) {
+							Element actor = (Element) e.getNewValue();
+							((SpriteActor) selectedActor)
+									.getRenderer()
+									.setInitFrameAnimation(
+											actor.getAttribute("init_frame_animation"));
+							setSelectedFA(null);
+						} else if (e.getPropertyName().equals("actor")) {
+							createAndSelectActor(Ctx.project.getSelectedActor());
+						} else if (e.getPropertyName().equals(
+								BaseDocument.NOTIFY_ELEMENT_DELETED)) {
+							if (((Element) e.getNewValue()).getTagName()
+									.equals("actor"))
+								removeActor(doc, (Element) e.getNewValue());
+							else if (((Element) e.getNewValue()).getTagName()
+									.equals("frame_animation"))
+								setSelectedFA(null);
+						}
+					}
+				});
 	}
 
 	@Override
@@ -87,7 +164,7 @@ public class ScnWidget extends Widget {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		validate();
-		
+
 		Color tmp = batch.getColor();
 		batch.setColor(Color.WHITE);
 
@@ -101,16 +178,16 @@ public class ScnWidget extends Widget {
 
 		if (scn != null) {
 			Vector3 v = new Vector3(getX(), getY(), 0);
-			v = v.prj(batch.getTransformMatrix());			
-			
+			v = v.prj(batch.getTransformMatrix());
+
 			batch.end();
 
-//			System.out.println("X: " + v.x+ " Y:" +  v.y);
-			Gdx.gl.glViewport((int) v.x, (int)v.y, (int) getWidth(),
+			// System.out.println("X: " + v.x+ " Y:" + v.y);
+			Gdx.gl.glViewport((int) v.x, (int) v.y, (int) getWidth(),
 					(int) (getHeight()));
 
 			getStage().calculateScissors(bounds, scissors);
-			
+
 			if (ScissorStack.pushScissors(scissors)) {
 				// WORLD CAMERA
 				sceneBatch.setProjectionMatrix(scn.getCamera().combined);
@@ -135,8 +212,7 @@ public class ScnWidget extends Widget {
 			if (!inScene) {
 				faRenderer.draw((SpriteBatch) batch);
 			}
-			
-			
+
 			batch.setColor(tmp);
 
 		} else {
@@ -213,14 +289,18 @@ public class ScnWidget extends Widget {
 			}
 		}
 
-		scn.getCamera().zoom = 100f / zoomLevel;
-		scn.getCamera().update();
+		if (scn != null) {
+			scn.getCamera().zoom = 100f / zoomLevel;
+			scn.getCamera().update();
+		}
 	}
 
 	public void translate(Vector2 delta) {
 		// EditorLogger.debug("TRANSLATING - X: " + delta.x + " Y: " + delta.y);
-		scn.getCamera().translate(-delta.x, -delta.y, 0);
-		scn.getCamera().update();
+		if (scn != null) {
+			scn.getCamera().translate(-delta.x, -delta.y, 0);
+			scn.getCamera().update();
+		}
 	}
 
 	public void localToScreenCoords(Vector2 coords) {
@@ -241,10 +321,117 @@ public class ScnWidget extends Widget {
 	public void screenToWorldCoords(Vector2 coords) {
 		tmpV2.set(0, 0);
 		localToStageCoordinates(tmpV2);
-//		getStage().stageToScreenCoordinates(tmpV2);
+		// getStage().stageToScreenCoordinates(tmpV2);
 		tmpV3.set(coords.x, coords.y, 0);
 		getScene().getCamera().unproject(tmpV3, tmpV2.x, tmpV2.y, getWidth(),
 				getHeight());
 		coords.set(tmpV3.x, tmpV3.y);
+	}
+
+	public Scene getScene() {
+		return scn;
+	}
+
+	public void setSelectedScene(Element e) {
+		if (scn != null) {
+			scn.dispose();
+			scn = null;
+		}
+
+		setSelectedActor(null);
+		
+		scn = Ctx.project.getSelectedChapter().getEngineScene(
+				e,
+				Ctx.project.getWorld().getWidth(),
+				Ctx.project.getWorld().getHeight());
+		
+		if (scn != null)
+			drawer.setCamera(scn.getCamera());
+
+		invalidate();
+	}
+
+	public void setSelectedActor(Element actor) {
+		Actor a = null;
+		
+		if (scn != null && actor != null) {
+			a = scn.getActor(Ctx.project.getSelectedChapter()
+					.getId(actor), false, true);
+		}
+		
+		selectedActor = a;
+		faRenderer.setActor(a);
+		setFrameAnimation(null);
+	}
+
+	public void setSelectedFA(String selFA) {
+		if (selectedActor instanceof SpriteActor) {
+			SpriteRenderer s = ((SpriteActor) selectedActor).getRenderer();
+
+			if (selFA == null || s.getFrameAnimations().get(selFA) == null) {
+				selFA = ((SpriteActor) selectedActor).getRenderer()
+						.getInitFrameAnimation();
+			}
+
+			if (selFA != null && s.getFrameAnimations().get(selFA) != null) {
+
+				setFrameAnimation(s.getFrameAnimations().get(selFA));
+
+				if (inScene
+						|| s.getCurrentFrameAnimation() == null
+						|| ((SpriteActor) selectedActor).getRenderer()
+								.getInitFrameAnimation().equals(selFA)) {
+					((SpriteActor) selectedActor).startFrameAnimation(selFA,
+							Tween.REPEAT, Tween.INFINITY, null);
+				}
+			} else {
+				setFrameAnimation(null);
+			}
+		} else {
+			setFrameAnimation(null);
+		}
+	}
+	
+	public void createAndSelectActor(Element actor) {
+		removeActor(Ctx.project.getSelectedChapter(), actor);
+		selectedActor = createActor(Ctx.project.getSelectedChapter(), actor);
+		setSelectedActor(actor);
+	}
+
+	private Actor createActor(ChapterDocument doc, Element e) {
+
+		String type = doc.getType(e);
+		Actor a = doc.getEngineActor(e);
+
+		if (type.equals("foreground")) {
+			scn.addFgActor((SpriteActor) a);
+		} else {
+			scn.addActor(a);
+		}
+
+		a.loadAssets();
+		EngineAssetManager.getInstance().getManager().finishLoading();
+		a.retrieveAssets();
+
+		return a;
+	}
+
+	private void removeActor(ChapterDocument doc, Element e) {
+		Actor a = scn.getActor(doc.getId(e), false, true);
+		if (a != null) {
+			scn.removeActor(a);
+
+			a.dispose();
+			setSelectedActor(null);
+		}
+	}
+	
+	public void dispose() {
+		if(scn != null) {
+			scn.dispose();
+			scn = null;
+		}
+		
+		faRenderer.dispose();
 	}
 }

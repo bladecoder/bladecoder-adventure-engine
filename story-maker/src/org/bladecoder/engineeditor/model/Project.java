@@ -230,7 +230,7 @@ public class Project extends PropertyChange {
 		}
 	}
 	
-	public void closeProyect() {
+	public void closeProject() {
 		this.projectFile = null;
 	}
 

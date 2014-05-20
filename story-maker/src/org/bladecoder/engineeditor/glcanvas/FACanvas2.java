@@ -8,7 +8,7 @@ import org.bladecoder.engine.model.AtlasRenderer;
 import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engineeditor.model.ChapterDocument;
-import org.bladecoder.engineeditor.ui.scene2d.EditFADialog;
+import org.bladecoder.engineeditor.ui.EditFADialog;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;

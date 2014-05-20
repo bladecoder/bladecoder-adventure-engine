@@ -1,126 +1,102 @@
 package org.bladecoder.engineeditor.ui.components;
 
-import java.awt.BorderLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import org.bladecoder.engineeditor.glcanvas.Assets;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Scaling;
+import com.esotericsoftware.tablelayout.Cell;
 
-@SuppressWarnings("serial")
-public class HeaderPanel extends JPanel {
-    private JComponent center;
-    private JPanel north;
-    private JLabel titleLbl;
-    private boolean collapsable = true;
-   
-    public HeaderPanel() {
-    	this("TITLE");
-    }    
-    
-    public HeaderPanel(String title) {
-    	titleLbl = new JLabel(title);
-    	north = new JPanel();
-    	
-    	setLayout(new BorderLayout());
-    	north.setLayout(new BoxLayout(north, BoxLayout.PAGE_AXIS));
-    	
-    	setOpaque(false);
-    	
-    	titleLbl.setAlignmentX(LEFT_ALIGNMENT);    	
-    	titleLbl.setOpaque(false);
-    	titleLbl.setFont(Theme.BOLD_FONT);
-    	titleLbl.setForeground(Theme.FG_LABEL);
-    	titleLbl.setBackground(Theme.BACKGROUND);
-    	titleLbl.setBorder(new EmptyBorder(3, 3, 3, 3));
-    	
-    	setCollapsable(true);   	   	
-   	
-    	Border compound;
-    	Border holo = BorderFactory.createMatteBorder(
-                0, 0, 2, 0, Theme.HOLO_COLOR);
+public class HeaderPanel extends Table {
+	private Actor content;
+	private HorizontalGroup north;
+	private Label titleLbl;
+	private boolean collapsable = true;
+	private Image collapseImg;
+	private Cell<Actor> contentCell;
 
-    	compound = BorderFactory.createCompoundBorder(new EmptyBorder(3, 0, 3, 0), holo);    	
-    	
-//    	titleLbl.setBorder(compound);
-    	
-    	north.setBorder(compound);
-    	north.add(titleLbl);
-    	add(north, java.awt.BorderLayout.NORTH);
-    	
-    	if(collapsable)
-    		titleLbl.addMouseListener(ml);
-    } 
-    
-    public void fillTitle() {
-    	north.setBackground(Theme.HOLO_COLOR);
-    	north.setOpaque(true);
-    }
+	public HeaderPanel(Skin skin, String title) {
+		titleLbl = new Label(title, skin);
+		north = new HorizontalGroup();
+		collapseImg = new Image();
+		collapseImg.setScaling(Scaling.none);
+		
+		if(collapsable) {
+			north.addActor(collapseImg);
+			collapseImg.setDrawable(new TextureRegionDrawable(new TextureRegion(Assets.inst().get("res/images/ic_open.png", Texture.class))));
+		}
+		
+		top().left();
+		
+		north.addActor(titleLbl);
+		north.align(Align.left);
+		north.fill();
+		add(north).expandX().fillX();
+		row();
+		Image image = new Image(skin.getDrawable("white_pixel"));
+		image.setColor(skin.getColor("holo-blue"));
+		add(image).height(2).padBottom(4f).expandX().fill();
+		row().top().left();
+		contentCell = add().expand().fill();
+		
 
+		if (collapsable)
+			titleLbl.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					toggleCollapse();
+					invalidateHierarchy();
+				}
+			});
+	}
 
 	public void setTile(String title) {
-    	titleLbl.setText(title);
-    }
-    
-    public void setContentPane(JComponent center) {
-    	this.center = center;
-    	
-    	add(center, java.awt.BorderLayout.CENTER);
-    }
-    
-    public void setCollapsable(boolean c) {
-    	collapsable = c;
-    	
-    	if(c)
-    		titleLbl.setIcon(new javax.swing.ImageIcon(getClass().getResource(
-				"/res/images/ic_open.png")));
-    	else
-    		titleLbl.setIcon(null);
-    }
-    
-    
-    MouseListener ml = new MouseListener() {
+		titleLbl.setText(title);
+	}
+
+	public void setContent(Actor center) {
+		removeActor(this.content);
 		
-		@Override
-		public void mouseReleased(MouseEvent arg0) {
-			
-		}
+		this.content = center;
+		this.contentCell.setWidget(center);
 		
-		@Override
-		public void mousePressed(MouseEvent arg0) {
-			
-		}
-		
-		@Override
-		public void mouseExited(MouseEvent arg0) {
-			
-		}
-		
-		@Override
-		public void mouseEntered(MouseEvent arg0) {
-			
-		}
-		
-		@Override
-		public void mouseClicked(MouseEvent arg0) {
-			if(center!=null && collapsable) {
-				if(center.isVisible()) {
-					center.setVisible(false);
-				
-					titleLbl.setIcon(new javax.swing.ImageIcon(getClass().getResource(
-						"/res/images/ic_closed.png")));
-				} else {
-					center.setVisible(true);
-					
-					titleLbl.setIcon(new javax.swing.ImageIcon(getClass().getResource(
-						"/res/images/ic_open.png")));						
-				}
+		invalidateHierarchy();
+	}
+	
+
+	public void setCollapsable(boolean c) {
+		collapsable = c;
+
+		if (c) {
+			collapseImg.setDrawable(new TextureRegionDrawable(new TextureRegion(Assets.inst().get("res/images/ic_open.png", Texture.class))));
+		} else
+			collapseImg.setDrawable(null);
+	}
+
+	public void toggleCollapse() {
+		if (collapsable) {
+			if (contentCell.getWidget() != null) {
+				removeActor(this.content);
+				invalidateHierarchy();
+
+				collapseImg.setDrawable(new TextureRegionDrawable(new TextureRegion(Assets.inst().get("res/images/ic_closed.png", Texture.class))));
+			} else {
+				this.contentCell.setWidget(content);				
+				invalidateHierarchy();
+
+				collapseImg.setDrawable(new TextureRegionDrawable(new TextureRegion(Assets.inst().get("res/images/ic_open.png", Texture.class))));
 			}
 		}
-	};
+	}
+
 }

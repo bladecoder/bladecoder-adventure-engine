@@ -2,8 +2,6 @@ package org.bladecoder.engineeditor;
 
 import java.io.File;
 
-import org.bladecoder.engineeditor.glcanvas.ScnCanvas;
-
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -20,18 +18,18 @@ public class Main {
 //		cfg.samples = 2;
 //		cfg.useGL30 = true;
 		
-		if(Main.class.getResource("/icons/icon128.png")!=null)
-			cfg.addIcon("icons/icon128.png", FileType.Internal);
+		if(Main.class.getResource("/res/images/ic_app.png")!=null)
+			cfg.addIcon("res/images/ic_app.png", FileType.Internal);
 		
-		if(Main.class.getResource("/icons/icon32.png")!=null)
-			cfg.addIcon("icons/icon32.png", FileType.Internal);
-		
-		if(Main.class.getResource("/icons/icon16.png")!=null)
-			cfg.addIcon("icons/icon16.png", FileType.Internal);			
+//		if(Main.class.getResource("/icons/icon32.png")!=null)
+//			cfg.addIcon("icons/icon32.png", FileType.Internal);
+//		
+//		if(Main.class.getResource("/icons/icon16.png")!=null)
+//			cfg.addIcon("icons/icon16.png", FileType.Internal);			
 		
 		parseArgs(args);
     	
-    	new LwjglApplication(new ScnCanvas(), cfg);
+    	new LwjglApplication(new Editor(), cfg);
     }
 
 	private static void parseArgs(String[] args) {
