@@ -26,6 +26,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 
@@ -52,8 +54,11 @@ public class ScnWidget extends Widget {
 	private static final int[] zoomLevels = { 5, 10, 16, 25, 33, 50, 66, 100,
 			150, 200, 300, 400, 600, 800, 1000 };
 	private int zoomLevel = 100;
+	
+	LabelStyle style;
 
-	public ScnWidget() {
+	public ScnWidget(Skin skin) {
+		style = skin.get(LabelStyle.class);
 
 		setSize(150, 150);
 		backgroundTexture = Assets.inst().get(
@@ -217,7 +222,18 @@ public class ScnWidget extends Widget {
 
 		} else {
 			RectangleRenderer.draw((SpriteBatch) batch, getX(), getY(),
-					getWidth(), getHeight(), Color.RED);
+					getWidth(), getHeight(), Color.BLACK);
+			
+			String s;
+			
+			if(Ctx.project.getProjectDir() == null)
+				s = "CREATE OR LOAD A PROJECT";
+			else
+				s = "THERE ARE NO SCENES IN THIS CHAPTER YET";
+			
+			style.font.draw(batch, s, 
+					(getWidth() - style.font.getBounds(s).width )/2, 
+					getHeight()/2 + style.font.getLineHeight() *3);
 		}
 
 	}

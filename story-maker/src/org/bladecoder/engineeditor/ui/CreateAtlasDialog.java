@@ -61,8 +61,6 @@ public class CreateAtlasDialog extends EditDialog {
 		filterMag.setText(FILTERS[1]);
 
 		setInfo(INFO);
-
-		init();
 	}
 
 	@Override

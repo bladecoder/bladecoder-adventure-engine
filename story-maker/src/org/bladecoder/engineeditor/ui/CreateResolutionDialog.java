@@ -37,8 +37,6 @@ public class CreateResolutionDialog extends EditDialog {
 		getCenterPanel().add(scale);
 		
 		setInfo(INFO);
-
-		init();
 	}
 
 	@Override

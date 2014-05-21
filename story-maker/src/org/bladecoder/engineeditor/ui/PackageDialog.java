@@ -41,6 +41,7 @@ public class PackageDialog extends EditDialog {
 
 	private InputPanel[] options = { type, os, linux64JRE, linux32JRE, winJRE, version, icon, androidSDK, androidKeyStore, androidKeyAlias };
 
+	@SuppressWarnings("unchecked")
 	public PackageDialog(Skin skin) {
 		super("PACKAGE ADVENTURE", skin);
 		
@@ -64,8 +65,6 @@ public class PackageDialog extends EditDialog {
 		getCenterPanel().add(arch);
 		getCenterPanel().row().fill().expandX();
 		getCenterPanel().add(dir);
-
-
 		
 		for(InputPanel i: options) {
 			getCenterPanel().row().fill().expandX();
@@ -137,8 +136,6 @@ public class PackageDialog extends EditDialog {
 				osChanged();
 			}
 		});
-
-		init();
 		
 		archChanged();
 	}

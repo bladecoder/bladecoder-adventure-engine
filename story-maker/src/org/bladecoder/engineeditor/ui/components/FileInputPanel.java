@@ -9,12 +9,12 @@ import org.bladecoder.engineeditor.Ctx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class FileInputPanel extends InputPanel {
 	
 	private File cd;
+	private File selected;
 	
 	private boolean dirOnly = false;
 	
@@ -45,13 +45,18 @@ public class FileInputPanel extends InputPanel {
 
 				if (chooser.showDialog(null, "Ok") == JFileChooser.APPROVE_OPTION) {
 					((TextButton) getField()).setText(chooser.getSelectedFile().getAbsolutePath());
-					cd = chooser.getSelectedFile();
+					selected = cd = chooser.getSelectedFile();
 				}				
 			}		
 		});
 	}
 	
 	public File getFile() {
-		return cd;
+		return selected;
+	}
+	
+	@Override
+	public String getText() {
+		return selected.getAbsolutePath();
 	}
 }

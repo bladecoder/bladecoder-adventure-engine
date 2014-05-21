@@ -43,6 +43,10 @@ public abstract class EditDialog extends Dialog {
 		button("Cancel", false);
 		key(Keys.ENTER, true);
 		key(Keys.ESCAPE, false);
+		
+		padBottom(10);
+		padLeft(10);
+		padRight(10);
     }
     
     public Skin getSkin() {
@@ -51,17 +55,6 @@ public abstract class EditDialog extends Dialog {
     
     public Table getCenterPanel() {
     	return centerPanel;
-    }
-    
-    protected void init() {
-//    	int height = (int)getContentPane().getPreferredSize().getHeight();
-//    	
-//    	if(height > parent.getHeight()) height = parent.getHeight() - 50 ;
-//    	
-//    	getContentPane().setPreferredSize(new Dimension(600,height));
-//    	infoLbl.setPreferredSize(new Dimension(300,(int)infoLbl.getPreferredSize().getHeight()));
-////        centerPanel.setPreferredSize(new Dimension(250,(int)centerPanel.getPreferredSize().getHeight()));
-    	pack();    	
     }
     
     public void setInfo(String text) {

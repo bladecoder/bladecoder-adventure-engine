@@ -22,7 +22,7 @@
 		default-thin: { fontColorUnselected: text-dark, selection: text_selected, fontColorSelected: text-dark, font: thin-font },
 		opaque-thin: { fontColorUnselected: text-dark, selection: text_selected_opaque, fontColorSelected: text-dark, font: thin-font }
 	},
-	org.bladecoder.engineeditor.ui.components.scene2d.CustomList$ListStyle: {
+	org.bladecoder.engineeditor.ui.components.CustomList$ListStyle: {
 		default: {  fontColorUnselected: text-dark, selection: text_selected, fontColorSelected: text-dark, font: default-font},
 		opaque: { fontColorUnselected: text-dark, selection: text_selected_opaque, fontColorSelected: text-dark, font: default-font },
 		default-thin: { fontColorUnselected: text-dark, selection: text_selected, fontColorSelected: text-dark, font: thin-font},
