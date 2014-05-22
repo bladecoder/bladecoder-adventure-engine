@@ -41,7 +41,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 public class Editor implements ApplicationListener {
 	public static final String VERSION_STR = "0.1.0 (Beta)";
 	public static final String COPYRIGHT_STR = "<html><p align=\"left\">2013 - Rafael García<br/>http://bladecoder.blogspot.com</p></html>";
-	public static final String TITLE = "Story Maker";	
+	public static final String TITLE = "Adventure Composer";	
 	
 	public static final String SKIN = "res/skin/HoloSkin/Holo-dark-ldpi.json";
 	// public static final String SKIN = "res/skin/uiskin.json";

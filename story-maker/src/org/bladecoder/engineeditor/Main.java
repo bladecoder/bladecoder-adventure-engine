@@ -10,7 +10,7 @@ public class Main {
     public static void main(final String[] args) {
     	LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
     	
-    	cfg.title = "Story Maker";
+    	cfg.title = "Adventure Composer";
 		cfg.width = 1920 / 2;
 		cfg.height = 1080 / 2;
 
