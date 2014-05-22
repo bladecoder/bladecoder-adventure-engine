@@ -64,7 +64,7 @@ public class Editor implements ApplicationListener {
 		Ctx.project = new Project();
 		Ctx.msg = new Message(skin);
 
-		scnWidget = new ScnWidget();
+		scnWidget = new ScnWidget(skin);
 
 		/*** STAGE SETUP ***/
 		stage = new Stage(new ScreenViewport());

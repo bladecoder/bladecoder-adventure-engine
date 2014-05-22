@@ -22,7 +22,8 @@ public class InputPanel extends Table {
     private Param.Type type = Type.STRING;
     private boolean mandatory = false;
 
-    public InputPanel(Skin skin, String title, String desc, String[] options) {
+    @SuppressWarnings("unchecked")
+	public InputPanel(Skin skin, String title, String desc, String[] options) {
     	init(skin, title, desc, new SelectBox<String>(skin), mandatory, null);
     	
     	if(options != null)
@@ -41,7 +42,8 @@ public class InputPanel extends Table {
     	this(skin, title, desc, type, mandatory, null, null);
     }
     
-    public InputPanel(Skin skin, String title, String desc, Param.Type type, boolean mandatory, String defaultValue, String[] options) {
+    @SuppressWarnings("unchecked")
+	public InputPanel(Skin skin, String title, String desc, Param.Type type, boolean mandatory, String defaultValue, String[] options) {
     	this.type = type;
     	
     	if(options != null) {
@@ -78,21 +80,19 @@ public class InputPanel extends Table {
     	this.mandatory = mandatory;
     	
        	this.setSkin(skin);
-    	this.title = new Label(title, skin);
+    	LabelStyle style = new LabelStyle(skin.get(LabelStyle.class));
+    	this.title = new Label(title, style);
     	
-    	LabelStyle descStyle = new LabelStyle(this.title.getStyle());
-    	descStyle.fontColor = Color.RED;
-    	descStyle.font = skin.getFont("thin-font");
-        this.desc = new Label(desc,skin, "thin-font", Color.RED );
+        this.desc = new Label(desc,skin);
         this.desc.setWrap(true);  
     	     	
        	this.field = c;
        	
-       	add(title).left();
+       	add(this.title).left();
        	row().expand();
        	add(field).left();
        	row().expand();
-       	add(desc).left();
+       	add(this.desc).left();
     	
        	if(defaultValue != null)
     		setText(defaultValue);
@@ -104,10 +104,10 @@ public class InputPanel extends Table {
     }
 
 	public void setError(boolean value) {
-//    	if(value)
-//    		desc.setForeground(Color.RED);
-//    	else
-//    		desc.setForeground(Theme.FG_LABEL);
+    	if(value)
+    		title.getStyle().fontColor = Color.RED;
+    	else
+    		title.getStyle().fontColor = Color.WHITE;
     }
     
     @SuppressWarnings("unchecked")
@@ -210,9 +210,5 @@ public class InputPanel extends Table {
 		
 		setError(false);	
 		return true;
-	}
-	
-	public void requestFocus() {
-//		field.requestFocus();
 	}
 }

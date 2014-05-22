@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engineeditor.Ctx;
-import org.bladecoder.engineeditor.glcanvas.FACanvas2;
+import org.bladecoder.engineeditor.glcanvas.FACanvas;
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.model.Project;
@@ -33,7 +33,7 @@ public class EditFADialog extends EditElementDialog {
 	String attrs[] = { "source", "id", "animation_type", "speed",  "delay", "count", "inD",
 			"outD", "sound", "preload", "disposed_when_played"};
 	
-	FACanvas2 faCanvas = new FACanvas2(this);
+	FACanvas faCanvas = new FACanvas(this);
 
 	@SuppressWarnings("unchecked")
 	public EditFADialog(Skin skin, BaseDocument doc, Element p, Element e) {

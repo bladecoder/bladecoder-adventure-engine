@@ -51,11 +51,10 @@ public abstract class EditElementDialog extends EditDialog {
 				i.setText(e.getAttribute(attrs[pos]));
 			}
 		}
-
-		init();
 		
 		// TODO set focus to the first component		
-//		getStage().setKeyboardFocus(centerPanel.getComponent(0));
+//		if(inputs.length > 0)
+//			getStage().setKeyboardFocus(inputs[0].getField());
 	}
 	
 	public void addInputPanel(InputPanel i) {

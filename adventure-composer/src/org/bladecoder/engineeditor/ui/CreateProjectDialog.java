@@ -16,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class CreateProjectDialog extends EditDialog {
 
-	public static final String INFO = "A project folder with the proper structure <br/>will be created in the selected location.";
+	public static final String INFO = "A project folder with the proper structure will be created in the selected location.";
 
 	private InputPanel projectName;
 	private FileInputPanel location;
@@ -32,11 +32,12 @@ public class CreateProjectDialog extends EditDialog {
 		location = new FileInputPanel(skin, "Location",
 				"Select the folder location for the project", true);
 
+		getCenterPanel().row().fill().expandX();
 		getCenterPanel().add(projectName);
 		getCenterPanel().row().fill().expandX();
 		getCenterPanel().add(location);
-
-		init();
+		
+//		getStage().setKeyboardFocus(projectName.getField());
 	}
 
 	@Override
@@ -60,6 +61,9 @@ public class CreateProjectDialog extends EditDialog {
 					+ projectName.getText()));
 		} catch (Exception e) {
 			EditorLogger.error(e.getMessage());
+			String msg = "Something went wrong while creating project.\n\n"
+					+ e.getClass().getSimpleName() + " - " + e.getMessage();
+			Ctx.msg.show(getStage(), msg, 2000);
 		}
 
 		try {
@@ -67,6 +71,9 @@ public class CreateProjectDialog extends EditDialog {
 					+ projectName.getText()));
 		} catch (IOException | ParserConfigurationException | SAXException e) {
 			EditorLogger.error(e.getMessage());
+			String msg = "Something went wrong while creating project.\n\n"
+					+ e.getClass().getSimpleName() + " - " + e.getMessage();
+			Ctx.msg.show(getStage(), msg, 2000);
 		}
 		
 		Ctx.msg.hide();
@@ -83,10 +90,11 @@ public class CreateProjectDialog extends EditDialog {
 			projectName.setError(false);
 
 		if (location.getFile() != null) {
+			location.setError(false);
+		} else {
 			location.setError(true);
 			isOk = false;
-		} else
-			location.setError(false);
+		}
 
 		return isOk;
 	}
