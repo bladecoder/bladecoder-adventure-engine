@@ -47,7 +47,7 @@ public class Project extends PropertyChange {
 	public static final String SPINE_PATH = ASSETS_PATH + "/spine";
 	public static final String UI_PATH = ASSETS_PATH + "/ui";
 
-	private static final String CONFIG_DIR = System.getProperty("user.home") + "/.StoryMaker";
+	private static final String CONFIG_DIR = System.getProperty("user.home") + "/.AdventureComposer";
 	private static final String CONFIG_FILENAME = "config.properties";
 	
 	public static final String LAST_PROJECT_PROP = "last_project";
