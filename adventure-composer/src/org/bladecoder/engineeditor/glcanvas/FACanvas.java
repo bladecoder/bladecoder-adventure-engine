@@ -18,7 +18,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-public class FACanvas2 extends ApplicationAdapter {
+public class FACanvas extends ApplicationAdapter {
 	private OrthographicCamera screenCamera;
 	private SpriteBatch batch;
 	private String source;
@@ -31,7 +31,7 @@ public class FACanvas2 extends ApplicationAdapter {
 	private boolean faChanged = false;
 	
 
-	public FACanvas2(EditFADialog createEditFADialog) {
+	public FACanvas(EditFADialog createEditFADialog) {
 		this.editFADialog = createEditFADialog;
 	}
 
