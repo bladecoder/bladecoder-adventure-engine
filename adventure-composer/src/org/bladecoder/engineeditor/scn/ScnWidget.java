@@ -1,4 +1,4 @@
-package org.bladecoder.engineeditor.glcanvas;
+package org.bladecoder.engineeditor.scn;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -20,7 +20,6 @@ import org.w3c.dom.Element;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -30,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 
 public class ScnWidget extends Widget {
 	// TMPs to avoid GC calls
@@ -46,7 +46,6 @@ public class ScnWidget extends Widget {
 	private final Rectangle scissors = new Rectangle();
 
 	private Scene scn;
-	private Texture backgroundTexture;
 	private Actor selectedActor = null;
 	private boolean inScene = false;
 	private boolean animation = true;
@@ -56,15 +55,14 @@ public class ScnWidget extends Widget {
 	private int zoomLevel = 100;
 	
 	LabelStyle style;
+	TiledDrawable tile;
 
 	public ScnWidget(Skin skin) {
 		style = skin.get(LabelStyle.class);
 
 		setSize(150, 150);
-		backgroundTexture = Assets.inst().get(
-				"res/images/transparent-light.png", Texture.class);
-		backgroundTexture.setWrap(Texture.TextureWrap.Repeat,
-				Texture.TextureWrap.Repeat);
+		
+		tile = new TiledDrawable(Ctx.assetManager.getIcon("transparent-light"));
 
 		faRenderer.setViewport(getWidth(), getHeight());
 
@@ -174,11 +172,8 @@ public class ScnWidget extends Widget {
 		batch.setColor(Color.WHITE);
 
 		// BACKGROUND
-		batch.disableBlending();
-		float tw = backgroundTexture.getWidth();
-		float th = backgroundTexture.getHeight();
-		batch.draw(backgroundTexture, getX(), getY(), getWidth(), getHeight(),
-				0f, 0f, getWidth() / tw, getHeight() / th);
+		batch.disableBlending();	
+		tile.draw(batch, getX(), getY(),getWidth(), getHeight());
 		batch.enableBlending();
 
 		if (scn != null) {

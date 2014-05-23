@@ -30,8 +30,8 @@ public class ActionList extends ElementList {
 		upBtn = new ImageButton(skin);
 		downBtn = new ImageButton(skin);
 
-		toolbar.addToolBarButton(upBtn, "res/images/ic_up.png", "Move up", "Move up");
-		toolbar.addToolBarButton(downBtn, "res/images/ic_down.png", "Move down", "Move down");
+		toolbar.addToolBarButton(upBtn, "ic_up", "Move up", "Move up");
+		toolbar.addToolBarButton(downBtn, "ic_down", "Move down", "Move down");
 		toolbar.pack();
 
 //		list.addListSelectionListener(new ListSelectionListener() {

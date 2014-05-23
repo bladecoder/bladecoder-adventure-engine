@@ -28,7 +28,7 @@ public class ChapterList extends ElementList {
 		list.setCellRenderer(listCellRenderer);
 
 		initBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(initBtn, "res/images/ic_check.png",
+		toolbar.addToolBarButton(initBtn, "ic_check",
 				"Set init chapter", "Set init chapter");
 
 		initBtn.setDisabled(false);

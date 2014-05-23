@@ -4,7 +4,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 
-import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -21,7 +20,9 @@ import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -34,31 +35,23 @@ public class SceneList extends ElementList {
 	public SceneList(Skin skin) {
 		super(skin, true);
 
+		HorizontalGroup chapterPanel = new HorizontalGroup();
 		chapters = new SelectBox<String>(skin);
+		chapters.setFillParent(true);
+		
+		chapterPanel.addActor(new Label("CHAPTER ", skin));
+		chapterPanel.addActor(chapters);
+		
 		clearChildren();
 		
-		add(chapters).expandX().fillX();
-		row().fill();
+		add(chapterPanel).expandX().fillX();
+		row();
 		add(toolbar).expandX().fillX();
 		row().fill();
 		add(container).expandY().fill();
 
-//		Label lbl = new Label("CHAPTER", skin);
-//		Font font = lbl.getFont();
-//		lbl.setFont(new Font(font.getName(), Font.BOLD, font.getSize()));
-//		lbl.setAlignmentX(LEFT_ALIGNMENT);
-//		chapterPanel.add(lbl);
-//		chapterPanel.add(Box.createHorizontalStrut(10));
-//		chapterPanel.add(chapters);
-//		chapterPanel.setAlignmentX(LEFT_ALIGNMENT);
-//		add(chapterPanel, 0);
-
-//		FontMetrics fm = chapters.getFontMetrics(chapters.getFont());
-//		chapters.setMaximumSize(new Dimension(chapters.getMaximumSize().width,
-//				fm.getHeight() + 10));
-
 		initBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(initBtn, "res/images/ic_check.png",
+		toolbar.addToolBarButton(initBtn, "ic_check",
 				"Set init scene", "Set init scene");
 
 		initBtn.setDisabled(true);
@@ -170,6 +163,7 @@ public class SceneList extends ElementList {
 		}
 
 		chapters.setSelected(Ctx.project.getSelectedChapter().getId());
+		invalidate();
 	}
 
 	private void setDefault() {
@@ -218,33 +212,26 @@ public class SceneList extends ElementList {
 
 		@Override
 		public TextureRegion getCellImage(Element e) {
-//			String bg = e.getAttribute("background");
-//			String bgPath = Ctx.project.getProjectPath()
-//					+ Project.BACKGROUNDS_PATH + "/" + Ctx.project.getResDir()
-//					+ "/" + bg;
-//
-//			File f = new File(bgPath);
-//
-//			ImageIcon ic = null;
-//
-//			try {
-//				ic = ImageUtils.getImageIcon(f.toURI().toURL(), 100);
-//			} catch (IOException e1) {
-//				ic = new ImageIcon(getClass().getResource(
-//						"/res/images/ic_no_scene.png"));
-//			}
-//
-//			if (ic == null)
-//				ic = new ImageIcon(getClass().getResource(
-//						"/res/images/ic_no_scene.png"));
-//
-//			return ic;
+			String bg = e.getAttribute("background");
 			
-			return null;
+			TextureRegion r = null;
+			
+			if(!bg.isEmpty()) 
+				r = Ctx.project.getBgIcon(bg);
+
+			if (r == null)
+				r =  Ctx.assetManager.getIcon("ic_no_scene");
+
+			return r;
 		}
 		
 		@Override
 		protected boolean hasSubtitle() {
+			return true;
+		}
+		
+		@Override
+		protected boolean hasImage() {
 			return true;
 		}
 	};

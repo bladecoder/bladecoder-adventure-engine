@@ -10,12 +10,10 @@ import javax.swing.JFileChooser;
 import javax.xml.transform.TransformerException;
 
 import org.bladecoder.engineeditor.Ctx;
-import org.bladecoder.engineeditor.glcanvas.Assets;
 import org.bladecoder.engineeditor.model.Project;
 import org.bladecoder.engineeditor.utils.RunProccess;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
@@ -51,23 +49,23 @@ public class ProjectToolbar extends Table {
 		assetsBtn = new ImageButton(skin);
 		atlasBtn = new ImageButton(skin);		
 
-		addToolBarButton(skin, newBtn, "res/images/ic_new.png", "New",
+		addToolBarButton(skin, newBtn, "ic_new", "New",
 				"Create a new project");
-		addToolBarButton(skin, loadBtn, "res/images/ic_load.png", "Load",
+		addToolBarButton(skin, loadBtn, "ic_load", "Load",
 				"Load an existing project");
-		addToolBarButton(skin, saveBtn, "res/images/ic_save.png", "Save",
+		addToolBarButton(skin, saveBtn, "ic_save", "Save",
 				"Save the current project");
-		addToolBarButton(skin, exitBtn, "res/images/ic_exit.png", "Exit",
+		addToolBarButton(skin, exitBtn, "ic_exit", "Exit",
 				"Save changes and exits");
 		row();
 		
-		addToolBarButton(skin, playBtn, "res/images/ic_play.png", "Play",
+		addToolBarButton(skin, playBtn, "ic_play", "Play",
 				"Play Adventure");
-		addToolBarButton(skin, packageBtn, "res/images/ic_package.png", "Package",
+		addToolBarButton(skin, packageBtn, "ic_package", "Package",
 				"Package the game for distribution");
-		addToolBarButton(skin, assetsBtn, "res/images/ic_assets.png", "Assets",
+		addToolBarButton(skin, assetsBtn, "ic_assets", "Assets",
 				"Open assets folder");
-		addToolBarButton(skin, atlasBtn, "res/images/ic_atlases.png", "Atlas",
+		addToolBarButton(skin, atlasBtn, "ic_atlases", "Atlas",
 				"Create Atlas");
 		
 		newBtn.setDisabled(false);
@@ -154,12 +152,12 @@ public class ProjectToolbar extends Table {
 	private void addToolBarButton(Skin skin, ImageButton button, String icon, String text,
 			String tooltip) {
 		ImageButtonStyle style = new ImageButtonStyle(skin.get(ButtonStyle.class));
-		Texture image = Assets.inst().get(icon, Texture.class);
-		style.imageUp = new TextureRegionDrawable(new TextureRegion(image));
+		TextureRegion image = Ctx.assetManager.getIcon(icon);
+		style.imageUp = new TextureRegionDrawable(image);
 		
 		try {
-			Texture imageDisabled = Assets.inst().get(icon.substring(0,icon.indexOf(".")) + "_disabled.png", Texture.class);
-			style.imageDisabled = new TextureRegionDrawable(new TextureRegion(imageDisabled));
+			TextureRegion imageDisabled = Ctx.assetManager.getIcon(icon + "_disabled");
+			style.imageDisabled = new TextureRegionDrawable(imageDisabled);
 		} catch(Exception e) {
 			
 		}
@@ -208,7 +206,6 @@ public class ProjectToolbar extends Table {
 	public void exit() {
 		try {
 			Ctx.project.saveProject();
-			Ctx.project.saveConfig();
 		} catch (TransformerException | IOException e1) {
 			String msg = "Something went wrong while saving the actor.\n\n"
 					+ e1.getClass().getSimpleName() + " - " + e1.getMessage();

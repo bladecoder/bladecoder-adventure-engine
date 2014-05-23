@@ -1,18 +1,17 @@
 package org.bladecoder.engineeditor.ui.components;
 
-import org.bladecoder.engineeditor.glcanvas.Assets;
+import org.bladecoder.engineeditor.Ctx;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-public class EditToolbar extends Table {
+public class EditToolbar extends HorizontalGroup {
 	
     private ImageButton createBtn;
     private ImageButton deleteBtn;
@@ -26,7 +25,7 @@ public class EditToolbar extends Table {
 		super();
 		
 		this.skin = skin;
-		this.left();
+		pad(0);
 		
         createBtn = new ImageButton(skin);
         editBtn = new ImageButton(skin);
@@ -34,11 +33,11 @@ public class EditToolbar extends Table {
         copyBtn = new ImageButton(skin);
         pasteBtn = new ImageButton(skin);
 		
-        addToolBarButton(createBtn, "res/images/ic_add.png","New", "Create a new Element");
-        addToolBarButton(editBtn, "res/images/ic_edit.png","Edit", "Edit the selected Element");
-        addToolBarButton(deleteBtn, "res/images/ic_delete.png","Delete", "Delete and put in the clipboard"); 
-        addToolBarButton(copyBtn, "res/images/ic_copy.png","Copy", "Copy to the clipboard");
-        addToolBarButton(pasteBtn, "res/images/ic_paste.png","Paste", "Paste from the clipboard");
+        addToolBarButton(createBtn, "ic_add","New", "Create a new Element");
+        addToolBarButton(editBtn, "ic_edit","Edit", "Edit the selected Element");
+        addToolBarButton(deleteBtn, "ic_delete","Delete", "Delete and put in the clipboard"); 
+        addToolBarButton(copyBtn, "ic_copy","Copy", "Copy to the clipboard");
+        addToolBarButton(pasteBtn, "ic_paste","Paste", "Paste from the clipboard");
     }
 	
 	public void hideCopyPaste() {
@@ -62,15 +61,15 @@ public class EditToolbar extends Table {
 	
 	public void addToolBarButton(ImageButton button, String icon, String text, String tooltip) {
 		
-		Texture image = Assets.inst().get(icon, Texture.class);
-		Texture imageDisabled = Assets.inst().get(icon.substring(0,icon.indexOf(".")) + "_disabled.png", Texture.class);
+		TextureRegion image = Ctx.assetManager.getIcon(icon);
+		TextureRegion imageDisabled = Ctx.assetManager.getIcon(icon + "_disabled");
 		
-		ImageButtonStyle style = new ImageButtonStyle(skin.get(ButtonStyle.class));
-		style.imageUp = new TextureRegionDrawable(new TextureRegion(image));
-		style.imageDisabled = new TextureRegionDrawable(new TextureRegion(imageDisabled));
+		ImageButtonStyle style = new ImageButtonStyle(skin.get("plain", ButtonStyle.class));
+		style.imageUp = new TextureRegionDrawable(image);
+		style.imageDisabled = new TextureRegionDrawable(imageDisabled);
 		button.setStyle(style);
-				
-        add(button);
+//		button.pad(4, 2, 4, 2);
+        addActor(button);
         button.setDisabled(true);
 	}
 	

@@ -18,14 +18,14 @@ public class Main {
 //		cfg.samples = 2;
 //		cfg.useGL30 = true;
 		
-		if(Main.class.getResource("/res/images/ic_app.png")!=null)
-			cfg.addIcon("res/images/ic_app.png", FileType.Internal);
+		if(Main.class.getResource("/res/images/ic_app64.png")!=null)
+			cfg.addIcon("res/images/ic_app64.png", FileType.Internal);
 		
-//		if(Main.class.getResource("/icons/icon32.png")!=null)
-//			cfg.addIcon("icons/icon32.png", FileType.Internal);
-//		
-//		if(Main.class.getResource("/icons/icon16.png")!=null)
-//			cfg.addIcon("icons/icon16.png", FileType.Internal);			
+		if(Main.class.getResource("/res/images/ic_app32.png")!=null)
+			cfg.addIcon("res/images/ic_app32.png", FileType.Internal);
+		
+		if(Main.class.getResource("/res/images/ic_app16.png")!=null)
+			cfg.addIcon("res/images/ic_app16.png", FileType.Internal);			
 		
 		parseArgs(args);
     	

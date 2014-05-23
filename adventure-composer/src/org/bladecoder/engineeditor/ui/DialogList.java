@@ -1,19 +1,16 @@
 package org.bladecoder.engineeditor.ui;
 
-import org.bladecoder.engineeditor.glcanvas.Assets;
+import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.ui.components.CellRenderer;
 import org.bladecoder.engineeditor.ui.components.EditElementDialog;
 import org.bladecoder.engineeditor.ui.components.ElementList;
 import org.w3c.dom.Element;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-
-
 
 public class DialogList extends ElementList {	
 	
@@ -70,22 +67,9 @@ public class DialogList extends ElementList {
 			return e.getAttribute("id");
 		}
 
-//		@Override
-//		protected String getCellSubTitle(Element e) {
-//			String state = e.getAttribute("state");
-//			String target = e.getAttribute("target");
-//			
-//			StringBuilder sb = new StringBuilder();
-//			
-//			if(!state.isEmpty()) sb.append("when ").append(state);
-//			if(!target.isEmpty()) sb.append(" with target '").append(target).append("'");
-//			
-//			return sb.toString();
-//		}
-
 		@Override
 		public TextureRegion getCellImage(Element e) {
-			return new TextureRegion(Assets.inst().get("res/images/ic_talkto.png", Texture.class));
+			return Ctx.assetManager.getIcon("ic_talkto.png");
 		}
 		
 		@Override

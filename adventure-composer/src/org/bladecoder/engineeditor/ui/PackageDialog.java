@@ -39,7 +39,7 @@ public class PackageDialog extends EditDialog {
 	private InputPanel androidKeyStorePassword;
 	private InputPanel androidKeyAliasPassword;	
 
-	private InputPanel[] options = { type, os, linux64JRE, linux32JRE, winJRE, version, icon, androidSDK, androidKeyStore, androidKeyAlias };
+	private InputPanel[] options = new InputPanel[10];
 
 	@SuppressWarnings("unchecked")
 	public PackageDialog(Skin skin) {
@@ -61,6 +61,17 @@ public class PackageDialog extends EditDialog {
 		androidKeyAlias = new InputPanel(skin, "KeyAlias", "Select the Key Alias Location");
 		androidKeyStorePassword = new InputPanel(skin, "KeyStorePasswd", "Key Store Password", false);
 		androidKeyAliasPassword = new InputPanel(skin, "KeyAliasPasswd", "Key Alias Password", false);
+		
+		options[0] = type;
+		options[1] = os;
+		options[2] = linux64JRE;
+		options[3] = linux32JRE;
+		options[4] = winJRE;
+		options[5] = version;
+		options[6] = icon;
+		options[7] = androidSDK;
+		options[8] = androidKeyStore;
+		options[9] = androidKeyAlias;
 		
 		getCenterPanel().add(arch);
 		getCenterPanel().row().fill().expandX();

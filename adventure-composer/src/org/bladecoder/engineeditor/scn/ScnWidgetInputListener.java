@@ -1,4 +1,4 @@
-package org.bladecoder.engineeditor.glcanvas;
+package org.bladecoder.engineeditor.scn;
 
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
@@ -217,8 +217,8 @@ public class ScnWidgetInputListener extends InputListener {
 		return false;
 	}
 	
-	//@Override
-	public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+	@Override
+	public void enter(InputEvent event, float x, float y, int pointer,  com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
 		EditorLogger.debug("ENTER - X: " + x + " Y: " + y);
 		scnWidget.getStage().setScrollFocus(scnWidget);
 	}

@@ -1,7 +1,6 @@
 package org.bladecoder.engineeditor.ui;
 
 import org.bladecoder.engineeditor.Ctx;
-import org.bladecoder.engineeditor.glcanvas.Assets;
 import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.components.CellRenderer;
 import org.bladecoder.engineeditor.ui.components.EditElementDialog;
@@ -9,7 +8,6 @@ import org.bladecoder.engineeditor.ui.components.ElementList;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -24,7 +22,7 @@ public class FAList extends ElementList {
 		super(skin, true);
 		
 		initBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(initBtn, "res/images/ic_check.png", "Set init scene", "Set init scene");
+		toolbar.addToolBarButton(initBtn, "ic_check", "Set init scene", "Set init scene");
 		initBtn.setDisabled(true);
 		
 		setCellRenderer(listCellRenderer);
@@ -127,14 +125,14 @@ public class FAList extends ElementList {
 			String u = null;	
 
 			if (e.getAttribute("animation_type").equalsIgnoreCase("repeat")) {
-				u = "res/images/ic_repeat.png";
+				u = "ic_repeat";
 			} else if (e.getAttribute("animation_type").equalsIgnoreCase("yoyo")) {
-				u = "res/images/ic_yoyo.png";
+				u = "ic_yoyo";
 			} else {
-				u = "res/images/ic_sprite_actor.png";
+				u = "ic_sprite_actor";
 			}
 			
-			return  new TextureRegion(Assets.inst().get(u, Texture.class));
+			return  Ctx.assetManager.getIcon(u);
 		}
 		
 		@Override

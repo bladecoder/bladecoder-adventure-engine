@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 public class CellRenderer<T> {
+	private static final float MARGIN = 10;
+	
 	private ListStyle style;
 	private float itemHeight;
 	private float textOffsetX, textOffsetY;
@@ -36,8 +38,17 @@ public class CellRenderer<T> {
 		
 		if(hasImage()) {
 			TextureRegion r = getCellImage(item);
-			batch.draw(r, x, y - r.getRegionHeight());
-			x += r.getRegionWidth();
+			
+			float ih = r.getRegionHeight();
+			float iw = r.getRegionWidth();
+					
+			if(ih > getItemHeight() - MARGIN) {
+				ih = getItemHeight() - MARGIN;
+				iw *= ih / r.getRegionHeight();
+			}
+			
+			batch.draw(r, x, y - ih - MARGIN/2, iw, ih);
+			x += iw;
 		}
 		
 		

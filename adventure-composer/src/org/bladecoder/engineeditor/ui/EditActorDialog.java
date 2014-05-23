@@ -23,17 +23,16 @@ public class EditActorDialog extends EditElementDialog {
 			"<center>Spine actors allows Spine 2d skeletal animations</center>",
 			"<center>Actors always in the foreground. No interactive</center>" };
 
-	private InputPanel[] inputs;
+	private InputPanel[] inputs = new InputPanel[11];
+	InputPanel typePanel;
 
 	String attrs[] = { "type", "id", "desc", "state", "interaction", "visible", "walking_speed", "depth_type" , "sprite_size", "camera", "fov"};
-	InputPanel typePanel = inputs[0];
 
 	@SuppressWarnings("unchecked")
 	public EditActorDialog(Skin skin, BaseDocument doc, Element parent,
 			Element e) {
 		super(skin);
-		
-		inputs = new InputPanel[11];
+
 		
 		inputs[0] =	new InputPanel(skin, "Actor Type",
 						"Actors can be from different types", ChapterDocument.ACTOR_TYPES);
@@ -55,6 +54,8 @@ public class EditActorDialog extends EditElementDialog {
 		inputs[10] =new InputPanel(skin, "Camera FOV", "The camera field of view", Param.Type.FLOAT, true, "49.3", null);
 
 		setInfo(TYPES_INFO[0]);
+		
+		typePanel = inputs[0];
 
 		((SelectBox<String>) typePanel.getField()).addListener(new ChangeListener() {
 

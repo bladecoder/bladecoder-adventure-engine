@@ -57,6 +57,9 @@ public class FileInputPanel extends InputPanel {
 	
 	@Override
 	public String getText() {
-		return selected.getAbsolutePath();
+		if(selected != null)
+			return selected.getAbsolutePath();
+		else 
+			return "";
 	}
 }

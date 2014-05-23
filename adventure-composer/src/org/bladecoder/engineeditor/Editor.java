@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 
-import org.bladecoder.engineeditor.glcanvas.Assets;
-import org.bladecoder.engineeditor.glcanvas.ScnWidget;
 import org.bladecoder.engineeditor.model.Project;
+import org.bladecoder.engineeditor.scn.ScnWidget;
 import org.bladecoder.engineeditor.ui.ActorPanel;
 import org.bladecoder.engineeditor.ui.AssetPanel;
 import org.bladecoder.engineeditor.ui.ProjectPanel;
@@ -19,7 +18,6 @@ import org.bladecoder.engineeditor.utils.RunProccess;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -60,9 +58,9 @@ public class Editor implements ApplicationListener {
 
 		EditorLogger.setDebug();
 		EditorLogger.debug("CREATE");
-		Assets.inst().initialize();
 		Ctx.project = new Project();
 		Ctx.msg = new Message(skin);
+		Ctx.assetManager = new EditorAssetManager();
 
 		scnWidget = new ScnWidget(skin);
 
@@ -89,14 +87,13 @@ public class Editor implements ApplicationListener {
 		// LEFT PANEL
 		ProjectPanel projectPanel = new ProjectPanel(skin);
 		AssetPanel assetPanel = new AssetPanel(skin);
-		Image img = new Image(Assets.inst().get("res/images/title.png",
-				Texture.class));
+		Image img = new Image(Ctx.assetManager.getIcon("title"));
 		img.setScaling(Scaling.none);
 		img.setAlign(Align.left);
 
 		Table leftPanel = new Table();
 		leftPanel.top().left();
-		leftPanel.add(img).expandX().fill().padBottom(30).padTop(20);
+		leftPanel.add(img).expandX().fill().padBottom(20).padTop(20).padLeft(20);
 		leftPanel.row();
 		leftPanel.add(new ProjectToolbar(skin)).expandX().fill();
 		leftPanel.row();
@@ -231,5 +228,8 @@ public class Editor implements ApplicationListener {
 	@Override
 	public void dispose() {
 		scnWidget.dispose();
+		stage.dispose();
+		
+		Ctx.project.saveConfig();
 	}
 }

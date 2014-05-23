@@ -1,6 +1,10 @@
 package org.bladecoder.engineeditor.ui.components;
 
+import org.bladecoder.engineeditor.utils.EditorLogger;
+
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -75,7 +79,15 @@ public abstract class EditList<T> extends Table {
 			public void changed(ChangeEvent event, Actor actor) {
 				paste();
 			}
-		});		
+		});
+		
+		list.addListener(new InputListener() {
+			@Override
+			public void enter(InputEvent event, float x, float y, int pointer,  com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
+				EditorLogger.debug("ENTER - X: " + x + " Y: " + y);
+				getStage().setScrollFocus(list);
+			}
+		});
     }
 	
 	public void setCellRenderer(CellRenderer<T> r) {

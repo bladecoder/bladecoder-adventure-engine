@@ -6,10 +6,10 @@ import java.util.Arrays;
 
 import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engineeditor.Ctx;
-import org.bladecoder.engineeditor.glcanvas.FACanvas;
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.model.Project;
+import org.bladecoder.engineeditor.scn.FACanvas;
 import org.bladecoder.engineeditor.ui.components.EditElementDialog;
 import org.bladecoder.engineeditor.ui.components.InputPanel;
 import org.bladecoder.engineeditor.utils.EditorLogger;
@@ -113,7 +113,8 @@ public class EditFADialog extends EditElementDialog {
 		
 		LwjglAWTCanvas canvas = new LwjglAWTCanvas(faCanvas);
 		try{
-			setInfoComponent(canvas.getCanvas());
+			//TODO
+//			setInfoWidget(canvas.getCanvas());
 		} catch(Exception ex) {
 			EditorLogger.error("ERROR ADDING LIBGDX/OPENGL CANVAS");
 		}

@@ -2,14 +2,13 @@ package org.bladecoder.engineeditor.ui;
 
 import java.text.MessageFormat;
 
-import org.bladecoder.engineeditor.glcanvas.Assets;
+import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.ui.components.CellRenderer;
 import org.bladecoder.engineeditor.ui.components.EditElementDialog;
 import org.bladecoder.engineeditor.ui.components.ElementList;
 import org.w3c.dom.Element;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -89,16 +88,16 @@ public class VerbList extends ElementList {
 
 		@Override
 		public TextureRegion getCellImage(Element e) {
-			String iconName = MessageFormat.format("res/images/ic_{0}.png", e.getAttribute("id"));
-			Texture image = null;
+			String iconName = MessageFormat.format("ic_{0}", e.getAttribute("id"));
+			TextureRegion image = null;
 			
 			try {
-				image = Assets.inst().get(iconName, Texture.class);
+				image = Ctx.assetManager.getIcon(iconName);
 			} catch(GdxRuntimeException e1) {
-				image = Assets.inst().get("res/images/ic_custom.png", Texture.class);
+				image = Ctx.assetManager.getIcon("ic_custom");
 			}
 
-			return new TextureRegion(image);
+			return image;
 		}
 		
 		@Override

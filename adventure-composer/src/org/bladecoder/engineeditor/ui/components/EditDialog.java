@@ -1,23 +1,19 @@
 package org.bladecoder.engineeditor.ui.components;
 
-import java.awt.Component;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.swing.ImageIcon;
-
-import org.bladecoder.engineeditor.utils.ImageUtils;
-
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Widget;
+import com.esotericsoftware.tablelayout.Cell;
 
 public abstract class EditDialog extends Dialog {
     
-    private Label infoLbl;
+	private Cell<Widget> infoCell;
+	private Label infoLbl;
     
     private Table centerPanel;
     
@@ -34,10 +30,9 @@ public abstract class EditDialog extends Dialog {
          
         infoLbl = new Label("", skin);
         infoLbl.setWrap(true);
-
         centerPanel = new Table(skin);
-        getContentTable().add(infoLbl).width(200);
-        getContentTable().add(new ScrollPane(centerPanel));
+        infoCell = getContentTable().add((Widget)infoLbl).prefWidth(200);
+        getContentTable().add(new ScrollPane(centerPanel, skin)).maxHeight(Gdx.graphics.getHeight() * 0.8f).maxWidth(Gdx.graphics.getWidth() * 0.6f);
 		
 		button("OK", true);
 		button("Cancel", false);
@@ -61,22 +56,10 @@ public abstract class EditDialog extends Dialog {
         infoLbl.setText(text);
     }
     
-    public void setInfoIcon(URL u) {
-    	ImageIcon icon = null;
-    	
-    	try {
-			icon = ImageUtils.getImageIcon(u, 300);
-		} catch (IOException e) {
-		}
-    	
-//    	if(icon != null)
-//    		infoLbl.setIcon(icon);
-    }
     
-    public void setInfoComponent(Component c) {
-//    	headerPanel.remove(infoLbl);
-//    	headerPanel.add(c, java.awt.BorderLayout.WEST);
-//    	c.setPreferredSize(new Dimension(300,(int)getContentPane().getPreferredSize().getHeight()));
+    public void setInfoWidget(Widget c) {
+    	infoCell.setWidget(null);
+    	infoCell.setWidget(c);
     }
     
     public void setTitle(String title) {

@@ -4,7 +4,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.bladecoder.engineeditor.Ctx;
-import org.bladecoder.engineeditor.glcanvas.Assets;
 import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.model.Project;
 import org.bladecoder.engineeditor.ui.components.CellRenderer;
@@ -12,7 +11,6 @@ import org.bladecoder.engineeditor.ui.components.EditElementDialog;
 import org.bladecoder.engineeditor.ui.components.ElementList;
 import org.w3c.dom.Element;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -27,7 +25,7 @@ public class ActorList extends ElementList {
 		super(skin, true);
 
 		playerBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(playerBtn, "res/images/ic_check.png",
+		toolbar.addToolBarButton(playerBtn, "ic_check",
 				"Set player", "Set player");
 		playerBtn.setDisabled(true);
 
@@ -137,20 +135,20 @@ public class ActorList extends ElementList {
 			String u = null;
 			
 			if (isPlayer) {
-				u = "res/images/ic_player.png";
+				u = "ic_player";
 			} else if (type.equals(ChapterDocument.FOREGROUND_ACTOR_TYPE)) {
-				u = "res/images/ic_fg_actor.png";
+				u = "ic_fg_actor";
 			} else if (type.equals(ChapterDocument.ATLAS_ACTOR_TYPE)) {
-				u = "res/images/ic_sprite_actor.png";
+				u = "ic_sprite_actor";
 			} else if (type.equals(ChapterDocument.BACKGROUND_ACTOR_TYPE)) {
-				u = "res/images/ic_base_actor.png";
+				u = "ic_base_actor";
 			} else if (type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
-				u = "res/images/ic_character_actor.png";			
+				u = "ic_character_actor";			
 			} else if (type.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
-				u = "res/images/ic_character_actor.png";
+				u = "ic_character_actor";
 			}
 
-			return new TextureRegion(Assets.inst().get(u, Texture.class));
+			return Ctx.assetManager.getIcon(u);
 		}
 		
 		@Override

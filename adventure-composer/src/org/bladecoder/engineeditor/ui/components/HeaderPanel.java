@@ -1,9 +1,7 @@
 package org.bladecoder.engineeditor.ui.components;
 
-import org.bladecoder.engineeditor.glcanvas.Assets;
+import org.bladecoder.engineeditor.Ctx;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
@@ -33,7 +31,7 @@ public class HeaderPanel extends Table {
 		
 		if(collapsable) {
 			north.addActor(collapseImg);
-			collapseImg.setDrawable(new TextureRegionDrawable(new TextureRegion(Assets.inst().get("res/images/ic_open.png", Texture.class))));
+			collapseImg.setDrawable(new TextureRegionDrawable(Ctx.assetManager.getIcon("ic_open")));
 		}
 		
 		top().left();
@@ -78,7 +76,7 @@ public class HeaderPanel extends Table {
 		collapsable = c;
 
 		if (c) {
-			collapseImg.setDrawable(new TextureRegionDrawable(new TextureRegion(Assets.inst().get("res/images/ic_open.png", Texture.class))));
+			collapseImg.setDrawable(new TextureRegionDrawable(Ctx.assetManager.getIcon("ic_open")));
 		} else
 			collapseImg.setDrawable(null);
 	}
@@ -89,12 +87,12 @@ public class HeaderPanel extends Table {
 				removeActor(this.content);
 				invalidateHierarchy();
 
-				collapseImg.setDrawable(new TextureRegionDrawable(new TextureRegion(Assets.inst().get("res/images/ic_closed.png", Texture.class))));
+				collapseImg.setDrawable(new TextureRegionDrawable(Ctx.assetManager.getIcon("ic_closed")));
 			} else {
 				this.contentCell.setWidget(content);				
 				invalidateHierarchy();
 
-				collapseImg.setDrawable(new TextureRegionDrawable(new TextureRegion(Assets.inst().get("res/images/ic_open.png", Texture.class))));
+				collapseImg.setDrawable(new TextureRegionDrawable(Ctx.assetManager.getIcon("ic_open")));
 			}
 		}
 	}

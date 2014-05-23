@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.JarEntry;
@@ -23,7 +24,10 @@ import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resolution;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Project extends PropertyChange {
 	public static final String PROP_PROJECTFILE = "projectFile";
@@ -63,6 +67,8 @@ public class Project extends PropertyChange {
 	private Element selectedScene;
 	private Element selectedActor;
 	private String selectedFA;
+	
+	private HashMap<String, TextureRegion> bgIconCache = new HashMap<String, TextureRegion>();
 
 	final PropertyChangeListener modelChangeListener = new PropertyChangeListener() {
 		@Override
@@ -75,6 +81,22 @@ public class Project extends PropertyChange {
 	public Project() {
 		world.addPropertyChangeListener(modelChangeListener);
 		loadConfig();
+	}
+	
+	public TextureRegion getBgIcon(String s) {
+		TextureRegion icon = bgIconCache.get(s);
+		
+		if(icon == null) {
+			bgIconCache.put(s, createBgIcon(s));
+			icon = bgIconCache.get(s);
+		}
+		
+		return icon;
+	}
+	
+	private TextureRegion createBgIcon(String bg) {
+		return new TextureRegion(new Texture(Gdx.files.absolute(getProjectPath() + "/" + BACKGROUNDS_PATH + 
+				"/" + getResolutions().get(0).suffix + "/" + bg)));
 	}
 
 	private void loadConfig() {
@@ -337,5 +359,10 @@ public class Project extends PropertyChange {
 //			if(scenes.getLength()>0)
 //				setSelectedScene((Element)scenes.item(0));
 //		}
+	}
+	
+	public void dispose() {
+		for(TextureRegion r:bgIconCache.values())
+			r.getTexture().dispose();
 	}
 }

@@ -1,4 +1,4 @@
-package org.bladecoder.engineeditor.glcanvas;
+package org.bladecoder.engineeditor.scn;
 
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;

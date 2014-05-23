@@ -45,11 +45,11 @@ public abstract class EditTree extends Table {
 		row().fill();
 		add(container).expandY().fill();
 		
-		toolbar.addToolBarButton(upBtn, "res/images/ic_up.png", "Move up", "Move up");
-		toolbar.addToolBarButton(downBtn, "res/images/ic_down.png", "Move down", "Move down");
-		toolbar.addToolBarButton(leftBtn, "res/images/ic_left.png", "Child",
+		toolbar.addToolBarButton(upBtn, "ic_up", "Move up", "Move up");
+		toolbar.addToolBarButton(downBtn, "ic_down", "Move down", "Move down");
+		toolbar.addToolBarButton(leftBtn, "ic_left", "Child",
 				"Move to child option");
-		toolbar.addToolBarButton(rightBtn, "res/images/ic_right.png", "Parent",
+		toolbar.addToolBarButton(rightBtn, "ic_right", "Parent",
 				"Move to parent option");
 		toolbar.addCreateListener(new ChangeListener() {
 
