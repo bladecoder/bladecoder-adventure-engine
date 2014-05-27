@@ -1,12 +1,6 @@
 package org.bladecoder.engineeditor.ui;
 
-import java.io.FileNotFoundException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
 import org.bladecoder.engineeditor.Ctx;
-import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.model.WorldDocument;
 import org.bladecoder.engineeditor.ui.components.CellRenderer;
 import org.bladecoder.engineeditor.ui.components.EditElementDialog;
@@ -32,6 +26,7 @@ public class ChapterList extends ElementList {
 				"Set init chapter", "Set init chapter");
 
 		initBtn.setDisabled(false);
+		toolbar.hideCopyPaste();
 
 		initBtn.addListener(new ChangeListener() {
 			@Override
@@ -60,67 +55,35 @@ public class ChapterList extends ElementList {
 			Element e) {
 		return new EditChapterDialog(skin, doc, parent, e);
 	}
-	
-	// TODO Override create and edit!!
 
 	@Override
 	protected void delete() {
 
-		Element e = list.getSelected();
+		int pos = list.getSelectedIndex();
 
-		if (e == null)
+		if (pos == -1)
 			return;
 
 		if (list.getItems().size < 2) {
-			String msg = "The chapter will not be deleted, at least one chapter must exists\n\n";
-			Ctx.msg.show(getStage(), msg, 2000);
+			String msg = "The chapter will not be deleted, at least one chapter must exists";
+			Ctx.msg.show(getStage(), msg, 3);
 
 			return;
 		}
+		
+		Element e = list.getItems().removeIndex(pos);
 
 		try {
-			Ctx.project.getWorld().removeChapter(doc.getRootAttr(e, "id"));
+			((WorldDocument)doc).removeChapter(e.getAttribute("id"));
 		} catch (Exception ex) {
-			String msg = "Something went wrong while deleting the scene.\n\n"
+			String msg = "Something went wrong while deleting the chapter.\n\n"
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
-			Ctx.msg.show(getStage(), msg, 2000);
+			Ctx.msg.show(getStage(), msg, 3);
 
 			ex.printStackTrace();
 		}
-
-		super.delete();
 	}
 
-	@Override
-	protected void paste() {
-		WorldDocument w = (WorldDocument) doc;
-
-		ChapterDocument scn;
-		try {
-			scn = w.createChapter(clipboard.getAttribute("id"));
-			String id = scn.getId();
-
-			Element newElement = scn.cloneNode(clipboard);
-
-			scn.getDocument().replaceChild(newElement, scn.getElement());
-			// scn.getDocument().appendChild(newElement);
-			scn.setModified(true);
-
-			newElement.setAttribute("id", id);
-
-			list.getItems().add(newElement);
-			list.setSelectedIndex(list.getItems().indexOf(newElement, true));
-			doc.setModified(newElement);
-		} catch (FileNotFoundException | TransformerException
-				| ParserConfigurationException e) {
-			String msg = "Something went wrong while pasting the scene.\n\n"
-					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(), msg, 2000);
-
-			e.printStackTrace();
-		}
-
-	}
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
@@ -137,16 +100,6 @@ public class ChapterList extends ElementList {
 				id += " <init>";
 
 			return id;
-		}
-
-		@Override
-		protected String getCellSubTitle(Element e) {
-			return e.getElementsByTagName("scene").getLength() + " scenes";
-		}
-
-		@Override
-		protected boolean hasSubtitle() {
-			return true;
 		}
 
 	};

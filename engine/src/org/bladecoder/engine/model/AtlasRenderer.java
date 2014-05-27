@@ -1,5 +1,6 @@
 package org.bladecoder.engine.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bladecoder.engine.actions.ActionCallback;
@@ -61,14 +62,16 @@ public class AtlasRenderer implements SpriteRenderer {
 		TextureAtlas atlas = EngineAssetManager.getInstance().getTextureAtlas(source);
 		
 		Array<AtlasRegion> animations = atlas.getRegions();
-		String[] result = new String[animations.size];
+		ArrayList<String> l = new ArrayList<String>();
 		
 		for(int i = 0; i< animations.size; i++) {
 			AtlasRegion a = animations.get(i);
-			result[i] = a.name;
+			if(!l.contains(a.name))
+				l.add(a.name);
 		}
 		
-		return result;
+		
+		return l.toArray(new String[l.size()]);
 	}	
 
 

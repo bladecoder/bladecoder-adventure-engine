@@ -47,7 +47,7 @@ import com.badlogic.gdx.utils.JsonValue;
 
 public class Sprite3DRenderer implements SpriteRenderer {
 
-	public final static boolean USE_FBO = true;
+	public final static boolean USE_FBO = false;
 	private final static int MAX_BONES = 40;
 	private final static Format FRAMEBUFFER_FORMAT = Format.RGBA4444;
 

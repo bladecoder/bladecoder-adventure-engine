@@ -45,7 +45,7 @@ public class ProjectPanel extends HeaderPanel  {
 				sceneList.addElements(selectedChapter, selectedChapter.getElement(), "scene");
 				verbList.addElements(w, w.getElement(), "verb");
 				chapterList.addElements(w, w.getElement(), "chapter");
-				setTile("ADVENTURE " + (Ctx.project.getTitle() != null? Ctx.project.getTitle():""));
+				setTile("ADVENTURE - " + (Ctx.project.getTitle() != null? Ctx.project.getTitle():""));
 			}
 		});		
 	}

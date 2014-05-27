@@ -10,15 +10,14 @@ import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.Tween;
-import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.Actor;
+import org.bladecoder.engine.model.AtlasRenderer;
 import org.bladecoder.engine.model.Scene;
+import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
-import org.bladecoder.engine.model.AtlasRenderer;
 import org.bladecoder.engine.model.SpriteRenderer;
-import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.util.EngineLogger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -213,10 +212,6 @@ public class ChapterDocument extends BaseDocument {
 			}
 		}
 
-		scn.loadAssets();
-		EngineAssetManager.getInstance().getManager().finishLoading();
-		scn.retrieveAssets();
-
 		return scn;
 	}
 
@@ -230,13 +225,6 @@ public class ChapterDocument extends BaseDocument {
 
 	public void rename(String newId) throws FileNotFoundException,
 			TransformerException {
-
-		// File oldFile = new File(getFilename());
-		// setFilenameFromId(newId);
-		//
-		// File newFile = new File(getFilename());
-		//
-		// oldFile.renameTo(newFile);
 
 		deleteFiles();
 
@@ -463,12 +451,6 @@ public class ChapterDocument extends BaseDocument {
 		if (!faElement.getAttribute("dispose_when_played").isEmpty()) {
 			fa.outD = Param.parseVector2(faElement.getAttribute("dispose_when_played"));
 		}
-
-		// LOAD THE FA ATLAS AND REGIONS
-		// EngineAssetManager.getInstance().loadAtlas(fa.atlas);
-		// EngineAssetManager.getInstance().getManager().finishLoading();
-		// fa.regions = EngineAssetManager.getInstance().getRegions(fa.atlas,
-		// fa.id);
 
 		return fa;
 	}

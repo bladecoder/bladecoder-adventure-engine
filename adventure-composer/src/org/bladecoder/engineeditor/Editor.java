@@ -38,11 +38,12 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class Editor implements ApplicationListener {
 	public static final String VERSION_STR = "0.1.0 (Beta)";
-	public static final String COPYRIGHT_STR = "<html><p align=\"left\">2013 - Rafael García<br/>http://bladecoder.blogspot.com</p></html>";
+	public static final String COPYRIGHT_STR = "2013 - Rafael García\nhttp://bladecoder.blogspot.com";
 	public static final String TITLE = "Adventure Composer";	
 	
-	public static final String SKIN = "res/skin/HoloSkin/Holo-dark-ldpi.json";
+//	public static final String SKIN = "res/skin/HoloSkin/Holo-dark-ldpi.json";
 	// public static final String SKIN = "res/skin/uiskin.json";
+	public static final String SKIN = "res/skin/BladeSkin/BladeSkin-ldpi.json";
 
 	Stage stage;
 	ScnWidget scnWidget;
@@ -75,14 +76,14 @@ public class Editor implements ApplicationListener {
 		ActorPanel actorPanel = new ActorPanel(skin);
 
 		Table rightPanel = new Table();
-
+		rightPanel.top().left();
 		rightPanel.add(scenePanel).expand().fill();
 		rightPanel.row();
 		rightPanel.add(actorPanel).expand().fill();
 
 		SplitPane splitPaneRight = new SplitPane(editorPanel, rightPanel,
 				false, skin);
-		splitPaneRight.setFillParent(true);
+//		splitPaneRight.setFillParent(true);
 
 		// LEFT PANEL
 		ProjectPanel projectPanel = new ProjectPanel(skin);
@@ -92,7 +93,7 @@ public class Editor implements ApplicationListener {
 		img.setAlign(Align.left);
 
 		Table leftPanel = new Table();
-		leftPanel.top().left();
+		leftPanel.top().left().padLeft(10);
 		leftPanel.add(img).expandX().fill().padBottom(20).padTop(20).padLeft(20);
 		leftPanel.row();
 		leftPanel.add(new ProjectToolbar(skin)).expandX().fill();
@@ -168,7 +169,7 @@ public class Editor implements ApplicationListener {
 				Ctx.project.closeProject();
 				e.printStackTrace();
 			}
-		}	
+		}
 	}
 	
 	private void test() {
@@ -178,7 +179,7 @@ public class Editor implements ApplicationListener {
 			} catch (Exception ex) {
 				String msg = "Something went wrong while saving the project.\n\n"
 						+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
-				Ctx.msg.show(stage,msg, 2000);
+				Ctx.msg.show(stage,msg, 2);
 			}
 			
 			RunProccess.runBladeEngine(
@@ -187,7 +188,7 @@ public class Editor implements ApplicationListener {
 		} catch (IOException e) {
 			String msg = "Something went wrong while testing the scene.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(stage,msg, 2000);
+			Ctx.msg.show(stage,msg, 2);
 		}
 	}
 

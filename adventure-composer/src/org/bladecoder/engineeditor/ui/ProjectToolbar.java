@@ -197,7 +197,7 @@ public class ProjectToolbar extends Table {
 						+ ex.getClass().getSimpleName()
 						+ " - "
 						+ ex.getMessage();
-				Ctx.msg.show(getStage(), msg, 2000);
+				Ctx.msg.show(getStage(), msg, 2);
 				ex.printStackTrace();
 			}
 		}
@@ -209,7 +209,7 @@ public class ProjectToolbar extends Table {
 		} catch (TransformerException | IOException e1) {
 			String msg = "Something went wrong while saving the actor.\n\n"
 					+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
-			Ctx.msg.show(getStage(),msg, 2000);
+			Ctx.msg.show(getStage(),msg, 2);
 
 			e1.printStackTrace();
 		}
@@ -222,7 +222,7 @@ public class ProjectToolbar extends Table {
 
 		if (file == null) {
 			String msg = "Please create a new project first.";
-			Ctx.msg.show(getStage(),msg, 2000);
+			Ctx.msg.show(getStage(),msg, 2);
 			return;
 		}
 
@@ -231,7 +231,7 @@ public class ProjectToolbar extends Table {
 		} catch (Exception ex) {
 			String msg = "Something went wrong while saving the project.\n\n"
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
-			Ctx.msg.show(getStage(),msg, 2000);
+			Ctx.msg.show(getStage(),msg, 2);
 		}
 	}
 
@@ -250,7 +250,7 @@ public class ProjectToolbar extends Table {
 		} catch (IOException e) {
 			String msg = "Something went wrong while playing the project.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(),msg, 2000);
+			Ctx.msg.show(getStage(),msg, 2);
 		}
 	}
 	
@@ -261,7 +261,7 @@ public class ProjectToolbar extends Table {
 			} catch (IOException e1) {
 				String msg = "Something went wrong while opening assets folder.\n\n"
 						+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
-				Ctx.msg.show(getStage(),msg, 2000);
+				Ctx.msg.show(getStage(),msg, 2);
 			}
 		}
 	}

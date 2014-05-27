@@ -43,7 +43,7 @@ public class EditSceneDialog extends EditElementDialog {
 		super(skin);
 		
 		inputs[0] = new InputPanel(skin, "Scene ID",
-				"The ID is mandatory for scenes. <br/>IDs can not contain '.' or '_' characters.");
+				"The ID is mandatory for scenes. \nIDs can not contain '.' or '_' characters.");
 		inputs[1] = new InputPanel(skin, "Background",
 				"The background for the scene", bgList);
 		inputs[2] = new InputPanel(skin, "Lightmap",

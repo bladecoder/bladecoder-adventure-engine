@@ -17,11 +17,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 public class EditActorDialog extends EditElementDialog {
 
 	public static final String TYPES_INFO[] = {
-			"<center>Background actors define an interactive area in the background</center>",
-			"<center>Atlas actors allows 2d image and animations</center>",
-			"<center>3d actors allows 3d models and animations</center>",
-			"<center>Spine actors allows Spine 2d skeletal animations</center>",
-			"<center>Actors always in the foreground. No interactive</center>" };
+			"Background actors define an interactive area in the background",
+			"Atlas actors allows 2d image and animations",
+			"3d actors allows 3d models and animations",
+			"Spine actors allows Spine 2d skeletal animations",
+			"Actors always in the foreground. No interactive" };
 
 	private InputPanel[] inputs = new InputPanel[11];
 	InputPanel typePanel;

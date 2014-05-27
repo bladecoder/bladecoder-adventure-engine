@@ -1,5 +1,8 @@
 package org.bladecoder.engineeditor.ui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.components.PropertyTable;
 import org.bladecoder.engineeditor.utils.EditorLogger;
@@ -37,14 +40,14 @@ public class ActorProps extends PropertyTable {
 //			}
 //		}
 //	};
-//	
-//	PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {		
-//		@Override
-//		public void propertyChange(PropertyChangeEvent evt) {
-//			EditorLogger.debug("Property Listener: " + evt.getPropertyName());
-//			setActorDocument(doc, actor);			
-//		}
-//	};
+	
+	PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			EditorLogger.debug("Property Listener: " + evt.getPropertyName());
+			setActorDocument(doc, actor);			
+		}
+	};
 
 	public ActorProps(Skin skin) {
 		super(skin);
@@ -81,7 +84,7 @@ public class ActorProps extends PropertyTable {
 				addProperty(WALKING_SPEED_PROP, doc.getRootAttr(a, "walking_speed"));
 			}
 			
-//			doc.addPropertyChangeListener(propertyChangeListener);
+			doc.addPropertyChangeListener(propertyChangeListener);
 			
 			invalidateHierarchy();
 		}

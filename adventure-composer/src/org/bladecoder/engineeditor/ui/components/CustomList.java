@@ -27,25 +27,25 @@ public class CustomList<T> extends Widget implements Cullable {
 
 	private CellRenderer<T> cellRenderer;
 
-	private ListStyle style;
+	private CustomListStyle style;
 	private final Array<T> items = new Array<T>();
 	private Rectangle cullingArea;
 	private float prefWidth, prefHeight;
 	final ArraySelection<T> selection;
 
 	public CustomList(Skin skin, CellRenderer<T> r) {
-		this(skin.get(ListStyle.class), r);
+		this(skin.get(CustomListStyle.class), r);
 	}
 	
 	public CustomList(Skin skin) {
-		this(skin.get(ListStyle.class), new CellRenderer<T>());
+		this(skin.get(CustomListStyle.class), new CellRenderer<T>());
 	}
 
 	public CustomList(Skin skin, String styleName) {
-		this(skin.get(styleName, ListStyle.class), new CellRenderer<T>());
+		this(skin.get(styleName, CustomListStyle.class), new CellRenderer<T>());
 	}
 
-	public CustomList(ListStyle style, CellRenderer<T> r) {
+	public CustomList(CustomListStyle style, CellRenderer<T> r) {
 		selection = new ArraySelection<T>(items);
 		selection.setActor(this);
 		selection.setRequired(true);
@@ -87,7 +87,7 @@ public class CustomList<T> extends Widget implements Cullable {
 		selection.choose(items.get(index));
 	}
 
-	public void setStyle(ListStyle style) {
+	public void setStyle(CustomListStyle style) {
 		if (style == null)
 			throw new IllegalArgumentException("style cannot be null.");
 		this.style = style;
@@ -96,9 +96,9 @@ public class CustomList<T> extends Widget implements Cullable {
 
 	/**
 	 * Returns the list's style. Modifying the returned style may not have an
-	 * effect until {@link #setStyle(ListStyle)} is called.
+	 * effect until {@link #setStyle(CustomListStyle)} is called.
 	 */
-	public ListStyle getStyle() {
+	public CustomListStyle getStyle() {
 		return style;
 	}
 
@@ -261,18 +261,19 @@ public class CustomList<T> extends Widget implements Cullable {
 	 * @author mzechner
 	 * @author Nathan Sweet
 	 */
-	static public class ListStyle {
+	static public class CustomListStyle {
 		public BitmapFont font;
+		public BitmapFont subtitleFont;
 		public Color fontColorSelected = new Color(1, 1, 1, 1);
 		public Color fontColorUnselected = new Color(1, 1, 1, 1);
 		public Drawable selection;
 		/** Optional. */
 		public Drawable background;
 
-		public ListStyle() {
+		public CustomListStyle() {
 		}
 
-		public ListStyle(BitmapFont font, Color fontColorSelected,
+		public CustomListStyle(BitmapFont font, Color fontColorSelected,
 				Color fontColorUnselected, Drawable selection) {
 			this.font = font;
 			this.fontColorSelected.set(fontColorSelected);
@@ -280,7 +281,7 @@ public class CustomList<T> extends Widget implements Cullable {
 			this.selection = selection;
 		}
 
-		public ListStyle(ListStyle style) {
+		public CustomListStyle(CustomListStyle style) {
 			this.font = style.font;
 			this.fontColorSelected.set(style.fontColorSelected);
 			this.fontColorUnselected.set(style.fontColorUnselected);

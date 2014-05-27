@@ -25,7 +25,7 @@ public class AssetPanel extends HeaderPanel {
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {				
-				setTile("ASSETS " + Ctx.project.getProjectDir().getName());
+				setTile("ASSETS - " + Ctx.project.getProjectDir().getName());
 			}
 		});		
 	}

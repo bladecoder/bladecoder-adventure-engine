@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 
 public class SceneList extends ElementList {
 
@@ -39,7 +40,7 @@ public class SceneList extends ElementList {
 		chapters = new SelectBox<String>(skin);
 		chapters.setFillParent(true);
 		
-		chapterPanel.addActor(new Label("CHAPTER ", skin));
+		chapterPanel.addActor(new Label("CHAPTER ", skin, "big"));
 		chapterPanel.addActor(chapters);
 		
 		clearChildren();
@@ -104,27 +105,23 @@ public class SceneList extends ElementList {
 								+ evt.getOldValue());
 
 						if (evt.getPropertyName().equals("chapter")) {
-							chapters.removeListener(chapterListener);
 							addChapters();
-							chapters.addListener(chapterListener);
 						} else if (evt.getPropertyName().equals(
 								"ELEMENT_DELETED")) {
 							Element e = (Element) evt.getNewValue();
 
-							if (e.getTagName().equals("chapter")) {
-								chapters.removeListener(chapterListener);
+							if (e.getTagName().equals("chapter")) {								
 								addChapters();
-								chapters.addListener(chapterListener);
 							}
 						}
 					}
 				});
+		
 	}
 
 	ChangeListener chapterListener = new ChangeListener() {
 		@Override
 		public void changed(ChangeEvent event, Actor actor) {
-			WorldDocument w = Ctx.project.getWorld();
 			String selChapter = (String) chapters.getSelected();
 
 			if (selChapter != null && !selChapter.equals(Ctx.project.getSelectedChapter().getId())) {
@@ -142,7 +139,10 @@ public class SceneList extends ElementList {
 					if(selChapter != null)
 						Ctx.project.loadChapter(selChapter);
 					
-					addElements(w, null, "scene");
+					doc = Ctx.project.getSelectedChapter();
+					
+					addElements(doc, doc.getElement(), "scene");
+					Ctx.project.setSelectedScene(list.getSelected());
 				} catch (ParserConfigurationException | SAXException
 						| IOException e1) {
 					e1.printStackTrace();
@@ -154,14 +154,15 @@ public class SceneList extends ElementList {
 	public void addChapters() {
 		WorldDocument w = Ctx.project.getWorld();
 		NodeList nl = w.getChapters();
-		chapters.getItems().clear();
+		Array<String> array = new Array<String>();
 
 		for (int i = 0; i < nl.getLength(); i++) {
 			Element e = (Element) nl.item(i);
 
-			chapters.getItems().add(e.getAttribute("id"));
+			array.add(e.getAttribute("id"));
 		}
 
+		chapters.setItems(array);
 		chapters.setSelected(Ctx.project.getSelectedChapter().getId());
 		invalidate();
 	}

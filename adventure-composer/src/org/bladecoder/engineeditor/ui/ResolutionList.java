@@ -114,7 +114,7 @@ public class ResolutionList extends EditList<Resolution> {
 		} catch (IOException e) {
 			String msg = "Something went wrong while deleting the resolution.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(),msg, 2000);
+			Ctx.msg.show(getStage(),msg, 2);
 			e.printStackTrace();
 		}
 	}

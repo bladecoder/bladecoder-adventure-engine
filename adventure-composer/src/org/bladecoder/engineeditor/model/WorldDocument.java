@@ -94,13 +94,15 @@ public class WorldDocument extends  BaseDocument {
 		return init;
 	}
 	
-	public void addChapterNode(String id) {
+	public Element addChapterNode(String id) {
 		Element e = doc.createElement("chapter");
 		
 		doc.getDocumentElement().appendChild(e);
 		e.setAttribute("id", id);
 		modified = true;
-		firePropertyChange();
+		firePropertyChange("chapter", e);
+		
+		return e;
 	}
 
 	public void removeChapterNode(String id) {
@@ -110,24 +112,24 @@ public class WorldDocument extends  BaseDocument {
 			Element e = (Element) chaptersNL.item(j);
 			if (id.equals(e.getAttribute("id"))) {
 				doc.getDocumentElement().removeChild(e);
+				modified = true;
+				firePropertyChange("chapter", e);
+				return;
 			}
 		}
 	}
 	
-	public ChapterDocument createChapter(String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
+	public Element createChapter(String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
 		ChapterDocument chapter = new ChapterDocument(modelPath);	
 		String checkedId = getChapterCheckedId(id);
 		
 		chapter.create(checkedId);
-
-		addChapterNode(id);
+		Element e = addChapterNode(checkedId);
 		save();
 		
-		chapter.addPropertyChangeListener(documentModifiedListener);
-		
-		firePropertyChange();
+//		chapter.addPropertyChangeListener(documentModifiedListener);
 
-		return chapter;
+		return e;
 	}
 	
 	public String getChapterCheckedId(String id) {
@@ -157,24 +159,22 @@ public class WorldDocument extends  BaseDocument {
 	}
 		
 	// TODO: Reload current chapter if the renamed chapter is the current chapter
-	public void renameChapter(String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
+	public void renameChapter(String oldId, String newId) throws TransformerException, ParserConfigurationException, SAXException, IOException {
 		
-		removeChapterNode(id);
-		String checkedId = getChapterCheckedId(id);
-		
-		// TODO chapter.rename(checkedId);
+		ChapterDocument chapter = new ChapterDocument(modelPath);
+		chapter.setFilename(oldId + ".chapter");
+		chapter.load();
+		chapter.rename(newId);
 
-		addChapterNode(id);
 		save();
-		
-		firePropertyChange();
 	}
 	
 	public void removeChapter(String id) throws FileNotFoundException, TransformerException {
 		removeChapterNode(id);
-		// TODO chapter.deleteFiles();
 		save();
 		
-		firePropertyChange();
+		ChapterDocument chapter = new ChapterDocument(modelPath);
+		chapter.setFilename(id + ".chapter");
+		chapter.deleteFiles();
 	}
 }

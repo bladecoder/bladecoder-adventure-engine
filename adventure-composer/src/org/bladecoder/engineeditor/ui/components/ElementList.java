@@ -1,5 +1,7 @@
 package org.bladecoder.engineeditor.ui.components;
 
+import java.util.Comparator;
+
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -14,6 +16,8 @@ public abstract class ElementList extends EditList<Element> {
 	protected Element parent;
 
 	protected Element clipboard;
+	
+	private boolean sorted;
 
 	public ElementList(Skin skin, boolean sorted) {
 		super(skin);
@@ -26,8 +30,9 @@ public abstract class ElementList extends EditList<Element> {
 				toolbar.disableEdit(pos == -1);
 			}
 		});
+		
+		this.sorted = sorted;
 
-		//TODO HANDLE SORTED
 	}
 
 	public void addElements(BaseDocument doc, Element parent, String tag) {
@@ -35,6 +40,7 @@ public abstract class ElementList extends EditList<Element> {
 		this.parent = parent;
 
 		list.getItems().clear();
+		list.getSelection().clear();;
 
 		if (parent != null) {
 
@@ -57,9 +63,18 @@ public abstract class ElementList extends EditList<Element> {
 			list.setSelectedIndex(0);
 		
 		toolbar.disableEdit(list.getSelectedIndex() < 0);
+		
+		if(sorted) {
+			list.getItems().sort(new Comparator<Element>() {
+				@Override
+				public int compare(Element o1, Element o2) {
+					return o1.getAttribute("id").compareTo(o2.getAttribute("id"));
+				}
+			});
+		}
 
 		toolbar.disableCreate(parent == null);
-		list.setWidth(getWidth());
+//		list.setWidth(getWidth());
 		invalidateHierarchy();
 	}
 
@@ -84,12 +99,11 @@ public abstract class ElementList extends EditList<Element> {
 	@Override
 	protected void edit() {
 
-		int pos = list.getSelectedIndex();
+		Element e = list.getSelected();
 
-		if (pos == -1)
+		if (e == null)
 			return;
 
-		Element e = list.getItems().get(pos);
 
 		EditElementDialog dialog = getEditElementDialogInstance(e);
 		dialog.show(getStage());

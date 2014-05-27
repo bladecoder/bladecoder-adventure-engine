@@ -173,12 +173,18 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public float getWidth() {
-		return bounds.getWidth();
+		if(bounds != null)
+			return bounds.getWidth();
+		
+		return 200;
 	}
 
 	@Override
 	public float getHeight() {
-		return bounds.getHeight();
+		if(bounds != null)
+			return bounds.getHeight();
+		
+		return 200;
 	}
 
 	@Override

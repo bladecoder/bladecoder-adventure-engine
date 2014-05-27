@@ -7,12 +7,17 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.Project;
 import org.bladecoder.engineeditor.ui.components.CustomList;
 import org.bladecoder.engineeditor.ui.components.EditToolbar;
+import org.bladecoder.engineeditor.utils.ImageUtils;
 
 import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resolution;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -177,77 +182,79 @@ public class AssetsList extends Table {
 	}
 
 	private void create() {
-//		String type = assetTypes.getSelected();
-//
-//		if (type.equals("atlases")) {
-//			new CreateAtlasDialog(Ctx.window).setVisible(true);
-//		} else {
-//
-//			JFileChooser chooser = new JFileChooser(lastDir);
-//			chooser.setDialogTitle("Select the '" + type + "' asset files");
-//			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-//			chooser.setMultiSelectionEnabled(true);
-//
-//			FileNameExtensionFilter filter = null;
-//
-//			if (type.equals("backgrounds") || type.equals("overlays"))
-//				filter = new FileNameExtensionFilter("Images", "jpg", "png",
-//						"etc1");
-//			else if (type.equals("music") || type.equals("sounds"))
-//				filter = new FileNameExtensionFilter("Music", "wav", "mp3",
-//						"ogg");
-//			else if (type.equals("bg maps"))
-//				filter = new FileNameExtensionFilter("Map", "png");
-//			else if (type.equals("3d models"))
-//				filter = new FileNameExtensionFilter("3D Models", "g3db", "png");			
-//
-//			chooser.removeChoosableFileFilter(chooser.getChoosableFileFilters()[0]);
-//			chooser.addChoosableFileFilter(filter);
-//
-//			if (chooser.showOpenDialog(Ctx.window) == JFileChooser.APPROVE_OPTION) {
-//				try {
-//					File[] files = chooser.getSelectedFiles();
-//					String dir = getAssetDir(type);
-//					lastDir = chooser.getSelectedFile();
-//
-//					for (File f : files) {
-//						if (type.equals("backgrounds")
-//								|| type.equals("overlays")) {
-//							List<Resolution> res = Ctx.project.getResolutions();
-//							int wWidth = Ctx.project.getWorld().getWidth();
-//
-//							for (Resolution r : res) {
-//								File destFile = new File(dir + "/" + r.suffix
-//										+ "/" + f.getName());
-//
-//								if (r.portraitWidth != wWidth) {
-//									float scale = r.portraitWidth / (float)wWidth;
-//
-//									ImageUtils.scaleImageFile(f, destFile,
-//											scale);
-//								} else {
-//									Files.copy(f.toPath(), destFile.toPath());
-//								}
-//							}
-//						} else {
-//							File destFile = new File(dir + "/" + f.getName());
-//							Files.copy(f.toPath(), destFile.toPath());
-//						}
-//						
-//					}
-//
-//				} catch (Exception ex) {
-//					String msg = "Something went wrong while getting the assets.\n\n"
-//							+ ex.getClass().getSimpleName()
-//							+ " - "
-//							+ ex.getMessage();
-//					JOptionPane.showMessageDialog(Ctx.window, msg);
-//					ex.printStackTrace();
-//				}
-//			}
-//		}
-//			
-//		addAssets();
+		String type = assetTypes.getSelected();
+
+		if (type.equals("atlases")) {
+			new CreateAtlasDialog(skin).setVisible(true);
+		} else {
+
+			JFileChooser chooser = new JFileChooser(lastDir);
+			chooser.setDialogTitle("Select the '" + type + "' asset files");
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			chooser.setMultiSelectionEnabled(true);
+
+			FileNameExtensionFilter filter = null;
+
+			if (type.equals("backgrounds") || type.equals("overlays"))
+				filter = new FileNameExtensionFilter("Images", "jpg", "png",
+						"etc1");
+			else if (type.equals("music") || type.equals("sounds"))
+				filter = new FileNameExtensionFilter("Music", "wav", "mp3",
+						"ogg");
+			else if (type.equals("bg maps"))
+				filter = new FileNameExtensionFilter("Map", "png");
+			else if (type.equals("3d models"))
+				filter = new FileNameExtensionFilter("3D Models", "g3db", "png");
+			else if (type.equals("spine"))
+				filter = new FileNameExtensionFilter("Spine", "json");			
+
+			chooser.removeChoosableFileFilter(chooser.getChoosableFileFilters()[0]);
+			chooser.addChoosableFileFilter(filter);
+
+			if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+				try {
+					File[] files = chooser.getSelectedFiles();
+					String dir = getAssetDir(type);
+					lastDir = chooser.getSelectedFile();
+
+					for (File f : files) {
+						if (type.equals("backgrounds")
+								|| type.equals("overlays")) {
+							List<Resolution> res = Ctx.project.getResolutions();
+							int wWidth = Ctx.project.getWorld().getWidth();
+
+							for (Resolution r : res) {
+								File destFile = new File(dir + "/" + r.suffix
+										+ "/" + f.getName());
+
+								if (r.portraitWidth != wWidth) {
+									float scale = r.portraitWidth / (float)wWidth;
+
+									ImageUtils.scaleImageFile(f, destFile,
+											scale);
+								} else {
+									Files.copy(f.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+								}
+							}
+						} else {
+							File destFile = new File(dir + "/" + f.getName());
+							Files.copy(f.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						}
+						
+					}
+
+				} catch (Exception ex) {
+					String msg = "Something went wrong while getting the assets.\n\n"
+							+ ex.getClass().getSimpleName()
+							+ " - "
+							+ ex.getMessage();
+					Ctx.msg.show(getStage(), msg, 4);
+					ex.printStackTrace();
+				}
+			}
+		}
+			
+		addAssets();
 	}
 
 	private void edit() {
@@ -261,7 +268,7 @@ public class AssetsList extends Table {
 						+ e1.getClass().getSimpleName()
 						+ " - "
 						+ e1.getMessage();
-				Ctx.msg.show(getStage(), msg, 2000);
+				Ctx.msg.show(getStage(), msg, 4);
 			}
 		}
 	}
@@ -318,7 +325,7 @@ public class AssetsList extends Table {
 		} catch (Exception ex) {
 			String msg = "Something went wrong while deleting the asset.\n\n"
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
-			Ctx.msg.show(getStage(), msg, 2000);
+			Ctx.msg.show(getStage(), msg, 4);
 			ex.printStackTrace();
 		}
 	}

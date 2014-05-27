@@ -1,6 +1,6 @@
 package org.bladecoder.engineeditor.ui.components;
 
-import org.bladecoder.engineeditor.ui.components.CustomList.ListStyle;
+import org.bladecoder.engineeditor.ui.components.CustomList.CustomListStyle;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 public class CellRenderer<T> {
 	private static final float MARGIN = 10;
 	
-	private ListStyle style;
+	private CustomListStyle style;
 	private float itemHeight;
 	private float textOffsetX, textOffsetY;
 
@@ -57,13 +57,13 @@ public class CellRenderer<T> {
 		
 		if(hasSubtitle()) {
 			if (selected) {
-				font.setColor(fontColorSelected.r, fontColorSelected.g,
+				style.subtitleFont.setColor(fontColorSelected.r, fontColorSelected.g,
 						fontColorSelected.b, fontColorSelected.a * parentAlpha * 0.5f);
 			} else {
-				font.setColor(fontColorUnselected.r, fontColorUnselected.g, fontColorUnselected.b, fontColorUnselected.a * parentAlpha * 0.5f);			
+				style.subtitleFont.setColor(fontColorUnselected.r, fontColorUnselected.g, fontColorUnselected.b, fontColorUnselected.a * parentAlpha * 0.5f);			
 			}			
 			
-			font.draw(batch, getCellSubTitle(item), x + textOffsetX,
+			style.subtitleFont.draw(batch, getCellSubTitle(item), x + textOffsetX,
 					y - textOffsetY - (font.getCapHeight() - font.getDescent() * 2));
 		}
 	}
@@ -76,11 +76,11 @@ public class CellRenderer<T> {
 		return false;
 	}
 	
-	public void layout(ListStyle style) {
+	public void layout(CustomListStyle style) {
 		this.style = style;
 		
-		final BitmapFont font = style.font;
-		final Drawable selectedDrawable = style.selection;
+		BitmapFont font = style.font;
+		Drawable selectedDrawable = style.selection;
 
 		textOffsetX = selectedDrawable.getLeftWidth();
 		textOffsetY = selectedDrawable.getTopHeight() - font.getDescent();
@@ -88,7 +88,7 @@ public class CellRenderer<T> {
 		itemHeight = font.getCapHeight() - font.getDescent() * 2;
 		
 		if(hasSubtitle()) {
-			itemHeight *= 2;
+			itemHeight += style.subtitleFont.getCapHeight() - style.subtitleFont.getDescent() * 2;;
 		}
 		
 		itemHeight += selectedDrawable.getTopHeight()

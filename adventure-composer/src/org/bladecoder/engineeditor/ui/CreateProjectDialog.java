@@ -47,7 +47,7 @@ public class CreateProjectDialog extends EditDialog {
 		} catch (Exception ex) {
 			String msg = "Something went wrong while saving the current project.\n\n"
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
-			Ctx.msg.show(getStage(), msg, 2000);
+			Ctx.msg.show(getStage(), msg, 2);
 		}
 
 		createProject();
@@ -63,7 +63,7 @@ public class CreateProjectDialog extends EditDialog {
 			EditorLogger.error(e.getMessage());
 			String msg = "Something went wrong while creating project.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(), msg, 2000);
+			Ctx.msg.show(getStage(), msg, 2);
 		}
 
 		try {
@@ -73,7 +73,7 @@ public class CreateProjectDialog extends EditDialog {
 			EditorLogger.error(e.getMessage());
 			String msg = "Something went wrong while creating project.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(), msg, 2000);
+			Ctx.msg.show(getStage(), msg, 2);
 		}
 		
 		Ctx.msg.hide();

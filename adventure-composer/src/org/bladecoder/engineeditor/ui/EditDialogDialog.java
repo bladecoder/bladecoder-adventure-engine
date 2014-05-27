@@ -20,7 +20,7 @@ public class EditDialogDialog extends EditElementDialog {
 		inputs = new InputPanel[1];
 		
 		inputs[0] = new InputPanel(skin, "Dialog ID",
-				"<html>Select the dialog id to create.</html>", true);
+				"Select the dialog id to create.", true);
 
 		setInfo(INFO);
 

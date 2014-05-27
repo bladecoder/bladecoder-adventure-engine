@@ -68,7 +68,7 @@ public class CreateAtlasDialog extends EditDialog {
 		Ctx.msg.show(getStage(), "Generating atlas...");
 
 		String msg = genAtlas();
-		Ctx.msg.show(getStage(), msg, 2000);
+		Ctx.msg.show(getStage(), msg, 2);
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public class CreateResolutionDialog extends EditDialog {
 		createResolution();
 
 		String msg = scaleImages();
-		Ctx.msg.show(getStage(), msg, 2000);
+		Ctx.msg.show(getStage(), msg, 2);
 		
 		if(listener != null)
 			listener.changed(new ChangeEvent(), this);

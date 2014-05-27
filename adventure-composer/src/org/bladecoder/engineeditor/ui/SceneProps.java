@@ -1,6 +1,9 @@
 package org.bladecoder.engineeditor.ui;
 
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.ui.components.PropertyTable;
 import org.w3c.dom.Element;
@@ -29,13 +32,13 @@ public class SceneProps extends PropertyTable {
 //			}
 //		}
 //	};
-//	
-//	PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {		
-//		@Override
-//		public void propertyChange(PropertyChangeEvent evt) {			
-//			setSceneDocument(doc, scn);			
-//		}
-//	};
+	
+	PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {			
+			setSceneDocument(doc, scn);			
+		}
+	};
 
 	public SceneProps(Skin skin) {
 		super(skin);
@@ -56,7 +59,7 @@ public class SceneProps extends PropertyTable {
 			addProperty(INITIAL_MUSIC_DELAY_PROP, doc.getRootAttr(scn,"initial_music_delay"), Types.FLOAT);
 			addProperty(REPEAT_MUSIC_DELAY_PROP, doc.getRootAttr(scn,"repeat_music_delay"), Types.FLOAT);
 			
-//			this.doc.addPropertyChangeListener("scene", propertyChangeListener);
+			this.doc.addPropertyChangeListener("scene", propertyChangeListener);
 			
 			invalidateHierarchy();
 		}	

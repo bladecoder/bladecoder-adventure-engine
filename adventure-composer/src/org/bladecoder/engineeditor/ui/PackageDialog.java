@@ -157,7 +157,7 @@ public class PackageDialog extends EditDialog {
 		Ctx.msg.show(getStage(), "Generating package...");
 	
 		String msg = packageAdv();
-		Ctx.msg.show(getStage(), msg, 2000);
+		Ctx.msg.show(getStage(), msg, 2);
 
 		Ctx.project.getConfig().setProperty(ARCH_PROP, arch.getText());
 		Ctx.project.getConfig().setProperty(DIR_PROP, dir.getText());

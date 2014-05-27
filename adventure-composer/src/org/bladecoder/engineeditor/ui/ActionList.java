@@ -168,8 +168,7 @@ public class ActionList extends ElementList {
 
 				String v = n.getNodeValue();
 
-				sb.append(name).append(" <b>").append(doc.getTranslation(v))
-						.append("</b>  ");
+				sb.append(name).append(": ").append(doc.getTranslation(v));
 			}
 			
 			return sb.toString();

@@ -21,11 +21,11 @@ import org.w3c.dom.Element;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
@@ -53,15 +53,17 @@ public class ScnWidget extends Widget {
 	private static final int[] zoomLevels = { 5, 10, 16, 25, 33, 50, 66, 100,
 			150, 200, 300, 400, 600, 800, 1000 };
 	private int zoomLevel = 100;
-	
-	LabelStyle style;
+
+	BitmapFont bigFont;
 	TiledDrawable tile;
 
+	boolean loading = false;
+
 	public ScnWidget(Skin skin) {
-		style = skin.get(LabelStyle.class);
+		bigFont = skin.get("big-font", BitmapFont.class);
 
 		setSize(150, 150);
-		
+
 		tile = new TiledDrawable(Ctx.assetManager.getIcon("transparent-light"));
 
 		faRenderer.setViewport(getWidth(), getHeight());
@@ -69,29 +71,31 @@ public class ScnWidget extends Widget {
 		setLayoutEnabled(true);
 
 		addListener(inputListner);
-		
-		Ctx.project.addPropertyChangeListener(
-				new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent e) {
-						if(e.getPropertyName().equals(Project.NOTIFY_SCENE_SELECTED)) {
-							setSelectedScene(Ctx.project.getSelectedScene());
-						} else if (e.getPropertyName().equals(Project.NOTIFY_ACTOR_SELECTED)) {
-							setSelectedActor(Ctx.project.getSelectedActor());
-						} else if (e.getPropertyName().equals(Project.NOTIFY_FA_SELECTED)) {
-							setSelectedFA(Ctx.project.getSelectedFA());
-						} else if (e.getPropertyName().equals(Project.NOTIFY_PROJECT_LOADED)) {
-							if(scn != null) {
-								scn.dispose();
-								scn = null;
-							}
-							
-							EngineAssetManager.createEditInstance(Ctx.project
-									.getProjectDir().getAbsolutePath() + "/assets",
-									Ctx.project.getWorld().getWidth());
-						}
+
+		Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent e) {
+				if (e.getPropertyName().equals(Project.NOTIFY_SCENE_SELECTED)) {
+					setSelectedScene(Ctx.project.getSelectedScene());
+				} else if (e.getPropertyName().equals(
+						Project.NOTIFY_ACTOR_SELECTED)) {
+					setSelectedActor(Ctx.project.getSelectedActor());
+				} else if (e.getPropertyName().equals(
+						Project.NOTIFY_FA_SELECTED)) {
+					setSelectedFA(Ctx.project.getSelectedFA());
+				} else if (e.getPropertyName().equals(
+						Project.NOTIFY_PROJECT_LOADED)) {
+					if (scn != null) {
+						scn.dispose();
+						scn = null;
 					}
-				});
+
+					EngineAssetManager.createEditInstance(Ctx.project
+							.getProjectDir().getAbsolutePath() + "/assets",
+							Ctx.project.getWorld().getWidth());
+				}
+			}
+		});
 
 		Ctx.project.getWorld().addPropertyChangeListener(
 				new PropertyChangeListener() {
@@ -141,7 +145,7 @@ public class ScnWidget extends Widget {
 											actor.getAttribute("init_frame_animation"));
 							setSelectedFA(null);
 						} else if (e.getPropertyName().equals("actor")) {
-							createAndSelectActor(Ctx.project.getSelectedActor());
+							createAndSelectActor((Element)e.getNewValue());
 						} else if (e.getPropertyName().equals(
 								BaseDocument.NOTIFY_ELEMENT_DELETED)) {
 							if (((Element) e.getNewValue()).getTagName()
@@ -172,11 +176,11 @@ public class ScnWidget extends Widget {
 		batch.setColor(Color.WHITE);
 
 		// BACKGROUND
-		batch.disableBlending();	
-		tile.draw(batch, getX(), getY(),getWidth(), getHeight());
+		batch.disableBlending();
+		tile.draw(batch, getX(), getY(), getWidth(), getHeight());
 		batch.enableBlending();
 
-		if (scn != null) {
+		if (scn != null && !loading) {
 			Vector3 v = new Vector3(getX(), getY(), 0);
 			v = v.prj(batch.getTransformMatrix());
 
@@ -218,17 +222,30 @@ public class ScnWidget extends Widget {
 		} else {
 			RectangleRenderer.draw((SpriteBatch) batch, getX(), getY(),
 					getWidth(), getHeight(), Color.BLACK);
-			
+
 			String s;
-			
-			if(Ctx.project.getProjectDir() == null)
+
+			if (loading) {
+				s = "LOADING...";
+
+				if (!EngineAssetManager.getInstance().isLoading()) {
+					loading = false;
+
+					scn.retrieveAssets();
+					drawer.setCamera(scn.getCamera());
+
+					invalidate();
+				}
+			} else if (Ctx.project.getProjectDir() == null) {
 				s = "CREATE OR LOAD A PROJECT";
-			else
+			} else {
 				s = "THERE ARE NO SCENES IN THIS CHAPTER YET";
-			
-			style.font.draw(batch, s, 
-					(getWidth() - style.font.getBounds(s).width )/2, 
-					getHeight()/2 + style.font.getLineHeight() *3);
+			}
+
+			bigFont.draw(batch, s,
+					(getWidth() - bigFont.getBounds(s).width) / 2, getHeight()
+							/ 2 + bigFont.getLineHeight() * 3);
+
 		}
 
 	}
@@ -350,26 +367,25 @@ public class ScnWidget extends Widget {
 		}
 
 		setSelectedActor(null);
-		
-		scn = Ctx.project.getSelectedChapter().getEngineScene(
-				e,
-				Ctx.project.getWorld().getWidth(),
-				Ctx.project.getWorld().getHeight());
-		
-		if (scn != null)
-			drawer.setCamera(scn.getCamera());
 
-		invalidate();
+		if (e != null) {
+			scn = Ctx.project.getSelectedChapter().getEngineScene(e,
+					Ctx.project.getWorld().getWidth(),
+					Ctx.project.getWorld().getHeight());
+
+			scn.loadAssets();
+			loading = true;
+		}
 	}
 
 	public void setSelectedActor(Element actor) {
 		Actor a = null;
-		
+
 		if (scn != null && actor != null) {
-			a = scn.getActor(Ctx.project.getSelectedChapter()
-					.getId(actor), false, true);
+			a = scn.getActor(Ctx.project.getSelectedChapter().getId(actor),
+					false, true);
 		}
-		
+
 		selectedActor = a;
 		faRenderer.setActor(a);
 		setFrameAnimation(null);
@@ -402,8 +418,8 @@ public class ScnWidget extends Widget {
 			setFrameAnimation(null);
 		}
 	}
-	
-	public void createAndSelectActor(Element actor) {
+
+	private void createAndSelectActor(Element actor) {
 		removeActor(Ctx.project.getSelectedChapter(), actor);
 		selectedActor = createActor(Ctx.project.getSelectedChapter(), actor);
 		setSelectedActor(actor);
@@ -436,13 +452,13 @@ public class ScnWidget extends Widget {
 			setSelectedActor(null);
 		}
 	}
-	
+
 	public void dispose() {
-		if(scn != null) {
+		if (scn != null) {
 			scn.dispose();
 			scn = null;
 		}
-		
+
 		faRenderer.dispose();
 	}
 }
