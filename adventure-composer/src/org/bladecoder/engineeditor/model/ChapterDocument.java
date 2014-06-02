@@ -191,7 +191,7 @@ public class ChapterDocument extends BaseDocument {
 			scn.setBackground(background, getLightmap(s));
 		}
 
-		String depthVector = getRootAttr("depth_vector");
+		String depthVector = s.getAttribute("depth_vector");
 		if (!depthVector.isEmpty())
 			scn.setDepthVector(Param.parseVector2(depthVector));
 

@@ -616,8 +616,8 @@ public class Scene extends Actor implements Movers, Serializable,
 			camera.setScrollingDimensions(getBBox().width,
 						getBBox().height);
 			
-			if(followActor != null)
-				camera.updatePos(followActor);
+//			if(followActor != null)
+//				camera.updatePos(followActor);
 		}
 
 		// RETRIEVE LIGHT MAP

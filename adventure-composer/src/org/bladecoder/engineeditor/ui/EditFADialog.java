@@ -241,13 +241,16 @@ public class EditFADialog extends EditElementDialog {
 
 		if (e == null && cb.getSelectedIndex() == 0) {
 			for (int i = 1; i < cb.getItems().size; i++) {
+				cb.setSelectedIndex(i);
 				create();
 				fill();
-				doc.setId(e, cb.getItems().get(i));
+//				doc.setId(e, cb.getItems().get(i));
+				
+				if (listener != null)
+					listener.changed(new ChangeEvent(), this);
 			}
 
-			if (listener != null)
-				listener.changed(new ChangeEvent(), this);
+			
 		} else {
 			super.ok();
 		}

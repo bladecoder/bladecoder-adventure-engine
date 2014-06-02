@@ -147,7 +147,7 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public void update(float delta) {
-		if (currentSkeleton != null && currentSkeleton.animation != null) {
+		if (currentSkeleton != null && currentSkeleton.skeleton != null) {
 			currentSkeleton.animation.update(delta);
 
 			currentSkeleton.animation.apply(currentSkeleton.skeleton);

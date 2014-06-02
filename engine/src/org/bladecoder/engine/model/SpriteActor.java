@@ -281,6 +281,9 @@ public class SpriteActor extends Actor {
 		super.retrieveAssets();
 
 		renderer.retrieveAssets();
+		
+		// Call setPosition to recalc fake depth and camera follow
+		setPosition(pos.x, pos.y);
 	}
 
 	@Override

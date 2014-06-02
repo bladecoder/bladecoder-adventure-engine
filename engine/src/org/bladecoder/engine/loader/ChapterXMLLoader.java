@@ -370,7 +370,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			sa.set(id, source, speed, delay,
 					count, animationType, soundId, inD, outD, preload, disposeWhenPlayed);
 
-			((AtlasRenderer)((SpriteActor) actor).getRenderer()).addFrameAnimation(sa);
+			((SpriteActor) actor).getRenderer().addFrameAnimation(sa);
 		} else if (localName.equals("verb")) {
 			parseVerb(localName, atts, actor != null ? actor : scene);
 		} else if (localName.equals("dialog")) {
