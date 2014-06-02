@@ -52,7 +52,7 @@ public class EngineAssetManager {
 	private static final String SPINE_DIR = "spine/";
 	
 	private static final String MODEL3D_EXT = ".g3db";
-	private static final String SPINE_EXT = ".json";
+	private static final String SPINE_EXT = ".skel";
 	
 	private static EngineAssetManager instance = null;
 

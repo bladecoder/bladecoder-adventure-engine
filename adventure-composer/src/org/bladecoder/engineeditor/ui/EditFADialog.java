@@ -49,7 +49,7 @@ public class EditFADialog extends EditElementDialog {
 				ChapterDocument.ANIMATION_TYPES);
 		inputs[3] = new InputPanel(skin, "Speed",
 				"Select the speed of the animation in secods",
-				Param.Type.FLOAT, true);
+				Param.Type.FLOAT, true, "1.0");
 		inputs[4] = new InputPanel(skin, "Delay",
 				"Select the delay between repeats in seconds",
 				Param.Type.FLOAT, false);
@@ -204,7 +204,7 @@ public class EditFADialog extends EditElementDialog {
 			ext = ".g3db";
 		} else if (type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
 			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
-			ext = ".json";
+			ext = ".skel";
 		}
 
 		File f = new File(path);

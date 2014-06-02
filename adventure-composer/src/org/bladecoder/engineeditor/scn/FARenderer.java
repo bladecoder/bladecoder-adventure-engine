@@ -27,7 +27,7 @@ public class FARenderer {
 	FrameAnimation currentFrameAnimation;
 	private SpriteRenderer renderer;
 	private float viewportW, viewportH;
-	
+
 	public void setViewport(float w, float h) {
 		viewportW = w;
 		viewportH = h;
@@ -44,7 +44,8 @@ public class FARenderer {
 
 			if (r instanceof Sprite3DRenderer) {
 				renderer = new Sprite3DRenderer();
-				((Sprite3DRenderer)renderer).setSpriteSize(new Vector2( r.getWidth(), r.getHeight()));
+				((Sprite3DRenderer) renderer).setSpriteSize(new Vector2(r
+						.getWidth(), r.getHeight()));
 			} else if (r instanceof SpineRenderer) {
 				renderer = new SpineRenderer();
 			} else {
@@ -56,32 +57,34 @@ public class FARenderer {
 	public void setFrameAnimation(FrameAnimation fa) {
 		currentFrameAnimation = fa;
 
-		if (renderer != null && fa != null) {
+		if (renderer != null) {
 
 			renderer.getFrameAnimations().clear();
-			
-			renderer.addFrameAnimation(fa);
 
-			renderer.retrieveAssets();
+			if (fa != null) {
 
-			renderer.startFrameAnimation(fa.id, Tween.FROM_FA, 1, null);
+				renderer.addFrameAnimation(fa);
+
+				renderer.retrieveAssets();
+
+				renderer.startFrameAnimation(fa.id, Tween.REPEAT, Tween.INFINITY, null);
+			}
 		}
 	}
 
 	public void draw(SpriteBatch batch) {
 		if (renderer != null && currentFrameAnimation != null) {
 
-
 			float width = HEIGHT / renderer.getHeight() * renderer.getWidth();
 
 			RectangleRenderer.draw(batch, viewportW - width - 5, viewportH
 					- HEIGHT - 55, width + 10, HEIGHT + 10, Color.BLACK);
-			RectangleRenderer.draw(batch, viewportW - width, viewportH
-					- HEIGHT - 50, width, HEIGHT, BG_COLOR);
+			RectangleRenderer.draw(batch, viewportW - width, viewportH - HEIGHT
+					- 50, width, HEIGHT, BG_COLOR);
 
 			float scaleh = width / renderer.getWidth();
-			renderer.draw(batch, viewportW - width/2, viewportH - HEIGHT
-					- 50, scaleh);
+			renderer.draw(batch, viewportW - width / 2,
+					viewportH - HEIGHT - 50, scaleh);
 
 		}
 	}
@@ -91,9 +94,9 @@ public class FARenderer {
 			renderer.update(delta);
 		}
 	}
-	
+
 	public void dispose() {
-		if(renderer != null)
+		if (renderer != null)
 			renderer.dispose();
 	}
 

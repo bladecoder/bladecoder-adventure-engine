@@ -138,14 +138,12 @@ public class ScnWidget extends Widget {
 							setSelectedFA(null);
 						} else if (e.getPropertyName().equals(
 								"init_frame_animation")) {
-							Element actor = (Element) e.getNewValue();
-							((SpriteActor) selectedActor)
-									.getRenderer()
-									.setInitFrameAnimation(
-											actor.getAttribute("init_frame_animation"));
+							String initFA = (String) e.getNewValue();
+							((SpriteActor) selectedActor).getRenderer()
+									.setInitFrameAnimation(initFA);
 							setSelectedFA(null);
 						} else if (e.getPropertyName().equals("actor")) {
-							createAndSelectActor((Element)e.getNewValue());
+							createAndSelectActor((Element) e.getNewValue());
 						} else if (e.getPropertyName().equals(
 								BaseDocument.NOTIFY_ELEMENT_DELETED)) {
 							if (((Element) e.getNewValue()).getTagName()
@@ -231,7 +229,14 @@ public class ScnWidget extends Widget {
 				if (!EngineAssetManager.getInstance().isLoading()) {
 					loading = false;
 
-					scn.retrieveAssets();
+					try {
+						scn.retrieveAssets();
+					} catch (Exception e) {
+						Ctx.msg.show(getStage(),
+								"Could not load assets for scene", 4);
+						e.printStackTrace();
+					}
+
 					drawer.setCamera(scn.getCamera());
 
 					invalidate();
@@ -259,7 +264,15 @@ public class ScnWidget extends Widget {
 	}
 
 	public void setFrameAnimation(FrameAnimation fa) {
-		faRenderer.setFrameAnimation(fa);
+		try {
+			faRenderer.setFrameAnimation(fa);
+		} catch (Exception e) {
+			Ctx.msg.show(getStage(), "Could not retrieve assets for sprite: "
+					+ fa.id, 4);
+			e.printStackTrace();
+
+			faRenderer.setFrameAnimation(null);
+		}
 	}
 
 	@Override
@@ -408,8 +421,14 @@ public class ScnWidget extends Widget {
 						|| s.getCurrentFrameAnimation() == null
 						|| ((SpriteActor) selectedActor).getRenderer()
 								.getInitFrameAnimation().equals(selFA)) {
-					((SpriteActor) selectedActor).startFrameAnimation(selFA,
-							Tween.REPEAT, Tween.INFINITY, null);
+					try {
+
+						((SpriteActor) selectedActor).startFrameAnimation(
+								selFA, Tween.REPEAT, Tween.INFINITY, null);
+					} catch (Exception e) {
+						setFrameAnimation(null);
+						((SpriteActor) selectedActor).getRenderer().getFrameAnimations().remove(selFA);
+					}
 				}
 			} else {
 				setFrameAnimation(null);

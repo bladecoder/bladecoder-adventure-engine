@@ -42,6 +42,10 @@ public class InputPanel extends Table {
     	this(skin, title, desc, type, mandatory, null, null);
     }
     
+    public InputPanel(Skin skin, String title, String desc, Param.Type type, boolean mandatory, String defaultValue) {
+    	this(skin, title, desc, type, mandatory, defaultValue, null);
+    }
+    
     @SuppressWarnings("unchecked")
 	public InputPanel(Skin skin, String title, String desc, Param.Type type, boolean mandatory, String defaultValue, String[] options) {
     	this.type = type;

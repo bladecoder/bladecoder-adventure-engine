@@ -24,9 +24,9 @@ import com.esotericsoftware.spine.AnimationState.AnimationStateListener;
 import com.esotericsoftware.spine.AnimationStateData;
 import com.esotericsoftware.spine.Event;
 import com.esotericsoftware.spine.Skeleton;
+import com.esotericsoftware.spine.SkeletonBinary;
 import com.esotericsoftware.spine.SkeletonBounds;
 import com.esotericsoftware.spine.SkeletonData;
-import com.esotericsoftware.spine.SkeletonJson;
 import com.esotericsoftware.spine.SkeletonRenderer;
 
 public class SpineRenderer implements SpriteRenderer {
@@ -147,7 +147,7 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public void update(float delta) {
-		if (currentSkeleton != null) {
+		if (currentSkeleton != null && currentSkeleton.animation != null) {
 			currentSkeleton.animation.update(delta);
 
 			currentSkeleton.animation.apply(currentSkeleton.skeleton);
@@ -160,11 +160,13 @@ public class SpineRenderer implements SpriteRenderer {
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale) {
 
-		if (currentSkeleton != null) {
-			currentSkeleton.skeleton.setX(x);
-			currentSkeleton.skeleton.setY(y);
+		if (currentSkeleton != null && currentSkeleton.skeleton != null) {
+			currentSkeleton.skeleton.setX(x/scale);
+			currentSkeleton.skeleton.setY(y/scale);
 
+			batch.setTransformMatrix(batch.getTransformMatrix().scale(scale, scale, 1.0f));
 			renderer.draw(batch, currentSkeleton.skeleton);
+			batch.setTransformMatrix(batch.getTransformMatrix().scale(1/scale, 1/scale, 1.0f));
 		} else {
 			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight()
 					* scale, Color.RED);
@@ -354,8 +356,8 @@ public class SpineRenderer implements SpriteRenderer {
 			TextureAtlas atlas = EngineAssetManager.getInstance()
 					.getTextureAtlas(source);
 
-			SkeletonJson json = new SkeletonJson(atlas);
-			SkeletonData skeletonData = json
+			SkeletonBinary skel = new SkeletonBinary(atlas);
+			SkeletonData skeletonData = skel
 					.readSkeletonData(EngineAssetManager.getInstance()
 							.getSpine(source));
 
@@ -421,7 +423,7 @@ public class SpineRenderer implements SpriteRenderer {
 		}
 
 		renderer = new SkeletonRenderer();
-		renderer.setPremultipliedAlpha(true);
+		renderer.setPremultipliedAlpha(false);
 
 		bounds = new SkeletonBounds();
 	}

@@ -22,7 +22,6 @@ import org.bladecoder.engine.util.Config;
 import org.bladecoder.engineeditor.utils.DinamicClassPath;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.Gdx;
