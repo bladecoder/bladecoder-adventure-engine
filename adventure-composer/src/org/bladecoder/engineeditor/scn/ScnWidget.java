@@ -161,7 +161,7 @@ public class ScnWidget extends Widget {
 	public void act(float delta) {
 		faRenderer.update(delta);
 
-		if (scn != null && animation) {
+		if (scn != null && animation && !loading) {
 			scn.update(delta);
 		}
 	}

@@ -161,12 +161,14 @@ public class SpineRenderer implements SpriteRenderer {
 	public void draw(SpriteBatch batch, float x, float y, float scale) {
 
 		if (currentSkeleton != null && currentSkeleton.skeleton != null) {
-			currentSkeleton.skeleton.setX(x/scale);
-			currentSkeleton.skeleton.setY(y/scale);
+			currentSkeleton.skeleton.setX(x / scale);
+			currentSkeleton.skeleton.setY(y / scale);
 
-			batch.setTransformMatrix(batch.getTransformMatrix().scale(scale, scale, 1.0f));
+			batch.setTransformMatrix(batch.getTransformMatrix().scale(scale,
+					scale, 1.0f));
 			renderer.draw(batch, currentSkeleton.skeleton);
-			batch.setTransformMatrix(batch.getTransformMatrix().scale(1/scale, 1/scale, 1.0f));
+			batch.setTransformMatrix(batch.getTransformMatrix().scale(
+					1 / scale, 1 / scale, 1.0f));
 		} else {
 			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight()
 					* scale, Color.RED);
@@ -175,17 +177,17 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public float getWidth() {
-		if(bounds != null)
+		if (bounds != null)
 			return bounds.getWidth();
-		
+
 		return 200;
 	}
 
 	@Override
 	public float getHeight() {
-		if(bounds != null)
+		if (bounds != null)
 			return bounds.getHeight();
-		
+
 		return 200;
 	}
 
@@ -276,7 +278,7 @@ public class SpineRenderer implements SpriteRenderer {
 		}
 
 		currentSkeleton.skeleton.setFlipX(flipX);
-		currentSkeleton.animation.setAnimation(0, id,
+		currentSkeleton.animation.setAnimation(0, fa.id,
 				currentAnimationType == Tween.REPEAT);
 	}
 
@@ -295,19 +297,22 @@ public class SpineRenderer implements SpriteRenderer {
 			else {
 				// search for .left if .frontleft not found and viceversa
 				StringBuilder sb = new StringBuilder();
-
-				if (id.endsWith(FrameAnimation.LEFT)) {
-					sb.append(id.substring(0, id.length() - 4));
-					sb.append("frontleft");
-				} else if (id.endsWith(FrameAnimation.FRONTLEFT)) {
-					sb.append(id.substring(0, id.length() - 9));
-					sb.append("left");
-				} else if (id.endsWith(FrameAnimation.RIGHT)) {
-					sb.append(id.substring(0, id.length() - 5));
-					sb.append("frontright");
+				
+				if (id.endsWith(FrameAnimation.FRONTLEFT)) {
+					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+					sb.append(FrameAnimation.LEFT);
 				} else if (id.endsWith(FrameAnimation.FRONTRIGHT)) {
-					sb.append(id.substring(0, id.length() - 10));
-					sb.append("right");
+					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+					sb.append(FrameAnimation.RIGHT);
+				} else if (id.endsWith(FrameAnimation.BACKLEFT) || id.endsWith(FrameAnimation.BACKRIGHT)) {
+					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+					sb.append(FrameAnimation.BACK);
+				} else if (id.endsWith(FrameAnimation.LEFT)) {
+					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+					sb.append(FrameAnimation.FRONTLEFT);
+				} else if (id.endsWith(FrameAnimation.RIGHT)) {
+					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+					sb.append(FrameAnimation.FRONTRIGHT);			
 				}
 
 				String s = sb.toString();
@@ -405,6 +410,10 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public void retrieveAssets() {
+		renderer = new SkeletonRenderer();
+		renderer.setPremultipliedAlpha(false);
+		bounds = new SkeletonBounds();
+
 		for (String key : skeletonCache.keySet()) {
 			if (skeletonCache.get(key).refCounter > 0)
 				retrieveSource(key);
@@ -418,14 +427,8 @@ public class SpineRenderer implements SpriteRenderer {
 			// TODO RESTORE CURRENT ANIMATION STATE
 
 		} else if (initFrameAnimation != null) {
-			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1,
-					null);
+			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1, null);
 		}
-
-		renderer = new SkeletonRenderer();
-		renderer.setPremultipliedAlpha(false);
-
-		bounds = new SkeletonBounds();
 	}
 
 	@Override
