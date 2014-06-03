@@ -10,7 +10,7 @@ import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.util.RectangleRenderer;
 import org.bladecoder.engineeditor.model.ChapterDocument;
-import org.bladecoder.engineeditor.ui.EditFADialog;
+import org.bladecoder.engineeditor.ui.EditSpriteDialog;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -23,10 +23,10 @@ public class SpriteWidget extends Widget {
 	private String source;
 	private FrameAnimation fa;
 	private SpriteRenderer renderer;
-	EditFADialog editFADialog;
+	EditSpriteDialog editFADialog;
 	
 
-	public SpriteWidget(EditFADialog createEditFADialog) {
+	public SpriteWidget(EditSpriteDialog createEditFADialog) {
 		this.editFADialog = createEditFADialog;
 	}
 

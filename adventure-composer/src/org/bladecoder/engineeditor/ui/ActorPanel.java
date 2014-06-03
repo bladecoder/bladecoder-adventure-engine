@@ -17,7 +17,7 @@ public class ActorPanel extends HeaderPanel {
 	private TabPanel tabPanel;
 	private VerbList verbList;
 	private DialogList dialogList;
-	private FAList faList;
+	private SpriteList faList;
 	private SoundList soundList;
 	private ActorProps props;
 
@@ -26,7 +26,7 @@ public class ActorPanel extends HeaderPanel {
 		tabPanel = new TabPanel(skin);
 		verbList = new VerbList(skin);
 		dialogList = new DialogList(skin);
-		faList = new FAList(skin);
+		faList = new SpriteList(skin);
 		props = new ActorProps(skin);
 		soundList = new SoundList(skin);
 		

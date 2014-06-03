@@ -22,7 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 
-public class EditFADialog extends EditElementDialog {
+public class EditSpriteDialog extends EditElementDialog {
 	public static final String INFO = "Define sprites and frame animations";
 
 	private InputPanel[] inputs = new InputPanel[11];
@@ -34,7 +34,7 @@ public class EditFADialog extends EditElementDialog {
 	SpriteWidget spriteWidget = new SpriteWidget(this);
 
 	@SuppressWarnings("unchecked")
-	public EditFADialog(Skin skin, BaseDocument doc, Element p, Element e) {
+	public EditSpriteDialog(Skin skin, BaseDocument doc, Element p, Element e) {
 		super(skin);
 
 		setInfo(INFO);

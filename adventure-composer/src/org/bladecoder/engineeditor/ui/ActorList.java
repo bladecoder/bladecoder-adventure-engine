@@ -129,13 +129,13 @@ public class ActorList extends ElementList {
 		public TextureRegion getCellImage(Element e) {
 			String type = e.getAttribute("type");
 
-			boolean isPlayer = doc.getRootAttr("player").equals(
+			boolean isPlayer = ((Element)e.getParentNode()).getAttribute("player").equals(
 					e.getAttribute("id"));
 
 			String u = null;
 			
 			if (isPlayer) {
-				u = "ic_player";
+				u = "ic_character_actor";
 			} else if (type.equals(ChapterDocument.FOREGROUND_ACTOR_TYPE)) {
 				u = "ic_fg_actor";
 			} else if (type.equals(ChapterDocument.ATLAS_ACTOR_TYPE)) {
@@ -143,9 +143,9 @@ public class ActorList extends ElementList {
 			} else if (type.equals(ChapterDocument.BACKGROUND_ACTOR_TYPE)) {
 				u = "ic_base_actor";
 			} else if (type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
-				u = "ic_character_actor";			
+				u = "ic_spine";			
 			} else if (type.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
-				u = "ic_character_actor";
+				u = "ic_3d";
 			}
 
 			return Ctx.assetManager.getIcon(u);

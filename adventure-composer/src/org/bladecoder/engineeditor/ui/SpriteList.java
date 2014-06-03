@@ -14,11 +14,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-public class FAList extends ElementList {
+public class SpriteList extends ElementList {
 	
 	private ImageButton initBtn;
 	
-	public FAList(Skin skin) {
+	public SpriteList(Skin skin) {
 		super(skin, true);
 		
 		initBtn = new ImageButton(skin);
@@ -69,7 +69,7 @@ public class FAList extends ElementList {
 
 	@Override
 	protected EditElementDialog getEditElementDialogInstance(Element e) {
-		return new EditFADialog(skin, doc, parent, e);
+		return new EditSpriteDialog(skin, doc, parent, e);
 	}	
 
 	// -------------------------------------------------------------------------
