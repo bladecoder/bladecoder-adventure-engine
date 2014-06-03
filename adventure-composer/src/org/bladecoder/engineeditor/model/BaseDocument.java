@@ -227,6 +227,18 @@ public abstract class BaseDocument extends PropertyChange {
 		modified = true;
 		firePropertyChange(attr, old, e);
 	}
+	
+	public void setRootAttr(String attr, String value) {
+		String old = getRootAttr(getRootElement(), attr);
+
+		if (value != null && !value.isEmpty())
+			getRootElement().setAttribute(attr, value);
+		else
+			getRootElement().removeAttribute(attr);
+
+		modified = true;
+		firePropertyChange(attr, old, getRootElement());
+	}
 
 	public void deleteElement(Element e) {
 		e.getParentNode().removeChild(e);

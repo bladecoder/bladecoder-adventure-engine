@@ -37,7 +37,6 @@ public class WorldXMLLoader extends DefaultHandler {
 	private Locator locator;
 
 	private String chapter;
-	private String currentChapter;
 
 	private List<Scene> scenes;
 	
@@ -118,33 +117,6 @@ public class WorldXMLLoader extends DefaultHandler {
 
 			if (chapter == null)
 				chapter = atts.getValue("init_chapter");
-
-		} else if (localName.equals("chapter")) {
-			currentChapter = atts.getValue("id");
-
-			if (chapter == null)
-				chapter = currentChapter;
-
-			// LOAD THE SELECTED OR THE INIT CHAPTER ONLY
-			if (chapter.equals(currentChapter)) {
-				
-				try {
-					loadChapter(currentChapter);
-					
-					for(Scene s:scenes) {
-						s.resetCamera(world.getWidth(), world.getHeight());
-
-						world.addScene(s);
-					}
-					
-				} catch (Exception e) {
-					SAXParseException e2 = new SAXParseException(
-							"Error loading chapter '" + currentChapter + "'", locator,
-							e);
-					error(e2);
-					throw e2;
-				}
-			}
 		} else if (localName.equals("verb")) {
 			String id = atts.getValue("id");
 
@@ -159,8 +131,33 @@ public class WorldXMLLoader extends DefaultHandler {
 			throws SAXException {
 
 		if (localName.equals("world")) {
-			if(initScene != null)
-				world.setCurrentScene(initScene);
+			if(chapter == null) {
+				SAXParseException e2 = new SAXParseException(
+						"Initial Chapter not specified", locator);
+				error(e2);
+				throw e2;
+			}
+			
+			try {
+				loadChapter(chapter);
+				
+				for(Scene s:scenes) {
+					s.resetCamera(world.getWidth(), world.getHeight());
+
+					world.addScene(s);
+				}
+				
+				if(initScene != null)
+					world.setCurrentScene(initScene);
+				
+			} catch (Exception e) {
+				SAXParseException e2 = new SAXParseException(
+						"Error loading chapter '" + chapter + "'", locator,
+						e);
+				error(e2);
+				throw e2;
+			}						
+			
 		} else if (localName.equals("verb")) {
 			currentVerb = null;
 		}

@@ -1,29 +1,31 @@
 package org.bladecoder.engineeditor.ui;
 
+import java.util.Comparator;
+
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.WorldDocument;
 import org.bladecoder.engineeditor.ui.components.CellRenderer;
-import org.bladecoder.engineeditor.ui.components.EditElementDialog;
-import org.bladecoder.engineeditor.ui.components.ElementList;
-import org.w3c.dom.Element;
+import org.bladecoder.engineeditor.ui.components.EditList;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-public class ChapterList extends ElementList {
+public class ChapterList extends EditList<String> {
+
+	WorldDocument doc;
 
 	private ImageButton initBtn;
 
 	public ChapterList(Skin skin) {
-		super(skin, true);
+		super(skin);
 
 		list.setCellRenderer(listCellRenderer);
 
 		initBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(initBtn, "ic_check",
-				"Set init chapter", "Set init chapter");
+		toolbar.addToolBarButton(initBtn, "ic_check", "Set init chapter",
+				"Set init chapter");
 
 		initBtn.setDisabled(false);
 		toolbar.hideCopyPaste();
@@ -40,20 +42,12 @@ public class ChapterList extends ElementList {
 	private void setDefault() {
 		WorldDocument w = (WorldDocument) doc;
 
-		Element e = list.getSelected();
+		String e = list.getSelected();
 
 		if (e == null)
 			return;
 
-		String id = e.getAttribute("id");
-
-		w.setRootAttr(doc.getElement(), "init_chapter", id);
-	}
-
-	@Override
-	protected EditElementDialog getEditElementDialogInstance(
-			Element e) {
-		return new EditChapterDialog(skin, doc, parent, e);
+		w.setRootAttr(doc.getElement(), "init_chapter", e);
 	}
 
 	@Override
@@ -70,11 +64,16 @@ public class ChapterList extends ElementList {
 
 			return;
 		}
-		
-		Element e = list.getItems().removeIndex(pos);
+
+		String e = list.getItems().removeIndex(pos);
+
+		if (e.equals(Ctx.project.getWorld().getInitChapter())) {
+			Ctx.project.getWorld().setInitChapter(list.getItems().get(0));
+		}
 
 		try {
-			((WorldDocument)doc).removeChapter(e.getAttribute("id"));
+			((WorldDocument) doc).removeChapter(e);
+			Ctx.project.saveProject();
 		} catch (Exception ex) {
 			String msg = "Something went wrong while deleting the chapter.\n\n"
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
@@ -84,15 +83,90 @@ public class ChapterList extends ElementList {
 		}
 	}
 
+	@Override
+	protected void create() {
+		EditChapterDialog dialog = new EditChapterDialog(skin, doc, null);
+		dialog.show(getStage());
+		dialog.setListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				String e = ((EditChapterDialog) actor).getNewId();
+				addItem(e);
+				int i = getItems().indexOf(e, true);
+				if (i != -1)
+					list.setSelectedIndex(i);
+
+				list.invalidateHierarchy();
+			}
+		});
+	}
+
+	@Override
+	protected void edit() {
+
+		String e = list.getSelected();
+
+		if (e == null)
+			return;
+
+		EditChapterDialog dialog = new EditChapterDialog(skin, doc, e);
+		dialog.show(getStage());
+		dialog.setListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				String e = ((EditChapterDialog) actor).getNewId();
+				list.getItems().removeIndex(list.getSelectedIndex());
+				list.getItems().add(e);
+				list.setSelectedIndex(list.getItems().indexOf(e, true));
+			}
+		});
+	}
+
+	@Override
+	protected void copy() {
+	}
+
+	@Override
+	protected void paste() {
+	}
+	
+
+	public void addElements(WorldDocument w) {
+		this.doc = w;
+
+		list.getItems().clear();
+		list.getSelection().clear();
+		toolbar.disableCreate(false);
+
+		String nl[] = w.getChapters();
+
+		for (int i = 0; i < nl.length; i++) {
+			addItem(nl[i]);
+		}
+
+		if (getItems().size > 0)
+			list.setSelectedIndex(0);
+
+		toolbar.disableEdit(list.getSelectedIndex() < 0);
+
+		list.getItems().sort(new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+
+		invalidateHierarchy();
+	}
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
-	private final CellRenderer<Element> listCellRenderer = new CellRenderer<Element>() {
+	private final CellRenderer<String> listCellRenderer = new CellRenderer<String>() {
 
 		@Override
-		protected String getCellTitle(Element e) {
-			String id = e.getAttribute("id");
+		protected String getCellTitle(String e) {
+			String id = e;
 
 			String init = ((WorldDocument) doc).getInitChapter();
 
@@ -103,4 +177,5 @@ public class ChapterList extends ElementList {
 		}
 
 	};
+
 }

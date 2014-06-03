@@ -15,7 +15,6 @@ import org.bladecoder.engineeditor.ui.components.EditElementDialog;
 import org.bladecoder.engineeditor.ui.components.ElementList;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -153,13 +152,11 @@ public class SceneList extends ElementList {
 
 	public void addChapters() {
 		WorldDocument w = Ctx.project.getWorld();
-		NodeList nl = w.getChapters();
+		String[] nl = w.getChapters();
 		Array<String> array = new Array<String>();
 
-		for (int i = 0; i < nl.getLength(); i++) {
-			Element e = (Element) nl.item(i);
-
-			array.add(e.getAttribute("id"));
+		for (int i = 0; i < nl.length; i++) {
+			array.add(nl[i]);
 		}
 
 		chapters.setItems(array);

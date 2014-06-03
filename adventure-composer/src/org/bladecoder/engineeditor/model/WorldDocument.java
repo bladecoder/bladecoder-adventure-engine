@@ -2,15 +2,16 @@ package org.bladecoder.engineeditor.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.utils.EditorLogger;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class WorldDocument extends  BaseDocument {
@@ -51,8 +52,23 @@ public class WorldDocument extends  BaseDocument {
 		firePropertyChange();
 	}
 	
-	public NodeList getChapters() {
-		 return doc.getDocumentElement().getElementsByTagName("chapter");
+	public String[] getChapters() {
+		String dir = Ctx.project.getProjectPath() + Project.MODEL_PATH;
+		
+		String[] chapters = new File(dir).list(new FilenameFilter() {
+			@Override
+			public boolean accept(File arg0, String arg1) {
+				if (!arg1.endsWith(".chapter"))
+					return false;
+
+				return true;
+			}
+		});
+		
+		for(int i = 0; i < chapters.length; i++)
+			chapters[i] = chapters[i].substring(0, chapters[i].lastIndexOf('.'));
+		
+		return chapters;
 	}
 
 	public int getWidth() {
@@ -88,48 +104,28 @@ public class WorldDocument extends  BaseDocument {
 		String init = getRootAttr("init_chapter");
 		
 		if(init == null || init.isEmpty()) {
-			init = ((Element)getChapters().item(0)).getAttribute("id");			
+			init = getChapters()[0];
+			
+			setRootAttr("init_chapter", init);
 		}
 		
 		return init;
 	}
 	
-	public Element addChapterNode(String id) {
-		Element e = doc.createElement("chapter");
-		
-		doc.getDocumentElement().appendChild(e);
-		e.setAttribute("id", id);
+	public void setInitChapter(String value) {
+		doc.getDocumentElement().setAttribute("init_chapter", value);
 		modified = true;
-		firePropertyChange("chapter", e);
-		
-		return e;
-	}
-
-	public void removeChapterNode(String id) {
-		
-		NodeList chaptersNL = getChapters();
-		for (int j = 0; j < chaptersNL.getLength(); j++) {
-			Element e = (Element) chaptersNL.item(j);
-			if (id.equals(e.getAttribute("id"))) {
-				doc.getDocumentElement().removeChild(e);
-				modified = true;
-				firePropertyChange("chapter", e);
-				return;
-			}
-		}
+		firePropertyChange();
 	}
 	
-	public Element createChapter(String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
+	public ChapterDocument createChapter(String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
 		ChapterDocument chapter = new ChapterDocument(modelPath);	
 		String checkedId = getChapterCheckedId(id);
 		
 		chapter.create(checkedId);
-		Element e = addChapterNode(checkedId);
-		save();
+		firePropertyChange("chapter");
 		
-//		chapter.addPropertyChangeListener(documentModifiedListener);
-
-		return e;
+		return chapter;
 	}
 	
 	public String getChapterCheckedId(String id) {
@@ -138,13 +134,13 @@ public class WorldDocument extends  BaseDocument {
 		
 		String idChecked = id;
 		
-		NodeList nl = getRootElement().getElementsByTagName("chapter");
+		String [] nl = getChapters();
 
 		while (!checked) {
 			checked = true;
 
-			for (int j = 0; j < nl.getLength(); j++) {
-				String id2 = ((Element)nl.item(j)).getAttribute("id");
+			for (int j = 0; j < nl.length; j++) {
+				String id2 = nl[j];
 						
 				if (id2.equals(idChecked)) {
 					i++;
@@ -158,23 +154,20 @@ public class WorldDocument extends  BaseDocument {
 		return idChecked;
 	}
 		
-	// TODO: Reload current chapter if the renamed chapter is the current chapter
 	public void renameChapter(String oldId, String newId) throws TransformerException, ParserConfigurationException, SAXException, IOException {
 		
 		ChapterDocument chapter = new ChapterDocument(modelPath);
 		chapter.setFilename(oldId + ".chapter");
 		chapter.load();
 		chapter.rename(newId);
-
-		save();
+		firePropertyChange("chapter");
 	}
 	
 	public void removeChapter(String id) throws FileNotFoundException, TransformerException {
-		removeChapterNode(id);
-		save();
 		
 		ChapterDocument chapter = new ChapterDocument(modelPath);
 		chapter.setFilename(id + ".chapter");
 		chapter.deleteFiles();
+		firePropertyChange("chapter");
 	}
 }
