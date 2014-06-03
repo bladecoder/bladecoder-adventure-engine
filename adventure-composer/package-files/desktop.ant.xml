@@ -23,7 +23,7 @@
 			<zipfileset excludes="META-INF/*.SF" src="engine/gdx-freetype.jar" />
 			<zipfileset excludes="META-INF/*.SF" src="engine/gdx-natives.jar" />
 			<zipfileset excludes="META-INF/*.SF" src="engine/gdx.jar" />
-			<zipfileset excludes="META-INF/*.SF" src="engine/tween-engine-api.jar" />
+			<zipfileset excludes="META-INF/*.SF" src="engine/spine-libgdx.jar" />
 			
 			<fileset dir="${project}/bin" excludes="assets"/>
 			<fileset dir="${project}/assets" />

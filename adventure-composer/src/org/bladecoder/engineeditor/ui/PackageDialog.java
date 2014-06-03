@@ -258,15 +258,16 @@ public class PackageDialog extends EditDialog {
 	private void typeChanged() {
 		if (type.getText().equals(TYPES[0])) {
 			os.setVisible(true);
-			osChanged();
 		} else {
 			os.setVisible(false);
 			icon.setVisible(false);
 		}
+		
+		osChanged();
 	}
 
 	private void osChanged() {
-		if (os.getText().equals("windows") || os.getText().equals("all")) {
+		if (os.isVisible() && (os.getText().equals("windows") || os.getText().equals("all"))) {
 			icon.setVisible(true);
 			winJRE.setVisible(true);
 		} else {
@@ -274,13 +275,13 @@ public class PackageDialog extends EditDialog {
 			winJRE.setVisible(false);
 		}
 		
-		if (os.getText().equals("linux32") || os.getText().equals("all")) {
+		if (os.isVisible() && (os.getText().equals("linux32") || os.getText().equals("all"))) {
 			linux32JRE.setVisible(true);
 		} else {
 			linux32JRE.setVisible(false);
 		}
 		
-		if (os.getText().equals("linux64") || os.getText().equals("all")) {
+		if (os.isVisible() && (os.getText().equals("linux64") || os.getText().equals("all"))) {
 			linux64JRE.setVisible(true);
 		} else {
 			linux64JRE.setVisible(false);
@@ -310,13 +311,13 @@ public class PackageDialog extends EditDialog {
 			ok = false;
 		}
 		
-		if(!new File(linux32JRE.getText() + "/bin/java").exists())
+		if(linux32JRE.isVisible() && !new File(linux32JRE.getText() + "/bin/java").exists())
 			ok = false;
 		
-		if(!new File(linux64JRE.getText() + "/bin/java").exists())
+		if(linux64JRE.isVisible() && !new File(linux64JRE.getText() + "/bin/java").exists())
 			ok = false;
 
-		if(!new File(winJRE.getText() + "/bin/javaw.exe").exists())
+		if(winJRE.isVisible() && !new File(winJRE.getText() + "/bin/javaw.exe").exists())
 			ok = false;
 		
 		return ok;

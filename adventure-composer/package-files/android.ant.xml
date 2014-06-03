@@ -124,7 +124,7 @@
     		<arg value="engine/gdx-backend-android.jar"/>
     		<arg value="engine/gdx-freetype.jar"/>
     		<arg value="engine/gdx.jar"/>
-    		<arg value="engine/tween-engine-api.jar"/>
+    		<arg value="engine/spine-libgdx.jar"/>
     		<arg value="engine/engine-android.jar"/>
     		<arg value="${project.abs.dir}/bin"/>  		
   		</exec>

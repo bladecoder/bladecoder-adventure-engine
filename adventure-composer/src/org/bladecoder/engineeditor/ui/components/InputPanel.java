@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 public class InputPanel extends Table {
@@ -157,6 +158,8 @@ public class InputPanel extends Table {
     		((Vector2Panel)field).setText(text);
 		else if(field instanceof DimPanel)
     		((DimPanel)field).setText(text);
+		else if(field instanceof TextButton)
+			((TextButton)field).setText(text);
 	}
 	
 	public boolean validateField() {
