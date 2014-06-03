@@ -123,19 +123,25 @@ public class EditFADialog extends EditElementDialog {
 		});
 
 		inputs[4].setVisible(false);
-		inputs[5].setVisible(false);
-
-		init(inputs, attrs, doc, p, "frame_animation", e);
+		inputs[5].setVisible(false);	
 
 		setInfoWidget(spriteWidget);
+		init(inputs, attrs, doc, p, "frame_animation", e);
 
 		addSources();
+		if(e !=  null) {
+			inputs[0].setText(e.getAttribute(attrs[0]));
+		}
 
 		if (inputs[0].getText() != null && !inputs[0].getText().isEmpty()) {
 			spriteWidget.setSource(parent.getAttribute("type"),
 					inputs[0].getText());
 
 			fillAnimations();
+			
+			if(e !=  null) {		
+				inputs[1].setText(e.getAttribute(attrs[1]));
+			}
 		}
 	}
 

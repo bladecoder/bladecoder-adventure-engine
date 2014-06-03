@@ -149,9 +149,11 @@ public class InputPanel extends Table {
 	public void setText(String text) {
 		if(field instanceof TextField)
     		((TextField)field).setText(text);
-		else if(field instanceof SelectBox<?>) 
-			((SelectBox<String>)field).setSelected(text);
-		else if(field instanceof Vector2Panel)
+		else if(field instanceof SelectBox) {
+			int idx = ((SelectBox<String>)field).getItems().indexOf(text, false);
+			if(idx != -1)
+				((SelectBox<String>)field).setSelectedIndex(idx);
+		} else if(field instanceof Vector2Panel)
     		((Vector2Panel)field).setText(text);
 		else if(field instanceof DimPanel)
     		((DimPanel)field).setText(text);
