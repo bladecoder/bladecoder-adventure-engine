@@ -62,4 +62,11 @@ public class FileInputPanel extends InputPanel {
 		else 
 			return "";
 	}
+	
+	@Override
+	public void setText(String text) {
+		super.setText(text);
+		selected=cd= new File(text);
+	}
+	
 }
