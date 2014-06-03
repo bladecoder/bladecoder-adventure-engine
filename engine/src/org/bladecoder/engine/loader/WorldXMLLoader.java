@@ -192,5 +192,8 @@ public class WorldXMLLoader extends DefaultHandler {
 	    
 	    scenes = parser.getScenes();
 	    initScene = parser.getInitScene();
+	    
+	    if(initScene == null && scenes.size() > 0)
+	    	initScene = scenes.get(0).getId();
 	}	
 }

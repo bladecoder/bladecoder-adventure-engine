@@ -44,6 +44,10 @@ public class AtlasRenderer implements SpriteRenderer {
 		int refCounter;
 	}
 	
+	
+	public AtlasRenderer() {
+		
+	}
 
 	@Override
 	public void setInitFrameAnimation(String fa) {
@@ -243,54 +247,56 @@ public class AtlasRenderer implements SpriteRenderer {
 		return sb.toString();
 	}
 
-	private AtlasFrameAnimation getFrameAnimation(String id) {	
-		AtlasFrameAnimation fa = (AtlasFrameAnimation)fanims.get(id);
+	private AtlasFrameAnimation getFrameAnimation(String id) {
+		FrameAnimation fa = fanims.get(id);
 		flipX = false;
 
-		if (fa == null && id != null) {
-			
+		if (fa == null) {
 			// Search for flipped
 			String flipId = FrameAnimation.getFlipId(id);
 
-			fa = (AtlasFrameAnimation)fanims.get(flipId);
+			fa = fanims.get(flipId);
 
 			if (fa != null)
 				flipX = true;
 			else {
 				// search for .left if .frontleft not found and viceversa
 				StringBuilder sb = new StringBuilder();
-
-				if (id.endsWith(FrameAnimation.LEFT)) {
-					sb.append(id.substring(0, id.length() - 4));
-					sb.append("frontleft");
-				} else if (id.endsWith(FrameAnimation.FRONTLEFT)) {
-					sb.append(id.substring(0, id.length() - 9));
-					sb.append("left");
-				} else if (id.endsWith(FrameAnimation.RIGHT)) {
-					sb.append(id.substring(0, id.length() - 5));
-					sb.append("frontright");
+				
+				if (id.endsWith(FrameAnimation.FRONTLEFT)) {
+					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+					sb.append(FrameAnimation.LEFT);
 				} else if (id.endsWith(FrameAnimation.FRONTRIGHT)) {
-					sb.append(id.substring(0, id.length() - 10));
-					sb.append("right");
+					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+					sb.append(FrameAnimation.RIGHT);
+				} else if (id.endsWith(FrameAnimation.BACKLEFT) || id.endsWith(FrameAnimation.BACKRIGHT)) {
+					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+					sb.append(FrameAnimation.BACK);
+				} else if (id.endsWith(FrameAnimation.LEFT)) {
+					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+					sb.append(FrameAnimation.FRONTLEFT);
+				} else if (id.endsWith(FrameAnimation.RIGHT)) {
+					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+					sb.append(FrameAnimation.FRONTRIGHT);			
 				}
 
 				String s = sb.toString();
 
-				fa = (AtlasFrameAnimation)fanims.get(s);
+				fa = fanims.get(s);
 
 				if (fa == null) {
 					// Search for flipped
 					flipId = FrameAnimation.getFlipId(s);
 
-					fa = (AtlasFrameAnimation)fanims.get(flipId);
+					fa = fanims.get(flipId);
 
 					if (fa != null)
 						flipX = true;
 				}
-			}			
+			}
 		}
 
-		return fa;
+		return (AtlasFrameAnimation)fa;
 	}
 
 	@Override

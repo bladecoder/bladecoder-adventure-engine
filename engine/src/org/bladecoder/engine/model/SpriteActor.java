@@ -304,6 +304,7 @@ public class SpriteActor extends Actor {
 		json.writeValue("walkingSpeed", walkingSpeed);
 		json.writeValue("posTween", posTween);
 		json.writeValue("depthType", depthType);
+		
 		json.writeValue("renderer", renderer);
 	}
 
@@ -321,6 +322,6 @@ public class SpriteActor extends Actor {
 		walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);
 		posTween = json.readValue("posTween", Tween.class, jsonData);
 		depthType = json.readValue("depthType", DepthType.class, jsonData);
-		renderer = json.readValue("renderer", SpriteRenderer.class, jsonData);
+		renderer = json.readValue("renderer", null, jsonData);
 	}
 }

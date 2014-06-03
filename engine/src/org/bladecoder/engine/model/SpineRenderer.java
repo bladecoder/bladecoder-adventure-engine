@@ -58,6 +58,10 @@ public class SpineRenderer implements SpriteRenderer {
 		AnimationState animation;
 	}
 
+	public SpineRenderer() {
+		
+	}
+	
 	private AnimationStateListener animationListener = new AnimationStateListener() {
 		@Override
 		public void complete(int trackIndex, int loopCount) {
@@ -148,6 +152,7 @@ public class SpineRenderer implements SpriteRenderer {
 	@Override
 	public void update(float delta) {
 		if (currentSkeleton != null && currentSkeleton.skeleton != null) {
+			currentSkeleton.skeleton.update(delta);
 			currentSkeleton.animation.update(delta);
 
 			currentSkeleton.animation.apply(currentSkeleton.skeleton);
@@ -280,6 +285,8 @@ public class SpineRenderer implements SpriteRenderer {
 		currentSkeleton.skeleton.setFlipX(flipX);
 		currentSkeleton.animation.setAnimation(0, fa.id,
 				currentAnimationType == Tween.REPEAT);
+		currentSkeleton.animation.setTimeScale(fa.duration);
+		currentSkeleton.animation.apply(currentSkeleton.skeleton);
 	}
 
 	private FrameAnimation getFrameAnimation(String id) {
@@ -298,12 +305,9 @@ public class SpineRenderer implements SpriteRenderer {
 				// search for .left if .frontleft not found and viceversa
 				StringBuilder sb = new StringBuilder();
 				
-				if (id.endsWith(FrameAnimation.FRONTLEFT)) {
+				if (id.endsWith(FrameAnimation.FRONTLEFT) || id.endsWith(FrameAnimation.FRONTRIGHT)) {
 					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
-					sb.append(FrameAnimation.LEFT);
-				} else if (id.endsWith(FrameAnimation.FRONTRIGHT)) {
-					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
-					sb.append(FrameAnimation.RIGHT);
+					sb.append(FrameAnimation.FRONT);
 				} else if (id.endsWith(FrameAnimation.BACKLEFT) || id.endsWith(FrameAnimation.BACKRIGHT)) {
 					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
 					sb.append(FrameAnimation.BACK);
@@ -372,7 +376,7 @@ public class SpineRenderer implements SpriteRenderer {
 																					// mixing
 																					// between
 																					// animations.
-			stateData.setDefaultMix(0);
+			stateData.setDefaultMix(0f);
 
 			entry.animation = new AnimationState(stateData);
 			entry.animation.addListener(animationListener);

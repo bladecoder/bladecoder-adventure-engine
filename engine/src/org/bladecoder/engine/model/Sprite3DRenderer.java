@@ -108,6 +108,10 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		AnimationController controller;
 		PerspectiveCamera camera3d;
 	}
+	
+	public Sprite3DRenderer() {
+		
+	}
 
 	@Override
 	public void addFrameAnimation(FrameAnimation fa) {
