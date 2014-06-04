@@ -1,7 +1,8 @@
-package org.bladecoder.engineeditor.scn;
+package org.bladecoder.engineeditor.scneditor;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.MessageFormat;
 
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.Tween;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -32,13 +34,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 
 public class ScnWidget extends Widget {
+	private static final Color BLACK_TRANSPARENT= new Color(0f,0f,0f,0.5f);
+	
 	// TMPs to avoid GC calls
 	private final Vector3 tmpV3 = new Vector3();
 	private final Vector2 tmpV2 = new Vector2();
 
 	private final SpriteBatch sceneBatch = new SpriteBatch();
 	private final CanvasDrawer drawer = new CanvasDrawer();
-	private final FARenderer faRenderer = new FARenderer();
+	private final SpriteDrawer faRenderer = new SpriteDrawer();
 	private final ScnWidgetInputListener inputListner = new ScnWidgetInputListener(
 			this);
 
@@ -55,12 +59,16 @@ public class ScnWidget extends Widget {
 	private int zoomLevel = 100;
 
 	BitmapFont bigFont;
+	BitmapFont defaultFont;
 	TiledDrawable tile;
 
 	boolean loading = false;
+	
+	WalkZoneWindow walkZoneWindow;
 
 	public ScnWidget(Skin skin) {
 		bigFont = skin.get("big-font", BitmapFont.class);
+		defaultFont = skin.get("default-font", BitmapFont.class);
 
 		setSize(150, 150);
 
@@ -155,6 +163,9 @@ public class ScnWidget extends Widget {
 						}
 					}
 				});
+		
+		
+		walkZoneWindow = new WalkZoneWindow(skin);
 	}
 
 	@Override
@@ -205,6 +216,9 @@ public class ScnWidget extends Widget {
 			if (selectedActor != null) {
 				drawer.drawSelectedActor(selectedActor);
 			}
+			
+			if(scn.getPolygonalPathFinder() != null)
+				drawer.drawPolygon(scn.getPolygonalPathFinder().getWalkZone(), Color.GREEN);
 
 			getStage().getViewport().update();
 
@@ -214,6 +228,17 @@ public class ScnWidget extends Widget {
 			if (!inScene) {
 				faRenderer.draw((SpriteBatch) batch);
 			}
+			
+			// DRAW COORDS
+			Vector2 coords = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+			screenToWorldCoords(coords);
+			String str = MessageFormat.format("({0}, {1})",
+						(int) coords.x, (int) coords.y);
+			
+			TextBounds bounds2 = defaultFont.getBounds(str);
+			RectangleRenderer.draw((SpriteBatch)batch, 0f, getY() + getHeight() - bounds2.height - 15, 
+					bounds2.width + 10, bounds2.height + 10, BLACK_TRANSPARENT);
+			defaultFont.draw(batch, str, 5, getHeight() + getY() - 10);
 
 			batch.setColor(tmp);
 
@@ -274,6 +299,15 @@ public class ScnWidget extends Widget {
 			faRenderer.setFrameAnimation(null);
 		}
 	}
+	
+	public void showEditWalkZoneWindow() {
+		getParent().addActor(walkZoneWindow);
+	}
+	
+
+	public void hideEditWalkZoneWindow() {
+		getParent().removeActor(walkZoneWindow);
+	}
 
 	@Override
 	public void layout() {
@@ -313,6 +347,9 @@ public class ScnWidget extends Widget {
 			translate(new Vector2((-getWidth() + wWidth) / 2,
 					(-getHeight() + wHeight) / 2));
 		}
+		
+		walkZoneWindow.setPosition(getX() + 5, getY() + 5);
+		walkZoneWindow.invalidate();
 	}
 
 	public void zoom(int amount) {
@@ -389,6 +426,8 @@ public class ScnWidget extends Widget {
 			scn.loadAssets();
 			loading = true;
 		}
+		
+		walkZoneWindow.setScene(scn);
 	}
 
 	public void setSelectedActor(Element actor) {
@@ -480,4 +519,5 @@ public class ScnWidget extends Widget {
 
 		faRenderer.dispose();
 	}
+
 }

@@ -1,4 +1,4 @@
-package org.bladecoder.engineeditor.scn;
+package org.bladecoder.engineeditor.scneditor;
 
 import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.FrameAnimation;

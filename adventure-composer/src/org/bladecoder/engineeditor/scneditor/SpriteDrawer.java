@@ -1,4 +1,4 @@
-package org.bladecoder.engineeditor.scn;
+package org.bladecoder.engineeditor.scneditor;
 
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.Tween;
@@ -19,7 +19,7 @@ import com.badlogic.gdx.math.Vector2;
  * 
  * @author rgarcia
  */
-public class FARenderer {
+public class SpriteDrawer {
 
 	public static final Color BG_COLOR = Color.MAGENTA;
 	private static final float HEIGHT = 200;

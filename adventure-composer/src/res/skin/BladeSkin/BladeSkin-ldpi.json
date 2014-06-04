@@ -15,7 +15,8 @@
 		holo-blue: { a: 1, b: 0.89, g: 0.7, r: 0.2 }
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
-		dialogDim: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.45 } }
+		dialogDim: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.45 } },
+		trans: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.75 } }
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
 		default: { fontColorUnselected: text-dark, selection: text_selected, fontColorSelected: text-dark, font: default-font },
@@ -54,8 +55,8 @@
 		default-horizontal: { handle: splitpane_horizontal }
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
-		default: { titleFont: default-font, background: window, titleFontColor: text-dark },
-		dialog: { titleFont: default-font, background: window, titleFontColor: text-dark, stageBackground: dialogDim },
+		default: { titleFont: big-font, background: window, titleFontColor: text-dark },
+		dialog: { titleFont: big-font, background: window, titleFontColor: text-dark, stageBackground: dialogDim },
 		default-thin: { titleFont: thin-font, background: window, titleFontColor: text-dark },
 		dialog-thin: { titleFont: thin-font, background: window, titleFontColor: text-dark, stageBackground: dialogDim }
 	},

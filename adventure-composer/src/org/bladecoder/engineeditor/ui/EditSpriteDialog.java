@@ -9,7 +9,7 @@ import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.model.ChapterDocument;
 import org.bladecoder.engineeditor.model.Project;
-import org.bladecoder.engineeditor.scn.SpriteWidget;
+import org.bladecoder.engineeditor.scneditor.SpriteWidget;
 import org.bladecoder.engineeditor.ui.components.EditElementDialog;
 import org.bladecoder.engineeditor.ui.components.InputPanel;
 import org.bladecoder.engineeditor.utils.EditorLogger;

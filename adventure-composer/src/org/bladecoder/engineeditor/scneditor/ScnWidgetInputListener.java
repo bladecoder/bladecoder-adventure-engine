@@ -1,4 +1,4 @@
-package org.bladecoder.engineeditor.scn;
+package org.bladecoder.engineeditor.scneditor;
 
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -20,7 +21,7 @@ public class ScnWidgetInputListener extends InputListener {
 	private final Vector2 lastTouch = new Vector2();
 
 	private static enum DraggingModes {
-		NONE, DRAGING_ACTOR, DRAGING_BBOX
+		NONE, DRAGING_ACTOR, DRAGING_BBOX, DRAGING_WALKZONE
 	};
 
 	private static enum Corners {
@@ -31,6 +32,7 @@ public class ScnWidgetInputListener extends InputListener {
 	private Corners corner = Corners.BOTTOM_LEFT;
 	private Actor actor = null;
 	private Vector2 org = new Vector2();
+	private int vertIndex;
 
 	public ScnWidgetInputListener(ScnWidget w) {
 		this.scnWidget = w;
@@ -39,7 +41,7 @@ public class ScnWidgetInputListener extends InputListener {
 	@Override
 	public boolean touchDown(InputEvent event, float x, float y, int pointer,
 			int button) {
-		
+
 		EditorLogger.debug("Touch Down - X: " + x + " Y: " + y);
 
 		if (button == Buttons.LEFT) {
@@ -47,42 +49,52 @@ public class ScnWidgetInputListener extends InputListener {
 			Scene scn = scnWidget.getScene();
 			if (scn == null)
 				return false;
-			
 
 			Vector2 p = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 			scnWidget.screenToWorldCoords(p);
 			actor = scn.getFullSearchActorAt(p.x, p.y);
 
-			if (actor == null)
-				return false;
+			if (actor != null) {
 
-			Element da = Ctx.project.getActor(actor.getId());
+				Element da = Ctx.project.getActor(actor.getId());
 
-			if (Ctx.project.getSelectedActor() == null
-					|| !actor.getId().equals(
-							Ctx.project.getSelectedChapter().getId(
-									Ctx.project.getSelectedActor())))
-				Ctx.project.setSelectedActor(da);
+				if (Ctx.project.getSelectedActor() == null
+						|| !actor.getId().equals(
+								Ctx.project.getSelectedChapter().getId(
+										Ctx.project.getSelectedActor())))
+					Ctx.project.setSelectedActor(da);
 
-			Rectangle bbox = actor.getBBox();
+				Rectangle bbox = actor.getBBox();
 
-			if (p.dst(bbox.x, bbox.y) < CanvasDrawer.CORNER_DIST) {
-				draggingMode = DraggingModes.DRAGING_BBOX;
-				corner = Corners.BOTTOM_LEFT;
-			} else if (p.dst(bbox.x + bbox.width, bbox.y) < CanvasDrawer.CORNER_DIST) {
-				draggingMode = DraggingModes.DRAGING_BBOX;
-				corner = Corners.BOTTOM_RIGHT;
-			} else if (p.dst(bbox.x, bbox.y + bbox.height) < CanvasDrawer.CORNER_DIST) {
-				draggingMode = DraggingModes.DRAGING_BBOX;
-				corner = Corners.TOP_LEFT;
-			} else if (p.dst(bbox.x + bbox.width, bbox.y + bbox.height) < CanvasDrawer.CORNER_DIST) {
-				draggingMode = DraggingModes.DRAGING_BBOX;
-				corner = Corners.TOP_RIGHT;
-			} else {
-				draggingMode = DraggingModes.DRAGING_ACTOR;
+				if (p.dst(bbox.x, bbox.y) < CanvasDrawer.CORNER_DIST) {
+					draggingMode = DraggingModes.DRAGING_BBOX;
+					corner = Corners.BOTTOM_LEFT;
+				} else if (p.dst(bbox.x + bbox.width, bbox.y) < CanvasDrawer.CORNER_DIST) {
+					draggingMode = DraggingModes.DRAGING_BBOX;
+					corner = Corners.BOTTOM_RIGHT;
+				} else if (p.dst(bbox.x, bbox.y + bbox.height) < CanvasDrawer.CORNER_DIST) {
+					draggingMode = DraggingModes.DRAGING_BBOX;
+					corner = Corners.TOP_LEFT;
+				} else if (p.dst(bbox.x + bbox.width, bbox.y + bbox.height) < CanvasDrawer.CORNER_DIST) {
+					draggingMode = DraggingModes.DRAGING_BBOX;
+					corner = Corners.TOP_RIGHT;
+				} else {
+					draggingMode = DraggingModes.DRAGING_ACTOR;
+				}
+
+				org.set(p);
+			} else if(scn.getPolygonalPathFinder()  != null) { // Check WALKZONE
+				Polygon poly = scn.getPolygonalPathFinder().getWalkZone();
+				float verts[] = poly.getTransformedVertices();
+				for(int i = 0; i < verts.length; i+=2) {
+					if(p.dst(verts[i], verts[i+1])< CanvasDrawer.CORNER_DIST) {
+						draggingMode = DraggingModes.DRAGING_WALKZONE;
+						vertIndex = i;
+						org.set(p);
+						break;
+					}
+				}
 			}
-
-			org.set(p);
 
 		} else if (button == Buttons.RIGHT || button == Buttons.MIDDLE) {
 			// PAN
@@ -96,22 +108,21 @@ public class ScnWidgetInputListener extends InputListener {
 
 	@Override
 	public void touchDragged(InputEvent event, float x, float y, int pointer) {
-//		EditorLogger.debug("Touch Dragged - X: " + Gdx.input.getX() + " Y: " +  Gdx.input.getY());
+		// EditorLogger.debug("Touch Dragged - X: " + Gdx.input.getX() + " Y: "
+		// + Gdx.input.getY());
 
 		if (Gdx.input.isButtonPressed(Buttons.LEFT)) {
 			Scene scn = scnWidget.getScene();
-			
+
 			if (scn == null)
 				return;
 
 			Vector2 d = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 			scnWidget.screenToWorldCoords(d);
 
-			d.x -= org.x;
-			d.y -= org.y;
-			org.x += d.x;
-			org.y += d.y;
-
+			d.sub(org);
+			org.add(d);
+			
 			if (draggingMode == DraggingModes.DRAGING_ACTOR) {
 				if (actor instanceof SpriteActor) {
 					Vector2 p = ((SpriteActor) actor).getPosition();
@@ -131,7 +142,7 @@ public class ScnWidgetInputListener extends InputListener {
 
 					Ctx.project.getSelectedChapter().setBbox(
 							Ctx.project.getSelectedActor(), bbox);
-				}
+				}				
 			} else if (draggingMode == DraggingModes.DRAGING_BBOX) {
 				Rectangle bbox = actor.getBBox(); // bbox will be an inmutable
 													// object
@@ -170,25 +181,28 @@ public class ScnWidgetInputListener extends InputListener {
 
 				Ctx.project.getSelectedChapter().setBbox(
 						Ctx.project.getSelectedActor(), bbox);
+			} else if (draggingMode == DraggingModes.DRAGING_WALKZONE) {
+				Polygon poly = scn.getPolygonalPathFinder().getWalkZone();
+				float verts[] = poly.getTransformedVertices();
+				verts[vertIndex] += d.x;
+				verts[vertIndex+1] += d.y;
 			}
 
 		} else if (Gdx.input.isButtonPressed(Buttons.RIGHT)
 				|| Gdx.input.isButtonPressed(Buttons.MIDDLE)) {
-			
 
 			Vector2 p = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 			scnWidget.screenToWorldCoords(p);
-			Vector2 delta = new Vector2(p);
-			delta.sub(lastTouch);
+			p.sub(lastTouch);
 
-			scnWidget.translate(delta);
+			scnWidget.translate(p);
 		}
 	}
 
 	@Override
 	public boolean scrolled(InputEvent event, float x, float y, int amount) {
 		EditorLogger.debug("SCROLLED - X: " + x + " Y: " + y);
-		
+
 		scnWidget.zoom(amount);
 		return true;
 	}
@@ -196,7 +210,7 @@ public class ScnWidgetInputListener extends InputListener {
 	@Override
 	public void touchUp(InputEvent event, float x, float y, int pointer,
 			int button) {
-		
+
 		EditorLogger.debug("Touch Up - X: " + x + " Y: " + y);
 
 		draggingMode = DraggingModes.NONE;
@@ -216,9 +230,10 @@ public class ScnWidgetInputListener extends InputListener {
 
 		return false;
 	}
-	
+
 	@Override
-	public void enter(InputEvent event, float x, float y, int pointer,  com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
+	public void enter(InputEvent event, float x, float y, int pointer,
+			com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
 		EditorLogger.debug("ENTER - X: " + x + " Y: " + y);
 		scnWidget.getStage().setScrollFocus(scnWidget);
 	}

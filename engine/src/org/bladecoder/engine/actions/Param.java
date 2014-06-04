@@ -1,5 +1,6 @@
 package org.bladecoder.engine.actions;
 
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -78,6 +79,36 @@ public class Param {
 		}
 
 		return v;
+	}
+	
+	public static Polygon parsePolygon(String s) {
+		Polygon p = null;
+		
+		String[] vs = s.split(",");
+		
+		float verts[] = new float[vs.length];
+		
+		for(int i = 0; i < vs.length; i++) {
+			verts[i] = Float.parseFloat(vs[i]);
+		}
+		
+		p = new Polygon(verts);
+
+		return p;
+	}
+	
+	public static String toStringParam(Polygon p) {
+		StringBuilder sb = new StringBuilder();
+		float[]verts = p.getVertices();
+		
+		sb.append(verts[0]);
+		
+		for(int i = 1; i < verts.length; i++) {
+			sb.append(',');
+			sb.append(verts[i]);	
+		}
+		
+		return sb.toString();
 	}
 
 	public static String toStringParam(Vector2 v) {

@@ -21,6 +21,7 @@ import org.bladecoder.engine.model.SpriteActor.DepthType;
 import org.bladecoder.engine.model.AtlasRenderer;
 import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.model.Verb;
+import org.bladecoder.engine.polygonalpathfinder.PolygonalPathFinder;
 import org.bladecoder.engine.util.EngineLogger;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
@@ -386,6 +387,11 @@ public class ChapterXMLLoader extends DefaultHandler {
 			parseSound(localName, atts, actor != null ? actor : scene);
 		} else if (localName.equals("chapter")) {
 			initScene = atts.getValue("init_scene");
+		} else if (localName.equals("walk_zone")) {
+			PolygonalPathFinder polygonalPathFinder = new PolygonalPathFinder();
+			polygonalPathFinder.setWalkZone(Param.parsePolygon(atts.getValue("polygon")));
+			
+			scene.setPolygonalPathFinder(polygonalPathFinder);
 		} else if (localName.equals("scene")) {
 			this.scene = new Scene();
 			scenes.add(scene);

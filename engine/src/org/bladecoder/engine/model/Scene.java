@@ -9,6 +9,7 @@ import org.bladecoder.engine.assets.AssetConsumer;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.pathfinder.Movers;
 import org.bladecoder.engine.pathfinder.PixTileMap;
+import org.bladecoder.engine.polygonalpathfinder.PolygonalPathFinder;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.audio.Music;
@@ -60,6 +61,9 @@ public class Scene extends Actor implements Movers, Serializable,
 
 	/** background tile map for pathfinding */
 	private PixTileMap backgroundMap;
+	
+	/** For polygonal PathFinding */
+	private PolygonalPathFinder polygonalPathFinder;
 	
 	/** depth vector. x: scale when y=0, y: scale when y=scene height */
 	private Vector2 depthVector;
@@ -351,7 +355,7 @@ public class Scene extends Actor implements Movers, Serializable,
 	}
 
 	/**
-	 * Search for files based in the filename parameter
+	 * Search for files based in the filename parameter. Used for bg images and maps.
 	 * 
 	 * ex. for filename 'bg_0.png': bg_0.png, bg_1.png, bg_2.png... ex. for
 	 * filename 'bg.png': bg.png, bg_1.png, bg_2.png...
@@ -697,6 +701,16 @@ public class Scene extends Actor implements Movers, Serializable,
 
 		transition = null;
 	}
+	
+
+	public PolygonalPathFinder getPolygonalPathFinder() {
+		return polygonalPathFinder;
+	}
+
+	public void setPolygonalPathFinder(PolygonalPathFinder polygonalPathFinder) {
+		this.polygonalPathFinder = polygonalPathFinder;
+	}
+
 
 	@Override
 	public void write(Json json) {

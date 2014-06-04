@@ -18,10 +18,12 @@ import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
 import org.bladecoder.engine.model.SpriteRenderer;
+import org.bladecoder.engine.polygonalpathfinder.PolygonalPathFinder;
 import org.bladecoder.engine.util.EngineLogger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -210,6 +212,16 @@ public class ChapterDocument extends BaseDocument {
 			if (getId(a).equals(getRootAttr("player"))) {
 				scn.setPlayer((SpriteActor) actor);
 			}
+		}
+		
+		// WALK ZONE
+		Element wz = getWalkZone(s);
+		
+		if(wz != null) {
+			PolygonalPathFinder polygonalPathFinder = new PolygonalPathFinder();
+			polygonalPathFinder.setWalkZone(Param.parsePolygon(wz.getAttribute("polygon")));
+			
+			scn.setPolygonalPathFinder(polygonalPathFinder);
 		}
 
 		return scn;
@@ -510,5 +522,53 @@ public class ChapterDocument extends BaseDocument {
 		firePropertyChange("option", e);
 
 		return e;
+	}
+
+	public Element createWalkZone(Element scn, Polygon poly) {
+		Element e = doc.createElement("walk_zone");
+		e.setAttribute("polygon", Param.toStringParam(poly));
+		
+		scn.appendChild(e);
+
+		modified = true;
+		firePropertyChange("walk_zone", e);
+
+		return e;
+	}
+	
+	public void setWalkZonePolygon(Element scn, Polygon poly) {
+		Element e = getWalkZone(scn);
+		
+		if(e == null)
+			e = createWalkZone(scn, poly);
+		else {
+			e.setAttribute("polygon", Param.toStringParam(poly));
+		}
+		
+		modified = true;
+		firePropertyChange("walk_zone", e);
+			
+	}
+	
+	public Element getWalkZone(Element scn) {
+		NodeList nl = scn.getElementsByTagName("walk_zone");
+		Element e = null;
+		
+		if(nl.getLength() > 0) {
+			e = (Element) nl.item(0);
+		}
+		
+		return e;
+	}
+
+	public void deleteWalkZone(Element scn) {
+		Element e = getWalkZone(scn);
+		
+		if(e != null) {
+			deleteElement(e);
+		}
+		
+		modified = true;
+		firePropertyChange("walk_zone", e);
 	}
 }
