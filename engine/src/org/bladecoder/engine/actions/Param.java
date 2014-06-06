@@ -97,6 +97,14 @@ public class Param {
 		return p;
 	}
 	
+	public static Polygon parsePolygon(String v, String pos) {
+		Polygon p = parsePolygon(v);
+		Vector2 v2 = parseVector2(pos);
+		p.setPosition(v2.x, v2.y);
+		
+		return p;
+	}
+	
 	public static String toStringParam(Polygon p) {
 		StringBuilder sb = new StringBuilder();
 		float[]verts = p.getVertices();

@@ -1,4 +1,4 @@
-package org.bladecoder.engine.pathfinder;
+package org.bladecoder.engine.tilepathfinder;
 
 /**
  * A tagging interface for an object representing the entity in the game that

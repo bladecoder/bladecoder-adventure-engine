@@ -32,7 +32,7 @@ public class CanvasDrawer {
 	public void drawBBoxActors(Scene scn) {
 		drawer.setProjectionMatrix(camera.combined);
 		drawer.setTransformMatrix(new Matrix4());
-		scn.drawBBoxActors(drawer);
+		scn.drawBBoxLines(drawer);
 	}
 
 
@@ -84,7 +84,7 @@ public class CanvasDrawer {
 		
 		drawer.begin(ShapeRenderer.ShapeType.Line);
 		drawer.setColor(c);
-		drawer.polygon(verts);
+//		drawer.polygon(verts);
 		
 		for(int i = 0; i < verts.length;i+= 2)
 			drawer.rect(verts[i] - CORNER_DIST / 2, verts[i+1] - CORNER_DIST / 2, CORNER_DIST, CORNER_DIST);

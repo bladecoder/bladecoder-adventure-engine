@@ -189,7 +189,7 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 					&& EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
 				renderer.setProjectionMatrix(World.getInstance().getSceneCamera()
 						.combined);
-				World.getInstance().getCurrentScene().drawBBoxActors(renderer);
+				World.getInstance().getCurrentScene().drawBBoxLines(renderer);
 			}
 		}
 

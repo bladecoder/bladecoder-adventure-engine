@@ -7,9 +7,11 @@ import java.util.List;
 
 import org.bladecoder.engine.assets.AssetConsumer;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.pathfinder.Movers;
-import org.bladecoder.engine.pathfinder.PixTileMap;
-import org.bladecoder.engine.polygonalpathfinder.PolygonalPathFinder;
+import org.bladecoder.engine.pathfinder.NavNode;
+import org.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
+import org.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
+import org.bladecoder.engine.tilepathfinder.Movers;
+import org.bladecoder.engine.tilepathfinder.PixTileMap;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.audio.Music;
@@ -20,6 +22,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
@@ -34,6 +37,8 @@ public class Scene extends Actor implements Movers, Serializable,
 	private static final String MAP_FILE_EXTENSION = ".map.png";
 	private static final TextureFilter BG_TEXFILTER_MAG = TextureFilter.Linear;
 	private static final TextureFilter BG_TEXFILTER_MIN = TextureFilter.Linear;
+	private static final Color WALKZONE_COLOR = Color.GREEN;
+	private static final Color OBSTACLE_COLOR = Color.RED;
 
 	/** 
 	 * All actors in the scene
@@ -63,7 +68,7 @@ public class Scene extends Actor implements Movers, Serializable,
 	private PixTileMap backgroundMap;
 	
 	/** For polygonal PathFinding */
-	private PolygonalPathFinder polygonalPathFinder;
+	private PolygonalNavGraph polygonalNavGraph;
 	
 	/** depth vector. x: scale when y=0, y: scale when y=scene height */
 	private Vector2 depthVector;
@@ -194,7 +199,7 @@ public class Scene extends Actor implements Movers, Serializable,
 			spriteBatch.enableBlending();
 
 			if (EngineLogger.debugMode()
-					&& EngineLogger.getDebugLevel() == EngineLogger.DEBUG2)
+					&& EngineLogger.getDebugLevel() == EngineLogger.DEBUG2 && backgroundMap != null)
 				backgroundMap.draw(spriteBatch, bbox.width, bbox.height);
 		}
 
@@ -249,7 +254,7 @@ public class Scene extends Actor implements Movers, Serializable,
 		}
 	}
 
-	public void drawBBoxActors(ShapeRenderer renderer) {
+	public void drawBBoxLines(ShapeRenderer renderer) {
 		// renderer.begin(ShapeType.Rectangle);
 		renderer.begin(ShapeType.Line);
 		renderer.setColor(ACTOR_BBOX_COLOR);
@@ -267,6 +272,27 @@ public class Scene extends Actor implements Movers, Serializable,
 		for (SpriteActor a : fgActors) {
 			Rectangle r = a.getBBox();
 			renderer.rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+		}
+		
+		if(polygonalNavGraph != null) {
+			renderer.setColor(WALKZONE_COLOR);
+			renderer.polygon(polygonalNavGraph.getWalkZone().getTransformedVertices());
+			
+			ArrayList<Polygon> obstacles = polygonalNavGraph.getObstacles();
+			
+			renderer.setColor(OBSTACLE_COLOR);
+			for(Polygon p: obstacles) {
+				renderer.polygon(p.getTransformedVertices());
+			}
+			
+			// DRAW LINEs OF SIGHT
+			renderer.setColor(Color.WHITE);
+			ArrayList<NavNodePolygonal> nodes = polygonalNavGraph.getGraphNodes();
+			for(NavNodePolygonal n:nodes) {
+				for(NavNode n2:n.neighbors) {
+					renderer.line(n.x, n.y, ((NavNodePolygonal)n2).x, ((NavNodePolygonal)n2).y);
+				}
+			}
 		}
 
 		renderer.end();
@@ -656,6 +682,11 @@ public class Scene extends Actor implements Movers, Serializable,
 
 		if (overlay != null)
 			overlay.retrieveAssets();
+		
+		// CALC WALK GRAPH
+		if(polygonalNavGraph != null) {
+			polygonalNavGraph.createInitialGraph();
+		}
 	}
 
 	@Override
@@ -703,12 +734,12 @@ public class Scene extends Actor implements Movers, Serializable,
 	}
 	
 
-	public PolygonalPathFinder getPolygonalPathFinder() {
-		return polygonalPathFinder;
+	public PolygonalNavGraph getPolygonalNavGraph() {
+		return polygonalNavGraph;
 	}
 
-	public void setPolygonalPathFinder(PolygonalPathFinder polygonalPathFinder) {
-		this.polygonalPathFinder = polygonalPathFinder;
+	public void setPolygonalNavGraph(PolygonalNavGraph polygonalNavGraph) {
+		this.polygonalNavGraph = polygonalNavGraph;
 	}
 
 

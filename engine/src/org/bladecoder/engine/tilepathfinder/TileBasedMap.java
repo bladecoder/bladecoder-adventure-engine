@@ -1,4 +1,4 @@
-package org.bladecoder.engine.pathfinder;
+package org.bladecoder.engine.tilepathfinder;
 
 /**
  * The description for the data we're pathfinding over. This provides the contract

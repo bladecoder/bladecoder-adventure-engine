@@ -1,439 +1,173 @@
+
 package org.bladecoder.engine.pathfinder;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import com.badlogic.gdx.utils.BinaryHeap;
 
-import org.bladecoder.engine.pathfinder.heuristics.ClosestHeuristic;
-
-/**
- * A path finder implementation that uses the AStar heuristic based algorithm
- * to determine a path. 
- * 
- * @author Kevin Glass
- */
-public class AStarPathFinder implements PathFinder {
-	/** The set of nodes that have been searched through */
-	private ArrayList<Node> closed = new ArrayList<Node>();
+/** A path finder that uses the AStar heuristic based algorithm to determine a path.
+ * <p>
+ * Original implementation by Kevin Glass from Slick2D.
+ * </p>
+ * @author hneuer */
+public class AStarPathFinder implements NavContext, PathFinder {
 	/** The set of nodes that we do not yet consider fully searched */
-	private SortedList open = new SortedList();
-	
-	/** The map being searched */
-	private TileBasedMap map;
+	private final BinaryHeap<AStarAlgoData> openList = new BinaryHeap<AStarAlgoData>();
+	/** The graph being searched */
+	private final NavGraph graph;
 	/** The maximum depth of search we're willing to accept before giving up */
-	private int maxSearchDistance;
-	
-	/** The complete set of nodes across the map */
-	private Node[][] nodes;
-	/** True if we allow diagonal movement */
-	private boolean allowDiagMovement;
+	private final int maxSearchDistance;
 	/** The heuristic we're applying to determine which nodes to search first */
-	private AStarHeuristic heuristic;
-	
-	/**
-	 * Create a path finder with the default heuristic - closest to target.
-	 * 
-	 * @param map The map to be searched
-	 * @param maxSearchDistance The maximum depth we'll search before giving up
-	 * @param allowDiagMovement True if the search should try diaganol movement
-	 */
-	public AStarPathFinder(TileBasedMap map, int maxSearchDistance, boolean allowDiagMovement) {
-		this(map, maxSearchDistance, allowDiagMovement, new ClosestHeuristic());
-	}
+	private final AStarHeuristicCalculator heuristicCalculator;
 
-	/**
-	 * Create a path finder 
-	 * 
-	 * @param heuristic The heuristic used to determine the search order of the map
-	 * @param map The map to be searched
-	 * @param maxSearchDistance The maximum depth we'll search before giving up
-	 * @param allowDiagMovement True if the search should try diaganol movement
-	 */
-	public AStarPathFinder(TileBasedMap map, int maxSearchDistance, 
-						   boolean allowDiagMovement, AStarHeuristic heuristic) {
-		this.heuristic = heuristic;
-		this.map = map;
+	/** The mover going through the path */
+	private Object mover;
+	/** The distance searched so far */
+	private int distance;
+	/** Unique ID for each search run. Used to mark nodes. */
+	private int checkedID;
+	/** The current source node in the context (part of the NavContext implementation) */
+	private NavNode sourceNodeInContext;
+
+	/** Create a path finder with a specific heuristic. */
+	public AStarPathFinder (NavGraph graph, int maxSearchDistance, AStarHeuristicCalculator heuristic) {
+		this.heuristicCalculator = heuristic;
+		this.graph = graph;
 		this.maxSearchDistance = maxSearchDistance;
-		this.allowDiagMovement = allowDiagMovement;
-		
-		nodes = new Node[map.getWidthInTiles()][map.getHeightInTiles()];
-		for (int x=0;x<map.getWidthInTiles();x++) {
-			for (int y=0;y<map.getHeightInTiles();y++) {
-				nodes[x][y] = new Node(x,y);
-			}
-		}
 	}
-	
-	/**
-	 * @see PathFinder#findPath(Movers, int, int, int, int)
-	 */
-	public Path findPath(Movers mover, int sx, int sy, int tx, int ty) {		
-		// easy first check, if the destination is blocked, we can't get there
-		if (map.blocked(mover, tx, ty)) {
-			return null;
-		}
-		
-		// initial state for A*. The closed group is empty. Only the starting
 
-		// tile is in the open list and it'e're already there
-		nodes[sx][sy].cost = 0;
-		nodes[sx][sy].depth = 0;
-		closed.clear();
-		open.clear();
-		open.add(nodes[sx][sy]);
-		
-		nodes[tx][ty].parent = null;
-		
-		// while we haven'n't exceeded our max search depth
+	@Override
+	public boolean findPath (Object mover, NavNode startNode, NavNode targetNode, NavPath out) {
+		this.mover = mover;
+		distance = 0;
+
+		if (isBlocked(targetNode, targetNode)) return false;
+
+		checkedID++;
+		if (checkedID < 0) checkedID = 1;
+
+		BinaryHeap<AStarAlgoData> openList = this.openList;
+		AStarHeuristicCalculator heuristicCalculator = this.heuristicCalculator;
+		int maxSearchDistance = this.maxSearchDistance;
+
+		openList.clear();
+		addToOpenList(getAlgoData(startNode));
+		getAlgoData(targetNode);
+
+		AStarAlgoData currentData = null;
 		int maxDepth = 0;
-		while ((maxDepth < maxSearchDistance) && (open.size() != 0)) {
-			// pull out the first node in our open list, this is determined to 
+		while (maxDepth < maxSearchDistance && openList.size != 0) {
+			AStarAlgoData lastData = currentData;
+			currentData = openList.pop();
+			currentData.open = false;
+			distance = currentData.depth;
+			currentData.closed = true;
 
-			// be the most likely to be the next step based on our heuristic
+			if (currentData.node == targetNode && lastData != null && !isBlocked(lastData.node, targetNode)) break;
 
-			Node current = getFirstInOpen();
-			if (current == nodes[tx][ty]) {
-				break;
-			}
-			
-			removeFromOpen(current);
-			addToClosed(current);
-			
-			// search through all the neighbours of the current node evaluating
-
-			// them as next steps
-
-			for (int x=-1;x<2;x++) {
-				for (int y=-1;y<2;y++) {
-					// not a neighbour, its the current tile
-
-					if ((x == 0) && (y == 0)) {
-						continue;
+			float currentCost = currentData.cost;
+			for (NavNode neighborNode : currentData.node.neighbors) {
+				AStarAlgoData neighborData = getAlgoData(neighborNode);
+				if (!isBlocked(currentData.node, neighborNode)) {
+					sourceNodeInContext = startNode;
+					float nextStepCost = currentCost + graph.getCost(this, neighborNode);
+					if (nextStepCost < neighborData.cost) {
+						if (neighborData.open) {
+							openList.remove(neighborData);
+							neighborData.open = false;
+						}
+						neighborData.closed = false;
 					}
-					
-					// if we're not allowing diaganol movement then only 
-
-					// one of x or y can be set
-
-					if (!allowDiagMovement) {
-						if ((x != 0) && (y != 0)) {
-							continue;
-						}
-					}
-					
-					// determine the location of the neighbour and evaluate it
-
-					int xp = x + current.x;
-					int yp = y + current.y;
-					
-					if (isValidLocation(mover,sx,sy,xp,yp)) {
-						// the cost to get to this node is cost the current plus the movement
-
-						// cost to reach this node. Note that the heursitic value is only used
-
-						// in the sorted open list
-						Node parent = current.parent;
-						if(parent == null) parent = current;
-						int dirx = current.x - parent.x;
-						int diry = current.y - parent.y;
-						float nextStepCost = current.cost + getMovementCost(mover, current.x, current.y, xp, yp, dirx, diry);
-						Node neighbour = nodes[xp][yp];
-						map.pathFinderVisited(xp, yp);
-						
-						// if the new cost we've determined for this node is lower than 
-
-						// it has been previously makes sure the node hasn'e've
-						// determined that there might have been a better path to get to
-
-						// this node so it needs to be re-evaluated
-
-						if (nextStepCost < neighbour.cost) {
-							if (inOpenList(neighbour)) {
-								removeFromOpen(neighbour);
-							}
-							if (inClosedList(neighbour)) {
-								removeFromClosed(neighbour);
-							}
-						}
-						
-						// if the node hasn't already been processed and discarded then
-
-						// reset it's cost to our current cost and add it as a next possible
-
-						// step (i.e. to the open list)
-
-						if (!inOpenList(neighbour) && !(inClosedList(neighbour))) {
-							neighbour.cost = nextStepCost;
-							neighbour.heuristic = getHeuristicCost(mover, xp, yp, tx, ty);
-							maxDepth = Math.max(maxDepth, neighbour.setParent(current));
-							addToOpen(neighbour);
-						}
+					if (!neighborData.open && !neighborData.closed) {
+						neighborData.cost = nextStepCost;
+						neighborData.heuristic = heuristicCalculator.getCost(this, mover, neighborNode, targetNode);
+						neighborData.depth = currentData.depth + 1;
+						neighborNode.parent = currentData.node;
+						maxDepth = Math.max(maxDepth, neighborData.depth);
+						addToOpenList(neighborData);
 					}
 				}
 			}
 		}
 
-		// since we'e've run out of search 
-		// there was no path. Just return null
-
-		if (nodes[tx][ty].parent == null) {
-			return null;
-		}
-		
-		// At this point we've definitely found a path so we can uses the parent
-
-		// references of the nodes to find out way from the target location back
-
-		// to the start recording the nodes on the way.
-
-		Path path = new Path();
-		Node target = nodes[tx][ty];
-		while (target != nodes[sx][sy]) {
-			path.prependStep(target.x, target.y);
-			target = target.parent;
-		}
-		path.prependStep(sx,sy);
-		
-		// thats it, we have our path 
-
-		return path;
+		boolean pathFound = targetNode.parent != null;
+		if (pathFound) out.fill(startNode, targetNode);
+		return pathFound;
 	}
 
-	/**
-	 * Get the first element from the open list. This is the next
-	 * one to be searched.
-	 * 
-	 * @return The first element in the open list
-	 */
-	protected Node getFirstInOpen() {
-		return (Node) open.first();
-	}
-	
-	/**
-	 * Add a node to the open list
-	 * 
-	 * @param node The node to be added to the open list
-	 */
-	protected void addToOpen(Node node) {
-		open.add(node);
-	}
-	
-	/**
-	 * Check if a node is in the open list
-	 * 
-	 * @param node The node to check for
-	 * @return True if the node given is in the open list
-	 */
-	protected boolean inOpenList(Node node) {
-		return open.contains(node);
-	}
-	
-	/**
-	 * Remove a node from the open list
-	 * 
-	 * @param node The node to remove from the open list
-	 */
-	protected void removeFromOpen(Node node) {
-		open.remove(node);
-	}
-	
-	/**
-	 * Add a node to the closed list
-	 * 
-	 * @param node The node to add to the closed list
-	 */
-	protected void addToClosed(Node node) {
-		closed.add(node);
-	}
-	
-	/**
-	 * Check if the node supplied is in the closed list
-	 * 
-	 * @param node The node to search for
-	 * @return True if the node specified is in the closed list
-	 */
-	protected boolean inClosedList(Node node) {
-		return closed.contains(node);
-	}
-	
-	/**
-	 * Remove a node from the closed list
-	 * 
-	 * @param node The node to remove from the closed list
-	 */
-	protected void removeFromClosed(Node node) {
-		closed.remove(node);
-	}
-	
-	/**
-	 * Check if a given location is valid for the supplied mover
-	 * 
-	 * @param mover The mover that would hold a given location
-	 * @param sx The starting x coordinate
-	 * @param sy The starting y coordinate
-	 * @param x The x coordinate of the location to check
-	 * @param y The y coordinate of the location to check
-	 * @return True if the location is valid for the given mover
-	 */
-	protected boolean isValidLocation(Movers mover, int sx, int sy, int x, int y) {
-		boolean invalid = (x < 0) || (y < 0) || (x >= map.getWidthInTiles()) || (y >= map.getHeightInTiles());
-		
-		if ((!invalid) && ((sx != x) || (sy != y))) {
-			invalid = map.blocked(mover, x, y);
+	/** Get the AStar data from the given node and reset it if it has not been used in this run. If it does not exist at all (node
+	 * is reached the first time in the very first run) create a new one. */
+	private AStarAlgoData getAlgoData (NavNode node) {
+		AStarAlgoData ad = (AStarAlgoData)node.algoData;
+		if (node.algoData == null) {
+			ad = new AStarAlgoData(node);
+			node.algoData = ad;
 		}
-		
-		return !invalid;
-	}
-	
-	/**
-	 * Get the cost to move through a given location
-	 * 
-	 * @param mover The entity that is being moved
-	 * @param sx The x coordinate of the tile whose cost is being determined
-	 * @param sy The y coordiante of the tile whose cost is being determined
-	 * @param tx The x coordinate of the target location
-	 * @param ty The y coordinate of the target location
-	 * @return The cost of movement through the given tile
-	 */
-	public float getMovementCost(Movers mover, int sx, int sy, int tx, int ty, int dirx, int diry) {
-		return map.getCost(mover, sx, sy, tx, ty, dirx, diry);
+
+		if (ad.checkedID != checkedID) {
+			ad.reset();
+			ad.checkedID = checkedID;
+		}
+		return ad;
 	}
 
-	/**
-	 * Get the heuristic cost for the given location. This determines in which 
-	 * order the locations are processed.
-	 * 
-	 * @param mover The entity that is being moved
-	 * @param x The x coordinate of the tile whose cost is being determined
-	 * @param y The y coordiante of the tile whose cost is being determined
-	 * @param tx The x coordinate of the target location
-	 * @param ty The y coordinate of the target location
-	 * @return The heuristic cost assigned to the tile
-	 */
-	public float getHeuristicCost(Movers mover, int x, int y, int tx, int ty) {
-		return heuristic.getCost(map, mover, x, y, tx, ty);
+	/** Ask the graph if the way from start to target node is blocked. */
+	private boolean isBlocked (NavNode startNode, NavNode targetNode) {
+		sourceNodeInContext = startNode;
+		return graph.blocked(this, targetNode);
 	}
-	
-	/**
-	 * A simple sorted list
-	 *
-	 * @author kevin
-	 */
-	private class SortedList {
-		/** The list of elements */
-		private ArrayList<Node> list = new ArrayList<Node>();
-		
-		/**
-		 * Retrieve the first element from the list
-		 *  
-		 * @return The first element from the list
-		 */
-		public Object first() {
-			return list.get(0);
-		}
-		
-		/**
-		 * Empty the list
-		 */
-		public void clear() {
-			list.clear();
-		}
-		
-		/**
-		 * Add an element to the list - causes sorting
-		 * 
-		 * @param o The element to add
-		 */
-		public void add(Node o) {
-			list.add(o);
-			Collections.sort(list);
-		}
-		
-		/**
-		 * Remove an element from the list
-		 * 
-		 * @param o The element to remove
-		 */
-		public void remove(Object o) {
-			list.remove(o);
-		}
-	
-		/**
-		 * Get the number of elements in the list
-		 * 
-		 * @return The number of element in the list
- 		 */
-		public int size() {
-			return list.size();
-		}
-		
-		/**
-		 * Check if an element is in the list
-		 * 
-		 * @param o The element to search for
-		 * @return True if the element is in the list
-		 */
-		public boolean contains(Object o) {
-			return list.contains(o);
-		}
+
+	private void addToOpenList (AStarAlgoData node) {
+		openList.add(node, node.cost + node.heuristic);
+		node.open = true;
 	}
-	
-	/**
-	 * A single node in the search graph
-	 */
-	private class Node implements Comparable<Node> {
-		/** The x coordinate of the node */
-		private int x;
-		/** The y coordinate of the node */
-		private int y;
-		/** The path cost for this node */
-		private float cost;
-		/** The parent of this node, how we reached it in the search */
-		private Node parent;
-		/** The heuristic cost of this node */
-		private float heuristic;
-		/** The search depth of this node */
-		private int depth;
-		
-		/**
-		 * Create a new node
-		 * 
-		 * @param x The x coordinate of the node
-		 * @param y The y coordinate of the node
-		 */
-		public Node(int x, int y) {
-			this.x = x;
-			this.y = y;
+
+	@Override
+	public Object getMover () {
+		return mover;
+	}
+
+	@Override
+	public float getSearchDistance () {
+		return distance;
+	}
+
+	@Override
+	public NavNode getSourceNode () {
+		return sourceNodeInContext;
+	}
+
+	/** The description of a class providing a cost for a given tile based on a target location and entity being moved. This
+	 * heuristic controls what priority is placed on different tiles during the search for a path */
+	public interface AStarHeuristicCalculator<N extends NavNode> {
+		public float getCost (NavContext<N> map, Object mover, N startNode, N targetNode);
+	}
+
+	class AStarAlgoData extends BinaryHeap.Node {
+		/** Backlink to the node. */
+		final NavNode node;
+		/** Heuristic from this node to the target. */
+		float heuristic;
+		/** Search depth to reach this node. */
+		int depth;
+		/** ID of the current search. */
+		int checkedID;
+		/** This node's cost. */
+		float cost;
+		/** In the open list */
+		boolean open;
+		/** In the closed list */
+		boolean closed;
+
+		public AStarAlgoData (NavNode node) {
+			super(0);
+			this.node = node;
 		}
-		
-		/**
-		 * Set the parent of this node
-		 * 
-		 * @param parent The parent node which lead us to this node
-		 * @return The depth we have no reached in searching
-		 */
-		public int setParent(Node parent) {
-			depth = parent.depth + 1;
-			this.parent = parent;
-			
-			return depth;
-		}
-		
-		/**
-		 * @see Comparable#compareTo(Object)
-		 */
-		public int compareTo(Node other) {
-			Node o = (Node) other;
-			
-			float f = heuristic + cost;
-			float of = o.heuristic + o.cost;
-			
-			if (f < of) {
-				return -1;
-			} else if (f > of) {
-				return 1;
-			} else {
-				return 0;
-			}
+
+		void reset () {
+			closed = false;
+			open = false;
+			cost = 0;
+			depth = 0;
+			node.parent = null;
 		}
 	}
 }

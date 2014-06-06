@@ -1,8 +1,8 @@
-package org.bladecoder.engine.pathfinder.heuristics;
+package org.bladecoder.engine.tilepathfinder.heuristics;
 
-import org.bladecoder.engine.pathfinder.AStarHeuristic;
-import org.bladecoder.engine.pathfinder.Movers;
-import org.bladecoder.engine.pathfinder.TileBasedMap;
+import org.bladecoder.engine.tilepathfinder.AStarHeuristic;
+import org.bladecoder.engine.tilepathfinder.Movers;
+import org.bladecoder.engine.tilepathfinder.TileBasedMap;
 
 /**
  * A heuristic that drives the search based on the Manhattan distance

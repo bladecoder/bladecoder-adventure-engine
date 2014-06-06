@@ -1,4 +1,4 @@
-package org.bladecoder.engine.pathfinder;
+package org.bladecoder.engine.tilepathfinder;
 
 /**
  * The description of a class providing a cost for a given tile based

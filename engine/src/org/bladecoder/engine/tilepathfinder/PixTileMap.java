@@ -1,10 +1,10 @@
-package org.bladecoder.engine.pathfinder;
+package org.bladecoder.engine.tilepathfinder;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.pathfinder.Path.Step;
+import org.bladecoder.engine.tilepathfinder.Path.Step;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.graphics.Pixmap;

@@ -3,6 +3,7 @@ package org.bladecoder.engineeditor.scneditor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.Tween;
@@ -25,6 +26,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -209,6 +211,16 @@ public class ScnWidget extends Widget {
 				sceneBatch.end();
 				ScissorStack.popScissors();
 			}
+			
+			if(scn.getPolygonalNavGraph() != null) {
+				drawer.drawPolygon(scn.getPolygonalNavGraph().getWalkZone(), Color.GREEN);
+				
+				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph().getObstacles();
+				
+				for(Polygon p: obstacles) {
+					drawer.drawPolygon(p, Color.RED);
+				}
+			}
 
 			drawer.drawBGBounds();
 			drawer.drawBBoxActors(scn);
@@ -216,9 +228,6 @@ public class ScnWidget extends Widget {
 			if (selectedActor != null) {
 				drawer.drawSelectedActor(selectedActor);
 			}
-			
-			if(scn.getPolygonalPathFinder() != null)
-				drawer.drawPolygon(scn.getPolygonalPathFinder().getWalkZone(), Color.GREEN);
 
 			getStage().getViewport().update();
 

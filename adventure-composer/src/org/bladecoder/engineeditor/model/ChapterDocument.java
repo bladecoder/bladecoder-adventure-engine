@@ -18,7 +18,7 @@ import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
 import org.bladecoder.engine.model.SpriteRenderer;
-import org.bladecoder.engine.polygonalpathfinder.PolygonalPathFinder;
+import org.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import org.bladecoder.engine.util.EngineLogger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -218,10 +218,17 @@ public class ChapterDocument extends BaseDocument {
 		Element wz = getWalkZone(s);
 		
 		if(wz != null) {
-			PolygonalPathFinder polygonalPathFinder = new PolygonalPathFinder();
-			polygonalPathFinder.setWalkZone(Param.parsePolygon(wz.getAttribute("polygon")));
+			PolygonalNavGraph polygonalPathFinder = new PolygonalNavGraph();
+			polygonalPathFinder.setWalkZone(Param.parsePolygon(wz.getAttribute("polygon"), wz.getAttribute("pos")));
 			
-			scn.setPolygonalPathFinder(polygonalPathFinder);
+			scn.setPolygonalNavGraph(polygonalPathFinder);
+			
+			NodeList obstacles = wz.getElementsByTagName("obstacle");
+			for (int i = 0; i < obstacles.getLength(); i++) {
+				Element o = (Element) obstacles.item(i);
+					
+				polygonalPathFinder.addObstacle(Param.parsePolygon(o.getAttribute("polygon"), o.getAttribute("pos")));
+			}
 		}
 
 		return scn;
@@ -527,6 +534,7 @@ public class ChapterDocument extends BaseDocument {
 	public Element createWalkZone(Element scn, Polygon poly) {
 		Element e = doc.createElement("walk_zone");
 		e.setAttribute("polygon", Param.toStringParam(poly));
+		e.setAttribute("pos", Param.toStringParam(new Vector2(poly.getX(), poly.getY())));
 		
 		scn.appendChild(e);
 
@@ -543,6 +551,7 @@ public class ChapterDocument extends BaseDocument {
 			e = createWalkZone(scn, poly);
 		else {
 			e.setAttribute("polygon", Param.toStringParam(poly));
+			e.setAttribute("pos", Param.toStringParam(new Vector2(poly.getX(), poly.getY())));
 		}
 		
 		modified = true;
@@ -570,5 +579,54 @@ public class ChapterDocument extends BaseDocument {
 		
 		modified = true;
 		firePropertyChange("walk_zone", e);
+	}
+
+	public Element createObstacle(Element scn, Polygon poly) {
+		Element e = doc.createElement("obstacle");
+		e.setAttribute("polygon", Param.toStringParam(poly));
+		e.setAttribute("pos", Param.toStringParam(new Vector2(poly.getX(), poly.getY())));
+		
+		getWalkZone(scn).appendChild(e);
+
+		modified = true;
+		firePropertyChange("obstacle", e);
+
+		return e;
+	}
+	
+	public Element getObstacle(Element scn, int i) {
+		Element wz = getWalkZone(scn);
+		Element e = null;
+		
+		NodeList nl = wz.getElementsByTagName("obstacle");
+		
+		e = (Element) nl.item(i);
+		
+		return e;
+	}
+
+	public void setObstaclePolygon(Element scn, int i, Polygon poly) {
+		Element e = getObstacle(scn, i);
+		
+		if(e == null)
+			return;
+		
+		
+		e.setAttribute("polygon", Param.toStringParam(poly));
+		e.setAttribute("pos", Param.toStringParam(new Vector2(poly.getX(), poly.getY())));
+		
+		modified = true;
+		firePropertyChange("obstacle", e);
+	}
+
+	public void deleteObstacle(Element scn, int i) {
+		Element e = getObstacle(scn, i);
+		
+		if(e != null) {
+			deleteElement(e);
+		}
+		
+		modified = true;
+		firePropertyChange("obstacle", e);
 	}
 }
