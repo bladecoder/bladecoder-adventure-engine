@@ -37,9 +37,15 @@ public class ScnWidgetInputListener extends ClickListener {
 	private int vertIndex;
 	private Polygon selPolygon = null;
 	private int selObstacleIndex = 0;
+	
+	private boolean deleteObstacle = false;
 
 	public ScnWidgetInputListener(ScnWidget w) {
 		this.scnWidget = w;
+	}
+	
+	public void setDeleteObstacle(boolean v) {
+		deleteObstacle = v;
 	}
 
 	@Override
@@ -47,6 +53,11 @@ public class ScnWidgetInputListener extends ClickListener {
 		Scene scn = scnWidget.getScene();
 		if (scn == null)
 			return;
+		
+		if(deleteObstacle) {
+			deleteObstacle = false;
+			
+		}
 
 		if (getTapCount() == 2) {
 			Vector2 p = new Vector2(Gdx.input.getX(), Gdx.input.getY());

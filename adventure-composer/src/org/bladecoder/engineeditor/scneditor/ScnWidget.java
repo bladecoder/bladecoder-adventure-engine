@@ -167,7 +167,7 @@ public class ScnWidget extends Widget {
 				});
 		
 		
-		walkZoneWindow = new WalkZoneWindow(skin);
+		walkZoneWindow = new WalkZoneWindow(skin, inputListner);
 	}
 
 	@Override

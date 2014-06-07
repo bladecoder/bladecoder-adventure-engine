@@ -24,7 +24,11 @@ public class WalkZoneWindow extends Container {
 	TextButton deleteObstacleBtn;
 	Scene scn;
 	
-	public WalkZoneWindow(Skin skin) {
+	ScnWidgetInputListener scnIL;
+	
+	public WalkZoneWindow(Skin skin, ScnWidgetInputListener scnIL) {
+		this.scnIL = scnIL;
+		
 		Table table = new Table(skin);
 		createZoneBtn = new TextButton(null, skin);
 		createObstacleBtn = new TextButton("Create Obstacle", skin);
