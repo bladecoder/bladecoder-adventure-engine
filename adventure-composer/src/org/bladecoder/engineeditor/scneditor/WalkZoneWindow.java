@@ -18,29 +18,29 @@ public class WalkZoneWindow extends Container {
 	private static final String DELETE_WALK_ZONE = "Delete Walk Zone";
 	private static final String CREATE_WALK_ZONE = "Create Walk Zone";
 	private static final float OBSTACLE_WIDTH = 200;
-	
+
 	TextButton createZoneBtn;
 	TextButton createObstacleBtn;
 	TextButton deleteObstacleBtn;
 	Scene scn;
-	
-	ScnWidgetInputListener scnIL;
-	
-	public WalkZoneWindow(Skin skin, ScnWidgetInputListener scnIL) {
-		this.scnIL = scnIL;
-		
+
+	private final ScnWidgetInputListener scnIL;
+
+	public WalkZoneWindow(Skin skin, ScnWidgetInputListener sIL) {
+		this.scnIL = sIL;
+
 		Table table = new Table(skin);
 		createZoneBtn = new TextButton(null, skin);
 		createObstacleBtn = new TextButton("Create Obstacle", skin);
 		deleteObstacleBtn = new TextButton("Delete Obstacle", skin);
-		
+
 		createZoneBtn.setDisabled(true);
 		createObstacleBtn.setDisabled(true);
 		deleteObstacleBtn.setDisabled(true);
-		
+
 		table.top();
 		table.add(new Label("Walk Zone", skin, "big")).center();
-		
+
 		Drawable drawable = skin.getDrawable("trans");
 		setBackground(drawable);
 		table.row();
@@ -50,98 +50,106 @@ public class WalkZoneWindow extends Container {
 		table.row();
 		table.add(deleteObstacleBtn).expandX().fill();
 		setWidget(table);
-		
+
 		createZoneBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				
-				if(scn.getPolygonalNavGraph() == null) {
+
+				if (scn.getPolygonalNavGraph() == null) {
 					float[] verts = new float[8];
-					
-					verts[3] = scn.getBBox().height;
-					verts[4] = scn.getBBox().width;
-					verts[5] = scn.getBBox().height;
-					verts[6] = scn.getBBox().width;
-					
-					Polygon poly = new Polygon(verts); 
+
+					if (scn.getBBox() != null) {
+						verts[3] = scn.getBBox().height;
+						verts[4] = scn.getBBox().width;
+						verts[5] = scn.getBBox().height;
+						verts[6] = scn.getBBox().width;
+					} else {
+						verts[3] = Ctx.project.getWorld().getHeight();
+						verts[4] = Ctx.project.getWorld().getWidth();
+						verts[5] = Ctx.project.getWorld().getHeight();
+						verts[6] = Ctx.project.getWorld().getWidth();
+					}
+
+					Polygon poly = new Polygon(verts);
 					PolygonalNavGraph pf = new PolygonalNavGraph();
 					pf.setWalkZone(poly);
 					scn.setPolygonalNavGraph(pf);
 					createZoneBtn.setText(DELETE_WALK_ZONE);
-					Ctx.project.getSelectedChapter().createWalkZone(Ctx.project.getSelectedScene(), poly);
+					createObstacleBtn.setDisabled(false);
+					Ctx.project.getSelectedChapter().createWalkZone(
+							Ctx.project.getSelectedScene(), poly);
 				} else {
 					createZoneBtn.setText(CREATE_WALK_ZONE);
+					createObstacleBtn.setDisabled(true);
 					scn.setPolygonalNavGraph(null);
-					Ctx.project.getSelectedChapter().deleteWalkZone(Ctx.project.getSelectedScene());
+					Ctx.project.getSelectedChapter().deleteWalkZone(
+							Ctx.project.getSelectedScene());
 				}
-				
+
 				event.cancel();
 			}
-			
+
 		});
-		
+
 		createObstacleBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				float[] verts = new float[8];
-				
+
 				verts[3] = OBSTACLE_WIDTH;
 				verts[4] = OBSTACLE_WIDTH;
 				verts[5] = OBSTACLE_WIDTH;
 				verts[6] = OBSTACLE_WIDTH;
-				
-				Polygon poly = new Polygon(verts); 
+
+				Polygon poly = new Polygon(verts);
 				PolygonalNavGraph pf = scn.getPolygonalNavGraph();
 				pf.addObstacle(poly);
-				Ctx.project.getSelectedChapter().createObstacle(Ctx.project.getSelectedScene(), poly);
+				Ctx.project.getSelectedChapter().createObstacle(
+						Ctx.project.getSelectedScene(), poly);
 				deleteObstacleBtn.setDisabled(false);
-				
+
 				event.cancel();
-			}			
+			}
 		});
-		
+
 		deleteObstacleBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				
-				Ctx.msg.show(getStage(), "Select Obstacle to Delete", 4);
-				PolygonalNavGraph pf = scn.getPolygonalNavGraph();
-				Ctx.project.getSelectedChapter().deleteObstacle(Ctx.project.getSelectedScene(), pf.getObstacles().size() -1);
-				pf.getObstacles().remove(pf.getObstacles().size() -1);
-			
-				if(pf.getObstacles().size() == 0)
-					deleteObstacleBtn.setDisabled(true);
-				
+				scnIL.setDeleteObstacle(true);
+
+				// if(pf.getObstacles().size() == 0)
+				// deleteObstacleBtn.setDisabled(true);
+
 				event.cancel();
-			}			
+			}
 		});
-		
-		
+
 		prefSize(200, 200);
 		setSize(200, 200);
 	}
-	
+
 	public void setScene(Scene scn) {
 		this.scn = scn;
-		
-		if(scn == null) {
+
+		if (scn == null) {
 			createZoneBtn.setDisabled(true);
 			createObstacleBtn.setDisabled(true);
 			deleteObstacleBtn.setDisabled(true);
 			return;
 		}
-		
+
 		createZoneBtn.setDisabled(false);
-		
-		if(scn.getPolygonalNavGraph() == null) {
+
+		if (scn.getPolygonalNavGraph() == null) {
 			createZoneBtn.setText(CREATE_WALK_ZONE);
 			createObstacleBtn.setDisabled(true);
 		} else {
 			createZoneBtn.setText(DELETE_WALK_ZONE);
 			createObstacleBtn.setDisabled(false);
 		}
-		
-		if(scn.getPolygonalNavGraph().getObstacles().size() > 0) {
+
+		if (scn.getPolygonalNavGraph() != null
+				&& scn.getPolygonalNavGraph().getObstacles().size() > 0) {
 			deleteObstacleBtn.setDisabled(false);
 		} else {
 			deleteObstacleBtn.setDisabled(true);

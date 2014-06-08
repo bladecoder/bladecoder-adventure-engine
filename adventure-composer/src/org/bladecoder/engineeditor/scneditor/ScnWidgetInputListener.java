@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.SpriteActor;
+import org.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import org.bladecoder.engine.util.PolygonUtils;
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.utils.EditorLogger;
@@ -45,24 +46,39 @@ public class ScnWidgetInputListener extends ClickListener {
 	}
 	
 	public void setDeleteObstacle(boolean v) {
+		Ctx.msg.show(scnWidget.getStage(), "Select Obstacle to Delete");
 		deleteObstacle = v;
 	}
 
 	@Override
-	public void clicked(InputEvent event, float x, float y) {
+	public void clicked(InputEvent event, float x, float y) {		
 		Scene scn = scnWidget.getScene();
 		if (scn == null)
 			return;
 		
+		Vector2 p = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+		scnWidget.screenToWorldCoords(p);
+		
 		if(deleteObstacle) {
 			deleteObstacle = false;
 			
+			Ctx.msg.hide();
+			PolygonalNavGraph pf = scn.getPolygonalNavGraph();
+			ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph()
+					.getObstacles();
+			
+			// CHECK FOR OBSTACLE DRAGGING
+			for (int j = 0; j < obstacles.size(); j++) {
+				Polygon o = obstacles.get(j);
+				if (o.contains(p.x, p.y)) {
+					Ctx.project.getSelectedChapter().deleteObstacle(Ctx.project.getSelectedScene(), j);
+					pf.getObstacles().remove(j);
+					return;
+				}
+			}
 		}
 
 		if (getTapCount() == 2) {
-			Vector2 p = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-			scnWidget.screenToWorldCoords(p);
-
 			if (scn.getPolygonalNavGraph() != null) { // Check WALKZONE
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph()
