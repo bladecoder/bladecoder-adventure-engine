@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.bladecoder.engine.actions.Param.Type;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Verb;
+import org.bladecoder.engine.model.VerbManager;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.EngineLogger;
 
@@ -42,36 +43,41 @@ public class RunVerbAction implements Action {
 	 */
 	private void runVerb(String verb, String target) {
 
-		Actor a = World.getInstance().getCurrentScene().getActor(actorId);
-		
-		Verb v = a.getVerb(verb, target);
-
-		if (v == null) {
-			v = Actor.getDefaultVerbs().get(verb);
-		}
+		Verb v = getVerb(verb, target);
 
 		if (v != null)
 			v.run();
 		else {
 			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for actor ''{1}'' and target ''{2}''",
-					verb, a.getId(), target) );
+					verb, actorId, target) );
 		}
 	}
 	
-	public void cancel() {
-		Actor a = World.getInstance().getCurrentScene().getActor(actorId);
+	private Verb getVerb(String verb, String target) {
+		Verb v = null;
 		
-		Verb v = a.getVerb(verb, target);
+		if(actorId != null) {
+			Actor a = World.getInstance().getCurrentScene().getActor(actorId);
+			v = a.getVerb(verb, target);
+		} else {
+			v = World.getInstance().getCurrentScene().getVerb(verb);
+		}
 
 		if (v == null) {
-			v = Actor.getDefaultVerbs().get(verb);
+			v = VerbManager.getDefaultVerbs().get(verb);
 		}
+		
+		return v;
+	}
+	
+	public void cancel() {
+		Verb v = getVerb(verb, target);
 
 		if (v != null)
 			v.cancel();
 		else {
 			EngineLogger.error(MessageFormat.format("Cancel: Verb ''{0}'' not found for actor ''{1}'' and target ''{2}''",
-					verb, a.getId(), target) );
+					verb, actorId, target) );
 		}		
 	}
 

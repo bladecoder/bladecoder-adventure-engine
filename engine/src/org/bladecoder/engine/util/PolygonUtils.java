@@ -17,8 +17,6 @@ public class PolygonUtils {
 		int length = verts.length;
 		float destination[] = new float[length + 2];
 
-		index = index * 2;
-
 		System.arraycopy(verts, 0, destination, 0, index);
 		destination[index] = x;
 		destination[index + 1] = y;
@@ -55,7 +53,7 @@ public class PolygonUtils {
 
 		for (int i = 0; i < verts.length; i += 2) {
 			if (Vector2.dst(x, y, verts[i], verts[i + 1]) < tolerance) {
-				deletePoint(poly, i / 2);
+				deletePoint(poly, i);
 
 				return true;
 			}
@@ -74,7 +72,7 @@ public class PolygonUtils {
 	public static void addClampedPoint(Polygon poly, float x, float y) {
 		int i = getClampedPoint(poly, x, y, tmp2);
 
-		addPoint(poly, tmp2.x, tmp2.y, i + 1);
+		addPoint(poly, tmp2.x, tmp2.y, i + 2);
 	}
 
 	/**
@@ -109,7 +107,7 @@ public class PolygonUtils {
 
 			if (dTmp < d) {
 				d = dTmp;
-				nearest = i / 2;
+				nearest = i;
 				dest.set(tmp);
 			}
 		}
@@ -125,23 +123,21 @@ public class PolygonUtils {
 
 		if (tmp2.dst(x, y) < tolerance) {
 			added = true;
-			addPoint(poly, tmp2.x, tmp2.y, i + 1);
+			addPoint(poly, tmp2.x, tmp2.y, i + 2);
 		}
 
 		return added;
 	}
 
-	public static boolean isVertexConcave(Polygon poly, int vertex) {
+	public static boolean isVertexConcave(Polygon poly, int index) {
 		float verts[] = poly.getTransformedVertices();
 
-		int pos = vertex * 2;
-
-		float currentX = verts[pos];
-		float currentY = verts[pos + 1];
-		float nextX = verts[(pos + 2) % verts.length];
-		float nextY = verts[(pos + 3) % verts.length];
-		float previousX = verts[pos == 0 ? verts.length - 2 : pos - 2];
-		float previousY = verts[pos == 0 ? verts.length - 1 : pos - 1];
+		float currentX = verts[index];
+		float currentY = verts[index + 1];
+		float nextX = verts[(index + 2) % verts.length];
+		float nextY = verts[(index + 3) % verts.length];
+		float previousX = verts[index == 0 ? verts.length - 2 : index - 2];
+		float previousY = verts[index == 0 ? verts.length - 1 : index - 1];
 
 		float leftX = currentX - previousX;
 		float leftY = currentY - previousY;

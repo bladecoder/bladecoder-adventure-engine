@@ -3,7 +3,6 @@ package org.bladecoder.engine.anim;
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.model.SpriteActor;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -20,10 +19,8 @@ public class SpritePosTween extends Tween {
 
 	public void start(SpriteActor target, int repeatType, int count, float tx, float ty, float duration, ActionCallback cb) {
 		
-		Vector2 currentPos = target.getPosition();
-		
-		startX = currentPos.x;
-		startY = currentPos.y;
+		startX = target.getX();
+		startY = target.getY();
 		targetX = tx;
 		targetY = ty;
 		

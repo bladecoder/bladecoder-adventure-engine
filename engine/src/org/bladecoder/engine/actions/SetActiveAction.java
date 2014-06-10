@@ -33,7 +33,9 @@ public class SetActiveAction implements Action {
 		Actor actor = World.getInstance().getCurrentScene().getActor(actorId);
 		
 		if(value != null) {
-			actor.setActive(Boolean.parseBoolean( value));
+			boolean v = Boolean.parseBoolean(value);
+			actor.setVisible(v);
+			actor.setInteraction(v);
 		} else {
 			if(visible != null) actor.setVisible(Boolean.parseBoolean(visible));
 			if(interaction != null) actor.setInteraction(Boolean.parseBoolean( interaction));

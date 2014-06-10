@@ -12,6 +12,7 @@ import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class LookAtAction implements Action {
@@ -50,10 +51,11 @@ public class LookAtAction implements Action {
 
 		SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
 		
-		
 		if(direction!=null) player.lookat(direction);
-		else if(actor!=null && player != null) 
-			player.lookat(new Vector2(actor.getBBox().x, actor.getBBox().y));
+		else if(actor!=null && player != null) {
+			Rectangle bbox = actor.getBBox().getBoundingRectangle();
+			player.lookat(new Vector2(bbox.x, bbox.y));
+		}
 
 		if (soundId != null)
 			actor.playSound(soundId);

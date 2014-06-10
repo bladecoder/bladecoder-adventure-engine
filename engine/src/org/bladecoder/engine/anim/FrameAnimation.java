@@ -69,9 +69,9 @@ public class FrameAnimation {
 	
 	private final static float DIRECTION_ASPECT_TOLERANCE = 2.5f;
 
-	public static String getFrameDirection(Vector2 p0, Vector2 pf) {
-		float dx = pf.x - p0.x;
-		float dy = pf.y - p0.y;
+	public static String getFrameDirection(float x, float y, Vector2 pf) {
+		float dx = pf.x - x;
+		float dy = pf.y - y;
 		float ratio = Math.abs(dx / dy);
 
 		if (ratio < 1.0)

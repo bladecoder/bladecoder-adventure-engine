@@ -24,6 +24,7 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 
 	private Polygon walkZone;
 	final private ArrayList<Polygon> obstacles = new ArrayList<Polygon>();
+	final private ArrayList<Polygon> dinamicObstacles = new ArrayList<Polygon>();
 
 	final private PathFinder pathfinder = new AStarPathFinder(this, 100,
 			new ManhattanDistance());
@@ -85,7 +86,7 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 		float verts[] = walkZone.getTransformedVertices();
 
 		for (int i = 0; i < verts.length; i += 2) {
-			if (!PolygonUtils.isVertexConcave(walkZone, i / 2)) {
+			if (!PolygonUtils.isVertexConcave(walkZone, i)) {
 				graphNodes.add(new NavNodePolygonal(verts[i], verts[i + 1]));
 			}
 		}
@@ -95,7 +96,7 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 			verts = o.getTransformedVertices();
 
 			for (int i = 0; i < verts.length; i += 2) {
-				if (PolygonUtils.isVertexConcave(o, i / 2)
+				if (PolygonUtils.isVertexConcave(o, i)
 						&& PolygonUtils.isPointInside(walkZone, verts[i],
 								verts[i + 1], false)) {
 					graphNodes
@@ -129,6 +130,12 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 		}
 
 		for (Polygon o : obstacles) {
+			if (!PolygonUtils.inLineOfSight(tmp, tmp2, o, true)) {
+				return false;
+			}
+		}
+		
+		for (Polygon o : dinamicObstacles) {
 			if (!PolygonUtils.inLineOfSight(tmp, tmp2, o, true)) {
 				return false;
 			}
@@ -191,4 +198,53 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 			NavNodePolygonal targetNode) {
 		return 1;
 	}
+
+	public void addDinamicObstacle(Polygon poly) {
+		float verts[] = poly.getTransformedVertices();
+		dinamicObstacles.add(poly);
+
+		for (int i = 0; i < verts.length; i += 2) {
+			if (PolygonUtils.isVertexConcave(poly, i)
+					&& PolygonUtils.isPointInside(walkZone, verts[i],
+							verts[i + 1], false)) {
+				NavNodePolygonal n1 = new NavNodePolygonal(verts[i], verts[i + 1]);
+				
+				for (int j = 0; j < graphNodes.size(); j++) {
+					NavNodePolygonal n2 = graphNodes.get(j);
+
+					if (inLineOfSight(n1.x, n1.y, n2.x, n2.y)) {
+						n1.neighbors.add(n2);
+						n2.neighbors.add(n1);
+					}
+				}
+				
+				graphNodes.add(n1);
+			}
+		}
+	}
+	
+	public void removeDinamicObstacle(Polygon poly) {
+		float verts[] = poly.getTransformedVertices();
+		dinamicObstacles.remove(poly);
+
+		for (int i = 0; i < verts.length; i += 2) {
+			if (PolygonUtils.isVertexConcave(poly, i)
+					&& PolygonUtils.isPointInside(walkZone, verts[i],
+							verts[i + 1], false)) {
+				for (int j = 0; j < graphNodes.size(); j++) {
+					NavNodePolygonal n = graphNodes.get(j);
+
+					if (n.x == verts[i] && n.y == verts[i+1]) {
+						graphNodes.remove(n);
+						j--;
+						
+						for(NavNodePolygonal n2:graphNodes) {
+							n2.neighbors.removeValue(n, true);
+						}
+						
+					}
+				}
+			}
+		}
+	}	
 }

@@ -41,7 +41,13 @@ public class DropItemAction implements Action {
 		World.getInstance().getInventory().removeItem(itemId);
 		
 		World.getInstance().getCurrentScene().addActor(actor);
-		((SpriteActor)actor).setPosition(pos.x * scale, pos.y * scale);
+		
+		if(actor.isWalkObstacle() && actor.getScene().getPolygonalNavGraph() != null) {
+			actor.getScene().getPolygonalNavGraph().addDinamicObstacle(actor.getBBox());
+		}
+		
+		if(pos != null)
+			((SpriteActor)actor).setPosition(pos.x * scale, pos.y * scale);
 	}
 
 	@Override

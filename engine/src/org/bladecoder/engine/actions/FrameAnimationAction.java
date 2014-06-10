@@ -10,7 +10,6 @@ import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.EngineLogger;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -92,10 +91,8 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 		
 		if (setPos == SET_POS_ABSOLUTE)
 			actor.setPosition(posx * scale, posy * scale);
-		else if (setPos == SET_POS_RELATIVE) {
-			Vector2 p = actor.getPosition();
-			
-			actor.setPosition(p.x + posx * scale, p.y + posy * scale);
+		else if (setPos == SET_POS_RELATIVE) {		
+			actor.setPosition(actor.getX() + posx * scale, actor.getY() + posy * scale);
 		}
 		
 		if(wait) {

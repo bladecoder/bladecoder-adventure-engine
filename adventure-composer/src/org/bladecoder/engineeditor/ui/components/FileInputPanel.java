@@ -17,13 +17,15 @@ public class FileInputPanel extends InputPanel {
 	private File selected;
 	
 	private boolean dirOnly = false;
+	private final static String FILE_TEXT = "Select file";
+	private final static String DIR_TEXT = "Select folder";
 	
 	public FileInputPanel(Skin skin, String title, String desc, boolean dirOnly) {
 		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."), dirOnly);
 	}
 
 	public FileInputPanel(Skin skin, String title, String desc, File current, boolean dOnly) {
-		super(skin, title, desc, new TextButton("Select file", skin), null);
+		super(skin, title, desc, new TextButton(dOnly?DIR_TEXT:FILE_TEXT, skin), null);
 		
 		this.cd = current;
 		this.dirOnly = dOnly;
