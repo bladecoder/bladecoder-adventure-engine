@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
 import org.bladecoder.engine.model.Actor;
+import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.World;
 
 /**
@@ -31,10 +32,14 @@ public class CancelVerbAction implements Action {
 
 	@Override
 	public void run() {
+		if(actorId != null) {
+			Actor actor = World.getInstance().getCurrentScene().getActor(actorId);
 		
-		Actor actor = World.getInstance().getCurrentScene().getActor(actorId);
-		
-		actor.cancelVerb(verb, target);
+			actor.getVerbManager().cancelVerb(verb, actor.getState(), target);
+		} else {
+			Scene s = World.getInstance().getCurrentScene();
+			s.getVerbManager().cancelVerb(verb, s.getState(), target);
+		}
 	}
 
 	@Override

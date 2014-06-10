@@ -2,13 +2,12 @@ package org.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.DialogOption;
+import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.Text;
 import org.bladecoder.engine.model.World;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -50,13 +49,11 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 		if (playerText != null) {
 			SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
 
-			Vector2 pos = player.getPosition();
-
 //			WorldCamera c = World.getInstance().getCamera();
 //			Vector3 p = c.scene2screen(pos.x, pos.y + player.getHeight());
 
 			World.getInstance().getTextManager()
-					.addSubtitle(playerText, pos.x, pos.y + player.getHeight(), false, Text.Type.TALK, Color.BLACK, this);
+					.addSubtitle(playerText, player.getX(), player.getY() + player.getHeight(), false, Text.Type.TALK, Color.BLACK, this);
 
 			previousFA = player.getRenderer().getCurrentFrameAnimationId(); 
 			player.startFrameAnimation(getTalkFA(previousFA), null);
@@ -81,14 +78,13 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 			}
 
 			if (responseText != null) {
-				Vector2 pos = actor.getPosition();
 
 //				WorldCamera c = World.getInstance().getCamera();
 //				Vector3 p = c.scene2screen(pos.x, pos.y + actor.getHeight());
 
 				World.getInstance()
 						.getTextManager()
-						.addSubtitle(responseText, pos.x, pos.y + actor.getHeight() , false, Text.Type.TALK,
+						.addSubtitle(responseText, actor.getX(), actor.getY() + actor.getHeight() , false, Text.Type.TALK,
 								Color.BLACK, this);
 
 				previousFA = actor.getRenderer().getCurrentFrameAnimationId(); 

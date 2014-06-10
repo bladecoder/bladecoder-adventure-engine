@@ -1,13 +1,12 @@
 package org.bladecoder.engine.model;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 
 import org.bladecoder.engine.assets.AssetConsumer;
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.util.EngineLogger;
 
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -16,6 +15,8 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 
 	protected String id;
 	protected String desc;
+	protected Scene scene = null;
+	
 	/** visibility and interaction activation */
 	private boolean interaction = true;
 	private boolean visible = true;
@@ -23,17 +24,17 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 	/** internal state. Can be used for actions to maintain a state machine */
 	protected String state;
 
-	protected static HashMap<String, Verb> defaultVerbs = new HashMap<String, Verb>();
-
-	protected HashMap<String, Verb> verbs = new HashMap<String, Verb>();
+	protected VerbManager verbs = new VerbManager();
 	protected HashMap<String, SoundFX> sounds;
 	protected HashMap<String, String> customProperties;
 	
 	private String playingSound;
 
-	protected Rectangle bbox;
+	protected Polygon bbox;
 	
 	private HashMap<String, Dialog> dialogs;
+	
+	private boolean isWalkObstacle = false;
 
 	public String getId() {
 		return id;
@@ -43,7 +44,7 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		this.id = id;
 	}
 
-	public Rectangle getBBox() {
+	public Polygon getBBox() {
 		return bbox;
 	}
 	
@@ -76,7 +77,7 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		this.visible = visible;
 	}
 
-	public void setBbox(Rectangle bbox) {
+	public void setBbox(Polygon bbox) {
 		this.bbox = bbox;
 	}
 
@@ -88,119 +89,29 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		this.desc = desc;
 	}
 
-	public void addVerb(String id, Verb v) {
-		verbs.put(id, v);
+	public VerbManager getVerbManager() {
+		return verbs;
 	}
-
-	public static void addDefaultVerb(String id, Verb v) {
-		defaultVerbs.put(id, v);
+	
+	public void setScene(Scene s) {
+		scene = s;
 	}
 
 	public Verb getVerb(String id) {
-		return getVerb(id, null);
+		return verbs.getVerb(id, state, null);
 	}
 
-	/**
-	 * Returns an actor Verb.
-	 * 
-	 * Search order:
-	 *   - id.target.state
-	 *   - id.target
-	 *   - id.state
-	 *   - id
-	 * 
-	 * @param id Verb id
-	 * @param target When an object is used by other object.
-	 * @return
-	 */
 	public Verb getVerb(String id, String target) {
-		StringBuilder sb = new StringBuilder();
-		Verb v = null;
-		
-		if(target != null) {
-			if(state != null) {
-				sb.append(id).append(".").append(target).append(".").append(state);
-				v = verbs.get(sb.toString()); // id.target.state
-			}
-
-			if (v == null) {
-				sb.setLength(0);
-				sb.append(id).append(".").append(target);
-				v = verbs.get(sb.toString()); // id.target
-			}
-		}
-		
-		if (v == null && state != null) {
-			sb.setLength(0);
-			sb.append(id).append(".").append(state);
-			
-			v = verbs.get(sb.toString()); // id.state
-		}
-
-		if (v == null)
-			v = verbs.get(id); // id
-
-		return v;
+		return verbs.getVerb(id, state, target);
 	}
 	
-	public static HashMap<String, Verb> getDefaultVerbs() {
-		return defaultVerbs;
-	}
-
-	public HashMap<String, Verb> getVerbs() {
-		return verbs;
-	}
-
 	public void runVerb(String id) {
-		runVerb(id, null);
-	}
-
-	/**
-	 * Run Verb
-	 * 
-	 * @param verb Verb
-	 * @param target When one object is used with another object.
-	 */
-	public void runVerb(String verb, String target) {
-
-		Verb v = null;
-			
-		v = getVerb(verb, target);
-
-		if (v == null) {
-			v = defaultVerbs.get(verb);
-		}
-
-		if (v != null) {
-			v.run();
-		} else {
-			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for actor ''{1}'' and target ''{2}''",
-					verb, id, target) );
-		}
+		verbs.runVerb(id, state, null);
 	}
 	
-	/**
-	 * Cancels the execution of a running verb
-	 * 
-	 * @param verb
-	 * @param target
-	 */
-	public void cancelVerb(String verb, String target) {
-		Verb v = null;
-		
-		v = getVerb(verb, target);
-
-		if (v == null) {
-			v = defaultVerbs.get(verb);
-		}
-
-		if (v != null)
-			v.cancel();
-		else {
-			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for actor ''{1}'' and target ''{2}''",
-					verb, id, target) );
-		}	
-	}	
+	public void runVerb(String id, String target) {
+		verbs.runVerb(id, state, target);
+	}
 
 	public void addSound(String id, String filename, boolean loop, float volume) {
 		if (sounds == null)
@@ -257,7 +168,7 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		sb.append("\n  BBox: ").append(getBBox().toString());
 		sb.append("\n  Verbs:");
 
-		for (String v : verbs.keySet()) {
+		for (String v : verbs.getVerbs().keySet()) {
 			sb.append(" ").append(v);
 		}
 
@@ -288,6 +199,26 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 			dialogs = new HashMap<String, Dialog> ();
 		
 		dialogs.put(id, d);
+	}
+	
+	public float getX() {
+		return bbox.getX();
+	}
+	
+	public float getY() {
+		return bbox.getY();
+	}
+	
+	public boolean isWalkObstacle() {
+		return isWalkObstacle;
+	}
+
+	public void setWalkObstacle(boolean isWalkObstacle) {
+		this.isWalkObstacle = isWalkObstacle;
+	}
+
+	public void setPosition(float x, float y) {
+		bbox.setPosition(x, y);
 	}
 	
 	@Override
@@ -331,22 +262,13 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		json.writeValue("interaction", interaction);
 		json.writeValue("visible", visible);
 		json.writeValue("desc", desc, desc == null ? null : desc.getClass());
-		json.writeValue("verbs", verbs, verbs == null ? null : verbs.getClass());
-		
-		Rectangle bboxScaled = null;
-		
-		if(bbox != null) {
-			float scale = EngineAssetManager.getInstance().getScale();
-			
-			bboxScaled = new Rectangle(bbox);
-			bboxScaled.x /= scale;
-			bboxScaled.y /= scale;
-			bboxScaled.width /= scale;
-			bboxScaled.height /= scale;
-		}
-		
-		json.writeValue("bbox", bboxScaled, bboxScaled == null ? null : bboxScaled.getClass());
-		json.writeValue("state", state, state == null ? null : desc.getClass());
+		json.writeValue("verbs", verbs);
+
+		float worldScale = EngineAssetManager.getInstance().getScale();
+		Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
+		json.writeValue("pos", scaledPos);	
+		json.writeValue("bbox", bbox.getVertices());
+		json.writeValue("state", state, state == null ? null : state.getClass());
 		json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass());
 		json.writeValue("playingSound", playingSound, playingSound == null ? null : playingSound.getClass());
 		
@@ -361,16 +283,13 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		interaction = json.readValue("interaction", Boolean.class, jsonData);
 		visible = json.readValue("visible", Boolean.class, jsonData);
 		desc = json.readValue("desc", String.class, jsonData);
-		verbs = json.readValue("verbs", HashMap.class, Verb.class, jsonData);
-		
-		bbox = json.readValue("bbox", Rectangle.class, jsonData);
-		if(bbox != null) {
-			float scale = EngineAssetManager.getInstance().getScale();
-			bbox.x *= scale;
-			bbox.y *= scale;
-			bbox.width *= scale;
-			bbox.height *= scale;
-		}
+		verbs = json.readValue("verbs", VerbManager.class, jsonData);
+
+		Vector2 pos = json.readValue("pos", Vector2.class, jsonData);
+
+		float worldScale = EngineAssetManager.getInstance().getScale();
+		bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
+		bbox.setVertices(json.readValue("bbox", float[].class, jsonData));
 		
 		state = json.readValue("state", String.class, jsonData);
 		sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);

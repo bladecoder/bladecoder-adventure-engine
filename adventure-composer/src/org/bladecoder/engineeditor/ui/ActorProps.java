@@ -15,10 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public class ActorProps extends PropertyTable {
 
 	public static final String DESC_PROP = "Description";
-	public static final String BBOX_X_PROP = "bbox x";
-	public static final String BBOX_Y_PROP = "bbox y";
-	public static final String BBOX_WIDTH_PROP = "bbox width";
-	public static final String BBOX_HEIGHT_PROP = "bbox height";
 	public static final String POS_X_PROP = "pos X";
 	public static final String POS_Y_PROP = "pos Y";
 	public static final String INTERACTION_PROP = "interaction";
@@ -59,10 +55,6 @@ public class ActorProps extends PropertyTable {
 		clear();
 
 		if (a != null) {
-			addProperty(BBOX_X_PROP, doc.getRootAttr(a, "x"), Types.FLOAT);
-			addProperty(BBOX_Y_PROP, doc.getRootAttr(a, "y"), Types.FLOAT);
-			addProperty(BBOX_WIDTH_PROP, doc.getRootAttr(a, "width"), Types.FLOAT);
-			addProperty(BBOX_HEIGHT_PROP, doc.getRootAttr(a, "height"), Types.FLOAT);
 
 			if (!a.getAttribute("type").equals("background")) {
 				Vector2 pos = doc.getPos(a);
@@ -91,23 +83,7 @@ public class ActorProps extends PropertyTable {
 	}
 
 	private void updateModel(String property, String value) {
-		if (property.equals(BBOX_X_PROP)) {
-			Rectangle bbox = doc.getBBox(actor);
-			bbox.x = Float.parseFloat(value);
-			doc.setBbox(actor, bbox);
-		} else if (property.equals(BBOX_Y_PROP)) {
-			Rectangle bbox = doc.getBBox(actor);
-			bbox.y = Float.parseFloat(value);
-			doc.setBbox(actor, bbox);
-		} else if (property.equals(BBOX_WIDTH_PROP)) {
-			Rectangle bbox = doc.getBBox(actor);
-			bbox.width = Float.parseFloat(value);
-			doc.setBbox(actor, bbox);
-		} else if (property.equals(BBOX_HEIGHT_PROP)) {
-			Rectangle bbox = doc.getBBox(actor);
-			bbox.height = Float.parseFloat(value);
-			doc.setBbox(actor, bbox);
-		} else if (property.equals(DESC_PROP)) {
+		if (property.equals(DESC_PROP)) {
 			doc.setRootAttr(actor, "desc", value);
 		} else if (property.equals(POS_X_PROP)) {
 			Vector2 pos = doc.getPos(actor);

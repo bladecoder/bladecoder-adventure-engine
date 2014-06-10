@@ -36,8 +36,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 
 public class ScnWidget extends Widget {
-	private static final Color BLACK_TRANSPARENT= new Color(0f,0f,0f,0.5f);
-	
+	private static final Color BLACK_TRANSPARENT = new Color(0f, 0f, 0f, 0.5f);
+
 	// TMPs to avoid GC calls
 	private final Vector3 tmpV3 = new Vector3();
 	private final Vector2 tmpV2 = new Vector2();
@@ -65,7 +65,8 @@ public class ScnWidget extends Widget {
 	TiledDrawable tile;
 
 	boolean loading = false;
-	
+	boolean loadingError = false;
+
 	WalkZoneWindow walkZoneWindow;
 
 	public ScnWidget(Skin skin) {
@@ -85,6 +86,9 @@ public class ScnWidget extends Widget {
 		Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
+				EditorLogger.debug("ScnWidget (Project Listener): "
+						+ e.getPropertyName());
+				
 				if (e.getPropertyName().equals(Project.NOTIFY_SCENE_SELECTED)) {
 					setSelectedScene(Ctx.project.getSelectedScene());
 				} else if (e.getPropertyName().equals(
@@ -111,7 +115,7 @@ public class ScnWidget extends Widget {
 				new PropertyChangeListener() {
 					@Override
 					public void propertyChange(PropertyChangeEvent e) {
-						EditorLogger.debug("Editor Listener: "
+						EditorLogger.debug("ScnWidget (World Listener): "
 								+ e.getPropertyName());
 						ChapterDocument doc = Ctx.project.getSelectedChapter();
 
@@ -125,6 +129,8 @@ public class ScnWidget extends Widget {
 								return;
 
 							a.setBbox(doc.getBBox(selActor));
+							Vector2 p = doc.getPos(selActor);
+							a.setPosition(p.x, p.y);
 						} else if (e.getPropertyName().equals("pos")) {
 							Element selActor = (Element) e.getNewValue();
 							String id = doc.getId(selActor);
@@ -132,7 +138,7 @@ public class ScnWidget extends Widget {
 							if (a == null)
 								return;
 							Vector2 p = doc.getPos(selActor);
-							((SpriteActor) a).setPosition(p.x, p.y);
+							a.setPosition(p.x, p.y);
 						} else if (e.getPropertyName().equals("id")) {
 							String id = (String) e.getOldValue();
 
@@ -165,16 +171,14 @@ public class ScnWidget extends Widget {
 						}
 					}
 				});
-		
-		
+
 		walkZoneWindow = new WalkZoneWindow(skin, inputListner);
 	}
 
 	@Override
 	public void act(float delta) {
-		faRenderer.update(delta);
-
-		if (scn != null && animation && !loading) {
+		if (scn != null && animation && !loading && !loadingError) {
+			faRenderer.update(delta);
 			scn.update(delta);
 		}
 	}
@@ -191,7 +195,7 @@ public class ScnWidget extends Widget {
 		tile.draw(batch, getX(), getY(), getWidth(), getHeight());
 		batch.enableBlending();
 
-		if (scn != null && !loading) {
+		if (scn != null && !loading && !loadingError) {
 			Vector3 v = new Vector3(getX(), getY(), 0);
 			v = v.prj(batch.getTransformMatrix());
 
@@ -211,14 +215,16 @@ public class ScnWidget extends Widget {
 				sceneBatch.end();
 				ScissorStack.popScissors();
 			}
-			
-			if(scn.getPolygonalNavGraph() != null) {
-				drawer.drawPolygon(scn.getPolygonalNavGraph().getWalkZone(), Color.GREEN);
-				
-				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph().getObstacles();
-				
-				for(Polygon p: obstacles) {
-					drawer.drawPolygon(p, Color.RED);
+
+			if (scn.getPolygonalNavGraph() != null) {
+				drawer.drawPolygonVertices(scn.getPolygonalNavGraph().getWalkZone(),
+						Color.GREEN);
+
+				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph()
+						.getObstacles();
+
+				for (Polygon p : obstacles) {
+					drawer.drawPolygonVertices(p, Color.RED);
 				}
 			}
 
@@ -237,16 +243,17 @@ public class ScnWidget extends Widget {
 			if (!inScene) {
 				faRenderer.draw((SpriteBatch) batch);
 			}
-			
+
 			// DRAW COORDS
 			Vector2 coords = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 			screenToWorldCoords(coords);
-			String str = MessageFormat.format("({0}, {1})",
-						(int) coords.x, (int) coords.y);
-			
+			String str = MessageFormat.format("({0}, {1})", (int) coords.x,
+					(int) coords.y);
+
 			TextBounds bounds2 = defaultFont.getBounds(str);
-			RectangleRenderer.draw((SpriteBatch)batch, 0f, getY() + getHeight() - bounds2.height - 15, 
-					bounds2.width + 10, bounds2.height + 10, BLACK_TRANSPARENT);
+			RectangleRenderer.draw((SpriteBatch) batch, 0f, getY()
+					+ getHeight() - bounds2.height - 15, bounds2.width + 10,
+					bounds2.height + 10, BLACK_TRANSPARENT);
 			defaultFont.draw(batch, str, 5, getHeight() + getY() - 10);
 
 			batch.setColor(tmp);
@@ -260,21 +267,26 @@ public class ScnWidget extends Widget {
 			if (loading) {
 				s = "LOADING...";
 
-				if (!EngineAssetManager.getInstance().isLoading()) {
-					loading = false;
+				try {
+					if (!EngineAssetManager.getInstance().isLoading()) {
+						loading = false;
 
-					try {
 						scn.retrieveAssets();
-					} catch (Exception e) {
-						Ctx.msg.show(getStage(),
-								"Could not load assets for scene", 4);
-						e.printStackTrace();
+
+						drawer.setCamera(scn.getCamera());
+
+						invalidate();
 					}
-
-					drawer.setCamera(scn.getCamera());
-
-					invalidate();
+				} catch (Exception e) {
+					Ctx.msg.show(getStage(), "Could not load assets for scene",
+							4);
+					e.printStackTrace();
+					loadingError = true;
+					loading = false;
 				}
+
+			} else if (loadingError) {
+				s = "ERROR IN SCENE DATA. CANNOT DISPLAY SCENE";
 			} else if (Ctx.project.getProjectDir() == null) {
 				s = "CREATE OR LOAD A PROJECT";
 			} else {
@@ -308,11 +320,10 @@ public class ScnWidget extends Widget {
 			faRenderer.setFrameAnimation(null);
 		}
 	}
-	
+
 	public void showEditWalkZoneWindow() {
 		getParent().addActor(walkZoneWindow);
 	}
-	
 
 	public void hideEditWalkZoneWindow() {
 		getParent().removeActor(walkZoneWindow);
@@ -356,7 +367,7 @@ public class ScnWidget extends Widget {
 			translate(new Vector2((-getWidth() + wWidth) / 2,
 					(-getHeight() + wHeight) / 2));
 		}
-		
+
 		walkZoneWindow.setPosition(getX() + 5, getY() + 5);
 		walkZoneWindow.invalidate();
 	}
@@ -419,11 +430,17 @@ public class ScnWidget extends Widget {
 		return scn;
 	}
 
+	public Actor getSelectedActor() {
+		return selectedActor;
+	}
+
 	public void setSelectedScene(Element e) {
 		if (scn != null) {
 			scn.dispose();
 			scn = null;
 		}
+
+		loadingError = false;
 
 		setSelectedActor(null);
 
@@ -435,7 +452,7 @@ public class ScnWidget extends Widget {
 			scn.loadAssets();
 			loading = true;
 		}
-		
+
 		walkZoneWindow.setScene(scn);
 	}
 
@@ -475,7 +492,8 @@ public class ScnWidget extends Widget {
 								selFA, Tween.REPEAT, Tween.INFINITY, null);
 					} catch (Exception e) {
 						setFrameAnimation(null);
-						((SpriteActor) selectedActor).getRenderer().getFrameAnimations().remove(selFA);
+						((SpriteActor) selectedActor).getRenderer()
+								.getFrameAnimations().remove(selFA);
 					}
 				}
 			} else {

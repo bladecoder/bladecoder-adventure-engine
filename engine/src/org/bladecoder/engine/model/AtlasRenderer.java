@@ -300,8 +300,8 @@ public class AtlasRenderer implements SpriteRenderer {
 	}
 
 	@Override
-	public void lookat(Vector2 p0, Vector2 pf) {
-		lookat(FrameAnimation.getFrameDirection(p0, pf));
+	public void lookat(float x, float y, Vector2 pf) {
+		lookat(FrameAnimation.getFrameDirection(x, y, pf));
 	}
 
 	@Override
@@ -328,13 +328,12 @@ public class AtlasRenderer implements SpriteRenderer {
 
 	@Override
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
-		String currentDirection = FrameAnimation.getFrameDirection(p0, pf);
+		String currentDirection = FrameAnimation.getFrameDirection(p0.x, p0.y, pf);
 		StringBuilder sb = new StringBuilder();
 		sb.append(FrameAnimation.WALK_ANIM).append('.').append(currentDirection);
 		startFrameAnimation(sb.toString(), Tween.FROM_FA, 1, null);
 	}
-
-
+	
 	private void loadSource(String source) {
 		AtlasCacheEntry entry = atlasCache.get(source);
 		
@@ -371,7 +370,7 @@ public class AtlasRenderer implements SpriteRenderer {
 		}
 
 		entry.refCounter--;
-	}	
+	}
 	
 
 	@Override
@@ -461,4 +460,5 @@ public class AtlasRenderer implements SpriteRenderer {
 		flipX = json.readValue("flipX", Boolean.class, jsonData);
 		currentFrameIndex = json.readValue("currentFrameIndex", Integer.class, jsonData);
 	}
+
 }

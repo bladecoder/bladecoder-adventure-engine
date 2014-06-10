@@ -35,7 +35,8 @@ public class GotoAction extends BaseCallbackAction implements Action {
 		
 		if(targetId!=null) {
 			Actor target =  World.getInstance().getCurrentScene().getActor(targetId);
-			actor.goTo(new Vector2(target.getBBox().x, target.getBBox().y), wait?this:null);			
+			Rectangle bbox = target.getBBox().getBoundingRectangle();
+			actor.goTo(new Vector2(bbox.x, bbox.y), wait?this:null);			
 		} else 
 			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), wait?this:null);
 						
@@ -69,11 +70,11 @@ public class GotoAction extends BaseCallbackAction implements Action {
 	 */
 	@SuppressWarnings("unused")
 	private void goNear(SpriteActor player, Actor actor) {
-		Rectangle rdest = actor.getBBox();
+		Rectangle rdest = actor.getBBox().getBoundingRectangle();
 
 		// Vector2 p0 = new Vector2(player.getSprite().getX(),
 		// player.getSprite().getY());
-		Vector2 p0 = player.getPosition();
+		Vector2 p0 = new Vector2(player.getX(), player.getY());
 
 		// calculamos el punto más cercano al objeto
 		Vector2 p1 = new Vector2(rdest.x, rdest.y); // izquierda

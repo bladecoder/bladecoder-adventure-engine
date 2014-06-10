@@ -12,15 +12,16 @@ import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.Actor;
+import org.bladecoder.engine.model.AtlasRenderer;
 import org.bladecoder.engine.model.Dialog;
 import org.bladecoder.engine.model.DialogOption;
 import org.bladecoder.engine.model.Scene;
+import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.SpriteActor.DepthType;
-import org.bladecoder.engine.model.AtlasRenderer;
-import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.model.Verb;
+import org.bladecoder.engine.model.VerbManager;
 import org.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import org.bladecoder.engine.util.EngineLogger;
 import org.xml.sax.Attributes;
@@ -29,7 +30,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -62,7 +63,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			String qName, Attributes atts) throws SAXException {
 
 		if (currentVerb != null) {
-			parseAction(localName, atts, actor != null ? actor : scene);
+			parseAction(localName, atts, actor != null ? actor.getId() : null);
 		} else if (currentDialog != null) {
 
 			if (!localName.equals("option")) {
@@ -184,20 +185,6 @@ public class ChapterXMLLoader extends DefaultHandler {
 					((SpriteActor) actor).setWalkingSpeed(s);
 				}
 
-				// PARSE POSTITION
-				Vector2 pos = Param.parseVector2(atts.getValue("pos"));
-				if (pos == null) {
-					SAXParseException e2 = new SAXParseException(
-							"Wrong actor XML position", locator);
-					error(e2);
-					throw e2;
-				}
-
-				pos.x *= scale;
-				pos.y *= scale;
-
-				((SpriteActor) actor).setPosition(pos.x, pos.y);
-
 				initFrameAnimation = atts.getValue("init_frame_animation");
 
 				// PARSE DEPTH MAP USE
@@ -213,28 +200,45 @@ public class ChapterXMLLoader extends DefaultHandler {
 			}
 
 			// PARSE BBOX
-			if (atts.getValue("x") != null) {
-				float x, y, width = 0, height = 0;
-
+			Polygon p = null;
+			
+			if (atts.getValue("bbox") != null) {
+				
 				try {
-					x = Float.parseFloat(atts.getValue("x")) * scale;
-					y = Float.parseFloat(atts.getValue("y")) * scale;
-					width = Float.parseFloat(atts.getValue("width")) * scale;
-					height = Float.parseFloat(atts.getValue("height")) * scale;
+					p = Param.parsePolygon(atts.getValue("bbox"));
+					p.setScale(scale, scale);
 				} catch (NumberFormatException e) {
 					SAXParseException e2 = new SAXParseException(
 							"Wrong Bounding Box Definition", locator, e);
 					error(e2);
 					throw e2;
 				}
-
-				actor.setBbox(new Rectangle(x, y, width, height));
+				
+				actor.setBbox(p);
 			} else if (type.equals("background")) {
 				SAXParseException e2 = new SAXParseException(
 						"Bounding box definition not set for actor", locator);
 				error(e2);
 				throw e2;
+			} else {
+				p = new Polygon();
+				actor.setBbox(p);
+				((SpriteActor)actor).setBboxFromRenderer(true);
 			}
+			
+			// PARSE POSTITION
+			Vector2 pos = Param.parseVector2(atts.getValue("pos"));
+			if (pos == null) {
+				SAXParseException e2 = new SAXParseException(
+						"Wrong actor XML position", locator);
+				error(e2);
+				throw e2;
+			}
+
+			pos.x *= scale;
+			pos.y *= scale;
+
+			actor.setPosition(pos.x, pos.y);			
 
 			if (atts.getValue("interaction") != null) {
 				boolean interaction = Boolean.parseBoolean(atts
@@ -373,7 +377,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			((SpriteActor) actor).getRenderer().addFrameAnimation(sa);
 		} else if (localName.equals("verb")) {
-			parseVerb(localName, atts, actor != null ? actor : scene);
+			parseVerb(localName, atts, actor != null ? actor.getVerbManager() : scene.getVerbManager());
 		} else if (localName.equals("dialog")) {
 			String id = atts.getValue("id");
 
@@ -384,7 +388,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			actor.addDialog(id, currentDialog);
 		} else if (localName.equals("sound")) {
-			parseSound(localName, atts, actor != null ? actor : scene);
+			parseSound(localName, atts, actor);
 		} else if (localName.equals("chapter")) {
 			initScene = atts.getValue("init_scene");
 		} else if (localName.equals("walk_zone")) {
@@ -497,7 +501,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		actor.addSound(id, filename, loop, volume);
 	}
 
-	private void parseVerb(String localName, Attributes atts, Actor actor) {
+	private void parseVerb(String localName, Attributes atts, VerbManager v) {
 
 		String id = atts.getValue("id");
 		String target = atts.getValue("target");
@@ -511,10 +515,10 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 		currentVerb = new Verb(id);
 
-		actor.addVerb(id, currentVerb);
+		v.addVerb(id, currentVerb);
 	}
 
-	private void parseAction(String localName, Attributes atts, Actor actor) {
+	private void parseAction(String localName, Attributes atts, String actor) {
 		String actionName = localName;
 		Action action = null;
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -533,7 +537,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		}
 
 		if (atts.getValue("actor") == null)
-			params.put("actor", actor.getId());
+			params.put("actor", actor);
 
 		if (actionClass != null) {
 			action = ActionFactory.createByClass(actionClass, params);

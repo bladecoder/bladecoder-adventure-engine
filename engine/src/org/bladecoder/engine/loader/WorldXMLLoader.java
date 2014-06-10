@@ -13,9 +13,9 @@ import org.bladecoder.engine.actions.Action;
 import org.bladecoder.engine.actions.ActionFactory;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.i18n.I18N;
-import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Verb;
+import org.bladecoder.engine.model.VerbManager;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.EngineLogger;
 import org.xml.sax.Attributes;
@@ -122,7 +122,7 @@ public class WorldXMLLoader extends DefaultHandler {
 
 			currentVerb = new Verb(id);
 
-			Actor.addDefaultVerb(id, currentVerb);
+			VerbManager.addDefaultVerb(id, currentVerb);
 		}
 	}
 

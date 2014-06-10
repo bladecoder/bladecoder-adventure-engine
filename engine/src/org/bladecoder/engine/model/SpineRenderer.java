@@ -182,7 +182,7 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public float getWidth() {
-		if (bounds != null)
+		if (bounds != null && bounds.getWidth() != 0)
 			return bounds.getWidth();
 
 		return 200;
@@ -190,7 +190,7 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public float getHeight() {
-		if (bounds != null)
+		if (bounds != null && bounds.getWidth() != 0)
 			return bounds.getHeight();
 
 		return 200;
@@ -202,8 +202,8 @@ public class SpineRenderer implements SpriteRenderer {
 	}
 
 	@Override
-	public void lookat(Vector2 p0, Vector2 pf) {
-		lookat(FrameAnimation.getFrameDirection(p0, pf));
+	public void lookat(float x, float y, Vector2 pf) {
+		lookat(FrameAnimation.getFrameDirection(x, y, pf));
 	}
 
 	@Override
@@ -230,7 +230,7 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
-		String currentDirection = FrameAnimation.getFrameDirection(p0, pf);
+		String currentDirection = FrameAnimation.getFrameDirection(p0.x, p0.y, pf);
 		StringBuilder sb = new StringBuilder();
 		sb.append(FrameAnimation.WALK_ANIM).append('.')
 				.append(currentDirection);

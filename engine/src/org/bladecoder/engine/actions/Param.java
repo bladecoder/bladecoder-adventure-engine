@@ -86,6 +86,9 @@ public class Param {
 		
 		String[] vs = s.split(",");
 		
+		if(vs.length < 6)
+			return null;
+		
 		float verts[] = new float[vs.length];
 		
 		for(int i = 0; i < vs.length; i++) {

@@ -12,7 +12,6 @@ import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -80,14 +79,12 @@ public class SayAction extends BaseCallbackAction implements Action {
 			if (type == Text.Type.RECTANGLE) {
 				x = y = TextManager.POS_SUBTITLE;
 			} else {
-				Vector2 pos = ((SpriteActor) actor).getPosition();
-
 				// WorldCamera c = World.getInstance().getCamera();
 				// Vector3 p = c.scene2screen(pos.x, pos.y +
 				// ((SpriteActor)actor).getHeight());
 
-				x = pos.x;
-				y = pos.y + ((SpriteActor) actor).getHeight();
+				x = actor.getX();
+				y = actor.getY() + ((SpriteActor) actor).getHeight();
 				// quee = true;
 			}
 

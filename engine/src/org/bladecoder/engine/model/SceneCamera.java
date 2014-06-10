@@ -53,6 +53,14 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 	public float getHeight() {
 		return viewportHeight;
 	}
+	
+	public float getScrollingWidth() {
+		return scrollingWidth;
+	}
+	
+	public float getScrollingHeight() {
+		return scrollingHeight;
+	}
 
 	public void setScrollingDimensions(float w, float h) {
 		scrollingWidth = w;
@@ -141,9 +149,9 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 
 	public void updatePos(SpriteActor followActor) {
 		float cx = position.x;
-		float posx = followActor.getPosition().x;
+		float posx = followActor.getX();
 		float cy = position.y;
-		float posy = followActor.getPosition().y;
+		float posy = followActor.getY();
 		
 		boolean translate = false;
 

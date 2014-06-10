@@ -15,7 +15,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -24,63 +23,88 @@ public class ScnWidgetInputListener extends ClickListener {
 	private final ScnWidget scnWidget;
 
 	private static enum DraggingModes {
-		NONE, DRAGING_ACTOR, DRAGING_BBOX, DRAGING_WALKZONE, DRAGING_WALKZONE_POINT, DRAGING_OBSTACLE, DRAGING_OBSTACLE_POINT
-	};
-
-	private static enum Corners {
-		BOTTOM_LEFT, BOTTOM_RIGHT, TOP_LEFT, TOP_RIGHT
+		NONE, DRAGING_ACTOR, DRAGING_BBOX_POINT, DRAGING_WALKZONE, DRAGING_WALKZONE_POINT, DRAGING_OBSTACLE, DRAGING_OBSTACLE_POINT
 	};
 
 	private DraggingModes draggingMode = DraggingModes.NONE;
-	private Corners corner = Corners.BOTTOM_LEFT;
 	private Actor selActor = null;
 	private Vector2 org = new Vector2();
 	private int vertIndex;
 	private Polygon selPolygon = null;
 	private int selObstacleIndex = 0;
-	
+
 	private boolean deleteObstacle = false;
 
 	public ScnWidgetInputListener(ScnWidget w) {
 		this.scnWidget = w;
 	}
-	
+
 	public void setDeleteObstacle(boolean v) {
 		Ctx.msg.show(scnWidget.getStage(), "Select Obstacle to Delete");
 		deleteObstacle = v;
 	}
 
 	@Override
-	public void clicked(InputEvent event, float x, float y) {		
+	public void clicked(InputEvent event, float x, float y) {
 		Scene scn = scnWidget.getScene();
 		if (scn == null)
 			return;
-		
+
 		Vector2 p = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 		scnWidget.screenToWorldCoords(p);
-		
-		if(deleteObstacle) {
+
+		if (deleteObstacle) {
 			deleteObstacle = false;
-			
+
 			Ctx.msg.hide();
 			PolygonalNavGraph pf = scn.getPolygonalNavGraph();
 			ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph()
 					.getObstacles();
-			
-			// CHECK FOR OBSTACLE DRAGGING
+
+			// SEARCH FOR OBSTACLE
 			for (int j = 0; j < obstacles.size(); j++) {
 				Polygon o = obstacles.get(j);
 				if (o.contains(p.x, p.y)) {
-					Ctx.project.getSelectedChapter().deleteObstacle(Ctx.project.getSelectedScene(), j);
+					Ctx.project.getSelectedChapter().deleteObstacle(
+							Ctx.project.getSelectedScene(), j);
 					pf.getObstacles().remove(j);
 					return;
 				}
 			}
 		}
 
+		// DOUBLE CLICK TO CREATE OR DELETE POINTS
 		if (getTapCount() == 2) {
-			if (scn.getPolygonalNavGraph() != null) { // Check WALKZONE
-				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
+			Polygon poly = scnWidget.getSelectedActor().getBBox();
+
+			if (!(scnWidget.getSelectedActor() instanceof SpriteActor)
+					|| !((SpriteActor) scnWidget.getSelectedActor()).isBboxFromRenderer()) {
+				if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+
+					// Delete the point if selected
+					boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y,
+							CanvasDrawer.CORNER_DIST);
+
+					if (deleted) {
+						Ctx.project.getSelectedChapter().setBbox(
+								Ctx.project.getSelectedActor(), poly);
+						return;
+					}
+				} else {
+					boolean created = PolygonUtils.addClampPointIfTolerance(
+							poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
+
+					if (created) {
+						Ctx.project.getSelectedChapter().setBbox(
+								Ctx.project.getSelectedActor(), poly);
+						return;
+					}
+				}
+			}
+
+			// Check WALKZONE
+			if (scn.getPolygonalNavGraph() != null) {
+				poly = scn.getPolygonalNavGraph().getWalkZone();
 				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph()
 						.getObstacles();
 
@@ -139,47 +163,51 @@ public class ScnWidgetInputListener extends ClickListener {
 
 		super.touchDown(event, x, y, pointer, button);
 		EditorLogger.debug("Touch Down - X: " + x + " Y: " + y);
-		
+
 		Scene scn = scnWidget.getScene();
 		if (scn == null)
 			return false;
-		
+
 		Vector2 p = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 		scnWidget.screenToWorldCoords(p);
 		org.set(p);
 
 		if (button == Buttons.LEFT) {
-			selActor = scn.getFullSearchActorAt(p.x, p.y);
+			selActor = scnWidget.getSelectedActor();
+			Actor a = scn.getFullSearchActorAt(p.x, p.y); // CHECK FOR ACTORS
 
-			if (selActor != null) {
+			if (a != null && a != selActor) {
 
+				selActor = a;
 				Element da = Ctx.project.getActor(selActor.getId());
+				Ctx.project.setSelectedActor(da);
 
-				if (Ctx.project.getSelectedActor() == null
-						|| !selActor.getId().equals(
-								Ctx.project.getSelectedChapter().getId(
-										Ctx.project.getSelectedActor())))
-					Ctx.project.setSelectedActor(da);
+				draggingMode = DraggingModes.DRAGING_ACTOR;
+				return true;
+			}
 
-				Rectangle bbox = selActor.getBBox();
+			// SELACTOR VERTEXs DRAGGING
 
-				if (p.dst(bbox.x, bbox.y) < CanvasDrawer.CORNER_DIST) {
-					draggingMode = DraggingModes.DRAGING_BBOX;
-					corner = Corners.BOTTOM_LEFT;
-				} else if (p.dst(bbox.x + bbox.width, bbox.y) < CanvasDrawer.CORNER_DIST) {
-					draggingMode = DraggingModes.DRAGING_BBOX;
-					corner = Corners.BOTTOM_RIGHT;
-				} else if (p.dst(bbox.x, bbox.y + bbox.height) < CanvasDrawer.CORNER_DIST) {
-					draggingMode = DraggingModes.DRAGING_BBOX;
-					corner = Corners.TOP_LEFT;
-				} else if (p.dst(bbox.x + bbox.width, bbox.y + bbox.height) < CanvasDrawer.CORNER_DIST) {
-					draggingMode = DraggingModes.DRAGING_BBOX;
-					corner = Corners.TOP_RIGHT;
-				} else {
-					draggingMode = DraggingModes.DRAGING_ACTOR;
+			if (!(selActor instanceof SpriteActor)
+					|| !((SpriteActor) selActor).isBboxFromRenderer()) {
+
+				Polygon bbox = selActor.getBBox();
+				float verts[] = bbox.getTransformedVertices();
+				for (int i = 0; i < verts.length; i += 2) {
+					if (p.dst(verts[i], verts[i + 1]) < CanvasDrawer.CORNER_DIST) {
+						draggingMode = DraggingModes.DRAGING_BBOX_POINT;
+						vertIndex = i;
+						return true;
+					}
 				}
+			}
 
-			} else if (scn.getPolygonalNavGraph() != null) { // Check WALKZONE
+			if (a != null) {
+				draggingMode = DraggingModes.DRAGING_ACTOR;
+				return true;
+			}
+
+			if (scn.getPolygonalNavGraph() != null) { // Check WALKZONE
 
 				// CHECK WALKZONE VERTEXS
 				Polygon wzPoly = scn.getPolygonalNavGraph().getWalkZone();
@@ -228,7 +256,7 @@ public class ScnWidgetInputListener extends ClickListener {
 					draggingMode = DraggingModes.DRAGING_WALKZONE;
 					return true;
 				}
-				
+
 			}
 
 		}
@@ -256,64 +284,22 @@ public class ScnWidgetInputListener extends ClickListener {
 			org.add(d);
 
 			if (draggingMode == DraggingModes.DRAGING_ACTOR) {
-				if (selActor instanceof SpriteActor) {
-					Vector2 p = ((SpriteActor) selActor).getPosition();
+				Polygon p = selActor.getBBox();
+				p.translate(d.x, d.y);
+				Ctx.project.getSelectedChapter().setPos(
+						Ctx.project.getSelectedActor(),
+						new Vector2(selActor.getX(), selActor.getY()));
 
-					// ((SpriteActor) actor).setPosition(p.x + d.x, p.y + d.y);
+			} else if (draggingMode == DraggingModes.DRAGING_BBOX_POINT) {
+				Polygon poly = selActor.getBBox();
 
-					Ctx.project.getSelectedChapter().setPos(
-							Ctx.project.getSelectedActor(),
-							new Vector2(p.x + d.x, p.y + d.y));
-				} else {
-					Rectangle bbox = selActor.getBBox(); // bbox will be an
-															// inmutable
-															// object
-					bbox.x += d.x;
-					bbox.y += d.y;
-					// actor.setBbox(bbox);
-
-					Ctx.project.getSelectedChapter().setBbox(
-							Ctx.project.getSelectedActor(), bbox);
-				}
-			} else if (draggingMode == DraggingModes.DRAGING_BBOX) {
-				Rectangle bbox = selActor.getBBox(); // bbox will be an
-														// inmutable
-														// object
-
-				switch (corner) {
-				case BOTTOM_LEFT:
-					bbox.x += d.x;
-					bbox.y += d.y;
-					bbox.width -= d.x;
-					bbox.height -= d.y;
-					break;
-				case BOTTOM_RIGHT:
-					bbox.y += d.y;
-					bbox.width += d.x;
-					bbox.height -= d.y;
-					break;
-				case TOP_LEFT:
-					bbox.x += d.x;
-					bbox.width -= d.x;
-					bbox.height += d.y;
-					break;
-				case TOP_RIGHT:
-					bbox.width += d.x;
-					bbox.height += d.y;
-					break;
-				default:
-					break;
-				}
-
-				// actor.setBbox(bbox);
-				if (selActor instanceof SpriteActor) {
-					Vector2 pos = ((SpriteActor) selActor).getPosition();
-					bbox.x -= pos.x;
-					bbox.y -= pos.y;
-				}
+				float verts[] = poly.getVertices();
+				verts[vertIndex] += d.x;
+				verts[vertIndex + 1] += d.y;
+				poly.dirty();
 
 				Ctx.project.getSelectedChapter().setBbox(
-						Ctx.project.getSelectedActor(), bbox);
+						Ctx.project.getSelectedActor(), poly);
 			} else if (draggingMode == DraggingModes.DRAGING_WALKZONE_POINT) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 
@@ -373,7 +359,6 @@ public class ScnWidgetInputListener extends ClickListener {
 		EditorLogger.debug("Touch Up - X: " + x + " Y: " + y);
 
 		draggingMode = DraggingModes.NONE;
-		selActor = null;
 
 		return;
 	}

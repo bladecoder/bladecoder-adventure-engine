@@ -22,6 +22,8 @@ public class WalkZoneWindow extends Container {
 	TextButton createZoneBtn;
 	TextButton createObstacleBtn;
 	TextButton deleteObstacleBtn;
+	TextButton addObstacleActorBtn;
+	TextButton deleteObstacleActorBtn;
 	Scene scn;
 
 	private final ScnWidgetInputListener scnIL;
@@ -33,6 +35,8 @@ public class WalkZoneWindow extends Container {
 		createZoneBtn = new TextButton(null, skin);
 		createObstacleBtn = new TextButton("Create Obstacle", skin);
 		deleteObstacleBtn = new TextButton("Delete Obstacle", skin);
+		addObstacleActorBtn = new TextButton("Set Actor as Obstacle", skin);
+		deleteObstacleActorBtn = new TextButton("Remove Actor as Obstacle", skin);
 
 		createZoneBtn.setDisabled(true);
 		createObstacleBtn.setDisabled(true);
@@ -58,17 +62,13 @@ public class WalkZoneWindow extends Container {
 				if (scn.getPolygonalNavGraph() == null) {
 					float[] verts = new float[8];
 
-					if (scn.getBBox() != null) {
-						verts[3] = scn.getBBox().height;
-						verts[4] = scn.getBBox().width;
-						verts[5] = scn.getBBox().height;
-						verts[6] = scn.getBBox().width;
-					} else {
-						verts[3] = Ctx.project.getWorld().getHeight();
-						verts[4] = Ctx.project.getWorld().getWidth();
-						verts[5] = Ctx.project.getWorld().getHeight();
-						verts[6] = Ctx.project.getWorld().getWidth();
-					}
+					float width = scn.getCamera().getScrollingWidth(); 
+					float height = scn.getCamera().getScrollingHeight();
+					
+					verts[3] = height;
+					verts[4] = width;
+					verts[5] = height;
+					verts[6] = width;
 
 					Polygon poly = new Polygon(verts);
 					PolygonalNavGraph pf = new PolygonalNavGraph();
@@ -115,7 +115,12 @@ public class WalkZoneWindow extends Container {
 		deleteObstacleBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				scnIL.setDeleteObstacle(true);
+				PolygonalNavGraph pf = scn.getPolygonalNavGraph();
+				
+				if(pf.getObstacles().size() > 0)
+					scnIL.setDeleteObstacle(true);
+				else 
+					Ctx.msg.show(getStage(), "There are no obstacles to delete", 3);
 
 				// if(pf.getObstacles().size() == 0)
 				// deleteObstacleBtn.setDisabled(true);

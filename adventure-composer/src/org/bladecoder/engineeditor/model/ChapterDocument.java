@@ -24,7 +24,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class ChapterDocument extends BaseDocument {
@@ -80,20 +79,6 @@ public class ChapterDocument extends BaseDocument {
 				.getElementsByTagName("scene");
 
 		return s;
-	}
-
-	public void createActor(Element scn, String id, String type) {
-		Element e = doc.createElement("actor");
-
-		scn.appendChild(e);
-		setActorId(scn, e, id);
-		e.setAttribute("type", type);
-
-		if (type.equals(BACKGROUND_ACTOR_TYPE))
-			setBbox(e, new Rectangle(0, 0, 100, 100));
-
-		modified = true;
-		firePropertyChange(ChapterDocument.NOTIFY_ELEMENT_CREATED, e);
 	}
 
 	public void addActor(Element scn, Element e) {
@@ -271,26 +256,8 @@ public class ChapterDocument extends BaseDocument {
 		setRootAttr(doc.getDocumentElement(), "id", id);
 	}
 
-	public Rectangle getBBox() {
-		return getBBox(doc.getDocumentElement());
-	}
-
 	public String toString() {
 		return getId();
-	}
-
-	public void setBbox(Rectangle bbox) {
-		setBbox(doc.getDocumentElement(), bbox);
-	}
-
-	public ChapterDocument cloneScene() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ChapterDocument pasteScene() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/*********************** ELEMENT METHODS *************************/
@@ -337,18 +304,11 @@ public class ChapterDocument extends BaseDocument {
 		return e.getElementsByTagName("frame_animation");
 	}
 
-	public Rectangle getBBox(Element e) {
-		if (e.getAttribute("x").isEmpty() || e.getAttribute("y").isEmpty()
-				|| e.getAttribute("width").isEmpty()
-				|| e.getAttribute("height").isEmpty())
+	public Polygon getBBox(Element e) {
+		if (e.getAttribute("bbox").isEmpty())
 			return null;
-
-		float x = Float.parseFloat(e.getAttribute("x"));
-		float y = Float.parseFloat(e.getAttribute("y"));
-		float width = Float.parseFloat(e.getAttribute("width"));
-		float height = Float.parseFloat(e.getAttribute("height"));
-
-		return new Rectangle(x, y, width, height);
+		
+		return Param.parsePolygon(e.getAttribute("bbox"));
 	}
 
 	public Actor getEngineActor(Element e) {
@@ -377,8 +337,20 @@ public class ChapterDocument extends BaseDocument {
 		}
 
 		a.setId(getId(e));
-		Rectangle bbox = getBBox(e);
+		Polygon bbox = getBBox(e);
 		a.setBbox(bbox);
+		
+		if(bbox == null) {
+			bbox = new Polygon();
+			a.setBbox(bbox);
+			
+			if(a instanceof SpriteActor)
+				((SpriteActor) a).setBboxFromRenderer(true);
+		}
+		
+		Vector2 pos = getPos(e);
+		a.setPosition(pos.x, pos.y);
+			
 		a.setDesc(e.getAttribute("desc"));
 
 		if (a instanceof SpriteActor) {
@@ -393,9 +365,6 @@ public class ChapterDocument extends BaseDocument {
 
 				r.addFrameAnimation(fa);
 			}
-
-			Vector2 pos = getPos(e);
-			((SpriteActor) a).setPosition(pos.x, pos.y);
 
 			if (!e.getAttribute("init_frame_animation").isEmpty()) {
 				((SpriteActor) a).getRenderer().setInitFrameAnimation(
@@ -493,18 +462,25 @@ public class ChapterDocument extends BaseDocument {
 		return e.getElementsByTagName("dialog");
 	}
 
-	public void setBbox(Element e, Rectangle bbox) {
-		if (bbox == null) {
-			e.removeAttribute("x");
-			e.removeAttribute("y");
-			e.removeAttribute("width");
-			e.removeAttribute("height");
-		} else {
-			e.setAttribute("x", Float.toString(bbox.x));
-			e.setAttribute("y", Float.toString(bbox.y));
-			e.setAttribute("width", Float.toString(bbox.width));
-			e.setAttribute("height", Float.toString(bbox.height));
+	public void setBbox(Element e, Polygon p) {
+		if (p == null) {
+			p = new Polygon();
+			
+			float[] verts = new float[8];
+			
+			verts[0] = 0f;
+			verts[1] = 0f;
+			verts[2] = 0f;
+			verts[3] = 200;
+			verts[4] = 200;
+			verts[5] = 200;
+			verts[6] = 200;
+			verts[7] = 0f;
+			
+			p.setVertices(verts);
 		}
+		
+		e.setAttribute("bbox", Param.toStringParam(p));
 
 		modified = true;
 		firePropertyChange("bbox", e);

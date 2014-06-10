@@ -13,7 +13,6 @@ import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -22,22 +21,19 @@ public class SpriteActor extends Actor {
 	private final static float DEFAULT_WALKING_SPEED = 700f; // Speed units:
 																// pix/sec.
 
-	private SpriteRenderer renderer;
-	
-	Tween posTween;
-
 	public static enum DepthType {
 		NONE, MAP, VECTOR
-	};
-
-	protected Vector2 pos = new Vector2();
-	protected float scale = 1.0f;
+	};	
+	
+	private SpriteRenderer renderer;
+	private Tween posTween;
+	private float scale = 1.0f;
 
 	/** Scale sprite acording to the scene depth map */
 	private DepthType depthType = DepthType.NONE;
-	protected Scene scene = null;
 
 	private float walkingSpeed = DEFAULT_WALKING_SPEED;
+	private boolean bboxFromRenderer = false;
 
 	public void setRenderer(SpriteRenderer r) {
 		renderer = r;
@@ -51,10 +47,6 @@ public class SpriteActor extends Actor {
 		walkingSpeed = s;
 	}
 
-	public void setScene(Scene s) {
-		scene = s;
-	}
-
 	public DepthType getDepthType() {
 		return depthType;
 	}
@@ -65,8 +57,7 @@ public class SpriteActor extends Actor {
 
 	public void setPosition(float x, float y) {
 
-		pos.x = x;
-		pos.y = y;
+		bbox.setPosition(x, y);
 
 		if (scene != null) {
 
@@ -81,7 +72,7 @@ public class SpriteActor extends Actor {
 
 				// interpolation equation
 				float s = Math.abs(depth.x + (depth.y - depth.x) * y
-						/ scene.getBBox().height);
+						/ scene.getCamera().getScrollingHeight());
 
 				if (s != 0)
 					setScale(s);
@@ -93,9 +84,16 @@ public class SpriteActor extends Actor {
 		}
 
 	}
+	
+	public boolean isBboxFromRenderer() {
+		return bboxFromRenderer;
+	}
 
-	public Vector2 getPosition() {
-		return pos;
+	public void setBboxFromRenderer(boolean v) {
+		this.bboxFromRenderer = v;
+		
+		if(v)
+			updateBBox();
 	}
 
 	public float getWidth() {
@@ -106,30 +104,13 @@ public class SpriteActor extends Actor {
 		return renderer.getHeight() * scale;
 	}
 
-	@Override
-	public Rectangle getBBox() {
-		if (bbox != null)
-			return new Rectangle(pos.x + bbox.x, pos.y + bbox.y, bbox.width
-					* scale, bbox.height * scale);
-		else
-			return new Rectangle(pos.x - getWidth() / 2, pos.y, getWidth(),
-					getHeight());
-	}
-
-	@Override
-	public void setBbox(Rectangle bbox) {
-		if (bbox == null)
-			this.bbox = null;
-		else
-			this.bbox = new Rectangle(bbox.x, bbox.y, bbox.width, bbox.height);
-	}
-
 	public float getScale() {
 		return scale;
 	}
 
 	public void setScale(float scale) {
 		this.scale = scale;
+		bbox.setScale(scale, scale);
 	}
 
 	public void update(float delta) {
@@ -144,7 +125,7 @@ public class SpriteActor extends Actor {
 
 	public void draw(SpriteBatch batch) {
 		if (isVisible()) {
-			renderer.draw(batch, pos.x, pos.y, scale);
+			renderer.draw(batch, getX(), getY(), scale);
 		}
 	}
 
@@ -167,9 +148,8 @@ public class SpriteActor extends Actor {
 
 			if (outD != null) {
 				float s = EngineAssetManager.getInstance().getScale();
-
-				pos.x += outD.x * s;
-				pos.y += outD.y * s;
+				
+				setPosition(getX() + outD.x * s, getY() + outD.y * s);
 			}
 		}
 
@@ -178,6 +158,9 @@ public class SpriteActor extends Actor {
 		fa = renderer.getCurrentFrameAnimation();
 
 		if (fa != null) {
+			if(bboxFromRenderer)
+				updateBBox();
+			
 			if (fa.sound != null) {
 				playSound(fa.sound);
 			}
@@ -186,8 +169,8 @@ public class SpriteActor extends Actor {
 
 			if (inD != null) {
 				float s = EngineAssetManager.getInstance().getScale();
-				pos.x += inD.x * s;
-				pos.y += inD.y * s;
+				
+				setPosition(getX() + inD.x * s, getY() + inD.y * s);
 			}
 		}
 	}
@@ -212,19 +195,27 @@ public class SpriteActor extends Actor {
 	}
 
 	public void lookat(Vector2 p) {
-		renderer.lookat(pos, p);
+		renderer.lookat(bbox.getX(), bbox.getY(), p);
+		if(bboxFromRenderer)
+			updateBBox();
 	}
 
 	public void lookat(String direction) {
 		renderer.lookat(direction);
+		if(bboxFromRenderer)
+			updateBBox();
 	}
 
 	public void stand() {
 		renderer.stand();
+		if(bboxFromRenderer)
+			updateBBox();
 	}
 
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
 		renderer.startWalkFA(p0, pf);
+		if(bboxFromRenderer)
+			updateBBox();
 	}
 
 	/**
@@ -236,7 +227,7 @@ public class SpriteActor extends Actor {
 	public void goTo(Vector2 pf, ActionCallback cb) {
 		EngineLogger.debug(MessageFormat.format("GOTO {0},{1}", pf.x, pf.y));
 
-		Vector2 p0 = getPosition();
+		Vector2 p0 = new Vector2(bbox.getX(), bbox.getY());
 
 		ArrayList<Vector2> walkingPath = null;
 
@@ -258,6 +249,28 @@ public class SpriteActor extends Actor {
 
 		((WalkTween)posTween).start(this, walkingPath, walkingSpeed, cb);
 	}
+	
+	/**
+	 * Updates de bbox with the renderer width and height information
+	 * 
+	 * @param p
+	 */
+	private void updateBBox() {
+		if(bbox.getVertices() == null || bbox.getVertices().length != 4) {
+			bbox.setVertices(new float[8]);
+		}
+		
+		float[] verts = bbox.getVertices();
+		
+		verts[0] = -renderer.getWidth()/2;
+		verts[1] = 0f;
+		verts[2] = -renderer.getWidth()/2;
+		verts[3] = renderer.getHeight();
+		verts[4] = renderer.getWidth()/2;
+		verts[5] = renderer.getHeight();
+		verts[6] = renderer.getWidth()/2;
+		verts[7] = 0f;		
+	}	
 
 	@Override
 	public String toString() {
@@ -279,12 +292,17 @@ public class SpriteActor extends Actor {
 
 	@Override
 	public void retrieveAssets() {
-		super.retrieveAssets();
-
 		renderer.retrieveAssets();
 		
+		if(bboxFromRenderer) {
+			renderer.update(0);
+			updateBBox();
+		}
+		
 		// Call setPosition to recalc fake depth and camera follow
-		setPosition(pos.x, pos.y);
+		setPosition(bbox.getX(), bbox.getY());
+		
+		super.retrieveAssets();
 	}
 
 	@Override
@@ -297,16 +315,11 @@ public class SpriteActor extends Actor {
 		super.write(json);
 
 		json.writeValue("scale", scale);
-
-		float worldScale = EngineAssetManager.getInstance().getScale();
-		Vector2 scaledPos = new Vector2(pos.x / worldScale, pos.y / worldScale);
-		json.writeValue("pos", scaledPos);
-
 		json.writeValue("walkingSpeed", walkingSpeed);
 		json.writeValue("posTween", posTween);
-		json.writeValue("depthType", depthType);
-		
-		json.writeValue("renderer", renderer);
+		json.writeValue("depthType", depthType);		
+		json.writeValue("renderer", renderer, renderer.getClass());
+		json.writeValue("bboxFromRenderer", bboxFromRenderer);
 	}
 
 	@Override
@@ -314,15 +327,11 @@ public class SpriteActor extends Actor {
 		super.read(json, jsonData);
 
 		scale = json.readValue("scale", Float.class, jsonData);
-		pos = json.readValue("pos", Vector2.class, jsonData);
-
-		float worldScale = EngineAssetManager.getInstance().getScale();
-		pos.x *= worldScale;
-		pos.y *= worldScale;
-
 		walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);
 		posTween = json.readValue("posTween", Tween.class, jsonData);
 		depthType = json.readValue("depthType", DepthType.class, jsonData);
-		renderer = json.readValue("renderer", null, jsonData);
+		renderer = json.readValue("renderer", SpriteRenderer.class, jsonData);
+		bboxFromRenderer = json.readValue("bboxFromRenderer", Boolean.class, jsonData);
 	}
+
 }

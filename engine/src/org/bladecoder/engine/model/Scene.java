@@ -29,16 +29,16 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class Scene extends Actor implements Movers, Serializable,
+public class Scene implements Movers, Serializable,
 		AssetConsumer {
 	
-	private static final Color ACTOR_BBOX_COLOR = new Color(0.2f, 0.2f, 0.8f,
+	public static final Color ACTOR_BBOX_COLOR = new Color(0.2f, 0.2f, 0.8f,
 			1f);
 	private static final String MAP_FILE_EXTENSION = ".map.png";
 	private static final TextureFilter BG_TEXFILTER_MAG = TextureFilter.Linear;
 	private static final TextureFilter BG_TEXFILTER_MIN = TextureFilter.Linear;
-	private static final Color WALKZONE_COLOR = Color.GREEN;
-	private static final Color OBSTACLE_COLOR = Color.RED;
+	public static final Color WALKZONE_COLOR = Color.GREEN;
+	public static final Color OBSTACLE_COLOR = Color.RED;
 
 	/** 
 	 * All actors in the scene
@@ -58,6 +58,7 @@ public class Scene extends Actor implements Movers, Serializable,
 	private List<Actor> orderedActors = new ArrayList<Actor>();
 	
 	private SceneCamera camera = new SceneCamera();
+
 	
 	private Texture[] background;
 	private Texture[] lightMap;
@@ -94,8 +95,49 @@ public class Scene extends Actor implements Movers, Serializable,
 	private boolean isPlayingSer = false;
 
 	transient private boolean isMusicPaused = false;
+	
+	private String id;
+	
+	/** internal state. Can be used for actions to maintain a state machine */
+	private String state;
+	
+	private VerbManager verbs = new VerbManager();
+	
+	/**
+	 * Add support for the use of global custom properties/variables in the game
+	 * logic
+	 */
+	private HashMap<String, String> customProperties;
 
 	public Scene() {	
+	}
+	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public String getState() {
+		return state;
+	}
+	
+	public void setState(String s) {
+		state = s;
+	}
+
+	
+	public void setCustomProperty(String name, String value) {
+		if(customProperties == null)
+			customProperties = new HashMap<String, String>();
+		
+		customProperties.put(name, value);
+	}
+	
+	public String getCustomProperty(String name) {
+		return customProperties.get(name);
 	}
 
 	public void playMusic() {
@@ -130,6 +172,18 @@ public class Scene extends Actor implements Movers, Serializable,
 		musicFilename = filename;
 		initialMusicDelay = initialDelay;
 		repeatMusicDelay = repeatDelay;
+	}
+	
+	public VerbManager getVerbManager() {
+		return verbs;
+	}
+
+	public Verb getVerb(String id) {
+		return verbs.getVerb(id, state, null);
+	}
+	
+	public void runVerb(String id) {
+		verbs.runVerb(id, state, null);
 	}
 
 	public void update(float delta) {
@@ -200,7 +254,7 @@ public class Scene extends Actor implements Movers, Serializable,
 
 			if (EngineLogger.debugMode()
 					&& EngineLogger.getDebugLevel() == EngineLogger.DEBUG2 && backgroundMap != null)
-				backgroundMap.draw(spriteBatch, bbox.width, bbox.height);
+				backgroundMap.draw(spriteBatch, camera.getScrollingWidth(), camera.getScrollingHeight());
 		}
 
 		for (Actor a : orderedActors) {
@@ -238,7 +292,7 @@ public class Scene extends Actor implements Movers, Serializable,
 			StringBuilder sb = new StringBuilder();
 
 			for (Actor a : orderedActors) {
-				Rectangle r = a.getBBox();
+				Rectangle r = a.getBBox().getBoundingRectangle();
 				sb.setLength(0);
 				sb.append(a.getId());
 				if (a.getState() != null)
@@ -260,17 +314,20 @@ public class Scene extends Actor implements Movers, Serializable,
 		renderer.setColor(ACTOR_BBOX_COLOR);
 
 		for (Actor a : orderedActors) {
-			Rectangle r = a.getBBox();
+			Polygon p = a.getBBox();
 
-			if (r == null) {
+			if (p == null) {
 				EngineLogger.error("ERROR DRAWING BBOX FOR: " + a.getId());
 			}
+			
+			Rectangle r = a.getBBox().getBoundingRectangle();
 
+			renderer.polygon(p.getTransformedVertices());
 			renderer.rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 		}
 
 		for (SpriteActor a : fgActors) {
-			Rectangle r = a.getBBox();
+			Rectangle r = a.getBBox().getBoundingRectangle();
 			renderer.rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 		}
 		
@@ -296,6 +353,10 @@ public class Scene extends Actor implements Movers, Serializable,
 		}
 
 		renderer.end();
+	}
+	
+	public ArrayList<SpriteActor> getForegroundActors() {
+		return fgActors;
 	}
 
 	public void setOverlay(OverlayImage o) {
@@ -336,9 +397,6 @@ public class Scene extends Actor implements Movers, Serializable,
 			}
 		}
 
-		if (a == null && this.id.equals(id))
-			a = this;
-
 		return a;
 	}
 
@@ -349,13 +407,12 @@ public class Scene extends Actor implements Movers, Serializable,
 	public void addActor(Actor actor) {
 		actors.put(actor.getId(), actor);
 		orderedActors.add(actor);
-		
-		if(actor instanceof SpriteActor)
-			((SpriteActor) actor).setScene(this);
+		actor.setScene(this);
 	}
 
 	public void addFgActor(SpriteActor actor) {
 		fgActors.add(actor);
+		// ADD SCENE?
 	}
 
 	public void setBackground(String bgFilename, String lightMapFilename) {
@@ -433,19 +490,26 @@ public class Scene extends Actor implements Movers, Serializable,
 		return null;
 	}
 
+	/**
+	 * Method used for the editor to select one actor.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public Actor getFullSearchActorAt(float x, float y) {
 		// Se recorre la lista al revés para quedarnos con el más cercano a la
 		// cámara
 		for (int i = orderedActors.size() - 1; i >= 0; i--) {
 			Actor a = orderedActors.get(i);
 
-			if (a.hit(x, y)) {
+			if (a.getBBox().getBoundingRectangle().contains(x, y)) {
 				return a;
 			}
 		}
 
 		for (Actor a : fgActors) {
-			if (a.hit(x, y)) {
+			if (a.getBBox().getBoundingRectangle().contains(x, y)) {
 				return a;
 			}
 		}
@@ -517,7 +581,7 @@ public class Scene extends Actor implements Movers, Serializable,
 
 			SpriteActor a = (SpriteActor) ba;
 
-			Rectangle bbox = a.getBBox();
+			Rectangle bbox = a.getBBox().getBoundingRectangle();
 
 			int x0 = (int) (bbox.x / size);
 			int y0 = (int) (bbox.y / size);
@@ -564,7 +628,6 @@ public class Scene extends Actor implements Movers, Serializable,
 
 	@Override
 	public void loadAssets() {
-		super.loadAssets();
 
 		if (background != null) {
 			ArrayList<String> tiles = getTilesByFilename(backgroundFilename);
@@ -616,13 +679,12 @@ public class Scene extends Actor implements Movers, Serializable,
 
 	@Override
 	public void retrieveAssets() {
-		super.retrieveAssets();
 
 		// RETRIEVE BACKGROUND
 		if (background != null) {
 			ArrayList<String> tiles = getTilesByFilename(backgroundFilename);
 
-			float width = 0;
+			int width = 0;
 
 			for (int i = 0; i < background.length; i++) {
 				Texture texture = EngineAssetManager.getInstance().getTexture(
@@ -632,9 +694,7 @@ public class Scene extends Actor implements Movers, Serializable,
 				width += texture.getWidth();
 			}
 
-			float height = background[0].getHeight();
-
-			setBbox(new Rectangle(0, 0, width, height));
+			int height = background[0].getHeight();
 
 			if (backgroundMap != null) {
 				backgroundMap.setTileSize(width
@@ -643,8 +703,8 @@ public class Scene extends Actor implements Movers, Serializable,
 			
 			// Sets the scrolling dimensions. It must be done here because 
 			// the background must be loaded to calculate the bbox
-			camera.setScrollingDimensions(getBBox().width,
-						getBBox().height);
+			camera.setScrollingDimensions(width,
+						height);
 			
 //			if(followActor != null)
 //				camera.updatePos(followActor);
@@ -691,7 +751,6 @@ public class Scene extends Actor implements Movers, Serializable,
 
 	@Override
 	public void dispose() {
-		super.dispose();
 
 		if (background != null) {
 			for (Texture tile : background)
@@ -743,9 +802,13 @@ public class Scene extends Actor implements Movers, Serializable,
 	}
 
 
+	// TODO SAVE BG WIDTH AND HEIGHT + WALKZONE
 	@Override
 	public void write(Json json) {
-		super.write(json);
+		json.writeValue("id", id);
+		json.writeValue("state", state, state == null ? null : state.getClass());
+		json.writeValue("verbs", verbs);
+		
 		json.writeValue("actors", actors);
 		json.writeValue("fgActors", fgActors);
 		json.writeValue("player", player,
@@ -779,12 +842,16 @@ public class Scene extends Actor implements Movers, Serializable,
 		
 		json.writeValue("followActor", followActor == null ? null : followActor.getId(),
 				followActor == null ? null : String.class);
+		
+		json.writeValue("customProperties", customProperties, customProperties == null ? null : customProperties.getClass());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
+		id = json.readValue("id", String.class, jsonData);
+		state = json.readValue("state", String.class, jsonData);
+		verbs = json.readValue("verbs", VerbManager.class, jsonData);
 
 		actors = json.readValue("actors", HashMap.class, Actor.class,
 				jsonData);
@@ -794,11 +861,7 @@ public class Scene extends Actor implements Movers, Serializable,
 
 		for (Actor a : actors.values()) {
 			orderedActors.add(a);
-
-			// set scene for SpriteActors
-			if (a instanceof SpriteActor) {
-				((SpriteActor) a).setScene(this);
-			}
+			a.setScene(this);
 		}
 
 		backgroundFilename = json.readValue("background", String.class,
@@ -825,6 +888,7 @@ public class Scene extends Actor implements Movers, Serializable,
 				jsonData);
 		
 		setCameraFollowActor((SpriteActor)actors.get(followActorId));
+		
+		customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
 	}
-
 }

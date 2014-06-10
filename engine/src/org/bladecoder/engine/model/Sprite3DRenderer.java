@@ -430,9 +430,9 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	@Override
-	public void lookat(Vector2 p0, Vector2 pf) {
+	public void lookat(float x, float y, Vector2 pf) {
 		Vector2 tmp = new Vector2(pf);
-		float angle = tmp.sub(p0).angle() + 90;
+		float angle = tmp.sub(x, y).angle() + 90;
 		lookat(angle);
 	}
 
@@ -449,7 +449,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
-		lookat(p0, pf);
+		lookat(p0.x, p0.y, pf);
 		startFrameAnimation(FrameAnimation.WALK_ANIM, Tween.REPEAT, -1,
 				null);
 	}
@@ -519,11 +519,14 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 			// get screen coords for x and y
 			tmp.set(x, y, 0);
+			
+			tmp.mul(batch.getTransformMatrix());
 			tmp.prj(batch.getProjectionMatrix());
 			p0x = VIEWPORT.width * (tmp.x + 1) / 2;
 			p0y = VIEWPORT.height * (tmp.y + 1) / 2;
 
-			tmp.set(x + width, y + height, 0);
+			tmp.set(x + width * scale, y + height * scale, 0);
+			tmp.mul(batch.getTransformMatrix());
 			tmp.prj(batch.getProjectionMatrix());
 			pfx = VIEWPORT.width * (tmp.x + 1) / 2;
 			pfy = VIEWPORT.height * (tmp.y + 1) / 2;

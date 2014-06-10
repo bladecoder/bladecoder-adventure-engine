@@ -5,6 +5,7 @@ import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Verb;
+import org.bladecoder.engine.model.VerbManager;
 import org.bladecoder.engine.model.World;
 
 public class ActionCallbackSerialization {
@@ -34,7 +35,26 @@ public class ActionCallbackSerialization {
 		
 		String id = a.getId();
 
-		for (Verb v : a.getVerbs().values()) {
+		for (Verb v : a.getVerbManager().getVerbs().values()) {
+			String result = find(cb, v);
+
+			if (result != null) {
+				StringBuilder stringBuilder = new StringBuilder(id);
+				stringBuilder.append(SEPARATION_SYMBOL).append(result);
+
+				return stringBuilder.toString();
+			}
+		}
+
+		return null;
+	}
+	
+	private static String find(ActionCallback cb, Scene s) {
+		if(s == null) return null;
+		
+		String id = s.getId();
+
+		for (Verb v : s.getVerbManager().getVerbs().values()) {
 			String result = find(cb, v);
 
 			if (result != null) {
@@ -74,7 +94,7 @@ public class ActionCallbackSerialization {
 		}
 
 		// search in defaultVerbs
-		for (Verb v : Actor.getDefaultVerbs().values()) {
+		for (Verb v : VerbManager.getDefaultVerbs().values()) {
 			id = find(cb, v);
 			if (id != null) {
 				StringBuilder stringBuilder = new StringBuilder("DEFAULT_VERB");
@@ -104,20 +124,21 @@ public class ActionCallbackSerialization {
 		
 		if (actorId.equals("DEFAULT_VERB")) {
 
-			v = Actor.getDefaultVerbs().get(verbId);
+			v = VerbManager.getDefaultVerbs().get(verbId);
 		} else {
 
 			Actor a;
 
-			if (actorId.equals(s.getId()))
-				a = s;
-			else
+			if (actorId.equals(s.getId())) {
+				v = s.getVerbManager().getVerbs().get(verbId);
+			} else {
 				a = s.getActor(actorId);
 
-			if (a == null)
-				return null;
-
-			v = a.getVerbs().get(verbId);
+				if (a == null)
+					return null;
+				
+				v = a.getVerbManager().getVerbs().get(verbId);
+			}
 		}
 
 		if (v == null)
