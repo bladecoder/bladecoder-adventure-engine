@@ -57,13 +57,13 @@ public class SpriteActor extends Actor {
 
 	public void setPosition(float x, float y) {
 		
-		if(scene!= null && isWalkObstacle() && scene.getPolygonalNavGraph() != null) {
+		if(isWalkObstacle() && scene.getPolygonalNavGraph() != null) {
 			scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
 		}
 		
 		bbox.setPosition(x, y);
 		
-		if(scene!= null && isWalkObstacle() && scene.getPolygonalNavGraph() != null) {
+		if(isWalkObstacle() && scene.getPolygonalNavGraph() != null) {
 			scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
 		}
 		

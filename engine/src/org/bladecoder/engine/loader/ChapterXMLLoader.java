@@ -240,6 +240,11 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			actor.setPosition(pos.x, pos.y);			
 
+			pos.x *= scale;
+			pos.y *= scale;
+
+			actor.setPosition(pos.x, pos.y);			
+
 			if (atts.getValue("interaction") != null) {
 				boolean interaction = Boolean.parseBoolean(atts
 						.getValue("interaction"));

@@ -198,7 +198,7 @@ public class WalkZoneWindow extends Container {
 			if(!a.isWalkObstacle()) {
 				addObstacleActorBtn.setText(SET_ACTOR_AS_OBSTACLE_TEXT);
 			} else {
-				addObstacleActorBtn.setText(REMOVE_ACTOR_AS_OBSTACLE_TEXT);
+				addObstacleActorBtn.setText(SET_ACTOR_AS_OBSTACLE_TEXT);
 			}
 		}
 	}
