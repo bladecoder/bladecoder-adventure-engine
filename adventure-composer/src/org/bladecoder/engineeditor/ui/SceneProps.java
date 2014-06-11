@@ -65,7 +65,8 @@ public class SceneProps extends PropertyTable {
 		}	
 	}
 
-	private void updateModel(String property, String value) {
+	@Override
+	protected void updateModel(String property, String value) {
 		if (property.equals(MUSIC_PROP)) {
 			doc.setRootAttr(scn,"music", value);
 		} else if (property.equals(LOOP_MUSIC_PROP)) {

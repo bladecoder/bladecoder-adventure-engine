@@ -103,11 +103,14 @@ public class EditActorDialog extends EditElementDialog {
 
 	@Override
 	protected void fill() {
-
-		if (((ChapterDocument)doc).getBBox(e) == null) {
+		int i = typePanel.getSelectedIndex();
+		if (((ChapterDocument)doc).getBBox(e) == null && ChapterDocument.ACTOR_TYPES[i]
+				.equals(ChapterDocument.BACKGROUND_ACTOR_TYPE)) {
 			((ChapterDocument) doc).setBbox(e, null);
-			((ChapterDocument) doc).setPos(e, new Vector2(0, 0));
 		}
+		
+		if(((ChapterDocument)doc).getPos(e) == null)
+			((ChapterDocument) doc).setPos(e, new Vector2(0, 0));
 
 		super.fill();
 	}

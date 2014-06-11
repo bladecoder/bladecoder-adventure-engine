@@ -144,5 +144,12 @@ public class Editor implements ApplicationListener {
 		stage.dispose();
 		
 		Ctx.project.saveConfig();
+		
+		try {
+			Ctx.project.saveProject();
+		} catch (Exception ex) {
+			System.out.println("Something went wrong while saving the project.\n");
+			ex.printStackTrace();
+		}
 	}
 }

@@ -8,7 +8,6 @@ import org.bladecoder.engineeditor.ui.components.PropertyTable;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.w3c.dom.Element;
 
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
@@ -17,7 +16,6 @@ public class ActorProps extends PropertyTable {
 	public static final String DESC_PROP = "Description";
 	public static final String POS_X_PROP = "pos X";
 	public static final String POS_Y_PROP = "pos Y";
-	public static final String INTERACTION_PROP = "interaction";
 	public static final String VISIBLE_PROP = "visible";
 	public static final String ACTIVE_PROP = "active";
 	public static final String STATE_PROP = "state";
@@ -64,15 +62,14 @@ public class ActorProps extends PropertyTable {
 
 			addProperty(DESC_PROP, doc.getRootAttr(a, "desc"));
 
-			addProperty(INTERACTION_PROP, doc.getRootAttr(a, "interaction"), Types.BOOLEAN);
 			addProperty(VISIBLE_PROP, doc.getRootAttr(a, "visible"), Types.BOOLEAN);
 
 			addProperty(ACTIVE_PROP, doc.getRootAttr(a, "active"), Types.BOOLEAN);
 			addProperty(STATE_PROP, doc.getRootAttr(a, "state"));
 			
 			
-			if (a.getAttribute("type").equals("player") || 
-				a.getAttribute("type").equals("character")) {
+			if (!a.getAttribute("type").equals("background") && 
+				!a.getAttribute("type").equals("foreground")) {
 				addProperty(WALKING_SPEED_PROP, doc.getRootAttr(a, "walking_speed"));
 			}
 			
@@ -82,7 +79,8 @@ public class ActorProps extends PropertyTable {
 		}
 	}
 
-	private void updateModel(String property, String value) {
+	@Override
+	protected void updateModel(String property, String value) {
 		if (property.equals(DESC_PROP)) {
 			doc.setRootAttr(actor, "desc", value);
 		} else if (property.equals(POS_X_PROP)) {
@@ -93,8 +91,6 @@ public class ActorProps extends PropertyTable {
 			Vector2 pos = doc.getPos(actor);
 			pos.y = Float.parseFloat(value);
 			doc.setPos(actor, pos);
-		} else if (property.equals(INTERACTION_PROP)) {
-			doc.setRootAttr(actor, "interaction", value);
 		} else if (property.equals(VISIBLE_PROP)) {
 			doc.setRootAttr(actor, "visible", value);
 		} else if (property.equals(ACTIVE_PROP)) {

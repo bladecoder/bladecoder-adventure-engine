@@ -348,7 +348,8 @@ public class ChapterDocument extends BaseDocument {
 		}
 		
 		Vector2 pos = getPos(e);
-		a.setPosition(pos.x, pos.y);
+		if(pos != null)
+			a.setPosition(pos.x, pos.y);
 			
 		a.setDesc(e.getAttribute("desc"));
 

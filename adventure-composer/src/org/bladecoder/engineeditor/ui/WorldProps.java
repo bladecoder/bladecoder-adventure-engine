@@ -40,7 +40,8 @@ public class WorldProps extends PropertyTable {
 				});
 	}
 
-	private void updateModel(String property, String value) {
+	@Override
+	protected void updateModel(String property, String value) {
 		if (property.equals(WIDTH_PROP)) {
 			Ctx.project.getWorld().setWidth(value);
 		} else if (property.equals(TITLE_PROP)) {

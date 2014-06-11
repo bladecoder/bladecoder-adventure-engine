@@ -52,9 +52,10 @@ public abstract class EditElementDialog extends EditDialog {
 			}
 		}
 		
-		// TODO set focus to the first component		
-//		if(inputs.length > 0)
+		// TODO Set focus to the 1st element		
+//		if(inputs.length > 0) {
 //			getStage().setKeyboardFocus(inputs[0].getField());
+//		}
 	}
 
 	@Override
