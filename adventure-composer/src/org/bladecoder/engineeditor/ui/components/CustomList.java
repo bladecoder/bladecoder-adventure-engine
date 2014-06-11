@@ -3,6 +3,7 @@ package org.bladecoder.engineeditor.ui.components;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -117,10 +118,20 @@ public class CustomList<T> extends Widget implements Cullable {
 			}
 			
 			if(cellRenderer.hasImage()) {
-				int w = cellRenderer.getCellImage(items.get(i)).getRegionWidth();
-				prefWidth = Math.max(w, prefWidth);
+				TextureRegion r = cellRenderer.getCellImage(items.get(i));
+				
+				float ih = r.getRegionHeight();
+				float iw = r.getRegionWidth();
+						
+				if(ih > getItemHeight() - 10) {
+					ih = getItemHeight() - 10;
+					iw *= ih / r.getRegionHeight();
+				}
+				
+				prefWidth = Math.max(iw, prefWidth);
 			}
 		}
+		
 		prefWidth += selectedDrawable.getLeftWidth()
 				+ selectedDrawable.getRightWidth();
 		
