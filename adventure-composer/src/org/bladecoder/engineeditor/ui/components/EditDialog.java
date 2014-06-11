@@ -57,6 +57,24 @@ public abstract class EditDialog extends Dialog {
 		padLeft(10);
 		padRight(10);
 	}
+	
+	public void addInputPanel(InputPanel i) {
+		getCenterPanel().row().fill().expandX();
+		getCenterPanel().add(i);
+	}
+	
+	public void setVisible(InputPanel i, boolean v) {
+		i.setVisible(v);
+		Cell<InputPanel> c = getCenterPanel().getCell(i);	
+		
+		if(v) {
+			c.height(i.getPrefHeight());
+		} else {
+			c.height(1);
+		}
+		
+		i.invalidateHierarchy();
+	}	
 
 	public Skin getSkin() {
 		return skin;

@@ -32,10 +32,8 @@ public class CreateProjectDialog extends EditDialog {
 		location = new FileInputPanel(skin, "Location",
 				"Select the folder location for the project", true);
 
-		getCenterPanel().row().fill().expandX();
-		getCenterPanel().add(projectName);
-		getCenterPanel().row().fill().expandX();
-		getCenterPanel().add(location);
+		addInputPanel(projectName);
+		addInputPanel(location);
 		
 //		getStage().setKeyboardFocus(projectName.getField());
 	}

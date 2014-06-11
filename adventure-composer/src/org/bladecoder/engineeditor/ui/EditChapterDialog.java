@@ -37,8 +37,7 @@ public class EditChapterDialog extends EditDialog {
 
 		setInfo("An adventure game is composed of chapters. Chapters contains scenes.");
 		
-		getCenterPanel().row().fill().expandX();
-		getCenterPanel().add(inputId);
+		addInputPanel(inputId);
 		
 		if (chapter == null) {
 			setTitle("CREATE CHAPTER");

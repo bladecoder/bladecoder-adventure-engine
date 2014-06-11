@@ -52,22 +52,22 @@ public class EditVerbDialog extends EditElementDialog {
 				setInfo(VERBS_INFO[i]);
 
 				if (id.equals("use"))
-					inputs[2].setVisible(true);
+					setVisible(inputs[2],true);
 				else
-					inputs[2].setVisible(false);
+					setVisible(inputs[2],false);
 
 				if (id.equals("custom"))
-					inputs[3].setVisible(true);
+					setVisible(inputs[3],true);
 				else
-					inputs[3].setVisible(false);
+					setVisible(inputs[3],false);
 			}
 
 		});
-
-		inputs[2].setVisible(false);
-		inputs[3].setVisible(false);
 		
 		init(inputs, attrs, doc, parent, "verb", e);
+		
+		setVisible(inputs[2],false);
+		setVisible(inputs[3],false);
 		
 		if(e != null) {
 			boolean isCustom = true;
@@ -82,7 +82,7 @@ public class EditVerbDialog extends EditElementDialog {
 			
 			if(isCustom) {
 				inputs[0].setText("custom");
-				inputs[3].setVisible(true);
+				setVisible(inputs[3],true);
 				inputs[3].setText(id);
 			}
 		}

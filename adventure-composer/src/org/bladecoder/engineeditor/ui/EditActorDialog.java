@@ -89,18 +89,16 @@ public class EditActorDialog extends EditElementDialog {
 
 		setInfo(TYPES_INFO[i]);
 
-		inputs[8].setVisible(false);
-		inputs[9].setVisible(false);
-		inputs[10].setVisible(false);
+		setVisible(inputs[8],false);
+		setVisible(inputs[9],false);
+		setVisible(inputs[10],false);
 
 		if (ChapterDocument.ACTOR_TYPES[i]
 				.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
-			inputs[8].setVisible(true);
-			inputs[9].setVisible(true);
-			inputs[10].setVisible(true);
+			setVisible(inputs[8],true);
+			setVisible(inputs[9],true);
+			setVisible(inputs[10],true);
 		}
-
-		pack();
 	}
 
 	@Override

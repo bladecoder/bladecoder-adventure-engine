@@ -20,7 +20,7 @@ public class CreateResolutionDialog extends EditDialog {
 
 	private InputPanel scale;
 	
-	   protected ChangeListener listener;
+	protected ChangeListener listener;
 	
 	String atlasDir = Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH;
 	String bgDir = Ctx.project.getProjectPath() + "/" + Project.BACKGROUNDS_PATH;
@@ -33,8 +33,7 @@ public class CreateResolutionDialog extends EditDialog {
 		 scale = new InputPanel(skin, "Scale",
 					"Scale relative to the world resolution", Param.Type.FLOAT, true);
 
-		getCenterPanel().row().fill().expandX();
-		getCenterPanel().add(scale);
+		addInputPanel(scale);
 		
 		setInfo(INFO);
 	}

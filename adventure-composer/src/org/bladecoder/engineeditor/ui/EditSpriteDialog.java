@@ -84,11 +84,11 @@ public class EditSpriteDialog extends EditElementDialog {
 						String type = typePanel.getText();
 
 						if (type.equals("repeat") || type.equals("yoyo")) {
-							inputs[4].setVisible(true);
-							inputs[5].setVisible(true);
+							setVisible(inputs[4],true);
+							setVisible(inputs[5],true);
 						} else {
-							inputs[4].setVisible(false);
-							inputs[5].setVisible(false);
+							setVisible(inputs[4],false);
+							setVisible(inputs[5],false);
 						}
 					}
 				});
@@ -120,13 +120,13 @@ public class EditSpriteDialog extends EditElementDialog {
 			public void changed(ChangeEvent event, Actor actor) {
 				setSprite();
 			}
-		});
-
-		inputs[4].setVisible(false);
-		inputs[5].setVisible(false);	
+		});	
 
 		setInfoWidget(spriteWidget);
 		init(inputs, attrs, doc, p, "frame_animation", e);
+		
+		setVisible(inputs[4],false);
+		setVisible(inputs[5],false);
 
 		addSources();
 		if(e !=  null) {

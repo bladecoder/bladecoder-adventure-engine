@@ -49,13 +49,10 @@ public class CreateAtlasDialog extends EditDialog {
 		filterMag = new InputPanel(skin, "Mag Filter",
 				"The filter when the texture is scaled up", FILTERS);
 
-		getCenterPanel().add(name);
-		getCenterPanel().row().fill().expandX();
-		getCenterPanel().add(dir);
-		getCenterPanel().row().fill().expandX();
-		getCenterPanel().add(filterMin);
-		getCenterPanel().row().fill().expandX();
-		getCenterPanel().add(filterMag);
+		addInputPanel(name);
+		addInputPanel(dir);
+		addInputPanel(filterMin);
+		addInputPanel(filterMag);
 
 		filterMin.setText(FILTERS[0]);
 		filterMag.setText(FILTERS[1]);

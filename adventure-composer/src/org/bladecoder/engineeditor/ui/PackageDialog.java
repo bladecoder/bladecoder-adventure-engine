@@ -73,20 +73,16 @@ public class PackageDialog extends EditDialog {
 		options[8] = androidKeyStore;
 		options[9] = androidKeyAlias;
 		
-		getCenterPanel().add(arch);
-		getCenterPanel().row().fill().expandX();
-		getCenterPanel().add(dir);
+		addInputPanel(arch);
+		addInputPanel(dir);
 		
 		for(InputPanel i: options) {
-			getCenterPanel().row().fill().expandX();
-			getCenterPanel().add(i);
+			addInputPanel(i);
 			i.setMandatory(true);
 		}
 		
-		getCenterPanel().row().fill().expandX();
-		getCenterPanel().add(androidKeyStorePassword);
-		getCenterPanel().row().fill().expandX();
-		getCenterPanel().add(androidKeyAliasPassword);
+		addInputPanel(androidKeyStorePassword);
+		addInputPanel(androidKeyAliasPassword);
 		
 		dir.setMandatory(true);
 		
@@ -235,32 +231,32 @@ public class PackageDialog extends EditDialog {
 
 	private void archChanged() {
 		for (InputPanel ip : options) {
-			ip.setVisible(false);
+			setVisible(ip, false);
 		}
 		
-		androidKeyStorePassword.setVisible(false);
-		androidKeyAliasPassword.setVisible(false);
-		version.setVisible(true);
+		setVisible(androidKeyStorePassword,false);
+		setVisible(androidKeyAliasPassword,false);
+		setVisible(version,true);
 
 		String a = arch.getText();
 		if (a.equals("desktop")) {
-			type.setVisible(true);
+			setVisible(type,true);
 			typeChanged();
 		} else if (a.equals("android")) {
-			androidSDK.setVisible(true);
-			androidKeyStore.setVisible(true);
-			androidKeyAlias.setVisible(true);
-			androidKeyStorePassword.setVisible(true);
-			androidKeyAliasPassword.setVisible(true);
+			setVisible(androidSDK,true);
+			setVisible(androidKeyStore,true);
+			setVisible(androidKeyAlias,true);
+			setVisible(androidKeyStorePassword,true);
+			setVisible(androidKeyAliasPassword,true);
 		}
 	}
 
 	private void typeChanged() {
 		if (type.getText().equals(TYPES[0])) {
-			os.setVisible(true);
+			setVisible(os,true);
 		} else {
-			os.setVisible(false);
-			icon.setVisible(false);
+			setVisible(os,false);
+			setVisible(icon,false);
 		}
 		
 		osChanged();
@@ -268,23 +264,23 @@ public class PackageDialog extends EditDialog {
 
 	private void osChanged() {
 		if (os.isVisible() && (os.getText().equals("windows") || os.getText().equals("all"))) {
-			icon.setVisible(true);
-			winJRE.setVisible(true);
+			setVisible(icon,true);
+			setVisible(winJRE,true);
 		} else {
-			icon.setVisible(false);
-			winJRE.setVisible(false);
+			setVisible(icon,false);
+			setVisible(winJRE,false);
 		}
 		
 		if (os.isVisible() && (os.getText().equals("linux32") || os.getText().equals("all"))) {
-			linux32JRE.setVisible(true);
+			setVisible(linux32JRE,true);
 		} else {
-			linux32JRE.setVisible(false);
+			setVisible(linux32JRE,false);
 		}
 		
 		if (os.isVisible() && (os.getText().equals("linux64") || os.getText().equals("all"))) {
-			linux64JRE.setVisible(true);
+			setVisible(linux64JRE,true);
 		} else {
-			linux64JRE.setVisible(false);
+			setVisible(linux64JRE, false);
 		}
 	}
 

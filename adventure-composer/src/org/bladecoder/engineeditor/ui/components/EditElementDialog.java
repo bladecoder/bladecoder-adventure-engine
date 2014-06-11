@@ -56,11 +56,6 @@ public abstract class EditElementDialog extends EditDialog {
 //		if(inputs.length > 0)
 //			getStage().setKeyboardFocus(inputs[0].getField());
 	}
-	
-	public void addInputPanel(InputPanel i) {
-		getCenterPanel().row().fill().expandX();
-		getCenterPanel().add(i);
-	}
 
 	@Override
 	protected void ok() {
