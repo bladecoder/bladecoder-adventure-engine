@@ -1,6 +1,9 @@
 package org.bladecoder.engineeditor;
 
 import java.io.File;
+import java.io.IOException;
+
+import javax.xml.transform.TransformerException;
 
 import org.bladecoder.engineeditor.model.Project;
 import org.bladecoder.engineeditor.scneditor.ScnEditor;
@@ -11,11 +14,14 @@ import org.bladecoder.engineeditor.ui.ProjectToolbar;
 import org.bladecoder.engineeditor.ui.ScenePanel;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.bladecoder.engineeditor.utils.Message;
+import org.lwjgl.opengl.Display;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
@@ -39,10 +45,11 @@ public class Editor implements ApplicationListener {
 
 	Stage stage;
 	ScnEditor scnEditor;
+	Skin skin;
 
 	@Override
 	public void create() {
-		Skin skin = new Skin(Gdx.files.internal(SKIN));
+		skin = new Skin(Gdx.files.internal(SKIN));
 
 		EditorLogger.setDebug();
 		EditorLogger.debug("CREATE");
@@ -115,6 +122,10 @@ public class Editor implements ApplicationListener {
 	public void render() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		if(Display.isCloseRequested()) {
+			System.out.println("CLOSE REQUESTED");
+		}
 
 		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		stage.draw();
@@ -145,11 +156,41 @@ public class Editor implements ApplicationListener {
 		
 		Ctx.project.saveConfig();
 		
-		try {
-			Ctx.project.saveProject();
-		} catch (Exception ex) {
-			System.out.println("Something went wrong while saving the project.\n");
-			ex.printStackTrace();
+//		try {
+//			Ctx.project.saveProject();
+//		} catch (Exception ex) {
+//			System.out.println("Something went wrong while saving the project.\n");
+//			ex.printStackTrace();
+//		}
+	}
+
+	public void exit() {
+		if (Ctx.project.getWorld().isModified()
+				|| Ctx.project.getSelectedChapter().isModified()) {
+			new Dialog("Save Project", skin) {
+				protected void result(Object object) {
+					if (((Boolean) object).booleanValue()) {
+						try {
+							Ctx.project.saveProject();
+						} catch (TransformerException | IOException e1) {
+							String msg = "Something went wrong while saving the actor.\n\n"
+									+ e1.getClass().getSimpleName()
+									+ " - "
+									+ e1.getMessage();
+							Ctx.msg.show(getStage(), msg, 2);
+
+							e1.printStackTrace();
+						}
+					}
+
+					((Main)Gdx.app).exitSaved();	
+				}
+			}.text("Save changes to project?").button("Yes", true)
+					.button("No", false).key(Keys.ENTER, true)
+					.key(Keys.ESCAPE, false).show(stage);
+		} else {
+			((Main)Gdx.app).exitSaved();	
 		}
+	
 	}
 }

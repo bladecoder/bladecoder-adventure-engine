@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
-import javax.xml.transform.TransformerException;
 
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.Project;
@@ -33,7 +32,7 @@ public class ProjectToolbar extends Table {
 	private ImageButton playBtn;
 	private ImageButton assetsBtn;
 	private ImageButton atlasBtn;
-	
+
 	private Skin skin;
 
 	public ProjectToolbar(Skin skin) {
@@ -47,10 +46,9 @@ public class ProjectToolbar extends Table {
 		exitBtn = new ImageButton(skin);
 		playBtn = new ImageButton(skin);
 		assetsBtn = new ImageButton(skin);
-		atlasBtn = new ImageButton(skin);		
+		atlasBtn = new ImageButton(skin);
 
-		addToolBarButton(skin, newBtn, "ic_new", "New",
-				"Create a new project");
+		addToolBarButton(skin, newBtn, "ic_new", "New", "Create a new project");
 		addToolBarButton(skin, loadBtn, "ic_load", "Load",
 				"Load an existing project");
 		addToolBarButton(skin, saveBtn, "ic_save", "Save",
@@ -58,19 +56,17 @@ public class ProjectToolbar extends Table {
 		addToolBarButton(skin, exitBtn, "ic_exit", "Exit",
 				"Save changes and exits");
 		row();
-		
-		addToolBarButton(skin, playBtn, "ic_play", "Play",
-				"Play Adventure");
+
+		addToolBarButton(skin, playBtn, "ic_play", "Play", "Play Adventure");
 		addToolBarButton(skin, packageBtn, "ic_package", "Package",
 				"Package the game for distribution");
 		addToolBarButton(skin, assetsBtn, "ic_assets", "Assets",
 				"Open assets folder");
-		addToolBarButton(skin, atlasBtn, "ic_atlases", "Atlas",
-				"Create Atlas");
-		
+		addToolBarButton(skin, atlasBtn, "ic_atlases", "Atlas", "Create Atlas");
+
 		newBtn.setDisabled(false);
 		loadBtn.setDisabled(false);
-		exitBtn.setDisabled(false);			
+		exitBtn.setDisabled(false);
 
 		newBtn.addListener(new ChangeListener() {
 			@Override
@@ -113,20 +109,20 @@ public class ProjectToolbar extends Table {
 				packageProject();
 			}
 		});
-		
+
 		assetsBtn.addListener(new ChangeListener() {
 			@Override
-			public void changed(ChangeEvent event, Actor actor) {		
+			public void changed(ChangeEvent event, Actor actor) {
 				openProjectFolder();
 			}
 		});
-		
+
 		atlasBtn.addListener(new ChangeListener() {
 			@Override
-			public void changed(ChangeEvent event, Actor actor) {		
+			public void changed(ChangeEvent event, Actor actor) {
 				createAtlas();
 			}
-		});		
+		});
 
 		Ctx.project.getWorld().addPropertyChangeListener(
 				new PropertyChangeListener() {
@@ -136,7 +132,7 @@ public class ProjectToolbar extends Table {
 								"DOCUMENT_SAVED"));
 					}
 				});
-		
+
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED,
 				new PropertyChangeListener() {
 					@Override
@@ -146,36 +142,38 @@ public class ProjectToolbar extends Table {
 						assetsBtn.setDisabled(Ctx.project.getProjectDir() == null);
 						atlasBtn.setDisabled(Ctx.project.getProjectDir() == null);
 					}
-				});		
+				});
 	}
 
-	private void addToolBarButton(Skin skin, ImageButton button, String icon, String text,
-			String tooltip) {
-		ImageButtonStyle style = new ImageButtonStyle(skin.get(ButtonStyle.class));
+	private void addToolBarButton(Skin skin, ImageButton button, String icon,
+			String text, String tooltip) {
+		ImageButtonStyle style = new ImageButtonStyle(
+				skin.get(ButtonStyle.class));
 		TextureRegion image = Ctx.assetManager.getIcon(icon);
 		style.imageUp = new TextureRegionDrawable(image);
-		
+
 		try {
-			TextureRegion imageDisabled = Ctx.assetManager.getIcon(icon + "_disabled");
+			TextureRegion imageDisabled = Ctx.assetManager.getIcon(icon
+					+ "_disabled");
 			style.imageDisabled = new TextureRegionDrawable(imageDisabled);
-		} catch(Exception e) {
-			
+		} catch (Exception e) {
+
 		}
-				
+
 		button.setStyle(style);
-				
-        add(button);
-        button.setDisabled(true);
+
+		add(button);
+		button.setDisabled(true);
 	}
 
 	private void newProject() {
 		CreateProjectDialog dialog = new CreateProjectDialog(skin);
 		dialog.show(getStage());
-// TODO
-//		if (!dialog.isCancel()) {
-//			playBtn.setDisabled(false);
-//			packageBtn.setDisabled(false);
-//		}
+		// TODO
+		// if (!dialog.isCancel()) {
+		// playBtn.setDisabled(false);
+		// packageBtn.setDisabled(false);
+		// }
 	}
 
 	private void loadProject() {
@@ -204,16 +202,6 @@ public class ProjectToolbar extends Table {
 	}
 
 	public void exit() {
-		try {
-			Ctx.project.saveProject();
-		} catch (TransformerException | IOException e1) {
-			String msg = "Something went wrong while saving the actor.\n\n"
-					+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
-			Ctx.msg.show(getStage(),msg, 2);
-
-			e1.printStackTrace();
-		}
-
 		Gdx.app.exit();
 	}
 
@@ -222,7 +210,7 @@ public class ProjectToolbar extends Table {
 
 		if (file == null) {
 			String msg = "Please create a new project first.";
-			Ctx.msg.show(getStage(),msg, 2);
+			Ctx.msg.show(getStage(), msg, 2);
 			return;
 		}
 
@@ -231,43 +219,47 @@ public class ProjectToolbar extends Table {
 		} catch (Exception ex) {
 			String msg = "Something went wrong while saving the project.\n\n"
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
-			Ctx.msg.show(getStage(),msg, 2);
+			Ctx.msg.show(getStage(), msg, 2);
 		}
 	}
 
 	private void packageProject() {
 		saveProject();
-		
+
 		new PackageDialog(skin).show(getStage());
 	}
 
 	private void play() {
 		try {
 			saveProject();
-			
+
 			RunProccess.runBladeEngine(Ctx.project.getProjectDir()
 					.getAbsolutePath(), null);
 		} catch (IOException e) {
 			String msg = "Something went wrong while playing the project.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(),msg, 2);
+			Ctx.msg.show(getStage(), msg, 2);
 		}
 	}
-	
+
 	private void openProjectFolder() {
 		if (Desktop.isDesktopSupported()) {
-		    try {
-				Desktop.getDesktop().open(new File(Ctx.project.getProjectDir().getAbsoluteFile() + "/assets"));
+			try {
+				Desktop.getDesktop().open(
+						new File(Ctx.project.getProjectDir().getAbsoluteFile()
+								+ "/assets"));
 			} catch (IOException e1) {
 				String msg = "Something went wrong while opening assets folder.\n\n"
-						+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
-				Ctx.msg.show(getStage(),msg, 2);
+						+ e1.getClass().getSimpleName()
+						+ " - "
+						+ e1.getMessage();
+				Ctx.msg.show(getStage(), msg, 2);
 			}
 		}
 	}
-	
+
 	private void createAtlas() {
 		new CreateAtlasDialog(skin).show(getStage());
-	}	
+	}
 
 }
