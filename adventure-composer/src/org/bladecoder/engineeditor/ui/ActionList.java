@@ -34,16 +34,17 @@ public class ActionList extends ElementList {
 		toolbar.addToolBarButton(downBtn, "ic_down", "Move down", "Move down");
 		toolbar.pack();
 
-//		list.addListSelectionListener(new ListSelectionListener() {
-//			@Override
-//			public void valueChanged(ListSelectionEvent e) {
-//				int pos = list.getSelectedIndex();
-//
-//				toolbar.enableEdit(pos != -1);
-//				upBtn.setEnabled(pos != -1 && pos != 0);
-//				downBtn.setEnabled(pos != -1 && pos != list.getModel().getSize() - 1);
-//			}
-//		});
+		list.addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				int pos = list.getSelectedIndex();
+
+				toolbar.disableEdit(pos == -1);
+				upBtn.setDisabled(pos == -1 || pos == 0);
+				downBtn.setDisabled(pos == -1 || pos == list.getItems().size - 1);
+			}
+		});
 
 		upBtn.addListener(new ChangeListener() {
 			
@@ -84,6 +85,8 @@ public class ActionList extends ElementList {
 		items.removeIndex(pos);
 		items.insert( pos - 1, e);
 		list.setSelectedIndex(pos - 1);
+		upBtn.setDisabled(list.getSelectedIndex() == 0);
+		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
 
 		doc.setModified(e);
 	}
@@ -106,6 +109,8 @@ public class ActionList extends ElementList {
 		items.removeIndex(pos);
 		items.insert(pos + 1, e);
 		list.setSelectedIndex(pos + 1);
+		upBtn.setDisabled(list.getSelectedIndex() == 0);
+		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
 
 		doc.setModified(e);
 	}
