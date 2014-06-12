@@ -1,7 +1,6 @@
 package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.assets.UIAssetConsumer;
 import org.bladecoder.engine.model.Text;
 import org.bladecoder.engine.model.TextManager;
 import org.bladecoder.engine.model.World;
@@ -15,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 /**
@@ -26,7 +24,7 @@ import com.badlogic.gdx.math.Vector3;
  * @author rgarcia
  * 
  */
-public class TextManagerUI implements UIAssetConsumer {
+public class TextManagerUI {
 	private static final float RECT_MARGIN = 18f; // TODO: MARGIN DEPENDS ON RESOLUTION/DPI!
 	private static final float RECT_BORDER = 2f;
 
@@ -38,10 +36,10 @@ public class TextManagerUI implements UIAssetConsumer {
 
 	private AtlasRegion bubblePointer;
 	private float scale = 1f;
-	
-	Rectangle viewPort;
+	SceneScreen sceneScreen;
 
-	public TextManagerUI() {
+	public TextManagerUI(SceneScreen sceneScreen) {
+		this.sceneScreen = sceneScreen;
 	}
 
 	public void draw(SpriteBatch batch) {
@@ -51,17 +49,17 @@ public class TextManagerUI implements UIAssetConsumer {
 			float posx = currentSubtitle.x;
 			float posy = currentSubtitle.y;
 			
-			Vector3 p = World.getInstance().getSceneCamera().scene2screen(posx, posy, viewPort);
+			Vector3 p = World.getInstance().getSceneCamera().scene2screen(posx, posy, sceneScreen.getViewPort());
 
 			if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE)
-				posx = TextUtils.getCenterX(font, currentSubtitle.str, maxRectangleWidth, (int)viewPort.width);
+				posx = TextUtils.getCenterX(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewPort().width);
 			else
 				posx = p.x;
 
 			if (posy == TextManager.POS_CENTER)
-				posy = TextUtils.getCenterY(font, currentSubtitle.str, maxRectangleWidth, (int)viewPort.height);
+				posy = TextUtils.getCenterY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewPort().height);
 			else if (posy == TextManager.POS_SUBTITLE)
-				posy = TextUtils.getSubtitleY(font, currentSubtitle.str, maxRectangleWidth, (int)viewPort.height);
+				posy = TextUtils.getSubtitleY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewPort().height);
 			else
 				posy = p.y;
 
@@ -98,12 +96,12 @@ public class TextManagerUI implements UIAssetConsumer {
 				// check if the text exits the screen
 				if (x < 0) {
 					dx = -x + RECT_MARGIN;
-				} else if (x + width > viewPort.width) {
-					dx = -(x + width - viewPort.width + RECT_MARGIN);
+				} else if (x + width > sceneScreen.getViewPort().width) {
+					dx = -(x + width - sceneScreen.getViewPort().width + RECT_MARGIN);
 				}
 				
-				if (y + height > viewPort.height) {
-					dy = -(y + height - viewPort.height);
+				if (y + height > sceneScreen.getViewPort().height) {
+					dy = -(y + height - sceneScreen.getViewPort().height);
 				}
 
 				batch.draw(bubblePointer, x + (width - bubblePointer.getRegionWidth()) / 2, y
@@ -124,26 +122,25 @@ public class TextManagerUI implements UIAssetConsumer {
 		}
 	}
 
-	@Override
 	public void createAssets() {
+		if(font != null)
+			font.dispose();
+		
 		font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
 	}
 
-	@Override
 	public void retrieveAssets(TextureAtlas atlas) {
 		bubblePointer = atlas.findRegion("bubblepointer");
 	}
 
-	public void resize(Rectangle v) {
-		viewPort = v;
-
-		scale = viewPort.width / World.getInstance().getWidth();
-		maxRectangleWidth = viewPort.width / 1.7f;
-		maxTalkWidth = viewPort.width / 3;
+	public void resize(int width, int height) {
+		scale = width / World.getInstance().getWidth();
+		maxRectangleWidth = width / 1.7f;
+		maxTalkWidth = width / 3;
 	}
 
-	@Override
 	public void dispose() {
 		font.dispose();
+		font = null;
 	}
 }

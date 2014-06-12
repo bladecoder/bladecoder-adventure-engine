@@ -1,22 +1,19 @@
 package org.bladecoder.engine.ui;
 
-import org.bladecoder.engine.assets.AssetConsumer;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.World;
-import org.bladecoder.engine.model.World.AssetState;
 import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Peripheral;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector3;
 
-public class UI implements CommandListener, TouchEventListener, AssetConsumer {
+public class UI implements CommandListener {
 
 	private final static String ATLAS_FILENAME = "atlases/ui.atlas";
 
@@ -28,30 +25,26 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 	boolean pieMode;
 
 	private SpriteBatch batch;
-	private ShapeRenderer renderer;
 	private TextureAtlas atlas;
 
 	private ScreenCamera camera;
-	
-	private Recorder recorder;
 
-	public enum State {
-		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, COMMAND_SCREEN, HELP_SCREEN, RESTART_SCREEN, CREDITS_SCREEN
+	public static enum State {
+		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, RESTART_SCREEN, CREDIT_SCREEN
 	};
+	
+	private final Screen screens[];
 
 	private State state;
 
 	public UI() {
 		batch = new SpriteBatch();
-		renderer = new ShapeRenderer();
 
 		camera = new ScreenCamera();
 		pointer = new Pointer(camera);
 		
-		recorder = new Recorder();
+		screens = new Screen[State.values().length];
 
-		// EngineInputProcessor inputProcessor = new EngineInputProcessor();
-		Gdx.input.setInputProcessor(new EngineInputProcessor(this));
 		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setCatchMenuKey(true);
 
@@ -60,11 +53,31 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 		else {
 			setPieMode(Config.getProperty(Config.PIE_MODE_DESKTOP_PROP, false));
 		}
+		
+		
+		screens[State.INIT_SCREEN.ordinal()] = new InitScreen(this, false);
+		screens[State.SCENE_SCREEN.ordinal()] = new SceneScreen(this, pieMode);
+		screens[State.LOADING_SCREEN.ordinal()] = new LoadingScreen(this);
+		screens[State.MENU_SCREEN.ordinal()] = new MenuScreen(this);
+		screens[State.HELP_SCREEN.ordinal()] = new HelpScreen(this, pieMode);
+		screens[State.RESTART_SCREEN.ordinal()] = new InitScreen(this, true);
+		screens[State.CREDIT_SCREEN.ordinal()] =  new CreditsScreen(this);
 
 		loadAssets();
-		retrieveAssets();
 
-		setState(State.INIT_SCREEN);
+		setScreen(State.INIT_SCREEN);
+	}
+	
+	public Screen getScreen(State state) {
+		return screens[state.ordinal()];
+	}
+	
+	public SpriteBatch getBatch() {
+		return batch;
+	}
+	
+	public Pointer getPointer() {
+		return pointer;
 	}
 
 	public State getState() {
@@ -75,71 +88,26 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 		return camera;
 	}
 
-	public void setState(State s) {
-		
-		if(state == State.INIT_SCREEN) {
-			// We must resize always after World.load() to set the viewport
-			// to the aspect of the loaded world
-			resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		}
+	public void setScreen(State s) {
 		
 		state = s;
 
-		if (state != State.SCENE_SCREEN) {
-			World.getInstance().pause();
-			pointer.setTarget(null);
+		if (screen != null) {
+			screen.hide();
 		}
+		
+		screen = screens[state.ordinal()];
 
-		if (screen != null)
-			screen.dispose();
-
-		switch (state) {
-		case INIT_SCREEN:
-			screen = new InitScreen(this, false);
-			break;
-		case RESTART_SCREEN:
-			screen = new InitScreen(this, true);
-			break;			
-		case COMMAND_SCREEN:
-			screen = new CommandScreen(pointer, this);
-			break;
-		case HELP_SCREEN:
-			screen = new HelpScreen(pointer, this, pieMode);
-			break;
-		case CREDITS_SCREEN:
-			screen = new CreditsScreen(pointer, this);
-			break;			
-		case LOADING_SCREEN:
-			screen = new LoadingScreen();
-			break;
-		case SCENE_SCREEN:
-			if (World.getInstance().isDisposed()) {
-				try {
-					World.getInstance().load();
-					resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-				} catch (Exception e) {
-					EngineLogger.error("ERROR LOADING GAME", e);
-
-					dispose();
-					Gdx.app.exit();
-				}
-			}
-
-			screen = new SceneScreen(pointer, this, pieMode, recorder);
-			World.getInstance().resume();
-			break;
-		}
-
-		screen.createAssets();
-		screen.retrieveAssets(atlas);
-		screen.resize(camera.getViewport());
+		screen.show();
+			
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 	
-	public Recorder getRecorder() {
-		return recorder;
+	public TextureAtlas getUIAtlas() {
+		return atlas;
 	}
 
-	public void setPieMode(boolean m) {
+	private void setPieMode(boolean m) {
 		pieMode = m;
 		if (m == true)
 			pointer.setShowAction(false);
@@ -147,86 +115,18 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 			pointer.setShowAction(true);
 	}
 
-	public boolean isPieMode() {
-		return pieMode;
-	}
-
-	public void update() {
+	public void render() {
 		// for long processing frames, limit delta to 1/30f to avoid skipping animations 
 		float delta = Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f);
-		
-		if(!World.getInstance().isDisposed()) {
-			World.getInstance().update(delta);
-		}
 
-		AssetState assetState = World.getInstance().getAssetState();
-
-		if (assetState != AssetState.LOADED && state == State.SCENE_SCREEN) {
-			setState(State.LOADING_SCREEN);
-		} else if (assetState == AssetState.LOADED
-//				&& (state == State.LOADING_SCREEN || state == State.INIT_SCREEN)) {
-				&& (state == State.LOADING_SCREEN)) {
-			setState(State.SCENE_SCREEN);
-		}
-
-		if (state == State.SCENE_SCREEN) {
-			((SceneScreen) screen).update();
-			recorder.update(delta);
-		}
+		screen.render(delta);
 	}
 
-	public void draw() {
-		if(state != State.LOADING_SCREEN) {
-			Gdx.gl.glClearColor(0, 0, 0, 1);			
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		}
-
-		// WORLD CAMERA
-		if (state == State.SCENE_SCREEN) {
-			World.getInstance().draw();
-
-			if (EngineLogger.debugMode()
-					&& EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
-				renderer.setProjectionMatrix(World.getInstance().getSceneCamera()
-						.combined);
-				World.getInstance().getCurrentScene().drawBBoxLines(renderer);
-			}
-		}
-
-		// SCREEN CAMERA
-		batch.setProjectionMatrix(camera.getCamera().combined);
-		batch.begin();
-		screen.draw(batch);
-		batch.end();
-	}
-
-	@Override
-	public void loadAssets() {
+	private void loadAssets() {
 		atlas = new TextureAtlas(EngineAssetManager.getInstance().getResAsset(
 				ATLAS_FILENAME));
-
 		pointer.createAssets();
-
-		if (screen != null)
-			screen.createAssets();
-	}
-
-	@Override
-	public void retrieveAssets() {
 		pointer.retrieveAssets(atlas);
-
-		if (screen != null)
-			screen.retrieveAssets(atlas);
-	}
-	
-	public void restoreGLContext() {
-		pointer.createAssets();
-
-		if (screen != null)
-			screen.createAssets();
-		
-		RectangleRenderer.dispose();
-		EngineLogger.dispose();
 	}
 
 	public void resize(int width, int height) {
@@ -242,23 +142,23 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 				(int) camera.getViewport().height);
 
 		if (screen != null)
-			screen.resize(camera.getViewport());
+			screen.resize((int)camera.getViewport().width, (int)camera.getViewport().height);
 	}
 
 	@Override
 	public void runCommand(String command, Object param) {
 
-		if (command.equals(CommandListener.CONFIG_COMMAND)) {
-			setState(State.COMMAND_SCREEN);
-		} else if (command.equals(CommandScreen.BACK_COMMAND)) {
-			setState(State.SCENE_SCREEN);
-		} else if (command.equals(CommandScreen.RELOAD_COMMAND)) {
-			setState(State.RESTART_SCREEN);
-		} else if (command.equals(CommandScreen.CREDITS_COMMAND)) {
-			setState(State.CREDITS_SCREEN);
-		} else if (command.equals(CommandScreen.HELP_COMMAND)) {
-			setState(State.HELP_SCREEN);			
-		} else if (command.equals(CommandScreen.QUIT_COMMAND)) {
+		if (command.equals(CommandListener.MENU_COMMAND)) {
+			setScreen(State.MENU_SCREEN);
+		} else if (command.equals(MenuScreen.BACK_COMMAND)) {
+			setScreen(State.SCENE_SCREEN);
+		} else if (command.equals(MenuScreen.RELOAD_COMMAND)) {
+			setScreen(State.RESTART_SCREEN);
+		} else if (command.equals(MenuScreen.CREDITS_COMMAND)) {
+			setScreen(State.CREDIT_SCREEN);
+		} else if (command.equals(MenuScreen.HELP_COMMAND)) {
+			setScreen(State.HELP_SCREEN);			
+		} else if (command.equals(MenuScreen.QUIT_COMMAND)) {
 			exit();
 		}
 	}
@@ -274,31 +174,31 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 		}
 	}
 
-	// TODO REMOVE THIS METHOD!!
-	public InventoryUI getInventoryUI() {
-		return ((SceneScreen) screen).getInventoryUI();
-	}
-
-	@Override
 	public void dispose() {
 		pointer.dispose();
-		screen.dispose();
+		screen.hide();
 		batch.dispose();
-		renderer.dispose();
-
 		atlas.dispose();
-	}
-
-	@Override
-	public void touchEvent(int type, float x, float y, int pointer, int button) {
-		Vector3 unprojectScreen = camera.getInputUnProject();
-
-		screen.touchEvent(type, unprojectScreen.x, unprojectScreen.y, pointer,
-				button);
 	}
 
 	public void exit() {
 		Gdx.app.exit();
 	}
-
+	
+	public void resume() {
+		if(Gdx.app.getType() == ApplicationType.Android) {
+			// RESTORE GL CONTEXT
+			pointer.createAssets();
+			RectangleRenderer.dispose();
+			EngineLogger.dispose();
+		}
+		
+		if(screen != null)
+			screen.resume();
+	}
+	
+	public void pause() {
+		if(screen != null)
+			screen.pause();
+	}
 }

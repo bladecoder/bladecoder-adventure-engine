@@ -5,7 +5,9 @@ import java.text.MessageFormat;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.World;
+import org.bladecoder.engine.ui.SceneScreen;
 import org.bladecoder.engine.ui.UI;
+import org.bladecoder.engine.ui.UI.State;
 import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.EngineLogger;
 
@@ -111,8 +113,9 @@ public class BladeEngine implements ApplicationListener {
 			recordName = Config.getProperty(Config.PLAY_RECORD_PROP, recordName);
 		
 		if (recordName != null) {
-			ui.getRecorder().load(recordName);
-			ui.getRecorder().setPlaying(true);
+			SceneScreen scr = (SceneScreen)ui.getScreen(State.SCENE_SCREEN);
+			scr.getRecorder().load(recordName);
+			scr.getRecorder().setPlaying(true);
 		}
 
 		if (EngineLogger.debugMode()) {
@@ -134,8 +137,7 @@ public class BladeEngine implements ApplicationListener {
 
 	@Override
 	public void render() {
-		ui.update();
-		ui.draw();
+		ui.render();
 	}
 
 	@Override
@@ -147,16 +149,14 @@ public class BladeEngine implements ApplicationListener {
 	@Override
 	public void pause() {
 		EngineLogger.debug("GAME PAUSE");
-		World.getInstance().pause();
+		ui.pause();
 		World.getInstance().saveGameState();
 	}
 
 	@Override
 	public void resume() {
 		EngineLogger.debug("GAME RESUME");
-		
-		ui.restoreGLContext();
-		World.getInstance().resume();
+		ui.resume();
 	}
 
 }

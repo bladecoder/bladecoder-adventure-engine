@@ -6,9 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-public class ScreenCamera {
-
-	private OrthographicCamera screenCamera = null;
+public class ScreenCamera extends OrthographicCamera {
 
 	private Rectangle viewport = null;
 	
@@ -17,9 +15,8 @@ public class ScreenCamera {
 	}
 
 	public void create(int width, int height) {
-		screenCamera = new OrthographicCamera();
-		screenCamera.setToOrtho(false, width, height);
-		screenCamera.update();
+		setToOrtho(false, width, height);
+		update();
 	}
 
 	public Rectangle getViewport() {
@@ -54,26 +51,19 @@ public class ScreenCamera {
 	}
 
 
-	public OrthographicCamera getCamera() {
-		return screenCamera;
-	}
+	public void getInputUnProject(Vector3 out) {
+		out.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 
+		unproject(out, viewport.x, viewport.y, viewport.width, viewport.height);
 
-	public Vector3 getInputUnProject() {
-		Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+		if (out.x >= viewport.width)
+			out.x = viewport.width - 1;
+		else if (out.x < 0)
+			out.x = 0;
 
-		screenCamera.unproject(touchPos, viewport.x, viewport.y, viewport.width, viewport.height);
-
-		if (touchPos.x >= viewport.width)
-			touchPos.x = viewport.width - 1;
-		else if (touchPos.x < 0)
-			touchPos.x = 0;
-
-		if (touchPos.y >= viewport.height)
-			touchPos.y = viewport.height - 1;
-		else if (touchPos.y < 0)
-			touchPos.y = 0;
-
-		return touchPos;
+		if (out.y >= viewport.height)
+			out.y = viewport.height - 1;
+		else if (out.y < 0)
+			out.y = 0;
 	}
 }

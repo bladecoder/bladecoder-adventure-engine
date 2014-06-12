@@ -1,19 +1,18 @@
 package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.model.World;
-import org.bladecoder.engine.ui.UI.State;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
-public class EngineInputProcessor implements InputProcessor {
+public class SceneInputProcessor implements InputProcessor {
 
-	UI ui;
+	SceneScreen sceneScreen;
 
-	public EngineInputProcessor(UI ui) {
-		this.ui = ui;
+	public SceneInputProcessor(SceneScreen sceneScreen) {
+		this.sceneScreen = sceneScreen;
 	}
 
 	@Override
@@ -29,15 +28,11 @@ public class EngineInputProcessor implements InputProcessor {
 		case Input.Keys.ESCAPE:
 		case Input.Keys.BACK:
 		case Input.Keys.MENU:
-			if (ui.getState() == State.SCENE_SCREEN)
-				ui.runCommand(CommandListener.CONFIG_COMMAND, null);
-			else if (ui.getState() == State.COMMAND_SCREEN)
-				ui.runCommand(CommandScreen.BACK_COMMAND, null);
-
+			sceneScreen.runCommand(CommandListener.MENU_COMMAND, null);
 			break;
 		}
 
-		return false;
+		return true;
 	}
 
 	@Override
@@ -57,7 +52,7 @@ public class EngineInputProcessor implements InputProcessor {
 			EngineLogger.setDebugLevel(EngineLogger.DEBUG2);
 			break;
 		case 'f':
-			ui.toggleFullScreen();
+//			ui.toggleFullScreen();
 			break;
 		case 's':
 			World.getInstance().saveGameState();
@@ -76,17 +71,17 @@ public class EngineInputProcessor implements InputProcessor {
 			World.getInstance().loadGameState();
 			break;
 		case '.':
-			if (ui.getRecorder().isRecording())
-				ui.getRecorder().setRecording(false);
+			if (sceneScreen.getRecorder().isRecording())
+				sceneScreen.getRecorder().setRecording(false);
 			else
-				ui.getRecorder().setRecording(true);
+				sceneScreen.getRecorder().setRecording(true);
 			break;
 		case ',':
-			if (ui.getRecorder().isPlaying())
-				ui.getRecorder().setPlaying(false);
+			if (sceneScreen.getRecorder().isPlaying())
+				sceneScreen.getRecorder().setPlaying(false);
 			else {
-				ui.getRecorder().load();
-				ui.getRecorder().setPlaying(true);
+				sceneScreen.getRecorder().load();
+				sceneScreen.getRecorder().setPlaying(true);
 			}
 			break;
 		case 'i': // TODO !!!
@@ -111,7 +106,7 @@ public class EngineInputProcessor implements InputProcessor {
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		EngineLogger.debug("Event TOUCH DOWN button: " + button);
 
-		ui.touchEvent(TouchEventListener.TOUCH_DOWN, x, y, pointer, button);
+		sceneScreen.touchEvent(TouchEventListener.TOUCH_DOWN, x, y, pointer, button);
 
 		return false;
 	}
@@ -120,7 +115,7 @@ public class EngineInputProcessor implements InputProcessor {
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		EngineLogger.debug("Event TOUCH UP button: " + button);
 
-		ui.touchEvent(TouchEventListener.TOUCH_UP, x, y, pointer, button);
+		sceneScreen.touchEvent(TouchEventListener.TOUCH_UP, x, y, pointer, button);
 
 		return false;
 	}
@@ -129,7 +124,7 @@ public class EngineInputProcessor implements InputProcessor {
 	public boolean touchDragged(int x, int y, int pointer) {
 		EngineLogger.debug("EVENT TOUCH DRAGGED");
 
-		ui.touchEvent(TouchEventListener.DRAG, x, y, pointer, 0);
+		sceneScreen.touchEvent(TouchEventListener.DRAG, x, y, pointer, 0);
 
 		return false;
 	}

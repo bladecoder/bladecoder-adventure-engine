@@ -1,6 +1,5 @@
 package org.bladecoder.engine.ui;
 
-import org.bladecoder.engine.assets.UIAssetConsumer;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Inventory;
 import org.bladecoder.engine.model.SpriteActor;
@@ -17,7 +16,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-public class InventoryUI implements TouchEventListener, UIAssetConsumer {
+public class InventoryUI {
 	private final static int TOP = 0;
 	private final static int DOWN = 1;
 	private final static int LEFT = 2;
@@ -66,13 +65,12 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 	
 	private int previousNumItems;
 
-	CommandListener l;
-	
-	Rectangle viewPort;
+	SceneScreen sceneScreen;
 	
 	Recorder recorder;
 
-	public InventoryUI(Recorder recorder) {
+	public InventoryUI(SceneScreen sceneScreen, Recorder recorder) {
+		this.sceneScreen = sceneScreen;
 		this.recorder = recorder;
 		
 		String pos = Config.getProperty(Config.INVENTORY_POS_PROP, "down");
@@ -87,12 +85,11 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 			inventoryPos = DOWN;
 	}
 
-	public void resize(Rectangle v) {
-		viewPort = v;
+	public void resize(int width, int height) {
 
 		// calc tilesize as function of resolution and DPI
 		// initial tilesize is 1/10 of screen resolution
-		this.tileSize = (int) viewPort.height / 10;
+		this.tileSize = (int) height / 10;
 
 		// the minimum height of the inventory is 1/3"
 		if (this.tileSize < (int) (DPI / 3)) {
@@ -103,26 +100,25 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 
 		switch (inventoryPos) {
 		case TOP:
-			setBbox(0, viewPort.height - this.tileSize, viewPort.width, this.tileSize);
+			setBbox(0, height - this.tileSize, width, this.tileSize);
 			break;
 		case DOWN:
-			setBbox(0, 0, viewPort.width, this.tileSize);
+			setBbox(0, 0,width, this.tileSize);
 			break;
 		case LEFT:
-			setBbox(0, 0, this.tileSize, viewPort.height);
+			setBbox(0, 0, this.tileSize, height);
 			break;
 		case RIGHT:
-			setBbox(viewPort.width - this.tileSize, 0, this.tileSize, viewPort.height);
+			setBbox(width - this.tileSize, 0, this.tileSize, height);
 			break;
 		}
 
 		if (bbox.width > bbox.height) // horizontal
-			this.itemsSize = (int) viewPort.width / this.tileSize - (itemsPos + 2);
+			this.itemsSize = (int) width / this.tileSize - (itemsPos + 2);
 		else
-			this.itemsSize = (int) viewPort.height / this.tileSize - (itemsPos + 2);
+			this.itemsSize = (int) height / this.tileSize - (itemsPos + 2);
 	}
 
-	@Override
 	public void retrieveAssets(TextureAtlas atlas) {
 //		collapseIcon = atlas.findRegion(COLLAPSE_TILE);
 		uncollapseIcon = atlas.findRegion(UNCOLLAPSE_TILE);
@@ -282,10 +278,6 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 		}		
 	}	
 
-	public void setCommandListener(CommandListener l) {
-		this.l = l;
-	}
-
 	public boolean contains(float x, float y) {
 		Inventory inventory = World.getInstance().getInventory();
 		
@@ -316,9 +308,11 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 		draggedActor = getItemAt(x, y);
 	}
 
+	private final Vector3 mousepos = new Vector3();
+	
 	private void stopDragging(int inputX, int inputY) {
-		Vector3 mousepos = World.getInstance().getSceneCamera()
-				.getInputUnProject(viewPort);
+		World.getInstance().getSceneCamera()
+				.getInputUnProject(sceneScreen.getViewPort(), mousepos);
 		
 		Actor targetActor = World.getInstance().getCurrentScene()
 				.getActorAt(mousepos.x, mousepos.y);
@@ -376,10 +370,9 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 		this.collapsed = collapse;
 	}
 
-	@Override
 	public void touchEvent(int type, float x, float y, int pointer, int button) {
 		switch (type) {
-		case TOUCH_UP:
+		case TouchEventListener.TOUCH_UP:
 			if (draggedActor != null) {
 				stopDragging((int)x , (int)y);
 			} else if (collapsedBbox.contains(x, y)) {
@@ -388,23 +381,23 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 				else
 					collapse(true);
 			} else if (configBbox.contains(x, y)) {
-				l.runCommand(CommandListener.CONFIG_COMMAND, null);
+				sceneScreen.runCommand(CommandListener.MENU_COMMAND, null);
 			} else {
 				Actor actor = getItemAt(x, y);
 
 				if (actor != null) {
-					l.runCommand(CommandListener.RUN_VERB_COMMAND, actor);
+					sceneScreen.runCommand(CommandListener.RUN_VERB_COMMAND, actor);
 				} else {
 					updateScroll(x,y);
 				}
 			}
 			break;
 
-		case TOUCH_DOWN:
+		case TouchEventListener.TOUCH_DOWN:
 			// TODO if points over collapse or options. color it
 			break;
 
-		case DRAG:
+		case TouchEventListener.DRAG:
 			startDragging(x, y);
 			break;
 		}
@@ -416,16 +409,6 @@ public class InventoryUI implements TouchEventListener, UIAssetConsumer {
 
 	public void setInventoryPos(int inventoryPos) {
 		this.inventoryPos = inventoryPos;
-	}
-
-	@Override
-	public void dispose() {
-		
-	}
-
-	@Override
-	public void createAssets() {
-		
 	}
 
 }

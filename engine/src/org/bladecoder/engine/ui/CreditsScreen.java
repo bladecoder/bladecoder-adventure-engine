@@ -11,16 +11,19 @@ import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.TextUtils;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Rectangle;
 
-public class CreditsScreen implements Screen {
+public class CreditsScreen implements Screen, InputProcessor {
 
 	private final static String CREDITS_FILENAME = "ui/credits";
 	private static final String FONT_TITLE_STYLE = "CREDITS_TITLE_FONT";
@@ -36,26 +39,32 @@ public class CreditsScreen implements Screen {
 	private int width, height, stringHead = 0;
 	private float scrollY = 0; 
 
-	CommandListener l;
-	Pointer pointer;
+	UI ui;
 
 	Music music;
 	
 	private HashMap<String, Texture> images = new HashMap<String, Texture>();
 
-	public CreditsScreen(Pointer pointer, CommandListener l) {
-		this.pointer = pointer;
-		this.l = l;
+	public CreditsScreen(UI ui) {
+		this.ui = ui;
 	}
 
 	@Override
-	public void draw(SpriteBatch batch) {
-		scrollY+= Gdx.graphics.getDeltaTime() * SPEED * EngineAssetManager.getInstance().getScale();
+	public void render(float delta) {
+		SpriteBatch batch = ui.getBatch();
+		
+		Gdx.gl.glClearColor(0, 0, 0, 1);			
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		batch.setProjectionMatrix(ui.getCamera().combined);
+		batch.begin();	
+		
+		scrollY+= delta * SPEED * EngineAssetManager.getInstance().getScale();
 		
 		float y = scrollY;
 
 		if (stringHead >= credits.size())
-			l.runCommand(CommandScreen.BACK_COMMAND, null);
+			ui.runCommand(MenuScreen.BACK_COMMAND, null);
 
 		for (int i = stringHead; i < credits.size(); i++) {
 			String s = credits.get(i);
@@ -117,33 +126,24 @@ public class CreditsScreen implements Screen {
 			}
 		}
 
-		pointer.draw(batch);
+		ui.getPointer().draw(batch);
+		
+		batch.end();
 	}
 
 	@Override
-	public void resize(Rectangle v) {
-		this.width = (int) v.width;
-		this.height = (int) v.height;
-	}
-
-	@Override
-	public void touchEvent(int type, float x0, float y0, int pointer, int button) {
-		if (l == null)
-			return;
-
-		switch (type) {
-		case TOUCH_UP:
-
-			l.runCommand(CommandScreen.BACK_COMMAND, null);
-
-			break;
-		}
+	public void resize(int width, int height) {		
+		this.width = width;
+		this.height = height;
 	}
 
 	@Override
 	public void dispose() {
 		creditsFont.dispose();
 		titlesFont.dispose();
+		
+		creditsFont = null;
+		titlesFont = null;
 		
 		for(Texture t:images.values())
 			t.dispose();
@@ -155,13 +155,7 @@ public class CreditsScreen implements Screen {
 			
 	}
 
-	@Override
-	public void createAssets() {
-		// Not needed
-	}
-
-	@Override
-	public void retrieveAssets(TextureAtlas atlas) {
+	private void retrieveAssets(TextureAtlas atlas) {
 		titlesFont = EngineAssetManager.getInstance().loadFont(FONT_TITLE_STYLE);
 		creditsFont = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
 
@@ -184,7 +178,7 @@ public class CreditsScreen implements Screen {
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage());
 			
-			l.runCommand(CommandScreen.BACK_COMMAND, null);
+			ui.runCommand(MenuScreen.BACK_COMMAND, null);
 		}
 		
 		scrollY += titlesFont.getLineHeight();
@@ -203,5 +197,75 @@ public class CreditsScreen implements Screen {
 				images.put(s, tex);
 			}
 		}
+	}
+
+	@Override
+	public void show() {
+		retrieveAssets(ui.getUIAtlas());
+		Gdx.input.setInputProcessor(this);
+	}
+
+	@Override
+	public void hide() {
+		dispose();
+	}
+
+	@Override
+	public void pause() {		
+	}
+
+	@Override
+	public void resume() {
+		if(Gdx.app.getType() == ApplicationType.Android) {
+			if(titlesFont != null)
+				titlesFont.dispose();
+			
+			if(creditsFont != null)
+				creditsFont.dispose();
+			// Restore FONTS in OPENGL CONTEXT LOST in Android
+			titlesFont = EngineAssetManager.getInstance().loadFont(FONT_TITLE_STYLE);
+			creditsFont = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
+		}
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		ui.runCommand(MenuScreen.BACK_COMMAND, null);
+		return true;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		return false;
 	}
 }

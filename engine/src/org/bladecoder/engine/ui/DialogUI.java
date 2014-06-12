@@ -3,7 +3,6 @@ package org.bladecoder.engine.ui;
 import java.util.ArrayList;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.assets.UIAssetConsumer;
 import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.model.Dialog;
 import org.bladecoder.engine.model.DialogOption;
@@ -13,10 +12,8 @@ import org.bladecoder.engine.util.RectangleRenderer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Rectangle;
 
-public class DialogUI implements TouchEventListener, UIAssetConsumer  {
+public class DialogUI  {
 	
 	private static final String FONT_STYLE = "DIALOG_FONT";
 	private final static Color BG_COLOR = new Color(0.0f, 0.0f, 0.0f, 0.7f);
@@ -24,18 +21,15 @@ public class DialogUI implements TouchEventListener, UIAssetConsumer  {
 	
 	private BitmapFont font = null;
 	
-	CommandListener l;
+	SceneScreen sceneScreen;
 	
 	int viewPortWidth, viewPortHeight;
 	
 	Recorder recorder;
 
-	public DialogUI(Recorder recorder) {
+	public DialogUI(SceneScreen sceneScreen, Recorder recorder) {
 		this.recorder = recorder;
-	}
-	
-	public void setCommandListener(CommandListener l) {
-		this.l = l;
+		this.sceneScreen = sceneScreen;
 	}
 
 	public void draw(SpriteBatch batch, int inputX, int inputY) {
@@ -73,23 +67,22 @@ public class DialogUI implements TouchEventListener, UIAssetConsumer  {
 		}
 	}
 	
-	@Override
 	public void createAssets() {
+		if(font != null)
+			font.dispose();
+			
 		font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);		
 	}
 
-	@Override
-	public void retrieveAssets(TextureAtlas atlas) {
-	}
 
-	public void resize(Rectangle v) {
-		viewPortWidth = (int)v.width;
-		viewPortHeight = (int)v.height;
+	public void resize(int width, int height) {
+		viewPortWidth = width;
+		viewPortHeight = height;
 	}
 	
-	@Override
 	public void dispose() {
 		font.dispose();
+		font = null;
 	}
 
 	private int getOption(float x, float y) {
@@ -111,14 +104,13 @@ public class DialogUI implements TouchEventListener, UIAssetConsumer  {
 		d.selectOption(i);
 		
 		if(World.getInstance().getCurrentDialog().ended()) {
-			l.runCommand(DIALOG_END_COMMAND, null);
+			sceneScreen.runCommand(DIALOG_END_COMMAND, null);
 		}
 	}
 	
-	@Override
 	public void touchEvent(int type, float x0, float y0, int pointer, int button) {
 		switch (type) {
-		case TOUCH_UP:
+		case TouchEventListener.TOUCH_UP:
 			int i = getOption(x0, y0);
 			
 			if(i >= 0) {

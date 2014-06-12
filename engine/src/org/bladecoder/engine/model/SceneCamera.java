@@ -128,23 +128,21 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		cameraTween.start(this, Tween.NO_REPEAT, 1, destX, destY, zoom, duration, cb);
 	}
 
-	public Vector3 getInputUnProject(Rectangle viewport) {
+	public void getInputUnProject(Rectangle viewport, Vector3 out) {
 
-		Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+		out.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 
-		unproject(touchPos, viewport.x, viewport.y, viewport.width, viewport.height);
+		unproject(out, viewport.x, viewport.y, viewport.width, viewport.height);
 
-		if (touchPos.x >= scrollingWidth)
-			touchPos.x = scrollingWidth - 1;
-		else if (touchPos.x < 0)
-			touchPos.x = 0;
+		if (out.x >= scrollingWidth)
+			out.x = scrollingWidth - 1;
+		else if (out.x < 0)
+			out.x = 0;
 
-		if (touchPos.y >= scrollingHeight)
-			touchPos.y = scrollingHeight - 1;
-		else if (touchPos.y < 0)
-			touchPos.y = 0;
-
-		return touchPos;
+		if (out.y >= scrollingHeight)
+			out.y = scrollingHeight - 1;
+		else if (out.y < 0)
+			out.y = 0;
 	}
 
 	public void updatePos(SpriteActor followActor) {

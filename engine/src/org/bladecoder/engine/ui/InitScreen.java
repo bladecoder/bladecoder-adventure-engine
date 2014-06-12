@@ -5,11 +5,11 @@ import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Rectangle;
 
 public class InitScreen implements Screen {
 	private final static String FILENAME = "ui/blade_logo.png";
@@ -18,7 +18,7 @@ public class InitScreen implements Screen {
 
 	private Texture tex;	
 	
-	CommandListener l;
+	UI ui;
 	boolean loadingGame = false;
 	boolean restart = false;
 	
@@ -26,24 +26,27 @@ public class InitScreen implements Screen {
 	float fadeTime;
 	float width, height;
 	
-	public InitScreen(CommandListener l, boolean restart) {
-		this.l = l;
+	public InitScreen(UI ui, boolean restart) {
+		this.ui = ui;
 		this.restart = restart;
 	}
-	
-	@Override
-	public void touchEvent(int type, float x, float y, int pointer, int button) {
-
-	}
 
 	@Override
-	public void draw(SpriteBatch batch) {
+	public void render(float delta) {
+		SpriteBatch batch = ui.getBatch();
+		
+		Gdx.gl.glClearColor(0, 0, 0, 1);			
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		batch.setProjectionMatrix(ui.getCamera().combined);
+		batch.begin();	
+		
 		if(fadeTime < FADE_TIME && !loadingGame) { // FADE IN
 			batch.setColor(1, 1, 1,  fadeTime/FADE_TIME);	
 		} else	if(fadeTime < FADE_TIME && loadingGame) {  // FADE_OUT
 			batch.setColor(1, 1, 1,  1 - fadeTime/FADE_TIME);
 		} if(fadeTime >= FADE_TIME && loadingGame) {  // EXIT INIT SCREEN
-			l.runCommand(CommandScreen.BACK_COMMAND, null);
+			ui.runCommand(MenuScreen.BACK_COMMAND, null);
 		} if(time > SCREEN_TIME && !loadingGame) { // LOAD GAME
 			loadingGame = true;
 			fadeTime = 0;
@@ -62,23 +65,18 @@ public class InitScreen implements Screen {
 		batch.draw(tex, (width - tex.getWidth()) /2, (height - tex.getHeight()) /2);
 		batch.setColor(1, 1, 1, 1);
 	
-		time += Gdx.graphics.getDeltaTime();
-		fadeTime += Gdx.graphics.getDeltaTime();
+		time += delta;
+		fadeTime += delta;
+		batch.end();
 	}
 
 	@Override
-	public void resize(Rectangle v) {		
-		width = v.width;
-		height = v.height;
+	public void resize(int width, int height) {	
+		this.width = width;
+		this.height = height;
 	}
 
-	@Override
-	public void createAssets() {
-		
-	}
-
-	@Override
-	public void retrieveAssets(TextureAtlas atlas) {		
+	public void retrieveAssets() {
 		tex = new Texture(EngineAssetManager.getInstance().getResAsset(FILENAME));
 		tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);	
 	}
@@ -86,5 +84,24 @@ public class InitScreen implements Screen {
 	@Override
 	public void dispose() {
 		tex.dispose();
+	}
+
+	@Override
+	public void show() {
+		Gdx.input.setInputProcessor(null);
+		retrieveAssets();
+	}
+
+	@Override
+	public void hide() {
+		dispose();
+	}
+
+	@Override
+	public void pause() {
+	}
+
+	@Override
+	public void resume() {
 	}
 }

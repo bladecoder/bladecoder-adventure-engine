@@ -1,7 +1,6 @@
 package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.assets.UIAssetConsumer;
 import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.model.Actor;
 
@@ -14,7 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector3;
 
-public class Pointer implements UIAssetConsumer {
+public class Pointer {
 	private static final String FONT_STYLE = "POINTER_FONT";
 
 	private BitmapFont font;
@@ -31,7 +30,7 @@ public class Pointer implements UIAssetConsumer {
 	private Actor target = null;
 
 	private boolean freezeHotSpot = false;
-	private Vector3 freezePos;
+	private final Vector3 freezePos = new Vector3();
 
 	// True for lookat, false for talkto, pickup or leave
 	private boolean selectedVerbLookat = true;
@@ -46,13 +45,15 @@ public class Pointer implements UIAssetConsumer {
 		draw(batch, false);
 	}
 	
-	public Vector3 getPosition() {
-		return camera.getInputUnProject();
+	public void getPosition(Vector3 pos) {
+		camera.getInputUnProject(pos);
 	}
 
+	private final Vector3 mousepos = new Vector3();
+	
 	public void draw(SpriteBatch batch, boolean dragging) {
 
-		Vector3 input = camera.getInputUnProject();
+		camera.getInputUnProject(mousepos);
 
 		// DRAW TARGET DESCRIPTION
 		if (target != null && target.getDesc() != null) {
@@ -65,9 +66,9 @@ public class Pointer implements UIAssetConsumer {
 
 			TextBounds b = font.getBounds(str);
 
-			float x0 = input.x;
+			float x0 = mousepos.x;
 
-			float y0 = input.y + margin + b.height;
+			float y0 = mousepos.y + margin + b.height;
 
 			float textX = x0 - b.width / 2;
 			float textY = y0;
@@ -92,17 +93,17 @@ public class Pointer implements UIAssetConsumer {
 			if (showAction) {
 				if (target != null && target.getVerb("leave") == null) {
 					if (selectedVerbLookat) {
-						lookatIcon.setPosition(input.x - lookatIcon.getWidth() / 2, input.y
+						lookatIcon.setPosition(mousepos.x - lookatIcon.getWidth() / 2, mousepos.y
 								- lookatIcon.getHeight() / 2);
 						lookatIcon.draw(batch);
 					} else {
 
 						if (target.getVerb("talkto") != null) {
-							talktoIcon.setPosition(input.x - talktoIcon.getWidth() / 2, input.y
+							talktoIcon.setPosition(mousepos.x - talktoIcon.getWidth() / 2, mousepos.y
 									- talktoIcon.getHeight() / 2);
 							talktoIcon.draw(batch);
 						} else {
-							pickupIcon.setPosition(input.x - pickupIcon.getWidth() / 2, input.y
+							pickupIcon.setPosition(mousepos.x - pickupIcon.getWidth() / 2, mousepos.y
 									- pickupIcon.getHeight() / 2);
 							pickupIcon.draw(batch);
 						}
@@ -112,11 +113,11 @@ public class Pointer implements UIAssetConsumer {
 
 			// leave action always shows
 			if (target != null && target.getVerb("leave") != null) {
-				leave.setPosition(input.x - leave.getWidth() / 2, input.y - leave.getHeight() / 2);
+				leave.setPosition(mousepos.x - leave.getWidth() / 2, mousepos.y - leave.getHeight() / 2);
 				leave.draw(batch);
 			} else if (!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)
 					&& (!showAction || target == null)) {
-				pointer.setPosition(input.x - pointer.getWidth() / 2, input.y - pointer.getHeight()
+				pointer.setPosition(mousepos.x - pointer.getWidth() / 2, mousepos.y - pointer.getHeight()
 						/ 2);
 
 				pointer.draw(batch);
@@ -136,12 +137,7 @@ public class Pointer implements UIAssetConsumer {
 
 	public void setFreezeHotSpot(boolean freeze) {
 		freezeHotSpot = freeze;
-		freezePos = camera.getInputUnProject();
-	}
-
-	@Override
-	public void createAssets() {
-		font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
+		camera.getInputUnProject(freezePos);
 	}
 
 	public void retrieveAssets(TextureAtlas atlas) {
@@ -208,9 +204,17 @@ public class Pointer implements UIAssetConsumer {
 		showAction = show;
 	}
 
-	@Override
+
+	public void createAssets() {
+		if(font != null)
+			font.dispose();
+		
+		font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
+	}
+	
 	public void dispose() {
 		font.dispose();
+		font = null;
 	}
 
 }

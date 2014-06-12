@@ -1,6 +1,5 @@
 package org.bladecoder.engine.ui;
 
-import org.bladecoder.engine.assets.UIAssetConsumer;
 import org.bladecoder.engine.model.Actor;
 
 import com.badlogic.gdx.Gdx;
@@ -10,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Rectangle;
 
-public class PieMenu implements TouchEventListener, UIAssetConsumer  {
+public class PieMenu  {
 	
 	private boolean visible = false;
 	
@@ -124,7 +123,6 @@ public class PieMenu implements TouchEventListener, UIAssetConsumer  {
 		}
 	}
 	
-	@Override
 	public void retrieveAssets(TextureAtlas atlas) {
 		piePiece = atlas.findRegion("pie");
 		//rightIcon = atlas.findRegion("pickup");
@@ -134,9 +132,9 @@ public class PieMenu implements TouchEventListener, UIAssetConsumer  {
 		pickupIcon = atlas.findRegion("pickup");
 	}
 	
-	public void resize(Rectangle v) {
-		viewPortWidth = (int)v.width;
-		viewPortHeight = (int)v.height;
+	public void resize(int width, int height) {
+		viewPortWidth = width;
+		viewPortHeight = height;
 		
 		scale = (viewPortHeight / 5) / piePiece.getRegionHeight();
 		
@@ -147,11 +145,9 @@ public class PieMenu implements TouchEventListener, UIAssetConsumer  {
 		}
 	}
 	
-	@Override
-	public void touchEvent(int type, float x2, float y2, int pointer, int button) {
-		
+	public void touchEvent(int type, float x2, float y2, int pointer, int button) {		
 		switch (type) {
-		case TOUCH_UP:
+		case TouchEventListener.TOUCH_UP:
 					
 			if(selected != null && actor != null) {
 				if(recorder.isRecording()) {
@@ -165,7 +161,7 @@ public class PieMenu implements TouchEventListener, UIAssetConsumer  {
 			selected = null;
 			break;
 			
-		case TOUCH_DOWN:
+		case TouchEventListener.TOUCH_DOWN:
 			Rectangle bboxLeft;
 			Rectangle bboxRight;
 			
@@ -191,16 +187,6 @@ public class PieMenu implements TouchEventListener, UIAssetConsumer  {
 			
 			break;
 		}
-	}
-
-	@Override
-	public void dispose() {
-		
-	}
-
-	@Override
-	public void createAssets() {
-
 	}
 
 }
