@@ -260,7 +260,7 @@ public class SpineRenderer implements SpriteRenderer {
 		// If the source is not loaded. Load it.
 		if (currentSkeleton == null || currentSkeleton.refCounter < 1) {
 			loadSource(fa.source);
-			EngineAssetManager.getInstance().getManager().finishLoading();
+			EngineAssetManager.getInstance().finishLoading();
 
 			retrieveSource(fa.source);
 
@@ -357,7 +357,7 @@ public class SpineRenderer implements SpriteRenderer {
 
 		if (entry == null || entry.refCounter < 1) {
 			loadSource(source);
-			EngineAssetManager.getInstance().getManager().finishLoading();
+			EngineAssetManager.getInstance().finishLoading();
 			entry = skeletonCache.get(source);
 		}
 

@@ -10,22 +10,17 @@ import org.bladecoder.engine.model.DialogOption;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.RectangleRenderer;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 
 public class DialogUI implements TouchEventListener, UIAssetConsumer  {
 	
-	private static final String FONT_FILE = "fonts/ArchitectsDaughter_fix.ttf";
+	private static final String FONT_STYLE = "DIALOG_FONT";
 	private final static Color BG_COLOR = new Color(0.0f, 0.0f, 0.0f, 0.7f);
 	public static final String DIALOG_END_COMMAND = "dialog_end";
-	
-	private static final int FONT_SIZE = 20;
-	private static final int FONT_SIZE_LOWRES = 13;
 	
 	private BitmapFont font = null;
 	
@@ -80,14 +75,7 @@ public class DialogUI implements TouchEventListener, UIAssetConsumer  {
 	
 	@Override
 	public void createAssets() {
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(EngineAssetManager.getInstance().getAsset(FONT_FILE));
-		// For small screens we use small fonts to limit the space used for the
-		// text in the screen
-		if (Gdx.graphics.getWidth() < 800)
-			font = generator.generateFont(FONT_SIZE_LOWRES);
-		else
-			font = generator.generateFont(FONT_SIZE);
-		generator.dispose();		
+		font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);		
 	}
 
 	@Override

@@ -554,7 +554,7 @@ public class ScnWidget extends Widget {
 		}
 
 		a.loadAssets();
-		EngineAssetManager.getInstance().getManager().finishLoading();
+		EngineAssetManager.getInstance().finishLoading();
 		a.retrieveAssets();
 
 		return a;

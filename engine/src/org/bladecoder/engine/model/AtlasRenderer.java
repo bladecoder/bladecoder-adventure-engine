@@ -358,7 +358,7 @@ public class AtlasRenderer implements SpriteRenderer {
 		
 		if(entry==null || entry.refCounter < 1) {
 			loadSource(source);
-			EngineAssetManager.getInstance().getManager().finishLoading();
+			EngineAssetManager.getInstance().finishLoading();
 		}
 	}
 	

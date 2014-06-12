@@ -50,7 +50,7 @@ public class SpriteWidget extends Widget {
 		}
 		
 		renderer.loadAssets();
-		EngineAssetManager.getInstance().getManager().finishLoading();
+		EngineAssetManager.getInstance().finishLoading();
 		renderer.retrieveAssets();
 	}
 	

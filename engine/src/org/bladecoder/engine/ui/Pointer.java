@@ -12,13 +12,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
 
 public class Pointer implements UIAssetConsumer {
-
-	// private static final String FONT_FILE = "fonts/JosefinSans-Regular.ttf";
-	private static final String FONT_FILE = "fonts/Ubuntu-M.ttf";
+	private static final String FONT_STYLE = "POINTER_FONT";
 
 	private BitmapFont font;
 	private Sprite pointer;
@@ -144,10 +141,7 @@ public class Pointer implements UIAssetConsumer {
 
 	@Override
 	public void createAssets() {
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(EngineAssetManager
-				.getInstance().getAsset(FONT_FILE));
-		font = generator.generateFont(16);
-		generator.dispose();
+		font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
 	}
 
 	public void retrieveAssets(TextureAtlas atlas) {

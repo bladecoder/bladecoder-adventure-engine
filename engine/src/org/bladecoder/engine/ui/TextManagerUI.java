@@ -8,7 +8,6 @@ import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.RectangleRenderer;
 import org.bladecoder.engine.util.TextUtils;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment;
@@ -16,7 +15,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
@@ -31,10 +29,8 @@ import com.badlogic.gdx.math.Vector3;
 public class TextManagerUI implements UIAssetConsumer {
 	private static final float RECT_MARGIN = 18f; // TODO: MARGIN DEPENDS ON RESOLUTION/DPI!
 	private static final float RECT_BORDER = 2f;
-	private static final int FONT_SIZE = 18;
-	private static final int FONT_SIZE_LOWRES = 11;
 
-	private static final String FONT_FILE = "fonts/ArchitectsDaughter_fix.ttf";
+	private static final String FONT_STYLE = "TEXTMANAGER_FONT";
 
 	private BitmapFont font = null;
 	private float maxRectangleWidth;
@@ -130,18 +126,7 @@ public class TextManagerUI implements UIAssetConsumer {
 
 	@Override
 	public void createAssets() {
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(EngineAssetManager
-				.getInstance().getAsset(FONT_FILE));
-
-		// For small screens we use small fonts to limit the space used for the
-		// text in the screen
-		if (Gdx.graphics.getWidth() < 800)
-			font = generator.generateFont(FONT_SIZE_LOWRES);
-		else
-			font = generator.generateFont(FONT_SIZE);
-
-		generator.dispose();
-
+		font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
 	}
 
 	@Override

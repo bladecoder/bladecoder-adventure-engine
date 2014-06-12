@@ -37,7 +37,7 @@ public class PickUpAction implements Action {
 			scn = World.getInstance().getScene(scene);
 			actor = scn.getActor(actorId);
 			actor.loadAssets();
-			EngineAssetManager.getInstance().getManager().finishLoading();
+			EngineAssetManager.getInstance().finishLoading();
 			actor.retrieveAssets();
 		} else {
 			scn = World.getInstance().getCurrentScene();

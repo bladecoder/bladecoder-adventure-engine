@@ -251,16 +251,6 @@ public class World implements Serializable, AssetConsumer {
 		return currentDialog;
 	}
 
-	public void exitTestMode() {
-		testScene = null;
-
-		EngineLogger.debug("Exiting test Mode");
-	}
-
-	public boolean inTestMode() {
-		return testScene != null;
-	}
-
 	public Scene getCurrentScene() {
 		return currentScene;
 	}
@@ -312,11 +302,14 @@ public class World implements Serializable, AssetConsumer {
 		cutMode = v;
 	}
 
-	public void setCurrentScene(String t) {
-		Scene s = scenes.get(t);
+	public void setCurrentScene(String id) {
+		Scene s = scenes.get(id);
 
 		if (s != null) {
 			setCurrentScene(s);
+		} else {
+			EngineLogger.error("COULD NOT FIND SCENE: " + id);
+			Gdx.app.exit();
 		}
 	}
 

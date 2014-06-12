@@ -18,16 +18,13 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 
 public class CreditsScreen implements Screen {
 
 	private final static String CREDITS_FILENAME = "ui/credits";
-	private static final String FONT_TITLES_FILE = "fonts/Ubuntu-M.ttf";
-	private static final int FONT_TITLES_SIZE = 14;
-	private static final String FONT_CREDITS_FILE = "fonts/Ubuntu-M.ttf";
-	private static final int FONT_CREDITS_SIZE = 20;
+	private static final String FONT_TITLE_STYLE = "CREDITS_TITLE_FONT";
+	private static final String FONT_STYLE = "CREDITS_FONT";
 	private static final float SPEED = 40; // px/sec.
 
 	// title and texts pair sequence
@@ -165,15 +162,8 @@ public class CreditsScreen implements Screen {
 
 	@Override
 	public void retrieveAssets(TextureAtlas atlas) {
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(EngineAssetManager
-				.getInstance().getAsset(FONT_TITLES_FILE));
-		titlesFont = generator.generateFont(FONT_TITLES_SIZE);
-		generator.dispose();
-		
-		FreeTypeFontGenerator generator2 = new FreeTypeFontGenerator(EngineAssetManager
-				.getInstance().getAsset(FONT_CREDITS_FILE));
-		creditsFont = generator2.generateFont(FONT_CREDITS_SIZE);
-		generator2.dispose();
+		titlesFont = EngineAssetManager.getInstance().loadFont(FONT_TITLE_STYLE);
+		creditsFont = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
 
 		Locale locale = Locale.getDefault();
 

@@ -17,8 +17,8 @@ import java.util.jar.JarFile;
 import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.EngineLogger;
 
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -31,13 +31,15 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Array;
 
-public class EngineAssetManager {
+public class EngineAssetManager extends AssetManager {
 	public static final String DESKTOP_PREFS_DIR = "BladeEngine";
 	public static final String NOT_DESKTOP_PREFS_DIR = "data/";
 	
@@ -56,18 +58,17 @@ public class EngineAssetManager {
 	
 	private static EngineAssetManager instance = null;
 
-	private AssetManager manager = null;
 	private float scale = 1;
 
 	private EngineResolutionFileResolver resResolver;
 
 	protected EngineAssetManager() {
 		this(new InternalFileHandleResolver());
-		manager.getLogger().setLevel(Application.LOG_DEBUG);
+		getLogger().setLevel(Application.LOG_DEBUG);
 	}
 
 	protected EngineAssetManager(FileHandleResolver resolver) {
-		manager = new AssetManager(resolver);
+		super(resolver);
 
 		Resolution[] r = getResolutions(resolver);
 
@@ -76,10 +77,10 @@ public class EngineAssetManager {
 		}
 
 		resResolver = new EngineResolutionFileResolver(resolver, r);
-		manager.setLoader(Texture.class, new TextureLoader(resResolver));
-		manager.setLoader(TextureAtlas.class, new TextureAtlasLoader(
+		setLoader(Texture.class, new TextureLoader(resResolver));
+		setLoader(TextureAtlas.class, new TextureAtlasLoader(
 				resResolver));
-		Texture.setAssetManager(manager);
+		Texture.setAssetManager(this);
 
 		Resolution choosed = EngineResolutionFileResolver.choose(r);
 
@@ -132,25 +133,53 @@ public class EngineAssetManager {
 		EngineLogger.debug("FORCING RESOLUTION: " + resWidth);
 	}
 
-	public AssetManager getManager() {
-		return manager;
-	}
-
 	public boolean isLoading() {
-		return !manager.update();
+		return !update();
+	}
+	
+	public BitmapFont loadFont(String style) {
+		String key =Config.getProperty(style, null);
+		
+		if(key == null) {
+			EngineLogger.error("FONT STYLE NOT DEFINED IN PROJECT PROPERTIES: " + style);
+			
+			return new BitmapFont();
+		}
+		
+		int size = Config.getProperty(style + "_SIZE", 14);
+		
+		return loadFont(FONTS_DIR + key, size);
+	}
+	
+	public BitmapFont loadFont(String filename, int size) {
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(getAsset(filename));
+		FreeTypeFontParameter param = new FreeTypeFontParameter();
+		param.size = size;
+		param.flip = false;
+		param.genMipMaps = false;
+		
+		// For small screens we use small fonts to limit the space used for the
+		// text in the screen
+		if (Gdx.graphics.getWidth() < 800)
+			param.size *= 0.7;
+		
+		BitmapFont font = generator.generateFont(param);
+		generator.dispose();
+		
+		return font;
 	}
 
 	public void loadAtlas(String name) {
-		manager.load(ATLASES_DIR + name + ".atlas", TextureAtlas.class);
+		load(ATLASES_DIR + name + ".atlas", TextureAtlas.class);
 	}
 
 	public boolean isAtlasLoaded(String name) {
-		return manager.isLoaded(ATLASES_DIR + name + ".atlas");
+		return isLoaded(ATLASES_DIR + name + ".atlas");
 	}
 
 	public void disposeAtlas(String name) {
 		if (isAtlasLoaded(name))
-			manager.unload(ATLASES_DIR + name + ".atlas");
+			unload(ATLASES_DIR + name + ".atlas");
 	}
 
 	public FileHandle getModelFile(String filename) {
@@ -177,22 +206,8 @@ public class EngineAssetManager {
 		return resResolver.baseResolve(filename);
 	}
 
-	public Sprite getSprite(String atlas, String name) {
-		TextureAtlas a = manager.get(ATLASES_DIR + atlas + ".atlas",
-				TextureAtlas.class);
-
-		Sprite s = a.createSprite(name);
-
-		if (s == null) {
-			EngineLogger.error("Sprite " + name + " not found in atlas "
-					+ atlas);
-		}
-
-		return s;
-	}
-
 	public AtlasRegion getRegion(String atlas, String name) {
-		TextureAtlas a = manager.get(ATLASES_DIR + atlas + ".atlas",
+		TextureAtlas a = get(ATLASES_DIR + atlas + ".atlas",
 				TextureAtlas.class);
 
 		AtlasRegion region = a.findRegion(name);
@@ -206,14 +221,14 @@ public class EngineAssetManager {
 	}
 	
 	public TextureAtlas getTextureAtlas(String atlas) {
-		TextureAtlas a = manager.get(ATLASES_DIR + atlas + ".atlas",
+		TextureAtlas a = get(ATLASES_DIR + atlas + ".atlas",
 				TextureAtlas.class);
 
 		return a;
 	}
 
 	public Array<AtlasRegion> getRegions(String atlas, String name) {
-		TextureAtlas a = manager.get(ATLASES_DIR + atlas + ".atlas",
+		TextureAtlas a = get(ATLASES_DIR + atlas + ".atlas",
 				TextureAtlas.class);
 
 		Array<AtlasRegion> region = a.findRegions(name);
@@ -227,12 +242,12 @@ public class EngineAssetManager {
 	}
 
 	public void loadTexture(String filename) {
-		manager.load(filename, Texture.class);
+		load(filename, Texture.class);
 	}
 
 	public void disposeTexture(Texture t) {
-		if (manager.isLoaded(manager.getAssetFileName(t)))
-			manager.unload(manager.getAssetFileName(t));
+		if (isLoaded(getAssetFileName(t)))
+			unload(getAssetFileName(t));
 	}
 
 	public Texture getTexture(String filename) {
@@ -240,38 +255,38 @@ public class EngineAssetManager {
 		// param.minFilter = TextureFilter.Linear;
 		// param.genMipMaps = true;
 
-		return manager.get(filename, Texture.class);
+		return get(filename, Texture.class);
 	}
 
 	public void dispose() {
-		manager.dispose();
+		super.dispose();
 		instance = null;
 	}
 
 	public void loadMusic(String filename) {
-		manager.load(MUSIC_DIR + filename, Music.class);
+		load(MUSIC_DIR + filename, Music.class);
 	}
 
 	public void disposeMusic(String filename) {
-		if (manager.isLoaded(MUSIC_DIR + filename))
-			manager.unload(MUSIC_DIR + filename);
+		if (isLoaded(MUSIC_DIR + filename))
+			unload(MUSIC_DIR + filename);
 	}
 
 	public Music getMusic(String filename) {
-		return manager.get(MUSIC_DIR + filename, Music.class);
+		return get(MUSIC_DIR + filename, Music.class);
 	}
 
 	public void loadSound(String filename) {
-		manager.load(SOUND_DIR + filename, Sound.class);
+		load(SOUND_DIR + filename, Sound.class);
 	}
 
 	public Sound getSound(String filename) {
-		return manager.get(SOUND_DIR + filename, Sound.class);
+		return get(SOUND_DIR + filename, Sound.class);
 	}
 
 	public void disposeSound(String filename) {
-		if (manager.isLoaded(SOUND_DIR + filename))
-			manager.unload(SOUND_DIR + filename);
+		if (isLoaded(SOUND_DIR + filename))
+			unload(SOUND_DIR + filename);
 	}
 	
 
@@ -280,17 +295,17 @@ public class EngineAssetManager {
 	}
 	
 	public void loadModel3D(String name) {
-		manager.load(MODEL3D_DIR + name + MODEL3D_EXT, Model.class);
+		load(MODEL3D_DIR + name + MODEL3D_EXT, Model.class);
 	}
 
 	public Model getModel3D(String name) {
-		return manager.get(MODEL3D_DIR + name + MODEL3D_EXT, Model.class);
+		return get(MODEL3D_DIR + name + MODEL3D_EXT, Model.class);
 	}
 		
 
 	public void disposeModel3D(String name) {
-		if (manager.isLoaded(MODEL3D_DIR + name + MODEL3D_EXT))
-			manager.unload(MODEL3D_DIR + name + MODEL3D_EXT);
+		if (isLoaded(MODEL3D_DIR + name + MODEL3D_EXT))
+			unload(MODEL3D_DIR + name + MODEL3D_EXT);
 	}	
 	
 	public Texture getOverlay(String filename) {
@@ -298,10 +313,6 @@ public class EngineAssetManager {
 		tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
 		return tex;
-	}
-
-	public <T> String getAssetFileName(T asset) {
-		return manager.getAssetFileName(asset);
 	}
 
 	public boolean assetExists(String filename) {

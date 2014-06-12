@@ -5,7 +5,6 @@ import org.bladecoder.engine.assets.EngineAssetManager;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class EngineLogger {
 	private static String TAG = "ENGINE";
@@ -17,7 +16,7 @@ public class EngineLogger {
 
 	public static int debugLevel = DEBUG0;
 
-	private static final String FONT_FILE = "fonts/Ubuntu-M.ttf";
+	private static final String FONT = "DEBUG_FONT";
 	private static BitmapFont debugFont = null;
 
 	public static void debug(String message) {
@@ -66,13 +65,7 @@ public class EngineLogger {
 
 	public static BitmapFont getDebugFont() {
 		if (debugFont == null) {
-
-			FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
-					EngineAssetManager.getInstance().getAsset(FONT_FILE));
-			debugFont = generator.generateFont(20);
-			generator.dispose();
-//			debugFont.getRegion().getTexture()
-//					.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+			debugFont = EngineAssetManager.getInstance().loadFont(FONT);
 		}
 
 		return debugFont;

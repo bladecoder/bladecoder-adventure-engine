@@ -29,7 +29,7 @@ public class CameraAction extends BaseCallbackAction implements Action {
 					Type.BOOLEAN, true) };
 
 	private String actorId, followActorId;
-	private float zoom, duration;
+	private float zoom=-1, duration;
 	private boolean wait = true;
 	private Vector2 pos;
 
@@ -42,8 +42,6 @@ public class CameraAction extends BaseCallbackAction implements Action {
 
 		if (params.get("zoom") != null)
 			zoom = Float.parseFloat(params.get("zoom"));
-		else
-			zoom = World.getInstance().getSceneCamera().getZoom(); // sets current zoom as final zoom if not param
 
 		if (params.get("duration") != null)
 			duration = Float.parseFloat(params.get("duration"));
@@ -62,6 +60,9 @@ public class CameraAction extends BaseCallbackAction implements Action {
 		float scale = EngineAssetManager.getInstance().getScale();
 
 		SceneCamera camera = World.getInstance().getSceneCamera();
+		
+		if(zoom == -1)
+			zoom = camera.getZoom();
 		
 		if(pos == null) {
 			pos = camera.getPosition();

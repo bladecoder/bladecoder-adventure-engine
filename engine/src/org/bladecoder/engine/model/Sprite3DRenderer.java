@@ -341,7 +341,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		if (currentModel == null || currentModel.refCounter < 1) {
 			// If the source is not loaded. Load it.
 			loadSource(fa.source);
-			EngineAssetManager.getInstance().getManager().finishLoading();
+			EngineAssetManager.getInstance().finishLoading();
 
 			retrieveSource(fa.source);
 			
@@ -630,7 +630,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 		if (entry == null || entry.refCounter < 1) {
 			loadSource(source);
-			EngineAssetManager.getInstance().getManager().finishLoading();
+			EngineAssetManager.getInstance().finishLoading();
 			entry = modelCache.get(source);
 		}
 

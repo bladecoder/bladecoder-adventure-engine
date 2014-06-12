@@ -43,4 +43,15 @@ public class Config {
 		
 		return result;
 	}
+	
+	public static int getProperty(String key, int defaultValue) {
+		int result = 0;
+		
+		try {
+			result = Integer.parseInt(getProperty(key, String.valueOf(defaultValue)));
+		} catch (Exception e) {
+		}
+		
+		return result;
+	}
 }

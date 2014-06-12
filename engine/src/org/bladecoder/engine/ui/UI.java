@@ -249,8 +249,6 @@ public class UI implements CommandListener, TouchEventListener, AssetConsumer {
 	public void runCommand(String command, Object param) {
 
 		if (command.equals(CommandListener.CONFIG_COMMAND)) {
-			// Exit testMode if config command
-			World.getInstance().exitTestMode();
 			setState(State.COMMAND_SCREEN);
 		} else if (command.equals(CommandScreen.BACK_COMMAND)) {
 			setState(State.SCENE_SCREEN);
