@@ -8,6 +8,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
 public class SceneInputProcessor implements InputProcessor {
+	public static final int TOUCH_DOWN = 0;
+	public static final int TOUCH_UP = 1;
+	public static final int DRAG = 2;
 
 	SceneScreen sceneScreen;
 
@@ -28,7 +31,7 @@ public class SceneInputProcessor implements InputProcessor {
 		case Input.Keys.ESCAPE:
 		case Input.Keys.BACK:
 		case Input.Keys.MENU:
-			sceneScreen.runCommand(CommandListener.MENU_COMMAND, null);
+			sceneScreen.showMenu();
 			break;
 		}
 
@@ -106,7 +109,7 @@ public class SceneInputProcessor implements InputProcessor {
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		EngineLogger.debug("Event TOUCH DOWN button: " + button);
 
-		sceneScreen.touchEvent(TouchEventListener.TOUCH_DOWN, x, y, pointer, button);
+		sceneScreen.touchEvent(TOUCH_DOWN, x, y, pointer, button);
 
 		return false;
 	}
@@ -115,7 +118,7 @@ public class SceneInputProcessor implements InputProcessor {
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		EngineLogger.debug("Event TOUCH UP button: " + button);
 
-		sceneScreen.touchEvent(TouchEventListener.TOUCH_UP, x, y, pointer, button);
+		sceneScreen.touchEvent(TOUCH_UP, x, y, pointer, button);
 
 		return false;
 	}
@@ -124,7 +127,7 @@ public class SceneInputProcessor implements InputProcessor {
 	public boolean touchDragged(int x, int y, int pointer) {
 		EngineLogger.debug("EVENT TOUCH DRAGGED");
 
-		sceneScreen.touchEvent(TouchEventListener.DRAG, x, y, pointer, 0);
+		sceneScreen.touchEvent(DRAG, x, y, pointer, 0);
 
 		return false;
 	}

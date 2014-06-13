@@ -13,7 +13,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
-public class UI implements CommandListener {
+public class UI {
 
 	private final static String ATLAS_FILENAME = "atlases/ui.atlas";
 
@@ -27,8 +27,6 @@ public class UI implements CommandListener {
 	private SpriteBatch batch;
 	private TextureAtlas atlas;
 
-	private ScreenCamera camera;
-
 	public static enum State {
 		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, RESTART_SCREEN, CREDIT_SCREEN
 	};
@@ -40,8 +38,8 @@ public class UI implements CommandListener {
 	public UI() {
 		batch = new SpriteBatch();
 
-		camera = new ScreenCamera();
-		pointer = new Pointer(camera);
+		
+		pointer = new Pointer();
 		
 		screens = new Screen[State.values().length];
 
@@ -82,10 +80,6 @@ public class UI implements CommandListener {
 
 	public State getState() {
 		return state;
-	}
-	
-	public ScreenCamera getCamera() {
-		return camera;
 	}
 
 	public void setScreen(State s) {
@@ -130,37 +124,10 @@ public class UI implements CommandListener {
 	}
 
 	public void resize(int width, int height) {
-
-		if(!World.getInstance().isDisposed()) {
-			camera.setViewport(width, height, World.getInstance().getWidth(), World.getInstance().getHeight());
-			World.getInstance().getSceneCamera().update();
-		} else {
-			camera.setViewport(width, height, width, height);
-		}
-
-		pointer.resize((int) camera.getViewport().width,
-				(int) camera.getViewport().height);
+		pointer.resize(width, height);
 
 		if (screen != null)
-			screen.resize((int)camera.getViewport().width, (int)camera.getViewport().height);
-	}
-
-	@Override
-	public void runCommand(String command, Object param) {
-
-		if (command.equals(CommandListener.MENU_COMMAND)) {
-			setScreen(State.MENU_SCREEN);
-		} else if (command.equals(MenuScreen.BACK_COMMAND)) {
-			setScreen(State.SCENE_SCREEN);
-		} else if (command.equals(MenuScreen.RELOAD_COMMAND)) {
-			setScreen(State.RESTART_SCREEN);
-		} else if (command.equals(MenuScreen.CREDITS_COMMAND)) {
-			setScreen(State.CREDIT_SCREEN);
-		} else if (command.equals(MenuScreen.HELP_COMMAND)) {
-			setScreen(State.HELP_SCREEN);			
-		} else if (command.equals(MenuScreen.QUIT_COMMAND)) {
-			exit();
-		}
+			screen.resize(width, height);
 	}
 
 	public void toggleFullScreen() {
@@ -179,10 +146,6 @@ public class UI implements CommandListener {
 		screen.hide();
 		batch.dispose();
 		atlas.dispose();
-	}
-
-	public void exit() {
-		Gdx.app.exit();
 	}
 	
 	public void resume() {

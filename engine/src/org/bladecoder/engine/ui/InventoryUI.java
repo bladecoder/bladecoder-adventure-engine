@@ -312,7 +312,7 @@ public class InventoryUI {
 	
 	private void stopDragging(int inputX, int inputY) {
 		World.getInstance().getSceneCamera()
-				.getInputUnProject(sceneScreen.getViewPort(), mousepos);
+				.getInputUnProject(sceneScreen.getViewport(), mousepos);
 		
 		Actor targetActor = World.getInstance().getCurrentScene()
 				.getActorAt(mousepos.x, mousepos.y);
@@ -372,7 +372,7 @@ public class InventoryUI {
 
 	public void touchEvent(int type, float x, float y, int pointer, int button) {
 		switch (type) {
-		case TouchEventListener.TOUCH_UP:
+		case SceneInputProcessor.TOUCH_UP:
 			if (draggedActor != null) {
 				stopDragging((int)x , (int)y);
 			} else if (collapsedBbox.contains(x, y)) {
@@ -381,23 +381,23 @@ public class InventoryUI {
 				else
 					collapse(true);
 			} else if (configBbox.contains(x, y)) {
-				sceneScreen.runCommand(CommandListener.MENU_COMMAND, null);
+				sceneScreen.showMenu();
 			} else {
 				Actor actor = getItemAt(x, y);
 
 				if (actor != null) {
-					sceneScreen.runCommand(CommandListener.RUN_VERB_COMMAND, actor);
+					sceneScreen.runVerb(actor);
 				} else {
 					updateScroll(x,y);
 				}
 			}
 			break;
 
-		case TouchEventListener.TOUCH_DOWN:
+		case SceneInputProcessor.TOUCH_DOWN:
 			// TODO if points over collapse or options. color it
 			break;
 
-		case TouchEventListener.DRAG:
+		case SceneInputProcessor.DRAG:
 			startDragging(x, y);
 			break;
 		}

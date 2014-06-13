@@ -10,24 +10,28 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class LoadingScreen implements Screen {
 	private final static float INIT_TIME = 1f;
 	
-	int pos = 0;
-	int numSquares = 3;
+	private int pos = 0;
+	private int numSquares = 3;
 	
-	float x, y;
+	private float x, y;
 	
-	float squareWidth = 30f;
-	float squareHeight = 30f;
-	float margin = 10f;
+	private float squareWidth = 30f;
+	private float squareHeight = 30f;
+	private float margin = 10f;
 	
-	float initTime = 0;
+	private float initTime = 0;
 	
-	float delta;
+	private float delta;
 	
 	private UI ui;
+	
+	private final Viewport viewport = new ScreenViewport();
 	
 	public LoadingScreen(UI ui) {	
 		delta = 0;
@@ -58,7 +62,7 @@ public class LoadingScreen implements Screen {
 		Gdx.gl.glClearColor(0, 0, 0, 1);			
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		batch.setProjectionMatrix(ui.getCamera().combined);
+		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();			
 				
 		update(delta);
@@ -84,8 +88,10 @@ public class LoadingScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		x = (width - (squareWidth * numSquares + margin * (numSquares -1))) / 2; 
-		y = (height - squareHeight) / 2;
+		viewport.update(width, height, true);
+		
+		x = (viewport.getWorldWidth() - (squareWidth * numSquares + margin * (numSquares -1))) / 2; 
+		y = (viewport.getWorldHeight() - squareHeight) / 2;
 	}
 
 	@Override

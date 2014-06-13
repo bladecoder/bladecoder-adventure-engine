@@ -4,14 +4,18 @@ import java.text.MessageFormat;
 import java.util.Locale;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
+import org.bladecoder.engine.ui.UI.State;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class HelpScreen implements Screen, InputProcessor {
 	
@@ -20,15 +24,12 @@ public class HelpScreen implements Screen, InputProcessor {
 
 	private Texture tex;
 
-	float width, height;
-
-	UI ui;
+	private final UI ui;
 	
-	boolean pieMode;
-	String localeFilename;
+	private String localeFilename;
+	private final Viewport viewport = new ScreenViewport();
 
 	public HelpScreen(UI ui, boolean pieMode) {
-		this.pieMode = pieMode;
 		this.ui = ui;
 		
 		Locale locale = Locale.getDefault();
@@ -53,17 +54,16 @@ public class HelpScreen implements Screen, InputProcessor {
 		Gdx.gl.glClearColor(0, 0, 0, 1);			
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		batch.setProjectionMatrix(ui.getCamera().combined);
+		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();	
-		batch.draw(tex, 0, 0, width, height);
-		ui.getPointer().draw(batch);
+		batch.draw(tex, 0, 0, viewport.getViewportWidth(), viewport.getViewportHeight());
+		ui.getPointer().draw(batch, viewport);
 		batch.end();
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		this.width = width;
-		this.height = height;
+		viewport.update(width, height, true);
 	}
 
 	@Override
@@ -101,7 +101,15 @@ public class HelpScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean keyUp(int keycode) {
-		return false;
+		switch (keycode) {
+		case Input.Keys.ESCAPE:
+		case Input.Keys.BACK:
+		case Input.Keys.MENU:
+			ui.setScreen(State.SCENE_SCREEN);
+			break;
+		}
+
+		return true;
 	}
 
 	@Override
@@ -116,7 +124,7 @@ public class HelpScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		ui.runCommand(MenuScreen.BACK_COMMAND, null);
+		ui.setScreen(State.SCENE_SCREEN);
 		return true;
 	}
 

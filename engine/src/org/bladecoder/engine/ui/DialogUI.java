@@ -104,13 +104,13 @@ public class DialogUI  {
 		d.selectOption(i);
 		
 		if(World.getInstance().getCurrentDialog().ended()) {
-			sceneScreen.runCommand(DIALOG_END_COMMAND, null);
+			World.getInstance().setCurrentDialog(null);
 		}
 	}
 	
 	public void touchEvent(int type, float x0, float y0, int pointer, int button) {
 		switch (type) {
-		case TouchEventListener.TOUCH_UP:
+		case SceneInputProcessor.TOUCH_UP:
 			int i = getOption(x0, y0);
 			
 			if(i >= 0) {

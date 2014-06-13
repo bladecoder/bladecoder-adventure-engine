@@ -147,7 +147,7 @@ public class PieMenu  {
 	
 	public void touchEvent(int type, float x2, float y2, int pointer, int button) {		
 		switch (type) {
-		case TouchEventListener.TOUCH_UP:
+		case SceneInputProcessor.TOUCH_UP:
 					
 			if(selected != null && actor != null) {
 				if(recorder.isRecording()) {
@@ -161,7 +161,7 @@ public class PieMenu  {
 			selected = null;
 			break;
 			
-		case TouchEventListener.TOUCH_DOWN:
+		case SceneInputProcessor.TOUCH_DOWN:
 			Rectangle bboxLeft;
 			Rectangle bboxRight;
 			

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
+import org.bladecoder.engine.ui.UI.State;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.TextUtils;
 
@@ -22,6 +23,8 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class CreditsScreen implements Screen, InputProcessor {
 
@@ -36,14 +39,16 @@ public class CreditsScreen implements Screen, InputProcessor {
 	private BitmapFont creditsFont;
 	private BitmapFont titlesFont;
 
-	private int width, height, stringHead = 0;
+	private int stringHead = 0;
 	private float scrollY = 0; 
 
-	UI ui;
+	private final UI ui;
 
-	Music music;
+	private Music music;
 	
-	private HashMap<String, Texture> images = new HashMap<String, Texture>();
+	private final HashMap<String, Texture> images = new HashMap<String, Texture>();
+	
+	private final Viewport viewport = new ScreenViewport();
 
 	public CreditsScreen(UI ui) {
 		this.ui = ui;
@@ -52,11 +57,13 @@ public class CreditsScreen implements Screen, InputProcessor {
 	@Override
 	public void render(float delta) {
 		SpriteBatch batch = ui.getBatch();
+		int width = (int)viewport.getWorldWidth();
+		int height = (int)viewport.getWorldHeight();
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);			
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		batch.setProjectionMatrix(ui.getCamera().combined);
+		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();	
 		
 		scrollY+= delta * SPEED * EngineAssetManager.getInstance().getScale();
@@ -64,7 +71,7 @@ public class CreditsScreen implements Screen, InputProcessor {
 		float y = scrollY;
 
 		if (stringHead >= credits.size())
-			ui.runCommand(MenuScreen.BACK_COMMAND, null);
+			ui.setScreen(State.SCENE_SCREEN);
 
 		for (int i = stringHead; i < credits.size(); i++) {
 			String s = credits.get(i);
@@ -126,15 +133,14 @@ public class CreditsScreen implements Screen, InputProcessor {
 			}
 		}
 
-		ui.getPointer().draw(batch);
+		ui.getPointer().draw(batch, viewport);
 		
 		batch.end();
 	}
 
 	@Override
 	public void resize(int width, int height) {		
-		this.width = width;
-		this.height = height;
+		viewport.update(width, height, true);
 	}
 
 	@Override
@@ -178,7 +184,7 @@ public class CreditsScreen implements Screen, InputProcessor {
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage());
 			
-			ui.runCommand(MenuScreen.BACK_COMMAND, null);
+			ui.setScreen(State.SCENE_SCREEN);
 		}
 		
 		scrollY += titlesFont.getLineHeight();
@@ -250,7 +256,7 @@ public class CreditsScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		ui.runCommand(MenuScreen.BACK_COMMAND, null);
+		ui.setScreen(State.SCENE_SCREEN);
 		return true;
 	}
 

@@ -9,18 +9,18 @@ import org.bladecoder.engine.ui.UI.State;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class SceneScreen implements Screen {
 
@@ -37,7 +37,11 @@ public class SceneScreen implements Screen {
 	private boolean pieMode;
 	boolean dragging = false;
 
-	private Recorder recorder;
+	private final Recorder recorder;
+
+	private final SceneViewport viewport = new SceneViewport();
+
+	private final Vector3 unprojectTmp = new Vector3();
 
 	public SceneScreen(UI ui, boolean pieMode) {
 		this.ui = ui;
@@ -77,15 +81,14 @@ public class SceneScreen implements Screen {
 			Actor a = null;
 
 			if (w.getInventory().isVisible()) {
-				ui.getPointer().getPosition(unproject);
-				a = inventoryUI.getItemAt(unproject.x, unproject.y);
+				viewport.getInputUnProject(unprojectTmp);
+				a = inventoryUI.getItemAt(unprojectTmp.x, unprojectTmp.y);
 			}
 
 			if (a == null) {
-				w.getSceneCamera().getInputUnProject(
-						ui.getCamera().getViewport(), unproject);
+				w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
 
-				a = w.getCurrentScene().getActorAt(unproject.x, unproject.y);
+				a = w.getCurrentScene().getActorAt(unprojectTmp.x, unprojectTmp.y);
 			}
 
 			ui.getPointer().setTarget(a);
@@ -94,7 +97,7 @@ public class SceneScreen implements Screen {
 
 			if (pie.isVisible()) {
 				pie.hide();
-				ui.getPointer().setFreezeHotSpot(false);
+				ui.getPointer().setFreezeHotSpot(false, viewport);
 			}
 
 			inventoryUI.cancelDragging();
@@ -125,66 +128,65 @@ public class SceneScreen implements Screen {
 			return;
 		
 		// SCREEN CAMERA
-		batch.setProjectionMatrix(ui.getCamera().combined);
+		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();
 
 		if (EngineLogger.debugMode()) {
 			w.getSceneCamera().getInputUnProject(
-					ui.getCamera().getViewport(), unproject);
+					viewport, unprojectTmp);
 
 			StringBuilder sb = new StringBuilder();
 			sb.append("Mouse ( ");
-			sb.append((int) unproject.x);
+			sb.append((int) unprojectTmp.x);
 			sb.append(", ");
-			sb.append((int) unproject.y);
+			sb.append((int) unprojectTmp.y);
 			sb.append(") FPS:");
 			sb.append(Gdx.graphics.getFramesPerSecond());
 
 			if (w.getCurrentScene().getBackgroundMap() != null) {
 				sb.append(" Map: ");
 				sb.append((int) (w.getCurrentScene().getBackgroundMap()
-						.getDepth(unproject.x, unproject.y) * 10));
+						.getDepth(unprojectTmp.x, unprojectTmp.y) * 10));
 			}
 
 			String strDebug = sb.toString();
 
 			TextBounds b = EngineLogger.getDebugFont().getBounds(strDebug);
 			RectangleRenderer.draw(batch, 0,
-					ui.getCamera().getViewport().height - b.height - 10,
+					viewport.getViewportHeight() - b.height - 10,
 					b.width, b.height + 10, Color.BLACK);
 			EngineLogger.getDebugFont().draw(batch, strDebug, 0,
-					ui.getCamera().getViewport().height);
+					viewport.getViewportHeight());
 		}
 
 		if (World.getInstance().getCurrentDialog() != null
 				&& !recorder.isPlaying()) { // DIALOG MODE
 
 			if (!World.getInstance().inCutMode()) {
-				ui.getPointer().getPosition(unproject);
-				dialogUI.draw(batch, (int) unproject.x, (int) unproject.y);
+				viewport.getInputUnProject(unprojectTmp);
+				dialogUI.draw(batch, (int) unprojectTmp.x, (int) unprojectTmp.y);
 			}
 
 			textManagerUI.draw(batch);
-			ui.getPointer().draw(batch, false);
+			ui.getPointer().draw(batch, false, viewport);
 		} else {
 
 			textManagerUI.draw(batch);
 
-			ui.getPointer().getPosition(unproject);
-			inventoryUI.draw(batch, (int) unproject.x, (int) unproject.y);
+			viewport.getInputUnProject(unprojectTmp);
+			inventoryUI.draw(batch, (int) unprojectTmp.x, (int) unprojectTmp.y);
 
 			if (pieMode)
 				pie.draw(batch);
 
 			if (!World.getInstance().inCutMode() && !recorder.isPlaying())
-				ui.getPointer().draw(batch, dragging);
+				ui.getPointer().draw(batch, dragging, viewport);
 		}
 
 		Transition t = World.getInstance().getCurrentScene().getTransition();
 
 		if (t != null) {
-			t.draw(batch, ui.getCamera().getViewport().width, ui.getCamera()
-					.getViewport().height);
+			t.draw(batch, viewport.getViewportWidth(), viewport.getViewportHeight());
 		}
 
 		recorder.draw(batch);
@@ -194,10 +196,20 @@ public class SceneScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		pie.resize(width, height);
-		inventoryUI.resize(width, height);
-		dialogUI.resize(width, height);
-		textManagerUI.resize(width, height);
+
+		if(!World.getInstance().isDisposed()) {
+			viewport.setWorldSize(World.getInstance().getWidth(), World.getInstance().getHeight());
+		} else {
+			viewport.setWorldSize(width, height);
+		}
+		
+		viewport.update(width, height, true);
+		World.getInstance().getSceneCamera().update();
+		
+		pie.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
+		inventoryUI.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
+		dialogUI.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
+		textManagerUI.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
 	}
 
 	public void dispose() {
@@ -221,7 +233,6 @@ public class SceneScreen implements Screen {
 		dialogUI.createAssets();
 	}
 
-	private final Vector3 unproject = new Vector3();
 	
 	public void touchEvent(int type, float x, float y, int pointer, int button) {
 		World w = World.getInstance();
@@ -229,59 +240,59 @@ public class SceneScreen implements Screen {
 		if (w.isPaused() || recorder.isPlaying())
 			return;
 		
-		ui.getCamera().getInputUnProject(unproject);
+		viewport.getInputUnProject(unprojectTmp);
 
 		switch (type) {
-		case TouchEventListener.TOUCH_UP:
+		case SceneInputProcessor.TOUCH_UP:
 
 			if (w.inCutMode() && !recorder.isRecording()) {
 				w.getTextManager().next();
 			} else if (w.getCurrentDialog() != null) {
-				dialogUI.touchEvent(TouchEventListener.TOUCH_UP, unproject.x, unproject.y, pointer,
+				dialogUI.touchEvent(SceneInputProcessor.TOUCH_UP, unprojectTmp.x, unprojectTmp.y, pointer,
 						button);
 			} else if (w.getCurrentScene().getOverlay() != null) {
 				w.getCurrentScene().getOverlay().click();
 			} else if (dragging) {
-				inventoryUI.touchEvent(TouchEventListener.TOUCH_UP, unproject.x, unproject.y,
+				inventoryUI.touchEvent(SceneInputProcessor.TOUCH_UP, unprojectTmp.x, unprojectTmp.y,
 						pointer, button);
 				dragging = false;
 			} else if (button == 1 && !pieMode) {
 				ui.getPointer().toggleSelectedVerb();
 			} else if (pie.isVisible()) {
-				ui.getPointer().setFreezeHotSpot(false);
-				pie.touchEvent(TouchEventListener.TOUCH_UP, unproject.x, unproject.y, pointer,
+				ui.getPointer().setFreezeHotSpot(false, viewport);
+				pie.touchEvent(SceneInputProcessor.TOUCH_UP, unprojectTmp.x, unprojectTmp.y, pointer,
 						button);
-			} else if (inventoryUI.contains(x, y)) {
-				inventoryUI.touchEvent(TouchEventListener.TOUCH_UP, unproject.x, unproject.y,
+			} else if (inventoryUI.contains(unprojectTmp.x, unprojectTmp.y)) {
+				inventoryUI.touchEvent(SceneInputProcessor.TOUCH_UP, unprojectTmp.x, unprojectTmp.y,
 						pointer, button);
 			} else {
 				sceneClick();
 			}
 			break;
 
-		case TouchEventListener.TOUCH_DOWN:
+		case SceneInputProcessor.TOUCH_DOWN:
 			if (pie.isVisible()) {
-				pie.touchEvent(TouchEventListener.TOUCH_DOWN, unproject.x, unproject.y, pointer,
+				pie.touchEvent(SceneInputProcessor.TOUCH_DOWN, unprojectTmp.x, unprojectTmp.y, pointer,
 						button);
-			} else if (!w.inCutMode() && inventoryUI.contains(unproject.x, unproject.y)) {
-				inventoryUI.touchEvent(TouchEventListener.TOUCH_DOWN, unproject.x, unproject.y,
+			} else if (!w.inCutMode() && inventoryUI.contains(unprojectTmp.x, unprojectTmp.y)) {
+				inventoryUI.touchEvent(SceneInputProcessor.TOUCH_DOWN, unprojectTmp.x, unprojectTmp.y,
 						pointer, button);
 			}
 
 			break;
 
-		case TouchEventListener.DRAG:
-			if (inventoryUI.contains(unproject.x, unproject.y)
-					&& inventoryUI.getItemAt(unproject.x, unproject.y) != null && !dragging) {
+		case SceneInputProcessor.DRAG:
+			if (inventoryUI.contains(unprojectTmp.x, unprojectTmp.y)
+					&& inventoryUI.getItemAt(unprojectTmp.x, unprojectTmp.y) != null && !dragging) {
 
-				inventoryUI.touchEvent(TouchEventListener.DRAG, unproject.x, unproject.y, pointer,
+				inventoryUI.touchEvent(SceneInputProcessor.DRAG, unprojectTmp.x, unprojectTmp.y, pointer,
 						button);
 
 				dragging = true;
 
 				if (pie.isVisible()) {
 					pie.hide();
-					ui.getPointer().setFreezeHotSpot(false);
+					ui.getPointer().setFreezeHotSpot(false, viewport);
 				}
 			}
 			break;
@@ -292,11 +303,11 @@ public class SceneScreen implements Screen {
 		World w = World.getInstance();
 
 		w.getSceneCamera().getInputUnProject(
-				ui.getCamera().getViewport(), unproject);
+				viewport, unprojectTmp);
 
 		Scene s = w.getCurrentScene();
 
-		Actor a = s.getActorAt(unproject.x, unproject.y);
+		Actor a = s.getActorAt(unprojectTmp.x, unprojectTmp.y);
 
 		if (a != null) {
 
@@ -313,7 +324,7 @@ public class SceneScreen implements Screen {
 
 				s.getPlayer().runVerb("goto");
 			} else {
-				Vector2 pos = new Vector2(unproject.x, unproject.y);
+				Vector2 pos = new Vector2(unprojectTmp.x, unprojectTmp.y);
 
 				if (recorder.isRecording()) {
 					recorder.add(pos);
@@ -338,29 +349,26 @@ public class SceneScreen implements Screen {
 
 			a.runVerb(ui.getPointer().getSelectedVerb());
 		} else {
-			ui.getPointer().getPosition(unproject);
-			pie.show(a, unproject.x, unproject.y);
-			ui.getPointer().setFreezeHotSpot(true);
+			viewport.getInputUnProject(unprojectTmp);
+			pie.show(a, unprojectTmp.x, unprojectTmp.y);
+			ui.getPointer().setFreezeHotSpot(true, viewport);
 		}
 	}
-
-	public void runCommand(String command, Object param) {
-
-		if (command.equals(CommandListener.RUN_VERB_COMMAND)) {
-			selectedActor = (Actor) param;
-			actorClick(selectedActor);
-		} else if (command.equals(DialogUI.DIALOG_END_COMMAND)) {
-			World.getInstance().setCurrentDialog(null);
-		} else {
-			ui.runCommand(command, param);
-		}
+	
+	public void showMenu() {
+		ui.setScreen(State.MENU_SCREEN);
+	}
+	
+	public void runVerb(Actor a) {
+		selectedActor = a;
+		actorClick(selectedActor);
 	}
 
 	public void resetUI() {
 
 		if (pie.isVisible()) {
 			pie.hide();
-			ui.getPointer().setFreezeHotSpot(false);
+			ui.getPointer().setFreezeHotSpot(false, viewport);
 		}
 
 		ui.getPointer().setTarget(null);
@@ -415,8 +423,8 @@ public class SceneScreen implements Screen {
 		World.getInstance().resume();
 	}
 
-	public Rectangle getViewPort() {
-		return ui.getCamera().getViewport();
+	public Viewport getViewport() {
+		return viewport;
 	}
 
 }

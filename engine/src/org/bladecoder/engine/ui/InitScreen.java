@@ -2,6 +2,7 @@ package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.World;
+import org.bladecoder.engine.ui.UI.State;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.Gdx;
@@ -10,6 +11,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class InitScreen implements Screen {
 	private final static String FILENAME = "ui/blade_logo.png";
@@ -18,13 +21,14 @@ public class InitScreen implements Screen {
 
 	private Texture tex;	
 	
-	UI ui;
-	boolean loadingGame = false;
-	boolean restart = false;
+	private UI ui;
+	private boolean loadingGame = false;
+	private boolean restart = false;
 	
-	float time;
-	float fadeTime;
-	float width, height;
+	private float time;
+	private float fadeTime;
+	
+	private final Viewport viewport = new ScreenViewport();
 	
 	public InitScreen(UI ui, boolean restart) {
 		this.ui = ui;
@@ -38,7 +42,7 @@ public class InitScreen implements Screen {
 		Gdx.gl.glClearColor(0, 0, 0, 1);			
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		batch.setProjectionMatrix(ui.getCamera().combined);
+		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();	
 		
 		if(fadeTime < FADE_TIME && !loadingGame) { // FADE IN
@@ -46,7 +50,7 @@ public class InitScreen implements Screen {
 		} else	if(fadeTime < FADE_TIME && loadingGame) {  // FADE_OUT
 			batch.setColor(1, 1, 1,  1 - fadeTime/FADE_TIME);
 		} if(fadeTime >= FADE_TIME && loadingGame) {  // EXIT INIT SCREEN
-			ui.runCommand(MenuScreen.BACK_COMMAND, null);
+			ui.setScreen(State.SCENE_SCREEN);
 		} if(time > SCREEN_TIME && !loadingGame) { // LOAD GAME
 			loadingGame = true;
 			fadeTime = 0;
@@ -62,7 +66,7 @@ public class InitScreen implements Screen {
 			}
 		}		
 		
-		batch.draw(tex, (width - tex.getWidth()) /2, (height - tex.getHeight()) /2);
+		batch.draw(tex, (viewport.getViewportWidth() - tex.getWidth()) /2, (viewport.getViewportHeight() - tex.getHeight()) /2);
 		batch.setColor(1, 1, 1, 1);
 	
 		time += delta;
@@ -72,8 +76,7 @@ public class InitScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {	
-		this.width = width;
-		this.height = height;
+		viewport.update(width, height, true);
 	}
 
 	public void retrieveAssets() {

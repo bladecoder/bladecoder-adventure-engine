@@ -1,19 +1,19 @@
 package org.bladecoder.engine.ui;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.bladecoder.engine.ui.UI.State;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class MenuScreen implements Screen, InputProcessor {
+public class MenuScreen implements Screen {
 
 	public static final String BACK_COMMAND = "back";
 	public static final String QUIT_COMMAND = "quit";
@@ -21,104 +21,105 @@ public class MenuScreen implements Screen, InputProcessor {
 	public static final String HELP_COMMAND = "help";
 	public static final String CREDITS_COMMAND = "credits";
 
-	private List<String> commands = new ArrayList<String>();
-	private List<AtlasRegion> commandsRegions;
-
-	float commandWidth, commandHeight;
-	String selCommand = null;
-
-	private static final float MARGIN = 30;
+	private static final float MARGIN = 15;
 
 	UI ui;
-	
-	int viewPortWidth, viewPortHeight;
+
+	Stage stage;
 
 	public MenuScreen(UI ui) {
-		commands.add(BACK_COMMAND);
-		commands.add(RELOAD_COMMAND);
-		commands.add(HELP_COMMAND);
-		commands.add(CREDITS_COMMAND);
-		commands.add(QUIT_COMMAND);
-		
 		this.ui = ui;
 	}
 
 	@Override
 	public void render(float delta) {
-		
-		SpriteBatch batch = ui.getBatch();
-		
-		Gdx.gl.glClearColor(0, 0, 0, 1);			
+
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		batch.setProjectionMatrix(ui.getCamera().combined);
-		batch.begin();		
-		
-		float x = (viewPortWidth - commandWidth) / 2;
-		float y = (viewPortHeight - commandHeight) / 2;
+		stage.act(delta);
+		stage.draw();
 
-		for(int i = 0; i < commandsRegions.size(); i++) {
-			AtlasRegion r = commandsRegions.get(i);
-			
-			if(selCommand != null && commands.get(i).equals(selCommand))
-				batch.setColor(Color.GRAY);
-				
-			batch.draw(r, x, y);
-			batch.setColor(Color.WHITE);
-			
-			x += commandHeight + MARGIN;
-		}
-
-		ui.getPointer().draw(batch);
-		batch.end();
+		ui.getBatch().setProjectionMatrix(
+				stage.getViewport().getCamera().combined);
+		ui.getBatch().begin();
+		ui.getPointer().draw(ui.getBatch(), stage.getViewport());
+		ui.getBatch().end();
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		viewPortWidth = width;
-		viewPortHeight = height;
-		
-		commandWidth = commandsRegions.get(0).getRegionWidth() * commands.size()
-				+ (MARGIN * commands.size());
-		commandHeight = commandsRegions.get(0).getRegionHeight();
-	}
-	
-	private String getCommand(float x0, float y0) {
-		
-		float x = (viewPortWidth - commandWidth) / 2;
-		float y = (viewPortHeight - commandHeight) / 2;
-		
-		Rectangle bbox = new Rectangle();
-
-		for (String c : commands) {
-			bbox.set(x, y, commandHeight, commandHeight);
-
-			if (bbox.contains(x0, y0)) {
-				return c;
-			}
-
-			x += commandHeight + MARGIN;
-		}
-		
-		return null;
+		stage.getViewport().update(width, height, true);
 	}
 
 	@Override
 	public void dispose() {
+		stage.dispose();
+		stage = null;
 	}
 
 	@Override
 	public void show() {
-		commandsRegions = new ArrayList<AtlasRegion>();
+		stage = new Stage(new ScreenViewport());
 
-		for (String c : commands) {
-			AtlasRegion r = ui.getUIAtlas().findRegion(c);
-			
-			if(r != null)
-				commandsRegions.add(r);
-		}
-		
-		Gdx.input.setInputProcessor(this);
+		Table table = new Table();
+		table.setFillParent(true);
+		table.center();
+
+		ImageButton back = new ImageButton(new TextureRegionDrawable(ui
+				.getUIAtlas().findRegion(BACK_COMMAND)));
+		back.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				ui.setScreen(State.SCENE_SCREEN);
+			}
+		});
+
+		table.add(back).pad(MARGIN);
+
+		ImageButton reload = new ImageButton(new TextureRegionDrawable(ui
+				.getUIAtlas().findRegion(RELOAD_COMMAND)));
+		reload.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				ui.setScreen(State.RESTART_SCREEN);
+			}
+		});
+
+		table.add(reload).pad(MARGIN);
+
+		ImageButton help = new ImageButton(new TextureRegionDrawable(ui
+				.getUIAtlas().findRegion(HELP_COMMAND)));
+		help.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				ui.setScreen(State.HELP_SCREEN);
+			}
+		});
+
+		table.add(help).pad(MARGIN);
+
+		ImageButton credits = new ImageButton(new TextureRegionDrawable(ui
+				.getUIAtlas().findRegion(CREDITS_COMMAND)));
+		credits.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				ui.setScreen(State.CREDIT_SCREEN);
+			}
+		});
+
+		table.add(credits).pad(MARGIN);
+
+		ImageButton quit = new ImageButton(new TextureRegionDrawable(ui
+				.getUIAtlas().findRegion(QUIT_COMMAND)));
+		quit.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				Gdx.app.exit();
+			}
+		});
+
+		table.add(quit).pad(MARGIN);
+		table.pack();
+
+		stage.addActor(table);
+
+		Gdx.input.setInputProcessor(stage);
 	}
 
 	@Override
@@ -127,59 +128,10 @@ public class MenuScreen implements Screen, InputProcessor {
 	}
 
 	@Override
-	public void pause() {		
+	public void pause() {
 	}
 
 	@Override
-	public void resume() {		
-	}
-
-	@Override
-	public boolean keyDown(int keycode) {
-		return false;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		return false;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		return false;
-	}
-
-	private final Vector3 unproject = new Vector3();
-	
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		ui.getCamera().getInputUnProject(unproject);
-		selCommand = getCommand(unproject.x, unproject.y);
-		return true;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		if(selCommand != null) {
-			ui.runCommand(selCommand, null);
-			selCommand = null;
-		}
-		
-		return true;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		return false;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		return false;
+	public void resume() {
 	}
 }

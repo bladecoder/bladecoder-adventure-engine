@@ -6,12 +6,12 @@ import org.bladecoder.engine.anim.Tween;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class SceneCamera extends OrthographicCamera implements Serializable  {
 	
@@ -128,11 +128,12 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		cameraTween.start(this, Tween.NO_REPEAT, 1, destX, destY, zoom, duration, cb);
 	}
 
-	public void getInputUnProject(Rectangle viewport, Vector3 out) {
+	public void getInputUnProject(Viewport viewport, Vector3 out) {
 
 		out.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 
-		unproject(out, viewport.x, viewport.y, viewport.width, viewport.height);
+		unproject(out, viewport.getViewportX(), viewport.getViewportY(), 
+				viewport.getViewportWidth(), viewport.getViewportHeight());
 
 		if (out.x >= scrollingWidth)
 			out.x = scrollingWidth - 1;
@@ -174,10 +175,10 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		}
 	}
 
-	public Vector3 scene2screen(float x, float y, Rectangle viewport) {
+	public Vector3 scene2screen(float x, float y, Viewport viewport) {
 		Vector3 v = new Vector3(x, y, 0);
 
-		project(v, 0, 0, viewport.width, viewport.height);
+		project(v, 0, 0, viewport.getViewportWidth(), viewport.getViewportHeight());
 
 		return v;
 	}

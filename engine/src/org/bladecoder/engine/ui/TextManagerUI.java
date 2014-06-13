@@ -49,17 +49,17 @@ public class TextManagerUI {
 			float posx = currentSubtitle.x;
 			float posy = currentSubtitle.y;
 			
-			Vector3 p = World.getInstance().getSceneCamera().scene2screen(posx, posy, sceneScreen.getViewPort());
+			Vector3 p = World.getInstance().getSceneCamera().scene2screen(posx, posy, sceneScreen.getViewport());
 
 			if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE)
-				posx = TextUtils.getCenterX(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewPort().width);
+				posx = TextUtils.getCenterX(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getViewportWidth());
 			else
 				posx = p.x;
 
 			if (posy == TextManager.POS_CENTER)
-				posy = TextUtils.getCenterY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewPort().height);
+				posy = TextUtils.getCenterY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getViewportHeight());
 			else if (posy == TextManager.POS_SUBTITLE)
-				posy = TextUtils.getSubtitleY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewPort().height);
+				posy = TextUtils.getSubtitleY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getViewportHeight());
 			else
 				posy = p.y;
 
@@ -96,12 +96,12 @@ public class TextManagerUI {
 				// check if the text exits the screen
 				if (x < 0) {
 					dx = -x + RECT_MARGIN;
-				} else if (x + width > sceneScreen.getViewPort().width) {
-					dx = -(x + width - sceneScreen.getViewPort().width + RECT_MARGIN);
+				} else if (x + width > sceneScreen.getViewport().getViewportWidth()) {
+					dx = -(x + width - sceneScreen.getViewport().getViewportWidth() + RECT_MARGIN);
 				}
 				
-				if (y + height > sceneScreen.getViewPort().height) {
-					dy = -(y + height - sceneScreen.getViewPort().height);
+				if (y + height > sceneScreen.getViewport().getViewportHeight()) {
+					dy = -(y + height - sceneScreen.getViewport().getViewportHeight());
 				}
 
 				batch.draw(bubblePointer, x + (width - bubblePointer.getRegionWidth()) / 2, y
