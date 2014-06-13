@@ -53,6 +53,8 @@ public class InputPanel extends Table {
     	
     	if(options != null) {
     		init(skin, title, desc, new SelectBox<String>(skin), mandatory, defaultValue);
+    		
+        	((SelectBox<String>)field).setItems(options);
     		return;
     	}
     	

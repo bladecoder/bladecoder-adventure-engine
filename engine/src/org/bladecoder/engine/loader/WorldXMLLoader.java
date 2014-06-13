@@ -61,35 +61,7 @@ public class WorldXMLLoader extends DefaultHandler {
 			String qName, Attributes atts) throws SAXException {
 
 		if (currentVerb != null) {
-			String actionName = localName;
-			Action action = null;
-			HashMap<String, String> params = new HashMap<String, String>();
-			String actionClass = null;
-
-			for (int i = 0; i < atts.getLength(); i++) {
-				String attName = atts.getLocalName(i);
-
-				if (attName.equals("class")) {
-					actionClass = atts.getValue(attName);
-				} else {
-					String value = atts.getValue(attName);
-
-					params.put(attName, value);
-				}
-			}
-
-			if (actionClass != null) {
-				action = ActionFactory.createByClass(actionClass, params);
-			} else {
-				action = ActionFactory.create(actionName, params);
-			}
-
-			if (action != null) {
-				currentVerb.add(action);
-			} else {
-				EngineLogger.error("Action '" + actionName + "' not found.");
-			}
-
+			parseAction(localName, atts);
 		} else if (localName.equals("world")) {
 			int width, height;
 
@@ -162,6 +134,42 @@ public class WorldXMLLoader extends DefaultHandler {
 			currentVerb = null;
 		}
 	}
+	
+	private void parseAction(String localName, Attributes atts) {
+
+		if (localName.equals("action")) {
+			String actionName = null;
+			Action action = null;
+			HashMap<String, String> params = new HashMap<String, String>();
+			String actionClass = null;
+
+			for (int i = 0; i < atts.getLength(); i++) {
+				String attName = atts.getLocalName(i);
+
+				if (attName.equals("class")) {
+					actionClass = atts.getValue(attName);
+				} else if (attName.equals("action_name")) {
+					actionName = atts.getValue(attName);
+				} else {
+					String value = atts.getValue(attName);
+
+					params.put(attName, value);
+				}
+			}
+
+			if (actionClass != null) {
+				action = ActionFactory.createByClass(actionClass, params);
+			} else if (actionName != null) {
+				action = ActionFactory.create(actionName, params);
+			}
+
+			if (action != null) {
+				currentVerb.add(action);
+			}
+		} else {
+			EngineLogger.error("TAG not supported inside VERB: "  + localName + " LINE: " + locator.getLineNumber());
+		}
+	}	
 
 	@Override
 	public void setDocumentLocator(Locator l) {

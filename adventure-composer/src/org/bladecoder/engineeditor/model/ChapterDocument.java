@@ -74,6 +74,13 @@ public class ChapterDocument extends BaseDocument {
 		return actors;
 	}
 	
+	public NodeList getActions(Element verb) {
+		NodeList actions = verb
+				.getElementsByTagName("action");
+
+		return actions;
+	}
+	
 	public NodeList getScenes() {
 		NodeList s = getElement()
 				.getElementsByTagName("scene");

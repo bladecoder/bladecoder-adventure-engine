@@ -115,32 +115,6 @@ public class ActionList extends ElementList {
 		doc.setModified(e);
 	}
 
-	// TODO
-//	@Override
-//	protected void edit() {	
-//		int pos = list.getSelectedIndex();
-//
-//		if (pos == -1)
-//			return;
-//
-//		Element e = list.getItems().get(pos);
-//
-//		EditElementDialog dialog = getEditElementDialogInstance(e);
-//		dialog.show(getStage());
-//		dialog.setListener(new ChangeListener() {
-//			@Override
-//			public void changed(ChangeEvent event, Actor actor) {
-//				Element e = ((EditElementDialog)actor).getElement();
-//				doc.setModified(e);
-//				
-//				Array<Element> items =  list.getItems();
-//				parent.replaceChild(s, e);
-//				lm.insertElementAt(s, pos);
-//				lm.removeElement(e);
-//			}			
-//		});	
-//	}
-
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
@@ -148,7 +122,7 @@ public class ActionList extends ElementList {
 
 		@Override
 		protected String getCellTitle(Element e) {
-			String id = e.getTagName();
+			String id = e.getAttribute("class").isEmpty()?e.getAttribute("action_name"): e.getAttribute("class");
 
 			String actor = e.getAttribute("actor");
 
@@ -168,12 +142,12 @@ public class ActionList extends ElementList {
 				Node n = attr.item(i);
 				String name = n.getNodeName();
 
-				if (name.equals("actor"))
+				if (name.equals("actor") || name.equals("class") || name.equals("action_name"))
 					continue;
 
 				String v = n.getNodeValue();
 
-				sb.append(name).append(": ").append(doc.getTranslation(v));
+				sb.append(name).append(": ").append(doc.getTranslation(v)).append(' ');
 			}
 			
 			return sb.toString();

@@ -58,7 +58,7 @@ public class VerbList extends ElementList {
 			v = list.getItems().get(pos);
 		}
 
-		actionList.addElements(doc, v, null);
+		actionList.addElements(doc, v, "action");
 	}
 
 	// -------------------------------------------------------------------------

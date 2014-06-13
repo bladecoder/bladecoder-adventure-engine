@@ -47,14 +47,14 @@ public class ChapterXMLLoader extends DefaultHandler {
 	private float scale;
 
 	private Locator locator;
-	
+
 	private List<Scene> scenes = new ArrayList<Scene>();
 	private String initScene;
 
 	public ChapterXMLLoader() {
 		scale = EngineAssetManager.getInstance().getScale();
 	}
-	
+
 	public String getInitScene() {
 		return initScene;
 	}
@@ -122,12 +122,13 @@ public class ChapterXMLLoader extends DefaultHandler {
 				actor = new Actor();
 			} else {
 				actor = new SpriteActor();
-				
-				if (type.equals("atlas") || type.equals("foreground")) { // ATLAS ACTOR
-					((SpriteActor)actor).setRenderer(new AtlasRenderer());
+
+				if (type.equals("atlas") || type.equals("foreground")) { // ATLAS
+																			// ACTOR
+					((SpriteActor) actor).setRenderer(new AtlasRenderer());
 				} else if (type.equals("3d")) { // 3D ACTOR
-					Sprite3DRenderer r = new Sprite3DRenderer();						
-					((SpriteActor)actor).setRenderer(r);
+					Sprite3DRenderer r = new Sprite3DRenderer();
+					((SpriteActor) actor).setRenderer(r);
 
 					Vector3 camPos, camRot;
 					float fov = 67;
@@ -146,24 +147,21 @@ public class ChapterXMLLoader extends DefaultHandler {
 							camPos = Param.parseVector3(atts
 									.getValue("cam_pos"));
 
-							r.setCameraPos(camPos.x,
-									camPos.y, camPos.z);
+							r.setCameraPos(camPos.x, camPos.y, camPos.z);
 						}
 
 						if (atts.getValue("cam_rot") != null) {
 							camRot = Param.parseVector3(atts
 									.getValue("cam_rot"));
 
-							r.setCameraRot(camRot.x,
-									camRot.y, camRot.z);
+							r.setCameraRot(camRot.x, camRot.y, camRot.z);
 						}
 
 						fov = Float.parseFloat(atts.getValue("fov"));
 						r.setCameraFOV(fov);
 
 						if (atts.getValue("camera_name") != null) {
-							r.setCameraName(atts
-									.getValue("camera_name"));
+							r.setCameraName(atts.getValue("camera_name"));
 						}
 
 					} catch (Exception e) {
@@ -173,9 +171,9 @@ public class ChapterXMLLoader extends DefaultHandler {
 						throw e2;
 					}
 
-				} else if (type.equals("spine")) { // SPINE RENDERER				
-					SpineRenderer r = new SpineRenderer();						
-					((SpriteActor)actor).setRenderer(r);
+				} else if (type.equals("spine")) { // SPINE RENDERER
+					SpineRenderer r = new SpineRenderer();
+					((SpriteActor) actor).setRenderer(r);
 				}
 
 				if (atts.getValue("walking_speed") != null
@@ -190,20 +188,20 @@ public class ChapterXMLLoader extends DefaultHandler {
 				// PARSE DEPTH MAP USE
 				String depthType = atts.getValue("depth_type");
 				((SpriteActor) actor).setDepthType(DepthType.NONE);
-				
-				if ( depthType != null && !depthType.isEmpty()) {
-					if(depthType.equals("map"))
+
+				if (depthType != null && !depthType.isEmpty()) {
+					if (depthType.equals("map"))
 						((SpriteActor) actor).setDepthType(DepthType.MAP);
-					else if(depthType.equals("vector"))
+					else if (depthType.equals("vector"))
 						((SpriteActor) actor).setDepthType(DepthType.VECTOR);
 				}
 			}
 
 			// PARSE BBOX
 			Polygon p = null;
-			
+
 			if (atts.getValue("bbox") != null) {
-				
+
 				try {
 					p = Param.parsePolygon(atts.getValue("bbox"));
 					p.setScale(scale, scale);
@@ -213,7 +211,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 					error(e2);
 					throw e2;
 				}
-				
+
 				actor.setBbox(p);
 			} else if (type.equals("background")) {
 				SAXParseException e2 = new SAXParseException(
@@ -223,9 +221,9 @@ public class ChapterXMLLoader extends DefaultHandler {
 			} else {
 				p = new Polygon();
 				actor.setBbox(p);
-				((SpriteActor)actor).setBboxFromRenderer(true);
+				((SpriteActor) actor).setBboxFromRenderer(true);
 			}
-			
+
 			// PARSE POSTITION
 			Vector2 pos = Param.parseVector2(atts.getValue("pos"));
 			if (pos == null) {
@@ -238,7 +236,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			pos.x *= scale;
 			pos.y *= scale;
 
-			actor.setPosition(pos.x, pos.y);		
+			actor.setPosition(pos.x, pos.y);
 
 			if (atts.getValue("interaction") != null) {
 				boolean interaction = Boolean.parseBoolean(atts
@@ -251,9 +249,10 @@ public class ChapterXMLLoader extends DefaultHandler {
 						.parseBoolean(atts.getValue("visible"));
 				actor.setVisible(visible);
 			}
-			
+
 			if (atts.getValue("obstacle") != null) {
-				boolean obstacle = Boolean.parseBoolean(atts.getValue("obstacle"));
+				boolean obstacle = Boolean.parseBoolean(atts
+						.getValue("obstacle"));
 				actor.setWalkObstacle(obstacle);
 			}
 
@@ -307,7 +306,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			float delay = 0f;
 			int animationType;
 			int count = Tween.INFINITY;
-			Vector2 inD = null, outD=null;
+			Vector2 inD = null, outD = null;
 			boolean preload = true;
 			boolean disposeWhenPlayed = false;
 
@@ -335,19 +334,21 @@ public class ChapterXMLLoader extends DefaultHandler {
 				if (delaystr != null && !delaystr.isEmpty())
 					delay = Float.parseFloat(delaystr);
 
-				if (countstr  != null && !countstr.isEmpty())
+				if (countstr != null && !countstr.isEmpty())
 					count = Integer.parseInt(countstr);
-				
-				if (preloadstr  != null && !preloadstr.isEmpty())
+
+				if (preloadstr != null && !preloadstr.isEmpty())
 					preload = Boolean.parseBoolean(preloadstr);
-				
-				if (disposewhenplayedstr  != null && !disposewhenplayedstr.isEmpty())
-					disposeWhenPlayed = Boolean.parseBoolean(disposewhenplayedstr);
+
+				if (disposewhenplayedstr != null
+						&& !disposewhenplayedstr.isEmpty())
+					disposeWhenPlayed = Boolean
+							.parseBoolean(disposewhenplayedstr);
 
 				if (inDstr != null && !inDstr.isEmpty()) {
 					inD = Param.parseVector2(inDstr);
 				}
-				
+
 				if (outDstr != null && !outDstr.isEmpty()) {
 					outD = Param.parseVector2(outDstr);
 				}
@@ -371,13 +372,14 @@ public class ChapterXMLLoader extends DefaultHandler {
 			}
 
 			AtlasFrameAnimation sa = new AtlasFrameAnimation();
-			
-			sa.set(id, source, speed, delay,
-					count, animationType, soundId, inD, outD, preload, disposeWhenPlayed);
+
+			sa.set(id, source, speed, delay, count, animationType, soundId,
+					inD, outD, preload, disposeWhenPlayed);
 
 			((SpriteActor) actor).getRenderer().addFrameAnimation(sa);
 		} else if (localName.equals("verb")) {
-			parseVerb(localName, atts, actor != null ? actor.getVerbManager() : scene.getVerbManager());
+			parseVerb(localName, atts, actor != null ? actor.getVerbManager()
+					: scene.getVerbManager());
 		} else if (localName.equals("dialog")) {
 			String id = atts.getValue("id");
 
@@ -393,25 +395,28 @@ public class ChapterXMLLoader extends DefaultHandler {
 			initScene = atts.getValue("init_scene");
 		} else if (localName.equals("walk_zone")) {
 			PolygonalNavGraph polygonalPathFinder = new PolygonalNavGraph();
-			Polygon poly = Param.parsePolygon(atts.getValue("polygon"), atts.getValue("pos"));
+			Polygon poly = Param.parsePolygon(atts.getValue("polygon"),
+					atts.getValue("pos"));
 			poly.setScale(scale, scale);
 			poly.setPosition(poly.getX() * scale, poly.getY() * scale);
 			polygonalPathFinder.setWalkZone(poly);
-			
+
 			scene.setPolygonalNavGraph(polygonalPathFinder);
 		} else if (localName.equals("obstacle")) {
-			PolygonalNavGraph polygonalPathFinder = scene.getPolygonalNavGraph();
-			Polygon poly = Param.parsePolygon(atts.getValue("polygon"), atts.getValue("pos"));
+			PolygonalNavGraph polygonalPathFinder = scene
+					.getPolygonalNavGraph();
+			Polygon poly = Param.parsePolygon(atts.getValue("polygon"),
+					atts.getValue("pos"));
 			poly.setScale(scale, scale);
-			poly.setPosition(poly.getX() * scale, poly.getY() * scale);			
+			poly.setPosition(poly.getX() * scale, poly.getY() * scale);
 			polygonalPathFinder.addObstacle(poly);
 		} else if (localName.equals("scene")) {
 			this.scene = new Scene();
 			scenes.add(scene);
-			
-			if(initScene == null)
+
+			if (initScene == null)
 				initScene = this.scene.getId();
-			
+
 			String idScn = atts.getValue("id");
 			String bgFilename = atts.getValue("background");
 			String lightmap = atts.getValue("lightmap");
@@ -420,7 +425,8 @@ public class ChapterXMLLoader extends DefaultHandler {
 			String initialMusicDelayStr = atts.getValue("initial_music_delay");
 			String repeatMusicDelayStr = atts.getValue("repeat_music_delay");
 
-			scene.setDepthVector(Param.parseVector2(atts.getValue("depth_vector")));
+			scene.setDepthVector(Param.parseVector2(atts
+					.getValue("depth_vector")));
 			player = atts.getValue("player");
 
 			if (idScn == null || idScn.isEmpty()) {
@@ -450,10 +456,11 @@ public class ChapterXMLLoader extends DefaultHandler {
 						repeatDelay);
 			}
 		} else {
-			SAXParseException e = new SAXParseException("Wrong label '"
-					+ localName + "' loading Scene.", locator);
-			error(e);
-			throw e;
+//			SAXParseException e = new SAXParseException("Wrong label '"
+//					+ localName + "' loading Scene.", locator);
+//			error(e);
+//			throw e;
+			EngineLogger.error("TAG not supported in Chapter document: "  + localName + " LINE: " + locator.getLineNumber());
 		}
 	}
 
@@ -470,7 +477,8 @@ public class ChapterXMLLoader extends DefaultHandler {
 		else if (localName.equals("actor")) {
 			if (actor instanceof SpriteActor && initFrameAnimation != null
 					&& !initFrameAnimation.isEmpty()) {
-				((SpriteActor) actor).getRenderer().setInitFrameAnimation(initFrameAnimation);
+				((SpriteActor) actor).getRenderer().setInitFrameAnimation(
+						initFrameAnimation);
 			}
 
 			actor = null;
@@ -525,36 +533,41 @@ public class ChapterXMLLoader extends DefaultHandler {
 	}
 
 	private void parseAction(String localName, Attributes atts, String actor) {
-		String actionName = localName;
-		Action action = null;
-		HashMap<String, String> params = new HashMap<String, String>();
-		String actionClass = null;
 
-		for (int i = 0; i < atts.getLength(); i++) {
-			String attName = atts.getLocalName(i);
+		if (localName.equals("action")) {
+			String actionName = null;
+			Action action = null;
+			HashMap<String, String> params = new HashMap<String, String>();
+			String actionClass = null;
 
-			if (attName.equals("class")) {
-				actionClass = atts.getValue(attName);
-			} else {
-				String value = atts.getValue(attName);
-				
-				params.put(attName, value);
+			for (int i = 0; i < atts.getLength(); i++) {
+				String attName = atts.getLocalName(i);
+
+				if (attName.equals("class")) {
+					actionClass = atts.getValue(attName);
+				} else if (attName.equals("action_name")) {
+					actionName = atts.getValue(attName);
+				} else {
+					String value = atts.getValue(attName);
+
+					params.put(attName, value);
+				}
 			}
-		}
 
-		if (atts.getValue("actor") == null)
-			params.put("actor", actor);
+			if (atts.getValue("actor") == null)
+				params.put("actor", actor);
 
-		if (actionClass != null) {
-			action = ActionFactory.createByClass(actionClass, params);
+			if (actionClass != null) {
+				action = ActionFactory.createByClass(actionClass, params);
+			} else if (actionName != null) {
+				action = ActionFactory.create(actionName, params);
+			}
+
+			if (action != null) {
+				currentVerb.add(action);
+			}
 		} else {
-			action = ActionFactory.create(actionName, params);
-		}
-
-		if (action != null) {
-			currentVerb.add(action);
-		} else {
-			EngineLogger.error("Action '" + actionName + "' not found.");
+			EngineLogger.error("TAG not supported inside VERB: "  + localName + " LINE: " + locator.getLineNumber());
 		}
 	}
 

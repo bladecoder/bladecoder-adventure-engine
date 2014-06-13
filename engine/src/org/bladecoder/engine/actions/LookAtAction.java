@@ -25,7 +25,7 @@ public class LookAtAction implements Action {
 				FrameAnimation.FRONT, FrameAnimation.BACK,FrameAnimation.LEFT,
 				FrameAnimation.RIGHT,	FrameAnimation.FRONTLEFT,
 				FrameAnimation.FRONTRIGHT,FrameAnimation.BACKLEFT,
-				FrameAnimation.BACKRIGHT,})
+				FrameAnimation.BACKRIGHT})
 		};			
 
 	private String soundId;
