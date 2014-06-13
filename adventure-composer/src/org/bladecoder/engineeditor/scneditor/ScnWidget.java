@@ -364,14 +364,9 @@ public class ScnWidget extends Widget {
 
 			scn.getCamera().setToOrtho(false, wWidth, wHeight);
 			scn.getCamera().zoom = 1f;
+			scn.getCamera().position.set(Ctx.project.getWorld().getWidth() / 2, Ctx.project.getWorld().getHeight() / 2, 0);
 			scn.getCamera().update();
-
-//			translate(new Vector2((-getWidth() + wWidth ) / 2 * scn.getCamera().zoom,
-//					(-getHeight() + wHeight) / 2 * scn.getCamera().zoom));
-			
-			zoom(-1);
-			translate(new Vector2(0,
-					(-getHeight() + wHeight) / 2));
+			zoom(+1);		
 		}			
 	}
 

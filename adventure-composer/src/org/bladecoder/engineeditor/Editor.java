@@ -14,7 +14,6 @@ import org.bladecoder.engineeditor.ui.ProjectToolbar;
 import org.bladecoder.engineeditor.ui.ScenePanel;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.bladecoder.engineeditor.utils.Message;
-import org.lwjgl.opengl.Display;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -122,10 +121,6 @@ public class Editor implements ApplicationListener {
 	public void render() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		if(Display.isCloseRequested()) {
-			System.out.println("CLOSE REQUESTED");
-		}
 
 		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		stage.draw();
