@@ -173,7 +173,7 @@ public class SpineRenderer implements SpriteRenderer {
 			currentSkeleton.animation.apply(currentSkeleton.skeleton);
 			currentSkeleton.skeleton.updateWorldTransform();
 
-			bounds.update(currentSkeleton.skeleton, true);
+//			bounds.update(currentSkeleton.skeleton, true);
 		}
 	}
 
@@ -302,6 +302,8 @@ public class SpineRenderer implements SpriteRenderer {
 				currentAnimationType == Tween.REPEAT);
 		currentSkeleton.animation.setTimeScale(fa.duration);
 		currentSkeleton.animation.apply(currentSkeleton.skeleton);
+		update(0);
+		bounds.update(currentSkeleton.skeleton, true);
 	}
 
 	private FrameAnimation getFrameAnimation(String id) {

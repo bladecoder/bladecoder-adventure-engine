@@ -136,6 +136,7 @@ public class ScnWidget extends Widget {
 
 						if (e.getPropertyName().equals("scene")) {
 							setSelectedScene(Ctx.project.getSelectedScene());
+							setSelectedActor(Ctx.project.getSelectedActor());
 						} else if (e.getPropertyName().equals("bbox")) {
 							Element selActor = (Element) e.getNewValue();
 							String id = doc.getId(selActor);

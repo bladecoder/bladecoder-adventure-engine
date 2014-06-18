@@ -203,8 +203,8 @@ public class ScnWidgetInputListener extends ClickListener {
 
 			// SELACTOR VERTEXs DRAGGING
 
-			if (!(selActor instanceof SpriteActor)
-					|| !((SpriteActor) selActor).isBboxFromRenderer()) {
+			if (selActor!=null && (!(selActor instanceof SpriteActor)
+					|| !((SpriteActor) selActor).isBboxFromRenderer())) {
 
 				Polygon bbox = selActor.getBBox();
 				float verts[] = bbox.getTransformedVertices();

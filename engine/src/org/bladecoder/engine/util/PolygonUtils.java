@@ -38,8 +38,6 @@ public class PolygonUtils {
 		System.arraycopy(verts, index, destination, index + 2, length - index);
 
 		poly.setVertices(destination);
-
-		poly.dirty();
 	}
 
 	public static void deletePoint(Polygon poly, int index) {
@@ -52,14 +50,13 @@ public class PolygonUtils {
 		int length = verts.length;
 		float destination[] = new float[length - 2];
 
-		index = index * 2;
+//		index = index * 2;
 
 		System.arraycopy(verts, 0, destination, 0, index);
 		System.arraycopy(verts, index + 2, destination, index, length - index
 				- 2);
 
 		poly.setVertices(destination);
-		poly.dirty();
 	}
 
 	public static boolean deletePoint(Polygon poly, float x, float y,

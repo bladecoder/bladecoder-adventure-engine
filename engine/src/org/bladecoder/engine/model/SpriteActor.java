@@ -327,7 +327,6 @@ public class SpriteActor extends Actor {
 		renderer.retrieveAssets();
 		
 		if(bboxFromRenderer) {
-			renderer.update(0);
 			updateBBox();
 		}
 		
