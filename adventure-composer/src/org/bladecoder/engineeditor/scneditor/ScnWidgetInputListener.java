@@ -91,34 +91,9 @@ public class ScnWidgetInputListener extends ClickListener {
 		// DOUBLE CLICK TO CREATE OR DELETE POINTS
 		if (getTapCount() == 2) {
 			Polygon poly = scnWidget.getSelectedActor().getBBox();
-
-			if (!(scnWidget.getSelectedActor() instanceof SpriteActor)
-					|| !((SpriteActor) scnWidget.getSelectedActor()).isBboxFromRenderer()) {
-				if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
-
-					// Delete the point if selected
-					boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y,
-							CanvasDrawer.CORNER_DIST);
-
-					if (deleted) {
-						Ctx.project.getSelectedChapter().setBbox(
-								Ctx.project.getSelectedActor(), poly);
-						return;
-					}
-				} else {
-					boolean created = PolygonUtils.addClampPointIfTolerance(
-							poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
-
-					if (created) {
-						Ctx.project.getSelectedChapter().setBbox(
-								Ctx.project.getSelectedActor(), poly);
-						return;
-					}
-				}
-			}
-
+			
 			// Check WALKZONE
-			if (scn.getPolygonalNavGraph() != null) {
+			if (scn.getPolygonalNavGraph() != null && scnWidget.getShowWalkZone()) {
 				poly = scn.getPolygonalNavGraph().getWalkZone();
 				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph()
 						.getObstacles();
@@ -168,6 +143,31 @@ public class ScnWidgetInputListener extends ClickListener {
 						}
 					}
 				}
+			}			
+
+			if (!(scnWidget.getSelectedActor() instanceof SpriteActor)
+					|| !((SpriteActor) scnWidget.getSelectedActor()).isBboxFromRenderer()) {
+				if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+
+					// Delete the point if selected
+					boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y,
+							CanvasDrawer.CORNER_DIST);
+
+					if (deleted) {
+						Ctx.project.getSelectedChapter().setBbox(
+								Ctx.project.getSelectedActor(), poly);
+						return;
+					}
+				} else {
+					boolean created = PolygonUtils.addClampPointIfTolerance(
+							poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
+
+					if (created) {
+						Ctx.project.getSelectedChapter().setBbox(
+								Ctx.project.getSelectedActor(), poly);
+						return;
+					}
+				}
 			}
 		}
 	}
@@ -189,40 +189,8 @@ public class ScnWidgetInputListener extends ClickListener {
 
 		if (button == Buttons.LEFT) {
 			selActor = scnWidget.getSelectedActor();
-			Actor a = scn.getFullSearchActorAt(p.x, p.y); // CHECK FOR ACTORS
-
-			if (a != null && a != selActor) {
-
-				selActor = a;
-				Element da = Ctx.project.getActor(selActor.getId());
-				Ctx.project.setSelectedActor(da);
-
-				draggingMode = DraggingModes.DRAGING_ACTOR;
-				return true;
-			}
-
-			// SELACTOR VERTEXs DRAGGING
-
-			if (selActor!=null && (!(selActor instanceof SpriteActor)
-					|| !((SpriteActor) selActor).isBboxFromRenderer())) {
-
-				Polygon bbox = selActor.getBBox();
-				float verts[] = bbox.getTransformedVertices();
-				for (int i = 0; i < verts.length; i += 2) {
-					if (p.dst(verts[i], verts[i + 1]) < CanvasDrawer.CORNER_DIST) {
-						draggingMode = DraggingModes.DRAGING_BBOX_POINT;
-						vertIndex = i;
-						return true;
-					}
-				}
-			}
-
-			if (a != null) {
-				draggingMode = DraggingModes.DRAGING_ACTOR;
-				return true;
-			}
-
-			if (scn.getPolygonalNavGraph() != null) { // Check WALKZONE
+			
+			if (scn.getPolygonalNavGraph() != null && scnWidget.getShowWalkZone()) { // Check WALKZONE
 
 				// CHECK WALKZONE VERTEXS
 				Polygon wzPoly = scn.getPolygonalNavGraph().getWalkZone();
@@ -272,6 +240,39 @@ public class ScnWidgetInputListener extends ClickListener {
 					return true;
 				}
 
+			}			
+			
+			Actor a = scn.getFullSearchActorAt(p.x, p.y); // CHECK FOR ACTORS
+
+			if (a != null && a != selActor) {
+
+				selActor = a;
+				Element da = Ctx.project.getActor(selActor.getId());
+				Ctx.project.setSelectedActor(da);
+
+				draggingMode = DraggingModes.DRAGING_ACTOR;
+				return true;
+			}
+
+			// SELACTOR VERTEXs DRAGGING
+
+			if (selActor!=null && (!(selActor instanceof SpriteActor)
+					|| !((SpriteActor) selActor).isBboxFromRenderer())) {
+
+				Polygon bbox = selActor.getBBox();
+				float verts[] = bbox.getTransformedVertices();
+				for (int i = 0; i < verts.length; i += 2) {
+					if (p.dst(verts[i], verts[i + 1]) < CanvasDrawer.CORNER_DIST) {
+						draggingMode = DraggingModes.DRAGING_BBOX_POINT;
+						vertIndex = i;
+						return true;
+					}
+				}
+			}
+
+			if (a != null) {
+				draggingMode = DraggingModes.DRAGING_ACTOR;
+				return true;
 			}
 
 		}

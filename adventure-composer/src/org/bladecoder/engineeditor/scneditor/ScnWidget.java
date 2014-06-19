@@ -75,14 +75,16 @@ public class ScnWidget extends Widget {
 			150, 200, 300, 400, 600, 800, 1000 };
 	private int zoomLevel = 100;
 
-	BitmapFont bigFont;
-	BitmapFont defaultFont;
-	TiledDrawable tile;
+	private BitmapFont bigFont;
+	private BitmapFont defaultFont;
+	private TiledDrawable tile;
 
-	boolean loading = false;
-	boolean loadingError = false;
+	private boolean loading = false;
+	private boolean loadingError = false;
 
-	WalkZoneWindow walkZoneWindow;
+	private WalkZoneWindow walkZoneWindow;
+
+	private boolean showWalkZone;
 
 	public ScnWidget(Skin skin) {
 		bigFont = skin.get("big-font", BitmapFont.class);
@@ -232,7 +234,11 @@ public class ScnWidget extends Widget {
 				ScissorStack.popScissors();
 			}
 
-			if (scn.getPolygonalNavGraph() != null) {
+			drawer.drawBGBounds();
+			
+			if (showWalkZone && scn.getPolygonalNavGraph() != null) {
+				drawer.drawBBoxWalkZone(scn, false);
+				
 				drawer.drawPolygonVertices(scn.getPolygonalNavGraph().getWalkZone(),
 						Color.GREEN);
 
@@ -244,7 +250,6 @@ public class ScnWidget extends Widget {
 				}
 			}
 
-			drawer.drawBGBounds();
 			drawer.drawBBoxActors(scn);
 
 			if (selectedActor != null) {
@@ -339,10 +344,16 @@ public class ScnWidget extends Widget {
 
 	public void showEditWalkZoneWindow() {
 		getParent().addActor(walkZoneWindow);
+		showWalkZone = true;
 	}
 
 	public void hideEditWalkZoneWindow() {
 		getParent().removeActor(walkZoneWindow);
+		showWalkZone = false;
+	}
+	
+	public boolean getShowWalkZone() {
+		return showWalkZone;
 	}
 
 	@Override

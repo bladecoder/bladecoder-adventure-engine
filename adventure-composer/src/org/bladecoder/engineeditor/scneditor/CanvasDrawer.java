@@ -21,6 +21,8 @@ import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.SceneCamera;
 import org.bladecoder.engine.model.SpriteActor;
+import org.bladecoder.engine.pathfinder.NavNode;
+import org.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engineeditor.Ctx;
 
@@ -74,7 +76,16 @@ public class CanvasDrawer {
 			drawer.polygon(a.getBBox().getTransformedVertices());
 		}
 
+		drawer.end();
+	}
+
+	public void drawBBoxWalkZone(Scene scn, boolean lineOfSight) {
+
 		if (scn.getPolygonalNavGraph() != null) {
+			drawer.setProjectionMatrix(camera.combined);
+			drawer.setTransformMatrix(new Matrix4());
+			drawer.begin(ShapeType.Line);
+			
 			drawer.setColor(Scene.WALKZONE_COLOR);
 			drawer.polygon(scn.getPolygonalNavGraph().getWalkZone()
 					.getTransformedVertices());
@@ -88,18 +99,19 @@ public class CanvasDrawer {
 			}
 
 			// DRAW LINEs OF SIGHT
-//			drawer.setColor(Color.WHITE);
-//			ArrayList<NavNodePolygonal> nodes = scn.getPolygonalNavGraph()
-//					.getGraphNodes();
-//			for (NavNodePolygonal n : nodes) {
-//				for (NavNode n2 : n.neighbors) {
-//					drawer.line(n.x, n.y, ((NavNodePolygonal) n2).x,
-//							((NavNodePolygonal) n2).y);
-//				}
-//			}
+			if (lineOfSight) {
+				drawer.setColor(Color.WHITE);
+				ArrayList<NavNodePolygonal> nodes = scn.getPolygonalNavGraph()
+						.getGraphNodes();
+				for (NavNodePolygonal n : nodes) {
+					for (NavNode n2 : n.neighbors) {
+						drawer.line(n.x, n.y, ((NavNodePolygonal) n2).x,
+								((NavNodePolygonal) n2).y);
+					}
+				}
+			}
+			drawer.end();
 		}
-
-		drawer.end();
 	}
 
 	public void drawSelectedActor(Actor selectedActor) {
