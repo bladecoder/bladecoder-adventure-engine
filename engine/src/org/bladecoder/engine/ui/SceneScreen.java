@@ -47,8 +47,6 @@ public class SceneScreen implements Screen {
 	private TextManagerUI textManagerUI;
 	private ShapeRenderer renderer;
 
-	private Actor selectedActor = null;
-
 	private boolean pieMode;
 	boolean dragging = false;
 
@@ -106,9 +104,18 @@ public class SceneScreen implements Screen {
 				a = w.getCurrentScene().getActorAt(unprojectTmp.x, unprojectTmp.y);
 			}
 
-			ui.getPointer().setTarget(a);
+			if(a != null) {
+				ui.getPointer().setDesc(a.getDesc());
+				
+				if(a.getVerb("leave") != null)
+					ui.getPointer().setLeaveIcon();
+				else
+					ui.getPointer().setHotspotIcon();
+			} else {
+				ui.getPointer().setDefaultIcon();
+			}
 		} else {
-			ui.getPointer().setTarget(null);
+			ui.getPointer().reset();
 
 			if (pie.isVisible()) {
 				pie.hide();
@@ -271,8 +278,6 @@ public class SceneScreen implements Screen {
 				inventoryUI.touchEvent(SceneInputProcessor.TOUCH_UP, unprojectTmp.x, unprojectTmp.y,
 						pointer, button);
 				dragging = false;
-			} else if (button == 1 && !pieMode) {
-				ui.getPointer().toggleSelectedVerb();
 			} else if (pie.isVisible()) {
 				ui.getPointer().setFreezeHotSpot(false, viewport);
 				pie.touchEvent(SceneInputProcessor.TOUCH_UP, unprojectTmp.x, unprojectTmp.y, pointer,
@@ -281,7 +286,7 @@ public class SceneScreen implements Screen {
 				inventoryUI.touchEvent(SceneInputProcessor.TOUCH_UP, unprojectTmp.x, unprojectTmp.y,
 						pointer, button);
 			} else {
-				sceneClick();
+				sceneClick(button == 1);
 			}
 			break;
 
@@ -314,7 +319,7 @@ public class SceneScreen implements Screen {
 		}
 	}
 
-	private void sceneClick() {
+	private void sceneClick(boolean lookat) {
 		World w = World.getInstance();
 
 		w.getSceneCamera().getInputUnProject(
@@ -330,7 +335,7 @@ public class SceneScreen implements Screen {
 				EngineLogger.debug(a.toString());
 			}
 
-			actorClick(a);
+			actorClick(a, lookat);
 		} else if (s.getPlayer() != null) {
 			if (s.getPlayer().getVerb("goto") != null) {
 				if (recorder.isRecording()) {
@@ -350,7 +355,7 @@ public class SceneScreen implements Screen {
 		}
 	}
 
-	private void actorClick(Actor a) {
+	public void actorClick(Actor a, boolean lookat) {
 		if (a.getVerb("leave") != null) {
 			if (recorder.isRecording()) {
 				recorder.add(a.getId(), "leave", null);
@@ -358,11 +363,17 @@ public class SceneScreen implements Screen {
 
 			a.runVerb("leave");
 		} else if (!pieMode) {
+			String verb = "lookat";
+			
+			if(!lookat) {
+				verb = a.getVerb("talkto") != null? "talkto":"pickup";
+			}			
+			
 			if (recorder.isRecording()) {
-				recorder.add(a.getId(), ui.getPointer().getSelectedVerb(), null);
+				recorder.add(a.getId(), verb, null);
 			}
 
-			a.runVerb(ui.getPointer().getSelectedVerb());
+			a.runVerb(verb);
 		} else {
 			viewport.getInputUnProject(unprojectTmp);
 			pie.show(a, unprojectTmp.x, unprojectTmp.y);
@@ -373,20 +384,14 @@ public class SceneScreen implements Screen {
 	public void showMenu() {
 		ui.setScreen(State.MENU_SCREEN);
 	}
-	
-	public void runVerb(Actor a) {
-		selectedActor = a;
-		actorClick(selectedActor);
-	}
 
-	public void resetUI() {
+	private void resetUI() {
 
 		if (pie.isVisible()) {
 			pie.hide();
-			ui.getPointer().setFreezeHotSpot(false, viewport);
 		}
 
-		ui.getPointer().setTarget(null);
+		ui.getPointer().reset();
 
 		dragging = false;
 	}
@@ -419,7 +424,7 @@ public class SceneScreen implements Screen {
 	@Override
 	public void hide() {
 		World.getInstance().pause();
-		ui.getPointer().setTarget(null);
+		resetUI();
 		dispose();
 	}
 

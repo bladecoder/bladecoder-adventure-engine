@@ -43,7 +43,7 @@ public class InventoryUI {
 	private final static String UNCOLLAPSE_TILE = "uncollapse";
 	private final static String CONFIG_TILE = "config";
 
-	private final static float AUTOCOLLAPSE_TIME = 5;
+	private final static float AUTOCOLLAPSE_TIME = 0.5f;
 	private final static float SCROLL_TIME = 0.5f;
 	
 	private final static float DPI = 160.0f * Gdx.graphics.getDensity();
@@ -329,12 +329,12 @@ public class InventoryUI {
 		World.getInstance().getSceneCamera()
 				.getInputUnProject(sceneScreen.getViewport(), mousepos);
 		
-		Actor targetActor = World.getInstance().getCurrentScene()
-				.getActorAt(mousepos.x, mousepos.y);
+		Actor targetActor = getItemAt(inputX, inputY);
 
-		// if targetActor is not found in scene search inventory
+		// if targetActor is not found in inventory search scene
 		if (targetActor == null) {		
-			targetActor = getItemAt(inputX, inputY);
+			targetActor = World.getInstance().getCurrentScene()
+					.getActorAt(mousepos.x, mousepos.y);
 		}
 
 		if (targetActor != null) {
@@ -361,9 +361,9 @@ public class InventoryUI {
 	}
 
 	public SpriteActor getItemAt(float x, float y) {
-		Inventory inventory = World.getInstance().getInventory();
 
 		if (collapsed == false && bbox.contains(x, y)) {
+			Inventory inventory = World.getInstance().getInventory();
 
 			int selected = (int) ((bbox.width > bbox.height ? x : y) / tileSize);
 
@@ -401,7 +401,7 @@ public class InventoryUI {
 				Actor actor = getItemAt(x, y);
 
 				if (actor != null) {
-					sceneScreen.runVerb(actor);
+					sceneScreen.actorClick(actor, pointer == 1);
 				} else {
 					updateScroll(x,y);
 				}

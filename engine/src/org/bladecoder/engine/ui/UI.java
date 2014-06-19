@@ -30,7 +30,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 public class UI {
 
-	private final static String ATLAS_FILENAME = "atlases/ui.atlas";
+	private final static String ATLAS_FILENAME = "ui/ui.atlas";
 
 	private boolean fullscreen = false;
 	private Pointer pointer;
@@ -118,10 +118,6 @@ public class UI {
 
 	private void setPieMode(boolean m) {
 		pieMode = m;
-		if (m == true)
-			pointer.setShowAction(false);
-		else
-			pointer.setShowAction(true);
 	}
 
 	public void render() {
