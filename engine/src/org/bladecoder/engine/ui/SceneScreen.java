@@ -55,6 +55,9 @@ public class SceneScreen implements Screen {
 	private final SceneViewport viewport = new SceneViewport();
 
 	private final Vector3 unprojectTmp = new Vector3();
+	
+	// Actor under the cursor
+	private Actor currentActor = null;
 
 	public SceneScreen(UI ui, boolean pieMode) {
 		this.ui = ui;
@@ -75,6 +78,7 @@ public class SceneScreen implements Screen {
 
 	private void update(float delta) {
 		World w = World.getInstance();
+		currentActor = null;
 		
 		if(!World.getInstance().isDisposed()) {
 			World.getInstance().update(delta);
@@ -91,23 +95,21 @@ public class SceneScreen implements Screen {
 
 		if (w.getCurrentDialog() == null && !w.inCutMode()) {
 
-			Actor a = null;
-
 			if (w.getInventory().isVisible()) {
 				viewport.getInputUnProject(unprojectTmp);
-				a = inventoryUI.getItemAt(unprojectTmp.x, unprojectTmp.y);
+				currentActor = inventoryUI.getItemAt(unprojectTmp.x, unprojectTmp.y);
 			}
 
-			if (a == null) {
+			if (currentActor == null) {
 				w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
 
-				a = w.getCurrentScene().getActorAt(unprojectTmp.x, unprojectTmp.y);
+				currentActor = w.getCurrentScene().getActorAt(unprojectTmp.x, unprojectTmp.y);
 			}
 
-			if(a != null) {
-				ui.getPointer().setDesc(a.getDesc());
+			if(currentActor != null) {
+				ui.getPointer().setDesc(currentActor.getDesc());
 				
-				if(a.getVerb("leave") != null)
+				if(currentActor.getVerb("leave") != null)
 					ui.getPointer().setLeaveIcon();
 				else
 					ui.getPointer().setHotspotIcon();
@@ -119,7 +121,6 @@ public class SceneScreen implements Screen {
 
 			if (pie.isVisible()) {
 				pie.hide();
-				ui.getPointer().setFreezeHotSpot(false, viewport);
 			}
 
 			inventoryUI.cancelDragging();
@@ -327,15 +328,13 @@ public class SceneScreen implements Screen {
 
 		Scene s = w.getCurrentScene();
 
-		Actor a = s.getActorAt(unprojectTmp.x, unprojectTmp.y);
-
-		if (a != null) {
+		if (currentActor != null) {
 
 			if (EngineLogger.debugMode()) {
-				EngineLogger.debug(a.toString());
+				EngineLogger.debug(currentActor.toString());
 			}
 
-			actorClick(a, lookat);
+			actorClick(currentActor, lookat);
 		} else if (s.getPlayer() != null) {
 			if (s.getPlayer().getVerb("goto") != null) {
 				if (recorder.isRecording()) {
@@ -394,6 +393,7 @@ public class SceneScreen implements Screen {
 		ui.getPointer().reset();
 
 		dragging = false;
+		currentActor = null;
 	}
 
 	public InventoryUI getInventoryUI() {
@@ -445,6 +445,10 @@ public class SceneScreen implements Screen {
 
 	public Viewport getViewport() {
 		return viewport;
+	}
+
+	public Actor getCurrentActor() {
+		return currentActor;
 	}
 
 }

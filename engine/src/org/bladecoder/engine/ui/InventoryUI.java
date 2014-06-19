@@ -214,11 +214,6 @@ public class InventoryUI {
 
 				SpriteActor a = inventory.getItem(i);
 
-//				if (!a.isLoaded()) {
-//					EngineLogger.error("Inventory item NOT loaded: " + a.getId());
-//					continue;
-//				}
-
 				float size = tileSize / a.getHeight() / a.getScale();
 
 				a.getRenderer().draw(batch, 
@@ -233,10 +228,21 @@ public class InventoryUI {
 			
 			float h = draggedActor.getHeight() / draggedActor.getScale();
 			
-			float size = tileSize / h * 1.3f;
+			float size = tileSize / h * 1.4f;
 			
-			draggedActor.getRenderer().draw(batch, inputX,
+//			batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO);
+////	         batch.setColor(0.3f, 0.3f, 0.3f, 1f);
+//	         draggedActor.getRenderer().draw(batch, inputX,
+//						inputY - h * size * 1.3f / 2, size * 1.3f);
+//	         batch.setColor(1f, 1f, 1f, 1f);
+//	         batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+	         
+	        if(sceneScreen.getCurrentActor() == null)
+	        	batch.setColor(0.7f, 0.7f, 0.7f, 1f);
+	     	
+	        draggedActor.getRenderer().draw(batch, inputX,
 					inputY - h * size / 2, size);
+	     	batch.setColor(Color.WHITE);
 			
 			
 			// Scroll the inventory if the draggedActor is over one inventory arrow
@@ -329,13 +335,7 @@ public class InventoryUI {
 		World.getInstance().getSceneCamera()
 				.getInputUnProject(sceneScreen.getViewport(), mousepos);
 		
-		Actor targetActor = getItemAt(inputX, inputY);
-
-		// if targetActor is not found in inventory search scene
-		if (targetActor == null) {		
-			targetActor = World.getInstance().getCurrentScene()
-					.getActorAt(mousepos.x, mousepos.y);
-		}
+		Actor targetActor = sceneScreen.getCurrentActor();
 
 		if (targetActor != null) {
 			use(targetActor, draggedActor);
