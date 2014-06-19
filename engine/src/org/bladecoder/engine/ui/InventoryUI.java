@@ -401,7 +401,7 @@ public class InventoryUI {
 				Actor actor = getItemAt(x, y);
 
 				if (actor != null) {
-					sceneScreen.actorClick(actor, pointer == 1);
+					sceneScreen.actorClick(actor, button == 1);
 				} else {
 					updateScroll(x,y);
 				}
