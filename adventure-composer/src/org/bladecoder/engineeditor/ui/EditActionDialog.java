@@ -24,7 +24,6 @@ import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.ui.components.EditElementDialog;
 import org.bladecoder.engineeditor.ui.components.InputPanel;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
@@ -78,6 +77,11 @@ public class EditActionDialog extends EditElementDialog {
 			classPanel.setText(e.getAttribute("class"));
 		}
 
+		if(e != null && !e.getAttribute("action_name").isEmpty()) {
+			actionPanel.setText(e.getAttribute("action_name"));
+			setAction();
+		}
+		
 		init(parameters, getAttrs(), doc, parent, "action", e);
 	}
 	
@@ -136,10 +140,9 @@ public class EditActionDialog extends EditElementDialog {
 		String actor = actorPanel.getText().trim();
 		
 		// Remove previous params
-		NamedNodeMap attributes = e.getAttributes();
-		int l = attributes.getLength();
-		for(int i = 0; i < l ; i++)
-			e.removeAttribute(attributes.item(i).getLocalName());
+		while(e.getAttributes().getLength() > 0) {
+			e.removeAttribute(e.getAttributes().item(0).getNodeName());
+		}
 
 		if (!actor.isEmpty())
 			e.setAttribute("actor", actor);

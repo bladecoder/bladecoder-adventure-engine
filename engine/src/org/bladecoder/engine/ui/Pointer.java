@@ -92,7 +92,7 @@ public class Pointer {
 		if (!freezeHotSpot) {
 			desc = s;
 
-			if (desc.charAt(0) == '@')
+			if (desc!= null && desc.charAt(0) == '@')
 				desc = I18N.getString(desc.substring(1));
 		}
 	}
