@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<chapter id="00" init_scene="01">
+<scene background="bg1.png" id="01">
+
+<walk_zone polygon="297.42737,284.14938,568.29877,434.68887,718.6812,440.14285,645.20966,343.2135,1375.7369,384.14554,1353.6876,407.92526,1922.6555,410.7885,1934.324,311.18817,1543.7379,296.05563,1514.5264,349.16766,624.51056,318.71033,589.1026,283.30228" pos="0.0,0.0"/>
+<actor bbox="1.1622314,20.920135,0.0,200.0,98.88623,203.48676,102.3728,18.595642" depth_type="none" id="door_right" pos="1455.109,395.15738" type="background">
+<verb id="leave">
+<action action_name="leave" target="02"/>
+</verb>
+</actor>
+<actor bbox="6.1985474,-71.283264,0.0,200.0,72.92984,215.49634,93.07495,-27.893463" depth_type="none" id="door_left" pos="251.04129,339.37048" type="background">
+<verb id="leave">
+<action action_name="leave" target="03"/>
+</verb>
+</actor>
+<verb id="init">
+<action action_name="say" text="This is an adventure test for the Adventure Blade Engine and Composer" type="rectangle" wait="false"/>
+</verb>
+</scene>
+<scene background="bg2.png" id="02">
+
+
+
+<actor bbox="0.0,0.0,0.0,200.0,897.3366,221.1315,876.20514,0.0" depth_type="none" id="exit" pos="405.07428,-48.177734" type="background">
+<verb id="leave">
+<action action_name="leave" target="01"/>
+</verb>
+</actor>
+
+</scene>
+<scene background="bg3.png" id="03">
+<actor bbox="34.09192,-446.2954,0.0,200.0,897.3366,221.1315,876.20514,0.0" depth_type="none" id="exit" pos="1644.7837,578.7209" type="background">
+<verb id="leave">
+<action action_name="leave" target="01"/>
+</verb>
+</actor>
+</scene>
+</chapter>

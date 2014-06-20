@@ -1,0 +1,202 @@
+
+ui.png
+size: 991,682
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+back
+  rotate: false
+  xy: 2, 447
+  size: 235, 235
+  orig: 235, 235
+  offset: 0, 0
+  index: -1
+bubblepointer
+  rotate: false
+  xy: 877, 275
+  size: 55, 35
+  orig: 55, 35
+  offset: 0, 0
+  index: -1
+bubblepointer2
+  rotate: false
+  xy: 944, 373
+  size: 26, 36
+  orig: 26, 36
+  offset: 0, 0
+  index: -1
+collapse
+  rotate: false
+  xy: 2, 8
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+config
+  rotate: false
+  xy: 476, 245
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+credits
+  rotate: false
+  xy: 2, 210
+  size: 235, 235
+  orig: 235, 235
+  offset: 0, 0
+  index: -1
+help
+  rotate: false
+  xy: 239, 447
+  size: 235, 235
+  orig: 235, 235
+  offset: 0, 0
+  index: -1
+hotspotpointer
+  rotate: false
+  xy: 730, 137
+  size: 109, 109
+  orig: 109, 109
+  offset: 0, 0
+  index: -1
+hotspotpointer2
+  rotate: false
+  xy: 841, 137
+  size: 109, 109
+  orig: 109, 109
+  offset: 0, 0
+  index: -1
+hotspotpointer3
+  rotate: false
+  xy: 608, 10
+  size: 111, 111
+  orig: 111, 111
+  offset: 0, 0
+  index: -1
+hotspotpointer4
+  rotate: false
+  xy: 608, 123
+  size: 120, 120
+  orig: 120, 120
+  offset: 0, 0
+  index: -1
+leave
+  rotate: false
+  xy: 855, 6
+  size: 97, 60
+  orig: 97, 60
+  offset: 0, 0
+  index: -1
+leave2
+  rotate: false
+  xy: 839, 68
+  size: 105, 67
+  orig: 105, 67
+  offset: 0, 0
+  index: -1
+leave3
+  rotate: false
+  xy: 730, 68
+  size: 107, 67
+  orig: 107, 67
+  offset: 0, 0
+  index: -1
+leave4
+  rotate: false
+  xy: 877, 411
+  size: 104, 69
+  orig: 104, 69
+  offset: 0, 0
+  index: -1
+left
+  rotate: false
+  xy: 713, 482
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+lookat
+  rotate: false
+  xy: 877, 368
+  size: 65, 41
+  orig: 65, 41
+  offset: 0, 0
+  index: -1
+pickup
+  rotate: false
+  xy: 877, 312
+  size: 48, 54
+  orig: 48, 54
+  offset: 0, 0
+  index: -1
+pie
+  rotate: false
+  xy: 678, 248
+  size: 197, 197
+  orig: 197, 197
+  offset: 0, 0
+  index: -1
+pointer
+  rotate: false
+  xy: 721, 2
+  size: 65, 64
+  orig: 65, 64
+  offset: 0, 0
+  index: -1
+pointer2
+  rotate: false
+  xy: 788, 2
+  size: 65, 64
+  orig: 65, 64
+  offset: 0, 0
+  index: -1
+pointer3
+  rotate: false
+  xy: 915, 537
+  size: 67, 67
+  orig: 67, 67
+  offset: 0, 0
+  index: -1
+pointer4
+  rotate: false
+  xy: 915, 606
+  size: 76, 76
+  orig: 76, 76
+  offset: 0, 0
+  index: -1
+quit
+  rotate: false
+  xy: 239, 210
+  size: 235, 235
+  orig: 235, 235
+  offset: 0, 0
+  index: -1
+reload
+  rotate: false
+  xy: 476, 447
+  size: 235, 235
+  orig: 235, 235
+  offset: 0, 0
+  index: -1
+right
+  rotate: false
+  xy: 204, 8
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+talkto
+  rotate: false
+  xy: 915, 486
+  size: 60, 49
+  orig: 60, 49
+  offset: 0, 0
+  index: -1
+uncollapse
+  rotate: false
+  xy: 406, 8
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1

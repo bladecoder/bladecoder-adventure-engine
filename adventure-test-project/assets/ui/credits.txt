@@ -1,0 +1,4 @@
+t#CREATED BY
+RAFAEL GARCÍA
+s#250
+i#blade_logo.png
