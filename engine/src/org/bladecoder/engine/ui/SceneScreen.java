@@ -129,9 +129,13 @@ public class SceneScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
+		World w = World.getInstance();
+		
 		update(delta);
 		
-		World w = World.getInstance();
+		if (w.getAssetState() != AssetState.LOADED)
+			return;		
+
 		SpriteBatch batch = ui.getBatch();
 
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -146,9 +150,6 @@ public class SceneScreen implements Screen {
 			w.getCurrentScene().drawBBoxLines(renderer);
 			renderer.end();
 		}
-
-		if (w.getAssetState() != AssetState.LOADED)
-			return;
 		
 		// SCREEN CAMERA
 		batch.setProjectionMatrix(viewport.getCamera().combined);

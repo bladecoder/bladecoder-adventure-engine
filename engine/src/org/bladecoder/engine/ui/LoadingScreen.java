@@ -29,7 +29,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class LoadingScreen implements Screen {
-	private final static float INIT_TIME = 1f;
+	private final static float INIT_TIME = 4f;
 	
 	private int pos = 0;
 	private int numSquares = 3;
@@ -42,14 +42,13 @@ public class LoadingScreen implements Screen {
 	
 	private float initTime = 0;
 	
-	private float delta;
+	private float delta = 0;
 	
 	private UI ui;
 	
 	private final Viewport viewport = new ScreenViewport();
 	
 	public LoadingScreen(UI ui) {	
-		delta = 0;
 		this.ui = ui;
 	}
 
@@ -117,6 +116,8 @@ public class LoadingScreen implements Screen {
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(null);
+		initTime = 0;
+		delta = 0;
 	}
 
 	@Override
