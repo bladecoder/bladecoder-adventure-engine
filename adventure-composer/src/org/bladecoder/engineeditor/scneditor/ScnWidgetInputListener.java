@@ -103,10 +103,11 @@ public class ScnWidgetInputListener extends ClickListener {
 					boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y,
 							CanvasDrawer.CORNER_DIST);
 
-					if (deleted)
+					if (deleted) {
 						Ctx.project.getSelectedChapter().setWalkZonePolygon(
 								Ctx.project.getSelectedScene(), poly);
-					else { // check obstacles
+						return;
+					} else { // check obstacles
 						for (int i = 0; i < obstacles.size(); i++) {
 							Polygon o = obstacles.get(i);
 							deleted = PolygonUtils.deletePoint(o, p.x, p.y,
@@ -116,7 +117,7 @@ public class ScnWidgetInputListener extends ClickListener {
 										.setObstaclePolygon(
 												Ctx.project.getSelectedScene(),
 												i, o);
-								break;
+								return;
 							}
 						}
 					}
@@ -128,6 +129,7 @@ public class ScnWidgetInputListener extends ClickListener {
 					if (created) {
 						Ctx.project.getSelectedChapter().setWalkZonePolygon(
 								Ctx.project.getSelectedScene(), poly);
+						return;
 					} else {
 						for (int i = 0; i < obstacles.size(); i++) {
 							Polygon o = obstacles.get(i);
@@ -138,7 +140,7 @@ public class ScnWidgetInputListener extends ClickListener {
 										.setObstaclePolygon(
 												Ctx.project.getSelectedScene(),
 												i, o);
-								break;
+								return;
 							}
 						}
 					}

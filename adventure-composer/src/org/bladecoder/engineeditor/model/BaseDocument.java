@@ -206,7 +206,7 @@ public abstract class BaseDocument extends PropertyChange {
 		return doc;
 	}
 
-	public Element cloneNode(Element e) {
+	public Element cloneNode(Element parent, Element e) {
 		Element cloned;
 
 		if (e.getOwnerDocument() != doc) {
@@ -214,6 +214,14 @@ public abstract class BaseDocument extends PropertyChange {
 		} else {
 			cloned = (Element) e.cloneNode(true);
 		}
+		
+		parent.appendChild(cloned);
+		
+		if (cloned.getAttribute("id") != null && !cloned.getAttribute("id").isEmpty()) {
+			cloned.setAttribute("id", getCheckedId(cloned, cloned.getAttribute("id")));
+		}
+		
+		setModified(cloned);
 
 		return cloned;
 	}
@@ -345,6 +353,12 @@ public abstract class BaseDocument extends PropertyChange {
 	 * @param id
 	 */
 	public void setId(Element e, String id) {
+		String idChecked = getCheckedId(e, id);
+
+		setRootAttr(e, "id", idChecked);
+	}
+	
+	public String getCheckedId(Element e, String id) {
 		String idChecked = id;
 
 		if (e.getParentNode() instanceof Element) {
@@ -368,8 +382,8 @@ public abstract class BaseDocument extends PropertyChange {
 				}
 			}
 		}
-
-		setRootAttr(e, "id", idChecked);
+		
+		return idChecked;
 	}
 
 	public String getId(Element e) {

@@ -55,7 +55,7 @@ public abstract class ElementList extends EditList<Element> {
 		this.parent = parent;
 
 		list.getItems().clear();
-		list.getSelection().clear();;
+		list.getSelection().clear();
 
 		if (parent != null) {
 
@@ -168,14 +168,8 @@ public abstract class ElementList extends EditList<Element> {
 
 	@Override
 	protected void paste() {
-		Element newElement = doc.cloneNode(clipboard);
+		Element newElement = doc.cloneNode(parent, clipboard);
 
-		parent.appendChild(newElement);
-
-		if (newElement.getAttribute("id") != null && !newElement.getAttribute("id").isEmpty()) {
-			doc.setId(newElement, newElement.getAttribute("id"));
-		}
-		
 		addItem(newElement);
 		int i = getItems().indexOf(newElement, true);
 		list.setSelectedIndex(i);
