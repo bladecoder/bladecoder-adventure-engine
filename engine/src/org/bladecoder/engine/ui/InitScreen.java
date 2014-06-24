@@ -42,6 +42,7 @@ public class InitScreen implements Screen {
 	
 	private float time;
 	private float fadeTime;
+	private float scale = 1f;
 	
 	private final Viewport viewport = new ScreenViewport();
 	
@@ -81,7 +82,8 @@ public class InitScreen implements Screen {
 			}
 		}		
 		
-		batch.draw(tex, (viewport.getViewportWidth() - tex.getWidth()) /2, (viewport.getViewportHeight() - tex.getHeight()) /2);
+		batch.draw(tex, (viewport.getViewportWidth() - tex.getWidth()* scale  ) /2, (viewport.getViewportHeight() - tex.getHeight()* scale)  /2,
+				tex.getWidth() * scale, tex.getHeight() * scale);
 		batch.setColor(1, 1, 1, 1);
 	
 		time += delta;
@@ -92,6 +94,7 @@ public class InitScreen implements Screen {
 	@Override
 	public void resize(int width, int height) {	
 		viewport.update(width, height, true);
+		scale = width / (float)EngineAssetManager.getInstance().getResolution().portraitWidth;
 	}
 
 	public void retrieveAssets() {

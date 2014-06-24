@@ -119,7 +119,6 @@ public class HelpScreen implements Screen, InputProcessor {
 		switch (keycode) {
 		case Input.Keys.ESCAPE:
 		case Input.Keys.BACK:
-		case Input.Keys.MENU:
 			ui.setScreen(State.SCENE_SCREEN);
 			break;
 		}

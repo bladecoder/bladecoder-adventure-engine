@@ -147,6 +147,10 @@ public class EngineAssetManager extends AssetManager {
 		
 		EngineLogger.debug("FORCING RESOLUTION: " + resWidth);
 	}
+	
+	public Resolution getResolution() {
+		return resResolver.getResolution();
+	}
 
 	public boolean isLoading() {
 		return !update();

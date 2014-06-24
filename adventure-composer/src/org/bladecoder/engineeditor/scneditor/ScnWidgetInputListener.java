@@ -243,21 +243,8 @@ public class ScnWidgetInputListener extends ClickListener {
 				}
 
 			}			
-			
-			Actor a = scn.getFullSearchActorAt(p.x, p.y); // CHECK FOR ACTORS
-
-			if (a != null && a != selActor) {
-
-				selActor = a;
-				Element da = Ctx.project.getActor(selActor.getId());
-				Ctx.project.setSelectedActor(da);
-
-				draggingMode = DraggingModes.DRAGING_ACTOR;
-				return true;
-			}
 
 			// SELACTOR VERTEXs DRAGGING
-
 			if (selActor!=null && (!(selActor instanceof SpriteActor)
 					|| !((SpriteActor) selActor).isBboxFromRenderer())) {
 
@@ -270,6 +257,18 @@ public class ScnWidgetInputListener extends ClickListener {
 						return true;
 					}
 				}
+			}
+			
+			Actor a = scn.getFullSearchActorAt(p.x, p.y); // CHECK FOR ACTORS
+
+			if (a != null && a != selActor) {
+
+				selActor = a;
+				Element da = Ctx.project.getActor(selActor.getId());
+				Ctx.project.setSelectedActor(da);
+
+				draggingMode = DraggingModes.DRAGING_ACTOR;
+				return true;
 			}
 
 			if (a != null) {

@@ -35,6 +35,9 @@ public class Pointer {
 	private static final String LEAVE_ICON = "leave3";
 	private static final String POINTER_ICON = "pointer3";
 	private static final String HOTSPOT_ICON = "hotspotpointer3";
+	
+	// Min height in inches for the pointer: 1/2"
+	private static final float MIN_HEIGHT = 160.0f * Gdx.graphics.getDensity() / 3f;
 
 	private BitmapFont font;
 
@@ -102,13 +105,13 @@ public class Pointer {
 
 		v.unproject(out);
 
-		if (out.x >= v.getViewportWidth())
-			out.x = v.getViewportWidth() - 1;
+		if (out.x >= v.getWorldWidth())
+			out.x = v.getWorldWidth() - 1;
 		else if (out.x < 0)
 			out.x = 0;
 
-		if (out.y >= v.getViewportHeight())
-			out.y = v.getViewportHeight() - 1;
+		if (out.y >= v.getWorldHeight())
+			out.y = v.getWorldHeight() - 1;
 		else if (out.y < 0)
 			out.y = 0;
 	}
@@ -145,12 +148,14 @@ public class Pointer {
 		if (!dragging) {
 			if (!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)
 					|| currentIcon == leaveIcon) {
+				
+				float minScale = Math.max(MIN_HEIGHT / pointerIcon.getRegionHeight(), scale);
 
 				batch.draw(currentIcon,
-						mousepos.x - currentIcon.getRegionWidth() * scale / 2,
-						mousepos.y - currentIcon.getRegionHeight() * scale / 2,
-						currentIcon.getRegionWidth() * scale,
-						currentIcon.getRegionHeight() * scale);
+						mousepos.x - currentIcon.getRegionWidth() * minScale / 2,
+						mousepos.y - currentIcon.getRegionHeight() * minScale / 2,
+						currentIcon.getRegionWidth() * minScale,
+						currentIcon.getRegionHeight() * minScale);
 			}
 		}
 	}
@@ -179,8 +184,10 @@ public class Pointer {
 		// scale = 160.0f * Gdx.graphics.getDensity() / 2f
 		// / pointer.getHeight();
 		// }
+		
+		float aspect = width / (float)EngineAssetManager.getInstance().getResolution().portraitWidth;
 
-		scale = 1;
+		scale = aspect;
 	}
 
 	public void createAssets() {

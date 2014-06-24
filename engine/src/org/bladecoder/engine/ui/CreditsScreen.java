@@ -29,6 +29,7 @@ import org.bladecoder.engine.util.TextUtils;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -63,14 +64,14 @@ public class CreditsScreen implements Screen, InputProcessor {
 	
 	private final HashMap<String, Texture> images = new HashMap<String, Texture>();
 	
-	private final Viewport viewport = new ScreenViewport();
+	private Viewport viewport;
 
 	public CreditsScreen(UI ui) {
 		this.ui = ui;
 	}
 
 	@Override
-	public void render(float delta) {
+	public void render(float delta) {		
 		SpriteBatch batch = ui.getBatch();
 		int width = (int)viewport.getWorldWidth();
 		int height = (int)viewport.getWorldHeight();
@@ -156,6 +157,7 @@ public class CreditsScreen implements Screen, InputProcessor {
 	@Override
 	public void resize(int width, int height) {		
 		viewport.update(width, height, true);
+		ui.getPointer().resize(width, height);
 	}
 
 	@Override
@@ -168,6 +170,9 @@ public class CreditsScreen implements Screen, InputProcessor {
 		
 		for(Texture t:images.values())
 			t.dispose();
+		
+		images.clear();
+		credits.clear();
 		
 		if(music != null) {
 			music.stop();
@@ -224,6 +229,12 @@ public class CreditsScreen implements Screen, InputProcessor {
 	public void show() {
 		retrieveAssets(ui.getUIAtlas());
 		Gdx.input.setInputProcessor(this);
+		
+//		int wWidth = EngineAssetManager.getInstance().getResolution().portraitWidth;
+//		int wHeight = EngineAssetManager.getInstance().getResolution().portraitHeight;
+		
+//		viewport = new ExtendViewport(wWidth, wHeight);
+		viewport = new ScreenViewport();
 	}
 
 	@Override
@@ -250,17 +261,20 @@ public class CreditsScreen implements Screen, InputProcessor {
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean keyDown(int keycode) {		
 		return false;
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
+		if (keycode == Input.Keys.ESCAPE
+				|| keycode == Input.Keys.BACK)
+			ui.setScreen(State.SCENE_SCREEN);		
 		return false;
 	}
 
 	@Override
-	public boolean keyTyped(char character) {
+	public boolean keyTyped(char character) {	
 		return false;
 	}
 

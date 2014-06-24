@@ -15,18 +15,21 @@
  ******************************************************************************/
 package org.bladecoder.engine.ui;
 
+import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.ui.UI.State;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 public class MenuScreen implements Screen {
 
@@ -48,7 +51,6 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -65,6 +67,7 @@ public class MenuScreen implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
+		ui.getPointer().resize(width, height);
 	}
 
 	@Override
@@ -75,11 +78,26 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void show() {
-		stage = new Stage(new ScreenViewport());
+		int wWidth = EngineAssetManager.getInstance().getResolution().portraitWidth;
+		int wHeight = EngineAssetManager.getInstance().getResolution().portraitHeight;
+
+		stage = new Stage(new ExtendViewport(wWidth, wHeight));
 
 		Table table = new Table();
 		table.setFillParent(true);
 		table.center();
+
+		table.addListener(new InputListener() {
+			@Override
+			public boolean keyUp(InputEvent event, int keycode) {
+				if (keycode == Input.Keys.ESCAPE
+						|| keycode == Input.Keys.BACK)
+					ui.setScreen(State.SCENE_SCREEN);
+				return true;
+			}
+		});
+
+		stage.setKeyboardFocus(table);
 
 		ImageButton back = new ImageButton(new TextureRegionDrawable(ui
 				.getUIAtlas().findRegion(BACK_COMMAND)));
