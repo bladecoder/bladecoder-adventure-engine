@@ -21,6 +21,7 @@ import org.bladecoder.engine.model.Transition;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.model.World.AssetState;
 import org.bladecoder.engine.ui.UI.State;
+import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
 
@@ -33,6 +34,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -58,6 +61,9 @@ public class SceneScreen implements Screen {
 	
 	// Actor under the cursor
 	private Actor currentActor = null;
+	
+	private boolean drawHotspots = false;
+	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
 
 	public SceneScreen(UI ui, boolean pieMode) {
 		this.ui = ui;
@@ -107,7 +113,9 @@ public class SceneScreen implements Screen {
 			}
 
 			if(currentActor != null) {
-				ui.getPointer().setDesc(currentActor.getDesc());
+				
+				if(showDesc)
+					ui.getPointer().setDesc(currentActor.getDesc());
 				
 				if(currentActor.getVerb("leave") != null)
 					ui.getPointer().setLeaveIcon();
@@ -214,8 +222,33 @@ public class SceneScreen implements Screen {
 		}
 
 		recorder.draw(batch);
+		
+		if(drawHotspots)
+			drawHotspots(batch);
 
 		batch.end();
+	}
+	
+	private void drawHotspots(SpriteBatch batch) {
+
+		for (Actor a : World.getInstance().getCurrentScene().getActors().values()) {
+			if(a == World.getInstance().getCurrentScene().getPlayer() || 
+					!a.hasInteraction() || !a.isVisible())
+				continue;
+			
+			Polygon p = a.getBBox();
+
+			if (p == null) {
+				EngineLogger.error("ERROR DRAWING HOTSPOT FOR: " + a.getId());
+			}
+			
+			Rectangle r = a.getBBox().getBoundingRectangle();
+			
+			unprojectTmp.set(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2, 0);
+			World.getInstance().getSceneCamera().scene2screen(viewport, unprojectTmp);
+
+			ui.getPointer().drawHotspot(batch, unprojectTmp.x, unprojectTmp.y, showDesc?a.getDesc():null);
+		}	
 	}
 
 	@Override

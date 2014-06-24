@@ -35,9 +35,12 @@ public class Pointer {
 	private static final String LEAVE_ICON = "leave3";
 	private static final String POINTER_ICON = "pointer3";
 	private static final String HOTSPOT_ICON = "hotspotpointer3";
-	
-	// Min height in inches for the pointer: 1/3"
+
+	/** Min height in inches for the pointer: 1/3" */
 	private static final float MIN_HEIGHT = 160.0f * Gdx.graphics.getDensity() / 3f;
+	
+	/** Margin to show the description. TODO: Must be dinamic */
+	private static final float DESC_MARGIN = 50;
 
 	private BitmapFont font;
 
@@ -46,7 +49,6 @@ public class Pointer {
 	private boolean freezeHotSpot = false;
 	private final Vector2 freezePos = new Vector2();
 
-	private boolean showDesc = true;
 	private String desc = null;
 
 	private TextureRegion leaveIcon;
@@ -63,13 +65,13 @@ public class Pointer {
 	public void reset() {
 		setDefaultIcon();
 		freezeHotSpot = false;
-		desc=null;
+		desc = null;
 	}
 
 	public void setDefaultIcon() {
 		currentIcon = pointerIcon;
-		
-		if(!freezeHotSpot)
+
+		if (!freezeHotSpot)
 			desc = null;
 	}
 
@@ -95,7 +97,7 @@ public class Pointer {
 		if (!freezeHotSpot) {
 			desc = s;
 
-			if (desc!= null && desc.charAt(0) == '@')
+			if (desc != null && desc.charAt(0) == '@')
 				desc = I18N.getString(desc.substring(1));
 		}
 	}
@@ -116,46 +118,72 @@ public class Pointer {
 			out.y = 0;
 	}
 
+	public void drawHotspot(SpriteBatch batch, float x, float y, String desc) {
+		float minScale = Math.max(MIN_HEIGHT / pointerIcon.getRegionHeight(),
+				scale);
+
+		if (desc == null) {
+			batch.setColor(Color.BLUE);
+			batch.draw(hotspotIcon, x - hotspotIcon.getRegionWidth() * minScale
+					/ 2, y - hotspotIcon.getRegionHeight() * minScale / 2,
+					hotspotIcon.getRegionWidth() * minScale,
+					hotspotIcon.getRegionHeight() * minScale);
+			batch.setColor(Color.WHITE);
+		} else {
+			if (desc != null && desc.charAt(0) == '@')
+				desc = I18N.getString(desc.substring(1));
+			
+			TextBounds b = font.getBounds(desc);
+
+			float textX = x - b.width / 2;
+			float textY = y + b.height;
+
+			RectangleRenderer.draw(batch, textX - 8, textY - b.height - 8,
+					b.width + 16, b.height + 16, Color.BLACK);
+			font.draw(batch, desc, textX, textY);
+		}
+	}
+
 	public void draw(SpriteBatch batch, boolean dragging, Viewport v) {
 
 		getInputUnproject(v, mousepos);
 
 		// DRAW TARGET DESCRIPTION
-		if (showDesc && desc != null) {
-			int margin = 50;
-
+		if (desc != null) {
 			TextBounds b = font.getBounds(desc);
 
 			float x0 = mousepos.x;
-			float y0 = mousepos.y + margin + b.height;
+			float y0 = mousepos.y + b.height + DESC_MARGIN;
 
 			float textX = x0 - b.width / 2;
 			float textY = y0;
+
+			if (textX < 0)
+				textX = 0;
 
 			if (freezeHotSpot) {
 				textX = freezePos.x - b.width / 2;
 				textY = freezePos.y;
 			}
 
-			if (textX < 0)
-				textX = 0;
-
-			
-			RectangleRenderer.draw(batch, textX - 8, textY - b.height - 8, b.width + 16, b.height + 16, Color.BLACK);
-			font.draw(batch, desc, textX, textY);
+			RectangleRenderer.draw(batch, textX - 8, textY - b.height - 8,
+					b.width + 16, b.height + 16, Color.BLACK);
+			font.draw(batch, desc, textX, textY);	
 		}
 
 		if (!dragging) {
 			if (!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)
 					|| currentIcon == leaveIcon) {
-				
-				float minScale = Math.max(MIN_HEIGHT / pointerIcon.getRegionHeight(), scale);
+
+				float minScale = Math.max(
+						MIN_HEIGHT / pointerIcon.getRegionHeight(), scale);
 
 				batch.draw(currentIcon,
-						mousepos.x - currentIcon.getRegionWidth() * minScale / 2,
-						mousepos.y - currentIcon.getRegionHeight() * minScale / 2,
-						currentIcon.getRegionWidth() * minScale,
-						currentIcon.getRegionHeight() * minScale);
+						mousepos.x - currentIcon.getRegionWidth() * minScale
+								/ 2, mousepos.y - currentIcon.getRegionHeight()
+								* minScale / 2, currentIcon.getRegionWidth()
+								* minScale, currentIcon.getRegionHeight()
+								* minScale);
 			}
 		}
 	}
@@ -173,7 +201,8 @@ public class Pointer {
 	}
 
 	public void resize(int width, int height) {
-		float aspect = width / (float)EngineAssetManager.getInstance().getResolution().portraitWidth;
+		float aspect = width
+				/ (float) EngineAssetManager.getInstance().getResolution().portraitWidth;
 
 		scale = aspect;
 	}

@@ -30,8 +30,10 @@ public class Config {
 	public static final String FORCE_RES_PROP = "force_res";
 	public static final String DEBUG_PROP = "debug";
 	public static final String CHAPTER_PROP = "chapter";
+	public static final String SHOW_DESC_PROP = "show_desc";
 	
 	public static final String PROPERTIES_FILENAME = "BladeEngine.properties";
+
 	private static Properties config = null;
 	
 	public static String getProperty(String key, String defaultValue) {

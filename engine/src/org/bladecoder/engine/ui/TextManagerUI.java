@@ -51,7 +51,8 @@ public class TextManagerUI {
 
 	private AtlasRegion bubblePointer;
 	private float scale = 1f;
-	SceneScreen sceneScreen;
+	private SceneScreen sceneScreen;
+	private final Vector3 unprojectTmp = new Vector3();
 
 	public TextManagerUI(SceneScreen sceneScreen) {
 		this.sceneScreen = sceneScreen;
@@ -64,19 +65,20 @@ public class TextManagerUI {
 			float posx = currentSubtitle.x;
 			float posy = currentSubtitle.y;
 			
-			Vector3 p = World.getInstance().getSceneCamera().scene2screen(posx, posy, sceneScreen.getViewport());
+			unprojectTmp.set(posx, posy, 0);
+			World.getInstance().getSceneCamera().scene2screen(sceneScreen.getViewport(), unprojectTmp);
 
 			if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE)
 				posx = TextUtils.getCenterX(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getViewportWidth());
 			else
-				posx = p.x;
+				posx = unprojectTmp.x;
 
 			if (posy == TextManager.POS_CENTER)
 				posy = TextUtils.getCenterY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getViewportHeight());
 			else if (posy == TextManager.POS_SUBTITLE)
 				posy = TextUtils.getSubtitleY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getViewportHeight());
 			else
-				posy = p.y;
+				posy = unprojectTmp.y;
 
 			font.setColor(currentSubtitle.color);
 

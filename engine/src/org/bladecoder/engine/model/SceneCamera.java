@@ -190,12 +190,8 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		}
 	}
 
-	public Vector3 scene2screen(float x, float y, Viewport viewport) {
-		Vector3 v = new Vector3(x, y, 0);
-
-		project(v, 0, 0, viewport.getViewportWidth(), viewport.getViewportHeight());
-
-		return v;
+	public void scene2screen(Viewport viewport, Vector3 out) {
+		project(out, 0, 0, viewport.getViewportWidth(), viewport.getViewportHeight());
 	}
 	
 	@Override
