@@ -50,23 +50,18 @@ public class SceneViewport extends Viewport {
 		out.set(Gdx.input.getX(), Gdx.input.getY());
 
 		unproject(out);
-
-		if (out.x >= viewportWidth)
-			out.x = viewportWidth - 1;
-		else if (out.x < 0)
-			out.x = 0;
-
-		if (out.y >= viewportHeight)
-			out.y = viewportHeight - 1;
-		else if (out.y < 0)
-			out.y = 0;
 	}
 	
 	public void getInputUnProject(Vector3 out) {
 		out.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 
-		unproject(out);
-
+		unproject(out);	
+	}
+	
+	@Override
+	public Vector2 unproject(Vector2 out) {
+		super.unproject(out);
+		
 		if (out.x >= viewportWidth)
 			out.x = viewportWidth - 1;
 		else if (out.x < 0)
@@ -76,5 +71,24 @@ public class SceneViewport extends Viewport {
 			out.y = viewportHeight - 1;
 		else if (out.y < 0)
 			out.y = 0;
+		
+		return out;
 	}
+	
+	@Override
+	public Vector3 unproject(Vector3 out) {
+		super.unproject(out);
+		
+		if (out.x >= viewportWidth)
+			out.x = viewportWidth - 1;
+		else if (out.x < 0)
+			out.x = 0;
+
+		if (out.y >= viewportHeight)
+			out.y = viewportHeight - 1;
+		else if (out.y < 0)
+			out.y = 0;
+		
+		return out;
+	}	
 }

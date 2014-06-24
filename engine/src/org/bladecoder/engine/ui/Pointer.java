@@ -107,15 +107,15 @@ public class Pointer {
 
 		v.unproject(out);
 
-		if (out.x >= v.getWorldWidth())
-			out.x = v.getWorldWidth() - 1;
-		else if (out.x < 0)
-			out.x = 0;
-
-		if (out.y >= v.getWorldHeight())
-			out.y = v.getWorldHeight() - 1;
-		else if (out.y < 0)
-			out.y = 0;
+//		if (out.x >= v.getWorldWidth())
+//			out.x = v.getWorldWidth() - 1;
+//		else if (out.x < 0)
+//			out.x = 0;
+//
+//		if (out.y >= v.getWorldHeight())
+//			out.y = v.getWorldHeight() - 1;
+//		else if (out.y < 0)
+//			out.y = 0;
 	}
 
 	public void drawHotspot(SpriteBatch batch, float x, float y, String desc) {

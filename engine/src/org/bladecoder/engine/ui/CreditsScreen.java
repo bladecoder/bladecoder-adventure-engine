@@ -157,7 +157,6 @@ public class CreditsScreen implements Screen, InputProcessor {
 	@Override
 	public void resize(int width, int height) {		
 		viewport.update(width, height, true);
-		ui.getPointer().resize(width, height);
 	}
 
 	@Override
