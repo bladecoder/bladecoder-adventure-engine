@@ -36,7 +36,7 @@ public class Pointer {
 	private static final String POINTER_ICON = "pointer3";
 	private static final String HOTSPOT_ICON = "hotspotpointer3";
 	
-	// Min height in inches for the pointer: 1/2"
+	// Min height in inches for the pointer: 1/3"
 	private static final float MIN_HEIGHT = 160.0f * Gdx.graphics.getDensity() / 3f;
 
 	private BitmapFont font;
@@ -173,18 +173,6 @@ public class Pointer {
 	}
 
 	public void resize(int width, int height) {
-
-		// Rectangle v = World.getInstance().getCameras().getViewport();
-
-		// scale = (v.height / 20) / pointer.getHeight();
-		//
-		// // the minimum height of the inventory is 1/2"
-		// if (scale * pointer.getHeight() < 160.0f * Gdx.graphics
-		// .getDensity() / 4f) {
-		// scale = 160.0f * Gdx.graphics.getDensity() / 2f
-		// / pointer.getHeight();
-		// }
-		
 		float aspect = width / (float)EngineAssetManager.getInstance().getResolution().portraitWidth;
 
 		scale = aspect;
