@@ -127,6 +127,7 @@ public class WorldXMLLoader extends DefaultHandler {
 			
 			try {
 				loadChapter(chapter);
+				world.setChapter(chapter);
 				
 				for(Scene s:scenes) {
 					s.resetCamera(world.getWidth(), world.getHeight());

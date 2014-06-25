@@ -29,7 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
-public class WalkZoneWindow extends Container {
+public class WalkZoneWindow extends Container<Table> {
 	private static final String DELETE_WALK_ZONE_TEXT = "Delete Walk Zone";
 	private static final String CREATE_WALK_ZONE_TEXT = "Create Walk Zone";
 	private static final String SET_ACTOR_AS_OBSTACLE_TEXT = "Set Actor as Obstacle";
@@ -72,7 +72,7 @@ public class WalkZoneWindow extends Container {
 		table.add(deleteObstacleBtn).expandX().fill();
 		table.row();
 		table.add(addObstacleActorBtn).expandX().fill();
-		setWidget(table);
+		setActor(table);
 
 		createZoneBtn.addListener(new ChangeListener() {
 			@Override

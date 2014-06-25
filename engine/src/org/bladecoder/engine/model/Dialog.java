@@ -128,10 +128,10 @@ public class Dialog implements Serializable   {
 	public void write(Json json) {
 		json.writeValue("id", id);
 		json.writeValue("actor", actor);
-		json.writeValue("options", options);
+		json.writeValue("options", options, ArrayList.class, DialogOption.class);
 		
 		String serCurrent = serOption(currentOption);		
-		json.writeValue("currentOption", serCurrent, serCurrent == null?null:String.class);	
+		json.writeValue("currentOption", serCurrent);	
 	}
 
 	@SuppressWarnings("unchecked")

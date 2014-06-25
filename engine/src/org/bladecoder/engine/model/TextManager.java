@@ -155,7 +155,7 @@ public class TextManager implements Serializable {
 	public void write(Json json) {
 		json.writeValue("inScreenTime", inScreenTime);
 		json.writeValue("currentSubtitle", currentSubtitle);
-		json.writeValue("fifo", new ArrayList<Text>(fifo));
+		json.writeValue("fifo", new ArrayList<Text>(fifo), ArrayList.class, Text.class);
 	}
 
 	@SuppressWarnings("unchecked")

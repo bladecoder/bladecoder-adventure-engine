@@ -19,6 +19,7 @@ import org.bladecoder.engineeditor.Ctx;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -28,7 +29,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
-import com.esotericsoftware.tablelayout.Cell;
 
 public class HeaderPanel extends Table {
 	private Actor content;
@@ -81,7 +81,7 @@ public class HeaderPanel extends Table {
 		removeActor(this.content);
 		
 		this.content = center;
-		this.contentCell.setWidget(center);
+		this.contentCell.setActor(center);
 		
 		invalidateHierarchy();
 	}
@@ -98,13 +98,13 @@ public class HeaderPanel extends Table {
 
 	public void toggleCollapse() {
 		if (collapsable) {
-			if (contentCell.getWidget() != null) {
+			if (contentCell.getActor() != null) {
 				removeActor(this.content);
 				invalidateHierarchy();
 
 				collapseImg.setDrawable(new TextureRegionDrawable(Ctx.assetManager.getIcon("ic_closed")));
 			} else {
-				this.contentCell.setWidget(content);				
+				this.contentCell.setActor(content);				
 				invalidateHierarchy();
 
 				collapseImg.setDrawable(new TextureRegionDrawable(Ctx.assetManager.getIcon("ic_open")));

@@ -26,6 +26,7 @@ import org.bladecoder.engine.actions.ActionCallbackQueue;
 import org.bladecoder.engine.anim.Timers;
 import org.bladecoder.engine.assets.AssetConsumer;
 import org.bladecoder.engine.assets.EngineAssetManager;
+import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.loader.WorldXMLLoader;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
@@ -37,6 +38,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class World implements Serializable, AssetConsumer {
@@ -85,6 +87,8 @@ public class World implements Serializable, AssetConsumer {
 	 * logic
 	 */
 	private HashMap<String, String> customProperties;
+	
+	private String chapter;
 	
 	transient private SpriteBatch spriteBatch;
 
@@ -389,6 +393,10 @@ public class World implements Serializable, AssetConsumer {
 	public SceneCamera getSceneCamera() {
 		return currentScene.getCamera();
 	}
+	
+	public void setChapter(String chapter) {
+		this.chapter = chapter;
+	}
 
 	public boolean isPaused() {
 		return paused;
@@ -429,7 +437,10 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void loadGameState() {
+		long initTime = System.currentTimeMillis();
 		loadGameState(GAMESTATE_FILENAME);
+		EngineLogger.debug("JSON LOADING TIME (ms): "
+				+ (System.currentTimeMillis() - initTime));
 	}
 
 	public void loadGameState(String filename) {
@@ -464,8 +475,14 @@ public class World implements Serializable, AssetConsumer {
 			return;
 
 		Json json = new Json();
+		json.setOutputType(OutputType.javascript);
 
-		String s = json.prettyPrint(instance);
+		String s = null;
+		
+		if(EngineLogger.debugMode())
+			s = json.prettyPrint(instance);
+		else
+			s = json.toJson(instance);
 
 		Writer w = EngineAssetManager.getInstance().getUserFile(filename)
 				.writer(false, "UTF-8");
@@ -484,12 +501,13 @@ public class World implements Serializable, AssetConsumer {
 
 		json.writeValue("width", (int) (width / scale));
 		json.writeValue("height", (int) (height / scale));
-		json.writeValue("scenes", scenes);
+		json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
 		json.writeValue("currentScene", currentScene.getId());
 		json.writeValue("inventory", inventory);
 		json.writeValue("timeOfGame", timeOfGame);
 		json.writeValue("cutmode", cutMode);
-		json.writeValue("defaultVerbs", VerbManager.defaultVerbs);
+		json.writeValue("defaultVerbs", VerbManager.defaultVerbs, HashMap.class,
+				Verb.class);
 		json.writeValue("timers", timers);
 		json.writeValue("textmanager", textManager);
 		json.writeValue("customProperties", customProperties);
@@ -501,6 +519,8 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("dialogActor", currentDialog.getActor());
 			json.writeValue("currentDialog", currentDialog.getId());
 		}
+		
+		json.writeValue("chapter", chapter);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -544,6 +564,8 @@ public class World implements Serializable, AssetConsumer {
 					.getActor(actorId);
 			instance.currentDialog = actor.getDialog(dialogId);
 		}
+		
+		instance.chapter = json.readValue("chapter", String.class, jsonData);
+		I18N.load(EngineAssetManager.MODEL_DIR + "world", EngineAssetManager.MODEL_DIR + instance.chapter);
 	}
-
 }

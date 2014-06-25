@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.actions.ActionCallbackQueue;
+import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.assets.EngineAssetManager;
@@ -65,7 +66,7 @@ public class SpineRenderer implements SpriteRenderer {
 	private SkeletonRenderer renderer;
 	private SkeletonBounds bounds;
 
-	private HashMap<String, SkeletonCacheEntry> skeletonCache = new HashMap<String, SkeletonCacheEntry>();
+	private final HashMap<String, SkeletonCacheEntry> skeletonCache = new HashMap<String, SkeletonCacheEntry>();
 
 	class SkeletonCacheEntry {
 		int refCounter;
@@ -444,7 +445,7 @@ public class SpineRenderer implements SpriteRenderer {
 			SkeletonCacheEntry entry = skeletonCache
 					.get(currentFrameAnimation.source);
 			currentSkeleton = entry;
-
+			
 			// TODO RESTORE CURRENT ANIMATION STATE
 
 		} else if (initFrameAnimation != null) {
@@ -466,13 +467,50 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public void write(Json json) {
-		// TODO Auto-generated method stub
 
+		json.writeValue("fanims", fanims, HashMap.class, FrameAnimation.class);
+
+		String currentFrameAnimationId = null;
+
+		if (currentFrameAnimation != null)
+			currentFrameAnimationId = currentFrameAnimation.id;
+
+		json.writeValue("currentFrameAnimation", currentFrameAnimationId,
+				currentFrameAnimationId == null ? null : String.class);
+		
+		json.writeValue("initFrameAnimation", initFrameAnimation);
+
+		json.writeValue("flipX", flipX);
+		
+		if(animationCbSer != null)
+			json.writeValue("cb", animationCbSer);
+		else 
+			json.writeValue("cb", ActionCallbackSerialization.find(animationCb),
+					animationCb == null ? null : String.class);
+		
+		json.writeValue("currentCount", currentCount);
+		json.writeValue("currentAnimationType", currentAnimationType);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		// TODO Auto-generated method stub
 
+		fanims = json.readValue("fanims", HashMap.class,
+				FrameAnimation.class, jsonData);
+
+		String currentFrameAnimationId = json.readValue(
+				"currentFrameAnimation", String.class, jsonData);
+
+		if (currentFrameAnimationId != null)
+			currentFrameAnimation = (AtlasFrameAnimation)fanims.get(currentFrameAnimationId);
+		
+		initFrameAnimation = json.readValue("initFrameAnimation", String.class,
+				jsonData);
+
+		flipX = json.readValue("flipX", Boolean.class, jsonData);
+		animationCbSer = json.readValue("cb", String.class, jsonData);
+		currentCount = json.readValue("currentCount", Integer.class, jsonData);
+		currentAnimationType = json.readValue("currentAnimationType", Integer.class, jsonData);
 	}
 }

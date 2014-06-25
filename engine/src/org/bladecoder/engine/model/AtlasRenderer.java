@@ -53,7 +53,7 @@ public class AtlasRenderer implements SpriteRenderer {
 	
 	private int currentFrameIndex;
 	
-	private HashMap<String, AtlasCacheEntry> atlasCache = new HashMap<String, AtlasCacheEntry>();
+	private final HashMap<String, AtlasCacheEntry> atlasCache = new HashMap<String, AtlasCacheEntry>();
 
 	class AtlasCacheEntry {
 		int refCounter;
@@ -440,20 +440,22 @@ public class AtlasRenderer implements SpriteRenderer {
 	@Override
 	public void write(Json json) {
 
-		json.writeValue("fanims", fanims);
+		json.writeValue("fanims", fanims, HashMap.class, AtlasFrameAnimation.class);
 
 		String currentFrameAnimationId = null;
 
 		if (currentFrameAnimation != null)
 			currentFrameAnimationId = currentFrameAnimation.id;
 
-		json.writeValue("currentFrameAnimation", currentFrameAnimationId,
-				currentFrameAnimationId == null ? null : String.class);
+		json.writeValue("currentFrameAnimation", currentFrameAnimationId);
 		
 		json.writeValue("initFrameAnimation", initFrameAnimation);
 
 		json.writeValue("flipX", flipX);
 		json.writeValue("currentFrameIndex", currentFrameIndex);
+		
+		json.writeValue("faTween", faTween,
+				faTween == null ? null : FATween.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -474,6 +476,7 @@ public class AtlasRenderer implements SpriteRenderer {
 
 		flipX = json.readValue("flipX", Boolean.class, jsonData);
 		currentFrameIndex = json.readValue("currentFrameIndex", Integer.class, jsonData);
+		faTween =  json.readValue("faTween", FATween.class, jsonData);
 	}
 
 }

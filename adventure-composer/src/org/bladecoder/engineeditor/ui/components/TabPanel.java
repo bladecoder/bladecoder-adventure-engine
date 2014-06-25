@@ -34,7 +34,7 @@ import com.badlogic.gdx.utils.Array;
 public class TabPanel extends Table {
 	private ButtonGroup buttonGroup;
 	private HorizontalGroup header;
-	private Container body;
+	private Container<Actor> body;
 	private List<Tab> tabs;
 	private Skin skin;
 	
@@ -53,7 +53,7 @@ public class TabPanel extends Table {
 		this.skin = skin;
 		buttonGroup = new ButtonGroup();
 		header = new HorizontalGroup();
-		body = new Container();
+		body = new Container<Actor>();
 		tabs = new ArrayList<Tab>();
 		
 		buttonGroup.setMaxCheckCount(1);
@@ -117,7 +117,7 @@ public class TabPanel extends Table {
 		Actor panel = tabs.get(i).content;
 		tabs.get(i).button.setChecked(true);
 		body.clear();
-		body.setWidget(panel);
+		body.setActor(panel);
 
 		if(panel instanceof Layout)
 			body.prefHeight(((Layout)panel).getPrefHeight());

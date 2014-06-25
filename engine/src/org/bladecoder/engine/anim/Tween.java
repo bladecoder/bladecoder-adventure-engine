@@ -187,7 +187,11 @@ public class Tween implements Serializable {
 		json.writeValue("complete", complete);
 		json.writeValue("type", type);
 		json.writeValue("count", count);
-		json.writeValue("cb", ActionCallbackSerialization.find(cb),
+		
+		if(cbSer != null)
+			json.writeValue("cb", cbSer);
+		else
+			json.writeValue("cb", ActionCallbackSerialization.find(cb),
 				cb == null ? null : String.class);
 	}
 

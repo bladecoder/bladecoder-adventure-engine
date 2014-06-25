@@ -136,7 +136,7 @@ public class VerbManager implements Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("verbs", verbs, verbs == null ? null : verbs.getClass());
+		json.writeValue("verbs", verbs, verbs == null ? null : verbs.getClass(), Verb.class);
 	}
 
 	@SuppressWarnings("unchecked")

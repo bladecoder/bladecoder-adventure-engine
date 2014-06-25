@@ -20,6 +20,7 @@ import java.util.HashMap;
 
 import org.bladecoder.engine.actions.ActionCallback;
 import org.bladecoder.engine.actions.ActionCallbackQueue;
+import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.assets.EngineAssetManager;
@@ -62,7 +63,7 @@ import com.badlogic.gdx.utils.JsonValue;
 
 public class Sprite3DRenderer implements SpriteRenderer {
 
-	public final static boolean USE_FBO = false;
+	private final static boolean USE_FBO = false;
 	private final static int MAX_BONES = 40;
 	private final static Format FRAMEBUFFER_FORMAT = Format.RGBA4444;
 
@@ -86,7 +87,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	private FrameBuffer fb = null;
 
-	private int width=200, height=200;
+	private int width = 200, height = 200;
 
 	private Vector3 cameraPos;
 	private Vector3 cameraRot;
@@ -104,7 +105,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	// TODO Move shadowLight to static for memory eficiency.
 	// This implies that the shadow must be calculated in the draw method and
 	// not in the update
-	DirectionalShadowLight shadowLight = (DirectionalShadowLight) new DirectionalShadowLight(
+	private final DirectionalShadowLight shadowLight = (DirectionalShadowLight) new DirectionalShadowLight(
 			1024, 1024, 30f, 30f, 1f, 100f).set(1f, 1f, 1f, 0.01f, -1f, 0.01f);
 
 	PointLight celLight;
@@ -117,15 +118,17 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	private ModelCacheEntry currentModel;
 	private HashMap<String, ModelCacheEntry> modelCache = new HashMap<String, ModelCacheEntry>();
 
+	private boolean renderShadow = true;
+
 	class ModelCacheEntry {
 		int refCounter;
 		ModelInstance modelInstance;
 		AnimationController controller;
 		PerspectiveCamera camera3d;
 	}
-	
+
 	public Sprite3DRenderer() {
-		
+
 	}
 
 	@Override
@@ -135,7 +138,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 		fanims.put(fa.id, fa);
 	}
-	
+
 	@Override
 	public HashMap<String, FrameAnimation> getFrameAnimations() {
 		return fanims;
@@ -194,7 +197,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	/**
-	 * GENERATE SHADOW MAP
+	 * Generates the Shadow Map
 	 */
 	private void genShadowMap() {
 		updateViewport();
@@ -213,9 +216,11 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		if (currentModel != null) {
 
 			// DRAW SHADOW
-			floorBatch.begin(currentModel.camera3d);
-			floorBatch.render(Utils3D.getFloor(), shadowEnvironment);
-			floorBatch.end();
+			if (renderShadow) {
+				floorBatch.begin(currentModel.camera3d);
+				floorBatch.render(Utils3D.getFloor(), shadowEnvironment);
+				floorBatch.end();
+			}
 
 			// DRAW MODEL
 			modelBatch.begin(currentModel.camera3d);
@@ -359,14 +364,14 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			EngineAssetManager.getInstance().finishLoading();
 
 			retrieveSource(fa.source);
-			
+
 			currentModel = modelCache.get(fa.source);
-			
-			if(currentModel == null) {
+
+			if (currentModel == null) {
 				EngineLogger.error("Could not load FrameAnimation: " + id);
 				currentFrameAnimation = null;
 
-				return;				
+				return;
 			}
 		}
 
@@ -458,15 +463,13 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void stand() {
-		startFrameAnimation(FrameAnimation.STAND_ANIM, Tween.NO_REPEAT,
-				1, null);
+		startFrameAnimation(FrameAnimation.STAND_ANIM, Tween.NO_REPEAT, 1, null);
 	}
 
 	@Override
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
 		lookat(p0.x, p0.y, pf);
-		startFrameAnimation(FrameAnimation.WALK_ANIM, Tween.REPEAT, -1,
-				null);
+		startFrameAnimation(FrameAnimation.WALK_ANIM, Tween.REPEAT, -1, null);
 	}
 
 	@Override
@@ -501,7 +504,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			currentModel.controller.update(delta);
 
 			// GENERATE SHADOW MAP
-			genShadowMap();
+			if(renderShadow)
+				genShadowMap();
 
 			if (USE_FBO)
 				renderTex();
@@ -519,13 +523,12 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y,float scale) {
-		
+	public void draw(SpriteBatch batch, float x, float y, float scale) {
+
 		x = x - getWidth() / 2 * scale;
-		
+
 		if (USE_FBO) {
-			batch.draw(tex, x, y, 0, 0, width, height, scale,
-					scale, 0);
+			batch.draw(tex, x, y, 0, 0, width, height, scale, scale, 0);
 		} else {
 			float p0x, p0y, pfx, pfy;
 
@@ -534,7 +537,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 			// get screen coords for x and y
 			tmp.set(x, y, 0);
-			
+
 			tmp.mul(batch.getTransformMatrix());
 			tmp.prj(batch.getProjectionMatrix());
 			p0x = VIEWPORT.width * (tmp.x + 1) / 2;
@@ -566,7 +569,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	private void createEnvirontment() {
 		environment = new Environment();
-		shadowEnvironment = new Environment();
+		
 		// environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f,
 		// 0.8f, 0.8f, 1f));
 
@@ -578,7 +581,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 			if (currentModel != null)
 				n = currentModel.modelInstance.getNode(celLightName);
-			
+
 			if (n != null) {
 				celLight = new PointLight().set(1f, 1f, 1f, n.translation, 1f);
 			} else {
@@ -588,8 +591,11 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 		environment.add(celLight);
 
-		shadowEnvironment.add(shadowLight);
-		shadowEnvironment.shadowMap = shadowLight;
+		if(renderShadow) {
+			shadowEnvironment = new Environment();
+			shadowEnvironment.add(shadowLight);
+			shadowEnvironment.shadowMap = shadowLight;
+		}
 	}
 
 	private static void updateViewport() {
@@ -699,9 +705,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 			// TODO RESTORE CURRENT ANIMATION STATE
 
-		} else if(initFrameAnimation != null){
-			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1,
-					null);
+		} else if (initFrameAnimation != null) {
+			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1, null);
 
 			if (currentFrameAnimation != null)
 				lookat(modelRotation);
@@ -713,7 +718,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 		createEnvirontment();
 
-		if (currentModel != null)
+		if (currentModel != null && renderShadow)
 			genShadowMap();
 
 		if (USE_FBO) {
@@ -760,6 +765,16 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void write(Json json) {
+		json.writeValue("fanims", fanims, HashMap.class, FrameAnimation.class);
+
+		String currentFrameAnimationId = null;
+
+		if (currentFrameAnimation != null)
+			currentFrameAnimationId = currentFrameAnimation.id;
+
+		json.writeValue("currentFrameAnimation", currentFrameAnimationId);
+
+		json.writeValue("initFrameAnimation", initFrameAnimation);
 
 		json.writeValue("width", width);
 		json.writeValue("height", height);
@@ -771,16 +786,37 @@ public class Sprite3DRenderer implements SpriteRenderer {
 				: String.class);
 		json.writeValue("cameraFOV", cameraFOV);
 		json.writeValue("modelRotation", modelRotation);
-		json.writeValue("animationCb",
-				ActionCallbackSerialization.find(animationCb),
-				animationCb == null ? null : String.class);
+
+		if (animationCbSer != null)
+			json.writeValue("cb", animationCbSer);
+		else
+			json.writeValue("animationCb",
+					ActionCallbackSerialization.find(animationCb),
+					animationCb == null ? null : String.class);
+
+		json.writeValue("currentCount", currentCount);
+		json.writeValue("currentAnimationType", currentAnimationType);
+		json.writeValue("renderShadow", renderShadow);
 
 		// TODO: SAVE AND RESTORE CURRENT ANIMATION
 		// TODO: shadowlight, cel light
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
+		fanims = json.readValue("fanims", HashMap.class,
+				FrameAnimation.class, jsonData);
+
+		String currentFrameAnimationId = json.readValue(
+				"currentFrameAnimation", String.class, jsonData);
+
+		if (currentFrameAnimationId != null)
+			currentFrameAnimation = (AtlasFrameAnimation) fanims
+					.get(currentFrameAnimationId);
+
+		initFrameAnimation = json.readValue("initFrameAnimation", String.class,
+				jsonData);
 
 		width = json.readValue("width", Integer.class, jsonData);
 		height = json.readValue("height", Integer.class, jsonData);
@@ -790,5 +826,10 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		cameraFOV = json.readValue("cameraFOV", Float.class, jsonData);
 		modelRotation = json.readValue("modelRotation", Float.class, jsonData);
 		animationCbSer = json.readValue("animationCb", String.class, jsonData);
+
+		currentCount = json.readValue("currentCount", Integer.class, jsonData);
+		currentAnimationType = json.readValue("currentAnimationType",
+				Integer.class, jsonData);
+		renderShadow = json.readValue("renderShadow", Boolean.class, jsonData);
 	}
 }

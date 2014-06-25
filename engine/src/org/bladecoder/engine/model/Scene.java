@@ -70,7 +70,7 @@ public class Scene implements Movers, Serializable,
 	 * Temp list with the 'actors' list + player ordered by 'y' axis to draw in
 	 * depth order and to check for click
 	 */
-	private List<Actor> orderedActors = new ArrayList<Actor>();
+	private final List<Actor> orderedActors = new ArrayList<Actor>();
 	
 	private SceneCamera camera = new SceneCamera();
 
@@ -849,7 +849,6 @@ public class Scene implements Movers, Serializable,
 		json.writeValue("repeatMusicDelay", repeatMusicDelay);
 
 		json.writeValue("isPlaying", music != null && music.isPlaying());
-
 		// TODO save music positionSer when available in API
 
 		json.writeValue("overlay", overlay,
@@ -863,6 +862,10 @@ public class Scene implements Movers, Serializable,
 				followActor == null ? null : String.class);
 		
 		json.writeValue("customProperties", customProperties, customProperties == null ? null : customProperties.getClass());
+		
+		json.writeValue("depthVector", depthVector);
+		
+		json.writeValue("polygonalNavGraph", polygonalNavGraph, polygonalNavGraph == null ? null : PolygonalNavGraph.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -909,5 +912,8 @@ public class Scene implements Movers, Serializable,
 		setCameraFollowActor((SpriteActor)actors.get(followActorId));
 		
 		customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
+		
+		depthVector = json.readValue("depthVector", Vector2.class, jsonData);
+		polygonalNavGraph = json.readValue("polygonalNavGraph", PolygonalNavGraph.class, jsonData);
 	}
 }

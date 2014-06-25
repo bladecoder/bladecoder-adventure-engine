@@ -41,7 +41,7 @@ public class SpriteActor extends Actor {
 	};	
 	
 	private SpriteRenderer renderer;
-	private Tween posTween;
+	private SpritePosTween posTween;
 	private float scale = 1.0f;
 
 	/** Scale sprite acording to the scene depth map */
@@ -139,7 +139,7 @@ public class SpriteActor extends Actor {
 	public void update(float delta) {
 		renderer.update(delta);
 		if(posTween != null) {
-			((SpritePosTween)posTween).update(this, delta);
+			posTween.update(this, delta);
 			if(posTween.isComplete()) {
 				posTween = null;
 			}
@@ -222,7 +222,7 @@ public class SpriteActor extends Actor {
 
 		posTween = new SpritePosTween();
 
-		((SpritePosTween)posTween).start(this, repeatType, count, destX, destY, duration,
+		posTween.start(this, repeatType, count, destX, destY, duration,
 				cb);
 	}
 
@@ -347,9 +347,9 @@ public class SpriteActor extends Actor {
 
 		json.writeValue("scale", scale);
 		json.writeValue("walkingSpeed", walkingSpeed);
-		json.writeValue("posTween", posTween);
-		json.writeValue("depthType", depthType);		
-		json.writeValue("renderer", renderer, renderer.getClass());
+		json.writeValue("posTween", posTween, null);
+		json.writeValue("depthType", depthType);
+		json.writeValue("renderer", renderer, null);
 		json.writeValue("bboxFromRenderer", bboxFromRenderer);
 	}
 
@@ -359,10 +359,15 @@ public class SpriteActor extends Actor {
 
 		scale = json.readValue("scale", Float.class, jsonData);
 		walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);
-		posTween = json.readValue("posTween", Tween.class, jsonData);
+		posTween = json.readValue("posTween", SpritePosTween.class, jsonData);
 		depthType = json.readValue("depthType", DepthType.class, jsonData);
+		
 		renderer = json.readValue("renderer", SpriteRenderer.class, jsonData);
+		
 		bboxFromRenderer = json.readValue("bboxFromRenderer", Boolean.class, jsonData);
+		
+		if(bboxFromRenderer)
+			bbox.setScale(1, 1);
 	}
 
 }

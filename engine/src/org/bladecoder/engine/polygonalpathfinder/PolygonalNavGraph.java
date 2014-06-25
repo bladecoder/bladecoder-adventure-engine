@@ -17,6 +17,7 @@ package org.bladecoder.engine.polygonalpathfinder;
 
 import java.util.ArrayList;
 
+import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.pathfinder.AStarPathFinder;
 import org.bladecoder.engine.pathfinder.NavContext;
 import org.bladecoder.engine.pathfinder.NavGraph;
@@ -26,6 +27,9 @@ import org.bladecoder.engine.util.PolygonUtils;
 
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 
 /**
  * Finds the shortest path between 2 points in a world defined by a walkzone and
@@ -33,13 +37,13 @@ import com.badlogic.gdx.math.Vector2;
  * 
  * @author rgarcia
  */
-public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
+public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializable{
 	private static final Vector2 tmp = new Vector2();
 	private static final Vector2 tmp2 = new Vector2();
 
 	private Polygon walkZone;
-	final private ArrayList<Polygon> obstacles = new ArrayList<Polygon>();
-	final private ArrayList<Polygon> dinamicObstacles = new ArrayList<Polygon>();
+	private ArrayList<Polygon> obstacles = new ArrayList<Polygon>();
+	private ArrayList<Polygon> dinamicObstacles = new ArrayList<Polygon>();
 
 	final private PathFinder pathfinder = new AStarPathFinder(this, 100,
 			new ManhattanDistance());
@@ -133,6 +137,10 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 				}
 			}
 		}
+		
+		// 4.- ADD DINAMIC OBSTACLES
+		for(Polygon p:dinamicObstacles)
+			addObstacleToGrapth(p);
 	}
 
 	private boolean inLineOfSight(float p1X, float p1Y, float p2X, float p2Y) {
@@ -213,11 +221,9 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 			NavNodePolygonal targetNode) {
 		return 1;
 	}
-
-	public void addDinamicObstacle(Polygon poly) {
+	
+	private void addObstacleToGrapth(Polygon poly) {
 		float verts[] = poly.getTransformedVertices();
-		dinamicObstacles.add(poly);
-
 		for (int i = 0; i < verts.length; i += 2) {
 			if (PolygonUtils.isVertexConcave(poly, i)
 					&& PolygonUtils.isPointInside(walkZone, verts[i],
@@ -235,7 +241,13 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 				
 				graphNodes.add(n1);
 			}
-		}
+		}		
+	}
+
+	public void addDinamicObstacle(Polygon poly) {
+		dinamicObstacles.add(poly);
+
+		addObstacleToGrapth(poly);
 	}
 	
 	public void removeDinamicObstacle(Polygon poly) {
@@ -261,5 +273,37 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 				}
 			}
 		}
-	}	
+	}
+	
+	@Override
+	public void write(Json json) {
+		Polygon p = new Polygon(walkZone.getVertices());
+		p.setPosition(walkZone.getX()/walkZone.getScaleX(), walkZone.getY()/walkZone.getScaleY());
+		json.writeValue("walkZone", p);
+		
+		ArrayList<Polygon> tmp = new ArrayList<Polygon>();
+		
+		for(Polygon poly:obstacles) {
+			// To SAVE space not writing worldVertices
+			p = new Polygon(poly.getVertices());
+			p.setPosition(poly.getX()/poly.getScaleX(), poly.getY()/poly.getScaleY());
+			tmp.add(p);
+		}
+		
+		json.writeValue("obstacles", tmp, ArrayList.class, Polygon.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+		walkZone = json.readValue("walkZone", Polygon.class, jsonData);
+		obstacles = json.readValue("obstacles", ArrayList.class, Polygon.class,
+				jsonData);
+		
+		for(Polygon poly:obstacles) {
+			poly.setScale(EngineAssetManager.getInstance().getScale(), EngineAssetManager.getInstance().getScale());
+			poly.setPosition(poly.getX() * EngineAssetManager.getInstance().getScale() , 
+					poly.getY() * EngineAssetManager.getInstance().getScale());
+		}
+	}
 }

@@ -45,8 +45,11 @@ public class BaseCallbackAction implements ActionCallback, ActionEndTrigger, Ser
 	}	
 
 	@Override
-	public void write(Json json) {		
-		json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null : String.class);	
+	public void write(Json json) {
+		if(cbSer != null)
+			json.writeValue("cb", cbSer);
+		else
+			json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null : String.class);	
 	}
 
 	@Override

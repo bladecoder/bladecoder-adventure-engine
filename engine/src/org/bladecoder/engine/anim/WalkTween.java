@@ -37,6 +37,7 @@ public class WalkTween extends SpritePosTween implements Serializable {
 	private float speed = 0;
 	
 	private ActionCallback walkCb;
+	private String walkCbSer;
 
 	public WalkTween() {
 	}
@@ -64,7 +65,16 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		float segmentDuration = p0.dst(pf)
 				/ (EngineAssetManager.getInstance().getScale() * speed);
 		
-		start(target, NO_REPEAT, 1, pf.x, pf.y, segmentDuration, currentStep < walkingPath.size() - 2?null:walkCb);
+		if(currentStep == walkingPath.size() - 2 && (walkCb != null || walkCbSer != null)) {
+			if(walkCbSer != null) {
+				walkCb = ActionCallbackSerialization.find(walkCbSer);
+				walkCbSer = null;
+			}
+			
+			start(target, NO_REPEAT, 1, pf.x, pf.y, segmentDuration, walkCb);
+		} else {
+			start(target, NO_REPEAT, 1, pf.x, pf.y, segmentDuration, null);
+		}
 	}
 
 	private void segmentEnded(SpriteActor target) {
@@ -95,8 +105,11 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		json.writeValue("currentStep", currentStep);
 		json.writeValue("speed", speed);
 		
-		json.writeValue("walkCb", ActionCallbackSerialization.find(walkCb),
-				walkCb == null ? null : String.class);		
+		if(walkCbSer != null)
+			json.writeValue("walkCb", walkCbSer);
+		else
+			json.writeValue("walkCb", ActionCallbackSerialization.find(walkCb),
+					walkCb == null ? null : String.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -108,7 +121,6 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		currentStep = json.readValue("currentStep", Integer.class, jsonData);
 		speed = json.readValue("speed", Float.class, jsonData);
 		
-		String cbSer = json.readValue("walkCb", String.class, jsonData);
-		walkCb = ActionCallbackSerialization.find(cbSer);
+		walkCbSer = json.readValue("walkCb", String.class, jsonData);
 	}
 }

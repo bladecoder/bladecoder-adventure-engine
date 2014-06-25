@@ -26,6 +26,11 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 
+/**
+ * An Actor is any object in a scene or in the inventory.
+ * 
+ * @author rgarcia
+ */
 public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 
 	protected String id;
@@ -252,7 +257,8 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 			}
 		}
 		
-		if(isWalkObstacle && scene.getPolygonalNavGraph() != null) {
+		// TODO: CHECK WHEN INVENTORY
+		if(isWalkObstacle && scene.getPolygonalNavGraph() != null && isVisible()) {
 			scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
 		}
 	}	
@@ -275,19 +281,21 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		json.writeValue("id", id);
 		json.writeValue("interaction", interaction);
 		json.writeValue("visible", visible);
-		json.writeValue("desc", desc, desc == null ? null : desc.getClass());
+		json.writeValue("desc", desc);
 		json.writeValue("verbs", verbs);
 
 		float worldScale = EngineAssetManager.getInstance().getScale();
 		Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
 		json.writeValue("pos", scaledPos);	
 		json.writeValue("bbox", bbox.getVertices());
-		json.writeValue("state", state, state == null ? null : state.getClass());
-		json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass());
+		json.writeValue("state", state);
+		json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass(), SoundFX.class);
 		json.writeValue("playingSound", playingSound, playingSound == null ? null : playingSound.getClass());
 		
-		json.writeValue("customProperties", customProperties, customProperties == null ? null : customProperties.getClass());
-		json.writeValue("dialogs", dialogs, dialogs == null ? null : dialogs.getClass());
+		json.writeValue("customProperties", customProperties, customProperties == null ? null : customProperties.getClass(), String.class);
+		json.writeValue("dialogs", dialogs, dialogs == null ? null : dialogs.getClass(), Dialog.class);
+		
+		json.writeValue("isWalkObstacle", isWalkObstacle);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -302,14 +310,18 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		Vector2 pos = json.readValue("pos", Vector2.class, jsonData);
 
 		float worldScale = EngineAssetManager.getInstance().getScale();
+		bbox = new Polygon();
 		bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
 		bbox.setVertices(json.readValue("bbox", float[].class, jsonData));
+		bbox.setScale(worldScale, worldScale);
 		
 		state = json.readValue("state", String.class, jsonData);
 		sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);
 		playingSound = json.readValue("playingSound", String.class, jsonData);
 		customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
 		dialogs = json.readValue("dialogs", HashMap.class, Dialog.class, jsonData);
+		
+		isWalkObstacle = json.readValue("isWalkObstacle", Boolean.class, jsonData);
 	}
 
 }

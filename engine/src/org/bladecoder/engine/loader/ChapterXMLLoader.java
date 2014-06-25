@@ -497,9 +497,9 @@ public class ChapterXMLLoader extends DefaultHandler {
 			}
 
 			actor = null;
+		} else if (localName.equals("scene")) {
+			scene.setPlayer((SpriteActor) scene.getActor(player));
 		}
-
-		scene.setPlayer((SpriteActor) scene.getActor(player));
 	}
 
 	private void parseSound(String localName, Attributes atts, Actor actor)
