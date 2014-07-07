@@ -28,7 +28,9 @@ import org.w3c.dom.Element;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
 public class EditActionDialog extends EditElementDialog {
 	private static final String CUSTOM_INFO="Custom action definition";
@@ -36,7 +38,6 @@ public class EditActionDialog extends EditElementDialog {
 	private InputPanel actionPanel;
 	private InputPanel actorPanel;
 	private InputPanel classPanel;
-	private InputPanel customParams;
 
 	private InputPanel parameters[];	
 
@@ -57,8 +58,6 @@ public class EditActionDialog extends EditElementDialog {
 				"Select the target actor id. Default is current actor.");
 		classPanel = new InputPanel(skin, "Class",
 				"Select the class for the custom action.", true);
-		customParams = new InputPanel(skin, "Params",
-				"Write the params for the custom action.");		
 
 		setAction();
 
@@ -70,6 +69,14 @@ public class EditActionDialog extends EditElementDialog {
 						setAction();
 					}
 				});
+		
+		((TextField) classPanel.getField()).addListener(new FocusListener() {
+			@Override
+			public void keyboardFocusChanged (FocusEvent event, Actor actor, boolean focused) {
+				if(!event.isFocused())
+					setAction();
+			}
+		});
 
 		if(e != null) {
 			actionPanel.setText(e.getTagName());
@@ -107,7 +114,8 @@ public class EditActionDialog extends EditElementDialog {
 		
 		if (id.equals("CUSTOM ACTION")) {
 			addInputPanel(classPanel);
-			addInputPanel(customParams);
+			if(!classPanel.getText().trim().isEmpty())
+				ac = ActionFactory.createByClass(classPanel.getText(), null);
 		} else {
 			ac = ActionFactory.create(id, null);			
 		}
