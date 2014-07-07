@@ -33,6 +33,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
 public class EditActionDialog extends EditElementDialog {
+	private static final String CUSTOM_ACTION_STR = "CUSTOM ACTION";
+
 	private static final String CUSTOM_INFO="Custom action definition";
 	
 	private InputPanel actionPanel;
@@ -49,7 +51,7 @@ public class EditActionDialog extends EditElementDialog {
 		Arrays.sort(actions);
 		String[] actions2 = new String[actions.length + 1];
 		System.arraycopy(actions, 0, actions2, 0, actions.length);		
-		actions2[actions2.length - 1] = "CUSTOM ACTION";
+		actions2[actions2.length - 1] = CUSTOM_ACTION_STR;
 
 		actionPanel = new InputPanel(skin, "Action",
 				"Select the action to create.", actions2);
@@ -79,13 +81,17 @@ public class EditActionDialog extends EditElementDialog {
 		});
 
 		if(e != null) {
-			actionPanel.setText(e.getTagName());
 			actorPanel.setText(e.getAttribute("actor"));
 			classPanel.setText(e.getAttribute("class"));
-		}
-
-		if(e != null && !e.getAttribute("action_name").isEmpty()) {
-			actionPanel.setText(e.getAttribute("action_name"));
+			
+			if(!e.getAttribute("action_name").isEmpty()) {
+				actionPanel.setText(e.getAttribute("action_name"));
+			} 
+			
+			if(!e.getAttribute("class").isEmpty()) {
+				actionPanel.setText(CUSTOM_ACTION_STR);
+			}
+			
 			setAction();
 		}
 		
@@ -112,7 +118,7 @@ public class EditActionDialog extends EditElementDialog {
 
 		Action ac = null;
 		
-		if (id.equals("CUSTOM ACTION")) {
+		if (id.equals(CUSTOM_ACTION_STR)) {
 			addInputPanel(classPanel);
 			if(!classPanel.getText().trim().isEmpty())
 				ac = ActionFactory.createByClass(classPanel.getText(), null);
@@ -157,13 +163,12 @@ public class EditActionDialog extends EditElementDialog {
 		
 		String id = actionPanel.getText();
 		
-		if (id.equals("CUSTOM ACTION")) {
+		if (id.equals(CUSTOM_ACTION_STR)) {
 			e.setAttribute("class", classPanel.getText());
-			// TODO Add parameters
 		} else {
-			e.setAttribute("action_name", id);
-			
-			super.fill();
+			e.setAttribute("action_name", id);			
 		}
+		
+		super.fill();
 	}
 }
