@@ -25,8 +25,6 @@ import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.pathfinder.NavNode;
 import org.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import org.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
-import org.bladecoder.engine.tilepathfinder.Movers;
-import org.bladecoder.engine.tilepathfinder.PixTileMap;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.audio.Music;
@@ -44,12 +42,11 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class Scene implements Movers, Serializable,
+public class Scene implements Serializable,
 		AssetConsumer {
 	
 	public static final Color ACTOR_BBOX_COLOR = new Color(0.2f, 0.2f, 0.8f,
 			1f);
-	private static final String MAP_FILE_EXTENSION = ".map.png";
 	private static final TextureFilter BG_TEXFILTER_MAG = TextureFilter.Linear;
 	private static final TextureFilter BG_TEXFILTER_MIN = TextureFilter.Linear;
 	public static final Color WALKZONE_COLOR = Color.GREEN;
@@ -79,9 +76,6 @@ public class Scene implements Movers, Serializable,
 	private Texture[] lightMap;
 	private String backgroundFilename;
 	private String lightMapFilename;
-
-	/** background tile map for pathfinding */
-	private PixTileMap backgroundMap;
 	
 	/** For polygonal PathFinding */
 	private PolygonalNavGraph polygonalNavGraph;
@@ -180,6 +174,15 @@ public class Scene implements Movers, Serializable,
 		if (music != null)
 			music.stop();
 	}
+	
+	public float getFakeDepthScale(float y) {
+		if(depthVector==null)
+			return 1.0f;
+		
+		// interpolation equation
+		return Math.abs(depthVector.x + (depthVector.y - depthVector.x) * y
+				/ camera.getScrollingHeight());
+	}
 
 	public void setMusic(String filename, boolean loop, float initialDelay,
 			float repeatDelay) {
@@ -266,10 +269,6 @@ public class Scene implements Movers, Serializable,
 			}
 
 			spriteBatch.enableBlending();
-
-			if (EngineLogger.debugMode()
-					&& EngineLogger.getDebugLevel() == EngineLogger.DEBUG2 && backgroundMap != null)
-				backgroundMap.draw(spriteBatch, camera.getScrollingWidth(), camera.getScrollingHeight());
 		}
 
 		for (Actor a : orderedActors) {
@@ -545,20 +544,12 @@ public class Scene implements Movers, Serializable,
 		return (SpriteActor) actors.get(player);
 	}
 
-	public PixTileMap getBackgroundMap() {
-		return backgroundMap;
-	}
-	
 	public Vector2 getDepthVector() {
 		return depthVector;
 	}
 	
 	public void setDepthVector(Vector2 v) {
 		depthVector = v;
-	}
-
-	public void setBackgroundMap(PixTileMap backgroundMap) {
-		this.backgroundMap = backgroundMap;
 	}
 
 	public void removeActor(Actor a) {
@@ -578,45 +569,6 @@ public class Scene implements Movers, Serializable,
 		if(a.isWalkObstacle() && polygonalNavGraph != null)
 			polygonalNavGraph.removeDinamicObstacle(a.getBBox());
 			
-	}
-
-	/**
-	 * Implements interface for indicating A* where a tile is blocked by an
-	 * Actor
-	 */
-	@Override
-	public boolean isBlocked(int x, int y) {
-		float size = backgroundMap.getTileSize();
-
-		for (Actor ba : orderedActors) {
-			if (!(ba instanceof SpriteActor))
-				continue;
-
-			if (ba.getId().equals(player))
-				continue; // TODO Change to allow other NPC to move
-
-			if (!ba.hasInteraction())
-				continue;
-
-			SpriteActor a = (SpriteActor) ba;
-
-			Rectangle bbox = a.getBBox().getBoundingRectangle();
-
-			int x0 = (int) (bbox.x / size);
-			int y0 = (int) (bbox.y / size);
-			int xf = (int) ((bbox.x + a.getWidth()) / size);
-			int yf = (int) ((bbox.y + a.getHeight()) / size);
-
-			// de alto como mucho bloqueamos el ancho
-			if (a.getWidth() < a.getHeight())
-				yf = (int) ((bbox.y + a.getWidth()) / size);
-
-			// TODO Change the fix +-1 for the player/npc width/2/size
-			if (x + 1 >= x0 && x - 1 <= xf && y + 1 >= y0 && y - 1 <= yf)
-				return true;
-		}
-
-		return false;
 	}
 
 	public Texture[] getBackground() {
@@ -650,23 +602,6 @@ public class Scene implements Movers, Serializable,
 
 		if (background != null) {
 			ArrayList<String> tiles = getTilesByFilename(backgroundFilename);
-
-			// name without extension
-			String name = backgroundFilename.substring(0,
-					backgroundFilename.lastIndexOf('.'));
-
-			String nameWithoutIndex = name.endsWith("_0") ? name.substring(0,
-					name.length() - 2) : name;
-
-			String mapFilename = new StringBuffer()
-					.append(EngineAssetManager.BACKGROUND_DIR)
-					.append(nameWithoutIndex).append(MAP_FILE_EXTENSION)
-					.toString();
-
-			// LOAD MOVEMENT AND DEPTH MAP
-			if (EngineAssetManager.getInstance().getAsset(mapFilename).exists()) {
-				backgroundMap = new PixTileMap(mapFilename);
-			}
 
 			// LOAD BACKGROUND TEXTURES
 			for (String filename : tiles) {
@@ -714,11 +649,6 @@ public class Scene implements Movers, Serializable,
 			}
 
 			int height = background[0].getHeight();
-
-			if (backgroundMap != null) {
-				backgroundMap.setTileSize(width
-						/ backgroundMap.getWidthInTiles());
-			}
 			
 			// Sets the scrolling dimensions. It must be done here because 
 			// the background must be loaded to calculate the bbox
@@ -781,11 +711,6 @@ public class Scene implements Movers, Serializable,
 			for (Texture tile : lightMap)
 				if (tile != null)
 					EngineAssetManager.getInstance().disposeTexture(tile);
-		}
-
-		if (backgroundMap != null) {
-			backgroundMap.dispose();
-			backgroundMap = null;
 		}
 
 		// orderedActors.clear();

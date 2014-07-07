@@ -70,7 +70,7 @@ public class EditActorDialog extends EditElementDialog {
 				false);
 		inputs[7] = new InputPanel(skin, "Depth Type",
 				"Scene fake depth for scaling", new String[] { "none",
-						"vector", "map" });
+						"vector"});
 		inputs[8] = new InputPanel(skin, "Sprite Dimensions",
 				"The size of the 3d sprite", Param.Type.DIMENSION, true);
 		inputs[9] = new InputPanel(skin, "Camera Name",

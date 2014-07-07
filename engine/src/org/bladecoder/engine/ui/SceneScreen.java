@@ -175,10 +175,9 @@ public class SceneScreen implements Screen {
 			sb.append(") FPS:");
 			sb.append(Gdx.graphics.getFramesPerSecond());
 
-			if (w.getCurrentScene().getBackgroundMap() != null) {
-				sb.append(" Map: ");
-				sb.append((int) (w.getCurrentScene().getBackgroundMap()
-						.getDepth(unprojectTmp.x, unprojectTmp.y) * 10));
+			if (w.getCurrentScene().getPlayer() != null) {
+				sb.append(" Depth Scale: ");
+				sb.append(w.getCurrentScene().getFakeDepthScale(unprojectTmp.y));
 			}
 
 			String strDebug = sb.toString();

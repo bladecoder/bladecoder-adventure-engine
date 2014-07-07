@@ -397,14 +397,12 @@ public class ChapterDocument extends BaseDocument {
 			if(e.getAttribute("obstacle").equals("true"))
 				a.setWalkObstacle(true);
 
-			// PARSE DEPTH MAP USE
+			// PARSE DEPTH TYPE
 			String depthType = e.getAttribute("depth_type");
 			((SpriteActor) a).setDepthType(DepthType.NONE);
 
 			if (!depthType.isEmpty()) {
-				if (depthType.equals("map"))
-					((SpriteActor) a).setDepthType(DepthType.MAP);
-				else if (depthType.equals("vector"))
+				if (depthType.equals("vector"))
 					((SpriteActor) a).setDepthType(DepthType.VECTOR);
 			}
 		}

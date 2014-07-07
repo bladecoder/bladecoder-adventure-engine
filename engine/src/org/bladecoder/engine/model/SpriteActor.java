@@ -37,7 +37,7 @@ public class SpriteActor extends Actor {
 																// pix/sec.
 
 	public static enum DepthType {
-		NONE, MAP, VECTOR
+		NONE, VECTOR
 	};	
 	
 	private SpriteRenderer renderer;
@@ -83,19 +83,9 @@ public class SpriteActor extends Actor {
 		}
 		
 		if (scene != null) {
-
-			if (depthType == DepthType.MAP) {
-				float depth = scene.getBackgroundMap().getDepth(x, y);
-
-				if (depth != 0)
-					setScale(depth);
-			} else if (depthType == DepthType.VECTOR
-					&& scene.getDepthVector() != null) {
-				Vector2 depth = scene.getDepthVector();
-
+			if (depthType == DepthType.VECTOR) {
 				// interpolation equation
-				float s = Math.abs(depth.x + (depth.y - depth.x) * y
-						/ scene.getCamera().getScrollingHeight());
+				float s = scene.getFakeDepthScale(y);
 
 				if (s != 0)
 					setScale(s);
@@ -263,9 +253,7 @@ public class SpriteActor extends Actor {
 
 		ArrayList<Vector2> walkingPath = null;
 
-		if ( scene.getBackgroundMap() != null)
-			walkingPath =  scene.getBackgroundMap().findPath(scene, p0, pf);
-		else if(scene.getPolygonalNavGraph() != null) {
+		if(scene.getPolygonalNavGraph() != null) {
 			walkingPath = scene.getPolygonalNavGraph().findPath(p0.x, p0.y, pf.x, pf.y);
 		}
 

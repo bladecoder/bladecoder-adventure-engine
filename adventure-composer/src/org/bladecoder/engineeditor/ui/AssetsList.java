@@ -45,7 +45,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 
 public class AssetsList extends Table {
-	private static final String[] ASSET_TYPES = { "3d models", "backgrounds", "bg maps",
+	private static final String[] ASSET_TYPES = { "3d models", "backgrounds",
 			"atlases", "music", "sounds", "overlays", "spine" };
 
 	private SelectBox<String> assetTypes;
@@ -151,9 +151,6 @@ public class AssetsList extends Table {
 					if (type.equals("atlases") && !arg1.endsWith(".atlas"))
 						return false;
 
-					if (type.equals("bg maps") && !arg1.endsWith(".map.png"))
-						return false;
-
 					return true;
 				}
 			});
@@ -174,8 +171,6 @@ public class AssetsList extends Table {
 		String dir;
 
 		if (type.equals("backgrounds")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.BACKGROUNDS_PATH;
-		} else if (type.equals("bg maps")) {
 			dir = Ctx.project.getProjectPath() + "/" + Project.BACKGROUNDS_PATH;
 		} else if (type.equals("atlases")) {
 			dir = Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH;
@@ -216,12 +211,10 @@ public class AssetsList extends Table {
 			else if (type.equals("music") || type.equals("sounds"))
 				filter = new FileNameExtensionFilter("Music", "wav", "mp3",
 						"ogg");
-			else if (type.equals("bg maps"))
-				filter = new FileNameExtensionFilter("Map", "png");
 			else if (type.equals("3d models"))
 				filter = new FileNameExtensionFilter("3D Models", "g3db", "png");
 			else if (type.equals("spine"))
-				filter = new FileNameExtensionFilter("Spine", "json");			
+				filter = new FileNameExtensionFilter("Spine", "skel", "json");			
 
 			chooser.removeChoosableFileFilter(chooser.getChoosableFileFilters()[0]);
 			chooser.addChoosableFileFilter(filter);

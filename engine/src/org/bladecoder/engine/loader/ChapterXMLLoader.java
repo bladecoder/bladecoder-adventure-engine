@@ -205,9 +205,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 				((SpriteActor) actor).setDepthType(DepthType.NONE);
 
 				if (depthType != null && !depthType.isEmpty()) {
-					if (depthType.equals("map"))
-						((SpriteActor) actor).setDepthType(DepthType.MAP);
-					else if (depthType.equals("vector"))
+					if (depthType.equals("vector"))
 						((SpriteActor) actor).setDepthType(DepthType.VECTOR);
 				}
 			}
