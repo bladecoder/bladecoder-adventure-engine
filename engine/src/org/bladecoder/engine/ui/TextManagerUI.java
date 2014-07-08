@@ -139,15 +139,11 @@ public class TextManagerUI {
 		}
 	}
 
-	public void createAssets() {
-		if(font != null)
-			font.dispose();
-		
-		font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
-	}
-
 	public void retrieveAssets(TextureAtlas atlas) {
 		bubblePointer = atlas.findRegion("bubblepointer");
+		
+		if(font == null)
+			font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
 	}
 
 	public void resize(int width, int height) {
@@ -157,7 +153,7 @@ public class TextManagerUI {
 	}
 
 	public void dispose() {
-		font.dispose();
+		EngineAssetManager.getInstance().disposeFont(font);
 		font = null;
 	}
 }

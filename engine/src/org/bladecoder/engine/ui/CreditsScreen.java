@@ -27,7 +27,6 @@ import org.bladecoder.engine.ui.UI.State;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.TextUtils;
 
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -161,8 +160,8 @@ public class CreditsScreen implements Screen, InputProcessor {
 
 	@Override
 	public void dispose() {
-		creditsFont.dispose();
-		titlesFont.dispose();
+		EngineAssetManager.getInstance().disposeFont(creditsFont);
+		EngineAssetManager.getInstance().disposeFont(titlesFont);
 		
 		creditsFont = null;
 		titlesFont = null;
@@ -247,16 +246,6 @@ public class CreditsScreen implements Screen, InputProcessor {
 
 	@Override
 	public void resume() {
-		if(Gdx.app.getType() == ApplicationType.Android) {
-			if(titlesFont != null)
-				titlesFont.dispose();
-			
-			if(creditsFont != null)
-				creditsFont.dispose();
-			// Restore FONTS in OPENGL CONTEXT LOST in Android
-			titlesFont = EngineAssetManager.getInstance().loadFont(FONT_TITLE_STYLE);
-			creditsFont = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
-		}
 	}
 
 	@Override

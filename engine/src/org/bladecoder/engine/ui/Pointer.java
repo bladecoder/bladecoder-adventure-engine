@@ -198,6 +198,9 @@ public class Pointer {
 		pointerIcon = atlas.findRegion(POINTER_ICON);
 		leaveIcon = atlas.findRegion(LEAVE_ICON);
 		hotspotIcon = atlas.findRegion(HOTSPOT_ICON);
+		
+		if (font == null)
+			font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
 	}
 
 	public void resize(int width, int height) {
@@ -207,15 +210,8 @@ public class Pointer {
 		scale = aspect;
 	}
 
-	public void createAssets() {
-		if (font != null)
-			font.dispose();
-
-		font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
-	}
-
 	public void dispose() {
-		font.dispose();
+		EngineAssetManager.getInstance().disposeFont(font);
 		font = null;
 	}
 

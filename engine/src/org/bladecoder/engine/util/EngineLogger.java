@@ -88,7 +88,7 @@ public class EngineLogger {
 	
 	public static void dispose() {
 		if(debugFont != null)
-			debugFont.dispose();
+			EngineAssetManager.getInstance().disposeFont(debugFont);
 		debugFont = null;
 	}
 }

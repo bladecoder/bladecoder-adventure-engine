@@ -25,7 +25,6 @@ import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
 
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -281,15 +280,6 @@ public class SceneScreen implements Screen {
 		textManagerUI.retrieveAssets(atlas);
 	}
 	
-	/**
-	 * Create assets not managed (fonts)
-	 */
-	private void createAssets() {
-		textManagerUI.createAssets();
-		dialogUI.createAssets();
-	}
-
-	
 	public void touchEvent(int type, float x, float y, int pointer, int button) {
 		World w = World.getInstance();
 
@@ -435,7 +425,7 @@ public class SceneScreen implements Screen {
 
 	@Override
 	public void show() {
-		createAssets();
+		dialogUI.loadAssets();
 		retrieveAssets(ui.getUIAtlas());
 		
 		Gdx.input.setInputProcessor(new SceneInputProcessor(this));
@@ -467,12 +457,7 @@ public class SceneScreen implements Screen {
 	}
 
 	@Override
-	public void resume() {
-		if(Gdx.app.getType() == ApplicationType.Android) {
-			// RESTORE GL CONTEXT
-			createAssets();
-		}
-		
+	public void resume() {		
 		World.getInstance().resume();
 	}
 

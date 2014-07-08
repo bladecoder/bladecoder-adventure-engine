@@ -82,7 +82,7 @@ public class DialogUI  {
 		}
 	}
 	
-	public void createAssets() {
+	public void loadAssets() {
 		if(font != null)
 			font.dispose();
 			
@@ -96,7 +96,7 @@ public class DialogUI  {
 	}
 	
 	public void dispose() {
-		font.dispose();
+		EngineAssetManager.getInstance().disposeFont(font);
 		font = null;
 	}
 

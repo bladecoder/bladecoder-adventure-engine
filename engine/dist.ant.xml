@@ -23,7 +23,7 @@
   		/>
 	</target>
 	
-	<target name="jar" depends="clean, compile">
+	<target name="jar" depends="clean">
 		<jar destfile="${dist}/${name}.jar">
 		    <manifest>
 				<attribute name="Version" value="${version}" />

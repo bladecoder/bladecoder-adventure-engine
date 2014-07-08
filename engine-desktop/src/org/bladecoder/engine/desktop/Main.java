@@ -42,7 +42,7 @@ public class Main extends BladeEngine {
 		Properties p = new Properties();
 		
 		try {
-			InputStream s = Main.class.getResourceAsStream("/" + Config.PROPERTIES_FILENAME);
+			InputStream s = Main.class.getResourceAsStream(Config.PROPERTIES_FILENAME);
 			if(s!=null)
 				p.load(s);
 		} catch (IOException e) {

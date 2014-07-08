@@ -29,8 +29,6 @@ import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.loader.WorldXMLLoader;
 import org.bladecoder.engine.util.EngineLogger;
-import org.bladecoder.engine.util.RectangleRenderer;
-import org.bladecoder.engine.util.Utils3D;
 import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.Gdx;
@@ -38,8 +36,8 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
-import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
 public class World implements Serializable, AssetConsumer {
 
@@ -373,11 +371,6 @@ public class World implements Serializable, AssetConsumer {
 			currentScene = null;
 
 			inventory.dispose();
-
-			EngineAssetManager.getInstance().dispose();
-			RectangleRenderer.dispose();
-			Utils3D.dispose();
-			EngineLogger.dispose();
 			
 			spriteBatch.dispose();
 			

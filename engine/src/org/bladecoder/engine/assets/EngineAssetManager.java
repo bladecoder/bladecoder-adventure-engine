@@ -50,7 +50,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Array;
 
@@ -88,13 +90,17 @@ public class EngineAssetManager extends AssetManager {
 		Resolution[] r = getResolutions(resolver);
 
 		if (r == null || r.length == 0) {
-			EngineLogger.error("No resolutions defined");
+			EngineLogger.error("No resolutions defined. Maybe your 'assets' folder doesn't exists or it's empty");
+			return;
 		}
 
 		resResolver = new EngineResolutionFileResolver(resolver, r);
 		setLoader(Texture.class, new TextureLoader(resResolver));
 		setLoader(TextureAtlas.class, new TextureAtlasLoader(
 				resResolver));
+		setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
+		setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+		
 		Texture.setAssetManager(this);
 
 		Resolution choosed = EngineResolutionFileResolver.choose(r);
@@ -167,25 +173,31 @@ public class EngineAssetManager extends AssetManager {
 		
 		int size = Config.getProperty(style + "_SIZE", 14);
 		
-		return loadFont(FONTS_DIR + key, size);
+		return loadFont(key, size);
 	}
 	
+	// TODO: Add support for .fnt loading
 	public BitmapFont loadFont(String filename, int size) {
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(getAsset(filename));
-		FreeTypeFontParameter param = new FreeTypeFontParameter();
-		param.size = size;
-		param.flip = false;
-		param.genMipMaps = false;
+		FreeTypeFontLoaderParameter param = new FreeTypeFontLoaderParameter();
+		param.fontFileName = FONTS_DIR + filename;
+		param.fontParameters.size = size;
+		param.fontParameters.flip = false;
+		param.fontParameters.genMipMaps = false;
 		
 		// For small screens we use small fonts to limit the space used for the
 		// text in the screen
 		if (Gdx.graphics.getWidth() < 800)
-			param.size *= 0.7;
+			param.fontParameters.size *= 0.7;
 		
-		BitmapFont font = generator.generateFont(param);
-		generator.dispose();
-		
-		return font;
+		String name = FONTS_DIR + filename + "_" + size + ".ttf";
+		load(name, BitmapFont.class, param);
+		finishLoading();
+		return get(name, BitmapFont.class);
+	}
+	
+	public void disposeFont(BitmapFont font) {
+		if (isLoaded(getAssetFileName(font)))
+			unload(getAssetFileName(font));
 	}
 
 	public void loadAtlas(String name) {

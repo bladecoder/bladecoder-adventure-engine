@@ -20,6 +20,7 @@ import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
+import org.bladecoder.engine.util.Utils3D;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -130,7 +131,6 @@ public class UI {
 	private void loadAssets() {
 		atlas = new TextureAtlas(EngineAssetManager.getInstance().getResAsset(
 				ATLAS_FILENAME));
-		pointer.createAssets();
 		pointer.retrieveAssets(atlas);
 	}
 
@@ -157,14 +157,17 @@ public class UI {
 		screen.hide();
 		batch.dispose();
 		atlas.dispose();
+		
+		RectangleRenderer.dispose();
+		Utils3D.dispose();
+		EngineLogger.dispose();
+		EngineAssetManager.getInstance().dispose();
 	}
 	
 	public void resume() {
 		if(Gdx.app.getType() == ApplicationType.Android) {
 			// RESTORE GL CONTEXT
-			pointer.createAssets();
 			RectangleRenderer.dispose();
-			EngineLogger.dispose();
 		}
 		
 		if(screen != null)
