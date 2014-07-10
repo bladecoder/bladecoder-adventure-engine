@@ -67,6 +67,8 @@ public class SpineRenderer implements SpriteRenderer {
 	private SkeletonBounds bounds;
 
 	private final HashMap<String, SkeletonCacheEntry> skeletonCache = new HashMap<String, SkeletonCacheEntry>();
+	
+	private float lastAnimationTime = 0;
 
 	class SkeletonCacheEntry {
 		int refCounter;
@@ -175,6 +177,8 @@ public class SpineRenderer implements SpriteRenderer {
 			currentSkeleton.skeleton.updateWorldTransform();
 
 //			bounds.update(currentSkeleton.skeleton, true);
+			
+			lastAnimationTime += delta;
 		}
 	}
 
@@ -305,6 +309,7 @@ public class SpineRenderer implements SpriteRenderer {
 		currentSkeleton.animation.apply(currentSkeleton.skeleton);
 		update(0);
 		bounds.update(currentSkeleton.skeleton, true);
+		lastAnimationTime = 0;
 	}
 
 	private FrameAnimation getFrameAnimation(String id) {
@@ -446,7 +451,13 @@ public class SpineRenderer implements SpriteRenderer {
 					.get(currentFrameAnimation.source);
 			currentSkeleton = entry;
 			
-			// TODO RESTORE CURRENT ANIMATION STATE
+			currentSkeleton.skeleton.setFlipX(flipX);
+			currentSkeleton.animation.setAnimation(0, currentFrameAnimation.id,
+					currentAnimationType == Tween.REPEAT);
+			currentSkeleton.animation.setTimeScale(currentFrameAnimation.duration);
+			currentSkeleton.animation.apply(currentSkeleton.skeleton);
+			update(lastAnimationTime);
+			bounds.update(currentSkeleton.skeleton, true);
 
 		} else if (initFrameAnimation != null) {
 			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1, null);
@@ -490,6 +501,7 @@ public class SpineRenderer implements SpriteRenderer {
 		
 		json.writeValue("currentCount", currentCount);
 		json.writeValue("currentAnimationType", currentAnimationType);
+		json.writeValue("lastAnimationTime", lastAnimationTime);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -512,5 +524,6 @@ public class SpineRenderer implements SpriteRenderer {
 		animationCbSer = json.readValue("cb", String.class, jsonData);
 		currentCount = json.readValue("currentCount", Integer.class, jsonData);
 		currentAnimationType = json.readValue("currentAnimationType", Integer.class, jsonData);
+		lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 	}
 }
