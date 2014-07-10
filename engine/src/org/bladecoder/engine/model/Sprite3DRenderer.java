@@ -117,6 +117,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	private ModelCacheEntry currentModel;
 	private HashMap<String, ModelCacheEntry> modelCache = new HashMap<String, ModelCacheEntry>();
+	private float lastAnimationTime = 0;
 
 	private boolean renderShadow = true;
 
@@ -383,16 +384,16 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			currentAnimationType = repeatType;
 		}
 
-		boolean reverse = false;
+		lastAnimationTime = 0;
+		float speed = currentFrameAnimation.duration;
 
 		if (currentAnimationType == Tween.REVERSE
 				|| currentAnimationType == Tween.REVERSE_REPEAT)
-			reverse = true;
+			speed *= -1;
 
 		if (currentModel.modelInstance.getAnimation(id) != null) {
 			animationCb = cb;
-			currentModel.controller.setAnimation(id, currentCount, reverse ? -1
-					: 1, animationListener);
+			currentModel.controller.setAnimation(id, currentCount, speed, animationListener);
 			return;
 		}
 
@@ -406,7 +407,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 			if (currentModel.modelInstance.getAnimation(s) != null) {
 				currentModel.controller.setAnimation(s, count,
-						reverse ? -1 : 1, animationListener);
+						speed, animationListener);
 
 				return;
 			}
@@ -502,6 +503,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		if (currentModel != null && currentModel.controller.current != null
 				&& currentModel.controller.current.loopCount != 0) {
 			currentModel.controller.update(delta);
+			lastAnimationTime += delta;
 
 			// GENERATE SHADOW MAP
 			if(renderShadow)
@@ -698,12 +700,20 @@ public class Sprite3DRenderer implements SpriteRenderer {
 				retrieveSource(key);
 		}
 
-		if (currentFrameAnimation != null) {
+		if (currentFrameAnimation != null) { // RESTORE FA
 			ModelCacheEntry entry = modelCache
 					.get(currentFrameAnimation.source);
 			currentModel = entry;
 
-			// TODO RESTORE CURRENT ANIMATION STATE
+			float speed = currentFrameAnimation.duration;
+
+			if (currentAnimationType == Tween.REVERSE
+					|| currentAnimationType == Tween.REVERSE_REPEAT)
+				speed *= -1;
+			
+			currentModel.controller.setAnimation(currentFrameAnimation.id, currentCount, speed, animationListener);
+			
+			update(lastAnimationTime);
 
 		} else if (initFrameAnimation != null) {
 			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1, null);
@@ -797,8 +807,9 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		json.writeValue("currentCount", currentCount);
 		json.writeValue("currentAnimationType", currentAnimationType);
 		json.writeValue("renderShadow", renderShadow);
+		json.writeValue("lastAnimationTime", lastAnimationTime);
 
-		// TODO: SAVE AND RESTORE CURRENT ANIMATION
+		// TODO: SAVE AND RESTORE CURRENT DIRECTION
 		// TODO: shadowlight, cel light
 	}
 
@@ -831,5 +842,6 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		currentAnimationType = json.readValue("currentAnimationType",
 				Integer.class, jsonData);
 		renderShadow = json.readValue("renderShadow", Boolean.class, jsonData);
+		lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 	}
 }
