@@ -296,14 +296,20 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
+		float worldScale = EngineAssetManager.getInstance().getScale();
+		
 		walkZone = json.readValue("walkZone", Polygon.class, jsonData);
+		walkZone.setScale(worldScale, worldScale);
+		walkZone.setPosition(walkZone.getX() * worldScale , 
+				walkZone.getY() * worldScale);
+		
 		obstacles = json.readValue("obstacles", ArrayList.class, Polygon.class,
 				jsonData);
 		
 		for(Polygon poly:obstacles) {
-			poly.setScale(EngineAssetManager.getInstance().getScale(), EngineAssetManager.getInstance().getScale());
-			poly.setPosition(poly.getX() * EngineAssetManager.getInstance().getScale() , 
-					poly.getY() * EngineAssetManager.getInstance().getScale());
+			poly.setScale(worldScale, worldScale);
+			poly.setPosition(poly.getX() * worldScale , 
+					poly.getY() * worldScale);
 		}
 	}
 }

@@ -22,10 +22,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class SceneViewport extends Viewport {
+public class SceneFitViewport extends Viewport {
 
 	/** Creates a new viewport using a new {@link OrthographicCamera}. */
-	public SceneViewport () {
+	public SceneFitViewport () {
 		camera = new OrthographicCamera();
 	}
 	

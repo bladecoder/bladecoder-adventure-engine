@@ -54,7 +54,8 @@ public class SceneScreen implements Screen {
 
 	private final Recorder recorder;
 
-	private final SceneViewport viewport = new SceneViewport();
+//	private final SceneFitViewport viewport = new SceneFitViewport();
+	private final SceneExtendViewport viewport = new SceneExtendViewport();
 
 	private final Vector3 unprojectTmp = new Vector3();
 	
@@ -254,13 +255,15 @@ public class SceneScreen implements Screen {
 
 		if(!World.getInstance().isDisposed()) {
 			viewport.setWorldSize(World.getInstance().getWidth(), World.getInstance().getHeight());
+			viewport.update(width, height, true);
+			World.getInstance().getSceneCamera().viewportWidth = viewport.getWorldWidth();
+			World.getInstance().getSceneCamera().viewportHeight = viewport.getWorldHeight();
+			World.getInstance().getSceneCamera().update();
 		} else {
 			viewport.setWorldSize(width, height);
+			viewport.update(width, height, true);
 		}
-		
-		viewport.update(width, height, true);
-		World.getInstance().getSceneCamera().update();
-		
+				
 		pie.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
 		inventoryUI.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
 		dialogUI.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
