@@ -45,7 +45,7 @@ public class RunProccess {
 		return builder.toString();
 	}
 	
-	public static void runBladeEngine(String prjFolder, String scene) throws IOException {
+	public static void runBladeEngine(String prjFolder, String chapter, String scene) throws IOException {
 		List<String> args = new ArrayList<String>();
 		args.add("-w");
 		args.add("-adv-dir");
@@ -56,6 +56,11 @@ public class RunProccess {
 			args.add(scene);
 		} else {
 			args.add("-r");			
+		}
+		
+		if(chapter != null) {
+			args.add("-chapter");
+			args.add(chapter);
 		}
 		
 		List<String> cp = new ArrayList<String>();

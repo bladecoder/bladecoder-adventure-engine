@@ -114,7 +114,8 @@ public class ScnEditor extends Table {
 			}
 			
 			RunProccess.runBladeEngine(
-					Ctx.project.getProjectDir().getAbsolutePath(), 
+					Ctx.project.getProjectDir().getAbsolutePath(),
+					Ctx.project.getSelectedChapter().getId(),
 					Ctx.project.getSelectedChapter().getId(Ctx.project.getSelectedScene()));
 		} catch (IOException e) {
 			String msg = "Something went wrong while testing the scene.\n\n"

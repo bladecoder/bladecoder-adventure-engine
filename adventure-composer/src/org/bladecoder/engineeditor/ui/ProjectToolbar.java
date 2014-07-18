@@ -249,7 +249,7 @@ public class ProjectToolbar extends Table {
 			saveProject();
 
 			RunProccess.runBladeEngine(Ctx.project.getProjectDir()
-					.getAbsolutePath(), null);
+					.getAbsolutePath(), null, null);
 		} catch (IOException e) {
 			String msg = "Something went wrong while playing the project.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();

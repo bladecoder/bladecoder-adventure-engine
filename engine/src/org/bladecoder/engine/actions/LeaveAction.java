@@ -25,21 +25,27 @@ import org.bladecoder.engine.util.EngineLogger;
 public class LeaveAction implements Action {
 	public static final String INFO = "Change the current scene. The target scene must exists in the current chapter.";
 	public static final Param[] PARAMS = {
-		new Param("target", "The target scene", Type.STRING, true)				
+		new Param("scene", "The target scene", Type.STRING, true),
+		new Param("chapter", "The target chapter", Type.STRING, false)
 		};		
 	
-	String target;
+	String scene;
+	String chapter;
 
 	@Override
 	public void run() {
 		EngineLogger.debug("LEAVE ACTION");
 		
-		World.getInstance().setCurrentScene(target);
+		if(chapter == null || chapter.isEmpty())
+			World.getInstance().setCurrentScene(chapter);
+		else
+			World.getInstance().loadXML(chapter, scene);
 	}
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		target = params.get("target");		
+		scene = params.get("scene");
+		chapter = params.get("chapter");
 	}
 
 

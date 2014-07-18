@@ -102,7 +102,12 @@ public class Project extends PropertyChange {
 		TextureRegion icon = bgIconCache.get(s);
 		
 		if(icon == null) {
-			bgIconCache.put(s, createBgIcon(s));
+			try {
+				bgIconCache.put(s, createBgIcon(s));
+			} catch (Exception e) {
+				return null;
+			}
+			
 			icon = bgIconCache.get(s);
 		}
 		
