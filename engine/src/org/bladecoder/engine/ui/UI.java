@@ -165,7 +165,7 @@ public class UI {
 	}
 	
 	public void resume() {
-		if(Gdx.app.getType() == ApplicationType.Android) {
+		if(Gdx.app.getType() != ApplicationType.Desktop) {
 			// RESTORE GL CONTEXT
 			RectangleRenderer.dispose();
 		}

@@ -218,7 +218,7 @@ public class Project extends PropertyChange {
 	}
 	
 	public String getPackageTitle() {
-		return getTitle().replaceAll(" ", "");
+		return getTitle().replace(" ", "").replace("'", "");
 	}
 
 	public void createProject(File projectFile) throws ParserConfigurationException,
