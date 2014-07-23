@@ -161,7 +161,7 @@ public class PolygonUtils {
 		return cross < 0;
 	}
 
-	private static float EPSILON = 0.5f;
+	private static float TOLERANCE_IS_POINT_INSIDE = 3f;
 
 	public static boolean isPointInside(Polygon polygon, float x, float y,
 			boolean toleranceOnOutside) {
@@ -180,7 +180,7 @@ public class PolygonUtils {
 			float newSqDist = Vector2.dst2(newX, newY, x, y);
 
 			if (oldSqDist + newSqDist + 2.0f * Math.sqrt(oldSqDist * newSqDist)
-					- Vector2.dst2(newX, newY, oldX, oldY) < EPSILON)
+					- Vector2.dst2(newX, newY, oldX, oldY) < TOLERANCE_IS_POINT_INSIDE)
 				return toleranceOnOutside;
 
 			float leftX = newX;
@@ -213,17 +213,6 @@ public class PolygonUtils {
 		tmp.set(p1);
 		tmp2.set(p2);
 
-//		if ((tmp2.x > tmp.x && !obstacle) || (tmp2.x < tmp.x && obstacle)) {
-//			tmp2.x -= 0.1;
-//			tmp.x += 0.1;
-//		} else {
-//			tmp2.x += 0.1;
-//			tmp.x -= 0.1;
-//		}
-//
-//		tmp.y = lineEquation(p1.x, p1.y, p2.x, p2.y, tmp.x);
-//		tmp2.y = lineEquation(p1.x, p1.y, p2.x, p2.y, tmp2.x);
-
 		float verts[] = polygon.getTransformedVertices();
 
 		for (int i = 0; i < verts.length; i += 2) {
@@ -242,11 +231,13 @@ public class PolygonUtils {
 		return obstacle?!result:result;
 	}
 
+	private static float TOLERANCE_LINE_SEGMENTS_CROSS = 0.1f;
+	
 	public static boolean lineSegmentsCross(float ax, float ay, float bx,
 			float by, float cx, float cy, float dx, float dy) {
 		float denominator = ((bx - ax) * (dy - cy)) - ((by - ay) * (dx - cx));
 
-		if (denominator == 0) {
+		if (denominator < TOLERANCE_LINE_SEGMENTS_CROSS && denominator > -TOLERANCE_LINE_SEGMENTS_CROSS) {
 			return false;
 		}
 
@@ -254,38 +245,13 @@ public class PolygonUtils {
 
 		float numerator2 = ((ay - cy) * (bx - ax)) - ((ax - cx) * (by - ay));
 
-		if (numerator1 == 0 || numerator2 == 0) {
+		if ((numerator1 < TOLERANCE_LINE_SEGMENTS_CROSS && numerator1 > -TOLERANCE_LINE_SEGMENTS_CROSS) || (numerator2 < TOLERANCE_LINE_SEGMENTS_CROSS && numerator2 > -TOLERANCE_LINE_SEGMENTS_CROSS)) {
 			return false;
 		}
 
 		float r = numerator1 / denominator;
 		float s = numerator2 / denominator;
 
-		return (r > 0 && r < 1) && (s > 0 && s < 1);
-	}
-
-	public static float lineEquation(float x1, float y1, float x2, float y2,
-			float x) {
-		return ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
-	}
-	
-	public static int getClampedPointInside(Polygon poly, float x, float y,
-			Vector2 dest) {
-		
-		int index = getClampedPoint(poly, x, y, dest);
-		
-		if (dest.x > x) {
-			dest.x += 0.1;
-		} else {
-			dest.x -= 0.1;
-		}
-		
-		if (dest.y > y) {
-			dest.y += 0.1;
-		} else {
-			dest.y -= 0.1;
-		}
-				
-		return index;	
+		return (r > TOLERANCE_LINE_SEGMENTS_CROSS && r < 1 - TOLERANCE_LINE_SEGMENTS_CROSS) && (s > TOLERANCE_LINE_SEGMENTS_CROSS && s < 1 - TOLERANCE_LINE_SEGMENTS_CROSS);
 	}
 }

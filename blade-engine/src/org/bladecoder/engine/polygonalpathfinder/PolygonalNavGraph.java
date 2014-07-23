@@ -67,12 +67,12 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		}
 
 		if (!PolygonUtils.isPointInside(walkZone, tx, ty, true)) {
-			PolygonUtils.getClampedPointInside(walkZone, tx, ty, target);
+			PolygonUtils.getClampedPoint(walkZone, tx, ty, target);
 
-			// if(!PolygonUtils.isPointInside(walkZone, tx, ty, true)) {
-			// EngineLogger.debug("PolygonalPathFinder: CLAMPED FAILED!!");
-			// return resultPath;
-			// }
+//			if (!PolygonUtils.isPointInside(walkZone, target.x, target.y, true)) {
+//				EngineLogger.debug("PolygonalPathFinder: CLAMPED FAILED!!");
+//				return resultPath.getPath();
+//			}
 		}
 
 		// 2. Then start by checking if both points are in line-of-sight. If
