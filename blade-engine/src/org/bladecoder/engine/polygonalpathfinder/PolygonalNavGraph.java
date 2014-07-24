@@ -74,6 +74,18 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 //				return resultPath.getPath();
 //			}
 		}
+		
+		for (Polygon o : obstacles) {
+			if (PolygonUtils.isPointInside(o, target.x, target.y, false)) {
+				PolygonUtils.getClampedPoint(o, target.x, target.y, target);
+			}
+		}
+		
+		for (Polygon o : dinamicObstacles) {
+			if (PolygonUtils.isPointInside(o, target.x, target.y, false)) {
+				PolygonUtils.getClampedPoint(o, target.x, target.y, target);
+			}
+		}
 
 		// 2. Then start by checking if both points are in line-of-sight. If
 		// they are, there’s no need for pathfinding, just walk there!
