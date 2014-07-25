@@ -147,7 +147,7 @@ public class TextManagerUI {
 	}
 
 	public void resize(int width, int height) {
-		scale = width / World.getInstance().getWidth();
+		scale = width / (float)World.getInstance().getWidth();
 		maxRectangleWidth = width / 1.7f;
 		maxTalkWidth = width / 3;
 	}

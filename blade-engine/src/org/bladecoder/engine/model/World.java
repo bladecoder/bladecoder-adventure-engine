@@ -325,7 +325,7 @@ public class World implements Serializable, AssetConsumer {
 		if (s != null) {
 			setCurrentScene(s);
 		} else {
-			EngineLogger.error("COULD NOT FIND SCENE: " + id);
+			EngineLogger.error("SetCurrentScene - COULD NOT FIND SCENE: " + id);
 			Gdx.app.exit();
 		}
 	}

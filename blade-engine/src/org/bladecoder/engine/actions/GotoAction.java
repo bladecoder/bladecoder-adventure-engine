@@ -22,6 +22,7 @@ import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.World;
+import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -50,8 +51,12 @@ public class GotoAction extends BaseCallbackAction implements Action {
 		
 		if(targetId!=null) {
 			Actor target =  World.getInstance().getCurrentScene().getActor(targetId);
-			Rectangle bbox = target.getBBox().getBoundingRectangle();
-			actor.goTo(new Vector2(bbox.x, bbox.y), wait?this:null);			
+			if(target != null) {
+				Rectangle bbox = target.getBBox().getBoundingRectangle();
+				actor.goTo(new Vector2(bbox.x, bbox.y), wait?this:null);
+			} else {
+				EngineLogger.error("GotoAction - Target actor doesn't exists: " + targetId);
+			}
 		} else 
 			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), wait?this:null);
 						

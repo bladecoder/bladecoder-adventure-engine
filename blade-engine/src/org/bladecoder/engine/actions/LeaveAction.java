@@ -37,7 +37,7 @@ public class LeaveAction implements Action {
 		EngineLogger.debug("LEAVE ACTION");
 		
 		if(chapter == null || chapter.isEmpty())
-			World.getInstance().setCurrentScene(chapter);
+			World.getInstance().setCurrentScene(scene);
 		else
 			World.getInstance().loadXML(chapter, scene);
 	}
