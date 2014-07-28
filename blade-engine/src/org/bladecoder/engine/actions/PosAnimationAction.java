@@ -32,7 +32,7 @@ public class PosAnimationAction extends BaseCallbackAction implements Action {
 	public static final String INFO = "Throws a position type animation";
 	public static final Param[] PARAMS = {
 		new Param("pos", "The target position", Type.VECTOR2, true),
-		new Param("speed", "Duration of the animation in seconds", Type.FLOAT),
+		new Param("speed", "Duration of the animation in seconds", Type.FLOAT, true, "1.0"),
 		new Param("count", "The times to repeat", Type.INTEGER),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
 		new Param("repeat", "The repeat mode", Type.STRING, true, "repeat", new String[]{"repeat", "yoyo", "no_repeat"}),

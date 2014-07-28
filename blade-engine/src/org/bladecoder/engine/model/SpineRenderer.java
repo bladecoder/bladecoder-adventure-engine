@@ -195,6 +195,7 @@ public class SpineRenderer implements SpriteRenderer {
 			batch.setTransformMatrix(batch.getTransformMatrix().scale(
 					1 / scale, 1 / scale, 1.0f));
 		} else {
+			x = x - getWidth() / 2 * scale;
 			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight()
 					* scale, Color.RED);
 		}
@@ -202,15 +203,16 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public float getWidth() {
-		if (bounds != null && bounds.getWidth() != 0)
+		if (bounds != null && bounds.getWidth() > 0) {
 			return bounds.getWidth();
+		}			
 
 		return 200;
 	}
 
 	@Override
 	public float getHeight() {
-		if (bounds != null && bounds.getWidth() != 0)
+		if (bounds != null && bounds.getHeight() > 0)
 			return bounds.getHeight();
 
 		return 200;
