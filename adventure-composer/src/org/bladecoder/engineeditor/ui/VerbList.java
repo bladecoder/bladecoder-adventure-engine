@@ -106,11 +106,10 @@ public class VerbList extends ElementList {
 			String iconName = MessageFormat.format("ic_{0}", e.getAttribute("id"));
 			TextureRegion image = null;
 			
-			try {
-				image = Ctx.assetManager.getIcon(iconName);
-			} catch(GdxRuntimeException e1) {
+			image = Ctx.assetManager.getIcon(iconName);
+			
+			if(image==null)
 				image = Ctx.assetManager.getIcon("ic_custom");
-			}
 
 			return image;
 		}

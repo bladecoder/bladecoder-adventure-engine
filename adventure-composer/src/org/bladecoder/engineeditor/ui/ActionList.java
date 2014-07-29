@@ -92,12 +92,20 @@ public class ActionList extends ElementList {
 			public void changed(ChangeEvent event, Actor actor) {
 				int pos = list.getSelectedIndex();
 				
-				if(pos == -1) pos = 0;
-				else pos++;
+				Element e2 = null;							
+				
+				pos++;
+				
+				if(pos!=0 && pos < list.getItems().size) 
+					e2 = list.getItems().get(pos);
 				
 				Element e = ((EditElementDialog)actor).getElement();
 				list.getItems().insert(pos, e);
 
+				Node parent = e.getParentNode();
+				parent.removeChild(e);
+				parent.insertBefore(e, e2);					
+				
 				int i = getItems().indexOf(e, true);
 				if(i != -1)
 					list.setSelectedIndex(i);
