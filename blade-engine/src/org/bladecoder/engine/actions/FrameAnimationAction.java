@@ -32,9 +32,9 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 	public static final String INFO = "Sets an actor frame animation";
 	public static final Param[] PARAMS = {
 		new Param("frame_animation", "The FA to set", Type.STRING, true),	
-		new Param("count", "The times to repeat", Type.INTEGER),
+		new Param("count", "The times to repeat. -1 to infinity repeat", Type.INTEGER),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
-		new Param("repeat", "The repeat mode", Type.STRING, true, "repeat", new String[]{"repeat", "yoyo", "no_repeat"}),
+		new Param("repeat", "The repeat mode", Type.STRING, true, "no_repeat", new String[]{"repeat", "yoyo", "no_repeat", "reverse", "sprite defined"}),
 		new Param("x", "Puts actor 'x' position after sets the FA", Type.FLOAT),
 		new Param("y", "Puts actor 'y' position after sets the FA", Type.FLOAT),
 		new Param("dx", "Adds 'dx' to the actor position", Type.FLOAT),
