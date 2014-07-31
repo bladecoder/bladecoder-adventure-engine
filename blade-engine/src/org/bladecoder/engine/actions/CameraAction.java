@@ -90,7 +90,7 @@ public class CameraAction extends BaseCallbackAction implements Action {
 				camera.updatePos(null);
 			else
 				camera.updatePos((SpriteActor) World.getInstance().getCurrentScene()
-						.getActor(followActorId));
+						.getActor(followActorId, false));
 		}
 
 		if (duration == 0) {

@@ -88,7 +88,7 @@ public class Recorder {
 					}
 				} else {
 
-					Actor a = s.getActor(v.actorId);
+					Actor a = s.getActor(v.actorId, true);
 
 					if (a != null) {
 						stringBuilder.append(v.verb);

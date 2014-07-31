@@ -355,7 +355,7 @@ public class EngineAssetManager extends AssetManager {
 
 		String n = "atlases";
 		
-		URL u = EngineAssetManager.class.getResource("/atlases");
+		URL u = EngineAssetManager.class.getResource("/backgrounds");
 
 		if (u != null
 				&& u.getProtocol().equals("jar")) {

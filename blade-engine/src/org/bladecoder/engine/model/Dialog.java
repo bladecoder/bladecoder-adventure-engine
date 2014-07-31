@@ -57,7 +57,7 @@ public class Dialog implements Serializable   {
 		if(v == null) v = DEFAULT_DIALOG_VERB;
 		
 		// TODO: DELETE REFERENCE TO WORLD FROM DIALOG
-		Actor a = World.getInstance().getCurrentScene().getActor(actor);
+		Actor a = World.getInstance().getCurrentScene().getActor(actor, false);
 		a.runVerb(v);
 		
 		if(currentOption.getNext() != null) {

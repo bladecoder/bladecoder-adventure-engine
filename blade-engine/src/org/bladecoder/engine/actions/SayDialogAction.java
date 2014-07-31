@@ -59,7 +59,7 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 		
 		// If the player or the character is talking restore to 'stand' pose
 		restoreStandPose(w.getCurrentScene().getPlayer());
-		restoreStandPose((SpriteActor)w.getCurrentScene().getActor(characterName));
+		restoreStandPose((SpriteActor)w.getCurrentScene().getActor(characterName, false));
 
 		if (playerText != null) {
 			SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
@@ -82,7 +82,7 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 	public void onEvent() {
 
 		World w = World.getInstance();
-		SpriteActor actor = (SpriteActor)w.getCurrentScene().getActor(characterName);
+		SpriteActor actor = (SpriteActor)w.getCurrentScene().getActor(characterName, false);
 		
 		if (characterTurn) {
 			characterTurn = false;

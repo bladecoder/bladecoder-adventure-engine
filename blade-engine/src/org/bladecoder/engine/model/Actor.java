@@ -32,6 +32,8 @@ import com.badlogic.gdx.utils.JsonValue;
  * @author rgarcia
  */
 public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
+	
+	public enum ActorLayer {BACKGROUND, DYNAMIC, FOREGROUND};
 
 	protected String id;
 	protected String desc;
@@ -55,6 +57,8 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 	private HashMap<String, Dialog> dialogs;
 	
 	private boolean isWalkObstacle = false;
+	
+	private ActorLayer layer;
 
 	public String getId() {
 		return id;
@@ -66,6 +70,14 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 
 	public Polygon getBBox() {
 		return bbox;
+	}
+	
+	public void setLayer(ActorLayer layer) {
+		this.layer = layer;
+	}
+	
+	public ActorLayer getLayer() {
+		return layer;
 	}
 	
 	public boolean hit(float x, float y) {
@@ -296,6 +308,7 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		json.writeValue("dialogs", dialogs, dialogs == null ? null : dialogs.getClass(), Dialog.class);
 		
 		json.writeValue("isWalkObstacle", isWalkObstacle);
+		json.writeValue("layer", layer);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -322,6 +335,7 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		dialogs = json.readValue("dialogs", HashMap.class, Dialog.class, jsonData);
 		
 		isWalkObstacle = json.readValue("isWalkObstacle", Boolean.class, jsonData);
+		layer = json.readValue("layer", ActorLayer.class, jsonData);
 	}
 
 }

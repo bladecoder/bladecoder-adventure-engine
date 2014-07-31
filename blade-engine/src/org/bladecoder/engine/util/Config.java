@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.bladecoder.engine.util;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
@@ -42,7 +41,7 @@ public class Config {
 			
 			try {
 				config.load(EngineAssetManager.getInstance().getAsset(PROPERTIES_FILENAME).reader());
-			} catch (IOException e) {
+			} catch (Exception e) {
 				EngineLogger.error("ERROR LOADING PROPERTIES: " + e.getMessage());
 			}
 		}

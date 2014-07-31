@@ -58,19 +58,13 @@ public class Scene implements Serializable,
 	private HashMap<String, Actor> actors = new HashMap<String, Actor>();
 
 	/**
-	 * Foreground actors. Non interactive. Always draw this actors in the
-	 * foreground
+	 * Actor layers: Background actors, dynamic (ordered) and foreground
 	 */
-	private ArrayList<SpriteActor> fgActors = new ArrayList<SpriteActor>();
-
-	/**
-	 * Temp list with the 'actors' list + player ordered by 'y' axis to draw in
-	 * depth order and to check for click
-	 */
-	private final List<Actor> orderedActors = new ArrayList<Actor>();
+	private final List<Actor> bgActors = new ArrayList<Actor>();
+	private final List<Actor> dynamicActors = new ArrayList<Actor>();
+	private final List<Actor> fgActors = new ArrayList<Actor>();
 	
 	private SceneCamera camera = new SceneCamera();
-
 	
 	private Texture[] background;
 	private Texture[] lightMap;
@@ -207,7 +201,7 @@ public class Scene implements Serializable,
 	public void update(float delta) {
 		// We draw the elements in order: from top to bottom.
 		// so we need to order the array list
-		Collections.sort(orderedActors);
+		Collections.sort(dynamicActors);
 
 		if (overlay != null) {
 			overlay.update(delta);
@@ -248,7 +242,7 @@ public class Scene implements Serializable,
 			}
 		}
 
-		for (Actor a:orderedActors) {
+		for (Actor a:actors.values()) {
 			if(a instanceof SpriteActor)
 				((SpriteActor)a).update(delta);
 		}
@@ -270,14 +264,20 @@ public class Scene implements Serializable,
 
 			spriteBatch.enableBlending();
 		}
-
-		for (Actor a : orderedActors) {
+		
+		for (Actor a : bgActors) {
 			if(a instanceof SpriteActor)
 				((SpriteActor)a).draw(spriteBatch);
 		}
 
-		for (SpriteActor a : fgActors) {
-			a.draw(spriteBatch);
+		for (Actor a : dynamicActors) {
+			if(a instanceof SpriteActor)
+				((SpriteActor)a).draw(spriteBatch);
+		}
+
+		for (Actor a : fgActors) {
+			if(a instanceof SpriteActor)
+				((SpriteActor)a).draw(spriteBatch);
 		}
 
 		// Draw the light map
@@ -305,7 +305,7 @@ public class Scene implements Serializable,
 
 			StringBuilder sb = new StringBuilder();
 
-			for (Actor a : orderedActors) {
+			for (Actor a : actors.values()) {
 				Rectangle r = a.getBBox().getBoundingRectangle();
 				sb.setLength(0);
 				sb.append(a.getId());
@@ -327,7 +327,7 @@ public class Scene implements Serializable,
 		renderer.begin(ShapeType.Line);
 		renderer.setColor(ACTOR_BBOX_COLOR);
 
-		for (Actor a : orderedActors) {
+		for (Actor a : actors.values()) {
 			Polygon p = a.getBBox();
 
 			if (p == null) {
@@ -337,11 +337,6 @@ public class Scene implements Serializable,
 			Rectangle r = a.getBBox().getBoundingRectangle();
 
 			renderer.polygon(p.getTransformedVertices());
-			renderer.rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
-		}
-
-		for (SpriteActor a : fgActors) {
-			Rectangle r = a.getBBox().getBoundingRectangle();
 			renderer.rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 		}
 		
@@ -368,10 +363,6 @@ public class Scene implements Serializable,
 
 		renderer.end();
 	}
-	
-	public ArrayList<SpriteActor> getForegroundActors() {
-		return fgActors;
-	}
 
 	public void setOverlay(OverlayImage o) {
 		if (overlay != null)
@@ -392,23 +383,11 @@ public class Scene implements Serializable,
 		return transition;
 	}
 
-	public Actor getActor(String id) {
-		return getActor(id, true, false);
-	}
-
-	public Actor getActor(String id, boolean searchInventory,
-			boolean searchFG) {
+	public Actor getActor(String id, boolean searchInventory) {
 		Actor a = actors.get(id);
 
 		if (a == null && searchInventory) {
 			a = World.getInstance().getInventory().getItem(id);
-		}
-
-		if (a == null && searchFG) {
-			for (SpriteActor fg : fgActors) {
-				if (fg.getId().equals(id))
-					a = fg;
-			}
 		}
 
 		return a;
@@ -420,13 +399,19 @@ public class Scene implements Serializable,
 
 	public void addActor(Actor actor) {
 		actors.put(actor.getId(), actor);
-		orderedActors.add(actor);
 		actor.setScene(this);
-	}
-
-	public void addFgActor(SpriteActor actor) {
-		fgActors.add(actor);
-		// ADD SCENE?
+		
+		switch(actor.getLayer()) {
+		case BACKGROUND:
+			bgActors.add(actor);
+			break;
+		case DYNAMIC:
+			dynamicActors.add(actor);
+			break;
+		case FOREGROUND:
+			fgActors.add(actor);
+			break;		
+		}
 	}
 
 	public void setBackground(String bgFilename, String lightMapFilename) {
@@ -490,40 +475,24 @@ public class Scene implements Serializable,
 	}
 
 	public Actor getActorAt(float x, float y) {
-		// Se recorre la lista al revés para quedarnos con el más cercano a la
-		// cámara
-		for (int i = orderedActors.size() - 1; i >= 0; i--) {
-			Actor a = orderedActors.get(i);
-
-			if (a.hit(x, y) && !a.getId().equals(player)
-					&& a.hasInteraction()) {
+		for (Actor a:fgActors) {
+			if (a.hit(x, y)	&& a.hasInteraction()) {
 				return a;
 			}
 		}
-
-		return null;
-	}
-
-	/**
-	 * Method used for the editor to select one actor.
-	 * 
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public Actor getFullSearchActorAt(float x, float y) {
+				
 		// Se recorre la lista al revés para quedarnos con el más cercano a la
 		// cámara
-		for (int i = orderedActors.size() - 1; i >= 0; i--) {
-			Actor a = orderedActors.get(i);
+		for (int i = dynamicActors.size() - 1; i >= 0; i--) {
+			Actor a = dynamicActors.get(i);
 
-			if (a.getBBox().getBoundingRectangle().contains(x, y)) {
+			if (a.hit(x, y)	&& a.hasInteraction()) {
 				return a;
 			}
 		}
-
-		for (Actor a : fgActors) {
-			if (a.getBBox().getBoundingRectangle().contains(x, y)) {
+		
+		for (Actor a:bgActors) {
+			if (a.hit(x, y)	&& a.hasInteraction()) {
 				return a;
 			}
 		}
@@ -564,7 +533,7 @@ public class Scene implements Serializable,
 		if (res == null)
 			fgActors.remove(a);
 		else
-			orderedActors.remove(a);
+			dynamicActors.remove(a);
 		
 		if(a.isWalkObstacle() && polygonalNavGraph != null)
 			polygonalNavGraph.removeDinamicObstacle(a.getBBox());
@@ -625,10 +594,6 @@ public class Scene implements Serializable,
 		for (Actor a : actors.values()) {
 			a.loadAssets();
 		}
-
-		for (SpriteActor a : fgActors) {
-			a.loadAssets();
-		}
 	}
 
 	@Override
@@ -655,8 +620,8 @@ public class Scene implements Serializable,
 			camera.setScrollingDimensions(width,
 						height);
 			
-//			if(followActor != null)
-//				camera.updatePos(followActor);
+			if(followActor != null)
+				camera.updatePos(followActor);
 		}
 
 		// RETRIEVE LIGHT MAP
@@ -679,10 +644,6 @@ public class Scene implements Serializable,
 
 		// RETRIEVE ACTORS
 		for (Actor a : actors.values()) {
-			a.retrieveAssets();
-		}
-
-		for (SpriteActor a : fgActors) {
 			a.retrieveAssets();
 		}
 
@@ -719,10 +680,6 @@ public class Scene implements Serializable,
 			a.dispose();
 		}
 
-		for (SpriteActor a : fgActors) {
-			a.dispose();
-		}
-
 		if (musicFilename != null && music != null) {
 			EngineAssetManager.getInstance().disposeMusic(musicFilename);
 			music = null;
@@ -754,7 +711,6 @@ public class Scene implements Serializable,
 		json.writeValue("verbs", verbs);
 		
 		json.writeValue("actors", actors);
-		json.writeValue("fgActors", fgActors);
 		json.writeValue("player", player,
 				player == null ? null : player.getClass());
 
@@ -802,13 +758,22 @@ public class Scene implements Serializable,
 
 		actors = json.readValue("actors", HashMap.class, Actor.class,
 				jsonData);
-		fgActors = json.readValue("fgActors", ArrayList.class,
-				SpriteActor.class, jsonData);
 		player = json.readValue("player", String.class, jsonData);
 
-		for (Actor a : actors.values()) {
-			orderedActors.add(a);
+		for (Actor a : actors.values()) {			
 			a.setScene(this);
+			
+			switch(a.getLayer()) {
+			case BACKGROUND:
+				bgActors.add(a);
+				break;
+			case DYNAMIC:
+				dynamicActors.add(a);
+				break;
+			case FOREGROUND:
+				fgActors.add(a);
+				break;		
+			}
 		}
 
 		backgroundFilename = json.readValue("background", String.class,

@@ -61,7 +61,7 @@ public class DialogOptionAction implements Action {
 	public void run() {
 
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene()
-				.getActor(actorId);
+				.getActor(actorId, false);
 		Dialog d = actor.getDialog(dialog);
 
 		if (d == null) {

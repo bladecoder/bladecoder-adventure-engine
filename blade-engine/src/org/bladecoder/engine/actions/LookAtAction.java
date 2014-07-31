@@ -62,7 +62,7 @@ public class LookAtAction implements Action {
 	@Override
 	public void run() {
 		EngineLogger.debug("LOOKAT ACTION");
-		Actor actor = (Actor) World.getInstance().getCurrentScene().getActor(actorId);
+		Actor actor = (Actor) World.getInstance().getCurrentScene().getActor(actorId, true);
 
 		SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
 		

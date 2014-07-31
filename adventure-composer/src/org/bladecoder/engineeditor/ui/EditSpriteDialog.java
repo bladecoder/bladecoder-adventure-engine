@@ -215,8 +215,7 @@ public class EditSpriteDialog extends EditElementDialog {
 		String path = null;
 		String type = parent.getAttribute("type");
 
-		if (type.equals(ChapterDocument.FOREGROUND_ACTOR_TYPE)
-				|| type.equals(ChapterDocument.ATLAS_ACTOR_TYPE)) {
+		if (type.equals(ChapterDocument.ATLAS_ACTOR_TYPE)) {
 			path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
 					+ Ctx.project.getResDir();
 			ext = ".atlas";

@@ -72,7 +72,7 @@ public class RunVerbAction implements Action {
 		Verb v = null;
 		
 		if(actorId != null) {
-			Actor a = World.getInstance().getCurrentScene().getActor(actorId);
+			Actor a = World.getInstance().getCurrentScene().getActor(actorId, true);
 			v = a.getVerb(verb, target);
 		} else {
 			v = World.getInstance().getCurrentScene().getVerb(verb);

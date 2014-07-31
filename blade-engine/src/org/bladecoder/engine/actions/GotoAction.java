@@ -47,10 +47,10 @@ public class GotoAction extends BaseCallbackAction implements Action {
 	public void run() {
 		float scale = EngineAssetManager.getInstance().getScale();
 		
-		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId);
+		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
 		
 		if(targetId!=null) {
-			Actor target =  World.getInstance().getCurrentScene().getActor(targetId);
+			Actor target =  World.getInstance().getCurrentScene().getActor(targetId, false);
 			if(target != null) {
 				Rectangle bbox = target.getBBox().getBoundingRectangle();
 				actor.goTo(new Vector2(bbox.x, bbox.y), wait?this:null);

@@ -39,7 +39,7 @@ public class SetStateAction implements Action {
 	@Override
 	public void run() {
 		if(actorId != null) {
-			Actor actor = World.getInstance().getCurrentScene().getActor(actorId);
+			Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 		
 			actor.setState(state);
 		} else {

@@ -147,7 +147,7 @@ public class ActionCallbackSerialization {
 			if (actorId.equals(s.getId())) {
 				v = s.getVerbManager().getVerbs().get(verbId);
 			} else {
-				a = s.getActor(actorId);
+				a = s.getActor(actorId, true);
 
 				if (a == null)
 					return null;

@@ -39,7 +39,7 @@ public class TalktoAction implements Action {
 	@Override
 	public void run() {
 		
-		SpriteActor actor = (SpriteActor)World.getInstance().getCurrentScene().getActor(actorId);
+		SpriteActor actor = (SpriteActor)World.getInstance().getCurrentScene().getActor(actorId, false);
 		
 		World.getInstance().setCurrentDialog(actor.getDialog(dialog));
 	}

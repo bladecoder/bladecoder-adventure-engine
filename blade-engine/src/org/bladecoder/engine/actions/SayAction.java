@@ -79,7 +79,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 	@Override
 	public void run() {
 		EngineLogger.debug("SAY ACTION");
-		Actor actor = World.getInstance().getCurrentScene().getActor(actorId);
+		Actor actor = World.getInstance().getCurrentScene().getActor(actorId, false);
 
 		if (type == Text.Type.TALK)
 			restoreStandPose((SpriteActor) actor);
@@ -124,7 +124,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 	public void onEvent() {
 		if (this.type == Text.Type.TALK) {
 			SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene()
-					.getActor(actorId);
+					.getActor(actorId, false);
 			actor.startFrameAnimation(previousFA, Tween.FROM_FA, 0, null);
 		}
 

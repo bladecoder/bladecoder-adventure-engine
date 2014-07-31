@@ -133,15 +133,14 @@ public class ChapterXMLLoader extends DefaultHandler {
 				throw e2;
 			}
 
-			if (type.equals("background")) {
+			if (type.equals("no_renderer")) {
 				actor = new Actor();
 			} else {
 				actor = new SpriteActor();
 
-				if (type.equals("atlas") || type.equals("foreground")) { // ATLAS
-																			// ACTOR
+				if (type.equals("atlas")) { // ATLAS RENDERER
 					((SpriteActor) actor).setRenderer(new AtlasRenderer());
-				} else if (type.equals("3d")) { // 3D ACTOR
+				} else if (type.equals("3d")) { // 3D RENDERER
 					Sprite3DRenderer r = new Sprite3DRenderer();
 					((SpriteActor) actor).setRenderer(r);
 
@@ -226,7 +225,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 				}
 
 				actor.setBbox(p);
-			} else if (type.equals("background")) {
+			} else if (type.equals("no_renderer")) {
 				SAXParseException e2 = new SAXParseException(
 						"Bounding box definition not set for actor", locator);
 				error(e2);
@@ -289,11 +288,17 @@ public class ChapterXMLLoader extends DefaultHandler {
 			if (state != null)
 				actor.setState(state);
 
-			if (type.equals("foreground")) {
-				scene.addFgActor((SpriteActor) actor);
+			String layerStr = atts.getValue("layer");
+			
+			if(layerStr.equals("background")) {
+				actor.setLayer(Actor.ActorLayer.BACKGROUND);
+			} else if(layerStr.equals("foreground")) {
+				actor.setLayer(Actor.ActorLayer.FOREGROUND);			
 			} else {
-				scene.addActor(actor);
+				actor.setLayer(Actor.ActorLayer.DYNAMIC);
 			}
+			
+			scene.addActor(actor);
 
 		} else if (localName.equals("frame_animation")) {
 
@@ -496,7 +501,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			actor = null;
 		} else if (localName.equals("scene")) {
-			scene.setPlayer((SpriteActor) scene.getActor(player));
+			scene.setPlayer((SpriteActor) scene.getActor(player, false));
 		}
 	}
 

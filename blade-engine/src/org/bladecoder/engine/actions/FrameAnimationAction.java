@@ -102,7 +102,7 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 		
 		float scale =  EngineAssetManager.getInstance().getScale();
 
-		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId);
+		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
 		
 		if (setPos == SET_POS_ABSOLUTE)
 			actor.setPosition(posx * scale, posy * scale);

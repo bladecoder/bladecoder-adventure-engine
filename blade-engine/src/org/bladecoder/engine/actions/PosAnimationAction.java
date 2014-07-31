@@ -82,7 +82,7 @@ public class PosAnimationAction extends BaseCallbackAction implements Action {
 		
 		float scale = EngineAssetManager.getInstance().getScale();
 
-		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId);
+		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
 		
 		if(wait) {
 			actor.startPosAnimation(repeat, count, speed, pos.x * scale, pos.y * scale, this);

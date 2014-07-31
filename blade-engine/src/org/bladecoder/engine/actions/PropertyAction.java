@@ -54,7 +54,7 @@ public class PropertyAction implements Action {
 			Scene s = World.getInstance().getCurrentScene();
 			s.setCustomProperty(prop, value);
 		} else {
-			Actor actor = World.getInstance().getCurrentScene().getActor(actorId);
+			Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 			actor.setCustomProperty(prop, value);
 		}
 	}

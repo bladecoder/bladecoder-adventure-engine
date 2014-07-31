@@ -42,7 +42,7 @@ public class SoundAction implements Action {
 	@Override
 	public void run() {
 		
-		Actor actor = World.getInstance().getCurrentScene().getActor(actorId);
+		Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 		
 		if(play!= null)	actor.playSound(play);
 		

@@ -48,7 +48,7 @@ public class CancelVerbAction implements Action {
 	@Override
 	public void run() {
 		if(actorId != null) {
-			Actor actor = World.getInstance().getCurrentScene().getActor(actorId);
+			Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 		
 			actor.getVerbManager().cancelVerb(verb, actor.getState(), target);
 		} else {
