@@ -28,6 +28,7 @@ import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Actor.ActorLayer;
 import org.bladecoder.engine.model.AtlasRenderer;
+import org.bladecoder.engine.model.ImageRenderer;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.model.Sprite3DRenderer;
@@ -48,13 +49,14 @@ public class ChapterDocument extends BaseDocument {
 	public static final String ATLAS_ACTOR_TYPE = "atlas";
 	public static final String SPRITE3D_ACTOR_TYPE = "3d";
 	public static final String SPINE_ACTOR_TYPE = "spine";
+	public static final String IMAGE_ACTOR_TYPE = "image";
 	
 	public static final String BACKGROUND_LAYER = "background";
 	public static final String FOREGROUND_LAYER = "foreground";
 	public static final String DYNAMIC_LAYER = "dynamic";
 
 	public static final String ACTOR_TYPES[] = { NO_RENDERER_ACTOR_TYPE,
-			ATLAS_ACTOR_TYPE, SPINE_ACTOR_TYPE, SPRITE3D_ACTOR_TYPE};
+			ATLAS_ACTOR_TYPE, SPINE_ACTOR_TYPE, SPRITE3D_ACTOR_TYPE, IMAGE_ACTOR_TYPE};
 	
 	public static final String ACTOR_LAYERS[] = { BACKGROUND_LAYER,
 		FOREGROUND_LAYER, DYNAMIC_LAYER};
@@ -351,6 +353,9 @@ public class ChapterDocument extends BaseDocument {
 		} else if (type.equals(SPINE_ACTOR_TYPE)) {
 			a = new SpriteActor();
 			((SpriteActor) a).setRenderer(new SpineRenderer());
+		} else if (type.equals(IMAGE_ACTOR_TYPE)) {
+			a = new SpriteActor();
+			((SpriteActor) a).setRenderer(new ImageRenderer());			
 		} else if (type.equals(NO_RENDERER_ACTOR_TYPE)) {
 			a = new Actor();
 		} else {

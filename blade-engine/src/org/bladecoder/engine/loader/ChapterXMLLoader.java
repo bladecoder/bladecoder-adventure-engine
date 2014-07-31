@@ -30,6 +30,7 @@ import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.AtlasRenderer;
 import org.bladecoder.engine.model.Dialog;
 import org.bladecoder.engine.model.DialogOption;
+import org.bladecoder.engine.model.ImageRenderer;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.model.Sprite3DRenderer;
@@ -140,6 +141,8 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 				if (type.equals("atlas")) { // ATLAS RENDERER
 					((SpriteActor) actor).setRenderer(new AtlasRenderer());
+				} else if (type.equals("image")) { // IMAGE RENDERER
+					((SpriteActor) actor).setRenderer(new ImageRenderer());					
 				} else if (type.equals("3d")) { // 3D RENDERER
 					Sprite3DRenderer r = new Sprite3DRenderer();
 					((SpriteActor) actor).setRenderer(r);

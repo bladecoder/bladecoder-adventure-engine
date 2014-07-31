@@ -61,12 +61,12 @@ public class SpineRenderer implements SpriteRenderer {
 
 	private boolean flipX;
 
-	private SkeletonCacheEntry currentSkeleton;
+	private SkeletonCacheEntry currentSource;
 
 	private SkeletonRenderer renderer;
 	private SkeletonBounds bounds;
 
-	private final HashMap<String, SkeletonCacheEntry> skeletonCache = new HashMap<String, SkeletonCacheEntry>();
+	private final HashMap<String, SkeletonCacheEntry> sourceCache = new HashMap<String, SkeletonCacheEntry>();
 	
 	private float lastAnimationTime = 0;
 
@@ -155,7 +155,7 @@ public class SpineRenderer implements SpriteRenderer {
 	public String[] getInternalAnimations(String source) {
 		retrieveSource(source);
 
-		Array<Animation> animations = skeletonCache.get(source).skeleton
+		Array<Animation> animations = sourceCache.get(source).skeleton
 				.getData().getAnimations();
 		String[] result = new String[animations.size];
 
@@ -169,12 +169,12 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public void update(float delta) {
-		if (currentSkeleton != null && currentSkeleton.skeleton != null) {
-			currentSkeleton.skeleton.update(delta);
-			currentSkeleton.animation.update(delta);
+		if (currentSource != null && currentSource.skeleton != null) {
+			currentSource.skeleton.update(delta);
+			currentSource.animation.update(delta);
 
-			currentSkeleton.animation.apply(currentSkeleton.skeleton);
-			currentSkeleton.skeleton.updateWorldTransform();
+			currentSource.animation.apply(currentSource.skeleton);
+			currentSource.skeleton.updateWorldTransform();
 
 //			bounds.update(currentSkeleton.skeleton, true);
 			
@@ -185,13 +185,13 @@ public class SpineRenderer implements SpriteRenderer {
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale) {
 
-		if (currentSkeleton != null && currentSkeleton.skeleton != null) {
-			currentSkeleton.skeleton.setX(x / scale);
-			currentSkeleton.skeleton.setY(y / scale);
+		if (currentSource != null && currentSource.skeleton != null) {
+			currentSource.skeleton.setX(x / scale);
+			currentSource.skeleton.setY(y / scale);
 
 			batch.setTransformMatrix(batch.getTransformMatrix().scale(scale,
 					scale, 1.0f));
-			renderer.draw(batch, currentSkeleton.skeleton);
+			renderer.draw(batch, currentSource.skeleton);
 			batch.setTransformMatrix(batch.getTransformMatrix().scale(
 					1 / scale, 1 / scale, 1.0f));
 		} else {
@@ -275,20 +275,20 @@ public class SpineRenderer implements SpriteRenderer {
 			disposeSource(currentFrameAnimation.source);
 
 		currentFrameAnimation = fa;
-		currentSkeleton = skeletonCache.get(fa.source);
+		currentSource = sourceCache.get(fa.source);
 
 		animationCb = cb;
 
 		// If the source is not loaded. Load it.
-		if (currentSkeleton == null || currentSkeleton.refCounter < 1) {
+		if (currentSource == null || currentSource.refCounter < 1) {
 			loadSource(fa.source);
 			EngineAssetManager.getInstance().finishLoading();
 
 			retrieveSource(fa.source);
 
-			currentSkeleton = skeletonCache.get(fa.source);
+			currentSource = sourceCache.get(fa.source);
 
-			if (currentSkeleton == null) {
+			if (currentSource == null) {
 				EngineLogger.error("Could not load FrameAnimation: " + id);
 				currentFrameAnimation = null;
 
@@ -304,13 +304,13 @@ public class SpineRenderer implements SpriteRenderer {
 			currentAnimationType = repeatType;
 		}
 
-		currentSkeleton.skeleton.setFlipX(flipX);
-		currentSkeleton.animation.setAnimation(0, fa.id,
+		currentSource.skeleton.setFlipX(flipX);
+		currentSource.animation.setAnimation(0, fa.id,
 				currentAnimationType == Tween.REPEAT);
-		currentSkeleton.animation.setTimeScale(fa.duration);
-		currentSkeleton.animation.apply(currentSkeleton.skeleton);
+		currentSource.animation.setTimeScale(fa.duration);
+		currentSource.animation.apply(currentSource.skeleton);
 		update(0);
-		bounds.update(currentSkeleton.skeleton, true);
+		bounds.update(currentSource.skeleton, true);
 		lastAnimationTime = 0;
 	}
 
@@ -364,11 +364,11 @@ public class SpineRenderer implements SpriteRenderer {
 	}
 
 	private void loadSource(String source) {
-		SkeletonCacheEntry entry = skeletonCache.get(source);
+		SkeletonCacheEntry entry = sourceCache.get(source);
 
 		if (entry == null) {
 			entry = new SkeletonCacheEntry();
-			skeletonCache.put(source, entry);
+			sourceCache.put(source, entry);
 		}
 
 		if (entry.refCounter == 0)
@@ -378,12 +378,12 @@ public class SpineRenderer implements SpriteRenderer {
 	}
 
 	private void retrieveSource(String source) {
-		SkeletonCacheEntry entry = skeletonCache.get(source);
+		SkeletonCacheEntry entry = sourceCache.get(source);
 
 		if (entry == null || entry.refCounter < 1) {
 			loadSource(source);
 			EngineAssetManager.getInstance().finishLoading();
-			entry = skeletonCache.get(source);
+			entry = sourceCache.get(source);
 		}
 
 		if (entry.skeleton == null) {
@@ -409,7 +409,7 @@ public class SpineRenderer implements SpriteRenderer {
 	}
 
 	private void disposeSource(String source) {
-		SkeletonCacheEntry entry = skeletonCache.get(source);
+		SkeletonCacheEntry entry = sourceCache.get(source);
 
 		if (entry.refCounter == 1) {
 			EngineAssetManager.getInstance().disposeAtlas(source);
@@ -443,23 +443,23 @@ public class SpineRenderer implements SpriteRenderer {
 		renderer.setPremultipliedAlpha(false);
 		bounds = new SkeletonBounds();
 
-		for (String key : skeletonCache.keySet()) {
-			if (skeletonCache.get(key).refCounter > 0)
+		for (String key : sourceCache.keySet()) {
+			if (sourceCache.get(key).refCounter > 0)
 				retrieveSource(key);
 		}
 
 		if (currentFrameAnimation != null) {
-			SkeletonCacheEntry entry = skeletonCache
+			SkeletonCacheEntry entry = sourceCache
 					.get(currentFrameAnimation.source);
-			currentSkeleton = entry;
+			currentSource = entry;
 			
-			currentSkeleton.skeleton.setFlipX(flipX);
-			currentSkeleton.animation.setAnimation(0, currentFrameAnimation.id,
+			currentSource.skeleton.setFlipX(flipX);
+			currentSource.animation.setAnimation(0, currentFrameAnimation.id,
 					currentAnimationType == Tween.REPEAT);
-			currentSkeleton.animation.setTimeScale(currentFrameAnimation.duration);
-			currentSkeleton.animation.apply(currentSkeleton.skeleton);
+			currentSource.animation.setTimeScale(currentFrameAnimation.duration);
+			currentSource.animation.apply(currentSource.skeleton);
 			update(lastAnimationTime);
-			bounds.update(currentSkeleton.skeleton, true);
+			bounds.update(currentSource.skeleton, true);
 
 		} else if (initFrameAnimation != null) {
 			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1, null);
@@ -468,12 +468,12 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public void dispose() {
-		for (String key : skeletonCache.keySet()) {
+		for (String key : sourceCache.keySet()) {
 			EngineAssetManager.getInstance().disposeAtlas(key);
 		}
 
-		skeletonCache.clear();
-		currentSkeleton = null;
+		sourceCache.clear();
+		currentSource = null;
 		renderer = null;
 		bounds = null;
 	}

@@ -225,6 +225,10 @@ public class EditSpriteDialog extends EditElementDialog {
 		} else if (type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
 			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
 			ext = ".skel";
+		} else if (type.equals(ChapterDocument.IMAGE_ACTOR_TYPE)) {
+			path = Ctx.project.getProjectPath() + Project.IMAGE_PATH + "/"
+					+ Ctx.project.getResDir();
+			ext = "";			
 		}
 
 		File f = new File(path);
@@ -246,6 +250,8 @@ public class EditSpriteDialog extends EditElementDialog {
 			for (int i = 0; i < sources.length; i++)
 				sources[i] = sources[i].substring(0,
 						sources[i].length() - ext.length());
+		} else {
+			sources = new String[0];
 		}
 
 		return sources;

@@ -45,7 +45,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -65,7 +64,7 @@ public class EngineAssetManager extends AssetManager {
 	public static final String FONTS_DIR = "fonts/";
 	public static final String MODEL_DIR = "model/";
 	public static final String MUSIC_DIR = "music/";
-	public static final String OVERLAY_DIR = "overlays/";
+	public static final String IMAGE_DIR = "images/";
 	public static final String SOUND_DIR = "sounds/";
 	private static final String MODEL3D_DIR = "3d/";
 	private static final String SPINE_DIR = "spine/";
@@ -338,13 +337,6 @@ public class EngineAssetManager extends AssetManager {
 		if (isLoaded(MODEL3D_DIR + name + MODEL3D_EXT))
 			unload(MODEL3D_DIR + name + MODEL3D_EXT);
 	}	
-	
-	public Texture getOverlay(String filename) {
-		Texture tex = new Texture(EngineAssetManager.getInstance().getResAsset(OVERLAY_DIR + filename));
-		tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		
-		return tex;
-	}
 
 	public boolean assetExists(String filename) {
 		return resResolver.exists(filename);

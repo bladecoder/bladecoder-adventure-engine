@@ -115,8 +115,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	private ActionCallback animationCb = null;
 	private String animationCbSer = null;
 
-	private ModelCacheEntry currentModel;
-	private HashMap<String, ModelCacheEntry> modelCache = new HashMap<String, ModelCacheEntry>();
+	private ModelCacheEntry currentSource;
+	private HashMap<String, ModelCacheEntry> sourceCache = new HashMap<String, ModelCacheEntry>();
 	private float lastAnimationTime = 0;
 
 	private boolean renderShadow = true;
@@ -169,7 +169,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	public String[] getInternalAnimations(String source) {
 		retrieveSource(source);
 
-		Array<Animation> animations = modelCache.get(source).modelInstance.animations;
+		Array<Animation> animations = sourceCache.get(source).modelInstance.animations;
 		String[] result = new String[animations.size];
 
 		for (int i = 0; i < animations.size; i++) {
@@ -203,9 +203,9 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	private void genShadowMap() {
 		updateViewport();
 
-		shadowLight.begin(Vector3.Zero, currentModel.camera3d.direction);
+		shadowLight.begin(Vector3.Zero, currentSource.camera3d.direction);
 		shadowBatch.begin(shadowLight.getCamera());
-		shadowBatch.render(currentModel.modelInstance);
+		shadowBatch.render(currentSource.modelInstance);
 		shadowBatch.end();
 		shadowLight.end();
 
@@ -214,23 +214,23 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	private void drawModel() {
-		if (currentModel != null) {
+		if (currentSource != null) {
 
 			// DRAW SHADOW
 			if (renderShadow) {
-				floorBatch.begin(currentModel.camera3d);
+				floorBatch.begin(currentSource.camera3d);
 				floorBatch.render(Utils3D.getFloor(), shadowEnvironment);
 				floorBatch.end();
 			}
 
 			// DRAW MODEL
-			modelBatch.begin(currentModel.camera3d);
+			modelBatch.begin(currentSource.camera3d);
 
 			if (EngineLogger.debugMode()
 					&& EngineLogger.debugLevel == EngineLogger.DEBUG1)
 				modelBatch.render(Utils3D.getAxes(), environment);
 
-			modelBatch.render(currentModel.modelInstance, environment);
+			modelBatch.render(currentSource.modelInstance, environment);
 
 			modelBatch.end();
 		}
@@ -356,19 +356,19 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			disposeSource(currentFrameAnimation.source);
 
 		currentFrameAnimation = fa;
-		currentModel = modelCache.get(fa.source);
+		currentSource = sourceCache.get(fa.source);
 		animationCb = cb;
 
-		if (currentModel == null || currentModel.refCounter < 1) {
+		if (currentSource == null || currentSource.refCounter < 1) {
 			// If the source is not loaded. Load it.
 			loadSource(fa.source);
 			EngineAssetManager.getInstance().finishLoading();
 
 			retrieveSource(fa.source);
 
-			currentModel = modelCache.get(fa.source);
+			currentSource = sourceCache.get(fa.source);
 
-			if (currentModel == null) {
+			if (currentSource == null) {
 				EngineLogger.error("Could not load FrameAnimation: " + id);
 				currentFrameAnimation = null;
 
@@ -391,9 +391,9 @@ public class Sprite3DRenderer implements SpriteRenderer {
 				|| currentAnimationType == Tween.REVERSE_REPEAT)
 			speed *= -1;
 
-		if (currentModel.modelInstance.getAnimation(id) != null) {
+		if (currentSource.modelInstance.getAnimation(id) != null) {
 			animationCb = cb;
-			currentModel.controller.setAnimation(id, currentCount, speed, animationListener);
+			currentSource.controller.setAnimation(id, currentCount, speed, animationListener);
 			return;
 		}
 
@@ -405,8 +405,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 			lookat(dir);
 
-			if (currentModel.modelInstance.getAnimation(s) != null) {
-				currentModel.controller.setAnimation(s, count,
+			if (currentSource.modelInstance.getAnimation(s) != null) {
+				currentSource.controller.setAnimation(s, count,
 						speed, animationListener);
 
 				return;
@@ -416,7 +416,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		// ERROR CASE
 		EngineLogger.error("Animation NOT FOUND: " + id);
 
-		for (Animation a : currentModel.modelInstance.animations) {
+		for (Animation a : currentSource.modelInstance.animations) {
 			EngineLogger.debug(a.id);
 		}
 
@@ -458,7 +458,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	private void lookat(float angle) {
-		currentModel.modelInstance.transform.setToRotation(Vector3.Y, angle);
+		currentSource.modelInstance.transform.setToRotation(Vector3.Y, angle);
 		modelRotation = angle;
 	}
 
@@ -479,13 +479,13 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 		sb.append("\n  Anims:");
 
-		for (Animation a : currentModel.modelInstance.animations) {
+		for (Animation a : currentSource.modelInstance.animations) {
 			sb.append(" ").append(a.id);
 		}
 
-		if (currentModel.controller.current != null)
+		if (currentSource.controller.current != null)
 			sb.append("\n  Current Anim: ").append(
-					currentModel.controller.current.animation.id);
+					currentSource.controller.current.animation.id);
 
 		sb.append("\n");
 
@@ -500,9 +500,9 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	@Override
 	public void update(float delta) {
 
-		if (currentModel != null && currentModel.controller.current != null
-				&& currentModel.controller.current.loopCount != 0) {
-			currentModel.controller.update(delta);
+		if (currentSource != null && currentSource.controller.current != null
+				&& currentSource.controller.current.loopCount != 0) {
+			currentSource.controller.update(delta);
 			lastAnimationTime += delta;
 
 			// GENERATE SHADOW MAP
@@ -581,8 +581,8 @@ public class Sprite3DRenderer implements SpriteRenderer {
 		if (celLight == null) {
 			Node n = null;
 
-			if (currentModel != null)
-				n = currentModel.modelInstance.getNode(celLightName);
+			if (currentSource != null)
+				n = currentSource.modelInstance.getNode(celLightName);
 
 			if (n != null) {
 				celLight = new PointLight().set(1f, 1f, 1f, n.translation, 1f);
@@ -634,11 +634,11 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	private void loadSource(String source) {
-		ModelCacheEntry entry = modelCache.get(source);
+		ModelCacheEntry entry = sourceCache.get(source);
 
 		if (entry == null) {
 			entry = new ModelCacheEntry();
-			modelCache.put(source, entry);
+			sourceCache.put(source, entry);
 		}
 
 		if (entry.refCounter == 0) {
@@ -649,12 +649,12 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	private void retrieveSource(String source) {
-		ModelCacheEntry entry = modelCache.get(source);
+		ModelCacheEntry entry = sourceCache.get(source);
 
 		if (entry == null || entry.refCounter < 1) {
 			loadSource(source);
 			EngineAssetManager.getInstance().finishLoading();
-			entry = modelCache.get(source);
+			entry = sourceCache.get(source);
 		}
 
 		if (entry.modelInstance == null) {
@@ -666,7 +666,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	private void disposeSource(String source) {
-		ModelCacheEntry entry = modelCache.get(source);
+		ModelCacheEntry entry = sourceCache.get(source);
 
 		if (entry.refCounter == 1) {
 			EngineAssetManager.getInstance().disposeModel3D(source);
@@ -695,15 +695,15 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void retrieveAssets() {
-		for (String key : modelCache.keySet()) {
-			if (modelCache.get(key).refCounter > 0)
+		for (String key : sourceCache.keySet()) {
+			if (sourceCache.get(key).refCounter > 0)
 				retrieveSource(key);
 		}
 
 		if (currentFrameAnimation != null) { // RESTORE FA
-			ModelCacheEntry entry = modelCache
+			ModelCacheEntry entry = sourceCache
 					.get(currentFrameAnimation.source);
-			currentModel = entry;
+			currentSource = entry;
 
 			float speed = currentFrameAnimation.duration;
 
@@ -711,7 +711,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 					|| currentAnimationType == Tween.REVERSE_REPEAT)
 				speed *= -1;
 			
-			currentModel.controller.setAnimation(currentFrameAnimation.id, currentCount, speed, animationListener);
+			currentSource.controller.setAnimation(currentFrameAnimation.id, currentCount, speed, animationListener);
 			
 			update(lastAnimationTime);
 
@@ -728,7 +728,7 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 		createEnvirontment();
 
-		if (currentModel != null && renderShadow)
+		if (currentSource != null && renderShadow)
 			genShadowMap();
 
 		if (USE_FBO) {
@@ -752,12 +752,12 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void dispose() {
-		for (String key : modelCache.keySet()) {
+		for (String key : sourceCache.keySet()) {
 			EngineAssetManager.getInstance().disposeModel3D(key);
 		}
 
-		modelCache.clear();
-		currentModel = null;
+		sourceCache.clear();
+		currentSource = null;
 		environment = null;
 		shadowEnvironment = null;
 

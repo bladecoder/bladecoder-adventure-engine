@@ -299,8 +299,6 @@ public class SceneScreen implements Screen {
 			} else if (w.getCurrentDialog() != null) {
 				dialogUI.touchEvent(SceneInputProcessor.TOUCH_UP, unprojectTmp.x, unprojectTmp.y, pointer,
 						button);
-			} else if (w.getCurrentScene().getOverlay() != null) {
-				w.getCurrentScene().getOverlay().click();
 			} else if (dragging) {
 				inventoryUI.touchEvent(SceneInputProcessor.TOUCH_UP, unprojectTmp.x, unprojectTmp.y,
 						pointer, button);

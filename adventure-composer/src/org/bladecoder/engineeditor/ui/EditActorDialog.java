@@ -31,10 +31,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 public class EditActorDialog extends EditElementDialog {
 
 	public static final String TYPES_INFO[] = {
-			"No renderer actors only define an interactive area",
-			"Atlas actors allows 2d image and animations",
-			"3d actors allows 3d models and animations",
-			"Spine actors allows Spine 2d skeletal animations"
+			"No renderer actor, only define an interactive area",
+			"Atlas actor allows 2d image and animations",
+			"3d actors allow 3d models and animations",
+			"Spine actors allow Spine 2d skeletal animations",
+			"Image actors show image files"
 			};
 
 	private InputPanel[] inputs = new InputPanel[12];

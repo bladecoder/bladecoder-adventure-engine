@@ -113,7 +113,7 @@ public class ResolutionList extends EditList<Resolution> {
 
 		removeDir(Ctx.project.getProjectDir() + "/" + Project.BACKGROUNDS_PATH
 				+ "/" + r.suffix);
-		removeDir(Ctx.project.getProjectDir() + "/" + Project.OVERLAYS_PATH
+		removeDir(Ctx.project.getProjectDir() + "/" + Project.IMAGE_PATH
 				+ "/" + r.suffix);
 		removeDir(Ctx.project.getProjectDir() + "/" + Project.UI_PATH + "/"
 				+ r.suffix);

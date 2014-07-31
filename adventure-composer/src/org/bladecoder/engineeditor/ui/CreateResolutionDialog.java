@@ -40,7 +40,7 @@ public class CreateResolutionDialog extends EditDialog {
 	String atlasDir = Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH;
 	String bgDir = Ctx.project.getProjectPath() + "/" + Project.BACKGROUNDS_PATH;
 	String uiDir = Ctx.project.getProjectPath() + "/" + Project.UI_PATH;
-	String overlaysDir = Ctx.project.getProjectPath() + "/" + Project.OVERLAYS_PATH;
+	String imageDir = Ctx.project.getProjectPath() + "/" + Project.IMAGE_PATH;
 
 	public CreateResolutionDialog(Skin skin) {
 		super("CREATE RESOLUTION", skin);
@@ -73,7 +73,7 @@ public class CreateResolutionDialog extends EditDialog {
 		new File(atlasDir + "/" + prefix).mkdir();
 		new File(bgDir + "/" + prefix).mkdir();
 		new File(uiDir + "/" + prefix).mkdir();
-		new File(overlaysDir + "/" + prefix).mkdir();		
+		new File(imageDir + "/" + prefix).mkdir();		
 	}
 
 	private String scaleImages() {
@@ -87,7 +87,7 @@ public class CreateResolutionDialog extends EditDialog {
 		try {
 			ImageUtils.scaleDirFiles(new File(uiDir + "/" + wPrefix), new File(uiDir + "/" + prefix), s);
 			ImageUtils.scaleDirFiles(new File(bgDir + "/" + wPrefix), new File(bgDir + "/" + prefix), s);
-			ImageUtils.scaleDirFiles(new File(overlaysDir + "/" + wPrefix), new File(overlaysDir + "/" + prefix), s);
+			ImageUtils.scaleDirFiles(new File(imageDir + "/" + wPrefix), new File(imageDir + "/" + prefix), s);
 		} catch (IOException e) {
 			return e.getMessage();
 		}

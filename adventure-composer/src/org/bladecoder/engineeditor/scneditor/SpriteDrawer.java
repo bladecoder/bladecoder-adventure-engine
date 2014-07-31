@@ -18,6 +18,7 @@ package org.bladecoder.engineeditor.scneditor;
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.model.Actor;
+import org.bladecoder.engine.model.ImageRenderer;
 import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.AtlasRenderer;
@@ -63,6 +64,8 @@ public class SpriteDrawer {
 						.getWidth(), r.getHeight()));
 			} else if (r instanceof SpineRenderer) {
 				renderer = new SpineRenderer();
+			} else if (r instanceof ImageRenderer) {
+				renderer = new ImageRenderer();				
 			} else {
 				renderer = new AtlasRenderer();
 			}

@@ -77,9 +77,6 @@ public class Scene implements Serializable,
 	/** depth vector. x: scale when y=0, y: scale when y=scene height */
 	private Vector2 depthVector;
 
-	/** Overlay image drew over the scene */
-	private OverlayImage overlay;
-
 	/** For FADEIN/FADEOUT */
 	private Transition transition;
 
@@ -203,15 +200,6 @@ public class Scene implements Serializable,
 		// so we need to order the array list
 		Collections.sort(dynamicActors);
 
-		if (overlay != null) {
-			overlay.update(delta);
-
-			if (overlay.isFinish()) {
-				overlay.dispose();
-				overlay = null;
-			}
-		}
-
 		if (transition != null) {
 			transition.update(delta);
 
@@ -296,10 +284,6 @@ public class Scene implements Serializable,
 					GL20.GL_ONE_MINUS_SRC_ALPHA);
 		}
 
-		if (overlay != null) {
-			overlay.draw(spriteBatch);
-		}
-
 		if (EngineLogger.debugMode()
 				&& EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
 
@@ -362,17 +346,6 @@ public class Scene implements Serializable,
 		}
 
 		renderer.end();
-	}
-
-	public void setOverlay(OverlayImage o) {
-		if (overlay != null)
-			overlay.dispose();
-
-		overlay = o;
-	}
-
-	public OverlayImage getOverlay() {
-		return overlay;
 	}
 
 	public void setTransition(Transition t) {
@@ -476,7 +449,7 @@ public class Scene implements Serializable,
 
 	public Actor getActorAt(float x, float y) {
 		for (Actor a:fgActors) {
-			if (a.hit(x, y)	&& a.hasInteraction()) {
+			if ( a.hasInteraction() && a.hit(x, y)) {
 				return a;
 			}
 		}
@@ -486,13 +459,13 @@ public class Scene implements Serializable,
 		for (int i = dynamicActors.size() - 1; i >= 0; i--) {
 			Actor a = dynamicActors.get(i);
 
-			if (a.hit(x, y)	&& a.hasInteraction()) {
+			if (a.hasInteraction() && a.hit(x, y)) {
 				return a;
 			}
 		}
 		
 		for (Actor a:bgActors) {
-			if (a.hit(x, y)	&& a.hasInteraction()) {
+			if (a.hasInteraction() && a.hit(x, y)) {
 				return a;
 			}
 		}
@@ -654,9 +627,6 @@ public class Scene implements Serializable,
 				isPlayingSer = false;
 			}
 		}
-
-		if (overlay != null)
-			overlay.retrieveAssets();
 	}
 
 	@Override
@@ -683,11 +653,6 @@ public class Scene implements Serializable,
 		if (musicFilename != null && music != null) {
 			EngineAssetManager.getInstance().disposeMusic(musicFilename);
 			music = null;
-		}
-
-		if (overlay != null) {
-			overlay.dispose();
-			overlay = null;
 		}
 
 		transition = null;
@@ -732,8 +697,6 @@ public class Scene implements Serializable,
 		json.writeValue("isPlaying", music != null && music.isPlaying());
 		// TODO save music positionSer when available in API
 
-		json.writeValue("overlay", overlay,
-				overlay == null ? null : overlay.getClass());
 		json.writeValue("transition", transition, transition == null ? null
 				: transition.getClass());
 		
@@ -792,7 +755,6 @@ public class Scene implements Serializable,
 		isPlayingSer = json.readValue("isPlaying", Boolean.class, jsonData);
 		// TODO restore positionSer for music when available in API
 
-		overlay = json.readValue("overlay", OverlayImage.class, jsonData);
 		transition = json.readValue("transition", Transition.class, jsonData);
 		
 		camera = json.readValue("camera", SceneCamera.class, jsonData);

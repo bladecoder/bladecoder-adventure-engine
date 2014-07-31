@@ -70,8 +70,6 @@ public class ActionFactory {
 				"org.bladecoder.engine.actions.SoundAction");
 		actions.put("music",
 				"org.bladecoder.engine.actions.MusicAction");
-		actions.put("overlay",
-				"org.bladecoder.engine.actions.OverlayAction");
 		actions.put("camera",
 				"org.bladecoder.engine.actions.CameraAction");
 		actions.put("transition",
