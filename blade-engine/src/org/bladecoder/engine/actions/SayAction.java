@@ -27,6 +27,7 @@ import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -34,13 +35,21 @@ public class SayAction extends BaseCallbackAction implements Action {
 	public static final String INFO = "Says a text";
 	public static final Param[] PARAMS = {
 			new Param("text", "The 'text' to show", Type.STRING),
-			new Param("speech", "The 'soundId' to play if selected", Type.STRING),
+			new Param(
+					"pos",
+					"The position of the text. If null, the position will be calc based in actor",
+					Type.VECTOR2),
+			new Param("speech", "The 'soundId' to play if selected",
+					Type.STRING),
 			new Param(
 					"wait",
 					"If this param is 'false' the text is showed and the action continues inmediatly",
 					Type.BOOLEAN, true),
-			new Param("type", "The type of the text: 'talk', 'rectangle' (default) and 'plain'",
-					Type.STRING, true, "rectangle", new String[] {"rectangle", "talk", "plain"}), };
+			new Param(
+					"type",
+					"The type of the text: 'talk', 'rectangle' (default) and 'plain'",
+					Type.STRING, true, "rectangle", new String[] { "rectangle",
+							"talk", "plain" }), };
 
 	private String soundId;
 	private String text;
@@ -51,6 +60,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 	private Text.Type type = Text.Type.RECTANGLE;
 
 	private String previousFA = null;
+	private Vector2 pos = null;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -73,13 +83,16 @@ public class SayAction extends BaseCallbackAction implements Action {
 			}
 		}
 
-		// TODO Add parameters like color, position of text, etc...
+		if (params.get("pos") != null) {
+			pos = Param.parseVector2(params.get("pos"));
+		}
 	}
 
 	@Override
 	public void run() {
 		EngineLogger.debug("SAY ACTION");
-		Actor actor = World.getInstance().getCurrentScene().getActor(actorId, false);
+		Actor actor = World.getInstance().getCurrentScene()
+				.getActor(actorId, false);
 
 		if (type == Text.Type.TALK)
 			restoreStandPose((SpriteActor) actor);
@@ -91,22 +104,31 @@ public class SayAction extends BaseCallbackAction implements Action {
 			float x, y;
 			boolean quee = false;
 
-			if (type == Text.Type.RECTANGLE) {
-				x = y = TextManager.POS_SUBTITLE;
+			if (pos != null) {
+				x = pos.x;
+				y = pos.y;
 			} else {
-				// WorldCamera c = World.getInstance().getCamera();
-				// Vector3 p = c.scene2screen(pos.x, pos.y +
-				// ((SpriteActor)actor).getHeight());
 
-				x = actor.getX();
-				y = actor.getY() + actor.getBBox().getBoundingRectangle().getHeight();
-				// quee = true;
+				if (type == Text.Type.RECTANGLE) {
+					x = y = TextManager.POS_SUBTITLE;
+				} else {
+					// WorldCamera c = World.getInstance().getCamera();
+					// Vector3 p = c.scene2screen(pos.x, pos.y +
+					// ((SpriteActor)actor).getHeight());
+
+					x = actor.getX();
+					y = actor.getY()
+							+ actor.getBBox().getBoundingRectangle()
+									.getHeight();
+					// quee = true;
+				}
 			}
 
 			if (type == Text.Type.TALK) {
-				previousFA = ((SpriteActor) actor).getRenderer().getCurrentFrameAnimationId();
-				((SpriteActor) actor).startFrameAnimation(getTalkFA(previousFA),
-						Tween.FROM_FA, 0, null);
+				previousFA = ((SpriteActor) actor).getRenderer()
+						.getCurrentFrameAnimationId();
+				((SpriteActor) actor).startFrameAnimation(
+						getTalkFA(previousFA), Tween.FROM_FA, 0, null);
 			}
 
 			if (wait) {
@@ -123,8 +145,8 @@ public class SayAction extends BaseCallbackAction implements Action {
 	@Override
 	public void onEvent() {
 		if (this.type == Text.Type.TALK) {
-			SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene()
-					.getActor(actorId, false);
+			SpriteActor actor = (SpriteActor) World.getInstance()
+					.getCurrentScene().getActor(actorId, false);
 			actor.startFrameAnimation(previousFA, Tween.FROM_FA, 0, null);
 		}
 
