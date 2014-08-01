@@ -144,6 +144,8 @@ public class TextManagerUI {
 		
 		if(font == null)
 			font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
+		
+		font.setMarkupEnabled(true);
 	}
 
 	public void resize(int width, int height) {

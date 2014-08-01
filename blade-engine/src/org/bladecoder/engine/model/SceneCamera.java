@@ -31,7 +31,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class SceneCamera extends OrthographicCamera implements Serializable  {
 	
 	private static final float START_SCROLLX = 0.1f;
-	private static final float START_SCROLLY = 0.2f;
+	private static final float START_SCROLLY = 0.15f;
 	
 	// to avoid create new vector when calling getPosition
 	private final static Vector2 tmpPos = new Vector2();
@@ -93,13 +93,13 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 
 	public void setPosition(float x, float y) {
 
-		float maxleft = viewportWidth / 2;
-		float maxright = scrollingWidth - viewportWidth / 2;
+		float maxleft = viewportWidth / 2 * zoom;
+		float maxright = (scrollingWidth - viewportWidth / 2 * zoom);
 		
-		float maxbottom = viewportHeight / 2;
-		float maxtop = scrollingHeight - viewportHeight / 2;
+		float maxbottom = viewportHeight / 2 * zoom;
+		float maxtop = (scrollingHeight - viewportHeight / 2 * zoom);
 
-		if (x <= maxleft)
+		if (x <= maxleft )
 			x = maxleft;
 		else if (x >= maxright)
 			x = maxright;
@@ -169,19 +169,19 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		
 		boolean translate = false;
 
-		if (cx - posx > startScrollDistanceX) {
-			cx = cx - (cx - posx - startScrollDistanceX);
+		if (cx - posx > startScrollDistanceX * zoom) {
+			cx = cx - (cx - posx - startScrollDistanceX * zoom);
 			translate = true;
-		} else if (posx - cx > startScrollDistanceX) {
-			cx = cx + (posx - cx - startScrollDistanceX);
+		} else if (posx - cx > startScrollDistanceX * zoom) {
+			cx = cx + (posx - cx - startScrollDistanceX * zoom);
 			translate = true;
 		}
 		
-		if (cy - posy  + followActor.getHeight() > startScrollDistanceY) {
-			cy = cy - (cy - posy - startScrollDistanceY);
+		if (cy - posy  + followActor.getHeight() > startScrollDistanceY * zoom) {
+			cy = cy - (cy - posy - startScrollDistanceY * zoom);
 			translate = true;
-		} else if (posy - cy > startScrollDistanceY) {
-			cy = cy + (posy - cy - startScrollDistanceY);
+		} else if (posy - cy > startScrollDistanceY * zoom) {
+			cy = cy + (posy - cy - startScrollDistanceY * zoom);
 			translate = true;
 		}
 		

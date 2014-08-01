@@ -56,10 +56,9 @@ public class CameraTween extends Tween {
 	public void update(float delta, SceneCamera camera) {
 		update(delta);
 		
+		camera.setZoom(startZoom + getPercent() * (targetZoom- startZoom));
 		camera.setPosition(startX + getPercent() * (targetX - startX),
 				startY + getPercent() * (targetY - startY));
-		
-		camera.setZoom(startZoom + getPercent() * (targetZoom- startZoom));
 	}
 	
 	@Override

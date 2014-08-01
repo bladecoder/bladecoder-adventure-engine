@@ -53,7 +53,8 @@ public class CameraAction extends BaseCallbackAction implements Action {
 		actorId = params.get("actor");
 		followActorId = params.get("followActorId");
 
-		pos = Param.parseVector2(params.get("pos"));
+		if (params.get("pos") != null)
+			pos = Param.parseVector2(params.get("pos"));
 
 		if (params.get("zoom") != null)
 			zoom = Float.parseFloat(params.get("zoom"));
@@ -94,8 +95,9 @@ public class CameraAction extends BaseCallbackAction implements Action {
 		}
 
 		if (duration == 0) {
-			camera.setPosition(pos.x * scale, pos.y * scale);
 			camera.setZoom(zoom);
+			camera.setPosition(pos.x * scale, pos.y * scale);
+			onEvent();
 		} else {
 
 			if (wait) {

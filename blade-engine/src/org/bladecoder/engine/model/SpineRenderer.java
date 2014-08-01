@@ -83,10 +83,11 @@ public class SpineRenderer implements SpriteRenderer {
 	private AnimationStateListener animationListener = new AnimationStateListener() {
 		@Override
 		public void complete(int trackIndex, int loopCount) {
-			if (currentCount >= loopCount) {
-				// TODO Manage loopCount
+			if (currentAnimationType == Tween.REPEAT && (currentCount == Tween.INFINITY || currentCount > loopCount)) {
+				return;
 			}
 
+			currentSource.animation.setTimeScale(0);
 			if (animationCb != null || animationCbSer != null) {
 
 				if (animationCb == null) {

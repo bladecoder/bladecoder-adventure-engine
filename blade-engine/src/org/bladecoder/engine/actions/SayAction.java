@@ -99,7 +99,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 				// ((SpriteActor)actor).getHeight());
 
 				x = actor.getX();
-				y = actor.getY() + ((SpriteActor) actor).getHeight();
+				y = actor.getY() + actor.getBBox().getBoundingRectangle().getHeight();
 				// quee = true;
 			}
 
