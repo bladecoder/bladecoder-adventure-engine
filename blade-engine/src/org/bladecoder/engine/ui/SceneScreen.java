@@ -256,9 +256,7 @@ public class SceneScreen implements Screen {
 		if(!World.getInstance().isDisposed()) {
 			viewport.setWorldSize(World.getInstance().getWidth(), World.getInstance().getHeight());
 			viewport.update(width, height, true);
-			World.getInstance().getSceneCamera().viewportWidth = viewport.getWorldWidth();
-			World.getInstance().getSceneCamera().viewportHeight = viewport.getWorldHeight();
-			World.getInstance().getSceneCamera().update();
+			World.getInstance().resize(viewport.getWorldWidth(), viewport.getWorldHeight());
 		} else {
 			viewport.setWorldSize(width, height);
 			viewport.update(width, height, true);

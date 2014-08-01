@@ -387,6 +387,17 @@ public class World implements Serializable, AssetConsumer {
 		return currentScene.getCamera();
 	}
 	
+
+	public void resize(float viewportWidth, float viewportHeight) {	
+		currentScene.getCamera().viewportWidth = viewportWidth;
+		currentScene.getCamera().viewportHeight = viewportHeight;
+		
+		if(currentScene.getCameraFollowActor() != null)
+			currentScene.getCamera().updatePos(currentScene.getCameraFollowActor());
+		
+		currentScene.getCamera().update();		
+	}
+	
 	public void setChapter(String chapter) {
 		this.chapter = chapter;
 	}

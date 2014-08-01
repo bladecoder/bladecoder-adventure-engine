@@ -593,8 +593,8 @@ public class Scene implements Serializable,
 			camera.setScrollingDimensions(width,
 						height);
 			
-			if(followActor != null)
-				camera.updatePos(followActor);
+//			if(followActor != null)
+//				camera.updatePos(followActor);
 		}
 
 		// RETRIEVE LIGHT MAP
