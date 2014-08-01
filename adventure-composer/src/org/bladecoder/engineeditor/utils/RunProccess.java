@@ -89,7 +89,7 @@ public class RunProccess {
 		args.add(target);
 		
 		List<String> cp = new ArrayList<String>();
-		cp.add(System.getProperty("java.class.path") );
+//		cp.add(System.getProperty("java.class.path") );
 		cp.add("package-files/ant.jar");
 		cp.add("package-files/ant-launcher.jar");
 		

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="Create dist packages for Android" default="dist">
-	<property file="android.test.properties" />
+<!-- 	<property file="android.test.properties" /> -->
 
 	<!-- TOOLS location -->
 	<property name="android.tools.dir" location="${sdk.dir}/tools" />
