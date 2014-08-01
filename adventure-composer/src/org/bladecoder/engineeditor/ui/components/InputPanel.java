@@ -77,6 +77,8 @@ public class InputPanel extends Table {
 		case BOOLEAN:
 			init(skin, title, desc, new SelectBox<String>(skin), mandatory, defaultValue);
 			((SelectBox<String>)field).setItems(mandatory?booleanValues:booleanNotMandatoryValues);
+	       	if(defaultValue != null)
+	    		setText(defaultValue);			
 			break;
 			
 		case VECTOR2:

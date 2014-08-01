@@ -32,7 +32,7 @@ public abstract class EditList<T> extends Table {
 	protected EditToolbar toolbar;
     protected CustomList<T> list;
     protected Skin skin;
-    protected Container container;
+    protected Container<ScrollPane> container;
 	
 	public EditList(Skin skin) {
 		super(skin);
@@ -46,7 +46,7 @@ public abstract class EditList<T> extends Table {
 		list.setItems(items);
 			
 		ScrollPane scrollPane = new ScrollPane(list, skin);
-		container = new Container(scrollPane);
+		container = new Container<ScrollPane>(scrollPane);
 		container.fill();
 		container.prefHeight(100);
 		

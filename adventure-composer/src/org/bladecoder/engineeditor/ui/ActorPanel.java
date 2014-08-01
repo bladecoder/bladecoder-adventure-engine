@@ -67,7 +67,7 @@ public class ActorPanel extends HeaderPanel {
 
 							String type = doc.getType(a);
 
-							if (!type.equals("background"))
+							if (!type.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE))
 								tabPanel.addTab("Sprites", faList);
 
 							if (!type.equals("foreground")) {

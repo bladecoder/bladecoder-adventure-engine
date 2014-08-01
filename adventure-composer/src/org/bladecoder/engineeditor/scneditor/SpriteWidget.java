@@ -20,6 +20,7 @@ import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.AtlasRenderer;
+import org.bladecoder.engine.model.ImageRenderer;
 import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.model.Sprite3DRenderer;
 import org.bladecoder.engine.model.SpriteRenderer;
@@ -60,6 +61,8 @@ public class SpriteWidget extends Widget {
 			((Sprite3DRenderer)renderer).setSpriteSize(new Vector2( Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 		} else if(type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
 			renderer = new SpineRenderer();
+		} else if(type.equals(ChapterDocument.IMAGE_ACTOR_TYPE)) {
+			renderer = new ImageRenderer();			
 		} else {
 			renderer = new AtlasRenderer();
 		}

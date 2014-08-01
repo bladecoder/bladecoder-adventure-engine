@@ -69,7 +69,7 @@ public class ActorProps extends PropertyTable {
 
 		if (a != null) {
 
-			if (!a.getAttribute("type").equals("background")) {
+			if (!a.getAttribute("type").equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
 				Vector2 pos = doc.getPos(a);
 				addProperty(POS_X_PROP, Float.toString(pos.x), Types.FLOAT);
 				addProperty(POS_Y_PROP, Float.toString(pos.y), Types.FLOAT);

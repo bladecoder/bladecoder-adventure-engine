@@ -31,16 +31,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 public class EditActorDialog extends EditElementDialog {
 
 	public static final String TYPES_INFO[] = {
-			"Background actors define an interactive area in the background",
-			"Atlas actors allows 2d image and animations",
-			"3d actors allows 3d models and animations",
-			"Spine actors allows Spine 2d skeletal animations",
-			"Actors always in the foreground. No interactive" };
+			"No renderer actor, only define an interactive area",
+			"Atlas actor allows 2d image and animations",
+			"3d actors allow 3d models and animations",
+			"Spine actors allow Spine 2d skeletal animations",
+			"Image actors show image files"
+			};
 
-	private InputPanel[] inputs = new InputPanel[11];
+	private InputPanel[] inputs = new InputPanel[12];
 	InputPanel typePanel;
 
-	String attrs[] = { "type", "id", "desc", "state", "interaction", "visible",
+	String attrs[] = { "type", "id", "layer", "desc", "state", "interaction", "visible",
 			"walking_speed", "depth_type", "sprite_size", "camera", "fov" };
 
 	@SuppressWarnings("unchecked")
@@ -54,29 +55,34 @@ public class EditActorDialog extends EditElementDialog {
 
 		inputs[1] = new InputPanel(skin, "Actor ID",
 				"IDs can not contain '.' or '_' characters.", true);
-		inputs[2] = new InputPanel(skin, "Description",
+
+		inputs[2] = new InputPanel(skin, "Actor Layer",
+				"The layer for drawing order",
+				ChapterDocument.ACTOR_LAYERS);
+		
+		inputs[3] = new InputPanel(skin, "Description",
 				"The text showed when the cursor is over the actor.");
-		inputs[3] = new InputPanel(
+		inputs[4] = new InputPanel(
 				skin,
 				"State",
 				"Initial state of the actor. Actors can be in differentes states during the game.");
-		inputs[4] = new InputPanel(skin, "Interaction",
+		inputs[5] = new InputPanel(skin, "Interaction",
 				"True when the actor reacts to the user input.",
 				Param.Type.BOOLEAN, false);
-		inputs[5] = new InputPanel(skin, "Visible", "The actor visibility.",
+		inputs[6] = new InputPanel(skin, "Visible", "The actor visibility.",
 				Param.Type.BOOLEAN, false);
-		inputs[6] = new InputPanel(skin, "Walking Speed",
+		inputs[7] = new InputPanel(skin, "Walking Speed",
 				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT,
 				false);
-		inputs[7] = new InputPanel(skin, "Depth Type",
+		inputs[8] = new InputPanel(skin, "Depth Type",
 				"Scene fake depth for scaling", new String[] { "none",
 						"vector"});
-		inputs[8] = new InputPanel(skin, "Sprite Dimensions",
+		inputs[9] = new InputPanel(skin, "Sprite Dimensions",
 				"The size of the 3d sprite", Param.Type.DIMENSION, true);
-		inputs[9] = new InputPanel(skin, "Camera Name",
+		inputs[10] = new InputPanel(skin, "Camera Name",
 				"The name of the camera in the model", Param.Type.STRING, true,
 				"Camera", null);
-		inputs[10] = new InputPanel(skin, "Camera FOV",
+		inputs[11] = new InputPanel(skin, "Camera FOV",
 				"The camera field of view", Param.Type.FLOAT, true, "49.3",
 				null);
 
@@ -104,15 +110,15 @@ public class EditActorDialog extends EditElementDialog {
 
 		setInfo(TYPES_INFO[i]);
 
-		setVisible(inputs[8],false);
 		setVisible(inputs[9],false);
 		setVisible(inputs[10],false);
+		setVisible(inputs[11],false);
 
 		if (ChapterDocument.ACTOR_TYPES[i]
 				.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
-			setVisible(inputs[8],true);
 			setVisible(inputs[9],true);
 			setVisible(inputs[10],true);
+			setVisible(inputs[11],true);
 		}
 	}
 
@@ -120,7 +126,7 @@ public class EditActorDialog extends EditElementDialog {
 	protected void fill() {
 		int i = typePanel.getSelectedIndex();
 		if (((ChapterDocument)doc).getBBox(e) == null && ChapterDocument.ACTOR_TYPES[i]
-				.equals(ChapterDocument.BACKGROUND_ACTOR_TYPE)) {
+				.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
 			((ChapterDocument) doc).setBbox(e, null);
 		}
 		

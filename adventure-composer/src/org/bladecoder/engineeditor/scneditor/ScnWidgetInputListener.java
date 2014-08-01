@@ -259,7 +259,7 @@ public class ScnWidgetInputListener extends ClickListener {
 				}
 			}
 			
-			Actor a = scn.getFullSearchActorAt(p.x, p.y); // CHECK FOR ACTORS
+			Actor a = scn.getActorAt(p.x, p.y); // CHECK FOR ACTORS
 
 			if (a != null && a != selActor) {
 

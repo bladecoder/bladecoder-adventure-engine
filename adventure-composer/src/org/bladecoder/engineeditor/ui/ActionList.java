@@ -82,6 +82,38 @@ public class ActionList extends ElementList {
 	protected EditElementDialog getEditElementDialogInstance(Element e) {
 		return new EditActionDialog(skin, doc, parent, e);
 	}
+	
+	@Override
+	protected void create() {
+		EditElementDialog dialog = getEditElementDialogInstance(null);
+		dialog.show(getStage());
+		dialog.setListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				int pos = list.getSelectedIndex();
+				
+				Element e2 = null;							
+				
+				pos++;
+				
+				if(pos!=0 && pos < list.getItems().size) 
+					e2 = list.getItems().get(pos);
+				
+				Element e = ((EditElementDialog)actor).getElement();
+				list.getItems().insert(pos, e);
+
+				Node parent = e.getParentNode();
+				parent.removeChild(e);
+				parent.insertBefore(e, e2);					
+				
+				int i = getItems().indexOf(e, true);
+				if(i != -1)
+					list.setSelectedIndex(i);
+				
+				list.invalidateHierarchy();
+			}			
+		});
+	}
 
 	private void up() {
 		int pos = list.getSelectedIndex();

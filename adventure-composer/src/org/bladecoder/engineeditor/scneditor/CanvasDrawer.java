@@ -72,10 +72,6 @@ public class CanvasDrawer {
 			// drawer.rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 		}
 
-		for (SpriteActor a : scn.getForegroundActors()) {
-			drawer.polygon(a.getBBox().getTransformedVertices());
-		}
-
 		drawer.end();
 	}
 

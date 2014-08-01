@@ -46,13 +46,13 @@ import com.badlogic.gdx.utils.Array;
 
 public class AssetsList extends Table {
 	private static final String[] ASSET_TYPES = { "3d models", "backgrounds",
-			"atlases", "music", "sounds", "overlays", "spine" };
+			"atlases", "music", "sounds", "images", "spine" };
 
 	private SelectBox<String> assetTypes;
 	protected EditToolbar toolbar;
     protected CustomList<String> list;
     protected Skin skin;
-    protected Container container;
+    protected Container<ScrollPane> container;
 
 	private File lastDir;
 
@@ -70,7 +70,7 @@ public class AssetsList extends Table {
 		list.setItems(items);
 			
 		ScrollPane scrollPane = new ScrollPane(list, skin);
-		container = new Container(scrollPane);
+		container = new Container<ScrollPane>(scrollPane);
 		container.fill();
 		container.prefHeight(100);
 		
@@ -140,7 +140,7 @@ public class AssetsList extends Table {
 			String type = assetTypes.getSelected();
 			String dir = getAssetDir(type);
 
-			if (type.equals("backgrounds") || type.equals("overlays") || type.equals("atlases"))
+			if (type.equals("backgrounds") || type.equals("images") || type.equals("atlases"))
 				dir += "/" + Ctx.project.getResolutions().get(0).suffix;
 
 			String[] files = new File(dir).list(new FilenameFilter() {
@@ -178,8 +178,8 @@ public class AssetsList extends Table {
 			dir = Ctx.project.getProjectPath() + "/" + Project.MUSIC_PATH;
 		} else if (type.equals("sounds")) {
 			dir = Ctx.project.getProjectPath() + "/" + Project.SOUND_PATH;
-		} else if (type.equals("overlays")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.OVERLAYS_PATH;
+		} else if (type.equals("images")) {
+			dir = Ctx.project.getProjectPath() + "/" + Project.IMAGE_PATH;
 		} else if (type.equals("3d models")) {
 			dir = Ctx.project.getProjectPath() + "/" + Project.SPRITE3D_PATH;
 		} else if (type.equals("spine")) {
@@ -205,7 +205,7 @@ public class AssetsList extends Table {
 
 			FileNameExtensionFilter filter = null;
 
-			if (type.equals("backgrounds") || type.equals("overlays"))
+			if (type.equals("backgrounds") || type.equals("images"))
 				filter = new FileNameExtensionFilter("Images", "jpg", "png",
 						"etc1");
 			else if (type.equals("music") || type.equals("sounds"))
@@ -227,7 +227,7 @@ public class AssetsList extends Table {
 
 					for (File f : files) {
 						if (type.equals("backgrounds")
-								|| type.equals("overlays")) {
+								|| type.equals("images")) {
 							List<Resolution> res = Ctx.project.getResolutions();
 							int wWidth = Ctx.project.getWorld().getWidth();
 
@@ -287,7 +287,7 @@ public class AssetsList extends Table {
 
 		String name = list.getSelected();
 		try {
-			if (type.equals("backgrounds") || type.equals("overlays")
+			if (type.equals("backgrounds") || type.equals("images")
 					|| type.equals("atlases")) {
 				List<Resolution> res = Ctx.project.getResolutions();
 

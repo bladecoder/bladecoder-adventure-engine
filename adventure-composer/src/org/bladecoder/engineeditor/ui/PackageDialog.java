@@ -217,6 +217,10 @@ public class PackageDialog extends EditDialog {
 		} else if (arch.getText().equals("android")) {
 			antBuild = "android.ant.xml";
 			antTarget = "dist";
+			
+			// Scape title in Android
+			props.setProperty("title", Ctx.project.getTitle().replace("'", "\\'"));
+			
 			props.setProperty("sdk.dir", androidSDK.getText());
 			props.setProperty("target", "android-15");
 			props.setProperty("project.app.package", "org.bladecoder." + Ctx.project.getPackageTitle().toLowerCase()); // ANDROID PACKAGE

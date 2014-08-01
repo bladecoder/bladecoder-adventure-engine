@@ -142,7 +142,7 @@ public class ScnWidget extends Widget {
 						} else if (e.getPropertyName().equals("bbox")) {
 							Element selActor = (Element) e.getNewValue();
 							String id = doc.getId(selActor);
-							Actor a = scn.getActor(id, false, true);
+							Actor a = scn.getActor(id, false);
 							if (a == null)
 								return;
 
@@ -152,7 +152,7 @@ public class ScnWidget extends Widget {
 						} else if (e.getPropertyName().equals("pos")) {
 							Element selActor = (Element) e.getNewValue();
 							String id = doc.getId(selActor);
-							Actor a = scn.getActor(id, false, true);
+							Actor a = scn.getActor(id, false);
 							if (a == null)
 								return;
 							Vector2 p = doc.getPos(selActor);
@@ -164,7 +164,7 @@ public class ScnWidget extends Widget {
 									|| !selectedActor.getId().equals(id))
 								return;
 
-							scn.removeActor(scn.getActor(id));
+							scn.removeActor(scn.getActor(id, false));
 							setSelectedActor(null);
 						} else if (e.getPropertyName()
 								.equals("frame_animation")) {
@@ -514,7 +514,7 @@ public class ScnWidget extends Widget {
 
 		if (scn != null && actor != null) {
 			a = scn.getActor(Ctx.project.getSelectedChapter().getId(actor),
-					false, true);
+					false);
 		}
 
 		selectedActor = a;
@@ -565,15 +565,8 @@ public class ScnWidget extends Widget {
 	}
 
 	private Actor createActor(ChapterDocument doc, Element e) {
-
-		String type = doc.getType(e);
 		Actor a = doc.getEngineActor(e);
-
-		if (type.equals("foreground")) {
-			scn.addFgActor((SpriteActor) a);
-		} else {
-			scn.addActor(a);
-		}
+		scn.addActor(a);
 
 		a.loadAssets();
 		EngineAssetManager.getInstance().finishLoading();
@@ -583,7 +576,7 @@ public class ScnWidget extends Widget {
 	}
 
 	private void removeActor(ChapterDocument doc, Element e) {
-		Actor a = scn.getActor(doc.getId(e), false, true);
+		Actor a = scn.getActor(doc.getId(e), false);
 		if (a != null) {
 			scn.removeActor(a);
 

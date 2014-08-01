@@ -28,10 +28,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 
 
 public class VerbList extends ElementList {
+	
+	public static final String VERBS[] = { "lookat", "pickup", "talkto", "use", "leave", "init",
+		"test", "custom" };
 
 	private ActionList actionList;
 
@@ -103,14 +105,23 @@ public class VerbList extends ElementList {
 
 		@Override
 		public TextureRegion getCellImage(Element e) {
+			boolean custom = true;
+			
+			String verbName = e.getAttribute("id");
+			for(String v:VERBS) {
+				if(v.equals(verbName)) {
+					custom = false;
+					break;
+				}
+			}
+			
 			String iconName = MessageFormat.format("ic_{0}", e.getAttribute("id"));
 			TextureRegion image = null;
 			
-			try {
+			if(!custom)
 				image = Ctx.assetManager.getIcon(iconName);
-			} catch(GdxRuntimeException e1) {
+			else
 				image = Ctx.assetManager.getIcon("ic_custom");
-			}
 
 			return image;
 		}

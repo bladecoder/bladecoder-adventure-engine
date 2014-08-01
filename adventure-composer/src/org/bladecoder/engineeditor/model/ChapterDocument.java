@@ -26,7 +26,9 @@ import org.bladecoder.engine.anim.AtlasFrameAnimation;
 import org.bladecoder.engine.anim.FrameAnimation;
 import org.bladecoder.engine.anim.Tween;
 import org.bladecoder.engine.model.Actor;
+import org.bladecoder.engine.model.Actor.ActorLayer;
 import org.bladecoder.engine.model.AtlasRenderer;
+import org.bladecoder.engine.model.ImageRenderer;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.SpineRenderer;
 import org.bladecoder.engine.model.Sprite3DRenderer;
@@ -43,15 +45,21 @@ import com.badlogic.gdx.math.Vector2;
 
 public class ChapterDocument extends BaseDocument {
 
-	public static final String BACKGROUND_ACTOR_TYPE = "background";
+	public static final String NO_RENDERER_ACTOR_TYPE = "no_renderer";
 	public static final String ATLAS_ACTOR_TYPE = "atlas";
 	public static final String SPRITE3D_ACTOR_TYPE = "3d";
 	public static final String SPINE_ACTOR_TYPE = "spine";
-	public static final String FOREGROUND_ACTOR_TYPE = "foreground";
+	public static final String IMAGE_ACTOR_TYPE = "image";
+	
+	public static final String BACKGROUND_LAYER = "background";
+	public static final String FOREGROUND_LAYER = "foreground";
+	public static final String DYNAMIC_LAYER = "dynamic";
 
-	public static final String ACTOR_TYPES[] = { BACKGROUND_ACTOR_TYPE,
-			ATLAS_ACTOR_TYPE, SPINE_ACTOR_TYPE, SPRITE3D_ACTOR_TYPE,
-			FOREGROUND_ACTOR_TYPE };
+	public static final String ACTOR_TYPES[] = { NO_RENDERER_ACTOR_TYPE,
+			ATLAS_ACTOR_TYPE, SPINE_ACTOR_TYPE, SPRITE3D_ACTOR_TYPE, IMAGE_ACTOR_TYPE};
+	
+	public static final String ACTOR_LAYERS[] = { BACKGROUND_LAYER,
+		FOREGROUND_LAYER, DYNAMIC_LAYER};
 
 	public static final String ANIMATION_TYPES[] = { "no_repeat", "repeat",
 			"yoyo", "reverse" };
@@ -208,12 +216,7 @@ public class ChapterDocument extends BaseDocument {
 		for (int i = 0; i < actors.getLength(); i++) {
 			Element a = (Element) actors.item(i);
 			Actor actor = getEngineActor(a);
-
-			if (getType(a).equals("foreground")) {
-				scn.addFgActor((SpriteActor) actor);
-			} else {
-				scn.addActor(actor);
-			}
+			scn.addActor(actor);
 
 			if (getId(a).equals(getRootAttr("player"))) {
 				scn.setPlayer((SpriteActor) actor);
@@ -337,7 +340,7 @@ public class ChapterDocument extends BaseDocument {
 
 		String type = getType(e);
 
-		if (type.equals(ATLAS_ACTOR_TYPE) || type.equals(FOREGROUND_ACTOR_TYPE)) {
+		if (type.equals(ATLAS_ACTOR_TYPE)) {
 			a = new SpriteActor();
 			((SpriteActor) a).setRenderer(new AtlasRenderer());
 		} else if (type.equals(SPRITE3D_ACTOR_TYPE)) {
@@ -350,13 +353,27 @@ public class ChapterDocument extends BaseDocument {
 		} else if (type.equals(SPINE_ACTOR_TYPE)) {
 			a = new SpriteActor();
 			((SpriteActor) a).setRenderer(new SpineRenderer());
-		} else if (type.equals(BACKGROUND_ACTOR_TYPE)) {
+		} else if (type.equals(IMAGE_ACTOR_TYPE)) {
+			a = new SpriteActor();
+			((SpriteActor) a).setRenderer(new ImageRenderer());			
+		} else if (type.equals(NO_RENDERER_ACTOR_TYPE)) {
 			a = new Actor();
 		} else {
 			EngineLogger.error(" Wrong actor Type defined in XML");
 			return null;
 		}
-
+		
+		
+		String layer = e.getAttribute("layer");
+		if (layer.equals(BACKGROUND_LAYER)) {
+			a.setLayer(ActorLayer.BACKGROUND);
+		} else if (layer.equals(FOREGROUND_LAYER)) {
+			a.setLayer(ActorLayer.FOREGROUND);
+		} else {
+			a.setLayer(ActorLayer.DYNAMIC);
+		}
+		
+		
 		a.setId(getId(e));
 		Polygon bbox = getBBox(e);
 		a.setBbox(bbox);
@@ -413,7 +430,7 @@ public class ChapterDocument extends BaseDocument {
 	public FrameAnimation getEngineFA(String type, Element faElement) {
 		FrameAnimation fa;
 
-		if(type.equals(ATLAS_ACTOR_TYPE)||type.equals(FOREGROUND_ACTOR_TYPE)) {
+		if(type.equals(ATLAS_ACTOR_TYPE)) {
 			fa = new AtlasFrameAnimation();	
 		} else {
 			fa = new FrameAnimation();

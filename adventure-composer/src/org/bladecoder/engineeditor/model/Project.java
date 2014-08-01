@@ -61,7 +61,7 @@ public class Project extends PropertyChange {
 	public static final String FONTS_PATH = ASSETS_PATH + "/fonts";
 	public static final String MUSIC_PATH = ASSETS_PATH + "/music";
 	public static final String SOUND_PATH = ASSETS_PATH + "/sounds";
-	public static final String OVERLAYS_PATH = ASSETS_PATH + "/overlays";
+	public static final String IMAGE_PATH = ASSETS_PATH + "/images";
 	public static final String SPRITE3D_PATH = ASSETS_PATH + "/3d";
 	public static final String SPINE_PATH = ASSETS_PATH + "/spine";
 	public static final String UI_PATH = ASSETS_PATH + "/ui";
@@ -218,7 +218,7 @@ public class Project extends PropertyChange {
 	}
 	
 	public String getPackageTitle() {
-		return getTitle().replaceAll(" ", "");
+		return getTitle().replace(" ", "").replace("'", "");
 	}
 
 	public void createProject(File projectFile) throws ParserConfigurationException,

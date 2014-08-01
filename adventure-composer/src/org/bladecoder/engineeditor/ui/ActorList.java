@@ -115,9 +115,7 @@ public class ActorList extends ElementList {
 
 		Element e = list.getItems().get(pos);
 
-		if (e.getAttribute("type").equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)
-				|| e.getAttribute("type").equals(ChapterDocument.ATLAS_ACTOR_TYPE)
-				|| e.getAttribute("type").equals(ChapterDocument.SPINE_ACTOR_TYPE)
+		if (!e.getAttribute("type").equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)
 				) {
 			String id = e.getAttribute("id");
 
@@ -151,11 +149,11 @@ public class ActorList extends ElementList {
 			
 			if (isPlayer) {
 				u = "ic_character_actor";
-			} else if (type.equals(ChapterDocument.FOREGROUND_ACTOR_TYPE)) {
-				u = "ic_fg_actor";
+			} else if (type.equals(ChapterDocument.IMAGE_ACTOR_TYPE)) {
+				u = "ic_sprite_actor";
 			} else if (type.equals(ChapterDocument.ATLAS_ACTOR_TYPE)) {
 				u = "ic_sprite_actor";
-			} else if (type.equals(ChapterDocument.BACKGROUND_ACTOR_TYPE)) {
+			} else if (type.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
 				u = "ic_base_actor";
 			} else if (type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
 				u = "ic_spine";			
