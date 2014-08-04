@@ -211,6 +211,27 @@ public class ChapterXMLLoader extends DefaultHandler {
 						((SpriteActor) actor).setDepthType(DepthType.VECTOR);
 				}
 			}
+			
+
+			String id = atts.getValue("id");
+			String desc = atts.getValue("desc");
+
+			String state = atts.getValue("state");
+
+			if (id == null || id.isEmpty()) {
+				SAXParseException e2 = new SAXParseException(
+						"Actor 'id' attribute not found or empty", locator);
+				error(e2);
+				throw e2;
+			}
+
+			actor.setId(id);
+
+			if (desc != null)
+				actor.setDesc(desc);
+
+			if (state != null)
+				actor.setState(state);					
 
 			// PARSE BBOX
 			Polygon p = null;
@@ -237,7 +258,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 				p = new Polygon();
 				actor.setBbox(p);
 				((SpriteActor) actor).setBboxFromRenderer(true);
-			}
+			}	
 
 			// PARSE POSTITION
 			Vector2 pos = Param.parseVector2(atts.getValue("pos"));
@@ -270,26 +291,6 @@ public class ChapterXMLLoader extends DefaultHandler {
 						.getValue("obstacle"));
 				actor.setWalkObstacle(obstacle);
 			}
-
-			String id = atts.getValue("id");
-			String desc = atts.getValue("desc");
-
-			String state = atts.getValue("state");
-
-			if (id == null || id.isEmpty()) {
-				SAXParseException e2 = new SAXParseException(
-						"Actor 'id' attribute not found or empty", locator);
-				error(e2);
-				throw e2;
-			}
-
-			actor.setId(id);
-
-			if (desc != null)
-				actor.setDesc(desc);
-
-			if (state != null)
-				actor.setState(state);
 
 			String layerStr = atts.getValue("layer");
 			
