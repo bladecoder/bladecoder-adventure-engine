@@ -90,11 +90,10 @@ public class ScnWidgetInputListener extends ClickListener {
 
 		// DOUBLE CLICK TO CREATE OR DELETE POINTS
 		if (getTapCount() == 2) {
-			Polygon poly = scnWidget.getSelectedActor().getBBox();
-			
 			// Check WALKZONE
-			if (scn.getPolygonalNavGraph() != null && scnWidget.getShowWalkZone()) {
-				poly = scn.getPolygonalNavGraph().getWalkZone();
+			if (scn.getPolygonalNavGraph() != null
+					&& scnWidget.getShowWalkZone()) {
+				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph()
 						.getObstacles();
 
@@ -123,6 +122,7 @@ public class ScnWidgetInputListener extends ClickListener {
 					}
 
 				} else {
+
 					boolean created = PolygonUtils.addClampPointIfTolerance(
 							poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
@@ -145,29 +145,36 @@ public class ScnWidgetInputListener extends ClickListener {
 						}
 					}
 				}
-			}			
+			}
 
-			if (!(scnWidget.getSelectedActor() instanceof SpriteActor)
-					|| !((SpriteActor) scnWidget.getSelectedActor()).isBboxFromRenderer()) {
-				if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+			if (scnWidget.getSelectedActor() != null) {
 
-					// Delete the point if selected
-					boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y,
-							CanvasDrawer.CORNER_DIST);
+				Polygon poly = scnWidget.getSelectedActor().getBBox();
 
-					if (deleted) {
-						Ctx.project.getSelectedChapter().setBbox(
-								Ctx.project.getSelectedActor(), poly);
-						return;
-					}
-				} else {
-					boolean created = PolygonUtils.addClampPointIfTolerance(
-							poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
+				if (!(scnWidget.getSelectedActor() instanceof SpriteActor)
+						|| !((SpriteActor) scnWidget.getSelectedActor())
+								.isBboxFromRenderer()) {
+					if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
 
-					if (created) {
-						Ctx.project.getSelectedChapter().setBbox(
-								Ctx.project.getSelectedActor(), poly);
-						return;
+						// Delete the point if selected
+						boolean deleted = PolygonUtils.deletePoint(poly, p.x,
+								p.y, CanvasDrawer.CORNER_DIST);
+
+						if (deleted) {
+							Ctx.project.getSelectedChapter().setBbox(
+									Ctx.project.getSelectedActor(), poly);
+							return;
+						}
+					} else {
+						boolean created = PolygonUtils
+								.addClampPointIfTolerance(poly, p.x, p.y,
+										CanvasDrawer.CORNER_DIST);
+
+						if (created) {
+							Ctx.project.getSelectedChapter().setBbox(
+									Ctx.project.getSelectedActor(), poly);
+							return;
+						}
 					}
 				}
 			}
@@ -191,8 +198,9 @@ public class ScnWidgetInputListener extends ClickListener {
 
 		if (button == Buttons.LEFT) {
 			selActor = scnWidget.getSelectedActor();
-			
-			if (scn.getPolygonalNavGraph() != null && scnWidget.getShowWalkZone()) { // Check WALKZONE
+
+			if (scn.getPolygonalNavGraph() != null
+					&& scnWidget.getShowWalkZone()) { // Check WALKZONE
 
 				// CHECK WALKZONE VERTEXS
 				Polygon wzPoly = scn.getPolygonalNavGraph().getWalkZone();
@@ -242,11 +250,12 @@ public class ScnWidgetInputListener extends ClickListener {
 					return true;
 				}
 
-			}			
+			}
 
 			// SELACTOR VERTEXs DRAGGING
-			if (selActor!=null && (!(selActor instanceof SpriteActor)
-					|| !((SpriteActor) selActor).isBboxFromRenderer())) {
+			if (selActor != null
+					&& (!(selActor instanceof SpriteActor) || !((SpriteActor) selActor)
+							.isBboxFromRenderer())) {
 
 				Polygon bbox = selActor.getBBox();
 				float verts[] = bbox.getTransformedVertices();
@@ -258,7 +267,7 @@ public class ScnWidgetInputListener extends ClickListener {
 					}
 				}
 			}
-			
+
 			Actor a = scn.getActorAt(p.x, p.y); // CHECK FOR ACTORS
 
 			if (a != null && a != selActor) {
