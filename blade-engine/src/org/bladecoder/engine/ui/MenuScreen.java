@@ -80,7 +80,7 @@ public class MenuScreen implements Screen {
 		int wWidth = EngineAssetManager.getInstance().getResolution().portraitWidth;
 		int wHeight = EngineAssetManager.getInstance().getResolution().portraitHeight;
 
-		stage = new Stage(new ExtendViewport(wWidth, wHeight));
+		stage = new Stage(new ExtendViewport(wWidth, wHeight/2));
 
 		Table table = new Table();
 		table.setFillParent(true);

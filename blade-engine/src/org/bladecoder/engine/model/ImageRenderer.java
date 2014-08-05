@@ -372,8 +372,8 @@ public class ImageRenderer implements SpriteRenderer {
 
 	@Override
 	public void dispose() {
-		for (String key : sourceCache.keySet()) {
-			EngineAssetManager.getInstance().disposeAtlas(key);
+		for (ImageCacheEntry entry : sourceCache.values()) {
+			EngineAssetManager.getInstance().disposeTexture(entry.tex);
 		}
 
 		sourceCache.clear();
