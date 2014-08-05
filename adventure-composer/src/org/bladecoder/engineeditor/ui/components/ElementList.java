@@ -19,6 +19,7 @@ import java.util.Comparator;
 
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -169,9 +170,19 @@ public abstract class ElementList extends EditList<Element> {
 	@Override
 	protected void paste() {
 		Element newElement = doc.cloneNode(parent, clipboard);
-
-		addItem(newElement);
-		int i = getItems().indexOf(newElement, true);
-		list.setSelectedIndex(i);
+		int pos = list.getSelectedIndex() + 1;
+		
+		Element e2 = null;	
+		
+		if(pos!=0 && pos < list.getItems().size) 
+			e2 = list.getItems().get(pos);
+		
+		list.getItems().insert(pos, newElement);
+		
+		Node parent = newElement.getParentNode();
+		parent.insertBefore(newElement, e2);					
+		
+		list.setSelectedIndex(pos);		
+		list.invalidateHierarchy();
 	}
 }

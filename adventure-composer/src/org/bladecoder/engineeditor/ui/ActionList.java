@@ -90,11 +90,9 @@ public class ActionList extends ElementList {
 		dialog.setListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				int pos = list.getSelectedIndex();
+				int pos = list.getSelectedIndex() + 1;
 				
 				Element e2 = null;							
-				
-				pos++;
 				
 				if(pos!=0 && pos < list.getItems().size) 
 					e2 = list.getItems().get(pos);
@@ -106,9 +104,7 @@ public class ActionList extends ElementList {
 				parent.removeChild(e);
 				parent.insertBefore(e, e2);					
 				
-				int i = getItems().indexOf(e, true);
-				if(i != -1)
-					list.setSelectedIndex(i);
+				list.setSelectedIndex(pos);
 				
 				list.invalidateHierarchy();
 			}			
