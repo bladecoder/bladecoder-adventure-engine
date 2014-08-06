@@ -27,7 +27,7 @@ import org.bladecoder.engine.model.World;
 public class PickUpAction implements Action {
 	public static final String INFO = "Puts the selected actor in the inventory.";
 	public static final Param[] PARAMS = {
-		new Param("scene", "If not empty, pickup the actor from the current scene", Type.STRING),
+		new Param("scene", "If not empty, pickup the actor from the selected scene", Type.SCENE),
 		new Param("frame_animation", "The sprite to show while in inventory. If empty, the sprite will be 'actorid.inventory'", Type.STRING)
 		};
 	

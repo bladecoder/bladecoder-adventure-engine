@@ -17,6 +17,9 @@ package org.bladecoder.engineeditor.ui.components;
 
 import org.bladecoder.engine.actions.Param;
 import org.bladecoder.engine.actions.Param.Type;
+import org.bladecoder.engineeditor.Ctx;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -87,8 +90,83 @@ public class InputPanel extends Table {
 			
 		case DIMENSION:
 			init(skin, title, desc, new DimPanel(skin), mandatory, defaultValue);
+			break;
+			
+		case ACTOR:
+		{
+			NodeList actors = Ctx.project.getSelectedChapter().getActors(Ctx.project.getSelectedScene());
+			int l = actors.getLength();
+			if(!mandatory) l++;
+			String values[] = new String[l];
+			
+			if(!mandatory) {
+				values[0] = "";
+			}
+			
+			for(int i = 0; i < actors.getLength(); i++) {
+				if(mandatory)
+					values[i] = ((Element)actors.item(i)).getAttribute("id");
+				else
+					values[i+1] = ((Element)actors.item(i)).getAttribute("id");
+			}
+			
+			init(skin, title, desc, new SelectBox<String>(skin), mandatory, defaultValue);
+			((SelectBox<String>)field).setItems(values);
+	       	if(defaultValue != null)
+	    		setText(defaultValue);
+		}
+			break;
+			
+		case SCENE:
+		{
+			NodeList scenes = Ctx.project.getSelectedChapter().getScenes();
+			int l = scenes.getLength();
+			if(!mandatory) l++;
+			String values[] = new String[l];
+			
+			if(!mandatory) {
+				values[0] = "";
+			}
+			
+			for(int i = 0; i < scenes.getLength(); i++) {
+				if(mandatory)
+					values[i] = ((Element)scenes.item(i)).getAttribute("id");
+				else
+					values[i+1] = ((Element)scenes.item(i)).getAttribute("id");
+			}
+			
+			init(skin, title, desc, new SelectBox<String>(skin), mandatory, defaultValue);
+			((SelectBox<String>)field).setItems(values);
+	       	if(defaultValue != null)
+	    		setText(defaultValue);
+		}
 			break;			
-
+			
+		case CHAPTER:
+		{
+			String[] chapters = Ctx.project.getWorld().getChapters();
+			int l = chapters.length;
+			if(!mandatory) l++;
+			String values[] = new String[l];
+			
+			if(!mandatory) {
+				values[0] = "";
+			}
+			
+			for(int i = 0; i < chapters.length; i++) {
+				if(mandatory)
+					values[i] = chapters[i];
+				else
+					values[i+1] = chapters[i];
+			}
+			
+			init(skin, title, desc, new SelectBox<String>(skin), mandatory, defaultValue);
+			((SelectBox<String>)field).setItems(values);
+	       	if(defaultValue != null)
+	    		setText(defaultValue);	
+		}
+			break;			
+			
 		default:
 			init(skin, title, desc, new TextField("", skin), mandatory, defaultValue);
 			break;

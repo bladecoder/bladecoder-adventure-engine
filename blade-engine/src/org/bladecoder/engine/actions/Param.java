@@ -21,7 +21,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Param {
 	public enum Type {
-		STRING, BOOLEAN, FLOAT, INTEGER, VECTOR2, VECTOR3, DIMENSION
+		STRING, BOOLEAN, FLOAT, INTEGER, VECTOR2, VECTOR3, DIMENSION, ACTOR, SCENE, CHAPTER
 	};
 
 	public String name;

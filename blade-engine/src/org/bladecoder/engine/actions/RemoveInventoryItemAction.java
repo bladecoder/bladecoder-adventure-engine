@@ -24,7 +24,7 @@ public class RemoveInventoryItemAction implements Action {
 	public static final String INFO = "Remove items from the inventory. If the removed items are not referenced in other actions.\n" +
 			"WARNING: This action does not 'dispose' the item.";
 	public static final Param[] PARAMS = {
-		new Param("id", "The 'actorid' from the inventory item to remove. If empty remove all items.", Type.STRING)
+		new Param("id", "The 'actorid' from the inventory item to remove. If empty remove all items.", Type.ACTOR)
 		};		
 	
 	String itemId;

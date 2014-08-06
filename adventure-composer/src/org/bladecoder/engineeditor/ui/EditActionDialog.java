@@ -20,6 +20,7 @@ import java.util.Arrays;
 import org.bladecoder.engine.actions.Action;
 import org.bladecoder.engine.actions.ActionFactory;
 import org.bladecoder.engine.actions.Param;
+import org.bladecoder.engine.actions.Param.Type;
 import org.bladecoder.engineeditor.model.BaseDocument;
 import org.bladecoder.engineeditor.ui.components.EditElementDialog;
 import org.bladecoder.engineeditor.ui.components.InputPanel;
@@ -57,7 +58,7 @@ public class EditActionDialog extends EditElementDialog {
 				"Select the action to create.", actions2);
 		
 		actorPanel = new InputPanel(skin, "Target Actor",
-				"Select the target actor id. Default is current actor.");
+				"Select the target actor id. Default is current actor.",Type.ACTOR,false);
 		classPanel = new InputPanel(skin, "Class",
 				"Select the class for the custom action.", true);
 

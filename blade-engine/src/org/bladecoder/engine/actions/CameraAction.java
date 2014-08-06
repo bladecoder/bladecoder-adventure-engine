@@ -37,7 +37,7 @@ public class CameraAction extends BaseCallbackAction implements Action {
 					"Duration of the animation in seconds. If not '0' and animation is triggered",
 					Type.FLOAT),
 			new Param("followActor", "Sets the actor to follow. 'none' puts no actor to follow",
-					Type.FLOAT),
+					Type.STRING),
 			new Param(
 					"wait",
 					"If this param is 'false' the text is showed and the action continues inmediatly",

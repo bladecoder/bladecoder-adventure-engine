@@ -25,8 +25,8 @@ import org.bladecoder.engine.util.EngineLogger;
 public class LeaveAction implements Action {
 	public static final String INFO = "Change the current scene. The target scene must exists in the current chapter.";
 	public static final Param[] PARAMS = {
-		new Param("scene", "The target scene", Type.STRING, true),
-		new Param("chapter", "The target chapter", Type.STRING, false)
+		new Param("scene", "The target scene", Type.STRING, false),
+		new Param("chapter", "The target chapter", Type.CHAPTER, false)
 		};		
 	
 	String scene;

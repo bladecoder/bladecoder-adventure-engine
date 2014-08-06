@@ -33,7 +33,7 @@ public class GotoAction extends BaseCallbackAction implements Action {
 	public static final String INFO = "Walks to the selected position";
 	public static final Param[] PARAMS = {
 		new Param("pos", "The position to walk to", Type.VECTOR2),
-		new Param("target", "Walks to the 'targetid' position", Type.STRING),
+		new Param("target", "Walks to the actor position", Type.ACTOR),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
 		};	
 	

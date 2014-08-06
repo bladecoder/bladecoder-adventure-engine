@@ -30,7 +30,7 @@ public class RunVerbAction implements Action {
 	public static final String INFO = "Runs an actor verb";
 	public static final Param[] PARAMS = {
 		new Param("verb", "The 'verbId' to run", Type.STRING, true),
-		new Param("target", "Aditional 'targetid' to locate the verb", Type.STRING)
+		new Param("target", "Aditional actor for 'use' verb", Type.ACTOR)
 		};		
 	
 	String actorId;
