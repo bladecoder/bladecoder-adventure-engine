@@ -495,18 +495,24 @@ public class Scene implements Serializable,
 	}
 
 	public void removeActor(Actor a) {
-		Actor res = null;
 
 		if (a.getId().equals(player)) {
 			player = null;
 		}
 
-		res = actors.remove(a.getId());
-
-		if (res == null)
-			fgActors.remove(a);
-		else
+		actors.remove(a.getId());
+		
+		switch(a.getLayer()) {
+		case BACKGROUND:
+			bgActors.remove(a);
+			break;
+		case DYNAMIC:
 			dynamicActors.remove(a);
+			break;
+		case FOREGROUND:
+			fgActors.remove(a);
+			break;		
+		}
 		
 		if(a.isWalkObstacle() && polygonalNavGraph != null)
 			polygonalNavGraph.removeDinamicObstacle(a.getBBox());

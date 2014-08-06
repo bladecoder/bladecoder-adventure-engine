@@ -112,7 +112,7 @@ public class World implements Serializable, AssetConsumer {
 
 		cutMode = false;
 		timeOfGame = 0;
-//		chapter = null;
+		chapter = null;
 
 		customProperties = new HashMap<String, String>();
 		
