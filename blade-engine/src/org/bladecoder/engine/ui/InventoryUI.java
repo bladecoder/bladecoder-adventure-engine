@@ -48,7 +48,7 @@ public class InventoryUI {
 	
 	private final static float DPI = 160.0f * Gdx.graphics.getDensity();
 	private final static Color GRAY = new Color(0.3f, 0.3f, 0.3f, 1f);
-	private final static Color BG_COLOR = new Color(0, 0, 0, 0.6f);
+	private final static Color BG_COLOR = new Color(0, 0, 0, 0.8f);
 //	private final static Color BG_COLOR = new Color(0, 0, 0, 1f);
 
 	private Rectangle bbox = new Rectangle();
@@ -214,7 +214,7 @@ public class InventoryUI {
 
 				SpriteActor a = inventory.getItem(i);
 
-				float size = tileSize / a.getHeight() / a.getScale();
+				float size = tileSize / (a.getHeight() > a.getWidth()? a.getHeight():a.getWidth()) / a.getScale();
 
 				a.getRenderer().draw(batch, 
 						horizontal ? (i + itemsPos - scrollItemPos)	* tileSize + a.getWidth() * size / 2: bbox.x + a.getWidth() * size / 2, 
@@ -226,7 +226,7 @@ public class InventoryUI {
 		// DRAW DRAGGING
 		if (draggedActor != null) {
 			
-			float h = draggedActor.getHeight() / draggedActor.getScale();
+			float h = (draggedActor.getHeight() > draggedActor.getWidth()? draggedActor.getHeight():draggedActor.getWidth()) / draggedActor.getScale();
 			
 			float size = tileSize / h * 1.4f;
 			

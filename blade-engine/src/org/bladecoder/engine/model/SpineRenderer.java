@@ -171,13 +171,9 @@ public class SpineRenderer implements SpriteRenderer {
 	@Override
 	public void update(float delta) {
 		if (currentSource != null && currentSource.skeleton != null) {
-//			currentSource.skeleton.update(delta);
 			currentSource.animation.update(delta);
-
 			currentSource.animation.apply(currentSource.skeleton);
 			currentSource.skeleton.updateWorldTransform();
-
-//			bounds.update(currentSkeleton.skeleton, true);
 			
 			lastAnimationTime += delta;
 		}
@@ -305,14 +301,13 @@ public class SpineRenderer implements SpriteRenderer {
 			currentAnimationType = repeatType;
 		}
 
+		lastAnimationTime = 0;
 		currentSource.skeleton.setFlipX(flipX);
+		currentSource.animation.setTimeScale(fa.duration);
 		currentSource.animation.setAnimation(0, fa.id,
 				currentAnimationType == Tween.REPEAT);
-		currentSource.animation.setTimeScale(fa.duration);
-		currentSource.animation.apply(currentSource.skeleton);
-		update(0);
+		update(lastAnimationTime);
 		bounds.update(currentSource.skeleton, true);
-		lastAnimationTime = 0;
 	}
 
 	private FrameAnimation getFrameAnimation(String id) {
@@ -392,6 +387,7 @@ public class SpineRenderer implements SpriteRenderer {
 					.getTextureAtlas(source);
 
 			SkeletonBinary skel = new SkeletonBinary(atlas);
+			skel.setScale(EngineAssetManager.getInstance().getScale());
 			SkeletonData skeletonData = skel
 					.readSkeletonData(EngineAssetManager.getInstance()
 							.getSpine(source));
@@ -458,7 +454,7 @@ public class SpineRenderer implements SpriteRenderer {
 			currentSource.animation.setAnimation(0, currentFrameAnimation.id,
 					currentAnimationType == Tween.REPEAT);
 			currentSource.animation.setTimeScale(currentFrameAnimation.duration);
-			currentSource.animation.apply(currentSource.skeleton);
+//			currentSource.animation.apply(currentSource.skeleton);
 			update(lastAnimationTime);
 			bounds.update(currentSource.skeleton, true);
 

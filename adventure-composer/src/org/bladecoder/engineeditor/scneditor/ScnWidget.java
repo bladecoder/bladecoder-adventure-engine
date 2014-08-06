@@ -118,6 +118,7 @@ public class ScnWidget extends Widget {
 						Project.NOTIFY_PROJECT_LOADED)) {
 					if (scn != null) {
 						scn.dispose();
+						EngineAssetManager.getInstance().dispose();
 						scn = null;
 					}
 
