@@ -130,9 +130,7 @@ public class TabPanel extends Table {
 	public void clear() {
 		Array<Button> buttons = buttonGroup.getButtons();
 		
-		for(Button b:buttons)
-			buttonGroup.remove(b);
-		
+		buttons.clear();		
 		header.clear();
 		tabs.clear();
 		body.clear();
