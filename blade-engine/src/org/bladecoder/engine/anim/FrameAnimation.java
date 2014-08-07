@@ -71,12 +71,12 @@ public class FrameAnimation {
 	public static String getFlipId(String id) {
 		StringBuilder sb = new StringBuilder();
 
-		if (id.endsWith("left")) {
+		if (id.endsWith(LEFT)) {
 			sb.append(id.substring(0, id.length() - 4));
-			sb.append("right");
-		} else if (id.endsWith("right")) {
+			sb.append(RIGHT);
+		} else if (id.endsWith(RIGHT)) {
 			sb.append(id.substring(0, id.length() - 5));
-			sb.append("left");
+			sb.append(LEFT);
 		}
 
 		return sb.toString();

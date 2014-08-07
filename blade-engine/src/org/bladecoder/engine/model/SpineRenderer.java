@@ -350,8 +350,31 @@ public class SpineRenderer implements SpriteRenderer {
 
 					fa = fanims.get(flipId);
 
-					if (fa != null)
+					if (fa != null) {
 						flipX = true;
+					} else if(s.endsWith(FrameAnimation.FRONT)||s.endsWith(FrameAnimation.BACK)) { // search for only right or left animations
+						if(id.endsWith(FrameAnimation.LEFT)) {
+							sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+							sb.append(FrameAnimation.LEFT);
+						} else {
+							sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+							sb.append(FrameAnimation.RIGHT);							
+						}
+						
+						s = sb.toString();
+						fa = fanims.get(s);
+						
+						if (fa == null) {
+							// Search for flipped
+							flipId = FrameAnimation.getFlipId(s);
+
+							fa = fanims.get(flipId);
+
+							if (fa != null) {
+								flipX = true;
+							}
+						}
+					}
 				}
 			}
 		}
