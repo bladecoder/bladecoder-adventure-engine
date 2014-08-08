@@ -49,7 +49,10 @@ public class SayAction extends BaseCallbackAction implements Action {
 					"type",
 					"The type of the text: 'talk', 'rectangle' (default) and 'plain'",
 					Type.STRING, true, "rectangle", new String[] { "rectangle",
-							"talk", "plain" }), };
+							"talk", "plain" }), 
+			new Param("talkfa",	"The animation to put when talking instead the default talk animation.",
+									Type.STRING)					
+	};
 
 	private String soundId;
 	private String text;
@@ -60,6 +63,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 	private Text.Type type = Text.Type.RECTANGLE;
 
 	private String previousFA = null;
+	private String talkFA = null;
 	private Vector2 pos = null;
 
 	@Override
@@ -68,17 +72,18 @@ public class SayAction extends BaseCallbackAction implements Action {
 
 		soundId = params.get("speech");
 		text = params.get("text");
+		talkFA = params.get("talkfa");
 
 		if (params.get("wait") != null) {
 			wait = Boolean.parseBoolean(params.get("wait"));
 		}
 
 		if (params.get("type") != null) {
-			if (params.get("type").equalsIgnoreCase("talk")) {
+			if (params.get("type").equals("talk")) {
 				type = Text.Type.TALK;
-			} else if (params.get("type").equalsIgnoreCase("rectangle")) {
+			} else if (params.get("type").equals("rectangle")) {
 				type = Text.Type.RECTANGLE;
-			} else if (params.get("type").equalsIgnoreCase("plain")) {
+			} else if (params.get("type").equals("plain")) {
 				type = Text.Type.PLAIN;
 			}
 		}
@@ -127,7 +132,12 @@ public class SayAction extends BaseCallbackAction implements Action {
 			if (type == Text.Type.TALK) {
 				previousFA = ((SpriteActor) actor).getRenderer()
 						.getCurrentFrameAnimationId();
-				((SpriteActor) actor).startFrameAnimation(
+				
+				if(talkFA != null)
+					((SpriteActor) actor).startFrameAnimation(
+							talkFA, Tween.FROM_FA, 0, null);
+				else
+					((SpriteActor) actor).startFrameAnimation(
 						getTalkFA(previousFA), Tween.FROM_FA, 0, null);
 			}
 
@@ -185,6 +195,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 		json.writeValue("actorId", actorId);
 		json.writeValue("previousFA", previousFA);
 		json.writeValue("type", type);
+		json.writeValue("talkFA", talkFA);
 		super.write(json);
 	}
 
@@ -196,6 +207,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 		actorId = json.readValue("actorId", String.class, jsonData);
 		previousFA = json.readValue("previousFA", String.class, jsonData);
 		type = json.readValue("type", Text.Type.class, jsonData);
+		talkFA = json.readValue("talkFA", String.class, jsonData);
 		super.read(json, jsonData);
 	}
 

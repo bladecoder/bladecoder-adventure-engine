@@ -67,7 +67,7 @@ public class SpineRenderer implements SpriteRenderer {
 	private SkeletonBounds bounds;
 
 	private final HashMap<String, SkeletonCacheEntry> sourceCache = new HashMap<String, SkeletonCacheEntry>();
-	
+
 	private float lastAnimationTime = 0;
 
 	class SkeletonCacheEntry {
@@ -77,13 +77,14 @@ public class SpineRenderer implements SpriteRenderer {
 	}
 
 	public SpineRenderer() {
-		
+
 	}
-	
+
 	private AnimationStateListener animationListener = new AnimationStateListener() {
 		@Override
 		public void complete(int trackIndex, int loopCount) {
-			if (currentAnimationType == Tween.REPEAT && (currentCount == Tween.INFINITY || currentCount > loopCount)) {
+			if (currentAnimationType == Tween.REPEAT
+					&& (currentCount == Tween.INFINITY || currentCount > loopCount)) {
 				return;
 			}
 
@@ -174,7 +175,7 @@ public class SpineRenderer implements SpriteRenderer {
 			currentSource.animation.update(delta);
 			currentSource.animation.apply(currentSource.skeleton);
 			currentSource.skeleton.updateWorldTransform();
-			
+
 			lastAnimationTime += delta;
 		}
 	}
@@ -202,7 +203,7 @@ public class SpineRenderer implements SpriteRenderer {
 	public float getWidth() {
 		if (bounds != null && bounds.getWidth() > 0) {
 			return bounds.getWidth();
-		}			
+		}
 
 		return 200;
 	}
@@ -249,7 +250,8 @@ public class SpineRenderer implements SpriteRenderer {
 
 	@Override
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
-		String currentDirection = FrameAnimation.getFrameDirection(p0.x, p0.y, pf);
+		String currentDirection = FrameAnimation.getFrameDirection(p0.x, p0.y,
+				pf);
 		StringBuilder sb = new StringBuilder();
 		sb.append(FrameAnimation.WALK_ANIM).append('.')
 				.append(currentDirection);
@@ -302,12 +304,22 @@ public class SpineRenderer implements SpriteRenderer {
 		}
 
 		lastAnimationTime = 0;
-		currentSource.skeleton.setFlipX(flipX);
-		currentSource.animation.setTimeScale(fa.duration);
-		currentSource.animation.setAnimation(0, fa.id,
-				currentAnimationType == Tween.REPEAT);
-		update(lastAnimationTime);
-		bounds.update(currentSource.skeleton, true);
+		setCurrentFA();
+	}
+
+	private void setCurrentFA() {
+		try {
+			currentSource.skeleton.setToSetupPose();
+			currentSource.skeleton.setFlipX(flipX);
+			currentSource.animation
+					.setTimeScale(currentFrameAnimation.duration);
+			currentSource.animation.setAnimation(0, currentFrameAnimation.id,
+					currentAnimationType == Tween.REPEAT);
+			update(lastAnimationTime);
+			bounds.update(currentSource.skeleton, true);
+		} catch (Exception e) {
+			EngineLogger.error("SpineRenderer:setCurrentFA " + e.getMessage());
+		}
 	}
 
 	private FrameAnimation getFrameAnimation(String id) {
@@ -325,11 +337,13 @@ public class SpineRenderer implements SpriteRenderer {
 			else {
 				// search for .left if .frontleft not found and viceversa
 				StringBuilder sb = new StringBuilder();
-				
-				if (id.endsWith(FrameAnimation.FRONTLEFT) || id.endsWith(FrameAnimation.FRONTRIGHT)) {
+
+				if (id.endsWith(FrameAnimation.FRONTLEFT)
+						|| id.endsWith(FrameAnimation.FRONTRIGHT)) {
 					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
 					sb.append(FrameAnimation.FRONT);
-				} else if (id.endsWith(FrameAnimation.BACKLEFT) || id.endsWith(FrameAnimation.BACKRIGHT)) {
+				} else if (id.endsWith(FrameAnimation.BACKLEFT)
+						|| id.endsWith(FrameAnimation.BACKRIGHT)) {
 					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
 					sb.append(FrameAnimation.BACK);
 				} else if (id.endsWith(FrameAnimation.LEFT)) {
@@ -337,7 +351,7 @@ public class SpineRenderer implements SpriteRenderer {
 					sb.append(FrameAnimation.FRONTLEFT);
 				} else if (id.endsWith(FrameAnimation.RIGHT)) {
 					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
-					sb.append(FrameAnimation.FRONTRIGHT);			
+					sb.append(FrameAnimation.FRONTRIGHT);
 				}
 
 				String s = sb.toString();
@@ -352,18 +366,23 @@ public class SpineRenderer implements SpriteRenderer {
 
 					if (fa != null) {
 						flipX = true;
-					} else if(s.endsWith(FrameAnimation.FRONT)||s.endsWith(FrameAnimation.BACK)) { // search for only right or left animations
-						if(id.endsWith(FrameAnimation.LEFT)) {
+					} else if (s.endsWith(FrameAnimation.FRONT)
+							|| s.endsWith(FrameAnimation.BACK)) { // search for
+																	// only
+																	// right or
+																	// left
+																	// animations
+						if (id.endsWith(FrameAnimation.LEFT)) {
 							sb.append(id.substring(0, id.lastIndexOf('.') + 1));
 							sb.append(FrameAnimation.LEFT);
 						} else {
 							sb.append(id.substring(0, id.lastIndexOf('.') + 1));
-							sb.append(FrameAnimation.RIGHT);							
+							sb.append(FrameAnimation.RIGHT);
 						}
-						
+
 						s = sb.toString();
 						fa = fanims.get(s);
-						
+
 						if (fa == null) {
 							// Search for flipped
 							flipId = FrameAnimation.getFlipId(s);
@@ -472,14 +491,8 @@ public class SpineRenderer implements SpriteRenderer {
 			SkeletonCacheEntry entry = sourceCache
 					.get(currentFrameAnimation.source);
 			currentSource = entry;
-			
-			currentSource.skeleton.setFlipX(flipX);
-			currentSource.animation.setAnimation(0, currentFrameAnimation.id,
-					currentAnimationType == Tween.REPEAT);
-			currentSource.animation.setTimeScale(currentFrameAnimation.duration);
-//			currentSource.animation.apply(currentSource.skeleton);
-			update(lastAnimationTime);
-			bounds.update(currentSource.skeleton, true);
+
+			setCurrentFA();
 
 		} else if (initFrameAnimation != null) {
 			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1, null);
@@ -510,17 +523,18 @@ public class SpineRenderer implements SpriteRenderer {
 
 		json.writeValue("currentFrameAnimation", currentFrameAnimationId,
 				currentFrameAnimationId == null ? null : String.class);
-		
+
 		json.writeValue("initFrameAnimation", initFrameAnimation);
 
 		json.writeValue("flipX", flipX);
-		
-		if(animationCbSer != null)
+
+		if (animationCbSer != null)
 			json.writeValue("cb", animationCbSer);
-		else 
-			json.writeValue("cb", ActionCallbackSerialization.find(animationCb),
+		else
+			json.writeValue("cb",
+					ActionCallbackSerialization.find(animationCb),
 					animationCb == null ? null : String.class);
-		
+
 		json.writeValue("currentCount", currentCount);
 		json.writeValue("currentAnimationType", currentAnimationType);
 		json.writeValue("lastAnimationTime", lastAnimationTime);
@@ -530,22 +544,25 @@ public class SpineRenderer implements SpriteRenderer {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
-		fanims = json.readValue("fanims", HashMap.class,
-				FrameAnimation.class, jsonData);
+		fanims = json.readValue("fanims", HashMap.class, FrameAnimation.class,
+				jsonData);
 
 		String currentFrameAnimationId = json.readValue(
 				"currentFrameAnimation", String.class, jsonData);
 
 		if (currentFrameAnimationId != null)
-			currentFrameAnimation = (AtlasFrameAnimation)fanims.get(currentFrameAnimationId);
-		
+			currentFrameAnimation = (AtlasFrameAnimation) fanims
+					.get(currentFrameAnimationId);
+
 		initFrameAnimation = json.readValue("initFrameAnimation", String.class,
 				jsonData);
 
 		flipX = json.readValue("flipX", Boolean.class, jsonData);
 		animationCbSer = json.readValue("cb", String.class, jsonData);
 		currentCount = json.readValue("currentCount", Integer.class, jsonData);
-		currentAnimationType = json.readValue("currentAnimationType", Integer.class, jsonData);
-		lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
+		currentAnimationType = json.readValue("currentAnimationType",
+				Integer.class, jsonData);
+		lastAnimationTime = json.readValue("lastAnimationTime", Float.class,
+				jsonData);
 	}
 }

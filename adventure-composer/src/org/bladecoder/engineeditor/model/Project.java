@@ -34,6 +34,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.bladecoder.engine.util.Config;
+import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.utils.DinamicClassPath;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.w3c.dom.Element;
@@ -159,7 +160,8 @@ public class Project extends PropertyChange {
 		selectedScene = scn;
 		selectedActor = null;
 		selectedFA = null;
-
+		EditorLogger.error("XXX SCENE SELECTED ACTOR NULLLLLLL");
+		
 		firePropertyChange(NOTIFY_SCENE_SELECTED, old, selectedScene);
 	}
 
@@ -171,6 +173,11 @@ public class Project extends PropertyChange {
 		selectedActor = a;
 
 		selectedFA = null;
+		
+		if(selectedActor==null)
+			EditorLogger.error("XXX SELECTED ACTOR NULLLLLLL");
+		else
+			EditorLogger.error("XXX SELECTED ACTOR: " + selectedActor.getAttribute("id"));
 
 		firePropertyChange(NOTIFY_ACTOR_SELECTED, old, selectedActor);
 	}

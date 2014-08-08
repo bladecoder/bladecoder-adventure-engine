@@ -27,7 +27,7 @@ public class EditorLogger {
 	}
 
 	public static void error(String message) {
-		System.out.println(TAG + ": " + message);
+		System.err.println(TAG + ": " + message);
 	}
 
 	public static void error(String message, Exception e) {

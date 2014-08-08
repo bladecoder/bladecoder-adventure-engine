@@ -84,7 +84,7 @@ public class DialogList extends ElementList {
 
 		@Override
 		public TextureRegion getCellImage(Element e) {
-			return Ctx.assetManager.getIcon("ic_talkto.png");
+			return Ctx.assetManager.getIcon("ic_talkto");
 		}
 		
 		@Override

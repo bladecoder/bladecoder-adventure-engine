@@ -156,7 +156,6 @@ public class SceneList extends ElementList {
 					doc = Ctx.project.getSelectedChapter();
 					
 					addElements(doc, doc.getElement(), "scene");
-					Ctx.project.setSelectedScene(list.getSelected());
 				} catch (ParserConfigurationException | SAXException
 						| IOException e1) {
 					e1.printStackTrace();
