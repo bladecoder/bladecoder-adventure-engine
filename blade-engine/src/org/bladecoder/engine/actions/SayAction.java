@@ -50,7 +50,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 					"The type of the text: 'talk', 'rectangle' (default) and 'plain'",
 					Type.STRING, true, "rectangle", new String[] { "rectangle",
 							"talk", "plain" }), 
-			new Param("talkfa",	"The animation to put when talking instead the default talk animation.",
+			new Param("animation",	"The animation to put when talking instead the default talk animation.",
 									Type.STRING)					
 	};
 
@@ -72,7 +72,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 
 		soundId = params.get("speech");
 		text = params.get("text");
-		talkFA = params.get("talkfa");
+		talkFA = params.get("animation");
 
 		if (params.get("wait") != null) {
 			wait = Boolean.parseBoolean(params.get("wait"));

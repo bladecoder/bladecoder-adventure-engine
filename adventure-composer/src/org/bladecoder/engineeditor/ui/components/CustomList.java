@@ -121,6 +121,8 @@ public class CustomList<T> extends Widget implements Cullable {
 	public void layout() {
 		final BitmapFont font = style.font;
 		final Drawable selectedDrawable = style.selection;
+		
+		cellRenderer.layout(style);
 
 		prefWidth = 0;
 		for (int i = 0; i < items.size; i++) {
@@ -158,8 +160,6 @@ public class CustomList<T> extends Widget implements Cullable {
 			prefHeight += background.getTopHeight()
 					+ background.getBottomHeight();
 		}
-		
-		cellRenderer.layout(style);
 	}
 
 	@Override

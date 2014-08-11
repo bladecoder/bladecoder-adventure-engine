@@ -61,11 +61,10 @@ public class DialogOptionTree extends EditTree {
 
 	@Override
 	public void create() {
-		Node sel = tree.getSelection().getLastSelected();
-		
 		Element parent = dialog;
-				
-		if(sel != null) {
+		
+		if(!tree.getSelection().isEmpty()) {
+			Node sel = tree.getSelection().getLastSelected();
 			parent = (Element)sel.getParent().getObject();
 		}
 

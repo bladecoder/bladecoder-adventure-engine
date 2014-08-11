@@ -54,12 +54,6 @@ public class ActorPanel extends HeaderPanel {
 						Element a = (Element) e.getNewValue();
 						ChapterDocument doc = Ctx.project.getSelectedChapter();
 
-						faList.addElements(doc, a, "frame_animation");
-						verbList.addElements(doc, a, "verb");
-						dialogList.addElements(doc, a, "dialog");
-						soundList.addElements(doc, a, "sound");
-						props.setActorDocument(doc, a);
-
 						String selTitle = tabPanel.getSelectedIndex() == -1? null: tabPanel.getTitleAt(tabPanel.getSelectedIndex());
 						tabPanel.clear();
 
@@ -91,6 +85,12 @@ public class ActorPanel extends HeaderPanel {
 						} else {
 							setTile("ACTOR");
 						}
+						
+						faList.addElements(doc, a, "frame_animation");
+						verbList.addElements(doc, a, "verb");
+						dialogList.addElements(doc, a, "dialog");
+						soundList.addElements(doc, a, "sound");
+						props.setActorDocument(doc, a);
 					}
 
 				});

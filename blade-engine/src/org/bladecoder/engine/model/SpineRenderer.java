@@ -326,7 +326,7 @@ public class SpineRenderer implements SpriteRenderer {
 		FrameAnimation fa = fanims.get(id);
 		flipX = false;
 
-		if (fa == null) {
+		if (fa == null && id.indexOf('.') != -1) {
 			// Search for flipped
 			String flipId = FrameAnimation.getFlipId(id);
 
