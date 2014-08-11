@@ -160,7 +160,6 @@ public class Project extends PropertyChange {
 		selectedScene = scn;
 		selectedActor = null;
 		selectedFA = null;
-		EditorLogger.error("XXX SCENE SELECTED ACTOR NULLLLLLL");
 		
 		firePropertyChange(NOTIFY_SCENE_SELECTED, old, selectedScene);
 	}
@@ -174,11 +173,6 @@ public class Project extends PropertyChange {
 
 		selectedFA = null;
 		
-		if(selectedActor==null)
-			EditorLogger.error("XXX SELECTED ACTOR NULLLLLLL");
-		else
-			EditorLogger.error("XXX SELECTED ACTOR: " + selectedActor.getAttribute("id"));
-
 		firePropertyChange(NOTIFY_ACTOR_SELECTED, old, selectedActor);
 	}
 	
