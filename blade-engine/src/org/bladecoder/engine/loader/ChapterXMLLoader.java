@@ -554,13 +554,16 @@ public class ChapterXMLLoader extends DefaultHandler {
 		v.addVerb(id, currentVerb);
 	}
 
+	
+	private final HashMap<String, String> actionParams = new HashMap<String, String>();
+	
 	private void parseAction(String localName, Attributes atts, String actor) {
 
 		if (localName.equals("action")) {
 			String actionName = null;
 			Action action = null;
-			HashMap<String, String> params = new HashMap<String, String>();
 			String actionClass = null;
+			actionParams.clear();
 
 			for (int i = 0; i < atts.getLength(); i++) {
 				String attName = atts.getLocalName(i);
@@ -572,17 +575,17 @@ public class ChapterXMLLoader extends DefaultHandler {
 				} else {
 					String value = atts.getValue(attName);
 
-					params.put(attName, value);
+					actionParams.put(attName, value);
 				}
 			}
 
 			if (atts.getValue("actor") == null)
-				params.put("actor", actor);
+				actionParams.put("actor", actor);
 
 			if (actionClass != null) {
-				action = ActionFactory.createByClass(actionClass, params);
+				action = ActionFactory.createByClass(actionClass, actionParams);
 			} else if (actionName != null) {
-				action = ActionFactory.create(actionName, params);
+				action = ActionFactory.create(actionName, actionParams);
 			}
 
 			if (action != null) {
