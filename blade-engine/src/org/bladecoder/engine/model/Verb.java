@@ -62,14 +62,14 @@ public class Verb implements ActionCallback {
 		
 		boolean stop = false;
 		
-		while(ip < actions.size() && !stop) {
+		while( !isFinish() && !stop) {
 			Action a = actions.get(ip);
 			if(a instanceof ActionEndTrigger) {
 				((ActionEndTrigger)a).setCallback(this);
 				stop = true;
+			} else {
+				ip++;
 			}
-			
-			ip++;
 			
 			try {
 				a.run();
@@ -78,9 +78,14 @@ public class Verb implements ActionCallback {
 			}		
 		}
 	}
+	
+	public boolean isFinish() {
+		return ip >= actions.size();
+	}
 
 	@Override
 	public void onEvent() {
+		ip++;
 		nextStep();	
 	}
 
