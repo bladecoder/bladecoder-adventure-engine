@@ -26,6 +26,7 @@ import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -33,6 +34,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -52,7 +54,7 @@ public class SceneScreen implements Screen {
 	private boolean pieMode;
 	boolean dragging = false;
 
-	private final Recorder recorder;
+	private final Recorder recorder = new Recorder();;
 
 //	private final SceneFitViewport viewport = new SceneFitViewport();
 	private final SceneExtendViewport viewport = new SceneExtendViewport();
@@ -64,11 +66,148 @@ public class SceneScreen implements Screen {
 	
 	private boolean drawHotspots = false;
 	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
+	
+//	private InputProcessor inputProcessor = new SceneInputProcessor(this);
+	
+	private final GestureDetector inputProcessor = new GestureDetector(new GestureDetector.GestureListener() {
+		@Override
+		public boolean touchDown (float x, float y, int pointer, int button) {
+			EngineLogger.debug("Event TOUCH DOWN button: " + button);
+			
+			touchEvent(SceneInputProcessor.TOUCH_DOWN, x, y, pointer, button);
+			
+			return true;
+		}
+		
+		@Override
+		public boolean tap (float x, float y, int count, int button) {
+			EngineLogger.debug("Event TAP button: " + button);
+			
+			if(drawHotspots) 
+				drawHotspots = false;
+			else
+				touchEvent(SceneInputProcessor.TOUCH_UP, x, y, count, button);
+			
+			return true;
+		}
+		
+		@Override
+		public boolean longPress (float x, float y) {
+			EngineLogger.debug("Event LONG PRESS");
+			
+			drawHotspots = true;
+			
+			return false;
+		}
+		
+		@Override
+		public boolean pan (float x, float y, float deltaX, float deltaY) {
+			EngineLogger.debug("Event PAN");
+			
+			touchEvent(SceneInputProcessor.DRAG, x, y, 0, 0);
+			
+			return true;
+		}
+		
+		@Override
+		public boolean panStop (float x, float y, int pointer, int button) {
+			touchEvent(SceneInputProcessor.TOUCH_UP, x, y, pointer, button);
+			
+			return true;
+		}
+		
+		@Override
+		public boolean fling (float velocityX, float velocityY, int button) {
+			return false;
+		}
+
+		@Override
+		public boolean zoom (float initialDistance, float distance) {
+			return false;
+		}
+
+		@Override
+		public boolean pinch (Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+			return false;
+		}		
+	}) {
+		@Override
+		public boolean keyUp(int keycode) {
+			switch (keycode) {
+			case Input.Keys.ESCAPE:
+			case Input.Keys.BACK:
+			case Input.Keys.MENU:
+				showMenu();
+				break;
+			}
+
+			return true;
+		}
+
+		@Override
+		public boolean keyTyped(char character) {
+			switch (character) {
+
+			case 'd':
+				EngineLogger.toggle();
+				break;
+			case '1':
+				EngineLogger.setDebugLevel(EngineLogger.DEBUG0);
+				break;
+			case '2':
+				EngineLogger.setDebugLevel(EngineLogger.DEBUG1);
+				break;
+			case '3':
+				EngineLogger.setDebugLevel(EngineLogger.DEBUG2);
+				break;
+			case 'f':
+//				ui.toggleFullScreen();
+				break;
+			case 's':
+				World.getInstance().saveGameState();
+				break;
+			case 'r':
+				try {
+					World.restart();
+				} catch (Exception e) {
+					EngineLogger.error("ERROR LOADING GAME", e);
+
+					World.getInstance().dispose();
+					Gdx.app.exit();
+				}
+				break;
+			case 'l':
+				World.getInstance().loadGameState();
+				break;
+			case '.':
+				if (getRecorder().isRecording())
+					getRecorder().setRecording(false);
+				else
+					getRecorder().setRecording(true);
+				break;
+			case ',':
+				if (getRecorder().isPlaying())
+					getRecorder().setPlaying(false);
+				else {
+					getRecorder().load();
+					getRecorder().setPlaying(true);
+				}
+				break;
+			case 'p':
+				if (World.getInstance().isPaused()) {
+					World.getInstance().resume();
+				} else {
+					World.getInstance().pause();
+				}
+				break;
+			}
+
+			return false;
+		}
+	};
 
 	public SceneScreen(UI ui, boolean pieMode) {
 		this.ui = ui;
-
-		recorder = new Recorder();
 
 		pie = new PieMenu(recorder);
 		textManagerUI = new TextManagerUI(this);
@@ -427,7 +566,7 @@ public class SceneScreen implements Screen {
 		dialogUI.loadAssets();
 		retrieveAssets(ui.getUIAtlas());
 		
-		Gdx.input.setInputProcessor(new SceneInputProcessor(this));
+		Gdx.input.setInputProcessor(inputProcessor);
 
 		if (World.getInstance().isDisposed()) {
 			try {
