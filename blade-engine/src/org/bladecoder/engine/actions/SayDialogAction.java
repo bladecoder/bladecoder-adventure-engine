@@ -17,6 +17,7 @@ package org.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.DialogOption;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.Text;
@@ -59,7 +60,9 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 		
 		// If the player or the character is talking restore to 'stand' pose
 		restoreStandPose(w.getCurrentScene().getPlayer());
-		restoreStandPose((SpriteActor)w.getCurrentScene().getActor(characterName, false));
+		
+		if(w.getCurrentScene().getActor(characterName, false) instanceof SpriteActor)
+			restoreStandPose((SpriteActor)w.getCurrentScene().getActor(characterName, false));
 
 		if (playerText != null) {
 			SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
@@ -82,7 +85,7 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 	public void onEvent() {
 
 		World w = World.getInstance();
-		SpriteActor actor = (SpriteActor)w.getCurrentScene().getActor(characterName, false);
+		Actor actor = w.getCurrentScene().getActor(characterName, false);
 		
 		if (characterTurn) {
 			characterTurn = false;
@@ -99,16 +102,20 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 
 				World.getInstance()
 						.getTextManager()
-						.addSubtitle(responseText, actor.getX(), actor.getY() + actor.getHeight() , false, Text.Type.TALK,
+						.addSubtitle(responseText, actor.getX(), actor.getY() + actor.getBBox().getBoundingRectangle().getHeight() , false, Text.Type.TALK,
 								Color.BLACK, this);
 
-				previousFA = actor.getRenderer().getCurrentFrameAnimationId(); 
-				actor.startFrameAnimation(getTalkFA(previousFA), null);
+				if(actor instanceof SpriteActor) {
+					previousFA = ((SpriteActor)actor).getRenderer().getCurrentFrameAnimationId(); 
+					((SpriteActor)actor).startFrameAnimation(getTalkFA(previousFA), null);
+				}
 			} else {
 				super.onEvent();
 			}
-		} else {			
-			actor.startFrameAnimation(previousFA, null);
+		} else {
+			if(actor instanceof SpriteActor) {
+				((SpriteActor)actor).startFrameAnimation(previousFA, null);
+			}
 			super.onEvent();			
 		}
 	}

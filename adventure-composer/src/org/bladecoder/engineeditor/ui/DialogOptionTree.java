@@ -65,7 +65,9 @@ public class DialogOptionTree extends EditTree {
 		
 		if(!tree.getSelection().isEmpty()) {
 			Node sel = tree.getSelection().getLastSelected();
-			parent = (Element)sel.getParent().getObject();
+
+			if(sel.getParent() != null)
+				parent = (Element)sel.getParent().getObject();
 		}
 
 		EditDialogOptionDialog o = new EditDialogOptionDialog(skin, doc,
@@ -75,7 +77,9 @@ public class DialogOptionTree extends EditTree {
 		o.setListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				Node sel = tree.getSelection().getLastSelected();
+				Node sel = null;
+				if(!tree.getSelection().isEmpty())
+					sel = tree.getSelection().getLastSelected();
 							
 				Element e = ((EditElementDialog)actor).getElement();
 				

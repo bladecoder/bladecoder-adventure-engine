@@ -18,7 +18,7 @@ package org.bladecoder.engine.util;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 
 public final class RectangleRenderer {
 	private static Texture texture;
@@ -33,7 +33,7 @@ public final class RectangleRenderer {
 		return _temp;
 	}
 
-	public static void draw(SpriteBatch batch, float posX, float posY,
+	public static void draw(Batch batch, float posX, float posY,
 			float width, float height, Color color) {
 		
 		if(texture == null) texture = makePixel();

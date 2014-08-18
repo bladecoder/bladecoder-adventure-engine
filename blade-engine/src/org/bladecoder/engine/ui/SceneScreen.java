@@ -27,6 +27,7 @@ import org.bladecoder.engine.util.RectangleRenderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -39,22 +40,26 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class SceneScreen implements Screen {
 
-	UI ui;
+	private UI ui;
+	
+	private Stage stage;
 
 	private PieMenu pie;
 	private InventoryUI inventoryUI;
-	private DialogUI dialogUI;
+	private DialogUI2 dialogUI;
 	private TextManagerUI textManagerUI;
 	private ShapeRenderer renderer;
 
 	private boolean pieMode;
 	boolean dragging = false;
 
-	private final Recorder recorder = new Recorder();;
+	private final Recorder recorder = new Recorder();
+	private InputMultiplexer multiplexer = new InputMultiplexer();
 
 //	private final SceneFitViewport viewport = new SceneFitViewport();
 	private final SceneExtendViewport viewport = new SceneExtendViewport();
@@ -212,9 +217,10 @@ public class SceneScreen implements Screen {
 		pie = new PieMenu(recorder);
 		textManagerUI = new TextManagerUI(this);
 		inventoryUI = new InventoryUI(this, recorder);
-		dialogUI = new DialogUI(this, recorder);
+		dialogUI = new DialogUI2(recorder);
 
 		this.pieMode = pieMode;
+
 	}
 
 	public Recorder getRecorder() {
@@ -271,7 +277,13 @@ public class SceneScreen implements Screen {
 			}
 
 			inventoryUI.cancelDragging();
+			
+			if(w.getCurrentDialog() != null && !dialogUI.isVisible() && !w.inCutMode()) {
+				dialogUI.setVisible(true);
+			} 
 		}
+		
+		stage.act(delta);
 	}
 
 	@Override
@@ -332,11 +344,6 @@ public class SceneScreen implements Screen {
 		if (World.getInstance().getCurrentDialog() != null
 				&& !recorder.isPlaying()) { // DIALOG MODE
 
-			if (!World.getInstance().inCutMode()) {
-				viewport.getInputUnProject(unprojectTmp);
-				dialogUI.draw(batch, (int) unprojectTmp.x, (int) unprojectTmp.y);
-			}
-
 			textManagerUI.draw(batch);
 			ui.getPointer().draw(batch, false, viewport);
 		} else {
@@ -365,6 +372,8 @@ public class SceneScreen implements Screen {
 			drawHotspots(batch);
 
 		batch.end();
+		
+		stage.draw();
 	}
 	
 	private void drawHotspots(SpriteBatch batch) {
@@ -403,7 +412,6 @@ public class SceneScreen implements Screen {
 				
 		pie.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
 		inventoryUI.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
-		dialogUI.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
 		textManagerUI.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
 	}
 
@@ -411,6 +419,7 @@ public class SceneScreen implements Screen {
 		textManagerUI.dispose();
 		dialogUI.dispose();
 		renderer.dispose();
+		stage.dispose();
 	}
 
 	private void retrieveAssets(TextureAtlas atlas) {
@@ -434,8 +443,6 @@ public class SceneScreen implements Screen {
 			if (w.inCutMode() && !recorder.isRecording()) {
 				w.getTextManager().next();
 			} else if (w.getCurrentDialog() != null) {
-				dialogUI.touchEvent(SceneInputProcessor.TOUCH_UP, unprojectTmp.x, unprojectTmp.y, pointer,
-						button);
 			} else if (dragging) {
 				inventoryUI.touchEvent(SceneInputProcessor.TOUCH_UP, unprojectTmp.x, unprojectTmp.y,
 						pointer, button);
@@ -566,7 +573,14 @@ public class SceneScreen implements Screen {
 		dialogUI.loadAssets();
 		retrieveAssets(ui.getUIAtlas());
 		
-		Gdx.input.setInputProcessor(inputProcessor);
+		stage = new Stage(viewport);
+		stage.addActor(dialogUI);
+		
+		multiplexer = new InputMultiplexer();
+		multiplexer.addProcessor(stage);
+		multiplexer.addProcessor(inputProcessor);
+		Gdx.input.setInputProcessor(multiplexer);
+		
 
 		if (World.getInstance().isDisposed()) {
 			try {

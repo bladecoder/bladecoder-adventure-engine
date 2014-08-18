@@ -18,6 +18,7 @@ package org.bladecoder.engine.actions;
 import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
+import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.World;
 
@@ -39,7 +40,7 @@ public class TalktoAction implements Action {
 	@Override
 	public void run() {
 		
-		SpriteActor actor = (SpriteActor)World.getInstance().getCurrentScene().getActor(actorId, false);
+		Actor actor = World.getInstance().getCurrentScene().getActor(actorId, false);
 		
 		World.getInstance().setCurrentDialog(actor.getDialog(dialog));
 	}
