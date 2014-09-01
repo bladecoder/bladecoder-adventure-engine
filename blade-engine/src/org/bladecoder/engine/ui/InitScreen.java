@@ -82,7 +82,7 @@ public class InitScreen implements Screen {
 			}
 		}		
 		
-		batch.draw(tex, (viewport.getViewportWidth() - tex.getWidth()* scale  ) /2, (viewport.getViewportHeight() - tex.getHeight()* scale)  /2,
+		batch.draw(tex, (viewport.getScreenWidth() - tex.getWidth()* scale  ) /2, (viewport.getScreenHeight() - tex.getHeight()* scale)  /2,
 				tex.getWidth() * scale, tex.getHeight() * scale);
 		batch.setColor(1, 1, 1, 1);
 	

@@ -147,8 +147,8 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 
 		out.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 
-		unproject(out, viewport.getViewportX(), viewport.getViewportY(), 
-				viewport.getViewportWidth(), viewport.getViewportHeight());
+		unproject(out, viewport.getScreenX(), viewport.getScreenY(), 
+				viewport.getScreenWidth(), viewport.getScreenHeight());
 
 		if (out.x >= scrollingWidth)
 			out.x = scrollingWidth - 1;
@@ -191,7 +191,7 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 	}
 
 	public void scene2screen(Viewport viewport, Vector3 out) {
-		project(out, 0, 0, viewport.getViewportWidth(), viewport.getViewportHeight());
+		project(out, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
 	}
 	
 	@Override

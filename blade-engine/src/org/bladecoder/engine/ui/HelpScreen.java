@@ -71,7 +71,7 @@ public class HelpScreen implements Screen, InputProcessor {
 
 		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();	
-		batch.draw(tex, 0, 0, viewport.getViewportWidth(), viewport.getViewportHeight());
+		batch.draw(tex, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
 		ui.getPointer().draw(batch, viewport);
 		batch.end();
 	}

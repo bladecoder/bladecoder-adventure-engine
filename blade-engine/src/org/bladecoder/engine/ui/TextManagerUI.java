@@ -69,14 +69,14 @@ public class TextManagerUI {
 			World.getInstance().getSceneCamera().scene2screen(sceneScreen.getViewport(), unprojectTmp);
 
 			if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE)
-				posx = TextUtils.getCenterX(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getViewportWidth());
+				posx = TextUtils.getCenterX(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getScreenWidth());
 			else
 				posx = unprojectTmp.x;
 
 			if (posy == TextManager.POS_CENTER)
-				posy = TextUtils.getCenterY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getViewportHeight());
+				posy = TextUtils.getCenterY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getScreenHeight());
 			else if (posy == TextManager.POS_SUBTITLE)
-				posy = TextUtils.getSubtitleY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getViewportHeight());
+				posy = TextUtils.getSubtitleY(font, currentSubtitle.str, maxRectangleWidth, (int)sceneScreen.getViewport().getScreenHeight());
 			else
 				posy = unprojectTmp.y;
 
@@ -113,12 +113,12 @@ public class TextManagerUI {
 				// check if the text exits the screen
 				if (x < 0) {
 					dx = -x + RECT_MARGIN;
-				} else if (x + width > sceneScreen.getViewport().getViewportWidth()) {
-					dx = -(x + width - sceneScreen.getViewport().getViewportWidth() + RECT_MARGIN);
+				} else if (x + width > sceneScreen.getViewport().getScreenWidth()) {
+					dx = -(x + width - sceneScreen.getViewport().getScreenWidth() + RECT_MARGIN);
 				}
 				
-				if (y + height > sceneScreen.getViewport().getViewportHeight()) {
-					dy = -(y + height - sceneScreen.getViewport().getViewportHeight());
+				if (y + height > sceneScreen.getViewport().getScreenHeight()) {
+					dy = -(y + height - sceneScreen.getViewport().getScreenHeight());
 				}
 
 				batch.draw(bubblePointer, x + (width - bubblePointer.getRegionWidth()) / 2, y

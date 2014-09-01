@@ -257,7 +257,7 @@ public class ScnWidget extends Widget {
 				drawer.drawSelectedActor(selectedActor);
 			}
 
-			getStage().getViewport().update();
+			getStage().getViewport().apply();
 
 			// SCREEN CAMERA
 			batch.begin();

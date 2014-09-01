@@ -26,23 +26,28 @@ public class SceneFitViewport extends Viewport {
 
 	/** Creates a new viewport using a new {@link OrthographicCamera}. */
 	public SceneFitViewport () {
-		camera = new OrthographicCamera();
+		setCamera(new OrthographicCamera());
 	}
 	
 	@Override
 	public void update (int screenWidth, int screenHeight, boolean centerCamera) {		
-		Vector2 scaled = Scaling.fit.apply(worldWidth, worldHeight, screenWidth, screenHeight);
-		viewportWidth = Math.round(scaled.x);
-		viewportHeight = Math.round(scaled.y);
+		Vector2 scaled = Scaling.fit.apply(getWorldWidth(), getWorldHeight(), screenWidth, screenHeight);
+		setScreenSize(Math.round(scaled.x), Math.round(scaled.y));
 		// center the viewport in the middle of the screen
-		viewportX = (screenWidth - viewportWidth) / 2;
-		viewportY = (screenHeight - viewportHeight) / 2;
+		setScreenPosition((screenWidth - getScreenWidth()) / 2,
+				(screenHeight - getScreenHeight()) / 2);
 		
-		Gdx.gl.glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
-		camera.viewportWidth = viewportWidth;
-		camera.viewportHeight = viewportHeight;
-		if (centerCamera) camera.position.set(viewportWidth / 2, viewportHeight / 2, 0);
-		camera.update();
+		apply(centerCamera);
+	}
+	
+	@Override
+	public void apply (boolean centerCamera) {
+		Gdx.gl.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
+		getCamera().viewportWidth = getScreenWidth();
+		getCamera().viewportHeight = getScreenHeight();
+		if (centerCamera)
+			getCamera().position.set(getScreenWidth() / 2, getScreenHeight() / 2, 0);
+		getCamera().update();
 	}
 
 
@@ -62,13 +67,13 @@ public class SceneFitViewport extends Viewport {
 	public Vector2 unproject(Vector2 out) {
 		super.unproject(out);
 		
-		if (out.x >= viewportWidth)
-			out.x = viewportWidth - 1;
+		if (out.x >= getScreenWidth())
+			out.x = getScreenWidth() - 1;
 		else if (out.x < 0)
 			out.x = 0;
 
-		if (out.y >= viewportHeight)
-			out.y = viewportHeight - 1;
+		if (out.y >= getScreenHeight())
+			out.y = getScreenHeight() - 1;
 		else if (out.y < 0)
 			out.y = 0;
 		
@@ -79,13 +84,13 @@ public class SceneFitViewport extends Viewport {
 	public Vector3 unproject(Vector3 out) {
 		super.unproject(out);
 		
-		if (out.x >= viewportWidth)
-			out.x = viewportWidth - 1;
+		if (out.x >= getScreenWidth())
+			out.x = getScreenWidth() - 1;
 		else if (out.x < 0)
 			out.x = 0;
 
-		if (out.y >= viewportHeight)
-			out.y = viewportHeight - 1;
+		if (out.y >= getScreenHeight())
+			out.y = getScreenHeight() - 1;
 		else if (out.y < 0)
 			out.y = 0;
 		

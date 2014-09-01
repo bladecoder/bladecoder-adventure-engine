@@ -335,10 +335,10 @@ public class SceneScreen implements Screen {
 
 			TextBounds b = EngineLogger.getDebugFont().getBounds(strDebug);
 			RectangleRenderer.draw(batch, 0,
-					viewport.getViewportHeight() - b.height - 10,
+					viewport.getScreenHeight() - b.height - 10,
 					b.width, b.height + 10, Color.BLACK);
 			EngineLogger.getDebugFont().draw(batch, strDebug, 0,
-					viewport.getViewportHeight());
+					viewport.getScreenHeight());
 		}
 
 		if (World.getInstance().getCurrentDialog() != null
@@ -363,7 +363,7 @@ public class SceneScreen implements Screen {
 		Transition t = World.getInstance().getCurrentScene().getTransition();
 
 		if (t != null) {
-			t.draw(batch, viewport.getViewportWidth(), viewport.getViewportHeight());
+			t.draw(batch, viewport.getScreenWidth(), viewport.getScreenHeight());
 		}
 
 		recorder.draw(batch);
@@ -410,9 +410,9 @@ public class SceneScreen implements Screen {
 			viewport.update(width, height, true);
 		}
 				
-		pie.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
-		inventoryUI.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
-		textManagerUI.resize(viewport.getViewportWidth(), viewport.getViewportHeight());
+		pie.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
+		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
+		textManagerUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 	}
 
 	public void dispose() {

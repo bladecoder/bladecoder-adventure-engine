@@ -30,50 +30,55 @@ public class SceneExtendViewport extends Viewport {
 
 	/** Creates a new viewport using a new {@link OrthographicCamera}. */
 	public SceneExtendViewport() {
-		camera = new OrthographicCamera();
+		setCamera(new OrthographicCamera());
 	}
 
 	@Override
 	public void update(int screenWidth, int screenHeight, boolean centerCamera) {
 		// Fit min size to the screen.
-		worldWidth = minWorldWidth;
-		worldHeight = minWorldHeight;
-		Vector2 scaled = Scaling.fit.apply(worldWidth, worldHeight,
+		setWorldSize(minWorldWidth, minWorldHeight);		
+		Vector2 scaled = Scaling.fit.apply(getWorldWidth(), getWorldHeight(),
 				screenWidth, screenHeight);
 
 		// Extend in the short direction.
-		viewportWidth = Math.round(scaled.x);
-		viewportHeight = Math.round(scaled.y);
-		if (viewportWidth < screenWidth) {
-			float toViewportSpace = viewportHeight / worldHeight;
-			float toWorldSpace = worldHeight / viewportHeight;
-			float lengthen = (screenWidth - viewportWidth) * toWorldSpace;
+		setScreenWidth(Math.round(scaled.x));
+		setScreenHeight(Math.round(scaled.y));
+		
+		if (getScreenWidth() < screenWidth) {
+			float toViewportSpace = getScreenHeight() / getWorldHeight();
+			float toWorldSpace = getWorldHeight() / getScreenHeight();
+			float lengthen = (screenWidth - getScreenWidth()) * toWorldSpace;
 			if (maxWorldWidth > 0)
 				lengthen = Math.min(lengthen, maxWorldWidth - minWorldWidth);
-			worldWidth += lengthen;
-			viewportWidth += Math.round(lengthen * toViewportSpace);
-		} else if (viewportHeight < screenHeight) {
-			float toViewportSpace = viewportWidth / worldWidth;
-			float toWorldSpace = worldWidth / viewportWidth;
-			float lengthen = (screenHeight - viewportHeight) * toWorldSpace;
+			setWorldWidth(getWorldWidth() + lengthen);
+			setScreenWidth(getScreenWidth() + Math.round(lengthen * toViewportSpace));
+		} else if (getScreenHeight() < screenHeight) {
+			float toViewportSpace = getScreenWidth() / getWorldWidth();
+			float toWorldSpace = getWorldWidth() / getScreenWidth();
+			float lengthen = (screenHeight - getScreenHeight()) * toWorldSpace;
 			if (maxWorldHeight > 0)
 				lengthen = Math.min(lengthen, maxWorldHeight - minWorldHeight);
-			worldHeight += lengthen;
-			viewportHeight += Math.round(lengthen * toViewportSpace);
+			setWorldHeight(getWorldHeight() + lengthen);
+			setScreenHeight(getScreenHeight() + Math.round(lengthen * toViewportSpace));
 		}
 
 		// Center
-		viewportX = (screenWidth - viewportWidth) / 2;
-		viewportY = (screenHeight - viewportHeight) / 2;
+		setScreenX((screenWidth - getScreenWidth()) / 2);
+		setScreenY((screenHeight - getScreenHeight()) / 2);
 
-		Gdx.gl.glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
-		camera.viewportWidth = viewportWidth;
-		camera.viewportHeight = viewportHeight;
+		apply(centerCamera);
+
+		EngineLogger.debug("SCREEN VIEWPORT: " + getScreenWidth() + "x" + getScreenHeight());
+	}
+	
+	@Override
+	public void apply (boolean centerCamera) {
+		Gdx.gl.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
+		getCamera().viewportWidth = getScreenWidth();
+		getCamera().viewportHeight = getScreenHeight();
 		if (centerCamera)
-			camera.position.set(viewportWidth / 2, viewportHeight / 2, 0);
-		camera.update();
-
-		EngineLogger.debug("VIEWPORT: " + viewportWidth + "x" + viewportHeight);
+			getCamera().position.set(getScreenWidth() / 2, getScreenHeight() / 2, 0);
+		getCamera().update();
 	}
 
 	@Override
@@ -104,13 +109,13 @@ public class SceneExtendViewport extends Viewport {
 	public Vector2 unproject(Vector2 out) {
 		super.unproject(out);
 
-		if (out.x >= viewportWidth)
-			out.x = viewportWidth - 1;
+		if (out.x >= getScreenWidth())
+			out.x = getScreenWidth() - 1;
 		else if (out.x < 0)
 			out.x = 0;
 
-		if (out.y >= viewportHeight)
-			out.y = viewportHeight - 1;
+		if (out.y >= getScreenHeight())
+			out.y = getScreenHeight() - 1;
 		else if (out.y < 0)
 			out.y = 0;
 
@@ -121,13 +126,13 @@ public class SceneExtendViewport extends Viewport {
 	public Vector3 unproject(Vector3 out) {
 		super.unproject(out);
 
-		if (out.x >= viewportWidth)
-			out.x = viewportWidth - 1;
+		if (out.x >= getScreenWidth())
+			out.x = getScreenWidth() - 1;
 		else if (out.x < 0)
 			out.x = 0;
 
-		if (out.y >= viewportHeight)
-			out.y = viewportHeight - 1;
+		if (out.y >=  getScreenHeight())
+			out.y =  getScreenHeight() - 1;
 		else if (out.y < 0)
 			out.y = 0;
 
