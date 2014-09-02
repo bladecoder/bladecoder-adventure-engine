@@ -17,6 +17,8 @@ package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.i18n.I18N;
+import org.bladecoder.engine.model.SpriteRenderer;
+import org.bladecoder.engine.util.DPIUtils;
 import org.bladecoder.engine.util.RectangleRenderer;
 
 import com.badlogic.gdx.Gdx;
@@ -38,7 +40,7 @@ public class Pointer {
 
 	/** Min height in inches for the pointer: 1/3" */
 	private static final float MIN_HEIGHT = 160.0f * Gdx.graphics.getDensity() / 3f;
-	
+
 	/** Margin to show the description. TODO: Must be dinamic */
 	private static final float DESC_MARGIN = 50;
 
@@ -46,15 +48,13 @@ public class Pointer {
 
 	private float scale = 1.0f;
 
-	private boolean freezeHotSpot = false;
-	private final Vector2 freezePos = new Vector2();
-
 	private String desc = null;
 
 	private TextureRegion leaveIcon;
 	private TextureRegion pointerIcon;
 	private TextureRegion hotspotIcon;
 	private TextureRegion currentIcon;
+	private SpriteRenderer draggingRenderer;
 
 	private final Vector2 mousepos = new Vector2();
 
@@ -64,25 +64,25 @@ public class Pointer {
 
 	public void reset() {
 		setDefaultIcon();
-		freezeHotSpot = false;
 		desc = null;
+		draggingRenderer = null;
+	}
+	
+	public void drag(SpriteRenderer r) {
+		draggingRenderer = r;
 	}
 
 	public void setDefaultIcon() {
 		currentIcon = pointerIcon;
-
-		if (!freezeHotSpot)
-			desc = null;
+		desc = null;
 	}
 
 	public void setLeaveIcon() {
-		if (!freezeHotSpot)
-			currentIcon = leaveIcon;
+		currentIcon = leaveIcon;
 	}
 
 	public void setHotspotIcon() {
-		if (!freezeHotSpot)
-			currentIcon = hotspotIcon;
+		currentIcon = hotspotIcon;
 	}
 
 	public void setIcon(TextureRegion r) {
@@ -94,28 +94,16 @@ public class Pointer {
 	}
 
 	public void setDesc(String s) {
-		if (!freezeHotSpot) {
-			desc = s;
+		desc = s;
 
-			if (desc != null && desc.charAt(0) == '@')
-				desc = I18N.getString(desc.substring(1));
-		}
+		if (desc != null && desc.charAt(0) == '@')
+			desc = I18N.getString(desc.substring(1));
 	}
 
 	private void getInputUnproject(Viewport v, Vector2 out) {
 		out.set(Gdx.input.getX(), Gdx.input.getY());
 
 		v.unproject(out);
-
-//		if (out.x >= v.getWorldWidth())
-//			out.x = v.getWorldWidth() - 1;
-//		else if (out.x < 0)
-//			out.x = 0;
-//
-//		if (out.y >= v.getWorldHeight())
-//			out.y = v.getWorldHeight() - 1;
-//		else if (out.y < 0)
-//			out.y = 0;
 	}
 
 	public void drawHotspot(SpriteBatch batch, float x, float y, String desc) {
@@ -132,7 +120,7 @@ public class Pointer {
 		} else {
 			if (desc != null && desc.charAt(0) == '@')
 				desc = I18N.getString(desc.substring(1));
-			
+
 			TextBounds b = font.getBounds(desc);
 
 			float textX = x - b.width / 2;
@@ -161,22 +149,17 @@ public class Pointer {
 			if (textX < 0)
 				textX = 0;
 
-			if (freezeHotSpot) {
-				textX = freezePos.x - b.width / 2;
-				textY = freezePos.y;
-			}
-
 			RectangleRenderer.draw(batch, textX - 8, textY - b.height - 8,
 					b.width + 16, b.height + 16, Color.BLACK);
-			font.draw(batch, desc, textX, textY);	
+			font.draw(batch, desc, textX, textY);
 		}
 
-		if (!dragging) {
+		if (draggingRenderer == null) {
 			if (!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)
 					|| currentIcon == leaveIcon) {
 
-				float minScale = Math.max(
-						MIN_HEIGHT / pointerIcon.getRegionHeight(), scale);
+				float minScale = pointerIcon.getRegionHeight() / Math.max(pointerIcon.getRegionHeight(), DPIUtils.MIN_SIZE);
+				minScale = Math.min(minScale, DPIUtils.MIN_SIZE * 1.5f);
 
 				batch.draw(currentIcon,
 						mousepos.x - currentIcon.getRegionWidth() * minScale
@@ -185,29 +168,30 @@ public class Pointer {
 								* minScale, currentIcon.getRegionHeight()
 								* minScale);
 			}
+		} else {
+			float h = (draggingRenderer.getHeight() > draggingRenderer.getWidth()? draggingRenderer.getHeight():draggingRenderer.getWidth());
+			int tileSize = 50;
+			float size =  tileSize / h * 1.4f;
+	         
+	        if(currentIcon != hotspotIcon)
+	        	batch.setColor(0.7f, 0.7f, 0.7f, 1f);
+	     	
+	        draggingRenderer.draw(batch, mousepos.x,
+	        		mousepos.y - h * size / 2, size);
+	     	batch.setColor(Color.WHITE);			
 		}
-	}
-
-	public void setFreezeHotSpot(boolean freeze, Viewport v) {
-		freezeHotSpot = freeze;
-		setDefaultIcon();
-		getInputUnproject(v, freezePos);
 	}
 
 	public void retrieveAssets(TextureAtlas atlas) {
 		pointerIcon = atlas.findRegion(POINTER_ICON);
 		leaveIcon = atlas.findRegion(LEAVE_ICON);
 		hotspotIcon = atlas.findRegion(HOTSPOT_ICON);
-		
+
 		if (font == null)
 			font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
 	}
 
 	public void resize(int width, int height) {
-		float aspect = width
-				/ (float) EngineAssetManager.getInstance().getResolution().portraitWidth;
-
-		scale = aspect;
 	}
 
 	public void dispose() {
