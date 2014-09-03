@@ -89,10 +89,6 @@ public class Pointer {
 		currentIcon = r;
 	}
 
-	public void draw(SpriteBatch batch, Viewport v) {
-		draw(batch, false, v);
-	}
-
 	public void setDesc(String s) {
 		desc = s;
 
@@ -132,7 +128,7 @@ public class Pointer {
 		}
 	}
 
-	public void draw(SpriteBatch batch, boolean dragging, Viewport v) {
+	public void draw(SpriteBatch batch, Viewport v) {
 
 		getInputUnproject(v, mousepos);
 

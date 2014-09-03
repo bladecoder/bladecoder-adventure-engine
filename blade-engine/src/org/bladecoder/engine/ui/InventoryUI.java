@@ -87,6 +87,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 
 					if (actor != null) {
 						sceneScreen.actorClick(actor, button == 1);
+					} else {
+						hide();
 					}
 				}
 			}
@@ -116,35 +118,37 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 
 				// EngineLogger.debug("EXIT EVENT: " + toActor);
 				if (!(toActor instanceof PieMenu)
-						&& !(toActor instanceof InventoryUI) && draggedActor != null)
+						&& !(toActor instanceof InventoryUI)
+						&& draggedActor != null)
 					hide();
 			}
 		});
 	}
-	
+
 	public void show() {
-		setVisible(true);
-		
-		addAction(Actions.moveTo(getX(), getY() + getHeight() + margin, .1f));
+		if (!isVisible()) {
+			setVisible(true);
+
+			addAction(Actions
+					.moveTo(getX(), getY() + getHeight() + margin, .1f));
+		}
 	}
-	
+
 	public void hide() {
-		addAction(
-				Actions.sequence(
-				Actions.moveTo(getX(), -getHeight(), .1f),
-				Actions.hide())
-				);
+		if(isVisible())
+			addAction(Actions.sequence(Actions.moveTo(getX(), -getHeight(), .1f),
+				Actions.hide()));
 	}
 
 	public void resize(int width, int height) {
 		tileSize = DPIUtils.getButtonPrefSize() * 2;
 
-		int w = (int)(width * .8f / tileSize) * tileSize;
-		int h = (int)(height * .8f / tileSize) * tileSize;
-		margin = (height - h)/2;
-		
+		int w = (int) (width * .8f / tileSize) * tileSize;
+		int h = (int) (height * .8f / tileSize) * tileSize;
+		margin = (height - h) / 2;
+
 		setVisible(false);
-		
+
 		setBounds((width - w) / 2, -h, w, h);
 	}
 
@@ -168,7 +172,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 				configBbox.height);
 
 		int cols = (int) getWidth() / tileSize;
-		int rows = (int)getHeight() / tileSize - 1;
+		int rows = (int) getHeight() / tileSize - 1;
 
 		// DRAW ITEMS
 		for (int i = 0; i < inventory.getNumItems(); i++) {
@@ -195,7 +199,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 
 	private void startDragging(float x, float y) {
 		draggedActor = getItemAt(x, y);
-		if(draggedActor != null)
+		if (draggedActor != null)
 			sceneScreen.getUI().getPointer().drag(draggedActor.getRenderer());
 	}
 
@@ -228,7 +232,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 		Inventory inventory = World.getInstance().getInventory();
 
 		int cols = (int) getWidth() / tileSize;
-		int rows = (int)getHeight() / tileSize - 1;
+		int rows = (int) getHeight() / tileSize - 1;
 
 		int i = (rows - ((int) y / tileSize)) * cols + (int) x / tileSize;
 

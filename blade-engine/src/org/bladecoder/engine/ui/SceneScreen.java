@@ -57,7 +57,6 @@ public class SceneScreen implements Screen {
 	private ShapeRenderer renderer;
 
 	private boolean pieMode;
-	boolean dragging = false;
 
 	private final Recorder recorder = new Recorder();
 	private InputMultiplexer multiplexer = new InputMultiplexer();
@@ -75,18 +74,17 @@ public class SceneScreen implements Screen {
 	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP,
 			true);
 
-	// private InputProcessor inputProcessor = new SceneInputProcessor(this);
+	private static enum UIStates {
+		SCENE_MODE, CUT_MODE, PLAY_MODE, PAUSE_MODE, INVENTORY_MODE, DIALOG_MODE
+	};
+
+	private UIStates state = UIStates.SCENE_MODE;
 
 	private final GestureDetector inputProcessor = new GestureDetector(
 			new GestureDetector.GestureListener() {
 				@Override
 				public boolean touchDown(float x, float y, int pointer,
 						int button) {
-					EngineLogger.debug("Event TOUCH DOWN button: " + button);
-
-					touchEvent(SceneInputProcessor.TOUCH_DOWN, x, y, pointer,
-							button);
-
 					return true;
 				}
 
@@ -94,11 +92,26 @@ public class SceneScreen implements Screen {
 				public boolean tap(float x, float y, int count, int button) {
 					EngineLogger.debug("Event TAP button: " + button);
 
+					World w = World.getInstance();
+
+					if (state == UIStates.PAUSE_MODE
+							|| state == UIStates.PLAY_MODE)
+						return true;
+
 					if (drawHotspots)
 						drawHotspots = false;
-					else
-						touchEvent(SceneInputProcessor.TOUCH_UP, x, y, count,
-								button);
+					else {
+						viewport.getInputUnProject(unprojectTmp);
+
+						if (state == UIStates.CUT_MODE
+								&& !recorder.isRecording()) {
+							w.getTextManager().next();
+						} else if (state == UIStates.INVENTORY_MODE) {
+							inventoryUI.hide();
+						} else if (state == UIStates.SCENE_MODE) {
+							sceneClick(button == 1);
+						}
+					}
 
 					return true;
 				}
@@ -107,25 +120,20 @@ public class SceneScreen implements Screen {
 				public boolean longPress(float x, float y) {
 					EngineLogger.debug("Event LONG PRESS");
 
-					drawHotspots = true;
+					if (state == UIStates.SCENE_MODE) {
+						drawHotspots = true;
+					}
 
 					return false;
 				}
 
 				@Override
 				public boolean pan(float x, float y, float deltaX, float deltaY) {
-					EngineLogger.debug("Event PAN");
-
-					touchEvent(SceneInputProcessor.DRAG, x, y, 0, 0);
-
 					return true;
 				}
 
 				@Override
 				public boolean panStop(float x, float y, int pointer, int button) {
-					touchEvent(SceneInputProcessor.TOUCH_UP, x, y, pointer,
-							button);
-
 					return true;
 				}
 
@@ -244,6 +252,72 @@ public class SceneScreen implements Screen {
 		return recorder;
 	}
 
+	private void setUIState(UIStates s) {
+		if (state == s)
+			return;
+
+		switch (s) {
+		case PAUSE_MODE:
+		case PLAY_MODE:
+		case CUT_MODE:
+			if (pieMode && pie.isVisible())
+				pie.hide();
+
+			if (inventoryUI.isVisible())
+				inventoryUI.hide();
+
+			if (inventoryButton.isVisible())
+				inventoryButton.setVisible(false);
+
+			if (dialogUI.isVisible())
+				dialogUI.setVisible(false);
+
+			inventoryUI.cancelDragging();
+			ui.getPointer().reset();
+			break;
+		case DIALOG_MODE:
+			if (pieMode && pie.isVisible())
+				pie.hide();
+
+			if (inventoryUI.isVisible())
+				inventoryUI.hide();
+
+			if (inventoryButton.isVisible())
+				inventoryButton.setVisible(false);
+
+			if (!dialogUI.isVisible())
+				dialogUI.setVisible(true);
+
+			inventoryUI.cancelDragging();
+			break;
+		case INVENTORY_MODE:
+			if (pieMode && pie.isVisible())
+				pie.hide();
+
+			if (!inventoryUI.isVisible())
+				inventoryUI.show();
+
+			if (!inventoryButton.isVisible())
+				inventoryButton.setVisible(true);
+
+			if (!dialogUI.isVisible())
+				dialogUI.setVisible(true);
+			break;
+		case SCENE_MODE:
+			if (pieMode && pie.isVisible())
+				pie.hide();
+
+			if (inventoryUI.isVisible())
+				inventoryUI.hide();
+
+			if (dialogUI.isVisible())
+				dialogUI.setVisible(false);
+			break;
+		}
+
+		state = s;
+	}
+
 	private void update(float delta) {
 		World w = World.getInstance();
 		currentActor = null;
@@ -259,54 +333,80 @@ public class SceneScreen implements Screen {
 			return;
 		}
 
-		recorder.update(delta);
-
-		if (w.getCurrentDialog() == null && !w.inCutMode()) {
-
-			if (inventoryUI.isVisible()) {
-				unproject2Tmp.set(Gdx.input.getX(), Gdx.input.getY());
-				inventoryUI.screenToLocalCoordinates(unproject2Tmp);
-				currentActor = inventoryUI.getItemAt(unproject2Tmp.x,
-						unproject2Tmp.y);
-			}
-
-			if (currentActor == null) {
-				w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
-
-				currentActor = w.getCurrentScene().getActorAt(unprojectTmp.x,
-						unprojectTmp.y);
-			}
-
-			if (!pie.isVisible()) {
-				if (currentActor != null) {
-
-					if (showDesc)
-						ui.getPointer().setDesc(currentActor.getDesc());
-
-					if (currentActor.getVerb("leave") != null)
-						ui.getPointer().setLeaveIcon();
-					else
-						ui.getPointer().setHotspotIcon();
-				} else {
-					ui.getPointer().setDefaultIcon();
-				}
-			}
-		} else {
-			ui.getPointer().reset();
-
-			if (pie.isVisible()) {
-				pie.hide();
-			}
-
-			inventoryUI.cancelDragging();
-
-			if (w.getCurrentDialog() != null && !dialogUI.isVisible()
-					&& !w.inCutMode()) {
-				dialogUI.setVisible(true);
-			}
+		// CHECK FOR STATE CHANGES
+		switch (state) {
+		case CUT_MODE:
+			if (!w.inCutMode())
+				setUIState(UIStates.SCENE_MODE);
+			break;
+		case DIALOG_MODE:
+			if (w.getCurrentDialog() == null)
+				setUIState(UIStates.SCENE_MODE);
+			break;
+		case INVENTORY_MODE:
+			if (!inventoryUI.isVisible())
+				setUIState(UIStates.SCENE_MODE);
+			break;
+		case PAUSE_MODE:
+			if (!w.isPaused())
+				setUIState(UIStates.SCENE_MODE);
+			break;
+		case PLAY_MODE:
+			if (!recorder.isPlaying())
+				setUIState(UIStates.SCENE_MODE);
+			break;
+		case SCENE_MODE:
+			if (w.isPaused())
+				setUIState(UIStates.PAUSE_MODE);
+			else if (w.inCutMode())
+				setUIState(UIStates.CUT_MODE);
+			else if (recorder.isPlaying())
+				setUIState(UIStates.PLAY_MODE);
+			else if (inventoryUI.isVisible())
+				setUIState(UIStates.INVENTORY_MODE);
+			else if (w.getCurrentDialog() != null)
+				setUIState(UIStates.DIALOG_MODE);
+			break;
 		}
 
 		stage.act(delta);
+
+		if (state == UIStates.PAUSE_MODE)
+			return;
+
+		recorder.update(delta);
+
+		if (state == UIStates.INVENTORY_MODE) {
+			unproject2Tmp.set(Gdx.input.getX(), Gdx.input.getY());
+			inventoryUI.screenToLocalCoordinates(unproject2Tmp);
+			currentActor = inventoryUI.getItemAt(unproject2Tmp.x,
+					unproject2Tmp.y);
+		} else if (state == UIStates.SCENE_MODE) {
+			w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
+
+			currentActor = w.getCurrentScene().getActorAt(unprojectTmp.x,
+					unprojectTmp.y);
+			
+			if(!w.getInventory().isVisible() && inventoryButton.isVisible())
+				inventoryButton.setVisible(false);
+			else if(w.getInventory().isVisible() && !inventoryButton.isVisible())
+				inventoryButton.setVisible(true);
+		}
+
+		if (!pie.isVisible()) {
+			if (currentActor != null) {
+
+				if (showDesc)
+					ui.getPointer().setDesc(currentActor.getDesc());
+
+				if (currentActor.getVerb("leave") != null)
+					ui.getPointer().setLeaveIcon();
+				else
+					ui.getPointer().setHotspotIcon();
+			} else {
+				ui.getPointer().setDefaultIcon();
+			}
+		}
 	}
 
 	@Override
@@ -369,10 +469,8 @@ public class SceneScreen implements Screen {
 					viewport.getScreenHeight());
 		}
 
-		textManagerUI.draw(batch);
-
 		if (!World.getInstance().inCutMode() && !recorder.isPlaying()) {
-			ui.getPointer().draw(batch, dragging, viewport);
+			ui.getPointer().draw(batch, viewport);
 		}
 
 		Transition t = World.getInstance().getCurrentScene().getTransition();
@@ -454,47 +552,8 @@ public class SceneScreen implements Screen {
 		inventoryButton.retrieveAssets(atlas);
 	}
 
-	public void touchEvent(int type, float x, float y, int pointer, int button) {
-		World w = World.getInstance();
-
-		if (w.isPaused() || recorder.isPlaying())
-			return;
-
-		viewport.getInputUnProject(unprojectTmp);
-
-		switch (type) {
-		case SceneInputProcessor.TOUCH_UP:
-
-			if (w.inCutMode() && !recorder.isRecording()) {
-				w.getTextManager().next();
-			} else if (w.getCurrentDialog() != null) {
-			} else if (dragging) {
-				dragging = false;
-			} else {
-				sceneClick(button == 1);
-			}
-			break;
-
-		case SceneInputProcessor.TOUCH_DOWN:
-
-			break;
-
-		case SceneInputProcessor.DRAG:
-
-			dragging = true;
-
-			if (pie.isVisible()) {
-				pie.hide();
-			}
-			break;
-		}
-	}
-
 	private void sceneClick(boolean lookat) {
 		World w = World.getInstance();
-		
-		if(inventoryUI.isVisible())
-			inventoryUI.hide();
 
 		w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
 
@@ -523,7 +582,7 @@ public class SceneScreen implements Screen {
 	}
 
 	public void actorClick(Actor a, boolean lookat) {
-		
+
 		if (a.getVerb("leave") != null) {
 			runVerb(a, "leave", null);
 		} else if (!pieMode) {
@@ -540,7 +599,7 @@ public class SceneScreen implements Screen {
 			ui.getPointer().reset();
 		}
 	}
-	
+
 	/**
 	 * Run actor verb and handles recording
 	 * 
@@ -549,14 +608,14 @@ public class SceneScreen implements Screen {
 	 * @param target
 	 */
 	public void runVerb(Actor a, String verb, String target) {
-		if(inventoryUI.isVisible())
+		if (inventoryUI.isVisible())
 			inventoryUI.hide();
-		
+
 		if (recorder.isRecording()) {
 			recorder.add(a.getId(), verb, target);
 		}
 
-		a.runVerb(verb, target);		
+		a.runVerb(verb, target);
 	}
 
 	public void showMenu() {
@@ -571,7 +630,6 @@ public class SceneScreen implements Screen {
 
 		ui.getPointer().reset();
 
-		dragging = false;
 		currentActor = null;
 	}
 
@@ -585,6 +643,7 @@ public class SceneScreen implements Screen {
 		retrieveAssets(ui.getUIAtlas());
 
 		stage = new Stage(viewport);
+		stage.addActor(textManagerUI);
 		stage.addActor(dialogUI);
 		stage.addActor(inventoryUI);
 		stage.addActor(inventoryButton);

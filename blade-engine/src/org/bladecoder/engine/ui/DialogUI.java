@@ -74,15 +74,20 @@ public class DialogUI extends Actor {
 
 		setPosition(0, 0);
 	}
-
+	
 	@Override
-	public void draw(Batch batch, float alpha) {
-		
-		if(World.getInstance().getCurrentDialog() == null || World.getInstance().inCutMode()) {
+	public void act(float delta) {
+		super.act(delta);
+
+		if(isVisible() && (World.getInstance().getCurrentDialog() == null || World.getInstance().inCutMode())) {
 			setVisible(false);
 			selected = -1;
 			return;
 		}
+	}
+
+	@Override
+	public void draw(Batch batch, float alpha) {
 		
 		ArrayList<DialogOption> options = World.getInstance()
 				.getCurrentDialog().getVisibleOptions();

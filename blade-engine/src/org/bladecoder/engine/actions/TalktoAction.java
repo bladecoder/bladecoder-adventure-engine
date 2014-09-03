@@ -19,7 +19,6 @@ import java.util.HashMap;
 
 import org.bladecoder.engine.actions.Param.Type;
 import org.bladecoder.engine.model.Actor;
-import org.bladecoder.engine.model.SpriteActor;
 import org.bladecoder.engine.model.World;
 
 public class TalktoAction implements Action {
