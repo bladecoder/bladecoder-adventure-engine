@@ -36,7 +36,7 @@ public class SceneExtendViewport extends Viewport {
 	@Override
 	public void update(int screenWidth, int screenHeight, boolean centerCamera) {
 		// Fit min size to the screen.
-		setWorldSize(minWorldWidth, minWorldHeight);		
+		super.setWorldSize(minWorldWidth, minWorldHeight);		
 		Vector2 scaled = Scaling.fit.apply(getWorldWidth(), getWorldHeight(),
 				screenWidth, screenHeight);
 

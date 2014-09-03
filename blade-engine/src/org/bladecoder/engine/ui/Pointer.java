@@ -38,15 +38,12 @@ public class Pointer {
 	private static final String POINTER_ICON = "pointer3";
 	private static final String HOTSPOT_ICON = "hotspotpointer3";
 
-	/** Min height in inches for the pointer: 1/3" */
-	private static final float MIN_HEIGHT = 160.0f * Gdx.graphics.getDensity() / 3f;
-
 	/** Margin to show the description. TODO: Must be dinamic */
 	private static final float DESC_MARGIN = 50;
+	
+	private static final Color DRAG_NOT_HOTSPOT_COLOR = new Color(.5f, 0.5f, 0.5f, 1f);
 
 	private BitmapFont font;
-
-	private float scale = 1.0f;
 
 	private String desc = null;
 
@@ -57,6 +54,8 @@ public class Pointer {
 	private SpriteRenderer draggingRenderer;
 
 	private final Vector2 mousepos = new Vector2();
+	
+	private float pointerScale;
 
 	public Pointer() {
 		reset();
@@ -103,15 +102,13 @@ public class Pointer {
 	}
 
 	public void drawHotspot(SpriteBatch batch, float x, float y, String desc) {
-		float minScale = Math.max(MIN_HEIGHT / pointerIcon.getRegionHeight(),
-				scale);
 
 		if (desc == null) {
 			batch.setColor(Color.BLUE);
-			batch.draw(hotspotIcon, x - hotspotIcon.getRegionWidth() * minScale
-					/ 2, y - hotspotIcon.getRegionHeight() * minScale / 2,
-					hotspotIcon.getRegionWidth() * minScale,
-					hotspotIcon.getRegionHeight() * minScale);
+			batch.draw(hotspotIcon, x - hotspotIcon.getRegionWidth() * pointerScale
+					/ 2, y - hotspotIcon.getRegionHeight() * pointerScale / 2,
+					hotspotIcon.getRegionWidth() * pointerScale,
+					hotspotIcon.getRegionHeight() * pointerScale);
 			batch.setColor(Color.WHITE);
 		} else {
 			if (desc != null && desc.charAt(0) == '@')
@@ -154,27 +151,27 @@ public class Pointer {
 			if (!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)
 					|| currentIcon == leaveIcon) {
 
-				float minScale = pointerIcon.getRegionHeight() / Math.max(pointerIcon.getRegionHeight(), DPIUtils.MIN_SIZE);
-				minScale = Math.min(minScale, DPIUtils.MIN_SIZE * 1.5f);
-
 				batch.draw(currentIcon,
-						mousepos.x - currentIcon.getRegionWidth() * minScale
+						mousepos.x - currentIcon.getRegionWidth() * pointerScale
 								/ 2, mousepos.y - currentIcon.getRegionHeight()
-								* minScale / 2, currentIcon.getRegionWidth()
-								* minScale, currentIcon.getRegionHeight()
-								* minScale);
+								* pointerScale / 2, currentIcon.getRegionWidth()
+								* pointerScale, currentIcon.getRegionHeight()
+								* pointerScale);
 			}
 		} else {
 			float h = (draggingRenderer.getHeight() > draggingRenderer.getWidth()? draggingRenderer.getHeight():draggingRenderer.getWidth());
-			int tileSize = 50;
-			float size =  tileSize / h * 1.4f;
+			float size =  DPIUtils.MIN_SIZE / h * 2f;
 	         
-	        if(currentIcon != hotspotIcon)
-	        	batch.setColor(0.7f, 0.7f, 0.7f, 1f);
+	        if(currentIcon != hotspotIcon) {
+	        	batch.setColor(DRAG_NOT_HOTSPOT_COLOR);
+	        }
 	     	
 	        draggingRenderer.draw(batch, mousepos.x,
-	        		mousepos.y - h * size / 2, size);
-	     	batch.setColor(Color.WHITE);			
+	        		mousepos.y - draggingRenderer.getHeight() * size / 2, size);
+	        
+	        if(currentIcon != hotspotIcon) {
+	        	batch.setColor(Color.WHITE);
+	        }	
 		}
 	}
 
@@ -185,6 +182,8 @@ public class Pointer {
 
 		if (font == null)
 			font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
+		
+		pointerScale = DPIUtils.MIN_SIZE / pointerIcon.getRegionHeight();
 	}
 
 	public void resize(int width, int height) {

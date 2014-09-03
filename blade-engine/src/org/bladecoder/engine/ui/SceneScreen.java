@@ -435,9 +435,7 @@ public class SceneScreen implements Screen {
 		}
 
 		// STAGE
-		if (!World.getInstance().inCutMode() && !recorder.isPlaying()) {
-			stage.draw();
-		}
+		stage.draw();
 
 		// SCREEN CAMERA
 		batch.setProjectionMatrix(viewport.getCamera().combined);

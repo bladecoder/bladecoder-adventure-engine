@@ -228,6 +228,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 	}
 
 	public SpriteActor getItemAt(float x, float y) {
+		if(x < 0 || y < 0 || x >= getWidth() || y >= getHeight())
+			return null;
 
 		Inventory inventory = World.getInstance().getInventory();
 
