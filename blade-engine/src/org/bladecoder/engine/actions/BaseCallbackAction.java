@@ -21,39 +21,54 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class BaseCallbackAction implements ActionCallback, ActionEndTrigger, Serializable {	
-	private ActionCallback cb;
-	private String cbSer;
-
+public abstract class BaseCallbackAction implements Action, ActionCallback, Serializable {	
+	private ActionCallback verbCb;
+	private String verbCbSer;
+	private boolean wait = true;	
+	
 	@Override
-	public void onEvent() {
-		if(cb != null || cbSer != null) {
-			if(cb==null) {
-				cb =  ActionCallbackSerialization.find(cbSer);
-				cbSer = null;
+	public void resume() {
+		if(verbCb != null || verbCbSer != null) {
+			if(verbCb==null) {
+				verbCb =  ActionCallbackSerialization.find(verbCbSer);
+				verbCbSer = null;
 			}
 			
-			ActionCallback cb2 = cb;
-			cb = null;
-			cb2.onEvent();
+			ActionCallback cb2 = verbCb;
+			verbCb = null;
+			cb2.resume();
 		}
 	}
 
 	@Override
-	public void setCallback(ActionCallback cb) {
-		this.cb = cb;
+	public boolean waitForFinish(ActionCallback cb) {
+		this.verbCb = cb;
+		
+		return wait;
 	}	
 
-	@Override
-	public void write(Json json) {
-		if(cbSer != null)
-			json.writeValue("cb", cbSer);
-		else
-			json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null : String.class);	
+	public void setWait(boolean wait) {
+		this.wait = wait;
+	}
+	
+	public boolean getWait() {
+		return wait;
 	}
 
 	@Override
-	public void read (Json json, JsonValue jsonData) {	
-		cbSer = json.readValue("cb", String.class, jsonData);
+	public void write(Json json) {
+		json.writeValue("wait", wait);
+		
+		if(verbCbSer != null)
+			json.writeValue("cb", verbCbSer);
+		else
+			json.writeValue("cb", ActionCallbackSerialization.find(verbCb), verbCb == null ? null : String.class);	
+	}
+
+	@Override
+	public void read (Json json, JsonValue jsonData) {
+		wait = json.readValue("wait", Boolean.class, jsonData);
+		
+		verbCbSer = json.readValue("cb", String.class, jsonData);
 	}
 }

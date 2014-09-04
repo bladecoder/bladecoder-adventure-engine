@@ -27,7 +27,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class SayDialogAction extends BaseCallbackAction implements Action {
+public class SayDialogAction extends BaseCallbackAction {
 
 	public static final String INFO = 
 			"Says the selected option from the current dialog. This action does the next steps:\n" +
@@ -77,12 +77,12 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 			player.startFrameAnimation(getTalkFA(previousFA), null);
 
 		} else {
-			onEvent();
+			resume();
 		}
 	}
 
 	@Override
-	public void onEvent() {
+	public void resume() {
 
 		World w = World.getInstance();
 		Actor actor = w.getCurrentScene().getActor(characterName, false);
@@ -110,13 +110,13 @@ public class SayDialogAction extends BaseCallbackAction implements Action {
 					((SpriteActor)actor).startFrameAnimation(getTalkFA(previousFA), null);
 				}
 			} else {
-				super.onEvent();
+				super.resume();
 			}
 		} else {
 			if(actor instanceof SpriteActor) {
 				((SpriteActor)actor).startFrameAnimation(previousFA, null);
 			}
-			super.onEvent();			
+			super.resume();			
 		}
 	}
 	

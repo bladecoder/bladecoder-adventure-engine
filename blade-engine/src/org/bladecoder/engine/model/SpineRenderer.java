@@ -303,13 +303,13 @@ public class SpineRenderer implements SpriteRenderer {
 			currentAnimationType = repeatType;
 		}
 
-		lastAnimationTime = 0;
+		lastAnimationTime = 0f;
 		setCurrentFA();
 	}
 
 	private void setCurrentFA() {
 		try {
-			currentSource.skeleton.setToSetupPose();
+//			currentSource.skeleton.setToSetupPose();
 			currentSource.skeleton.setFlipX(flipX);
 			currentSource.animation
 					.setTimeScale(currentFrameAnimation.duration);

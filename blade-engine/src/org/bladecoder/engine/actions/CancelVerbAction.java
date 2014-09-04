@@ -67,4 +67,9 @@ public class CancelVerbAction implements Action {
 		return PARAMS;
 	}
 
+	@Override
+	public boolean waitForFinish(ActionCallback cb) {
+		return false;
+	}
+
 }

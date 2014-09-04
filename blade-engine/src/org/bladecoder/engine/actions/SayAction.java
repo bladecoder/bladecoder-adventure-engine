@@ -31,7 +31,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class SayAction extends BaseCallbackAction implements Action {
+public class SayAction extends BaseCallbackAction {
 	public static final String INFO = "Says a text";
 	public static final Param[] PARAMS = {
 			new Param("text", "The 'text' to show", Type.STRING),
@@ -56,7 +56,6 @@ public class SayAction extends BaseCallbackAction implements Action {
 
 	private String soundId;
 	private String text;
-	private boolean wait = true;
 
 	private String actorId;
 
@@ -75,7 +74,7 @@ public class SayAction extends BaseCallbackAction implements Action {
 		talkFA = params.get("animation");
 
 		if (params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
+			setWait(Boolean.parseBoolean(params.get("wait")));
 		}
 
 		if (params.get("type") != null) {
@@ -141,26 +140,20 @@ public class SayAction extends BaseCallbackAction implements Action {
 						getTalkFA(previousFA), Tween.FROM_FA, 0, null);
 			}
 
-			if (wait) {
-				World.getInstance().getTextManager()
-						.addSubtitle(text, x, y, quee, type, Color.BLACK, this);
-			} else {
-				World.getInstance().getTextManager()
-						.addSubtitle(text, x, y, quee, type, Color.BLACK, null);
-				onEvent();
-			}
+			World.getInstance().getTextManager()
+						.addSubtitle(text, x, y, quee, type, Color.BLACK, getWait()?this:null);
 		}
 	}
 
 	@Override
-	public void onEvent() {
+	public void resume() {
 		if (this.type == Text.Type.TALK) {
 			SpriteActor actor = (SpriteActor) World.getInstance()
 					.getCurrentScene().getActor(actorId, false);
 			actor.startFrameAnimation(previousFA, Tween.FROM_FA, 0, null);
 		}
 
-		super.onEvent();
+		super.resume();
 	}
 
 	private void restoreStandPose(SpriteActor a) {
@@ -191,7 +184,6 @@ public class SayAction extends BaseCallbackAction implements Action {
 
 		json.writeValue("soundId", soundId);
 		json.writeValue("text", text);
-		json.writeValue("wait", wait);
 		json.writeValue("actorId", actorId);
 		json.writeValue("previousFA", previousFA);
 		json.writeValue("type", type);
@@ -203,7 +195,6 @@ public class SayAction extends BaseCallbackAction implements Action {
 	public void read(Json json, JsonValue jsonData) {
 		soundId = json.readValue("soundId", String.class, jsonData);
 		text = json.readValue("text", String.class, jsonData);
-		wait = json.readValue("wait", Boolean.class, jsonData);
 		actorId = json.readValue("actorId", String.class, jsonData);
 		previousFA = json.readValue("previousFA", String.class, jsonData);
 		type = json.readValue("type", Text.Type.class, jsonData);

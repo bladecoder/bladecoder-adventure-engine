@@ -23,11 +23,32 @@ import org.bladecoder.engine.model.Verb;
 import org.bladecoder.engine.model.VerbManager;
 import org.bladecoder.engine.model.World;
 
+/**
+ * 
+ * Helper class to serialize ActionCallbacks. An ActionCallback is an Action or
+ * a Verb.
+ * 
+ * This class can generate an String from an ActionCallback to save to a file
+ * and then locate the ActionCallback based in the generated String.
+ * 
+ * The String generated to locate an ActionCallback is like:
+ * 
+ * For verbs: actorId#verbId
+ * For actions: actorId#verbId#actionPos
+ * 
+ * If actorId == "DEFAULT_VERB" the ActionCallback is searched in the World default verbs.
+ * If actorId == current scene ID the ActionCallback is searched in the current scene verbs.
+ * 
+ * @author rgarcia
+ */
 public class ActionCallbackSerialization {
 	public static final String SEPARATION_SYMBOL = "#";
 
 	private static String find(ActionCallback cb, Verb v) {
 		String id = v.getId();
+
+		if (cb == v)
+			return id;
 
 		int pos = 0;
 
@@ -46,8 +67,9 @@ public class ActionCallbackSerialization {
 	}
 
 	private static String find(ActionCallback cb, Actor a) {
-		if(a == null) return null;
-		
+		if (a == null)
+			return null;
+
 		String id = a.getId();
 
 		for (Verb v : a.getVerbManager().getVerbs().values()) {
@@ -63,10 +85,11 @@ public class ActionCallbackSerialization {
 
 		return null;
 	}
-	
+
 	private static String find(ActionCallback cb, Scene s) {
-		if(s == null) return null;
-		
+		if (s == null)
+			return null;
+
 		String id = s.getId();
 
 		for (Verb v : s.getVerbManager().getVerbs().values()) {
@@ -83,6 +106,12 @@ public class ActionCallbackSerialization {
 		return null;
 	}
 
+	/**
+	 * Generates a String for serialization that allows locate the ActionCallback
+	 * 
+	 * @param cb The ActionCallback to serialize
+	 * @return The generated location string
+	 */
 	public static String find(ActionCallback cb) {
 		String id = null;
 
@@ -122,21 +151,29 @@ public class ActionCallbackSerialization {
 		return null;
 	}
 
+	/**
+	 * Searches for the ActionCallback represented by the id string.
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public static ActionCallback find(String id) {
 		Scene s = World.getInstance().getCurrentScene();
 
 		String[] split = id.split(SEPARATION_SYMBOL);
 
-		if (split.length < 3)
+		if (split.length < 2)
 			return null;
 
 		String actorId = split[0];
 		String verbId = split[1];
-		int actionPos = Integer.parseInt(split[2]);
+		int actionPos = -1;
 
-		
+		if (split.length > 2)
+			actionPos = Integer.parseInt(split[2]);
+
 		Verb v = null;
-		
+
 		if (actorId.equals("DEFAULT_VERB")) {
 
 			v = VerbManager.getDefaultVerbs().get(verbId);
@@ -151,13 +188,16 @@ public class ActionCallbackSerialization {
 
 				if (a == null)
 					return null;
-				
+
 				v = a.getVerbManager().getVerbs().get(verbId);
 			}
 		}
 
 		if (v == null)
 			return null;
+
+		if (split.length == 2)
+			return v;
 
 		Action action = v.getActions().get(actionPos);
 

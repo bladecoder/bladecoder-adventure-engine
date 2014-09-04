@@ -29,7 +29,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class GotoAction extends BaseCallbackAction implements Action {
+public class GotoAction extends BaseCallbackAction {
 	public static final String INFO = "Walks to the selected position";
 	public static final Param[] PARAMS = {
 		new Param("pos", "The position to walk to", Type.VECTOR2),
@@ -40,8 +40,6 @@ public class GotoAction extends BaseCallbackAction implements Action {
 	private String actorId;
 	private Vector2 pos;
 	private String targetId;
-	
-	private boolean wait = true;
 
 	@Override
 	public void run() {
@@ -53,15 +51,12 @@ public class GotoAction extends BaseCallbackAction implements Action {
 			Actor target =  World.getInstance().getCurrentScene().getActor(targetId, false);
 			if(target != null) {
 				Rectangle bbox = target.getBBox().getBoundingRectangle();
-				actor.goTo(new Vector2(bbox.x, bbox.y), wait?this:null);
+				actor.goTo(new Vector2(bbox.x, bbox.y), getWait()?this:null);
 			} else {
 				EngineLogger.error("GotoAction - Target actor doesn't exists: " + targetId);
 			}
 		} else 
-			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), wait?this:null);
-						
-		if(!wait)
-			onEvent();
+			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), getWait()?this:null);
 	}
 
 	@Override
@@ -75,7 +70,7 @@ public class GotoAction extends BaseCallbackAction implements Action {
 		}
 		
 		if(params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
+			setWait(Boolean.parseBoolean(params.get("wait")));
 		}
 	}
 	

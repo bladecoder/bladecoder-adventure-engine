@@ -28,7 +28,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class PosAnimationAction extends BaseCallbackAction implements Action {
+public class PosAnimationAction extends BaseCallbackAction {
 	public static final String INFO = "Throws a position type animation";
 	public static final Param[] PARAMS = {
 		new Param("pos", "The target position", Type.VECTOR2, true),
@@ -43,7 +43,6 @@ public class PosAnimationAction extends BaseCallbackAction implements Action {
 	private Vector2 pos;
 	private int repeat = Tween.NO_REPEAT;
 	private int count = 1;
-	private boolean wait = true;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -59,7 +58,7 @@ public class PosAnimationAction extends BaseCallbackAction implements Action {
 		}
 		
 		if(params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
+			setWait(Boolean.parseBoolean(params.get("wait")));
 		}
 		
 		if(params.get("repeat") != null) {
@@ -84,12 +83,7 @@ public class PosAnimationAction extends BaseCallbackAction implements Action {
 
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
 		
-		if(wait) {
-			actor.startPosAnimation(repeat, count, speed, pos.x * scale, pos.y * scale, this);
-		} else {
-			actor.startPosAnimation(repeat, count, speed, pos.x * scale, pos.y * scale, null);
-			onEvent();
-		}
+		actor.startPosAnimation(repeat, count, speed, pos.x * scale, pos.y * scale, getWait()?this:null);
 	}
 
 	@Override
@@ -99,7 +93,6 @@ public class PosAnimationAction extends BaseCallbackAction implements Action {
 		json.writeValue("speed", speed);
 		json.writeValue("repeat", repeat);
 		json.writeValue("count", count);
-		json.writeValue("wait", wait);
 		super.write(json);	
 	}
 
@@ -110,7 +103,6 @@ public class PosAnimationAction extends BaseCallbackAction implements Action {
 		speed = json.readValue("speed", Float.class, jsonData);
 		repeat = json.readValue("repeat", Integer.class, jsonData);
 		count = json.readValue("count", Integer.class, jsonData);
-		wait = json.readValue("wait", Boolean.class, jsonData);
 		super.read(json, jsonData);
 	}	
 	

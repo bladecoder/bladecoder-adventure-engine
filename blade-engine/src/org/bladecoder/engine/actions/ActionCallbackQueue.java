@@ -41,7 +41,7 @@ public class ActionCallbackQueue {
 			queue.clear();
 			
 			for(ActionCallback cb: array)
-				cb.onEvent();
+				cb.resume();
 		}
 	}
 }

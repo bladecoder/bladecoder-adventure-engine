@@ -23,7 +23,7 @@ import org.bladecoder.engine.model.World;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class WaitAction extends BaseCallbackAction implements Action {
+public class WaitAction extends BaseCallbackAction {
 	public static final String INFO = "Pause the action";
 	public static final Param[] PARAMS = {
 		new Param("time", "The time for the pause in seconds", Type.FLOAT, true, "1.0")

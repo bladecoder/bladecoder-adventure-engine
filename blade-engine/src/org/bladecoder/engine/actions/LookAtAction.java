@@ -90,4 +90,9 @@ public class LookAtAction implements Action {
 	public Param[] getParams() {
 		return PARAMS;
 	}
+
+	@Override
+	public boolean waitForFinish(ActionCallback cb) {
+		return false;
+	}
 }

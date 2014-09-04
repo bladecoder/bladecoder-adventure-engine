@@ -19,8 +19,19 @@ import java.util.HashMap;
 
 public interface Action {
 	public void run();
+
 	public void setParams(HashMap<String, String> params);
-	
+
+	/**
+	 * If this method returns true, the verb must stops the execution and wait
+	 * for the action to call the cb.resume()
+	 * 
+	 * @param cb
+	 * @return
+	 */
+	public boolean waitForFinish(ActionCallback cb);
+
 	public String getInfo();
+
 	public Param[] getParams();
 }

@@ -29,7 +29,7 @@ import org.bladecoder.engine.util.EngineLogger;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class RunVerbAction extends BaseCallbackAction implements Action {
+public class RunVerbAction extends BaseCallbackAction {
 
 	public static final String INFO = "Runs an actor verb";
 	public static final Param[] PARAMS = {
@@ -45,7 +45,6 @@ public class RunVerbAction extends BaseCallbackAction implements Action {
 	String actorId;
 	String verb;
 	String target;
-	boolean wait;
 	int ip = -1;
 	int repeat = 1;
 	int currentRepeat = 0;
@@ -57,7 +56,7 @@ public class RunVerbAction extends BaseCallbackAction implements Action {
 		target = params.get("target");
 
 		if (params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
+			setWait(Boolean.parseBoolean(params.get("wait")));
 		}
 
 		if (params.get("repeat") != null) {
@@ -69,29 +68,8 @@ public class RunVerbAction extends BaseCallbackAction implements Action {
 	public void run() {
 		currentRepeat = 0;
 
-		if (wait) {
-			runVerb(verb, target);
-		} else {
-			runVerb(verb, target);
-		}
-	}
-
-	/**
-	 * Run Verb. Repeat implementation instead call actor.runVerb because of
-	 * Recorder.
-	 * 
-	 * @param verb
-	 *            Verb
-	 * @param target
-	 *            When one object is used with another object.
-	 */
-	private void runVerb(String verb, String target) {
-
 		ip = 0;
 		nextStep();
-
-		if (!wait)
-			super.onEvent();
 	}
 
 	private Verb getVerb(String verb, String target) {
@@ -132,8 +110,7 @@ public class RunVerbAction extends BaseCallbackAction implements Action {
 		while (currentRepeat < repeat) {
 			while (ip < actions.size() && !stop) {
 				Action a = actions.get(ip);
-				if (a instanceof ActionEndTrigger) {
-					((ActionEndTrigger) a).setCallback(this);
+				if (a.waitForFinish(this)) {
 					stop = true;
 				} else {
 					ip++;
@@ -155,13 +132,13 @@ public class RunVerbAction extends BaseCallbackAction implements Action {
 			}
 		}
 
-		if (wait && !stop) {
-			super.onEvent();
+		if (getWait() && !stop) {
+			super.resume();
 		}
 	}
 
 	@Override
-	public void onEvent() {
+	public void resume() {
 		ip++;
 		nextStep();
 	}
@@ -187,7 +164,6 @@ public class RunVerbAction extends BaseCallbackAction implements Action {
 		json.writeValue("currentRepeat", currentRepeat);
 		json.writeValue("verb", verb);
 		json.writeValue("target", target);
-		json.writeValue("wait", wait);
 		super.write(json);
 	}
 
@@ -200,7 +176,6 @@ public class RunVerbAction extends BaseCallbackAction implements Action {
 				.readValue("currentRepeat", Integer.class, jsonData);
 		verb = json.readValue("verb", String.class, jsonData);
 		target = json.readValue("target", String.class, jsonData);
-		wait = json.readValue("wait", Boolean.class, jsonData);
 		super.read(json, jsonData);
 	}
 

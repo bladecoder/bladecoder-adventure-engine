@@ -19,7 +19,6 @@ import java.util.ArrayList;
 
 import org.bladecoder.engine.actions.Action;
 import org.bladecoder.engine.actions.ActionCallback;
-import org.bladecoder.engine.actions.ActionEndTrigger;
 import org.bladecoder.engine.actions.RunVerbAction;
 import org.bladecoder.engine.util.EngineLogger;
 
@@ -28,7 +27,7 @@ public class Verb implements ActionCallback {
 	
 	private ArrayList<Action> actions = new ArrayList <Action>();
 	
-	int ip = -1;
+	private int ip = -1;
 	
 	public Verb() {
 	}
@@ -62,10 +61,9 @@ public class Verb implements ActionCallback {
 		
 		boolean stop = false;
 		
-		while( !isFinish() && !stop) {
+		while( !isFinished() && !stop) {
 			Action a = actions.get(ip);
-			if(a instanceof ActionEndTrigger) {
-				((ActionEndTrigger)a).setCallback(this);
+			if(a.waitForFinish(this)) {
 				stop = true;
 			} else {
 				ip++;
@@ -79,12 +77,12 @@ public class Verb implements ActionCallback {
 		}
 	}
 	
-	public boolean isFinish() {
+	private boolean isFinished() {
 		return ip >= actions.size();
 	}
 
 	@Override
-	public void onEvent() {
+	public void resume() {
 		ip++;
 		nextStep();	
 	}

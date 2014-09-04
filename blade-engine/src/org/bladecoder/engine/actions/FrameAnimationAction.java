@@ -52,7 +52,6 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 	private boolean reverse = false;
 	private int repeat = Tween.FROM_FA;
 	private int count = 1;
-	private boolean wait = true;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -77,7 +76,7 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 		}
 		
 		if(params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
+			setWait(Boolean.parseBoolean(params.get("wait")));
 		}
 		
 		if(params.get("animation_type") != null) {
@@ -110,12 +109,7 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 			actor.setPosition(actor.getX() + posx * scale, actor.getY() + posy * scale);
 		}
 		
-		if(wait) {
-			actor.startFrameAnimation(fa, repeat, count, this);
-		} else {
-			actor.startFrameAnimation(fa, repeat, count, null);
-			onEvent();
-		}		
+		actor.startFrameAnimation(fa, repeat, count, getWait()?this:null);
 	}
 
 	@Override
@@ -128,7 +122,6 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 		json.writeValue("reverse", reverse);
 		json.writeValue("repeat", repeat);
 		json.writeValue("count", count);
-		json.writeValue("wait", wait);
 		super.write(json);	
 	}
 
@@ -142,7 +135,6 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 		reverse = json.readValue("reverse", Boolean.class, jsonData);
 		repeat = json.readValue("repeat", Integer.class, jsonData);
 		count = json.readValue("count", Integer.class, jsonData);
-		wait = json.readValue("wait", Boolean.class, jsonData);
 		super.read(json, jsonData);
 	}	
 	

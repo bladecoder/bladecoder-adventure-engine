@@ -28,7 +28,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class CameraAction extends BaseCallbackAction implements Action {
+public class CameraAction extends BaseCallbackAction {
 	public static final String INFO = "Set/Animates the camera position and zoom. Also can stablish the follow character parameter";
 	public static final Param[] PARAMS = {
 			new Param("pos", "The target position", Type.VECTOR2),
@@ -45,7 +45,6 @@ public class CameraAction extends BaseCallbackAction implements Action {
 
 	private String actorId, followActorId;
 	private float zoom=-1, duration;
-	private boolean wait = true;
 	private Vector2 pos;
 
 	@Override
@@ -65,8 +64,10 @@ public class CameraAction extends BaseCallbackAction implements Action {
 			duration = 0;
 
 		if (params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
+			setWait(Boolean.parseBoolean(params.get("wait")));
 		}
+		
+		if(duration == 0) setWait(false);
 	}
 
 	@Override
@@ -97,15 +98,8 @@ public class CameraAction extends BaseCallbackAction implements Action {
 		if (duration == 0) {
 			camera.setZoom(zoom);
 			camera.setPosition(pos.x * scale, pos.y * scale);
-			onEvent();
 		} else {
-
-			if (wait) {
-				camera.startAnimation(pos.x * scale, pos.y * scale, zoom, duration, this);
-			} else {
-				camera.startAnimation(pos.x * scale, pos.y * scale, zoom, duration, null);
-				onEvent();
-			}
+			camera.startAnimation(pos.x * scale, pos.y * scale, zoom, duration, getWait()?this:null);
 		}
 	}
 
@@ -117,7 +111,6 @@ public class CameraAction extends BaseCallbackAction implements Action {
 		json.writeValue("pos", pos);
 		json.writeValue("zoom", zoom);
 		json.writeValue("duration", duration);
-		json.writeValue("wait", wait);
 		super.write(json);
 	}
 
@@ -128,7 +121,6 @@ public class CameraAction extends BaseCallbackAction implements Action {
 		pos = json.readValue("pos", Vector2.class, jsonData);
 		zoom = json.readValue("zoom", Float.class, jsonData);
 		duration = json.readValue("duration", Float.class, jsonData);
-		wait = json.readValue("wait", Boolean.class, jsonData);
 		super.read(json, jsonData);
 	}
 
