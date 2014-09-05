@@ -15,21 +15,21 @@
  ******************************************************************************/
 package org.bladecoder.engine.ui;
 
-import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.ui.UI.State;
+import org.bladecoder.engine.util.DPIUtils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class MenuScreen implements Screen {
 
@@ -39,11 +39,13 @@ public class MenuScreen implements Screen {
 	public static final String HELP_COMMAND = "help";
 	public static final String CREDITS_COMMAND = "credits";
 
-	private static final float MARGIN = 15;
+	private static final float MARGIN = DPIUtils.UI_SPACE;
 
-	UI ui;
+	private UI ui;
 
-	Stage stage;
+	private Stage stage;
+	
+	private float buttonSize;
 
 	public MenuScreen(UI ui) {
 		this.ui = ui;
@@ -77,10 +79,14 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void show() {
-		int wWidth = EngineAssetManager.getInstance().getResolution().portraitWidth;
-		int wHeight = EngineAssetManager.getInstance().getResolution().portraitHeight;
-
-		stage = new Stage(new ExtendViewport(wWidth, wHeight/2));
+//		int wWidth = EngineAssetManager.getInstance().getResolution().portraitWidth;
+//		int wHeight = EngineAssetManager.getInstance().getResolution().portraitHeight;
+//
+//		stage = new Stage(new ExtendViewport(wWidth, wHeight/2));
+		
+		stage = new Stage(new ScreenViewport());
+		
+		buttonSize = DPIUtils.getPrefButtonSize() * 2f;
 
 		Table table = new Table();
 		table.setFillParent(true);
@@ -100,6 +106,7 @@ public class MenuScreen implements Screen {
 
 		ImageButton back = new ImageButton(new TextureRegionDrawable(ui
 				.getUIAtlas().findRegion(BACK_COMMAND)));
+		
 		back.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setScreen(State.SCENE_SCREEN);
@@ -107,6 +114,8 @@ public class MenuScreen implements Screen {
 		});
 
 		table.add(back).pad(MARGIN);
+		back.getImageCell().minSize(buttonSize,buttonSize);
+		back.getImageCell().maxSize(buttonSize,buttonSize);
 
 		ImageButton reload = new ImageButton(new TextureRegionDrawable(ui
 				.getUIAtlas().findRegion(RELOAD_COMMAND)));
@@ -117,6 +126,8 @@ public class MenuScreen implements Screen {
 		});
 
 		table.add(reload).pad(MARGIN);
+		reload.getImageCell().minSize(buttonSize,buttonSize);
+		reload.getImageCell().maxSize(buttonSize,buttonSize);
 
 		ImageButton help = new ImageButton(new TextureRegionDrawable(ui
 				.getUIAtlas().findRegion(HELP_COMMAND)));
@@ -127,6 +138,8 @@ public class MenuScreen implements Screen {
 		});
 
 		table.add(help).pad(MARGIN);
+		help.getImageCell().minSize(buttonSize,buttonSize);
+		help.getImageCell().maxSize(buttonSize,buttonSize);
 
 		ImageButton credits = new ImageButton(new TextureRegionDrawable(ui
 				.getUIAtlas().findRegion(CREDITS_COMMAND)));
@@ -137,6 +150,8 @@ public class MenuScreen implements Screen {
 		});
 
 		table.add(credits).pad(MARGIN);
+		credits.getImageCell().minSize(buttonSize,buttonSize);
+		credits.getImageCell().maxSize(buttonSize,buttonSize);
 
 		ImageButton quit = new ImageButton(new TextureRegionDrawable(ui
 				.getUIAtlas().findRegion(QUIT_COMMAND)));
@@ -147,6 +162,8 @@ public class MenuScreen implements Screen {
 		});
 
 		table.add(quit).pad(MARGIN);
+		quit.getImageCell().minSize(buttonSize,buttonSize);
+		quit.getImageCell().maxSize(buttonSize,buttonSize);
 		table.pack();
 
 		stage.addActor(table);

@@ -141,10 +141,10 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 	}
 
 	public void resize(int width, int height) {
-		tileSize = DPIUtils.getButtonPrefSize() * 2;
+		tileSize = (int)DPIUtils.getMinSize(width, height) * 2;
 
 		int w = (int) (width * .8f / tileSize) * tileSize;
-		int h = (int) (height * .8f / tileSize) * tileSize;
+		int h = (int) (height * .7f / tileSize) * tileSize;
 		margin = (height - h) / 2;
 
 		setVisible(false);

@@ -37,9 +37,6 @@ public class Pointer {
 	private static final String LEAVE_ICON = "leave3";
 	private static final String POINTER_ICON = "pointer3";
 	private static final String HOTSPOT_ICON = "hotspotpointer3";
-
-	/** Margin to show the description. TODO: Must be dinamic */
-	private static final float DESC_MARGIN = 50;
 	
 	private static final Color DRAG_NOT_HOTSPOT_COLOR = new Color(.5f, 0.5f, 0.5f, 1f);
 
@@ -132,18 +129,16 @@ public class Pointer {
 		// DRAW TARGET DESCRIPTION
 		if (desc != null) {
 			TextBounds b = font.getBounds(desc);
+			float margin = DPIUtils.UI_SPACE;
 
-			float x0 = mousepos.x;
-			float y0 = mousepos.y + b.height + DESC_MARGIN;
-
-			float textX = x0 - b.width / 2;
-			float textY = y0;
+			float textX = mousepos.x - b.width / 2;
+			float textY = mousepos.y + b.height + DPIUtils.UI_SPACE + DPIUtils.getMinSize();
 
 			if (textX < 0)
 				textX = 0;
 
-			RectangleRenderer.draw(batch, textX - 8, textY - b.height - 8,
-					b.width + 16, b.height + 16, Color.BLACK);
+			RectangleRenderer.draw(batch, textX - margin, textY - b.height - margin,
+					b.width + margin*2, b.height + margin*2, Color.BLACK);
 			font.draw(batch, desc, textX, textY);
 		}
 
@@ -160,7 +155,7 @@ public class Pointer {
 			}
 		} else {
 			float h = (draggingRenderer.getHeight() > draggingRenderer.getWidth()? draggingRenderer.getHeight():draggingRenderer.getWidth());
-			float size =  DPIUtils.MIN_SIZE / h * 2f;
+			float size =  DPIUtils.getMinSize() / h * 1.8f;
 	         
 	        if(currentIcon != hotspotIcon) {
 	        	batch.setColor(DRAG_NOT_HOTSPOT_COLOR);
@@ -183,10 +178,11 @@ public class Pointer {
 		if (font == null)
 			font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
 		
-		pointerScale = DPIUtils.MIN_SIZE / pointerIcon.getRegionHeight();
+		
 	}
 
 	public void resize(int width, int height) {
+		pointerScale = DPIUtils.getMinSize(width, height) / pointerIcon.getRegionHeight() * .8f;
 	}
 
 	public void dispose() {

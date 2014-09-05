@@ -28,8 +28,6 @@ public class InventoryButton extends ImageButton {
 					inventory.hide();
 			}
 		});
-		
-		setPosition(0, 0);
 	}
 	
 	public void retrieveAssets(TextureAtlas atlas) {		
@@ -37,10 +35,15 @@ public class InventoryButton extends ImageButton {
 		
 		TextureRegion upIcon = atlas.findRegion(UP_ICON);
 		style.imageUp = new TextureRegionDrawable(upIcon);
-		setStyle(style);		
+		setStyle(style);
 	}
 	
 	public void resize(int width, int height) {
-		setSize(DPIUtils.getButtonPrefSize(), DPIUtils.getButtonPrefSize());
+		setSize(DPIUtils.getPrefButtonSize(width, height), DPIUtils.getPrefButtonSize(width, height));
+		
+		getImageCell().minSize(DPIUtils.getPrefButtonSize(width, height),DPIUtils.getPrefButtonSize(width, height));
+		getImageCell().maxSize(DPIUtils.getPrefButtonSize(width, height),DPIUtils.getPrefButtonSize(width, height));
+		
+		setPosition(DPIUtils.getMarginSize(width, height), DPIUtils.getMarginSize(width, height));
 	}
 }

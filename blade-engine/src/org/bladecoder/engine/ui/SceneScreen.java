@@ -22,6 +22,7 @@ import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.model.World.AssetState;
 import org.bladecoder.engine.ui.UI.State;
 import org.bladecoder.engine.util.Config;
+import org.bladecoder.engine.util.DPIUtils;
 import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
 
@@ -452,6 +453,10 @@ public class SceneScreen implements Screen {
 			sb.append((int) unprojectTmp.y);
 			sb.append(") FPS:");
 			sb.append(Gdx.graphics.getFramesPerSecond());
+			sb.append(" Density:");
+			sb.append(Gdx.graphics.getDensity());
+			sb.append(" UI Multiplier:");
+			sb.append(DPIUtils.getSizeMultiplier(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
 			if (w.getCurrentScene().getPlayer() != null) {
 				sb.append(" Depth Scale: ");
