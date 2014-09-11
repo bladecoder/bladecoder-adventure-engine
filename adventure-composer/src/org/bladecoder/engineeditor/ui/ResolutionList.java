@@ -20,7 +20,6 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.model.Project;
@@ -28,12 +27,11 @@ import org.bladecoder.engineeditor.ui.components.CellRenderer;
 import org.bladecoder.engineeditor.ui.components.EditList;
 import org.bladecoder.engineeditor.utils.DesktopUtils;
 
-import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resolution;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-public class ResolutionList extends EditList<Resolution> {
+public class ResolutionList extends EditList<String> {
 
 	public ResolutionList(Skin skin) {
 		super(skin);
@@ -66,20 +64,15 @@ public class ResolutionList extends EditList<Resolution> {
 
 			list.getItems().clear();
 
-			ArrayList<Resolution> tmp = new ArrayList<Resolution>();
+			ArrayList<String> tmp = new ArrayList<String>();
 
-			for (Resolution scn : Ctx.project.getResolutions()) {
+			for (String scn : Ctx.project.getResolutions()) {
 				tmp.add(scn);
 			}
 
-			Collections.sort(tmp, new Comparator<Resolution>() {
-				@Override
-				public int compare(Resolution o1, Resolution o2) {
-					return o2.portraitWidth - o1.portraitWidth;
-				}
-			});
+			Collections.sort(tmp);
 
-			for (Resolution s : tmp)
+			for (String s : tmp)
 				list.getItems().add(s);
 
 			if (list.getItems().size > 0) {
@@ -109,16 +102,16 @@ public class ResolutionList extends EditList<Resolution> {
 	@Override
 	public void delete() {
 		int index = list.getSelectedIndex();
-		Resolution r = list.getItems().get(index);
+		String r = list.getItems().get(index);
 
 		removeDir(Ctx.project.getProjectDir() + "/" + Project.BACKGROUNDS_PATH
-				+ "/" + r.suffix);
+				+ "/" + r);
 		removeDir(Ctx.project.getProjectDir() + "/" + Project.IMAGE_PATH
-				+ "/" + r.suffix);
+				+ "/" + r);
 		removeDir(Ctx.project.getProjectDir() + "/" + Project.UI_PATH + "/"
-				+ r.suffix);
+				+ r);
 		removeDir(Ctx.project.getProjectDir() + "/" + Project.ATLASES_PATH
-				+ "/" + r.suffix);
+				+ "/" + r);
 
 		addResolutions();
 	}
@@ -147,10 +140,10 @@ public class ResolutionList extends EditList<Resolution> {
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
-	private static final CellRenderer<Resolution> listCellRenderer = new CellRenderer<Resolution>() {
+	private static final CellRenderer<String> listCellRenderer = new CellRenderer<String>() {
 		@Override
-		protected String getCellTitle(Resolution r) {
-			return r.suffix;
+		protected String getCellTitle(String r) {
+			return r;
 		}
 	};
 }

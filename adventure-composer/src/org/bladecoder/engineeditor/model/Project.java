@@ -40,7 +40,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resolution;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -116,7 +115,7 @@ public class Project extends PropertyChange {
 	
 	private TextureRegion createBgIcon(String bg) {
 		return new TextureRegion(new Texture(Gdx.files.absolute(getProjectPath() + "/" + BACKGROUNDS_PATH + 
-				"/" + getResolutions().get(0).suffix + "/" + bg)));
+				"/1/" + bg)));
 	}
 
 	private void loadConfig() {
@@ -331,25 +330,23 @@ public class Project extends PropertyChange {
 		return selectedChapter.getActor(selectedScene, id);
 	}
 
-	public List<Resolution> getResolutions() {
+	public List<String> getResolutions() {
 		File atlasesPath = new File(projectFile.getAbsolutePath() + ATLASES_PATH);
-		ArrayList<Resolution> l = new ArrayList<Resolution>();
+		ArrayList<String> l = new ArrayList<String>();
 
 		File[] list = atlasesPath.listFiles();
 
 		for (int i = 0; i < list.length; i++) {
 			String name = list[i].getName();
 
-			if (list[i].isDirectory() && name.contains("_")) {
-				String s[] = name.split("_");
-				if (s.length < 2) {
-					continue;
+			if (list[i].isDirectory()) {
+				try {
+					Float.parseFloat(name);
+				
+					l.add(name);
+				} catch (Exception e) {
+					
 				}
-
-				int width = Integer.parseInt(s[0]);
-				int height = Integer.parseInt(s[1]);
-
-				l.add(new Resolution(width, height, name));
 			}
 		}
 

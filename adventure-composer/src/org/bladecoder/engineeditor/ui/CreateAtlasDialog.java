@@ -28,7 +28,6 @@ import org.bladecoder.engineeditor.utils.DesktopUtils;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.bladecoder.engineeditor.utils.ImageUtils;
 
-import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resolution;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -100,7 +99,7 @@ public class CreateAtlasDialog extends EditDialog {
 	private String genAtlas() {
 		File inDir = new File(dir.getText());
 		String outdir = Ctx.project.getProjectPath() + Project.ATLASES_PATH;
-		List<Resolution> res = Ctx.project.getResolutions();
+		List<String> res = Ctx.project.getResolutions();
 		String name = this.name.getText();
 		String fMin = filterMin.getText();
 		String fMag = filterMag.getText();
@@ -161,9 +160,10 @@ public class CreateAtlasDialog extends EditDialog {
 
 		int wWidth = Ctx.project.getWorld().getWidth();
 
-		for (Resolution r : res) {
-			settings.maxWidth = calcPOT(r.portraitWidth * 2);
-			settings.maxHeight = calcPOT(r.portraitWidth * 2);
+		for (String r : res) {
+			float scale = Float.parseFloat(r);
+			settings.maxWidth = calcPOT((int)(wWidth * scale * 2f));
+			settings.maxHeight = calcPOT((int)(wWidth * scale * 2f));
 
 			EditorLogger.debug("ATLAS MAXWIDTH: " + settings.maxWidth);
 
@@ -172,18 +172,16 @@ public class CreateAtlasDialog extends EditDialog {
 			try {
 
 				// Resize images to create atlas for diferent resolutions
-				if (r.portraitWidth != wWidth) {
-					inTmpDir = DesktopUtils.createTempDirectory();
-										
-					float scale = (float)r.portraitWidth / (float)wWidth;		
+				if (scale != 1.0f) {
+					inTmpDir = DesktopUtils.createTempDirectory();	
 					
 					ImageUtils.scaleDirFiles(inDir, inTmpDir, scale);
 				}
 
 				TexturePacker.process(settings, inTmpDir.getAbsolutePath(),
-						outdir + "/" + r.suffix, name + ".atlas");
+						outdir + "/" + r, name + ".atlas");
 
-				if (r.portraitWidth != wWidth) {
+				if (scale != 1.0f) {
 					DesktopUtils.removeDir(inTmpDir.getAbsolutePath());
 				}
 			} catch (IOException e) {

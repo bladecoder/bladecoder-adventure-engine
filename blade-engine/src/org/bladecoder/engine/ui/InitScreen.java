@@ -109,6 +109,8 @@ public class InitScreen implements Screen {
 
 	@Override
 	public void show() {
+		time = fadeTime = 0;
+		loadingGame = false;
 		Gdx.input.setInputProcessor(null);
 		retrieveAssets();
 	}

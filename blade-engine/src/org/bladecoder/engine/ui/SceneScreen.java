@@ -231,16 +231,16 @@ public class SceneScreen implements Screen {
 		}
 	};
 
-	public SceneScreen(UI ui, boolean pieMode) {
+	public SceneScreen(UI ui) {
 		this.ui = ui;
 
 		pie = new PieMenu(this);
 		textManagerUI = new TextManagerUI(this);
 		inventoryUI = new InventoryUI(this);
-		inventoryButton = new InventoryButton(inventoryUI);
+		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
 		dialogUI = new DialogUI(recorder);
 
-		this.pieMode = pieMode;
+		this.pieMode = ui.isPieMode();
 
 		pie.setVisible(false);
 	}
@@ -552,7 +552,6 @@ public class SceneScreen implements Screen {
 		pie.retrieveAssets(atlas);
 		inventoryUI.retrieveAssets(atlas);
 		textManagerUI.retrieveAssets(atlas);
-		inventoryButton.retrieveAssets(atlas);
 	}
 
 	private void sceneClick(boolean lookat) {

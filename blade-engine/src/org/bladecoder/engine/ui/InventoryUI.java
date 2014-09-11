@@ -22,9 +22,7 @@ import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.DPIUtils;
-import org.bladecoder.engine.util.RectangleRenderer;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -34,6 +32,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 	private final static int TOP = 0;
@@ -42,10 +41,6 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 	private final static int RIGHT = 3;
 
 	private final static String MENU_BUTTON = "config";
-
-	// private final static Color GRAY = new Color(0.3f, 0.3f, 0.3f, 1f);
-	private final static Color BG_COLOR = new Color(0, 0, 0, 0.8f);
-	// private final static Color BG_COLOR = new Color(0, 0, 0, 1f);
 
 	private Rectangle configBbox = new Rectangle();
 
@@ -58,9 +53,12 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 	private AtlasRegion configIcon;
 
 	private final SceneScreen sceneScreen;
+	
+	private InventoryUIStyle style;
 
 	public InventoryUI(SceneScreen scr) {
-		this.sceneScreen = scr;
+		style = scr.getUI().getSkin().get(InventoryUIStyle.class);		
+		sceneScreen = scr;
 
 		String pos = Config.getProperty(Config.INVENTORY_POS_PROP, "down");
 
@@ -91,6 +89,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 						hide();
 					}
 				}
+				
 			}
 
 			@Override
@@ -165,8 +164,10 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 			return;
 		}
 
-		RectangleRenderer.draw(batch, getX(), getY(), getWidth(), getHeight(),
-				BG_COLOR);
+		
+		if (style.background != null) {
+			style.background.draw(batch, getX(), getY(), getWidth(), getHeight());
+		}
 
 		batch.draw(configIcon, configBbox.x, configBbox.y, configBbox.width,
 				configBbox.height);
@@ -249,5 +250,19 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 
 	public int getInventoryPos() {
 		return inventoryPos;
+	}
+	
+	/** The style for the InventoryUI.
+	 * @author Rafael Garcia */
+	static public class InventoryUIStyle {
+		/** Optional. */
+		public Drawable background;
+
+		public InventoryUIStyle () {
+		}
+
+		public InventoryUIStyle (InventoryUIStyle style) {
+			background = style.background;
+		}
 	}
 }

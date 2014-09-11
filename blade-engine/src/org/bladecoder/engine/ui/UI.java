@@ -26,22 +26,24 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class UI {
 
-	private final static String ATLAS_FILENAME = "ui/ui.atlas";
+	private static final String SKIN_FILENAME = "ui/ui.json";
 
 	private boolean fullscreen = false;
 	private Pointer pointer;
 
 	private Screen screen;
 
-	boolean pieMode;
+	private boolean pieMode;
 
 	private SpriteBatch batch;
-	private TextureAtlas atlas;
+	private Skin skin;
 
 	public static enum State {
 		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, RESTART_SCREEN, CREDIT_SCREEN
@@ -68,16 +70,16 @@ public class UI {
 			setPieMode(Config.getProperty(Config.PIE_MODE_DESKTOP_PROP, false));
 		}
 		
+		World.getInstance().loadXMLWorld();
+		loadAssets();
 		
 		screens[State.INIT_SCREEN.ordinal()] = new InitScreen(this, false);
-		screens[State.SCENE_SCREEN.ordinal()] = new SceneScreen(this, pieMode);
+		screens[State.SCENE_SCREEN.ordinal()] = new SceneScreen(this);
 		screens[State.LOADING_SCREEN.ordinal()] = new LoadingScreen(this);
 		screens[State.MENU_SCREEN.ordinal()] = new MenuScreen(this);
-		screens[State.HELP_SCREEN.ordinal()] = new HelpScreen(this, pieMode);
+		screens[State.HELP_SCREEN.ordinal()] = new HelpScreen(this);
 		screens[State.RESTART_SCREEN.ordinal()] = new InitScreen(this, true);
 		screens[State.CREDIT_SCREEN.ordinal()] =  new CreditsScreen(this);
-
-		loadAssets();
 
 		setScreen(State.INIT_SCREEN);
 	}
@@ -114,11 +116,19 @@ public class UI {
 	}
 	
 	public TextureAtlas getUIAtlas() {
-		return atlas;
+		return skin.getAtlas();
+	}
+	
+	public Skin getSkin() {
+		return skin;
 	}
 
 	private void setPieMode(boolean m) {
 		pieMode = m;
+	}
+	
+	public boolean isPieMode() {
+		return pieMode;
 	}
 
 	public void render() {
@@ -129,8 +139,10 @@ public class UI {
 	}
 
 	private void loadAssets() {
-		atlas = new TextureAtlas(EngineAssetManager.getInstance().getResAsset(
-				ATLAS_FILENAME));
+		FileHandle skinFile = EngineAssetManager.getInstance().getAsset(SKIN_FILENAME);
+		TextureAtlas atlas = new TextureAtlas(EngineAssetManager.getInstance().getResAsset(
+				SKIN_FILENAME.substring(0,SKIN_FILENAME.lastIndexOf('.')) + ".atlas"));
+		skin = new Skin(skinFile, atlas);		
 		pointer.retrieveAssets(atlas);
 	}
 
@@ -156,7 +168,7 @@ public class UI {
 		pointer.dispose();
 		screen.hide();
 		batch.dispose();
-		atlas.dispose();
+		skin.dispose();
 		
 		RectangleRenderer.dispose();
 		Utils3D.dispose();

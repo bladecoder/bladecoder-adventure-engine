@@ -22,17 +22,13 @@ import com.badlogic.gdx.files.FileHandle;
 
 public class EngineResolutionFileResolver implements FileHandleResolver {
 
-	protected final FileHandleResolver baseResolver;
-	protected final Resolution[] descriptors;
-	
+	private final FileHandleResolver baseResolver;
+	private Resolution[] descriptors;
 	
 	private Resolution bestDesc;
 
-	public EngineResolutionFileResolver(FileHandleResolver baseResolver, Resolution... descriptors) {
+	public EngineResolutionFileResolver(FileHandleResolver baseResolver) {
 		this.baseResolver = baseResolver;
-		this.descriptors = descriptors;
-		
-		bestDesc = choose(descriptors);
 	}
 
 	@Override
@@ -74,6 +70,10 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 		return false;
 	}
 	
+	public FileHandleResolver getBaseResolver() {
+		return baseResolver;
+	}
+	
 	/**
 	 * Skip the resolution resolver. In Android the exists() method is expensive, so this
 	 * method save a exists call.
@@ -84,26 +84,6 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 	public FileHandle baseResolve(String fileName) {
 		return baseResolver.resolve(fileName);
 	}
-
-	static public Resolution choose(Resolution... descriptors) {
-		if (descriptors == null)
-			throw new IllegalArgumentException("descriptors cannot be null.");
-		
-		Resolution best = descriptors[0];
-		int bestDist = Math.abs(Gdx.graphics.getWidth() - best.portraitWidth);
-
-		for (int i = 1; i < descriptors.length; i++) {
-			Resolution other = descriptors[i];
-			int dist =  Math.abs(Gdx.graphics.getWidth() - other.portraitWidth);
-			
-			if (dist < bestDist) {
-				best = descriptors[i];
-				bestDist = dist;
-			}
-		}
-
-		return best;
-	}
 	
 	public Resolution[] getResolutions() {
 		return descriptors;
@@ -113,17 +93,35 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 		return bestDesc;
 	}
 	
+	public void selectBestResolution(Resolution[] resolutions) {
+		this.descriptors = resolutions;
+		
+		bestDesc = descriptors[0];
+		int bestDist = Math.abs(Gdx.graphics.getWidth() - bestDesc.portraitWidth);
+
+		for (int i = 1; i < descriptors.length; i++) {
+			Resolution other = descriptors[i];
+			int dist =  Math.abs(Gdx.graphics.getWidth() - other.portraitWidth);
+			
+			if (dist < bestDist) {
+				bestDesc = descriptors[i];
+				bestDist = dist;
+			}
+		}
+	}
+	
 	/**
-	 * Sets a fixed resolution, disabling choosing the best resolution.
+	 * Sets a fixed prefix, disabling choosing the best resolution.
 	 * 
-	 * @param width The width of the resolution
+	 * @param scale The prefix of the assets
 	 */
-	public void forceResolution(int width) {
+	public void selectFixedResolution(String suffix) {
 		for (int i = 0; i < descriptors.length; i++) {
-			if(descriptors[i].portraitWidth == width) {
+			if(descriptors[i].suffix.equals(suffix)) {
 				bestDesc = descriptors[i];
 				return;
 			}
 		}
 	}
+
 }

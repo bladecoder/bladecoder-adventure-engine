@@ -29,7 +29,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class LoadingScreen implements Screen {
-	private final static float INIT_TIME = 4f;
+	private final static float INIT_TIME = 3f;
 	
 	private int pos = 0;
 	private int numSquares = 3;

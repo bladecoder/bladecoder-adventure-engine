@@ -39,7 +39,7 @@ public class LeaveAction implements Action {
 		if(chapter == null || chapter.isEmpty())
 			World.getInstance().setCurrentScene(scene);
 		else
-			World.getInstance().loadXML(chapter, scene);
+			World.getInstance().loadXMLChapter(chapter, scene);
 	}
 
 	@Override

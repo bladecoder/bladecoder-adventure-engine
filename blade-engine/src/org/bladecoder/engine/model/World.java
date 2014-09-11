@@ -85,9 +85,10 @@ public class World implements Serializable, AssetConsumer {
 	 * logic
 	 */
 	private HashMap<String, String> customProperties;
-	
-	private String chapter;
-	
+
+	private String initChapter;
+	private String currentChapter;
+
 	transient private SpriteBatch spriteBatch;
 
 	public static World getInstance() {
@@ -112,10 +113,10 @@ public class World implements Serializable, AssetConsumer {
 
 		cutMode = false;
 		timeOfGame = 0;
-		chapter = null;
+		currentChapter = null;
 
 		customProperties = new HashMap<String, String>();
-		
+
 		spriteBatch = new SpriteBatch();
 
 		disposed = false;
@@ -138,7 +139,7 @@ public class World implements Serializable, AssetConsumer {
 
 	public void draw() {
 		if (assetState == AssetState.LOADED) {
-			
+
 			spriteBatch.setProjectionMatrix(currentScene.getCamera().combined);
 			spriteBatch.begin();
 			getCurrentScene().draw(spriteBatch);
@@ -225,16 +226,25 @@ public class World implements Serializable, AssetConsumer {
 				instance.loadGameState();
 			} catch (Exception e) {
 				EngineLogger.error("ERROR LOADING SAVED GAME", e);
-				instance.loadXML(null);
+				instance.loadXMLChapter(null);
 			}
 		} else {
 			// 3.- XML LOADING
-			instance.loadXML(null);
+			instance.loadXMLChapter(null);
 		}
 	}
 
-	public void loadXML(String chapterName)
-			throws ParserConfigurationException, SAXException, IOException {
+	public void loadXMLWorld() {
+		try {
+			WorldXMLLoader.loadWorld(this);
+		} catch (Exception e) {
+			EngineLogger.error("ERROR LOADING WORLD XML", e);
+			instance.dispose();
+			Gdx.app.exit();
+		}
+	}
+
+	public void loadXMLChapter(String chapterName) {
 		if (!disposed)
 			dispose();
 
@@ -243,21 +253,23 @@ public class World implements Serializable, AssetConsumer {
 		assetState = AssetState.LOAD_ASSETS;
 
 		long initTime = System.currentTimeMillis();
-		WorldXMLLoader.load("world.xml", this, chapterName);
-		EngineLogger.debug("XML LOADING TIME (ms): "
-				+ (System.currentTimeMillis() - initTime));
-	}
-
-	public void loadXML(String chapter, String scene) {
-		this.testScene = scene;
 
 		try {
-			instance.loadXML(chapter);
+			WorldXMLLoader.loadChapter(chapterName, this);
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING GAME", e);
 			instance.dispose();
 			Gdx.app.exit();
 		}
+
+		EngineLogger.debug("XML LOADING TIME (ms): "
+				+ (System.currentTimeMillis() - initTime));
+	}
+
+	public void loadXMLChapter(String chapter, String scene) {
+		this.testScene = scene;
+
+		instance.loadXMLChapter(chapter);
 
 		if (testScene != null) {
 			currentScene = null;
@@ -372,9 +384,9 @@ public class World implements Serializable, AssetConsumer {
 			currentScene = null;
 
 			inventory.dispose();
-			
+
 			spriteBatch.dispose();
-			
+
 			Sprite3DRenderer.disposeBatchs();
 
 		} catch (Exception e) {
@@ -387,20 +399,28 @@ public class World implements Serializable, AssetConsumer {
 	public SceneCamera getSceneCamera() {
 		return currentScene.getCamera();
 	}
-	
 
-	public void resize(float viewportWidth, float viewportHeight) {	
+	public void resize(float viewportWidth, float viewportHeight) {
 		currentScene.getCamera().viewportWidth = viewportWidth;
 		currentScene.getCamera().viewportHeight = viewportHeight;
-		
-		if(currentScene.getCameraFollowActor() != null)
-			currentScene.getCamera().updatePos(currentScene.getCameraFollowActor());
-		
-		currentScene.getCamera().update();		
+
+		if (currentScene.getCameraFollowActor() != null)
+			currentScene.getCamera().updatePos(
+					currentScene.getCameraFollowActor());
+
+		currentScene.getCamera().update();
 	}
-	
+
 	public void setChapter(String chapter) {
-		this.chapter = chapter;
+		this.currentChapter = chapter;
+	}
+
+	public String getInitChapter() {
+		return initChapter;
+	}
+
+	public void setInitChapter(String initChapter) {
+		this.initChapter = initChapter;
 	}
 
 	public boolean isPaused() {
@@ -433,7 +453,7 @@ public class World implements Serializable, AssetConsumer {
 
 	public static void restart() throws ParserConfigurationException,
 			SAXException, IOException {
-		instance.loadXML(null);
+		instance.loadXMLChapter(null);
 	}
 
 	// ********** JSON SERIALIZATION FOR GAME SAVING **********
@@ -483,8 +503,8 @@ public class World implements Serializable, AssetConsumer {
 		json.setOutputType(OutputType.javascript);
 
 		String s = null;
-		
-		if(EngineLogger.debugMode())
+
+		if (EngineLogger.debugMode())
 			s = json.prettyPrint(instance);
 		else
 			s = json.toJson(instance);
@@ -502,17 +522,13 @@ public class World implements Serializable, AssetConsumer {
 
 	@Override
 	public void write(Json json) {
-		float scale = EngineAssetManager.getInstance().getScale();
-
-		json.writeValue("width", (int) (width / scale));
-		json.writeValue("height", (int) (height / scale));
 		json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
 		json.writeValue("currentScene", currentScene.getId());
 		json.writeValue("inventory", inventory);
 		json.writeValue("timeOfGame", timeOfGame);
 		json.writeValue("cutmode", cutMode);
-		json.writeValue("defaultVerbs", VerbManager.defaultVerbs, HashMap.class,
-				Verb.class);
+		json.writeValue("defaultVerbs", VerbManager.defaultVerbs,
+				HashMap.class, Verb.class);
 		json.writeValue("timers", timers);
 		json.writeValue("textmanager", textManager);
 		json.writeValue("customProperties", customProperties);
@@ -524,23 +540,13 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("dialogActor", currentDialog.getActor());
 			json.writeValue("currentDialog", currentDialog.getId());
 		}
-		
-		json.writeValue("chapter", chapter);
+
+		json.writeValue("chapter", currentChapter);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-
-		instance.width = json.readValue("width", Integer.class, jsonData);
-		instance.height = json.readValue("height", Integer.class, jsonData);
-
-		EngineAssetManager.getInstance().setScale(instance.width);
-		float scale = EngineAssetManager.getInstance().getScale();
-
-		instance.width = (int) (instance.width * scale);
-		instance.height = (int) (instance.height * scale);
-
 		instance.scenes = json.readValue("scenes", HashMap.class, Scene.class,
 				jsonData);
 		instance.currentScene = instance.scenes.get(json.readValue(
@@ -551,8 +557,8 @@ public class World implements Serializable, AssetConsumer {
 		instance.timeOfGame = json.readValue("timeOfGame", Float.class,
 				jsonData);
 		instance.cutMode = json.readValue("cutmode", Boolean.class, jsonData);
-		VerbManager.defaultVerbs = json.readValue("defaultVerbs", HashMap.class,
-				Verb.class, jsonData);
+		VerbManager.defaultVerbs = json.readValue("defaultVerbs",
+				HashMap.class, Verb.class, jsonData);
 		instance.timers = json.readValue("timers", Timers.class, jsonData);
 
 		instance.textManager = json.readValue("textmanager", TextManager.class,
@@ -569,8 +575,9 @@ public class World implements Serializable, AssetConsumer {
 					.getActor(actorId, false);
 			instance.currentDialog = actor.getDialog(dialogId);
 		}
-		
-		instance.chapter = json.readValue("chapter", String.class, jsonData);
-		I18N.load(EngineAssetManager.MODEL_DIR + "world", EngineAssetManager.MODEL_DIR + instance.chapter);
+
+		instance.currentChapter = json.readValue("chapter", String.class,
+				jsonData);
+		I18N.loadChapter(EngineAssetManager.MODEL_DIR + instance.currentChapter);
 	}
 }

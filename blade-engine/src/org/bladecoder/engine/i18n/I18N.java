@@ -25,7 +25,7 @@ public class I18N {
 	private static ResourceBundle i18nWorld;
 	private static ResourceBundle i18nChapter;
 	
-	public static void load(String i18nWorldFilename, String i18nChapterFilename) {
+	public static void loadChapter(String i18nChapterFilename) {
 		Locale locale = Locale.getDefault();
 
 		try {
@@ -34,6 +34,10 @@ public class I18N {
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nChapter);
 		}
+	}
+	
+	public static void loadWorld(String i18nWorldFilename) {
+		Locale locale = Locale.getDefault();
 		
 		try {
 			i18nWorld = ResourceBundle.getBundle(i18nWorldFilename, locale,

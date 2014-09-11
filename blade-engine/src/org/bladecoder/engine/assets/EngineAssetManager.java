@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -86,14 +85,7 @@ public class EngineAssetManager extends AssetManager {
 	protected EngineAssetManager(FileHandleResolver resolver) {
 		super(resolver);
 
-		Resolution[] r = getResolutions(resolver);
-
-		if (r == null || r.length == 0) {
-			EngineLogger.error("No resolutions defined. Maybe your 'assets' folder doesn't exists or it's empty");
-			return;
-		}
-
-		resResolver = new EngineResolutionFileResolver(resolver, r);
+		resResolver = new EngineResolutionFileResolver(resolver);
 		setLoader(Texture.class, new TextureLoader(resResolver));
 		setLoader(TextureAtlas.class, new TextureAtlasLoader(
 				resResolver));
@@ -101,20 +93,24 @@ public class EngineAssetManager extends AssetManager {
 		setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 		
 		Texture.setAssetManager(this);
-
-		Resolution choosed = EngineResolutionFileResolver.choose(r);
-
-		EngineLogger.debug(	"Resolution choosed: " + choosed.suffix);
 	}
 
 	public float getScale() {
 		return scale;
 	}
 	
-	public void setScale(int worldWidth) {
+	public void setScale(int worldWidth, int worldHeight) {
+		Resolution r[] = getResolutions(resResolver.getBaseResolver(), worldWidth, worldHeight);
+		
+		if (r == null || r.length == 0) {
+			EngineLogger.error("No resolutions defined. Maybe your 'assets' folder doesn't exists or it's empty");
+			return;
+		}
+		
+		resResolver.selectBestResolution(r);
 		scale = resResolver.getResolution().portraitWidth / (float)worldWidth;
 		
-		EngineLogger.debug(	"Setting SCALE: " + scale);
+		EngineLogger.debug(	"Setting ASSETS SCALE: " + scale);
 	}
 
 	public static EngineAssetManager getInstance() {
@@ -129,28 +125,24 @@ public class EngineAssetManager extends AssetManager {
 	 * Creates a EngineAssetManager instance for edition. That is:
 	 * 
 	 * - Puts a PathResolver to locate the assets through an absolute path 
-	 * - If reswidth > 0 puts reswidth as fixed resolution: 
-	 * - For testmode reswidth = 0 
-	 * - For editmode reswidth = max resolution found
+	 * - Puts assets scale to "1"
 	 * 
 	 * @param base
 	 * @param resWidth
 	 */
-	public static void createEditInstance(String base, int resWidth) {
+	public static void createEditInstance(String base) {
 		if (instance != null)
 			instance.dispose();
 
 		instance = new EngineAssetManager(new BasePathResolver(base));
 
-		if (resWidth > 0) {
-			instance.forceResolution(resWidth);
-		}
+		instance.forceResolution("1");
 	}
 	
-	public void forceResolution(int resWidth) {
-		resResolver.forceResolution(resWidth);
+	public void forceResolution(String suffix) {
+		resResolver.selectFixedResolution(suffix);
 		
-		EngineLogger.debug("FORCING RESOLUTION: " + resWidth);
+		EngineLogger.debug("FORCING ASSETS RESOLUTION SCALE: " + suffix);
 	}
 	
 	public Resolution getResolution() {
@@ -342,7 +334,7 @@ public class EngineAssetManager extends AssetManager {
 		return resResolver.exists(filename);
 	}
 	
-	private Resolution[] getResolutions(FileHandleResolver resolver) {
+	private Resolution[] getResolutions(FileHandleResolver resolver, int worldWidth, int worldHeight) {
 		ArrayList<Resolution> rl = new ArrayList<Resolution>();
 
 		String n = "atlases";
@@ -354,11 +346,14 @@ public class EngineAssetManager extends AssetManager {
 			String list[] = getResolutionsFromJar();
 			
 			for (String name : list) {
-				if (name.contains("_")) {
-					Resolution r = parseResolution(name);
+				try {
+					float scale = Float.parseFloat(name);
+					
+					Resolution r = new Resolution((int)(worldWidth * scale), (int)(worldHeight * scale), name);
 
-					if (r != null)
-						rl.add(r);
+					rl.add(r);
+				} catch(Exception e) {
+					
 				}
 			}
 			
@@ -379,11 +374,16 @@ public class EngineAssetManager extends AssetManager {
 			for (FileHandle h : list) {
 				String name = h.name();
 
-				if (h.isDirectory() && name.contains("_")) {
-					Resolution r = parseResolution(name);
+				if (h.isDirectory()) {
+					try {
+						float scale = Float.parseFloat(name);
+						
+						Resolution r = new Resolution((int)(worldWidth * scale), (int)(worldHeight * scale), name);
 
-					if (r != null)
 						rl.add(r);
+					} catch(Exception e) {
+						
+					}
 				}
 			}
 		}
@@ -395,27 +395,6 @@ public class EngineAssetManager extends AssetManager {
 		});
 
 		return rl.toArray(new Resolution[rl.size()]);
-	}
-
-	private Resolution parseResolution(String name) {
-		String s[] = name.split("_");
-		if (s.length < 2) {
-			return null;
-		}
-
-		int width;
-		int height;
-		
-		try{
-			width = Integer.parseInt(s[0]);
-			height = Integer.parseInt(s[1]);
-		} catch(NumberFormatException e) {
-			return null;
-		}
-
-		EngineLogger.debug(MessageFormat.format("New Resolution: {0}", name));
-
-		return new Resolution(width, height, name);
 	}	
 
 	/**

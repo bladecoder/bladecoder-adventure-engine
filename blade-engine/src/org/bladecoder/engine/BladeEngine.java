@@ -92,7 +92,7 @@ public class BladeEngine implements ApplicationListener {
 			forceRes = Config.getProperty(Config.FORCE_RES_PROP, forceRes);
 		
 		if(forceRes != null) {
-			EngineAssetManager.getInstance().forceResolution(Integer.parseInt(forceRes));
+			EngineAssetManager.getInstance().forceResolution(forceRes);
 		}
 		
 		ui = new UI();
@@ -104,7 +104,7 @@ public class BladeEngine implements ApplicationListener {
 			testScene = Config.getProperty(Config.TEST_SCENE_PROP, testScene);
 		
 		if (testScene != null || chapter != null) {
-			World.getInstance().loadXML(chapter, testScene);
+			World.getInstance().loadXMLChapter(chapter, testScene);
 		}
 		
 		if(gameState == null)
@@ -116,7 +116,7 @@ public class BladeEngine implements ApplicationListener {
 		
 		if(restart) {
 			try {
-				World.getInstance().loadXML(null);
+				World.getInstance().loadXMLChapter(null);
 			} catch (Exception e) {
 				EngineLogger.error("ERROR LOADING GAME", e);
 				dispose();

@@ -123,8 +123,7 @@ public class ScnWidget extends Widget {
 					}
 
 					EngineAssetManager.createEditInstance(Ctx.project
-							.getProjectDir().getAbsolutePath() + "/assets",
-							Ctx.project.getWorld().getWidth());
+							.getProjectDir().getAbsolutePath() + "/assets");
 				}
 			}
 		});

@@ -18,7 +18,6 @@ package org.bladecoder.engine.loader;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -42,33 +41,66 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class WorldXMLLoader extends DefaultHandler {
+	private static final String WORLD_FILENAME = "world.xml";
+	
 	private World world;
 
-	private String initScene;
 	private Verb currentVerb;
 
 	private float scale;
 
 	private Locator locator;
 
-	private String chapter;
-
-	private List<Scene> scenes;
-	
-	public static void load(String filename, World world, String chapter) throws ParserConfigurationException, SAXException, IOException  {
+	public static void loadWorld(World world)
+			throws ParserConfigurationException, SAXException, IOException {
 		SAXParserFactory spf = SAXParserFactory.newInstance();
-	    spf.setNamespaceAware(true);
-	    SAXParser saxParser = spf.newSAXParser();
-	    
-	    WorldXMLLoader parser = new WorldXMLLoader(world, chapter);
-	    XMLReader xmlReader = saxParser.getXMLReader();
-	    xmlReader.setContentHandler(parser);
-	    xmlReader.parse(new InputSource(EngineAssetManager.getInstance().getModelFile(filename).read()));
-	}
+		spf.setNamespaceAware(true);
+		SAXParser saxParser = spf.newSAXParser();
 
-	public WorldXMLLoader(World world, String chapter) {
+		WorldXMLLoader parser = new WorldXMLLoader(world);
+		XMLReader xmlReader = saxParser.getXMLReader();
+		xmlReader.setContentHandler(parser);
+		xmlReader.parse(new InputSource(EngineAssetManager.getInstance()
+				.getModelFile(WORLD_FILENAME).read()));
+		
+		I18N.loadWorld(EngineAssetManager.MODEL_DIR + "world");
+	}
+	
+
+	public static void loadChapter(String chapter, World world)
+			throws ParserConfigurationException, SAXException, IOException {
+		if (chapter == null) {
+			chapter = world.getInitChapter();
+		}
+
+		SAXParserFactory spf = SAXParserFactory.newInstance();
+		spf.setNamespaceAware(true);
+		SAXParser saxParser = spf.newSAXParser();
+
+		ChapterXMLLoader parser = new ChapterXMLLoader();
+		XMLReader xmlReader = saxParser.getXMLReader();
+		xmlReader.setContentHandler(parser);
+		xmlReader.parse(new InputSource(EngineAssetManager.getInstance()
+				.getModelFile(chapter + ".chapter").read()));
+
+		I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapter);
+
+		world.setChapter(chapter);
+
+		for (Scene s : parser.getScenes()) {
+			s.resetCamera(world.getWidth(), world.getHeight());
+
+			world.addScene(s);
+		}
+
+		if (parser.getInitScene() != null)
+			world.setCurrentScene(parser.getInitScene());
+		else if (parser.getScenes().size() > 0)
+			world.setCurrentScene(parser.getScenes().get(0).getId());
+	}	
+
+	public WorldXMLLoader(World world) {
 		this.world = world;
-		this.chapter = chapter;
 	}
 
 	@Override
@@ -85,7 +117,7 @@ public class WorldXMLLoader extends DefaultHandler {
 				height = Integer.parseInt(atts.getValue("height"));
 
 				// When we know the world width, we can put the scale
-				EngineAssetManager.getInstance().setScale(width);
+				EngineAssetManager.getInstance().setScale(width, height);
 				scale = EngineAssetManager.getInstance().getScale();
 
 				width = (int) (width * scale);
@@ -101,9 +133,7 @@ public class WorldXMLLoader extends DefaultHandler {
 
 			world.setWidth(width);
 			world.setHeight(height);
-
-			if (chapter == null)
-				chapter = atts.getValue("init_chapter");
+			world.setInitChapter(atts.getValue("init_chapter"));
 		} else if (localName.equals("verb")) {
 			String id = atts.getValue("id");
 
@@ -117,40 +147,11 @@ public class WorldXMLLoader extends DefaultHandler {
 	public void endElement(String namespaceURI, String localName, String qName)
 			throws SAXException {
 
-		if (localName.equals("world")) {
-			if(chapter == null) {
-				SAXParseException e2 = new SAXParseException(
-						"Initial Chapter not specified", locator);
-				error(e2);
-				throw e2;
-			}
-			
-			try {
-				loadChapter(chapter);
-				world.setChapter(chapter);
-				
-				for(Scene s:scenes) {
-					s.resetCamera(world.getWidth(), world.getHeight());
-
-					world.addScene(s);
-				}
-				
-				if(initScene != null)
-					world.setCurrentScene(initScene);
-				
-			} catch (Exception e) {
-				SAXParseException e2 = new SAXParseException(
-						"Error loading chapter '" + chapter + "'", locator,
-						e);
-				error(e2);
-				throw e2;
-			}						
-			
-		} else if (localName.equals("verb")) {
+		if (localName.equals("verb")) {
 			currentVerb = null;
 		}
 	}
-	
+
 	private void parseAction(String localName, Attributes atts) {
 
 		if (localName.equals("action")) {
@@ -183,9 +184,10 @@ public class WorldXMLLoader extends DefaultHandler {
 				currentVerb.add(action);
 			}
 		} else {
-			EngineLogger.error("TAG not supported inside VERB: "  + localName + " LINE: " + locator.getLineNumber());
+			EngineLogger.error("TAG not supported inside VERB: " + localName
+					+ " LINE: " + locator.getLineNumber());
 		}
-	}	
+	}
 
 	@Override
 	public void setDocumentLocator(Locator l) {
@@ -198,23 +200,5 @@ public class WorldXMLLoader extends DefaultHandler {
 				"{0} in 'world.xml' Line: {1} Column: {2}", e.getMessage(),
 				e.getLineNumber(), e.getColumnNumber()));
 	}
-	
-	private void loadChapter(String id) throws ParserConfigurationException, SAXException, IOException  {	
-		SAXParserFactory spf = SAXParserFactory.newInstance();
-	    spf.setNamespaceAware(true);
-	    SAXParser saxParser = spf.newSAXParser();
-	    
-	    ChapterXMLLoader parser = new ChapterXMLLoader();
-	    XMLReader xmlReader = saxParser.getXMLReader();
-	    xmlReader.setContentHandler(parser);
-	    xmlReader.parse(new InputSource(EngineAssetManager.getInstance().getModelFile(id + ".chapter").read()));
-	    
-	    I18N.load(EngineAssetManager.MODEL_DIR + "world", EngineAssetManager.MODEL_DIR + id);
-	    
-	    scenes = parser.getScenes();
-	    initScene = parser.getInitScene();
-	    
-	    if(initScene == null && scenes.size() > 0)
-	    	initScene = scenes.get(0).getId();
-	}	
+
 }

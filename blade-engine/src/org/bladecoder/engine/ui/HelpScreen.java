@@ -44,14 +44,14 @@ public class HelpScreen implements Screen, InputProcessor {
 	private String localeFilename;
 	private final Viewport viewport = new ScreenViewport();
 
-	public HelpScreen(UI ui, boolean pieMode) {
+	public HelpScreen(UI ui) {
 		this.ui = ui;
 		
 		Locale locale = Locale.getDefault();
 		
 		String filename = null;
 		
-		if(pieMode)
+		if(ui.isPieMode())
 			filename = PIE_FILENAME;
 		else
 			filename = DESKTOP_FILENAME;

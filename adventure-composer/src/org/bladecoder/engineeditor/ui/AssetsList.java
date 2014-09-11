@@ -34,7 +34,6 @@ import org.bladecoder.engineeditor.ui.components.CustomList;
 import org.bladecoder.engineeditor.ui.components.EditToolbar;
 import org.bladecoder.engineeditor.utils.ImageUtils;
 
-import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resolution;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -141,7 +140,7 @@ public class AssetsList extends Table {
 			String dir = getAssetDir(type);
 
 			if (type.equals("backgrounds") || type.equals("images") || type.equals("atlases"))
-				dir += "/" + Ctx.project.getResolutions().get(0).suffix;
+				dir += "/1";
 
 			String[] files = new File(dir).list(new FilenameFilter() {
 				@Override
@@ -228,15 +227,14 @@ public class AssetsList extends Table {
 					for (File f : files) {
 						if (type.equals("backgrounds")
 								|| type.equals("images")) {
-							List<Resolution> res = Ctx.project.getResolutions();
-							int wWidth = Ctx.project.getWorld().getWidth();
+							List<String> res = Ctx.project.getResolutions();
 
-							for (Resolution r : res) {
-								File destFile = new File(dir + "/" + r.suffix
+							for (String r : res) {
+								File destFile = new File(dir + "/" + r
 										+ "/" + f.getName());
+								float scale = Float.parseFloat(r);
 
-								if (r.portraitWidth != wWidth) {
-									float scale = r.portraitWidth / (float)wWidth;
+								if (scale != 1.0f) {
 
 									ImageUtils.scaleImageFile(f, destFile,
 											scale);
@@ -289,16 +287,16 @@ public class AssetsList extends Table {
 		try {
 			if (type.equals("backgrounds") || type.equals("images")
 					|| type.equals("atlases")) {
-				List<Resolution> res = Ctx.project.getResolutions();
+				List<String> res = Ctx.project.getResolutions();
 
-				for (Resolution r : res) {
-					File file = new File(dir + "/" + r.suffix + "/" + name);
+				for (String r : res) {
+					File file = new File(dir + "/" + r + "/" + name);
 
 					file.delete();
 
 					// delete pages on atlases
 					if (type.equals("atlases")) {
-						File atlasDir = new File(dir + "/" + r.suffix);
+						File atlasDir = new File(dir + "/" + r);
 
 						File[] files = atlasDir.listFiles();
 
