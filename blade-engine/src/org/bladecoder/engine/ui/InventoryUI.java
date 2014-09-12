@@ -32,9 +32,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 
-public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
+public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	private final static int TOP = 0;
 	private final static int DOWN = 1;
 	private final static int LEFT = 2;
@@ -55,6 +58,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 	private final SceneScreen sceneScreen;
 	
 	private InventoryUIStyle style;
+	
+	private TextButton menuButton;
 
 	public InventoryUI(SceneScreen scr) {
 		style = scr.getUI().getSkin().get(InventoryUIStyle.class);		
@@ -77,7 +82,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 					int pointer, int button) {
 
 				if (draggedActor != null) {
-					stopDragging((int) x, (int) y);
+					stopDragging(button);
 				} else if (configBbox.contains(x, y)) {
 					sceneScreen.showMenu();
 				} else {
@@ -120,6 +125,16 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 						&& !(toActor instanceof InventoryUI)
 						&& draggedActor != null)
 					hide();
+			}
+		});
+		
+		menuButton = new TextButton("MENU", scr.getUI().getSkin());
+		menuButton.setPosition(0, 0);
+		addActor(menuButton);
+		menuButton.addListener(new ChangeListener() {			
+			@Override
+			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+				sceneScreen.getUI().setScreen(UI.State.MENU_SCREEN);
 			}
 		});
 	}
@@ -191,6 +206,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 			r.draw((SpriteBatch) batch, getX() + x * tileSize + tileSize / 2,
 					getY() + y * tileSize, size);
 		}
+		
+		super.draw(batch, alpha);
 	}
 
 	public void cancelDragging() {
@@ -206,14 +223,17 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Actor {
 
 	private final Vector3 mousepos = new Vector3();
 
-	private void stopDragging(int inputX, int inputY) {
+	private void stopDragging(int button) {
 		World.getInstance().getSceneCamera()
 				.getInputUnProject(sceneScreen.getViewport(), mousepos);
 
 		Actor targetActor = sceneScreen.getCurrentActor();
 
 		if (targetActor != null) {
-			use(targetActor, draggedActor);
+			if(targetActor != draggedActor)
+				use(targetActor, draggedActor);
+			else
+				sceneScreen.actorClick(targetActor, button == 1);
 		}
 
 		draggedActor = null;

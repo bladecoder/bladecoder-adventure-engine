@@ -86,7 +86,7 @@ public class CreditsScreen implements Screen, InputProcessor {
 		float y = scrollY;
 
 		if (stringHead >= credits.size())
-			ui.setScreen(State.SCENE_SCREEN);
+			ui.setScreen(State.MENU_SCREEN);
 
 		for (int i = stringHead; i < credits.size(); i++) {
 			String s = credits.get(i);
@@ -202,7 +202,7 @@ public class CreditsScreen implements Screen, InputProcessor {
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage());
 			
-			ui.setScreen(State.SCENE_SCREEN);
+			ui.setScreen(State.MENU_SCREEN);
 		}
 		
 		scrollY += titlesFont.getLineHeight();
@@ -257,7 +257,7 @@ public class CreditsScreen implements Screen, InputProcessor {
 	public boolean keyUp(int keycode) {
 		if (keycode == Input.Keys.ESCAPE
 				|| keycode == Input.Keys.BACK)
-			ui.setScreen(State.SCENE_SCREEN);		
+			ui.setScreen(State.MENU_SCREEN);		
 		return false;
 	}
 
@@ -273,7 +273,7 @@ public class CreditsScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		ui.setScreen(State.SCENE_SCREEN);
+		ui.setScreen(State.MENU_SCREEN);
 		return true;
 	}
 

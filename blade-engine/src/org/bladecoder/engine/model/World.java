@@ -47,7 +47,7 @@ public class World implements Serializable, AssetConsumer {
 		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
 	};
 
-	private static World instance = null;
+	private static final World instance = new World();
 
 	private AssetState assetState;
 
@@ -92,15 +92,10 @@ public class World implements Serializable, AssetConsumer {
 	transient private SpriteBatch spriteBatch;
 
 	public static World getInstance() {
-
-		if (instance == null) {
-			instance = new World();
-		}
-
 		return instance;
 	}
 
-	protected World() {
+	private World() {
 		disposed = true;
 	}
 
@@ -217,8 +212,7 @@ public class World implements Serializable, AssetConsumer {
 	 * @throws SAXException
 	 * @throws ParserConfigurationException
 	 */
-	public void load() throws ParserConfigurationException, SAXException,
-			IOException {
+	public void load() {
 		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME)
 				.exists()) {
 			// 2.- SAVEGAME EXISTS
@@ -451,9 +445,8 @@ public class World implements Serializable, AssetConsumer {
 		}
 	}
 
-	public static void restart() throws ParserConfigurationException,
-			SAXException, IOException {
-		instance.loadXMLChapter(null);
+	public void newGame() {
+		loadXMLChapter(null);
 	}
 
 	// ********** JSON SERIALIZATION FOR GAME SAVING **********

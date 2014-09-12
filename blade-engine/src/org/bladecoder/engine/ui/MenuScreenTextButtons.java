@@ -17,6 +17,7 @@ package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.ui.UI.State;
+import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.DPIUtils;
 
 import com.badlogic.gdx.Gdx;
@@ -26,29 +27,18 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class MenuScreen implements Screen {
-
-	public static final String BACK_COMMAND = "back";
-	public static final String QUIT_COMMAND = "quit";
-	public static final String RELOAD_COMMAND = "reload";
-	public static final String HELP_COMMAND = "help";
-	public static final String CREDITS_COMMAND = "credits";
-
-	private static final float MARGIN = DPIUtils.UI_SPACE;
-
+public class MenuScreenTextButtons implements Screen {
 	private UI ui;
 
 	private Stage stage;
 	
-	private float buttonSize;
-
-	public MenuScreen(UI ui) {
+	public MenuScreenTextButtons(UI ui) {
 		this.ui = ui;
 	}
 
@@ -86,8 +76,6 @@ public class MenuScreen implements Screen {
 //		stage = new Stage(new ExtendViewport(wWidth, wHeight/2));
 		
 		stage = new Stage(new ScreenViewport());
-		
-		buttonSize = DPIUtils.getPrefButtonSize() * 2f;
 
 		Table table = new Table();
 		table.setFillParent(true);
@@ -104,11 +92,16 @@ public class MenuScreen implements Screen {
 		});
 
 		stage.setKeyboardFocus(table);
-
-		ImageButton back = new ImageButton(new TextureRegionDrawable(ui
-				.getUIAtlas().findRegion(BACK_COMMAND)));
 		
-		back.addListener(new ClickListener() {
+		
+		Label title = new Label(Config.getProperty(Config.TITLE_PROP, "Adventure Blade Engine"), ui.getSkin(), "title");
+
+		table.add(title).padBottom(DPIUtils.getMarginSize()*2);
+		
+		// TODO: IF JSON FILE EXITS HIDE RESUME BUTTON
+		TextButton continueGame = new TextButton("Continue", ui.getSkin(), "menu");
+		
+		continueGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				if(World.getInstance().getCurrentScene() == null)
 					World.getInstance().load();
@@ -117,58 +110,52 @@ public class MenuScreen implements Screen {
 			}
 		});
 
-		table.add(back).pad(MARGIN);
-		back.getImageCell().minSize(buttonSize,buttonSize);
-		back.getImageCell().maxSize(buttonSize,buttonSize);
+		table.row();
+		table.add(continueGame);
+		
 
-		ImageButton reload = new ImageButton(new TextureRegionDrawable(ui
-				.getUIAtlas().findRegion(RELOAD_COMMAND)));
-		reload.addListener(new ClickListener() {
+		TextButton newGame = new TextButton("New Game", ui.getSkin(), "menu");
+		newGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				World.getInstance().newGame();
 				ui.setScreen(State.SCENE_SCREEN);
 			}
 		});
 
-		table.add(reload).pad(MARGIN);
-		reload.getImageCell().minSize(buttonSize,buttonSize);
-		reload.getImageCell().maxSize(buttonSize,buttonSize);
+		table.row();
+		table.add(newGame);
 
-		ImageButton help = new ImageButton(new TextureRegionDrawable(ui
-				.getUIAtlas().findRegion(HELP_COMMAND)));
+		TextButton help = new TextButton("Help", ui.getSkin(), "menu");
 		help.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setScreen(State.HELP_SCREEN);
 			}
 		});
 
-		table.add(help).pad(MARGIN);
-		help.getImageCell().minSize(buttonSize,buttonSize);
-		help.getImageCell().maxSize(buttonSize,buttonSize);
+		table.row();
+		table.add(help);
 
-		ImageButton credits = new ImageButton(new TextureRegionDrawable(ui
-				.getUIAtlas().findRegion(CREDITS_COMMAND)));
+		TextButton credits = new TextButton("Credits", ui.getSkin(), "menu");
 		credits.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setScreen(State.CREDIT_SCREEN);
 			}
 		});
 
-		table.add(credits).pad(MARGIN);
-		credits.getImageCell().minSize(buttonSize,buttonSize);
-		credits.getImageCell().maxSize(buttonSize,buttonSize);
+		table.row();
+		table.add(credits);
 
-		ImageButton quit = new ImageButton(new TextureRegionDrawable(ui
-				.getUIAtlas().findRegion(QUIT_COMMAND)));
+		TextButton quit = new TextButton("Quit Game", ui.getSkin(), "menu");
 		quit.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
+				World.getInstance().dispose();
 				Gdx.app.exit();
 			}
 		});
 
-		table.add(quit).pad(MARGIN);
-		quit.getImageCell().minSize(buttonSize,buttonSize);
-		quit.getImageCell().maxSize(buttonSize,buttonSize);
+		table.row();
+		table.add(quit);
+		
 		table.pack();
 
 		stage.addActor(table);

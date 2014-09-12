@@ -60,7 +60,6 @@ public class Pointer {
 
 	public void reset() {
 		setDefaultIcon();
-		desc = null;
 		draggingRenderer = null;
 	}
 	

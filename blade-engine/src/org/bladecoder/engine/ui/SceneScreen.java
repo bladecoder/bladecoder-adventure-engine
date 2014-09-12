@@ -192,14 +192,7 @@ public class SceneScreen implements Screen {
 				World.getInstance().saveGameState();
 				break;
 			case 'r':
-				try {
-					World.restart();
-				} catch (Exception e) {
-					EngineLogger.error("ERROR LOADING GAME", e);
-
-					World.getInstance().dispose();
-					Gdx.app.exit();
-				}
+				World.getInstance().newGame();
 				break;
 			case 'l':
 				World.getInstance().loadGameState();

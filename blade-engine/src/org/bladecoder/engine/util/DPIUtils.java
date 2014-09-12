@@ -87,9 +87,14 @@ public class DPIUtils {
 	public static float getMarginSize(int screenWidth, int screenHeight) {
 		return getSizeMultiplier(screenWidth, screenHeight) * MARGIN_SIZE;
 	}
+	
+	public static float getMarginSize() {
+		return getMarginSize(Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+	}
 
 	public static float getSizeMultiplier(int screenWidth, int screenHeight) {
-		float inches = toInches(screenWidth);
+		float inches = pixelsToInches(screenWidth);
 
 		if (inches > 15)
 			return XXLARGE_MULTIPLIER;
@@ -104,15 +109,19 @@ public class DPIUtils {
 
 	}
 
-	public static int toPixels(int dp) {
+	public static int dpToPixels(int dp) {
 		return (int) (dp * Gdx.graphics.getDensity());
 	}
 	
-	public static int toDP(int pixels) {
+	public static int pixelsToDP(int pixels) {
 		return (int) (pixels / Gdx.graphics.getDensity());
 	}
 	
-	public static float toInches(int pixels) {
+	public static float pixelsToInches(int pixels) {
 		return (float)pixels / DPI;
+	}
+	
+	public static float ptToPixels(float pts) {
+		return pts * 72 / DPI;
 	}
 }

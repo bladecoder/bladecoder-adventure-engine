@@ -138,7 +138,7 @@ public class HelpScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		ui.setScreen(State.SCENE_SCREEN);
+		ui.setScreen(State.MENU_SCREEN);
 		return true;
 	}
 

@@ -46,7 +46,7 @@ public class UI {
 	private Skin skin;
 
 	public static enum State {
-		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, RESTART_SCREEN, CREDIT_SCREEN
+		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN
 	};
 	
 	private final Screen screens[];
@@ -73,12 +73,11 @@ public class UI {
 		World.getInstance().loadXMLWorld();
 		loadAssets();
 		
-		screens[State.INIT_SCREEN.ordinal()] = new InitScreen(this, false);
+		screens[State.INIT_SCREEN.ordinal()] = new InitScreen(this);
 		screens[State.SCENE_SCREEN.ordinal()] = new SceneScreen(this);
 		screens[State.LOADING_SCREEN.ordinal()] = new LoadingScreen(this);
-		screens[State.MENU_SCREEN.ordinal()] = new MenuScreen(this);
+		screens[State.MENU_SCREEN.ordinal()] = new MenuScreenTextButtons(this);
 		screens[State.HELP_SCREEN.ordinal()] = new HelpScreen(this);
-		screens[State.RESTART_SCREEN.ordinal()] = new InitScreen(this, true);
 		screens[State.CREDIT_SCREEN.ordinal()] =  new CreditsScreen(this);
 
 		setScreen(State.INIT_SCREEN);
@@ -142,7 +141,7 @@ public class UI {
 		FileHandle skinFile = EngineAssetManager.getInstance().getAsset(SKIN_FILENAME);
 		TextureAtlas atlas = new TextureAtlas(EngineAssetManager.getInstance().getResAsset(
 				SKIN_FILENAME.substring(0,SKIN_FILENAME.lastIndexOf('.')) + ".atlas"));
-		skin = new Skin(skinFile, atlas);		
+		skin = new BladeSkin(skinFile, atlas);		
 		pointer.retrieveAssets(atlas);
 	}
 

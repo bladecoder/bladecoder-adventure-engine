@@ -16,12 +16,11 @@
 package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.ui.UI.State;
-import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -31,14 +30,12 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class InitScreen implements Screen {
 	private final static String FILENAME = "ui/blade_logo.png";
-	private final static float FADE_TIME = 1f;
-	private final static float SCREEN_TIME = 1.5f;
+	private final static float FADE_TIME = .6f;
+	private final static float SCREEN_TIME = .8f;
 
 	private Texture tex;	
 	
 	private UI ui;
-	private boolean loadingGame = false;
-	private boolean restart = false;
 	
 	private float time;
 	private float fadeTime;
@@ -46,9 +43,8 @@ public class InitScreen implements Screen {
 	
 	private final Viewport viewport = new ScreenViewport();
 	
-	public InitScreen(UI ui, boolean restart) {
+	public InitScreen(UI ui) {
 		this.ui = ui;
-		this.restart = restart;
 	}
 
 	@Override
@@ -61,25 +57,15 @@ public class InitScreen implements Screen {
 		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();	
 		
-		if(fadeTime < FADE_TIME && !loadingGame) { // FADE IN
+		if(time > FADE_TIME * 2 + SCREEN_TIME) {  // EXIT INIT SCREEN
+			batch.setColor(Color.WHITE);
+			ui.setScreen(State.MENU_SCREEN);
+		} else if(time > FADE_TIME + SCREEN_TIME) {  // FADE_OUT
+			batch.setColor(1, 1, 1,  1 - fadeTime/FADE_TIME);			
+		} else if(time < FADE_TIME) { // FADE IN
 			batch.setColor(1, 1, 1,  fadeTime/FADE_TIME);	
-		} else	if(fadeTime < FADE_TIME && loadingGame) {  // FADE_OUT
-			batch.setColor(1, 1, 1,  1 - fadeTime/FADE_TIME);
-		} if(fadeTime >= FADE_TIME && loadingGame) {  // EXIT INIT SCREEN
-			ui.setScreen(State.SCENE_SCREEN);
-		} if(time > SCREEN_TIME && !loadingGame) { // LOAD GAME
-			loadingGame = true;
+		} else {
 			fadeTime = 0;
-			
-			try {
-				if(restart) World.restart();
-				else if(World.getInstance().isDisposed())
-					World.getInstance().load();
-			} catch (Exception e) {
-				EngineLogger.error("ERROR LOADING GAME", e);
-				dispose();
-				Gdx.app.exit();
-			}
 		}		
 		
 		batch.draw(tex, (viewport.getScreenWidth() - tex.getWidth()* scale  ) /2, (viewport.getScreenHeight() - tex.getHeight()* scale)  /2,
@@ -110,9 +96,9 @@ public class InitScreen implements Screen {
 	@Override
 	public void show() {
 		time = fadeTime = 0;
-		loadingGame = false;
 		Gdx.input.setInputProcessor(null);
 		retrieveAssets();
+		ui.getPointer().reset();
 	}
 
 	@Override
