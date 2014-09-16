@@ -37,7 +37,7 @@ public class MenuScreenTextButtons implements Screen {
 	private UI ui;
 
 	private Stage stage;
-	
+
 	public MenuScreenTextButtons(UI ui) {
 		this.ui = ui;
 	}
@@ -50,8 +50,7 @@ public class MenuScreenTextButtons implements Screen {
 		stage.act(delta);
 		stage.draw();
 
-		ui.getBatch().setProjectionMatrix(
-				stage.getViewport().getCamera().combined);
+		ui.getBatch().setProjectionMatrix(stage.getViewport().getCamera().combined);
 		ui.getBatch().begin();
 		ui.getPointer().draw(ui.getBatch(), stage.getViewport());
 		ui.getBatch().end();
@@ -70,11 +69,13 @@ public class MenuScreenTextButtons implements Screen {
 
 	@Override
 	public void show() {
-//		int wWidth = EngineAssetManager.getInstance().getResolution().portraitWidth;
-//		int wHeight = EngineAssetManager.getInstance().getResolution().portraitHeight;
-//
-//		stage = new Stage(new ExtendViewport(wWidth, wHeight/2));
-		
+		// int wWidth =
+		// EngineAssetManager.getInstance().getResolution().portraitWidth;
+		// int wHeight =
+		// EngineAssetManager.getInstance().getResolution().portraitHeight;
+		//
+		// stage = new Stage(new ExtendViewport(wWidth, wHeight/2));
+
 		stage = new Stage(new ScreenViewport());
 
 		Table table = new Table();
@@ -84,35 +85,33 @@ public class MenuScreenTextButtons implements Screen {
 		table.addListener(new InputListener() {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
-				if (keycode == Input.Keys.ESCAPE
-						|| keycode == Input.Keys.BACK)
+				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
 					ui.setScreen(State.SCENE_SCREEN);
 				return true;
 			}
 		});
 
 		stage.setKeyboardFocus(table);
-		
-		
+
 		Label title = new Label(Config.getProperty(Config.TITLE_PROP, "Adventure Blade Engine"), ui.getSkin(), "title");
 
-		table.add(title).padBottom(DPIUtils.getMarginSize()*2);
-		
-		// TODO: IF JSON FILE EXITS HIDE RESUME BUTTON
-		TextButton continueGame = new TextButton("Continue", ui.getSkin(), "menu");
-		
-		continueGame.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				if(World.getInstance().getCurrentScene() == null)
-					World.getInstance().load();
-				
-				ui.setScreen(State.SCENE_SCREEN);
-			}
-		});
+		table.add(title).padBottom(DPIUtils.getMarginSize() * 2);
 
-		table.row();
-		table.add(continueGame);
-		
+		if (World.getInstance().savedGameExists()) {
+			TextButton continueGame = new TextButton("Continue", ui.getSkin(), "menu");
+
+			continueGame.addListener(new ClickListener() {
+				public void clicked(InputEvent event, float x, float y) {
+					if (World.getInstance().getCurrentScene() == null)
+						World.getInstance().load();
+
+					ui.setScreen(State.SCENE_SCREEN);
+				}
+			});
+
+			table.row();
+			table.add(continueGame);
+		}
 
 		TextButton newGame = new TextButton("New Game", ui.getSkin(), "menu");
 		newGame.addListener(new ClickListener() {
@@ -155,7 +154,7 @@ public class MenuScreenTextButtons implements Screen {
 
 		table.row();
 		table.add(quit);
-		
+
 		table.pack();
 
 		stage.addActor(table);

@@ -448,6 +448,10 @@ public class World implements Serializable, AssetConsumer {
 	public void newGame() {
 		loadXMLChapter(null);
 	}
+	
+	public boolean savedGameExists() {
+		return EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists();
+	}
 
 	// ********** JSON SERIALIZATION FOR GAME SAVING **********
 	public void saveGameState() {
