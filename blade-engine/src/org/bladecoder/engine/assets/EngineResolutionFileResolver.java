@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.bladecoder.engine.assets;
 
+import org.bladecoder.engine.util.FileUtils;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resolution;
@@ -36,7 +38,7 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 		FileHandle originalHandle = new FileHandle(fileName);
 		FileHandle handle = baseResolver.resolve(resolve(originalHandle, bestDesc.suffix));
 		
-		if (!handle.exists())
+		if (!FileUtils.exists(handle))
 			handle = baseResolver.resolve(fileName);
 		
 		return handle;
@@ -59,12 +61,12 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 		FileHandle originalHandle = new FileHandle(fileName);
 		FileHandle handle = baseResolver.resolve(resolve(originalHandle, bestDesc.suffix));
 		
-		if (handle.exists())
+		if (FileUtils.exists(handle))
 			return true;
 		
 		handle = baseResolver.resolve(fileName);
 		
-		if (handle.exists())
+		if (FileUtils.exists(handle))
 			return true;
 		
 		return false;

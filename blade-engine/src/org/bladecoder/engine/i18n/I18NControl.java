@@ -24,6 +24,7 @@ import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
+import org.bladecoder.engine.util.FileUtils;
 
 import com.badlogic.gdx.files.FileHandle;
 
@@ -46,7 +47,7 @@ public class I18NControl extends Control {
 
 		FileHandle fileHandle = EngineAssetManager.getInstance().getAsset(resourceName);
 
-		if (fileHandle.exists()) {
+		if (FileUtils.exists(fileHandle)) {
 			try {
 				// inputStream = loader.getResourceAsStream(resourceName);
 				inputStream = fileHandle.read();

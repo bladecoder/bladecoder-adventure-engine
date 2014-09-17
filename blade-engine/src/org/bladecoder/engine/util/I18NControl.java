@@ -46,7 +46,7 @@ public class I18NControl extends Control {
 
 		FileHandle fileHandle = EngineAssetManager.getInstance().getAsset(resourceName);
 
-		if (fileHandle.exists()) {
+		if (FileUtils.exists(fileHandle)) {
 			try {
 				// inputStream = loader.getResourceAsStream(resourceName);
 				inputStream = fileHandle.read();

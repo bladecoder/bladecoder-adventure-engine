@@ -1,6 +1,7 @@
 package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.util.DPIUtils;
+import org.bladecoder.engine.util.FileUtils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -45,9 +46,10 @@ public class BladeSkin extends Skin {
 				int size = json.readValue("size", int.class, -1, jsonData);
 
 				FileHandle fontFile = skinFile.parent().child(path);
-				if (!fontFile.exists())
+				if (!FileUtils.exists(fontFile))
 					fontFile = Gdx.files.internal(path);
-				if (!fontFile.exists())
+				
+				if (!FileUtils.exists(fontFile))
 					throw new SerializationException("Font file not found: " + fontFile);
 				
 				BitmapFont font;
@@ -73,7 +75,7 @@ public class BladeSkin extends Skin {
 							font = new BitmapFont(fontFile, region, flip);
 						else {
 							FileHandle imageFile = fontFile.parent().child(regionName + ".png");
-							if (imageFile.exists())
+							if (FileUtils.exists(imageFile))
 								font = new BitmapFont(fontFile, imageFile, flip);
 							else
 								font = new BitmapFont(fontFile, flip);

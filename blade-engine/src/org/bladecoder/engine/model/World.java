@@ -29,6 +29,7 @@ import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.loader.WorldXMLLoader;
 import org.bladecoder.engine.util.EngineLogger;
+import org.bladecoder.engine.util.FileUtils;
 import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.Gdx;
@@ -213,8 +214,7 @@ public class World implements Serializable, AssetConsumer {
 	 * @throws ParserConfigurationException
 	 */
 	public void load() {
-		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME)
-				.exists()) {
+		if (FileUtils.exists(EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME))) {
 			// 2.- SAVEGAME EXISTS
 			try {
 				instance.loadGameState();
@@ -450,7 +450,7 @@ public class World implements Serializable, AssetConsumer {
 	}
 	
 	public boolean savedGameExists() {
-		return EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists();
+		return FileUtils.exists(EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME));
 	}
 
 	// ********** JSON SERIALIZATION FOR GAME SAVING **********
@@ -480,7 +480,7 @@ public class World implements Serializable, AssetConsumer {
 
 		init();
 
-		if (savedFile.exists()) {
+		if (FileUtils.exists(savedFile)) {
 			assetState = AssetState.LOAD_ASSETS;
 
 			new Json().fromJson(World.class, savedFile.reader("UTF-8"));
