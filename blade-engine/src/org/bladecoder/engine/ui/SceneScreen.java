@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.bladecoder.engine.ui;
 
+import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Transition;
@@ -32,6 +33,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -42,6 +44,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class SceneScreen implements Screen {
@@ -72,8 +75,7 @@ public class SceneScreen implements Screen {
 	private Actor currentActor = null;
 
 	private boolean drawHotspots = false;
-	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP,
-			true);
+	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
 
 	private static enum UIStates {
 		SCENE_MODE, CUT_MODE, PLAY_MODE, PAUSE_MODE, INVENTORY_MODE, DIALOG_MODE
@@ -81,81 +83,74 @@ public class SceneScreen implements Screen {
 
 	private UIStates state = UIStates.SCENE_MODE;
 
-	private final GestureDetector inputProcessor = new GestureDetector(
-			new GestureDetector.GestureListener() {
-				@Override
-				public boolean touchDown(float x, float y, int pointer,
-						int button) {
-					return true;
+	private final GestureDetector inputProcessor = new GestureDetector(new GestureDetector.GestureListener() {
+		@Override
+		public boolean touchDown(float x, float y, int pointer, int button) {
+			return true;
+		}
+
+		@Override
+		public boolean tap(float x, float y, int count, int button) {
+			EngineLogger.debug("Event TAP button: " + button);
+
+			World w = World.getInstance();
+
+			if (state == UIStates.PAUSE_MODE || state == UIStates.PLAY_MODE)
+				return true;
+
+			if (drawHotspots)
+				drawHotspots = false;
+			else {
+				viewport.getInputUnProject(unprojectTmp);
+
+				if (w.inCutMode() && !recorder.isRecording()) {
+					w.getTextManager().next();
+				} else if (state == UIStates.INVENTORY_MODE) {
+					inventoryUI.hide();
+				} else if (state == UIStates.SCENE_MODE) {
+					sceneClick(button == 1);
 				}
+			}
 
-				@Override
-				public boolean tap(float x, float y, int count, int button) {
-					EngineLogger.debug("Event TAP button: " + button);
+			return true;
+		}
 
-					World w = World.getInstance();
+		@Override
+		public boolean longPress(float x, float y) {
+			EngineLogger.debug("Event LONG PRESS");
 
-					if (state == UIStates.PAUSE_MODE
-							|| state == UIStates.PLAY_MODE)
-						return true;
+			if (state == UIStates.SCENE_MODE) {
+				drawHotspots = true;
+			}
 
-					if (drawHotspots)
-						drawHotspots = false;
-					else {
-						viewport.getInputUnProject(unprojectTmp);
+			return false;
+		}
 
-						if (w.inCutMode()
-								&& !recorder.isRecording()) {
-							w.getTextManager().next();
-						} else if (state == UIStates.INVENTORY_MODE) {
-							inventoryUI.hide();
-						} else if (state == UIStates.SCENE_MODE) {
-							sceneClick(button == 1);
-						}
-					}
+		@Override
+		public boolean pan(float x, float y, float deltaX, float deltaY) {
+			return true;
+		}
 
-					return true;
-				}
+		@Override
+		public boolean panStop(float x, float y, int pointer, int button) {
+			return true;
+		}
 
-				@Override
-				public boolean longPress(float x, float y) {
-					EngineLogger.debug("Event LONG PRESS");
+		@Override
+		public boolean fling(float velocityX, float velocityY, int button) {
+			return false;
+		}
 
-					if (state == UIStates.SCENE_MODE) {
-						drawHotspots = true;
-					}
+		@Override
+		public boolean zoom(float initialDistance, float distance) {
+			return false;
+		}
 
-					return false;
-				}
-
-				@Override
-				public boolean pan(float x, float y, float deltaX, float deltaY) {
-					return true;
-				}
-
-				@Override
-				public boolean panStop(float x, float y, int pointer, int button) {
-					return true;
-				}
-
-				@Override
-				public boolean fling(float velocityX, float velocityY,
-						int button) {
-					return false;
-				}
-
-				@Override
-				public boolean zoom(float initialDistance, float distance) {
-					return false;
-				}
-
-				@Override
-				public boolean pinch(Vector2 initialPointer1,
-						Vector2 initialPointer2, Vector2 pointer1,
-						Vector2 pointer2) {
-					return false;
-				}
-			}) {
+		@Override
+		public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+			return false;
+		}
+	}) {
 		@Override
 		public boolean keyUp(int keycode) {
 			switch (keycode) {
@@ -373,17 +368,15 @@ public class SceneScreen implements Screen {
 		if (state == UIStates.INVENTORY_MODE) {
 			unproject2Tmp.set(Gdx.input.getX(), Gdx.input.getY());
 			inventoryUI.screenToLocalCoordinates(unproject2Tmp);
-			currentActor = inventoryUI.getItemAt(unproject2Tmp.x,
-					unproject2Tmp.y);
+			currentActor = inventoryUI.getItemAt(unproject2Tmp.x, unproject2Tmp.y);
 		} else if (state == UIStates.SCENE_MODE) {
 			w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
 
-			currentActor = w.getCurrentScene().getActorAt(unprojectTmp.x,
-					unprojectTmp.y);
-			
-			if(!w.getInventory().isVisible() && inventoryButton.isVisible())
+			currentActor = w.getCurrentScene().getActorAt(unprojectTmp.x, unprojectTmp.y);
+
+			if (!w.getInventory().isVisible() && inventoryButton.isVisible())
 				inventoryButton.setVisible(false);
-			else if(w.getInventory().isVisible() && !inventoryButton.isVisible())
+			else if (w.getInventory().isVisible() && !inventoryButton.isVisible())
 				inventoryButton.setVisible(true);
 		}
 
@@ -421,8 +414,7 @@ public class SceneScreen implements Screen {
 		w.draw();
 
 		// DRAW DEBUG BBOXES
-		if (EngineLogger.debugMode()
-				&& EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
+		if (EngineLogger.debugMode() && EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
 			renderer.setProjectionMatrix(w.getSceneCamera().combined);
 			w.getCurrentScene().drawBBoxLines(renderer);
 			renderer.end();
@@ -459,12 +451,11 @@ public class SceneScreen implements Screen {
 			String strDebug = sb.toString();
 
 			TextBounds b = ui.getSkin().getFont("debug").getBounds(strDebug);
-			RectangleRenderer.draw(batch, 0, viewport.getScreenHeight()
-					- b.height - 10, b.width, b.height + 10, Color.BLACK);
-			ui.getSkin().getFont("debug").draw(batch, strDebug, 0,
-					viewport.getScreenHeight());
-			
-			//Draw actor states when debug
+			RectangleRenderer.draw(batch, 0, viewport.getScreenHeight() - b.height - 10, b.width, b.height + 10,
+					Color.BLACK);
+			ui.getSkin().getFont("debug").draw(batch, strDebug, 0, viewport.getScreenHeight());
+
+			// Draw actor states when debug
 			if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
 
 				for (Actor a : w.getCurrentScene().getActors().values()) {
@@ -473,11 +464,10 @@ public class SceneScreen implements Screen {
 					sb.append(a.getId());
 					if (a.getState() != null)
 						sb.append(".").append(a.getState());
-					
-					unprojectTmp.set(r.getX(), r.getY(), 0);			
+
+					unprojectTmp.set(r.getX(), r.getY(), 0);
 					w.getSceneCamera().scene2screen(viewport, unprojectTmp);
-					ui.getSkin().getFont("debug").draw(batch, sb.toString(),
-							unprojectTmp.x, unprojectTmp.y);
+					ui.getSkin().getFont("debug").draw(batch, sb.toString(), unprojectTmp.x, unprojectTmp.y);
 				}
 
 			}
@@ -503,10 +493,8 @@ public class SceneScreen implements Screen {
 
 	private void drawHotspots(SpriteBatch batch) {
 
-		for (Actor a : World.getInstance().getCurrentScene().getActors()
-				.values()) {
-			if (a == World.getInstance().getCurrentScene().getPlayer()
-					|| !a.hasInteraction() || !a.isVisible())
+		for (Actor a : World.getInstance().getCurrentScene().getActors().values()) {
+			if (a == World.getInstance().getCurrentScene().getPlayer() || !a.hasInteraction() || !a.isVisible())
 				continue;
 
 			Polygon p = a.getBBox();
@@ -517,13 +505,32 @@ public class SceneScreen implements Screen {
 
 			Rectangle r = a.getBBox().getBoundingRectangle();
 
-			unprojectTmp.set(r.getX() + r.getWidth() / 2,
-					r.getY() + r.getHeight() / 2, 0);
-			World.getInstance().getSceneCamera()
-					.scene2screen(viewport, unprojectTmp);
+			unprojectTmp.set(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2, 0);
+			World.getInstance().getSceneCamera().scene2screen(viewport, unprojectTmp);
 
-			ui.getPointer().drawHotspot(batch, unprojectTmp.x, unprojectTmp.y,
-					showDesc ? a.getDesc() : null);
+			if (!showDesc || a.getDesc() == null) {
+				Drawable drawable = getUI().getSkin().getDrawable("hotspotpointer3");
+				float scale = DPIUtils.getSizeMultiplier(viewport.getScreenWidth(), viewport.getScreenHeight());
+				batch.setColor(Color.BLUE);
+				drawable.draw(batch, unprojectTmp.x - drawable.getMinWidth() * scale / 2,
+						unprojectTmp.y - drawable.getMinHeight() * scale / 2, drawable.getMinWidth()
+								* scale, drawable.getMinHeight() * scale);
+				batch.setColor(Color.WHITE);
+			} else {
+				BitmapFont font = getUI().getSkin().getFont("desc");
+				String desc = a.getDesc();
+				if (desc.charAt(0) == '@')
+					desc = I18N.getString(desc.substring(1));
+
+				TextBounds b = font.getBounds(desc);
+
+				float textX = unprojectTmp.x - b.width / 2;
+				float textY = unprojectTmp.y + b.height;
+
+				RectangleRenderer
+						.draw(batch, textX - 8, textY - b.height - 8, b.width + 16, b.height + 16, Color.BLACK);
+				font.draw(batch, desc, textX, textY);
+			}
 		}
 	}
 
@@ -531,34 +538,27 @@ public class SceneScreen implements Screen {
 	public void resize(int width, int height) {
 
 		if (!World.getInstance().isDisposed()) {
-			viewport.setWorldSize(World.getInstance().getWidth(), World
-					.getInstance().getHeight());
+			viewport.setWorldSize(World.getInstance().getWidth(), World.getInstance().getHeight());
 			viewport.update(width, height, true);
-			World.getInstance().resize(viewport.getWorldWidth(),
-					viewport.getWorldHeight());
+			World.getInstance().resize(viewport.getWorldWidth(), viewport.getWorldHeight());
 		} else {
 			viewport.setWorldSize(width, height);
 			viewport.update(width, height, true);
 		}
 
 		pie.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
-		inventoryUI.resize(viewport.getScreenWidth(),
-				viewport.getScreenHeight());
-		textManagerUI.resize(viewport.getScreenWidth(),
-				viewport.getScreenHeight());
-		inventoryButton.resize(viewport.getScreenWidth(),
-				viewport.getScreenHeight());
+		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
+		textManagerUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
+		inventoryButton.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 	}
 
 	public void dispose() {
 		renderer.dispose();
 		stage.dispose();
-		pie.dispose();
 	}
 
 	private void retrieveAssets(TextureAtlas atlas) {
 		renderer = new ShapeRenderer();
-		pie.retrieveAssets(atlas);
 		inventoryUI.retrieveAssets(atlas);
 	}
 

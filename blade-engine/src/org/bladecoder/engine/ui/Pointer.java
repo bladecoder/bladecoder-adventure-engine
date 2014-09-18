@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.bladecoder.engine.ui;
 
-import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.model.SpriteRenderer;
 import org.bladecoder.engine.util.DPIUtils;
@@ -27,13 +26,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class Pointer {
-	private static final String FONT_STYLE = "POINTER_FONT";
 	private static final String LEAVE_ICON = "leave3";
 	private static final String POINTER_ICON = "pointer3";
 	private static final String HOTSPOT_ICON = "hotspotpointer3";
@@ -53,8 +51,14 @@ public class Pointer {
 	private final Vector2 mousepos = new Vector2();
 	
 	private float pointerScale;
+//	private Skin skin;
 
-	public Pointer() {
+	public Pointer(Skin skin) {
+//		this.skin = skin;
+		font = skin.getFont("desc");
+		pointerIcon = skin.getAtlas().findRegion(POINTER_ICON);
+		leaveIcon = skin.getAtlas().findRegion(LEAVE_ICON);
+		hotspotIcon = skin.getAtlas().findRegion(HOTSPOT_ICON);
 		reset();
 	}
 
@@ -95,30 +99,6 @@ public class Pointer {
 		out.set(Gdx.input.getX(), Gdx.input.getY());
 
 		v.unproject(out);
-	}
-
-	public void drawHotspot(SpriteBatch batch, float x, float y, String desc) {
-
-		if (desc == null) {
-			batch.setColor(Color.BLUE);
-			batch.draw(hotspotIcon, x - hotspotIcon.getRegionWidth() * pointerScale
-					/ 2, y - hotspotIcon.getRegionHeight() * pointerScale / 2,
-					hotspotIcon.getRegionWidth() * pointerScale,
-					hotspotIcon.getRegionHeight() * pointerScale);
-			batch.setColor(Color.WHITE);
-		} else {
-			if (desc != null && desc.charAt(0) == '@')
-				desc = I18N.getString(desc.substring(1));
-
-			TextBounds b = font.getBounds(desc);
-
-			float textX = x - b.width / 2;
-			float textY = y + b.height;
-
-			RectangleRenderer.draw(batch, textX - 8, textY - b.height - 8,
-					b.width + 16, b.height + 16, Color.BLACK);
-			font.draw(batch, desc, textX, textY);
-		}
 	}
 
 	public void draw(SpriteBatch batch, Viewport v) {
@@ -169,24 +149,8 @@ public class Pointer {
 		}
 	}
 
-	public void retrieveAssets(TextureAtlas atlas) {
-		pointerIcon = atlas.findRegion(POINTER_ICON);
-		leaveIcon = atlas.findRegion(LEAVE_ICON);
-		hotspotIcon = atlas.findRegion(HOTSPOT_ICON);
-
-		if (font == null)
-			font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
-		
-		
-	}
-
 	public void resize(int width, int height) {
 		pointerScale = DPIUtils.getMinSize(width, height) / pointerIcon.getRegionHeight() * .8f;
-	}
-
-	public void dispose() {
-		EngineAssetManager.getInstance().disposeFont(font);
-		font = null;
 	}
 
 }

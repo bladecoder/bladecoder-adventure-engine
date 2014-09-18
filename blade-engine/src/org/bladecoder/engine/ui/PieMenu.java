@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.bladecoder.engine.ui;
 
-import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.model.Actor;
 import org.bladecoder.engine.util.DPIUtils;
@@ -25,7 +24,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -33,7 +31,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Actor {
 
-	private static final String FONT_STYLE = "POINTER_FONT";
 	private BitmapFont font;
 
 	private AtlasRegion piePiece;
@@ -60,6 +57,13 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Actor {
 
 	public PieMenu(SceneScreen scr) {
 		sceneScreen = scr;
+		font = scr.getUI().getSkin().getFont("desc");
+		piePiece = scr.getUI().getSkin().getAtlas().findRegion("pie");
+		// rightIcon = atlas.findRegion("pickup");
+		leftIcon = scr.getUI().getSkin().getAtlas().findRegion("lookat");
+
+		talktoIcon = scr.getUI().getSkin().getAtlas().findRegion("talkto");
+		pickupIcon = scr.getUI().getSkin().getAtlas().findRegion("pickup");
 
 		addListener(new InputListener() {
 			@Override
@@ -206,18 +210,6 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Actor {
 			this.y = viewPortHeight - piePiece.getRegionHeight() * scale;
 	}
 
-	public void retrieveAssets(TextureAtlas atlas) {
-		piePiece = atlas.findRegion("pie");
-		// rightIcon = atlas.findRegion("pickup");
-		leftIcon = atlas.findRegion("lookat");
-
-		talktoIcon = atlas.findRegion("talkto");
-		pickupIcon = atlas.findRegion("pickup");
-
-		if (font == null)
-			font = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
-	}
-
 	public void resize(int width, int height) {
 		viewPortWidth = width;
 		viewPortHeight = height;
@@ -226,10 +218,5 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Actor {
 
 		scale = DPIUtils.getPrefButtonSize(width, height) * 1.7f
 				/ piePiece.getRegionHeight();
-	}
-
-	public void dispose() {
-		EngineAssetManager.getInstance().disposeFont(font);
-		font = null;
 	}
 }

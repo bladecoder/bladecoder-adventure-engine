@@ -54,9 +54,6 @@ public class UI {
 
 	public UI() {
 		batch = new SpriteBatch();
-
-		
-		pointer = new Pointer();
 		
 		screens = new Screen[State.values().length];
 
@@ -140,8 +137,8 @@ public class UI {
 		FileHandle skinFile = EngineAssetManager.getInstance().getAsset(SKIN_FILENAME);
 		TextureAtlas atlas = new TextureAtlas(EngineAssetManager.getInstance().getResAsset(
 				SKIN_FILENAME.substring(0,SKIN_FILENAME.lastIndexOf('.')) + ".atlas"));
-		skin = new BladeSkin(skinFile, atlas);		
-		pointer.retrieveAssets(atlas);
+		skin = new BladeSkin(skinFile, atlas);
+		pointer = new Pointer(skin);
 	}
 
 	public void resize(int width, int height) {
@@ -163,7 +160,6 @@ public class UI {
 	}
 
 	public void dispose() {
-		pointer.dispose();
 		screen.hide();
 		batch.dispose();
 		skin.dispose();

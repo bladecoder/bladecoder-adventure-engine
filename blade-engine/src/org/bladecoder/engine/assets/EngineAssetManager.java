@@ -107,7 +107,8 @@ public class EngineAssetManager extends AssetManager {
 			return;
 		}
 		
-		resResolver.selectBestResolution(r);
+		resResolver.setResolutions(r);
+		resResolver.selectResolution();
 		scale = resResolver.getResolution().portraitWidth / (float)worldWidth;
 		
 		EngineLogger.debug(	"Setting ASSETS SCALE: " + scale);
@@ -135,13 +136,12 @@ public class EngineAssetManager extends AssetManager {
 			instance.dispose();
 
 		instance = new EngineAssetManager(new BasePathResolver(base));
-		instance.setScale(worldWidth, worldHeight);
-
 		instance.forceResolution("1");
+		instance.setScale(worldWidth, worldHeight);
 	}
 	
 	public void forceResolution(String suffix) {
-		resResolver.selectFixedResolution(suffix);
+		resResolver.setFixedResolution(suffix);
 		
 		EngineLogger.debug("FORCING ASSETS RESOLUTION SCALE: " + suffix);
 	}

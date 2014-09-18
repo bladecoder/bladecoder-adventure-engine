@@ -28,6 +28,7 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 	private Resolution[] descriptors;
 	
 	private Resolution bestDesc;
+	private String fixResolution;
 
 	public EngineResolutionFileResolver(FileHandleResolver baseResolver) {
 		this.baseResolver = baseResolver;
@@ -95,9 +96,14 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 		return bestDesc;
 	}
 	
-	public void selectBestResolution(Resolution[] resolutions) {
-		this.descriptors = resolutions;
-		
+	public void selectResolution() {
+		if(fixResolution != null)
+			selectFixedResolution();
+		else
+			selectBestResolution();
+	}
+	
+	private void selectBestResolution() {
 		bestDesc = descriptors[0];
 		int bestDist = Math.abs(Gdx.graphics.getWidth() - bestDesc.portraitWidth);
 
@@ -112,18 +118,26 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 		}
 	}
 	
+	public void setResolutions(Resolution[] resolutions) {
+		this.descriptors = resolutions;
+	}
+	
 	/**
 	 * Sets a fixed prefix, disabling choosing the best resolution.
 	 * 
 	 * @param scale The prefix of the assets
 	 */
-	public void selectFixedResolution(String suffix) {
+	private void selectFixedResolution() {
 		for (int i = 0; i < descriptors.length; i++) {
-			if(descriptors[i].suffix.equals(suffix)) {
+			if(descriptors[i].suffix.equals(fixResolution)) {
 				bestDesc = descriptors[i];
 				return;
 			}
 		}
+	}
+	
+	public void setFixedResolution(String suffix) {
+		fixResolution = suffix;
 	}
 
 }
