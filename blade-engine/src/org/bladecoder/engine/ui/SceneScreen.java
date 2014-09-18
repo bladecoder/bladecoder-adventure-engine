@@ -104,7 +104,7 @@ public class SceneScreen implements Screen {
 					else {
 						viewport.getInputUnProject(unprojectTmp);
 
-						if (state == UIStates.CUT_MODE
+						if (w.inCutMode()
 								&& !recorder.isRecording()) {
 							w.getTextManager().next();
 						} else if (state == UIStates.INVENTORY_MODE) {
@@ -231,7 +231,7 @@ public class SceneScreen implements Screen {
 		textManagerUI = new TextManagerUI(this);
 		inventoryUI = new InventoryUI(this);
 		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
-		dialogUI = new DialogUI(recorder);
+		dialogUI = new DialogUI(this);
 
 		this.pieMode = ui.isPieMode();
 
@@ -458,11 +458,29 @@ public class SceneScreen implements Screen {
 
 			String strDebug = sb.toString();
 
-			TextBounds b = EngineLogger.getDebugFont().getBounds(strDebug);
+			TextBounds b = ui.getSkin().getFont("debug").getBounds(strDebug);
 			RectangleRenderer.draw(batch, 0, viewport.getScreenHeight()
 					- b.height - 10, b.width, b.height + 10, Color.BLACK);
-			EngineLogger.getDebugFont().draw(batch, strDebug, 0,
+			ui.getSkin().getFont("debug").draw(batch, strDebug, 0,
 					viewport.getScreenHeight());
+			
+			//Draw actor states when debug
+			if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
+
+				for (Actor a : w.getCurrentScene().getActors().values()) {
+					Rectangle r = a.getBBox().getBoundingRectangle();
+					sb.setLength(0);
+					sb.append(a.getId());
+					if (a.getState() != null)
+						sb.append(".").append(a.getState());
+					
+					unprojectTmp.set(r.getX(), r.getY(), 0);			
+					w.getSceneCamera().scene2screen(viewport, unprojectTmp);
+					ui.getSkin().getFont("debug").draw(batch, sb.toString(),
+							unprojectTmp.x, unprojectTmp.y);
+				}
+
+			}
 		}
 
 		if (!World.getInstance().inCutMode() && !recorder.isPlaying()) {
@@ -533,8 +551,6 @@ public class SceneScreen implements Screen {
 	}
 
 	public void dispose() {
-		textManagerUI.dispose();
-		dialogUI.dispose();
 		renderer.dispose();
 		stage.dispose();
 		pie.dispose();
@@ -544,7 +560,6 @@ public class SceneScreen implements Screen {
 		renderer = new ShapeRenderer();
 		pie.retrieveAssets(atlas);
 		inventoryUI.retrieveAssets(atlas);
-		textManagerUI.retrieveAssets(atlas);
 	}
 
 	private void sceneClick(boolean lookat) {
@@ -634,7 +649,6 @@ public class SceneScreen implements Screen {
 
 	@Override
 	public void show() {
-		dialogUI.loadAssets();
 		retrieveAssets(ui.getUIAtlas());
 
 		stage = new Stage(viewport);

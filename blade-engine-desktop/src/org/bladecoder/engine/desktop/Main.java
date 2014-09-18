@@ -117,7 +117,7 @@ public class Main extends BladeEngine {
 					i++;
 					setAdvDir(args[i]);
 				}
-			} else if (s.equals("-h")) {
+			} else {
 				usage();
 			}
 		}

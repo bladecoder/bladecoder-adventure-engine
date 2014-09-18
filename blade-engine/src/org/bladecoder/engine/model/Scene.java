@@ -283,27 +283,6 @@ public class Scene implements Serializable,
 			spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA,
 					GL20.GL_ONE_MINUS_SRC_ALPHA);
 		}
-
-		if (EngineLogger.debugMode()
-				&& EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
-
-			StringBuilder sb = new StringBuilder();
-
-			for (Actor a : actors.values()) {
-				Rectangle r = a.getBBox().getBoundingRectangle();
-				sb.setLength(0);
-				sb.append(a.getId());
-				if (a.getState() != null)
-					sb.append(".").append(a.getState());
-				// sb.append(" (").append((int) r.getX()).append(", ");
-				// sb.append((int) r.getY()).append(", ").append((int)
-				// r.getWidth());
-				// sb.append(", ").append((int) r.getHeight()).append(") ");
-				EngineLogger.getDebugFont().draw(spriteBatch, sb.toString(),
-						r.getX(), r.getY());
-			}
-
-		}
 	}
 
 	public void drawBBoxLines(ShapeRenderer renderer) {

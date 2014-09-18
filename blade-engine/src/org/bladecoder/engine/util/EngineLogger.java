@@ -15,11 +15,8 @@
  ******************************************************************************/
 package org.bladecoder.engine.util;
 
-import org.bladecoder.engine.assets.EngineAssetManager;
-
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 public class EngineLogger {
 	private static String TAG = "ENGINE";
@@ -30,9 +27,6 @@ public class EngineLogger {
 	public static final int DEBUG2 = 2;
 
 	public static int debugLevel = DEBUG0;
-
-	private static final String FONT = "DEBUG_FONT";
-	private static BitmapFont debugFont = null;
 
 	public static void debug(String message) {
 		Gdx.app.debug(TAG, message);
@@ -76,19 +70,5 @@ public class EngineLogger {
 		level = Application.LOG_DEBUG;
 
 		Gdx.app.setLogLevel(level);
-	}
-
-	public static BitmapFont getDebugFont() {
-		if (debugFont == null) {
-			debugFont = EngineAssetManager.getInstance().loadFont(FONT);
-		}
-
-		return debugFont;
-	}
-	
-	public static void dispose() {
-		if(debugFont != null)
-			EngineAssetManager.getInstance().disposeFont(debugFont);
-		debugFont = null;
 	}
 }

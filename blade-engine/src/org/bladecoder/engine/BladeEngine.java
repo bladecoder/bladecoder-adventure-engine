@@ -100,11 +100,13 @@ public class BladeEngine implements ApplicationListener {
 		if(chapter == null)
 			chapter = Config.getProperty(Config.CHAPTER_PROP, chapter);
 		
-		if(testScene == null)
+		if(testScene == null) {
 			testScene = Config.getProperty(Config.TEST_SCENE_PROP, testScene);
+		}
 		
 		if (testScene != null || chapter != null) {
 			World.getInstance().loadXMLChapter(chapter, testScene);
+			ui.setScreen(UI.State.SCENE_SCREEN);
 		}
 		
 		if(gameState == null)

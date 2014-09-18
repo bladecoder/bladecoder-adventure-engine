@@ -18,7 +18,6 @@ package org.bladecoder.engine.ui;
 import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.util.Config;
-import org.bladecoder.engine.util.EngineLogger;
 import org.bladecoder.engine.util.RectangleRenderer;
 import org.bladecoder.engine.util.Utils3D;
 
@@ -171,7 +170,6 @@ public class UI {
 		
 		RectangleRenderer.dispose();
 		Utils3D.dispose();
-		EngineLogger.dispose();
 		EngineAssetManager.getInstance().dispose();
 	}
 	

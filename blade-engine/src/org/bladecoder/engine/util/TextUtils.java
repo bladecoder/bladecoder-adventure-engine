@@ -122,7 +122,7 @@ public class TextUtils {
 	
 	public static float getSubtitleY(BitmapFont font, String str, float maxLength, int viewportHeight) {
 		
-		float y = viewportHeight - viewportHeight/10;
+		float y = viewportHeight - viewportHeight/8;
 		
 		return y;
 	}		

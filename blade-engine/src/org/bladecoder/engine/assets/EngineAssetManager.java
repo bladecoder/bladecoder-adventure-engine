@@ -130,11 +130,12 @@ public class EngineAssetManager extends AssetManager {
 	 * @param base
 	 * @param resWidth
 	 */
-	public static void createEditInstance(String base) {
+	public static void createEditInstance(String base, int worldWidth, int worldHeight) {
 		if (instance != null)
 			instance.dispose();
 
 		instance = new EngineAssetManager(new BasePathResolver(base));
+		instance.setScale(worldWidth, worldHeight);
 
 		instance.forceResolution("1");
 	}
