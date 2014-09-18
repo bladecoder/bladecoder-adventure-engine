@@ -126,7 +126,9 @@ public class SpriteActor extends Actor {
 		bbox.setScale(scale, scale);
 	}
 
+	@Override
 	public void update(float delta) {
+		super.update(delta);
 		renderer.update(delta);
 		if(posTween != null) {
 			posTween.update(this, delta);

@@ -35,6 +35,9 @@ public class VerbManager implements Serializable {
 	public static void addDefaultVerb(String id, Verb v) {
 		defaultVerbs.put(id, v);
 	}
+	
+	// Used only in getVerb(). It is a class variable to avoid allocations
+	private StringBuilder tmpsb = new StringBuilder();
 
 	/**
 	 * Returns an actor Verb.
@@ -50,27 +53,27 @@ public class VerbManager implements Serializable {
 	 * @return
 	 */
 	public Verb getVerb(String id, String state, String target) {
-		StringBuilder sb = new StringBuilder();
 		Verb v = null;
 		
 		if(target != null) {
+			tmpsb.setLength(0);
 			if(state != null) {
-				sb.append(id).append(".").append(target).append(".").append(state);
-				v = verbs.get(sb.toString()); // id.target.state
+				tmpsb.append(id).append(".").append(target).append(".").append(state);
+				v = verbs.get(tmpsb.toString()); // id.target.state
 			}
 
 			if (v == null) {
-				sb.setLength(0);
-				sb.append(id).append(".").append(target);
-				v = verbs.get(sb.toString()); // id.target
+				tmpsb.setLength(0);
+				tmpsb.append(id).append(".").append(target);
+				v = verbs.get(tmpsb.toString()); // id.target
 			}
 		}
 		
 		if (v == null && state != null) {
-			sb.setLength(0);
-			sb.append(id).append(".").append(state);
+			tmpsb.setLength(0);
+			tmpsb.append(id).append(".").append(state);
 			
-			v = verbs.get(sb.toString()); // id.state
+			v = verbs.get(tmpsb.toString()); // id.state
 		}
 
 		if (v == null)

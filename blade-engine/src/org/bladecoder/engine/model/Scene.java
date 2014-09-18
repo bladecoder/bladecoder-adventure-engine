@@ -231,8 +231,7 @@ public class Scene implements Serializable,
 		}
 
 		for (Actor a:actors.values()) {
-			if(a instanceof SpriteActor)
-				((SpriteActor)a).update(delta);
+			a.update(delta);
 		}
 		
 		camera.update(delta);

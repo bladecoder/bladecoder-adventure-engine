@@ -59,6 +59,9 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 	private boolean isWalkObstacle = false;
 	
 	private ActorLayer layer;
+	
+	/** State to know when the player is inside this actor to trigger the enter/leave verbs */ 
+	private boolean playerInside = false;
 
 	public String getId() {
 		return id;
@@ -122,6 +125,28 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 	
 	public Scene getScene() {
 		return scene;
+	}
+	
+	public void update(float delta) {
+		Actor player = scene.getPlayer();
+		if(isVisible() && player != null) {
+			boolean hit = hit(player.getX(), player.getY());
+			if(!hit && playerInside) {
+				// the player leaves
+				playerInside = false;
+				
+				Verb v = getVerb("leave");
+				if(v!=null)
+					v.run();
+			} else if(hit && !playerInside){
+				// the player enters
+				playerInside = true;
+				
+				Verb v = getVerb("enter");
+				if(v!=null)
+					v.run();				
+			}
+		}
 	}
 
 	public Verb getVerb(String id) {
