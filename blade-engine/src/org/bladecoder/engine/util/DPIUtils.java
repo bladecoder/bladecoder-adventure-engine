@@ -108,6 +108,11 @@ public class DPIUtils {
 		return NORMAL_MULTIPLIER;
 
 	}
+	
+	public static float getSizeMultiplier() {
+		return getSizeMultiplier(Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight());
+	}
 
 	public static int dpToPixels(int dp) {
 		return (int) (dp * Gdx.graphics.getDensity());

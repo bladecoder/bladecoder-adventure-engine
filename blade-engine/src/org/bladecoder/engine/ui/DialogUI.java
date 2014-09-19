@@ -21,6 +21,7 @@ import org.bladecoder.engine.i18n.I18N;
 import org.bladecoder.engine.model.Dialog;
 import org.bladecoder.engine.model.DialogOption;
 import org.bladecoder.engine.model.World;
+import org.bladecoder.engine.util.DPIUtils;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -101,8 +102,9 @@ public class DialogUI extends Actor {
 
 		float lineHeight = style.font.getLineHeight();
 		float y = lineHeight * options.size();
-		setWidth(getStage().getWidth());
-		setHeight(15 + lineHeight * options.size());
+		setWidth(getStage().getViewport().getScreenWidth());
+		float margin = DPIUtils.getMarginSize(getStage().getViewport().getScreenWidth(), getStage().getViewport().getScreenWidth());
+		setHeight( margin + lineHeight * options.size());
 
 		if (style.background != null) {
 			style.background.draw(batch, getX(), getY(), getWidth(), getHeight());
@@ -117,10 +119,10 @@ public class DialogUI extends Actor {
 
 			if (i == selected) {
 				style.font.setColor(style.overFontColor);
-				style.font.draw(batch, str, 10, y);
+				style.font.draw(batch, str, margin, y);
 			} else {
 				style.font.setColor(style.fontColor);
-				style.font.draw(batch, str, 10, y);
+				style.font.draw(batch, str, margin, y);
 			}
 
 			y -= lineHeight;

@@ -61,7 +61,7 @@ public class BladeSkin extends Skin {
 					
 					FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
 					FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-					parameter.size = size;
+					parameter.size = (int) (DPIUtils.dpToPixels(size) * DPIUtils.getSizeMultiplier());
 					font = generator.generateFont(parameter); 
 					generator.dispose(); 
 				} else {
