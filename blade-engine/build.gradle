@@ -9,6 +9,7 @@ version = '1.0.0-SNAPSHOT'
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
 
 repositories {
 	mavenLocal()
@@ -49,12 +50,16 @@ javadoc {
 	}
 }
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
 dependencies {
   compile "com.badlogicgames.gdx:gdx:$libgdxVersion"
   compile "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
   compile fileTree(dir: 'libs', include: '*.jar')
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
 }
