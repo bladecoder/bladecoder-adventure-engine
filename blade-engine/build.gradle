@@ -1,0 +1,8 @@
+apply from: 'common.gradle'
+
+dependencies {
+  compile "com.badlogicgames.gdx:gdx:$libgdxVersion"
+  compile fileTree(dir: 'libs', include: '*.jar')
+  compile "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
+//  testCompile 'junit:junit:+'
+}

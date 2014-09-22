@@ -1,0 +1,171 @@
+buildscript {
+	repositories { jcenter() }
+}
+
+ext {
+	libName = 'blade-engine'
+	nameAppendix = project != rootProject ? project.name : ''
+	nameFull = libName + (nameAppendix.empty ? '' : "-$nameAppendix")
+	libgdxVersion = '1.2.1-SNAPSHOT'
+}
+
+group = 'org.bladecoder.bladeengine'
+version = '1.0.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'announce'
+
+repositories {
+	mavenCentral()
+	mavenLocal()
+	maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
+	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+// java
+
+sourceCompatibility = 1.7
+
+sourceSets {
+	main {
+		java.srcDirs = ['src']
+		resources.srcDirs = ['src']
+	}
+//	test.java.srcDirs = ['src/test/java']
+	site.resources.srcDirs = [javadoc.destinationDir.parentFile, testReportDir.parentFile]
+}
+
+jar {
+	baseName = libName
+	appendix = nameAppendix
+	manifest.attributes += [
+//			'web': 'http://bladecoder.blogspot.com',
+			'github': 'https://github.com/bladecoder/bladeengine',
+			'bintray': "http://bintray.com/bladecoder/generic/bladeengine${nameAppendix.empty ? '' : "-$nameAppendix"}",
+			'license': 'Apache-2.0',
+			'group': project.group,
+			'artifact': nameFull,
+			'version': project.version,
+			'libgdx': libgdxVersion,
+			'java': targetCompatibility,
+			'timestamp': System.currentTimeMillis()
+	]
+}
+
+javadoc {
+	title = nameFull
+	options {
+		memberLevel = JavadocMemberLevel.PUBLIC
+		author true
+		setUse true
+    encoding "UTF-8"
+	}
+}
+
+// distribution
+
+task distSources(type: Jar, group: 'distribution') {
+	description = 'Assembles a jar archive containing the main sources and resources.'
+	from sourceSets.main.java
+	from sourceSets.main.resources
+	baseName = libName
+	appendix = nameAppendix
+	classifier = 'sources'
+	destinationDir = jar.destinationDir
+	manifest = jar.manifest
+} << { announce.local.send "$nameFull $version", 'Distributed sources' }
+
+task distJavadoc(type: Jar, dependsOn: javadoc, group: 'distribution') {
+	description = 'Assembles a jar archive containing the javadoc.'
+	from javadoc.destinationDir
+	baseName = libName
+	appendix = nameAppendix
+	classifier = 'javadoc'
+	destinationDir = jar.destinationDir
+	manifest = jar.manifest
+} << { announce.local.send "$nameFull $version", 'Distributed javadoc' }
+
+task distBundle(type: Zip, dependsOn: [jar, distSources, distJavadoc], group: 'distribution') {
+	description = 'Assembles a zip archive containing the binary, source and javadoc archives as well as the LICENSE file.'
+	from jar.archivePath
+	from distSources.archivePath
+	from distJavadoc.archivePath
+	from "$rootDir/LICENSE"
+	baseName = libName
+	appendix = nameAppendix
+	destinationDir = jar.destinationDir
+} << { announce.local.send "$nameFull $version", 'Distributed bundle' }
+
+// upload
+
+artifacts {
+	archives distSources, distJavadoc
+}
+
+uploadArchives {
+	doFirst { announce.local.send "$nameFull $version", 'Uploading archives artifacts...' }
+	repositories.mavenDeployer {
+		beforeDeployment { signing.signPom(it) }
+		repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+			authentication(userName: property('sonatype_jira_username'), password: property('sonatype_jira_password'))
+		}
+		snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+			authentication(userName: property('sonatype_jira_username'), password: property('sonatype_jira_password'))
+		}
+		pom.withXml { asNode().appendNode('packaging', 'jar') } // http://issues.gradle.org/browse/GRADLE-1200
+		pom.project {
+			name nameFull
+			description "point and click engine using libGDX${!nameAppendix.empty ? " ($nameAppendix module)" : ''}"
+			url 'http://bladecoder.org'
+			licenses {
+				license {
+					name 'Apache 2.0'
+					url 'http://apache.org/licenses/LICENSE-2.0.txt'
+				}
+			}
+			developers {
+				developer {
+					name 'Rafael Garcia'
+					email 'bladecoder@gmail.com'
+					url 'http://bladecoder.org'
+					organization = 'bladecoder' // http://issues.gradle.org/browse/GRADLE-1200
+					organizationUrl 'http://bladecoder.org'
+				}
+			}
+			scm {
+				connection 'scm:git:https://github.com/bladecoder/libengine'
+				developerConnection 'scm:git:https://github.com/bladecoder/bladeengine'
+				url 'https://github.com/bladecoder/bladeengine'
+			}
+		}
+	}
+} << { announce.local.send "$nameFull $version",  'Uploaded archives artifacts'}
+
+// signing
+
+signing.sign configurations.archives
+
+gradle.taskGraph.whenReady {
+	signArchives {
+		enabled = !version.endsWith('-SNAPSHOT') && gradle.taskGraph.hasTask(uploadArchives) // workaround for signing.setRequired(..)
+	} << { announce.local.send "$nameFull $version", 'Signed archives artifacts' }
+}
+
+// IDE integration
+
+eclipse {
+	project.name = nameFull
+	classpath {
+		sourceSets -= sourceSets.site
+		containers = ["org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-$targetCompatibility"]
+	}
+}
+
+// methods
+Object property(String property) {
+	return hasProperty(property) ? project[property] : ''
+}
