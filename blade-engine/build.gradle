@@ -1,8 +1,60 @@
-apply from: 'common.gradle'
+ext {
+	libName = 'blade-engine'
+	libgdxVersion = '1.3.1'
+}
+
+group = 'org.bladecoder.engine'
+version = '1.0.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+	maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
+	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+// java
+sourceCompatibility = 1.7
+sourceSets {
+	main {
+		java.srcDirs = ['src']
+		resources.srcDirs = ['src']
+	}
+}
+
+jar {
+	manifest.attributes += [
+			'github': 'https://github.com/bladecoder/bladecoder-adventure-engine/',
+			'license': 'Apache-2.0',
+			'group': project.group,
+			'artifact': libName,
+			'version': project.version,
+			'libgdx': libgdxVersion,
+			'java': targetCompatibility,
+			'timestamp': System.currentTimeMillis()
+	]
+}
+
+javadoc {
+	title = libName
+	options {
+		memberLevel = JavadocMemberLevel.PUBLIC
+		author true
+		setUse true
+    		encoding "UTF-8"
+	}
+}
 
 dependencies {
   compile "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  compile fileTree(dir: 'libs', include: '*.jar')
   compile "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
-//  testCompile 'junit:junit:+'
+  compile fileTree(dir: 'libs', include: '*.jar')
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
 }
