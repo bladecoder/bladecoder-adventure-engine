@@ -1,0 +1,50 @@
+{
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+		default: {file: Roboto-Regular.ttf, size: 20},
+		debug: {file: Roboto-Regular.ttf, size: 15}, 
+		big-font: {file: Roboto-Black.ttf, size: 40},
+		title-font: {file: Roboto-Black.ttf, size: 70},
+		dialog-font: {file: ArchitectsDaughter_fix.ttf, size: 20},
+		text-manager-font: {file: ArchitectsDaughter_fix.ttf, size: 18},
+		desc: {file: Ubuntu-M.ttf, size: 16}
+	},
+com.badlogic.gdx.graphics.Color: {
+	green: { a: 1, b: 0, g: 1, r: 0 },
+	white: { a: 1, b: 1, g: 1, r: 1 },
+	red: { a: 1, b: 0, g: 0, r: 1 },
+	black: { a: 1, b: 0, g: 0, r: 0 },
+	dark-gray: { a: 1, b: 0.25, g: 0.25, r: 0.25 },
+	light-gray: { a: 1, b: 0.75, g: 0.75, r: 0.75 },
+	gray: { a: 1, b: 0.5, g: 0.5, r: 0.5 }
+},
+com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
+	black08: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.8 } },
+	white: { name: white_pixel, color: { r: 1, g: 1, b: 1, a: 1 } }
+},
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+	default: {},
+},
+com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
+	default: {  },
+	inventory: {imageUp: inventory}
+},
+org.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
+	default: {background: black08}
+},
+com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+		default: { font: default, fontColor: white , downFontColor: gray, overFontColor: light-gray, disabledFontColor: dark-gray},
+		menu: { font: big-font, fontColor: white , downFontColor: gray, overFontColor: light-gray, disabledFontColor: dark-gray}		
+},
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+		default: { font: default, fontColor: white},
+		title: { font: title-font, fontColor: white},
+},
+
+org.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
+	default: {background: black08, font: dialog-font, fontColor: white, overFontColor: light-gray}
+},
+
+org.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle: {
+	default: {rectBackground: white, talkBackground: white, font: text-manager-font, talkBubble: bubblepointer}
+}
+}

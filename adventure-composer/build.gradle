@@ -23,12 +23,6 @@ repositories {
 
 // java
 sourceCompatibility = 1.7
-sourceSets {
-	main {
-		java.srcDirs = ['src']
-		resources.srcDirs = ['src']
-	}
-}
 
 jar {
 	manifest.attributes += [
@@ -61,6 +55,7 @@ dependencies {
   compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$libgdxVersion"
   compile "com.badlogicgames.gdx:gdx-platform:$libgdxVersion:natives-desktop"
   compile "com.badlogicgames.gdx:gdx-freetype-platform:$libgdxVersion:natives-desktop"
+  compile "commons-io:commons-io:2.1"
   
   compile "org.bladecoder.engine:blade-engine:$bladeEngineVersion"
 }
