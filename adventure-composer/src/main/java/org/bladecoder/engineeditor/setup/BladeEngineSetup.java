@@ -259,7 +259,7 @@ public class BladeEngineSetup {
 
 		// core project
 		project.files.add(new ProjectFile("core/build.gradle"));
-		project.files.add(new ProjectFile("core/src/MainClass", "core/src/" + packageDir + "/" + mainClass + ".java", true));
+//		project.files.add(new ProjectFile("core/src/MainClass", "core/src/" + packageDir + "/" + mainClass + ".java", true));
 		if (builder.modules.contains(ProjectType.HTML)) {
 			project.files.add(new ProjectFile("core/CoreGdxDefinition", "core/src/" + mainClass + ".gwt.xml", true));
 		}
@@ -268,6 +268,7 @@ public class BladeEngineSetup {
 		if (builder.modules.contains(ProjectType.DESKTOP)) {
 			project.files.add(new ProjectFile("desktop/build.gradle"));
 			project.files.add(new ProjectFile("desktop/src/DesktopLauncher", "desktop/src/" + packageDir + "/desktop/DesktopLauncher.java", true));
+			project.files.add(new ProjectFile("desktop/src/DinamicClassPath", "desktop/src/" + packageDir + "/desktop/DinamicClassPath.java", true));
 		}
 
 		// Assets

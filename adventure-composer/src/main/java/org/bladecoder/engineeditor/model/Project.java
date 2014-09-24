@@ -223,7 +223,7 @@ public class Project extends PropertyChange {
 
 	public void createProject(String projectDir, String name, String sdkLocation) throws ParserConfigurationException,
 			TransformerException, IOException, SAXException {
-		createLibGdxProject(projectDir, name, "testpkg", "testMainClass", sdkLocation);
+		createLibGdxProject(projectDir, name, "org.bladecoder.engine", "BladeEngine", sdkLocation);
 		
 		projectFile = new File(projectDir + "/" + name);
 		
@@ -249,6 +249,7 @@ public class Project extends PropertyChange {
 
 		List<Dependency> dependencies = new ArrayList<Dependency>();
 		dependencies.add(bank.getDependency(ProjectDependency.GDX));
+		dependencies.add(bank.getDependency(ProjectDependency.FREETYPE));
 
 		builder.buildProject(projects, dependencies);
 		builder.build();
