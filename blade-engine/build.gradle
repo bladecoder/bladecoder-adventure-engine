@@ -1,31 +1,23 @@
+apply plugin: "java"
+
 ext {
 	libName = 'blade-engine'
-	libgdxVersion = '1.3.1'
 }
 
 group = 'org.bladecoder.engine'
-version = '1.0.0-SNAPSHOT'
 
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-repositories {
-	mavenLocal()
-	mavenCentral()
-	maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
-	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-}
-
 // java
-sourceCompatibility = 1.7
+    sourceCompatibility = 1.7
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 sourceSets {
 	main {
 		java.srcDirs = ['src']
 		resources.srcDirs = ['src']
 	}
 }
+
 
 jar {
 	manifest.attributes += [
@@ -34,13 +26,13 @@ jar {
 			'group': project.group,
 			'artifact': libName,
 			'version': project.version,
-			'libgdx': libgdxVersion,
+			'libgdx': gdxVersion,
 			'java': targetCompatibility,
 			'timestamp': System.currentTimeMillis()
 	]
 }
 
-javadoc {
+    javadoc {
 	title = libName
 	options {
 		memberLevel = JavadocMemberLevel.PUBLIC
@@ -48,7 +40,7 @@ javadoc {
 		setUse true
     		encoding "UTF-8"
 	}
-}
+    }
 
 publishing {
     publications {
@@ -59,7 +51,7 @@ publishing {
 }
 
 dependencies {
-  compile "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  compile "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
+  compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+  compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
   compile fileTree(dir: 'libs', include: '*.jar')
 }
