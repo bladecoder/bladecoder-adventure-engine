@@ -33,16 +33,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-public class Main extends BladeEngine {
+public class DesktopLauncher extends BladeEngine {
 
 	private boolean fullscreen = true;
 	private LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 
-	Main() {
+	DesktopLauncher() {
 		Properties p = new Properties();
 		
 		try {
-			InputStream s = Main.class.getResourceAsStream(Config.PROPERTIES_FILENAME);
+			InputStream s = DesktopLauncher.class.getResourceAsStream(Config.PROPERTIES_FILENAME);
 			if(s!=null)
 				p.load(s);
 		} catch (IOException e) {
@@ -62,13 +62,13 @@ public class Main extends BladeEngine {
 	}
 
 	public void run() {
-		if(Main.class.getResource("/icons/icon128.png")!=null)
+		if(DesktopLauncher.class.getResource("/icons/icon128.png")!=null)
 			cfg.addIcon("icons/icon128.png", FileType.Internal);
 		
-		if(Main.class.getResource("/icons/icon32.png")!=null)
+		if(DesktopLauncher.class.getResource("/icons/icon32.png")!=null)
 			cfg.addIcon("icons/icon32.png", FileType.Internal);
 		
-		if(Main.class.getResource("/icons/icon16.png")!=null)
+		if(DesktopLauncher.class.getResource("/icons/icon16.png")!=null)
 			cfg.addIcon("icons/icon16.png", FileType.Internal);		
 		
 		new LwjglApplication(this, cfg);
@@ -132,7 +132,9 @@ public class Main extends BladeEngine {
 		
 		try {
 			DinamicClassPath.addFile(dir + "/bin");
-			DinamicClassPath.addFile(dir + "/assets");
+			DinamicClassPath.addFile(dir + "/android/assets");
+			DinamicClassPath.addFile(dir + "/core/assets");
+			DinamicClassPath.addFile(dir + "/build/classes");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(0);
@@ -185,7 +187,7 @@ public class Main extends BladeEngine {
 	}
 
 	public static void main(String[] args) {
-		Main game = new Main();
+		DesktopLauncher game = new DesktopLauncher();
 		game.parseParams(args);
 		game.run();
 	}

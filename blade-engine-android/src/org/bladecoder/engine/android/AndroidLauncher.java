@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.bladecoder.engine;
+package org.bladecoder.engine.android;
+
+import org.bladecoder.engine.BladeEngine;
 
 import android.os.Bundle; 
 import android.view.WindowManager;
@@ -21,7 +23,7 @@ import android.view.WindowManager;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
-public class MainActivity extends AndroidApplication {
+public class AndroidLauncher extends AndroidApplication {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,10 +36,6 @@ public class MainActivity extends AndroidApplication {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         
         BladeEngine engine = new BladeEngine();
-        
-//        engine.setDebugMode();
-//        engine.forceResolution("1920");
-//        engine.setPlayMode("full");
         
         initialize(engine, cfg);
     }
