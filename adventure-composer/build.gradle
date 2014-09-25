@@ -6,6 +6,7 @@ ext {
 }
 
 group = 'org.bladecoder.engineeditor'
+version = engineVersion
 
 mainClassName = 'org.bladecoder.engineeditor.Main'
 

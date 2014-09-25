@@ -16,16 +16,31 @@
 
 package org.bladecoder.engineeditor.setup;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.bladecoder.engine.BladeEngine;
 import org.bladecoder.engineeditor.setup.DependencyBank.ProjectDependency;
 import org.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
 import org.bladecoder.engineeditor.setup.Executor.CharCallback;
 import org.bladecoder.engineeditor.utils.EditorLogger;
+
+import com.esotericsoftware.spine.Skeleton;
 
 /** Command line tool to generate libgdx projects
  * @author badlogic
@@ -387,6 +402,7 @@ public class BladeEngineSetup {
 		}
 
 		copyAndReplace(outputDir, project, values);
+		copyLibs(outputDir, callback);
 
 		builder.cleanUp();
 
@@ -394,6 +410,27 @@ public class BladeEngineSetup {
 		new File(outputDir, "gradlew").setExecutable(true);
 
 		Executor.execute(new File(outputDir), "gradlew.bat", "gradlew", "clean" + parseGradleArgs(builder.modules, gradleArgs), callback);
+	}
+	
+	/** 
+	 * Copy the blade-engine.jar and libgdx-spine.jar to the output folder
+	 * @param outputDir
+	 * @throws IOException 
+	 */
+	private void copyLibs(String outputDir, CharCallback callback) throws IOException {
+		File bladeEngineFile =  new File(BladeEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+		File libSpineFile =  new File(Skeleton.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+		
+		FileUtils.copyFileToDirectory(libSpineFile, new File(outputDir + "/libs"));
+		
+		if(bladeEngineFile.isDirectory()) {
+			EditorLogger.error("Editor is running inside IDE. Trying to build blade-engine.jar");
+			Executor.execute(bladeEngineFile.getParentFile().getParentFile(), "gradlew.bat", "gradlew", ":blade-engine:jar" , callback);
+			
+			FileUtils.copyDirectory(new File(bladeEngineFile.getParent() + "/build/libs"), new File(outputDir + "/libs"));
+		} else {
+			FileUtils.copyFileToDirectory(bladeEngineFile, new File(outputDir + "/libs"));
+		}
 	}
 
 	private void copyAndReplace (String outputDir, Project project, Map<String, String> values) throws IOException {
