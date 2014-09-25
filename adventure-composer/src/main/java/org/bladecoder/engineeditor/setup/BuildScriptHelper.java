@@ -81,7 +81,10 @@ public class BuildScriptHelper {
 				if ((project.equals(ProjectType.ANDROID) || project.equals(ProjectType.IOS)) && moduleDependency.contains("native")) {
 					write(wr, "natives \"" + moduleDependency + "\"");
 				} else {
-					write(wr, "compile \"" + moduleDependency + "\"");
+					if(moduleDependency.startsWith("fileTree("))
+						write(wr, "compile " + moduleDependency);
+					else
+						write(wr, "compile \"" + moduleDependency + "\"");
 				}
 			}
 		}

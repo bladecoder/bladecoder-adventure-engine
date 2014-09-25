@@ -104,6 +104,12 @@ public class ScnEditor extends Table {
 	}	
 	
 	private void test() {
+		
+		if(Ctx.project.getSelectedScene() == null) {
+			String msg = "There are no scenes in this chapter.";
+			Ctx.msg.show(getStage(),msg, 2);			
+		}
+		
 		try {
 			try {
 				Ctx.project.saveProject();
@@ -114,7 +120,7 @@ public class ScnEditor extends Table {
 			}
 			
 			RunProccess.runBladeEngine(
-					Ctx.project.getProjectDir().getAbsolutePath(),
+					Ctx.project.getProjectDir(),
 					Ctx.project.getSelectedChapter().getId(),
 					Ctx.project.getSelectedChapter().getId(Ctx.project.getSelectedScene()));
 		} catch (IOException e) {

@@ -27,8 +27,6 @@ import java.util.Properties;
  * @author rgarcia
  */
 public class RunProccess {
-
-	private static final String LAUNCHER_MAIN_CLASS = "org.bladecoder.engine.desktop.Main";
 	private static final String ANT_MAIN_CLASS = "org.apache.tools.ant.launch.Launcher";
 
 	private static String getClasspath(List<String> classpathEntries) {
@@ -45,29 +43,20 @@ public class RunProccess {
 		return builder.toString();
 	}
 	
-	public static void runBladeEngine(String prjFolder, String chapter, String scene) throws IOException {
-		List<String> args = new ArrayList<String>();
-		args.add("-w");
-		args.add("-adv-dir");
-		args.add(prjFolder);
-		
-		if(scene != null) {
-			args.add("-t");
-			args.add(scene);
-		} else {
-			args.add("-r");			
-		}
+	public static void runBladeEngine(File prjFolder, String chapter, String scene) throws IOException {
+		String args = ":desktop:run -PappArgs=['-w'";
 		
 		if(chapter != null) {
-			args.add("-chapter");
-			args.add(chapter);
+			args += ",'-chapter','" + chapter + "'";
 		}
 		
-		List<String> cp = new ArrayList<String>();
-		cp.add(System.getProperty("java.class.path") );
-		cp.add("./package-files/engine/engine-desktop.jar");
+		if(scene != null) {
+			args += ",'-t','" + scene + "'";
+		}
 		
-		start(LAUNCHER_MAIN_CLASS, cp, args);
+		args += "]";
+		
+		runGradle(prjFolder, args);
 	}
 	
 	public static void runAnt(String buildFile, String target, String distDir, String projectDir, Properties props) throws IOException {
@@ -93,7 +82,7 @@ public class RunProccess {
 		cp.add("package-files/ant.jar");
 		cp.add("package-files/ant-launcher.jar");
 		
-		Process p = start(ANT_MAIN_CLASS, cp, args);
+		Process p = runJavaProccess(ANT_MAIN_CLASS, cp, args);
 		
 		try {
 			p.waitFor();
@@ -107,7 +96,7 @@ public class RunProccess {
 		}
 	}
 
-	public static Process start(String mainClass, List<String> classpathEntries, List<String> args) throws IOException {
+	public static Process runJavaProccess(String mainClass, List<String> classpathEntries, List<String> args) throws IOException {
 		String javaRT = System.getProperty("java.home") + "/bin/java";
 		String workingDirectory = ".";
 		
@@ -133,4 +122,20 @@ public class RunProccess {
 		
 		return processBuilder.start();
 	}
+	
+	public static boolean runGradle(File workingDir, String parameters) {
+		String exec = workingDir.getAbsolutePath() + "/" + (System.getProperty("os.name").contains("Windows") ?  "gradlew.bat": "gradlew");
+		String command = exec + " " + parameters;
+		
+		EditorLogger.debug("Executing '" + command + "'");		
+		
+		try {
+			final Process process = new ProcessBuilder(command.split(" ")).directory(workingDir).inheritIO().start();
+			process.waitFor();			
+			return process.exitValue() == 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}	
 }

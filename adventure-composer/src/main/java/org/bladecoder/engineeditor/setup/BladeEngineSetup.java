@@ -37,8 +37,8 @@ import org.apache.commons.io.FileUtils;
 import org.bladecoder.engine.BladeEngine;
 import org.bladecoder.engineeditor.setup.DependencyBank.ProjectDependency;
 import org.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
-import org.bladecoder.engineeditor.setup.Executor.CharCallback;
 import org.bladecoder.engineeditor.utils.EditorLogger;
+import org.bladecoder.engineeditor.utils.RunProccess;
 
 import com.esotericsoftware.spine.Skeleton;
 
@@ -252,7 +252,7 @@ public class BladeEngineSetup {
 	}
 
 	public void build (ProjectBuilder builder, String outputDir, String appName, String packageName, String mainClass,
-		String sdkLocation, CharCallback callback, List<String> gradleArgs) throws IOException {
+		String sdkLocation, List<String> gradleArgs) throws IOException {
 		Project project = new Project();
 
 		String packageDir = packageName.replace('.', '/');
@@ -283,7 +283,6 @@ public class BladeEngineSetup {
 		if (builder.modules.contains(ProjectType.DESKTOP)) {
 			project.files.add(new ProjectFile("desktop/build.gradle"));
 			project.files.add(new ProjectFile("desktop/src/DesktopLauncher", "desktop/src/" + packageDir + "/desktop/DesktopLauncher.java", true));
-			project.files.add(new ProjectFile("desktop/src/DinamicClassPath", "desktop/src/" + packageDir + "/desktop/DinamicClassPath.java", true));
 		}
 
 		// Assets
@@ -402,14 +401,14 @@ public class BladeEngineSetup {
 		}
 
 		copyAndReplace(outputDir, project, values);
-		copyLibs(outputDir, callback);
+		copyLibs(outputDir);
 
 		builder.cleanUp();
 
 		// HACK executable flag isn't preserved for whatever reason...
 		new File(outputDir, "gradlew").setExecutable(true);
 
-		Executor.execute(new File(outputDir), "gradlew.bat", "gradlew", "clean" + parseGradleArgs(builder.modules, gradleArgs), callback);
+		RunProccess.runGradle(new File(outputDir), "clean" + parseGradleArgs(builder.modules, gradleArgs));
 	}
 	
 	/** 
@@ -417,7 +416,7 @@ public class BladeEngineSetup {
 	 * @param outputDir
 	 * @throws IOException 
 	 */
-	private void copyLibs(String outputDir, CharCallback callback) throws IOException {
+	private void copyLibs(String outputDir) throws IOException {
 		File bladeEngineFile =  new File(BladeEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		File libSpineFile =  new File(Skeleton.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		
@@ -425,7 +424,7 @@ public class BladeEngineSetup {
 		
 		if(bladeEngineFile.isDirectory()) {
 			EditorLogger.error("Editor is running inside IDE. Trying to build blade-engine.jar");
-			Executor.execute(bladeEngineFile.getParentFile().getParentFile(), "gradlew.bat", "gradlew", ":blade-engine:jar" , callback);
+			RunProccess.runGradle(bladeEngineFile.getParentFile().getParentFile(), ":blade-engine:jar");
 			
 			FileUtils.copyDirectory(new File(bladeEngineFile.getParent() + "/build/libs"), new File(outputDir + "/libs"));
 		} else {
@@ -648,12 +647,7 @@ public class BladeEngineSetup {
 			builder.buildProject(projects, dependencies);
 			builder.build();
 			new BladeEngineSetup().build(builder, params.get("dir"), params.get("name"), params.get("package"), params.get("mainClass"),
-				sdkLocation, new CharCallback() {
-					@Override
-					public void character (char c) {
-						System.out.print(c);
-					}
-				}, null);
+				sdkLocation, null);
 		}
 	}
 }

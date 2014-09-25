@@ -36,7 +36,6 @@ import org.bladecoder.engineeditor.setup.BladeEngineSetup;
 import org.bladecoder.engineeditor.setup.ProjectBuilder;
 import org.bladecoder.engineeditor.setup.DependencyBank.ProjectDependency;
 import org.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
-import org.bladecoder.engineeditor.setup.Executor.CharCallback;
 import org.bladecoder.engineeditor.utils.DinamicClassPath;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.w3c.dom.Element;
@@ -254,12 +253,7 @@ public class Project extends PropertyChange {
 		builder.buildProject(projects, dependencies);
 		builder.build();
 		new BladeEngineSetup().build(builder, projectDir + "/" + name, name, pkg,mainClass,
-			sdk, new CharCallback() {
-				@Override
-				public void character (char c) {
-					System.out.print(c);
-				}
-			}, null);
+			sdk, null);
 	}
 
 	public void saveProject() throws IOException, TransformerException {
@@ -282,13 +276,17 @@ public class Project extends PropertyChange {
 		if (checkProjectStructure()) {
 			
 			
-			// Add 'bin' dir from project directory to classpath
+			// Add 'bin' dir from project directory to classpath so we can get custom actions desc and params
 			// WARNING: Previous 'bin' folders are not deleted from the classpath
 			// That can not be a problem if the package of the custom actions is different
 			// in the loaded project.
-			for (File f : projectFile.listFiles()) {
-				if (f.getName().equals("bin"))
-					DinamicClassPath.addFile(f);
+			try {
+				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/bin");
+				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/out");
+				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/desktop/build/classes/main");
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(0);
 			}
 			
 			world.setModelPath(projectFile.getAbsolutePath() + "/" + MODEL_PATH);
