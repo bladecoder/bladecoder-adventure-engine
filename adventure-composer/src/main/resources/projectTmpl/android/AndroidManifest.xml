@@ -3,8 +3,12 @@
     package="%PACKAGE%.android"
     android:versionCode="1"
     android:versionName="1.0" >
-
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="%API_LEVEL%" />
+    
+   <uses-sdk android:minSdkVersion="13"
+			android:targetSdkVersion="%API_LEVEL%" />
+        
+    <uses-feature android:glEsVersion="0x00020000"
+			android:required="true" />
 
     <application
         android:allowBackup="true"
