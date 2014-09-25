@@ -371,7 +371,7 @@ public class ScnWidgetInputListener extends ClickListener {
 	@Override
 	public boolean scrolled(InputEvent event, float x, float y, int amount) {
 		super.scrolled(event, x, y, amount);
-		EditorLogger.debug("SCROLLED - X: " + x + " Y: " + y);
+//		EditorLogger.debug("SCROLLED - X: " + x + " Y: " + y);
 
 		scnWidget.zoom(amount);
 		return true;

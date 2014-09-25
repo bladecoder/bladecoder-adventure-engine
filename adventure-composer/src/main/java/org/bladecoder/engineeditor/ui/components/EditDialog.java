@@ -58,7 +58,7 @@ public abstract class EditDialog extends Dialog {
 		centerPanel.addListener(new InputListener() {
 			@Override
 			public void enter(InputEvent event, float x, float y, int pointer,  com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
-				EditorLogger.debug("ENTER - X: " + x + " Y: " + y);
+//				EditorLogger.debug("ENTER - X: " + x + " Y: " + y);
 				getStage().setScrollFocus(centerPanel);
 			}
 		});
