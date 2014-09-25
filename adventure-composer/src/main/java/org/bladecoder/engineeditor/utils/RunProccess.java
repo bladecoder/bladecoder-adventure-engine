@@ -60,10 +60,22 @@ public class RunProccess {
 	}
 	
 	public static void runAnt(String buildFile, String target, String distDir, String projectDir, Properties props) throws IOException {
+		String packageFilesDir = "package-files/";
+		
+		if(!new File(packageFilesDir).exists()) {
+			EditorLogger.error("package-files folder not found. Searching folder for IDE mode.");
+			
+			packageFilesDir = "src/dist/package-files/";
+			if(!new File(packageFilesDir).exists()) {
+				EditorLogger.error(new File(packageFilesDir).getAbsolutePath() + " folder not found in IDE mode.");
+				return;
+			}
+		}
+		
 		
 		List<String> args = new ArrayList<String>();
 		args.add("-f");
-		args.add("package-files/" + buildFile);
+		args.add(packageFilesDir + buildFile);
 		args.add("-Dproject=" + projectDir);
 		args.add("-Ddist=" + distDir);
 		
@@ -79,8 +91,8 @@ public class RunProccess {
 		
 		List<String> cp = new ArrayList<String>();
 //		cp.add(System.getProperty("java.class.path") );
-		cp.add("package-files/ant.jar");
-		cp.add("package-files/ant-launcher.jar");
+		cp.add(packageFilesDir + "ant.jar");
+		cp.add(packageFilesDir + "ant-launcher.jar");
 		
 		Process p = runJavaProccess(ANT_MAIN_CLASS, cp, args);
 		

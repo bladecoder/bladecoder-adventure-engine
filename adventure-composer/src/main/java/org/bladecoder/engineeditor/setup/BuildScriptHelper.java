@@ -42,6 +42,9 @@ public class BuildScriptHelper {
 		write(wr, "apply plugin: \"idea\"");
 		space(wr);
 		write(wr, "version = '1.0'");
+		
+	    write(wr, "if(project.hasProperty('passed_version'))\n        version = passed_version");
+		
 		write(wr, "ext {");
 		write(wr, "appName = '%APP_NAME%'");
 		write(wr, "gdxVersion = '" + DependencyBank.libgdxVersion + "'");

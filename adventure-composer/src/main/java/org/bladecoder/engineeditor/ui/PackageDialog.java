@@ -17,8 +17,9 @@ package org.bladecoder.engineeditor.ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
+import java.util.Arrays;
 
+import org.apache.commons.io.FileUtils;
 import org.bladecoder.engineeditor.Ctx;
 import org.bladecoder.engineeditor.ui.components.EditDialog;
 import org.bladecoder.engineeditor.ui.components.FileInputPanel;
@@ -29,13 +30,15 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogicgames.packr.Packr;
+import com.badlogicgames.packr.Packr.Platform;
 
 public class PackageDialog extends EditDialog {
 	private static final String ARCH_PROP = "package.arch";
 	private static final String DIR_PROP = "package.dir";
-	
+
 	private static final String INFO = "Package the Adventure for distribution";
-	private static final String[] ARCHS = { "desktop", "android", "html", "ios" };
+	private static final String[] ARCHS = { "desktop", "android", "ios", "html" };
 	private static final String[] TYPES = { "Bundle JRE", "Runnable jar" };
 	private static final String[] OSS = { "all", "windows", "linux64", "linux32", "macOSX" };
 
@@ -46,29 +49,29 @@ public class PackageDialog extends EditDialog {
 	private InputPanel linux64JRE;
 	private InputPanel linux32JRE;
 	private InputPanel winJRE;
+	private InputPanel osxJRE;
 	private InputPanel version;
 	private InputPanel icon;
 	private InputPanel androidSDK;
 	private InputPanel androidKeyStore;
 	private InputPanel androidKeyAlias;
 	private InputPanel androidKeyStorePassword;
-	private InputPanel androidKeyAliasPassword;	
+	private InputPanel androidKeyAliasPassword;
 
-	private InputPanel[] options = new InputPanel[10];
+	private InputPanel[] options = new InputPanel[11];
 
 	@SuppressWarnings("unchecked")
 	public PackageDialog(Skin skin) {
 		super("PACKAGE ADVENTURE", skin);
-		
-		arch = new InputPanel(skin, "Architecture", "Select the target OS for the game",
-				ARCHS);
-		dir = new FileInputPanel(skin, "Output Directory",
-				"Select the output directory to put the package", true);
+
+		arch = new InputPanel(skin, "Architecture", "Select the target Architecture for the game", ARCHS);
+		dir = new FileInputPanel(skin, "Output Directory", "Select the output directory to put the package", true);
 		type = new InputPanel(skin, "Type", "Select the type of the package", TYPES);
 		os = new InputPanel(skin, "OS", "Select the OS of the package", OSS);
-		linux64JRE = new FileInputPanel(skin, "JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle", true);
-		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle", true);
-		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle", true);
+		linux64JRE = new FileInputPanel(skin, "JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle", false);
+		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle", false);
+		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle", false);
+		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle", false);
 		version = new InputPanel(skin, "Version", "Select the version of the package");
 		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", false);
 		androidSDK = new FileInputPanel(skin, "SDK", "Select the Android SDK Location", true);
@@ -76,65 +79,42 @@ public class PackageDialog extends EditDialog {
 		androidKeyAlias = new InputPanel(skin, "KeyAlias", "Select the Key Alias Location");
 		androidKeyStorePassword = new InputPanel(skin, "KeyStorePasswd", "Key Store Password", false);
 		androidKeyAliasPassword = new InputPanel(skin, "KeyAliasPasswd", "Key Alias Password", false);
-		
+
 		options[0] = type;
 		options[1] = os;
 		options[2] = linux64JRE;
 		options[3] = linux32JRE;
 		options[4] = winJRE;
-		options[5] = version;
-		options[6] = icon;
-		options[7] = androidSDK;
-		options[8] = androidKeyStore;
-		options[9] = androidKeyAlias;
-		
+		options[5] = osxJRE;
+		options[6] = version;
+		options[7] = icon;
+		options[8] = androidSDK;
+		options[9] = androidKeyStore;
+		options[10] = androidKeyAlias;
+
 		addInputPanel(arch);
 		addInputPanel(dir);
-		
-		for(InputPanel i: options) {
+
+		for (InputPanel i : options) {
 			addInputPanel(i);
 			i.setMandatory(true);
 		}
-		
+
 		addInputPanel(androidKeyStorePassword);
 		addInputPanel(androidKeyAliasPassword);
-		
+
 		dir.setMandatory(true);
-		
+
 		arch.setText(Ctx.project.getConfig().getProperty(ARCH_PROP, ARCHS[0]));
 		dir.setText(Ctx.project.getConfig().getProperty(DIR_PROP, ""));
-		
-		
-		for(InputPanel i: options) {
+
+		for (InputPanel i : options) {
 			String prop = Ctx.project.getConfig().getProperty("package." + i.getTitle());
-			
-			if(prop != null && !prop.isEmpty())
+
+			if (prop != null && !prop.isEmpty())
 				i.setText(prop);
 		}
-		
-		if(linux64JRE.getText().isEmpty()) {
-			if(new File("./jre-linux64").exists()) {
-				linux64JRE.setText(new File("./jre-linux64").getAbsolutePath());
-			} else if(new File("../engine-dist/jre-linux64").exists()) {
-				linux64JRE.setText(new File("../engine-dist/jre-linux64").getAbsolutePath());
-			}
-		}
-		
-		if(linux32JRE.getText().isEmpty()) {
-			if(new File("./jre-linux32").exists()) {
-				linux32JRE.setText(new File("./jre-linux32").getAbsolutePath());
-			} else if(new File("../engine-dist/jre-linux32").exists()) {
-				linux32JRE.setText(new File("../engine-dist/jre-linux32").getAbsolutePath());
-			}
-		}
-		
-		if(winJRE.getText().isEmpty()) {
-			if(new File("./jre-win").exists()) {
-				winJRE.setText(new File("./jre-win").getAbsolutePath());
-			} else if(new File("../engine-dist/jre-win").exists()) {
-				winJRE.setText(new File("../engine-dist/jre-win").getAbsolutePath());
-			}
-		}
+
 
 		setInfo(INFO);
 
@@ -158,7 +138,7 @@ public class PackageDialog extends EditDialog {
 				osChanged();
 			}
 		});
-		
+
 		archChanged();
 	}
 
@@ -166,83 +146,89 @@ public class PackageDialog extends EditDialog {
 	protected void ok() {
 
 		Ctx.msg.show(getStage(), "Generating package...");
-	
-		String msg = packageAdv();
+		String msg;
+		
+		try {
+			msg = packageAdv();
+		} catch (IOException e) {
+			msg = "Error Generating package\n\n" + e.getMessage();
+		}
+		
 		Ctx.msg.show(getStage(), msg, 2);
 
 		Ctx.project.getConfig().setProperty(ARCH_PROP, arch.getText());
 		Ctx.project.getConfig().setProperty(DIR_PROP, dir.getText());
-		
-		for(InputPanel i: options) {
+
+		for (InputPanel i : options) {
 			Ctx.project.getConfig().setProperty("package." + i.getTitle(), i.getText());
 		}
 
 	}
 
-	private String packageAdv() {
-		String antBuild = null;
-		String antTarget = null;
-		Properties props = new Properties();
+	private String packageAdv() throws IOException {
 		String msg = "Package generated SUCCESSFULLY";
 		
-		props.setProperty("title", Ctx.project.getTitle());
-		props.setProperty("name", Ctx.project.getPackageTitle());
-		props.setProperty("version", version.getText());
+		String projectName = Ctx.project.getProjectDir().getName();
+		String versionParam = "-Ppassed_version=" + version.getText() + " ";
 		
-
-		if (arch.getText().equals("desktop")) {
-			antBuild = "desktop.ant.xml";
+		if (arch.getText().equals("desktop")) {			
+			String jar = Ctx.project.getProjectDir().getAbsolutePath() +
+					"/desktop/build/libs/" + projectName + "-desktop-" + version.getText() + ".jar";
 
 			if (type.getText().equals(TYPES[0])) { // RUNNABLE JAR
-				if (os.getText().equals("linux64")) {
-					antTarget = "linux64";
-					props.setProperty("linux64.jre", linux64JRE.getText());
+				if (os.getText().equals("linux64")) {					
+					packr(Platform.linux64, linux64JRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
 				} else if (os.getText().equals("linux32")) {
-					antTarget = "linux32";
-					props.setProperty("linux32.jre", linux32JRE.getText());
+					packr(Platform.linux32, linux32JRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
 				} else if (os.getText().equals("windows")) {
-					antTarget = "win";
-					props.setProperty("icon", icon.getText());
-					props.setProperty("win.jre", winJRE.getText());
+					packr(Platform.windows, winJRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
+				} else if (os.getText().equals("macOSX")) {
+					packr(Platform.mac, osxJRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
 				} else if (os.getText().equals("all")) {
-					antTarget = "dist";
-					props.setProperty("icon", icon.getText());
-					props.setProperty("linux64.jre", linux64JRE.getText());
-					props.setProperty("linux32.jre", linux32JRE.getText());
-					props.setProperty("win.jre", winJRE.getText());
+					packr(Platform.linux64, linux64JRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
+					packr(Platform.linux32, linux32JRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
+					packr(Platform.windows, winJRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
+					packr(Platform.mac, osxJRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
 				}
 			} else {
-				antTarget = "jar";
+				if(RunProccess.runGradle(Ctx.project.getProjectDir(), versionParam + "desktop:dist")) {
+					File f = new File(jar);
+					FileUtils.copyFileToDirectory(f, new File(dir.getText()));					
+					new File(dir.getText() + "/" + projectName + "-desktop-" + version.getText() + ".jar").setExecutable(true);
+				} else {
+					msg = "Error Generating package" ;
+				}
 			}
-		} else if (arch.getText().equals("android")) {
-			antBuild = "android.ant.xml";
-			antTarget = "dist";
+		} else if (arch.getText().equals("android")) {			
+			String params = versionParam + 
+					"-Pkeystore=" +  androidKeyStore.getText() + " " +
+					"-PstorePassword=" + androidKeyStorePassword.getText() + " " +
+					"-Palias=" + androidKeyAlias.getText() + " " +
+					"-PkeyPassword=" + androidKeyAliasPassword.getText() + " ";
 			
-			// Scape title in Android
-			props.setProperty("title", Ctx.project.getTitle().replace("'", "\\'"));
-			
-			props.setProperty("sdk.dir", androidSDK.getText());
-			props.setProperty("target", "android-15");
-			props.setProperty("project.app.package", "org.bladecoder." + Ctx.project.getPackageTitle().toLowerCase()); // ANDROID PACKAGE
-			props.setProperty("version.code", "10"); // TODO
-			
-			props.setProperty("key.store", androidKeyStore.getText());
-			props.setProperty("key.alias", androidKeyAlias.getText());
-			props.setProperty("key.store.password", androidKeyStorePassword.getText());
-			props.setProperty("key.alias.password", androidKeyAliasPassword.getText());
-//			props.setProperty("aapt.ignore.assets=1920_1080:tests");		
-		}
-
-		if (antTarget != null) {
-
-			try {
-				RunProccess.runAnt(antBuild, antTarget, dir.getText(),
-						Ctx.project.getProjectPath(), props);
-			} catch (IOException e) {
-				msg = "Error Generating package\n\n" + e.getMessage();
+			if(RunProccess.runGradle(Ctx.project.getProjectDir(), params + "android:assembleRelease")) {
+				FileUtils.copyDirectory(new File(Ctx.project.getProjectDir().getAbsolutePath() +
+							"/android/build/apk/")
+							, new File(dir.getText()));
+			} else {
+				msg = "Error Generating package" ;
 			}
-		} else {
-			msg = "Packaging option NOT implemented yet.\n\n";
+		} else if (arch.getText().equals("ios")) {
+			if(RunProccess.runGradle(Ctx.project.getProjectDir(), "ios:createIPA")) {
+				FileUtils.copyDirectory(new File(Ctx.project.getProjectDir().getAbsolutePath() +
+							"/ios/build/robovm/")
+							, new File(dir.getText()));
+			} else {
+				msg = "Error Generating package" ;
+			}			
+		} else if (arch.getText().equals("html")) {
+			if(RunProccess.runGradle(Ctx.project.getProjectDir(), "html:dist")) {
+				FileUtils.copyDirectory(new File(Ctx.project.getProjectDir().getAbsolutePath() +
+							"/html/build/dist")
+							, new File(dir.getText()));
+			} else {
+				msg = "Error Generating package" ;
+			}			
 		}
 
 		return msg;
@@ -252,54 +238,60 @@ public class PackageDialog extends EditDialog {
 		for (InputPanel ip : options) {
 			setVisible(ip, false);
 		}
-		
-		setVisible(androidKeyStorePassword,false);
-		setVisible(androidKeyAliasPassword,false);
-		setVisible(version,true);
+
+		setVisible(androidKeyStorePassword, false);
+		setVisible(androidKeyAliasPassword, false);
+		setVisible(version, true);
 
 		String a = arch.getText();
 		if (a.equals("desktop")) {
-			setVisible(type,true);
+			setVisible(type, true);
 			typeChanged();
 		} else if (a.equals("android")) {
-			setVisible(androidSDK,true);
-			setVisible(androidKeyStore,true);
-			setVisible(androidKeyAlias,true);
-			setVisible(androidKeyStorePassword,true);
-			setVisible(androidKeyAliasPassword,true);
+			setVisible(androidSDK, true);
+			setVisible(androidKeyStore, true);
+			setVisible(androidKeyAlias, true);
+			setVisible(androidKeyStorePassword, true);
+			setVisible(androidKeyAliasPassword, true);
 		}
 	}
 
 	private void typeChanged() {
 		if (type.getText().equals(TYPES[0])) {
-			setVisible(os,true);
+			setVisible(os, true);
 		} else {
-			setVisible(os,false);
-			setVisible(icon,false);
+			setVisible(os, false);
+			setVisible(icon, false);
 		}
-		
+
 		osChanged();
 	}
 
 	private void osChanged() {
 		if (os.isVisible() && (os.getText().equals("windows") || os.getText().equals("all"))) {
-			setVisible(icon,true);
-			setVisible(winJRE,true);
+			setVisible(icon, true);
+			setVisible(winJRE, true);
 		} else {
-			setVisible(icon,false);
-			setVisible(winJRE,false);
+			setVisible(icon, false);
+			setVisible(winJRE, false);
 		}
-		
+
 		if (os.isVisible() && (os.getText().equals("linux32") || os.getText().equals("all"))) {
-			setVisible(linux32JRE,true);
+			setVisible(linux32JRE, true);
 		} else {
-			setVisible(linux32JRE,false);
+			setVisible(linux32JRE, false);
 		}
-		
+
 		if (os.isVisible() && (os.getText().equals("linux64") || os.getText().equals("all"))) {
-			setVisible(linux64JRE,true);
+			setVisible(linux64JRE, true);
 		} else {
 			setVisible(linux64JRE, false);
+		}
+		
+		if (os.isVisible() && (os.getText().equals("macOSX") || os.getText().equals("all"))) {
+			setVisible(osxJRE, true);
+		} else {
+			setVisible(osxJRE, false);
 		}
 	}
 
@@ -310,31 +302,66 @@ public class PackageDialog extends EditDialog {
 		if (!dir.validateField())
 			ok = false;
 
-		for(InputPanel i: options) {
+		for (InputPanel i : options) {
 			if (i.isVisible() && !i.validateField())
 				ok = false;
 		}
-		
+
 		if (androidKeyStorePassword.isVisible() && !androidKeyStorePassword.validateField())
 			ok = false;
 
 		if (androidKeyAliasPassword.isVisible() && !androidKeyAliasPassword.validateField())
-			ok = false;		
-
-		if(icon.isVisible() && !icon.getText().endsWith(".ico")) {
-			icon.setError(true);
 			ok = false;
+
+//		if (icon.isVisible() && !icon.getText().endsWith(".ico")) {
+//			icon.setError(true);
+//			ok = false;
+//		}
+
+		if (linux32JRE.isVisible() && !new File(linux32JRE.getText()).exists())
+			ok = false;
+
+		if (linux64JRE.isVisible() && !new File(linux64JRE.getText()).exists())
+			ok = false;
+
+		if (winJRE.isVisible() && !new File(winJRE.getText()).exists())
+			ok = false;
+		
+		if (osxJRE.isVisible() && !new File(osxJRE.getText()).exists())
+			ok = false;
+
+		return ok;
+	}
+	
+	private void packr(Platform platform, String jdk, String exe, String jar, String mainClass, String outDir) throws IOException {
+		String suffix = null;;
+		
+		switch(platform) {
+		case linux32:
+			suffix = "lin32";
+			break;
+		case linux64:
+			suffix = "lin64";
+			break;
+		case mac:
+			suffix = "mac";
+			break;
+		case windows:
+			suffix = "win";
+			break;
+		
 		}
 		
-		if(linux32JRE.isVisible() && !new File(linux32JRE.getText() + "/bin/java").exists())
-			ok = false;
-		
-		if(linux64JRE.isVisible() && !new File(linux64JRE.getText() + "/bin/java").exists())
-			ok = false;
+		Packr.Config config = new Packr.Config();
+		config.platform = platform;
+		config.jdk = jdk;
+		config.executable = exe;
+		config.jar = jar;
+		config.mainClass = mainClass;
+		config.vmArgs = Arrays.asList("-Xmx1G");
+		config.minimizeJre = new String[] { "jre/lib/rt/com/sun/corba", "jre/lib/rt/com/sun/jndi" };
+		config.outDir = outDir + "/" + exe + "-" + suffix;
 
-		if(winJRE.isVisible() && !new File(winJRE.getText() + "/bin/javaw.exe").exists())
-			ok = false;
-		
-		return ok;
+		new Packr().pack(config);
 	}
 }

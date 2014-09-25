@@ -12,6 +12,23 @@ android {
         }
 
         instrumentTest.setRoot('tests')
+        
+        if(project.hasProperty('keystore')) {   
+          signingConfigs {
+            release {
+            storeFile file(project.keystore)
+            storePassword project.storePassword
+            keyAlias project.alias
+            keyPassword project.keyPassword
+            }
+          }
+    
+          buildTypes {
+           release {
+            signingConfig signingConfigs.release
+           }
+         }
+       }
     }
 }
 
