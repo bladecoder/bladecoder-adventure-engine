@@ -45,7 +45,7 @@ public class MenuScreen implements Screen {
 	private UI ui;
 
 	private Stage stage;
-	
+
 	private float buttonSize;
 
 	public MenuScreen(UI ui) {
@@ -60,8 +60,7 @@ public class MenuScreen implements Screen {
 		stage.act(delta);
 		stage.draw();
 
-		ui.getBatch().setProjectionMatrix(
-				stage.getViewport().getCamera().combined);
+		ui.getBatch().setProjectionMatrix(stage.getViewport().getCamera().combined);
 		ui.getBatch().begin();
 		ui.getPointer().draw(ui.getBatch(), stage.getViewport());
 		ui.getBatch().end();
@@ -80,13 +79,15 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void show() {
-//		int wWidth = EngineAssetManager.getInstance().getResolution().portraitWidth;
-//		int wHeight = EngineAssetManager.getInstance().getResolution().portraitHeight;
-//
-//		stage = new Stage(new ExtendViewport(wWidth, wHeight/2));
-		
+		// int wWidth =
+		// EngineAssetManager.getInstance().getResolution().portraitWidth;
+		// int wHeight =
+		// EngineAssetManager.getInstance().getResolution().portraitHeight;
+		//
+		// stage = new Stage(new ExtendViewport(wWidth, wHeight/2));
+
 		stage = new Stage(new ScreenViewport());
-		
+
 		buttonSize = DPIUtils.getPrefButtonSize() * 2f;
 
 		Table table = new Table();
@@ -96,33 +97,35 @@ public class MenuScreen implements Screen {
 		table.addListener(new InputListener() {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
-				if (keycode == Input.Keys.ESCAPE
-						|| keycode == Input.Keys.BACK)
+				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK) {
+					if (World.getInstance().getCurrentScene() == null)
+						World.getInstance().load();
+
 					ui.setScreen(State.SCENE_SCREEN);
+				}
+				
 				return true;
 			}
 		});
 
 		stage.setKeyboardFocus(table);
 
-		ImageButton back = new ImageButton(new TextureRegionDrawable(ui
-				.getUIAtlas().findRegion(BACK_COMMAND)));
-		
+		ImageButton back = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(BACK_COMMAND)));
+
 		back.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				if(World.getInstance().getCurrentScene() == null)
+				if (World.getInstance().getCurrentScene() == null)
 					World.getInstance().load();
-				
+
 				ui.setScreen(State.SCENE_SCREEN);
 			}
 		});
 
 		table.add(back).pad(MARGIN);
-		back.getImageCell().minSize(buttonSize,buttonSize);
-		back.getImageCell().maxSize(buttonSize,buttonSize);
+		back.getImageCell().minSize(buttonSize, buttonSize);
+		back.getImageCell().maxSize(buttonSize, buttonSize);
 
-		ImageButton reload = new ImageButton(new TextureRegionDrawable(ui
-				.getUIAtlas().findRegion(RELOAD_COMMAND)));
+		ImageButton reload = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(RELOAD_COMMAND)));
 		reload.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				World.getInstance().newGame();
@@ -131,11 +134,10 @@ public class MenuScreen implements Screen {
 		});
 
 		table.add(reload).pad(MARGIN);
-		reload.getImageCell().minSize(buttonSize,buttonSize);
-		reload.getImageCell().maxSize(buttonSize,buttonSize);
+		reload.getImageCell().minSize(buttonSize, buttonSize);
+		reload.getImageCell().maxSize(buttonSize, buttonSize);
 
-		ImageButton help = new ImageButton(new TextureRegionDrawable(ui
-				.getUIAtlas().findRegion(HELP_COMMAND)));
+		ImageButton help = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(HELP_COMMAND)));
 		help.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setScreen(State.HELP_SCREEN);
@@ -143,11 +145,10 @@ public class MenuScreen implements Screen {
 		});
 
 		table.add(help).pad(MARGIN);
-		help.getImageCell().minSize(buttonSize,buttonSize);
-		help.getImageCell().maxSize(buttonSize,buttonSize);
+		help.getImageCell().minSize(buttonSize, buttonSize);
+		help.getImageCell().maxSize(buttonSize, buttonSize);
 
-		ImageButton credits = new ImageButton(new TextureRegionDrawable(ui
-				.getUIAtlas().findRegion(CREDITS_COMMAND)));
+		ImageButton credits = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(CREDITS_COMMAND)));
 		credits.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setScreen(State.CREDIT_SCREEN);
@@ -155,11 +156,10 @@ public class MenuScreen implements Screen {
 		});
 
 		table.add(credits).pad(MARGIN);
-		credits.getImageCell().minSize(buttonSize,buttonSize);
-		credits.getImageCell().maxSize(buttonSize,buttonSize);
+		credits.getImageCell().minSize(buttonSize, buttonSize);
+		credits.getImageCell().maxSize(buttonSize, buttonSize);
 
-		ImageButton quit = new ImageButton(new TextureRegionDrawable(ui
-				.getUIAtlas().findRegion(QUIT_COMMAND)));
+		ImageButton quit = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(QUIT_COMMAND)));
 		quit.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				Gdx.app.exit();
@@ -167,8 +167,8 @@ public class MenuScreen implements Screen {
 		});
 
 		table.add(quit).pad(MARGIN);
-		quit.getImageCell().minSize(buttonSize,buttonSize);
-		quit.getImageCell().maxSize(buttonSize,buttonSize);
+		quit.getImageCell().minSize(buttonSize, buttonSize);
+		quit.getImageCell().maxSize(buttonSize, buttonSize);
 		table.pack();
 
 		stage.addActor(table);
