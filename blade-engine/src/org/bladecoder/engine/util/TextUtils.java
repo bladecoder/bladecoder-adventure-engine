@@ -121,8 +121,9 @@ public class TextUtils {
 	}	
 	
 	public static float getSubtitleY(BitmapFont font, String str, float maxLength, int viewportHeight) {
+		TextBounds b = font.getWrappedBounds(str, maxLength);
 		
-		float y = viewportHeight - viewportHeight/8;
+		float y = viewportHeight - b.height - DPIUtils.getMarginSize() * 4;
 		
 		return y;
 	}		
