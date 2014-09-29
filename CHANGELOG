@@ -1,6 +1,7 @@
 [0.2.0]
 - COMPOSER: Threads for long tasks to show UI message status.
 - COMPOSER: FIXED packaging with embedded JRE.
+- ENGINE: CreditsScreen fonts now obtained from Skin
 
 [0.1.0]
 - Initial release

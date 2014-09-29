@@ -302,13 +302,7 @@ public class BladeEngineSetup {
 		
 		project.files.add(new ProjectFile("android/assets/icons/icon16.png", assetPath + "/icons/icon16.png", false));
 		project.files.add(new ProjectFile("android/assets/icons/icon32.png", assetPath + "/icons/icon32.png", false));
-		project.files.add(new ProjectFile("android/assets/icons/icon36.png", assetPath + "/icons/icon36.png", false));
-		project.files.add(new ProjectFile("android/assets/icons/icon48.png", assetPath + "/icons/icon48.png", false));
-		project.files.add(new ProjectFile("android/assets/icons/icon72.png", assetPath + "/icons/icon72.png", false));
-		project.files.add(new ProjectFile("android/assets/icons/icon96.png", assetPath + "/icons/icon96.png", false));
 		project.files.add(new ProjectFile("android/assets/icons/icon128.png", assetPath + "/icons/icon128.png", false));
-		project.files.add(new ProjectFile("android/assets/icons/icon144.png", assetPath + "/icons/icon144.png", false));
-		project.files.add(new ProjectFile("android/assets/icons/icon512.png", assetPath + "/icons/icon512.png", false));
 		
 		project.files.add(new ProjectFile("android/assets/model/00.chapter", assetPath + "/model/00.chapter", false));
 		project.files.add(new ProjectFile("android/assets/model/world.properties", assetPath + "/model/world.properties", false));
