@@ -144,24 +144,32 @@ public class PackageDialog extends EditDialog {
 
 	@Override
 	protected void ok() {
-
-		Ctx.msg.show(getStage(), "Generating package...");
-		String msg;
 		
-		try {
-			msg = packageAdv();
-		} catch (IOException e) {
-			msg = "Error Generating package\n\n" + e.getMessage();
-		}
-		
-		Ctx.msg.show(getStage(), msg, 2);
+		new Thread(new Runnable() {			
+			@Override
+			public void run() {
+				Ctx.msg.show(getStage(), "Generating package...");
+				String msg;
+				
+				try {
+					msg = packageAdv();
+				} catch (IOException e) {
+					msg = "Error Generating package\n\n" + e.getMessage();
+				}
 
-		Ctx.project.getConfig().setProperty(ARCH_PROP, arch.getText());
-		Ctx.project.getConfig().setProperty(DIR_PROP, dir.getText());
+				Ctx.project.getConfig().setProperty(ARCH_PROP, arch.getText());
+				Ctx.project.getConfig().setProperty(DIR_PROP, dir.getText());
 
-		for (InputPanel i : options) {
-			Ctx.project.getConfig().setProperty("package." + i.getTitle(), i.getText());
-		}
+				for (InputPanel i : options) {
+					Ctx.project.getConfig().setProperty("package." + i.getTitle(), i.getText());
+				}
+				
+				Ctx.msg.hide();
+				
+				if(msg != null)
+					Ctx.msg.show(getStage(), msg, 2);
+			}
+		}).start();			
 
 	}
 

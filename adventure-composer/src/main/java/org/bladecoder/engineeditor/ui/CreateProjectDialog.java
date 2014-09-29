@@ -73,7 +73,12 @@ public class CreateProjectDialog extends EditDialog {
 			Ctx.msg.show(getStage(), msg, 2);
 		}
 
-		createProject();
+		new Thread(new Runnable() {			
+			@Override
+			public void run() {
+				createProject();	
+			}
+		}).start();
 	}
 
 	private void createProject() {

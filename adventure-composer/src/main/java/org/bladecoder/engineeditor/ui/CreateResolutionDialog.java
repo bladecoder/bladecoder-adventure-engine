@@ -55,15 +55,24 @@ public class CreateResolutionDialog extends EditDialog {
 
 	@Override
 	protected void ok() {
-		Ctx.msg.show(getStage(), "Creating resolution...");
-		
-		createResolution();
+		new Thread(new Runnable() {			
+			@Override
+			public void run() {
+				Ctx.msg.show(getStage(), "Creating resolution...");
+				
+				createResolution();
 
-		String msg = scaleImages();
-		Ctx.msg.show(getStage(), msg, 2);
-		
-		if(listener != null)
-			listener.changed(new ChangeEvent(), this);
+				String msg = scaleImages();				
+				
+				if(listener != null)
+					listener.changed(new ChangeEvent(), CreateResolutionDialog.this);
+				
+				Ctx.msg.hide();
+				
+				if(msg != null)
+					Ctx.msg.show(getStage(), msg, 2);
+			}
+		}).start();		
 	}
 	
 	private void createResolution() {

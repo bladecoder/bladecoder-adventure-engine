@@ -16,6 +16,7 @@
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 		dialogDim: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.45 } },
+		message: { name: white_pixel, color: holo-blue },
 		trans: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.75 } }
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
@@ -71,7 +72,7 @@
 	com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		default: { font: default-font, fontColor: text-dark , background: text},
 		subtitle: { font: thin-font, fontColor: text-light , background: text},
-		message: { font: big-font, fontColor: text-dark , background: dialogDim},
+		message: { font: big-font, fontColor: text-dark , background: message},
 		big: { font: big-font, fontColor: text-dark}
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
