@@ -145,7 +145,7 @@ public class SceneList extends ElementList {
 					Ctx.project.saveProject();
 				} catch (IOException | TransformerException e1) {
 					Ctx.msg.show(getStage(),
-							"Error saving project");
+							"Error saving project", 3);
 					EditorLogger.error(e1.getMessage());
 				}
 

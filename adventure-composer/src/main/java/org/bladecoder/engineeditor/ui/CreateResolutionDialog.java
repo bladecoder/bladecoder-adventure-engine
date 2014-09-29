@@ -61,7 +61,7 @@ public class CreateResolutionDialog extends EditDialog {
 			
 			@Override
 			public void run() {
-				Ctx.msg.show(stage, "Creating resolution...");
+				Ctx.msg.show(stage, "Creating resolution...", true);
 				
 				createResolution();
 

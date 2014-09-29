@@ -85,7 +85,7 @@ public class CreateProjectDialog extends EditDialog {
 	}
 
 	private void createProject(Stage stage) {
-		Ctx.msg.show(stage, "Creating project...");
+		Ctx.msg.show(stage, "Creating project...", true);
 
 		try {
 			Ctx.project.createProject(

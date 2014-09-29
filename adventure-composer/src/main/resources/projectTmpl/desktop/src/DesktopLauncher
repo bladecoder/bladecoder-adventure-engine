@@ -97,7 +97,11 @@ public class DesktopLauncher extends BladeEngine {
 					i++;
 					loadGameState(args[i]);
 				}
+			} else if (s.equals("-h")) {
+				usage();
 			} else {
+				if(i == 0 && !s.startsWith("-")) continue; // When embeded JRE the 0 parameter is the app name
+				System.out.println("Unrecognized parameter: " + s);
 				usage();
 			}
 		}

@@ -37,6 +37,8 @@ import com.badlogicgames.packr.Packr.Platform;
 public class PackageDialog extends EditDialog {
 	private static final String ARCH_PROP = "package.arch";
 	private static final String DIR_PROP = "package.dir";
+	
+	private static final String DESKTOP_LAUNCHER = "org/bladecoder/engine/desktop/DesktopLauncher";
 
 	private static final String INFO = "Package the Adventure for distribution";
 	private static final String[] ARCHS = { "desktop", "android", "ios", "html" };
@@ -151,7 +153,7 @@ public class PackageDialog extends EditDialog {
 			
 			@Override
 			public void run() {
-				Ctx.msg.show(stage, "Generating package...");
+				Ctx.msg.show(stage, "Generating package...",true);
 				String msg;
 				
 				try {
@@ -170,7 +172,7 @@ public class PackageDialog extends EditDialog {
 				Ctx.msg.hide();
 				
 				if(msg != null)
-					Ctx.msg.show(stage, msg, 2);
+					Ctx.msg.show(stage, msg, 3);
 			}
 		}).start();			
 
@@ -185,29 +187,23 @@ public class PackageDialog extends EditDialog {
 		if (arch.getText().equals("desktop")) {			
 			String jar = Ctx.project.getProjectDir().getAbsolutePath() +
 					"/desktop/build/libs/" + projectName + "-desktop-" + version.getText() + ".jar";
+			
+			msg = genDesktopJar(projectName, versionParam, jar);
 
 			if (type.getText().equals(TYPES[0])) { // RUNNABLE JAR
 				if (os.getText().equals("linux64")) {					
-					packr(Platform.linux64, linux64JRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
+					packr(Platform.linux64, linux64JRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
 				} else if (os.getText().equals("linux32")) {
-					packr(Platform.linux32, linux32JRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
+					packr(Platform.linux32, linux32JRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
 				} else if (os.getText().equals("windows")) {
-					packr(Platform.windows, winJRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
+					packr(Platform.windows, winJRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
 				} else if (os.getText().equals("macOSX")) {
-					packr(Platform.mac, osxJRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
+					packr(Platform.mac, osxJRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
 				} else if (os.getText().equals("all")) {
-					packr(Platform.linux64, linux64JRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
-					packr(Platform.linux32, linux32JRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
-					packr(Platform.windows, winJRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
-					packr(Platform.mac, osxJRE.getText(), projectName, jar, "org.bladecoder.engine.desktop.DesktopLauncher", dir.getText());
-				}
-			} else {
-				if(RunProccess.runGradle(Ctx.project.getProjectDir(), versionParam + "desktop:dist")) {
-					File f = new File(jar);
-					FileUtils.copyFileToDirectory(f, new File(dir.getText()));					
-					new File(dir.getText() + "/" + projectName + "-desktop-" + version.getText() + ".jar").setExecutable(true);
-				} else {
-					msg = "Error Generating package" ;
+					packr(Platform.linux64, linux64JRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.linux32, linux32JRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.windows, winJRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.mac, osxJRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
 				}
 			}
 		} else if (arch.getText().equals("android")) {			
@@ -342,6 +338,20 @@ public class PackageDialog extends EditDialog {
 			ok = false;
 
 		return ok;
+	}
+	
+	private String genDesktopJar(String projectName, String versionParam, String jar) throws IOException {
+		String msg = null;
+		
+		if(RunProccess.runGradle(Ctx.project.getProjectDir(), versionParam + "desktop:dist")) {
+			File f = new File(jar);
+			FileUtils.copyFileToDirectory(f, new File(dir.getText()));					
+			new File(dir.getText() + "/" + projectName + "-desktop-" + version.getText() + ".jar").setExecutable(true);
+		} else {
+			msg = "Error Generating package" ;
+		}
+		
+		return msg;
 	}
 	
 	private void packr(Platform platform, String jdk, String exe, String jar, String mainClass, String outDir) throws IOException {
