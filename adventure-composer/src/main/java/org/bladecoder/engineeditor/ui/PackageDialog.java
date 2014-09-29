@@ -27,6 +27,7 @@ import org.bladecoder.engineeditor.ui.components.InputPanel;
 import org.bladecoder.engineeditor.utils.RunProccess;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -145,10 +146,12 @@ public class PackageDialog extends EditDialog {
 	@Override
 	protected void ok() {
 		
-		new Thread(new Runnable() {			
+		new Thread(new Runnable() {
+			Stage stage = getStage();
+			
 			@Override
 			public void run() {
-				Ctx.msg.show(getStage(), "Generating package...");
+				Ctx.msg.show(stage, "Generating package...");
 				String msg;
 				
 				try {
@@ -167,7 +170,7 @@ public class PackageDialog extends EditDialog {
 				Ctx.msg.hide();
 				
 				if(msg != null)
-					Ctx.msg.show(getStage(), msg, 2);
+					Ctx.msg.show(stage, msg, 2);
 			}
 		}).start();			
 

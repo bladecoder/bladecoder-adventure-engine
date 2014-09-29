@@ -31,6 +31,7 @@ import org.bladecoder.engineeditor.utils.ImageUtils;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
@@ -76,17 +77,19 @@ public class CreateAtlasDialog extends EditDialog {
 
 	@Override
 	protected void ok() {
-		new Thread(new Runnable() {			
+		new Thread(new Runnable() {
+			Stage stage = getStage();
+			
 			@Override
 			public void run() {
-				Ctx.msg.show(getStage(), "Generating atlas...");
+				Ctx.msg.show(stage, "Generating atlas...");
 
 				String msg = genAtlas();
 				
 				Ctx.msg.hide();
 				
 				if(msg != null)
-					Ctx.msg.show(getStage(), msg, 3);
+					Ctx.msg.show(stage, msg, 3);
 			}
 		}).start();
 	}

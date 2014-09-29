@@ -45,6 +45,11 @@ public class Message extends Label {
 	public void show (Stage stage, String text, boolean modal) {
 		isModal = modal;
 		
+		if(text == null) {
+			hide();
+			return;
+		}
+
 		add(stage, text);
 		
 		if (fadeDuration > 0) {
@@ -60,7 +65,7 @@ public class Message extends Label {
 		
 		TextBounds bounds2 = getStyle().font.getWrappedBounds(text, stage.getWidth() * .8f);
 		
-		setSize(bounds2.width + 20, bounds2.height * 2);
+		setSize(bounds2.width + bounds2.height, bounds2.height  + bounds2.height * 2);
 
 		stage.addActor(this);
 		setPosition(Math.round((stage.getWidth() - getWidth()) / 2), Math.round((stage.getHeight() - getHeight()) / 2));
@@ -77,6 +82,11 @@ public class Message extends Label {
 	
 	public void show (Stage stage, String text, float duration) {
 		isModal = false;
+		
+		if(text == null) {
+			hide();
+			return;
+		}
 		
 		add(stage, text);
 		

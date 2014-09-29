@@ -25,6 +25,7 @@ import org.bladecoder.engineeditor.ui.components.EditDialog;
 import org.bladecoder.engineeditor.ui.components.InputPanel;
 import org.bladecoder.engineeditor.utils.ImageUtils;
 
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
@@ -55,10 +56,12 @@ public class CreateResolutionDialog extends EditDialog {
 
 	@Override
 	protected void ok() {
-		new Thread(new Runnable() {			
+		new Thread(new Runnable() {	
+			Stage stage = getStage();
+			
 			@Override
 			public void run() {
-				Ctx.msg.show(getStage(), "Creating resolution...");
+				Ctx.msg.show(stage, "Creating resolution...");
 				
 				createResolution();
 
@@ -70,7 +73,7 @@ public class CreateResolutionDialog extends EditDialog {
 				Ctx.msg.hide();
 				
 				if(msg != null)
-					Ctx.msg.show(getStage(), msg, 2);
+					Ctx.msg.show(stage, msg, 2);
 			}
 		}).start();		
 	}

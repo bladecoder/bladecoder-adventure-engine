@@ -23,6 +23,7 @@ import org.bladecoder.engineeditor.ui.components.FileInputPanel;
 import org.bladecoder.engineeditor.ui.components.InputPanel;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class CreateProjectDialog extends EditDialog {
@@ -73,16 +74,18 @@ public class CreateProjectDialog extends EditDialog {
 			Ctx.msg.show(getStage(), msg, 2);
 		}
 
-		new Thread(new Runnable() {			
+		new Thread(new Runnable() {
+			Stage stage = getStage();
+			
 			@Override
 			public void run() {
-				createProject();	
+				createProject(stage);	
 			}
 		}).start();
 	}
 
-	private void createProject() {
-		Ctx.msg.show(getStage(), "Creating project...");
+	private void createProject(Stage stage) {
+		Ctx.msg.show(stage, "Creating project...");
 
 		try {
 			Ctx.project.createProject(
@@ -95,7 +98,7 @@ public class CreateProjectDialog extends EditDialog {
 		} catch (Exception e) {
 			String msg = "Something went wrong while creating project.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(), msg, 2);
+			Ctx.msg.show(stage, msg, 2);
 			EditorLogger.error(msg);
 		}
 		
