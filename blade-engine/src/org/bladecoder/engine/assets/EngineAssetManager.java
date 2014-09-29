@@ -50,7 +50,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
-import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Array;
 
@@ -60,7 +59,6 @@ public class EngineAssetManager extends AssetManager {
 	
 	public static final String ATLASES_DIR = "atlases/";
 	public static final String BACKGROUND_DIR = "backgrounds/";
-	public static final String FONTS_DIR = "fonts/";
 	public static final String MODEL_DIR = "model/";
 	public static final String MUSIC_DIR = "music/";
 	public static final String IMAGE_DIR = "images/";
@@ -154,43 +152,43 @@ public class EngineAssetManager extends AssetManager {
 		return !update();
 	}
 	
-	public BitmapFont loadFont(String style) {
-		String key =Config.getProperty(style, null);
-		
-		if(key == null) {
-			EngineLogger.error("FONT STYLE NOT DEFINED IN PROJECT PROPERTIES: " + style);
-			
-			return new BitmapFont();
-		}
-		
-		int size = Config.getProperty(style + "_SIZE", 14);
-		
-		return loadFont(key, size);
-	}
+//	public BitmapFont loadFont(String style) {
+//		String key =Config.getProperty(style, null);
+//		
+//		if(key == null) {
+//			EngineLogger.error("FONT STYLE NOT DEFINED IN PROJECT PROPERTIES: " + style);
+//			
+//			return new BitmapFont();
+//		}
+//		
+//		int size = Config.getProperty(style + "_SIZE", 14);
+//		
+//		return loadFont(key, size);
+//	}
 	
 	// TODO: Add support for .fnt loading
-	public BitmapFont loadFont(String filename, int size) {
-		FreeTypeFontLoaderParameter param = new FreeTypeFontLoaderParameter();
-		param.fontFileName = FONTS_DIR + filename;
-		param.fontParameters.size = size;
-		param.fontParameters.flip = false;
-		param.fontParameters.genMipMaps = false;
-		
-		// For small screens we use small fonts to limit the space used for the
-		// text in the screen
-		if (Gdx.graphics.getWidth() < 800)
-			param.fontParameters.size *= 0.7;
-		
-		String name = FONTS_DIR + filename + "_" + size + ".ttf";
-		load(name, BitmapFont.class, param);
-		finishLoading();
-		return get(name, BitmapFont.class);
-	}
-	
-	public void disposeFont(BitmapFont font) {
-		if (isLoaded(getAssetFileName(font)))
-			unload(getAssetFileName(font));
-	}
+//	public BitmapFont loadFont(String filename, int size) {
+//		FreeTypeFontLoaderParameter param = new FreeTypeFontLoaderParameter();
+//		param.fontFileName = FONTS_DIR + filename;
+//		param.fontParameters.size = size;
+//		param.fontParameters.flip = false;
+//		param.fontParameters.genMipMaps = false;
+//		
+//		// For small screens we use small fonts to limit the space used for the
+//		// text in the screen
+//		if (Gdx.graphics.getWidth() < 800)
+//			param.fontParameters.size *= 0.7;
+//		
+//		String name = FONTS_DIR + filename + "_" + size + ".ttf";
+//		load(name, BitmapFont.class, param);
+//		finishLoading();
+//		return get(name, BitmapFont.class);
+//	}
+//	
+//	public void disposeFont(BitmapFont font) {
+//		if (isLoaded(getAssetFileName(font)))
+//			unload(getAssetFileName(font));
+//	}
 
 	public void loadAtlas(String name) {
 		load(ATLASES_DIR + name + ".atlas", TextureAtlas.class);

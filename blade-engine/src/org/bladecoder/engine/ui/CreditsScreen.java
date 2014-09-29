@@ -44,8 +44,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class CreditsScreen implements Screen, InputProcessor {
 
 	private final static String CREDITS_FILENAME = "ui/credits";
-	private static final String FONT_TITLE_STYLE = "CREDITS_TITLE_FONT";
-	private static final String FONT_STYLE = "CREDITS_FONT";
+	private static final String FONT_TITLE_STYLE = "credits-title";
+	private static final String FONT_STYLE = "credits";
 	private static final float SPEED = 40; // px/sec.
 
 	// title and texts pair sequence
@@ -160,11 +160,6 @@ public class CreditsScreen implements Screen, InputProcessor {
 
 	@Override
 	public void dispose() {
-		EngineAssetManager.getInstance().disposeFont(creditsFont);
-		EngineAssetManager.getInstance().disposeFont(titlesFont);
-		
-		creditsFont = null;
-		titlesFont = null;
 		
 		for(Texture t:images.values())
 			t.dispose();
@@ -180,8 +175,8 @@ public class CreditsScreen implements Screen, InputProcessor {
 	}
 
 	private void retrieveAssets(TextureAtlas atlas) {
-		titlesFont = EngineAssetManager.getInstance().loadFont(FONT_TITLE_STYLE);
-		creditsFont = EngineAssetManager.getInstance().loadFont(FONT_STYLE);
+		titlesFont = ui.getSkin().getFont(FONT_TITLE_STYLE);
+		creditsFont = ui.getSkin().getFont(FONT_STYLE);
 
 		Locale locale = Locale.getDefault();
 

@@ -6,7 +6,9 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 		title-font: {file: Roboto-Black.ttf, size: 70},
 		dialog-font: {file: ArchitectsDaughter_fix.ttf, size: 20},
 		text-manager-font: {file: ArchitectsDaughter_fix.ttf, size: 18},
-		desc: {file: Ubuntu-M.ttf, size: 16}
+		desc: {file: Ubuntu-M.ttf, size: 16},
+		credits_title: {file: Ubuntu-M.ttf, size: 20},
+		credits: {file: Ubuntu-M.ttf, size: 30}
 	},
 com.badlogic.gdx.graphics.Color: {
 	green: { a: 1, b: 0, g: 1, r: 0 },

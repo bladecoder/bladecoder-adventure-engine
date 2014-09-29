@@ -292,7 +292,6 @@ public class BladeEngineSetup {
 		new File(outputDir + "/" + assetPath + "/3d").mkdirs();
 		new File(outputDir + "/" + assetPath + "/atlases/1").mkdirs();
 		new File(outputDir + "/" + assetPath + "/backgrounds/1").mkdirs();
-		new File(outputDir + "/" + assetPath + "/fonts").mkdirs();
 		new File(outputDir + "/" + assetPath + "/icons").mkdirs();
 		new File(outputDir + "/" + assetPath + "/images/1").mkdirs();
 		new File(outputDir + "/" + assetPath + "/model").mkdirs();
@@ -300,8 +299,6 @@ public class BladeEngineSetup {
 		new File(outputDir + "/" + assetPath + "/sounds").mkdirs();
 		new File(outputDir + "/" + assetPath + "/test").mkdirs();
 		new File(outputDir + "/" + assetPath + "/ui/1").mkdirs();
-		
-		project.files.add(new ProjectFile("android/assets/fonts/Ubuntu-M.ttf", assetPath + "/fonts/Ubuntu-M.ttf", false));
 		
 		project.files.add(new ProjectFile("android/assets/icons/icon16.png", assetPath + "/icons/icon16.png", false));
 		project.files.add(new ProjectFile("android/assets/icons/icon32.png", assetPath + "/icons/icon32.png", false));
