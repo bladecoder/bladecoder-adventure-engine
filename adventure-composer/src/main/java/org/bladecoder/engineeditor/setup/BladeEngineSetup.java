@@ -39,6 +39,7 @@ import org.bladecoder.engineeditor.setup.DependencyBank.ProjectDependency;
 import org.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
 import org.bladecoder.engineeditor.utils.EditorLogger;
 import org.bladecoder.engineeditor.utils.RunProccess;
+import org.bladecoder.engineeditor.utils.Versions;
 
 import com.esotericsoftware.spine.Skeleton;
 
@@ -63,19 +64,19 @@ public class BladeEngineSetup {
 		File buildTools = new File(sdkLocation, "build-tools");
 		if (!buildTools.exists()) {
 			EditorLogger.error("You have no build tools!\nUpdate your Android SDK with build tools version: "
-				+ DependencyBank.buildToolsVersion);
+				+ Versions.getBuildToolsVersion());
 			return false;
 		}
 
 		File apis = new File(sdkLocation, "platforms");
 		if (!apis.exists()) {
 			EditorLogger.error("You have no Android APIs!\nUpdate your Android SDK with API level: "
-				+ DependencyBank.androidAPILevel);
+				+ Versions.getAndroidAPILevel());
 			return false;
 		}
 		String newestLocalTool = getLatestTools(buildTools);
 		int[] localToolVersion = convertTools(newestLocalTool);
-		int[] targetToolVersion = convertTools(DependencyBank.buildToolsVersion);
+		int[] targetToolVersion = convertTools(Versions.getBuildToolsVersion());
 		if (compareVersions(targetToolVersion, localToolVersion)) {
 //			int value = JOptionPane.showConfirmDialog(null,
 //				"You have a more recent version of android build tools than the recommended.\nDo you want to use this version?",
@@ -83,20 +84,21 @@ public class BladeEngineSetup {
 			
 			int value = 0; // USE THE CURRENT BUILD TOOLS
 			if (value != 0) {
-				EditorLogger.error("Using build tools: " + DependencyBank.buildToolsVersion);
+				EditorLogger.error("Using build tools: " + Versions.getBuildToolsVersion());
 			} else {
-				DependencyBank.buildToolsVersion = newestLocalTool;
+				// TODO use the current local version if available
+//				buildToolsVersion = newestLocalTool;
 			}
 		} else {
-			if (!hasFileInDirectory(buildTools, DependencyBank.buildToolsVersion)) {
+			if (!hasFileInDirectory(buildTools, Versions.getBuildToolsVersion())) {
 				EditorLogger.error("Please update your Android SDK, you need build tools: "
-					+ DependencyBank.buildToolsVersion);
+					+ Versions.getBuildToolsVersion());
 				return false;
 			}
 		}
 
 		int newestLocalApi = getLatestApi(apis);
-		if (newestLocalApi > Integer.valueOf(DependencyBank.androidAPILevel)) {
+		if (newestLocalApi > Integer.valueOf(Versions.getAndroidAPILevel())) {
 //			int value = JOptionPane.showConfirmDialog(null,
 //			"You have a more recent version of android build tools than the recommended.\nDo you want to use this version?",
 //			"Warning!", JOptionPane.YES_NO_OPTION);
@@ -104,14 +106,15 @@ public class BladeEngineSetup {
 			int value = 0; // USE THE CURRENT API
 			
 			if (value != 0) {
-				EditorLogger.error("Using API level: " + DependencyBank.androidAPILevel);
+				EditorLogger.error("Using API level: " + Versions.getAndroidAPILevel());
 			} else {
-				DependencyBank.androidAPILevel = String.valueOf(newestLocalApi);
+				// TODO use current API if available
+//				Versions.getAndroidAPILevel() = String.valueOf(newestLocalApi);
 			}
 		} else {
-			if (!hasFileInDirectory(apis, "android-" + DependencyBank.androidAPILevel)) {
+			if (!hasFileInDirectory(apis, "android-" + Versions.getAndroidAPILevel())) {
 				EditorLogger.error("Please update your Android SDK, you need the Android API: "
-					+ DependencyBank.androidAPILevel);
+					+ Versions.getAndroidAPILevel());
 				return false;
 			}
 		}
@@ -384,9 +387,9 @@ public class BladeEngineSetup {
 		values.put("%MAIN_CLASS%", mainClass);
 		values.put("%ANDROID_SDK%", sdkPath);
 		values.put("%ASSET_PATH%", assetPath);
-		values.put("%BUILD_TOOLS_VERSION%", DependencyBank.buildToolsVersion);
-		values.put("%API_LEVEL%", DependencyBank.androidAPILevel);
-		values.put("%GWT_VERSION%", DependencyBank.gwtVersion);
+		values.put("%BUILD_TOOLS_VERSION%", Versions.getBuildToolsVersion());
+		values.put("%API_LEVEL%", Versions.getAndroidAPILevel());
+		values.put("%GWT_VERSION%", Versions.getGwtVersion());
 		if (builder.modules.contains(ProjectType.HTML)) {
 			values.put("%GWT_INHERITS%", parseGwtInherits(builder.bank.gwtInheritances, builder));
 		}

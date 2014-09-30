@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
+import org.bladecoder.engineeditor.utils.Versions;
 
 public class BuildScriptHelper {
 
@@ -47,8 +48,9 @@ public class BuildScriptHelper {
 		
 		write(wr, "ext {");
 		write(wr, "appName = '%APP_NAME%'");
-		write(wr, "gdxVersion = '" + DependencyBank.libgdxVersion + "'");
-		write(wr, "roboVMVersion = '" + DependencyBank.roboVMVersion + "'");
+		write(wr, "bladeEngineVersion = '" + Versions.getVersion() + "'");
+		write(wr, "gdxVersion = '" + Versions.getLibgdxVersion() + "'");
+		write(wr, "roboVMVersion = '" + Versions.getRoboVMVersion() + "'");
 		write(wr, "}");
 		space(wr);
 		write(wr, "repositories {");

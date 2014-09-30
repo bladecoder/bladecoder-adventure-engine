@@ -37,9 +37,9 @@ public class DPIUtils {
 			/ Gdx.graphics.getDensity();
 
 	public final static float NORMAL_MULTIPLIER = 1.0f; // 3-5"
-	public final static float LARGE_MULTIPLIER = 1.3f; // 5-7"
-	public final static float XLARGE_MULTIPLIER = 1.5f; // 8-10"
-	public final static float XXLARGE_MULTIPLIER = 2f; // > 10"
+	public final static float LARGE_MULTIPLIER = 1.5f; // 5-7"
+	public final static float XLARGE_MULTIPLIER = 2f; // 8-10"
+	public final static float XXLARGE_MULTIPLIER = 2.5f; // > 10"
 
 	/**
 	 * Calcs the button size based in screen size
@@ -99,7 +99,7 @@ public class DPIUtils {
 		if (inches > 15)
 			return XXLARGE_MULTIPLIER;
 
-		if (inches > 8)
+		if (inches > 9)
 			return XLARGE_MULTIPLIER;
 
 		if (inches > 6)
