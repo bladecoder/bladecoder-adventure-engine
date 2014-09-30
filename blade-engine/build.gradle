@@ -5,7 +5,6 @@ ext {
 }
 
 group = 'org.bladecoder.engine'
-version = engineVersion
 
 apply plugin: 'maven-publish'
 

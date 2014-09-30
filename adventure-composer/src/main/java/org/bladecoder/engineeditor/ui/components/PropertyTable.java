@@ -50,7 +50,8 @@ public class PropertyTable extends Table {
 		if(type == Types.BOOLEAN) {
 			SelectBox<String> sb= new SelectBox<String>(skin);
 			sb.setItems(BOOLEAN_VALUES);
-			sb.setSelected(value);
+			if(value!=null)
+				sb.setSelected(value);
 			sb.setName(name);
 			add(sb).expandX().left();
 			
@@ -66,7 +67,7 @@ public class PropertyTable extends Table {
 				}
 			});
 		} else {
-			TextField tf = new TextField( value, skin);
+			TextField tf = new TextField( value==null?"":value, skin);
 			tf.setName(name);
 			add(tf).expandX().left();
 			

@@ -354,8 +354,8 @@ public class Project extends PropertyChange {
 		projectConfig.setProperty(titleProp, value);
 	}
 
-	public String getProjectProperty(String titleProp) {
-		return projectConfig.getProperty(titleProp);
+	public String getProjectProperty(String titleProp, String def) {
+		return projectConfig.getProperty(titleProp, def);
 	}
 
 	public void loadChapter(String selChapter) throws ParserConfigurationException, SAXException, IOException {

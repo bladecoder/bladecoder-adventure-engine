@@ -1,5 +1,6 @@
 [0.2.0]
-- COMPOSER: Threads for long tasks to show UI message status.
+- COMPOSER: Fixed NullPointer error when creating project
+- COMPOSER: Threads for long tasks to show UI message status
 - COMPOSER: FIXED packaging with embedded JRE.
 - ENGINE: CreditsScreen fonts now obtained from Skin
 

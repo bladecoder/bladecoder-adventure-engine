@@ -28,8 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public class WorldProps extends PropertyTable {
 
 	public static final String WIDTH_PROP = "width";
-	public static final String HEIGHT_PROP = "height";
-	
+	public static final String HEIGHT_PROP = "height";	
 	public static final String TITLE_PROP = "title";
 	
 //	TableModelListener tableModelListener = new TableModelListener() {
@@ -70,7 +69,7 @@ public class WorldProps extends PropertyTable {
 		clear();
 		addProperty(WIDTH_PROP, Ctx.project.getWorld().getWidth());
 		addProperty(HEIGHT_PROP, Ctx.project.getWorld().getHeight());		
-		addProperty(TITLE_PROP, Ctx.project.getProjectProperty(TITLE_PROP));
+		addProperty(TITLE_PROP, Ctx.project.getTitle());
 		
 		invalidateHierarchy();
 	}
