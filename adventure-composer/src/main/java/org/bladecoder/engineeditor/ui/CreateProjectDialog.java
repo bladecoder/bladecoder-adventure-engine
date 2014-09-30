@@ -56,7 +56,7 @@ public class CreateProjectDialog extends EditDialog {
 		
 		String sdkprop = Ctx.project.getConfig().getProperty(ANDROID_SDK_PROP);
 		
-		if(new File(sdkprop).exists()) {
+		if(sdkprop != null && new File(sdkprop).exists()) {
 			androidSdk.setText(sdkprop);
 		}
 		
