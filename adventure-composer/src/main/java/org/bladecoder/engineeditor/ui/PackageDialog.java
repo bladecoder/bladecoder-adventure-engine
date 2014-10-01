@@ -71,10 +71,10 @@ public class PackageDialog extends EditDialog {
 		dir = new FileInputPanel(skin, "Output Directory", "Select the output directory to put the package", true);
 		type = new InputPanel(skin, "Type", "Select the type of the package", TYPES);
 		os = new InputPanel(skin, "OS", "Select the OS of the package", OSS);
-		linux64JRE = new FileInputPanel(skin, "JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle", false);
-		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle", false);
-		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle", false);
-		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle", false);
+		linux64JRE = new FileInputPanel(skin, "JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file", false);
+		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file", false);
+		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle. Must be a ZIP file", false);
+		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle. Must be a ZIP file", false);
 		version = new InputPanel(skin, "Version", "Select the version of the package");
 		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", false);
 		androidSDK = new FileInputPanel(skin, "SDK", "Select the Android SDK Location", true);
@@ -325,17 +325,25 @@ public class PackageDialog extends EditDialog {
 //			ok = false;
 //		}
 
-		if (linux32JRE.isVisible() && !new File(linux32JRE.getText()).exists())
+		if (linux32JRE.isVisible() && (!new File(linux32JRE.getText()).exists() || !linux32JRE.getText().toLowerCase().endsWith(".zip"))) {
+			linux32JRE.setError(true);
 			ok = false;
+		}
 
-		if (linux64JRE.isVisible() && !new File(linux64JRE.getText()).exists())
+		if (linux64JRE.isVisible() && (!new File(linux64JRE.getText()).exists() || !linux64JRE.getText().toLowerCase().endsWith(".zip"))){
+			linux64JRE.setError(true);
 			ok = false;
+		}
 
-		if (winJRE.isVisible() && !new File(winJRE.getText()).exists())
+		if (winJRE.isVisible() && (!new File(winJRE.getText()).exists() || !winJRE.getText().toLowerCase().endsWith(".zip"))){
+			winJRE.setError(true);
 			ok = false;
+		}
 		
-		if (osxJRE.isVisible() && !new File(osxJRE.getText()).exists())
+		if (osxJRE.isVisible() && (!new File(osxJRE.getText()).exists() || !osxJRE.getText().toLowerCase().endsWith(".zip"))){
+			osxJRE.setError(true);
 			ok = false;
+		}
 
 		return ok;
 	}

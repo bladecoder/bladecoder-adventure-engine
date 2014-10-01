@@ -21,7 +21,7 @@ import org.bladecoder.engine.model.Scene;
 import org.bladecoder.engine.model.Transition;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.model.World.AssetState;
-import org.bladecoder.engine.ui.UI.State;
+import org.bladecoder.engine.ui.UI.Screens;
 import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.DPIUtils;
 import org.bladecoder.engine.util.EngineLogger;
@@ -76,6 +76,8 @@ public class SceneScreen implements Screen {
 
 	private boolean drawHotspots = false;
 	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
+	
+	private float speed = 1.0f;
 
 	private static enum UIStates {
 		SCENE_MODE, CUT_MODE, PLAY_MODE, PAUSE_MODE, INVENTORY_MODE, DIALOG_MODE
@@ -306,19 +308,28 @@ public class SceneScreen implements Screen {
 
 		state = s;
 	}
+	
+	/**
+	 * Sets the game speed. Can be used to fastfordward
+	 * 
+	 * @param s The multiplier speed. ej. 2.0
+	 */
+	public void setSpeed(float s) {
+		speed = s;
+	}
 
 	private void update(float delta) {
 		World w = World.getInstance();
 		currentActor = null;
 
 		if (!World.getInstance().isDisposed()) {
-			World.getInstance().update(delta);
+			World.getInstance().update(delta * speed);
 		}
 
 		AssetState assetState = World.getInstance().getAssetState();
 
 		if (assetState != AssetState.LOADED) {
-			ui.setScreen(State.LOADING_SCREEN);
+			ui.setCurrentScreen(Screens.LOADING_SCREEN);
 			return;
 		}
 
@@ -363,7 +374,7 @@ public class SceneScreen implements Screen {
 		if (state == UIStates.PAUSE_MODE)
 			return;
 
-		recorder.update(delta);
+		recorder.update(delta * speed);
 
 		if (state == UIStates.INVENTORY_MODE) {
 			unproject2Tmp.set(Gdx.input.getX(), Gdx.input.getY());
@@ -629,7 +640,7 @@ public class SceneScreen implements Screen {
 	}
 
 	public void showMenu() {
-		ui.setScreen(State.MENU_SCREEN);
+		ui.setCurrentScreen(Screens.MENU_SCREEN);
 	}
 
 	private void resetUI() {

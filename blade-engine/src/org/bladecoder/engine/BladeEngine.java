@@ -22,7 +22,7 @@ import org.bladecoder.engine.assets.EngineAssetManager;
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.ui.SceneScreen;
 import org.bladecoder.engine.ui.UI;
-import org.bladecoder.engine.ui.UI.State;
+import org.bladecoder.engine.ui.UI.Screens;
 import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.EngineLogger;
 
@@ -106,7 +106,7 @@ public class BladeEngine implements ApplicationListener {
 		
 		if (testScene != null || chapter != null) {
 			World.getInstance().loadXMLChapter(chapter, testScene);
-			ui.setScreen(UI.State.SCENE_SCREEN);
+			ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 		}
 		
 		if(gameState == null)
@@ -130,7 +130,7 @@ public class BladeEngine implements ApplicationListener {
 			recordName = Config.getProperty(Config.PLAY_RECORD_PROP, recordName);
 		
 		if (recordName != null) {
-			SceneScreen scr = (SceneScreen)ui.getScreen(State.SCENE_SCREEN);
+			SceneScreen scr = (SceneScreen)ui.getScreen(Screens.SCENE_SCREEN);
 			scr.getRecorder().load(recordName);
 			scr.getRecorder().setPlaying(true);
 		}

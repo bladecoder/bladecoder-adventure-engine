@@ -133,7 +133,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		menuButton.addListener(new ChangeListener() {			
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-				sceneScreen.getUI().setScreen(UI.State.MENU_SCREEN);
+				sceneScreen.getUI().setCurrentScreen(UI.Screens.MENU_SCREEN);
 			}
 		});
 	}

@@ -19,7 +19,7 @@ import java.text.MessageFormat;
 import java.util.Locale;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.ui.UI.State;
+import org.bladecoder.engine.ui.UI.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -119,7 +119,7 @@ public class HelpScreen implements Screen, InputProcessor {
 		switch (keycode) {
 		case Input.Keys.ESCAPE:
 		case Input.Keys.BACK:
-			ui.setScreen(State.SCENE_SCREEN);
+			ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			break;
 		}
 
@@ -138,7 +138,7 @@ public class HelpScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		ui.setScreen(State.MENU_SCREEN);
+		ui.setCurrentScreen(Screens.MENU_SCREEN);
 		return true;
 	}
 

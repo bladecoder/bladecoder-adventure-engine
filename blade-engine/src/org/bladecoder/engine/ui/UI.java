@@ -44,18 +44,16 @@ public class UI {
 	private SpriteBatch batch;
 	private Skin skin;
 
-	public static enum State {
-		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN
+	public static enum Screens {
+		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN, DEBUG_SCREEN
 	};
 	
 	private final Screen screens[];
 
-	private State state;
-
 	public UI() {
 		batch = new SpriteBatch();
 		
-		screens = new Screen[State.values().length];
+		screens = new Screen[Screens.values().length];
 
 		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setCatchMenuKey(true);
@@ -69,18 +67,23 @@ public class UI {
 		World.getInstance().loadXMLWorld();
 		loadAssets();
 		
-		screens[State.INIT_SCREEN.ordinal()] = new InitScreen(this);
-		screens[State.SCENE_SCREEN.ordinal()] = new SceneScreen(this);
-		screens[State.LOADING_SCREEN.ordinal()] = new LoadingScreen(this);
-		screens[State.MENU_SCREEN.ordinal()] = new MenuScreenTextButtons(this);
-		screens[State.HELP_SCREEN.ordinal()] = new HelpScreen(this);
-		screens[State.CREDIT_SCREEN.ordinal()] =  new CreditsScreen(this);
+		screens[Screens.INIT_SCREEN.ordinal()] = new InitScreen(this);
+		screens[Screens.SCENE_SCREEN.ordinal()] = new SceneScreen(this);
+		screens[Screens.LOADING_SCREEN.ordinal()] = new LoadingScreen(this);
+		screens[Screens.MENU_SCREEN.ordinal()] = new MenuScreenTextButtons(this);
+		screens[Screens.HELP_SCREEN.ordinal()] = new HelpScreen(this);
+		screens[Screens.CREDIT_SCREEN.ordinal()] =  new CreditsScreen(this);
+		screens[Screens.DEBUG_SCREEN.ordinal()] =  new DebugScreen(this);
 
-		setScreen(State.INIT_SCREEN);
+		setCurrentScreen(Screens.INIT_SCREEN);
 	}
 	
-	public Screen getScreen(State state) {
+	public Screen getScreen(Screens state) {
 		return screens[state.ordinal()];
+	}
+	
+	public Screen setScreen(Screens state, Screen s) {
+		return screens[state.ordinal()] = s;
 	}
 	
 	public SpriteBatch getBatch() {
@@ -91,19 +94,21 @@ public class UI {
 		return pointer;
 	}
 
-	public State getState() {
-		return state;
+	public Screen getCurrentScreen() {
+		return screen;
 	}
 
-	public void setScreen(State s) {
-		
-		state = s;
+	public void setCurrentScreen(Screens s) {				
+		setCurrentScreen(screens[s.ordinal()]);
+	}
+	
+	public void setCurrentScreen(Screen s) {
 
 		if (screen != null) {
 			screen.hide();
 		}
 		
-		screen = screens[state.ordinal()];
+		screen = s;
 
 		screen.show();
 			

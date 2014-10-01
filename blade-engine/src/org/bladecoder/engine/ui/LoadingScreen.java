@@ -17,7 +17,7 @@ package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.model.World.AssetState;
-import org.bladecoder.engine.ui.UI.State;
+import org.bladecoder.engine.ui.UI.Screens;
 import org.bladecoder.engine.util.RectangleRenderer;
 
 import com.badlogic.gdx.Gdx;
@@ -61,7 +61,7 @@ public class LoadingScreen implements Screen {
 		AssetState assetState = World.getInstance().getAssetState();
 
 		if (assetState == AssetState.LOADED) {
-			ui.setScreen(State.SCENE_SCREEN);
+			ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			return;
 		}		
 		

@@ -15,11 +15,8 @@
  ******************************************************************************/
 package org.bladecoder.engine.ui;
 
-import org.bladecoder.engine.model.World;
 import org.bladecoder.engine.ui.UI.Screens;
-import org.bladecoder.engine.util.Config;
 import org.bladecoder.engine.util.DPIUtils;
-import org.bladecoder.engine.util.EngineLogger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -34,12 +31,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class MenuScreenTextButtons implements Screen {
+public class DebugScreen implements Screen {
 	private UI ui;
 
 	private Stage stage;
 
-	public MenuScreenTextButtons(UI ui) {
+	public DebugScreen(UI ui) {
 		this.ui = ui;
 	}
 
@@ -70,12 +67,6 @@ public class MenuScreenTextButtons implements Screen {
 
 	@Override
 	public void show() {
-		// int wWidth =
-		// EngineAssetManager.getInstance().getResolution().portraitWidth;
-		// int wHeight =
-		// EngineAssetManager.getInstance().getResolution().portraitHeight;
-		//
-		// stage = new Stage(new ExtendViewport(wWidth, wHeight/2));
 
 		stage = new Stage(new ScreenViewport());
 
@@ -87,88 +78,50 @@ public class MenuScreenTextButtons implements Screen {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
 				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
-					if (World.getInstance().getCurrentScene() != null)
-						ui.setCurrentScreen(Screens.SCENE_SCREEN);
-				
+					ui.setCurrentScreen(Screens.MENU_SCREEN);
 				return true;
 			}
 		});
 
 		stage.setKeyboardFocus(table);
 
-		Label title = new Label(Config.getProperty(Config.TITLE_PROP, "Adventure Blade Engine"), ui.getSkin(), "title");
+		Label title = new Label("DEBUG SCREEN", ui.getSkin(), "title");
 
 		table.add(title).padBottom(DPIUtils.getMarginSize() * 2);
 
-		if (World.getInstance().savedGameExists()) {
-			TextButton continueGame = new TextButton("Continue", ui.getSkin(), "menu");
+		TextButton back = new TextButton("Back", ui.getSkin(), "menu");
+		back.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				ui.setCurrentScreen(Screens.MENU_SCREEN);
+			}
+		});
 
-			continueGame.addListener(new ClickListener() {
-				public void clicked(InputEvent event, float x, float y) {
-					if (World.getInstance().getCurrentScene() == null)
-						World.getInstance().load();
+		table.row();
+		table.add(back);
 
+		Recorder r = ((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getRecorder();
+		TextButton play = new TextButton(r.isPlaying() ? "Stop" : "Play", ui.getSkin(), "menu");
+		play.addListener(new ClickListener() {
+			
+			public void clicked(InputEvent event, float x, float y) {
+				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
+				Recorder r = scnScr.getRecorder();
+				
+				if (!r.isPlaying()) {
+					scnScr.setSpeed(4.0f);
+					r.load("full");
+					r.setPlaying(true);
 					ui.setCurrentScreen(Screens.SCENE_SCREEN);
+				} else {
+					scnScr.setSpeed(1.0f);
+					r.setPlaying(false);
+					ui.setCurrentScreen(Screens.MENU_SCREEN);
 				}
-			});
-
-			table.row();
-			table.add(continueGame);
-		}
-
-		TextButton newGame = new TextButton("New Game", ui.getSkin(), "menu");
-		newGame.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				World.getInstance().newGame();
-				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
 
 		table.row();
-		table.add(newGame);
-
-		TextButton help = new TextButton("Help", ui.getSkin(), "menu");
-		help.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				ui.setCurrentScreen(Screens.HELP_SCREEN);
-			}
-		});
-
-		table.row();
-		table.add(help);
-
-		TextButton credits = new TextButton("Credits", ui.getSkin(), "menu");
-		credits.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				ui.setCurrentScreen(Screens.CREDIT_SCREEN);
-			}
-		});
-
-		table.row();
-		table.add(credits);
-
-		TextButton quit = new TextButton("Quit Game", ui.getSkin(), "menu");
-		quit.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				World.getInstance().dispose();
-				Gdx.app.exit();
-			}
-		});
-
-		table.row();
-		table.add(quit);
-		
-		if(EngineLogger.debugMode()) {
-			TextButton debug = new TextButton("Debug screen", ui.getSkin(), "menu");
-			debug.addListener(new ClickListener() {
-				public void clicked(InputEvent event, float x, float y) {
-					ui.setCurrentScreen(Screens.DEBUG_SCREEN);
-				}
-			});
-
-			table.row();
-			table.add(debug);
-		}
+		table.add(play);
 
 		table.pack();
 

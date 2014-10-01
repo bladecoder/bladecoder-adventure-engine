@@ -16,7 +16,7 @@
 package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.assets.EngineAssetManager;
-import org.bladecoder.engine.ui.UI.State;
+import org.bladecoder.engine.ui.UI.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -59,7 +59,7 @@ public class InitScreen implements Screen {
 		
 		if(time > FADE_TIME * 2 + SCREEN_TIME) {  // EXIT INIT SCREEN
 			batch.setColor(Color.WHITE);
-			ui.setScreen(State.MENU_SCREEN);
+			ui.setCurrentScreen(Screens.MENU_SCREEN);
 		} else if(time > FADE_TIME + SCREEN_TIME) {  // FADE_OUT
 			batch.setColor(1, 1, 1,  1 - fadeTime/FADE_TIME);			
 		} else if(time < FADE_TIME) { // FADE IN

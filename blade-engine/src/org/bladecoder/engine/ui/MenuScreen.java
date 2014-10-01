@@ -16,7 +16,7 @@
 package org.bladecoder.engine.ui;
 
 import org.bladecoder.engine.model.World;
-import org.bladecoder.engine.ui.UI.State;
+import org.bladecoder.engine.ui.UI.Screens;
 import org.bladecoder.engine.util.DPIUtils;
 
 import com.badlogic.gdx.Gdx;
@@ -101,7 +101,7 @@ public class MenuScreen implements Screen {
 					if (World.getInstance().getCurrentScene() == null)
 						World.getInstance().load();
 
-					ui.setScreen(State.SCENE_SCREEN);
+					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 				}
 				
 				return true;
@@ -117,7 +117,7 @@ public class MenuScreen implements Screen {
 				if (World.getInstance().getCurrentScene() == null)
 					World.getInstance().load();
 
-				ui.setScreen(State.SCENE_SCREEN);
+				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
 
@@ -129,7 +129,7 @@ public class MenuScreen implements Screen {
 		reload.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				World.getInstance().newGame();
-				ui.setScreen(State.SCENE_SCREEN);
+				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
 
@@ -140,7 +140,7 @@ public class MenuScreen implements Screen {
 		ImageButton help = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(HELP_COMMAND)));
 		help.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				ui.setScreen(State.HELP_SCREEN);
+				ui.setCurrentScreen(Screens.HELP_SCREEN);
 			}
 		});
 
@@ -151,7 +151,7 @@ public class MenuScreen implements Screen {
 		ImageButton credits = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(CREDITS_COMMAND)));
 		credits.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				ui.setScreen(State.CREDIT_SCREEN);
+				ui.setCurrentScreen(Screens.CREDIT_SCREEN);
 			}
 		});
 
