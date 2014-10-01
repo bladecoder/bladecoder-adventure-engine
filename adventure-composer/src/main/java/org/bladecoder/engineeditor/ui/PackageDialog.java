@@ -158,7 +158,7 @@ public class PackageDialog extends EditDialog {
 				
 				try {
 					msg = packageAdv();
-				} catch (IOException e) {
+				} catch (Exception e) {
 					msg = "Error Generating package\n\n" + e.getMessage();
 				}
 

@@ -59,7 +59,7 @@ public class WorldProps extends PropertyTable {
 		if (property.equals(WIDTH_PROP)) {
 			Ctx.project.getWorld().setWidth(value);
 		} else if (property.equals(TITLE_PROP)) {
-			Ctx.project.setProjectProperty(TITLE_PROP, value);
+			Ctx.project.getConfig().setProperty(TITLE_PROP, value);
 		} else if (property.equals(HEIGHT_PROP)) {
 			Ctx.project.getWorld().setHeight(value);
 		}

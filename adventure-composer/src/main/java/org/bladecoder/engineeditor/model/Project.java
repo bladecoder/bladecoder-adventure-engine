@@ -350,14 +350,6 @@ public class Project extends PropertyChange {
 		return "1";
 	}
 
-	public void setProjectProperty(String titleProp, String value) {
-		projectConfig.setProperty(titleProp, value);
-	}
-
-	public String getProjectProperty(String titleProp, String def) {
-		return projectConfig.getProperty(titleProp, def);
-	}
-
 	public void loadChapter(String selChapter) throws ParserConfigurationException, SAXException, IOException {
 		selectedChapter = world.loadChapter(selChapter);
 		
