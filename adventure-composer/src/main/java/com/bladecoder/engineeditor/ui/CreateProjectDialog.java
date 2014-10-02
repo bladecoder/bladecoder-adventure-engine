@@ -99,9 +99,10 @@ public class CreateProjectDialog extends EditDialog {
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
 			Ctx.msg.show(stage, msg, 2);
 			EditorLogger.error(msg);
+			return;
 		}
 		
-		Ctx.msg.hide();
+		Ctx.msg.show(stage, "Project successfully created", 3);
 	}
 
 	@Override

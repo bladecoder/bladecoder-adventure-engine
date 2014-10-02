@@ -35,7 +35,6 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
-import com.bladecoder.engine.BladeEngine;
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectDependency;
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
 import com.bladecoder.engineeditor.utils.EditorLogger;
@@ -411,19 +410,20 @@ public class BladeEngineSetup {
 	 * @throws IOException 
 	 */
 	private void copyLibs(String outputDir) throws IOException {
-		File bladeEngineFile =  new File(BladeEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+//		File bladeEngineFile =  new File(BladeEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		File libSpineFile =  new File(Skeleton.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		
 		FileUtils.copyFileToDirectory(libSpineFile, new File(outputDir + "/libs"));
 		
-		if(bladeEngineFile.isDirectory()) {
-			EditorLogger.error("Editor is running inside IDE. Trying to build blade-engine.jar");
-			RunProccess.runGradle(bladeEngineFile.getParentFile().getParentFile(), ":blade-engine:jar");
-			
-			FileUtils.copyDirectory(new File(bladeEngineFile.getParent() + "/build/libs"), new File(outputDir + "/libs"));
-		} else {
-			FileUtils.copyFileToDirectory(bladeEngineFile, new File(outputDir + "/libs"));
-		}
+		// blade-engine.jar is in Maven Central now
+//		if(bladeEngineFile.isDirectory()) {
+//			EditorLogger.error("Editor is running inside IDE. Trying to build blade-engine.jar");
+//			RunProccess.runGradle(bladeEngineFile.getParentFile().getParentFile(), ":blade-engine:jar");
+//			
+//			FileUtils.copyDirectory(new File(bladeEngineFile.getParent() + "/build/libs"), new File(outputDir + "/libs"));
+//		} else {
+//			FileUtils.copyFileToDirectory(bladeEngineFile, new File(outputDir + "/libs"));
+//		}
 	}
 
 	private void copyAndReplace (String outputDir, Project project, Map<String, String> values) throws IOException {

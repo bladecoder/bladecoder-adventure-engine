@@ -3,20 +3,20 @@
 
 	<!-- *********************** DEFAULT VERBS ************************ -->
 	<verb id="lookat">
-		<action action_name="lookat" text="@default.lookat.0.text" />
+		<action action_name="Lookat" text="@default.lookat.0.text" />
 	</verb>
 
 	<verb id="pickup">
-		<action action_name="lookat" text="@default.pickup.0.text" />
+		<action action_name="Lookat" text="@default.pickup.0.text" />
 	</verb>
 
 	<verb id="use">
-		<action action_name="say" text="@default.use.0.text" wait="false" />
+		<action action_name="Say" text="@default.use.0.text" wait="false" />
 	</verb>
 
 	<verb id="dialog">
-		<action action_name="set_cutmode" inventory="false" value="true" />
-		<action action_name="say_dialog" />
-		<action action_name="set_cutmode" inventory="true" value="false" />
+		<action action_name="Cutmode" inventory="false" value="true" />
+		<action action_name="SayDialog" />
+		<action action_name="Cutmode" inventory="true" value="false" />
 	</verb>
 </world>

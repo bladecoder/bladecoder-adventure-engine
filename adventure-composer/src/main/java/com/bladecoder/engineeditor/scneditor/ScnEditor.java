@@ -106,7 +106,8 @@ public class ScnEditor extends Table {
 		
 		if(Ctx.project.getSelectedScene() == null) {
 			String msg = "There are no scenes in this chapter.";
-			Ctx.msg.show(getStage(),msg, 2);			
+			Ctx.msg.show(getStage(),msg, 3);
+			return;
 		}
 		
 		try {

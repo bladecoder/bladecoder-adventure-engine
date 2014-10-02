@@ -1,12 +1,6 @@
 apply plugin: "java"
 apply plugin: 'application'
 
-ext {
-	libName = 'adventure-composer'
-}
-
-group = 'com.bladecoder.engineeditor'
-
 mainClassName = 'com.bladecoder.engineeditor.Main'
 
 // java
@@ -18,7 +12,6 @@ jar {
 			'github': 'https://github.com/bladecoder/bladecoder-adventure-engine/',
 			'license': 'Apache-2.0',
 			'group': project.group,
-			'artifact': libName,
 			'version': project.version,
 			'libgdx': gdxVersion,
 			'java': targetCompatibility,
@@ -27,7 +20,7 @@ jar {
 }
 
     javadoc {
-	title = libName
+	title = "Adventure Composer"
 	options {
 		memberLevel = JavadocMemberLevel.PUBLIC
 		author true

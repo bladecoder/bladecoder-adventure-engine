@@ -21,7 +21,6 @@ import java.util.Properties;
 public class Versions {
 	private static final String VERSION_PROP="version";
 	private static final String LIBGDX_VERSION_PROP="libgdxVersion";
-	private static final String LIBGDX_NIGHTLY_VERSION_PROP="libgdxNightlyVersion";
 	private static final String ROBOVM_VERSION_PROP="roboVMVersion";
 	private static final String BUILDTOOLS_VERSION_PROP="buildToolsVersion";
 	private static final String ANDROID_API_LEVEL_PROP="androidAPILevel";
@@ -52,10 +51,6 @@ public class Versions {
 	
 	public static String getLibgdxVersion() {
 		return getProperty(LIBGDX_VERSION_PROP,null);
-	}
-	
-	public static String getLibgdxNightlyVersion() {
-		return getProperty(LIBGDX_NIGHTLY_VERSION_PROP,null);
 	}
 	
 	public static String getRoboVMVersion() {
