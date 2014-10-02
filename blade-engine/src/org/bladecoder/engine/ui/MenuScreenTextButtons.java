@@ -162,7 +162,7 @@ public class MenuScreenTextButtons implements Screen {
 			TextButton debug = new TextButton("Debug screen", ui.getSkin(), "menu");
 			debug.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
-					ui.setCurrentScreen(Screens.DEBUG_SCREEN);
+					ui.setCurrentScreen(new DebugScreen(ui));
 				}
 			});
 

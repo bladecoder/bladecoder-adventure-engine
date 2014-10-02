@@ -20,8 +20,8 @@ import java.util.HashMap;
 import org.bladecoder.engine.actions.Param.Type;
 import org.bladecoder.engine.model.World;
 
-public class SetCutmodeAction implements Action {
-	public static final String INFO = "Set/Unset the cutmode. Also shows/hide the inventory";
+public class ShowInventoryAction implements Action {
+	public static final String INFO = "Shows/Hide the inventory";
 	public static final Param[] PARAMS = {
 		new Param("value", "when 'true' sets the scene in 'cutmode'", Type.BOOLEAN, true, "true")
 		};	
@@ -36,7 +36,7 @@ public class SetCutmodeAction implements Action {
 
 	@Override
 	public void run() {
-		World.getInstance().setCutMode(value);
+		World.getInstance().showInventory(value);
 	}
 
 	@Override

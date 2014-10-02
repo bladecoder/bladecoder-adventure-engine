@@ -334,6 +334,7 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		
 		json.writeValue("isWalkObstacle", isWalkObstacle);
 		json.writeValue("layer", layer);
+		json.writeValue("playerInside", playerInside);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -361,6 +362,7 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 		
 		isWalkObstacle = json.readValue("isWalkObstacle", Boolean.class, jsonData);
 		layer = json.readValue("layer", ActorLayer.class, jsonData);
+		playerInside = json.readValue("playerInside", Boolean.class, jsonData);
 	}
 
 }

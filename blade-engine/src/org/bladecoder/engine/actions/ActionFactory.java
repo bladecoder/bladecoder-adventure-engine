@@ -24,55 +24,56 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 public class ActionFactory {
 
-	private static final HashMap<String, String> actions;
+	private static final HashMap<String, String> actions = new HashMap<String, String>();
 
 	static {
-		actions = new HashMap<String, String>();
 		
-		actions.put("lookat",
+		actions.put("Lookat",
 				"org.bladecoder.engine.actions.LookAtAction");
-		actions.put("pickup",
+		actions.put("Pickup",
 				"org.bladecoder.engine.actions.PickUpAction");
-		actions.put("goto",
+		actions.put("Goto",
 				"org.bladecoder.engine.actions.GotoAction");
-		actions.put("leave",
+		actions.put("Leave",
 				"org.bladecoder.engine.actions.LeaveAction");	
 
-		actions.put("set_state",
+		actions.put("SetState",
 				"org.bladecoder.engine.actions.SetStateAction");
-		actions.put("set_active",
+		actions.put("SetActive",
 				"org.bladecoder.engine.actions.SetActiveAction");
-		actions.put("set_cutmode",
-				"org.bladecoder.engine.actions.SetCutmodeAction");			
-		actions.put("set_frame_animation",
+		actions.put("Cutmode",
+				"org.bladecoder.engine.actions.SetCutmodeAction");
+		actions.put("ShowInventory",
+				"org.bladecoder.engine.actions.ShowInventoryAction");			
+		actions.put("Animation",
 				"org.bladecoder.engine.actions.FrameAnimationAction");
-		actions.put("pos_animation",
+		actions.put("Position",
 				"org.bladecoder.engine.actions.PosAnimationAction");
-		actions.put("remove_inventory_item",
+		actions.put("RemoveInventoryItem",
 				"org.bladecoder.engine.actions.RemoveInventoryItemAction");	
-		actions.put("say",
+		actions.put("Say",
 				"org.bladecoder.engine.actions.SayAction");	
-		actions.put("drop_item",
+		actions.put("DropItem",
 				"org.bladecoder.engine.actions.DropItemAction");
-		actions.put("wait",
+		actions.put("Wait",
 				"org.bladecoder.engine.actions.WaitAction");
-		actions.put("talkto",
+		actions.put("Talkto",
 				"org.bladecoder.engine.actions.TalktoAction");
-		actions.put("dialog_option",
+		actions.put("DialogOption",
 				"org.bladecoder.engine.actions.DialogOptionAction");
-		actions.put("say_dialog",
+		actions.put("SayDialog",
 				"org.bladecoder.engine.actions.SayDialogAction");
-		actions.put("run_verb",
+		actions.put("RunVerb",
 				"org.bladecoder.engine.actions.RunVerbAction");
-		actions.put("cancel_verb",
+		actions.put("CancelVerb",
 				"org.bladecoder.engine.actions.CancelVerbAction");
-		actions.put("sound",
+		actions.put("Sound",
 				"org.bladecoder.engine.actions.SoundAction");
-		actions.put("music",
+		actions.put("Music",
 				"org.bladecoder.engine.actions.MusicAction");
-		actions.put("camera",
+		actions.put("Camera",
 				"org.bladecoder.engine.actions.CameraAction");
-		actions.put("transition",
+		actions.put("Transition",
 				"org.bladecoder.engine.actions.TransitionAction");
 	}
 	

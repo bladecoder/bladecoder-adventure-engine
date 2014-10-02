@@ -42,7 +42,7 @@ import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
 public class World implements Serializable, AssetConsumer {
 
-	private static final String GAMESTATE_FILENAME = "gamestate.v6";
+	private static final String GAMESTATE_FILENAME = "gamestate.v7";
 
 	public static enum AssetState {
 		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE

@@ -45,7 +45,7 @@ public class UI {
 	private Skin skin;
 
 	public static enum Screens {
-		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN, DEBUG_SCREEN
+		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN
 	};
 	
 	private final Screen screens[];
@@ -73,7 +73,6 @@ public class UI {
 		screens[Screens.MENU_SCREEN.ordinal()] = new MenuScreenTextButtons(this);
 		screens[Screens.HELP_SCREEN.ordinal()] = new HelpScreen(this);
 		screens[Screens.CREDIT_SCREEN.ordinal()] =  new CreditsScreen(this);
-		screens[Screens.DEBUG_SCREEN.ordinal()] =  new DebugScreen(this);
 
 		setCurrentScreen(Screens.INIT_SCREEN);
 	}
