@@ -5,9 +5,9 @@ ext {
 	libName = 'adventure-composer'
 }
 
-group = 'org.bladecoder.engineeditor'
+group = 'com.bladecoder.engineeditor'
 
-mainClassName = 'org.bladecoder.engineeditor.Main'
+mainClassName = 'com.bladecoder.engineeditor.Main'
 
 // java
     sourceCompatibility = 1.7
@@ -47,6 +47,6 @@ dependencies {
   compile "commons-io:commons-io:2.1"
   compile "com.badlogicgames.packr:packr:1.2"
   
-  //compile "org.bladecoder.engine:blade-engine:$bladeEngineVersion"
+  //compile "com.bladecoder.engine:blade-engine:$bladeEngineVersion"
   compile project(":blade-engine")
 }

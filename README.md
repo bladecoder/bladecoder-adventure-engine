@@ -35,7 +35,7 @@ The source of **The Goddess Robbery** can be downloaded  [here](https://github.c
 
 The Goddess Robbery is also available for Android devices at the Google Play Store.
 
-[![The Goddess Robbery on Google Play](http://developer.android.com/images/brand/en_app_rgb_wo_60.png)](http://play.google.com/store/apps/details?id=org.bladecoder.engine)
+[![The Goddess Robbery on Google Play](http://developer.android.com/images/brand/en_app_rgb_wo_60.png)](http://play.google.com/store/apps/details?id=com.bladecoder.engine)
 
 ### Building and running
 In order to compile, build and run the engine, the Java platform is necessary. The project uses Gradle to build and package.

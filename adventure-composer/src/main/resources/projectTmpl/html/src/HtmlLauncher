@@ -3,7 +3,7 @@ package %PACKAGE%.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import org.bladecoder.engine.BladeEngine;
+import com.bladecoder.engine.BladeEngine;
 
 public class HtmlLauncher extends GwtApplication {
 

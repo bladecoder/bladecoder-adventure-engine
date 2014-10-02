@@ -1,6 +1,6 @@
 package %PACKAGE%.android;
 
-import org.bladecoder.engine.BladeEngine;
+import com.bladecoder.engine.BladeEngine;
 
 import android.os.Bundle; 
 import android.view.WindowManager;

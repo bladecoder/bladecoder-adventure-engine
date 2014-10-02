@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.nio.IntBuffer;
 import java.util.Properties;
 
-import org.bladecoder.engine.BladeEngine;
-import org.bladecoder.engine.util.Config;
+import com.bladecoder.engine.BladeEngine;
+import com.bladecoder.engine.util.Config;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Cursor;

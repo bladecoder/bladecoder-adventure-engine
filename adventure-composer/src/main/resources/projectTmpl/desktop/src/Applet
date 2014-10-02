@@ -1,6 +1,6 @@
-package org.bladecoder.engine.desktop;
+package com.bladecoder.engine.desktop;
 
-import org.bladecoder.engine.BladeEngine;
+import com.bladecoder.engine.BladeEngine;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplet;
 

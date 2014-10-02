@@ -59,7 +59,7 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
 	default: { fontColorUnselected: white, selection: selection, fontColorSelected: white, font: default-font }
 },
-	org.bladecoder.engineeditor.ui.components.scene2d.CustomList$ListStyle: {
+	com.bladecoder.engineeditor.ui.components.scene2d.CustomList$ListStyle: {
 	default: { fontColorUnselected: white, selection: selection, fontColorSelected: white, font: default-font }
 	},	
 com.badlogic.gdx.scenes.scene2d.ui.Touchpad$TouchpadStyle: {

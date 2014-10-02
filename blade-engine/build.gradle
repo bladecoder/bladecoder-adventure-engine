@@ -4,7 +4,7 @@ ext {
 	libName = 'blade-engine'
 }
 
-group = 'org.bladecoder.engine'
+group = 'com.bladecoder.engine'
 
 apply plugin: 'maven-publish'
 

@@ -30,7 +30,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	default: {  },
 	inventory: {imageUp: inventory}
 },
-org.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
+com.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
 	default: {background: black08}
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
@@ -42,11 +42,11 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		title: { font: title-font, fontColor: white},
 },
 
-org.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
+com.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
 	default: {background: black08, font: dialog-font, fontColor: white, overFontColor: light-gray}
 },
 
-org.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle: {
+com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle: {
 	default: {rectBackground: white, talkBackground: white, font: text-manager-font, talkBubble: bubblepointer}
 }
 }
