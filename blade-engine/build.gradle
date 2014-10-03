@@ -79,9 +79,45 @@ artifacts {
     archives sourcesJar
 }
 
+def ask(title){
+	def console = System.console()
+	def string
+	
+    if (console) {
+        string = console.readLine(title)
+    } else {
+        logger.error "Cannot get console."
+    }
+    
+    return new String(string)
+}
+
+def askPasswd(title){
+	def console = System.console()
+	def string
+	
+    if (console) {
+        string = console.readPassword(title)
+    } else {
+        logger.error "Cannot get console."
+    }
+    
+    return new String(string)
+}
+
 //********* artifact signing *********
 if(isReleaseBuild) {
     signing {
+    	if(!project.hasProperty("signing.keyId"))
+    		allprojects {ext."signing.keyId" = ask('\nKey Id: ')}
+    	
+    	if(!project.hasProperty("signing.secretKeyRingFile"))
+    		allprojects { ext."signing.secretKeyRingFile" = ask('\nSecret Keyring file: ') }
+    	
+    	if(!project.hasProperty("signing.password"))
+    	  	allprojects { ext."signing.password" = askPasswd('\nKey Password: ') }
+
+    
         sign configurations.archives
     }
 } else {
@@ -89,7 +125,6 @@ if(isReleaseBuild) {
         // do nothing
     }
 }
-
 
 uploadArchives {
     repositories {
@@ -102,8 +137,11 @@ uploadArchives {
                     beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
                 }
 
-                repository(url: sonatypeRepositoryUrl) {
-                  authentication(userName: sonatypeUsername, password: sonatypePassword)
+                repository(url: sonatypeRepositoryUrl) {                 
+                  authentication(
+                    userName: project.hasProperty("sonatypeUsername")?sonatypeUsername:ask('\nSonatype Username: '), 
+                  	password: project.hasProperty("sonatypePassword")?sonatypePassword:askPasswd('\nSonatype Password: ')
+                  )
                 }
 
                 pom.project {
