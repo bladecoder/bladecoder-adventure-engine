@@ -23,7 +23,6 @@ import com.bladecoder.engine.ui.Recorder;
 import com.bladecoder.engine.ui.SceneExtendViewport;
 import com.bladecoder.engine.ui.TextManagerUI;
 import com.bladecoder.engine.ui.UI;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -325,6 +324,10 @@ public class SceneScreen implements Screen {
 	public void setSpeed(float s) {
 		speed = s;
 	}
+	
+	public float getSpeed() {
+		return speed;
+	}	
 
 	private void update(float delta) {
 		World w = World.getInstance();
@@ -720,5 +723,4 @@ public class SceneScreen implements Screen {
 	public Actor getCurrentActor() {
 		return currentActor;
 	}
-
 }
