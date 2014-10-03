@@ -63,7 +63,8 @@ public class LookAtAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
+
 		EngineLogger.debug("LOOKAT ACTION");
 		Actor actor = (Actor) World.getInstance().getCurrentScene().getActor(actorId, true);
 
@@ -81,6 +82,8 @@ public class LookAtAction implements Action {
 		if(text !=null)
 			World.getInstance().getTextManager().addSubtitle(text, TextManager.POS_SUBTITLE,
 					TextManager.POS_SUBTITLE, false, Text.Type.RECTANGLE, Color.BLACK, null);
+		
+		return false;
 	}
 
 
@@ -92,10 +95,5 @@ public class LookAtAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
-	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
 	}
 }

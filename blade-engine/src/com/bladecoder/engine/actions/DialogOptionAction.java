@@ -62,7 +62,7 @@ public class DialogOptionAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
 
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene()
 				.getActor(actorId, false);
@@ -70,7 +70,7 @@ public class DialogOptionAction implements Action {
 
 		if (d == null) {
 			EngineLogger.error("DialogOptionAction: Dialog '" + dialog + "' not found");
-			return;
+			return false;
 		}
 
 		DialogOption o = null;
@@ -80,7 +80,7 @@ public class DialogOptionAction implements Action {
 
 			if (o == null) {
 				EngineLogger.error("DialogOptionAction: Option '" + option + "' not found");
-				return;
+				return false;
 			}
 		}
 
@@ -91,6 +91,8 @@ public class DialogOptionAction implements Action {
 			World.getInstance().setCurrentDialog(actor.getDialog(dialog));
 			d.setCurrentOption(o);
 		}
+		
+		return false;
 	}
 	
 
@@ -102,10 +104,5 @@ public class DialogOptionAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
-	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
 	}
 }

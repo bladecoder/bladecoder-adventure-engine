@@ -44,13 +44,15 @@ public class SoundAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
 		
 		Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 		
 		if(play!= null)	actor.playSound(play);
 		
 		if(stop!= null)	actor.stopSound(stop);
+		
+		return false;
 	}
 
 
@@ -62,10 +64,5 @@ public class SoundAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
-	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
 	}
 }

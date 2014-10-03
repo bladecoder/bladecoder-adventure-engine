@@ -41,13 +41,10 @@ public abstract class BaseCallbackAction implements Action, ActionCallback, Seri
 			cb2.resume();
 		}
 	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
+	
+	public void setVerbCb(ActionCallback cb) {
 		this.verbCb = cb;
-		
-		return wait;
-	}	
+	}
 
 	public void setWait(boolean wait) {
 		this.wait = wait;

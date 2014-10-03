@@ -47,7 +47,8 @@ public class PickUpAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
+
 		Actor actor = null;
 		
 		Scene scn;
@@ -75,6 +76,8 @@ public class PickUpAction implements Action {
 			
 			World.getInstance().getInventory().addItem(a);
 		}
+		
+		return false;
 	}
 	
 
@@ -88,8 +91,4 @@ public class PickUpAction implements Action {
 		return PARAMS;
 	}
 
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
-	}
 }

@@ -19,7 +19,6 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.BaseCallbackAction;
 import com.bladecoder.engine.actions.Param;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -50,7 +49,8 @@ public class SayDialogAction extends BaseCallbackAction {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
+		setVerbCb(cb);
 		World w = World.getInstance();
 		DialogOption o = World.getInstance().getCurrentDialog().getCurrentOption();
 		String playerText = o.getText();
@@ -81,6 +81,8 @@ public class SayDialogAction extends BaseCallbackAction {
 		} else {
 			resume();
 		}
+		
+		return getWait();
 	}
 
 	@Override

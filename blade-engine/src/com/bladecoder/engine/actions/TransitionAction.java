@@ -19,7 +19,6 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.BaseCallbackAction;
 import com.bladecoder.engine.actions.Param;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -41,12 +40,14 @@ public class TransitionAction extends BaseCallbackAction {
 	Transition.Type type = Transition.Type.FADE_IN;
 	
 	@Override
-	public void run() {
-		
+	public boolean run(ActionCallback cb) {
+		setVerbCb(cb);
 		Transition t = new Transition();
 		t.create(time, c, type, getWait()?this:null);
 		
 		World.getInstance().getCurrentScene().setTransition(t);
+		
+		return getWait();
 	}
 
 	@Override

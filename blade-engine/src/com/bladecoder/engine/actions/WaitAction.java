@@ -19,7 +19,6 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.BaseCallbackAction;
 import com.bladecoder.engine.actions.Param;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
@@ -35,8 +34,10 @@ public class WaitAction extends BaseCallbackAction {
 	
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
+		setVerbCb(cb);
 		World.getInstance().addTimer(time, this);
+		return getWait();
 	}
 
 	@Override

@@ -37,13 +37,16 @@ public class MusicAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
+
 		boolean p = Boolean.parseBoolean(play);
 
 		if (p)
 			World.getInstance().getCurrentScene().playMusic();
 		else
 			World.getInstance().getCurrentScene().stopMusic();
+		
+		return false;
 	}
 
 	@Override
@@ -54,10 +57,5 @@ public class MusicAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
-	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
 	}
 }

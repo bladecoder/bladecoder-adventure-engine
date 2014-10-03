@@ -45,11 +45,13 @@ public class SetActiveAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
 		Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 		
 		if(visible != null) actor.setVisible(Boolean.parseBoolean(visible));
 		if(interaction != null) actor.setInteraction(Boolean.parseBoolean( interaction));
+		
+		return false;
 	}
 
 	@Override
@@ -60,10 +62,5 @@ public class SetActiveAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
-	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
 	}
 }

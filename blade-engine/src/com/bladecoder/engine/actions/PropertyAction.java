@@ -50,7 +50,7 @@ public class PropertyAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
 		
 		if(type.equals("world")) {
 			World.getInstance().setCustomProperty(prop, value);
@@ -61,6 +61,8 @@ public class PropertyAction implements Action {
 			Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 			actor.setCustomProperty(prop, value);
 		}
+		
+		return false;
 	}
 
 	@Override
@@ -73,8 +75,4 @@ public class PropertyAction implements Action {
 		return PARAMS;
 	}
 
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
-	}
 }

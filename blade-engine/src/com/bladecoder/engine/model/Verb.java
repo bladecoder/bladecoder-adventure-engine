@@ -63,14 +63,12 @@ public class Verb implements ActionCallback {
 		
 		while( !isFinished() && !stop) {
 			Action a = actions.get(ip);
-			if(a.waitForFinish(this)) {
-				stop = true;
-			} else {
-				ip++;
-			}
 			
 			try {
-				a.run();
+				if(a.run(this))
+					stop = true;
+				else
+					ip++;
 			} catch (Exception e) {
 				EngineLogger.error("EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName(), e);
 			}		

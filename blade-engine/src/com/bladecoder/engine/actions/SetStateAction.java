@@ -41,7 +41,7 @@ public class SetStateAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
 		if(actorId != null) {
 			Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 		
@@ -49,6 +49,8 @@ public class SetStateAction implements Action {
 		} else {
 			World.getInstance().getCurrentScene().setState(state);
 		}
+		
+		return false;
 	}
 
 
@@ -60,10 +62,5 @@ public class SetStateAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
-	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
 	}
 }

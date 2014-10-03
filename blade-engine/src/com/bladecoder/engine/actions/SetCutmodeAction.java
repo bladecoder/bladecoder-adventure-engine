@@ -39,8 +39,10 @@ public class SetCutmodeAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
 		World.getInstance().setCutMode(value);
+		
+		return false;
 	}
 
 	@Override
@@ -51,10 +53,5 @@ public class SetCutmodeAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
-	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
 	}
 }

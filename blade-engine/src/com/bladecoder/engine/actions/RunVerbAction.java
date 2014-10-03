@@ -22,7 +22,6 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.BaseCallbackAction;
 import com.bladecoder.engine.actions.Param;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
@@ -68,11 +67,13 @@ public class RunVerbAction extends BaseCallbackAction {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
+		setVerbCb(cb);
 		currentRepeat = 0;
 
 		ip = 0;
 		nextStep();
+		return getWait();
 	}
 
 	private Verb getVerb(String verb, String target) {
@@ -113,14 +114,12 @@ public class RunVerbAction extends BaseCallbackAction {
 		while (currentRepeat < repeat) {
 			while (ip < actions.size() && !stop) {
 				Action a = actions.get(ip);
-				if (a.waitForFinish(this)) {
-					stop = true;
-				} else {
-					ip++;
-				}
 
 				try {
-					a.run();
+					if(a.run(this))
+						stop = true;
+					else
+						ip++;
 				} catch (Exception e) {
 					EngineLogger.error("EXCEPTION EXECUTING ACTION: "
 							+ a.getClass().getSimpleName(), e);

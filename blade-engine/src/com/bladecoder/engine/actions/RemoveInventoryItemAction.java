@@ -39,12 +39,14 @@ public class RemoveInventoryItemAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
 		
 		if(itemId!=null)
 			World.getInstance().getInventory().removeItem(itemId);
 		else
 			World.getInstance().getInventory().removeAllItems();
+		
+		return false;
 	}
 
 	@Override
@@ -55,10 +57,5 @@ public class RemoveInventoryItemAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
-	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
 	}
 }

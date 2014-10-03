@@ -17,9 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.BaseCallbackAction;
-import com.bladecoder.engine.actions.Param;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -28,7 +25,6 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
 
 public class CameraAction extends BaseCallbackAction {
 	public static final String INFO = "Set/Animates the camera position and zoom. Also can stablish the follow character parameter";
@@ -73,8 +69,8 @@ public class CameraAction extends BaseCallbackAction {
 	}
 
 	@Override
-	public void run() {
-		EngineLogger.debug("CAMERA_ACTION");
+	public boolean run(ActionCallback cb) {
+		setVerbCb(cb);
 
 		float scale = EngineAssetManager.getInstance().getScale();
 
@@ -103,6 +99,8 @@ public class CameraAction extends BaseCallbackAction {
 		} else {
 			camera.startAnimation(pos.x * scale, pos.y * scale, zoom, duration, getWait()?this:null);
 		}
+		
+		return getWait();
 	}
 
 

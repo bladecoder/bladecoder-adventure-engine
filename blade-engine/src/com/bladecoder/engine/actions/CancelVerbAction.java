@@ -50,7 +50,8 @@ public class CancelVerbAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
+
 		if(actorId != null) {
 			Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 		
@@ -59,6 +60,8 @@ public class CancelVerbAction implements Action {
 			Scene s = World.getInstance().getCurrentScene();
 			s.getVerbManager().cancelVerb(verb, s.getState(), target);
 		}
+		
+		return false;
 	}
 
 	@Override
@@ -69,11 +72,6 @@ public class CancelVerbAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
-	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
 	}
 
 }

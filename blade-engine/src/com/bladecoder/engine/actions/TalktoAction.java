@@ -41,11 +41,13 @@ public class TalktoAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
 		
 		Actor actor = World.getInstance().getCurrentScene().getActor(actorId, false);
 		
 		World.getInstance().setCurrentDialog(actor.getDialog(dialog));
+		
+		return false;
 	}
 
 
@@ -57,10 +59,5 @@ public class TalktoAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
-	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
 	}
 }

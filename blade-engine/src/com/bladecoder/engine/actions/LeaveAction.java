@@ -37,13 +37,16 @@ public class LeaveAction implements Action {
 	String chapter;
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
+
 		EngineLogger.debug("LEAVE ACTION");
 		
 		if(chapter == null || chapter.isEmpty())
 			World.getInstance().setCurrentScene(scene);
 		else
 			World.getInstance().loadXMLChapter(chapter, scene);
+		
+		return false;
 	}
 
 	@Override
@@ -63,8 +66,4 @@ public class LeaveAction implements Action {
 		return PARAMS;
 	}
 
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
-	}
 }

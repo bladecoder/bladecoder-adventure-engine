@@ -19,7 +19,6 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.BaseCallbackAction;
 import com.bladecoder.engine.actions.Param;
-
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
@@ -44,7 +43,9 @@ public class GotoAction extends BaseCallbackAction {
 	private String targetId;
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
+		setVerbCb(cb);
+		
 		float scale = EngineAssetManager.getInstance().getScale();
 		
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
@@ -59,6 +60,8 @@ public class GotoAction extends BaseCallbackAction {
 			}
 		} else 
 			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), getWait()?this:null);
+		
+		return getWait();
 	}
 
 	@Override

@@ -21,18 +21,16 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.Param;
 
 public interface Action {
-	public void run();
-
-	public void setParams(HashMap<String, String> params);
-
 	/**
-	 * If this method returns true, the verb must stops the execution and wait
-	 * for the action to call the cb.resume()
+	 * Execute the action
 	 * 
 	 * @param cb
-	 * @return
+	 * @return If returns true, the verb must stops the execution and wait
+	 * for the action to call the cb.resume()
 	 */
-	public boolean waitForFinish(ActionCallback cb);
+	public boolean run(ActionCallback cb);
+
+	public void setParams(HashMap<String, String> params);
 
 	public String getInfo();
 

@@ -19,7 +19,6 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.BaseCallbackAction;
 import com.bladecoder.engine.actions.Param;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -78,7 +77,8 @@ public class PosAnimationAction extends BaseCallbackAction {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
+		setVerbCb(cb);
 		EngineLogger.debug("SET_POSANIMATION_ACTION");
 		
 		float scale = EngineAssetManager.getInstance().getScale();
@@ -86,6 +86,8 @@ public class PosAnimationAction extends BaseCallbackAction {
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
 		
 		actor.startPosAnimation(repeat, count, speed, pos.x * scale, pos.y * scale, getWait()?this:null);
+		
+		return getWait();
 	}
 
 	@Override

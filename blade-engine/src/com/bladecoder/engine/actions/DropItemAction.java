@@ -46,14 +46,14 @@ public class DropItemAction implements Action {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
 		float scale =  EngineAssetManager.getInstance().getScale();
 		
 		Actor actor = World.getInstance().getInventory().getItem(itemId);
 		
 		if(actor==null) {
 			EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", itemId));
-			return;
+			return false;
 		}
 		
 		World.getInstance().getInventory().removeItem(itemId);
@@ -66,6 +66,8 @@ public class DropItemAction implements Action {
 		
 		if(pos != null)
 			((SpriteActor)actor).setPosition(pos.x * scale, pos.y * scale);
+		
+		return false;
 	}
 
 	@Override
@@ -76,10 +78,5 @@ public class DropItemAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
-	}
-
-	@Override
-	public boolean waitForFinish(ActionCallback cb) {
-		return false;
 	}
 }

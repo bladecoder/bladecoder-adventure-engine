@@ -19,7 +19,6 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.BaseCallbackAction;
 import com.bladecoder.engine.actions.Param;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
@@ -95,7 +94,8 @@ public class SayAction extends BaseCallbackAction {
 	}
 
 	@Override
-	public void run() {
+	public boolean run(ActionCallback cb) {
+		setVerbCb(cb);	
 		EngineLogger.debug("SAY ACTION");
 		Actor actor = World.getInstance().getCurrentScene()
 				.getActor(actorId, false);
@@ -145,6 +145,8 @@ public class SayAction extends BaseCallbackAction {
 			World.getInstance().getTextManager()
 						.addSubtitle(text, x, y, quee, type, Color.BLACK, getWait()?this:null);
 		}
+		
+		return getWait();
 	}
 
 	@Override
