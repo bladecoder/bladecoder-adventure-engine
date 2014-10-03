@@ -3,7 +3,6 @@ allprojects {
     apply plugin: "idea"
     
     version = '0.3.0'
-    group = 'com.bladecoder'
 
     ext {
         gdxVersion = '1.3.1'

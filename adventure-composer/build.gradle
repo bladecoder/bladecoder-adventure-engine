@@ -1,6 +1,8 @@
 apply plugin: "java"
 apply plugin: 'application'
 
+    group = 'com.bladecoder.engineeditor'
+
 mainClassName = 'com.bladecoder.engineeditor.Main'
 
 // java
