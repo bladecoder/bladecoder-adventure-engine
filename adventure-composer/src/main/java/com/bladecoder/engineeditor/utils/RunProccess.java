@@ -139,10 +139,10 @@ public class RunProccess {
 		String exec = workingDir.getAbsolutePath() + "/" + (System.getProperty("os.name").contains("Windows") ?  "gradlew.bat": "gradlew");
 		String command = exec + " " + parameters;
 		
-		EditorLogger.debug("Executing '" + command + "'");		
+		EditorLogger.debug("Executing '" + command + "'");
 		
 		try {
-			final Process process = new ProcessBuilder(command.split(" ")).directory(workingDir).inheritIO().start();
+			final Process process = new ProcessBuilder(command.split(" ")).directory(workingDir).start();
 			process.waitFor();			
 			return process.exitValue() == 0;
 		} catch (Exception e) {
