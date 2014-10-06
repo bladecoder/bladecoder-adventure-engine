@@ -85,6 +85,12 @@ public class ScnWidget extends Widget {
 	private WalkZoneWindow walkZoneWindow;
 
 	private boolean showWalkZone;
+	
+	/**
+	 * The NOTIFY_PROJECT_LOADED listener is called from other thread.
+	 * This flag is to recreate the scene in the OpenGL thread. 
+	 */
+	private boolean projectLoadedFlag = false;
 
 	public ScnWidget(Skin skin) {
 		bigFont = skin.get("big-font", BitmapFont.class);
@@ -107,23 +113,19 @@ public class ScnWidget extends Widget {
 						+ e.getPropertyName());
 				
 				if (e.getPropertyName().equals(Project.NOTIFY_SCENE_SELECTED)) {
-					setSelectedScene(Ctx.project.getSelectedScene());
+					if(!projectLoadedFlag)
+						setSelectedScene(Ctx.project.getSelectedScene());
 				} else if (e.getPropertyName().equals(
 						Project.NOTIFY_ACTOR_SELECTED)) {
-					setSelectedActor(Ctx.project.getSelectedActor());
+					if(!projectLoadedFlag)
+						setSelectedActor(Ctx.project.getSelectedActor());
 				} else if (e.getPropertyName().equals(
 						Project.NOTIFY_FA_SELECTED)) {
-					setSelectedFA(Ctx.project.getSelectedFA());
+					if(!projectLoadedFlag)
+						setSelectedFA(Ctx.project.getSelectedFA());
 				} else if (e.getPropertyName().equals(
 						Project.NOTIFY_PROJECT_LOADED)) {
-					if (scn != null) {
-						scn.dispose();
-						EngineAssetManager.getInstance().dispose();
-						scn = null;
-					}
-
-					EngineAssetManager.createEditInstance(Ctx.project
-							.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH, Ctx.project.getWorld().getWidth(), Ctx.project.getWorld().getHeight());
+					projectLoadedFlag = true;
 				}
 			}
 		});
@@ -195,6 +197,23 @@ public class ScnWidget extends Widget {
 
 	@Override
 	public void act(float delta) {
+		if(projectLoadedFlag) {
+			projectLoadedFlag = false;
+			
+			if (scn != null) {
+				scn.dispose();
+				EngineAssetManager.getInstance().dispose();
+				scn = null;
+			}
+
+			EngineAssetManager.createEditInstance(Ctx.project
+					.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH, Ctx.project.getWorld().getWidth(), Ctx.project.getWorld().getHeight());
+			
+			setSelectedScene(Ctx.project.getSelectedScene());
+			setSelectedActor(Ctx.project.getSelectedActor());
+			setSelectedFA(Ctx.project.getSelectedFA());
+		}
+		
 		if (scn != null && animation && !loading && !loadingError) {
 			faRenderer.update(delta);
 			scn.update(delta);

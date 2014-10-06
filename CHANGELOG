@@ -1,3 +1,6 @@
+[0.3.1]
+- COMPOSER: Fixed accessing opengl context issue when creating project in the new thread.
+
 [0.3.0]
 - ENGINE: Action refactoring. WARNING: Names have changed. All previous games are not compatible.
 - ENGINE: New DebugScreen (Work in progress)

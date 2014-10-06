@@ -94,15 +94,15 @@ public class CreateProjectDialog extends EditDialog {
 			
 			Ctx.project.loadProject(new File(location.getText() + "/"
 					+ projectName.getText()));
+			
+			Ctx.msg.show(stage, "Project successfully created", 3);
 		} catch (Exception e) {
 			String msg = "Something went wrong while creating project.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(stage, msg, 2);
+			Ctx.msg.show(stage, msg, 3);
 			EditorLogger.error(msg);
 			return;
 		}
-		
-		Ctx.msg.show(stage, "Project successfully created", 3);
 	}
 
 	@Override
