@@ -81,13 +81,12 @@ public class BladeEngineSetup {
 //				"You have a more recent version of android build tools than the recommended.\nDo you want to use this version?",
 //				"Warning!", JOptionPane.YES_NO_OPTION);
 			
-			int value = 0; // USE THE CURRENT BUILD TOOLS
-			if (value != 0) {
-				EditorLogger.error("Using build tools: " + Versions.getBuildToolsVersion());
-			} else {
-				// TODO use the current local version if available
-//				buildToolsVersion = newestLocalTool;
+			int value = 0; // ALWAYS USE THE CURRENT BUILD TOOLS
+			if(value == 0) {
+				Versions.setBuildToolsVersion(newestLocalTool);
 			}
+			
+			EditorLogger.error("Using build tools: " + Versions.getBuildToolsVersion());
 		} else {
 			if (!hasFileInDirectory(buildTools, Versions.getBuildToolsVersion())) {
 				EditorLogger.error("Please update your Android SDK, you need build tools: "
@@ -102,14 +101,13 @@ public class BladeEngineSetup {
 //			"You have a more recent version of android build tools than the recommended.\nDo you want to use this version?",
 //			"Warning!", JOptionPane.YES_NO_OPTION);
 		
-			int value = 0; // USE THE CURRENT API
+			int value = 0; // ALWAYS USE THE CURRENT API
 			
-			if (value != 0) {
-				EditorLogger.error("Using API level: " + Versions.getAndroidAPILevel());
-			} else {
-				// TODO use current API if available
-//				Versions.getAndroidAPILevel() = String.valueOf(newestLocalApi);
+			if(value == 0) {
+				Versions.setAndroidAPILevel(Integer.toString(newestLocalApi));
 			}
+			
+			EditorLogger.error("Using API level: " + Versions.getAndroidAPILevel());
 		} else {
 			if (!hasFileInDirectory(apis, "android-" + Versions.getAndroidAPILevel())) {
 				EditorLogger.error("Please update your Android SDK, you need the Android API: "

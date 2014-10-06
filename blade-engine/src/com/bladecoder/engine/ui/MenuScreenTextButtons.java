@@ -147,6 +147,18 @@ public class MenuScreenTextButtons implements Screen {
 
 		table.row();
 		table.add(credits);
+		
+		if(EngineLogger.debugMode()) {
+			TextButton debug = new TextButton("[RED]Debug[]", ui.getSkin(), "menu");
+			debug.addListener(new ClickListener() {
+				public void clicked(InputEvent event, float x, float y) {
+					ui.setCurrentScreen(new DebugScreen(ui));
+				}
+			});
+
+			table.row();
+			table.add(debug);
+		}
 
 		TextButton quit = new TextButton("Quit Game", ui.getSkin(), "menu");
 		quit.addListener(new ClickListener() {
@@ -158,18 +170,6 @@ public class MenuScreenTextButtons implements Screen {
 
 		table.row();
 		table.add(quit);
-		
-		if(EngineLogger.debugMode()) {
-			TextButton debug = new TextButton("Debug screen", ui.getSkin(), "menu");
-			debug.addListener(new ClickListener() {
-				public void clicked(InputEvent event, float x, float y) {
-					ui.setCurrentScreen(new DebugScreen(ui));
-				}
-			});
-
-			table.row();
-			table.add(debug);
-		}
 
 		table.pack();
 

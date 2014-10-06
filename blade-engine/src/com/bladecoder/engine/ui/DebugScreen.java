@@ -117,6 +117,7 @@ public class DebugScreen implements Screen {
 
 		Recorder r = ((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getRecorder();
 		TextButton play = new TextButton(r.isPlaying() ? "Stop" : "Play", ui.getSkin());
+		TextButton rec = new TextButton(r.isRecording() ? "Stop Rec" : "Rec", ui.getSkin());
 		play.addListener(new ClickListener() {
 			
 			public void clicked(InputEvent event, float x, float y) {
@@ -124,7 +125,7 @@ public class DebugScreen implements Screen {
 				Recorder r = scnScr.getRecorder();
 				
 				if (!r.isPlaying()) {
-					r.load("full");
+					r.load(recordings.getSelected());
 					r.setPlaying(true);
 					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 				} else {
@@ -134,13 +135,55 @@ public class DebugScreen implements Screen {
 			}
 		});
 		
+		rec.addListener(new ClickListener() {
+			
+			public void clicked(InputEvent event, float x, float y) {
+				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
+				Recorder r = scnScr.getRecorder();
+				
+				if (r.isPlaying()) {
+					r.setPlaying(false);
+				}
+				
+				r.setRecording(!r.isRecording());
+			}
+		});
+		
 		recordings = new SelectBox<String>(ui.getSkin());
-		recordings.setItems(EngineAssetManager.getInstance().listAssetFiles("/test"));
+		recordings.setItems(EngineAssetManager.getInstance().listAssetFiles("/tests"));
 
 		table.row();
 		table.add("Game Recording: ");
 		table.add(recordings);
 		table.add(play);
+		table.add(rec);
+		
+		// ------------- SCENES
+		TextButton go = new TextButton("Go", ui.getSkin());
+		go.addListener(new ClickListener() {
+					
+					public void clicked(InputEvent event, float x, float y) {
+						SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
+						Recorder r = scnScr.getRecorder();
+						
+						if (!r.isPlaying()) {
+							r.load("full");
+							r.setPlaying(true);
+							ui.setCurrentScreen(Screens.SCENE_SCREEN);
+						} else {
+							r.setPlaying(false);
+							ui.setCurrentScreen(Screens.MENU_SCREEN);
+						}
+					}
+				});
+				
+				recordings = new SelectBox<String>(ui.getSkin());
+				recordings.setItems(EngineAssetManager.getInstance().listAssetFiles("/tests"));
+
+				table.row();
+				table.add("Game Recording: ");
+				table.add(recordings);
+				table.add(play);		
 		
 		// ------------- BACK BUTTON
 		

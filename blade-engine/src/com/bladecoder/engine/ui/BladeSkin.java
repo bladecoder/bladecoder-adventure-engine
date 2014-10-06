@@ -90,6 +90,8 @@ public class BladeSkin extends Skin {
 					}
 				}
 				
+				font.setMarkupEnabled(true);
+				
 				return font;
 			}
 		});

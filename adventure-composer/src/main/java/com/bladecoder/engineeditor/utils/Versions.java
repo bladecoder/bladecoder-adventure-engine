@@ -68,4 +68,12 @@ public class Versions {
 	public static String getGwtVersion() {
 		return getProperty(GWT_VERSION_PROP,null);
 	}
+	
+	public static void setBuildToolsVersion(String v) {
+		config.setProperty(BUILDTOOLS_VERSION_PROP, v);
+	}
+	
+	public static void setAndroidAPILevel(String v) {
+		config.setProperty(ANDROID_API_LEVEL_PROP, v);
+	}
 }
