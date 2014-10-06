@@ -43,7 +43,7 @@ public class RunProccess {
 		return builder.toString();
 	}
 	
-	public static void runBladeEngine(File prjFolder, String chapter, String scene) throws IOException {
+	public static boolean runBladeEngine(File prjFolder, String chapter, String scene) throws IOException {
 		String args = ":desktop:run -PappArgs=['-w'";
 		
 		if(chapter != null) {
@@ -56,7 +56,7 @@ public class RunProccess {
 		
 		args += "]";
 		
-		runGradle(prjFolder, args);
+		return runGradle(prjFolder, args);
 	}
 	
 	public static void runAnt(String buildFile, String target, String distDir, String projectDir, Properties props) throws IOException {
@@ -139,10 +139,16 @@ public class RunProccess {
 		String exec = workingDir.getAbsolutePath() + "/" + (System.getProperty("os.name").contains("Windows") ?  "gradlew.bat": "gradlew");
 		String command = exec + " " + parameters;
 		
-		EditorLogger.debug("Executing '" + command + "'");		
+		EditorLogger.debug("Executing '" + command + "'");
 		
 		try {
-			final Process process = new ProcessBuilder(command.split(" ")).directory(workingDir).inheritIO().start();
+			final ProcessBuilder pb = new ProcessBuilder(command.split(" ")).directory(workingDir);
+			
+			// TODO: READ OUTPUT FROM pb AND print in output stream			
+			if(System.console() != null)
+				pb.inheritIO();
+			
+			final Process process = pb.start();
 			process.waitFor();			
 			return process.exitValue() == 0;
 		} catch (Exception e) {

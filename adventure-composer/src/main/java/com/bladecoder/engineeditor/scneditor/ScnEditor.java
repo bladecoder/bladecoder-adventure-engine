@@ -119,14 +119,15 @@ public class ScnEditor extends Table {
 				Ctx.msg.show(getStage(),msg, 2);
 			}
 			
-			RunProccess.runBladeEngine(
+			if(!RunProccess.runBladeEngine(
 					Ctx.project.getProjectDir(),
 					Ctx.project.getSelectedChapter().getId(),
-					Ctx.project.getSelectedChapter().getId(Ctx.project.getSelectedScene()));
+					Ctx.project.getSelectedChapter().getId(Ctx.project.getSelectedScene())))
+				Ctx.msg.show(getStage(),"There was a problem running the project", 3);
 		} catch (IOException e) {
 			String msg = "Something went wrong while testing the scene.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(),msg, 2);
+			Ctx.msg.show(getStage(),msg, 3);
 		}
 	}
 

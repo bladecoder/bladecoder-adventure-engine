@@ -247,7 +247,8 @@ public class ProjectToolbar extends Table {
 		try {
 			saveProject();
 
-			RunProccess.runBladeEngine(Ctx.project.getProjectDir(), null, null);
+			if(!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), null, null))
+				Ctx.msg.show(getStage(), "There was a problem running the project", 3);
 		} catch (IOException e) {
 			String msg = "Something went wrong while playing the project.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
