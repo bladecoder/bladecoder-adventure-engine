@@ -2,6 +2,7 @@ apply plugin: "java"
 
 sourceCompatibility = 1.6
 sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.resources.srcDirs = [ "src/" ]
 
 project.ext.mainClassName = "%PACKAGE%.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../%ASSET_PATH%");

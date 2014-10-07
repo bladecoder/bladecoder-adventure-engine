@@ -283,6 +283,10 @@ public class BladeEngineSetup {
 		if (builder.modules.contains(ProjectType.DESKTOP)) {
 			project.files.add(new ProjectFile("desktop/build.gradle"));
 			project.files.add(new ProjectFile("desktop/src/DesktopLauncher", "desktop/src/" + packageDir + "/desktop/DesktopLauncher.java", true));
+			
+			project.files.add(new ProjectFile("desktop/src/icons/icon16.png", false));
+			project.files.add(new ProjectFile("desktop/src/icons/icon32.png", false));
+			project.files.add(new ProjectFile("desktop/src/icons/icon128.png", false));
 		}
 
 		// Assets
@@ -292,17 +296,13 @@ public class BladeEngineSetup {
 		new File(outputDir + "/" + assetPath + "/3d").mkdirs();
 		new File(outputDir + "/" + assetPath + "/atlases/1").mkdirs();
 		new File(outputDir + "/" + assetPath + "/backgrounds/1").mkdirs();
-		new File(outputDir + "/" + assetPath + "/icons").mkdirs();
 		new File(outputDir + "/" + assetPath + "/images/1").mkdirs();
 		new File(outputDir + "/" + assetPath + "/model").mkdirs();
 		new File(outputDir + "/" + assetPath + "/music").mkdirs();
 		new File(outputDir + "/" + assetPath + "/sounds").mkdirs();
 		new File(outputDir + "/" + assetPath + "/test").mkdirs();
 		new File(outputDir + "/" + assetPath + "/ui/1").mkdirs();
-		
-		project.files.add(new ProjectFile("android/assets/icons/icon16.png", assetPath + "/icons/icon16.png", false));
-		project.files.add(new ProjectFile("android/assets/icons/icon32.png", assetPath + "/icons/icon32.png", false));
-		project.files.add(new ProjectFile("android/assets/icons/icon128.png", assetPath + "/icons/icon128.png", false));
+
 		
 		project.files.add(new ProjectFile("android/assets/model/00.chapter", assetPath + "/model/00.chapter", false));
 		project.files.add(new ProjectFile("android/assets/model/world.properties", assetPath + "/model/world.properties", false));
