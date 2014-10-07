@@ -149,6 +149,7 @@ public class RunProccess {
 				pb.inheritIO();
 			
 			final Process process = pb.start();
+			
 			process.waitFor();			
 			return process.exitValue() == 0;
 		} catch (Exception e) {
