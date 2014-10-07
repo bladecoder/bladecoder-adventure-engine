@@ -56,7 +56,7 @@ public class EditVerbDialog extends EditElementDialog {
 		inputs = new InputPanel [4];
 		inputs[0] = new InputPanel(skin, "Verb ID", "Select the verb to create.", parentElement.getTagName().equals("scene")?SCENE_VERBS:VERBS);
 		inputs[1] = new InputPanel(skin, "State", "Select the state.");
-		inputs[2] = new InputPanel(skin, "Target Actor", "Select the target actor id for the 'use' verb");
+		inputs[2] = new InputPanel(skin, "Target BaseActor", "Select the target actor id for the 'use' verb");
 		inputs[3] = new InputPanel(skin, "Custom Verb Name", "Select the Custom verb id");
 
 		if(parentElement.getTagName().equals("scene"))

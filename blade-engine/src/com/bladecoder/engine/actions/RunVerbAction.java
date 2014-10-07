@@ -25,7 +25,7 @@ import com.bladecoder.engine.actions.Param;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
@@ -80,7 +80,7 @@ public class RunVerbAction extends BaseCallbackAction {
 		Verb v = null;
 
 		if (actorId != null) {
-			Actor a = World.getInstance().getCurrentScene()
+			BaseActor a = World.getInstance().getCurrentScene()
 					.getActor(actorId, true);
 			v = a.getVerb(verb, target);
 		} else {

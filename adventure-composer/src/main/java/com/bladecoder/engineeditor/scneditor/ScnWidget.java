@@ -39,7 +39,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.bladecoder.engine.anim.FrameAnimation;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteRenderer;
@@ -67,7 +67,7 @@ public class ScnWidget extends Widget {
 	private final Rectangle scissors = new Rectangle();
 
 	private Scene scn;
-	private Actor selectedActor = null;
+	private BaseActor selectedActor = null;
 	private boolean inScene = false;
 	private boolean animation = true;
 
@@ -144,7 +144,7 @@ public class ScnWidget extends Widget {
 						} else if (e.getPropertyName().equals("bbox")) {
 							Element selActor = (Element) e.getNewValue();
 							String id = doc.getId(selActor);
-							Actor a = scn.getActor(id, false);
+							BaseActor a = scn.getActor(id, false);
 							if (a == null)
 								return;
 
@@ -154,7 +154,7 @@ public class ScnWidget extends Widget {
 						} else if (e.getPropertyName().equals("pos")) {
 							Element selActor = (Element) e.getNewValue();
 							String id = doc.getId(selActor);
-							Actor a = scn.getActor(id, false);
+							BaseActor a = scn.getActor(id, false);
 							if (a == null)
 								return;
 							Vector2 p = doc.getPos(selActor);
@@ -474,7 +474,7 @@ public class ScnWidget extends Widget {
 		return scn;
 	}
 
-	public Actor getSelectedActor() {
+	public BaseActor getSelectedActor() {
 		return selectedActor;
 	}
 
@@ -529,7 +529,7 @@ public class ScnWidget extends Widget {
 	}
 
 	public void setSelectedActor(Element actor) {
-		Actor a = null;
+		BaseActor a = null;
 
 		if (scn != null && actor != null) {
 			a = scn.getActor(Ctx.project.getSelectedChapter().getId(actor),
@@ -583,8 +583,8 @@ public class ScnWidget extends Widget {
 		setSelectedActor(actor);
 	}
 
-	private Actor createActor(ChapterDocument doc, Element e) {
-		Actor a = doc.getEngineActor(e);
+	private BaseActor createActor(ChapterDocument doc, Element e) {
+		BaseActor a = doc.getEngineActor(e);
 		scn.addActor(a);
 
 		a.loadAssets();
@@ -595,7 +595,7 @@ public class ScnWidget extends Widget {
 	}
 
 	private void removeActor(ChapterDocument doc, Element e) {
-		Actor a = scn.getActor(doc.getId(e), false);
+		BaseActor a = scn.getActor(doc.getId(e), false);
 		if (a != null) {
 			scn.removeActor(a);
 

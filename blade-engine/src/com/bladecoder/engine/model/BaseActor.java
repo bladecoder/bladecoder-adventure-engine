@@ -17,7 +17,7 @@ package com.bladecoder.engine.model;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SoundFX;
@@ -33,11 +33,11 @@ import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 
 /**
- * An Actor is any object in a scene or in the inventory.
+ * A BaseActor is any object in a scene or in the inventory.
  * 
  * @author rgarcia
  */
-public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
+public class BaseActor implements Comparable<BaseActor>, Serializable, AssetConsumer {
 	
 	public enum ActorLayer {BACKGROUND, DYNAMIC, FOREGROUND};
 
@@ -134,7 +134,7 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 	}
 	
 	public void update(float delta) {
-		Actor player = scene.getPlayer();
+		BaseActor player = scene.getPlayer();
 		if(isVisible() && player != null) {
 			boolean hit = hit(player.getX(), player.getY());
 			if(!hit && playerInside) {
@@ -236,7 +236,7 @@ public class Actor implements Comparable<Actor>, Serializable, AssetConsumer {
 	}
 
 	@Override
-	public int compareTo(Actor o) {
+	public int compareTo(BaseActor o) {
 		return (int) (o.getBBox().getY() - this.getBBox().getY());
 	}
 

@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
@@ -42,7 +42,7 @@ public class ScnWidgetInputListener extends ClickListener {
 	};
 
 	private DraggingModes draggingMode = DraggingModes.NONE;
-	private Actor selActor = null;
+	private BaseActor selActor = null;
 	private Vector2 org = new Vector2();
 	private int vertIndex;
 	private Polygon selPolygon = null;
@@ -268,7 +268,7 @@ public class ScnWidgetInputListener extends ClickListener {
 				}
 			}
 
-			Actor a = scn.getActorAt(p.x, p.y); // CHECK FOR ACTORS
+			BaseActor a = scn.getActorAt(p.x, p.y); // CHECK FOR ACTORS
 
 			if (a != null && a != selActor) {
 

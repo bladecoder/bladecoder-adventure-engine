@@ -18,7 +18,7 @@ package com.bladecoder.engine.model;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteRenderer;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -34,7 +34,7 @@ import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class SpriteActor extends Actor {
+public class SpriteActor extends BaseActor {
 	private final static float DEFAULT_WALKING_SPEED = 700f; // Speed units:
 																// pix/sec.
 

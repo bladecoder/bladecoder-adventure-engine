@@ -30,7 +30,7 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.anim.AtlasFrameAnimation;
 import com.bladecoder.engine.anim.FrameAnimation;
 import com.bladecoder.engine.anim.Tween;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.Scene;
@@ -38,7 +38,7 @@ import com.bladecoder.engine.model.SpineRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteRenderer;
-import com.bladecoder.engine.model.Actor.ActorLayer;
+import com.bladecoder.engine.model.BaseActor.ActorLayer;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.util.EngineLogger;
@@ -215,7 +215,7 @@ public class ChapterDocument extends BaseDocument {
 		NodeList actors = getActors(s);
 		for (int i = 0; i < actors.getLength(); i++) {
 			Element a = (Element) actors.item(i);
-			Actor actor = getEngineActor(a);
+			BaseActor actor = getEngineActor(a);
 			scn.addActor(actor);
 
 			if (getId(a).equals(getRootAttr("player"))) {
@@ -335,8 +335,8 @@ public class ChapterDocument extends BaseDocument {
 		return Param.parsePolygon(e.getAttribute("bbox"));
 	}
 
-	public Actor getEngineActor(Element e) {
-		Actor a = null;
+	public BaseActor getEngineActor(Element e) {
+		BaseActor a = null;
 
 		String type = getType(e);
 
@@ -357,7 +357,7 @@ public class ChapterDocument extends BaseDocument {
 			a = new SpriteActor();
 			((SpriteActor) a).setRenderer(new ImageRenderer());			
 		} else if (type.equals(NO_RENDERER_ACTOR_TYPE)) {
-			a = new Actor();
+			a = new BaseActor();
 		} else {
 			EngineLogger.error(" Wrong actor Type defined in XML");
 			return null;

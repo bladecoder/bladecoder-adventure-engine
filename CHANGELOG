@@ -1,3 +1,6 @@
+[0.3.2]
+- COMPOSER: Fixed bug when running project without console
+
 [0.3.1]
 - COMPOSER: Fixed accessing opengl context issue when creating project in the new thread.
 

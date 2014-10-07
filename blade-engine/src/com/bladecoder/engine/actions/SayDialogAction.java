@@ -22,7 +22,7 @@ import com.bladecoder.engine.actions.Param;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
@@ -89,7 +89,7 @@ public class SayDialogAction extends BaseCallbackAction {
 	public void resume() {
 
 		World w = World.getInstance();
-		Actor actor = w.getCurrentScene().getActor(characterName, false);
+		BaseActor actor = w.getCurrentScene().getActor(characterName, false);
 		
 		if (characterTurn) {
 			characterTurn = false;

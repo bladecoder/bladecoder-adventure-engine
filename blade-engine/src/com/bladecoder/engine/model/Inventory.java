@@ -52,7 +52,7 @@ public class Inventory implements AssetConsumer {
 		if(!items.contains(actor))
 			items.add(actor);
 		else
-			EngineLogger.error("Actor already in inventory: " + actor.getId());
+			EngineLogger.error("BaseActor already in inventory: " + actor.getId());
 
 		//actor.setFrameAnimation("inventory");
 	}

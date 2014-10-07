@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -45,7 +45,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Actor {
 	private float x = 0, y = 0;
 	private String selected;
 
-	private Actor actor = null;
+	private BaseActor actor = null;
 
 	private String rightVerb;
 	private String leftVerb;
@@ -183,7 +183,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Actor {
 		actor = null;
 	}
 
-	public void show(Actor a, float x, float y) {
+	public void show(BaseActor a, float x, float y) {
 		setVisible(true);
 		this.x = x;
 		this.y = y;

@@ -23,7 +23,7 @@ import com.bladecoder.engine.actions.Param;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
@@ -49,7 +49,7 @@ public class PickUpAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 
-		Actor actor = null;
+		BaseActor actor = null;
 		
 		Scene scn;
 		

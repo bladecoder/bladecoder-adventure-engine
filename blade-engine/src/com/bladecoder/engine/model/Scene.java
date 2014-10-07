@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Transition;
@@ -62,14 +62,14 @@ public class Scene implements Serializable,
 	/** 
 	 * All actors in the scene
 	 */
-	private HashMap<String, Actor> actors = new HashMap<String, Actor>();
+	private HashMap<String, BaseActor> actors = new HashMap<String, BaseActor>();
 
 	/**
-	 * Actor layers: Background actors, dynamic (ordered) and foreground
+	 * BaseActor layers: Background actors, dynamic (ordered) and foreground
 	 */
-	private final List<Actor> bgActors = new ArrayList<Actor>();
-	private final List<Actor> dynamicActors = new ArrayList<Actor>();
-	private final List<Actor> fgActors = new ArrayList<Actor>();
+	private final List<BaseActor> bgActors = new ArrayList<BaseActor>();
+	private final List<BaseActor> dynamicActors = new ArrayList<BaseActor>();
+	private final List<BaseActor> fgActors = new ArrayList<BaseActor>();
 	
 	private SceneCamera camera = new SceneCamera();
 	
@@ -237,7 +237,7 @@ public class Scene implements Serializable,
 			}
 		}
 
-		for (Actor a:actors.values()) {
+		for (BaseActor a:actors.values()) {
 			a.update(delta);
 		}
 		
@@ -259,17 +259,17 @@ public class Scene implements Serializable,
 			spriteBatch.enableBlending();
 		}
 		
-		for (Actor a : bgActors) {
+		for (BaseActor a : bgActors) {
 			if(a instanceof SpriteActor)
 				((SpriteActor)a).draw(spriteBatch);
 		}
 
-		for (Actor a : dynamicActors) {
+		for (BaseActor a : dynamicActors) {
 			if(a instanceof SpriteActor)
 				((SpriteActor)a).draw(spriteBatch);
 		}
 
-		for (Actor a : fgActors) {
+		for (BaseActor a : fgActors) {
 			if(a instanceof SpriteActor)
 				((SpriteActor)a).draw(spriteBatch);
 		}
@@ -296,7 +296,7 @@ public class Scene implements Serializable,
 		renderer.begin(ShapeType.Line);
 		renderer.setColor(ACTOR_BBOX_COLOR);
 
-		for (Actor a : actors.values()) {
+		for (BaseActor a : actors.values()) {
 			Polygon p = a.getBBox();
 
 			if (p == null) {
@@ -341,8 +341,8 @@ public class Scene implements Serializable,
 		return transition;
 	}
 
-	public Actor getActor(String id, boolean searchInventory) {
-		Actor a = actors.get(id);
+	public BaseActor getActor(String id, boolean searchInventory) {
+		BaseActor a = actors.get(id);
 
 		if (a == null && searchInventory) {
 			a = World.getInstance().getInventory().getItem(id);
@@ -351,11 +351,11 @@ public class Scene implements Serializable,
 		return a;
 	}
 
-	public HashMap<String, Actor> getActors() {
+	public HashMap<String, BaseActor> getActors() {
 		return actors;
 	}
 
-	public void addActor(Actor actor) {
+	public void addActor(BaseActor actor) {
 		actors.put(actor.getId(), actor);
 		actor.setScene(this);
 		
@@ -432,8 +432,8 @@ public class Scene implements Serializable,
 		return tiles;
 	}
 
-	public Actor getActorAt(float x, float y) {
-		for (Actor a:fgActors) {
+	public BaseActor getActorAt(float x, float y) {
+		for (BaseActor a:fgActors) {
 			if ( a.hasInteraction() && a.hit(x, y)) {
 				return a;
 			}
@@ -442,14 +442,14 @@ public class Scene implements Serializable,
 		// Se recorre la lista al revés para quedarnos con el más cercano a la
 		// cámara
 		for (int i = dynamicActors.size() - 1; i >= 0; i--) {
-			Actor a = dynamicActors.get(i);
+			BaseActor a = dynamicActors.get(i);
 
 			if (a.hasInteraction() && a.hit(x, y)) {
 				return a;
 			}
 		}
 		
-		for (Actor a:bgActors) {
+		for (BaseActor a:bgActors) {
 			if (a.hasInteraction() && a.hit(x, y)) {
 				return a;
 			}
@@ -479,7 +479,7 @@ public class Scene implements Serializable,
 		depthVector = v;
 	}
 
-	public void removeActor(Actor a) {
+	public void removeActor(BaseActor a) {
 
 		if (a.getId().equals(player)) {
 			player = null;
@@ -555,7 +555,7 @@ public class Scene implements Serializable,
 		if (musicFilename != null)
 			EngineAssetManager.getInstance().loadMusic(musicFilename);
 
-		for (Actor a : actors.values()) {
+		for (BaseActor a : actors.values()) {
 			a.loadAssets();
 		}
 	}
@@ -607,7 +607,7 @@ public class Scene implements Serializable,
 		}
 
 		// RETRIEVE ACTORS
-		for (Actor a : actors.values()) {
+		for (BaseActor a : actors.values()) {
 			a.retrieveAssets();
 		}
 
@@ -637,7 +637,7 @@ public class Scene implements Serializable,
 
 		// orderedActors.clear();
 
-		for (Actor a : actors.values()) {
+		for (BaseActor a : actors.values()) {
 			a.dispose();
 		}
 
@@ -710,11 +710,11 @@ public class Scene implements Serializable,
 		state = json.readValue("state", String.class, jsonData);
 		verbs = json.readValue("verbs", VerbManager.class, jsonData);
 
-		actors = json.readValue("actors", HashMap.class, Actor.class,
+		actors = json.readValue("actors", HashMap.class, BaseActor.class,
 				jsonData);
 		player = json.readValue("player", String.class, jsonData);
 
-		for (Actor a : actors.values()) {			
+		for (BaseActor a : actors.values()) {			
 			a.setScene(this);
 			
 			switch(a.getLayer()) {

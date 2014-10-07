@@ -22,7 +22,7 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.Param;
 
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.World;
 
 public class SetActiveAction implements Action {
@@ -46,7 +46,7 @@ public class SetActiveAction implements Action {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
+		BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 		
 		if(visible != null) actor.setVisible(Boolean.parseBoolean(visible));
 		if(interaction != null) actor.setInteraction(Boolean.parseBoolean( interaction));

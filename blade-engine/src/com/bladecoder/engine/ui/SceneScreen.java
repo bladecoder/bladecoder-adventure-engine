@@ -43,7 +43,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.World;
@@ -78,8 +78,8 @@ public class SceneScreen implements Screen {
 	private final Vector3 unprojectTmp = new Vector3();
 	private final Vector2 unproject2Tmp = new Vector2();
 
-	// Actor under the cursor
-	private Actor currentActor = null;
+	// BaseActor under the cursor
+	private BaseActor currentActor = null;
 
 	private boolean drawHotspots = false;
 	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
@@ -480,7 +480,7 @@ public class SceneScreen implements Screen {
 			// Draw actor states when debug
 			if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
 
-				for (Actor a : w.getCurrentScene().getActors().values()) {
+				for (BaseActor a : w.getCurrentScene().getActors().values()) {
 					Rectangle r = a.getBBox().getBoundingRectangle();
 					sb.setLength(0);
 					sb.append(a.getId());
@@ -515,7 +515,7 @@ public class SceneScreen implements Screen {
 
 	private void drawHotspots(SpriteBatch batch) {
 
-		for (Actor a : World.getInstance().getCurrentScene().getActors().values()) {
+		for (BaseActor a : World.getInstance().getCurrentScene().getActors().values()) {
 			if (a == World.getInstance().getCurrentScene().getPlayer() || !a.hasInteraction() || !a.isVisible())
 				continue;
 
@@ -613,7 +613,7 @@ public class SceneScreen implements Screen {
 		}
 	}
 
-	public void actorClick(Actor a, boolean lookat) {
+	public void actorClick(BaseActor a, boolean lookat) {
 
 		if (a.getVerb("leave") != null) {
 			runVerb(a, "leave", null);
@@ -639,7 +639,7 @@ public class SceneScreen implements Screen {
 	 * @param verb
 	 * @param target
 	 */
-	public void runVerb(Actor a, String verb, String target) {
+	public void runVerb(BaseActor a, String verb, String target) {
 		if (inventoryUI.isVisible())
 			inventoryUI.hide();
 
@@ -720,7 +720,7 @@ public class SceneScreen implements Screen {
 		return viewport;
 	}
 
-	public Actor getCurrentActor() {
+	public BaseActor getCurrentActor() {
 		return currentActor;
 	}
 }

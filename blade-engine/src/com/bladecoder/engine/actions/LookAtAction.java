@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.FrameAnimation;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
@@ -66,7 +66,7 @@ public class LookAtAction implements Action {
 	public boolean run(ActionCallback cb) {
 
 		EngineLogger.debug("LOOKAT ACTION");
-		Actor actor = (Actor) World.getInstance().getCurrentScene().getActor(actorId, true);
+		BaseActor actor = (BaseActor) World.getInstance().getCurrentScene().getActor(actorId, true);
 
 		SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
 		

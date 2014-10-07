@@ -25,7 +25,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
@@ -58,7 +58,7 @@ public class CanvasDrawer {
 		drawer.begin(ShapeType.Line);
 		drawer.setColor(Scene.ACTOR_BBOX_COLOR);
 
-		for (Actor a : scn.getActors().values()) {
+		for (BaseActor a : scn.getActors().values()) {
 			Polygon p = a.getBBox();
 
 			if (p == null) {
@@ -109,7 +109,7 @@ public class CanvasDrawer {
 		}
 	}
 
-	public void drawSelectedActor(Actor selectedActor) {
+	public void drawSelectedActor(BaseActor selectedActor) {
 		// Gdx.gl20.glLineWidth(3);
 		Gdx.gl20.glEnable(GL20.GL_BLEND);
 		// Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);

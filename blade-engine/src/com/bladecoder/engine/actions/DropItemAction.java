@@ -25,7 +25,7 @@ import com.bladecoder.engine.actions.Param;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
@@ -49,7 +49,7 @@ public class DropItemAction implements Action {
 	public boolean run(ActionCallback cb) {
 		float scale =  EngineAssetManager.getInstance().getScale();
 		
-		Actor actor = World.getInstance().getInventory().getItem(itemId);
+		BaseActor actor = World.getInstance().getInventory().getItem(itemId);
 		
 		if(actor==null) {
 			EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", itemId));

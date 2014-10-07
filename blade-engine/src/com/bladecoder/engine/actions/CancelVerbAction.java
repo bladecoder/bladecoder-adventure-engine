@@ -22,7 +22,7 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.Param;
 
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 
@@ -53,7 +53,7 @@ public class CancelVerbAction implements Action {
 	public boolean run(ActionCallback cb) {
 
 		if(actorId != null) {
-			Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
+			BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 		
 			actor.getVerbManager().cancelVerb(verb, actor.getState(), target);
 		} else {

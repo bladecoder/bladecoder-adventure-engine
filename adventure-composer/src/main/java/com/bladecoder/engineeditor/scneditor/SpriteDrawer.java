@@ -20,7 +20,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.anim.FrameAnimation;
 import com.bladecoder.engine.anim.Tween;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.SpineRenderer;
@@ -48,7 +48,7 @@ public class SpriteDrawer {
 		viewportH = h;
 	}
 
-	public void setActor(Actor a) {
+	public void setActor(BaseActor a) {
 		if (renderer != null) {
 			renderer.dispose();
 			renderer = null;

@@ -49,14 +49,14 @@ public class EditActorDialog extends EditElementDialog {
 			Element e) {
 		super(skin);
 
-		inputs[0] = new InputPanel(skin, "Actor Type",
+		inputs[0] = new InputPanel(skin, "BaseActor Type",
 				"Actors can be from different types",
 				ChapterDocument.ACTOR_TYPES);
 
-		inputs[1] = new InputPanel(skin, "Actor ID",
+		inputs[1] = new InputPanel(skin, "BaseActor ID",
 				"IDs can not contain '.' or '_' characters.", true);
 
-		inputs[2] = new InputPanel(skin, "Actor Layer",
+		inputs[2] = new InputPanel(skin, "BaseActor Layer",
 				"The layer for drawing order",
 				ChapterDocument.ACTOR_LAYERS);
 		

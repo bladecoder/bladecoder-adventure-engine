@@ -26,7 +26,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
@@ -87,7 +87,7 @@ public class Recorder {
 					}
 				} else {
 
-					Actor a = s.getActor(v.actorId, true);
+					BaseActor a = s.getActor(v.actorId, true);
 
 					if (a != null) {
 						stringBuilder.append(v.verb);
@@ -99,7 +99,7 @@ public class Recorder {
 
 						a.runVerb(v.verb, v.target);
 					} else
-						EngineLogger.error("PLAYING ERROR: Actor not found: " + v.actorId);
+						EngineLogger.error("PLAYING ERROR: BaseActor not found: " + v.actorId);
 				}
 
 				EngineLogger.debug(stringBuilder.toString());

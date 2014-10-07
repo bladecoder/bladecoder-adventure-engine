@@ -35,7 +35,7 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.anim.AtlasFrameAnimation;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
@@ -51,7 +51,7 @@ import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class ChapterXMLLoader extends DefaultHandler {
-	private Actor actor;
+	private BaseActor actor;
 	private Scene scene;
 
 	private Verb currentVerb;
@@ -129,13 +129,13 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			if (type == null || type.isEmpty()) {
 				SAXParseException e2 = new SAXParseException(
-						"Actor 'type' attribute not found or empty", locator);
+						"BaseActor 'type' attribute not found or empty", locator);
 				error(e2);
 				throw e2;
 			}
 
 			if (type.equals("no_renderer")) {
-				actor = new Actor();
+				actor = new BaseActor();
 			} else {
 				actor = new SpriteActor();
 
@@ -220,7 +220,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			if (id == null || id.isEmpty()) {
 				SAXParseException e2 = new SAXParseException(
-						"Actor 'id' attribute not found or empty", locator);
+						"BaseActor 'id' attribute not found or empty", locator);
 				error(e2);
 				throw e2;
 			}
@@ -295,11 +295,11 @@ public class ChapterXMLLoader extends DefaultHandler {
 			String layerStr = atts.getValue("layer");
 			
 			if(layerStr.equals("background")) {
-				actor.setLayer(Actor.ActorLayer.BACKGROUND);
+				actor.setLayer(BaseActor.ActorLayer.BACKGROUND);
 			} else if(layerStr.equals("foreground")) {
-				actor.setLayer(Actor.ActorLayer.FOREGROUND);			
+				actor.setLayer(BaseActor.ActorLayer.FOREGROUND);			
 			} else {
-				actor.setLayer(Actor.ActorLayer.DYNAMIC);
+				actor.setLayer(BaseActor.ActorLayer.DYNAMIC);
 			}
 			
 			scene.addActor(actor);
@@ -509,7 +509,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		}
 	}
 
-	private void parseSound(String localName, Attributes atts, Actor actor)
+	private void parseSound(String localName, Attributes atts, BaseActor actor)
 			throws SAXException {
 		String id = atts.getValue("id");
 		String filename = atts.getValue("filename");

@@ -22,7 +22,7 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.Param;
 
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 
@@ -58,7 +58,7 @@ public class PropertyAction implements Action {
 			Scene s = World.getInstance().getCurrentScene();
 			s.setCustomProperty(prop, value);
 		} else {
-			Actor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
+			BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 			actor.setCustomProperty(prop, value);
 		}
 		

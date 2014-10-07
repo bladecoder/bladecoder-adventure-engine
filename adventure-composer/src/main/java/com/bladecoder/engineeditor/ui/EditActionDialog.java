@@ -57,7 +57,7 @@ public class EditActionDialog extends EditElementDialog {
 		actionPanel = new InputPanel(skin, "Action",
 				"Select the action to create.", actions2);
 		
-		actorPanel = new InputPanel(skin, "Target Actor",
+		actorPanel = new InputPanel(skin, "Target BaseActor",
 				"Select the target actor id. Default is current actor.",Type.ACTOR,false);
 		classPanel = new InputPanel(skin, "Class",
 				"Select the class for the custom action.", true);

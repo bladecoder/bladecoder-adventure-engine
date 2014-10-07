@@ -32,7 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteRenderer;
@@ -89,7 +89,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 				} else if (configBbox.contains(x, y)) {
 					sceneScreen.showMenu();
 				} else {
-					Actor actor = getItemAt(x, y);
+					BaseActor actor = getItemAt(x, y);
 
 					if (actor != null) {
 						sceneScreen.actorClick(actor, button == 1);
@@ -230,7 +230,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		World.getInstance().getSceneCamera()
 				.getInputUnProject(sceneScreen.getViewport(), mousepos);
 
-		Actor targetActor = sceneScreen.getCurrentActor();
+		BaseActor targetActor = sceneScreen.getCurrentActor();
 
 		if (targetActor != null) {
 			if(targetActor != draggedActor)
@@ -243,7 +243,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		sceneScreen.getUI().getPointer().drag(null);
 	}
 
-	private void use(Actor a1, Actor a2) {
+	private void use(BaseActor a1, BaseActor a2) {
 		if (a1.getVerb("use", a2.getId()) != null) {
 			sceneScreen.runVerb(a1, "use", a2.getId());
 		} else {

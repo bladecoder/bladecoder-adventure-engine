@@ -25,7 +25,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
@@ -51,7 +51,7 @@ public class GotoAction extends BaseCallbackAction {
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
 		
 		if(targetId!=null) {
-			Actor target =  World.getInstance().getCurrentScene().getActor(targetId, false);
+			BaseActor target =  World.getInstance().getCurrentScene().getActor(targetId, false);
 			if(target != null) {
 				Rectangle bbox = target.getBBox().getBoundingRectangle();
 				actor.goTo(new Vector2(bbox.x, bbox.y), getWait()?this:null);
@@ -89,7 +89,7 @@ public class GotoAction extends BaseCallbackAction {
 	 * @param actor
 	 */
 	@SuppressWarnings("unused")
-	private void goNear(SpriteActor player, Actor actor) {
+	private void goNear(SpriteActor player, BaseActor actor) {
 		Rectangle rdest = actor.getBBox().getBoundingRectangle();
 
 		// Vector2 p0 = new Vector2(player.getSprite().getX(),

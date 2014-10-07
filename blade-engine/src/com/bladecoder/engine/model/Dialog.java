@@ -17,7 +17,7 @@ package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
 
-import com.bladecoder.engine.model.Actor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.World;
 
@@ -61,7 +61,7 @@ public class Dialog implements Serializable   {
 		if(v == null) v = DEFAULT_DIALOG_VERB;
 		
 		// TODO: DELETE REFERENCE TO WORLD FROM DIALOG
-		Actor a = World.getInstance().getCurrentScene().getActor(actor, false);
+		BaseActor a = World.getInstance().getCurrentScene().getActor(actor, false);
 		a.runVerb(v);
 		
 		if(currentOption.getNext() != null) {
