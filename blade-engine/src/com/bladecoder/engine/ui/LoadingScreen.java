@@ -15,10 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.ui.UI;
-
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -29,7 +26,7 @@ import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.RectangleRenderer;
 
-public class LoadingScreen implements Screen {
+public class LoadingScreen implements BladeScreen {
 	private final static float INIT_TIME = 3f;
 	
 	private int pos = 0;
@@ -49,8 +46,7 @@ public class LoadingScreen implements Screen {
 	
 	private final Viewport viewport = new ScreenViewport();
 	
-	public LoadingScreen(UI ui) {	
-		this.ui = ui;
+	public LoadingScreen() {	
 	}
 
 	@Override
@@ -134,6 +130,11 @@ public class LoadingScreen implements Screen {
 	@Override
 	public void resume() {
 		
+	}
+
+	@Override
+	public void setUI(UI ui) {
+		this.ui = ui;
 	}
 	
 }

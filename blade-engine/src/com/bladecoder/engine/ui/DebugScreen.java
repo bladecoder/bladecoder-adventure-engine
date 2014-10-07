@@ -15,13 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.ui.Recorder;
-import com.bladecoder.engine.ui.SceneScreen;
-import com.bladecoder.engine.ui.UI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -33,10 +28,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.DPIUtils;
 
-public class DebugScreen implements Screen {
+public class DebugScreen implements BladeScreen {
 	private UI ui;
 
 	private Stage stage;
@@ -44,8 +40,7 @@ public class DebugScreen implements Screen {
 	private TextField speedText;
 	SelectBox<String> recordings;
 
-	public DebugScreen(UI ui) {
-		this.ui = ui;
+	public DebugScreen() {
 	}
 
 	@Override
@@ -215,5 +210,10 @@ public class DebugScreen implements Screen {
 
 	@Override
 	public void resume() {
+	}
+
+	@Override
+	public void setUI(UI ui) {
+		this.ui = ui;
 	}
 }

@@ -18,12 +18,9 @@ package com.bladecoder.engine.ui;
 import java.text.MessageFormat;
 import java.util.Locale;
 
-import com.bladecoder.engine.ui.UI;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -33,34 +30,20 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.ui.UI.Screens;
 
-public class HelpScreen implements Screen, InputProcessor {
+public class HelpScreen implements BladeScreen, InputProcessor {
 	
 	private final static String PIE_FILENAME = "ui/helpPie";
 	private final static String DESKTOP_FILENAME = "ui/helpDesktop";
 
 	private Texture tex;
 
-	private final UI ui;
+	private UI ui;
 	
 	private String localeFilename;
 	private final Viewport viewport = new ScreenViewport();
 
-	public HelpScreen(UI ui) {
-		this.ui = ui;
-		
-		Locale locale = Locale.getDefault();
-		
-		String filename = null;
-		
-		if(ui.isPieMode())
-			filename = PIE_FILENAME;
-		else
-			filename = DESKTOP_FILENAME;
-		
-		localeFilename = MessageFormat.format("{0}_{1}.png", filename, locale.getLanguage());
-		
-		if(!EngineAssetManager.getInstance().assetExists(localeFilename))
-			localeFilename = MessageFormat.format("{0}.png", filename);
+	public HelpScreen() {
+
 	}
 
 	@Override
@@ -156,5 +139,24 @@ public class HelpScreen implements Screen, InputProcessor {
 	@Override
 	public boolean scrolled(int amount) {
 		return false;
+	}
+
+	@Override
+	public void setUI(UI ui) {
+		this.ui = ui;
+		
+		Locale locale = Locale.getDefault();
+		
+		String filename = null;
+		
+		if(ui.isPieMode())
+			filename = PIE_FILENAME;
+		else
+			filename = DESKTOP_FILENAME;
+		
+		localeFilename = MessageFormat.format("{0}_{1}.png", filename, locale.getLanguage());
+		
+		if(!EngineAssetManager.getInstance().assetExists(localeFilename))
+			localeFilename = MessageFormat.format("{0}.png", filename);
 	}
 }

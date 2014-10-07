@@ -15,18 +15,9 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.ui.DialogUI;
-import com.bladecoder.engine.ui.InventoryButton;
-import com.bladecoder.engine.ui.InventoryUI;
-import com.bladecoder.engine.ui.PieMenu;
-import com.bladecoder.engine.ui.Recorder;
-import com.bladecoder.engine.ui.SceneExtendViewport;
-import com.bladecoder.engine.ui.TextManagerUI;
-import com.bladecoder.engine.ui.UI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -54,7 +45,7 @@ import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
-public class SceneScreen implements Screen {
+public class SceneScreen implements BladeScreen {
 
 	private UI ui;
 
@@ -228,18 +219,8 @@ public class SceneScreen implements Screen {
 		}
 	};
 
-	public SceneScreen(UI ui) {
-		this.ui = ui;
+	public SceneScreen() {
 
-		pie = new PieMenu(this);
-		textManagerUI = new TextManagerUI(this);
-		inventoryUI = new InventoryUI(this);
-		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
-		dialogUI = new DialogUI(this);
-
-		this.pieMode = ui.isPieMode();
-
-		pie.setVisible(false);
 	}
 
 	public UI getUI() {
@@ -722,5 +703,20 @@ public class SceneScreen implements Screen {
 
 	public BaseActor getCurrentActor() {
 		return currentActor;
+	}
+
+	@Override
+	public void setUI(UI ui) {
+		this.ui = ui;
+
+		pie = new PieMenu(this);
+		textManagerUI = new TextManagerUI(this);
+		inventoryUI = new InventoryUI(this);
+		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
+		dialogUI = new DialogUI(this);
+
+		this.pieMode = ui.isPieMode();
+
+		pie.setVisible(false);
 	}
 }

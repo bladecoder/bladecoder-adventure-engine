@@ -32,6 +32,10 @@ public class Config {
 	public static final String DEBUG_PROP = "debug";
 	public static final String CHAPTER_PROP = "chapter";
 	public static final String SHOW_DESC_PROP = "show_desc";
+	public static final String MENU_SCREEN_CLASS_PROP = "menu_screen";
+	public static final String HELP_SCREEN_CLASS_PROP = "help_screen";
+	public static final String CREDIT_SCREEN_CLASS_PROP = "credit_screen";
+	public static final String INIT_SCREEN_CLASS_PROP = "init_screen";
 	
 	public static final String PROPERTIES_FILENAME = "BladeEngine.properties";
 

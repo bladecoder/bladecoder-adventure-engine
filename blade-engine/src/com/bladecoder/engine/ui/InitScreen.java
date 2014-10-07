@@ -15,10 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.ui.UI;
-
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -29,7 +26,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.ui.UI.Screens;
 
-public class InitScreen implements Screen {
+public class InitScreen implements BladeScreen {
 	private final static String FILENAME = "ui/blade_logo.png";
 	private final static float FADE_TIME = .6f;
 	private final static float SCREEN_TIME = .8f;
@@ -44,8 +41,7 @@ public class InitScreen implements Screen {
 	
 	private final Viewport viewport = new ScreenViewport();
 	
-	public InitScreen(UI ui) {
-		this.ui = ui;
+	public InitScreen() {
 	}
 
 	@Override
@@ -113,5 +109,10 @@ public class InitScreen implements Screen {
 
 	@Override
 	public void resume() {
+	}
+
+	@Override
+	public void setUI(UI ui) {
+		this.ui = ui;
 	}
 }

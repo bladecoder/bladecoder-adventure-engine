@@ -22,12 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import com.bladecoder.engine.ui.UI;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -42,7 +39,7 @@ import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.TextUtils;
 
-public class CreditsScreen implements Screen, InputProcessor {
+public class CreditsScreen implements BladeScreen, InputProcessor {
 
 	private final static String CREDITS_FILENAME = "ui/credits";
 	private static final String FONT_TITLE_STYLE = "credits-title";
@@ -58,7 +55,7 @@ public class CreditsScreen implements Screen, InputProcessor {
 	private int stringHead = 0;
 	private float scrollY = 0; 
 
-	private final UI ui;
+	private UI ui;
 
 	private Music music;
 	
@@ -66,8 +63,7 @@ public class CreditsScreen implements Screen, InputProcessor {
 	
 	private Viewport viewport;
 
-	public CreditsScreen(UI ui) {
-		this.ui = ui;
+	public CreditsScreen() {
 	}
 
 	@Override
@@ -286,5 +282,10 @@ public class CreditsScreen implements Screen, InputProcessor {
 	@Override
 	public boolean scrolled(int amount) {
 		return false;
+	}
+
+	@Override
+	public void setUI(UI ui) {
+		this.ui = ui;
 	}
 }

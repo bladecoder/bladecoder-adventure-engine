@@ -15,11 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.ui.UI;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -35,13 +32,12 @@ import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class MenuScreenTextButtons implements Screen {
+public class MenuScreenTextButtons implements BladeScreen {
 	private UI ui;
 
 	private Stage stage;
 
-	public MenuScreenTextButtons(UI ui) {
-		this.ui = ui;
+	public MenuScreenTextButtons() {
 	}
 
 	@Override
@@ -152,7 +148,9 @@ public class MenuScreenTextButtons implements Screen {
 			TextButton debug = new TextButton("[RED]Debug[]", ui.getSkin(), "menu");
 			debug.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
-					ui.setCurrentScreen(new DebugScreen(ui));
+					DebugScreen debugScr = new DebugScreen();
+					debugScr.setUI(ui);
+					ui.setCurrentScreen(debugScr);
 				}
 			});
 
@@ -189,5 +187,10 @@ public class MenuScreenTextButtons implements Screen {
 
 	@Override
 	public void resume() {
+	}
+
+	@Override
+	public void setUI(UI ui) {
+		this.ui = ui;
 	}
 }

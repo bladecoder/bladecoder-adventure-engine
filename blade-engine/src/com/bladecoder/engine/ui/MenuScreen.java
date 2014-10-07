@@ -15,11 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.ui.UI;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -33,7 +30,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.DPIUtils;
 
-public class MenuScreen implements Screen {
+public class MenuScreen implements BladeScreen {
 
 	public static final String BACK_COMMAND = "back";
 	public static final String QUIT_COMMAND = "quit";
@@ -49,8 +46,8 @@ public class MenuScreen implements Screen {
 
 	private float buttonSize;
 
-	public MenuScreen(UI ui) {
-		this.ui = ui;
+	public MenuScreen() {
+
 	}
 
 	@Override
@@ -188,5 +185,10 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void resume() {
+	}
+
+	@Override
+	public void setUI(UI ui) {
+		this.ui = ui;
 	}
 }

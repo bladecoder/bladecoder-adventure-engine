@@ -23,11 +23,9 @@ import com.bladecoder.engine.ui.LoadingScreen;
 import com.bladecoder.engine.ui.MenuScreenTextButtons;
 import com.bladecoder.engine.ui.Pointer;
 import com.bladecoder.engine.ui.SceneScreen;
-
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Peripheral;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -35,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engine.util.Utils3D;
 
@@ -45,7 +44,7 @@ public class UI {
 	private boolean fullscreen = false;
 	private Pointer pointer;
 
-	private Screen screen;
+	private BladeScreen screen;
 
 	private boolean pieMode;
 
@@ -56,12 +55,12 @@ public class UI {
 		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN
 	};
 	
-	private final Screen screens[];
+	private final BladeScreen screens[];
 
 	public UI() {
 		batch = new SpriteBatch();
 		
-		screens = new Screen[Screens.values().length];
+		screens = new BladeScreen[Screens.values().length];
 
 		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setCatchMenuKey(true);
@@ -75,22 +74,48 @@ public class UI {
 		World.getInstance().loadXMLWorld();
 		loadAssets();
 		
-		screens[Screens.INIT_SCREEN.ordinal()] = new InitScreen(this);
-		screens[Screens.SCENE_SCREEN.ordinal()] = new SceneScreen(this);
-		screens[Screens.LOADING_SCREEN.ordinal()] = new LoadingScreen(this);
-		screens[Screens.MENU_SCREEN.ordinal()] = new MenuScreenTextButtons(this);
-		screens[Screens.HELP_SCREEN.ordinal()] = new HelpScreen(this);
-		screens[Screens.CREDIT_SCREEN.ordinal()] =  new CreditsScreen(this);
+		screens[Screens.INIT_SCREEN.ordinal()] = getCustomScreenInstance(Config.INIT_SCREEN_CLASS_PROP, InitScreen.class);
+		screens[Screens.SCENE_SCREEN.ordinal()] = new SceneScreen();
+		screens[Screens.LOADING_SCREEN.ordinal()] = new LoadingScreen();
+		screens[Screens.MENU_SCREEN.ordinal()] = getCustomScreenInstance(Config.MENU_SCREEN_CLASS_PROP, MenuScreenTextButtons.class);
+		screens[Screens.HELP_SCREEN.ordinal()] = getCustomScreenInstance(Config.HELP_SCREEN_CLASS_PROP, HelpScreen.class);
+		screens[Screens.CREDIT_SCREEN.ordinal()] =  getCustomScreenInstance(Config.CREDIT_SCREEN_CLASS_PROP, CreditsScreen.class);
+		
+		for(BladeScreen s:screens)
+			s.setUI(this);
 
 		setCurrentScreen(Screens.INIT_SCREEN);
 	}
 	
-	public Screen getScreen(Screens state) {
+	private BladeScreen getCustomScreenInstance(String prop, Class<?> defaultClass) {
+		String clsName = Config.getProperty(prop, null);
+		Class<?> instanceClass = defaultClass;
+		
+		if( clsName != null  && !clsName.isEmpty()) {
+			try {
+				instanceClass = Class.forName(clsName);
+				return (BladeScreen)instanceClass.newInstance();
+			} catch (Exception e) {
+				EngineLogger.error("Error instancing screen. " + e.getMessage());
+				instanceClass = defaultClass;
+			}
+		} 
+		
+		try {
+			return (BladeScreen)instanceClass.newInstance();
+		} catch (Exception e) {
+			EngineLogger.error("Error instancing screen", e);
+		}
+		
+		return null;
+	}
+	
+	public BladeScreen getScreen(Screens state) {
 		return screens[state.ordinal()];
 	}
 	
-	public Screen setScreen(Screens state, Screen s) {
-		return screens[state.ordinal()] = s;
+	public void setScreen(Screens state, BladeScreen s) {
+		screens[state.ordinal()] = s;
 	}
 	
 	public SpriteBatch getBatch() {
@@ -101,7 +126,7 @@ public class UI {
 		return pointer;
 	}
 
-	public Screen getCurrentScreen() {
+	public BladeScreen getCurrentScreen() {
 		return screen;
 	}
 
@@ -109,7 +134,7 @@ public class UI {
 		setCurrentScreen(screens[s.ordinal()]);
 	}
 	
-	public void setCurrentScreen(Screen s) {
+	public void setCurrentScreen(BladeScreen s) {
 
 		if (screen != null) {
 			screen.hide();
