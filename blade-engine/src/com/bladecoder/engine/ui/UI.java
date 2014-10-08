@@ -30,6 +30,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
@@ -93,8 +94,8 @@ public class UI {
 		
 		if( clsName != null  && !clsName.isEmpty()) {
 			try {
-				instanceClass = Class.forName(clsName);
-				return (BladeScreen)instanceClass.newInstance();
+				instanceClass = ClassReflection.forName(clsName);
+				return (BladeScreen)ClassReflection.newInstance(instanceClass);
 			} catch (Exception e) {
 				EngineLogger.error("Error instancing screen. " + e.getMessage());
 				instanceClass = defaultClass;
@@ -102,7 +103,7 @@ public class UI {
 		} 
 		
 		try {
-			return (BladeScreen)instanceClass.newInstance();
+			return (BladeScreen)ClassReflection.newInstance(instanceClass);
 		} catch (Exception e) {
 			EngineLogger.error("Error instancing screen", e);
 		}
