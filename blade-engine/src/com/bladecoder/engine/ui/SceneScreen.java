@@ -217,6 +217,16 @@ public class SceneScreen implements BladeScreen {
 
 			return false;
 		}
+		
+		@Override
+		public boolean scrolled (int amount) {
+			if(amount > 0 && inventoryUI.isVisible())
+				inventoryUI.hide();
+			else if(amount < 0 && !inventoryUI.isVisible())
+				inventoryUI.show();
+			
+			return true;
+		}
 	};
 
 	public SceneScreen() {
