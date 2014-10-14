@@ -28,11 +28,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import com.bladecoder.engine.assets.BasePathResolver;
-import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.assets.EngineResolutionFileResolver;
-
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
@@ -80,7 +75,7 @@ public class EngineAssetManager extends AssetManager {
 
 	protected EngineAssetManager() {
 		this(new InternalFileHandleResolver());
-		getLogger().setLevel(Application.LOG_DEBUG);
+//		getLogger().setLevel(Application.LOG_DEBUG);
 	}
 
 	protected EngineAssetManager(FileHandleResolver resolver) {

@@ -29,6 +29,11 @@ public class DPIUtils {
 	 * The Google recommendations are 56 dp for action buttons
 	 */
 	public final static float BUTTON_SIZE = 56 * Gdx.graphics.getDensity();
+	
+	/**
+	 * The Google recommendations are 24 dp for icons inside action buttons
+	 */
+	public final static float ICON_SIZE = 24 * Gdx.graphics.getDensity();
 
 	/**
 	 * The screen height in DP
@@ -46,18 +51,8 @@ public class DPIUtils {
 	 *
 	 * @return The recommended size in pixels
 	 */
-	public static float getPrefButtonSize(int screenWidth, int screenHeight) {
-		return getSizeMultiplier(screenWidth, screenHeight) * BUTTON_SIZE;
-	}
-
-	/**
-	 * Calcs the button size based in screen size
-	 *
-	 * @return The recommended size in pixels
-	 */
 	public static float getPrefButtonSize() {
-		return getPrefButtonSize(Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight());
+		return getSizeMultiplier() * BUTTON_SIZE;
 	}
 	
 	/**
@@ -65,18 +60,8 @@ public class DPIUtils {
 	 *
 	 * @return The recommended size in pixels
 	 */
-	public static float getMinSize(int screenWidth, int screenHeight) {
-		return getSizeMultiplier(screenWidth, screenHeight) * MIN_SIZE;
-	}
-
-	/**
-	 * Calcs the minimum size based in screen size
-	 *
-	 * @return The recommended size in pixels
-	 */
 	public static float getMinSize() {
-		return getMinSize(Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight());
+		return getSizeMultiplier() * MIN_SIZE;
 	}
 	
 	/**
@@ -84,17 +69,12 @@ public class DPIUtils {
 	 *
 	 * @return The recommended size in pixels
 	 */
-	public static float getMarginSize(int screenWidth, int screenHeight) {
-		return getSizeMultiplier(screenWidth, screenHeight) * MARGIN_SIZE;
-	}
-	
 	public static float getMarginSize() {
-		return getMarginSize(Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight());
+		return getSizeMultiplier() * MARGIN_SIZE;
 	}
 
-	public static float getSizeMultiplier(int screenWidth, int screenHeight) {
-		float inches = pixelsToInches(screenWidth);
+	public static float getSizeMultiplier() {
+		float inches = pixelsToInches(Gdx.graphics.getWidth());
 
 		if (inches > 15)
 			return XXLARGE_MULTIPLIER;
@@ -107,11 +87,6 @@ public class DPIUtils {
 
 		return NORMAL_MULTIPLIER;
 
-	}
-	
-	public static float getSizeMultiplier() {
-		return getSizeMultiplier(Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight());
 	}
 
 	public static int dpToPixels(int dp) {

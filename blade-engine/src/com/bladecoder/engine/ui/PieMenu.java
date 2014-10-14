@@ -15,148 +15,95 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.ui.SceneScreen;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
-public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Actor {
+public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	private BitmapFont font;
 
-	private AtlasRegion piePiece;
-	private AtlasRegion rightIcon;
-	private AtlasRegion leftIcon;
+	private ImageButton lookatButton;
+	private ImageButton talktoButton;
+	private ImageButton pickupButton;
 
-	private AtlasRegion talktoIcon;
-	private AtlasRegion pickupIcon;
-
-	private float scale;
 	private float x = 0, y = 0;
-	private String selected;
 
-	private BaseActor actor = null;
-
-	private String rightVerb;
-	private String leftVerb;
+	private BaseActor baseActor = null;
 
 	private final SceneScreen sceneScreen;
-
-	private final static Color COLOR = new Color(0.0f, 0.0f, 0.0f, 0.7f);
-
-	int viewPortWidth, viewPortHeight;
+	
+	private int viewportWidth, viewportHeight;
 
 	public PieMenu(SceneScreen scr) {
 		sceneScreen = scr;
 		font = scr.getUI().getSkin().getFont("desc");
-		piePiece = scr.getUI().getSkin().getAtlas().findRegion("pie");
-		// rightIcon = atlas.findRegion("pickup");
-		leftIcon = scr.getUI().getSkin().getAtlas().findRegion("lookat");
-
-		talktoIcon = scr.getUI().getSkin().getAtlas().findRegion("talkto");
-		pickupIcon = scr.getUI().getSkin().getAtlas().findRegion("pickup");
-
-		addListener(new InputListener() {
+				
+		lookatButton = new ImageButton(scr.getUI().getSkin(), "pie_lookat");
+		addActor(lookatButton);
+		lookatButton.addListener(new ChangeListener() {			
 			@Override
-			public void touchUp(InputEvent event, float x, float y,
-					int pointer, int button) {
-				if (selected != null && actor != null) {
-					sceneScreen.runVerb(actor, selected, null);
+			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+				if (baseActor != null) {
+					sceneScreen.runVerb(baseActor, "lookat", null);
 				}
 
 				hide();
-				selected = null;
-			}
-
-			@Override
-			public boolean mouseMoved(InputEvent event, float x, float y) {
-
-				return true;
-			}
-
-			@Override
-			public boolean touchDown(InputEvent event, float x2, float y2,
-					int pointer, int button) {
-
-				Rectangle bboxLeft;
-				Rectangle bboxRight;
-
-				bboxLeft = new Rectangle(x - piePiece.getRegionWidth() * scale,
-						y, piePiece.getRegionWidth() * scale,
-						piePiece.getRegionHeight() * scale);
-				bboxRight = new Rectangle(x, y, piePiece.getRegionWidth()
-						* scale, piePiece.getRegionHeight() * scale);
-
-				if (bboxLeft.contains(x2, y2)) {
-					selected = leftVerb;
-				} else if (bboxRight.contains(x2, y2)) {
-					selected = rightVerb;
-				} else {
-					selected = null;
-				}
-
-				if (selected == null) {
-					hide();
-					return false;
-				}
-
-				return true;
 			}
 		});
+		
+		talktoButton = new ImageButton(scr.getUI().getSkin(), "pie_talkto");
+		addActor(talktoButton);
+		talktoButton.addListener(new ChangeListener() {			
+			@Override
+			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+				if (baseActor != null) {
+					sceneScreen.runVerb(baseActor, "talkto", null);
+				}
+
+				hide();
+			}
+		});
+		
+		pickupButton = new ImageButton(scr.getUI().getSkin(), "pie_pickup");
+		addActor(pickupButton);
+		pickupButton.addListener(new ChangeListener() {			
+			@Override
+			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+				if (baseActor != null) {
+					sceneScreen.runVerb(baseActor, "pickup", null);
+				}
+
+				hide();
+			}
+		});
+		
+//		addListener(new InputListener() {
+//			@Override
+//			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+//				hide();
+//				
+//				return false;
+//			}
+//		});
 	}
 
 	@Override
 	public void draw(Batch batch, float alpha) {
 
-		float leftX, leftY, rightX, rightY;
-
-		leftX = x - (piePiece.getRegionWidth() + leftIcon.getRegionWidth())
-				* scale / 2;
-		leftY = y + (piePiece.getRegionHeight() - leftIcon.getRegionHeight())
-				* scale / 2;
-		rightX = x + (piePiece.getRegionWidth() - rightIcon.getRegionWidth())
-				* scale / 2;
-		rightY = y + (piePiece.getRegionHeight() - rightIcon.getRegionHeight())
-				* scale / 2;
-
-		if (selected != leftVerb)
-			batch.setColor(COLOR);
-		else
-			batch.setColor(Color.LIGHT_GRAY);
-
-		batch.draw(piePiece, x - piePiece.getRegionWidth(), y,
-				piePiece.getRegionWidth(), 0, piePiece.getRegionWidth(),
-				piePiece.getRegionHeight(), scale, scale, 0);
-
-		if (selected != rightVerb)
-			batch.setColor(COLOR);
-		else
-			batch.setColor(Color.LIGHT_GRAY);
-
-		batch.draw(piePiece, x - piePiece.getRegionWidth(), y,
-				piePiece.getRegionWidth(), 0, piePiece.getRegionWidth(),
-				piePiece.getRegionHeight(), -scale, scale, 0);
-
-		batch.setColor(Color.WHITE);
-
-		batch.draw(leftIcon, leftX, leftY, 0, 0, leftIcon.getRegionWidth(),
-				leftIcon.getRegionHeight(), scale, scale, 0);
-
-		batch.draw(rightIcon, rightX, rightY, 0, 0, rightIcon.getRegionWidth(),
-				rightIcon.getRegionHeight(), scale, scale, 0);
+		super.draw(batch, alpha);
 
 		// DRAW TARGET DESCRIPTION
-		String desc = actor.getDesc();
+		String desc = baseActor.getDesc();
 
 		if (desc != null) {
 
@@ -180,44 +127,56 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Actor {
 
 	public void hide() {
 		setVisible(false);
-		actor = null;
+		baseActor = null;
 	}
 
 	public void show(BaseActor a, float x, float y) {
 		setVisible(true);
 		this.x = x;
 		this.y = y;
-		actor = a;
-
-		leftVerb = "lookat";
+		baseActor = a;
 
 		if (a.getVerb("talkto") != null) {
-			rightVerb = "talkto";
-			rightIcon = talktoIcon;
+			talktoButton.setVisible(true);
+			pickupButton.setVisible(false);
 		} else {
-			rightVerb = "pickup";
-			rightIcon = pickupIcon;
+			talktoButton.setVisible(false);
+			pickupButton.setVisible(true);
 		}
 		
-		// FITS TO SCREEN
-		if(x < piePiece.getRegionWidth() * scale)
-			this.x = piePiece.getRegionWidth() * scale;
-		else if(x > viewPortWidth - piePiece.getRegionWidth() * scale)
-			this.x = viewPortWidth - piePiece.getRegionWidth() * scale;
+		float margin = DPIUtils.getMarginSize();
 		
-		if(y < piePiece.getRegionHeight() * scale)
-			this.y = piePiece.getRegionHeight() * scale;
-		else if(y > viewPortHeight - piePiece.getRegionHeight() * scale)
-			this.y = viewPortHeight - piePiece.getRegionHeight() * scale;
+		// FITS TO SCREEN
+		if(x < lookatButton.getWidth() + margin)
+			this.x = lookatButton.getWidth() + margin;
+		else if(x > viewportWidth - lookatButton.getWidth() - margin)
+			this.x = viewportWidth - lookatButton.getWidth() - margin;
+		
+		if(y < margin)
+			this.y = margin;
+		else if(y > viewportHeight - lookatButton.getHeight() - margin)
+			this.y = viewportHeight - lookatButton.getHeight() - margin;
+		
+		lookatButton.setPosition(this.x - lookatButton.getWidth() - margin / 2, this.y + margin);
+		pickupButton.setPosition(this.x + margin / 2, this.y + margin);
+		talktoButton.setPosition(this.x + margin / 2, this.y + margin);
 	}
 
 	public void resize(int width, int height) {
-		viewPortWidth = width;
-		viewPortHeight = height;
-
+		viewportWidth = width;
+		viewportHeight = height;
+		
 		setBounds(0, 0, width, height);
 
-		scale = DPIUtils.getPrefButtonSize(width, height) * 1.7f
-				/ piePiece.getRegionHeight();
+		float size = DPIUtils.getPrefButtonSize();
+		float iconSize = Math.max(size/2, DPIUtils.ICON_SIZE);
+		talktoButton.setSize(size, size);
+		talktoButton.getImageCell().maxSize(iconSize, iconSize);
+
+		pickupButton.setSize(size, size);
+		pickupButton.getImageCell().maxSize(iconSize, iconSize);
+		
+		lookatButton.setSize(size, size);
+		lookatButton.getImageCell().maxSize(iconSize, iconSize);
 	}
 }

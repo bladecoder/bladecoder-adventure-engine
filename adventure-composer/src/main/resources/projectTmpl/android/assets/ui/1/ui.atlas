@@ -1,209 +1,160 @@
 
 ui.png
-size: 878,764
+size: 989,823
 format: RGBA8888
-filter: Linear,Linear
+filter: Linear,Nearest
 repeat: none
 back
   rotate: false
-  xy: 2, 529
+  xy: 2, 244
   size: 235, 235
   orig: 235, 235
   offset: 0, 0
   index: -1
 bubblepointer
   rotate: false
-  xy: 131, 18
-  size: 55, 35
-  orig: 55, 35
+  xy: 675, 101
+  size: 79, 51
+  orig: 79, 51
   offset: 0, 0
   index: -1
-bubblepointer2
+circle
   rotate: false
-  xy: 441, 254
-  size: 26, 36
-  orig: 26, 36
+  xy: 635, 468
+  size: 148, 148
+  orig: 148, 148
   offset: 0, 0
   index: -1
-collapse
+circle_button
   rotate: false
-  xy: 476, 564
-  size: 200, 200
-  orig: 200, 200
+  xy: 2, 481
+  size: 341, 342
+  orig: 341, 342
   offset: 0, 0
   index: -1
 config
   rotate: false
-  xy: 239, 90
+  xy: 789, 623
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 credits
   rotate: false
-  xy: 2, 292
+  xy: 2, 7
   size: 235, 235
   orig: 235, 235
   offset: 0, 0
   index: -1
 help
   rotate: false
-  xy: 239, 529
+  xy: 239, 244
   size: 235, 235
   orig: 235, 235
   offset: 0, 0
   index: -1
 hotspotpointer
   rotate: false
-  xy: 554, 75
-  size: 109, 109
-  orig: 109, 109
-  offset: 0, 0
-  index: -1
-hotspotpointer2
-  rotate: false
-  xy: 678, 132
-  size: 109, 109
-  orig: 109, 109
-  offset: 0, 0
-  index: -1
-hotspotpointer3
-  rotate: false
-  xy: 441, 73
-  size: 111, 111
-  orig: 111, 111
-  offset: 0, 0
-  index: -1
-hotspotpointer4
-  rotate: false
-  xy: 678, 243
-  size: 120, 120
-  orig: 120, 120
+  xy: 582, 618
+  size: 205, 205
+  orig: 205, 205
   offset: 0, 0
   index: -1
 inventory
   rotate: false
-  xy: 476, 186
-  size: 200, 174
-  orig: 200, 174
+  xy: 614, 319
+  size: 169, 147
+  orig: 169, 147
+  offset: 0, 0
+  index: -1
+inventory_plain
+  rotate: false
+  xy: 476, 387
+  size: 136, 97
+  orig: 136, 97
   offset: 0, 0
   index: -1
 leave
   rotate: false
-  xy: 554, 13
-  size: 97, 60
-  orig: 97, 60
-  offset: 0, 0
-  index: -1
-leave2
-  rotate: false
-  xy: 239, 21
-  size: 105, 67
-  orig: 105, 67
-  offset: 0, 0
-  index: -1
-leave3
-  rotate: false
-  xy: 665, 63
-  size: 107, 67
-  orig: 107, 67
-  offset: 0, 0
-  index: -1
-leave4
-  rotate: false
-  xy: 415, 2
-  size: 104, 69
-  orig: 104, 69
+  xy: 476, 18
+  size: 197, 124
+  orig: 197, 124
   offset: 0, 0
   index: -1
 left
   rotate: false
-  xy: 476, 362
+  xy: 789, 421
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 lookat
   rotate: false
-  xy: 64, 12
-  size: 65, 41
-  orig: 65, 41
+  xy: 472, 486
+  size: 161, 100
+  orig: 161, 100
+  offset: 0, 0
+  index: -1
+menu
+  rotate: false
+  xy: 602, 154
+  size: 163, 163
+  orig: 163, 163
   offset: 0, 0
   index: -1
 pickup
   rotate: false
-  xy: 653, 7
-  size: 48, 54
-  orig: 48, 54
+  xy: 476, 144
+  size: 103, 116
+  orig: 103, 116
   offset: 0, 0
   index: -1
 pie
   rotate: false
-  xy: 678, 365
+  xy: 767, 20
   size: 197, 197
   orig: 197, 197
   offset: 0, 0
   index: -1
 pointer
   rotate: false
-  xy: 800, 221
-  size: 65, 64
-  orig: 65, 64
-  offset: 0, 0
-  index: -1
-pointer2
-  rotate: false
-  xy: 789, 155
-  size: 65, 64
-  orig: 65, 64
-  offset: 0, 0
-  index: -1
-pointer3
-  rotate: false
-  xy: 346, 21
-  size: 67, 67
-  orig: 67, 67
-  offset: 0, 0
-  index: -1
-pointer4
-  rotate: false
-  xy: 800, 287
-  size: 76, 76
-  orig: 76, 76
+  xy: 476, 262
+  size: 124, 123
+  orig: 124, 123
   offset: 0, 0
   index: -1
 quit
   rotate: false
-  xy: 2, 55
+  xy: 239, 7
   size: 235, 235
   orig: 235, 235
   offset: 0, 0
   index: -1
 reload
   rotate: false
-  xy: 239, 292
+  xy: 345, 588
   size: 235, 235
   orig: 235, 235
   offset: 0, 0
   index: -1
 right
   rotate: false
-  xy: 678, 564
+  xy: 785, 219
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 talkto
   rotate: false
-  xy: 2, 4
-  size: 60, 49
-  orig: 60, 49
+  xy: 345, 482
+  size: 125, 104
+  orig: 125, 104
   offset: 0, 0
   index: -1
 white_pixel
   rotate: false
-  xy: 877, 561
-  size: 1, 1
-  orig: 1, 1
+  xy: 2, 2
+  size: 3, 3
+  orig: 3, 3
   offset: 0, 0
   index: -1

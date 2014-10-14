@@ -15,11 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.ui.InventoryUI;
-import com.bladecoder.engine.ui.PieMenu;
-import com.bladecoder.engine.ui.SceneScreen;
-import com.bladecoder.engine.ui.UI;
-
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -29,7 +24,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.model.BaseActor;
@@ -62,7 +57,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	
 	private InventoryUIStyle style;
 	
-	private TextButton menuButton;
+	private ImageButton menuButton;
 
 	public InventoryUI(SceneScreen scr) {
 		style = scr.getUI().getSkin().get(InventoryUIStyle.class);		
@@ -131,8 +126,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 		});
 		
-		menuButton = new TextButton("MENU", scr.getUI().getSkin());
-		menuButton.setPosition(0, 0);
+		menuButton = new ImageButton(scr.getUI().getSkin(), "menu");
 		addActor(menuButton);
 		menuButton.addListener(new ChangeListener() {			
 			@Override
@@ -158,15 +152,20 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	}
 
 	public void resize(int width, int height) {
-		tileSize = (int)DPIUtils.getMinSize(width, height) * 2;
+		tileSize = (int)DPIUtils.getMinSize() * 2;
 
 		int w = (int) (width * .8f / tileSize) * tileSize;
 		int h = (int) (height * .7f / tileSize) * tileSize;
 		margin = (height - h) / 2;
 
 		setVisible(false);
-
-		setBounds((width - w) / 2, -h, w, h);
+		setBounds((width - w) / 2, -h, w, h);		
+		
+		float size = DPIUtils.getPrefButtonSize();
+		float iconSize = Math.max(size/2, DPIUtils.ICON_SIZE);
+		menuButton.setSize(size, size);
+		menuButton.getImageCell().maxSize(iconSize, iconSize);
+		menuButton.setPosition(getWidth()-menuButton.getWidth()/2, (getHeight() - menuButton.getHeight()) / 2);
 	}
 
 	public void retrieveAssets(TextureAtlas atlas) {

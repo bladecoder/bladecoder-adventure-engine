@@ -25,11 +25,17 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	black08: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.8 } },
 	white: { name: white_pixel, color: { r: 1, g: 1, b: 1, a: 1 } },
 	grey: { name: white_pixel, color: { r: 0.5, g: 0.5, b: 0.5, a: 1 } },
-	dark-grey: { name: white_pixel, color: { r: 0.2, g: 0.2, b: 0.2, a: 1 } }
+	dark-grey: { name: white_pixel, color: { r: 0.2, g: 0.2, b: 0.2, a: 1 }},
+	red: { name: white_pixel, color: { r: 0.5, g: 0, b: 0, a: 1 }},
+	circle_indigo: { name: circle_button, color: { r: 0.24, g: 0.31, b: 0.70, a: 1 }},
+	circle_indigo_light: { name: circle_button, color: { r: 0.50, g: 0.55, b: 0.82, a: 1 } }
 },
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
-	default: {  },
-	inventory: {imageUp: inventory}
+	pie_lookat: {up:circle_indigo, down: circle_indigo_light, imageUp: lookat},
+	pie_pickup: {up:circle_indigo, down: circle_indigo_light, imageUp: pickup},
+	pie_talkto: {up:circle_indigo, down: circle_indigo_light, imageUp: talkto},
+	inventory: {up:circle_indigo, down: circle_indigo_light, imageUp: inventory_plain},
+	menu: {up:circle_indigo, down: circle_indigo_light, imageUp: menu}
 },
 com.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
 	default: {background: black08}

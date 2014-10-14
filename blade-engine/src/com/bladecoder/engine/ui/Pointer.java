@@ -31,9 +31,9 @@ import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class Pointer {
-	private static final String LEAVE_ICON = "leave3";
-	private static final String POINTER_ICON = "pointer3";
-	private static final String HOTSPOT_ICON = "hotspotpointer3";
+	private static final String LEAVE_ICON = "leave";
+	private static final String POINTER_ICON = "pointer";
+	private static final String HOTSPOT_ICON = "hotspotpointer";
 	
 	private static final Color DRAG_NOT_HOTSPOT_COLOR = new Color(.5f, 0.5f, 0.5f, 1f);
 
@@ -149,7 +149,7 @@ public class Pointer {
 	}
 
 	public void resize(int width, int height) {
-		pointerScale = DPIUtils.getMinSize(width, height) / pointerIcon.getRegionHeight() * .8f;
+		pointerScale = DPIUtils.getMinSize() / pointerIcon.getRegionHeight() * .8f;
 	}
 
 }
