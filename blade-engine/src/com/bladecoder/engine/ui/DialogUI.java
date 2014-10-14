@@ -105,7 +105,7 @@ public class DialogUI extends Actor {
 		float lineHeight = style.font.getLineHeight();
 		float y = lineHeight * options.size();
 		setWidth(getStage().getViewport().getScreenWidth());
-		float margin = DPIUtils.getMarginSize(getStage().getViewport().getScreenWidth(), getStage().getViewport().getScreenWidth());
+		float margin = DPIUtils.getMarginSize();
 		setHeight( margin + lineHeight * options.size());
 
 		if (style.background != null) {

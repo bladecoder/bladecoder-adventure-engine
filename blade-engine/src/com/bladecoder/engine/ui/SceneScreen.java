@@ -97,6 +97,9 @@ public class SceneScreen implements BladeScreen {
 
 			if (state == UIStates.PAUSE_MODE || state == UIStates.PLAY_MODE)
 				return true;
+			
+			if(pie.isVisible())
+				pie.hide();
 
 			if (drawHotspots)
 				drawHotspots = false;
@@ -454,7 +457,7 @@ public class SceneScreen implements BladeScreen {
 			sb.append(" Density:");
 			sb.append(Gdx.graphics.getDensity());
 			sb.append(" UI Multiplier:");
-			sb.append(DPIUtils.getSizeMultiplier(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+			sb.append(DPIUtils.getSizeMultiplier());
 
 			if (w.getCurrentScene().getPlayer() != null) {
 				sb.append(" Depth Scale: ");
@@ -522,12 +525,12 @@ public class SceneScreen implements BladeScreen {
 			World.getInstance().getSceneCamera().scene2screen(viewport, unprojectTmp);
 
 			if (!showDesc || a.getDesc() == null) {
-				Drawable drawable = getUI().getSkin().getDrawable("hotspotpointer3");
-				float scale = DPIUtils.getSizeMultiplier(viewport.getScreenWidth(), viewport.getScreenHeight());
-				batch.setColor(Color.BLUE);
-				drawable.draw(batch, unprojectTmp.x - drawable.getMinWidth() * scale / 2,
-						unprojectTmp.y - drawable.getMinHeight() * scale / 2, drawable.getMinWidth()
-								* scale, drawable.getMinHeight() * scale);
+				Drawable drawable = getUI().getSkin().getDrawable("circle");
+				batch.setColor(Color.RED);
+				float size = DPIUtils.ICON_SIZE * DPIUtils.getSizeMultiplier();
+				
+				drawable.draw(batch, unprojectTmp.x - size/2,
+						unprojectTmp.y - size/2, size,size);
 				batch.setColor(Color.WHITE);
 			} else {
 				BitmapFont font = getUI().getSkin().getFont("desc");

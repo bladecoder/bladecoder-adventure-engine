@@ -15,11 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.ui.InventoryUI;
-import com.bladecoder.engine.ui.PieMenu;
-import com.bladecoder.engine.ui.SceneScreen;
-import com.bladecoder.engine.ui.UI;
-
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -29,7 +24,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.model.BaseActor;
@@ -51,6 +47,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	private Rectangle configBbox = new Rectangle();
 
 	private int tileSize;
+	private float destY;
 	private int margin;
 	private int inventoryPos = DOWN;
 
@@ -62,7 +59,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	
 	private InventoryUIStyle style;
 	
-	private TextButton menuButton;
+	private ImageButton menuButton;
 
 	public InventoryUI(SceneScreen scr) {
 		style = scr.getUI().getSkin().get(InventoryUIStyle.class);		
@@ -131,8 +128,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 		});
 		
-		menuButton = new TextButton("MENU", scr.getUI().getSkin());
-		menuButton.setPosition(0, 0);
+		menuButton = new ImageButton(style.menuButtonStyle);
 		addActor(menuButton);
 		menuButton.addListener(new ChangeListener() {			
 			@Override
@@ -145,9 +141,10 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	public void show() {
 		if (!isVisible()) {
 			setVisible(true);
+			setY(-getHeight());
 
 			addAction(Actions
-					.moveTo(getX(), getY() + getHeight() + margin, .1f));
+					.moveTo(getX(), destY, .1f));
 		}
 	}
 
@@ -158,15 +155,24 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	}
 
 	public void resize(int width, int height) {
-		tileSize = (int)DPIUtils.getMinSize(width, height) * 2;
+		tileSize = (int)DPIUtils.getTouchMinSize() * 2;
+		margin = (int)DPIUtils.getMarginSize();
+		
+		float rowSpace = DPIUtils.getSpacing();
 
 		int w = (int) (width * .8f / tileSize) * tileSize;
 		int h = (int) (height * .7f / tileSize) * tileSize;
-		margin = (height - h) / 2;
 
 		setVisible(false);
-
-		setBounds((width - w) / 2, -h, w, h);
+		setSize(w + (w/tileSize - 1) * rowSpace + margin * 2 , h + (h/tileSize - 1) * rowSpace + margin * 2);
+		destY = ( height - getHeight()) / 2;
+		setX((width - getWidth()) / 2);
+		
+		float size = DPIUtils.getPrefButtonSize();
+		float iconSize = Math.max(size/2, DPIUtils.ICON_SIZE);
+		menuButton.setSize(size, size);
+		menuButton.getImageCell().maxSize(iconSize, iconSize);
+		menuButton.setPosition(getWidth()-menuButton.getWidth()/2, (getHeight() - menuButton.getHeight()) / 2);
 	}
 
 	public void retrieveAssets(TextureAtlas atlas) {
@@ -190,8 +196,10 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		batch.draw(configIcon, configBbox.x, configBbox.y, configBbox.width,
 				configBbox.height);
 
-		int cols = (int) getWidth() / tileSize;
-		int rows = (int) getHeight() / tileSize - 1;
+		int cols = (int) (getWidth() - margin) / tileSize;
+		int rows = (int) (getHeight() - margin) / tileSize - 1;
+		
+		float rowSpace = DPIUtils.getSpacing();
 
 		// DRAW ITEMS
 		for (int i = 0; i < inventory.getNumItems(); i++) {
@@ -206,8 +214,13 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			float x = i % cols;
 			float y = rows - i / cols;
 
-			r.draw((SpriteBatch) batch, getX() + x * tileSize + tileSize / 2,
-					getY() + y * tileSize, size);
+			if (style.itemBackground != null) {
+				style.itemBackground.draw(batch, getX() + x * tileSize + x * rowSpace + margin,
+						getY() + y * tileSize + y * rowSpace + margin, tileSize, tileSize);
+			}
+			
+			r.draw((SpriteBatch) batch, getX() + x * tileSize + x * rowSpace+ tileSize / 2 + margin,
+					getY() + y * tileSize + y * rowSpace + margin, size);
 		}
 		
 		super.draw(batch, alpha);
@@ -279,13 +292,18 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	 * @author Rafael Garcia */
 	static public class InventoryUIStyle {
 		/** Optional. */
-		public Drawable background;
+		public Drawable background;		
+		/** Optional. */
+		public Drawable itemBackground;		
+		public ImageButtonStyle menuButtonStyle;
 
 		public InventoryUIStyle () {
 		}
 
 		public InventoryUIStyle (InventoryUIStyle style) {
 			background = style.background;
+			menuButtonStyle = style.menuButtonStyle;
+			itemBackground = style.itemBackground;
 		}
 	}
 }

@@ -45,7 +45,6 @@ public class TextManagerUI extends Actor {
 	private float maxRectangleWidth;
 	private float maxTalkWidth;
 
-	private float scale = 1f;
 	private SceneScreen sceneScreen;
 	private final Vector3 unprojectTmp = new Vector3();
 
@@ -103,10 +102,10 @@ public class TextManagerUI extends Actor {
 					b = style.font.getWrappedBounds(currentSubtitle.str, maxTalkWidth);
 
 					if (style.talkBubble != null) {
-						setY(getY() + style.talkBubble.getMinHeight() * scale + PADDING);
+						setY(getY() + DPIUtils.getTouchMinSize() / 3 + PADDING);
 					}
 					
-					setX(getX() - (b.width + PADDING * 2) / 2);
+					setX(getX() - (b.width) / 2);
 
 				} else {
 					b = style.font.getWrappedBounds(currentSubtitle.str, maxRectangleWidth);
@@ -137,9 +136,13 @@ public class TextManagerUI extends Actor {
 
 		if (subtitle.type == Text.Type.TALK) {
 			if (style.talkBubble != null) {
-				float bubbleX = getX() + getWidth() / 2;
-				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale;
+				float scale = DPIUtils.getTouchMinSize() / 2 / style.talkBubble.getMinHeight();
+				float bubbleX = getX() + (getWidth()  - style.talkBubble.getMinWidth() * scale)/ 2;
+				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + 2;
 
+//				style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
+//						style.talkBubble.getMinHeight() * scale);
+				
 				style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
 						style.talkBubble.getMinHeight() * scale);
 			}
@@ -159,7 +162,6 @@ public class TextManagerUI extends Actor {
 	}
 
 	public void resize(int width, int height) {
-		scale = width / (float) World.getInstance().getWidth();
 		maxRectangleWidth = width / 1.7f;
 		maxTalkWidth = width / 3;
 	}

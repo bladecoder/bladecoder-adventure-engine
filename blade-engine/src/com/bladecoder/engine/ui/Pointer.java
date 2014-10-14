@@ -31,9 +31,9 @@ import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class Pointer {
-	private static final String LEAVE_ICON = "leave3";
-	private static final String POINTER_ICON = "pointer3";
-	private static final String HOTSPOT_ICON = "hotspotpointer3";
+	private static final String LEAVE_ICON = "leave";
+	private static final String POINTER_ICON = "pointer";
+	private static final String HOTSPOT_ICON = "hotspotpointer";
 	
 	private static final Color DRAG_NOT_HOTSPOT_COLOR = new Color(.5f, 0.5f, 0.5f, 1f);
 
@@ -110,7 +110,7 @@ public class Pointer {
 			float margin = DPIUtils.UI_SPACE;
 
 			float textX = mousepos.x - b.width / 2;
-			float textY = mousepos.y + b.height + DPIUtils.UI_SPACE + DPIUtils.getMinSize();
+			float textY = mousepos.y + b.height + DPIUtils.UI_SPACE + DPIUtils.getTouchMinSize();
 
 			if (textX < 0)
 				textX = 0;
@@ -133,7 +133,7 @@ public class Pointer {
 			}
 		} else {
 			float h = (draggingRenderer.getHeight() > draggingRenderer.getWidth()? draggingRenderer.getHeight():draggingRenderer.getWidth());
-			float size =  DPIUtils.getMinSize() / h * 1.8f;
+			float size =  DPIUtils.getTouchMinSize() / h * 1.8f;
 	         
 	        if(currentIcon != hotspotIcon) {
 	        	batch.setColor(DRAG_NOT_HOTSPOT_COLOR);
@@ -149,7 +149,7 @@ public class Pointer {
 	}
 
 	public void resize(int width, int height) {
-		pointerScale = DPIUtils.getMinSize(width, height) / pointerIcon.getRegionHeight() * .8f;
+		pointerScale = DPIUtils.getTouchMinSize() / pointerIcon.getRegionHeight() * .8f;
 	}
 
 }

@@ -15,28 +15,42 @@ com.badlogic.gdx.graphics.Color: {
 	white: { a: 1, b: 1, g: 1, r: 1 },
 	red: { a: 1, b: 0, g: 0, r: 1 },
 	black: { a: 1, b: 0, g: 0, r: 0 },
-	dark-gray: { a: 1, b: 0.25, g: 0.25, r: 0.25 },
-	light-gray: { a: 1, b: 0.75, g: 0.75, r: 0.75 },
-	gray: { a: 1, b: 0.5, g: 0.5, r: 0.5 },
+	dark-grey: { a: 1, b: 0.25, g: 0.25, r: 0.25 },
+	light-grey: { a: 1, b: 0.75, g: 0.75, r: 0.75 },
+	grey: { a: 1, b: 0.5, g: 0.5, r: 0.5 },
 	text-dark: { a: 1, b: 1, g: 1, r: 1 },
-	text-light: { a: 1, b: 0.7, g: 0.7, r: 0.7 }
+	indigo: { r: 0.24, g: 0.31, b: 0.70, a: 1 },
+	indigo-light:  { r: 0.50, g: 0.55, b: 0.82, a: 1 },
+	red500: { r: 0.90, g: 0.11, b: 0.13, a: 1 },
+	red-dark: { r: 0.71, g: 0.04, b: 0.06, a: 1 },
+	red-light:  { r: 0.99, g: 0.45, b: 0.47, a: 1 }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	black08: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.8 } },
-	white: { name: white_pixel, color: { r: 1, g: 1, b: 1, a: 1 } },
-	grey: { name: white_pixel, color: { r: 0.5, g: 0.5, b: 0.5, a: 1 } },
-	dark-grey: { name: white_pixel, color: { r: 0.2, g: 0.2, b: 0.2, a: 1 } }
+	white: { name: white_pixel, color: white },
+	grey: { name: white_pixel, color: grey},
+	dark-grey: { name: white_pixel, color: dark-grey},
+	red: { name: white_pixel, color: { r: 0.5, g: 0, b: 0, a: 1 }},
+	circle: { name: circle_button, color: red-dark},
+	circle-light: { name: circle_button, color: red500},
+	circle-border: { name: circle_border, color: red-dark},
+	circle-border-light: { name: circle_border, color: red500},	
+	border-rect-grey: { name: border_rect4, color: light-grey},
+	border-rect-dark-grey: { name: border_rect2, color: { a: 1, b: 0.6, g: 0.6, r: 0.6 }},
 },
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
-	default: {  },
-	inventory: {imageUp: inventory}
+	pie_lookat: {up:circle-border, down: circle-border-light, imageUp: lookat},
+	pie_pickup: {up:circle-border, down: circle-border-light, imageUp: pickup},
+	pie_talkto: {up:circle-border, down: circle-border-light, imageUp: talkto},
+	inventory: {up:inventory},
+	menu: {up:circle, down: circle-light, imageUp: menu}
 },
 com.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
-	default: {background: black08}
+	default: {background: border-rect-grey, itemBackground: border-rect-dark-grey, menuButtonStyle: menu}
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
-		default: { font: default, up: grey, fontColor: white , downFontColor: gray, overFontColor: light-gray, disabledFontColor: dark-gray},
-		menu: { font: big-font, fontColor: white , downFontColor: gray, overFontColor: light-gray, disabledFontColor: dark-gray}		
+		default: { font: default, up: grey, fontColor: white , downFontColor: grey, overFontColor: light-grey, disabledFontColor: dark-grey},
+		menu: { font: big-font, fontColor: white , downFontColor: grey, overFontColor: light-grey, disabledFontColor: dark-grey}		
 },
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		default: { font: default, fontColor: white},
@@ -44,11 +58,11 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 },
 
 com.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
-	default: {background: black08, font: dialog-font, fontColor: white, overFontColor: light-gray}
+	default: {background: black08, font: dialog-font, fontColor: white, overFontColor: light-grey}
 },
 
 com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle: {
-	default: {rectBackground: white, talkBackground: white, font: text-manager-font, talkBubble: bubblepointer}
+	default: {rectBackground: border_black_rect4, talkBackground: white, font: text-manager-font, talkBubble: bubblepointer}
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 		default: { selection: grey, background: dark-grey, focusedBackground: dark-grey, disabledBackground: grey, font: default, fontColor: white, focusedFontColor: text-dark, disabledFontColor: text-dark, cursor: white, messageFont: default, messageFontColor: text-dark }

@@ -29,11 +29,16 @@ public class InventoryButton extends ImageButton {
 	}
 	
 	public void resize(int width, int height) {
-		setSize(DPIUtils.getPrefButtonSize(width, height), DPIUtils.getPrefButtonSize(width, height));
+		float size = DPIUtils.getPrefButtonSize();
+		float margin = DPIUtils.getMarginSize();
 		
-		getImageCell().minSize(DPIUtils.getPrefButtonSize(width, height),DPIUtils.getPrefButtonSize(width, height));
-		getImageCell().maxSize(DPIUtils.getPrefButtonSize(width, height),DPIUtils.getPrefButtonSize(width, height));
+		setSize(size, size);
 		
-		setPosition(DPIUtils.getMarginSize(width, height), DPIUtils.getMarginSize(width, height));
+//		getImageCell().minSize(DPIUtils.getPrefButtonSize(width, height),DPIUtils.getPrefButtonSize(width, height));
+		
+		float iconSize = Math.max(size/2, DPIUtils.ICON_SIZE);
+		getImageCell().maxSize(iconSize, iconSize);
+		
+		setPosition(margin, margin);
 	}
 }
