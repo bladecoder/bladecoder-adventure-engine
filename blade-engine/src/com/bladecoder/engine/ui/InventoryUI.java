@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.model.BaseActor;
@@ -128,7 +129,9 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 		});
 		
+
 		menuButton = new ImageButton(style.menuButtonStyle);
+
 		addActor(menuButton);
 		menuButton.addListener(new ChangeListener() {			
 			@Override
@@ -155,6 +158,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	}
 
 	public void resize(int width, int height) {
+
 		tileSize = (int)DPIUtils.getTouchMinSize() * 2;
 		margin = (int)DPIUtils.getMarginSize();
 		

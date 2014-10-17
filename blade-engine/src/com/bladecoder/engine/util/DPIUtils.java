@@ -34,6 +34,7 @@ public class DPIUtils {
 	 * The Google recommendations are 24 dp for icons inside action buttons
 	 */
 	public final static float ICON_SIZE = 24 * Gdx.graphics.getDensity();
+
 	
 	/**
 	 * The Google recommendations are 8 dp for space between ui elements
