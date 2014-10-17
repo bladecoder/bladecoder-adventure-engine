@@ -26,7 +26,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
-
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.model.BaseActor;
@@ -36,6 +35,7 @@ import com.bladecoder.engine.model.SpriteRenderer;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	private final static int TOP = 0;
@@ -199,14 +199,18 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 		batch.draw(configIcon, configBbox.x, configBbox.y, configBbox.width,
 				configBbox.height);
-
-		int cols = (int) (getWidth() - margin) / tileSize;
-		int rows = (int) (getHeight() - margin) / tileSize - 1;
 		
 		float rowSpace = DPIUtils.getSpacing();
 
+		int cols = (int) (getWidth() - margin) / (tileSize + (int)rowSpace);
+		int rows = (int) (getHeight() - margin) / (tileSize + (int)rowSpace) - 1;
+
+		int capacity = cols * (rows + 1);
+		if(inventory.getNumItems() >= capacity)
+			EngineLogger.error("Items in inventory excees the UI capacity");
+
 		// DRAW ITEMS
-		for (int i = 0; i < inventory.getNumItems(); i++) {
+		for (int i = 0; i < inventory.getNumItems() && i < capacity; i++) {
 
 			SpriteActor a = inventory.getItem(i);
 			SpriteRenderer r = a.getRenderer();
@@ -269,15 +273,17 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	}
 
 	public SpriteActor getItemAt(float x, float y) {
-		if(x < 0 || y < 0 || x >= getWidth() || y >= getHeight())
+		if(x < margin || y < margin || x >= getWidth() - margin || y >= getHeight() - margin)
 			return null;
 
 		Inventory inventory = World.getInstance().getInventory();
+		
+		float rowSpace = DPIUtils.getSpacing();
 
-		int cols = (int) getWidth() / tileSize;
-		int rows = (int) getHeight() / tileSize - 1;
+		int cols = (int) (getWidth() - margin) / (tileSize + (int)rowSpace);
+		int rows = (int) (getHeight() - margin) / (tileSize + (int)rowSpace) - 1;
 
-		int i = (rows - ((int) y / tileSize)) * cols + (int) x / tileSize;
+		int i = (rows - ((int) (y - margin) / (tileSize + (int)rowSpace))) * cols + (int) ( x - margin) / (tileSize + (int)rowSpace);
 
 		if (i >= 0 && i < inventory.getNumItems()) {
 			// EngineLogger.debug(" X: " + x + " Y:" + y + " DESC:" +

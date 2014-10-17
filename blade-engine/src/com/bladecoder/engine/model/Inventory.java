@@ -49,9 +49,9 @@ public class Inventory implements AssetConsumer {
 	}
 
 	public void addItem(SpriteActor actor) {		
-		if(!items.contains(actor))
+		if(!items.contains(actor)) {
 			items.add(actor);
-		else
+		} else
 			EngineLogger.error("BaseActor already in inventory: " + actor.getId());
 
 		//actor.setFrameAnimation("inventory");
