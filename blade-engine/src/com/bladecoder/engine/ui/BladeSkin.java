@@ -16,7 +16,7 @@ import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.FileUtils;
 
 /**
- * Custom Skin class to add support for TTF fonts
+ * Custom Skin class to add TTF font support
  * 
  * @author rgarcia
  */

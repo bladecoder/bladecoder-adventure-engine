@@ -88,19 +88,27 @@ public class DPIUtils {
 		return getSizeMultiplier() * SPACING;
 	}
 
+//	public static float getSizeMultiplier() {
+//		float inches = pixelsToInches(Gdx.graphics.getWidth());
+//
+//		if (inches > 15)
+//			return XXLARGE_MULTIPLIER;
+//
+//		if (inches > 9)
+//			return XLARGE_MULTIPLIER;
+//
+//		if (inches > 6)
+//			return LARGE_MULTIPLIER;
+//
+//		return NORMAL_MULTIPLIER;
+//
+//	}
+	
 	public static float getSizeMultiplier() {
 		float inches = pixelsToInches(Gdx.graphics.getWidth());
+		float s = inches / 6f;
 
-		if (inches > 15)
-			return XXLARGE_MULTIPLIER;
-
-		if (inches > 9)
-			return XLARGE_MULTIPLIER;
-
-		if (inches > 6)
-			return LARGE_MULTIPLIER;
-
-		return NORMAL_MULTIPLIER;
+		return Math.max(1.0f, s);
 
 	}
 
