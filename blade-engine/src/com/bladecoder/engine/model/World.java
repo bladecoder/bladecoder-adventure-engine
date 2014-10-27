@@ -329,6 +329,10 @@ public class World implements Serializable, AssetConsumer {
 	public Scene getScene(String id) {
 		return scenes.get(id);
 	}
+	
+	public HashMap<String, Scene> getScenes() {
+		return scenes;
+	}
 
 	public void setCutMode(boolean v) {
 		cutMode = v;

@@ -26,9 +26,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.DPIUtils;
 
@@ -36,9 +38,10 @@ public class DebugScreen implements BladeScreen {
 	private UI ui;
 
 	private Stage stage;
-	
+
 	private TextField speedText;
 	SelectBox<String> recordings;
+	SelectBox<String> scenes;
 
 	public DebugScreen() {
 	}
@@ -91,19 +94,20 @@ public class DebugScreen implements BladeScreen {
 		Label title = new Label("DEBUG SCREEN", ui.getSkin(), "title");
 
 		table.add(title).padBottom(DPIUtils.getMarginSize() * 2).colspan(3);
-		
+
 		// ------------- SPEED
-		speedText = new TextField(Float.toString(((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getSpeed()), ui.getSkin());
+		speedText = new TextField(Float.toString(((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getSpeed()),
+				ui.getSkin());
 		TextButton speedButton = new TextButton("Set Speed", ui.getSkin());
 		speedButton.addListener(new ClickListener() {
-			
+
 			public void clicked(InputEvent event, float x, float y) {
 				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
 				scnScr.setSpeed(Float.parseFloat(speedText.getText()));
 			}
 		});
-		
-		table.row();
+
+		table.row().pad(5).align(Align.left);
 		table.add("Game Speed: ");
 		table.add(speedText);
 		table.add(speedButton);
@@ -114,11 +118,11 @@ public class DebugScreen implements BladeScreen {
 		TextButton play = new TextButton(r.isPlaying() ? "Stop" : "Play", ui.getSkin());
 		TextButton rec = new TextButton(r.isRecording() ? "Stop Rec" : "Rec", ui.getSkin());
 		play.addListener(new ClickListener() {
-			
+
 			public void clicked(InputEvent event, float x, float y) {
 				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
 				Recorder r = scnScr.getRecorder();
-				
+
 				if (!r.isPlaying()) {
 					r.load(recordings.getSelected());
 					r.setPlaying(true);
@@ -129,59 +133,50 @@ public class DebugScreen implements BladeScreen {
 				}
 			}
 		});
-		
+
 		rec.addListener(new ClickListener() {
-			
+
 			public void clicked(InputEvent event, float x, float y) {
 				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
 				Recorder r = scnScr.getRecorder();
-				
+
 				if (r.isPlaying()) {
 					r.setPlaying(false);
 				}
-				
+
 				r.setRecording(!r.isRecording());
 			}
 		});
-		
+
 		recordings = new SelectBox<String>(ui.getSkin());
 		recordings.setItems(EngineAssetManager.getInstance().listAssetFiles("/tests"));
 
-		table.row();
+		table.row().pad(5).align(Align.left);
 		table.add("Game Recording: ");
 		table.add(recordings);
 		table.add(play);
 		table.add(rec);
-		
+
 		// ------------- SCENES
 		TextButton go = new TextButton("Go", ui.getSkin());
 		go.addListener(new ClickListener() {
-					
-					public void clicked(InputEvent event, float x, float y) {
-						SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
-						Recorder r = scnScr.getRecorder();
-						
-						if (!r.isPlaying()) {
-							r.load("full");
-							r.setPlaying(true);
-							ui.setCurrentScreen(Screens.SCENE_SCREEN);
-						} else {
-							r.setPlaying(false);
-							ui.setCurrentScreen(Screens.MENU_SCREEN);
-						}
-					}
-				});
-				
-				recordings = new SelectBox<String>(ui.getSkin());
-				recordings.setItems(EngineAssetManager.getInstance().listAssetFiles("/tests"));
 
-				table.row();
-				table.add("Game Recording: ");
-				table.add(recordings);
-				table.add(play);		
-		
+			public void clicked(InputEvent event, float x, float y) {
+				World.getInstance().setCurrentScene(scenes.getSelected());
+				ui.setCurrentScreen(Screens.SCENE_SCREEN);
+			}
+		});
+
+		scenes = new SelectBox<String>(ui.getSkin());
+		scenes.setItems(World.getInstance().getScenes().keySet().toArray(new String[World.getInstance().getScenes().size()]));
+
+		table.row().pad(5).align(Align.left);
+		table.add("Go to Scene: ");
+		table.add(scenes);
+		table.add(go);
+
 		// ------------- BACK BUTTON
-		
+
 		TextButton back = new TextButton("Back", ui.getSkin());
 		back.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
@@ -189,8 +184,8 @@ public class DebugScreen implements BladeScreen {
 			}
 		});
 
-		table.row();
-		table.add(back).colspan(3);		
+		table.row().pad(5);
+		table.add(back).colspan(3);
 
 		table.pack();
 
