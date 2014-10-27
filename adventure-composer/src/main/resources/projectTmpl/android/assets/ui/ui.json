@@ -23,7 +23,8 @@ com.badlogic.gdx.graphics.Color: {
 	indigo-light:  { r: 0.50, g: 0.55, b: 0.82, a: 1 },
 	red500: { r: 0.90, g: 0.11, b: 0.13, a: 1 },
 	red-dark: { r: 0.71, g: 0.04, b: 0.06, a: 1 },
-	red-light:  { r: 0.99, g: 0.45, b: 0.47, a: 1 }
+	red-light:  { r: 0.99, g: 0.45, b: 0.47, a: 1 },
+	black-trans:  { r: 0.1, g: 0.1, b: 0.1, a: 0.7 }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	black08: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.8 } },
@@ -33,8 +34,8 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	red: { name: white_pixel, color: { r: 0.5, g: 0, b: 0, a: 1 }},
 	circle: { name: circle_button, color: red-dark},
 	circle-light: { name: circle_button, color: red500},
-	circle-border: { name: circle_border, color: red-dark},
-	circle-border-light: { name: circle_border, color: red500},	
+	circle-border: { name: circle_border, color: black-trans},
+	circle-border-light: { name: circle_border, color: light-grey},	
 	border-rect-grey: { name: border_rect4, color: light-grey},
 	border-rect-dark-grey: { name: border_rect2, color: { a: 1, b: 0.6, g: 0.6, r: 0.6 }},
 },
