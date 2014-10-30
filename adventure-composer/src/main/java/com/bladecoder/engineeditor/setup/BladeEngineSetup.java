@@ -361,7 +361,7 @@ public class BladeEngineSetup {
 
 		// ios robovm
 		if (builder.modules.contains(ProjectType.IOS)) {
-			project.files.add(new ProjectFile("ios/src/IOSLauncher", "ios/src/" + packageDir + "/IOSLauncher.java", true));
+			project.files.add(new ProjectFile("ios/src/IOSLauncher", "ios/src/" + packageDir + "/ios/IOSLauncher.java", true));
 			project.files.add(new ProjectFile("ios/data/Default.png", false));
 			project.files.add(new ProjectFile("ios/data/Default@2x.png", false));
 			project.files.add(new ProjectFile("ios/data/Default@2x~ipad.png", false));

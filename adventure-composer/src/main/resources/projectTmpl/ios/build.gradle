@@ -4,7 +4,7 @@ sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 ext {
-	mainClassName = "%PACKAGE%.IOSLauncher"
+	mainClassName = "%PACKAGE%.ios.IOSLauncher"
 }
 
 // Extracts native libs (*.a) from the native-ios.jar and places them
