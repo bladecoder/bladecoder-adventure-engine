@@ -13,8 +13,8 @@ public class DependencyBank {
 
 	//Project plugins
 	static String gwtPluginImport = "de.richsource.gradle.plugins:gwt-gradle-plugin:0.5";
-	static String androidPluginImport = "com.android.tools.build:gradle:0.10+";
-	static String roboVMPluginImport = "com.github.jtakakura:gradle-robovm-plugin:0.0.10";
+	static String androidPluginImport = "com.android.tools.build:gradle:0.13+";
+	static String roboVMPluginImport = "org.robovm:robovm-gradle-plugin:1.0.0-alpha-04";
 
 	HashMap<ProjectDependency, Dependency> gdxDependencies = new HashMap<ProjectDependency, Dependency>();
 	LinkedHashMap<ProjectDependency, String[]> gwtInheritances = new LinkedHashMap<ProjectDependency, String[]>();

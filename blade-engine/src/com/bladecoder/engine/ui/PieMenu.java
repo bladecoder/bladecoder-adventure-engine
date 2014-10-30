@@ -19,8 +19,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.i18n.I18N;
@@ -135,13 +135,16 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		this.x = x;
 		this.y = y;
 		baseActor = a;
+		Actor rightButton;
 
 		if (a.getVerb("talkto") != null) {
 			talktoButton.setVisible(true);
 			pickupButton.setVisible(false);
+			rightButton = talktoButton;
 		} else {
 			talktoButton.setVisible(false);
 			pickupButton.setVisible(true);
+			rightButton = pickupButton;
 		}
 		
 		float margin = DPIUtils.getMarginSize();
@@ -157,9 +160,17 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		else if(y > viewportHeight - lookatButton.getHeight() - margin)
 			this.y = viewportHeight - lookatButton.getHeight() - margin;
 		
-		lookatButton.setPosition(this.x - lookatButton.getWidth() - margin / 2, this.y + margin);
-		pickupButton.setPosition(this.x + margin / 2, this.y + margin);
-		talktoButton.setPosition(this.x + margin / 2, this.y + margin);
+		//lookatButton.setPosition(this.x - lookatButton.getWidth() - margin / 2, this.y + margin);
+		lookatButton.setPosition(this.x - lookatButton.getWidth() / 2, this.y - lookatButton.getHeight() / 2);
+		lookatButton.addAction(Actions
+				.moveTo(this.x - lookatButton.getWidth() - margin / 2, this.y + margin, .1f));
+		
+
+//		rightButton.setPosition(this.x + margin / 2, this.y + margin);
+		rightButton.setPosition(this.x - lookatButton.getWidth() / 2, this.y - lookatButton.getHeight() / 2);
+		rightButton.addAction(Actions
+				.moveTo(this.x + margin / 2, this.y + margin, .1f));
+
 	}
 
 	public void resize(int width, int height) {

@@ -36,7 +36,7 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 	@Override
 	public FileHandle resolve(String fileName) {		
 		FileHandle originalHandle = new FileHandle(fileName);
-		FileHandle handle = baseResolver.resolve(resolve(originalHandle, bestDesc.suffix));
+		FileHandle handle = baseResolver.resolve(resolve(originalHandle, bestDesc.folder));
 		
 		if (!FileUtils.exists(handle))
 			handle = baseResolver.resolve(fileName);
@@ -59,7 +59,7 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 	
 	public boolean exists(String fileName) {
 		FileHandle originalHandle = new FileHandle(fileName);
-		FileHandle handle = baseResolver.resolve(resolve(originalHandle, bestDesc.suffix));
+		FileHandle handle = baseResolver.resolve(resolve(originalHandle, bestDesc.folder));
 		
 		if (FileUtils.exists(handle))
 			return true;
@@ -128,7 +128,7 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 	 */
 	private void selectFixedResolution() {
 		for (int i = 0; i < descriptors.length; i++) {
-			if(descriptors[i].suffix.equals(fixResolution)) {
+			if(descriptors[i].folder.equals(fixResolution)) {
 				bestDesc = descriptors[i];
 				return;
 			}
