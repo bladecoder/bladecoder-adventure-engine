@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
@@ -106,7 +108,8 @@ public class DebugScreen implements BladeScreen {
 				scnScr.setSpeed(Float.parseFloat(speedText.getText()));
 			}
 		});
-
+		
+		speedButton.pad(2,3,2,3);
 		table.row().pad(5).align(Align.left);
 		table.add("Game Speed: ");
 		table.add(speedText);
@@ -149,7 +152,18 @@ public class DebugScreen implements BladeScreen {
 		});
 
 		recordings = new SelectBox<String>(ui.getSkin());
-		recordings.setItems(EngineAssetManager.getInstance().listAssetFiles("/tests"));
+		
+		String[] testFiles = EngineAssetManager.getInstance().listAssetFiles("/tests");
+		ArrayList<String> al = new ArrayList<String>();
+		
+		for(String file:testFiles)
+			if(file.endsWith(".verbs.rec"))
+				al.add(file.substring(0,file.indexOf(".verbs.rec")));
+		
+		recordings.setItems(al.toArray(new String[al.size()]));
+		
+		play.pad(2,3,2,3);
+		rec.pad(2,3,2,3);
 
 		table.row().pad(5).align(Align.left);
 		table.add("Game Recording: ");
@@ -166,6 +180,8 @@ public class DebugScreen implements BladeScreen {
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
+		
+		go.pad(2,3,2,3);
 
 		scenes = new SelectBox<String>(ui.getSkin());
 		scenes.setItems(World.getInstance().getScenes().keySet().toArray(new String[World.getInstance().getScenes().size()]));
@@ -183,6 +199,8 @@ public class DebugScreen implements BladeScreen {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
 			}
 		});
+		
+		back.pad(4,4,4,4);
 
 		table.row().pad(5);
 		table.add(back).colspan(3);
