@@ -1,6 +1,7 @@
 [0.5.0]
 - Updated to libgdx 1.4.1
-- Material style buttons in engine UI. Better look and feel for inventory and pie menu.
+- ENGINE: Debug screen with speed control, record/play games and go to any scene in runtime
+- ENGINE: Material style buttons in engine UI. Better look and feel for inventory and pie menu.
 
 [0.4.0]
 - ENGINE: Custom game UI Screen support
