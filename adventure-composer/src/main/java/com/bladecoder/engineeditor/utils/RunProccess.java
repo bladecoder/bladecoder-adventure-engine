@@ -44,14 +44,14 @@ public class RunProccess {
 	}
 	
 	public static boolean runBladeEngine(File prjFolder, String chapter, String scene) throws IOException {
-		String args = ":desktop:run -PappArgs=['-w'";
+		String args = ":desktop:run -PappArgs=[\"-w\"";
 		
 		if(chapter != null) {
-			args += ",'-chapter','" + chapter + "'";
+			args += ",\"-chapter\",\"" + chapter + "\"";
 		}
 		
 		if(scene != null) {
-			args += ",'-t','" + scene + "'";
+			args += ",\"-t\",\"" + scene + "\"";
 		}
 		
 		args += "]";
