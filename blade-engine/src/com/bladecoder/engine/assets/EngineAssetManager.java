@@ -280,27 +280,57 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	public void loadMusic(String filename) {
+		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
+			EngineLogger.error("OGG files not supported in IOS");
+			return;
+		}
+		
 		load(MUSIC_DIR + filename, Music.class);
 	}
 
 	public void disposeMusic(String filename) {
+		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
+			EngineLogger.error("OGG files not supported in IOS");
+			return;
+		}		
+		
 		if (isLoaded(MUSIC_DIR + filename))
 			unload(MUSIC_DIR + filename);
 	}
 
 	public Music getMusic(String filename) {
+		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
+			EngineLogger.error("OGG files not supported in IOS");
+			return null;
+		}		
+		
 		return get(MUSIC_DIR + filename, Music.class);
 	}
 
 	public void loadSound(String filename) {
+		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
+			EngineLogger.error("OGG files not supported in IOS");
+			return;
+		}
+		
 		load(SOUND_DIR + filename, Sound.class);
 	}
 
 	public Sound getSound(String filename) {
+		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
+			EngineLogger.error("OGG files not supported in IOS");
+			return null;
+		}		
+		
 		return get(SOUND_DIR + filename, Sound.class);
 	}
 
 	public void disposeSound(String filename) {
+		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
+			EngineLogger.error("OGG files not supported in IOS");
+			return;
+		}		
+		
 		if (isLoaded(SOUND_DIR + filename))
 			unload(SOUND_DIR + filename);
 	}
