@@ -2,7 +2,7 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
     
-    version = '0.5.0'
+    version = '0.5.1'
 
     ext {
         gdxVersion = '1.4.1'
