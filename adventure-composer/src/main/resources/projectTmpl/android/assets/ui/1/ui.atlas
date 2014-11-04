@@ -2,7 +2,7 @@
 ui.png
 size: 1005,1005
 format: RGBA8888
-filter: MipMapLinearNearest,Nearest
+filter: Linear,Nearest
 repeat: none
 back
   rotate: false

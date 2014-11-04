@@ -78,8 +78,9 @@ public class CreateResolutionDialog extends EditDialog {
 	}
 	
 	private void createResolution() {
-		float s = Float.parseFloat(scale.getText());
-		String prefix = (int)(Ctx.project.getWorld().getWidth() * s) + "_" +  (int)(Ctx.project.getWorld().getHeight() * s);
+//		float s = Float.parseFloat(scale.getText());
+//		String prefix = (int)(Ctx.project.getWorld().getWidth() * s) + "_" +  (int)(Ctx.project.getWorld().getHeight() * s);
+		String prefix = scale.getText().trim();
 		
 		new File(atlasDir + "/" + prefix).mkdir();
 		new File(bgDir + "/" + prefix).mkdir();
@@ -90,7 +91,8 @@ public class CreateResolutionDialog extends EditDialog {
 	private String scaleImages() {
 		
 		float s = Float.parseFloat(scale.getText());
-		String prefix = (int)(Ctx.project.getWorld().getWidth() * s) + "_" +  (int)(Ctx.project.getWorld().getHeight() * s);	
+//		String prefix = (int)(Ctx.project.getWorld().getWidth() * s) + "_" +  (int)(Ctx.project.getWorld().getHeight() * s);
+		String prefix = scale.getText().trim();
 		
 		// COPY ASSETS FROM WORLD RESOLUTION SCALED
 		String wPrefix = Ctx.project.getResDir();
@@ -99,6 +101,9 @@ public class CreateResolutionDialog extends EditDialog {
 			ImageUtils.scaleDirFiles(new File(uiDir + "/" + wPrefix), new File(uiDir + "/" + prefix), s);
 			ImageUtils.scaleDirFiles(new File(bgDir + "/" + wPrefix), new File(bgDir + "/" + prefix), s);
 			ImageUtils.scaleDirFiles(new File(imageDir + "/" + wPrefix), new File(imageDir + "/" + prefix), s);
+			
+			ImageUtils.scaleDirAtlases(new File(atlasDir + "/" + wPrefix), new File(atlasDir + "/" + prefix), s);
+			ImageUtils.scaleDirAtlases(new File(uiDir + "/" + wPrefix), new File(uiDir + "/" + prefix), s);
 		} catch (IOException e) {
 			return e.getMessage();
 		}

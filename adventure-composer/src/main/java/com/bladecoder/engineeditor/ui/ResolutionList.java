@@ -102,6 +102,12 @@ public class ResolutionList extends EditList<String> {
 	public void delete() {
 		int index = list.getSelectedIndex();
 		String r = list.getItems().get(index);
+		
+		if(r.equals("1")) {
+			Ctx.msg.show(getStage(),"Initial resolution cannot be deleted", 3);
+			
+			return;
+		}
 
 		removeDir(Ctx.project.getProjectDir() + "/" + Project.BACKGROUNDS_PATH
 				+ "/" + r);

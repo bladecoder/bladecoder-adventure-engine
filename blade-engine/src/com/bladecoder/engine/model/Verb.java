@@ -71,6 +71,7 @@ public class Verb implements ActionCallback {
 					ip++;
 			} catch (Exception e) {
 				EngineLogger.error("EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName(), e);
+				ip++;
 			}		
 		}
 	}
