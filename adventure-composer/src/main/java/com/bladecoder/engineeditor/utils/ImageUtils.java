@@ -84,7 +84,7 @@ public class ImageUtils {
 				interpolation = RenderingHints.VALUE_INTERPOLATION_BICUBIC;
 			}
 			
-			destImg = scaleImage((int) (orgImg.getWidth() * scale), (int) (orgImg.getHeight() * scale), orgImg, interpolation);
+			destImg = scaleImage(Math.max(1,(int) (orgImg.getWidth() * scale)), Math.max(1,(int) (orgImg.getHeight() * scale)), orgImg, interpolation);
 			ImageIO.write(destImg, org.getName().substring(org.getName().lastIndexOf('.') + 1), dest);
 		}
 	}

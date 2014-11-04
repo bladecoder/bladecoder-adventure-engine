@@ -1,5 +1,6 @@
 [0.6.0]
-- COMPOSER: fix package naming when creating ios project
+- COMPOSER: fix several IOS related bugs
+- COMPOSER: fix create resolution. Now atlas upacking/packing is supported
 
 [0.5.0]
 - Updated to libgdx 1.4.1
