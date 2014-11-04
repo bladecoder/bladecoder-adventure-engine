@@ -214,9 +214,11 @@ public class PackageDialog extends EditDialog {
 					"-PkeyPassword=" + androidKeyAliasPassword.getText() + " ";
 			
 			if(RunProccess.runGradle(Ctx.project.getProjectDir(), params + "android:assembleRelease")) {
-				FileUtils.copyDirectory(new File(Ctx.project.getProjectDir().getAbsolutePath() +
-							"/android/build/apk/")
-							, new File(dir.getText()));
+				String apk = Ctx.project.getProjectDir().getAbsolutePath() +
+						"/android/build/outputs/apk/android-release.apk";
+				File f = new File(apk);
+//				FileUtils.copyFileToDirectory(f, new File(dir.getText()));
+				FileUtils.copyFile(f, new File(dir.getText(),projectName + "-" + version.getText() + ".apk"));
 			} else {
 				msg = "Error Generating package" ;
 			}
