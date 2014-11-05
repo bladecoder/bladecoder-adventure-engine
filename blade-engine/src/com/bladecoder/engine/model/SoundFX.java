@@ -36,11 +36,17 @@ public class SoundFX implements AssetConsumer {
 	}
 	
 	public void play() {
+		if(s==null)
+			return;
+		
 		if(loop) s.loop();
 		else s.play(volume);
 	}
 
 	public void stop() {
+		if(s==null)
+			return;
+		
 		s.stop();
 	}
 	
