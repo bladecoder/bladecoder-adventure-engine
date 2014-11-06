@@ -21,14 +21,6 @@ import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.bladecoder.engine.model.Dialog;
-import com.bladecoder.engine.model.Inventory;
-import com.bladecoder.engine.model.Scene;
-import com.bladecoder.engine.model.SceneCamera;
-import com.bladecoder.engine.model.Sprite3DRenderer;
-import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.TextManager;
-import com.bladecoder.engine.model.World;
 import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.Gdx;
@@ -46,7 +38,6 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.loader.WorldXMLLoader;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.FileUtils;
 
 public class World implements Serializable, AssetConsumer {
 
@@ -222,7 +213,7 @@ public class World implements Serializable, AssetConsumer {
 	 * @throws ParserConfigurationException
 	 */
 	public void load() {
-		if (FileUtils.exists(EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME))) {
+		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
 			// 2.- SAVEGAME EXISTS
 			try {
 				instance.loadGameState();
@@ -462,7 +453,7 @@ public class World implements Serializable, AssetConsumer {
 	}
 	
 	public boolean savedGameExists() {
-		return FileUtils.exists(EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME));
+		return EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists();
 	}
 
 	// ********** JSON SERIALIZATION FOR GAME SAVING **********
@@ -492,7 +483,7 @@ public class World implements Serializable, AssetConsumer {
 
 		init();
 
-		if (FileUtils.exists(savedFile)) {
+		if (savedFile.exists()) {
 			assetState = AssetState.LOAD_ASSETS;
 
 			new Json().fromJson(World.class, savedFile.reader("UTF-8"));

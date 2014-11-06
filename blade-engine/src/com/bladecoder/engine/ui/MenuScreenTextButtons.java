@@ -97,7 +97,7 @@ public class MenuScreenTextButtons implements BladeScreen {
 
 		table.add(title).padBottom(DPIUtils.getMarginSize() * 2);
 
-		if (World.getInstance().savedGameExists()) {
+		if (World.getInstance().savedGameExists() || World.getInstance().getCurrentScene() != null) {
 			TextButton continueGame = new TextButton("Continue", ui.getSkin(), "menu");
 
 			continueGame.addListener(new ClickListener() {
@@ -161,7 +161,6 @@ public class MenuScreenTextButtons implements BladeScreen {
 		TextButton quit = new TextButton("Quit Game", ui.getSkin(), "menu");
 		quit.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				World.getInstance().dispose();
 				Gdx.app.exit();
 			}
 		});
