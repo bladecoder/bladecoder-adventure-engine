@@ -220,16 +220,16 @@ public class Project extends PropertyChange {
 		return getTitle().replace(" ", "").replace("'", "");
 	}
 
-	public void createProject(String projectDir, String name, String sdkLocation) throws ParserConfigurationException,
+	public void createProject(String projectDir, String name, String pkg, String sdkLocation, boolean spinePlugin) throws ParserConfigurationException,
 			TransformerException, IOException, SAXException {
-		createLibGdxProject(projectDir, name, "com.bladecoder.engine", "BladeEngine", sdkLocation);
+		createLibGdxProject(projectDir, name, pkg, "BladeEngine", sdkLocation, spinePlugin);
 		
 		projectFile = new File(projectDir + "/" + name);
 		
 //		loadProject(projectFile);
 	}
 	
-	private void createLibGdxProject(String projectDir, String name, String pkg, String mainClass, String sdkLocation) throws IOException {
+	private void createLibGdxProject(String projectDir, String name, String pkg, String mainClass, String sdkLocation, boolean spinePlugin) throws IOException {
 		String sdk = "";
 		if (System.getenv("ANDROID_HOME") != null && sdkLocation == null) {
 			sdk = System.getenv("ANDROID_HOME");
@@ -249,6 +249,9 @@ public class Project extends PropertyChange {
 		List<Dependency> dependencies = new ArrayList<Dependency>();
 		dependencies.add(bank.getDependency(ProjectDependency.GDX));
 		dependencies.add(bank.getDependency(ProjectDependency.FREETYPE));
+		
+		if(spinePlugin)
+			dependencies.add(bank.getDependency(ProjectDependency.SPINE));
 
 		builder.buildProject(projects, dependencies);
 		builder.build();

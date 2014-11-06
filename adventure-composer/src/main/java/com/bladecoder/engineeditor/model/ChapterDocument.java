@@ -34,7 +34,7 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.Scene;
-import com.bladecoder.engine.model.SpineRenderer;
+import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteRenderer;

@@ -33,14 +33,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectDependency;
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.RunProccess;
 import com.bladecoder.engineeditor.utils.Versions;
-import com.esotericsoftware.spine.Skeleton;
 
 /** Command line tool to generate libgdx projects
  * @author badlogic
@@ -300,6 +297,7 @@ public class BladeEngineSetup {
 		new File(outputDir + "/" + assetPath + "/model").mkdirs();
 		new File(outputDir + "/" + assetPath + "/music").mkdirs();
 		new File(outputDir + "/" + assetPath + "/sounds").mkdirs();
+		new File(outputDir + "/" + assetPath + "/spine").mkdirs();
 		new File(outputDir + "/" + assetPath + "/test").mkdirs();
 		new File(outputDir + "/" + assetPath + "/ui/1").mkdirs();
 
@@ -405,15 +403,16 @@ public class BladeEngineSetup {
 	}
 	
 	/** 
+	 * NOTE: Not necessary now.
 	 * Copy the blade-engine.jar and libgdx-spine.jar to the output folder
 	 * @param outputDir
 	 * @throws IOException 
 	 */
 	private void copyLibs(String outputDir) throws IOException {
 //		File bladeEngineFile =  new File(BladeEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-		File libSpineFile =  new File(Skeleton.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+//		File libSpineFile =  new File(Skeleton.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		
-		FileUtils.copyFileToDirectory(libSpineFile, new File(outputDir + "/libs"));
+//		FileUtils.copyFileToDirectory(libSpineFile, new File(outputDir + "/libs"));
 		
 		// blade-engine.jar is in Maven Central now
 //		if(bladeEngineFile.isDirectory()) {

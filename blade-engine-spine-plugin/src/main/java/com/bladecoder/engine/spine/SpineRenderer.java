@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.bladecoder.engine.model;
+package com.bladecoder.engine.spine;
 
 import java.util.HashMap;
 

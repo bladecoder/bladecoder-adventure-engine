@@ -29,6 +29,8 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
@@ -41,9 +43,9 @@ import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.Scene;
-import com.bladecoder.engine.model.SpineRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.SpriteRenderer;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
@@ -189,8 +191,16 @@ public class ChapterXMLLoader extends DefaultHandler {
 					}
 
 				} else if (type.equals("spine")) { // SPINE RENDERER
-					SpineRenderer r = new SpineRenderer();
-					((SpriteActor) actor).setRenderer(r);
+					try {
+						Class<?> c = ClassReflection.forName("com.bladecoder.engine.spine.SpineRenderer");
+						SpriteRenderer r = (SpriteRenderer) ClassReflection.newInstance(c);						
+						((SpriteActor) actor).setRenderer(r);
+					} catch (ReflectionException e) {
+						SAXParseException e2 = new SAXParseException(
+								"Spine plugin not found", locator, e);
+						error(e2);
+						throw e2;
+					}
 				}
 
 				if (atts.getValue("walking_speed") != null

@@ -42,6 +42,6 @@ dependencies {
   compile "commons-io:commons-io:2.1"
   compile "com.badlogicgames.packr:packr:1.2"
   
-  //compile "com.bladecoder.engine:blade-engine:$bladeEngineVersion"
   compile project(":blade-engine")
+  compile project(":blade-engine-spine-plugin")
 }

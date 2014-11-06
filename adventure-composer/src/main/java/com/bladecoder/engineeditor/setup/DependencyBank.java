@@ -123,7 +123,17 @@ public class DependencyBank {
 			new String[]{"com.badlogicgames.ashley:ashley:1.1.0:sources"},
 			
 			"Lightweight Entity framework"
-		);
+		),
+		SPINE (
+				new String[]{ "com.bladecoder.engine:blade-engine-spine-plugin:$bladeEngineVersion"},
+				new String[]{},
+				new String[]{"com.bladecoder.engine:blade-engine-spine-plugin:$bladeEngineVersion"},
+				new String[]{},
+				new String[]{"com.bladecoder.engine:blade-engine-spine-plugin:$bladeEngineVersion:sources"},
+				
+				"Spine plugin"
+			)		
+		;
 
 		private String[] coreDependencies;
 		private String[] desktopDependencies;

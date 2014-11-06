@@ -1,0 +1,178 @@
+apply plugin: "java"
+apply plugin: "maven"
+apply plugin: "signing"
+
+group = 'com.bladecoder.engine'
+
+// java
+    sourceCompatibility = 1.7
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+jar {
+	manifest.attributes += [
+			'github': 'https://github.com/bladecoder/bladecoder-adventure-engine/',
+			'license': 'Apache-2.0, Spine Runtimes Software License',
+			'group': project.group,
+			'version': project.version,
+			'libgdx': gdxVersion,
+			'java': targetCompatibility,
+			'timestamp': System.currentTimeMillis()
+	]
+}
+
+    javadoc {
+	title = "Bladecoder Adventure Engine Spine Plugin"
+	options {
+		memberLevel = JavadocMemberLevel.PUBLIC
+		author true
+		setUse true
+    		encoding "UTF-8"
+	}
+    }
+
+dependencies {
+  compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+  compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+  compile fileTree(dir: 'libs', include: '*.jar')
+  
+  compile project(":blade-engine")
+}
+
+def isDevBuild
+def isCiBuild
+def isReleaseBuild
+
+def sonatypeRepositoryUrl
+
+//set build variables based on build type (release, continuous integration, development)
+if(hasProperty("release")) {
+    isReleaseBuild = true
+    sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+} else if (hasProperty("ci")) {
+    isCiBuild = true
+    version += "-SNAPSHOT"
+    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+} else {
+    isDevBuild = true
+}
+
+
+task enginedocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives enginedocJar
+    archives sourcesJar
+}
+
+def ask(title){
+	def console = System.console()
+	def string
+	
+    if (console) {
+        string = console.readLine(title)
+    } else {
+        logger.error "Cannot get console."
+    }
+    
+    return new String(string)
+}
+
+def askPasswd(title){
+	def console = System.console()
+	def string
+	
+    if (console) {
+        string = console.readPassword(title)
+    } else {
+        logger.error "Cannot get console."
+    }
+    
+    return new String(string)
+}
+
+//********* artifact signing *********
+if(isReleaseBuild) {
+    signing {
+    	if(!project.hasProperty("signing.keyId"))
+    		allprojects {ext."signing.keyId" = ask('\nKey Id: ')}
+    	
+    	if(!project.hasProperty("signing.secretKeyRingFile"))
+    		allprojects { ext."signing.secretKeyRingFile" = ask('\nSecret Keyring file: ') }
+    	
+    	if(!project.hasProperty("signing.password"))
+    	  	allprojects { ext."signing.password" = askPasswd('\nKey Password: ') }
+
+    
+        sign configurations.archives
+    }
+} else {
+    task signArchives {
+        // do nothing
+    }
+}
+
+uploadArchives {
+    repositories {
+        if (isDevBuild) {
+            mavenLocal()
+        }
+        else {
+            mavenDeployer {
+                if(isReleaseBuild) {
+                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                }
+
+                repository(url: sonatypeRepositoryUrl) {                 
+                  authentication(
+                    userName: project.hasProperty("sonatypeUsername")?sonatypeUsername:ask('\nSonatype Username: '), 
+                  	password: project.hasProperty("sonatypePassword")?sonatypePassword:askPasswd('\nSonatype Password: ')
+                  )
+                }
+
+                pom.project {
+                   name 'blade-engine-spine-plugin'
+                   packaging 'jar'
+                   description 'Classic point and click adventure game engine - Spine plugin'
+                   url 'https://github.com/bladecoder/bladecoder-adventure-engine'
+
+                   scm {
+                       url 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+                       connection 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+                       developerConnection 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+                   }
+
+                   licenses {
+                       license {
+                           name 'The Apache Software License, Version 2.0'
+                           url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                           distribution 'repo'
+                       }
+                       
+                       license {
+                           name 'Spine Runtimes Software License'
+                           url 'http://esotericsoftware.com/files/license.txt'
+                           distribution 'repo'
+                       }
+                   }
+
+                   developers {
+                       developer {
+                           id 'rgarcia'
+                           name 'Rafael Garcia'
+                       } 
+                   }
+               }
+            }
+        }
+    }
+}

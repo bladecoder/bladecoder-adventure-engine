@@ -19,6 +19,7 @@ import java.io.File;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.FileInputPanel;
@@ -32,6 +33,8 @@ public class CreateProjectDialog extends EditDialog {
 	private static final String ANDROID_SDK_PROP = "package.SDK";
 
 	private InputPanel projectName;
+	private InputPanel pkg;
+	private InputPanel spinePlugin;
 	private FileInputPanel location;
 	private FileInputPanel androidSdk;
 
@@ -41,7 +44,13 @@ public class CreateProjectDialog extends EditDialog {
 		setInfo(INFO);
 
 		projectName = new InputPanel(skin, "Project Name",
-				"Select the name of the project");
+				"Set the name of the project", true);
+		
+		pkg = new InputPanel(skin, "Package",
+				"The package will be used as package ID in Android and IOS. The launchers will be in this package too.", Param.Type.STRING, true, "com.myadv.game");
+		
+		spinePlugin = new InputPanel(skin, "Spine animation support",
+				"The game can use Spine animations, require Spine License to distribute the game. See http://www.esotericsoftware.com for more info.", Param.Type.BOOLEAN, true, "false");
 
 		location = new FileInputPanel(skin, "Location",
 				"Select the folder location for the project", true);
@@ -50,7 +59,9 @@ public class CreateProjectDialog extends EditDialog {
 				"Select the Android SDK folder. If empty, the ANDROID_HOME variable will be used", true);
 
 		addInputPanel(projectName);
+		addInputPanel(pkg);
 		addInputPanel(location);
+		addInputPanel(spinePlugin);
 		addInputPanel(androidSdk);
 		
 		String sdkprop = Ctx.project.getConfig().getProperty(ANDROID_SDK_PROP);
@@ -89,8 +100,8 @@ public class CreateProjectDialog extends EditDialog {
 		try {
 			Ctx.project.createProject(
 					location.getText(), 
-					projectName.getText(),
-					androidSdk.getText());
+					projectName.getText(), pkg.getText(),
+					androidSdk.getText(), Boolean.parseBoolean(spinePlugin.getText()));
 			
 			Ctx.project.loadProject(new File(location.getText() + "/"
 					+ projectName.getText()));
@@ -101,6 +112,7 @@ public class CreateProjectDialog extends EditDialog {
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
 			Ctx.msg.show(stage, msg, 3);
 			EditorLogger.error(msg);
+			e.printStackTrace();
 			return;
 		}
 	}
@@ -108,12 +120,14 @@ public class CreateProjectDialog extends EditDialog {
 	@Override
 	protected boolean validateFields() {
 		boolean isOk = true;
-
-		if (projectName.getText().trim().isEmpty()) {
-			projectName.setError(true);
+		
+		if (!projectName.validateField()) {
 			isOk = false;
-		} else
-			projectName.setError(false);
+		}
+		
+		if (!pkg.validateField()) {
+			isOk = false;
+		}
 
 		if (location.getFile() != null) {
 			location.setError(false);

@@ -1,5 +1,5 @@
 [0.6.0]
-- COMPOSER: fix several IOS related bugs
+- COMPOSER: fix several IOS related bugs. IOS Ipad/Iphone testing and working fine.
 - COMPOSER: fix create resolution. Now atlas upacking/packing is supported
 
 [0.5.0]

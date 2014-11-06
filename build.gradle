@@ -2,14 +2,13 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
     
-    version = '0.5.1'
+    version = '0.6.0'
 
     ext {
         gdxVersion = '1.4.1'
     }
 
     repositories {
-	    mavenLocal()
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
