@@ -104,11 +104,14 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 	
 	private void selectBestResolution() {
 		bestDesc = descriptors[0];
-		int bestDist = Math.abs(Gdx.graphics.getWidth() - bestDesc.portraitWidth);
+		
+		int width = Gdx.graphics.getWidth() > Gdx.graphics.getHeight() ?Gdx.graphics.getWidth():Gdx.graphics.getHeight();
+		
+		int bestDist = Math.abs(width - bestDesc.portraitWidth);
 
 		for (int i = 1; i < descriptors.length; i++) {
 			Resolution other = descriptors[i];
-			int dist =  Math.abs(Gdx.graphics.getWidth() - other.portraitWidth);
+			int dist =  Math.abs(width - other.portraitWidth);
 			
 			if (dist < bestDist) {
 				bestDesc = descriptors[i];
