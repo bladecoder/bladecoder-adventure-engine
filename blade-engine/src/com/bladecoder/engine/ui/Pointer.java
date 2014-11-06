@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engine.model.SpriteRenderer;
+import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -45,7 +45,7 @@ public class Pointer {
 	private TextureRegion pointerIcon;
 	private TextureRegion hotspotIcon;
 	private TextureRegion currentIcon;
-	private SpriteRenderer draggingRenderer;
+	private ActorRenderer draggingRenderer;
 
 	private final Vector2 mousepos = new Vector2();
 	
@@ -66,7 +66,7 @@ public class Pointer {
 		draggingRenderer = null;
 	}
 	
-	public void drag(SpriteRenderer r) {
+	public void drag(ActorRenderer r) {
 		draggingRenderer = r;
 	}
 

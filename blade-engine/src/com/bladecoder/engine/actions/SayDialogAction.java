@@ -75,8 +75,8 @@ public class SayDialogAction extends BaseCallbackAction {
 			World.getInstance().getTextManager()
 					.addSubtitle(playerText, player.getX(), player.getY() + player.getHeight(), false, Text.Type.TALK, Color.BLACK, this);
 
-			previousFA = player.getRenderer().getCurrentFrameAnimationId(); 
-			player.startFrameAnimation(getTalkFA(previousFA), null);
+			previousFA = player.getRenderer().getCurrentAnimationId(); 
+			player.startAnimation(getTalkFA(previousFA), null);
 
 		} else {
 			resume();
@@ -96,7 +96,7 @@ public class SayDialogAction extends BaseCallbackAction {
 			
 			if(previousFA!= null){
 				SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
-				player.startFrameAnimation(previousFA, null);
+				player.startAnimation(previousFA, null);
 			}
 
 			if (responseText != null) {
@@ -110,15 +110,15 @@ public class SayDialogAction extends BaseCallbackAction {
 								Color.BLACK, this);
 
 				if(actor instanceof SpriteActor) {
-					previousFA = ((SpriteActor)actor).getRenderer().getCurrentFrameAnimationId(); 
-					((SpriteActor)actor).startFrameAnimation(getTalkFA(previousFA), null);
+					previousFA = ((SpriteActor)actor).getRenderer().getCurrentAnimationId(); 
+					((SpriteActor)actor).startAnimation(getTalkFA(previousFA), null);
 				}
 			} else {
 				super.resume();
 			}
 		} else {
 			if(actor instanceof SpriteActor) {
-				((SpriteActor)actor).startFrameAnimation(previousFA, null);
+				((SpriteActor)actor).startAnimation(previousFA, null);
 			}
 			super.resume();			
 		}
@@ -127,12 +127,12 @@ public class SayDialogAction extends BaseCallbackAction {
 	private void restoreStandPose(SpriteActor a) {
 		if(a == null) return;
 		
-		String fa = a.getRenderer().getCurrentFrameAnimationId();
+		String fa = a.getRenderer().getCurrentAnimationId();
 		
 		if(fa.startsWith("talk.")){ // If the actor was already talking we restore the actor to the 'stand' pose
 			int idx = fa.indexOf('.');
 			String prevFA = "stand" + fa.substring(idx);
-			a.startFrameAnimation(prevFA, null);
+			a.startAnimation(prevFA, null);
 		}
 	}
 	

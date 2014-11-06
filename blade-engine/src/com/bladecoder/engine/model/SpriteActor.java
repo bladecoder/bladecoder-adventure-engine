@@ -19,7 +19,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 
 import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.SpriteRenderer;
+import com.bladecoder.engine.model.ActorRenderer;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -27,7 +27,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
-import com.bladecoder.engine.anim.FrameAnimation;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.SpritePosTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
@@ -42,7 +42,7 @@ public class SpriteActor extends BaseActor {
 		NONE, VECTOR
 	};	
 	
-	private SpriteRenderer renderer;
+	private ActorRenderer renderer;
 	private SpritePosTween posTween;
 	private float scale = 1.0f;
 
@@ -52,11 +52,11 @@ public class SpriteActor extends BaseActor {
 	private float walkingSpeed = DEFAULT_WALKING_SPEED;
 	private boolean bboxFromRenderer = false;
 
-	public void setRenderer(SpriteRenderer r) {
+	public void setRenderer(ActorRenderer r) {
 		renderer = r;
 	}
 
-	public SpriteRenderer getRenderer() {
+	public ActorRenderer getRenderer() {
 		return renderer;
 	}
 
@@ -146,14 +146,14 @@ public class SpriteActor extends BaseActor {
 		}
 	}
 
-	public void startFrameAnimation(String id, ActionCallback cb) {
-		startFrameAnimation(id, Tween.FROM_FA, 1, cb);
+	public void startAnimation(String id, ActionCallback cb) {
+		startAnimation(id, Tween.FROM_FA, 1, cb);
 	}
 
-	public void startFrameAnimation(String id, int repeatType, int count,
+	public void startAnimation(String id, int repeatType, int count,
 			ActionCallback cb) {
 
-		FrameAnimation fa = renderer.getCurrentFrameAnimation();
+		AnimationDesc fa = renderer.getCurrentAnimation();
 
 		if (fa != null) {
 
@@ -170,9 +170,9 @@ public class SpriteActor extends BaseActor {
 			}
 		}
 
-		renderer.startFrameAnimation(id, repeatType, count, cb);
+		renderer.startAnimation(id, repeatType, count, cb);
 
-		fa = renderer.getCurrentFrameAnimation();
+		fa = renderer.getCurrentAnimation();
 
 		if (fa != null) {
 			if(bboxFromRenderer) {
@@ -354,7 +354,7 @@ public class SpriteActor extends BaseActor {
 		posTween = json.readValue("posTween", SpritePosTween.class, jsonData);
 		depthType = json.readValue("depthType", DepthType.class, jsonData);
 		
-		renderer = json.readValue("renderer", SpriteRenderer.class, jsonData);
+		renderer = json.readValue("renderer", ActorRenderer.class, jsonData);
 		
 		bboxFromRenderer = json.readValue("bboxFromRenderer", Boolean.class, jsonData);
 		

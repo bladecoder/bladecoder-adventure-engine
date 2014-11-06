@@ -18,7 +18,7 @@ package com.bladecoder.engine.model;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 
-import com.bladecoder.engine.model.SpriteRenderer;
+import com.bladecoder.engine.model.ActorRenderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -39,7 +39,7 @@ import com.badlogic.gdx.graphics.g3d.model.Animation;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader.Config;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc;
+
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
@@ -54,15 +54,15 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
-import com.bladecoder.engine.anim.AtlasFrameAnimation;
-import com.bladecoder.engine.anim.FrameAnimation;
+import com.bladecoder.engine.anim.AtlasAnimationDesc;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.Utils3D;
 
-public class Sprite3DRenderer implements SpriteRenderer {
+public class Sprite3DRenderer implements ActorRenderer {
 
 	private final static boolean USE_FBO = false;
 	private final static int MAX_BONES = 40;
@@ -72,12 +72,12 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	private final static IntBuffer VIEWPORT_RESULTS = BufferUtils
 			.newIntBuffer(16);
 
-	private HashMap<String, FrameAnimation> fanims = new HashMap<String, FrameAnimation>();
+	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
 
 	/** Starts this anim the first time that the scene is loaded */
-	private String initFrameAnimation;
+	private String initAnimation;
 
-	private FrameAnimation currentFrameAnimation;
+	private AnimationDesc currentAnimation;
 	private int currentCount;
 	private int currentAnimationType;
 
@@ -134,36 +134,36 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	}
 
 	@Override
-	public void addFrameAnimation(FrameAnimation fa) {
-		if (initFrameAnimation == null)
-			initFrameAnimation = fa.id;
+	public void addAnimation(AnimationDesc fa) {
+		if (initAnimation == null)
+			initAnimation = fa.id;
 
 		fanims.put(fa.id, fa);
 	}
 
 	@Override
-	public HashMap<String, FrameAnimation> getFrameAnimations() {
+	public HashMap<String, AnimationDesc> getAnimations() {
 		return fanims;
 	}
 
 	@Override
-	public void setInitFrameAnimation(String fa) {
-		initFrameAnimation = fa;
+	public void setInitAnimation(String fa) {
+		initAnimation = fa;
 	}
 
 	@Override
-	public String getInitFrameAnimation() {
-		return initFrameAnimation;
+	public String getInitAnimation() {
+		return initAnimation;
 	}
 
 	@Override
-	public FrameAnimation getCurrentFrameAnimation() {
-		return currentFrameAnimation;
+	public AnimationDesc getCurrentAnimation() {
+		return currentAnimation;
 	}
 
 	@Override
-	public String getCurrentFrameAnimationId() {
-		return currentFrameAnimation.id;
+	public String getCurrentAnimationId() {
+		return currentAnimation.id;
 	}
 
 	@Override
@@ -320,11 +320,11 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	private final AnimationListener animationListener = new AnimationListener() {
 
 		@Override
-		public void onLoop(AnimationDesc animation) {
+		public void onLoop(com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc animation) {
 		}
 
 		@Override
-		public void onEnd(AnimationDesc animation) {
+		public void onEnd(com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc animation) {
 			if (animationCb != null || animationCbSer != null) {
 				if (animationCb == null) {
 					animationCb = ActionCallbackSerialization
@@ -342,21 +342,21 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	// }
 
 	@Override
-	public void startFrameAnimation(String id, int repeatType, int count,
+	public void startAnimation(String id, int repeatType, int count,
 			ActionCallback cb) {
-		FrameAnimation fa = fanims.get(id);
+		AnimationDesc fa = fanims.get(id);
 
 		if (fa == null) {
-			EngineLogger.error("FrameAnimation not found: " + id);
+			EngineLogger.error("AnimationDesc not found: " + id);
 
 			return;
 		}
 
-		if (currentFrameAnimation != null
-				&& currentFrameAnimation.disposeWhenPlayed)
-			disposeSource(currentFrameAnimation.source);
+		if (currentAnimation != null
+				&& currentAnimation.disposeWhenPlayed)
+			disposeSource(currentAnimation.source);
 
-		currentFrameAnimation = fa;
+		currentAnimation = fa;
 		currentSource = sourceCache.get(fa.source);
 		animationCb = cb;
 
@@ -370,23 +370,23 @@ public class Sprite3DRenderer implements SpriteRenderer {
 			currentSource = sourceCache.get(fa.source);
 
 			if (currentSource == null) {
-				EngineLogger.error("Could not load FrameAnimation: " + id);
-				currentFrameAnimation = null;
+				EngineLogger.error("Could not load AnimationDesc: " + id);
+				currentAnimation = null;
 
 				return;
 			}
 		}
 
 		if (repeatType == Tween.FROM_FA) {
-			currentAnimationType = currentFrameAnimation.animationType;
-			currentCount = currentFrameAnimation.count;
+			currentAnimationType = currentAnimation.animationType;
+			currentCount = currentAnimation.count;
 		} else {
 			currentCount = count;
 			currentAnimationType = repeatType;
 		}
 
 		lastAnimationTime = 0;
-		float speed = currentFrameAnimation.duration;
+		float speed = currentAnimation.duration;
 
 		if (currentAnimationType == Tween.REVERSE
 				|| currentAnimationType == Tween.REVERSE_REPEAT)
@@ -430,21 +430,21 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	public void lookat(String dir) {
 		EngineLogger.debug("LOOKAT DIRECTION - " + dir);
 
-		if (dir.equals(FrameAnimation.BACK))
+		if (dir.equals(AnimationDesc.BACK))
 			lookat(180);
-		else if (dir.equals(FrameAnimation.FRONT))
+		else if (dir.equals(AnimationDesc.FRONT))
 			lookat(0);
-		else if (dir.equals(FrameAnimation.LEFT))
+		else if (dir.equals(AnimationDesc.LEFT))
 			lookat(270);
-		else if (dir.equals(FrameAnimation.RIGHT))
+		else if (dir.equals(AnimationDesc.RIGHT))
 			lookat(90);
-		else if (dir.equals(FrameAnimation.BACKLEFT))
+		else if (dir.equals(AnimationDesc.BACKLEFT))
 			lookat(225);
-		else if (dir.equals(FrameAnimation.BACKRIGHT))
+		else if (dir.equals(AnimationDesc.BACKRIGHT))
 			lookat(135);
-		else if (dir.equals(FrameAnimation.FRONTLEFT))
+		else if (dir.equals(AnimationDesc.FRONTLEFT))
 			lookat(-45);
-		else if (dir.equals(FrameAnimation.FRONTRIGHT))
+		else if (dir.equals(AnimationDesc.FRONTRIGHT))
 			lookat(45);
 		else
 			EngineLogger.error("LOOKAT: Direction not found - " + dir);
@@ -465,13 +465,13 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void stand() {
-		startFrameAnimation(FrameAnimation.STAND_ANIM, Tween.NO_REPEAT, 1, null);
+		startAnimation(AnimationDesc.STAND_ANIM, Tween.NO_REPEAT, 1, null);
 	}
 
 	@Override
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
 		lookat(p0.x, p0.y, pf);
-		startFrameAnimation(FrameAnimation.WALK_ANIM, Tween.REPEAT, -1, null);
+		startAnimation(AnimationDesc.WALK_ANIM, Tween.REPEAT, -1, null);
 	}
 
 	@Override
@@ -679,15 +679,15 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void loadAssets() {
-		for (FrameAnimation fa : fanims.values()) {
+		for (AnimationDesc fa : fanims.values()) {
 			if (fa.preload)
 				loadSource(fa.source);
 		}
 
-		if (currentFrameAnimation != null && !currentFrameAnimation.preload) {
-			loadSource(currentFrameAnimation.source);
-		} else if (currentFrameAnimation == null && initFrameAnimation != null) {
-			FrameAnimation fa = fanims.get(initFrameAnimation);
+		if (currentAnimation != null && !currentAnimation.preload) {
+			loadSource(currentAnimation.source);
+		} else if (currentAnimation == null && initAnimation != null) {
+			AnimationDesc fa = fanims.get(initAnimation);
 
 			if (!fa.preload)
 				loadSource(fa.source);
@@ -701,25 +701,25 @@ public class Sprite3DRenderer implements SpriteRenderer {
 				retrieveSource(key);
 		}
 
-		if (currentFrameAnimation != null) { // RESTORE FA
+		if (currentAnimation != null) { // RESTORE FA
 			ModelCacheEntry entry = sourceCache
-					.get(currentFrameAnimation.source);
+					.get(currentAnimation.source);
 			currentSource = entry;
 
-			float speed = currentFrameAnimation.duration;
+			float speed = currentAnimation.duration;
 
 			if (currentAnimationType == Tween.REVERSE
 					|| currentAnimationType == Tween.REVERSE_REPEAT)
 				speed *= -1;
 			
-			currentSource.controller.setAnimation(currentFrameAnimation.id, currentCount, speed, animationListener);
+			currentSource.controller.setAnimation(currentAnimation.id, currentCount, speed, animationListener);
 			
 			update(lastAnimationTime);
 
-		} else if (initFrameAnimation != null) {
-			startFrameAnimation(initFrameAnimation, Tween.FROM_FA, 1, null);
+		} else if (initAnimation != null) {
+			startAnimation(initAnimation, Tween.FROM_FA, 1, null);
 
-			if (currentFrameAnimation != null)
+			if (currentAnimation != null)
 				lookat(modelRotation);
 		}
 
@@ -776,16 +776,16 @@ public class Sprite3DRenderer implements SpriteRenderer {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("fanims", fanims, HashMap.class, FrameAnimation.class);
+		json.writeValue("fanims", fanims, HashMap.class, AnimationDesc.class);
 
-		String currentFrameAnimationId = null;
+		String currentAnimationId = null;
 
-		if (currentFrameAnimation != null)
-			currentFrameAnimationId = currentFrameAnimation.id;
+		if (currentAnimation != null)
+			currentAnimationId = currentAnimation.id;
 
-		json.writeValue("currentFrameAnimation", currentFrameAnimationId);
+		json.writeValue("currentAnimation", currentAnimationId);
 
-		json.writeValue("initFrameAnimation", initFrameAnimation);
+		json.writeValue("initAnimation", initAnimation);
 
 		json.writeValue("width", width);
 		json.writeValue("height", height);
@@ -818,16 +818,16 @@ public class Sprite3DRenderer implements SpriteRenderer {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		fanims = json.readValue("fanims", HashMap.class,
-				FrameAnimation.class, jsonData);
+				AnimationDesc.class, jsonData);
 
-		String currentFrameAnimationId = json.readValue(
-				"currentFrameAnimation", String.class, jsonData);
+		String currentAnimationId = json.readValue(
+				"currentAnimation", String.class, jsonData);
 
-		if (currentFrameAnimationId != null)
-			currentFrameAnimation = (AtlasFrameAnimation) fanims
-					.get(currentFrameAnimationId);
+		if (currentAnimationId != null)
+			currentAnimation = (AtlasAnimationDesc) fanims
+					.get(currentAnimationId);
 
-		initFrameAnimation = json.readValue("initFrameAnimation", String.class,
+		initAnimation = json.readValue("initAnimation", String.class,
 				jsonData);
 
 		width = json.readValue("width", Integer.class, jsonData);

@@ -15,11 +15,11 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
-import com.bladecoder.engine.anim.FrameAnimation;
+import com.bladecoder.engine.anim.AnimationDesc;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Array;
 
-public class AtlasFrameAnimation extends FrameAnimation {
+public class AtlasAnimationDesc extends AnimationDesc {
 	public transient Array<AtlasRegion> regions;
 }

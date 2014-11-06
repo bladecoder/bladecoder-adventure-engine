@@ -21,23 +21,23 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
-import com.bladecoder.engine.anim.AtlasFrameAnimation;
-import com.bladecoder.engine.anim.FrameAnimation;
+import com.bladecoder.engine.anim.AtlasAnimationDesc;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
-import com.bladecoder.engine.model.SpriteRenderer;
+import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.EditSpriteDialog;
 
 public class SpriteWidget extends Widget {
 	private String source;
-	private FrameAnimation fa;
-	private SpriteRenderer renderer;
+	private AnimationDesc fa;
+	private ActorRenderer renderer;
 	EditSpriteDialog editFADialog;
 	
 
@@ -75,7 +75,7 @@ public class SpriteWidget extends Widget {
 		return renderer.getInternalAnimations(source);
 	}
 	
-	public void setFrameAnimation(String id, String speedStr, String typeStr) {
+	public void setAnimation(String id, String speedStr, String typeStr) {
 		if (source!=null && id != null && !source.isEmpty() && !id.isEmpty()) {
 			
 			int type = Tween.REPEAT;
@@ -88,23 +88,23 @@ public class SpriteWidget extends Widget {
 				type = Tween.PINGPONG;
 			
 			if(renderer instanceof AtlasRenderer)
-				fa = new AtlasFrameAnimation();
+				fa = new AtlasAnimationDesc();
 			else 
-				fa = new FrameAnimation();
+				fa = new AnimationDesc();
 			
 			fa.set(id, source, speed, 0.0f, Tween.INFINITY, type,
 					null, null, null, false, true);
 			
-			renderer.addFrameAnimation(fa);
+			renderer.addAnimation(fa);
 			
-			renderer.startFrameAnimation(fa.id, Tween.FROM_FA, 1, null);
+			renderer.startAnimation(fa.id, Tween.FROM_FA, 1, null);
 		}
 	}
 	
 	public void draw (Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
 		
-		if(renderer == null || renderer.getCurrentFrameAnimation() == null)
+		if(renderer == null || renderer.getCurrentAnimation() == null)
 			return;
 		
 		Color tmp = batch.getColor();

@@ -132,13 +132,13 @@ public class SayAction extends BaseCallbackAction {
 
 			if (type == Text.Type.TALK) {
 				previousFA = ((SpriteActor) actor).getRenderer()
-						.getCurrentFrameAnimationId();
+						.getCurrentAnimationId();
 				
 				if(talkFA != null)
-					((SpriteActor) actor).startFrameAnimation(
+					((SpriteActor) actor).startAnimation(
 							talkFA, Tween.FROM_FA, 0, null);
 				else
-					((SpriteActor) actor).startFrameAnimation(
+					((SpriteActor) actor).startAnimation(
 						getTalkFA(previousFA), Tween.FROM_FA, 0, null);
 			}
 
@@ -154,7 +154,7 @@ public class SayAction extends BaseCallbackAction {
 		if (this.type == Text.Type.TALK) {
 			SpriteActor actor = (SpriteActor) World.getInstance()
 					.getCurrentScene().getActor(actorId, false);
-			actor.startFrameAnimation(previousFA, Tween.FROM_FA, 0, null);
+			actor.startAnimation(previousFA, Tween.FROM_FA, 0, null);
 		}
 
 		super.resume();
@@ -164,13 +164,13 @@ public class SayAction extends BaseCallbackAction {
 		if (a == null)
 			return;
 
-		String fa = a.getRenderer().getCurrentFrameAnimationId();
+		String fa = a.getRenderer().getCurrentAnimationId();
 
 		if (fa.startsWith("talk.")) { // If the actor was already talking we
 										// restore the actor to the 'stand' pose
 			int idx = fa.indexOf('.');
 			String prevFA = "stand" + fa.substring(idx);
-			a.startFrameAnimation(prevFA, null);
+			a.startAnimation(prevFA, null);
 		}
 	}
 

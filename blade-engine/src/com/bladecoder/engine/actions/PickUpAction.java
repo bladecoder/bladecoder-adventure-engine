@@ -32,7 +32,7 @@ public class PickUpAction implements Action {
 	public static final String INFO = "Puts the selected actor in the inventory.";
 	public static final Param[] PARAMS = {
 		new Param("scene", "If not empty, pickup the actor from the selected scene", Type.SCENE),
-		new Param("frame_animation", "The sprite to show while in inventory. If empty, the sprite will be 'actorid.inventory'", Type.STRING)
+		new Param("animation", "The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'", Type.STRING)
 		};
 	
 	String actorId;
@@ -42,7 +42,7 @@ public class PickUpAction implements Action {
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		actorId = params.get("actor");
-		fa = params.get("frame_animation");
+		fa = params.get("animation");
 		scene = params.get("scene");
 	}
 
@@ -70,9 +70,9 @@ public class PickUpAction implements Action {
 			SpriteActor a = (SpriteActor) actor;
 
 			if(fa != null)
-				a.startFrameAnimation(fa, null);
+				a.startAnimation(fa, null);
 			else
-				a.startFrameAnimation(a.getId() + ".inventory", null);
+				a.startAnimation(a.getId() + ".inventory", null);
 			
 			World.getInstance().getInventory().addItem(a);
 		}

@@ -79,7 +79,7 @@ public class SpriteList extends ElementList {
 		String id = list.getItems().get(pos).getAttribute("id");
 //		String prev = w.getRootAttr("init_scene");
 		
-		scn.setRootAttr((Element)list.getItems().get(pos).getParentNode(), "init_frame_animation", id);
+		scn.setRootAttr((Element)list.getItems().get(pos).getParentNode(), "init_animation", id);
 	}	
 
 	@Override
@@ -97,7 +97,7 @@ public class SpriteList extends ElementList {
 			String name =  e.getAttribute("id");
 			Element actor = (Element)e.getParentNode();
 			
-			String init = actor.getAttribute("init_frame_animation");
+			String init = actor.getAttribute("init_animation");
 			
 			if(init == null || init.isEmpty()) {
 				Node n = actor.getFirstChild();

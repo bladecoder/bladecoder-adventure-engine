@@ -18,7 +18,7 @@ package com.bladecoder.engineeditor.scneditor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.bladecoder.engine.anim.FrameAnimation;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.AtlasRenderer;
@@ -26,7 +26,7 @@ import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.SpriteRenderer;
+import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 /**
@@ -39,8 +39,8 @@ public class SpriteDrawer {
 	public static final Color BG_COLOR = Color.MAGENTA;
 	private static final float HEIGHT = 200;
 
-	FrameAnimation currentFrameAnimation;
-	private SpriteRenderer renderer;
+	AnimationDesc currentAnimation;
+	private ActorRenderer renderer;
 	private float viewportW, viewportH;
 
 	public void setViewport(float w, float h) {
@@ -55,7 +55,7 @@ public class SpriteDrawer {
 		}
 
 		if (a instanceof SpriteActor) {
-			SpriteRenderer r = ((SpriteActor) a).getRenderer();
+			ActorRenderer r = ((SpriteActor) a).getRenderer();
 
 			if (r instanceof Sprite3DRenderer) {
 				renderer = new Sprite3DRenderer();
@@ -71,26 +71,26 @@ public class SpriteDrawer {
 		}
 	}
 
-	public void setFrameAnimation(FrameAnimation fa) {
-		currentFrameAnimation = fa;
+	public void setAnimation(AnimationDesc fa) {
+		currentAnimation = fa;
 
 		if (renderer != null) {
 
-			renderer.getFrameAnimations().clear();
+			renderer.getAnimations().clear();
 
 			if (fa != null) {
 
-				renderer.addFrameAnimation(fa);
+				renderer.addAnimation(fa);
 
 				renderer.retrieveAssets();
 
-				renderer.startFrameAnimation(fa.id, Tween.REPEAT, Tween.INFINITY, null);
+				renderer.startAnimation(fa.id, Tween.REPEAT, Tween.INFINITY, null);
 			}
 		}
 	}
 
 	public void draw(SpriteBatch batch) {
-		if (renderer != null && currentFrameAnimation != null) {
+		if (renderer != null && currentAnimation != null) {
 
 			float width = HEIGHT / renderer.getHeight() * renderer.getWidth();
 
@@ -107,7 +107,7 @@ public class SpriteDrawer {
 	}
 
 	public void update(float delta) {
-		if (renderer != null && currentFrameAnimation != null) {
+		if (renderer != null && currentAnimation != null) {
 			renderer.update(delta);
 		}
 	}

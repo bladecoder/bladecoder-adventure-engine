@@ -62,7 +62,7 @@ public class ActorPanel extends HeaderPanel {
 							String type = doc.getType(a);
 
 							if (!type.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE))
-								tabPanel.addTab("Sprites", faList);
+								tabPanel.addTab("Animations", faList);
 
 							if (!type.equals("foreground")) {
 								tabPanel.addTab("Verbs", verbList);
@@ -86,7 +86,7 @@ public class ActorPanel extends HeaderPanel {
 							setTile("ACTOR");
 						}
 						
-						faList.addElements(doc, a, "frame_animation");
+						faList.addElements(doc, a, "animation");
 						verbList.addElements(doc, a, "verb");
 						dialogList.addElements(doc, a, "dialog");
 						soundList.addElements(doc, a, "sound");

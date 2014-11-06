@@ -17,7 +17,7 @@ package com.bladecoder.engine.anim;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class FrameAnimation {
+public class AnimationDesc {
 	public final static String BACK = "back";
 	public final static String FRONT = "front";
 	public final static String RIGHT = "right";
@@ -45,7 +45,7 @@ public class FrameAnimation {
 	public boolean preload;
 	public boolean disposeWhenPlayed;
 	
-	public FrameAnimation() {
+	public AnimationDesc() {
 		
 	}
 	

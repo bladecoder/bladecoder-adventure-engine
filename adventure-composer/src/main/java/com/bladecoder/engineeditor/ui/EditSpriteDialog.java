@@ -138,7 +138,7 @@ public class EditSpriteDialog extends EditElementDialog {
 		});	
 
 		setInfoWidget(spriteWidget);
-		init(inputs, attrs, doc, p, "frame_animation", e);
+		init(inputs, attrs, doc, p, "animation", e);
 		
 		setVisible(inputs[4],false);
 		setVisible(inputs[5],false);
@@ -169,7 +169,7 @@ public class EditSpriteDialog extends EditElementDialog {
 		SelectBox<String> cb = (SelectBox<String>) inputs[1].getField();
 
 		if (e != null || cb.getSelectedIndex() != 0)
-			spriteWidget.setFrameAnimation(id, speed, type);
+			spriteWidget.setAnimation(id, speed, type);
 	}
 
 	private void fillAnimations() {

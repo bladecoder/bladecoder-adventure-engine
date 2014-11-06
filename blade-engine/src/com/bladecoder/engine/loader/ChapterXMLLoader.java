@@ -34,7 +34,7 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.anim.AtlasFrameAnimation;
+import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
@@ -45,7 +45,7 @@ import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.SpriteRenderer;
+import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
@@ -59,7 +59,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 	private Verb currentVerb;
 	private Dialog currentDialog;
 	private DialogOption currentOption;
-	private String initFrameAnimation = null;
+	private String initAnimation = null;
 	private String player = null;
 
 	private float scale;
@@ -193,7 +193,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 				} else if (type.equals("spine")) { // SPINE RENDERER
 					try {
 						Class<?> c = ClassReflection.forName("com.bladecoder.engine.spine.SpineRenderer");
-						SpriteRenderer r = (SpriteRenderer) ClassReflection.newInstance(c);						
+						ActorRenderer r = (ActorRenderer) ClassReflection.newInstance(c);						
 						((SpriteActor) actor).setRenderer(r);
 					} catch (ReflectionException e) {
 						SAXParseException e2 = new SAXParseException(
@@ -210,7 +210,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 					((SpriteActor) actor).setWalkingSpeed(s);
 				}
 
-				initFrameAnimation = atts.getValue("init_frame_animation");
+				initAnimation = atts.getValue("init_animation");
 
 				// PARSE DEPTH MAP USE
 				String depthType = atts.getValue("depth_type");
@@ -314,11 +314,11 @@ public class ChapterXMLLoader extends DefaultHandler {
 			
 			scene.addActor(actor);
 
-		} else if (localName.equals("frame_animation")) {
+		} else if (localName.equals("animation")) {
 
 			if (actor == null || !(actor instanceof SpriteActor)) {
 				SAXParseException e = new SAXParseException(
-						"'frame_animation' TAG must be inside sprite actors",
+						"'animation' TAG must be inside sprite actors",
 						locator);
 				error(e);
 				throw e;
@@ -403,12 +403,12 @@ public class ChapterXMLLoader extends DefaultHandler {
 				animationType = Tween.NO_REPEAT;
 			}
 
-			AtlasFrameAnimation sa = new AtlasFrameAnimation();
+			AtlasAnimationDesc sa = new AtlasAnimationDesc();
 
 			sa.set(id, source, speed, delay, count, animationType, soundId,
 					inD, outD, preload, disposeWhenPlayed);
 
-			((SpriteActor) actor).getRenderer().addFrameAnimation(sa);
+			((SpriteActor) actor).getRenderer().addAnimation(sa);
 		} else if (localName.equals("verb")) {
 			parseVerb(localName, atts, actor != null ? actor.getVerbManager()
 					: scene.getVerbManager());
@@ -507,10 +507,10 @@ public class ChapterXMLLoader extends DefaultHandler {
 		else if (localName.equals("option"))
 			currentOption = currentOption.getParent();
 		else if (localName.equals("actor")) {
-			if (actor instanceof SpriteActor && initFrameAnimation != null
-					&& !initFrameAnimation.isEmpty()) {
-				((SpriteActor) actor).getRenderer().setInitFrameAnimation(
-						initFrameAnimation);
+			if (actor instanceof SpriteActor && initAnimation != null
+					&& !initAnimation.isEmpty()) {
+				((SpriteActor) actor).getRenderer().setInitAnimation(
+						initAnimation);
 			}
 
 			actor = null;

@@ -36,13 +36,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
-import com.bladecoder.engine.anim.FrameAnimation;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.SpriteRenderer;
+import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
@@ -169,14 +169,14 @@ public class ScnWidget extends Widget {
 							scn.removeActor(scn.getActor(id, false));
 							setSelectedActor(null);
 						} else if (e.getPropertyName()
-								.equals("frame_animation")) {
+								.equals("animation")) {
 							createAndSelectActor(Ctx.project.getSelectedActor());
 							setSelectedFA(null);
 						} else if (e.getPropertyName().equals(
-								"init_frame_animation")) {
+								"init_animation")) {
 							String initFA = (String) e.getNewValue();
 							((SpriteActor) selectedActor).getRenderer()
-									.setInitFrameAnimation(initFA);
+									.setInitAnimation(initFA);
 							setSelectedFA(null);
 						} else if (e.getPropertyName().equals("actor")) {
 							createAndSelectActor((Element) e.getNewValue());
@@ -186,7 +186,7 @@ public class ScnWidget extends Widget {
 									.equals("actor"))
 								removeActor(doc, (Element) e.getNewValue());
 							else if (((Element) e.getNewValue()).getTagName()
-									.equals("frame_animation"))
+									.equals("animation"))
 								setSelectedFA(null);
 						}
 					}
@@ -349,15 +349,15 @@ public class ScnWidget extends Widget {
 		animation = v;
 	}
 
-	public void setFrameAnimation(FrameAnimation fa) {
+	public void setAnimation(AnimationDesc fa) {
 		try {
-			faRenderer.setFrameAnimation(fa);
+			faRenderer.setAnimation(fa);
 		} catch (Exception e) {
 			Ctx.msg.show(getStage(), "Could not retrieve assets for sprite: "
 					+ fa.id, 4);
 			e.printStackTrace();
 
-			faRenderer.setFrameAnimation(null);
+			faRenderer.setAnimation(null);
 		}
 	}
 
@@ -538,42 +538,42 @@ public class ScnWidget extends Widget {
 
 		selectedActor = a;
 		faRenderer.setActor(a);
-		setFrameAnimation(null);
+		setAnimation(null);
 		walkZoneWindow.setActor(a);
 	}
 
 	public void setSelectedFA(String selFA) {
 		if (selectedActor instanceof SpriteActor) {
-			SpriteRenderer s = ((SpriteActor) selectedActor).getRenderer();
+			ActorRenderer s = ((SpriteActor) selectedActor).getRenderer();
 
-			if (selFA == null || s.getFrameAnimations().get(selFA) == null) {
+			if (selFA == null || s.getAnimations().get(selFA) == null) {
 				selFA = ((SpriteActor) selectedActor).getRenderer()
-						.getInitFrameAnimation();
+						.getInitAnimation();
 			}
 
-			if (selFA != null && s.getFrameAnimations().get(selFA) != null) {
+			if (selFA != null && s.getAnimations().get(selFA) != null) {
 
-				setFrameAnimation(s.getFrameAnimations().get(selFA));
+				setAnimation(s.getAnimations().get(selFA));
 
 				if (inScene
-						|| s.getCurrentFrameAnimation() == null
+						|| s.getCurrentAnimation() == null
 						|| ((SpriteActor) selectedActor).getRenderer()
-								.getInitFrameAnimation().equals(selFA)) {
+								.getInitAnimation().equals(selFA)) {
 					try {
 
-						((SpriteActor) selectedActor).startFrameAnimation(
+						((SpriteActor) selectedActor).startAnimation(
 								selFA, Tween.REPEAT, Tween.INFINITY, null);
 					} catch (Exception e) {
-						setFrameAnimation(null);
+						setAnimation(null);
 						((SpriteActor) selectedActor).getRenderer()
-								.getFrameAnimations().remove(selFA);
+								.getAnimations().remove(selFA);
 					}
 				}
 			} else {
-				setFrameAnimation(null);
+				setAnimation(null);
 			}
 		} else {
-			setFrameAnimation(null);
+			setAnimation(null);
 		}
 	}
 

@@ -27,8 +27,8 @@ import org.w3c.dom.NodeList;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.anim.AtlasFrameAnimation;
-import com.bladecoder.engine.anim.FrameAnimation;
+import com.bladecoder.engine.anim.AtlasAnimationDesc;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.AtlasRenderer;
@@ -37,7 +37,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.SpriteRenderer;
+import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.BaseActor.ActorLayer;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
@@ -324,8 +324,8 @@ public class ChapterDocument extends BaseDocument {
 		return getTranslation(e.getAttribute("desc"));
 	}
 
-	public NodeList getFrameAnimations(Element e) {
-		return e.getElementsByTagName("frame_animation");
+	public NodeList getAnimations(Element e) {
+		return e.getElementsByTagName("animation");
 	}
 
 	public Polygon getBBox(Element e) {
@@ -393,21 +393,21 @@ public class ChapterDocument extends BaseDocument {
 		a.setDesc(e.getAttribute("desc"));
 
 		if (a instanceof SpriteActor) {
-			SpriteRenderer r = ((SpriteActor) a).getRenderer();
+			ActorRenderer r = ((SpriteActor) a).getRenderer();
 
-			NodeList faList = getFrameAnimations(e);
+			NodeList faList = getAnimations(e);
 
 			for (int i = 0; i < faList.getLength(); i++) {
 				Element faElement = (Element) faList.item(i);
 
-				FrameAnimation fa = getEngineFA(type, faElement);
+				AnimationDesc fa = getEngineFA(type, faElement);
 
-				r.addFrameAnimation(fa);
+				r.addAnimation(fa);
 			}
 
-			if (!e.getAttribute("init_frame_animation").isEmpty()) {
-				((SpriteActor) a).getRenderer().setInitFrameAnimation(
-						e.getAttribute("init_frame_animation"));
+			if (!e.getAttribute("init_animation").isEmpty()) {
+				((SpriteActor) a).getRenderer().setInitAnimation(
+						e.getAttribute("init_animation"));
 
 			}
 			
@@ -427,13 +427,13 @@ public class ChapterDocument extends BaseDocument {
 		return a;
 	}
 
-	public FrameAnimation getEngineFA(String type, Element faElement) {
-		FrameAnimation fa;
+	public AnimationDesc getEngineFA(String type, Element faElement) {
+		AnimationDesc fa;
 
 		if(type.equals(ATLAS_ACTOR_TYPE)) {
-			fa = new AtlasFrameAnimation();	
+			fa = new AtlasAnimationDesc();	
 		} else {
-			fa = new FrameAnimation();
+			fa = new AnimationDesc();
 		}
 			
 		fa.id = faElement.getAttribute("id");

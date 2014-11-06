@@ -21,10 +21,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.anim.FrameAnimation;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.assets.AssetConsumer;
 
-public interface SpriteRenderer extends Serializable, AssetConsumer {
+public interface ActorRenderer extends Serializable, AssetConsumer {
 
 	public void update(float delta);
 	public void draw(SpriteBatch batch, float x, float y, float scale);
@@ -32,22 +32,22 @@ public interface SpriteRenderer extends Serializable, AssetConsumer {
 	public float getWidth();
 	public float getHeight();
 	
-	public FrameAnimation getCurrentFrameAnimation();
-	public String getCurrentFrameAnimationId();
+	public AnimationDesc getCurrentAnimation();
+	public String getCurrentAnimationId();
 	
 	public void lookat(float x, float y, Vector2 pf);
 	public void lookat(String direction);
 	public void stand();
 	public void startWalkFA(Vector2 p0, Vector2 pf);
-	public void startFrameAnimation(String id, int repeatType,
+	public void startAnimation(String id, int repeatType,
 			int count, ActionCallback cb);
 	
 	
-	public void addFrameAnimation(FrameAnimation fa);
-	public void setInitFrameAnimation(String fa);
-	public String getInitFrameAnimation();
+	public void addAnimation(AnimationDesc fa);
+	public void setInitAnimation(String fa);
+	public String getInitAnimation();
 	
 	public String[] getInternalAnimations(String source);
-	public HashMap<String, FrameAnimation> getFrameAnimations();
+	public HashMap<String, AnimationDesc> getAnimations();
 }
 

@@ -31,7 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.SpriteRenderer;
+import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
@@ -213,7 +213,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		for (int i = 0; i < inventory.getNumItems() && i < capacity; i++) {
 
 			SpriteActor a = inventory.getItem(i);
-			SpriteRenderer r = a.getRenderer();
+			ActorRenderer r = a.getRenderer();
 
 			float size = tileSize
 					/ (r.getHeight() > r.getWidth() ? r.getHeight() : r

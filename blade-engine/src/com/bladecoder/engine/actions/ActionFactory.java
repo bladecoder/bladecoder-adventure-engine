@@ -48,7 +48,7 @@ public class ActionFactory {
 		actions.put("ShowInventory",
 				"com.bladecoder.engine.actions.ShowInventoryAction");			
 		actions.put("Animation",
-				"com.bladecoder.engine.actions.FrameAnimationAction");
+				"com.bladecoder.engine.actions.AnimationAction");
 		actions.put("Position",
 				"com.bladecoder.engine.actions.PosAnimationAction");
 		actions.put("RemoveInventoryItem",

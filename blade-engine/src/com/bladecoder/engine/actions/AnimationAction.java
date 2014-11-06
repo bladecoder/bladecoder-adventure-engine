@@ -30,10 +30,10 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class FrameAnimationAction extends BaseCallbackAction implements Action {
+public class AnimationAction extends BaseCallbackAction implements Action {
 	public static final String INFO = "Sets an actor frame animation";
 	public static final Param[] PARAMS = {
-		new Param("frame_animation", "The FA to set", Type.STRING, true),	
+		new Param("animation", "The FA to set", Type.STRING, true),	
 		new Param("count", "The times to repeat. -1 to infinity repeat", Type.INTEGER),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
 		new Param("repeat", "The repeat mode", Type.STRING, true, "no_repeat", new String[]{"repeat", "yoyo", "no_repeat", "reverse", "sprite defined"}),
@@ -58,7 +58,7 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		actorId = params.get("actor");
-		fa = params.get("frame_animation");
+		fa = params.get("animation");
 
 		if (params.get("x") != null) {
 			posx = Float.parseFloat(params.get("x"));
@@ -100,7 +100,7 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 		setVerbCb(cb);
-		EngineLogger.debug(MessageFormat.format("SET_FRAMEANIMATION_ACTION: {0}", fa));
+		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", fa));
 		
 		float scale =  EngineAssetManager.getInstance().getScale();
 
@@ -112,7 +112,7 @@ public class FrameAnimationAction extends BaseCallbackAction implements Action {
 			actor.setPosition(actor.getX() + posx * scale, actor.getY() + posy * scale);
 		}
 		
-		actor.startFrameAnimation(fa, repeat, count, getWait()?this:null);
+		actor.startAnimation(fa, repeat, count, getWait()?this:null);
 		
 		return getWait();
 	}

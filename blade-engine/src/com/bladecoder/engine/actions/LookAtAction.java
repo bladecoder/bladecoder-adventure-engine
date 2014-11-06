@@ -25,7 +25,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.anim.FrameAnimation;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
@@ -40,10 +40,10 @@ public class LookAtAction implements Action {
 		new Param("text", "The 'text' to show", Type.STRING),
 		new Param("direction", "The direction to lookat. If empty, the player lookat to the actor", 
 				Type.STRING, false, "", new String[] {"", 
-				FrameAnimation.FRONT, FrameAnimation.BACK,FrameAnimation.LEFT,
-				FrameAnimation.RIGHT,	FrameAnimation.FRONTLEFT,
-				FrameAnimation.FRONTRIGHT,FrameAnimation.BACKLEFT,
-				FrameAnimation.BACKRIGHT})
+				AnimationDesc.FRONT, AnimationDesc.BACK,AnimationDesc.LEFT,
+				AnimationDesc.RIGHT,	AnimationDesc.FRONTLEFT,
+				AnimationDesc.FRONTRIGHT,AnimationDesc.BACKLEFT,
+				AnimationDesc.BACKRIGHT})
 		};			
 
 	private String soundId;
