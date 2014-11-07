@@ -1,4 +1,8 @@
+[0.7.0]
+
 [0.6.0]
+- Created Spine plugin and set as optional when creating a project.
+- Refactor: FrameAnimation -> AnimationDesc, SpriteRenderer -> ActorRenderer
 - COMPOSER: fix several IOS related bugs. IOS Ipad/Iphone testing and working fine.
 - COMPOSER: fix create resolution. Now atlas upacking/packing is supported
 

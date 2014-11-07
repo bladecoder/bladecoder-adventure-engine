@@ -19,6 +19,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resolution;
 import com.badlogic.gdx.files.FileHandle;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
 
 public class EngineResolutionFileResolver implements FileHandleResolver {
@@ -135,6 +136,11 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 				bestDesc = descriptors[i];
 				return;
 			}
+		}
+		
+		if(bestDesc == null) {
+			EngineLogger.error("Requested resolution not found: " + fixResolution);
+			selectBestResolution();
 		}
 	}
 	
