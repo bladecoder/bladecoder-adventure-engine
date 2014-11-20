@@ -84,7 +84,7 @@ public class BladeSkin extends Skin {
 						if (scaledSize != -1)
 							font.setScale(scaledSize / font.getCapHeight());
 						else if(size != -1) // TODO set size in points (dpi independent)
-							font.setScale(DPIUtils.ptToPixels(size) / font.getCapHeight());
+							font.setScale((DPIUtils.dpToPixels(size) * DPIUtils.getSizeMultiplier()) / font.getCapHeight());
 					} catch (RuntimeException ex) {
 						throw new SerializationException("Error loading bitmap font: " + fontFile, ex);
 					}

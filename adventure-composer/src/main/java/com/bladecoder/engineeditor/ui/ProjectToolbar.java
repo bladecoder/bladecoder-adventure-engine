@@ -261,7 +261,7 @@ public class ProjectToolbar extends Table {
 			try {
 				Desktop.getDesktop().open(
 						new File(Ctx.project.getProjectDir().getAbsoluteFile()
-								+ "/assets"));
+								+ Project.ASSETS_PATH));
 			} catch (IOException e1) {
 				String msg = "Something went wrong while opening assets folder.\n\n"
 						+ e1.getClass().getSimpleName()

@@ -139,12 +139,14 @@ public class RunProccess {
 	public static boolean runGradle(File workingDir, String parameters) {
 		String exec = workingDir.getAbsolutePath() + "/"
 				+ (System.getProperty("os.name").contains("Windows") ? "gradlew.bat" : "gradlew");
-		String command = exec + " " + parameters;
+		String command = "exec" + " " + parameters;
+		String[] split = command.split(" ");
+		split[0] = exec;
 
 		EditorLogger.debug("Executing '" + command + "'");
 
 		try {
-			final ProcessBuilder pb = new ProcessBuilder(command.split(" ")).directory(workingDir).redirectErrorStream(
+			final ProcessBuilder pb = new ProcessBuilder(split).directory(workingDir).redirectErrorStream(
 					true);
 			;
 
