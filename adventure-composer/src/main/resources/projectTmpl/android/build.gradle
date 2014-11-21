@@ -13,7 +13,10 @@ android {
 
         instrumentTest.setRoot('tests')
         
-        if(project.hasProperty('keystore')) {   
+        
+    }
+
+	if(project.hasProperty('keystore')) {   
           signingConfigs {
             release {
             storeFile file(project.keystore)
@@ -22,14 +25,13 @@ android {
             keyPassword project.keyPassword
             }
           }
-    
-          buildTypes {
-           release {
-            signingConfig signingConfigs.release
-           }
-         }
+          
+		  buildTypes {
+           	release {
+            	signingConfig signingConfigs.release
+             }
+          }
        }
-    }
 }
 
 // needed to add JNI shared libraries to APK when compiling on CLI
