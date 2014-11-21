@@ -239,7 +239,7 @@ public class SpriteActor extends BaseActor {
 	}
 
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
-		renderer.startWalkFA(p0, pf);
+		renderer.walk(p0, pf);
 		if(bboxFromRenderer)
 			updateBBox();
 	}

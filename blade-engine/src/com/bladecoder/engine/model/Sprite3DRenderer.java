@@ -469,7 +469,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void startWalkFA(Vector2 p0, Vector2 pf) {
+	public void walk(Vector2 p0, Vector2 pf) {
 		lookat(p0.x, p0.y, pf);
 		startAnimation(AnimationDesc.WALK_ANIM, Tween.REPEAT, -1, null);
 	}

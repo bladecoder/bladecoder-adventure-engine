@@ -38,7 +38,7 @@ public interface ActorRenderer extends Serializable, AssetConsumer {
 	public void lookat(float x, float y, Vector2 pf);
 	public void lookat(String direction);
 	public void stand();
-	public void startWalkFA(Vector2 p0, Vector2 pf);
+	public void walk(Vector2 p0, Vector2 pf);
 	public void startAnimation(String id, int repeatType,
 			int count, ActionCallback cb);
 	

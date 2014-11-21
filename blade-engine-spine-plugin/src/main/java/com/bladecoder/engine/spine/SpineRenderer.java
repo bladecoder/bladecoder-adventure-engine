@@ -18,7 +18,6 @@ package com.bladecoder.engine.spine;
 import java.util.HashMap;
 
 import com.bladecoder.engine.model.ActorRenderer;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -38,6 +37,8 @@ import com.bladecoder.engine.util.RectangleRenderer;
 import com.esotericsoftware.spine.Animation;
 import com.esotericsoftware.spine.AnimationState;
 import com.esotericsoftware.spine.AnimationState.AnimationStateListener;
+import com.esotericsoftware.spine.attachments.Attachment;
+import com.esotericsoftware.spine.attachments.RegionAttachment;
 import com.esotericsoftware.spine.AnimationStateData;
 import com.esotericsoftware.spine.Event;
 import com.esotericsoftware.spine.Skeleton;
@@ -45,6 +46,7 @@ import com.esotericsoftware.spine.SkeletonBinary;
 import com.esotericsoftware.spine.SkeletonBounds;
 import com.esotericsoftware.spine.SkeletonData;
 import com.esotericsoftware.spine.SkeletonRenderer;
+import com.esotericsoftware.spine.Slot;
 
 public class SpineRenderer implements ActorRenderer {
 
@@ -66,6 +68,7 @@ public class SpineRenderer implements ActorRenderer {
 
 	private SkeletonRenderer renderer;
 	private SkeletonBounds bounds;
+	private float width = 200, height = 200;
 
 	private final HashMap<String, SkeletonCacheEntry> sourceCache = new HashMap<String, SkeletonCacheEntry>();
 
@@ -84,8 +87,7 @@ public class SpineRenderer implements ActorRenderer {
 	private AnimationStateListener animationListener = new AnimationStateListener() {
 		@Override
 		public void complete(int trackIndex, int loopCount) {
-			if (currentAnimationType == Tween.REPEAT
-					&& (currentCount == Tween.INFINITY || currentCount > loopCount)) {
+			if (currentAnimationType == Tween.REPEAT && (currentCount == Tween.INFINITY || currentCount > loopCount)) {
 				return;
 			}
 
@@ -93,8 +95,7 @@ public class SpineRenderer implements ActorRenderer {
 			if (animationCb != null || animationCbSer != null) {
 
 				if (animationCb == null) {
-					animationCb = ActionCallbackSerialization
-							.find(animationCbSer);
+					animationCb = ActionCallbackSerialization.find(animationCbSer);
 					animationCbSer = null;
 				}
 
@@ -158,8 +159,7 @@ public class SpineRenderer implements ActorRenderer {
 	public String[] getInternalAnimations(String source) {
 		retrieveSource(source);
 
-		Array<Animation> animations = sourceCache.get(source).skeleton
-				.getData().getAnimations();
+		Array<Animation> animations = sourceCache.get(source).skeleton.getData().getAnimations();
 		String[] result = new String[animations.size];
 
 		for (int i = 0; i < animations.size; i++) {
@@ -188,33 +188,23 @@ public class SpineRenderer implements ActorRenderer {
 			currentSource.skeleton.setX(x / scale);
 			currentSource.skeleton.setY(y / scale);
 
-			batch.setTransformMatrix(batch.getTransformMatrix().scale(scale,
-					scale, 1.0f));
+			batch.setTransformMatrix(batch.getTransformMatrix().scale(scale, scale, 1.0f));
 			renderer.draw(batch, currentSource.skeleton);
-			batch.setTransformMatrix(batch.getTransformMatrix().scale(
-					1 / scale, 1 / scale, 1.0f));
+			batch.setTransformMatrix(batch.getTransformMatrix().scale(1 / scale, 1 / scale, 1.0f));
 		} else {
 			x = x - getWidth() / 2 * scale;
-			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight()
-					* scale, Color.RED);
+			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
 		}
 	}
 
 	@Override
 	public float getWidth() {
-		if (bounds != null && bounds.getWidth() > 0) {
-			return bounds.getWidth();
-		}
-
-		return 200;
+		return width;
 	}
 
 	@Override
 	public float getHeight() {
-		if (bounds != null && bounds.getHeight() > 0)
-			return bounds.getHeight();
-
-		return 200;
+		return height;
 	}
 
 	@Override
@@ -250,18 +240,15 @@ public class SpineRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void startWalkFA(Vector2 p0, Vector2 pf) {
-		String currentDirection = AnimationDesc.getFrameDirection(p0.x, p0.y,
-				pf);
+	public void walk(Vector2 p0, Vector2 pf) {
+		String currentDirection = AnimationDesc.getFrameDirection(p0.x, p0.y, pf);
 		StringBuilder sb = new StringBuilder();
-		sb.append(AnimationDesc.WALK_ANIM).append('.')
-				.append(currentDirection);
+		sb.append(AnimationDesc.WALK_ANIM).append('.').append(currentDirection);
 		startAnimation(sb.toString(), Tween.FROM_FA, 1, null);
 	}
 
 	@Override
-	public void startAnimation(String id, int repeatType, int count,
-			ActionCallback cb) {
+	public void startAnimation(String id, int repeatType, int count, ActionCallback cb) {
 		AnimationDesc fa = getAnimation(id);
 
 		if (fa == null) {
@@ -270,8 +257,7 @@ public class SpineRenderer implements ActorRenderer {
 			return;
 		}
 
-		if (currentAnimation != null
-				&& currentAnimation.disposeWhenPlayed)
+		if (currentAnimation != null && currentAnimation.disposeWhenPlayed)
 			disposeSource(currentAnimation.source);
 
 		currentAnimation = fa;
@@ -305,21 +291,64 @@ public class SpineRenderer implements ActorRenderer {
 		}
 
 		lastAnimationTime = 0f;
-		setCurrentFA();
+		setCurrentAnimation();
 	}
 
-	private void setCurrentFA() {
+	private void setCurrentAnimation() {
 		try {
-//			currentSource.skeleton.setToSetupPose();
+			// TODO Make setup pose parametrizable in the AnimationDesc
+			currentSource.skeleton.setToSetupPose();
 			currentSource.skeleton.setFlipX(flipX);
-			currentSource.animation
-					.setTimeScale(currentAnimation.duration);
-			currentSource.animation.setAnimation(0, currentAnimation.id,
-					currentAnimationType == Tween.REPEAT);
+			currentSource.animation.setTimeScale(currentAnimation.duration);
+			currentSource.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.REPEAT);
 			update(lastAnimationTime);
-			bounds.update(currentSource.skeleton, true);
+			computeBounds();
 		} catch (Exception e) {
 			EngineLogger.error("SpineRenderer:setCurrentFA " + e.getMessage());
+		}
+	}
+
+	private void computeBounds() {
+		bounds.update(currentSource.skeleton, true);
+
+		if (bounds.getWidth() > 0 && bounds.getHeight() > 0) {
+			width = bounds.getWidth();
+			height = bounds.getHeight();
+		} else {
+			currentSource.skeleton.updateWorldTransform();
+
+			float minX = Float.MAX_VALUE;
+			float minY = Float.MAX_VALUE;
+			float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE;
+
+			Array<Slot> slots = currentSource.skeleton.getSlots();
+
+			for (int i = 0, n = slots.size; i < n; i++) {
+				Slot slot = slots.get(i);
+				Attachment attachment = slot.getAttachment();
+				if (attachment == null)
+					continue;
+
+				if (!(attachment instanceof RegionAttachment))
+					continue;
+
+				((RegionAttachment) attachment).updateWorldVertices(slot, false);
+
+				float[] vertices = ((RegionAttachment) attachment).getWorldVertices();
+				for (int ii = 0, nn = vertices.length; ii < nn; ii += 5) {
+					minX = Math.min(minX, vertices[ii]);
+					minY = Math.min(minY, vertices[ii + 1]);
+					maxX = Math.max(maxX, vertices[ii]);
+					maxY = Math.max(maxY, vertices[ii + 1]);
+				}
+			}
+			
+			width = (maxX - minX);
+			height = (maxY - minY);
+			
+			if(width <= 0 || height <= 0) {
+				width = height = 200;
+			}
 		}
 	}
 
@@ -339,12 +368,10 @@ public class SpineRenderer implements ActorRenderer {
 				// search for .left if .frontleft not found and viceversa
 				StringBuilder sb = new StringBuilder();
 
-				if (id.endsWith(AnimationDesc.FRONTLEFT)
-						|| id.endsWith(AnimationDesc.FRONTRIGHT)) {
+				if (id.endsWith(AnimationDesc.FRONTLEFT) || id.endsWith(AnimationDesc.FRONTRIGHT)) {
 					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
 					sb.append(AnimationDesc.FRONT);
-				} else if (id.endsWith(AnimationDesc.BACKLEFT)
-						|| id.endsWith(AnimationDesc.BACKRIGHT)) {
+				} else if (id.endsWith(AnimationDesc.BACKLEFT) || id.endsWith(AnimationDesc.BACKRIGHT)) {
 					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
 					sb.append(AnimationDesc.BACK);
 				} else if (id.endsWith(AnimationDesc.LEFT)) {
@@ -367,12 +394,13 @@ public class SpineRenderer implements ActorRenderer {
 
 					if (fa != null) {
 						flipX = true;
-					} else if (s.endsWith(AnimationDesc.FRONT)
-							|| s.endsWith(AnimationDesc.BACK)) { // search for
-																	// only
-																	// right or
-																	// left
-																	// animations
+					} else if (s.endsWith(AnimationDesc.FRONT) || s.endsWith(AnimationDesc.BACK)) { // search
+																									// for
+																									// only
+																									// right
+																									// or
+																									// left
+																									// animations
 						if (id.endsWith(AnimationDesc.LEFT)) {
 							sb.append(id.substring(0, id.lastIndexOf('.') + 1));
 							sb.append(AnimationDesc.LEFT);
@@ -426,14 +454,11 @@ public class SpineRenderer implements ActorRenderer {
 		}
 
 		if (entry.skeleton == null) {
-			TextureAtlas atlas = EngineAssetManager.getInstance()
-					.getTextureAtlas(source);
+			TextureAtlas atlas = EngineAssetManager.getInstance().getTextureAtlas(source);
 
 			SkeletonBinary skel = new SkeletonBinary(atlas);
 			skel.setScale(EngineAssetManager.getInstance().getScale());
-			SkeletonData skeletonData = skel
-					.readSkeletonData(EngineAssetManager.getInstance()
-							.getSpine(source));
+			SkeletonData skeletonData = skel.readSkeletonData(EngineAssetManager.getInstance().getSpine(source));
 
 			entry.skeleton = new Skeleton(skeletonData);
 
@@ -489,11 +514,10 @@ public class SpineRenderer implements ActorRenderer {
 		}
 
 		if (currentAnimation != null) {
-			SkeletonCacheEntry entry = sourceCache
-					.get(currentAnimation.source);
+			SkeletonCacheEntry entry = sourceCache.get(currentAnimation.source);
 			currentSource = entry;
 
-			setCurrentFA();
+			setCurrentAnimation();
 
 		} else if (initAnimation != null) {
 			startAnimation(initAnimation, Tween.FROM_FA, 1, null);
@@ -522,8 +546,7 @@ public class SpineRenderer implements ActorRenderer {
 		if (currentAnimation != null)
 			currentAnimationId = currentAnimation.id;
 
-		json.writeValue("currentAnimation", currentAnimationId,
-				currentAnimationId == null ? null : String.class);
+		json.writeValue("currentAnimation", currentAnimationId, currentAnimationId == null ? null : String.class);
 
 		json.writeValue("initAnimation", initAnimation);
 
@@ -532,9 +555,8 @@ public class SpineRenderer implements ActorRenderer {
 		if (animationCbSer != null)
 			json.writeValue("cb", animationCbSer);
 		else
-			json.writeValue("cb",
-					ActionCallbackSerialization.find(animationCb),
-					animationCb == null ? null : String.class);
+			json.writeValue("cb", ActionCallbackSerialization.find(animationCb), animationCb == null ? null
+					: String.class);
 
 		json.writeValue("currentCount", currentCount);
 		json.writeValue("currentAnimationType", currentAnimationType);
@@ -545,25 +567,19 @@ public class SpineRenderer implements ActorRenderer {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
-		fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class,
-				jsonData);
+		fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
 
-		String currentAnimationId = json.readValue(
-				"currentAnimation", String.class, jsonData);
+		String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);
 
 		if (currentAnimationId != null)
-			currentAnimation = (AtlasAnimationDesc) fanims
-					.get(currentAnimationId);
+			currentAnimation = (AtlasAnimationDesc) fanims.get(currentAnimationId);
 
-		initAnimation = json.readValue("initAnimation", String.class,
-				jsonData);
+		initAnimation = json.readValue("initAnimation", String.class, jsonData);
 
 		flipX = json.readValue("flipX", Boolean.class, jsonData);
 		animationCbSer = json.readValue("cb", String.class, jsonData);
 		currentCount = json.readValue("currentCount", Integer.class, jsonData);
-		currentAnimationType = json.readValue("currentAnimationType",
-				Integer.class, jsonData);
-		lastAnimationTime = json.readValue("lastAnimationTime", Float.class,
-				jsonData);
+		currentAnimationType = json.readValue("currentAnimationType", Integer.class, jsonData);
+		lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 	}
 }
