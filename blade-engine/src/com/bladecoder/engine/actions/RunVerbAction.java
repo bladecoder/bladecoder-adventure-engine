@@ -63,6 +63,9 @@ public class RunVerbAction extends BaseCallbackAction {
 
 		if (params.get("repeat") != null) {
 			repeat = Integer.parseInt(params.get("repeat"));
+			
+			if(repeat == -1)
+				repeat = Integer.MAX_VALUE;
 		}
 	}
 
@@ -111,7 +114,7 @@ public class RunVerbAction extends BaseCallbackAction {
 
 		ArrayList<Action> actions = v.getActions();
 
-		while (currentRepeat < repeat) {
+		while (currentRepeat < repeat && !stop) {
 			while (ip < actions.size() && !stop) {
 				Action a = actions.get(ip);
 

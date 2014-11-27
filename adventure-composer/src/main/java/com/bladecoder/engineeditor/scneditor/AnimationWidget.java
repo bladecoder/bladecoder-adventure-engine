@@ -32,16 +32,16 @@ import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engineeditor.model.ChapterDocument;
-import com.bladecoder.engineeditor.ui.EditSpriteDialog;
+import com.bladecoder.engineeditor.ui.EditAnimationDialog;
 
-public class SpriteWidget extends Widget {
+public class AnimationWidget extends Widget {
 	private String source;
 	private AnimationDesc fa;
 	private ActorRenderer renderer;
-	EditSpriteDialog editFADialog;
+	EditAnimationDialog editFADialog;
 	
 
-	public SpriteWidget(EditSpriteDialog createEditFADialog) {
+	public AnimationWidget(EditAnimationDialog createEditFADialog) {
 		this.editFADialog = createEditFADialog;
 	}
 

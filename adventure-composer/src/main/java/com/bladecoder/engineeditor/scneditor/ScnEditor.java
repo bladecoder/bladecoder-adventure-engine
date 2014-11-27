@@ -17,6 +17,7 @@ package com.bladecoder.engineeditor.scneditor;
 
 import java.io.IOException;
 
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -31,19 +32,19 @@ public class ScnEditor extends Table {
 	CheckBox animCb;
 	TextButton testButton;
 	TextButton walkZoneButton;
-	
+
 	public ScnEditor(Skin skin) {
 		super(skin);
-		
+
 		scnWidget = new ScnWidget(skin);
-		
+
 		inSceneCb = new CheckBox("In Scene Anims", skin);
 		inSceneCb.setChecked(false);
 		animCb = new CheckBox("Animation", skin);
 		animCb.setChecked(true);
 		testButton = new TextButton("Test", skin);
 		walkZoneButton = new TextButton("Walk Zone", skin);
-		
+
 		add(scnWidget).expand().fill();
 		row();
 
@@ -56,24 +57,21 @@ public class ScnEditor extends Table {
 		bottomTable.add(inSceneCb);
 		bottomTable.add(animCb);
 		bottomTable.add(testButton);
-		
+
 		walkZoneButton.addListener(new ChangeListener() {
 			@Override
-			public void changed(ChangeEvent event,
-					com.badlogic.gdx.scenes.scene2d.Actor actor) {
-				if(walkZoneButton.isChecked())
+			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+				if (walkZoneButton.isChecked())
 					getScnWidget().showEditWalkZoneWindow();
 				else
 					getScnWidget().hideEditWalkZoneWindow();
 			}
 		});
 
-
 		inSceneCb.addListener(new ChangeListener() {
 
 			@Override
-			public void changed(ChangeEvent event,
-					com.badlogic.gdx.scenes.scene2d.Actor actor) {
+			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
 				scnWidget.setInSceneSprites(inSceneCb.isChecked());
 			}
 		});
@@ -81,8 +79,7 @@ public class ScnEditor extends Table {
 		animCb.addListener(new ChangeListener() {
 
 			@Override
-			public void changed(ChangeEvent event,
-					com.badlogic.gdx.scenes.scene2d.Actor actor) {
+			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
 				scnWidget.setAnimation(animCb.isChecked());
 			}
 		});
@@ -90,45 +87,51 @@ public class ScnEditor extends Table {
 		testButton.addListener(new ChangeListener() {
 
 			@Override
-			public void changed(ChangeEvent event,
-					com.badlogic.gdx.scenes.scene2d.Actor actor) {
+			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
 				test();
 				event.cancel();
 			}
 		});
 	}
-	
+
 	public ScnWidget getScnWidget() {
 		return scnWidget;
-	}	
-	
+	}
+
 	private void test() {
-		
-		if(Ctx.project.getSelectedScene() == null) {
+
+		if (Ctx.project.getSelectedScene() == null) {
 			String msg = "There are no scenes in this chapter.";
-			Ctx.msg.show(getStage(),msg, 3);
+			Ctx.msg.show(getStage(), msg, 3);
 			return;
 		}
-		
+
 		try {
-			try {
-				Ctx.project.saveProject();
-			} catch (Exception ex) {
-				String msg = "Something went wrong while saving the project.\n\n"
-						+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
-				Ctx.msg.show(getStage(),msg, 2);
-			}
-			
-			if(!RunProccess.runBladeEngine(
-					Ctx.project.getProjectDir(),
-					Ctx.project.getSelectedChapter().getId(),
-					Ctx.project.getSelectedChapter().getId(Ctx.project.getSelectedScene())))
-				Ctx.msg.show(getStage(),"There was a problem running the project", 3);
-		} catch (IOException e) {
-			String msg = "Something went wrong while testing the scene.\n\n"
-					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(),msg, 3);
+			Ctx.project.saveProject();
+		} catch (Exception ex) {
+			String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
+					+ ex.getMessage();
+			Ctx.msg.show(getStage(), msg, 2);
 		}
+
+		new Thread(new Runnable() {
+			Stage stage = getStage();
+
+			@Override
+			public void run() {
+				Ctx.msg.show(stage, "Running scene...", 3);
+
+				try {
+					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), Ctx.project.getSelectedChapter()
+							.getId(), Ctx.project.getSelectedChapter().getId(Ctx.project.getSelectedScene())))
+						Ctx.msg.show(stage, "There was a problem running the scene", 3);
+				} catch (IOException e) {
+					Ctx.msg.show(stage, "There was a problem running the scene: " + e.getMessage(), 3);
+				}
+
+			}
+		}).start();
+
 	}
 
 	public void dispose() {

@@ -31,8 +31,8 @@ import com.bladecoder.engineeditor.Ctx;
 public class WalkZoneWindow extends Container<Table> {
 	private static final String DELETE_WALK_ZONE_TEXT = "Delete Walk Zone";
 	private static final String CREATE_WALK_ZONE_TEXT = "Create Walk Zone";
-	private static final String SET_ACTOR_AS_OBSTACLE_TEXT = "Set BaseActor as Obstacle";
-	private static final String REMOVE_ACTOR_AS_OBSTACLE_TEXT = "Remove BaseActor as Obstacle";
+	private static final String SET_ACTOR_AS_OBSTACLE_TEXT = "Set Actor as Obstacle";
+	private static final String REMOVE_ACTOR_AS_OBSTACLE_TEXT = "Remove Actor as Obstacle";
 	private static final float OBSTACLE_WIDTH = 200;
 
 	TextButton createZoneBtn;

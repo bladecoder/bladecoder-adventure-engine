@@ -32,12 +32,12 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.scneditor.SpriteWidget;
+import com.bladecoder.engineeditor.scneditor.AnimationWidget;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
-public class EditSpriteDialog extends EditElementDialog {
+public class EditAnimationDialog extends EditElementDialog {
 	public static final String INFO = "Define sprites and frame animations";
 
 	private InputPanel[] inputs = new InputPanel[11];
@@ -46,10 +46,10 @@ public class EditSpriteDialog extends EditElementDialog {
 	String attrs[] = { "source", "id", "animation_type", "speed", "delay",
 			"count", "inD", "outD", "sound", "preload", "disposed_when_played" };
 
-	SpriteWidget spriteWidget = new SpriteWidget(this);
+	AnimationWidget spriteWidget = new AnimationWidget(this);
 
 	@SuppressWarnings("unchecked")
-	public EditSpriteDialog(Skin skin, BaseDocument doc, Element p, Element e) {
+	public EditAnimationDialog(Skin skin, BaseDocument doc, Element p, Element e) {
 		super(skin);
 
 		setInfo(INFO);
@@ -126,14 +126,14 @@ public class EditSpriteDialog extends EditElementDialog {
 				.addListener(new ChangeListener() {
 					@Override
 					public void changed(ChangeEvent event, Actor actor) {
-						setSprite();
+						setAnimation();
 					}
 				});
 
 		((TextField) inputs[3].getField()).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				setSprite();
+				setAnimation();
 			}
 		});	
 
@@ -160,7 +160,7 @@ public class EditSpriteDialog extends EditElementDialog {
 		}
 	}
 
-	private void setSprite() {
+	private void setAnimation() {
 		String id = inputs[1].getText();
 		String type = typePanel.getText();
 		String speed = inputs[3].getText();
@@ -177,7 +177,7 @@ public class EditSpriteDialog extends EditElementDialog {
 
 		@SuppressWarnings("unchecked")
 		SelectBox<String> cb = (SelectBox<String>) inputs[1].getField();
-		cb.getItems().clear();
+		cb.clearItems();
 
 		// When creating, give option to add all elements
 		if (e == null)
@@ -191,7 +191,7 @@ public class EditSpriteDialog extends EditElementDialog {
 
 		cb.invalidateHierarchy();
 
-		setSprite();
+		setAnimation();
 	}
 
 	String ext;

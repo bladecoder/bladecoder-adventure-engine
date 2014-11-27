@@ -26,6 +26,7 @@ import javax.swing.JFileChooser;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
@@ -63,19 +64,14 @@ public class ProjectToolbar extends Table {
 		atlasBtn = new ImageButton(skin);
 
 		addToolBarButton(skin, newBtn, "ic_new", "New", "Create a new project");
-		addToolBarButton(skin, loadBtn, "ic_load", "Load",
-				"Load an existing project");
-		addToolBarButton(skin, saveBtn, "ic_save", "Save",
-				"Save the current project");
-		addToolBarButton(skin, exitBtn, "ic_exit", "Exit",
-				"Save changes and exits");
+		addToolBarButton(skin, loadBtn, "ic_load", "Load", "Load an existing project");
+		addToolBarButton(skin, saveBtn, "ic_save", "Save", "Save the current project");
+		addToolBarButton(skin, exitBtn, "ic_exit", "Exit", "Save changes and exits");
 		row();
 
 		addToolBarButton(skin, playBtn, "ic_play", "Play", "Play Adventure");
-		addToolBarButton(skin, packageBtn, "ic_package", "Package",
-				"Package the game for distribution");
-		addToolBarButton(skin, assetsBtn, "ic_assets", "Assets",
-				"Open assets folder");
+		addToolBarButton(skin, packageBtn, "ic_package", "Package", "Package the game for distribution");
+		addToolBarButton(skin, assetsBtn, "ic_assets", "Assets", "Open assets folder");
 		addToolBarButton(skin, atlasBtn, "ic_atlases", "Atlas", "Create Atlas");
 
 		newBtn.setDisabled(false);
@@ -138,37 +134,31 @@ public class ProjectToolbar extends Table {
 			}
 		});
 
-		Ctx.project.getWorld().addPropertyChangeListener(
-				new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent e) {
-						saveBtn.setDisabled(e.getPropertyName().equals(
-								"DOCUMENT_SAVED"));
-					}
-				});
+		Ctx.project.getWorld().addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent e) {
+				saveBtn.setDisabled(e.getPropertyName().equals("DOCUMENT_SAVED"));
+			}
+		});
 
-		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED,
-				new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent arg0) {
-						packageBtn.setDisabled(Ctx.project.getProjectDir() == null);
-						playBtn.setDisabled(Ctx.project.getProjectDir() == null);
-						assetsBtn.setDisabled(Ctx.project.getProjectDir() == null);
-						atlasBtn.setDisabled(Ctx.project.getProjectDir() == null);
-					}
-				});
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent arg0) {
+				packageBtn.setDisabled(Ctx.project.getProjectDir() == null);
+				playBtn.setDisabled(Ctx.project.getProjectDir() == null);
+				assetsBtn.setDisabled(Ctx.project.getProjectDir() == null);
+				atlasBtn.setDisabled(Ctx.project.getProjectDir() == null);
+			}
+		});
 	}
 
-	private void addToolBarButton(Skin skin, ImageButton button, String icon,
-			String text, String tooltip) {
-		ImageButtonStyle style = new ImageButtonStyle(
-				skin.get(ButtonStyle.class));
+	private void addToolBarButton(Skin skin, ImageButton button, String icon, String text, String tooltip) {
+		ImageButtonStyle style = new ImageButtonStyle(skin.get(ButtonStyle.class));
 		TextureRegion image = Ctx.assetManager.getIcon(icon);
 		style.imageUp = new TextureRegionDrawable(image);
 
 		try {
-			TextureRegion imageDisabled = Ctx.assetManager.getIcon(icon
-					+ "_disabled");
+			TextureRegion imageDisabled = Ctx.assetManager.getIcon(icon + "_disabled");
 			style.imageDisabled = new TextureRegionDrawable(imageDisabled);
 		} catch (Exception e) {
 
@@ -191,9 +181,8 @@ public class ProjectToolbar extends Table {
 	}
 
 	private void loadProject() {
-		JFileChooser chooser = new JFileChooser(
-				Ctx.project.getProjectDir() != null ? Ctx.project
-						.getProjectDir() : new File("."));
+		JFileChooser chooser = new JFileChooser(Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir()
+				: new File("."));
 		chooser.setDialogTitle("Select the project to load");
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.setMultiSelectionEnabled(false);
@@ -205,10 +194,8 @@ public class ProjectToolbar extends Table {
 				playBtn.setDisabled(false);
 				packageBtn.setDisabled(false);
 			} catch (Exception ex) {
-				String msg = "Something went wrong while loading the project.\n\n"
-						+ ex.getClass().getSimpleName()
-						+ " - "
-						+ ex.getMessage();
+				String msg = "Something went wrong while loading the project.\n\n" + ex.getClass().getSimpleName()
+						+ " - " + ex.getMessage();
 				Ctx.msg.show(getStage(), msg, 2);
 				ex.printStackTrace();
 			}
@@ -231,8 +218,8 @@ public class ProjectToolbar extends Table {
 		try {
 			Ctx.project.saveProject();
 		} catch (Exception ex) {
-			String msg = "Something went wrong while saving the project.\n\n"
-					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
+			String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
+					+ ex.getMessage();
 			Ctx.msg.show(getStage(), msg, 2);
 		}
 	}
@@ -244,29 +231,35 @@ public class ProjectToolbar extends Table {
 	}
 
 	private void play() {
-		try {
-			saveProject();
+		saveProject();
 
-			if(!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), null, null))
-				Ctx.msg.show(getStage(), "There was a problem running the project", 3);
-		} catch (IOException e) {
-			String msg = "Something went wrong while playing the project.\n\n"
-					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(), msg, 2);
-		}
+		new Thread(new Runnable() {
+			Stage stage = getStage();
+
+			@Override
+			public void run() {
+				Ctx.msg.show(stage, "Running scene...", 3);
+
+				try {
+					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), null, null))
+						Ctx.msg.show(getStage(), "There was a problem running the project", 3);
+				} catch (IOException e) {
+					Ctx.msg.show(stage, "There was a problem running the project: " + e.getMessage(), 3);
+				}
+
+			}
+		}).start();
+
 	}
 
 	private void openProjectFolder() {
 		if (Desktop.isDesktopSupported()) {
 			try {
-				Desktop.getDesktop().open(
-						new File(Ctx.project.getProjectDir().getAbsoluteFile()
-								+ Project.ASSETS_PATH));
+				Desktop.getDesktop()
+						.open(new File(Ctx.project.getProjectDir().getAbsoluteFile() + Project.ASSETS_PATH));
 			} catch (IOException e1) {
-				String msg = "Something went wrong while opening assets folder.\n\n"
-						+ e1.getClass().getSimpleName()
-						+ " - "
-						+ e1.getMessage();
+				String msg = "Something went wrong while opening assets folder.\n\n" + e1.getClass().getSimpleName()
+						+ " - " + e1.getMessage();
 				Ctx.msg.show(getStage(), msg, 2);
 			}
 		}

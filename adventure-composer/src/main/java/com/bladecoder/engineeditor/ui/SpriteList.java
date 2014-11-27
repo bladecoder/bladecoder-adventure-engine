@@ -84,7 +84,7 @@ public class SpriteList extends ElementList {
 
 	@Override
 	protected EditElementDialog getEditElementDialogInstance(Element e) {
-		return new EditSpriteDialog(skin, doc, parent, e);
+		return new EditAnimationDialog(skin, doc, parent, e);
 	}	
 
 	// -------------------------------------------------------------------------
