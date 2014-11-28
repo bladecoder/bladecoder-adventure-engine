@@ -126,23 +126,24 @@ public class TextManager implements Serializable {
 	public void next() {
 		if (currentSubtitle != null) {
 
-			Text prev = currentSubtitle;
+			currentSubtitle.callCb();
 
 			setCurrentSubtitle(fifo.poll());
-
-			// call cb after putting next subtitle because 'cb' can put new
-			// subtitles too
-			prev.callCb();
 		}
 	}
 
 	public void clear() {
-		fifo.clear();
+		//fifo.clear();
+		
+		// CLEAR FIFO
+		while(currentSubtitle != null)
+			next();
+		
 		inScreenTime = 0;
 
-		if (currentSubtitle != null) {
-			currentSubtitle = null;
-		}
+//		if (currentSubtitle != null) {
+//			currentSubtitle = null;
+//		}
 	}
 
 	/**

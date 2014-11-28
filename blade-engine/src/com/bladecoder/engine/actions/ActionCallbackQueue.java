@@ -46,4 +46,10 @@ public class ActionCallbackQueue {
 				cb.resume();
 		}
 	}
+	
+	public static void clear() {
+		queue.clear();
+	}
+	
+	// TODO: SAVE AND RESUME QUEUE
 }

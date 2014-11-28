@@ -287,6 +287,9 @@ public class World implements Serializable, AssetConsumer {
 			currentDialog = null;
 
 			currentScene.dispose();
+			
+			// Clear all pending callbacks
+			ActionCallbackQueue.clear();
 		}
 
 		currentScene = scene;
