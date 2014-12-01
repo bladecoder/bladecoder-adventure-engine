@@ -66,7 +66,7 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 	
 	private ActorLayer layer;
 	
-	/** State to know when the player is inside this actor to trigger the enter/leave verbs */ 
+	/** State to know when the player is inside this actor to trigger the enter/exit verbs */ 
 	private boolean playerInside = false;
 
 	public String getId() {
@@ -141,7 +141,7 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 				// the player leaves
 				playerInside = false;
 				
-				Verb v = getVerb("leave");
+				Verb v = getVerb("exit");
 				if(v!=null)
 					v.run();
 			} else if(hit && !playerInside){

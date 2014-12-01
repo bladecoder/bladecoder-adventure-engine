@@ -100,7 +100,9 @@ public class VerbManager implements Serializable {
 	public void runVerb(String verb, String state, String target) {
 
 		Verb v = null;
-			
+		
+		EngineLogger.debug(MessageFormat.format("Run Verb:{0} State: {1} Target: {2}", verb, state, target));
+		
 		v = getVerb(verb, state, target);
 
 		if (v == null) {
