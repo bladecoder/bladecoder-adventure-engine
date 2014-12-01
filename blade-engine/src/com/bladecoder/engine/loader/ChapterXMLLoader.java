@@ -589,7 +589,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 				}
 			}
 
-			if (atts.getValue("actor") == null)
+			if (atts.getValue("", "actor") == null)
 				actionParams.put("actor", actor);
 
 			if (actionClass != null) {

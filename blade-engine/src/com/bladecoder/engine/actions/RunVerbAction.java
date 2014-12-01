@@ -63,14 +63,12 @@ public class RunVerbAction extends BaseCallbackAction {
 
 		if (params.get("repeat") != null) {
 			repeat = Integer.parseInt(params.get("repeat"));
-			
-			if(repeat == -1)
-				repeat = Integer.MAX_VALUE;
 		}
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
+		EngineLogger.debug("RUNNING RUNVERBACTION");
 		setVerbCb(cb);
 		currentRepeat = 0;
 
@@ -114,7 +112,7 @@ public class RunVerbAction extends BaseCallbackAction {
 
 		ArrayList<Action> actions = v.getActions();
 
-		while (currentRepeat < repeat && !stop) {
+		while ((currentRepeat < repeat || repeat == -1) && !stop) {
 			while (ip < actions.size() && !stop) {
 				Action a = actions.get(ip);
 
@@ -131,7 +129,7 @@ public class RunVerbAction extends BaseCallbackAction {
 			
 			if(!stop) {
 				currentRepeat++;
-				if (currentRepeat < repeat && repeat != -1) {
+				if (currentRepeat < repeat || repeat == -1) {
 					ip = 0;
 				} 
 			}
