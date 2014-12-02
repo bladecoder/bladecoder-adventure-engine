@@ -41,7 +41,7 @@ public class SayDialogAction extends BaseCallbackAction {
 	
 
 	private static final String TALK_LEFT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.LEFT;
-	private static final String TALK_RIGHT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.LEFT;
+	private static final String TALK_RIGHT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.RIGHT;
 
 	private boolean characterTurn = false;
 	private String characterName;

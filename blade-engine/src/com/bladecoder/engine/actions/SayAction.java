@@ -57,7 +57,7 @@ public class SayAction extends BaseCallbackAction {
 	};
 
 	private static final String TALK_LEFT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.LEFT;
-	private static final String TALK_RIGHT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.LEFT;
+	private static final String TALK_RIGHT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.RIGHT;
 	
 	private String soundId;
 	private String text;
