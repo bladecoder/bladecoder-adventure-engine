@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.BaseCallbackAction;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -37,6 +38,10 @@ public class SayDialogAction extends BaseCallbackAction {
 			"\n- Restore the target actor animation";
 	public static final Param[] PARAMS = {
 		};
+	
+
+	private static final String TALK_LEFT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.LEFT;
+	private static final String TALK_RIGHT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.LEFT;
 
 	private boolean characterTurn = false;
 	private String characterName;
@@ -137,10 +142,12 @@ public class SayDialogAction extends BaseCallbackAction {
 	}
 	
 	private String getTalkFA(String prevFA) {
-		if(prevFA.endsWith("left")) return "talk.left";
-		else if(prevFA.endsWith("right")) return "talk.right";
-		
-		return "talk";
+		if (prevFA.endsWith(AnimationDesc.LEFT))
+			return TALK_LEFT;
+		else if (prevFA.endsWith(AnimationDesc.RIGHT))
+			return TALK_RIGHT;
+
+		return AnimationDesc.TALK_ANIM;
 	}
 
 	@Override

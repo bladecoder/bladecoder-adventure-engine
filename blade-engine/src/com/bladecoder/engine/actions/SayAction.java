@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
@@ -55,6 +56,9 @@ public class SayAction extends BaseCallbackAction {
 									Type.STRING)					
 	};
 
+	private static final String TALK_LEFT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.LEFT;
+	private static final String TALK_RIGHT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.LEFT;
+	
 	private String soundId;
 	private String text;
 
@@ -166,21 +170,21 @@ public class SayAction extends BaseCallbackAction {
 
 		String fa = a.getRenderer().getCurrentAnimationId();
 
-		if (fa.startsWith("talk.")) { // If the actor was already talking we
+		if (fa.startsWith(AnimationDesc.TALK_ANIM)) { // If the actor was already talking we
 										// restore the actor to the 'stand' pose
 			int idx = fa.indexOf('.');
-			String prevFA = "stand" + fa.substring(idx);
+			String prevFA = AnimationDesc.STAND_ANIM + fa.substring(idx);
 			a.startAnimation(prevFA, null);
 		}
 	}
 
 	private String getTalkFA(String prevFA) {
-		if (prevFA.endsWith("left"))
-			return "talk.left";
-		else if (prevFA.endsWith("right"))
-			return "talk.right";
+		if (prevFA.endsWith(AnimationDesc.LEFT))
+			return TALK_LEFT;
+		else if (prevFA.endsWith(AnimationDesc.RIGHT))
+			return TALK_RIGHT;
 
-		return "talk";
+		return AnimationDesc.TALK_ANIM;
 	}
 
 	@Override
