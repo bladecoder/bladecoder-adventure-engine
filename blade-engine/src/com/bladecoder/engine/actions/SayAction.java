@@ -55,9 +55,6 @@ public class SayAction extends BaseCallbackAction {
 			new Param("animation",	"The animation to put when talking instead the default talk animation.",
 									Type.STRING)					
 	};
-
-	private static final String TALK_LEFT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.LEFT;
-	private static final String TALK_RIGHT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.RIGHT;
 	
 	private String soundId;
 	private String text;
@@ -66,8 +63,8 @@ public class SayAction extends BaseCallbackAction {
 
 	private Text.Type type = Text.Type.RECTANGLE;
 
-	private String previousFA = null;
-	private String talkFA = null;
+	private String previousAnim = null;
+	private String talkAnim = null;
 	private Vector2 pos = null;
 
 	@Override
@@ -76,7 +73,10 @@ public class SayAction extends BaseCallbackAction {
 
 		soundId = params.get("speech");
 		text = params.get("text");
-		talkFA = params.get("animation");
+		talkAnim = params.get("animation");
+		
+		if(talkAnim == null)
+			talkAnim = AnimationDesc.TALK_ANIM;
 
 		if (params.get("wait") != null) {
 			setWait(Boolean.parseBoolean(params.get("wait")));
@@ -135,15 +135,11 @@ public class SayAction extends BaseCallbackAction {
 			}
 
 			if (type == Text.Type.TALK) {
-				previousFA = ((SpriteActor) actor).getRenderer()
+				previousAnim = ((SpriteActor) actor).getRenderer()
 						.getCurrentAnimationId();
 				
-				if(talkFA != null)
-					((SpriteActor) actor).startAnimation(
-							talkFA, Tween.FROM_FA, 0, null);
-				else
-					((SpriteActor) actor).startAnimation(
-						getTalkFA(previousFA), Tween.FROM_FA, 0, null);
+				((SpriteActor) actor).startAnimation(
+						getTalkFA(previousAnim), Tween.FROM_FA, 0, null);
 			}
 
 			World.getInstance().getTextManager()
@@ -158,7 +154,7 @@ public class SayAction extends BaseCallbackAction {
 		if (this.type == Text.Type.TALK) {
 			SpriteActor actor = (SpriteActor) World.getInstance()
 					.getCurrentScene().getActor(actorId, false);
-			actor.startAnimation(previousFA, Tween.FROM_FA, 0, null);
+			actor.startAnimation(previousAnim, Tween.FROM_FA, 0, null);
 		}
 
 		super.resume();
@@ -170,7 +166,7 @@ public class SayAction extends BaseCallbackAction {
 
 		String fa = a.getRenderer().getCurrentAnimationId();
 
-		if (fa.startsWith(AnimationDesc.TALK_ANIM)) { // If the actor was already talking we
+		if (fa.startsWith(talkAnim)) { // If the actor was already talking we
 										// restore the actor to the 'stand' pose
 			int idx = fa.indexOf('.');
 			String prevFA = AnimationDesc.STAND_ANIM + fa.substring(idx);
@@ -180,11 +176,11 @@ public class SayAction extends BaseCallbackAction {
 
 	private String getTalkFA(String prevFA) {
 		if (prevFA.endsWith(AnimationDesc.LEFT))
-			return TALK_LEFT;
+			return talkAnim + "." + AnimationDesc.LEFT;
 		else if (prevFA.endsWith(AnimationDesc.RIGHT))
-			return TALK_RIGHT;
+			return talkAnim + "." + AnimationDesc.RIGHT;
 
-		return AnimationDesc.TALK_ANIM;
+		return talkAnim;
 	}
 
 	@Override
@@ -193,9 +189,9 @@ public class SayAction extends BaseCallbackAction {
 		json.writeValue("soundId", soundId);
 		json.writeValue("text", text);
 		json.writeValue("actorId", actorId);
-		json.writeValue("previousFA", previousFA);
+		json.writeValue("previousAnim", previousAnim);
 		json.writeValue("type", type);
-		json.writeValue("talkFA", talkFA);
+		json.writeValue("talkAnim", talkAnim);
 		super.write(json);
 	}
 
@@ -204,9 +200,9 @@ public class SayAction extends BaseCallbackAction {
 		soundId = json.readValue("soundId", String.class, jsonData);
 		text = json.readValue("text", String.class, jsonData);
 		actorId = json.readValue("actorId", String.class, jsonData);
-		previousFA = json.readValue("previousFA", String.class, jsonData);
+		previousAnim = json.readValue("previousAnim", String.class, jsonData);
 		type = json.readValue("type", Text.Type.class, jsonData);
-		talkFA = json.readValue("talkFA", String.class, jsonData);
+		talkAnim = json.readValue("talkAnim", String.class, jsonData);
 		super.read(json, jsonData);
 	}
 

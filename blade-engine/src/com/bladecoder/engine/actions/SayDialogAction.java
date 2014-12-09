@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.BaseCallbackAction;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
@@ -37,20 +38,31 @@ public class SayDialogAction extends BaseCallbackAction {
 			"\n- Restore the previous player animation and set the target actor 'talk' animation and say the response text" + 
 			"\n- Restore the target actor animation";
 	public static final Param[] PARAMS = {
+			new Param("player_talk_animation", "The player animation for talking instead of the default talk animation.",
+								Type.STRING),
+			new Param("character_talk_animation", "The character animation for talking instead of the default talk animation.",
+										Type.STRING)								
 		};
-	
-
-	private static final String TALK_LEFT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.LEFT;
-	private static final String TALK_RIGHT = AnimationDesc.TALK_ANIM + "." + AnimationDesc.RIGHT;
 
 	private boolean characterTurn = false;
 	private String characterName;
 	private String responseText;
 	
 	private String previousFA;
+	private String talkAnim = null;
+	private String charTalkAnim = null;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
+		talkAnim = params.get("player_talk_animation");
+		
+		if(talkAnim == null)
+			talkAnim = AnimationDesc.TALK_ANIM;
+		
+		charTalkAnim = params.get("character_talk_animation");
+		
+		if(charTalkAnim == null)
+			charTalkAnim = AnimationDesc.TALK_ANIM;		
 	}
 
 	@Override
@@ -66,10 +78,10 @@ public class SayDialogAction extends BaseCallbackAction {
 		previousFA = null;
 		
 		// If the player or the character is talking restore to 'stand' pose
-		restoreStandPose(w.getCurrentScene().getPlayer());
+		restoreStandPose(w.getCurrentScene().getPlayer(), talkAnim);
 		
 		if(w.getCurrentScene().getActor(characterName, false) instanceof SpriteActor)
-			restoreStandPose((SpriteActor)w.getCurrentScene().getActor(characterName, false));
+			restoreStandPose((SpriteActor)w.getCurrentScene().getActor(characterName, false), charTalkAnim);
 
 		if (playerText != null) {
 			SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
@@ -81,7 +93,7 @@ public class SayDialogAction extends BaseCallbackAction {
 					.addSubtitle(playerText, player.getX(), player.getY() + player.getHeight(), false, Text.Type.TALK, Color.BLACK, this);
 
 			previousFA = player.getRenderer().getCurrentAnimationId(); 
-			player.startAnimation(getTalkFA(previousFA), null);
+			player.startAnimation(getTalkFA(previousFA, talkAnim), null);
 
 		} else {
 			resume();
@@ -116,7 +128,7 @@ public class SayDialogAction extends BaseCallbackAction {
 
 				if(actor instanceof SpriteActor) {
 					previousFA = ((SpriteActor)actor).getRenderer().getCurrentAnimationId(); 
-					((SpriteActor)actor).startAnimation(getTalkFA(previousFA), null);
+					((SpriteActor)actor).startAnimation(getTalkFA(previousFA, charTalkAnim), null);
 				}
 			} else {
 				super.resume();
@@ -129,25 +141,25 @@ public class SayDialogAction extends BaseCallbackAction {
 		}
 	}
 	
-	private void restoreStandPose(SpriteActor a) {
+	private void restoreStandPose(SpriteActor a, String talkAnim) {
 		if(a == null) return;
 		
 		String fa = a.getRenderer().getCurrentAnimationId();
 		
-		if(fa.startsWith("talk.")){ // If the actor was already talking we restore the actor to the 'stand' pose
+		if(fa.startsWith(talkAnim)){ // If the actor was already talking we restore the actor to the 'stand' pose
 			int idx = fa.indexOf('.');
-			String prevFA = "stand" + fa.substring(idx);
+			String prevFA = AnimationDesc.STAND_ANIM + fa.substring(idx);
 			a.startAnimation(prevFA, null);
 		}
 	}
 	
-	private String getTalkFA(String prevFA) {
+	private String getTalkFA(String prevFA, String talkAnim) {
 		if (prevFA.endsWith(AnimationDesc.LEFT))
-			return TALK_LEFT;
+			return talkAnim + "." + AnimationDesc.LEFT;
 		else if (prevFA.endsWith(AnimationDesc.RIGHT))
-			return TALK_RIGHT;
+			return talkAnim + "." + AnimationDesc.RIGHT;
 
-		return AnimationDesc.TALK_ANIM;
+		return talkAnim;
 	}
 
 	@Override
@@ -156,6 +168,8 @@ public class SayDialogAction extends BaseCallbackAction {
 		json.writeValue("responseText", responseText);
 		json.writeValue("characterTurn", characterTurn);
 		json.writeValue("characterName", characterName);
+		json.writeValue("talkAnim", talkAnim);
+		json.writeValue("charTalkAnim", charTalkAnim);
 		super.write(json);
 	}
 
@@ -165,6 +179,8 @@ public class SayDialogAction extends BaseCallbackAction {
 		responseText = json.readValue("responseText", String.class, jsonData);
 		characterTurn = json.readValue("characterTurn", Boolean.class, jsonData);
 		characterName = json.readValue("characterName", String.class, jsonData);
+		talkAnim = json.readValue("talkAnim", String.class, jsonData);
+		charTalkAnim = json.readValue("charTalkAnim", String.class, jsonData);
 		super.read(json, jsonData);
 	}
 	

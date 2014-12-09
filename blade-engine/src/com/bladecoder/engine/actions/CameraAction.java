@@ -48,7 +48,7 @@ public class CameraAction extends BaseCallbackAction {
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		actorId = params.get("actor");
-		followActorId = params.get("followActorId");
+		followActorId = params.get("followActor");
 
 		if (params.get("pos") != null)
 			pos = Param.parseVector2(params.get("pos"));
@@ -87,7 +87,7 @@ public class CameraAction extends BaseCallbackAction {
 
 		if (followActorId != null) {
 			if (followActorId.equals("none"))
-				camera.updatePos(null);
+				World.getInstance().getCurrentScene().setCameraFollowActor(null);
 			else
 				camera.updatePos((SpriteActor) World.getInstance().getCurrentScene()
 						.getActor(followActorId, false));

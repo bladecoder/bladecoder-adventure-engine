@@ -482,6 +482,8 @@ public class ScnWidget extends Widget {
 		if (scn != null) {
 			scn.dispose();
 			scn = null;
+			
+			EngineAssetManager.getInstance().clear();
 		}
 
 		loadingError = false;
