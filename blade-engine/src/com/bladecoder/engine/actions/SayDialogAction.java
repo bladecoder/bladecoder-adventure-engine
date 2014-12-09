@@ -91,9 +91,8 @@ public class SayDialogAction extends BaseCallbackAction {
 
 			World.getInstance().getTextManager()
 					.addSubtitle(playerText, player.getX(), player.getY() + player.getHeight(), false, Text.Type.TALK, Color.BLACK, this);
-
-			previousFA = player.getRenderer().getCurrentAnimationId(); 
-			player.startAnimation(getTalkFA(previousFA, talkAnim), null);
+ 
+			startTalkAnim(player, talkAnim);
 
 		} else {
 			resume();
@@ -127,8 +126,7 @@ public class SayDialogAction extends BaseCallbackAction {
 								Color.BLACK, this);
 
 				if(actor instanceof SpriteActor) {
-					previousFA = ((SpriteActor)actor).getRenderer().getCurrentAnimationId(); 
-					((SpriteActor)actor).startAnimation(getTalkFA(previousFA, charTalkAnim), null);
+					startTalkAnim((SpriteActor)actor, charTalkAnim);
 				}
 			} else {
 				super.resume();
@@ -153,13 +151,23 @@ public class SayDialogAction extends BaseCallbackAction {
 		}
 	}
 	
-	private String getTalkFA(String prevFA, String talkAnim) {
-		if (prevFA.endsWith(AnimationDesc.LEFT))
-			return talkAnim + "." + AnimationDesc.LEFT;
-		else if (prevFA.endsWith(AnimationDesc.RIGHT))
-			return talkAnim + "." + AnimationDesc.RIGHT;
-
-		return talkAnim;
+	private void startTalkAnim(SpriteActor a, String talkAnim) {
+		previousFA = a.getRenderer().getCurrentAnimationId();
+		
+		String s = talkAnim;
+		
+		String l = s + "." + AnimationDesc.LEFT;
+		String r = s + "." + AnimationDesc.RIGHT;
+		
+		if (previousFA.endsWith(AnimationDesc.LEFT)) {
+			if(a.getRenderer().getAnimations().get(l) != null || a.getRenderer().getAnimations().get(r) != null)
+				s = l;
+		} else if (previousFA.endsWith(AnimationDesc.RIGHT)) {
+			if(a.getRenderer().getAnimations().get(l) != null || a.getRenderer().getAnimations().get(r) != null)
+				s = r;
+		}
+		
+		a.startAnimation(s, null);
 	}
 
 	@Override

@@ -64,6 +64,9 @@ public class Verb implements ActionCallback {
 		while( !isFinished() && !stop) {
 			Action a = actions.get(ip);
 			
+			if(EngineLogger.debugMode())
+				EngineLogger.debug(ip + ". " + a.getClass().getSimpleName());
+			
 			try {
 				if(a.run(this))
 					stop = true;

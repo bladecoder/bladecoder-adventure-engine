@@ -135,11 +135,7 @@ public class SayAction extends BaseCallbackAction {
 			}
 
 			if (type == Text.Type.TALK) {
-				previousAnim = ((SpriteActor) actor).getRenderer()
-						.getCurrentAnimationId();
-				
-				((SpriteActor) actor).startAnimation(
-						getTalkFA(previousAnim), Tween.FROM_FA, 0, null);
+				startTalkAnim((SpriteActor)actor, talkAnim);
 			}
 
 			World.getInstance().getTextManager()
@@ -174,13 +170,23 @@ public class SayAction extends BaseCallbackAction {
 		}
 	}
 
-	private String getTalkFA(String prevFA) {
-		if (prevFA.endsWith(AnimationDesc.LEFT))
-			return talkAnim + "." + AnimationDesc.LEFT;
-		else if (prevFA.endsWith(AnimationDesc.RIGHT))
-			return talkAnim + "." + AnimationDesc.RIGHT;
-
-		return talkAnim;
+	private void startTalkAnim(SpriteActor a, String talkAnim) {
+		previousAnim = a.getRenderer().getCurrentAnimationId();
+		
+		String s = talkAnim;
+		
+		String l = s + "." + AnimationDesc.LEFT;
+		String r = s + "." + AnimationDesc.RIGHT;
+		
+		if (previousAnim.endsWith(AnimationDesc.LEFT)) {
+			if(a.getRenderer().getAnimations().get(l) != null || a.getRenderer().getAnimations().get(r) != null)
+				s = l;
+		} else if (previousAnim.endsWith(AnimationDesc.RIGHT)) {
+			if(a.getRenderer().getAnimations().get(l) != null || a.getRenderer().getAnimations().get(r) != null)
+				s = r;
+		}
+		
+		a.startAnimation(s, null);
 	}
 
 	@Override
