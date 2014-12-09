@@ -377,13 +377,13 @@ public class ScnWidget extends Widget {
 
 	@Override
 	public void layout() {
-		EditorLogger.debug("LAYOUT SIZE CHANGED - X: " + getX() + " Y: "
-				+ getY() + " Width: " + getWidth() + " Height: " + getHeight());
-		EditorLogger.debug("Last Point coords - X: " + (getX() + getWidth())
-				+ " Y: " + (getY() + getHeight()));
+//		EditorLogger.debug("LAYOUT SIZE CHANGED - X: " + getX() + " Y: "
+//				+ getY() + " Width: " + getWidth() + " Height: " + getHeight());
+//		EditorLogger.debug("Last Point coords - X: " + (getX() + getWidth())
+//				+ " Y: " + (getY() + getHeight()));
 		localToScreenCoords(tmpV2
 				.set(getX() + getWidth(), getY() + getHeight()));
-		EditorLogger.debug("Screen Last Point coords:  " + tmpV2);
+//		EditorLogger.debug("Screen Last Point coords:  " + tmpV2);
 
 		faRenderer.setViewport(getWidth(), getHeight());
 		bounds.set(getX(), getY(), getWidth(), getHeight());

@@ -22,8 +22,8 @@ import org.w3c.dom.NodeList;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
@@ -99,21 +99,35 @@ public class DialogOptionTree extends EditTree {
 		
 		Element parent = dialog;
 				
-		if(sel != null) {
+		if(sel.getParent() != null) {
 			parent = (Element)sel.getParent().getObject();
 		}
 		
 		EditDialogOptionDialog o = new EditDialogOptionDialog(skin, doc,
 				parent, (Element)sel.getObject());
 		o.show(getStage());
+		
+		o.setListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				Node sel = tree.getSelection().getLastSelected();
+				
+				updateNode(sel);
+			}		
+		});
 	}
 
 	@Override
 	public void delete() {
 		Node sel = tree.getSelection().getLastSelected();
 		Element selElement = (Element)sel.getObject();
-		Node parent = sel.getParent();
-		Element parentElement = (Element)parent.getObject();
+//		Node parentNode = sel.getParent();
+		
+//		Element parentElement = dialog;
+//		
+//		if(parentNode != null) {
+//			parentElement = (Element)parentNode.getObject();
+//		}
 
 		doc.deleteElement(selElement);
 
@@ -123,9 +137,9 @@ public class DialogOptionTree extends EditTree {
 //		Node childBefore = parent.getChildBefore(on);
 //		Node childAfter = parent.getChildAfter(on);
 		
-		parent.remove(sel);
+		tree.remove(sel);
 		
-		Node nextPath = null;
+//		Node nextPath = null;
 		
 		// TODO Set NEXT SELECTION
 		
@@ -307,6 +321,54 @@ public class DialogOptionTree extends EditTree {
 			if (childs.item(i) instanceof Element)
 				tree.add(createNode((Element) childs.item(i)));
 		}
+	}
+	
+	private void updateNode(Node node) {
+		Element e = (Element)node.getObject();
+		VerticalGroup vg = (VerticalGroup)node.getActor();
+		
+		Label textLbl =	(Label)vg.getChildren().get(0);
+		Label infoLbl = (Label)vg.getChildren().get(1);
+
+		String text = e.getAttribute("text");
+
+		textLbl.setText(Ctx.project.getSelectedChapter().getTranslation(text));
+
+		StringBuilder sb = new StringBuilder();
+
+		// if(!actor.isEmpty())
+		// sb.append(" actor '").append(actor).append("'");
+
+		NamedNodeMap attr = e.getAttributes();
+
+		String response = e.getAttribute("response_text");
+
+		if (!response.isEmpty())
+			sb.append("R: ")
+					.append(Ctx.project.getSelectedChapter().getTranslation(response)).append(' ');
+
+		for (int i = 0; i < attr.getLength(); i++) {
+			org.w3c.dom.Node n = attr.item(i);
+			String name = n.getNodeName();
+
+			if (name.equals("text") || name.equals("response_text"))
+				continue;
+
+			String v = n.getNodeValue();
+			sb.append(name).append(':')
+					.append(Ctx.project.getSelectedChapter().getTranslation(v)).append(' ');
+		}
+		
+		infoLbl.setText(sb.toString());
+		
+//		NodeList childs = e.getChildNodes();
+//		int n = childs.getLength();
+//
+//		for (int i = 0; i < n; i++) {
+//			if (childs.item(i) instanceof Element) {
+//				node.add(createNode((Element) childs.item(i)));				
+//			}
+//		}		
 	}
 	
 	private Node createNode(Element e) {
