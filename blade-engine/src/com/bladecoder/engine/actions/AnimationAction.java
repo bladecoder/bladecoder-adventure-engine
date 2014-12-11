@@ -31,7 +31,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class AnimationAction extends BaseCallbackAction implements Action {
-	public static final String INFO = "Sets an actor frame animation";
+	public static final String INFO = "Sets the animation for an actor";
 	public static final Param[] PARAMS = {
 		new Param("animation", "The FA to set", Type.STRING, true),	
 		new Param("count", "The times to repeat. -1 to infinity repeat", Type.INTEGER),
