@@ -18,6 +18,9 @@ package com.bladecoder.engine.spine;
 import java.util.HashMap;
 
 import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.World;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -49,6 +52,10 @@ import com.esotericsoftware.spine.SkeletonRenderer;
 import com.esotericsoftware.spine.Slot;
 
 public class SpineRenderer implements ActorRenderer {
+	
+	private final static int PLAY_ANIMATION_EVENT = 0;
+	private final static int PLAY_SOUND_EVENT = 1;
+	private final static int RUN_VERB_EVENT = 2;
 
 	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
 
@@ -109,7 +116,23 @@ public class SpineRenderer implements ActorRenderer {
 		}
 
 		@Override
-		public void event(int arg0, Event arg1) {
+		public void event(int trackIndex, Event event) {
+			String actorId = event.getData().getName();
+			BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
+			
+			switch(event.getInt()) {
+			case PLAY_ANIMATION_EVENT:
+				((SpriteActor)actor).startAnimation(event.getString(), null);
+				break;
+			case PLAY_SOUND_EVENT:
+				actor.playSound(event.getString());
+				break;
+			case RUN_VERB_EVENT:
+				actor.runVerb(event.getString());
+				break;
+			default:
+				EngineLogger.error("Spine event not recognized.");
+			}
 		}
 
 		@Override
