@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engineeditor.model.BaseDocument;
+import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public abstract class ElementList extends EditList<Element> {
 
@@ -146,6 +147,7 @@ public abstract class ElementList extends EditList<Element> {
 		doc.deleteElement(e);
 
 		clipboard = e;
+		I18NUtils.putTranslationsInElement(doc, clipboard);
 		toolbar.disablePaste(false);
 
 		if (pos > 0)
@@ -164,6 +166,7 @@ public abstract class ElementList extends EditList<Element> {
 			return;
 
 		clipboard = (Element) e.cloneNode(true);
+		I18NUtils.putTranslationsInElement(doc, clipboard);
 		toolbar.disablePaste(false);
 	}
 
@@ -180,7 +183,8 @@ public abstract class ElementList extends EditList<Element> {
 		list.getItems().insert(pos, newElement);
 		
 		Node parent = newElement.getParentNode();
-		parent.insertBefore(newElement, e2);					
+		parent.insertBefore(newElement, e2);
+		I18NUtils.extractStrings(doc, newElement);
 		
 		list.setSelectedIndex(pos);		
 		list.invalidateHierarchy();

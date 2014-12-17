@@ -29,6 +29,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.EditTree;
+import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public class DialogOptionTree extends EditTree {
 
@@ -132,6 +133,7 @@ public class DialogOptionTree extends EditTree {
 		doc.deleteElement(selElement);
 
 		clipboard = selElement;
+		I18NUtils.putTranslationsInElement(doc, clipboard);
 		toolbar.disablePaste(false);
 			
 //		Node childBefore = parent.getChildBefore(on);
@@ -159,6 +161,7 @@ public class DialogOptionTree extends EditTree {
 		Element selElement = (Element)sel.getObject();
 
 		clipboard = (Element) selElement.cloneNode(true);
+		I18NUtils.putTranslationsInElement(doc, clipboard);
 		toolbar.disablePaste(false);
 	}
 
@@ -176,7 +179,7 @@ public class DialogOptionTree extends EditTree {
 		
 		parent.appendChild(newElement);		
 		doc.setModified(newElement);
-		
+		I18NUtils.extractStrings(doc, newElement);
 		
 		Node newOption = createNode(newElement);
 		

@@ -27,20 +27,20 @@ import org.w3c.dom.NodeList;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
-import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.BaseActor.ActorLayer;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.Scene;
-import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.ActorRenderer;
-import com.bladecoder.engine.model.BaseActor.ActorLayer;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
+import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class ChapterDocument extends BaseDocument {
@@ -50,19 +50,17 @@ public class ChapterDocument extends BaseDocument {
 	public static final String SPRITE3D_ACTOR_TYPE = "3d";
 	public static final String SPINE_ACTOR_TYPE = "spine";
 	public static final String IMAGE_ACTOR_TYPE = "image";
-	
+
 	public static final String BACKGROUND_LAYER = "background";
 	public static final String FOREGROUND_LAYER = "foreground";
 	public static final String DYNAMIC_LAYER = "dynamic";
 
-	public static final String ACTOR_TYPES[] = { NO_RENDERER_ACTOR_TYPE,
-			ATLAS_ACTOR_TYPE, SPINE_ACTOR_TYPE, SPRITE3D_ACTOR_TYPE, IMAGE_ACTOR_TYPE};
-	
-	public static final String ACTOR_LAYERS[] = { BACKGROUND_LAYER,
-		FOREGROUND_LAYER, DYNAMIC_LAYER};
+	public static final String ACTOR_TYPES[] = { NO_RENDERER_ACTOR_TYPE, ATLAS_ACTOR_TYPE, SPINE_ACTOR_TYPE,
+			SPRITE3D_ACTOR_TYPE, IMAGE_ACTOR_TYPE };
 
-	public static final String ANIMATION_TYPES[] = { "no_repeat", "repeat",
-			"yoyo", "reverse" };
+	public static final String ACTOR_LAYERS[] = { BACKGROUND_LAYER, FOREGROUND_LAYER, DYNAMIC_LAYER };
+
+	public static final String ANIMATION_TYPES[] = { "no_repeat", "repeat", "yoyo", "reverse" };
 
 	public ChapterDocument(String modelPath) {
 		super();
@@ -91,22 +89,19 @@ public class ChapterDocument extends BaseDocument {
 	}
 
 	public NodeList getActors(Element scn) {
-		NodeList actors = scn
-				.getElementsByTagName("actor");
+		NodeList actors = scn.getElementsByTagName("actor");
 
 		return actors;
 	}
-	
+
 	public NodeList getActions(Element verb) {
-		NodeList actions = verb
-				.getElementsByTagName("action");
+		NodeList actions = verb.getElementsByTagName("action");
 
 		return actions;
 	}
-	
+
 	public NodeList getScenes() {
-		NodeList s = getElement()
-				.getElementsByTagName("scene");
+		NodeList s = getElement().getElementsByTagName("scene");
 
 		return s;
 	}
@@ -151,8 +146,8 @@ public class ChapterDocument extends BaseDocument {
 		return scn.getAttribute("music");
 	}
 
-	public void setMusic(Element scn, String filename, String loopMusic,
-			String initialMusicDelay, String repeatMusicDelay) {
+	public void setMusic(Element scn, String filename, String loopMusic, String initialMusicDelay,
+			String repeatMusicDelay) {
 		if (filename != null && !filename.isEmpty())
 			scn.setAttribute("music", filename);
 		else
@@ -164,14 +159,12 @@ public class ChapterDocument extends BaseDocument {
 			scn.removeAttribute("loop_music");
 
 		if (initialMusicDelay != null && !initialMusicDelay.isEmpty())
-			scn.setAttribute("initial_music_delay",
-					initialMusicDelay);
+			scn.setAttribute("initial_music_delay", initialMusicDelay);
 		else
 			scn.removeAttribute("initial_music_delay");
 
 		if (repeatMusicDelay != null && !repeatMusicDelay.isEmpty())
-			scn.setAttribute("repeat_music_delay",
-					repeatMusicDelay);
+			scn.setAttribute("repeat_music_delay", repeatMusicDelay);
 		else
 			scn.removeAttribute("repeat_music_delay");
 
@@ -222,20 +215,20 @@ public class ChapterDocument extends BaseDocument {
 				scn.setPlayer((SpriteActor) actor);
 			}
 		}
-		
+
 		// WALK ZONE
 		Element wz = getWalkZone(s);
-		
-		if(wz != null) {
+
+		if (wz != null) {
 			PolygonalNavGraph polygonalPathFinder = new PolygonalNavGraph();
 			polygonalPathFinder.setWalkZone(Param.parsePolygon(wz.getAttribute("polygon"), wz.getAttribute("pos")));
-			
+
 			scn.setPolygonalNavGraph(polygonalPathFinder);
-			
+
 			NodeList obstacles = wz.getElementsByTagName("obstacle");
 			for (int i = 0; i < obstacles.getLength(); i++) {
 				Element o = (Element) obstacles.item(i);
-					
+
 				polygonalPathFinder.addObstacle(Param.parsePolygon(o.getAttribute("polygon"), o.getAttribute("pos")));
 			}
 		}
@@ -243,16 +236,14 @@ public class ChapterDocument extends BaseDocument {
 		return scn;
 	}
 
-	public void create(String id) throws ParserConfigurationException,
-			FileNotFoundException, TransformerException {
+	public void create(String id) throws ParserConfigurationException, FileNotFoundException, TransformerException {
 		create();
 		setId(id);
 		setFilenameFromId();
 		save();
 	}
 
-	public void rename(String newId) throws FileNotFoundException,
-			TransformerException {
+	public void rename(String newId) throws FileNotFoundException, TransformerException {
 
 		deleteFiles();
 
@@ -331,7 +322,7 @@ public class ChapterDocument extends BaseDocument {
 	public Polygon getBBox(Element e) {
 		if (e.getAttribute("bbox").isEmpty())
 			return null;
-		
+
 		return Param.parsePolygon(e.getAttribute("bbox"));
 	}
 
@@ -347,23 +338,21 @@ public class ChapterDocument extends BaseDocument {
 			a = new SpriteActor();
 			Sprite3DRenderer r = new Sprite3DRenderer();
 			((SpriteActor) a).setRenderer(r);
-			r.setSpriteSize(Param.parseVector2(e
-					.getAttribute("sprite_size")));
-			
+			r.setSpriteSize(Param.parseVector2(e.getAttribute("sprite_size")));
+
 		} else if (type.equals(SPINE_ACTOR_TYPE)) {
 			a = new SpriteActor();
 			((SpriteActor) a).setRenderer(new SpineRenderer());
 		} else if (type.equals(IMAGE_ACTOR_TYPE)) {
 			a = new SpriteActor();
-			((SpriteActor) a).setRenderer(new ImageRenderer());			
+			((SpriteActor) a).setRenderer(new ImageRenderer());
 		} else if (type.equals(NO_RENDERER_ACTOR_TYPE)) {
 			a = new BaseActor();
 		} else {
 			EngineLogger.error(" Wrong actor Type defined in XML");
 			return null;
 		}
-		
-		
+
 		String layer = e.getAttribute("layer");
 		if (layer.equals(BACKGROUND_LAYER)) {
 			a.setLayer(ActorLayer.BACKGROUND);
@@ -372,24 +361,23 @@ public class ChapterDocument extends BaseDocument {
 		} else {
 			a.setLayer(ActorLayer.DYNAMIC);
 		}
-		
-		
+
 		a.setId(getId(e));
 		Polygon bbox = getBBox(e);
 		a.setBbox(bbox);
-		
-		if(bbox == null) {
+
+		if (bbox == null) {
 			bbox = new Polygon();
 			a.setBbox(bbox);
-			
-			if(a instanceof SpriteActor)
+
+			if (a instanceof SpriteActor)
 				((SpriteActor) a).setBboxFromRenderer(true);
 		}
-		
+
 		Vector2 pos = getPos(e);
-		if(pos != null)
+		if (pos != null)
 			a.setPosition(pos.x, pos.y);
-			
+
 		a.setDesc(e.getAttribute("desc"));
 
 		if (a instanceof SpriteActor) {
@@ -406,12 +394,11 @@ public class ChapterDocument extends BaseDocument {
 			}
 
 			if (!e.getAttribute("init_animation").isEmpty()) {
-				((SpriteActor) a).getRenderer().setInitAnimation(
-						e.getAttribute("init_animation"));
+				((SpriteActor) a).getRenderer().setInitAnimation(e.getAttribute("init_animation"));
 
 			}
-			
-			if(e.getAttribute("obstacle").equals("true"))
+
+			if (e.getAttribute("obstacle").equals("true"))
 				a.setWalkObstacle(true);
 
 			// PARSE DEPTH TYPE
@@ -430,21 +417,19 @@ public class ChapterDocument extends BaseDocument {
 	public AnimationDesc getEngineFA(String type, Element faElement) {
 		AnimationDesc fa;
 
-		if(type.equals(ATLAS_ACTOR_TYPE)) {
-			fa = new AtlasAnimationDesc();	
+		if (type.equals(ATLAS_ACTOR_TYPE)) {
+			fa = new AtlasAnimationDesc();
 		} else {
 			fa = new AnimationDesc();
 		}
-			
+
 		fa.id = faElement.getAttribute("id");
 		fa.source = faElement.getAttribute("source");
 
 		if (faElement.getAttribute("animation_type").isEmpty()
-				|| faElement.getAttribute("animation_type").equalsIgnoreCase(
-						"repeat")) {
+				|| faElement.getAttribute("animation_type").equalsIgnoreCase("repeat")) {
 			fa.animationType = Tween.REPEAT;
-		} else if (faElement.getAttribute("animation_type").equalsIgnoreCase(
-				"yoyo")) {
+		} else if (faElement.getAttribute("animation_type").equalsIgnoreCase("yoyo")) {
 			fa.animationType = Tween.PINGPONG;
 		} else {
 			fa.animationType = Tween.NO_REPEAT;
@@ -471,11 +456,11 @@ public class ChapterDocument extends BaseDocument {
 		if (!faElement.getAttribute("outD").isEmpty()) {
 			fa.outD = Param.parseVector2(faElement.getAttribute("outD"));
 		}
-		
+
 		if (!faElement.getAttribute("preload").isEmpty()) {
 			fa.outD = Param.parseVector2(faElement.getAttribute("preload"));
 		}
-		
+
 		if (!faElement.getAttribute("dispose_when_played").isEmpty()) {
 			fa.outD = Param.parseVector2(faElement.getAttribute("dispose_when_played"));
 		}
@@ -505,9 +490,9 @@ public class ChapterDocument extends BaseDocument {
 	public void setBbox(Element e, Polygon p) {
 		if (p == null) {
 			p = new Polygon();
-			
+
 			float[] verts = new float[8];
-			
+
 			verts[0] = 0f;
 			verts[1] = 0f;
 			verts[2] = 0f;
@@ -516,18 +501,18 @@ public class ChapterDocument extends BaseDocument {
 			verts[5] = 200;
 			verts[6] = 200;
 			verts[7] = 0f;
-			
+
 			p.setVertices(verts);
 		}
-		
+
 		e.setAttribute("bbox", Param.toStringParam(p));
 
 		modified = true;
 		firePropertyChange("bbox", e);
 	}
 
-	public Element createDialogOption(Element parent, String text,
-			String responseText, String verb, String next, String visible) {
+	public Element createDialogOption(Element parent, String text, String responseText, String verb, String next,
+			String visible) {
 		Element e = doc.createElement("option");
 		e.setAttribute("text", text);
 		if (responseText != null && !responseText.isEmpty())
@@ -551,7 +536,7 @@ public class ChapterDocument extends BaseDocument {
 		Element e = doc.createElement("walk_zone");
 		e.setAttribute("polygon", Param.toStringParam(poly));
 		e.setAttribute("pos", Param.toStringParam(new Vector2(poly.getX(), poly.getY())));
-		
+
 		scn.appendChild(e);
 
 		modified = true;
@@ -559,40 +544,40 @@ public class ChapterDocument extends BaseDocument {
 
 		return e;
 	}
-	
+
 	public void setWalkZonePolygon(Element scn, Polygon poly) {
 		Element e = getWalkZone(scn);
-		
-		if(e == null)
+
+		if (e == null)
 			e = createWalkZone(scn, poly);
 		else {
 			e.setAttribute("polygon", Param.toStringParam(poly));
 			e.setAttribute("pos", Param.toStringParam(new Vector2(poly.getX(), poly.getY())));
 		}
-		
+
 		modified = true;
 		firePropertyChange("walk_zone", e);
-			
+
 	}
-	
+
 	public Element getWalkZone(Element scn) {
 		NodeList nl = scn.getElementsByTagName("walk_zone");
 		Element e = null;
-		
-		if(nl.getLength() > 0) {
+
+		if (nl.getLength() > 0) {
 			e = (Element) nl.item(0);
 		}
-		
+
 		return e;
 	}
 
 	public void deleteWalkZone(Element scn) {
 		Element e = getWalkZone(scn);
-		
-		if(e != null) {
+
+		if (e != null) {
 			deleteElement(e);
 		}
-		
+
 		modified = true;
 		firePropertyChange("walk_zone", e);
 	}
@@ -601,7 +586,7 @@ public class ChapterDocument extends BaseDocument {
 		Element e = doc.createElement("obstacle");
 		e.setAttribute("polygon", Param.toStringParam(poly));
 		e.setAttribute("pos", Param.toStringParam(new Vector2(poly.getX(), poly.getY())));
-		
+
 		getWalkZone(scn).appendChild(e);
 
 		modified = true;
@@ -609,39 +594,38 @@ public class ChapterDocument extends BaseDocument {
 
 		return e;
 	}
-	
+
 	public Element getObstacle(Element scn, int i) {
 		Element wz = getWalkZone(scn);
 		Element e = null;
-		
+
 		NodeList nl = wz.getElementsByTagName("obstacle");
-		
+
 		e = (Element) nl.item(i);
-		
+
 		return e;
 	}
 
 	public void setObstaclePolygon(Element scn, int i, Polygon poly) {
 		Element e = getObstacle(scn, i);
-		
-		if(e == null)
+
+		if (e == null)
 			return;
-		
-		
+
 		e.setAttribute("polygon", Param.toStringParam(poly));
 		e.setAttribute("pos", Param.toStringParam(new Vector2(poly.getX(), poly.getY())));
-		
+
 		modified = true;
 		firePropertyChange("obstacle", e);
 	}
 
 	public void deleteObstacle(Element scn, int i) {
 		Element e = getObstacle(scn, i);
-		
-		if(e != null) {
+
+		if (e != null) {
 			deleteElement(e);
 		}
-		
+
 		modified = true;
 		firePropertyChange("obstacle", e);
 	}

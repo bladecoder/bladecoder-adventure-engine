@@ -20,8 +20,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.TreeSet;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,12 +48,15 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public abstract class BaseDocument extends PropertyChange {
 	public static final String NOTIFY_ELEMENT_DELETED = "ELEMENT_DELETED";
 	public static final String NOTIFY_ELEMENT_CREATED = "ELEMENT_CREATED";
-	
+
 	public static final String NOTIFY_DOCUMENT_SAVED = "DOCUMENT_SAVED";
+
+	public static final char I18NPREFIX = '@';
 
 	Document doc;
 	private String filename;
@@ -60,6 +68,7 @@ public abstract class BaseDocument extends PropertyChange {
 
 	public abstract String getRootTag();
 
+	@SuppressWarnings("serial")
 	public void create() throws ParserConfigurationException {
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -70,7 +79,13 @@ public abstract class BaseDocument extends PropertyChange {
 
 		doc.appendChild(rootElement);
 
-		i18n = new Properties();
+		// To save in alphabetical order we override the keys method
+		i18n = new Properties() {
+			@Override
+			public synchronized Enumeration<Object> keys() {
+				return Collections.enumeration(new TreeSet<Object>(keySet()));
+			}
+		};
 
 		modified = true;
 		firePropertyChange();
@@ -82,34 +97,52 @@ public abstract class BaseDocument extends PropertyChange {
 		return name.substring(0, name.lastIndexOf('.')) + ".properties";
 	}
 
+	@SuppressWarnings("serial")
 	private void loadI18N() {
 		String i18nFilename = getI18NFilename();
 
-		i18n = new Properties();
+		// To save in alphabetical order we override the keys method
+		i18n = new Properties() {
+			@Override
+			public synchronized Enumeration<Object> keys() {
+				return Collections.enumeration(new TreeSet<Object>(keySet()));
+			}
+		};
+		
 		try {
 			i18n.load(new FileInputStream(i18nFilename));
-			;
 		} catch (IOException e) {
 			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nFilename);
 		}
 	}
 
 	public String getTranslation(String key) {
-		if (key.isEmpty() || key.charAt(0) != '@' || i18n == null)
+		if (key.isEmpty() || key.charAt(0) != I18NPREFIX || i18n == null)
 			return key;
 
 		return i18n.getProperty(key.substring(1), key);
 	}
 
 	public void setTranslation(String key, String value) {
-		i18n.setProperty(key, value);
+		if (key.charAt(0) != I18NPREFIX)
+			i18n.setProperty(key, value);
+		else
+			i18n.setProperty(key.substring(1), value);
+	}
+
+	public Properties getI18N() {
+		return i18n;
 	}
 
 	private void saveI18N() {
 		String i18nFilename = getI18NFilename();
+		
+		I18NUtils.deleteUnusedKeys(this);
 
 		try {
-			i18n.store(new FileOutputStream(i18nFilename), filename);
+			FileOutputStream os = new FileOutputStream(i18nFilename);
+			Writer out = new OutputStreamWriter(os, "ISO-8859-1");
+			i18n.store(out, filename);
 		} catch (IOException e) {
 			EngineLogger.error("ERROR WRITING BUNDLE: " + i18nFilename);
 		}
@@ -159,7 +192,7 @@ public abstract class BaseDocument extends PropertyChange {
 	public String getAbsoluteName() {
 		return modelPath + "/" + filename;
 	}
-	
+
 	public void setModelPath(String p) {
 		modelPath = p;
 	}
@@ -215,13 +248,13 @@ public abstract class BaseDocument extends PropertyChange {
 		} else {
 			cloned = (Element) e.cloneNode(true);
 		}
-		
+
 		parent.appendChild(cloned);
-		
+
 		if (cloned.getAttribute("id") != null && !cloned.getAttribute("id").isEmpty()) {
 			cloned.setAttribute("id", getCheckedId(cloned, cloned.getAttribute("id")));
 		}
-		
+
 		setModified(cloned);
 
 		return cloned;
@@ -251,7 +284,7 @@ public abstract class BaseDocument extends PropertyChange {
 		modified = true;
 		firePropertyChange(attr, old, e);
 	}
-	
+
 	public void setRootAttr(String attr, String value) {
 		String old = getRootAttr(getRootElement(), attr);
 
@@ -287,8 +320,7 @@ public abstract class BaseDocument extends PropertyChange {
 		return ev;
 	}
 
-	public Element createAction(Element verb, String action, String actor,
-			HashMap<String, String> params) {
+	public Element createAction(Element verb, String action, String actor, HashMap<String, String> params) {
 		Element e = doc.createElement(action);
 		if (actor != null && !actor.isEmpty())
 			e.setAttribute("actor", actor);
@@ -358,7 +390,7 @@ public abstract class BaseDocument extends PropertyChange {
 
 		setRootAttr(e, "id", idChecked);
 	}
-	
+
 	public String getCheckedId(Element e, String id) {
 		String idChecked = id;
 
@@ -383,7 +415,7 @@ public abstract class BaseDocument extends PropertyChange {
 				}
 			}
 		}
-		
+
 		return idChecked;
 	}
 

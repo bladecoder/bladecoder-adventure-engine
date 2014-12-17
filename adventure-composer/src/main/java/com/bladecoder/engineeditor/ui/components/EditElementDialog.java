@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.bladecoder.engineeditor.model.BaseDocument;
+import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public abstract class EditElementDialog extends EditDialog {
 	
@@ -63,7 +64,11 @@ public abstract class EditElementDialog extends EditDialog {
 			
 			for (int pos = 0; pos < attrs.length; pos++) {			
 				InputPanel i = inputs[pos];
-				i.setText(e.getAttribute(attrs[pos]));
+				if(I18NUtils.mustTraslateAttr(attrs[pos])) {
+					i.setText(doc.getTranslation(e.getAttribute(attrs[pos])));
+				} else {
+					i.setText(e.getAttribute(attrs[pos]));
+				}
 			}
 		}
 		
@@ -102,7 +107,7 @@ public abstract class EditElementDialog extends EditDialog {
 				if(a[j].equals("id")) {
 					doc.setId(e, input.getText());
 				} else {
-					e.setAttribute(a[j], input.getText());
+					I18NUtils.setI18NAttr(doc, e, a[j], input.getText());
 				}
 			} else {
 				e.removeAttribute(a[j]);
@@ -110,7 +115,7 @@ public abstract class EditElementDialog extends EditDialog {
 			
 			
 		}
-		
+	
 		doc.setModified(e);
 	}
 	
