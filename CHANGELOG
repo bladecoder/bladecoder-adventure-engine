@@ -1,4 +1,16 @@
-[0.7.0]
+[0.6.2]
+- i18n workflow in composer working
+- Added event handling in Spine plugin
+- composer dialog tree: edit and delete fixes
+- fix CameraAction when no selecting any target
+- fix enter/leave verb conflicts name. Rename to enter/exit
+- fix xml action loading
+- Call cb before cleaning text fifo
+- fix RunVerb action in repeat 
+
+[0.6.1]
+- fix show assets folder
+- fix when packaging android release (build.gradle bug)
 
 [0.6.0]
 - Created Spine plugin and set as optional when creating a project.
