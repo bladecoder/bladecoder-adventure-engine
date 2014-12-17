@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.I18NControl;
 
 public class I18N {
 	private static ResourceBundle i18nWorld;
