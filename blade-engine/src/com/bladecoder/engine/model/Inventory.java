@@ -26,6 +26,7 @@ public class Inventory implements AssetConsumer {
 	ArrayList<SpriteActor> items;
 	
 	private boolean visible = true;
+	transient private boolean disposed= true;
 
 	public Inventory() {
 		items = new ArrayList<SpriteActor>();
@@ -92,12 +93,20 @@ public class Inventory implements AssetConsumer {
 		for (SpriteActor a : items) {
 			a.retrieveAssets();
 		}
+		
+		disposed = false;
 	}	
 	
 	@Override
 	public void dispose() {
 		for (SpriteActor a : items)
 			a.dispose();
+		
+		disposed = true;
+	}
+	
+	public boolean isDisposed() {
+		return disposed;
 	}
 	
 }

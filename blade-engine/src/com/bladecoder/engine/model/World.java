@@ -187,12 +187,16 @@ public class World implements Serializable, AssetConsumer {
 	@Override
 	public void loadAssets() {
 		currentScene.loadAssets();
-		inventory.loadAssets();
+		
+		if(inventory.isDisposed())
+			inventory.loadAssets();
 	}
 
 	@Override
 	public void retrieveAssets() {
-		inventory.retrieveAssets();
+		if(inventory.isDisposed())
+			inventory.retrieveAssets();
+		
 		getCurrentScene().retrieveAssets();
 	}
 
