@@ -56,6 +56,7 @@ public class SpineRenderer implements ActorRenderer {
 	private final static int PLAY_ANIMATION_EVENT = 0;
 	private final static int PLAY_SOUND_EVENT = 1;
 	private final static int RUN_VERB_EVENT = 2;
+	private final static int LOOP_EVENT = 3;
 
 	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
 
@@ -130,6 +131,9 @@ public class SpineRenderer implements ActorRenderer {
 			case RUN_VERB_EVENT:
 				actor.runVerb(event.getString());
 				break;
+			case LOOP_EVENT:
+				// used for looping from a starting frame
+				break;				
 			default:
 				EngineLogger.error("Spine event not recognized.");
 			}
