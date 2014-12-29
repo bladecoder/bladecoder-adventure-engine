@@ -88,6 +88,9 @@ public class World implements Serializable, AssetConsumer {
 
 	private String initChapter;
 	private String currentChapter;
+	
+	/** For FADEIN/FADEOUT */
+	private Transition transition;
 
 	transient private SpriteBatch spriteBatch;
 
@@ -113,6 +116,8 @@ public class World implements Serializable, AssetConsumer {
 		customProperties = new HashMap<String, String>();
 
 		spriteBatch = new SpriteBatch();
+		
+		transition = new Transition();
 
 		disposed = false;
 	}
@@ -182,6 +187,10 @@ public class World implements Serializable, AssetConsumer {
 		getCurrentScene().update(delta);
 		textManager.update(delta);
 		timers.update(delta);
+		
+		if (!transition.isFinish()) {
+			transition.update(delta);
+		}
 	}
 
 	@Override
@@ -199,6 +208,10 @@ public class World implements Serializable, AssetConsumer {
 		
 		getCurrentScene().retrieveAssets();
 	}
+
+	public Transition getTransition() {
+		return transition;
+	}	
 
 	public float getTimeOfGame() {
 		return timeOfGame;
@@ -291,6 +304,7 @@ public class World implements Serializable, AssetConsumer {
 			currentDialog = null;
 
 			currentScene.dispose();
+			transition.reset();
 			
 			// Clear all pending callbacks
 			ActionCallbackQueue.clear();
@@ -547,6 +561,9 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("dialogActor", currentDialog.getActor());
 			json.writeValue("currentDialog", currentDialog.getId());
 		}
+		
+		json.writeValue("transition", transition, transition == null ? null
+				: transition.getClass());
 
 		json.writeValue("chapter", currentChapter);
 	}
@@ -582,6 +599,8 @@ public class World implements Serializable, AssetConsumer {
 					.getActor(actorId, false);
 			instance.currentDialog = actor.getDialog(dialogId);
 		}
+		
+		transition = json.readValue("transition", Transition.class, jsonData);
 
 		instance.currentChapter = json.readValue("chapter", String.class,
 				jsonData);

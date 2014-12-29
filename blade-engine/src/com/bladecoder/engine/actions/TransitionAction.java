@@ -42,10 +42,8 @@ public class TransitionAction extends BaseCallbackAction {
 	@Override
 	public boolean run(ActionCallback cb) {
 		setVerbCb(cb);
-		Transition t = new Transition();
+		Transition t = World.getInstance().getTransition();
 		t.create(time, c, type, getWait()?this:null);
-		
-		World.getInstance().getCurrentScene().setTransition(t);
 		
 		return getWait();
 	}

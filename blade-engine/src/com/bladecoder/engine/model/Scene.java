@@ -23,7 +23,6 @@ import java.util.List;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
@@ -83,9 +82,6 @@ public class Scene implements Serializable,
 	
 	/** depth vector. x: scale when y=0, y: scale when y=scene height */
 	private Vector2 depthVector;
-
-	/** For FADEIN/FADEOUT */
-	private Transition transition;
 
 	private String player;
 	
@@ -207,14 +203,6 @@ public class Scene implements Serializable,
 		// so we need to order the array list
 		Collections.sort(dynamicActors);
 
-		if (transition != null) {
-			transition.update(delta);
-
-			if (transition.isFinish()) {
-				transition = null;
-			}
-		}
-
 		// music delay update
 		if (music != null && !music.isPlaying()) {
 			boolean initialTime = false;
@@ -331,14 +319,6 @@ public class Scene implements Serializable,
 		}
 
 		renderer.end();
-	}
-
-	public void setTransition(Transition t) {
-		transition = t;
-	}
-
-	public Transition getTransition() {
-		return transition;
 	}
 
 	public BaseActor getActor(String id, boolean searchInventory) {
@@ -645,8 +625,6 @@ public class Scene implements Serializable,
 			EngineAssetManager.getInstance().disposeMusic(musicFilename);
 			music = null;
 		}
-
-		transition = null;
 	}
 	
 
@@ -687,9 +665,6 @@ public class Scene implements Serializable,
 
 		json.writeValue("isPlaying", music != null && music.isPlaying());
 		// TODO save music positionSer when available in API
-
-		json.writeValue("transition", transition, transition == null ? null
-				: transition.getClass());
 		
 		json.writeValue("camera", camera);
 		
@@ -745,8 +720,6 @@ public class Scene implements Serializable,
 
 		isPlayingSer = json.readValue("isPlaying", Boolean.class, jsonData);
 		// TODO restore positionSer for music when available in API
-
-		transition = json.readValue("transition", Transition.class, jsonData);
 		
 		camera = json.readValue("camera", SceneCamera.class, jsonData);
 		String followActorId = json.readValue("followActor", String.class,

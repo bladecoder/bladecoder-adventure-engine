@@ -17,6 +17,7 @@ package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -31,7 +32,7 @@ import com.bladecoder.engine.util.RectangleRenderer;
  * @author rgarcia
  */
 public class Transition implements Serializable {
-	public static enum Type {FADE_IN, FADE_OUT};
+	public static enum Type {NONE, FADE_IN, FADE_OUT};
 	
 	private float time;
 	private float currentTime;
@@ -45,19 +46,27 @@ public class Transition implements Serializable {
 		if(isFinish() && cb != null) {
 			ActionCallbackQueue.add(cb);
 			cb = null;
+			
+			// reset the transition when finish. Only in fade in case, fade out must stay in screen even when finished
+			if(type == Type.FADE_IN)
+				reset();
 		}
+	}
+	
+	public void reset() {
+		type = Type.NONE;
 	}
 	
 	public void draw(SpriteBatch batch, float width, float height) {
 		
-		if(isFinish()) return;
+		if(type == Type.NONE) return;
 		
 		switch(type) {
 		case FADE_IN:
-			c.a = 1 - currentTime / time;
+			c.a = MathUtils.clamp(1 - currentTime / time, 0, 1);
 			break;
 		case FADE_OUT:
-			c.a = currentTime / time;
+			c.a = MathUtils.clamp(currentTime / time, 0, 1);
 			break;
 		default:
 			break;
@@ -67,6 +76,7 @@ public class Transition implements Serializable {
 	}
 	
 	public void create(float time, Color color, Type type, ActionCallback cb) {
+		this.currentTime = 0f;
 		this.c = color;
 		this.type = type;
 		this.time = time;
@@ -74,7 +84,7 @@ public class Transition implements Serializable {
 	}
 	
 	public boolean isFinish() {
-		return (currentTime > time);
+		return (currentTime > time || type == Type.NONE);
 	}	
 	
 	@Override

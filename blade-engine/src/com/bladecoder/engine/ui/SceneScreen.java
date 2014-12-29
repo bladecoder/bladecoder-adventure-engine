@@ -493,11 +493,9 @@ public class SceneScreen implements BladeScreen {
 			ui.getPointer().draw(batch, viewport);
 		}
 
-		Transition t = World.getInstance().getCurrentScene().getTransition();
+		Transition t = World.getInstance().getTransition();
 
-		if (t != null) {
-			t.draw(batch, viewport.getScreenWidth(), viewport.getScreenHeight());
-		}
+		t.draw(batch, viewport.getScreenWidth(), viewport.getScreenHeight());
 
 		recorder.draw(batch);
 
