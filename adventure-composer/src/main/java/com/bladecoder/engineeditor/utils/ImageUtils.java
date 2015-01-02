@@ -78,7 +78,7 @@ public class ImageUtils {
 		if (orgImg != null) {
 			Object interpolation;
 			
-			if(orgImg.getWidth() < 40) {
+			if(orgImg.getWidth() < 20) {
 				interpolation = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
 			} else {
 				interpolation = RenderingHints.VALUE_INTERPOLATION_BICUBIC;
