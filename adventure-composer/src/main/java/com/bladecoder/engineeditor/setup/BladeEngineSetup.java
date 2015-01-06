@@ -300,6 +300,7 @@ public class BladeEngineSetup {
 		new File(outputDir + "/" + assetPath + "/spine").mkdirs();
 		new File(outputDir + "/" + assetPath + "/test").mkdirs();
 		new File(outputDir + "/" + assetPath + "/ui/1").mkdirs();
+		new File(outputDir + "/" + assetPath + "/ui/fonts").mkdirs();
 
 		
 		project.files.add(new ProjectFile("android/assets/model/00.chapter", assetPath + "/model/00.chapter", false));
@@ -307,12 +308,13 @@ public class BladeEngineSetup {
 		project.files.add(new ProjectFile("android/assets/model/world.xml", assetPath + "/model/world.xml", false));
 		project.files.add(new ProjectFile("android/assets/model/world_es.properties", assetPath + "/model/world_es.properties", false));
 		
-		project.files.add(new ProjectFile("android/assets/ui/ArchitectsDaughter_fix.ttf", assetPath + "/ui/ArchitectsDaughter_fix.ttf", false));
 		project.files.add(new ProjectFile("android/assets/ui/credits.txt", assetPath + "/ui/credits.txt", false));
-		project.files.add(new ProjectFile("android/assets/ui/Roboto-Black.ttf", assetPath + "/ui/Roboto-Black.ttf", false));
-		project.files.add(new ProjectFile("android/assets/ui/Roboto-Regular.ttf", assetPath + "/ui/Roboto-Regular.ttf", false));
-		project.files.add(new ProjectFile("android/assets/ui/Roboto-Thin.ttf", assetPath + "/ui/Roboto-Thin.ttf", false));
-		project.files.add(new ProjectFile("android/assets/ui/Ubuntu-M.ttf", assetPath + "/ui/Ubuntu-M.ttf", false));
+		project.files.add(new ProjectFile("android/assets/ui/fonts/PaytoneOne.ttf", assetPath + "/ui/fonts/PaytoneOne.ttf", false));
+		project.files.add(new ProjectFile("android/assets/ui/fonts/ArchitectsDaughter_fix.ttf", assetPath + "/ui/fonts/ArchitectsDaughter_fix.ttf", false));
+		project.files.add(new ProjectFile("android/assets/ui/fonts/Roboto-Black.ttf", assetPath + "/ui/fonts/Roboto-Black.ttf", false));
+		project.files.add(new ProjectFile("android/assets/ui/fonts/Roboto-Regular.ttf", assetPath + "/ui/fonts/Roboto-Regular.ttf", false));
+		project.files.add(new ProjectFile("android/assets/ui/fonts/Roboto-Thin.ttf", assetPath + "/ui/fonts/Roboto-Thin.ttf", false));
+		project.files.add(new ProjectFile("android/assets/ui/fonts/Ubuntu-M.ttf", assetPath + "/ui/fonts/Ubuntu-M.ttf", false));
 		project.files.add(new ProjectFile("android/assets/ui/ui.json", assetPath + "/ui/ui.json", false));
 		
 		project.files.add(new ProjectFile("android/assets/ui/1/blade_logo.png", assetPath + "/ui/1/blade_logo.png", false));

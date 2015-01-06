@@ -1,18 +1,5 @@
-t#SCRIPT
+t#BLADECODER ADVENTURE ENGINE
 RAFAEL GARCÍA
-t#CHAPTER DESIGN
-ALMUDENA CASTILLEJO
-RAFAEL GARCÍA
-t#BACKGROUNDS
-ALMUDENA CASTILLEJO
-RAFAEL GARCÍA
-t#PROGRAMMING
-RAFAEL GARCÍA
-t#MUSIC
-Moonlight Sonata Op. 27 No. 2 Moonlight Sonata 
-Performed by Paul Pitman - musopen.org
-t#SOUND FX
-freesound.org
 s#120
 i#libgdx_logo.png
 s#250

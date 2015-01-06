@@ -1,14 +1,13 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
-		default: {file: Roboto-Regular.ttf, size: 20},
-		debug: {file: Roboto-Regular.ttf, size: 15}, 
-		big-font: {file: Roboto-Black.ttf, size: 35},
-		title-font: {file: Roboto-Black.ttf, size: 60},
-		dialog-font: {file: ArchitectsDaughter_fix.ttf, size: 20},
-		text-manager-font: {file: ArchitectsDaughter_fix.ttf, size: 18},
-		desc: {file: Ubuntu-M.ttf, size: 16},
-		credits-title: {file: Ubuntu-M.ttf, size: 20},
-		credits: {file: Ubuntu-M.ttf, size: 30}
+		default: {file: fonts/Roboto-Regular.ttf, size: 20},
+		debug: {file: fonts/Roboto-Regular.ttf, size: 15}, 
+		big-font: {file: fonts/PaytoneOne.ttf, size: 35},
+		dialog-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 20},
+		text-manager-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 18},
+		desc: {file: fonts/Ubuntu-M.ttf, size: 16},
+		credits-title: {file: fonts/Ubuntu-M.ttf, size: 20},
+		credits: {file: fonts/Ubuntu-M.ttf, size: 30}
 	},
 com.badlogic.gdx.graphics.Color: {
 	green: { a: 1, b: 0, g: 1, r: 0 },
@@ -24,7 +23,8 @@ com.badlogic.gdx.graphics.Color: {
 	red500: { r: 0.90, g: 0.11, b: 0.13, a: 1 },
 	red-dark: { r: 0.71, g: 0.04, b: 0.06, a: 1 },
 	red-light:  { r: 0.99, g: 0.45, b: 0.47, a: 1 },
-	black-trans:  { r: 0.1, g: 0.1, b: 0.1, a: 0.7 }
+	black-trans:  { r: 0.1, g: 0.1, b: 0.1, a: 0.7 },
+	yellow:  { r: 1, g: 1, b: 0.13, a: 1 }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	black08: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.8 } },
@@ -38,26 +38,32 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	circle-border-light: { name: circle_border, color: light-grey},	
 	border-rect-grey: { name: border_rect4, color: light-grey},
 	border-rect-dark-grey: { name: border_rect2, color: { a: 1, b: 0.6, g: 0.6, r: 0.6 }},
+	border-rect-trans: { name: border_rect4, color: { a: 0.2, b: 0.6, g: 0.6, r: 0.6 }},
+	border-rect-trans-down: { name: border_rect4, color: { a: 0.5, b: 0.6, g: 0.6, r: 0.6 }},
 },
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	pie_lookat: {up:circle-border, down: circle-border-light, imageUp: lookat},
 	pie_pickup: {up:circle-border, down: circle-border-light, imageUp: pickup},
 	pie_talkto: {up:circle-border, down: circle-border-light, imageUp: talkto},
 	inventory: {up:inventory},
-	menu: {up:circle, down: circle-light, imageUp: menu}
+	showMenu: {up:circle, down: circle-light, imageUp: menu}
 },
-com.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
-	default: {background: border-rect-grey, itemBackground: border-rect-dark-grey, menuButtonStyle: menu}
-},
+
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		default: { font: default, up: grey, fontColor: white , downFontColor: grey, overFontColor: light-grey, disabledFontColor: dark-grey},
-		menu: { font: big-font, fontColor: white , downFontColor: grey, overFontColor: light-grey, disabledFontColor: dark-grey}		
+		menu: { up: border-rect-trans, down: border-rect-trans-down, font: big-font, fontColor: white , downFontColor: grey, overFontColor: yellow, disabledFontColor: dark-grey}		
 },
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		default: { font: default, fontColor: white},
-		title: { font: title-font, fontColor: white},
+		title: { font: big-font, fontColor: white},
 },
 
+com.bladecoder.engine.ui.MenuScreen$MenuScreenStyle: {
+	default: {textButtonStyle: menu, showTitle: true, titleStyle: title}
+},
+com.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
+	default: {background: border-rect-grey, itemBackground: border-rect-dark-grey, menuButtonStyle: showMenu}
+},
 com.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
 	default: {background: black08, font: dialog-font, fontColor: white, overFontColor: light-grey}
 },
@@ -65,6 +71,8 @@ com.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
 com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle: {
 	default: {rectBackground: border_black_rect4, talkBackground: white, font: text-manager-font, talkBubble: bubblepointer}
 },
+
+
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 		default: { selection: grey, background: dark-grey, focusedBackground: dark-grey, disabledBackground: grey, font: default, fontColor: white, focusedFontColor: text-dark, disabledFontColor: text-dark, cursor: white, messageFont: default, messageFontColor: text-dark }
 },

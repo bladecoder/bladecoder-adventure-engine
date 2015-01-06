@@ -20,7 +20,7 @@ import com.bladecoder.engine.ui.CreditsScreen;
 import com.bladecoder.engine.ui.HelpScreen;
 import com.bladecoder.engine.ui.InitScreen;
 import com.bladecoder.engine.ui.LoadingScreen;
-import com.bladecoder.engine.ui.MenuScreenTextButtons;
+import com.bladecoder.engine.ui.MenuScreen;
 import com.bladecoder.engine.ui.Pointer;
 import com.bladecoder.engine.ui.SceneScreen;
 import com.badlogic.gdx.Application.ApplicationType;
@@ -78,7 +78,7 @@ public class UI {
 		screens[Screens.INIT_SCREEN.ordinal()] = getCustomScreenInstance(Config.INIT_SCREEN_CLASS_PROP, InitScreen.class);
 		screens[Screens.SCENE_SCREEN.ordinal()] = new SceneScreen();
 		screens[Screens.LOADING_SCREEN.ordinal()] = new LoadingScreen();
-		screens[Screens.MENU_SCREEN.ordinal()] = getCustomScreenInstance(Config.MENU_SCREEN_CLASS_PROP, MenuScreenTextButtons.class);
+		screens[Screens.MENU_SCREEN.ordinal()] = getCustomScreenInstance(Config.MENU_SCREEN_CLASS_PROP, MenuScreen.class);
 		screens[Screens.HELP_SCREEN.ordinal()] = getCustomScreenInstance(Config.HELP_SCREEN_CLASS_PROP, HelpScreen.class);
 		screens[Screens.CREDIT_SCREEN.ordinal()] =  getCustomScreenInstance(Config.CREDIT_SCREEN_CLASS_PROP, CreditsScreen.class);
 		

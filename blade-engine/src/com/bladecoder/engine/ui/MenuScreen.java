@@ -18,36 +18,37 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class MenuScreen implements BladeScreen {
-
-	public static final String BACK_COMMAND = "back";
-	public static final String QUIT_COMMAND = "quit";
-	public static final String RELOAD_COMMAND = "reload";
-	public static final String HELP_COMMAND = "help";
-	public static final String CREDITS_COMMAND = "credits";
-
-	private static final float MARGIN = DPIUtils.UI_SPACE;
-
+	private final static float BUTTON_PADDING = DPIUtils.UI_SPACE;
+	
 	private UI ui;
 
 	private Stage stage;
-
-	private float buttonSize;
+	private Texture bgTexFile = null;
 
 	public MenuScreen() {
-
 	}
 
 	@Override
@@ -58,7 +59,8 @@ public class MenuScreen implements BladeScreen {
 		stage.act(delta);
 		stage.draw();
 
-		ui.getBatch().setProjectionMatrix(stage.getViewport().getCamera().combined);
+		ui.getBatch().setProjectionMatrix(
+				stage.getViewport().getCamera().combined);
 		ui.getBatch().begin();
 		ui.getPointer().draw(ui.getBatch(), stage.getViewport());
 		ui.getBatch().end();
@@ -73,6 +75,12 @@ public class MenuScreen implements BladeScreen {
 	public void dispose() {
 		stage.dispose();
 		stage = null;
+
+		if (bgTexFile != null) {
+			bgTexFile.dispose();
+		}
+
+		bgTexFile = null;
 	}
 
 	@Override
@@ -86,87 +94,128 @@ public class MenuScreen implements BladeScreen {
 
 		stage = new Stage(new ScreenViewport());
 
-		buttonSize = DPIUtils.getPrefButtonSize() * 2f;
+		MenuScreenStyle style = ui.getSkin().get(MenuScreenStyle.class);
+		BitmapFont f = ui.getSkin().get(style.textButtonStyle, TextButtonStyle.class).font;	
+		float buttonWidth = f.getCapHeight() * 15f;
+		
+		
+		// Image background = new Image(style.background);
+		Drawable bg = style.background;
+
+		if (bg == null && style.bgFile != null) {
+			bgTexFile = new Texture(EngineAssetManager.getInstance()
+					.getResAsset(style.bgFile));
+			bgTexFile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+			bg = new TextureRegionDrawable(new TextureRegion(bgTexFile));
+		}
 
 		Table table = new Table();
 		table.setFillParent(true);
 		table.center();
 
+		if (bg != null)
+			table.setBackground(bg);
+
 		table.addListener(new InputListener() {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
-				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK) {
-					if (World.getInstance().getCurrentScene() == null)
-						World.getInstance().load();
+				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
+					if (World.getInstance().getCurrentScene() != null)
+						ui.setCurrentScreen(Screens.SCENE_SCREEN);
 
-					ui.setCurrentScreen(Screens.SCENE_SCREEN);
-				}
-				
 				return true;
 			}
 		});
 
 		stage.setKeyboardFocus(table);
 
-		ImageButton back = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(BACK_COMMAND)));
+		if (style.showTitle) {
 
-		back.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				if (World.getInstance().getCurrentScene() == null)
-					World.getInstance().load();
+			Label title = new Label(Config.getProperty(Config.TITLE_PROP,
+					"Adventure Blade Engine"), ui.getSkin(), style.titleStyle);
 
-				ui.setCurrentScreen(Screens.SCENE_SCREEN);
-			}
-		});
+			table.add(title).padBottom(DPIUtils.getMarginSize() * 2);
+			table.row();
+		}
 
-		table.add(back).pad(MARGIN);
-		back.getImageCell().minSize(buttonSize, buttonSize);
-		back.getImageCell().maxSize(buttonSize, buttonSize);
+		if (World.getInstance().savedGameExists()
+				|| World.getInstance().getCurrentScene() != null) {
+			TextButton continueGame = new TextButton("Continue", ui.getSkin(),
+					style.textButtonStyle);
 
-		ImageButton reload = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(RELOAD_COMMAND)));
-		reload.addListener(new ClickListener() {
+			continueGame.addListener(new ClickListener() {
+				public void clicked(InputEvent event, float x, float y) {
+					if (World.getInstance().getCurrentScene() == null)
+						World.getInstance().load();
+
+					ui.setCurrentScreen(Screens.SCENE_SCREEN);
+				}
+			});
+
+			table.add(continueGame).pad(BUTTON_PADDING).width(buttonWidth);
+		}
+
+		TextButton newGame = new TextButton("New Game", ui.getSkin(),
+				style.textButtonStyle);
+		newGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				World.getInstance().newGame();
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
 
-		table.add(reload).pad(MARGIN);
-		reload.getImageCell().minSize(buttonSize, buttonSize);
-		reload.getImageCell().maxSize(buttonSize, buttonSize);
+		table.row();
+		table.add(newGame).pad(BUTTON_PADDING).width(buttonWidth);
 
-		ImageButton help = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(HELP_COMMAND)));
+		TextButton help = new TextButton("Help", ui.getSkin(),
+				style.textButtonStyle);
 		help.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.HELP_SCREEN);
 			}
 		});
 
-		table.add(help).pad(MARGIN);
-		help.getImageCell().minSize(buttonSize, buttonSize);
-		help.getImageCell().maxSize(buttonSize, buttonSize);
+		table.row();
+		table.add(help).pad(BUTTON_PADDING).width(buttonWidth);
 
-		ImageButton credits = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(CREDITS_COMMAND)));
+		TextButton credits = new TextButton("Credits", ui.getSkin(),
+				style.textButtonStyle);
 		credits.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.CREDIT_SCREEN);
 			}
 		});
 
-		table.add(credits).pad(MARGIN);
-		credits.getImageCell().minSize(buttonSize, buttonSize);
-		credits.getImageCell().maxSize(buttonSize, buttonSize);
+		table.row();
+		table.add(credits).pad(BUTTON_PADDING).width(buttonWidth);
 
-		ImageButton quit = new ImageButton(new TextureRegionDrawable(ui.getUIAtlas().findRegion(QUIT_COMMAND)));
+		if (EngineLogger.debugMode()) {
+			TextButton debug = new TextButton("[RED]Debug[]", ui.getSkin(),
+					style.textButtonStyle);
+			debug.addListener(new ClickListener() {
+				public void clicked(InputEvent event, float x, float y) {
+					DebugScreen debugScr = new DebugScreen();
+					debugScr.setUI(ui);
+					ui.setCurrentScreen(debugScr);
+				}
+			});
+
+			table.row();
+			table.add(debug).pad(BUTTON_PADDING).width(buttonWidth);
+		}
+
+		TextButton quit = new TextButton("Quit Game", ui.getSkin(),
+				style.textButtonStyle);
 		quit.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				Gdx.app.exit();
 			}
 		});
 
-		table.add(quit).pad(MARGIN);
-		quit.getImageCell().minSize(buttonSize, buttonSize);
-		quit.getImageCell().maxSize(buttonSize, buttonSize);
+		table.row();
+		table.add(quit).pad(BUTTON_PADDING).width(buttonWidth);
+
 		table.pack();
 
 		stage.addActor(table);
@@ -190,5 +239,27 @@ public class MenuScreen implements BladeScreen {
 	@Override
 	public void setUI(UI ui) {
 		this.ui = ui;
+	}
+
+	/** The style for the MenuScreen */
+	static public class MenuScreenStyle {
+		/** Optional. */
+		public Drawable background;
+		/** if 'bg' not specified try to load the bgFile */
+		public String bgFile;
+		public String textButtonStyle;
+		public String titleStyle;
+		public boolean showTitle;
+
+		public MenuScreenStyle() {
+		}
+
+		public MenuScreenStyle(MenuScreenStyle style) {
+			background = style.background;
+			bgFile = style.bgFile;
+			textButtonStyle = style.textButtonStyle;
+			showTitle = style.showTitle;
+			titleStyle = style.titleStyle;
+		}
 	}
 }

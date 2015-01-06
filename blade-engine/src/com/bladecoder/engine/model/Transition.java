@@ -38,7 +38,7 @@ public class Transition implements Serializable {
 	private float currentTime;
 	private ActionCallback cb;
 	private Color c;
-	private Type type;
+	private Type type = Type.NONE;
 	
 	public void update(float delta) {
 		currentTime += delta;
