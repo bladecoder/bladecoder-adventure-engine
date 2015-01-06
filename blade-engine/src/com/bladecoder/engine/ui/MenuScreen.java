@@ -190,7 +190,7 @@ public class MenuScreen implements BladeScreen {
 		table.row();
 		table.add(credits).pad(BUTTON_PADDING).width(buttonWidth);
 
-		if (EngineLogger.debugMode()) {
+		if (EngineLogger.debugMode() && World.getInstance().getCurrentScene() != null) {
 			TextButton debug = new TextButton("[RED]Debug[]", ui.getSkin(),
 					style.textButtonStyle);
 			debug.addListener(new ClickListener() {
