@@ -34,6 +34,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.Config;
@@ -141,7 +142,7 @@ public class MenuScreen implements BladeScreen {
 
 		if (World.getInstance().savedGameExists()
 				|| World.getInstance().getCurrentScene() != null) {
-			TextButton continueGame = new TextButton("Continue", ui.getSkin(),
+			TextButton continueGame = new TextButton(I18N.getString("ui.continue"), ui.getSkin(),
 					style.textButtonStyle);
 
 			continueGame.addListener(new ClickListener() {
@@ -156,7 +157,7 @@ public class MenuScreen implements BladeScreen {
 			table.add(continueGame).pad(BUTTON_PADDING).width(buttonWidth);
 		}
 
-		TextButton newGame = new TextButton("New Game", ui.getSkin(),
+		TextButton newGame = new TextButton(I18N.getString("ui.new"), ui.getSkin(),
 				style.textButtonStyle);
 		newGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
@@ -168,7 +169,7 @@ public class MenuScreen implements BladeScreen {
 		table.row();
 		table.add(newGame).pad(BUTTON_PADDING).width(buttonWidth);
 
-		TextButton help = new TextButton("Help", ui.getSkin(),
+		TextButton help = new TextButton(I18N.getString("ui.help"), ui.getSkin(),
 				style.textButtonStyle);
 		help.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
@@ -179,7 +180,7 @@ public class MenuScreen implements BladeScreen {
 		table.row();
 		table.add(help).pad(BUTTON_PADDING).width(buttonWidth);
 
-		TextButton credits = new TextButton("Credits", ui.getSkin(),
+		TextButton credits = new TextButton(I18N.getString("ui.credits"), ui.getSkin(),
 				style.textButtonStyle);
 		credits.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
@@ -205,7 +206,7 @@ public class MenuScreen implements BladeScreen {
 			table.add(debug).pad(BUTTON_PADDING).width(buttonWidth);
 		}
 
-		TextButton quit = new TextButton("Quit Game", ui.getSkin(),
+		TextButton quit = new TextButton(I18N.getString("ui.quit"), ui.getSkin(),
 				style.textButtonStyle);
 		quit.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {

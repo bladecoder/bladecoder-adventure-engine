@@ -96,6 +96,8 @@ public class BladeEngine implements ApplicationListener {
 			EngineAssetManager.getInstance().forceResolution(forceRes);
 		}
 		
+		World.getInstance().loadXMLWorld();
+		
 		ui = new UI();
 
 		if(chapter == null)

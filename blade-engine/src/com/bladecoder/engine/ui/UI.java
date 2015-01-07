@@ -72,7 +72,6 @@ public class UI {
 			setPieMode(Config.getProperty(Config.PIE_MODE_DESKTOP_PROP, false));
 		}
 		
-		World.getInstance().loadXMLWorld();
 		loadAssets();
 		
 		screens[Screens.INIT_SCREEN.ordinal()] = getCustomScreenInstance(Config.INIT_SCREEN_CLASS_PROP, InitScreen.class);
