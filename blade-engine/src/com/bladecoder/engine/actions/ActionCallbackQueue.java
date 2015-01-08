@@ -18,7 +18,10 @@ package com.bladecoder.engine.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bladecoder.engine.actions.ActionCallback;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.util.ActionCallbackSerialization;
 
 /**
  * This is a queue to group all cb that must be triggered in the next iteration.
@@ -29,21 +32,29 @@ import com.bladecoder.engine.actions.ActionCallback;
  * @author rgarcia
  *
  */
-public class ActionCallbackQueue {
+public class ActionCallbackQueue  implements Serializable{
 	private static final List<ActionCallback> queue = new ArrayList<ActionCallback>();
+	private static final List<ActionCallback> runQueue = new ArrayList<ActionCallback>();
 	
 	public static void add(ActionCallback cb) {
 		queue.add(cb);
 	}
 	
+	/**
+	 * Resume all cb's in the 'queue'. 
+	 * 
+	 * To do that, we copy all elements in the 'runQueue' and clean the 'queue' because 
+	 * cb.resume() can trigger more cb's
+	 */
 	public static void run() {
 		if(!queue.isEmpty()) {
-			ActionCallback[] array = queue.toArray(new ActionCallback[queue.size()]);
-			
+			runQueue.addAll(queue);				
 			queue.clear();
 			
-			for(ActionCallback cb: array)
+			for(ActionCallback cb: runQueue)
 				cb.resume();
+			
+			runQueue.clear();
 		}
 	}
 	
@@ -51,5 +62,26 @@ public class ActionCallbackQueue {
 		queue.clear();
 	}
 	
-	// TODO: SAVE AND RESUME QUEUE
+	@Override
+	public void write(Json json) {
+		ArrayList<String> q = new ArrayList<String>();
+		for(ActionCallback cb: queue) {
+			q.add(ActionCallbackSerialization.find(cb));
+		}
+		
+		json.writeValue("queue", q);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void read (Json json, JsonValue jsonData) {
+		ArrayList<String> q = json.readValue("queue", ArrayList.class, String.class,
+				jsonData);
+		
+		queue.clear();
+		
+		for(String s: q) {
+			queue.add(ActionCallbackSerialization.find(s));
+		}
+	}
 }

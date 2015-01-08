@@ -688,6 +688,10 @@ public class Scene implements Serializable,
 		actors = json.readValue("actors", HashMap.class, BaseActor.class,
 				jsonData);
 		player = json.readValue("player", String.class, jsonData);
+		
+		bgActors.clear();
+		dynamicActors.clear();
+		fgActors.clear();
 
 		for (BaseActor a : actors.values()) {			
 			a.setScene(this);
