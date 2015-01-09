@@ -1,3 +1,9 @@
+[0.6.5]
+- fix ActionCallbackQueue serialization
+- better text size management for small screens
+- text bubble smaller and better management
+
+
 [0.6.4]
 - ActionCallbackQueue serialization
 - world defaultverbs serialization
