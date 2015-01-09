@@ -96,6 +96,7 @@ public class Scene implements Serializable,
 
 	private String musicFilename;
 	private boolean isPlayingSer = false;
+	private float musicPosSer = 0;
 
 	transient private boolean isMusicPaused = false;
 	
@@ -594,6 +595,11 @@ public class Scene implements Serializable,
 		if (musicFilename != null) {
 			music = EngineAssetManager.getInstance().getMusic(musicFilename);
 			if (isPlayingSer) { // TODO must be in World???
+				if(music != null) {
+					music.setPosition(musicPosSer);
+					musicPosSer = 0f;
+				}
+				
 				playMusic();
 				isPlayingSer = false;
 			}
@@ -664,7 +670,7 @@ public class Scene implements Serializable,
 		json.writeValue("repeatMusicDelay", repeatMusicDelay);
 
 		json.writeValue("isPlaying", music != null && music.isPlaying());
-		// TODO save music positionSer when available in API
+		json.writeValue("musicPos", music != null && music.isPlaying()?music.getPosition():0f);
 		
 		json.writeValue("camera", camera);
 		
@@ -723,7 +729,7 @@ public class Scene implements Serializable,
 				jsonData);
 
 		isPlayingSer = json.readValue("isPlaying", Boolean.class, jsonData);
-		// TODO restore positionSer for music when available in API
+		musicPosSer = json.readValue("musicPos", Float.class, jsonData);
 		
 		camera = json.readValue("camera", SceneCamera.class, jsonData);
 		String followActorId = json.readValue("followActor", String.class,
