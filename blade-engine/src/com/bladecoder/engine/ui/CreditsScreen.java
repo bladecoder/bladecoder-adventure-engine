@@ -36,6 +36,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.TextUtils;
 
@@ -44,7 +45,7 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 	private final static String CREDITS_FILENAME = "ui/credits";
 	private static final String FONT_TITLE_STYLE = "credits-title";
 	private static final String FONT_STYLE = "credits";
-	private static final float SPEED = 40; // px/sec.
+	private static final float SPEED = 10 * DPIUtils.getSpacing(); // px/sec.
 
 	// title and texts pair sequence
 	private List<String> credits = new ArrayList<String>();
