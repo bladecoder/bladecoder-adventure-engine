@@ -56,6 +56,7 @@ public class TextManagerUI extends Actor {
 		this.sceneScreen = sceneScreen;
 		setTouchable(Touchable.disabled);
 		style = sceneScreen.getUI().getSkin().get(TextManagerUIStyle.class);
+		style.font.setMarkupEnabled(true);
 		setVisible(false);
 	}
 
@@ -113,7 +114,6 @@ public class TextManagerUI extends Actor {
 
 				setSize(b.width + PADDING * 2, b.height + PADDING * 2);
 
-				style.font.setMarkupEnabled(true);
 				style.font.setColor(currentSubtitle.color);
 				
 				// check if the text exits the screen
@@ -137,7 +137,12 @@ public class TextManagerUI extends Actor {
 		if (subtitle.type == Text.Type.TALK) {
 			if (style.talkBubble != null) {
 				float scale = DPIUtils.getTouchMinSize() / 4 / style.talkBubble.getMinHeight();
-				float bubbleX = getX() + (getWidth()  - style.talkBubble.getMinWidth() * scale)/ 2;
+//				float bubbleX = getX() + (getWidth()  - style.talkBubble.getMinWidth() * scale)/ 2;
+				unprojectTmp.set(subtitle.x, subtitle.y, 0);
+				World.getInstance().getSceneCamera().scene2screen(sceneScreen.getViewport(), unprojectTmp);
+				
+				float bubbleX = unprojectTmp.x  - style.talkBubble.getMinWidth() * scale / 2;
+				
 				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + 2;
 
 //				style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
@@ -161,9 +166,9 @@ public class TextManagerUI extends Actor {
 				getWidth() - PADDING * 2, HAlignment.CENTER);
 	}
 
-	public void resize(int width, int height) {
-		maxRectangleWidth = width / 1.7f;
-		maxTalkWidth = width / 3;
+	public void resize(int width, int height) {	
+		maxRectangleWidth = Math.min(width - DPIUtils.getMarginSize() * 2, style.font.getSpaceWidth() * 80);
+		maxTalkWidth = Math.min(width - DPIUtils.getMarginSize() * 2, style.font.getSpaceWidth() * 35);
 	}
 
 	/** The style for the TextManagerUI */
