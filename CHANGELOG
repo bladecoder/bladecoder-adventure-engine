@@ -1,3 +1,13 @@
+[0.6.4]
+- ActionCallbackQueue serialization
+- world defaultverbs serialization
+- i18n UI support
+
+[0.6.3]
+- Updated libgdx to 1.5.2 version
+- Menu Screen Refactor
+- Transition moved to World
+
 [0.6.2]
 - i18n workflow in composer working
 - Added event handling in Spine plugin

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 
@@ -32,7 +31,7 @@ import com.bladecoder.engine.util.ActionCallbackSerialization;
  * @author rgarcia
  *
  */
-public class ActionCallbackQueue  implements Serializable{
+public class ActionCallbackQueue {
 	private static final List<ActionCallback> queue = new ArrayList<ActionCallback>();
 	private static final List<ActionCallback> runQueue = new ArrayList<ActionCallback>();
 	
@@ -62,8 +61,7 @@ public class ActionCallbackQueue  implements Serializable{
 		queue.clear();
 	}
 	
-	@Override
-	public void write(Json json) {
+	public static void write(Json json) {
 		ArrayList<String> q = new ArrayList<String>();
 		for(ActionCallback cb: queue) {
 			q.add(ActionCallbackSerialization.find(cb));
@@ -73,8 +71,7 @@ public class ActionCallbackQueue  implements Serializable{
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Override
-	public void read (Json json, JsonValue jsonData) {
+	public static void read (Json json, JsonValue jsonData) {
 		ArrayList<String> q = json.readValue("queue", ArrayList.class, String.class,
 				jsonData);
 		

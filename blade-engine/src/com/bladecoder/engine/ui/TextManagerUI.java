@@ -136,7 +136,7 @@ public class TextManagerUI extends Actor {
 
 		if (subtitle.type == Text.Type.TALK) {
 			if (style.talkBubble != null) {
-				float scale = DPIUtils.getTouchMinSize() / 2 / style.talkBubble.getMinHeight();
+				float scale = DPIUtils.getTouchMinSize() / 4 / style.talkBubble.getMinHeight();
 				float bubbleX = getX() + (getWidth()  - style.talkBubble.getMinWidth() * scale)/ 2;
 				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + 2;
 

@@ -566,6 +566,7 @@ public class World implements Serializable, AssetConsumer {
 				: transition.getClass());
 
 		json.writeValue("chapter", currentChapter);
+		ActionCallbackQueue.write(json);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -604,6 +605,11 @@ public class World implements Serializable, AssetConsumer {
 
 		instance.currentChapter = json.readValue("chapter", String.class,
 				jsonData);
+		
+		ActionCallbackQueue.read(json, jsonData);
+		
+		
 		I18N.loadChapter(EngineAssetManager.MODEL_DIR + instance.currentChapter);
+		
 	}
 }
