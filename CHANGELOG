@@ -1,3 +1,8 @@
+[0.6.6]
+- creditscreen: set scroll speed resolution independent
+- creditscreen: added background style. Style now obtained from skin
+- fixed textureunpacker bug when image was rotated in atlas
+
 [0.6.5]
 - fix ActionCallbackQueue serialization
 - better text size management for small screens
