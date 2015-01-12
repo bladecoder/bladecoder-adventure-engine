@@ -32,6 +32,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -43,15 +44,12 @@ import com.bladecoder.engine.util.TextUtils;
 public class CreditsScreen implements BladeScreen, InputProcessor {
 
 	private final static String CREDITS_FILENAME = "ui/credits";
-	private static final String FONT_TITLE_STYLE = "credits-title";
-	private static final String FONT_STYLE = "credits";
 	private static final float SPEED = 10 * DPIUtils.getSpacing(); // px/sec.
 
 	// title and texts pair sequence
 	private List<String> credits = new ArrayList<String>();
 
-	private BitmapFont creditsFont;
-	private BitmapFont titlesFont;
+	CreditScreenStyle style;
 
 	private int stringHead = 0;
 	private float scrollY = 0; 
@@ -79,6 +77,10 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();	
 		
+		if(style.background != null) {
+			style.background.draw(batch, 0, 0, width, height);
+		}
+		
 		scrollY+= delta * SPEED * EngineAssetManager.getInstance().getScale();
 		
 		float y = scrollY;
@@ -97,15 +99,15 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 			}
 			
 			if(type == 't') {				
-				y -= titlesFont.getLineHeight() * 2;
+				y -= style.titleFont.getLineHeight() * 2;
 				
-				TextUtils.drawCenteredScreenX(batch, titlesFont, s, y, width);
-				y -= titlesFont.getLineHeight();
+				TextUtils.drawCenteredScreenX(batch, style.titleFont, s, y, width);
+				y -= style.titleFont.getLineHeight();
 				
-				if (y > height + titlesFont.getLineHeight()) {
+				if (y > height + style.titleFont.getLineHeight()) {
 					stringHead = i + 1;
-					scrollY -= titlesFont.getLineHeight();
-					scrollY -= titlesFont.getLineHeight() * 2;
+					scrollY -= style.titleFont.getLineHeight();
+					scrollY -= style.titleFont.getLineHeight() * 2;
 				}
 			} else if(type == 'i') {
 				Texture img = images.get(s);
@@ -132,12 +134,12 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 				music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset("music/" + s));
 				music.play();
 			} else {
-				TextUtils.drawCenteredScreenX(batch, creditsFont, s, y, width);
-				y -= creditsFont.getLineHeight();
+				TextUtils.drawCenteredScreenX(batch, style.font, s, y, width);
+				y -= style.font.getLineHeight();
 				
-				if (y > height + creditsFont.getLineHeight()) {
+				if (y > height + style.font.getLineHeight()) {
 					stringHead = i + 1;
-					scrollY -= creditsFont.getLineHeight();
+					scrollY -= style.font.getLineHeight();
 				}
 			}
 			
@@ -173,8 +175,7 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 	}
 
 	private void retrieveAssets(TextureAtlas atlas) {
-		titlesFont = ui.getSkin().getFont(FONT_TITLE_STYLE);
-		creditsFont = ui.getSkin().getFont(FONT_STYLE);
+		style = ui.getSkin().get(CreditScreenStyle.class);
 
 		Locale locale = Locale.getDefault();
 
@@ -198,7 +199,7 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 			ui.setCurrentScreen(Screens.MENU_SCREEN);
 		}
 		
-		scrollY += titlesFont.getLineHeight();
+		scrollY += style.titleFont.getLineHeight();
 		
 		// Load IMAGES
 		for (int i = 0; i < credits.size(); i++) {
@@ -288,5 +289,25 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 	@Override
 	public void setUI(UI ui) {
 		this.ui = ui;
+	}
+	
+	/** The style for the CreditsScreen */
+	static public class CreditScreenStyle {
+		/** Optional. */
+		public Drawable background;
+		/** if 'bg' not specified try to load the bgFile */
+		public String bgFile;
+		public BitmapFont titleFont;
+		public BitmapFont font;
+
+		public CreditScreenStyle() {
+		}
+
+		public CreditScreenStyle(CreditScreenStyle style) {
+			background = style.background;
+			bgFile = style.bgFile;
+			titleFont = style.titleFont;
+			font = style.font;
+		}
 	}
 }
