@@ -186,7 +186,7 @@ public class Editor implements ApplicationListener {
 									+ e1.getClass().getSimpleName()
 									+ " - "
 									+ e1.getMessage();
-							Ctx.msg.show(getStage(), msg, 2);
+							Ctx.msg.show(getStage(), msg, 4);
 
 							e1.printStackTrace();
 						}

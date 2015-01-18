@@ -112,13 +112,18 @@ public class EditAnimationDialog extends EditElementDialog {
 				.addListener(new ChangeListener() {
 					@Override
 					public void changed(ChangeEvent event, Actor actor) {
-						EditorLogger.debug("CreateEditFADialog.setSource():"
+						EditorLogger.debug("EditAnimationDialog.setSource():"
 								+ inputs[0].getText());
 
 						spriteWidget.setSource(parent.getAttribute("type"),
 								inputs[0].getText());
 
-						fillAnimations();
+						
+						try {
+							fillAnimations();
+						} catch(Exception e) {
+							Ctx.msg.show(getStage(), "Error loading animations from selected source", 4);
+						}
 					}
 				});
 
@@ -173,8 +178,6 @@ public class EditAnimationDialog extends EditElementDialog {
 	}
 
 	private void fillAnimations() {
-		EditorLogger.debug("CreateEditFADialog.fillAnimations()");
-
 		@SuppressWarnings("unchecked")
 		SelectBox<String> cb = (SelectBox<String>) inputs[1].getField();
 		cb.clearItems();
