@@ -24,13 +24,13 @@ public class BuildScriptHelper {
 		//dependencies
 		write(wr, "dependencies {");
 		if (projects.contains(ProjectType.HTML)) {
-			write(wr, "classpath '" + DependencyBank.gwtPluginImport + "'");
+			write(wr, "classpath '" + DependencyBank.gwtPluginImport + Versions.getGwtGradlePluginVersion() + "'");
 		}
 		if (projects.contains(ProjectType.ANDROID)) {
-			write(wr, "classpath '" + DependencyBank.androidPluginImport + "'");
+			write(wr, "classpath '" + DependencyBank.androidPluginImport + Versions.getAndroidGradlePluginVersion() + "'");
 		}
 		if (projects.contains(ProjectType.IOS)) {
-			write(wr, "classpath '" + DependencyBank.roboVMPluginImport + "'");
+			write(wr, "classpath '" + DependencyBank.roboVMPluginImport + Versions.getROBOVMGradlePluginVersion() + "'");
 		}
 		write(wr, "}");
 		write(wr, "}");
