@@ -191,6 +191,8 @@ public class EditAnimationDialog extends EditElementDialog {
 			cb.getItems().add(s);
 
 		cb.getList().setItems(cb.getItems());
+		if (cb.getItems().size > 0)
+			cb.setSelectedIndex(0);
 
 		cb.invalidateHierarchy();
 
