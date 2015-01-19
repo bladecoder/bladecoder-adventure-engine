@@ -1,0 +1,6 @@
+#!/bin/sh
+
+TARGET_DIR=../../../src/main/resources/projectTmpl/android/assets/ui/1
+
+inkscape -d 60 --export-area-page --export-png=$TARGET_DIR/blade_logo.png  blade_logo3.svg;
+
