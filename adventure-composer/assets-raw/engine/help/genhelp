@@ -1,0 +1,9 @@
+#!/bin/sh
+
+TARGET_DIR=../../../src/main/resources/projectTmpl/android/assets/ui/1
+
+#GENERATE 1920_1080
+inkscape -w 1920 -h 1080 --export-area-page --export-png=$TARGET_DIR/helpDesktop_es.png  helpDesktop_es.svg;
+inkscape -w 1920 -h 1080 --export-area-page --export-png=$TARGET_DIR/helpDesktop.png  helpDesktop_en.svg;
+inkscape -w 1920 -h 1080 --export-area-page --export-png=$TARGET_DIR/helpPie_es.png  helpPie_es.svg;
+inkscape -w 1920 -h 1080 --export-area-page --export-png=$TARGET_DIR/helpPie.png  helpPie_en.svg;
