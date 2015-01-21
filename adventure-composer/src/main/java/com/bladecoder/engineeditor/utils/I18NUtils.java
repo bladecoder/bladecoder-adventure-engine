@@ -28,7 +28,7 @@ import com.bladecoder.engineeditor.model.BaseDocument;
 public class I18NUtils {
 	
 	public static boolean mustTraslateAttr(String attrName) {
-		if (attrName.equals("desc") || attrName.equals("text") || attrName.equals("response_text")) {
+		if (attrName.equals("desc") || attrName.toLowerCase().endsWith("text")) {
 			return true;
 		}
 		
