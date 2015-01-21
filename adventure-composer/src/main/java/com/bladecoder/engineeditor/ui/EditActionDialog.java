@@ -138,6 +138,10 @@ public class EditActionDialog extends EditElementDialog {
 				parameters[i] = new InputPanel(getSkin(),params[i].name, params[i].desc,
 						params[i].type, params[i].mandatory, params[i].defaultValue, params[i].options);
 				addInputPanel(parameters[i]);
+				
+				if(parameters[i].getField() instanceof TextField && params[i].name.endsWith("text")) {
+					parameters[i].getCell(parameters[i].getField()).fillX();
+				}
 			}
 			
 			i = parameters;

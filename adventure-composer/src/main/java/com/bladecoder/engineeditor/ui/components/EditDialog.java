@@ -26,7 +26,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
-import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public abstract class EditDialog extends Dialog {
 

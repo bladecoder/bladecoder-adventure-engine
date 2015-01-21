@@ -44,6 +44,9 @@ public class EditDialogOptionDialog extends EditElementDialog {
 
 		setInfo("A dialog is composed of an option tree. Each option is a dialog sentence that the user can choose to say");
 
+		inputs[0].getCell(inputs[0].getField()).fillX();
+		inputs[1].getCell(inputs[1].getField()).fillX();
+		
 		init(inputs, attrs, doc, parent, "option", e);
 	}
 }
