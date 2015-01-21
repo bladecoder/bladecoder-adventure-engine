@@ -66,7 +66,7 @@ public class ProjectToolbar extends Table {
 		addToolBarButton(skin, newBtn, "ic_new", "New", "Create a new project");
 		addToolBarButton(skin, loadBtn, "ic_load", "Load", "Load an existing project");
 		addToolBarButton(skin, saveBtn, "ic_save", "Save", "Save the current project");
-		addToolBarButton(skin, exitBtn, "ic_exit", "Exit", "Save changes and exits");
+		addToolBarButton(skin, exitBtn, "ic_quit", "Exit", "Save changes and exits");
 		row();
 
 		addToolBarButton(skin, playBtn, "ic_play", "Play", "Play Adventure");
@@ -165,6 +165,8 @@ public class ProjectToolbar extends Table {
 		}
 
 		button.setStyle(style);
+//		button.row();
+//		button.add(new Label(text, skin));
 
 		add(button);
 		button.setDisabled(true);

@@ -26,7 +26,7 @@ import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 
 public class EditVerbDialog extends EditElementDialog {
-	public static final String VERBS[] = { "lookat", "pickup", "talkto", "use", "leave", "custom" };
+	public static final String VERBS[] = { "lookat", "pickup", "talkto", "use", "leave", "enter", "exit", "custom" };
 	
 	public static final String SCENE_VERBS[] = { "init", "test", "custom" };	
 	
@@ -36,6 +36,8 @@ public class EditVerbDialog extends EditElementDialog {
 			"Called when the user clicks\n in the 'talkto' icon\n over a character in scene",
 			"Called when the user drags and drops\n an inventory object over\n an object in scene or in inventory",
 			"Called when the user clicks\n in an exit zone in scene",
+			"Called when the player enters\n in the object bounding box",
+			"Called when the player exits\n the object bounding box",
 			"User defined verbs can be called\n from dialogs or inside actions using \nthe 'run_verb' action" };
 	
 	public static final String SCENE_VERBS_INFO[] = {

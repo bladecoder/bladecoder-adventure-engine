@@ -32,7 +32,7 @@ import com.bladecoder.engineeditor.ui.components.ElementList;
 
 public class VerbList extends ElementList {
 	
-	public static final String VERBS[] = { "lookat", "pickup", "talkto", "use", "leave", "init",
+	public static final String VERBS[] = { "lookat", "pickup", "talkto", "use", "leave", "enter", "exit", "init",
 		"test", "custom" };
 
 	private ActionList actionList;
