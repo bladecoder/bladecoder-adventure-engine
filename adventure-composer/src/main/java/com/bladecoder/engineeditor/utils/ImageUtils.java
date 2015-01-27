@@ -33,6 +33,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 import com.bladecoder.engineeditor.Ctx;
@@ -180,8 +181,8 @@ public class ImageUtils {
 
 		int wWidth = Ctx.project.getWorld().getWidth();
 
-		settings.maxWidth = calcPOT((int) (wWidth * scale * 2f));
-		settings.maxHeight = calcPOT((int) (wWidth * scale * 2f));
+		settings.maxWidth = MathUtils.nextPowerOfTwo((int) (wWidth * scale * 2f));
+		settings.maxHeight = MathUtils.nextPowerOfTwo((int) (wWidth * scale * 2f));
 
 		EditorLogger.debug("ATLAS MAXWIDTH: " + settings.maxWidth);
 
@@ -199,17 +200,5 @@ public class ImageUtils {
 		if (scale != 1.0f) {
 			DesktopUtils.removeDir(inTmpDir.getAbsolutePath());
 		}
-	}
-
-	public static int calcPOT(int v) {
-		v--;
-		v |= v >> 1;
-		v |= v >> 2;
-		v |= v >> 4;
-		v |= v >> 8;
-		v |= v >> 16;
-		v++;
-
-		return v;
 	}
 }
