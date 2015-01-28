@@ -155,7 +155,6 @@ public class ActionCallbackSerialization {
 	 * Searches for the ActionCallback represented by the id string.
 	 * 
 	 * @param id
-	 * @return
 	 */
 	public static ActionCallback find(String id) {
 		Scene s = World.getInstance().getCurrentScene();

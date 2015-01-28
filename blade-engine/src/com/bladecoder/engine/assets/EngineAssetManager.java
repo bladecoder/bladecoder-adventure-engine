@@ -123,8 +123,8 @@ public class EngineAssetManager extends AssetManager {
 	 * - Puts a PathResolver to locate the assets through an absolute path -
 	 * Puts assets scale to "1"
 	 * 
-	 * @param base
-	 * @param resWidth
+	 * @param base is the project base folder
+	 * @param worldWidth the width
 	 */
 	public static void createEditInstance(String base, int worldWidth, int worldHeight) {
 		if (instance != null)
@@ -208,9 +208,6 @@ public class EngineAssetManager extends AssetManager {
 	/**
 	 * Returns a file in the asset directory SEARCHING in the resolution
 	 * directories
-	 * 
-	 * @param filename
-	 * @return
 	 */
 	public FileHandle getResAsset(String filename) {
 		return resResolver.resolve(filename);
@@ -219,9 +216,6 @@ public class EngineAssetManager extends AssetManager {
 	/**
 	 * Returns a file in the asset directory without searching in the resolution
 	 * directories
-	 * 
-	 * @param filename
-	 * @return
 	 */
 	public FileHandle getAsset(String filename) {
 		return resResolver.baseResolve(filename);

@@ -383,7 +383,6 @@ public class Scene implements Serializable,
 	 * 
 	 * @param filename
 	 *            The filename used as search base
-	 * @return
 	 */
 	private ArrayList<String> getTilesByFilename(String filename) {
 		ArrayList<String> tiles = new ArrayList<String>();

@@ -203,13 +203,6 @@ public class SpriteActor extends BaseActor {
 
 	/**
 	 * Create position animation.
-	 * 
-	 * @param manager
-	 * @param type
-	 * @param duration
-	 *            is in pixels/seg
-	 * @param destX
-	 * @param destY
 	 */
 	public void startPosAnimation(int repeatType, int count, float duration,
 			float destX, float destY, ActionCallback cb) {
@@ -247,8 +240,8 @@ public class SpriteActor extends BaseActor {
 	/**
 	 * Walking Support
 	 * 
-	 * @param pf
-	 * @param cb
+	 * @param pf Final position to walk
+	 * @param cb The action callback
 	 */
 	public void goTo(Vector2 pf, ActionCallback cb) {
 		EngineLogger.debug(MessageFormat.format("GOTO {0},{1}", pf.x, pf.y));
@@ -276,8 +269,6 @@ public class SpriteActor extends BaseActor {
 	
 	/**
 	 * Updates de bbox with the renderer width and height information
-	 * 
-	 * @param p
 	 */
 	private void updateBBox() {
 		if(bbox.getVertices() == null || bbox.getVertices().length != 4) {

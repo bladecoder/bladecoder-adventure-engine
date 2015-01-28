@@ -80,9 +80,6 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 	/**
 	 * Skip the resolution resolver. In Android the exists() method is expensive, so this
 	 * method save a exists call.
-	 * 
-	 * @param fileName
-	 * @return
 	 */
 	public FileHandle baseResolve(String fileName) {
 		return baseResolver.resolve(fileName);
@@ -127,8 +124,6 @@ public class EngineResolutionFileResolver implements FileHandleResolver {
 	
 	/**
 	 * Sets a fixed prefix, disabling choosing the best resolution.
-	 * 
-	 * @param scale The prefix of the assets
 	 */
 	private void selectFixedResolution() {
 		for (int i = 0; i < descriptors.length; i++) {

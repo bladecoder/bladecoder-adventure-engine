@@ -130,13 +130,6 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 
 	/**
 	 * Create camera animation.
-	 * 
-	 * @param manager
-	 * @param type
-	 * @param speed
-	 *            is in pixels/seg
-	 * @param destX
-	 * @param destY
 	 */
 	public void startAnimation(float destX, float destY, float zoom, float duration, ActionCallback cb) {
 		cameraTween = new CameraTween();

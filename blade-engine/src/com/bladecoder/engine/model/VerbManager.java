@@ -51,7 +51,6 @@ public class VerbManager implements Serializable {
 	 * 
 	 * @param id Verb id
 	 * @param target When an object is used by other object.
-	 * @return
 	 */
 	public Verb getVerb(String id, String state, String target) {
 		Verb v = null;
