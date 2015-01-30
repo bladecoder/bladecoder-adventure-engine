@@ -46,14 +46,14 @@ public class RunProccess {
 	}
 
 	public static boolean runBladeEngine(File prjFolder, String chapter, String scene) throws IOException {
-		String args = ":desktop:run -PappArgs=[\"-w\"";
+		String args = ":desktop:run -PappArgs=['-w'";
 
 		if (chapter != null) {
-			args += ",\"-chapter\",\"" + chapter + "\"";
+			args += ",'-chapter','" + chapter + "'";
 		}
 
 		if (scene != null) {
-			args += ",\"-t\",\"" + scene + "\"";
+			args += ",'-t','" + scene + "'";
 		}
 
 		args += "]";
@@ -139,7 +139,7 @@ public class RunProccess {
 	public static boolean runGradle(File workingDir, String parameters) {
 		String exec = workingDir.getAbsolutePath() + "/"
 				+ (System.getProperty("os.name").contains("Windows") ? "gradlew.bat" : "gradlew");
-		String command = "exec" + " " + parameters;
+		String command = "gradlew" + " " + parameters;
 		String[] split = command.split(" ");
 		split[0] = exec;
 
