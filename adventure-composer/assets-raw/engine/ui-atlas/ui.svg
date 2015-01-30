@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.92843591"
-     inkscape:cx="548.01466"
-     inkscape:cy="0.084988115"
+     inkscape:zoom="0.65650333"
+     inkscape:cx="1594.4196"
+     inkscape:cy="353.93616"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -568,18 +568,18 @@
        style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#d40000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;enable-background:accumulate"
        id="rect3271"
        width="1920"
-       height="1080"
+       height="1460.8053"
        x="0"
-       y="-27.637791" />
+       y="-27.637789" />
     <rect
        style="color:#000000;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#d35f5f;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="rect5199"
        width="666.75824"
-       height="1198.4353"
+       height="1606.6587"
        x="33.22084"
        y="-122.91204" />
     <rect
-       y="1105.639"
+       y="1568.6984"
        x="0"
        height="1080"
        width="1920"
@@ -595,7 +595,7 @@
     <rect
        y="11.345305"
        x="1230.4729"
-       height="683.15863"
+       height="1057.8711"
        width="654.57251"
        id="rect4919"
        style="color:#000000;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#d35f5f;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
@@ -1267,7 +1267,7 @@
     </g>
     <g
        id="g1815"
-       transform="matrix(0.57587358,0,0,0.57587358,740.69027,575.10968)"
+       transform="matrix(0.57587358,0,0,0.57587358,740.69027,1038.169)"
        inkscape:export-filename="/home/rgarcia/Dropbox/art/2013.Proyecto Indiana/diosa/assets/sprites/ui/quit.png"
        inkscape:export-xdpi="59"
        inkscape:export-ydpi="59">
@@ -1298,7 +1298,7 @@
     </g>
     <g
        id="g1860"
-       transform="matrix(0.57587358,0,0,0.57587358,-4.8314469,505.61069)"
+       transform="matrix(0.57587358,0,0,0.57587358,-4.8314469,968.67003)"
        inkscape:export-filename="/home/rgarcia/Dropbox/art/2013.Proyecto Indiana/diosa/assets/sprites/ui/back.png"
        inkscape:export-xdpi="59"
        inkscape:export-ydpi="59">
@@ -1323,7 +1323,7 @@
        inkscape:export-xdpi="59"
        inkscape:export-ydpi="59"
        inkscape:export-filename="/home/rgarcia/Dropbox/art/2013.Proyecto Indiana/diosa/assets/sprites/ui/reload.png"
-       transform="matrix(0.84350454,0,0,0.84350454,-32.311947,-18.511808)">
+       transform="matrix(0.84350454,0,0,0.84350454,-32.311947,444.54753)">
       <rect
          style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:none;stroke:#ffffff;stroke-width:20.48146439;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker:none;enable-background:accumulate"
          id="rect1803-1"
@@ -1506,11 +1506,11 @@
        id="rect1012"
        width="407.08478"
        height="198.82513"
-       x="1473.2963"
-       y="746.2406" />
+       x="1247.8595"
+       y="1130.0924" />
     <path
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;enable-background:accumulate"
-       d="m 1592.4983,943.36078 39.6957,51.37145 39.6963,-51.37145 z"
+       d="m 1367.0615,1327.2126 39.6957,51.3715 39.6963,-51.3715 z"
        id="path1014"
        inkscape:connector-curvature="0"
        inkscape:export-filename="images/bubblepointer.png"
@@ -1549,9 +1549,9 @@
        inkscape:export-filename="/home/rgarcia/Dropbox/art/2013.Proyecto Indiana/diosa/assets/sprites/ui/help.png"
        inkscape:export-xdpi="59"
        inkscape:export-ydpi="59"
-       transform="matrix(0.84350454,0,0,0.84350454,-32.311947,-18.511808)">
+       transform="matrix(0.84350454,0,0,0.84350454,-32.311947,444.54753)">
       <g
-         transform="translate(420.06133,0)"
+         transform="translate(420.06133)"
          id="g4257"
          inkscape:export-xdpi="59"
          inkscape:export-ydpi="59"
@@ -1589,13 +1589,13 @@
        inkscape:export-filename="/home/rgarcia/Dropbox/prj/2013.Proyecto Indiana/diosa/assets/sprites/ui/credits.png"
        inkscape:export-xdpi="59"
        inkscape:export-ydpi="59"
-       transform="matrix(0.84350454,0,0,0.84350454,-32.311947,-18.511808)">
+       transform="matrix(0.84350454,0,0,0.84350454,-32.311947,444.54753)">
       <g
          inkscape:export-filename="/home/rgarcia/Dropbox/art/2013.Proyecto Indiana/diosa/assets/sprites/ui/reload.png"
          inkscape:export-ydpi="59"
          inkscape:export-xdpi="59"
          id="g3210"
-         transform="translate(825.23827,0)">
+         transform="translate(825.23827)">
         <rect
            ry="27.308619"
            rx="27.308619"
@@ -2317,7 +2317,7 @@
        inkscape:export-filename="ui/bubblepointer2.png"
        inkscape:connector-curvature="0"
        id="path5314"
-       d="m 1705.7701,937.82614 0,59.61042 42.3169,-59.61042 z"
+       d="m 1480.3333,1321.678 0,59.6104 42.3169,-59.6104 z"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;enable-background:accumulate"
        sodipodi:nodetypes="cccc" />
     <text
@@ -2554,23 +2554,116 @@
        id="rect5367"
        style="color:#000000;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
     <circle
-       transform="scale(-1,-1)"
+       transform="scale(-1)"
        id="circle5369"
-       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#ffffff;fill-opacity:1;stroke:#777777;stroke-width:12;marker:none;enable-background:accumulate;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       cx="-1237.8591"
-       cy="-867.97528"
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#ffffff;fill-opacity:1;stroke:#777777;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker:none;enable-background:accumulate"
+       cx="-908.84326"
+       cy="-1200.0376"
        r="150"
        inkscape:export-filename="images/circle_border.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker:none;enable-background:accumulate"
-       d="m 493.58242,1109.6881 -1.24674,-63.5229 46.63526,-1.0771 0,-21.2674 69.55538,53.3753 -70.67109,51.3325 -0.13824,-18.4575 z"
+       d="m 493.58242,1131.6881 -1.24674,-63.5229 46.63526,-1.0771 0,-21.2674 69.55538,53.3753 -70.67109,51.3325 -0.13824,-18.4575 z"
        id="path5276-5"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccc"
        inkscape:export-filename="images/leave.png"
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100" />
+    <text
+       sodipodi:linespacing="0%"
+       id="text4265-0"
+       y="858.2309"
+       x="1295.1912"
+       style="font-style:normal;font-weight:normal;font-size:20.34972572px;line-height:0%;font-family:'Josefin Sans';-inkscape-font-specification:'Josefin Sans';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.84350455"
+       xml:space="preserve"
+       inkscape:export-filename="images/help.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:178.06010437px;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, Black,';stroke-width:0.84350455"
+         y="858.2309"
+         x="1295.1912"
+         id="tspan4267-6"
+         sodipodi:role="line">?</tspan></text>
+    <g
+       inkscape:export-filename="/home/rgarcia/Dropbox/art/2013.Proyecto Indiana/diosa/assets/sprites/ui/reload.png"
+       inkscape:export-ydpi="59"
+       inkscape:export-xdpi="59"
+       id="g4533"
+       transform="matrix(0.84350454,0,0,0.84350454,663.78028,-871.51587)">
+      <g
+         transform="matrix(4.421117,0,0,4.421117,-442.15111,453.7938)"
+         id="g4537"
+         inkscape:label="Layer 1"
+         style="fill:#ffffff;fill-opacity:1" />
+    </g>
+    <path
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.48238921;marker:none;enable-background:accumulate"
+       d="m 1518.614,725.09619 -16.0635,51.57571 -54.239,0.78575 44.087,31.21467 -16.013,51.82679 43.3102,-32.28287 44.3426,31.2438 -17.3201,-51.16546 43.4179,-32.51715 -54.0137,0.66021 -17.5084,-51.34145 z m 0.1569,51.40646 a 5.4597635,5.4597635 0 0 1 5.4599,5.45987 5.4597635,5.4597635 0 0 1 -5.4599,5.45988 5.4597635,5.4597635 0 0 1 -5.4598,-5.45988 5.4597635,5.4597635 0 0 1 5.4598,-5.45987 z m -14.2711,10.91303 a 5.4597635,5.4597635 0 0 1 5.4598,5.45987 5.4597635,5.4597635 0 0 1 -5.4598,5.45988 5.4597635,5.4597635 0 0 1 -5.4599,-5.45988 5.4597635,5.4597635 0 0 1 5.4599,-5.45987 z m 14.5828,0.91689 c 2.2636,-0.009 4.5749,0.96441 5.4509,2.94683 2.524,5.71178 1.5165,17.48035 1.5165,17.48035 l -13.3464,0 c 0,0 -0.9093,-11.45124 1.2139,-17.48035 0.6857,-1.94698 2.9014,-2.93797 5.1651,-2.94683 z m 14.7991,0.76221 a 5.4597635,5.4597635 0 0 1 5.4588,5.45987 5.4597635,5.4597635 0 0 1 -5.4588,5.45988 5.4597635,5.4597635 0 0 1 -5.4598,-5.45988 5.4597635,5.4597635 0 0 1 5.4598,-5.45987 z m -29.0704,10.15082 c 2.2637,-0.009 4.575,0.96441 5.451,2.94683 2.5239,5.71177 1.5165,17.48147 1.5165,17.48147 l -13.3454,0 c 0,0 -0.9103,-11.45236 1.2128,-17.48147 0.6857,-1.94698 2.9015,-2.93797 5.1651,-2.94683 z m 29.3821,1.6791 c 2.2636,-0.009 4.5749,0.96441 5.4508,2.94682 2.524,5.71178 1.5166,17.48036 1.5166,17.48036 l -13.3464,0 c 0,0 -0.9093,-11.45125 1.2139,-17.48036 0.6857,-1.94697 2.9014,-2.93796 5.1651,-2.94682 z"
+       id="path4539"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="images/credits.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <g
+       id="g4583"
+       transform="translate(-15.232215,-1.5232215)"
+       inkscape:export-filename="images/debug.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <ellipse
+         ry="51.02792"
+         rx="38.080536"
+         cy="800.26898"
+         cx="1698.392"
+         id="path4569"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:12;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+      <path
+         sodipodi:nodetypes="ccc"
+         inkscape:connector-curvature="0"
+         id="path4571"
+         d="m 1708.5094,801.03066 30.703,-35.03409 23.7253,30.46442"
+         style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 1715.4873,805.60033 23.7251,-12.18577 23.7253,30.46442"
+         id="path4573"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccc" />
+      <path
+         sodipodi:nodetypes="ccc"
+         inkscape:connector-curvature="0"
+         id="path4575"
+         d="m 1708.5094,829.97188 30.703,-10.66255 23.7253,30.46442"
+         style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 1684.1275,801.03066 -30.7031,-35.03409 -23.7253,30.46442"
+         id="path4577"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccc" />
+      <path
+         sodipodi:nodetypes="ccc"
+         inkscape:connector-curvature="0"
+         id="path4579"
+         d="m 1677.1495,805.60033 -23.7251,-12.18577 -23.7253,30.46442"
+         style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 1684.1275,829.97188 -30.7031,-10.66255 -23.7253,30.46442"
+         id="path4581"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccc" />
+    </g>
+    <path
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#ffffff;stroke:none;stroke-width:5.29951572;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+       d="M 1356.748 918.49023 A 71.379379 71.390732 0 0 0 1285.3691 989.88086 A 71.379379 71.390732 0 0 0 1356.748 1061.2715 A 71.379379 71.390732 0 0 0 1428.1289 989.88086 A 71.379379 71.390732 0 0 0 1356.748 918.49023 z M 1341.5176 937.33008 L 1371.9805 937.33008 L 1371.9805 974.64844 L 1409.3008 974.64844 L 1409.3008 1005.1133 L 1371.9805 1005.1133 L 1371.9805 1042.4336 L 1341.5176 1042.4336 L 1341.5176 1005.1133 L 1304.1973 1005.1133 L 1304.1973 974.64844 L 1341.5176 974.64844 L 1341.5176 937.33008 z "
+       transform="translate(0,-27.637791)"
+       id="ellipse4592"
+       inkscape:export-filename="images/plus.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
   </g>
 </svg>

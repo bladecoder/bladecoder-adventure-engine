@@ -53,7 +53,7 @@ public class UI {
 	private Skin skin;
 
 	public static enum Screens {
-		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN
+		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN, LOAD_GAME, SAVE_GAME
 	};
 	
 	private final BladeScreen screens[];
@@ -80,6 +80,8 @@ public class UI {
 		screens[Screens.MENU_SCREEN.ordinal()] = getCustomScreenInstance(Config.MENU_SCREEN_CLASS_PROP, MenuScreen.class);
 		screens[Screens.HELP_SCREEN.ordinal()] = getCustomScreenInstance(Config.HELP_SCREEN_CLASS_PROP, HelpScreen.class);
 		screens[Screens.CREDIT_SCREEN.ordinal()] =  getCustomScreenInstance(Config.CREDIT_SCREEN_CLASS_PROP, CreditsScreen.class);
+		screens[Screens.LOAD_GAME.ordinal()] = new LoadSaveScreen();
+		screens[Screens.SAVE_GAME.ordinal()] = new LoadSaveScreen();
 		
 		for(BladeScreen s:screens)
 			s.setUI(this);

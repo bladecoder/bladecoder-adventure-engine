@@ -103,7 +103,7 @@ public class HelpScreen implements BladeScreen, InputProcessor {
 		switch (keycode) {
 		case Input.Keys.ESCAPE:
 		case Input.Keys.BACK:
-			ui.setCurrentScreen(Screens.SCENE_SCREEN);
+			ui.setCurrentScreen(Screens.MENU_SCREEN);
 			break;
 		}
 

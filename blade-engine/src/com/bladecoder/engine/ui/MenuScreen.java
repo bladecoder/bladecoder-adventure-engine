@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -43,7 +44,7 @@ import com.bladecoder.engine.util.EngineLogger;
 
 public class MenuScreen implements BladeScreen {
 	private final static float BUTTON_PADDING = DPIUtils.UI_SPACE;
-	
+
 	private UI ui;
 
 	private Stage stage;
@@ -60,8 +61,7 @@ public class MenuScreen implements BladeScreen {
 		stage.act(delta);
 		stage.draw();
 
-		ui.getBatch().setProjectionMatrix(
-				stage.getViewport().getCamera().combined);
+		ui.getBatch().setProjectionMatrix(stage.getViewport().getCamera().combined);
 		ui.getBatch().begin();
 		ui.getPointer().draw(ui.getBatch(), stage.getViewport());
 		ui.getBatch().end();
@@ -86,26 +86,17 @@ public class MenuScreen implements BladeScreen {
 
 	@Override
 	public void show() {
-		// int wWidth =
-		// EngineAssetManager.getInstance().getResolution().portraitWidth;
-		// int wHeight =
-		// EngineAssetManager.getInstance().getResolution().portraitHeight;
-		//
-		// stage = new Stage(new ExtendViewport(wWidth, wHeight/2));
-
 		stage = new Stage(new ScreenViewport());
 
 		MenuScreenStyle style = ui.getSkin().get(MenuScreenStyle.class);
-		BitmapFont f = ui.getSkin().get(style.textButtonStyle, TextButtonStyle.class).font;	
+		BitmapFont f = ui.getSkin().get(style.textButtonStyle, TextButtonStyle.class).font;
 		float buttonWidth = f.getCapHeight() * 15f;
-		
-		
+
 		// Image background = new Image(style.background);
 		Drawable bg = style.background;
 
 		if (bg == null && style.bgFile != null) {
-			bgTexFile = new Texture(EngineAssetManager.getInstance()
-					.getResAsset(style.bgFile));
+			bgTexFile = new Texture(EngineAssetManager.getInstance().getResAsset(style.bgFile));
 			bgTexFile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 			bg = new TextureRegionDrawable(new TextureRegion(bgTexFile));
@@ -128,22 +119,22 @@ public class MenuScreen implements BladeScreen {
 				return true;
 			}
 		});
+		
+		table.defaults().pad(BUTTON_PADDING).width(buttonWidth);
 
 		stage.setKeyboardFocus(table);
 
 		if (style.showTitle) {
 
-			Label title = new Label(Config.getProperty(Config.TITLE_PROP,
-					"Adventure Blade Engine"), ui.getSkin(), style.titleStyle);
+			Label title = new Label(Config.getProperty(Config.TITLE_PROP, "Adventure Blade Engine"), ui.getSkin(),
+					style.titleStyle);
 
 			table.add(title).padBottom(DPIUtils.getMarginSize() * 2);
 			table.row();
 		}
 
-		if (World.getInstance().savedGameExists()
-				|| World.getInstance().getCurrentScene() != null) {
-			TextButton continueGame = new TextButton(I18N.getString("ui.continue"), ui.getSkin(),
-					style.textButtonStyle);
+		if (World.getInstance().savedGameExists() || World.getInstance().getCurrentScene() != null) {
+			TextButton continueGame = new TextButton(I18N.getString("ui.continue"), ui.getSkin(), style.textButtonStyle);
 
 			continueGame.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
@@ -154,11 +145,10 @@ public class MenuScreen implements BladeScreen {
 				}
 			});
 
-			table.add(continueGame).pad(BUTTON_PADDING).width(buttonWidth);
+			table.add(continueGame);
 		}
 
-		TextButton newGame = new TextButton(I18N.getString("ui.new"), ui.getSkin(),
-				style.textButtonStyle);
+		TextButton newGame = new TextButton(I18N.getString("ui.new"), ui.getSkin(), style.textButtonStyle);
 		newGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				World.getInstance().newGame();
@@ -167,47 +157,65 @@ public class MenuScreen implements BladeScreen {
 		});
 
 		table.row();
-		table.add(newGame).pad(BUTTON_PADDING).width(buttonWidth);
+		table.add(newGame);
 
-		TextButton help = new TextButton(I18N.getString("ui.help"), ui.getSkin(),
-				style.textButtonStyle);
-		help.addListener(new ClickListener() {
+		TextButton loadGame = new TextButton("Load Game", ui.getSkin(), style.textButtonStyle);
+		loadGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				ui.setCurrentScreen(Screens.HELP_SCREEN);
+				ui.setCurrentScreen(Screens.LOAD_GAME);
 			}
 		});
 
 		table.row();
-		table.add(help).pad(BUTTON_PADDING).width(buttonWidth);
+		table.add(loadGame);
 
-		TextButton credits = new TextButton(I18N.getString("ui.credits"), ui.getSkin(),
-				style.textButtonStyle);
-		credits.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				ui.setCurrentScreen(Screens.CREDIT_SCREEN);
-			}
-		});
-
-		table.row();
-		table.add(credits).pad(BUTTON_PADDING).width(buttonWidth);
-
-		if (EngineLogger.debugMode() && World.getInstance().getCurrentScene() != null) {
-			TextButton debug = new TextButton("[RED]Debug[]", ui.getSkin(),
-					style.textButtonStyle);
-			debug.addListener(new ClickListener() {
+		if (World.getInstance().getCurrentScene() != null) {
+			TextButton saveGame = new TextButton("Save Game", ui.getSkin(), style.textButtonStyle);
+			saveGame.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
-					DebugScreen debugScr = new DebugScreen();
-					debugScr.setUI(ui);
-					ui.setCurrentScreen(debugScr);
+					ui.setCurrentScreen(Screens.SAVE_GAME);
 				}
 			});
 
 			table.row();
-			table.add(debug).pad(BUTTON_PADDING).width(buttonWidth);
+			table.add(saveGame);
 		}
 
-		TextButton quit = new TextButton(I18N.getString("ui.quit"), ui.getSkin(),
-				style.textButtonStyle);
+//		TextButton help = new TextButton(I18N.getString("ui.help"), ui.getSkin(), style.textButtonStyle);
+//		help.addListener(new ClickListener() {
+//			public void clicked(InputEvent event, float x, float y) {
+//				ui.setCurrentScreen(Screens.HELP_SCREEN);
+//			}
+//		});
+//
+//		table.row();
+//		table.add(help);
+
+//		TextButton credits = new TextButton(I18N.getString("ui.credits"), ui.getSkin(), style.textButtonStyle);
+//		credits.addListener(new ClickListener() {
+//			public void clicked(InputEvent event, float x, float y) {
+//				ui.setCurrentScreen(Screens.CREDIT_SCREEN);
+//			}
+//		});
+//
+//		table.row();
+//		table.add(credits);
+
+//		if (EngineLogger.debugMode() && World.getInstance().getCurrentScene() != null) {
+//			TextButton debug = new TextButton("[RED]Debug[]", ui.getSkin(), style.textButtonStyle);
+//			debug.addListener(new ClickListener() {
+//				public void clicked(InputEvent event, float x, float y) {
+//					DebugScreen debugScr = new DebugScreen();
+//					debugScr.setUI(ui);
+//					ui.setCurrentScreen(debugScr);
+//				}
+//			});
+//
+//			table.row();
+//			table.add(debug);
+//		}
+
+		TextButton quit = new TextButton(I18N.getString("ui.quit"), ui.getSkin(), style.textButtonStyle);
 		quit.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				Gdx.app.exit();
@@ -215,11 +223,54 @@ public class MenuScreen implements BladeScreen {
 		});
 
 		table.row();
-		table.add(quit).pad(BUTTON_PADDING).width(buttonWidth);
+		table.add(quit);
 
 		table.pack();
 
 		stage.addActor(table);
+		
+		
+		// BOTTOM-RIGHT BUTTON STACK
+		ImageButton credits = new ImageButton(ui.getSkin(), "credits");
+		credits.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				ui.setCurrentScreen(Screens.CREDIT_SCREEN);
+			}
+		});
+		
+		ImageButton help = new ImageButton(ui.getSkin(), "help");
+		help.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				ui.setCurrentScreen(Screens.HELP_SCREEN);
+			}
+		});
+		
+		ImageButton debug = new ImageButton(ui.getSkin(), "debug");
+		debug.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				DebugScreen debugScr = new DebugScreen();
+				debugScr.setUI(ui);
+				ui.setCurrentScreen(debugScr);
+			}
+		});
+		
+		Table buttonStack = new Table();
+		buttonStack.defaults().pad(DPIUtils.getSpacing()).size(DPIUtils.getPrefButtonSize(), DPIUtils.getPrefButtonSize());
+		buttonStack.pad(DPIUtils.getMarginSize() * 2);
+		
+		if (EngineLogger.debugMode() && World.getInstance().getCurrentScene() != null) {		
+			buttonStack.add(debug);
+			buttonStack.row();
+		}
+		
+		buttonStack.add(help);
+		buttonStack.row();
+		buttonStack.add(credits);
+		buttonStack.bottom().right();
+		buttonStack.setFillParent(true);
+		buttonStack.pack();
+		stage.addActor(buttonStack);
+
 
 		Gdx.input.setInputProcessor(stage);
 	}

@@ -17,6 +17,7 @@ package com.bladecoder.engine.model;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,11 +26,16 @@ import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.Timers;
@@ -41,7 +47,10 @@ import com.bladecoder.engine.util.EngineLogger;
 
 public class World implements Serializable, AssetConsumer {
 
-	private static final String GAMESTATE_FILENAME = "gamestate.v7";
+	public static final String GAMESTATE_EXT = ".gamestate.v7";
+	private static final String GAMESTATE_FILENAME = "default" + GAMESTATE_EXT;
+	
+	private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
 
 	public static enum AssetState {
 		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
@@ -472,9 +481,13 @@ public class World implements Serializable, AssetConsumer {
 	public void newGame() {
 		loadXMLChapter(null);
 	}
-	
+
 	public boolean savedGameExists() {
-		return EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists();
+		return savedGameExists(GAMESTATE_FILENAME);
+	}
+	
+	public boolean savedGameExists(String filename) {
+		return EngineAssetManager.getInstance().getUserFile(filename).exists();
 	}
 
 	// ********** JSON SERIALIZATION FOR GAME SAVING **********
@@ -539,6 +552,35 @@ public class World implements Serializable, AssetConsumer {
 		} catch (IOException e) {
 			EngineLogger.error("ERROR SAVING GAME", e);
 		}
+		
+		// Save Screenshot
+		takeScreenshot(filename + ".png", SCREENSHOT_DEFAULT_WIDTH);
+	}
+	
+	public void takeScreenshot(String filename, int w) {
+		
+		int h = (int)(w * ((float)height)/(float)width);
+		
+		FrameBuffer fbo = new FrameBuffer(Format.RGB565, w, h, false);
+
+		fbo.begin();
+		draw();
+		Pixmap pixmap = ScreenUtils.getFrameBufferPixmap(0, 0, w, h);
+		fbo.end();
+		
+		// Flip the pixmap upside down
+        ByteBuffer pixels = pixmap.getPixels();
+        int numBytes = w * h * 4;
+        byte[] lines = new byte[numBytes];
+        int numBytesPerLine = w * 4;
+        for (int i = 0; i < h; i++) {
+            pixels.position((h - i - 1) * numBytesPerLine);
+            pixels.get(lines, i * numBytesPerLine, numBytesPerLine);
+        }
+        pixels.clear();
+        pixels.put(lines);
+		
+		PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap);
 	}
 
 	@Override
