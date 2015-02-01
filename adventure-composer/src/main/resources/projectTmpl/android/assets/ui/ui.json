@@ -2,9 +2,9 @@
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
 		default: {file: fonts/Roboto-Regular.ttf, size: 20},
 		debug: {file: fonts/Roboto-Regular.ttf, size: 15}, 
-		big-font: {file: fonts/PaytoneOne.ttf, size: 35},
+		big-font: {file: fonts/PaytoneOne.ttf, size: 33},
 		dialog-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 20},
-		text-manager-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 18},
+		text-manager-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 17},
 		desc: {file: fonts/Ubuntu-M.ttf, size: 16},
 		credits-title: {file: fonts/Ubuntu-M.ttf, size: 20},
 		credits: {file: fonts/Ubuntu-M.ttf, size: 30}
@@ -24,34 +24,45 @@ com.badlogic.gdx.graphics.Color: {
 	red-dark: { r: 0.71, g: 0.04, b: 0.06, a: 1 },
 	red-light:  { r: 0.99, g: 0.45, b: 0.47, a: 1 },
 	black-trans:  { r: 0.1, g: 0.1, b: 0.1, a: 0.7 },
+	white-trans:  {  r: 0.4, g: 0.4, b: 0.4, a: 0.7 },
 	yellow:  { r: 1, g: 1, b: 0.13, a: 1 }
 },
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
+	black: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 1.0 } },
 	black08: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.8 } },
 	white: { name: white_pixel, color: white },
 	grey: { name: white_pixel, color: grey},
 	dark-grey: { name: white_pixel, color: dark-grey},
 	red: { name: white_pixel, color: { r: 0.5, g: 0, b: 0, a: 1 }},
 	circle: { name: circle_button, color: red-dark},
+	circle-grey: { name: circle_button, color: grey},
 	circle-light: { name: circle_button, color: red500},
 	circle-border: { name: circle_border, color: black-trans},
 	circle-border-light: { name: circle_border, color: light-grey},	
+	circle-border-over: { name: circle_border, color: white-trans},	
 	border-rect-grey: { name: border_rect4, color: light-grey},
 	border-rect-dark-grey: { name: border_rect2, color: { a: 1, b: 0.6, g: 0.6, r: 0.6 }},
 	border-rect-trans: { name: border_rect4, color: { a: 0.2, b: 0.6, g: 0.6, r: 0.6 }},
 	border-rect-trans-down: { name: border_rect4, color: { a: 0.5, b: 0.6, g: 0.6, r: 0.6 }},
 },
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
-	pie_lookat: {up:circle-border, down: circle-border-light, imageUp: lookat},
-	pie_pickup: {up:circle-border, down: circle-border-light, imageUp: pickup},
-	pie_talkto: {up:circle-border, down: circle-border-light, imageUp: talkto},
+	pie_lookat: {up:circle-border, down: circle-border-light, over: circle-border-over, imageUp: lookat},
+	pie_pickup: {up:circle-border, down: circle-border-light, over: circle-border-over, imageUp: pickup},
+	pie_talkto: {up:circle-border, down: circle-border-light, over: circle-border-over, imageUp: talkto},
 	inventory: {up:inventory},
-	showMenu: {up:circle, down: circle-light, imageUp: menu}
+	showMenu: {up:circle, down: circle-light, imageUp: menu},
+
+	help: {up:circle, over: circle-light, down: circle-grey, imageUp:help},
+	credits: {up:circle, over: circle-light, down: circle-grey,imageUp:credits},
+	debug: {up:circle, over: circle-light, down: circle-grey,imageUp:debug},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		default: { font: default, up: grey, fontColor: white , downFontColor: grey, overFontColor: light-grey, disabledFontColor: dark-grey},
 		menu: { up: border-rect-trans, down: border-rect-trans-down, font: big-font, fontColor: white , downFontColor: grey, overFontColor: yellow, disabledFontColor: dark-grey}		
+},
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+		default: {}		
 },
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		default: { font: default, fontColor: white},
@@ -61,11 +72,14 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 com.bladecoder.engine.ui.MenuScreen$MenuScreenStyle: {
 	default: {textButtonStyle: menu, showTitle: true, titleStyle: title}
 },
+com.bladecoder.engine.ui.LoadSaveScreen$LoadSaveScreenStyle: {
+	default: { textButtonStyle: menu}
+},
 com.bladecoder.engine.ui.CreditsScreen$CreditScreenStyle: {
 	default: {titleFont: credits-title, font: credits}
 },
 com.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
-	default: {background: border-rect-grey, itemBackground: border-rect-dark-grey, menuButtonStyle: showMenu}
+	default: {background: black08, itemBackground: dark-grey, menuButtonStyle: showMenu}
 },
 com.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
 	default: {background: black08, font: dialog-font, fontColor: white, overFontColor: light-grey}
