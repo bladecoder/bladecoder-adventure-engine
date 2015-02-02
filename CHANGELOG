@@ -1,3 +1,6 @@
+[0.6.8]
+- Composer only release: Fix bug when saving project
+
 [0.6.7]
 - Load/Save game screens
 - libgdx updated to v1.5.3.
