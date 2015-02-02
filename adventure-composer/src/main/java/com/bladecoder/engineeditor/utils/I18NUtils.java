@@ -229,7 +229,7 @@ public class I18NUtils {
 		NamedNodeMap attrs = e.getAttributes();
 		
 		for(int i = 0; i < attrs.getLength(); i++) {
-			if(attrs.item(i).getNodeValue().charAt(0) == BaseDocument.I18NPREFIX) {
+			if(attrs.item(i).getNodeValue().length() > 0 && attrs.item(i).getNodeValue().charAt(0) == BaseDocument.I18NPREFIX) {
 				usedKeys.add(attrs.item(i).getNodeValue().substring(1));
 			}
 		}
