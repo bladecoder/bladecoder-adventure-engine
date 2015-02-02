@@ -331,6 +331,9 @@ public class Project extends PropertyChange {
 		ArrayList<String> l = new ArrayList<String>();
 
 		File[] list = atlasesPath.listFiles();
+		
+		if(list == null)
+			return l;
 
 		for (int i = 0; i < list.length; i++) {
 			String name = list[i].getName();

@@ -1,3 +1,9 @@
+[0.6.7]
+- Load/Save game screens
+- libgdx updated to v1.5.3.
+- fixed fillanimations combo bug. set selection to the first element
+- Fix for windows gradle exec
+
 [0.6.6]
 - creditscreen: set scroll speed resolution independent
 - creditscreen: added background style. Style now obtained from skin
