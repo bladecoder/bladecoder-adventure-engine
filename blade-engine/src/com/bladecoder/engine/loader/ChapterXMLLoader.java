@@ -456,7 +456,11 @@ public class ChapterXMLLoader extends DefaultHandler {
 			String loopMusicStr = atts.getValue("loop_music");
 			String initialMusicDelayStr = atts.getValue("initial_music_delay");
 			String repeatMusicDelayStr = atts.getValue("repeat_music_delay");
-
+			String state = atts.getValue("state");
+			
+			if(state != null)
+				scene.setState(state);
+			
 			scene.setDepthVector(Param.parseVector2(atts
 					.getValue("depth_vector")));
 			player = atts.getValue("player");

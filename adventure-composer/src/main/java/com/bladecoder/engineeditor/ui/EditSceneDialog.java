@@ -44,12 +44,12 @@ public class EditSceneDialog extends EditElementDialog {
 	private String bgList[] = getBgList();
 	private String musicList[] = getMusicList();
 	
-	private InputPanel[] inputs = new InputPanel[8];
+	private InputPanel[] inputs = new InputPanel[9];
 	
 	private Image bgImage;
 					
 	
-	String attrs[] = {"id", "background", "lightmap", "depth_vector", "music", "loop_music", "initial_music_delay", "repeat_music_delay"};
+	String attrs[] = {"id", "background", "lightmap", "depth_vector", "state", "music", "loop_music", "initial_music_delay", "repeat_music_delay"};
 
 	@SuppressWarnings("unchecked")
 	public EditSceneDialog(Skin skin, BaseDocument doc, Element parent,
@@ -64,14 +64,16 @@ public class EditSceneDialog extends EditElementDialog {
 		inputs[2] = new InputPanel(skin, "Lightmap",
 						"The lightmap for the scene", bgList);					
 		inputs[3] = new InputPanel(skin, "Depth Vector",
-						"X: the actor scale when y=0, Y: the actor scale when y=scene height .", Param.Type.VECTOR2, false);					
-		inputs[4] = new InputPanel(skin, "Music Filename",
+						"X: the actor scale when y=0, Y: the actor scale when y=scene height .", Param.Type.VECTOR2, false);
+		inputs[4] = new InputPanel(skin, "State",
+				"The initial state for the scene.");
+		inputs[5] = new InputPanel(skin, "Music Filename",
 				"The music for the scene", musicList);
-		inputs[5] = new InputPanel(skin, "Loop Music",
+		inputs[6] = new InputPanel(skin, "Loop Music",
 				"If the music is playing in looping", Param.Type.BOOLEAN, false);
-		inputs[6] = new InputPanel(skin, "Initial music delay",
+		inputs[7] = new InputPanel(skin, "Initial music delay",
 				"The time to wait before playing", Param.Type.FLOAT, false);
-		inputs[7] = new InputPanel(skin, "Repeat music delay",
+		inputs[8] = new InputPanel(skin, "Repeat music delay",
 				"The time to wait before repetitions", Param.Type.FLOAT, false);		
 		
 		bgImage = new Image();
