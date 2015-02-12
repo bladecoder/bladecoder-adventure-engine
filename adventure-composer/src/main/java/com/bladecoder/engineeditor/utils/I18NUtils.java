@@ -73,7 +73,6 @@ public class I18NUtils {
 	 * @param doc
 	 * @param e
 	 * @param attr
-	 * @return
 	 */
 	public static String genI18NKey(BaseDocument doc, Element e, String attr) {
 		String key = null;
