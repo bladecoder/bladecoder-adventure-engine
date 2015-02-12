@@ -44,7 +44,7 @@ public class DependencyBank {
 	/**
 	 * This enum will hold all dependencies available for libgdx, allowing the setup to pick the ones needed by default,
 	 * and allow the option to choose extensions as the user wishes.
-	 * <p/>
+	 *
 	 * These depedency strings can be later used in a simple gradle plugin to manipulate the users project either after/before
 	 * project generation
 	 *

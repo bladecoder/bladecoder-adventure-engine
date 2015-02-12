@@ -228,7 +228,7 @@ public class AnimationState {
 	}
 
 	/** Adds an animation to be played delay seconds after the current or last queued animation.
-	 * @param delay May be <= 0 to use duration of previous animation minus any mix duration plus the negative delay. */
+	 * @param delay May be &lt;= 0 to use duration of previous animation minus any mix duration plus the negative delay. */
 	public TrackEntry addAnimation (int trackIndex, Animation animation, boolean loop, float delay) {
 		TrackEntry entry = trackEntryPool.obtain();
 		entry.animation = animation;

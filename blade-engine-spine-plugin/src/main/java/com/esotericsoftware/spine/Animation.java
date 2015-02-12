@@ -556,7 +556,7 @@ public class Animation {
 			events[frameIndex] = event;
 		}
 
-		/** Fires events for frames > lastTime and <= time. */
+		/** Fires events for frames &gt; lastTime and &lt;= time. */
 		public void apply (Skeleton skeleton, float lastTime, float time, Array<Event> firedEvents, float alpha) {
 			if (firedEvents == null) return;
 			float[] frames = this.frames;
