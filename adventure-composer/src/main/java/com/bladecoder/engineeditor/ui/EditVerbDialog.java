@@ -87,6 +87,8 @@ public class EditVerbDialog extends EditElementDialog {
 					setVisible(inputs[3],true);
 				else
 					setVisible(inputs[3],false);
+				
+				pack();
 			}
 
 		});
@@ -114,6 +116,9 @@ public class EditVerbDialog extends EditElementDialog {
 				setVisible(inputs[3],true);
 				inputs[3].setText(id);
 			}
+			
+			if(id.equals("use"))
+				setVisible(inputs[2],true);
 		}
 	}
 
