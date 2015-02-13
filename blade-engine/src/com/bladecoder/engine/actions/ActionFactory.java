@@ -50,7 +50,9 @@ public class ActionFactory {
 		actions.put("Animation",
 				"com.bladecoder.engine.actions.AnimationAction");
 		actions.put("Position",
-				"com.bladecoder.engine.actions.PosAnimationAction");
+				"com.bladecoder.engine.actions.PositionAction");
+		actions.put("Scale",
+				"com.bladecoder.engine.actions.ScaleAction");		
 		actions.put("RemoveInventoryItem",
 				"com.bladecoder.engine.actions.RemoveInventoryItemAction");	
 		actions.put("Say",

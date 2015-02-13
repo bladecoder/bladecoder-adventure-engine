@@ -17,8 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.BaseCallbackAction;
-import com.bladecoder.engine.actions.Param;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -27,10 +25,9 @@ import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
 
-public class PosAnimationAction extends BaseCallbackAction {
-	public static final String INFO = "Throws a position type animation";
+public class PositionAction extends BaseCallbackAction {
+	public static final String INFO = "Sets an actor Position animation";
 	public static final Param[] PARAMS = {
 		new Param("pos", "The target position", Type.VECTOR2, true),
 		new Param("speed", "Duration of the animation in seconds", Type.FLOAT, true, "1.0"),
@@ -79,7 +76,6 @@ public class PosAnimationAction extends BaseCallbackAction {
 	@Override
 	public boolean run(ActionCallback cb) {
 		setVerbCb(cb);
-		EngineLogger.debug("SET_POSANIMATION_ACTION");
 		
 		float scale = EngineAssetManager.getInstance().getScale();
 

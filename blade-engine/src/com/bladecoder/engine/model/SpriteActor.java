@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.ActorRenderer;
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
@@ -29,6 +28,7 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.SpritePosTween;
+import com.bladecoder.engine.anim.SpriteScaleTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -44,6 +44,7 @@ public class SpriteActor extends BaseActor {
 	
 	private ActorRenderer renderer;
 	private SpritePosTween posTween;
+	private SpriteScaleTween scaleTween;
 	private float scale = 1.0f;
 
 	/** Scale sprite acording to the scene depth map */
@@ -138,6 +139,13 @@ public class SpriteActor extends BaseActor {
 				posTween = null;
 			}
 		}
+		
+		if(scaleTween != null) {
+			scaleTween.update(this, delta);
+			if(scaleTween.isComplete()) {
+				scaleTween = null;
+			}
+		}
 	}
 
 	public void draw(SpriteBatch batch) {
@@ -212,6 +220,18 @@ public class SpriteActor extends BaseActor {
 		posTween.start(this, repeatType, count, destX, destY, duration,
 				cb);
 	}
+	
+	/**
+	 * Create scale animation.
+	 */
+	public void startScaleAnimation(int repeatType, int count, float duration,
+			float scale, ActionCallback cb) {
+
+		scaleTween = new SpriteScaleTween();
+
+		scaleTween.start(this, repeatType, count, scale, duration,
+				cb);
+	}	
 
 	public void lookat(Vector2 p) {
 		renderer.lookat(bbox.getX(), bbox.getY(), p);
@@ -334,6 +354,7 @@ public class SpriteActor extends BaseActor {
 		json.writeValue("depthType", depthType);
 		json.writeValue("renderer", renderer, null);
 		json.writeValue("bboxFromRenderer", bboxFromRenderer);
+		json.writeValue("scaleTween", scaleTween, null);
 	}
 
 	@Override
@@ -349,8 +370,11 @@ public class SpriteActor extends BaseActor {
 		
 		bboxFromRenderer = json.readValue("bboxFromRenderer", Boolean.class, jsonData);
 		
-		if(bboxFromRenderer)
-			bbox.setScale(1, 1);
+//		if(bboxFromRenderer)
+//			bbox.setScale(1, 1);
+		
+		scaleTween = json.readValue("scaleTween", SpriteScaleTween.class, jsonData);
+		setScale(scale);
 	}
 
 }
