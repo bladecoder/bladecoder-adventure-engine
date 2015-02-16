@@ -94,7 +94,7 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 	}
 
 	public boolean hasInteraction() {
-		return interaction;
+		return interaction && visible;
 	}
 
 	public void setInteraction(boolean interaction) {

@@ -301,6 +301,13 @@ public class ChapterXMLLoader extends DefaultHandler {
 						.getValue("obstacle"));
 				actor.setWalkObstacle(obstacle);
 			}
+			
+			
+			if (atts.getValue("scale") != null && actor instanceof SpriteActor) {
+				float s = Float
+						.parseFloat(atts.getValue("scale"));
+				((SpriteActor)actor).setScale(s);
+			}
 
 			String layerStr = atts.getValue("layer");
 			

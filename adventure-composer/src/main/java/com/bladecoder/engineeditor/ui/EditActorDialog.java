@@ -38,11 +38,11 @@ public class EditActorDialog extends EditElementDialog {
 			"Image actors show image files"
 			};
 
-	private InputPanel[] inputs = new InputPanel[12];
+	private InputPanel[] inputs = new InputPanel[13];
 	InputPanel typePanel;
 
 	String attrs[] = { "type", "id", "layer", "desc", "state", "interaction", "visible",
-			"walking_speed", "depth_type", "sprite_size", "camera", "fov" };
+			"walking_speed", "depth_type", "sprite_size", "camera", "fov", "scale" };
 
 	@SuppressWarnings("unchecked")
 	public EditActorDialog(Skin skin, BaseDocument doc, Element parent,
@@ -85,6 +85,10 @@ public class EditActorDialog extends EditElementDialog {
 		inputs[11] = new InputPanel(skin, "Camera FOV",
 				"The camera field of view", Param.Type.FLOAT, true, "49.3",
 				null);
+		
+		inputs[12] = new InputPanel(skin, "Scale",
+				"The sprite scale", Param.Type.FLOAT, true, "1",
+				null);
 
 		setInfo(TYPES_INFO[0]);
 
@@ -113,12 +117,18 @@ public class EditActorDialog extends EditElementDialog {
 		setVisible(inputs[9],false);
 		setVisible(inputs[10],false);
 		setVisible(inputs[11],false);
+		setVisible(inputs[12],false);
 
 		if (ChapterDocument.ACTOR_TYPES[i]
 				.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
 			setVisible(inputs[9],true);
 			setVisible(inputs[10],true);
 			setVisible(inputs[11],true);
+		}
+		
+		if (!ChapterDocument.ACTOR_TYPES[i]
+				.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
+			setVisible(inputs[12],true);
 		}
 	}
 

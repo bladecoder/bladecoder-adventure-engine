@@ -397,9 +397,10 @@ public class ChapterDocument extends BaseDocument {
 				((SpriteActor) a).getRenderer().setInitAnimation(e.getAttribute("init_animation"));
 
 			}
-
-			if (e.getAttribute("obstacle").equals("true"))
-				a.setWalkObstacle(true);
+			
+			if (!e.getAttribute("scale").isEmpty()) {
+				((SpriteActor) a).setScale(Float.parseFloat(e.getAttribute("scale")));
+			}
 
 			// PARSE DEPTH TYPE
 			String depthType = e.getAttribute("depth_type");
@@ -410,6 +411,9 @@ public class ChapterDocument extends BaseDocument {
 					((SpriteActor) a).setDepthType(DepthType.VECTOR);
 			}
 		}
+		
+		if (e.getAttribute("obstacle").equals("true"))
+			a.setWalkObstacle(true);
 
 		return a;
 	}
