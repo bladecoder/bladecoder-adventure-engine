@@ -53,8 +53,7 @@ public class GotoAction extends BaseCallbackAction {
 		if(targetId!=null) {
 			BaseActor target =  World.getInstance().getCurrentScene().getActor(targetId, false);
 			if(target != null) {
-				Rectangle bbox = target.getBBox().getBoundingRectangle();
-				actor.goTo(new Vector2(bbox.x, bbox.y), getWait()?this:null);
+				actor.goTo(new Vector2(target.getX(), target.getY()), getWait()?this:null);
 			} else {
 				EngineLogger.error("GotoAction - Target actor doesn't exists: " + targetId);
 			}

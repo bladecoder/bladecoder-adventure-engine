@@ -87,7 +87,7 @@ public class EditActorDialog extends EditElementDialog {
 				null);
 		
 		inputs[12] = new InputPanel(skin, "Scale",
-				"The sprite scale", Param.Type.FLOAT, true, "1",
+				"The sprite scale", Param.Type.FLOAT, false, "1",
 				null);
 
 		setInfo(TYPES_INFO[0]);
