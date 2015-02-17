@@ -59,6 +59,10 @@ public class CanvasDrawer {
 		drawer.setColor(Scene.ACTOR_BBOX_COLOR);
 
 		for (BaseActor a : scn.getActors().values()) {
+			if(!scn.getLayer(a.getLayer()).isVisible()) {
+				continue;
+			}
+			
 			Polygon p = a.getBBox();
 
 			if (p == null) {

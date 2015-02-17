@@ -46,7 +46,7 @@ public class ProjectPanel extends HeaderPanel  {
 		
 		tabPanel.addTab("Scenes", sceneList);
 		tabPanel.addTab("Chapters", chapterList);
-		tabPanel.addTab("Def. Verbs", verbList);
+		tabPanel.addTab("Verbs", verbList);
 		tabPanel.addTab("Properties", new WorldProps(skin));
 
 

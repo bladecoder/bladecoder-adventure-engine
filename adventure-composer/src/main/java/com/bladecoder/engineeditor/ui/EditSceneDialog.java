@@ -97,6 +97,30 @@ public class EditSceneDialog extends EditElementDialog {
 			}
 		});		
 	}
+	
+	@Override
+	protected void create() {
+		super.create();
+		
+		// CREATE DEFAULT LAYERS: BG, DYNAMIC, FG
+		Element layer = doc.createElement(getElement(), "layer");
+		layer.setAttribute("id", "foreground");
+		layer.setAttribute("visible", "true");
+		layer.setAttribute("dynamic", "false");
+		getElement().appendChild(layer);
+		
+		layer = doc.createElement(getElement(), "layer");
+		layer.setAttribute("id", "dynamic");
+		layer.setAttribute("visible", "true");
+		layer.setAttribute("dynamic", "true");
+		getElement().appendChild(layer);
+		
+		layer = doc.createElement(getElement(), "layer");
+		layer.setAttribute("id", "background");
+		layer.setAttribute("visible", "true");
+		layer.setAttribute("dynamic", "false");
+		getElement().appendChild(layer);
+	}
 
 	private String[] getBgList() {
 		String bgPath = Ctx.project.getProjectPath() + Project.BACKGROUNDS_PATH + "/"

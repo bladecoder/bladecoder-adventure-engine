@@ -16,16 +16,8 @@
 package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
-import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.SceneCamera;
-import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.VerbManager;
-import com.bladecoder.engine.model.World;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -64,11 +56,9 @@ public class Scene implements Serializable,
 	private HashMap<String, BaseActor> actors = new HashMap<String, BaseActor>();
 
 	/**
-	 * BaseActor layers: Background actors, dynamic (ordered) and foreground
+	 * BaseActor layers
 	 */
-	private final List<BaseActor> bgActors = new ArrayList<BaseActor>();
-	private final List<BaseActor> dynamicActors = new ArrayList<BaseActor>();
-	private final List<BaseActor> fgActors = new ArrayList<BaseActor>();
+	private List<SceneLayer> layers = new ArrayList<SceneLayer>();
 	
 	private SceneCamera camera = new SceneCamera();
 	
@@ -130,6 +120,23 @@ public class Scene implements Serializable,
 	
 	public void setState(String s) {
 		state = s;
+	}
+	
+	public List<SceneLayer> getLayers() {
+		return layers;
+	}
+	
+	public SceneLayer getLayer(String name) {
+		for(SceneLayer l: layers) {
+			if(name.equals(l.getName()))
+				return l;
+		}
+		
+		return null;
+	}
+	
+	public void addLayer(SceneLayer layer) {
+		layers.add(layer);
 	}
 
 	
@@ -202,7 +209,8 @@ public class Scene implements Serializable,
 	public void update(float delta) {
 		// We draw the elements in order: from top to bottom.
 		// so we need to order the array list
-		Collections.sort(dynamicActors);
+		for(SceneLayer layer:layers)
+			layer.update();
 
 		// music delay update
 		if (music != null && !music.isPlaying()) {
@@ -248,19 +256,10 @@ public class Scene implements Serializable,
 			spriteBatch.enableBlending();
 		}
 		
-		for (BaseActor a : bgActors) {
-			if(a instanceof SpriteActor)
-				((SpriteActor)a).draw(spriteBatch);
-		}
-
-		for (BaseActor a : dynamicActors) {
-			if(a instanceof SpriteActor)
-				((SpriteActor)a).draw(spriteBatch);
-		}
-
-		for (BaseActor a : fgActors) {
-			if(a instanceof SpriteActor)
-				((SpriteActor)a).draw(spriteBatch);
+		// draw layers from bottom to top
+		for(int i = layers.size() - 1; i >= 0; i--) {
+			SceneLayer layer = layers.get(i);
+			layer.draw(spriteBatch);			
 		}
 
 		// Draw the light map
@@ -340,17 +339,15 @@ public class Scene implements Serializable,
 		actors.put(actor.getId(), actor);
 		actor.setScene(this);
 		
-		switch(actor.getLayer()) {
-		case BACKGROUND:
-			bgActors.add(actor);
-			break;
-		case DYNAMIC:
-			dynamicActors.add(actor);
-			break;
-		case FOREGROUND:
-			fgActors.add(actor);
-			break;		
+		SceneLayer layer = getLayer(actor.getLayer());
+		
+		if(layer == null) { // fallback for compatibility
+			layer = new SceneLayer();
+			layer.setName(actor.getLayer());
+			layers.add(layer);			
 		}
+		
+		layer.add(actor);
 	}
 
 	public void setBackground(String bgFilename, String lightMapFilename) {
@@ -413,25 +410,19 @@ public class Scene implements Serializable,
 	}
 
 	public BaseActor getActorAt(float x, float y) {
-		for (BaseActor a:fgActors) {
-			if ( a.hasInteraction() && a.hit(x, y)) {
-				return a;
-			}
-		}
-				
-		// Se recorre la lista al revés para quedarnos con el más cercano a la
-		// cámara
-		for (int i = dynamicActors.size() - 1; i >= 0; i--) {
-			BaseActor a = dynamicActors.get(i);
-
-			if (a.hasInteraction() && a.hit(x, y)) {
-				return a;
-			}
-		}
 		
-		for (BaseActor a:bgActors) {
-			if (a.hasInteraction() && a.hit(x, y)) {
-				return a;
+		for(SceneLayer layer:layers) {
+			
+			if(!layer.isVisible())
+				continue;
+			
+			// Obtain actors in reverse (close to camera)
+			for (int i = layer.getActors().size() - 1; i >= 0; i--) {
+				BaseActor a = layer.getActors().get(i);
+
+				if (a.hasInteraction() && a.hit(x, y)) {
+					return a;
+				}
 			}
 		}
 
@@ -467,16 +458,10 @@ public class Scene implements Serializable,
 
 		actors.remove(a.getId());
 		
-		switch(a.getLayer()) {
-		case BACKGROUND:
-			bgActors.remove(a);
-			break;
-		case DYNAMIC:
-			dynamicActors.remove(a);
-			break;
-		case FOREGROUND:
-			fgActors.remove(a);
-			break;		
+		for(SceneLayer layer:layers) {
+			if(layer.getName().equals(a.getLayer())) {
+				layer.getActors().remove(a);
+			}
 		}
 		
 		if(a.isWalkObstacle() && polygonalNavGraph != null)
@@ -645,6 +630,7 @@ public class Scene implements Serializable,
 	// TODO SAVE BG WIDTH AND HEIGHT + WALKZONE
 	@Override
 	public void write(Json json) {
+		json.writeValue("layers", layers);
 		json.writeValue("id", id);
 		json.writeValue("state", state, state == null ? null : state.getClass());
 		json.writeValue("verbs", verbs);
@@ -681,11 +667,14 @@ public class Scene implements Serializable,
 		json.writeValue("depthVector", depthVector);
 		
 		json.writeValue("polygonalNavGraph", polygonalNavGraph, polygonalNavGraph == null ? null : PolygonalNavGraph.class);
+		
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
+		layers = json.readValue("layers", ArrayList.class, SceneLayer.class,
+				jsonData);
 		id = json.readValue("id", String.class, jsonData);
 		state = json.readValue("state", String.class, jsonData);
 		verbs = json.readValue("verbs", VerbManager.class, jsonData);
@@ -693,25 +682,12 @@ public class Scene implements Serializable,
 		actors = json.readValue("actors", HashMap.class, BaseActor.class,
 				jsonData);
 		player = json.readValue("player", String.class, jsonData);
-		
-		bgActors.clear();
-		dynamicActors.clear();
-		fgActors.clear();
 
-		for (BaseActor a : actors.values()) {			
-			a.setScene(this);
+		for (BaseActor actor: actors.values()) {			
+			actor.setScene(this);
 			
-			switch(a.getLayer()) {
-			case BACKGROUND:
-				bgActors.add(a);
-				break;
-			case DYNAMIC:
-				dynamicActors.add(a);
-				break;
-			case FOREGROUND:
-				fgActors.add(a);
-				break;		
-			}
+			SceneLayer layer = getLayer(actor.getLayer());
+			layer.add(actor);
 		}
 
 		backgroundFilename = json.readValue("background", String.class,

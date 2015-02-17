@@ -48,7 +48,7 @@ public class EditSoundDialog extends EditElementDialog {
 		inputs[0].setMandatory(true);
 		inputs[1].setMandatory(true);
 
-		setInfo("Actors and scenes can have a list of sounds that can be associated to Sprites or played with the 'sound' action");
+		setInfo("Actors can have a list of sounds that can be associated to Sprites or played with the 'sound' action");
 
 		init(inputs, attrs, doc, parent, "sound", e);
 	}

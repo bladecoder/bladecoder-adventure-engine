@@ -33,9 +33,9 @@ import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.BaseActor.ActorLayer;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
@@ -51,14 +51,8 @@ public class ChapterDocument extends BaseDocument {
 	public static final String SPINE_ACTOR_TYPE = "spine";
 	public static final String IMAGE_ACTOR_TYPE = "image";
 
-	public static final String BACKGROUND_LAYER = "background";
-	public static final String FOREGROUND_LAYER = "foreground";
-	public static final String DYNAMIC_LAYER = "dynamic";
-
 	public static final String ACTOR_TYPES[] = { NO_RENDERER_ACTOR_TYPE, ATLAS_ACTOR_TYPE, SPINE_ACTOR_TYPE,
 			SPRITE3D_ACTOR_TYPE, IMAGE_ACTOR_TYPE };
-
-	public static final String ACTOR_LAYERS[] = { BACKGROUND_LAYER, FOREGROUND_LAYER, DYNAMIC_LAYER };
 
 	public static final String ANIMATION_TYPES[] = { "no_repeat", "repeat", "yoyo", "reverse" };
 
@@ -90,6 +84,12 @@ public class ChapterDocument extends BaseDocument {
 
 	public NodeList getActors(Element scn) {
 		NodeList actors = scn.getElementsByTagName("actor");
+
+		return actors;
+	}
+	
+	public NodeList getLayers(Element scn) {
+		NodeList actors = scn.getElementsByTagName("layer");
 
 		return actors;
 	}
@@ -203,6 +203,17 @@ public class ChapterDocument extends BaseDocument {
 		String depthVector = s.getAttribute("depth_vector");
 		if (!depthVector.isEmpty())
 			scn.setDepthVector(Param.parseVector2(depthVector));
+		
+		// LAYERS
+		NodeList layers = getLayers(s);
+		for (int i = 0; i < layers.getLength(); i++) {
+			Element l = (Element) layers.item(i);
+			SceneLayer layer = new SceneLayer();
+			layer.setName(l.getAttribute("id"));
+			layer.setVisible(Boolean.parseBoolean(l.getAttribute("visible")));
+			layer.setDynamic(Boolean.parseBoolean(l.getAttribute("dynamic")));
+			scn.addLayer(layer);
+		}
 
 		// GET ACTORS
 		NodeList actors = getActors(s);
@@ -354,13 +365,7 @@ public class ChapterDocument extends BaseDocument {
 		}
 
 		String layer = e.getAttribute("layer");
-		if (layer.equals(BACKGROUND_LAYER)) {
-			a.setLayer(ActorLayer.BACKGROUND);
-		} else if (layer.equals(FOREGROUND_LAYER)) {
-			a.setLayer(ActorLayer.FOREGROUND);
-		} else {
-			a.setLayer(ActorLayer.DYNAMIC);
-		}
+		a.setLayer(layer);
 
 		a.setId(getId(e));
 		Polygon bbox = getBBox(e);

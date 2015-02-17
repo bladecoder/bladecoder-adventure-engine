@@ -80,7 +80,8 @@ public class EditToolbar extends HorizontalGroup {
 		
 		ImageButtonStyle style = new ImageButtonStyle(skin.get("plain", ButtonStyle.class));
 		style.imageUp = new TextureRegionDrawable(image);
-		style.imageDisabled = new TextureRegionDrawable(imageDisabled);
+		if(imageDisabled != null)
+			style.imageDisabled = new TextureRegionDrawable(imageDisabled);
 		button.setStyle(style);
 //		button.pad(4, 2, 4, 2);
         addActor(button);

@@ -38,9 +38,6 @@ import com.bladecoder.engine.assets.EngineAssetManager;
  * @author rgarcia
  */
 public class BaseActor implements Comparable<BaseActor>, Serializable, AssetConsumer {
-	
-	public enum ActorLayer {BACKGROUND, DYNAMIC, FOREGROUND};
-
 	protected String id;
 	protected String desc;
 	protected Scene scene = null;
@@ -64,7 +61,7 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 	
 	private boolean isWalkObstacle = false;
 	
-	private ActorLayer layer;
+	private String layer;
 	
 	/** State to know when the player is inside this actor to trigger the enter/exit verbs */ 
 	private boolean playerInside = false;
@@ -81,11 +78,11 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 		return bbox;
 	}
 	
-	public void setLayer(ActorLayer layer) {
+	public void setLayer(String layer) {
 		this.layer = layer;
 	}
 	
-	public ActorLayer getLayer() {
+	public String getLayer() {
 		return layer;
 	}
 	
@@ -367,7 +364,7 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 		dialogs = json.readValue("dialogs", HashMap.class, Dialog.class, jsonData);
 		
 		isWalkObstacle = json.readValue("isWalkObstacle", Boolean.class, jsonData);
-		layer = json.readValue("layer", ActorLayer.class, jsonData);
+		layer = json.readValue("layer", String.class, jsonData);
 		playerInside = json.readValue("playerInside", Boolean.class, jsonData);
 	}
 

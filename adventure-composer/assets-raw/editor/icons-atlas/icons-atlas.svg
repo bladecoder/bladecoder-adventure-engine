@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.99882976"
-     inkscape:cx="753.2928"
-     inkscape:cy="-297.11968"
+     inkscape:zoom="0.7062793"
+     inkscape:cx="106.05558"
+     inkscape:cy="-1090.0071"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -3686,5 +3686,85 @@
          x="876.77643"
          id="tspan3067-75"
          sodipodi:role="line">exit</tspan></text>
+    <g
+       id="g4673"
+       inkscape:export-filename="images/ic_eye.png"
+       inkscape:export-xdpi="10.664063"
+       inkscape:export-ydpi="10.664063">
+      <rect
+         y="2345.7507"
+         x="129.543"
+         height="126.03077"
+         width="126.03078"
+         id="rect3045-6"
+         style="fill:none;stroke:none" />
+      <path
+         sodipodi:nodetypes="ccsc"
+         inkscape:connector-curvature="0"
+         id="path4669"
+         d="m 140.11388,2406.7748 c 25.24059,61.5475 99.33395,41.3008 106.25476,-1.2726 0,0 -21.04732,-36.3525 -53.73805,-35.6317 -31.10767,0.6858 -52.51671,36.9043 -52.51671,36.9043 z"
+         style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <ellipse
+         ry="31.149151"
+         rx="30.241541"
+         cy="2398.8552"
+         cx="195.39015"
+         id="path4671"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    </g>
+    <g
+       inkscape:export-ydpi="24.374998"
+       inkscape:export-xdpi="24.374998"
+       inkscape:export-filename="images/eye.png"
+       id="g4687"
+       transform="translate(0,151.49814)">
+      <rect
+         style="fill:none;stroke:none"
+         id="rect4689"
+         width="126.03078"
+         height="126.03077"
+         x="129.543"
+         y="2345.7507" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 140.11388,2406.7748 c 25.24059,61.5475 99.33395,41.3008 106.25476,-1.2726 0,0 -21.04732,-36.3525 -53.73805,-35.6317 -31.10767,0.6858 -52.51671,36.9043 -52.51671,36.9043 z"
+         id="path4691"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccsc" />
+      <ellipse
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         id="ellipse4693"
+         cx="195.39015"
+         cy="2398.8552"
+         rx="30.241541"
+         ry="31.149151" />
+    </g>
+    <g
+       inkscape:export-ydpi="24.375002"
+       inkscape:export-xdpi="24.375002"
+       inkscape:export-filename="images/eye_disabled.png"
+       transform="translate(-141.58705,151.49814)"
+       id="g4695">
+      <rect
+         y="2345.7507"
+         x="129.543"
+         height="126.03077"
+         width="126.03078"
+         id="rect4697"
+         style="fill:none;stroke:none" />
+      <path
+         sodipodi:nodetypes="ccsc"
+         inkscape:connector-curvature="0"
+         id="path4699"
+         d="m 140.11388,2406.7748 c 25.24059,61.5475 99.33395,41.3008 106.25476,-1.2726 0,0 -21.04732,-36.3525 -53.73805,-35.6317 -31.10767,0.6858 -52.51671,36.9043 -52.51671,36.9043 z"
+         style="fill:none;fill-rule:evenodd;stroke:#333333;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <ellipse
+         ry="31.149151"
+         rx="30.241541"
+         cy="2398.8552"
+         cx="195.39015"
+         id="ellipse4701"
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#333333;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    </g>
   </g>
 </svg>

@@ -32,6 +32,7 @@ public class ScenePanel extends HeaderPanel {
 	private TabPanel tabPanel;
 	private VerbList verbList;	
 	private ActorList actorList;
+	private LayerList layerList;
 	private SceneProps sceneProps;
 	
 	public ScenePanel(Skin skin) {
@@ -39,12 +40,14 @@ public class ScenePanel extends HeaderPanel {
 		tabPanel = new TabPanel(skin);
 		verbList = new VerbList(skin);
 		actorList = new ActorList(skin);
+		layerList = new LayerList(skin);
 		sceneProps = new SceneProps(skin);
 				
 		setContent(tabPanel);		
 		
 		tabPanel.addTab("Actors", actorList);
 		tabPanel.addTab("Verbs", verbList);
+		tabPanel.addTab("Layers", layerList);
 		tabPanel.addTab("Properties", sceneProps);
 		
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_SCENE_SELECTED, new PropertyChangeListener() {
@@ -60,7 +63,8 @@ public class ScenePanel extends HeaderPanel {
 				}
 				
 				actorList.addElements(doc, scn, "actor");
-				verbList.addElements(doc, scn, "verb");		
+				verbList.addElements(doc, scn, "verb");	
+				layerList.addElements(doc, scn, "layer");		
 				sceneProps.setSceneDocument(doc, scn);
 				
 			}

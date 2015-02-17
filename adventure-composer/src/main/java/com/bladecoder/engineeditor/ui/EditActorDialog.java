@@ -16,6 +16,7 @@
 package com.bladecoder.engineeditor.ui;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -57,8 +58,7 @@ public class EditActorDialog extends EditElementDialog {
 				"IDs can not contain '.' or '_' characters.", true);
 
 		inputs[2] = new InputPanel(skin, "Actor Layer",
-				"The layer for drawing order",
-				ChapterDocument.ACTOR_LAYERS);
+				"The layer for drawing order", getLayers(parent));
 		
 		inputs[3] = new InputPanel(skin, "Description",
 				"The text showed when the cursor is over the actor.");
@@ -107,6 +107,18 @@ public class EditActorDialog extends EditElementDialog {
 
 		typeChanged();
 
+	}
+
+	private String[] getLayers(Element parent) {
+		NodeList layerList = parent.getElementsByTagName("layer");
+		
+		String[] layers = new String[layerList.getLength()];
+		
+		for(int i = 0; i < layerList.getLength(); i++) {
+			layers[i] = ((Element)(layerList.item(i))).getAttribute("id");
+		}
+		
+		return layers;
 	}
 
 	private void typeChanged() {

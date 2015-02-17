@@ -180,6 +180,9 @@ public class ScnWidget extends Widget {
 							setSelectedFA(null);
 						} else if (e.getPropertyName().equals("actor")) {
 							createAndSelectActor((Element) e.getNewValue());
+						} else if (e.getPropertyName().equals("layer")) {
+							setSelectedScene(Ctx.project.getSelectedScene());
+							setSelectedActor(Ctx.project.getSelectedActor());							
 						} else if (e.getPropertyName().equals(
 								BaseDocument.NOTIFY_ELEMENT_DELETED)) {
 							if (((Element) e.getNewValue()).getTagName()
