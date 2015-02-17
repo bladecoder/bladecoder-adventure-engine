@@ -8,17 +8,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - libgdx updated to v1.5.4
 - Sprite Actor Scale support
 - Added scene state handling
+
 ### Fixed
 - javadoc fixes for jdk 1.8
 
 ## [0.6.8]
+
 ### Fixed
 - Composer only release: Fix bug when saving project
 
 ## [0.6.7]
+
 ### Added
 - Load/Save game screens
 - libgdx updated to v1.5.3.
+
 ### Fixed
 - fixed fillanimations combo bug. set selection to the first element
 - Fix for windows gradle exec
@@ -26,12 +30,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.6.6]
 - creditscreen: set scroll speed resolution independent
 - creditscreen: added background style. Style now obtained from skin
+
 ### Fixed
 - fixed textureunpacker bug when image was rotated in atlas
 
 ## [0.6.5]
 - better text size management for small screens
 - text bubble smaller and better management
+
 ### Fixed
 - fix ActionCallbackQueue serialization
 
