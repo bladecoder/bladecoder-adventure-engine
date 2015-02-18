@@ -65,6 +65,15 @@ public class VerbList extends ElementList {
 		super.addElements(doc, parent, tag);
 		addActions();
 	}
+	
+	@Override
+	protected void delete() {
+		super.delete();
+		
+		// Clear actions here because change event doesn't call when deleting the last element
+		if(list.getSelectedIndex() == -1)
+			addActions();
+	}
 
 	private void addActions() {
 		int pos = list.getSelectedIndex();
