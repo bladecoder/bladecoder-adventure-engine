@@ -221,21 +221,6 @@ public class CustomList<T> extends Widget implements Cullable {
 		selection.set(items.get(index));
 	}
 
-	public void setItems(T... newItems) {
-		if (newItems == null)
-			throw new IllegalArgumentException("newItems cannot be null.");
-
-		items.clear();
-		items.addAll(newItems);
-
-		if (selection.getRequired() && items.size > 0)
-			selection.set(items.first());
-		else
-			selection.clear();
-
-		invalidateHierarchy();
-	}
-
 	/**
 	 * Sets the current items, clearing the selection if it is no longer valid.
 	 * If a selection is {@link ArraySelection#getRequired()}, the first item is

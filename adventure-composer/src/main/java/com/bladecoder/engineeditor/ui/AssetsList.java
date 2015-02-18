@@ -70,15 +70,15 @@ public class AssetsList extends Table {
 		ScrollPane scrollPane = new ScrollPane(list, skin);
 		container = new Container<ScrollPane>(scrollPane);
 		container.fill();
-		container.prefHeight(100);
+		container.prefHeight(1000);
 		
 		toolbar = new EditToolbar(skin);
 //		debug();
 		add(assetTypes).expandX().fillX();
-		row().fill();
+		row();
 		add(toolbar).expandX().fillX();
-		row().fill();
-		add(container).expandY().fill();
+		row();
+		add(container).expand().fill();
 		
 		toolbar.addCreateListener(new ChangeListener() {
 
@@ -163,6 +163,7 @@ public class AssetsList extends Table {
 		}
 
 		toolbar.disableCreate(Ctx.project.getProjectDir() == null);
+		list.invalidateHierarchy();
 	}
 
 	private String getAssetDir(String type) {

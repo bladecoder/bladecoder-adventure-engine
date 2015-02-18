@@ -37,6 +37,7 @@ public class HeaderPanel extends Table {
 	private Image collapseImg;
 	private Cell<Actor> contentCell;
 
+	@SuppressWarnings("unchecked")
 	public HeaderPanel(Skin skin, String title) {
 		titleLbl = new Label(title, skin);
 		north = new HorizontalGroup();
@@ -70,6 +71,8 @@ public class HeaderPanel extends Table {
 					invalidateHierarchy();
 				}
 			});
+		
+//		setDebug(true);
 	}
 
 	public void setTile(String title) {
@@ -77,8 +80,7 @@ public class HeaderPanel extends Table {
 	}
 
 	public void setContent(Actor center) {
-		removeActor(this.content);
-		
+		this.contentCell.clearActor();
 		this.content = center;
 		this.contentCell.setActor(center);
 		
@@ -98,12 +100,15 @@ public class HeaderPanel extends Table {
 	public void toggleCollapse() {
 		if (collapsable) {
 			if (contentCell.getActor() != null) {
-				removeActor(this.content);
+//			if (this.content.isVisible()) {
+//				this.content.setVisible(false);
+				this.contentCell.clearActor();
 				invalidateHierarchy();
 
 				collapseImg.setDrawable(new TextureRegionDrawable(Ctx.assetManager.getIcon("ic_closed")));
 			} else {
-				this.contentCell.setActor(content);				
+				this.contentCell.setActor(content);	
+//				this.content.setVisible(true);				
 				invalidateHierarchy();
 
 				collapseImg.setDrawable(new TextureRegionDrawable(Ctx.assetManager.getIcon("ic_open")));

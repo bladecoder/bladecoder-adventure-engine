@@ -98,7 +98,7 @@ public class Editor implements ApplicationListener {
 
 		Table leftPanel = new Table();
 		leftPanel.top().left().padLeft(10);
-		leftPanel.add(img).expandX().fill().padBottom(20).padTop(20).padLeft(20);
+		leftPanel.add(img).expand().fill().padBottom(20).padTop(20).padLeft(20);
 		leftPanel.row();
 		leftPanel.add(new ProjectToolbar(skin)).expandX().fill();
 		leftPanel.row();

@@ -91,7 +91,6 @@ public abstract class ElementList extends EditList<Element> {
 		}
 
 		toolbar.disableCreate(parent == null);
-//		list.setWidth(getWidth());
 		list.invalidateHierarchy();
 	}
 
