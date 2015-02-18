@@ -215,7 +215,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			SpriteActor a = inventory.getItem(i);
 			ActorRenderer r = a.getRenderer();
 
-			float size = tileSize
+			float size = (tileSize - rowSpace)
 					/ (r.getHeight() > r.getWidth() ? r.getHeight() : r
 							.getWidth());
 
@@ -228,7 +228,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 			
 			r.draw((SpriteBatch) batch, getX() + x * tileSize + x * rowSpace+ tileSize / 2 + margin,
-					getY() + y * tileSize + y * rowSpace + margin, size);
+					getY() + (tileSize - r.getHeight() *size) / 2 + y * tileSize + y * rowSpace + margin, size);
 		}
 		
 		super.draw(batch, alpha);
