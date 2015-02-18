@@ -81,6 +81,23 @@ public class SpriteList extends ElementList {
 		
 		scn.setRootAttr((Element)list.getItems().get(pos).getParentNode(), "init_animation", id);
 	}	
+	
+	@Override
+	protected void delete() {
+		int pos = list.getSelectedIndex();
+
+		if (pos == -1)
+			return;
+
+		Element e = list.getItems().get(pos);
+		
+		// delete init_animation attr if the animation to delete is the chapter init_animation
+		if(((Element)e.getParentNode()).getAttribute("init_animation").equals(e.getAttribute("id"))) {
+			((Element)e.getParentNode()).removeAttribute("init_animation");
+		}
+		
+		super.delete();
+	}	
 
 	@Override
 	protected EditElementDialog getEditElementDialogInstance(Element e) {

@@ -191,6 +191,23 @@ public class SceneList extends ElementList {
 				"init_scene", id);
 
 	}
+	
+	@Override
+	protected void delete() {
+		int pos = list.getSelectedIndex();
+
+		if (pos == -1)
+			return;
+
+		Element e = list.getItems().get(pos);
+		
+		// delete init_scene attr if the scene to delete is the chapter init_scene
+		if(((Element)e.getParentNode()).getAttribute("init_scene").equals(e.getAttribute("id"))) {
+			((Element)e.getParentNode()).removeAttribute("init_scene");
+		}
+		
+		super.delete();
+	}
 
 	@Override
 	protected EditElementDialog getEditElementDialogInstance(

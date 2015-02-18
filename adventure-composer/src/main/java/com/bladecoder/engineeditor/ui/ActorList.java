@@ -98,6 +98,23 @@ public class ActorList extends ElementList {
 					}
 				});
 	}
+	
+	@Override
+	protected void delete() {
+		int pos = list.getSelectedIndex();
+
+		if (pos == -1)
+			return;
+
+		Element e = list.getItems().get(pos);
+		
+		// delete player attr if the actor to delete is the player
+		if(((Element)e.getParentNode()).getAttribute("player").equals(e.getAttribute("id"))) {
+			((Element)e.getParentNode()).removeAttribute("player");
+		}
+		
+		super.delete();
+	}
 
 	@Override
 	protected EditElementDialog getEditElementDialogInstance(
