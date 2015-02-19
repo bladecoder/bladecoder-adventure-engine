@@ -162,8 +162,12 @@ public class SceneScreen implements BladeScreen {
 			case Input.Keys.MENU:
 				showMenu();
 				break;
+			case Input.Keys.SPACE:
+				if (drawHotspots)
+					drawHotspots = false;				
+				break;				
 			}
-
+				
 			return true;
 		}
 
@@ -216,6 +220,11 @@ public class SceneScreen implements BladeScreen {
 					World.getInstance().pause();
 				}
 				break;
+			case ' ':
+				if (state == UIStates.SCENE_MODE) {
+					drawHotspots = true;
+				}
+				break;				
 			}
 
 			return false;
@@ -415,8 +424,11 @@ public class SceneScreen implements BladeScreen {
 	@Override
 	public void render(float delta) {
 		World w = World.getInstance();
-
+		
 		update(delta);
+		
+//		Gdx.gl.glClearColor(0, 0, 0, 1);
+//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);		
 
 		if (w.getAssetState() != AssetState.LOADED)
 			return;
