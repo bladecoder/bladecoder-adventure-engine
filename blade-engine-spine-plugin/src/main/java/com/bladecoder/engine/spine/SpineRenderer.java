@@ -200,11 +200,20 @@ public class SpineRenderer implements ActorRenderer {
 	@Override
 	public void update(float delta) {
 		if (currentSource != null && currentSource.skeleton != null) {
-			currentSource.animation.update(delta);
+			float d = delta;
+			
+			if(currentAnimationType == Tween.REVERSE) {
+				d = -delta;
+				
+				if(d < 0) animationListener.complete(0, 1);
+				return;
+			}
+			
+			currentSource.animation.update(d);
 			currentSource.animation.apply(currentSource.skeleton);
 			currentSource.skeleton.updateWorldTransform();
 
-			lastAnimationTime += delta;
+			lastAnimationTime += d;
 		}
 	}
 
@@ -317,8 +326,23 @@ public class SpineRenderer implements ActorRenderer {
 			currentAnimationType = repeatType;
 		}
 
-		lastAnimationTime = 0f;
-		setCurrentAnimation();
+		if(currentAnimationType == Tween.REVERSE) {
+			// get animation duration
+			Array<Animation> animations = currentSource.skeleton.getData().getAnimations();
+			
+			for(Animation a: animations) {
+				if(a.getName().equals(currentAnimation.id)) {
+					float animationTime = a.getDuration() - 0.01f;
+					lastAnimationTime = -animationTime;
+					setCurrentAnimation();
+					lastAnimationTime = animationTime;
+					break;
+				}
+			}
+		} else {
+			lastAnimationTime = 0f;
+			setCurrentAnimation();
+		}
 	}
 
 	private void setCurrentAnimation() {
@@ -328,7 +352,9 @@ public class SpineRenderer implements ActorRenderer {
 			currentSource.skeleton.setFlipX(flipX);
 			currentSource.animation.setTimeScale(currentAnimation.duration);
 			currentSource.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.REPEAT);
+			
 			update(lastAnimationTime);
+			
 			computeBounds();
 		} catch (Exception e) {
 			EngineLogger.error("SpineRenderer:setCurrentFA " + e.getMessage());

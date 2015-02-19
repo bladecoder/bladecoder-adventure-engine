@@ -36,7 +36,7 @@ public class AnimationAction extends BaseCallbackAction implements Action {
 		new Param("animation", "The FA to set", Type.STRING, true),	
 		new Param("count", "The times to repeat. -1 to infinity repeat", Type.INTEGER),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
-		new Param("repeat", "The repeat mode", Type.STRING, true, "sprite defined", new String[]{"repeat", "yoyo", "no_repeat", "reverse", "sprite defined"}),
+		new Param("animation_type", "The repeat mode", Type.STRING, true, "sprite defined", new String[]{"repeat", "yoyo", "no_repeat", "reverse", "sprite defined"}),
 		new Param("x", "Puts actor 'x' position after sets the FA", Type.FLOAT),
 		new Param("y", "Puts actor 'y' position after sets the FA", Type.FLOAT),
 		new Param("dx", "Adds 'dx' to the actor position", Type.FLOAT),
