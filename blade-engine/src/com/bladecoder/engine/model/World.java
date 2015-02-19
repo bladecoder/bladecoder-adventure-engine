@@ -49,12 +49,14 @@ public class World implements Serializable, AssetConsumer {
 
 	public static final String GAMESTATE_EXT = ".gamestate.v7";
 	private static final String GAMESTATE_FILENAME = "default" + GAMESTATE_EXT;
-	
+
 	private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
 
 	public static enum AssetState {
 		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
 	};
+	
+	private static final boolean CACHE_ENABLED = true;
 
 	private static final World instance = new World();
 
@@ -97,11 +99,15 @@ public class World implements Serializable, AssetConsumer {
 
 	private String initChapter;
 	private String currentChapter;
-	
+
 	/** For FADEIN/FADEOUT */
 	private Transition transition;
 
 	transient private SpriteBatch spriteBatch;
+
+	// We not dispose the last loaded scene.
+	// Instead we cache it to improve performance when returning
+	transient private Scene cachedScene = null;
 
 	public static World getInstance() {
 		return instance;
@@ -125,7 +131,7 @@ public class World implements Serializable, AssetConsumer {
 		customProperties = new HashMap<String, String>();
 
 		spriteBatch = new SpriteBatch();
-		
+
 		transition = new Transition();
 
 		disposed = false;
@@ -157,8 +163,7 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void update(float delta) {
-		if (assetState == AssetState.LOAD_ASSETS
-				|| assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
+		if (assetState == AssetState.LOAD_ASSETS || assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
 			loadAssets();
 
 			if (assetState == AssetState.LOAD_ASSETS)
@@ -166,7 +171,7 @@ public class World implements Serializable, AssetConsumer {
 			else
 				assetState = AssetState.LOADING_AND_INIT_SCENE;
 
-			initLoadingTime = System.currentTimeMillis();
+//			initLoadingTime = System.currentTimeMillis();
 
 		} else if ((assetState == AssetState.LOADING || assetState == AssetState.LOADING_AND_INIT_SCENE)
 				&& !EngineAssetManager.getInstance().isLoading()) {
@@ -176,8 +181,7 @@ public class World implements Serializable, AssetConsumer {
 
 			assetState = AssetState.LOADED;
 
-			EngineLogger.debug("ASSETS LOADING TIME (ms): "
-					+ (System.currentTimeMillis() - initLoadingTime));
+			EngineLogger.debug("ASSETS LOADING TIME (ms): " + (System.currentTimeMillis() - initLoadingTime));
 
 			// call 'init' verb only when arrives from setCurrentScene and not
 			// from load or restoring
@@ -196,7 +200,7 @@ public class World implements Serializable, AssetConsumer {
 		getCurrentScene().update(delta);
 		textManager.update(delta);
 		timers.update(delta);
-		
+
 		if (!transition.isFinish()) {
 			transition.update(delta);
 		}
@@ -205,22 +209,22 @@ public class World implements Serializable, AssetConsumer {
 	@Override
 	public void loadAssets() {
 		currentScene.loadAssets();
-		
-		if(inventory.isDisposed())
+
+		if (inventory.isDisposed())
 			inventory.loadAssets();
 	}
 
 	@Override
 	public void retrieveAssets() {
-		if(inventory.isDisposed())
+		if (inventory.isDisposed())
 			inventory.retrieveAssets();
-		
+
 		getCurrentScene().retrieveAssets();
 	}
 
 	public Transition getTransition() {
 		return transition;
-	}	
+	}
 
 	public float getTimeOfGame() {
 		return timeOfGame;
@@ -281,8 +285,7 @@ public class World implements Serializable, AssetConsumer {
 			Gdx.app.exit();
 		}
 
-		EngineLogger.debug("XML LOADING TIME (ms): "
-				+ (System.currentTimeMillis() - initTime));
+		EngineLogger.debug("XML LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 	}
 
 	public void loadXMLChapter(String chapter, String scene) {
@@ -305,6 +308,18 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void setCurrentScene(Scene scene) {
+		initLoadingTime = System.currentTimeMillis();		
+		
+		if(cachedScene == scene) {
+			assetState = AssetState.LOADING_AND_INIT_SCENE;		
+		} else {
+			if(cachedScene != null) {
+				cachedScene.dispose();
+				cachedScene = null;
+			}
+			
+			assetState = AssetState.LOAD_ASSETS_AND_INIT_SCENE;	
+		}
 
 		if (currentScene != null) {
 			textManager.reset();
@@ -312,22 +327,23 @@ public class World implements Serializable, AssetConsumer {
 			currentScene.stopMusic();
 			currentDialog = null;
 
-			currentScene.dispose();
+			if(CACHE_ENABLED) 
+				cachedScene = currentScene; // CACHE ENABLED
+			else
+				currentScene.dispose(); // CACHE DISABLED
+
 			transition.reset();
-			
+
 			// Clear all pending callbacks
 			ActionCallbackQueue.clear();
 		}
 
 		currentScene = scene;
-
-		assetState = AssetState.LOAD_ASSETS_AND_INIT_SCENE;
 	}
 
 	public void initCurrentScene() {
 		// If in test mode run 'test' verb
-		if (testScene != null && testScene.equals(currentScene.getId())
-				&& currentScene.getVerb("test") != null)
+		if (testScene != null && testScene.equals(currentScene.getId()) && currentScene.getVerb("test") != null)
 			currentScene.runVerb("test");
 
 		// Run INIT action
@@ -350,7 +366,7 @@ public class World implements Serializable, AssetConsumer {
 	public Scene getScene(String id) {
 		return scenes.get(id);
 	}
-	
+
 	public HashMap<String, Scene> getScenes() {
 		return scenes;
 	}
@@ -432,8 +448,7 @@ public class World implements Serializable, AssetConsumer {
 		currentScene.getCamera().viewportHeight = viewportHeight;
 
 		if (currentScene.getCameraFollowActor() != null)
-			currentScene.getCamera().updatePos(
-					currentScene.getCameraFollowActor());
+			currentScene.getCamera().updatePos(currentScene.getCameraFollowActor());
 
 		currentScene.getCamera().update();
 	}
@@ -485,7 +500,7 @@ public class World implements Serializable, AssetConsumer {
 	public boolean savedGameExists() {
 		return savedGameExists(GAMESTATE_FILENAME);
 	}
-	
+
 	public boolean savedGameExists(String filename) {
 		return EngineAssetManager.getInstance().getUserFile(filename).exists();
 	}
@@ -498,13 +513,11 @@ public class World implements Serializable, AssetConsumer {
 	public void loadGameState() {
 		long initTime = System.currentTimeMillis();
 		loadGameState(GAMESTATE_FILENAME);
-		EngineLogger.debug("JSON LOADING TIME (ms): "
-				+ (System.currentTimeMillis() - initTime));
+		EngineLogger.debug("JSON LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 	}
 
 	public void loadGameState(String filename) {
-		FileHandle savedFile = EngineAssetManager.getInstance().getUserFile(
-				filename);
+		FileHandle savedFile = EngineAssetManager.getInstance().getUserFile(filename);
 
 		loadGameState(savedFile);
 	}
@@ -543,8 +556,7 @@ public class World implements Serializable, AssetConsumer {
 		else
 			s = json.toJson(instance);
 
-		Writer w = EngineAssetManager.getInstance().getUserFile(filename)
-				.writer(false, "UTF-8");
+		Writer w = EngineAssetManager.getInstance().getUserFile(filename).writer(false, "UTF-8");
 
 		try {
 			w.write(s);
@@ -552,34 +564,34 @@ public class World implements Serializable, AssetConsumer {
 		} catch (IOException e) {
 			EngineLogger.error("ERROR SAVING GAME", e);
 		}
-		
+
 		// Save Screenshot
 		takeScreenshot(filename + ".png", SCREENSHOT_DEFAULT_WIDTH);
 	}
-	
+
 	public void takeScreenshot(String filename, int w) {
-		
-		int h = (int)(w * ((float)height)/(float)width);
-		
+
+		int h = (int) (w * ((float) height) / (float) width);
+
 		FrameBuffer fbo = new FrameBuffer(Format.RGB565, w, h, false);
 
 		fbo.begin();
 		draw();
 		Pixmap pixmap = ScreenUtils.getFrameBufferPixmap(0, 0, w, h);
 		fbo.end();
-		
+
 		// Flip the pixmap upside down
-        ByteBuffer pixels = pixmap.getPixels();
-        int numBytes = w * h * 4;
-        byte[] lines = new byte[numBytes];
-        int numBytesPerLine = w * 4;
-        for (int i = 0; i < h; i++) {
-            pixels.position((h - i - 1) * numBytesPerLine);
-            pixels.get(lines, i * numBytesPerLine, numBytesPerLine);
-        }
-        pixels.clear();
-        pixels.put(lines);
-		
+		ByteBuffer pixels = pixmap.getPixels();
+		int numBytes = w * h * 4;
+		byte[] lines = new byte[numBytes];
+		int numBytesPerLine = w * 4;
+		for (int i = 0; i < h; i++) {
+			pixels.position((h - i - 1) * numBytesPerLine);
+			pixels.get(lines, i * numBytesPerLine, numBytesPerLine);
+		}
+		pixels.clear();
+		pixels.put(lines);
+
 		PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap);
 	}
 
@@ -590,8 +602,7 @@ public class World implements Serializable, AssetConsumer {
 		json.writeValue("inventory", inventory);
 		json.writeValue("timeOfGame", timeOfGame);
 		json.writeValue("cutmode", cutMode);
-		json.writeValue("defaultVerbs", VerbManager.defaultVerbs,
-				HashMap.class, Verb.class);
+		json.writeValue("defaultVerbs", VerbManager.defaultVerbs, HashMap.class, Verb.class);
 		json.writeValue("timers", timers);
 		json.writeValue("textmanager", textManager);
 		json.writeValue("customProperties", customProperties);
@@ -603,9 +614,8 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("dialogActor", currentDialog.getActor());
 			json.writeValue("currentDialog", currentDialog.getId());
 		}
-		
-		json.writeValue("transition", transition, transition == null ? null
-				: transition.getClass());
+
+		json.writeValue("transition", transition, transition == null ? null : transition.getClass());
 
 		json.writeValue("chapter", currentChapter);
 		ActionCallbackQueue.write(json);
@@ -614,44 +624,33 @@ public class World implements Serializable, AssetConsumer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		instance.scenes = json.readValue("scenes", HashMap.class, Scene.class,
-				jsonData);
-		instance.currentScene = instance.scenes.get(json.readValue(
-				"currentScene", String.class, jsonData));
-		instance.inventory = json.readValue("inventory", Inventory.class,
-				jsonData);
+		instance.scenes = json.readValue("scenes", HashMap.class, Scene.class, jsonData);
+		instance.currentScene = instance.scenes.get(json.readValue("currentScene", String.class, jsonData));
+		instance.inventory = json.readValue("inventory", Inventory.class, jsonData);
 
-		instance.timeOfGame = json.readValue("timeOfGame", Float.class,
-				jsonData);
+		instance.timeOfGame = json.readValue("timeOfGame", Float.class, jsonData);
 		instance.cutMode = json.readValue("cutmode", Boolean.class, jsonData);
-		VerbManager.defaultVerbs = json.readValue("defaultVerbs",
-				HashMap.class, Verb.class, jsonData);
+		VerbManager.defaultVerbs = json.readValue("defaultVerbs", HashMap.class, Verb.class, jsonData);
 		instance.timers = json.readValue("timers", Timers.class, jsonData);
 
-		instance.textManager = json.readValue("textmanager", TextManager.class,
-				jsonData);
-		instance.customProperties = json.readValue("customProperties",
-				HashMap.class, String.class, jsonData);
+		instance.textManager = json.readValue("textmanager", TextManager.class, jsonData);
+		instance.customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
 
 		String actorId = json.readValue("dialogActor", String.class, jsonData);
-		String dialogId = json.readValue("currentDialog", String.class,
-				jsonData);
+		String dialogId = json.readValue("currentDialog", String.class, jsonData);
 
 		if (dialogId != null) {
-			SpriteActor actor = (SpriteActor) instance.getCurrentScene()
-					.getActor(actorId, false);
+			SpriteActor actor = (SpriteActor) instance.getCurrentScene().getActor(actorId, false);
 			instance.currentDialog = actor.getDialog(dialogId);
 		}
-		
+
 		transition = json.readValue("transition", Transition.class, jsonData);
 
-		instance.currentChapter = json.readValue("chapter", String.class,
-				jsonData);
-		
+		instance.currentChapter = json.readValue("chapter", String.class, jsonData);
+
 		ActionCallbackQueue.read(json, jsonData);
-		
-		
+
 		I18N.loadChapter(EngineAssetManager.MODEL_DIR + instance.currentChapter);
-		
+
 	}
 }
