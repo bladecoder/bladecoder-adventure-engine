@@ -205,16 +205,23 @@ public class SpineRenderer implements ActorRenderer {
 			if(currentAnimationType == Tween.REVERSE) {
 				d = -delta;
 				
-				if(d < 0) animationListener.complete(0, 1);
-				return;
+				if(lastAnimationTime < 0) {
+					animationListener.complete(0, 1);
+					lastAnimationTime = 0f; // to avoid trigger more complete evetns
+					return;
+				}
 			}
 			
-			currentSource.animation.update(d);
-			currentSource.animation.apply(currentSource.skeleton);
-			currentSource.skeleton.updateWorldTransform();
+			updateAnimation(d);
 
 			lastAnimationTime += d;
 		}
+	}
+	
+	private void updateAnimation(float time) {
+		currentSource.animation.update(time);
+		currentSource.animation.apply(currentSource.skeleton);
+		currentSource.skeleton.updateWorldTransform();
 	}
 
 	@Override
@@ -332,17 +339,15 @@ public class SpineRenderer implements ActorRenderer {
 			
 			for(Animation a: animations) {
 				if(a.getName().equals(currentAnimation.id)) {
-					float animationTime = a.getDuration() - 0.01f;
-					lastAnimationTime = -animationTime;
-					setCurrentAnimation();
-					lastAnimationTime = animationTime;
+					lastAnimationTime = a.getDuration() - 0.01f;
 					break;
 				}
 			}
 		} else {
 			lastAnimationTime = 0f;
-			setCurrentAnimation();
 		}
+		
+		setCurrentAnimation();
 	}
 
 	private void setCurrentAnimation() {
@@ -353,7 +358,7 @@ public class SpineRenderer implements ActorRenderer {
 			currentSource.animation.setTimeScale(currentAnimation.duration);
 			currentSource.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.REPEAT);
 			
-			update(lastAnimationTime);
+			updateAnimation(lastAnimationTime);
 			
 			computeBounds();
 		} catch (Exception e) {
