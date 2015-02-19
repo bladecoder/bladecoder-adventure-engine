@@ -107,7 +107,7 @@ public class World implements Serializable, AssetConsumer {
 
 	// We not dispose the last loaded scene.
 	// Instead we cache it to improve performance when returning
-	transient private Scene cachedScene = null;
+	transient private Scene cachedScene;
 
 	public static World getInstance() {
 		return instance;
@@ -127,6 +127,7 @@ public class World implements Serializable, AssetConsumer {
 		cutMode = false;
 		timeOfGame = 0;
 		currentChapter = null;
+		cachedScene = null;
 
 		customProperties = new HashMap<String, String>();
 
