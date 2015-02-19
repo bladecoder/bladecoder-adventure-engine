@@ -425,6 +425,11 @@ public class World implements Serializable, AssetConsumer {
 			// disposed
 			currentScene.dispose();
 			currentScene = null;
+			
+			if(cachedScene != null) {
+				cachedScene.dispose();
+				cachedScene = null;
+			}
 
 			inventory.dispose();
 
