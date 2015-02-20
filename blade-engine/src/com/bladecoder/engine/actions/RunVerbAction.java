@@ -22,6 +22,7 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.BaseCallbackAction;
 import com.bladecoder.engine.actions.Param;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
@@ -35,26 +36,36 @@ public class RunVerbAction extends BaseCallbackAction {
 
 	public static final String INFO = "Runs an actor verb";
 	public static final Param[] PARAMS = {
-			new Param("verb", "The 'verbId' to run", Type.STRING, true),
+			new Param("verb", "The 'verbId' to run. Can be a comma separated verb list to execute one o them based in the chooseCriteria param", Type.STRING, true),
 			new Param("target", "Aditional actor for 'use' verb", Type.ACTOR),
 			new Param("repeat", "Repeat the verb the specified times. -1 to infinity",
 					Type.INTEGER),
+			new Param("chooseCriteria", "If the verb param is a comma separated verb list, one verb will be choose following this criteria",
+							Type.STRING, false, "first", new String[]{"first", "iterate", "random", "cycle"}),					
 			new Param(
 					"wait",
 					"If this param is 'false' the text is showed and the action continues inmediatly",
 					Type.BOOLEAN, true) };
 
 	String actorId;
+	String verbList;
 	String verb;
 	String target;
 	int ip = -1;
 	int repeat = 1;
 	int currentRepeat = 0;
+	
+	/** 
+	 * When the verb is a comma separated verb list, we use chooseCriteria as criteria to choose the verb to execute.
+	 */
+	String chooseCriteria;
+	/** Used when choose_criteria is 'iterate' or 'cycle' */
+	int chooseCount = 0;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		actorId = params.get("actor");
-		verb = params.get("verb");
+		verbList = params.get("verb");
 		target = params.get("target");
 
 		if (params.get("wait") != null) {
@@ -64,15 +75,19 @@ public class RunVerbAction extends BaseCallbackAction {
 		if (params.get("repeat") != null) {
 			repeat = Integer.parseInt(params.get("repeat"));
 		}
+		
+		if (params.get("chooseCriteria") != null) {
+			chooseCriteria = params.get("chooseCriteria");
+		}
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		EngineLogger.debug("RUNNING RUNVERBACTION");
 		setVerbCb(cb);
 		currentRepeat = 0;
 
 		ip = 0;
+		selectVerb();
 		nextStep();
 		return getWait();
 	}
@@ -94,8 +109,32 @@ public class RunVerbAction extends BaseCallbackAction {
 
 		return v;
 	}
+	
+	/**
+	 * Select the verb to execute from the verbList
+	 */
+	private void selectVerb() {
+		String verbs[] = verbList.split(",");
+		
+		String v = verbs[0];
+		
+		if(chooseCriteria.equals("iterate")) {
+			v = verbs[chooseCount];
+			
+			if(chooseCount < verbs.length - 1)
+				chooseCount++;
+		} else if(chooseCriteria.equals("random")) {
+			v = verbs[MathUtils.random(0, verbs.length -1)];
+		} else if(chooseCriteria.equals("cycle")) {
+			v = verbs[chooseCount];
+			
+			chooseCount = (chooseCount + 1) % verbs.length;
+		}
+		
+		verb =  v.trim();
+	}
 
-	public void nextStep() {
+	private void nextStep() {
 
 		boolean stop = false;
 
@@ -131,6 +170,19 @@ public class RunVerbAction extends BaseCallbackAction {
 				currentRepeat++;
 				if (currentRepeat < repeat || repeat == -1) {
 					ip = 0;
+					selectVerb();
+					v = getVerb(verb, target);
+					
+					if (v == null) {
+						EngineLogger
+								.error(MessageFormat
+										.format("Verb ''{0}'' not found for actor ''{1}'' and target ''{2}''",
+												verb, actorId, target));
+
+						return;
+					}
+
+					actions = v.getActions();
 				} 
 			}
 		}
@@ -167,6 +219,9 @@ public class RunVerbAction extends BaseCallbackAction {
 		json.writeValue("currentRepeat", currentRepeat);
 		json.writeValue("verb", verb);
 		json.writeValue("target", target);
+		json.writeValue("chooseCriteria", chooseCriteria);
+		json.writeValue("chooseCount", chooseCount);
+		json.writeValue("verbList", verbList);
 		super.write(json);
 	}
 
@@ -179,6 +234,9 @@ public class RunVerbAction extends BaseCallbackAction {
 				.readValue("currentRepeat", Integer.class, jsonData);
 		verb = json.readValue("verb", String.class, jsonData);
 		target = json.readValue("target", String.class, jsonData);
+		chooseCriteria = json.readValue("chooseCriteria", String.class, jsonData);
+		chooseCount = json.readValue("chooseCount", Integer.class, jsonData);
+		verbList = json.readValue("verbList", String.class, jsonData);
 		super.read(json, jsonData);
 	}
 
