@@ -767,6 +767,10 @@ public class Sprite3DRenderer implements ActorRenderer {
 	}
 
 	public static void disposeBatchs() {
+		
+		if(modelBatch == null)
+			return;
+		
 		modelBatch.dispose();
 		shadowBatch.dispose();
 		floorBatch.dispose();

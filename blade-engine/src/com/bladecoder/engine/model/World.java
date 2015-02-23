@@ -173,9 +173,20 @@ public class World implements Serializable, AssetConsumer {
 				assetState = AssetState.LOADING_AND_INIT_SCENE;
 
 //			initLoadingTime = System.currentTimeMillis();
+			
+			
+			// Try to load scene for 100ms before. If not loaded in this time, show the loading screen
+			float t0 = System.currentTimeMillis();
+			float t = 0f;
+			while(EngineAssetManager.getInstance().isLoading() && t -t0 < 100f) {
+				t = System.currentTimeMillis();
+			}
 
-		} else if ((assetState == AssetState.LOADING || assetState == AssetState.LOADING_AND_INIT_SCENE)
+		} 
+		
+		if ((assetState == AssetState.LOADING || assetState == AssetState.LOADING_AND_INIT_SCENE)
 				&& !EngineAssetManager.getInstance().isLoading()) {
+			
 			retrieveAssets();
 
 			boolean initScene = (assetState == AssetState.LOADING_AND_INIT_SCENE);
@@ -308,7 +319,8 @@ public class World implements Serializable, AssetConsumer {
 		return currentScene;
 	}
 
-	public void setCurrentScene(Scene scene) {
+	public void setCurrentScene(Scene scene) {	
+		
 		initLoadingTime = System.currentTimeMillis();		
 		
 		if(cachedScene == scene) {

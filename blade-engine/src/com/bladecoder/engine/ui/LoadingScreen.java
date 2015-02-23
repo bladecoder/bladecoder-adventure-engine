@@ -27,7 +27,7 @@ import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class LoadingScreen implements BladeScreen {
-	private final static float INIT_TIME = 3f;
+	private final static float INIT_TIME = 1f;
 	
 	private int pos = 0;
 	private int numSquares = 3;
@@ -60,7 +60,10 @@ public class LoadingScreen implements BladeScreen {
 		if (assetState == AssetState.LOADED) {
 			ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			return;
-		}		
+		}
+		
+		Gdx.gl.glClearColor(0, 0, 0, 1);			
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		// Only show the screen when time > INIT_TIME
 		if(initTime < INIT_TIME) {
@@ -69,9 +72,6 @@ public class LoadingScreen implements BladeScreen {
 		}			
 		
 		SpriteBatch batch = ui.getBatch();
-		
-		Gdx.gl.glClearColor(0, 0, 0, 1);			
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();			
