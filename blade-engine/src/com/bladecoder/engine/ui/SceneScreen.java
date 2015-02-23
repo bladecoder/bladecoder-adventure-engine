@@ -411,14 +411,39 @@ public class SceneScreen implements BladeScreen {
 				if (showDesc)
 					ui.getPointer().setDesc(currentActor.getDesc());
 
-				if (currentActor.getVerb("leave") != null)
-					ui.getPointer().setLeaveIcon();
-				else
+				if (currentActor.getVerb("leave") != null) {					
+					ui.getPointer().setLeaveIcon(calcLeaveArrowRotation());
+				} else
 					ui.getPointer().setHotspotIcon();
 			} else {
 				ui.getPointer().setDefaultIcon();
 			}
 		}
+	}
+	
+	
+	/**
+	 * Calcs the rotation based in the actor screen position
+	 * @return
+	 */
+	private float calcLeaveArrowRotation() {
+
+		currentActor.getBBox().getBoundingRectangle().getCenter(unproject2Tmp);
+		
+		if(unproject2Tmp.x < stage.getViewport().getWorldWidth() / 3f) {
+			return 180;
+		}
+		
+		if(unproject2Tmp.x > stage.getViewport().getWorldWidth() / 3f * 2f ) {
+			return 0;
+		}
+
+		if(unproject2Tmp.y < stage.getViewport().getWorldHeight() / 5f) {
+			return -90;
+		}
+		
+		
+		return 90;
 	}
 
 	@Override

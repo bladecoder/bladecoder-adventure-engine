@@ -50,6 +50,7 @@ public class Pointer {
 	private final Vector2 mousepos = new Vector2();
 	
 	private float pointerScale;
+	private float leaveRotation = 0f;
 //	private Skin skin;
 
 	public Pointer(Skin skin) {
@@ -75,8 +76,9 @@ public class Pointer {
 		desc = null;
 	}
 
-	public void setLeaveIcon() {
+	public void setLeaveIcon(float rot) {
 		currentIcon = leaveIcon;
+		leaveRotation = rot;
 	}
 
 	public void setHotspotIcon() {
@@ -123,13 +125,17 @@ public class Pointer {
 		if (draggingRenderer == null) {
 			if (!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)
 					|| currentIcon == leaveIcon) {
-
+				
 				batch.draw(currentIcon,
-						mousepos.x - currentIcon.getRegionWidth() * pointerScale
-								/ 2, mousepos.y - currentIcon.getRegionHeight()
-								* pointerScale / 2, currentIcon.getRegionWidth()
-								* pointerScale, currentIcon.getRegionHeight()
-								* pointerScale);
+						mousepos.x - currentIcon.getRegionWidth() / 2,
+						mousepos.y - currentIcon.getRegionHeight() / 2,
+						currentIcon.getRegionWidth() / 2, 
+						currentIcon.getRegionHeight() / 2,
+						currentIcon.getRegionWidth(),
+						currentIcon.getRegionHeight(),
+						pointerScale, 
+						pointerScale,
+						currentIcon == leaveIcon? leaveRotation:0);
 			}
 		} else {
 			float h = (draggingRenderer.getHeight() > draggingRenderer.getWidth()? draggingRenderer.getHeight():draggingRenderer.getWidth());
