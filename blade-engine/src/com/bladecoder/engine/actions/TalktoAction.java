@@ -20,7 +20,6 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.Param;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.World;
@@ -28,6 +27,7 @@ import com.bladecoder.engine.model.World;
 public class TalktoAction implements Action {
 	public static final String INFO = "Sets the dialog mode";
 	public static final Param[] PARAMS = {
+		new Param("actor",  "The target actor", Type.ACTOR, false),
 		new Param("dialog", "The 'dialogId' to show", Type.STRING, true)
 		};		
 	

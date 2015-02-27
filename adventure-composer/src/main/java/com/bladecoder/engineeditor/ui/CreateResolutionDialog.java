@@ -27,6 +27,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.ImageUtils;
 
 public class CreateResolutionDialog extends EditDialog {
@@ -45,7 +46,7 @@ public class CreateResolutionDialog extends EditDialog {
 	public CreateResolutionDialog(Skin skin) {
 		super("CREATE RESOLUTION", skin);
 		
-		 scale = new InputPanel(skin, "Scale",
+		 scale = InputPanelFactory.createInputPanel(skin, "Scale",
 					"Scale relative to the world resolution", Param.Type.FLOAT, true);
 
 		addInputPanel(scale);

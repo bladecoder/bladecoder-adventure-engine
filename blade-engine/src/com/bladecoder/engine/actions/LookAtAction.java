@@ -36,6 +36,7 @@ import com.bladecoder.engine.util.EngineLogger;
 public class LookAtAction implements Action {
 	public static final String INFO = "Shows the text and sets the player to lookat in the selected actor direction";
 	public static final Param[] PARAMS = {
+		new Param("actor", "The target actor", Type.ACTOR, false),
 		new Param("speech", "The 'soundId' to play if selected", Type.STRING),
 		new Param("text", "The 'text' to show", Type.STRING),
 		new Param("direction", "The direction to lookat. If empty, the player lookat to the actor", 

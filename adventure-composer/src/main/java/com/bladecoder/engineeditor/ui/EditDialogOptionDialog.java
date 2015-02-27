@@ -22,6 +22,7 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
 public class EditDialogOptionDialog extends EditElementDialog {
 
@@ -35,12 +36,12 @@ public class EditDialogOptionDialog extends EditElementDialog {
 		
 		inputs = new InputPanel[5];
 		
-		inputs[0] = new InputPanel(skin, "Text", "The sentence of the dialog to say by the player");
-		inputs[1] = new InputPanel(skin, "Response Text", "The response by the character");
-		inputs[2] = new InputPanel(skin, "Verb", "The verb to execute when choosing this option");
-		inputs[3] = new InputPanel(skin, "Next Option",
+		inputs[0] = InputPanelFactory.createInputPanel(skin, "Text", "The sentence of the dialog to say by the player");
+		inputs[1] = InputPanelFactory.createInputPanel(skin, "Response Text", "The response by the character");
+		inputs[2] = InputPanelFactory.createInputPanel(skin, "Verb", "The verb to execute when choosing this option");
+		inputs[3] = InputPanelFactory.createInputPanel(skin, "Next Option",
 						"The next option to show when this option is selected");
-		inputs[4] = new InputPanel(skin, "Visible", "The visibility", Param.Type.BOOLEAN, false);
+		inputs[4] = InputPanelFactory.createInputPanel(skin, "Visible", "The visibility", Param.Type.BOOLEAN, false);
 
 		setInfo("A dialog is composed of an option tree. Each option is a dialog sentence that the user can choose to say");
 

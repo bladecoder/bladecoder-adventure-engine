@@ -39,7 +39,7 @@ public class FileInputPanel extends InputPanel {
 	}
 
 	public FileInputPanel(Skin skin, String title, String desc, File current, boolean dOnly) {
-		super(skin, title, desc, new TextButton(dOnly?DIR_TEXT:FILE_TEXT, skin), null);
+		init(skin, title, desc, new TextButton(dOnly?DIR_TEXT:FILE_TEXT, skin), true, null);
 		
 		this.cd = current;
 		this.dirOnly = dOnly;
@@ -81,7 +81,7 @@ public class FileInputPanel extends InputPanel {
 	
 	@Override
 	public void setText(String text) {
-		super.setText(text);
+		((TextButton)field).setText(text);
 		selected=cd= new File(text);
 	}
 	

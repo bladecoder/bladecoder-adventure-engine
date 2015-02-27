@@ -24,6 +24,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.FileInputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class CreateProjectDialog extends EditDialog {
@@ -43,13 +44,13 @@ public class CreateProjectDialog extends EditDialog {
 
 		setInfo(INFO);
 
-		projectName = new InputPanel(skin, "Project Name",
+		projectName = InputPanelFactory.createInputPanel(skin, "Project Name",
 				"Set the name of the project", true);
 		
-		pkg = new InputPanel(skin, "Package",
+		pkg = InputPanelFactory.createInputPanel(skin, "Package",
 				"The package will be used as package ID in Android and IOS. The launchers will be in this package too.", Param.Type.STRING, true, "com.myadv.game");
 		
-		spinePlugin = new InputPanel(skin, "Spine animation support",
+		spinePlugin = InputPanelFactory.createInputPanel(skin, "Spine animation support",
 				"The game can use Spine animations, require Spine License to distribute the game. See http://www.esotericsoftware.com for more info.", Param.Type.BOOLEAN, true, "false");
 
 		location = new FileInputPanel(skin, "Location",

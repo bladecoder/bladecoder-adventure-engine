@@ -71,6 +71,7 @@ public class Editor implements ApplicationListener {
 		Ctx.assetManager = new EditorAssetManager();
 
 		scnEditor = new ScnEditor(skin);
+		skin.getFont("default-font").setMarkupEnabled(true);
 
 		/*** STAGE SETUP ***/
 		stage = new Stage(new ScreenViewport());

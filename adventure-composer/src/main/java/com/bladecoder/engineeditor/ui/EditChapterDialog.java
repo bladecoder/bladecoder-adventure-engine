@@ -31,6 +31,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.WorldDocument;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
 public class EditChapterDialog extends EditDialog {
 
@@ -47,7 +48,7 @@ public class EditChapterDialog extends EditDialog {
 		
 		this.doc = doc;
 
-		inputId = new InputPanel(skin, "Chapter ID", "The id of the chapter",
+		inputId = InputPanelFactory.createInputPanel(skin, "Chapter ID", "The id of the chapter",
 				true);
 
 		setInfo("An adventure game is composed of chapters. Chapters contains scenes.");

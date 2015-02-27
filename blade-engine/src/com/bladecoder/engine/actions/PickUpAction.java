@@ -20,7 +20,6 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.Param;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
@@ -31,7 +30,7 @@ import com.bladecoder.engine.model.World;
 public class PickUpAction implements Action {
 	public static final String INFO = "Puts the selected actor in the inventory.";
 	public static final Param[] PARAMS = {
-		new Param("scene", "If not empty, pickup the actor from the selected scene", Type.SCENE),
+		new Param("actor", "The target actor", Type.SCENE_ACTOR, false),
 		new Param("animation", "The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'", Type.STRING)
 		};
 	
@@ -41,9 +40,12 @@ public class PickUpAction implements Action {
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
 		fa = params.get("animation");
-		scene = params.get("scene");
+		
+		String[] a = Param.parseString2(params.get("actor"));
+		
+		actorId = a[1];
+		scene = a[0];
 	}
 
 	@Override

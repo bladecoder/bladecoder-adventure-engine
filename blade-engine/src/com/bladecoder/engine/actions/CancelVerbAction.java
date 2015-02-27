@@ -34,6 +34,7 @@ import com.bladecoder.engine.model.World;
 public class CancelVerbAction implements Action {
 	public static final String INFO = "Stops the named verb if it is in execution.";
 	public static final Param[] PARAMS = {
+		new Param("actor", "The target actor", Type.ACTOR, false),
 		new Param("verb", "The verb to stop", Type.STRING, true), 
 		new Param("target", "If the verb is 'use', the target actor", Type.ACTOR)
 		};

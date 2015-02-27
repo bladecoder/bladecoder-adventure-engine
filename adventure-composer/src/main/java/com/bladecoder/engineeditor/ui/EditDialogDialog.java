@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
 public class EditDialogDialog extends EditElementDialog {
 	public static final String INFO = "Actors can have several dialogs defined. Dialogs have a tree of options to choose";
@@ -34,7 +35,7 @@ public class EditDialogDialog extends EditElementDialog {
 		
 		inputs = new InputPanel[1];
 		
-		inputs[0] = new InputPanel(skin, "Dialog ID",
+		inputs[0] = InputPanelFactory.createInputPanel(skin, "Dialog ID",
 				"Select the dialog id to create.", true);
 
 		setInfo(INFO);

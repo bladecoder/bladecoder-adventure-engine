@@ -22,19 +22,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.bladecoder.engine.actions.Param;
 
-public class DimPanel extends Table {
-
+public class DimensionInputPanel extends InputPanel {
 	TextField width;
 	TextField height;
-
-	public DimPanel(Skin skin) {
+	Table dimPanel;
+	
+	DimensionInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
+		dimPanel = new Table(skin);
+		init(skin, title, desc, dimPanel, mandatory, defaultValue);
 		width = new TextField("", skin);
 		height = new TextField("", skin);
 
-		add(new Label(" width ", skin));
-		add(width);
-		add(new Label("  height ", skin));
-		add(height);
+		dimPanel.add(new Label(" width ", skin));
+		dimPanel.add(width);
+		dimPanel.add(new Label("  height ", skin));
+		dimPanel.add(height);
 	}
 
 	public String getText() {
@@ -57,13 +59,28 @@ public class DimPanel extends Table {
 	}
 
 	public boolean validateField() {
+
+		String s = getText();
+		
+		if(s == null || s.trim().isEmpty()) {
+			if(isMandatory()) {
+				setError(true);
+				return false;
+			} else {
+				setError(false);
+				return true;
+			}
+		}
+		
 		try {
 			Integer.parseInt(width.getText());
 			Integer.parseInt(height.getText());
 		} catch (NumberFormatException e) {
+			setError(true);
 			return false;
 		}
 
+		setError(false);
 		return true;
 	}
 }

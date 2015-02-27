@@ -26,6 +26,7 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.FileInputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.ImageUtils;
 
@@ -46,15 +47,15 @@ public class CreateAtlasDialog extends EditDialog {
 	public CreateAtlasDialog(Skin skin) {
 		super("CREATE ATLAS", skin);
 		
-		name = new InputPanel(skin, "Atlas Name",
+		name = InputPanelFactory.createInputPanel(skin, "Atlas Name",
 				"The name of the sprite atlas", true);
 		dir = new FileInputPanel(skin, "Input Image Directory",
 				"Select the output directory with the images to create the Atlas",
 				true);
 
-		filterMin = new InputPanel(skin, "Min Filter",
+		filterMin = InputPanelFactory.createInputPanel(skin, "Min Filter",
 				"The filter when the texture is scaled down", FILTERS);
-		filterMag = new InputPanel(skin, "Mag Filter",
+		filterMag = InputPanelFactory.createInputPanel(skin, "Mag Filter",
 				"The filter when the texture is scaled up", FILTERS);
 
 		addInputPanel(name);

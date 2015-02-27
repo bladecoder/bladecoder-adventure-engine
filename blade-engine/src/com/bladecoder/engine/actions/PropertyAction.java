@@ -20,7 +20,6 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.Param;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
@@ -29,6 +28,7 @@ import com.bladecoder.engine.model.World;
 public class PropertyAction implements Action {
 	public static final String INFO = "Set/Remove a global property of the game";
 	public static final Param[] PARAMS = {
+		new Param("actor", "The target actor", Type.SCENE_ACTOR, false),
 		new Param("type", "Property type", Type.STRING, true, "actor", new String[] {"world", "scene", "actor"}),
 		new Param("prop", "Property name", Type.STRING, true), 
 		new Param("value", "Property value", Type.STRING, true),
@@ -58,7 +58,10 @@ public class PropertyAction implements Action {
 			Scene s = World.getInstance().getCurrentScene();
 			s.setCustomProperty(prop, value);
 		} else {
-			BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
+			String[] a = Param.parseString2(actorId);
+			
+			Scene s = (a[0] != null && !a[0].isEmpty())? World.getInstance().getScene(a[0]): World.getInstance().getCurrentScene();
+			BaseActor actor = s.getActor(actorId, true);
 			actor.setCustomProperty(prop, value);
 		}
 		

@@ -28,10 +28,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
 public class EditActionDialog extends EditElementDialog {
 	private static final String CUSTOM_ACTION_STR = "CUSTOM ACTION";
@@ -39,7 +39,6 @@ public class EditActionDialog extends EditElementDialog {
 	private static final String CUSTOM_INFO="Custom action definition";
 	
 	private InputPanel actionPanel;
-	private InputPanel actorPanel;
 	private InputPanel classPanel;
 
 	private InputPanel parameters[];	
@@ -54,12 +53,10 @@ public class EditActionDialog extends EditElementDialog {
 		System.arraycopy(actions, 0, actions2, 0, actions.length);		
 		actions2[actions2.length - 1] = CUSTOM_ACTION_STR;
 
-		actionPanel = new InputPanel(skin, "Action",
+		actionPanel = InputPanelFactory.createInputPanel(skin, "Action",
 				"Select the action to create.", actions2);
 		
-		actorPanel = new InputPanel(skin, "Target Actor",
-				"Select the target actor id. Default is current actor.",Type.ACTOR,false);
-		classPanel = new InputPanel(skin, "Class",
+		classPanel = InputPanelFactory.createInputPanel(skin, "Class",
 				"Select the class for the custom action.", true);
 
 		setAction();
@@ -82,7 +79,6 @@ public class EditActionDialog extends EditElementDialog {
 		});
 
 		if(e != null) {
-			actorPanel.setText(e.getAttribute("actor"));
 			classPanel.setText(e.getAttribute("class"));
 			
 			if(!e.getAttribute("action_name").isEmpty()) {
@@ -115,7 +111,6 @@ public class EditActionDialog extends EditElementDialog {
 
 		getCenterPanel().clear();
 		addInputPanel(actionPanel);
-		addInputPanel(actorPanel);
 
 		Action ac = null;
 		
@@ -135,7 +130,7 @@ public class EditActionDialog extends EditElementDialog {
 			parameters = new InputPanel[params.length];
 
 			for (int i = 0; i < params.length; i++) {
-				parameters[i] = new InputPanel(getSkin(),params[i].name, params[i].desc,
+				parameters[i] = InputPanelFactory.createInputPanel(getSkin(),params[i].name, params[i].desc,
 						params[i].type, params[i].mandatory, params[i].defaultValue, params[i].options);
 				addInputPanel(parameters[i]);
 				
@@ -156,15 +151,12 @@ public class EditActionDialog extends EditElementDialog {
 
 	@Override
 	protected void fill() {
-		String actor = actorPanel.getText().trim();
 		
 		// Remove previous params
 		while(e.getAttributes().getLength() > 0) {
 			e.removeAttribute(e.getAttributes().item(0).getNodeName());
 		}
 
-		if (!actor.isEmpty())
-			e.setAttribute("actor", actor);
 		
 		String id = actionPanel.getText();
 		

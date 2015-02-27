@@ -28,6 +28,8 @@ import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 
 public class EditActorDialog extends EditElementDialog {
 
@@ -50,43 +52,43 @@ public class EditActorDialog extends EditElementDialog {
 			Element e) {
 		super(skin);
 
-		inputs[0] = new InputPanel(skin, "Actor Type",
+		inputs[0] = InputPanelFactory.createInputPanel(skin, "Actor Type",
 				"Actors can be from different types",
 				ChapterDocument.ACTOR_TYPES);
 
-		inputs[1] = new InputPanel(skin, "Actor ID",
+		inputs[1] = InputPanelFactory.createInputPanel(skin, "Actor ID",
 				"IDs can not contain '.' or '_' characters.", true);
 
-		inputs[2] = new InputPanel(skin, "Actor Layer",
+		inputs[2] = InputPanelFactory.createInputPanel(skin, "Actor Layer",
 				"The layer for drawing order", getLayers(parent));
 		
-		inputs[3] = new InputPanel(skin, "Description",
+		inputs[3] = InputPanelFactory.createInputPanel(skin, "Description",
 				"The text showed when the cursor is over the actor.");
-		inputs[4] = new InputPanel(
+		inputs[4] = InputPanelFactory.createInputPanel(
 				skin,
 				"State",
 				"Initial state of the actor. Actors can be in differentes states during the game.");
-		inputs[5] = new InputPanel(skin, "Interaction",
+		inputs[5] = InputPanelFactory.createInputPanel(skin, "Interaction",
 				"True when the actor reacts to the user input.",
 				Param.Type.BOOLEAN, false);
-		inputs[6] = new InputPanel(skin, "Visible", "The actor visibility.",
+		inputs[6] = InputPanelFactory.createInputPanel(skin, "Visible", "The actor visibility.",
 				Param.Type.BOOLEAN, false);
-		inputs[7] = new InputPanel(skin, "Walking Speed",
+		inputs[7] = InputPanelFactory.createInputPanel(skin, "Walking Speed",
 				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT,
 				false);
-		inputs[8] = new InputPanel(skin, "Depth Type",
+		inputs[8] = InputPanelFactory.createInputPanel(skin, "Depth Type",
 				"Scene fake depth for scaling", new String[] { "none",
 						"vector"});
-		inputs[9] = new InputPanel(skin, "Sprite Dimensions",
+		inputs[9] = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions",
 				"The size of the 3d sprite", Param.Type.DIMENSION, true);
-		inputs[10] = new InputPanel(skin, "Camera Name",
+		inputs[10] = InputPanelFactory.createInputPanel(skin, "Camera Name",
 				"The name of the camera in the model", Param.Type.STRING, true,
 				"Camera", null);
-		inputs[11] = new InputPanel(skin, "Camera FOV",
+		inputs[11] = InputPanelFactory.createInputPanel(skin, "Camera FOV",
 				"The camera field of view", Param.Type.FLOAT, true, "49.3",
 				null);
 		
-		inputs[12] = new InputPanel(skin, "Scale",
+		inputs[12] = InputPanelFactory.createInputPanel(skin, "Scale",
 				"The sprite scale", Param.Type.FLOAT, false, "1",
 				null);
 
@@ -122,7 +124,7 @@ public class EditActorDialog extends EditElementDialog {
 	}
 
 	private void typeChanged() {
-		int i = typePanel.getSelectedIndex();
+		int i = ((OptionsInputPanel)typePanel).getSelectedIndex();
 
 		setInfo(TYPES_INFO[i]);
 
@@ -146,7 +148,7 @@ public class EditActorDialog extends EditElementDialog {
 
 	@Override
 	protected void fill() {
-		int i = typePanel.getSelectedIndex();
+		int i = ((OptionsInputPanel)typePanel).getSelectedIndex();
 		if (((ChapterDocument)doc).getBBox(e) == null && ChapterDocument.ACTOR_TYPES[i]
 				.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
 			((ChapterDocument) doc).setBbox(e, null);

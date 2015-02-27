@@ -79,6 +79,8 @@ public class ActionFactory {
 				"com.bladecoder.engine.actions.CameraAction");
 		actions.put("Transition",
 				"com.bladecoder.engine.actions.TransitionAction");
+		actions.put("LoadChapter",
+				"com.bladecoder.engine.actions.LoadChapterAction");
 	}
 	
 	public static String []getActionList() {

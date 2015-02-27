@@ -35,6 +35,7 @@ import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
 public class EditSceneDialog extends EditElementDialog {
 
@@ -57,23 +58,23 @@ public class EditSceneDialog extends EditElementDialog {
 		
 		super(skin);
 		
-		inputs[0] = new InputPanel(skin, "Scene ID",
+		inputs[0] = InputPanelFactory.createInputPanel(skin, "Scene ID",
 				"The ID is mandatory for scenes. \nIDs can not contain '.' or '_' characters.");
-		inputs[1] = new InputPanel(skin, "Background",
+		inputs[1] = InputPanelFactory.createInputPanel(skin, "Background",
 				"The background for the scene", bgList);
-		inputs[2] = new InputPanel(skin, "Lightmap",
+		inputs[2] = InputPanelFactory.createInputPanel(skin, "Lightmap",
 						"The lightmap for the scene", bgList);					
-		inputs[3] = new InputPanel(skin, "Depth Vector",
+		inputs[3] = InputPanelFactory.createInputPanel(skin, "Depth Vector",
 						"X: the actor scale when y=0, Y: the actor scale when y=scene height .", Param.Type.VECTOR2, false);
-		inputs[4] = new InputPanel(skin, "State",
+		inputs[4] = InputPanelFactory.createInputPanel(skin, "State",
 				"The initial state for the scene.");
-		inputs[5] = new InputPanel(skin, "Music Filename",
+		inputs[5] = InputPanelFactory.createInputPanel(skin, "Music Filename",
 				"The music for the scene", musicList);
-		inputs[6] = new InputPanel(skin, "Loop Music",
+		inputs[6] = InputPanelFactory.createInputPanel(skin, "Loop Music",
 				"If the music is playing in looping", Param.Type.BOOLEAN, false);
-		inputs[7] = new InputPanel(skin, "Initial music delay",
+		inputs[7] = InputPanelFactory.createInputPanel(skin, "Initial music delay",
 				"The time to wait before playing", Param.Type.FLOAT, false);
-		inputs[8] = new InputPanel(skin, "Repeat music delay",
+		inputs[8] = InputPanelFactory.createInputPanel(skin, "Repeat music delay",
 				"The time to wait before repetitions", Param.Type.FLOAT, false);		
 		
 		bgImage = new Image();

@@ -638,4 +638,17 @@ public class ChapterDocument extends BaseDocument {
 		modified = true;
 		firePropertyChange("obstacle", e);
 	}
+
+	public Element getSceneById(String id) {
+		NodeList scenes = getScenes();
+		
+		for(int i = 0; i < scenes.getLength(); i++) {
+			Element e = (Element) scenes.item(i);
+			
+			if(e.getAttribute("id").equals(id))
+				return e;
+		}
+		
+		return null;
+	}
 }

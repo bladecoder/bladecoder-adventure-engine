@@ -36,6 +36,7 @@ public class RunVerbAction extends BaseCallbackAction {
 
 	public static final String INFO = "Runs an actor verb";
 	public static final Param[] PARAMS = {
+			new Param("actor", "The target actor", Type.ACTOR, false),
 			new Param("verb", "The 'verbId' to run. Can be a comma separated verb list to execute one o them based in the chooseCriteria param", Type.STRING, true),
 			new Param("target", "Aditional actor for 'use' verb", Type.ACTOR),
 			new Param("repeat", "Repeat the verb the specified times. -1 to infinity",

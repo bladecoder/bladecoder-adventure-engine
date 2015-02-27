@@ -13,44 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.bladecoder.engine.actions;
+package com.bladecoder.engineeditor.ui.components;
 
-import java.util.HashMap;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.World;
-
-
-public class LeaveAction implements Action {
-	public static final String INFO = "Change the current scene.";
-	public static final Param[] PARAMS = {
-		new Param("scene", "The target scene", Type.SCENE, true),
-	};		
+public class BooleanInputPanel extends OptionsInputPanel {
+	private static final String[] booleanValues = {"true", "false"};
+	private static final String[] booleanNotMandatoryValues = {"", "true", "false"};
 	
-	String scene;
-
-	@Override
-	public boolean run(ActionCallback cb) {
+	BooleanInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
+		super(skin, title, desc, mandatory, defaultValue, mandatory?booleanValues:booleanNotMandatoryValues);
 		
-		World.getInstance().setCurrentScene(scene);
-		
-		return false;
+		if(defaultValue != null)
+    		setText(defaultValue);
 	}
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		scene = params.get("scene");
-	}
-
-
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
-
-	@Override
-	public Param[] getParams() {
-		return PARAMS;
-	}
-
 }

@@ -35,19 +35,18 @@ public class CameraAction extends BaseCallbackAction {
 					"Duration of the animation in seconds. If not '0' and animation is triggered",
 					Type.FLOAT),
 			new Param("followActor", "Sets the actor to follow. 'none' puts no actor to follow",
-					Type.STRING),
+					Type.ACTOR),
 			new Param(
 					"wait",
 					"If this param is 'false' the text is showed and the action continues inmediatly",
 					Type.BOOLEAN, true) };
 
-	private String actorId, followActorId;
+	private String followActorId;
 	private float zoom=-1, duration;
 	private Vector2 pos;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
 		followActorId = params.get("followActor");
 
 		if (params.get("pos") != null)
@@ -106,7 +105,6 @@ public class CameraAction extends BaseCallbackAction {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("actorId", actorId);
 		json.writeValue("followActorId", followActorId);
 		json.writeValue("pos", pos);
 		json.writeValue("zoom", zoom);
@@ -116,7 +114,6 @@ public class CameraAction extends BaseCallbackAction {
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		actorId = json.readValue("actorId", String.class, jsonData);
 		followActorId = json.readValue("followActorId", String.class, jsonData);
 		pos = json.readValue("pos", Vector2.class, jsonData);
 		zoom = json.readValue("zoom", Float.class, jsonData);

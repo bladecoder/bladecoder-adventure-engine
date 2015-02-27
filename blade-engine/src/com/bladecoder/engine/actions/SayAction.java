@@ -36,6 +36,7 @@ import com.bladecoder.engine.util.EngineLogger;
 public class SayAction extends BaseCallbackAction {
 	public static final String INFO = "Says a text";
 	public static final Param[] PARAMS = {
+			new Param("actor", "The target actor", Type.ACTOR, false),
 			new Param("text", "The 'text' to show", Type.STRING),
 			new Param(
 					"pos",

@@ -33,7 +33,7 @@ import com.bladecoder.engine.util.EngineLogger;
 public class AnimationAction extends BaseCallbackAction implements Action {
 	public static final String INFO = "Sets the animation for an actor";
 	public static final Param[] PARAMS = {
-		new Param("animation", "The FA to set", Type.STRING, true),	
+		new Param("animation", "The Animation to set", Type.ACTOR_ANIMATION, true),	
 		new Param("count", "The times to repeat. -1 to infinity repeat", Type.INTEGER),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
 		new Param("animation_type", "The repeat mode", Type.STRING, true, "sprite defined", new String[]{"repeat", "yoyo", "no_repeat", "reverse", "sprite defined"}),

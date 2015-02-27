@@ -31,6 +31,7 @@ import com.bladecoder.engine.util.EngineLogger;
 public class DialogOptionAction implements Action {
 	public static final String INFO = "Change the selected dialog option properties";
 	public static final Param[] PARAMS = {
+		new Param("actor", "The target actor", Type.ACTOR, false),
 		new Param("dialog", "The dialog", Type.STRING, true),	
 		new Param("option", "The option", Type.STRING, true),
 		new Param("visible", "Shows/Hide the dialog option", Type.BOOLEAN),

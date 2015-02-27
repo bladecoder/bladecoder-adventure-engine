@@ -72,10 +72,10 @@ public class AnimationDesc {
 		StringBuilder sb = new StringBuilder();
 
 		if (id.endsWith(LEFT)) {
-			sb.append(id.substring(0, id.length() - 4));
+			sb.append(id.substring(0, id.length() - LEFT.length()));
 			sb.append(RIGHT);
 		} else if (id.endsWith(RIGHT)) {
-			sb.append(id.substring(0, id.length() - 5));
+			sb.append(id.substring(0, id.length() - RIGHT.length()));
 			sb.append(LEFT);
 		}
 

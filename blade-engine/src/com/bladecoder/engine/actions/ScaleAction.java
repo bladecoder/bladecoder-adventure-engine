@@ -27,6 +27,7 @@ import com.bladecoder.engine.model.World;
 public class ScaleAction extends BaseCallbackAction {
 	public static final String INFO = "Sets an actor Scale animation";
 	public static final Param[] PARAMS = {
+		new Param("actor", "The target actor", Type.ACTOR, false),
 		new Param("scale", "The target scale", Type.FLOAT, true),
 		new Param("speed", "Duration of the animation in seconds", Type.FLOAT, true, "1.0"),
 		new Param("count", "The times to repeat", Type.INTEGER),

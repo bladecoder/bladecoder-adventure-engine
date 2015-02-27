@@ -13,44 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.bladecoder.engine.actions;
+package com.bladecoder.engineeditor.ui.components;
 
-import java.util.HashMap;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.World;
-
-
-public class LeaveAction implements Action {
-	public static final String INFO = "Change the current scene.";
-	public static final Param[] PARAMS = {
-		new Param("scene", "The target scene", Type.SCENE, true),
-	};		
+public class FloatInputPanel extends StringInputPanel {
 	
-	String scene;
-
+	FloatInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
+		super(skin, title, desc, mandatory, defaultValue);
+	}
+	
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean validateField() {
+		String s = getText();
 		
-		World.getInstance().setCurrentScene(scene);
+		if(s == null || s.trim().isEmpty()) {
+			if(isMandatory()) {
+				setError(true);
+				return false;
+			} else {
+				setError(false);
+				return true;
+			}
+		}
 		
-		return false;
+		try {
+			Float.parseFloat(s);
+		} catch (NumberFormatException e) {
+			setError(true);
+			return false;
+		}
+
+		setError(false);
+		return true;
 	}
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		scene = params.get("scene");
-	}
-
-
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
-
-	@Override
-	public Param[] getParams() {
-		return PARAMS;
-	}
-
 }

@@ -21,8 +21,11 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Param {
 	public enum Type {
-		STRING, BOOLEAN, FLOAT, INTEGER, VECTOR2, VECTOR3, DIMENSION, ACTOR, SCENE, CHAPTER
+		STRING, BOOLEAN, FLOAT, INTEGER, VECTOR2, VECTOR3, DIMENSION, ACTOR, SCENE, CHAPTER, FILE, OPTION, SCENE_ACTOR, ACTOR_ANIMATION
 	};
+	
+	public static final String NUMBER_PARAM_SEPARATOR = ",";
+	public static final String STRING_PARAM_SEPARATOR = "#";
 
 	public String name;
 	public String desc;
@@ -59,7 +62,7 @@ public class Param {
 		
 		Vector2 v = null;
 
-		int idx = s.indexOf(',');
+		int idx = s.indexOf(NUMBER_PARAM_SEPARATOR.charAt(0));
 
 		if (idx != -1) {
 			try {
@@ -78,8 +81,8 @@ public class Param {
 	public static Vector3 parseVector3(String s) {
 		Vector3 v = null;
 
-		int idx = s.indexOf(',');
-		int idx2 = s.lastIndexOf(',');
+		int idx = s.indexOf(NUMBER_PARAM_SEPARATOR.charAt(0));
+		int idx2 = s.lastIndexOf(NUMBER_PARAM_SEPARATOR.charAt(0));
 
 		if (idx != -1 && idx2 != -1 && idx != idx2) {
 			try {
@@ -99,7 +102,7 @@ public class Param {
 	public static Polygon parsePolygon(String s) {
 		Polygon p = null;
 		
-		String[] vs = s.split(",");
+		String[] vs = s.split(NUMBER_PARAM_SEPARATOR);
 		
 		if(vs.length < 6)
 			return null;
@@ -130,18 +133,46 @@ public class Param {
 		sb.append(verts[0]);
 		
 		for(int i = 1; i < verts.length; i++) {
-			sb.append(',');
+			sb.append(NUMBER_PARAM_SEPARATOR);
 			sb.append(verts[i]);	
 		}
 		
 		return sb.toString();
 	}
+	
+	public static String[] parseString2(String s) {
+		
+		if(s==null)
+			return null;
+		
+		String[] v = null;
+		
+		v = new String[2];
+
+		int idx = s.indexOf(STRING_PARAM_SEPARATOR.charAt(0));
+		
+		if (idx != -1) {
+			v[0] = s.substring(0,idx);
+			v[1] = s.substring(idx + 1); 
+		} else {
+			v[1] = s;
+		}
+
+		return v;
+	}	
 
 	public static String toStringParam(Vector2 v) {
-		return v.x + "," + v.y;
+		return v.x + NUMBER_PARAM_SEPARATOR + v.y;
 	}
 
 	public static String toStringParam(Vector3 v) {
-		return v.x + "," + v.y + "," + v.z;
+		return v.x + NUMBER_PARAM_SEPARATOR + v.y + NUMBER_PARAM_SEPARATOR + v.z;
+	}
+	
+	public static String toStringParam(String s1, String s2) {
+		if( s1==null || s1.isEmpty())
+			return s2;
+		
+		return s1 + STRING_PARAM_SEPARATOR + s2;
 	}
 }

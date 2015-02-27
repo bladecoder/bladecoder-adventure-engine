@@ -17,43 +17,31 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
-
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.World;
 
-public class SoundAction implements Action {
-	public static final String INFO = "Play/Stop a sound";
+
+public class LoadChapterAction implements Action {
+	public static final String INFO = "Load the specified Chapter. Scene can be empty to load the default scene.";
 	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.ACTOR, false),
-		new Param("play", "The 'soundId' to play", Type.STRING),
-		new Param("stop", "The 'soundId' to stop", Type.STRING)
+		new Param("chapter", "The target chapter", Type.CHAPTER, true),
+		new Param("scene", "The target scene", Type.STRING, false)
 		};		
 	
-	String actorId;
-	String play;
-	String stop;
-	
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-		play = params.get("play");
-		stop = params.get("stop");
-	}
+	String scene;
+	String chapter;
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		
-		BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
-		
-		if(play!= null)	actor.playSound(play);
-		
-		if(stop!= null)	actor.stopSound(stop);
+		World.getInstance().loadXMLChapter(chapter, scene);
 		
 		return false;
+	}
+
+	@Override
+	public void setParams(HashMap<String, String> params) {
+		scene = params.get("scene");
+		chapter = params.get("chapter");
 	}
 
 
@@ -66,4 +54,5 @@ public class SoundAction implements Action {
 	public Param[] getParams() {
 		return PARAMS;
 	}
+
 }

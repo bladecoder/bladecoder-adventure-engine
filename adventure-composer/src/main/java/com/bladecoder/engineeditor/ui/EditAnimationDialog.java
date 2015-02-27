@@ -35,6 +35,7 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.scneditor.AnimationWidget;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class EditAnimationDialog extends EditElementDialog {
@@ -54,38 +55,38 @@ public class EditAnimationDialog extends EditElementDialog {
 
 		setInfo(INFO);
 
-		inputs[0] = new InputPanel(skin, "Source",
+		inputs[0] = InputPanelFactory.createInputPanel(skin, "Source",
 				"Select the source where the sprite or animation is defined",
 				new String[0]);
-		inputs[1] = new InputPanel(skin, "ID",
+		inputs[1] = InputPanelFactory.createInputPanel(skin, "ID",
 				"Select the id of the animation", new String[0]);
-		inputs[2] = new InputPanel(skin, "Animation type",
+		inputs[2] = InputPanelFactory.createInputPanel(skin, "Animation type",
 				"Select the type of the animation",
 				ChapterDocument.ANIMATION_TYPES);
-		inputs[3] = new InputPanel(skin, "Speed",
+		inputs[3] = InputPanelFactory.createInputPanel(skin, "Speed",
 				"Select the speed of the animation in secods",
 				Param.Type.FLOAT, true, "1.0");
-		inputs[4] = new InputPanel(skin, "Delay",
+		inputs[4] = InputPanelFactory.createInputPanel(skin, "Delay",
 				"Select the delay between repeats in seconds",
 				Param.Type.FLOAT, false);
-		inputs[5] = new InputPanel(skin, "Count", "Select the repeat times",
+		inputs[5] = InputPanelFactory.createInputPanel(skin, "Count", "Select the repeat times",
 				Param.Type.INTEGER, false);
-		inputs[6] = new InputPanel(
+		inputs[6] = InputPanelFactory.createInputPanel(
 				skin,
 				"In Dist",
 				"Select the distance in pixels to add to the actor position when the sprite is displayed",
 				Param.Type.VECTOR2, false);
-		inputs[7] = new InputPanel(
+		inputs[7] = InputPanelFactory.createInputPanel(
 				skin,
 				"Out Dist",
 				"Select the distance in pixels to add to the actor position when the sprite is changed",
 				Param.Type.VECTOR2, false);
-		inputs[8] = new InputPanel(skin, "Sound",
+		inputs[8] = InputPanelFactory.createInputPanel(skin, "Sound",
 				"Select the sound ID that will be play when displayed");
-		inputs[9] = new InputPanel(skin, "Preload",
+		inputs[9] = InputPanelFactory.createInputPanel(skin, "Preload",
 				"Preload the animation when the scene is loaded",
 				Param.Type.BOOLEAN, true, "true", null);
-		inputs[10] = new InputPanel(skin, "Dispose When Played",
+		inputs[10] = InputPanelFactory.createInputPanel(skin, "Dispose When Played",
 				"Dispose de animation when the animation is played",
 				Param.Type.BOOLEAN, true, "false", null);
 

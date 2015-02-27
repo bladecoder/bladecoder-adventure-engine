@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ElementList;
@@ -169,8 +170,22 @@ public class ActionList extends ElementList {
 
 			String actor = e.getAttribute("actor");
 
-			if (!actor.isEmpty())
-				id = MessageFormat.format("{1}.{0}", id, actor);
+			if (!actor.isEmpty()) {
+				String[] s = Param.parseString2(actor);
+				
+				if(s[0] != null)
+					id =MessageFormat.format("[GREEN]{0}[] {1}.{2}", s[0], s[1], id);
+				else
+					id = MessageFormat.format("{0}.{1}", actor, id);
+			} else if(!e.getAttribute("animation").isEmpty()){
+				String a = e.getAttribute("animation");
+				String[] s = Param.parseString2(a);
+				
+				if(s[0] != null)
+					id =MessageFormat.format("{0}.{1} [GREEN]{2}[]", s[0], id, s[1]);
+				else
+					id = MessageFormat.format("{0} [GREEN]{1}[]",id, a);
+			}
 			
 			return id;
 		}

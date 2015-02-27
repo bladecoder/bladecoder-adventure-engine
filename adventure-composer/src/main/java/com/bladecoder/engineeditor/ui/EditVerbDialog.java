@@ -24,6 +24,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 
 public class EditVerbDialog extends EditElementDialog {
 	public static final String VERBS[] = { "lookat", "pickup", "talkto", "use", "leave", "enter", "exit", "custom" };
@@ -56,10 +58,10 @@ public class EditVerbDialog extends EditElementDialog {
 		super(skin);
 		
 		inputs = new InputPanel [4];
-		inputs[0] = new InputPanel(skin, "Verb ID", "Select the verb to create.", parentElement.getTagName().equals("scene")?SCENE_VERBS:VERBS);
-		inputs[1] = new InputPanel(skin, "State", "Select the state.");
-		inputs[2] = new InputPanel(skin, "Target BaseActor", "Select the target actor id for the 'use' verb");
-		inputs[3] = new InputPanel(skin, "Custom Verb Name", "Select the Custom verb id");
+		inputs[0] = InputPanelFactory.createInputPanel(skin, "Verb ID", "Select the verb to create.", parentElement.getTagName().equals("scene")?SCENE_VERBS:VERBS);
+		inputs[1] = InputPanelFactory.createInputPanel(skin, "State", "Select the state.");
+		inputs[2] = InputPanelFactory.createInputPanel(skin, "Target BaseActor", "Select the target actor id for the 'use' verb");
+		inputs[3] = InputPanelFactory.createInputPanel(skin, "Custom Verb Name", "Select the Custom verb id");
 
 		if(parentElement.getTagName().equals("scene"))
 			setInfo(SCENE_VERBS_INFO[0]);
@@ -71,7 +73,7 @@ public class EditVerbDialog extends EditElementDialog {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				String id = (String) inputs[0].getText();
-				int i = inputs[0].getSelectedIndex();
+				int i = ((OptionsInputPanel)inputs[0]).getSelectedIndex();
 
 				if(parent.getTagName().equals("scene"))
 					setInfo(SCENE_VERBS_INFO[i]);

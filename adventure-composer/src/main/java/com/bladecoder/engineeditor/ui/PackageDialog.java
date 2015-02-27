@@ -32,6 +32,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.FileInputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.RunProccess;
 
 public class PackageDialog extends EditDialog {
@@ -67,21 +68,21 @@ public class PackageDialog extends EditDialog {
 	public PackageDialog(Skin skin) {
 		super("PACKAGE ADVENTURE", skin);
 
-		arch = new InputPanel(skin, "Architecture", "Select the target Architecture for the game", ARCHS);
+		arch = InputPanelFactory.createInputPanel(skin, "Architecture", "Select the target Architecture for the game", ARCHS);
 		dir = new FileInputPanel(skin, "Output Directory", "Select the output directory to put the package", true);
-		type = new InputPanel(skin, "Type", "Select the type of the package", TYPES);
-		os = new InputPanel(skin, "OS", "Select the OS of the package", OSS);
+		type = InputPanelFactory.createInputPanel(skin, "Type", "Select the type of the package", TYPES);
+		os = InputPanelFactory.createInputPanel(skin, "OS", "Select the OS of the package", OSS);
 		linux64JRE = new FileInputPanel(skin, "JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file", false);
 		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file", false);
 		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle. Must be a ZIP file", false);
 		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle. Must be a ZIP file", false);
-		version = new InputPanel(skin, "Version", "Select the version of the package");
+		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the version of the package");
 		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", false);
 		androidSDK = new FileInputPanel(skin, "SDK", "Select the Android SDK Location", true);
 		androidKeyStore = new FileInputPanel(skin, "KeyStore", "Select the Key Store Location", false);
-		androidKeyAlias = new InputPanel(skin, "KeyAlias", "Select the Key Alias Location");
-		androidKeyStorePassword = new InputPanel(skin, "KeyStorePasswd", "Key Store Password", false);
-		androidKeyAliasPassword = new InputPanel(skin, "KeyAliasPasswd", "Key Alias Password", false);
+		androidKeyAlias = InputPanelFactory.createInputPanel(skin, "KeyAlias", "Select the Key Alias Location");
+		androidKeyStorePassword = InputPanelFactory.createInputPanel(skin, "KeyStorePasswd", "Key Store Password", false);
+		androidKeyAliasPassword = InputPanelFactory.createInputPanel(skin, "KeyAliasPasswd", "Key Alias Password", false);
 
 		options[0] = type;
 		options[1] = os;

@@ -28,6 +28,7 @@ import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
 public class EditSoundDialog extends EditElementDialog {
 	
@@ -40,10 +41,10 @@ public class EditSoundDialog extends EditElementDialog {
 		super(skin);
 		
 		inputs = new InputPanel [4];
-		inputs[0] = new InputPanel(skin, "Sound ID", "The id of the sound");
-		inputs[1] = new InputPanel(skin, "Filename", "Filename of the sound", getSoundList());
-		inputs[2] = new InputPanel(skin, "Loop", "True if the sound is looping", Param.Type.BOOLEAN, false);
-		inputs[3] = new InputPanel(skin, "Volume", "Select the volume");
+		inputs[0] = InputPanelFactory.createInputPanel(skin, "Sound ID", "The id of the sound");
+		inputs[1] = InputPanelFactory.createInputPanel(skin, "Filename", "Filename of the sound", getSoundList());
+		inputs[2] = InputPanelFactory.createInputPanel(skin, "Loop", "True if the sound is looping", Param.Type.BOOLEAN, false);
+		inputs[3] = InputPanelFactory.createInputPanel(skin, "Volume", "Select the volume");
 		
 		inputs[0].setMandatory(true);
 		inputs[1].setMandatory(true);
