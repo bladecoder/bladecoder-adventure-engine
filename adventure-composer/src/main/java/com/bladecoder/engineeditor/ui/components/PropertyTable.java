@@ -16,6 +16,7 @@
 package com.bladecoder.engineeditor.ui.components;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -24,28 +25,37 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
-public class PropertyTable extends Table {
+public class PropertyTable extends Container<Table> {
 	private static final String[] BOOLEAN_VALUES = {"", "true", "false"};
 
 	Skin skin;
+	Table table;
 
 	public enum Types {
 		INTEGER, BOOLEAN, FLOAT, STRING
 	}
 
 	public PropertyTable(Skin skin) {
-		super(skin);
+//		super(skin);
+		table = new Table(skin);
 		this.skin = skin;
 		top().left();
+		table.top().left();
 		
-		add(new Label("Name", skin));
-		add(new Label("Value", skin));
+		table.add(new Label("Name", skin));
+		table.add(new Label("Value", skin));
+		table.setFillParent(true);
+		
+		fill();
+		prefHeight(1000);
+		
+		setActor(table);
 	}
 
 	public void addProperty(String name, String value, Types type) {
 		
-		row();
-		add(new Label(name, skin)).expandX().left();
+		table.row();
+		table.add(new Label(name, skin)).expandX().left();
 		
 		if(type == Types.BOOLEAN) {
 			SelectBox<String> sb= new SelectBox<String>(skin);
@@ -53,7 +63,7 @@ public class PropertyTable extends Table {
 			if(value!=null)
 				sb.setSelected(value);
 			sb.setName(name);
-			add(sb).expandX().left();
+			table.add(sb).expandX().left();
 			
 			sb.addListener(new ChangeListener() {
 				
@@ -69,7 +79,7 @@ public class PropertyTable extends Table {
 		} else {
 			TextField tf = new TextField( value==null?"":value, skin);
 			tf.setName(name);
-			add(tf).expandX().left();
+			table.add(tf).expandX().left();
 			
 			tf.addListener(new FocusListener() {
 				
@@ -102,4 +112,8 @@ public class PropertyTable extends Table {
 		
 	}
 
+
+	protected void clearProps() {
+		table.clear();
+	}
 }

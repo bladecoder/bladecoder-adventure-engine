@@ -42,13 +42,13 @@ import com.bladecoder.engineeditor.ui.ProjectToolbar;
 import com.bladecoder.engineeditor.ui.ScenePanel;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.Message;
+import com.bladecoder.engineeditor.utils.Versions;
 
 //TODO: Show COPYRIGHT_STR + VERSION_STR
 //TODO: Set TITLE in window bar. Set '*' in the title when modified
-//TODO: Query if save project when exit
 
 public class Editor implements ApplicationListener {
-	public static final String VERSION_STR = "0.1.0 (Beta)";
+	public static final String VERSION_STR = Versions.getVersion();
 	public static final String COPYRIGHT_STR = "2013 - Rafael García\nhttp://bladecoder.blogspot.com";
 	public static final String TITLE = "Adventure Composer";	
 	

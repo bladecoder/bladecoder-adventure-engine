@@ -64,7 +64,7 @@ public class SceneProps extends PropertyTable {
 		this.scn = scn;
 		this.doc = doc;
 		
-		clear();
+		clearProps();
 
 		if (scn != null) {
 			addProperty(BACKGROUND_PROP, doc.getBackground(scn));
