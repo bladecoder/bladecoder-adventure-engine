@@ -65,7 +65,7 @@ public class ActorProps extends PropertyTable {
 	public void setActorDocument(ChapterDocument doc, Element a) {		
 		this.doc = doc;
 		this.actor = a;
-		clear();
+		clearProps();
 
 		if (a != null) {
 

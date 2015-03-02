@@ -65,7 +65,7 @@ public class WorldProps extends PropertyTable {
 	}
 
 	private void setProject() {
-		clear();
+		clearProps();
 		addProperty(WIDTH_PROP, Ctx.project.getWorld().getWidth());
 		addProperty(HEIGHT_PROP, Ctx.project.getWorld().getHeight());		
 		addProperty(TITLE_PROP, Ctx.project.getTitle());
