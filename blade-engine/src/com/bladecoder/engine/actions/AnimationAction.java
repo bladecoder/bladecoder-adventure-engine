@@ -70,6 +70,7 @@ public class AnimationAction extends BaseCallbackAction implements Action {
 			Vector2 p = Param.parseVector2(params.get("pos"));
 			posx = p.x;
 			posy = p.y;
+			setPos = SET_POS_ABSOLUTE;
 		}
 		
 		if (params.get("absolute") != null) {
