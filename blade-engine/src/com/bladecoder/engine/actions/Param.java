@@ -145,9 +145,7 @@ public class Param {
 		if(s==null)
 			return null;
 		
-		String[] v = null;
-		
-		v = new String[2];
+		String[] v = new String[2];
 
 		int idx = s.indexOf(STRING_PARAM_SEPARATOR.charAt(0));
 		

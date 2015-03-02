@@ -169,15 +169,16 @@ public class ActionList extends ElementList {
 			String id = e.getAttribute("class").isEmpty()?e.getAttribute("action_name"): e.getAttribute("class");
 
 			String actor = e.getAttribute("actor");
+			boolean animationAction = e.getAttribute("action_name").equals("Animation");
 
-			if (!actor.isEmpty()) {
+			if (!actor.isEmpty()&&!animationAction) {
 				String[] s = Param.parseString2(actor);
 				
 				if(s[0] != null)
-					id =MessageFormat.format("[GREEN]{0}[] {1}.{2}", s[0], s[1], id);
+					id = MessageFormat.format("[GREEN]{0}[] {1}.{2}", s[0], s[1], id);
 				else
 					id = MessageFormat.format("{0}.{1}", actor, id);
-			} else if(!e.getAttribute("animation").isEmpty()){
+			} else if(animationAction){
 				String a = e.getAttribute("animation");
 				String[] s = Param.parseString2(a);
 				
@@ -200,7 +201,7 @@ public class ActionList extends ElementList {
 				Node n = attr.item(i);
 				String name = n.getNodeName();
 
-				if (name.equals("actor") || name.equals("class") || name.equals("action_name"))
+				if (name.equals("actor") || name.equals("class") || name.equals("action_name") || (e.getAttribute("action_name").equals("Animation") && name.equals("animation")))
 					continue;
 
 				String v = n.getNodeValue();

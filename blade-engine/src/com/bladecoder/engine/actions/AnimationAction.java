@@ -21,6 +21,7 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.BaseCallbackAction;
 import com.bladecoder.engine.actions.Param;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
@@ -37,17 +38,15 @@ public class AnimationAction extends BaseCallbackAction implements Action {
 		new Param("count", "The times to repeat. -1 to infinity repeat", Type.INTEGER),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
 		new Param("animation_type", "The repeat mode", Type.STRING, true, "sprite defined", new String[]{"repeat", "yoyo", "no_repeat", "reverse", "sprite defined"}),
-		new Param("x", "Puts actor 'x' position after sets the FA", Type.FLOAT),
-		new Param("y", "Puts actor 'y' position after sets the FA", Type.FLOAT),
-		new Param("dx", "Adds 'dx' to the actor position", Type.FLOAT),
-		new Param("dy", "Adds 'dy' to the actor position", Type.FLOAT),			
+		new Param("pos", "Puts actor position after setting the animation", Type.VECTOR2, false),
+		new Param("absolute", "Sets the position absolute or relative", Type.BOOLEAN, false)		
 		};		
 	
 	private static final int NO_POS = 0;
 	private static final int SET_POS_ABSOLUTE = 1;
 	private static final int SET_POS_RELATIVE = 2;
 	
-	private String fa;
+	private String animation;
 	private String actorId;
 	private float posx, posy;
 	private int setPos = NO_POS;
@@ -58,18 +57,28 @@ public class AnimationAction extends BaseCallbackAction implements Action {
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		actorId = params.get("actor");
-		fa = params.get("animation");
+		animation = params.get("animation");
+		
+		String a[] = Param.parseString2(animation);
+		
+		if(a[0] != null)
+			actorId = a[0];
+		
+		animation = a[1];
 
-		if (params.get("x") != null) {
-			posx = Float.parseFloat(params.get("x"));
-			posy = Float.parseFloat(params.get("y"));
-			setPos = SET_POS_ABSOLUTE;
+		if (params.get("pos") != null) {
+			Vector2 p = Param.parseVector2(params.get("pos"));
+			posx = p.x;
+			posy = p.y;
 		}
 		
-		if (params.get("dx") != null) {
-			posx = Float.parseFloat(params.get("dx"));
-			posy = Float.parseFloat(params.get("dy"));
-			setPos = SET_POS_RELATIVE;
+		if (params.get("absolute") != null) {
+			boolean absolute = Boolean.parseBoolean(params.get("absolute"));
+			
+			if(absolute)
+				setPos = SET_POS_ABSOLUTE;
+			else
+				setPos = SET_POS_RELATIVE;
 		}
 		
 		
@@ -100,7 +109,7 @@ public class AnimationAction extends BaseCallbackAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 		setVerbCb(cb);
-		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", fa));
+		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", animation));
 		
 		float scale =  EngineAssetManager.getInstance().getScale();
 
@@ -112,14 +121,14 @@ public class AnimationAction extends BaseCallbackAction implements Action {
 			actor.setPosition(actor.getX() + posx * scale, actor.getY() + posy * scale);
 		}
 		
-		actor.startAnimation(fa, repeat, count, getWait()?this:null);
+		actor.startAnimation(animation, repeat, count, getWait()?this:null);
 		
 		return getWait();
 	}
 
 	@Override
 	public void write(Json json) {		
-		json.writeValue("fa", fa);
+		json.writeValue("animation", animation);
 		json.writeValue("actorId", actorId);
 		json.writeValue("posx", posx);
 		json.writeValue("posy", posy);
@@ -132,7 +141,7 @@ public class AnimationAction extends BaseCallbackAction implements Action {
 
 	@Override
 	public void read (Json json, JsonValue jsonData) {	
-		fa = json.readValue("fa", String.class, jsonData);
+		animation = json.readValue("animation", String.class, jsonData);
 		actorId = json.readValue("actorId", String.class, jsonData);
 		posx = json.readValue("posx", Float.class, jsonData);
 		posy = json.readValue("posy", Float.class, jsonData);

@@ -17,14 +17,12 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.Verb;
+import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
 /**
  * Cancels a running verb.
@@ -34,15 +32,15 @@ import com.bladecoder.engine.model.World;
 public class CancelVerbAction implements Action {
 	public static final String INFO = "Stops the named verb if it is in execution.";
 	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.ACTOR, false),
-		new Param("verb", "The verb to stop", Type.STRING, true), 
-		new Param("target", "If the verb is 'use', the target actor", Type.ACTOR)
-		};
-	
+			new Param("actor", "The target actor", Type.ACTOR, false),
+			new Param("verb", "The verb to stop", Type.STRING, true),
+			new Param("target", "If the verb is 'use', the target actor",
+					Type.ACTOR) };
+
 	String actorId;
 	String verb;
 	String target;
-	
+
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		actorId = params.get("actor");
@@ -53,15 +51,27 @@ public class CancelVerbAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 
-		if(actorId != null) {
-			BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
-		
-			actor.getVerbManager().cancelVerb(verb, actor.getState(), target);
-		} else {
-			Scene s = World.getInstance().getCurrentScene();
-			s.getVerbManager().cancelVerb(verb, s.getState(), target);
+		Verb v = null;
+
+		if (actorId != null) {
+			BaseActor a = World.getInstance().getCurrentScene()
+					.getActor(actorId, true);
+			v = a.getVerb(verb, target);
 		}
-		
+
+		if (v == null) {
+			v = World.getInstance().getCurrentScene().getVerb(verb);
+		}
+
+		if (v == null) {
+			v = VerbManager.getDefaultVerbs().get(verb);
+		}
+
+		if (v != null)
+			v.cancel();
+		else
+			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actorId);
+
 		return false;
 	}
 

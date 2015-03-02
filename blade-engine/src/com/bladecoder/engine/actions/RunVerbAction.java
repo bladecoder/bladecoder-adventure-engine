@@ -59,7 +59,7 @@ public class RunVerbAction extends BaseCallbackAction {
 	/** 
 	 * When the verb is a comma separated verb list, we use chooseCriteria as criteria to choose the verb to execute.
 	 */
-	String chooseCriteria;
+	String chooseCriteria = "first";
 	/** Used when choose_criteria is 'iterate' or 'cycle' */
 	int chooseCount = 0;
 
@@ -100,13 +100,18 @@ public class RunVerbAction extends BaseCallbackAction {
 			BaseActor a = World.getInstance().getCurrentScene()
 					.getActor(actorId, true);
 			v = a.getVerb(verb, target);
-		} else {
+		}
+		
+		if (v == null) {
 			v = World.getInstance().getCurrentScene().getVerb(verb);
 		}
 
 		if (v == null) {
 			v = VerbManager.getDefaultVerbs().get(verb);
 		}
+		
+		if (v == null)
+			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actorId);
 
 		return v;
 	}
@@ -200,16 +205,8 @@ public class RunVerbAction extends BaseCallbackAction {
 	}
 
 	public void cancel() {
-		Verb v = getVerb(verb, target);
-
-		if (v != null)
-			v.cancel();
-		else {
-			EngineLogger
-					.error(MessageFormat
-							.format("Cancel: Verb ''{0}'' not found for actor ''{1}'' and target ''{2}''",
-									verb, actorId, target));
-		}
+		ip = Integer.MAX_VALUE/2;
+		currentRepeat++;
 	}
 
 	@Override
