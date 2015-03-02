@@ -52,6 +52,7 @@ public class RunVerbAction extends BaseCallbackAction {
 	String verbList;
 	String verb;
 	String target;
+	String state;
 	int ip = -1;
 	int repeat = 1;
 	int currentRepeat = 0;
@@ -93,13 +94,14 @@ public class RunVerbAction extends BaseCallbackAction {
 		return getWait();
 	}
 
-	private Verb getVerb(String verb, String target) {
+	private Verb getVerb(String verb, String target, String state) {
 		Verb v = null;
 
 		if (actorId != null) {
 			BaseActor a = World.getInstance().getCurrentScene()
 					.getActor(actorId, true);
-			v = a.getVerb(verb, target);
+			
+			v = a.getVerbManager().getVerb(verb, state, target);
 		}
 		
 		if (v == null) {
@@ -138,19 +140,29 @@ public class RunVerbAction extends BaseCallbackAction {
 		}
 		
 		verb =  v.trim();
+		
+		// Gets the actor/scene state.
+		
+		if (actorId != null && World.getInstance().getCurrentScene()
+				.getActor(actorId, true).getVerb(verb, target) != null) {
+			 state = World.getInstance().getCurrentScene()
+					.getActor(actorId, true).getState();
+		} else if(World.getInstance().getCurrentScene().getVerb(verb) != null) {
+			 state = World.getInstance().getCurrentScene().getState();
+		}
 	}
 
 	private void nextStep() {
 
 		boolean stop = false;
 
-		Verb v = getVerb(verb, target);
+		Verb v = getVerb(verb, target, state);
 
 		if (v == null) {
 			EngineLogger
 					.error(MessageFormat
-							.format("Verb ''{0}'' not found for actor ''{1}'' and target ''{2}''",
-									verb, actorId, target));
+							.format("Verb ''{0}'' not found for actor ''{1}({3})'' and target ''{2}''",
+									verb, actorId, target, World.getInstance().getCurrentScene().getActor(actorId, true).getState()));
 
 			return;
 		}
@@ -160,6 +172,9 @@ public class RunVerbAction extends BaseCallbackAction {
 		while ((currentRepeat < repeat || repeat == -1) && !stop) {
 			while (ip < actions.size() && !stop) {
 				Action a = actions.get(ip);
+				
+				if(EngineLogger.debugMode())
+					EngineLogger.debug("RunVerbAction: " + verb + "(" + ip + ") " + a.getClass().getSimpleName());
 
 				try {
 					if(a.run(this))
@@ -177,13 +192,13 @@ public class RunVerbAction extends BaseCallbackAction {
 				if (currentRepeat < repeat || repeat == -1) {
 					ip = 0;
 					selectVerb();
-					v = getVerb(verb, target);
+					v = getVerb(verb, target, state);
 					
 					if (v == null) {
 						EngineLogger
 								.error(MessageFormat
-										.format("Verb ''{0}'' not found for actor ''{1}'' and target ''{2}''",
-												verb, actorId, target));
+										.format("Verb ''{0}'' not found for actor ''{1}({3})'' and target ''{2}''",
+												verb, actorId, target, World.getInstance().getCurrentScene().getActor(actorId, true).getState()));
 
 						return;
 					}
@@ -220,6 +235,7 @@ public class RunVerbAction extends BaseCallbackAction {
 		json.writeValue("chooseCriteria", chooseCriteria);
 		json.writeValue("chooseCount", chooseCount);
 		json.writeValue("verbList", verbList);
+		json.writeValue("state", state);
 		super.write(json);
 	}
 
@@ -235,6 +251,7 @@ public class RunVerbAction extends BaseCallbackAction {
 		chooseCriteria = json.readValue("chooseCriteria", String.class, jsonData);
 		chooseCount = json.readValue("chooseCount", Integer.class, jsonData);
 		verbList = json.readValue("verbList", String.class, jsonData);
+		state = json.readValue("state", String.class, jsonData);
 		super.read(json, jsonData);
 	}
 

@@ -17,8 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.BaseCallbackAction;
-import com.bladecoder.engine.actions.Param;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
@@ -31,7 +29,6 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
 
 public class SayAction extends BaseCallbackAction {
 	public static final String INFO = "Says a text";
@@ -101,7 +98,6 @@ public class SayAction extends BaseCallbackAction {
 	@Override
 	public boolean run(ActionCallback cb) {
 		setVerbCb(cb);	
-		EngineLogger.debug("SAY ACTION");
 		BaseActor actor = World.getInstance().getCurrentScene()
 				.getActor(actorId, false);
 
