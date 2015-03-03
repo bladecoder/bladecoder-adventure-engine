@@ -40,7 +40,7 @@ public class SetActiveAction implements Action {
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		String[] a = Param.parseString2("actor");
+		String[] a = Param.parseString2(params.get("actor"));
 		
 		sceneId = a[0];
 		actorId = a[1];
@@ -53,7 +53,7 @@ public class SetActiveAction implements Action {
 	public boolean run(ActionCallback cb) {
 		Scene s;
 		
-		if(sceneId != null) {
+		if(sceneId != null && !sceneId.isEmpty()) {
 			s = World.getInstance().getScene(sceneId);
 		} else {
 			s = World.getInstance().getCurrentScene();

@@ -39,7 +39,7 @@ public class SetStateAction implements Action {
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		String[] a = Param.parseString2("actor");
+		String[] a = Param.parseString2(params.get("actor"));
 		
 		sceneId = a[0];
 		actorId = a[1];

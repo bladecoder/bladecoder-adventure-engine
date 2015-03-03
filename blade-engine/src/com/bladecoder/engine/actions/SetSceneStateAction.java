@@ -24,8 +24,8 @@ import com.bladecoder.engine.model.World;
 public class SetSceneStateAction implements Action {
 	public static final String INFO = "Sets the scene state";
 	public static final Param[] PARAMS = {
-		new Param("scene", "The target actor", Type.SCENE),
-		new Param("state", "The actor 'state'", Type.STRING)
+		new Param("scene", "The scene", Type.SCENE),
+		new Param("state", "The scene 'state'", Type.STRING)
 		};		
 	
 	String sceneId;
