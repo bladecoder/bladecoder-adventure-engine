@@ -29,13 +29,13 @@ import com.bladecoder.engineeditor.Ctx;
 
 public class SceneActorInputPanel extends InputPanel {
 	SelectBox<String> scene;
-	SelectBox<String> actor;
+	EditableSelectBox actor;
 	Table panel;
 
 	SceneActorInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
 		panel = new Table(skin);
 		scene = new SelectBox<String>(skin);
-		actor = new SelectBox<String>(skin);
+		actor = new EditableSelectBox(skin);
 
 		panel.add(new Label(" Scene ", skin));
 		panel.add(scene);
@@ -111,8 +111,10 @@ public class SceneActorInputPanel extends InputPanel {
 		if(idx != -1)
 			scene.setSelectedIndex(idx);
 		
-		idx = actor.getItems().indexOf(out[1], false);
-		if(idx != -1)
-			actor.setSelectedIndex(idx);
+//		idx = actor.getItems().indexOf(out[1], false);
+//		if(idx != -1)
+//			actor.setSelectedIndex(idx);
+		
+		actor.setSelected(s);
 	}
 }
