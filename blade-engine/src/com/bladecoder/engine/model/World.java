@@ -134,6 +134,7 @@ public class World implements Serializable, AssetConsumer {
 		spriteBatch = new SpriteBatch();
 
 		transition = new Transition();
+		paused = false;
 
 		disposed = false;
 	}
@@ -433,6 +434,16 @@ public class World implements Serializable, AssetConsumer {
 	public void dispose() {
 
 		try {
+			
+			textManager.reset();
+			timers.clear();
+			currentScene.stopMusic();
+			currentDialog = null;
+
+			transition.reset();
+
+			// Clear all pending callbacks
+			ActionCallbackQueue.clear();					
 
 			// ONLY dispose currentscene because other scenes are already
 			// disposed
