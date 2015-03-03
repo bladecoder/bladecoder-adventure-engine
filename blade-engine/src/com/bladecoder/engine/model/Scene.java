@@ -461,6 +461,7 @@ public class Scene implements Serializable,
 		for(SceneLayer layer:layers) {
 			if(layer.getName().equals(a.getLayer())) {
 				layer.getActors().remove(a);
+				break;
 			}
 		}
 		

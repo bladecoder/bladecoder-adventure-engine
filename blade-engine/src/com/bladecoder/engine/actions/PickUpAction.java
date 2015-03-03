@@ -34,18 +34,18 @@ public class PickUpAction implements Action {
 		new Param("animation", "The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'", Type.STRING)
 		};
 	
-	String actorId;
-	String fa;
-	String scene;
+	private String actorId;
+	private String animation;
+	private String sceneId;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		fa = params.get("animation");
+		animation = params.get("animation");
 		
 		String[] a = Param.parseString2(params.get("actor"));
 		
 		actorId = a[1];
-		scene = a[0];
+		sceneId = a[0];
 	}
 
 	@Override
@@ -55,8 +55,8 @@ public class PickUpAction implements Action {
 		
 		Scene scn;
 		
-		if(scene != null) {
-			scn = World.getInstance().getScene(scene);
+		if(sceneId != null) {
+			scn = World.getInstance().getScene(sceneId);
 			actor = scn.getActor(actorId, false);
 			actor.loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
@@ -71,8 +71,8 @@ public class PickUpAction implements Action {
 		if (actor instanceof SpriteActor) {
 			SpriteActor a = (SpriteActor) actor;
 
-			if(fa != null)
-				a.startAnimation(fa, null);
+			if(animation != null)
+				a.startAnimation(animation, null);
 			else
 				a.startAnimation(a.getId() + ".inventory", null);
 			

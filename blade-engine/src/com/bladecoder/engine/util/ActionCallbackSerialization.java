@@ -137,8 +137,8 @@ public class ActionCallbackSerialization {
 				return id;
 		}
 
-		// search in defaultVerbs
-		for (Verb v : VerbManager.getDefaultVerbs().values()) {
+		// search in worldVerbs
+		for (Verb v : VerbManager.getWorldVerbs().values()) {
 			id = find(cb, v);
 			if (id != null) {
 				StringBuilder stringBuilder = new StringBuilder("DEFAULT_VERB");
@@ -175,7 +175,7 @@ public class ActionCallbackSerialization {
 
 		if (actorId.equals("DEFAULT_VERB")) {
 
-			v = VerbManager.getDefaultVerbs().get(verbId);
+			v = VerbManager.getWorldVerbs().get(verbId);
 		} else {
 
 			BaseActor a;

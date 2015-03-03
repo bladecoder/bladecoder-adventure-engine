@@ -17,55 +17,36 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 
-public class SetActiveAction implements Action {
-	public static final String INFO = "Change the visible/interaction properties for the selected actor.";
+public class SetSceneStateAction implements Action {
+	public static final String INFO = "Sets the scene state";
 	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.SCENE_ACTOR, false),
-		new Param("visible", "sets the actor visibility", Type.BOOLEAN), 
-		new Param("interaction", "when 'true' the actor responds to the user input", Type.BOOLEAN)
+		new Param("scene", "The target actor", Type.SCENE),
+		new Param("state", "The actor 'state'", Type.STRING)
 		};		
 	
-	String actorId;
 	String sceneId;
-	String visible;
-	String interaction;
+	String state;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		String[] a = Param.parseString2("actor");
 		
-		sceneId = a[0];
-		actorId = a[1];
-		
-		visible = params.get("visible");
-		interaction = params.get("interaction");
+		sceneId = params.get("scene");;
+		state = params.get("state");
 	}
 
 	@Override
-	public boolean run(ActionCallback cb) {
-		Scene s;
+	public boolean run(ActionCallback cb) {			
+		Scene s = (sceneId != null && !sceneId.isEmpty())? World.getInstance().getScene(sceneId): World.getInstance().getCurrentScene();
 		
-		if(sceneId != null) {
-			s = World.getInstance().getScene(sceneId);
-		} else {
-			s = World.getInstance().getCurrentScene();
-		}
-		
-		BaseActor actor = s.getActor(actorId, true);
-		
-		if(visible != null) actor.setVisible(Boolean.parseBoolean(visible));
-		if(interaction != null) actor.setInteraction(Boolean.parseBoolean( interaction));
+		s.setState(state);
 		
 		return false;
 	}
+
 
 	@Override
 	public String getInfo() {
