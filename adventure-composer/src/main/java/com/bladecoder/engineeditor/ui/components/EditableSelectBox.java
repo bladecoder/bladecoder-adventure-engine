@@ -37,6 +37,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
@@ -73,6 +74,13 @@ public class EditableSelectBox extends Table {
 				return true;
 			}
 		});
+		
+		selectList.getList().addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+					fire(event);				
+			}
+		});
 	}
 	
 	public String getSelected() {
@@ -88,7 +96,8 @@ public class EditableSelectBox extends Table {
 		float oldPrefWidth = getPrefWidth();
 
 		selectList.list.setItems(newItems);
-		selectList.list.setSelectedIndex(0);
+		if(newItems.length > 0)
+			selectList.list.setSelectedIndex(0);
 
 		invalidate();
 		if (oldPrefWidth != getPrefWidth()) invalidateHierarchy();
