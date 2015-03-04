@@ -15,35 +15,30 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engineeditor.Ctx;
 
-public class ActorInputPanel extends EditableOptionsInputPanel {	
-	ActorInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
-		NodeList actors = Ctx.project.getSelectedChapter().getActors(Ctx.project.getSelectedScene());
-		int l = actors.getLength();
-		if(!mandatory) l++;
-		String values[] = new String[l];
-		
-		if(!mandatory) {
-			values[0] = "";
-		}
-		
-		for(int i = 0; i < actors.getLength(); i++) {
-			if(mandatory)
-				values[i] = ((Element)actors.item(i)).getAttribute("id");
-			else
-				values[i+1] = ((Element)actors.item(i)).getAttribute("id");
-		}
-		
+public class EditableOptionsInputPanel extends InputPanel {
+	EditableSelectBox input;
+	
+	EditableOptionsInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, String[] options) {
 		input = new EditableSelectBox(skin);
 		init(skin, title, desc, input, mandatory, defaultValue);
-		input.setItems(values);
-       	
-		if(defaultValue != null)
-    		setText(defaultValue);
+		
+		if(options != null)
+    		input.setItems(options);
+	}
+	
+	EditableOptionsInputPanel() {
+	}
+
+	public String getText() {
+		return input.getSelected();
+	}
+
+	public void setText(String s) {
+		if(s == null)
+			return;
+		
+		input.setSelected(s);
 	}
 }

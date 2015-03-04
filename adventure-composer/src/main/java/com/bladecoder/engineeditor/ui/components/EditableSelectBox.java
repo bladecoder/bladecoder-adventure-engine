@@ -47,6 +47,7 @@ public class EditableSelectBox extends Table {
 	private TextButton showListButton;
 	private SelectList selectList;
 	
+	@SuppressWarnings("unused")
 	private ClickListener clickListener;
 	
 	private boolean disabled;
@@ -116,7 +117,7 @@ public class EditableSelectBox extends Table {
 		private Actor previousScrollFocus;
 
 		public SelectList (Skin skin, final TextField inputBox) {
-			super(null, skin);
+			super(null, skin.get(SelectBoxStyle.class).scrollStyle);
 			this.selectBox = inputBox;
 
 			setOverscroll(false, false);
