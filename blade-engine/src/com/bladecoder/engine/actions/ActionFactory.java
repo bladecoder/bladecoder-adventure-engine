@@ -81,6 +81,10 @@ public class ActionFactory {
 				"com.bladecoder.engine.actions.TransitionAction");
 		actions.put("LoadChapter",
 				"com.bladecoder.engine.actions.LoadChapterAction");
+		actions.put("SetSceneState",
+				"com.bladecoder.engine.actions.SetSceneStateAction");
+		actions.put("RemoveActor",
+				"com.bladecoder.engine.actions.RemoveActorAction");		
 	}
 	
 	public static String []getActionList() {

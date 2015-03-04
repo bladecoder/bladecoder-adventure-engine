@@ -34,12 +34,16 @@ public class SetActiveAction implements Action {
 		};		
 	
 	String actorId;
+	String sceneId;
 	String visible;
 	String interaction;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
+		String[] a = Param.parseString2(params.get("actor"));
+		
+		sceneId = a[0];
+		actorId = a[1];
 		
 		visible = params.get("visible");
 		interaction = params.get("interaction");
@@ -47,9 +51,14 @@ public class SetActiveAction implements Action {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		String[] a = Param.parseString2(actorId);
+		Scene s;
 		
-		Scene s = (a[0] != null && !a[0].isEmpty())? World.getInstance().getScene(a[0]): World.getInstance().getCurrentScene();
+		if(sceneId != null && !sceneId.isEmpty()) {
+			s = World.getInstance().getScene(sceneId);
+		} else {
+			s = World.getInstance().getCurrentScene();
+		}
+		
 		BaseActor actor = s.getActor(actorId, true);
 		
 		if(visible != null) actor.setVisible(Boolean.parseBoolean(visible));

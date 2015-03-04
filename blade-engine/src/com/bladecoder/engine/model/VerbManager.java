@@ -26,7 +26,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class VerbManager implements Serializable {
-	protected static HashMap<String, Verb> defaultVerbs = new HashMap<String, Verb>();
+	protected static HashMap<String, Verb> worldVerbs = new HashMap<String, Verb>();
 	protected HashMap<String, Verb> verbs = new HashMap<String, Verb>();
 
 	public void addVerb(String id, Verb v) {
@@ -34,7 +34,7 @@ public class VerbManager implements Serializable {
 	}
 
 	public static void addDefaultVerb(String id, Verb v) {
-		defaultVerbs.put(id, v);
+		worldVerbs.put(id, v);
 	}
 	
 	// Used only in getVerb(). It is a class variable to avoid allocations
@@ -82,8 +82,8 @@ public class VerbManager implements Serializable {
 		return v;
 	}
 	
-	public static HashMap<String, Verb> getDefaultVerbs() {
-		return defaultVerbs;
+	public static HashMap<String, Verb> getWorldVerbs() {
+		return worldVerbs;
 	}
 
 	public HashMap<String, Verb> getVerbs() {
@@ -105,7 +105,7 @@ public class VerbManager implements Serializable {
 		v = getVerb(verb, state, target);
 
 		if (v == null) {
-			v = defaultVerbs.get(verb);
+			v = worldVerbs.get(verb);
 		}
 
 		if (v != null) {
@@ -128,7 +128,7 @@ public class VerbManager implements Serializable {
 		v = getVerb(verb, state, target);
 
 		if (v == null) {
-			v = defaultVerbs.get(verb);
+			v = worldVerbs.get(verb);
 		}
 
 		if (v != null)

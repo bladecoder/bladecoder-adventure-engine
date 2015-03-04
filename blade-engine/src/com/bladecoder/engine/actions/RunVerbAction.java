@@ -109,7 +109,7 @@ public class RunVerbAction extends BaseCallbackAction {
 		}
 
 		if (v == null) {
-			v = VerbManager.getDefaultVerbs().get(verb);
+			v = VerbManager.getWorldVerbs().get(verb);
 		}
 		
 		if (v == null)

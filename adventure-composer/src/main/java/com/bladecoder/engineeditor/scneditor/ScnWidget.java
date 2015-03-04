@@ -250,7 +250,8 @@ public class ScnWidget extends Widget {
 		}
 		
 		if (scn != null && animation && !loading && !loadingError) {
-			faRenderer.update(delta);
+			if(!inScene)
+				faRenderer.update(delta);
 			scn.update(delta);
 		}
 	}

@@ -17,8 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.BaseCallbackAction;
-import com.bladecoder.engine.actions.Param;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
@@ -28,7 +26,6 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
 
 public class GotoAction extends BaseCallbackAction {
 	public static final String INFO = "Walks to the selected position";
@@ -53,11 +50,7 @@ public class GotoAction extends BaseCallbackAction {
 		
 		if(targetId!=null) {
 			BaseActor target =  World.getInstance().getCurrentScene().getActor(targetId, false);
-			if(target != null) {
-				actor.goTo(new Vector2(target.getX(), target.getY()), getWait()?this:null);
-			} else {
-				EngineLogger.error("GotoAction - Target actor doesn't exists: " + targetId);
-			}
+			actor.goTo(new Vector2(target.getX(), target.getY()), getWait()?this:null);
 		} else 
 			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), getWait()?this:null);
 		

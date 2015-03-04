@@ -19,61 +19,56 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.VerbManager;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
-/**
- * Cancels a running verb.
- * 
- * @author rgarcia
- */
-public class CancelVerbAction implements Action {
-	public static final String INFO = "Stops the named verb if it is in execution.";
+public class RemoveActorAction implements Action {
+	public static final String INFO = "Deletes an actor from the game";
 	public static final Param[] PARAMS = {
-			new Param("actor", "The target actor", Type.ACTOR, false),
-			new Param("verb", "The verb to stop", Type.STRING, true),
-			new Param("target", "If the verb is 'use', the target actor",
-					Type.ACTOR) };
-
+		new Param("actor", "The actor to remove", Type.SCENE_ACTOR)
+		};		
+	
 	String actorId;
-	String verb;
-	String target;
-
+	String sceneId;
+	
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-		verb = params.get("verb");
-		target = params.get("target");
+		String[] a = Param.parseString2(params.get("actor"));
+		
+		sceneId = a[0];
+		actorId = a[1];
 	}
 
 	@Override
-	public boolean run(ActionCallback cb) {
-
-		Verb v = null;
-
-		if (actorId != null) {
-			BaseActor a = World.getInstance().getCurrentScene()
-					.getActor(actorId, true);
-			v = a.getVerb(verb, target);
+	public boolean run(ActionCallback cb) {		
+		Scene s;
+		
+		if(sceneId != null) {
+			s = World.getInstance().getScene(sceneId);
+		} else {
+			s = World.getInstance().getCurrentScene();
 		}
-
-		if (v == null) {
-			v = World.getInstance().getCurrentScene().getVerb(verb);
-		}
-
-		if (v == null) {
-			v = VerbManager.getWorldVerbs().get(verb);
-		}
-
-		if (v != null)
-			v.cancel();
-		else
-			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actorId);
-
+		
+		BaseActor a = s.getActor(actorId, false);
+		
+		if(a == null) { // search in inventory
+			a = World.getInstance().getInventory().removeItem(actorId);
+			
+			if(a != null) {
+				a.dispose();
+			} else {
+				EngineLogger.error("RemoveActor - Actor not found: " + actorId);
+			}
+		} else {
+			s.removeActor(a);
+			if(s ==  World.getInstance().getCurrentScene())
+				a.dispose();
+		}		
+		
 		return false;
 	}
+
 
 	@Override
 	public String getInfo() {
@@ -84,5 +79,4 @@ public class CancelVerbAction implements Action {
 	public Param[] getParams() {
 		return PARAMS;
 	}
-
 }

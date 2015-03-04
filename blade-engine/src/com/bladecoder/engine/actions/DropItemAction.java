@@ -33,7 +33,7 @@ import com.bladecoder.engine.util.EngineLogger;
 public class DropItemAction implements Action {
 	public static final String INFO = "Drops the inventory actor in the scene.";
 	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.ACTOR, false),
+		new Param("actor", "An actor in the inventory.", Type.STRING, false),
 		new Param("pos", "Position in the scene where de actor is dropped", Type.VECTOR2, false)
 		};	
 	

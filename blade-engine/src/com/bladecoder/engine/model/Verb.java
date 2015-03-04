@@ -53,6 +53,9 @@ public class Verb implements ActionCallback {
 	}
 	
 	public void run() {
+		if(EngineLogger.debugMode())
+			EngineLogger.debug(">>> Running verb: "+ id);
+		
 		ip = 0;
 		nextStep();
 	}

@@ -61,13 +61,15 @@ public class Inventory implements AssetConsumer {
 		items.remove(item);
 	}
 	
-	public void removeItem(String item) {
+	public SpriteActor removeItem(String item) {
 		for (SpriteActor a : items) {
 			if (a.getId().equals(item)){
 				items.remove(a);
-				break;
+				return a;
 			}
-		}	
+		}
+		
+		return null;
 	}
 	
 	public void removeAllItems() {

@@ -87,7 +87,7 @@ public class TextUtils {
 		
 		TextBounds b = font.getMultiLineBounds(str);
 		
-		y = (viewportHeight + b.height)/2;
+		y = (viewportHeight - b.height)/2;
 		
 		return y;
 	}
@@ -97,7 +97,7 @@ public class TextUtils {
 		
 		TextBounds b = font.getWrappedBounds(str, maxLength);
 		
-		y = (viewportHeight + b.height)/2;
+		y = (viewportHeight - b.height)/2;
 		
 		return y;
 	}

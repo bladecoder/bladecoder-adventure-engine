@@ -34,7 +34,7 @@ public class PositionAction extends BaseCallbackAction {
 		new Param("speed", "Duration of the animation in seconds", Type.FLOAT, true, "1.0"),
 		new Param("count", "The times to repeat", Type.INTEGER),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
-		new Param("repeat", "The repeat mode", Type.STRING, true, "repeat", new String[]{"repeat", "yoyo", "no_repeat"}),
+		new Param("repeat", "The repeat mode", Type.OPTION, true, "repeat", new String[]{"repeat", "yoyo", "no_repeat"}),
 		};		
 	
 	private String actorId;

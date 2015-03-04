@@ -17,46 +17,36 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.BaseCallbackAction;
-import com.bladecoder.engine.actions.Param;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 
-public class WaitAction extends BaseCallbackAction {
-	public static final String INFO = "Pause the action";
+public class SetSceneStateAction implements Action {
+	public static final String INFO = "Sets the scene state";
 	public static final Param[] PARAMS = {
-		new Param("time", "The time pause in seconds", Type.FLOAT, true, "1.0")
+		new Param("scene", "The scene", Type.SCENE),
+		new Param("state", "The scene 'state'", Type.STRING)
 		};		
 	
-	private float time;
+	String sceneId;
+	String state;
 	
-
-	@Override
-	public boolean run(ActionCallback cb) {
-		setVerbCb(cb);
-		World.getInstance().addTimer(time, this);
-		return getWait();
-	}
-
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		time = Float.parseFloat(params.get("time"));
-	}
-	
-	@Override
-	public void write(Json json) {		
-		json.writeValue("time", time);
-		super.write(json);	
+		
+		sceneId = params.get("scene");;
+		state = params.get("state");
 	}
 
 	@Override
-	public void read (Json json, JsonValue jsonData) {
-		time = json.readValue("time", Float.class, jsonData);
-		super.read(json, jsonData);
-	}	
-	
+	public boolean run(ActionCallback cb) {			
+		Scene s = (sceneId != null && !sceneId.isEmpty())? World.getInstance().getScene(sceneId): World.getInstance().getCurrentScene();
+		
+		s.setState(state);
+		
+		return false;
+	}
+
 
 	@Override
 	public String getInfo() {

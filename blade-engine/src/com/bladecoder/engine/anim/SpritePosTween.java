@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
-import com.bladecoder.engine.anim.Tween;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
@@ -24,6 +22,8 @@ import com.bladecoder.engine.model.SpriteActor;
 
 /**
  * Tween for spriteactor position animation
+ * 
+ * TODO: Y speed depends on scale if fake depth is used
  */
 public class SpritePosTween extends Tween {
 	
@@ -54,8 +54,10 @@ public class SpritePosTween extends Tween {
 	public void update(SpriteActor a, float delta) {
 		update(delta);
 		
-		a.setPosition(startX + getPercent() * (targetX - startX),
-				startY + getPercent() * (targetY - startY));
+		float percent = getPercent();
+		
+		a.setPosition(startX + percent * (targetX - startX),
+				startY + percent * (targetY - startY));
 	}
 	
 	@Override

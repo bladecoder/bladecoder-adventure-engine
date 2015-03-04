@@ -24,6 +24,7 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class SetStateAction implements Action {
 	public static final String INFO = "Sets the actor state";
@@ -33,26 +34,41 @@ public class SetStateAction implements Action {
 		};		
 	
 	String actorId;
+	String sceneId;
 	String state;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
+		String[] a = Param.parseString2(params.get("actor"));
 		state = params.get("state");
+		
+		if(a==null) // Called inside a scene
+			return;
+		
+		sceneId = a[0];
+		actorId = a[1];
 	}
 
 	@Override
-	public boolean run(ActionCallback cb) {
-		if(actorId != null) {
-			String[] a = Param.parseString2(actorId);
-			
-			Scene s = (a[0] != null && !a[0].isEmpty())? World.getInstance().getScene(a[0]): World.getInstance().getCurrentScene();
-			BaseActor actor = s.getActor(actorId, true);
+	public boolean run(ActionCallback cb) {			
+		Scene s = (sceneId != null && !sceneId.isEmpty())? World.getInstance().getScene(sceneId): World.getInstance().getCurrentScene();
 		
-			actor.setState(state);
-		} else {
-			World.getInstance().getCurrentScene().setState(state);
+		if(actorId == null) { 
+			// if called in a scene verb and no actor is specified, set the state of the scene
+			s.setState(state);
+			return false;
 		}
+		
+		BaseActor a = s.getActor(actorId, false);
+		
+		if(a == null) { // search in inventory
+			a = World.getInstance().getInventory().getItem(actorId);
+		}
+		
+		if(a != null)
+			a.setState(state);
+		else
+			EngineLogger.error("SetState - Actor not found: " + actorId);
 		
 		return false;
 	}
