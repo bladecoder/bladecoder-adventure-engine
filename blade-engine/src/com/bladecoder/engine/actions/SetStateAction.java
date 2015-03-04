@@ -40,16 +40,24 @@ public class SetStateAction implements Action {
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		String[] a = Param.parseString2(params.get("actor"));
+		state = params.get("state");
+		
+		if(a==null) // Called inside a scene
+			return;
 		
 		sceneId = a[0];
 		actorId = a[1];
-		
-		state = params.get("state");
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {			
 		Scene s = (sceneId != null && !sceneId.isEmpty())? World.getInstance().getScene(sceneId): World.getInstance().getCurrentScene();
+		
+		if(actorId == null) { 
+			// if called in a scene verb and no actor is specified, set the state of the scene
+			s.setState(state);
+			return false;
+		}
 		
 		BaseActor a = s.getActor(actorId, false);
 		
