@@ -62,6 +62,9 @@ public class InputPanelFactory extends Table {
 		case SCENE:
 			return new SceneInputPanel(skin, title, desc, mandatory, defaultValue);
 		case STRING:
+			if(options != null)
+				return new OptionsInputPanel(skin, title, desc, mandatory, defaultValue, options);
+			
 			return new StringInputPanel(skin, title, desc, mandatory, defaultValue);
 		case VECTOR2:
 			return new Vector2InputPanel(skin, title, desc, mandatory, defaultValue);
