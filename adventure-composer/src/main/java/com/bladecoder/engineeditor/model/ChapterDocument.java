@@ -243,6 +243,8 @@ public class ChapterDocument extends BaseDocument {
 				polygonalPathFinder.addObstacle(Param.parsePolygon(o.getAttribute("polygon"), o.getAttribute("pos")));
 			}
 		}
+		
+		scn.orderLayersByZIndex();
 
 		return scn;
 	}
@@ -419,6 +421,10 @@ public class ChapterDocument extends BaseDocument {
 		
 		if (e.getAttribute("obstacle").equals("true"))
 			a.setWalkObstacle(true);
+		
+		if (!e.getAttribute("zIndex").isEmpty()) {
+			a.setZIndex(Float.parseFloat(e.getAttribute("zIndex")));
+		}
 
 		return a;
 	}

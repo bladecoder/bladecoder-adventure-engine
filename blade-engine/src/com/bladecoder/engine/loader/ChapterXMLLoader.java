@@ -175,6 +175,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			actor = null;
 		} else if (localName.equals("scene")) {
 			scene.setPlayer((SpriteActor) scene.getActor(player, false));
+			scene.orderLayersByZIndex();
 		}
 	}
 
@@ -388,6 +389,12 @@ public class ChapterXMLLoader extends DefaultHandler {
 			float s = Float
 					.parseFloat(atts.getValue("scale"));
 			((SpriteActor)actor).setScale(s);
+		}
+		
+		if (atts.getValue("zIndex") != null) {
+			float z = Float
+					.parseFloat(atts.getValue("zIndex"));
+			actor.setZIndex(z);
 		}
 
 		if (atts.getValue("interaction") != null) {

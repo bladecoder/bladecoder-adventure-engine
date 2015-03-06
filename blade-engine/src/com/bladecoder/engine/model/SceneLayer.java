@@ -2,6 +2,7 @@ package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -58,5 +59,15 @@ public class SceneLayer {
 
 	public List<BaseActor> getActors() {
 		return actors;
+	}
+
+	public void orderByZIndex() {
+		Collections.sort(actors, new Comparator<BaseActor>() {
+
+			@Override
+			public int compare(BaseActor a1, BaseActor a2) {
+				return (int) (a1.getZIndex() - a2.getZIndex());
+			}
+		});
 	}
 }

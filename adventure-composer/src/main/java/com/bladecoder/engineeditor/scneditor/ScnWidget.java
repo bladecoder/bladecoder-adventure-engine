@@ -678,6 +678,8 @@ public class ScnWidget extends Widget {
 	private BaseActor createActor(ChapterDocument doc, Element e) {
 		BaseActor a = doc.getEngineActor(e);
 		scn.addActor(a);
+		SceneLayer l = scn.getLayer(a.getLayer());
+		l.orderByZIndex();
 
 		a.loadAssets();
 		EngineAssetManager.getInstance().finishLoading();

@@ -41,11 +41,11 @@ public class EditActorDialog extends EditElementDialog {
 			"Image actors show image files"
 			};
 
-	private InputPanel[] inputs = new InputPanel[13];
+	private InputPanel[] inputs = new InputPanel[14];
 	InputPanel typePanel;
 
 	String attrs[] = { "type", "id", "layer", "desc", "state", "interaction", "visible",
-			"walking_speed", "depth_type", "sprite_size", "camera", "fov", "scale" };
+			"walking_speed", "depth_type", "sprite_size", "camera", "fov", "scale", "zIndex" };
 
 	@SuppressWarnings("unchecked")
 	public EditActorDialog(Skin skin, BaseDocument doc, Element parent,
@@ -90,6 +90,10 @@ public class EditActorDialog extends EditElementDialog {
 		
 		inputs[12] = InputPanelFactory.createInputPanel(skin, "Scale",
 				"The sprite scale", Param.Type.FLOAT, false, "1",
+				null);
+		
+		inputs[13] = InputPanelFactory.createInputPanel(skin, "zIndex",
+				"The order to draw.", Param.Type.FLOAT, false, "0",
 				null);
 
 		setInfo(TYPES_INFO[0]);

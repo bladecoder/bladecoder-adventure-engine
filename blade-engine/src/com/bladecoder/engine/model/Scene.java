@@ -623,6 +623,12 @@ public class Scene implements Serializable,
 	}
 	
 
+	public void orderLayersByZIndex() {
+		for(SceneLayer l:layers) {
+			l.orderByZIndex();
+		}
+	}	
+
 	public PolygonalNavGraph getPolygonalNavGraph() {
 		return polygonalNavGraph;
 	}
@@ -694,6 +700,8 @@ public class Scene implements Serializable,
 			SceneLayer layer = getLayer(actor.getLayer());
 			layer.add(actor);
 		}
+		
+		orderLayersByZIndex();
 
 		backgroundFilename = json.readValue("background", String.class,
 				jsonData);

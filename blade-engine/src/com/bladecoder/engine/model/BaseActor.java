@@ -41,6 +41,7 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 	protected String id;
 	protected String desc;
 	protected Scene scene = null;
+	protected float zIndex;
 	
 	/** visibility and interaction activation */
 	private boolean interaction = true;
@@ -235,6 +236,14 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 	@Override
 	public int compareTo(BaseActor o) {
 		return (int) (o.getBBox().getY() - this.getBBox().getY());
+	}
+	
+	public float getZIndex() {
+		return zIndex;
+	}
+	
+	public void setZIndex(float z) {
+		zIndex = z;
 	}
 
 	public String getState() {
