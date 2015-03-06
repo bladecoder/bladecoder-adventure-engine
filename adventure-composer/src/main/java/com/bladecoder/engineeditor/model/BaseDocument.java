@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.model;
 
+import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -262,6 +263,12 @@ public abstract class BaseDocument extends PropertyChange {
 
 	public void setModified(Element e) {
 		setModified(e.getTagName(), e);
+	}
+	
+	public void setModified(Element e, Object source) {
+		modified = true;
+		PropertyChangeEvent evt = new PropertyChangeEvent(source, e.getTagName(), null, e);
+		firePropertyChange(evt);
 	}
 
 	public void setModified(String property, Element e) {

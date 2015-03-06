@@ -26,11 +26,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ElementList;
+import com.bladecoder.engineeditor.undo.UndoOp;
+import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public class ActorList extends ElementList {
 
@@ -40,15 +43,14 @@ public class ActorList extends ElementList {
 		super(skin, true);
 
 		playerBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(playerBtn, "ic_check",
-				"Set player", "Set player");
+		toolbar.addToolBarButton(playerBtn, "ic_check", "Set player", "Set player");
 		playerBtn.setDisabled(true);
 
 		list.addListener(new ChangeListener() {
-			
+
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-//				EditorLogger.debug("ACTOR LIST ELEMENT SELECTED");
+				// EditorLogger.debug("ACTOR LIST ELEMENT SELECTED");
 				int pos = list.getSelectedIndex();
 
 				if (pos == -1) {
@@ -59,7 +61,7 @@ public class ActorList extends ElementList {
 				}
 
 				toolbar.disableEdit(pos == -1);
-				playerBtn.setDisabled(pos== -1);
+				playerBtn.setDisabled(pos == -1);
 			}
 		});
 
@@ -72,33 +74,73 @@ public class ActorList extends ElementList {
 
 		list.setCellRenderer(listCellRenderer);
 
-		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ACTOR_SELECTED,
-				new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent e) {
-						int pos = list.getSelectedIndex();
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ACTOR_SELECTED, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent e) {
+				int pos = list.getSelectedIndex();
 
-						// Element newActor = (Element) e.getNewValue();
-						Element newActor = Ctx.project.getSelectedActor();
+				// Element newActor = (Element) e.getNewValue();
+				Element newActor = Ctx.project.getSelectedActor();
 
-						if (newActor == null)
-							return;
+				if (newActor == null)
+					return;
 
-						if (pos != -1) {
-							Element oldActor = list.getItems().get(pos);
+				if (pos != -1) {
+					Element oldActor = list.getItems().get(pos);
 
-							if (oldActor == newActor) {
-								return;
+					if (oldActor == newActor) {
+						return;
+					}
+				}
+
+				int i = list.getItems().indexOf(newActor, true);
+				if (i >= 0)
+					list.setSelectedIndex(i);
+			}
+		});
+
+		Ctx.project.getWorld().addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent e) {
+				if (e.getPropertyName().equals(BaseDocument.NOTIFY_ELEMENT_DELETED)) {
+					if (((Element) e.getNewValue()).getTagName().equals("actor")) {
+						Element el = (Element) e.getNewValue();
+
+						for (Element e2 : list.getItems()) {
+							if (e2 == el) {
+								int pos = list.getItems().indexOf(e2, true);
+								
+								list.getItems().removeIndex(pos);
+
+								clipboard = e2;
+								I18NUtils.putTranslationsInElement(doc, clipboard);
+								toolbar.disablePaste(false);
+
+								if (pos > 0)
+									list.setSelectedIndex(pos - 1);
+								else if (pos == 0 && list.getItems().size > 0)
+									list.setSelectedIndex(0);
 							}
 						}
-
-						int i = list.getItems().indexOf(newActor, true);
-						if(i >= 0)
-							list.setSelectedIndex(i);
 					}
-				});
+				} else if (e.getPropertyName().equals("actor") && e.getSource() instanceof UndoOp) {
+					Element el = (Element) e.getNewValue();
+					
+					if(getItems().indexOf(el, true) != -1)
+						return;
+					
+					addItem(el);
+
+					int i = getItems().indexOf(el, true);
+					if(i != -1)
+						list.setSelectedIndex(i);
+					
+					list.invalidateHierarchy();
+				}
+			}
+		});
 	}
-	
+
 	@Override
 	protected void delete() {
 		int pos = list.getSelectedIndex();
@@ -107,18 +149,17 @@ public class ActorList extends ElementList {
 			return;
 
 		Element e = list.getItems().get(pos);
-		
+
 		// delete player attr if the actor to delete is the player
-		if(((Element)e.getParentNode()).getAttribute("player").equals(e.getAttribute("id"))) {
-			((Element)e.getParentNode()).removeAttribute("player");
+		if (((Element) e.getParentNode()).getAttribute("player").equals(e.getAttribute("id"))) {
+			((Element) e.getParentNode()).removeAttribute("player");
 		}
-		
+
 		super.delete();
 	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(
-			Element e) {
+	protected EditElementDialog getEditElementDialogInstance(Element e) {
 		return new EditActorDialog(skin, doc, parent, e);
 	}
 
@@ -132,8 +173,7 @@ public class ActorList extends ElementList {
 
 		Element e = list.getItems().get(pos);
 
-		if (!e.getAttribute("type").equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)
-				) {
+		if (!e.getAttribute("type").equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
 			String id = e.getAttribute("id");
 
 			scn.setRootAttr(parent, "player", id);
@@ -159,11 +199,10 @@ public class ActorList extends ElementList {
 		public TextureRegion getCellImage(Element e) {
 			String type = e.getAttribute("type");
 
-			boolean isPlayer = ((Element)e.getParentNode()).getAttribute("player").equals(
-					e.getAttribute("id"));
+			boolean isPlayer = ((Element) e.getParentNode()).getAttribute("player").equals(e.getAttribute("id"));
 
 			String u = null;
-			
+
 			if (isPlayer) {
 				u = "ic_character_actor";
 			} else if (type.equals(ChapterDocument.IMAGE_ACTOR_TYPE)) {
@@ -173,19 +212,19 @@ public class ActorList extends ElementList {
 			} else if (type.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
 				u = "ic_base_actor";
 			} else if (type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
-				u = "ic_spine";			
+				u = "ic_spine";
 			} else if (type.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
 				u = "ic_3d";
 			}
 
 			return Ctx.assetManager.getIcon(u);
 		}
-		
+
 		@Override
 		protected boolean hasSubtitle() {
 			return true;
 		}
-		
+
 		@Override
 		protected boolean hasImage() {
 			return true;

@@ -24,7 +24,11 @@ import org.w3c.dom.NodeList;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
+import com.bladecoder.engineeditor.undo.UndoAddElement;
+import com.bladecoder.engineeditor.undo.UndoDeleteElement;
+import com.bladecoder.engineeditor.undo.UndoOp;
 import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public abstract class ElementList extends EditList<Element> {
@@ -102,7 +106,10 @@ public abstract class ElementList extends EditList<Element> {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				Element e = ((EditElementDialog)actor).getElement();
-				addItem(e);
+//				addItem(e);
+				UndoOp undoOp = new UndoAddElement(doc, e);
+				Ctx.undoStack.add(undoOp);
+
 				int i = getItems().indexOf(e, true);
 				if(i != -1)
 					list.setSelectedIndex(i);
@@ -143,6 +150,8 @@ public abstract class ElementList extends EditList<Element> {
 
 		Element e = list.getItems().removeIndex(pos);
 
+		UndoOp undoOp = new UndoDeleteElement(doc, e);
+		Ctx.undoStack.add(undoOp);
 		doc.deleteElement(e);
 
 		clipboard = e;

@@ -40,6 +40,7 @@ import com.bladecoder.engineeditor.ui.AssetPanel;
 import com.bladecoder.engineeditor.ui.ProjectPanel;
 import com.bladecoder.engineeditor.ui.ProjectToolbar;
 import com.bladecoder.engineeditor.ui.ScenePanel;
+import com.bladecoder.engineeditor.undo.UndoStack;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.Message;
 import com.bladecoder.engineeditor.utils.Versions;
@@ -69,6 +70,7 @@ public class Editor implements ApplicationListener {
 		Ctx.project = new Project();
 		Ctx.msg = new Message(skin);
 		Ctx.assetManager = new EditorAssetManager();
+		Ctx.undoStack = new UndoStack();
 
 		scnEditor = new ScnEditor(skin);
 		skin.getFont("default-font").setMarkupEnabled(true);
@@ -130,6 +132,7 @@ public class Editor implements ApplicationListener {
 		}
 		
 		stage.setScrollFocus(scnEditor.getScnWidget());
+		stage.setKeyboardFocus(scnEditor.getScnWidget());
 	}
 
 	@Override

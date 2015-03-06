@@ -19,7 +19,6 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 
 import com.bladecoder.engine.model.ActorRenderer;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -39,7 +38,6 @@ import com.badlogic.gdx.graphics.g3d.model.Animation;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader.Config;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
@@ -62,6 +60,7 @@ import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.Utils3D;
 
+@SuppressWarnings("deprecation")
 public class Sprite3DRenderer implements ActorRenderer {
 
 	private final static boolean USE_FBO = false;

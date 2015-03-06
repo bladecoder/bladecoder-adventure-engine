@@ -89,9 +89,10 @@ public class SpriteActor extends BaseActor {
 			if (depthType == DepthType.VECTOR) {
 				// interpolation equation
 				float s = scene.getFakeDepthScale(y);
+				
+				System.out.println("y:" + y + " scale:" + s + " V:" + scene.getDepthVector());
 
-				if (s != 0)
-					setScale(s);
+				setScale(s);
 			}
 
 			if (scene.getCameraFollowActor() == this)
@@ -150,7 +151,8 @@ public class SpriteActor extends BaseActor {
 
 	public void draw(SpriteBatch batch) {
 		if (isVisible()) {
-			renderer.draw(batch, getX(), getY(), scale);
+			if(scale != 0)
+				renderer.draw(batch, getX(), getY(), scale);
 		}
 	}
 

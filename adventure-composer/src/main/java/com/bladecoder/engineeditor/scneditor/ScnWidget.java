@@ -58,6 +58,7 @@ public class ScnWidget extends Widget {
 	// TMPs to avoid GC calls
 	private final Vector3 tmpV3 = new Vector3();
 	private final Vector2 tmpV2 = new Vector2();
+	private final Vector2 tmp2V2 = new Vector2();
 
 	private final SpriteBatch sceneBatch = new SpriteBatch();
 	private final CanvasDrawer drawer = new CanvasDrawer();
@@ -315,6 +316,8 @@ public class ScnWidget extends Widget {
 
 			// SCREEN CAMERA
 			batch.begin();
+			
+			drawFakeDepthMarkers((SpriteBatch) batch);
 
 			if (!inScene) {
 				faRenderer.draw((SpriteBatch) batch);
@@ -375,6 +378,47 @@ public class ScnWidget extends Widget {
 
 		}
 
+	}
+
+	private void drawFakeDepthMarkers(SpriteBatch batch) {
+		int margin = 5;
+		
+		Vector2 d = scn.getDepthVector();
+		
+		if(d==null)
+			return;
+		
+		tmp2V2.x = 0;
+		tmp2V2.y = d.y ;
+		worldToScreenCoords(tmp2V2);
+		
+		String s = "100%";
+		TextBounds tb = defaultFont.getBounds(s);
+		
+		float posx = tmp2V2.x - tb.width - 20;
+		
+		RectangleRenderer.draw((SpriteBatch) batch, posx, tmp2V2.y,
+				tb.width + margin * 2, tb.height + margin * 2, Color.BLACK);
+		RectangleRenderer.draw((SpriteBatch) batch, tmp2V2.x-20, tmp2V2.y,
+				20 , 2, Color.BLACK);
+		
+		defaultFont.draw(batch, s, posx + margin, tmp2V2.y + tb.height + margin);
+		
+		tmp2V2.x = 0;
+		tmp2V2.y = d.x ;
+		worldToScreenCoords(tmp2V2);
+		s="0%";
+		tb = defaultFont.getBounds(s);
+		
+		posx = tmp2V2.x - tb.width - 20;
+		
+		RectangleRenderer.draw((SpriteBatch) batch, posx, tmp2V2.y,
+				tb.width + margin * 2, tb.height + margin * 2, Color.BLACK);
+		RectangleRenderer.draw((SpriteBatch) batch, tmp2V2.x-20, tmp2V2.y,
+				20 , 2, Color.BLACK);
+		
+		defaultFont.draw(batch, s, posx + margin, tmp2V2.y + tb.height + margin);
+		
 	}
 
 	public void setInSceneSprites(boolean v) {
@@ -504,6 +548,16 @@ public class ScnWidget extends Widget {
 		getScene().getCamera().unproject(tmpV3, tmpV2.x, tmpV2.y, getWidth(),
 				getHeight());
 		coords.set(tmpV3.x, tmpV3.y);
+	}
+	
+	public void worldToScreenCoords(Vector2 coords) {
+		tmpV2.set(getX(), getY());
+		localToStageCoordinates(tmpV2);
+		tmpV3.set(coords.x, coords.y, 0);
+		getScene().getCamera().project(tmpV3, tmpV2.x, tmpV2.y, getWidth(),
+				getHeight());
+		coords.set(tmpV3.x, tmpV3.y);
+		stageToLocalCoordinates(coords);
 	}
 
 	public Scene getScene() {

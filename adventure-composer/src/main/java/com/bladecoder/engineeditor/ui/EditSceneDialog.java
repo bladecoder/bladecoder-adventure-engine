@@ -65,7 +65,7 @@ public class EditSceneDialog extends EditElementDialog {
 		inputs[2] = InputPanelFactory.createInputPanel(skin, "Lightmap",
 						"The lightmap for the scene", bgList);					
 		inputs[3] = InputPanelFactory.createInputPanel(skin, "Depth Vector",
-						"X: the actor scale when y=0, Y: the actor scale when y=scene height .", Param.Type.VECTOR2, false);
+						"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.", Param.Type.VECTOR2, false);
 		inputs[4] = InputPanelFactory.createInputPanel(skin, "State",
 				"The initial state for the scene.");
 		inputs[5] = InputPanelFactory.createInputPanel(skin, "Music Filename",

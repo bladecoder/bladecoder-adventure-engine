@@ -32,7 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Array;
 
 public class TabPanel extends Table {
-	private ButtonGroup buttonGroup;
+	private ButtonGroup<Button> buttonGroup;
 	private HorizontalGroup header;
 	private Container<Actor> body;
 	private List<Tab> tabs;
@@ -51,7 +51,7 @@ public class TabPanel extends Table {
 	public TabPanel(Skin skin) {
 		super(skin);
 		this.skin = skin;
-		buttonGroup = new ButtonGroup();
+		buttonGroup = new ButtonGroup<Button>();
 		header = new HorizontalGroup();
 		body = new Container<Actor>();
 		tabs = new ArrayList<Tab>();

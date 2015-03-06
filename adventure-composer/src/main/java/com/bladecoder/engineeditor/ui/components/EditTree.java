@@ -31,7 +31,7 @@ public abstract class EditTree extends Table {
 	protected EditToolbar toolbar;
     protected Tree tree;
     protected Skin skin;
-    protected Container container;
+    protected Container<ScrollPane> container;
     
 	private ImageButton upBtn;
 	private ImageButton downBtn;
@@ -50,7 +50,7 @@ public abstract class EditTree extends Table {
 		tree = new Tree(skin);
 			
 		ScrollPane scrollPane = new ScrollPane(tree, skin);
-		container = new Container(scrollPane);
+		container = new Container<ScrollPane>(scrollPane);
 		container.fill();
 		container.prefHeight(100);
 		

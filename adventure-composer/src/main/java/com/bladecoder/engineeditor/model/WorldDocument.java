@@ -36,6 +36,8 @@ public class WorldDocument extends  BaseDocument {
 	
 	public static final String NOTIFY_DOCUMENT_MODIFIED = "DOCUMENT_MODIFIED";
 	
+	private int width = -1, height = -1;
+	
     private PropertyChangeListener documentModifiedListener = new PropertyChangeListener() {	
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
@@ -88,20 +90,30 @@ public class WorldDocument extends  BaseDocument {
 	}
 
 	public int getWidth() {
-		return Integer.parseInt(doc.getDocumentElement().getAttribute("width"));
+		if(width == -1) {
+			width = Integer.parseInt(doc.getDocumentElement().getAttribute("width"));
+		}
+		
+		return width;
 	}
 	
 	public int getHeight() {
-		return  Integer.parseInt(doc.getDocumentElement().getAttribute("height"));		
+		if(height == -1) {
+			height = Integer.parseInt(doc.getDocumentElement().getAttribute("height"));	 
+		}
+		
+		return height;
 	}
 
 	public void setWidth(String value) {
+		width = Integer.parseInt(value);
 		doc.getDocumentElement().setAttribute("width", value);
 		modified = true;
 		firePropertyChange();
 	}
 	
 	public void setHeight(String value) {
+		height = Integer.parseInt(value);
 		doc.getDocumentElement().setAttribute("height", value);
 		modified = true;
 		firePropertyChange();

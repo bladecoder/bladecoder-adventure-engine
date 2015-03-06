@@ -26,24 +26,29 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.util.PolygonUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.undo.UndoDeleteElement;
+import com.bladecoder.engineeditor.undo.UndoSetAttr;
+import com.bladecoder.engineeditor.undo.UndoOp;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class ScnWidgetInputListener extends ClickListener {
 	private final ScnWidget scnWidget;
 
 	private static enum DraggingModes {
-		NONE, DRAGING_ACTOR, DRAGING_BBOX_POINT, DRAGING_WALKZONE, DRAGING_WALKZONE_POINT, DRAGING_OBSTACLE, DRAGING_OBSTACLE_POINT
+		NONE, DRAGGING_ACTOR, DRAGGING_BBOX_POINT, DRAGGING_WALKZONE, DRAGGING_WALKZONE_POINT, DRAGGING_OBSTACLE, DRAGGING_OBSTACLE_POINT, DRAGGING_MARKER_0, DRAGGING_MARKER_100
 	};
 
 	private DraggingModes draggingMode = DraggingModes.NONE;
 	private BaseActor selActor = null;
 	private Vector2 org = new Vector2();
+	private Vector2 undoOrg = new Vector2();
 	private int vertIndex;
 	private Polygon selPolygon = null;
 	private int selObstacleIndex = 0;
@@ -73,15 +78,13 @@ public class ScnWidgetInputListener extends ClickListener {
 
 			Ctx.msg.hide();
 			PolygonalNavGraph pf = scn.getPolygonalNavGraph();
-			ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph()
-					.getObstacles();
+			ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph().getObstacles();
 
 			// SEARCH FOR OBSTACLE
 			for (int j = 0; j < obstacles.size(); j++) {
 				Polygon o = obstacles.get(j);
 				if (o.contains(p.x, p.y)) {
-					Ctx.project.getSelectedChapter().deleteObstacle(
-							Ctx.project.getSelectedScene(), j);
+					Ctx.project.getSelectedChapter().deleteObstacle(Ctx.project.getSelectedScene(), j);
 					pf.getObstacles().remove(j);
 					return;
 				}
@@ -91,31 +94,24 @@ public class ScnWidgetInputListener extends ClickListener {
 		// DOUBLE CLICK TO CREATE OR DELETE POINTS
 		if (getTapCount() == 2) {
 			// Check WALKZONE
-			if (scn.getPolygonalNavGraph() != null
-					&& scnWidget.getShowWalkZone()) {
+			if (scn.getPolygonalNavGraph() != null && scnWidget.getShowWalkZone()) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
-				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph()
-						.getObstacles();
+				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph().getObstacles();
 
 				if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
 					// Delete the point if selected
-					boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y,
-							CanvasDrawer.CORNER_DIST);
+					boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
 					if (deleted) {
-						Ctx.project.getSelectedChapter().setWalkZonePolygon(
-								Ctx.project.getSelectedScene(), poly);
+						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedScene(), poly);
 						return;
 					} else { // check obstacles
 						for (int i = 0; i < obstacles.size(); i++) {
 							Polygon o = obstacles.get(i);
-							deleted = PolygonUtils.deletePoint(o, p.x, p.y,
-									CanvasDrawer.CORNER_DIST);
+							deleted = PolygonUtils.deletePoint(o, p.x, p.y, CanvasDrawer.CORNER_DIST);
 							if (deleted) {
-								Ctx.project.getSelectedChapter()
-										.setObstaclePolygon(
-												Ctx.project.getSelectedScene(),
-												i, o);
+								Ctx.project.getSelectedChapter().setObstaclePolygon(Ctx.project.getSelectedScene(), i,
+										o);
 								return;
 							}
 						}
@@ -123,23 +119,18 @@ public class ScnWidgetInputListener extends ClickListener {
 
 				} else {
 
-					boolean created = PolygonUtils.addClampPointIfTolerance(
-							poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
+					boolean created = PolygonUtils.addClampPointIfTolerance(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
 					if (created) {
-						Ctx.project.getSelectedChapter().setWalkZonePolygon(
-								Ctx.project.getSelectedScene(), poly);
+						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedScene(), poly);
 						return;
 					} else {
 						for (int i = 0; i < obstacles.size(); i++) {
 							Polygon o = obstacles.get(i);
-							created = PolygonUtils.addClampPointIfTolerance(o,
-									p.x, p.y, CanvasDrawer.CORNER_DIST);
+							created = PolygonUtils.addClampPointIfTolerance(o, p.x, p.y, CanvasDrawer.CORNER_DIST);
 							if (created) {
-								Ctx.project.getSelectedChapter()
-										.setObstaclePolygon(
-												Ctx.project.getSelectedScene(),
-												i, o);
+								Ctx.project.getSelectedChapter().setObstaclePolygon(Ctx.project.getSelectedScene(), i,
+										o);
 								return;
 							}
 						}
@@ -152,27 +143,22 @@ public class ScnWidgetInputListener extends ClickListener {
 				Polygon poly = scnWidget.getSelectedActor().getBBox();
 
 				if (!(scnWidget.getSelectedActor() instanceof SpriteActor)
-						|| !((SpriteActor) scnWidget.getSelectedActor())
-								.isBboxFromRenderer()) {
+						|| !((SpriteActor) scnWidget.getSelectedActor()).isBboxFromRenderer()) {
 					if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
 
 						// Delete the point if selected
-						boolean deleted = PolygonUtils.deletePoint(poly, p.x,
-								p.y, CanvasDrawer.CORNER_DIST);
+						boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
 						if (deleted) {
-							Ctx.project.getSelectedChapter().setBbox(
-									Ctx.project.getSelectedActor(), poly);
+							Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedActor(), poly);
 							return;
 						}
 					} else {
-						boolean created = PolygonUtils
-								.addClampPointIfTolerance(poly, p.x, p.y,
-										CanvasDrawer.CORNER_DIST);
+						boolean created = PolygonUtils.addClampPointIfTolerance(poly, p.x, p.y,
+								CanvasDrawer.CORNER_DIST);
 
 						if (created) {
-							Ctx.project.getSelectedChapter().setBbox(
-									Ctx.project.getSelectedActor(), poly);
+							Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedActor(), poly);
 							return;
 						}
 					}
@@ -182,8 +168,7 @@ public class ScnWidgetInputListener extends ClickListener {
 	}
 
 	@Override
-	public boolean touchDown(InputEvent event, float x, float y, int pointer,
-			int button) {
+	public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 
 		super.touchDown(event, x, y, pointer, button);
 		EditorLogger.debug("Touch Down - X: " + x + " Y: " + y);
@@ -199,8 +184,8 @@ public class ScnWidgetInputListener extends ClickListener {
 		if (button == Buttons.LEFT) {
 			selActor = scnWidget.getSelectedActor();
 
-			if (scn.getPolygonalNavGraph() != null
-					&& scnWidget.getShowWalkZone()) { // Check WALKZONE
+			if (scn.getPolygonalNavGraph() != null && scnWidget.getShowWalkZone()) { // Check
+																						// WALKZONE
 
 				// CHECK WALKZONE VERTEXS
 				Polygon wzPoly = scn.getPolygonalNavGraph().getWalkZone();
@@ -208,15 +193,14 @@ public class ScnWidgetInputListener extends ClickListener {
 
 				for (int i = 0; i < verts.length; i += 2) {
 					if (p.dst(verts[i], verts[i + 1]) < CanvasDrawer.CORNER_DIST) {
-						draggingMode = DraggingModes.DRAGING_WALKZONE_POINT;
+						draggingMode = DraggingModes.DRAGGING_WALKZONE_POINT;
 						vertIndex = i;
 						return true;
 					}
 				}
 
 				// CHECK OBSTACLE VERTEXS
-				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph()
-						.getObstacles();
+				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph().getObstacles();
 
 				for (int j = 0; j < obstacles.size(); j++) {
 					Polygon o = obstacles.get(j);
@@ -224,7 +208,7 @@ public class ScnWidgetInputListener extends ClickListener {
 
 					for (int i = 0; i < verts.length; i += 2) {
 						if (p.dst(verts[i], verts[i + 1]) < CanvasDrawer.CORNER_DIST) {
-							draggingMode = DraggingModes.DRAGING_OBSTACLE_POINT;
+							draggingMode = DraggingModes.DRAGGING_OBSTACLE_POINT;
 							selPolygon = o;
 							vertIndex = i;
 							selObstacleIndex = j;
@@ -237,7 +221,7 @@ public class ScnWidgetInputListener extends ClickListener {
 				for (int j = 0; j < obstacles.size(); j++) {
 					Polygon o = obstacles.get(j);
 					if (o.contains(p.x, p.y)) {
-						draggingMode = DraggingModes.DRAGING_OBSTACLE;
+						draggingMode = DraggingModes.DRAGGING_OBSTACLE;
 						selPolygon = o;
 						selObstacleIndex = j;
 						return true;
@@ -246,7 +230,7 @@ public class ScnWidgetInputListener extends ClickListener {
 
 				// CHECK FOR WALKZONE DRAGGING
 				if (wzPoly.contains(p.x, p.y)) {
-					draggingMode = DraggingModes.DRAGING_WALKZONE;
+					draggingMode = DraggingModes.DRAGGING_WALKZONE;
 					return true;
 				}
 
@@ -254,14 +238,13 @@ public class ScnWidgetInputListener extends ClickListener {
 
 			// SELACTOR VERTEXs DRAGGING
 			if (selActor != null
-					&& (!(selActor instanceof SpriteActor) || !((SpriteActor) selActor)
-							.isBboxFromRenderer())) {
+					&& (!(selActor instanceof SpriteActor) || !((SpriteActor) selActor).isBboxFromRenderer())) {
 
 				Polygon bbox = selActor.getBBox();
 				float verts[] = bbox.getTransformedVertices();
 				for (int i = 0; i < verts.length; i += 2) {
 					if (p.dst(verts[i], verts[i + 1]) < CanvasDrawer.CORNER_DIST) {
-						draggingMode = DraggingModes.DRAGING_BBOX_POINT;
+						draggingMode = DraggingModes.DRAGGING_BBOX_POINT;
 						vertIndex = i;
 						return true;
 					}
@@ -276,13 +259,32 @@ public class ScnWidgetInputListener extends ClickListener {
 				Element da = Ctx.project.getActor(selActor.getId());
 				Ctx.project.setSelectedActor(da);
 
-				draggingMode = DraggingModes.DRAGING_ACTOR;
+				draggingMode = DraggingModes.DRAGGING_ACTOR;
 				return true;
 			}
 
 			if (a != null) {
-				draggingMode = DraggingModes.DRAGING_ACTOR;
+				draggingMode = DraggingModes.DRAGGING_ACTOR;
+				undoOrg.set(selActor.getX(), selActor.getY());
 				return true;
+			}
+
+			// CHECK FOR DRAGGING DEPTH MARKERS
+			Vector2 depthVector = scnWidget.getScene().getDepthVector();
+			if (depthVector != null) {
+				p.set(0, depthVector.x);
+				scnWidget.worldToScreenCoords(p);
+				if (Vector2.dst(p.x - 40, p.y, x, y) < 50) {
+					draggingMode = DraggingModes.DRAGGING_MARKER_0;
+					return true;
+				}
+
+				p.set(0, depthVector.y);
+				scnWidget.worldToScreenCoords(p);
+				if (Vector2.dst(p.x - 40, p.y, x, y) < 50) {
+					draggingMode = DraggingModes.DRAGGING_MARKER_100;
+					return true;
+				}
 			}
 
 		}
@@ -309,14 +311,13 @@ public class ScnWidgetInputListener extends ClickListener {
 			d.sub(org);
 			org.add(d);
 
-			if (draggingMode == DraggingModes.DRAGING_ACTOR) {
+			if (draggingMode == DraggingModes.DRAGGING_ACTOR) {
 				Polygon p = selActor.getBBox();
 				p.translate(d.x, d.y);
-				Ctx.project.getSelectedChapter().setPos(
-						Ctx.project.getSelectedActor(),
+				Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(),
 						new Vector2(selActor.getX(), selActor.getY()));
 
-			} else if (draggingMode == DraggingModes.DRAGING_BBOX_POINT) {
+			} else if (draggingMode == DraggingModes.DRAGGING_BBOX_POINT) {
 				Polygon poly = selActor.getBBox();
 
 				float verts[] = poly.getVertices();
@@ -324,9 +325,8 @@ public class ScnWidgetInputListener extends ClickListener {
 				verts[vertIndex + 1] += d.y;
 				poly.dirty();
 
-				Ctx.project.getSelectedChapter().setBbox(
-						Ctx.project.getSelectedActor(), poly);
-			} else if (draggingMode == DraggingModes.DRAGING_WALKZONE_POINT) {
+				Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedActor(), poly);
+			} else if (draggingMode == DraggingModes.DRAGGING_WALKZONE_POINT) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 
 				float verts[] = poly.getVertices();
@@ -334,31 +334,41 @@ public class ScnWidgetInputListener extends ClickListener {
 				verts[vertIndex + 1] += d.y;
 				poly.dirty();
 
-				Ctx.project.getSelectedChapter().setWalkZonePolygon(
-						Ctx.project.getSelectedScene(), poly);
-			} else if (draggingMode == DraggingModes.DRAGING_OBSTACLE_POINT) {
+				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedScene(), poly);
+			} else if (draggingMode == DraggingModes.DRAGGING_OBSTACLE_POINT) {
 				float verts[] = selPolygon.getVertices();
 				verts[vertIndex] += d.x;
 				verts[vertIndex + 1] += d.y;
 				selPolygon.dirty();
 
-				Ctx.project.getSelectedChapter().setObstaclePolygon(
-						Ctx.project.getSelectedScene(), selObstacleIndex,
+				Ctx.project.getSelectedChapter().setObstaclePolygon(Ctx.project.getSelectedScene(), selObstacleIndex,
 						selPolygon);
-			} else if (draggingMode == DraggingModes.DRAGING_OBSTACLE) {
+			} else if (draggingMode == DraggingModes.DRAGGING_OBSTACLE) {
 				selPolygon.translate(d.x, d.y);
-				Ctx.project.getSelectedChapter().setObstaclePolygon(
-						Ctx.project.getSelectedScene(), selObstacleIndex,
+				Ctx.project.getSelectedChapter().setObstaclePolygon(Ctx.project.getSelectedScene(), selObstacleIndex,
 						selPolygon);
-			} else if (draggingMode == DraggingModes.DRAGING_WALKZONE) {
+			} else if (draggingMode == DraggingModes.DRAGGING_WALKZONE) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 				poly.translate(d.x, d.y);
-				Ctx.project.getSelectedChapter().setWalkZonePolygon(
-						Ctx.project.getSelectedScene(), poly);
+				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedScene(), poly);
+			} else if (draggingMode == DraggingModes.DRAGGING_MARKER_0) {
+				Vector2 depthVector = scnWidget.getScene().getDepthVector();
+
+				depthVector.x += d.y;
+
+				Ctx.project.getSelectedScene().setAttribute("depth_vector", Param.toStringParam(depthVector));
+				Ctx.project.getSelectedChapter().setModified(true);
+				updateFakeDepth();
+			} else if (draggingMode == DraggingModes.DRAGGING_MARKER_100) {
+				Vector2 depthVector = scnWidget.getScene().getDepthVector();
+
+				depthVector.y += d.y;
+				Ctx.project.getSelectedScene().setAttribute("depth_vector", Param.toStringParam(depthVector));
+				Ctx.project.getSelectedChapter().setModified(true);
+				updateFakeDepth();
 			}
 
-		} else if (Gdx.input.isButtonPressed(Buttons.RIGHT)
-				|| Gdx.input.isButtonPressed(Buttons.MIDDLE)) {
+		} else if (Gdx.input.isButtonPressed(Buttons.RIGHT) || Gdx.input.isButtonPressed(Buttons.MIDDLE)) {
 
 			Vector2 p = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 			scnWidget.screenToWorldCoords(p);
@@ -368,21 +378,35 @@ public class ScnWidgetInputListener extends ClickListener {
 		}
 	}
 
+	private void updateFakeDepth() {
+		Scene scn = scnWidget.getScene();
+		for (BaseActor a : scn.getActors().values()) {
+			if (a instanceof SpriteActor) {
+				a.setPosition(a.getX(), a.getY());
+			}
+		}
+	}
+
 	@Override
 	public boolean scrolled(InputEvent event, float x, float y, int amount) {
 		super.scrolled(event, x, y, amount);
-//		EditorLogger.debug("SCROLLED - X: " + x + " Y: " + y);
+		// EditorLogger.debug("SCROLLED - X: " + x + " Y: " + y);
 
 		scnWidget.zoom(amount);
 		return true;
 	}
 
 	@Override
-	public void touchUp(InputEvent event, float x, float y, int pointer,
-			int button) {
+	public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 
 		super.touchUp(event, x, y, pointer, button);
-		EditorLogger.debug("Touch Up - X: " + x + " Y: " + y);
+//		EditorLogger.debug("Touch Up - X: " + x + " Y: " + y);
+
+		if (draggingMode == DraggingModes.DRAGGING_ACTOR) {
+			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
+					Param.toStringParam(undoOrg));
+			Ctx.undoStack.add(undoOp);
+		}
 
 		draggingMode = DraggingModes.NONE;
 
@@ -398,14 +422,26 @@ public class ScnWidgetInputListener extends ClickListener {
 			break;
 		case Keys.BACKSPACE:
 			break;
+		case Keys.Z:
+			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+				Ctx.undoStack.undo();
+			}
+			break;
+			
+		case Keys.FORWARD_DEL:
+			if(Ctx.project.getSelectedActor() == null)
+				return false;
+			UndoOp undoOp = new UndoDeleteElement(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor());
+			Ctx.undoStack.add(undoOp);
+			Ctx.project.getSelectedChapter().deleteElement(Ctx.project.getSelectedActor());
+			break;
 		}
 
 		return false;
 	}
 
 	@Override
-	public void enter(InputEvent event, float x, float y, int pointer,
-			com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
+	public void enter(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
 		super.enter(event, x, y, pointer, fromActor);
 		// EditorLogger.debug("ENTER - X: " + x + " Y: " + y);
 		scnWidget.getStage().setScrollFocus(scnWidget);

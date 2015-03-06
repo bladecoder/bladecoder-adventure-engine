@@ -70,7 +70,7 @@ public class Scene implements Serializable,
 	/** For polygonal PathFinding */
 	private PolygonalNavGraph polygonalNavGraph;
 	
-	/** depth vector. x: scale when y=0, y: scale when y=scene height */
+	/** depth vector. X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale. */
 	private Vector2 depthVector;
 
 	private String player;
@@ -182,8 +182,12 @@ public class Scene implements Serializable,
 			return 1.0f;
 		
 		// interpolation equation
-		return Math.abs(depthVector.x + (depthVector.y - depthVector.x) * y
-				/ camera.getScrollingHeight());
+//		return Math.max(0, depthVector.x + (depthVector.y - depthVector.x) * y
+//				/ camera.getScrollingHeight());
+		
+		return Math.max(0, (y - depthVector.x) / (depthVector.y - depthVector.x));
+		
+//		return Math.max(0, Interpolation.linear.apply(depthVector.x, depthVector.y, y));
 	}
 
 	public void setMusic(String filename, boolean loop, float initialDelay,
