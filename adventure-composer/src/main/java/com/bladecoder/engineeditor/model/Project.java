@@ -39,9 +39,10 @@ import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.setup.Dependency;
 import com.bladecoder.engineeditor.setup.DependencyBank;
-import com.bladecoder.engineeditor.setup.ProjectBuilder;
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectDependency;
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
+import com.bladecoder.engineeditor.setup.ProjectBuilder;
+import com.bladecoder.engineeditor.undo.UndoStack;
 import com.bladecoder.engineeditor.utils.DinamicClassPath;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
@@ -74,7 +75,8 @@ public class Project extends PropertyChange {
 
 	private File projectFile;
 
-	private final WorldDocument world = new WorldDocument();	
+	private final WorldDocument world = new WorldDocument();
+	private final UndoStack undoStack = new UndoStack();
 	private Properties projectConfig;
 
 	private ChapterDocument selectedChapter;
@@ -116,6 +118,10 @@ public class Project extends PropertyChange {
 	private TextureRegion createBgIcon(String bg) {
 		return new TextureRegion(new Texture(Gdx.files.absolute(getProjectPath() + "/" + BACKGROUNDS_PATH + 
 				"/1/" + bg)));
+	}
+	
+	public UndoStack getUndoStack() {
+		return undoStack;
 	}
 
 	private void loadConfig() {
@@ -357,6 +363,8 @@ public class Project extends PropertyChange {
 	}
 
 	public void loadChapter(String selChapter) throws ParserConfigurationException, SAXException, IOException {
+		undoStack.clear();
+		
 		selectedChapter = world.loadChapter(selChapter);
 		
 //		if(selectedChapter != null) {

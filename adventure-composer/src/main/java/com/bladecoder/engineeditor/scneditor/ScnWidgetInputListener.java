@@ -263,6 +263,7 @@ public class ScnWidgetInputListener extends ClickListener {
 				Ctx.project.setSelectedActor(da);
 
 				draggingMode = DraggingModes.DRAGGING_ACTOR;
+				undoOrg.set(selActor.getX(), selActor.getY());
 				return true;
 			}
 
@@ -408,7 +409,7 @@ public class ScnWidgetInputListener extends ClickListener {
 		if (draggingMode == DraggingModes.DRAGGING_ACTOR) {
 			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
 					Param.toStringParam(undoOrg));
-			Ctx.undoStack.add(undoOp);
+			Ctx.project.getUndoStack().add(undoOp);
 		}
 
 		draggingMode = DraggingModes.NONE;
@@ -427,7 +428,7 @@ public class ScnWidgetInputListener extends ClickListener {
 			break;
 		case Keys.Z:
 			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
-				Ctx.undoStack.undo();
+				Ctx.project.getUndoStack().undo();
 			}
 			break;
 			
@@ -435,7 +436,7 @@ public class ScnWidgetInputListener extends ClickListener {
 			if(Ctx.project.getSelectedActor() == null)
 				return false;
 			UndoOp undoOp = new UndoDeleteElement(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor());
-			Ctx.undoStack.add(undoOp);
+			Ctx.project.getUndoStack().add(undoOp);
 			Ctx.project.getSelectedChapter().deleteElement(Ctx.project.getSelectedActor());
 			break;
 			

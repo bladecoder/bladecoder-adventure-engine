@@ -16,12 +16,10 @@
 package com.bladecoder.engineeditor;
 
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.undo.UndoStack;
 import com.bladecoder.engineeditor.utils.Message;
 
 public class Ctx {
 	public static Project project;
 	public static Message msg;
 	public static EditorAssetManager assetManager;
-	public static UndoStack undoStack;
 }

@@ -16,4 +16,8 @@ public class UndoStack {
 			op.undo();
 		}
 	}
+
+	public void clear() {
+		stack.clear();
+	}
 }

@@ -106,9 +106,9 @@ public abstract class ElementList extends EditList<Element> {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				Element e = ((EditElementDialog)actor).getElement();
-//				addItem(e);
+				addItem(e);
 				UndoOp undoOp = new UndoAddElement(doc, e);
-				Ctx.undoStack.add(undoOp);
+				Ctx.project.getUndoStack().add(undoOp);
 
 				int i = getItems().indexOf(e, true);
 				if(i != -1)
@@ -151,7 +151,7 @@ public abstract class ElementList extends EditList<Element> {
 		Element e = list.getItems().removeIndex(pos);
 
 		UndoOp undoOp = new UndoDeleteElement(doc, e);
-		Ctx.undoStack.add(undoOp);
+		Ctx.project.getUndoStack().add(undoOp);
 		doc.deleteElement(e);
 
 		clipboard = e;
