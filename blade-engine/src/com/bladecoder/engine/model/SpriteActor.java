@@ -90,8 +90,6 @@ public class SpriteActor extends BaseActor {
 				// interpolation equation
 				float s = scene.getFakeDepthScale(y);
 				
-				System.out.println("y:" + y + " scale:" + s + " V:" + scene.getDepthVector());
-
 				setScale(s);
 			}
 

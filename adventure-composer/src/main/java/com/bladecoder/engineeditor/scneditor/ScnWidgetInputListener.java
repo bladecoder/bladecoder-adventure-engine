@@ -15,7 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.scneditor;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Element;
 
@@ -435,6 +438,22 @@ public class ScnWidgetInputListener extends ClickListener {
 			Ctx.undoStack.add(undoOp);
 			Ctx.project.getSelectedChapter().deleteElement(Ctx.project.getSelectedActor());
 			break;
+			
+		case Keys.S:
+			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+				try {
+					Ctx.project.saveProject();
+				} catch (TransformerException | IOException e1) {
+					String msg = "Something went wrong while saving the actor.\n\n"
+							+ e1.getClass().getSimpleName()
+							+ " - "
+							+ e1.getMessage();
+					Ctx.msg.show(scnWidget.getStage(), msg, 4);
+
+					e1.printStackTrace();
+				}
+			}
+			break;			
 		}
 
 		return false;
