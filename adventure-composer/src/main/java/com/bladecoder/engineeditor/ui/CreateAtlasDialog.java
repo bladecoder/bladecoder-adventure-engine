@@ -64,7 +64,7 @@ public class CreateAtlasDialog extends EditDialog {
 		addInputPanel(filterMag);
 
 		filterMin.setText(FILTERS[0]);
-		filterMag.setText(FILTERS[1]);
+		filterMag.setText(FILTERS[0]);
 
 		setInfo(INFO);
 	}
