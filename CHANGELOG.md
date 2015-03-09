@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+
+## [0.7.1]
+- Action refactor
+- Composer: Undo support
+- Composer: Fake depth vector can be setting dragging ui markers
+- Actor ZIndex
+- RunVerb now allows iterating over a list of verbs
+- Scene cache
+- SpriteActor: scale support
+- SpineRenderer: Reverse animation support
 - Scene layer support
 
 ## [0.6.9]

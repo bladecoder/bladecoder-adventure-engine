@@ -47,7 +47,7 @@ import com.bladecoder.engine.util.EngineLogger;
 
 public class World implements Serializable, AssetConsumer {
 
-	public static final String GAMESTATE_EXT = ".gamestate.v7";
+	public static final String GAMESTATE_EXT = ".gamestate.v8";
 	private static final String GAMESTATE_FILENAME = "default" + GAMESTATE_EXT;
 
 	private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
