@@ -347,6 +347,7 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 		json.writeValue("isWalkObstacle", isWalkObstacle);
 		json.writeValue("layer", layer);
 		json.writeValue("playerInside", playerInside);
+		json.writeValue("zIndex", zIndex);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -375,6 +376,7 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 		isWalkObstacle = json.readValue("isWalkObstacle", Boolean.class, jsonData);
 		layer = json.readValue("layer", String.class, jsonData);
 		playerInside = json.readValue("playerInside", Boolean.class, jsonData);
+		zIndex = json.readValue("zIndex", Float.class, jsonData);
 	}
 
 }
