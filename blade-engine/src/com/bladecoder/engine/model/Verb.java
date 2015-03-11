@@ -78,8 +78,11 @@ public class Verb implements ActionCallback {
 			} catch (Exception e) {
 				EngineLogger.error("EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName(), e);
 				ip++;
-			}		
+			}
 		}
+		
+		if(EngineLogger.debugMode() && isFinished())
+			EngineLogger.debug(">>> Verb FINISHED: "+ id);
 	}
 	
 	private boolean isFinished() {
