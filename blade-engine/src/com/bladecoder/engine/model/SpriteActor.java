@@ -74,16 +74,7 @@ public class SpriteActor extends BaseActor {
 	}
 
 	public void setPosition(float x, float y) {
-		
-		if(isWalkObstacle() && scene.getPolygonalNavGraph() != null) {
-			scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
-		}
-		
-		bbox.setPosition(x, y);
-		
-		if(isWalkObstacle() && scene.getPolygonalNavGraph() != null) {
-			scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
-		}
+		super.setPosition(x, y);
 		
 		if (scene != null) {
 			if (depthType == DepthType.VECTOR) {
@@ -184,13 +175,15 @@ public class SpriteActor extends BaseActor {
 
 		if (fa != null) {
 			if(bboxFromRenderer) {
-				if(isWalkObstacle() && scene.getPolygonalNavGraph() != null) {
-					scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
+				boolean inNavGraph = false;
+		
+				if(isWalkObstacle() && scene != null && scene.getPolygonalNavGraph() != null) {
+					inNavGraph = scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
 				}
 				
 				updateBBox();
 				
-				if(isWalkObstacle() && scene.getPolygonalNavGraph() != null) {
+				if(inNavGraph) {
 					scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
 				}
 			}
@@ -291,7 +284,7 @@ public class SpriteActor extends BaseActor {
 	 * Updates de bbox with the renderer width and height information
 	 */
 	private void updateBBox() {
-		if(bbox.getVertices() == null || bbox.getVertices().length != 4) {
+		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
 		

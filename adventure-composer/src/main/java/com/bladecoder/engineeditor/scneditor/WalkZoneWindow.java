@@ -212,7 +212,7 @@ public class WalkZoneWindow extends Container<Table> {
 			if(!a.isWalkObstacle()) {
 				addObstacleActorBtn.setText(SET_ACTOR_AS_OBSTACLE_TEXT);
 			} else {
-				addObstacleActorBtn.setText(SET_ACTOR_AS_OBSTACLE_TEXT);
+				addObstacleActorBtn.setText(REMOVE_ACTOR_AS_OBSTACLE_TEXT);
 			}
 		}
 	}

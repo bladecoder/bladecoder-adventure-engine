@@ -77,12 +77,30 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		for (Polygon o : obstacles) {
 			if (PolygonUtils.isPointInside(o, target.x, target.y, false)) {
 				PolygonUtils.getClampedPoint(o, target.x, target.y, target);
+				
+				// If the clamped point is not in the walkzone 
+				// we search for the first vertex inside
+				if (!PolygonUtils.isPointInside(walkZone, target.x, target.y, true)) {
+					getFirstVertexInsideWalkzone(o, target);
+					// We exit after processing the first polygon with the point inside. 
+					// Overlaped obstacles are not supported
+					break;
+				}
 			}
 		}
 		
 		for (Polygon o : dinamicObstacles) {
 			if (PolygonUtils.isPointInside(o, target.x, target.y, false)) {
 				PolygonUtils.getClampedPoint(o, target.x, target.y, target);
+				
+				// If the clamped point is not in the walkzone 
+				// we search for the first vertex inside
+				if (!PolygonUtils.isPointInside(walkZone, target.x, target.y, true)) {
+					getFirstVertexInsideWalkzone(o, target);
+					// We exit after processing the first polygon with the point inside. 
+					// Overlaped obstacles are not supported
+					break;
+				}
 			}
 		}
 
@@ -107,6 +125,25 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		pathfinder.findPath(null, startNode, targetNode, resultPath);
 
 		return resultPath.getPath();
+	}
+	
+	/**
+	 * Search the first polygon vertex inside the walkzone.
+	 * 
+	 * @param p the polygon 
+	 * @param target the vertex found
+	 */
+	private void getFirstVertexInsideWalkzone(Polygon p, Vector2 target) {
+		float verts[] = p.getTransformedVertices();
+		
+		for (int i = 0; i < verts.length; i += 2) {
+			if(PolygonUtils.isPointInside(walkZone, verts[i], verts[i + 1], true)) {
+				target.x = verts[i];
+				target.y = verts[i + 1];
+				
+				return;
+			}
+		}		
 	}
 
 	public void createInitialGraph() {
@@ -256,14 +293,23 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 	}
 
 	public void addDinamicObstacle(Polygon poly) {
-		dinamicObstacles.add(poly);
-
-		addObstacleToGrapth(poly);
+		
+		int idx = dinamicObstacles.indexOf(poly);
+		
+		// CHECK TO AVOID ADDING THE ACTOR SEVERAL TIMES
+		if(idx == -1) {
+			dinamicObstacles.add(poly);
+			addObstacleToGrapth(poly);
+		}
 	}
 	
-	public void removeDinamicObstacle(Polygon poly) {
+	public boolean removeDinamicObstacle(Polygon poly) {
+		boolean exists = dinamicObstacles.remove(poly);
+		
+		if(!exists)
+			return false;
+		
 		float verts[] = poly.getTransformedVertices();
-		dinamicObstacles.remove(poly);
 
 		for (int i = 0; i < verts.length; i += 2) {
 			if (PolygonUtils.isVertexConcave(poly, i)
@@ -284,6 +330,8 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 				}
 			}
 		}
+		
+		return true;
 	}
 	
 	@Override

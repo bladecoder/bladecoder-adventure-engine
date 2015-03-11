@@ -17,13 +17,6 @@ package com.bladecoder.engine.model;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.Dialog;
-import com.bladecoder.engine.model.Scene;
-import com.bladecoder.engine.model.SoundFX;
-import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.VerbManager;
-
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
@@ -104,7 +97,14 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 	}
 
 	public void setVisible(boolean visible) {
-		this.visible = visible;		
+		this.visible = visible;
+		
+		if(isWalkObstacle() && scene!= null && scene.getPolygonalNavGraph() != null) {
+			if(visible)
+				scene.getPolygonalNavGraph().addDinamicObstacle(getBBox());
+			else
+				scene.getPolygonalNavGraph().removeDinamicObstacle(getBBox());
+		}
 	}
 
 	public void setBbox(Polygon bbox) {
@@ -282,7 +282,17 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 	}
 
 	public void setPosition(float x, float y) {
+		boolean inNavGraph = false;
+		
+		if(isWalkObstacle() && scene != null && scene.getPolygonalNavGraph() != null) {
+			inNavGraph = scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
+		}
+		
 		bbox.setPosition(x, y);
+		
+		if(inNavGraph) {
+			scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
+		}
 	}
 	
 	@Override
@@ -304,11 +314,6 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 			if(playingSound != null && sounds.get(playingSound).isLooping() == true) {
 				playSound(playingSound);
 			}
-		}
-		
-		// TODO: CHECK WHEN INVENTORY
-		if(isWalkObstacle && scene.getPolygonalNavGraph() != null && isVisible()) {
-			scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
 		}
 	}	
 

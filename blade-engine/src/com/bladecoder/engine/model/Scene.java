@@ -462,15 +462,13 @@ public class Scene implements Serializable,
 
 		actors.remove(a.getId());
 		
-		for(SceneLayer layer:layers) {
-			if(layer.getName().equals(a.getLayer())) {
-				layer.getActors().remove(a);
-				break;
-			}
-		}
+		SceneLayer layer = getLayer(a.getLayer());
+		layer.getActors().remove(a);
 		
 		if(a.isWalkObstacle() && polygonalNavGraph != null)
 			polygonalNavGraph.removeDinamicObstacle(a.getBBox());
+		
+		a.setScene(null);
 			
 	}
 
@@ -579,6 +577,11 @@ public class Scene implements Serializable,
 		// RETRIEVE ACTORS
 		for (BaseActor a : actors.values()) {
 			a.retrieveAssets();
+
+			// Add to navGraph if obstacle and visible
+			if(a.isWalkObstacle() && getPolygonalNavGraph() != null && a.isVisible()) {
+				getPolygonalNavGraph().addDinamicObstacle(a.getBBox());
+			}			
 		}
 
 		if (musicFilename != null) {
