@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
@@ -80,9 +81,16 @@ public class PositionAction extends BaseCallbackAction {
 		
 		float scale = EngineAssetManager.getInstance().getScale();
 
-		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
+		BaseActor actor =  World.getInstance().getCurrentScene().getActor(actorId, false);
 		
-		actor.startPosAnimation(repeat, count, speed, pos.x * scale, pos.y * scale, getWait()?this:null);
+		if(speed == 0 || !(actor instanceof SpriteActor)) {
+			actor.setPosition(pos.x * scale, pos.y * scale);
+			
+			return false;
+		} else {
+			// only spriteactors support animation
+			((SpriteActor)actor).startPosAnimation(repeat, count, speed, pos.x * scale, pos.y * scale, getWait()?this:null);
+		}
 		
 		return getWait();
 	}
