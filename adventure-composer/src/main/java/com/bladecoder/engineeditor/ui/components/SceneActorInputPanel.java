@@ -114,7 +114,7 @@ public class SceneActorInputPanel extends InputPanel {
 //		idx = actor.getItems().indexOf(out[1], false);
 //		if(idx != -1)
 //			actor.setSelectedIndex(idx);
-		
+		sceneSelected();
 		actor.setSelected(s);
 	}
 }
