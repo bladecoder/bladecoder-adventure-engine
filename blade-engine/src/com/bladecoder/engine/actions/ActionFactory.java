@@ -38,11 +38,8 @@ public class ActionFactory {
 				"com.bladecoder.engine.actions.GotoAction");
 		actions.put("Leave",
 				"com.bladecoder.engine.actions.LeaveAction");	
-
-		actions.put("SetState",
+		actions.put("State",
 				"com.bladecoder.engine.actions.SetStateAction");
-		actions.put("SetActive",
-				"com.bladecoder.engine.actions.SetActiveAction");
 		actions.put("Cutmode",
 				"com.bladecoder.engine.actions.SetCutmodeAction");
 		actions.put("ShowInventory",
@@ -81,10 +78,12 @@ public class ActionFactory {
 				"com.bladecoder.engine.actions.TransitionAction");
 		actions.put("LoadChapter",
 				"com.bladecoder.engine.actions.LoadChapterAction");
-		actions.put("SetSceneState",
+		actions.put("SceneState",
 				"com.bladecoder.engine.actions.SetSceneStateAction");
 		actions.put("RemoveActor",
 				"com.bladecoder.engine.actions.RemoveActorAction");		
+		actions.put("ActorAttr",
+				"com.bladecoder.engine.actions.SetActorAttrAction");	
 	}
 	
 	public static String []getActionList() {

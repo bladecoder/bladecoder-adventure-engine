@@ -49,6 +49,8 @@ public class InputPanelFactory extends Table {
     	switch (type) {
 		case ACTOR:
 			return new ActorInputPanel(skin, title, desc, mandatory, defaultValue);
+		case LAYER:
+			return new LayerInputPanel(skin, title, desc, mandatory, defaultValue);			
 		case BOOLEAN:
 			return new BooleanInputPanel(skin, title, desc, mandatory, defaultValue);
 		case CHAPTER:

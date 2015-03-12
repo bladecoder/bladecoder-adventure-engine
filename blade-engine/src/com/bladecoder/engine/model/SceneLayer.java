@@ -70,4 +70,8 @@ public class SceneLayer {
 			}
 		});
 	}
+
+	public void remove(BaseActor actor) {
+		actors.remove(actor);
+	}
 }

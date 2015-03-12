@@ -23,20 +23,25 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.World;
 
-public class SetActiveAction implements Action {
-	public static final String INFO = "Change the visible/interaction properties for the selected actor.";
+public class SetActorAttrAction implements Action {
+	public static final String INFO = "Change actor attributes.";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.SCENE_ACTOR, false),
 		new Param("visible", "sets the actor visibility", Type.BOOLEAN), 
-		new Param("interaction", "when 'true' the actor responds to the user input", Type.BOOLEAN)
+		new Param("interaction", "when 'true' the actor responds to the user input", Type.BOOLEAN),
+		new Param("layer", "The actor layer", Type.LAYER),
+		new Param("zIndex", "The order to draw bigger is near", Type.FLOAT)
 		};		
 	
 	String actorId;
 	String sceneId;
 	String visible;
 	String interaction;
+	String layer;
+	String zIndex;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -47,6 +52,8 @@ public class SetActiveAction implements Action {
 		
 		visible = params.get("visible");
 		interaction = params.get("interaction");
+		layer = params.get("layer");
+		zIndex = params.get("zIndex");
 	}
 
 	@Override
@@ -63,6 +70,28 @@ public class SetActiveAction implements Action {
 		
 		if(visible != null) actor.setVisible(Boolean.parseBoolean(visible));
 		if(interaction != null) actor.setInteraction(Boolean.parseBoolean( interaction));
+		
+		if(layer != null) {
+			String oldLayer = actor.getLayer();
+			
+			s.getLayer(oldLayer).remove(actor);
+			
+			actor.setLayer(layer);
+			
+			SceneLayer l = s.getLayer(layer);
+			l.add(actor);
+			
+			if(!l.isDynamic())
+				l.orderByZIndex();
+		}
+		
+		if(zIndex != null) {
+			actor.setZIndex(Float.parseFloat(zIndex));
+			SceneLayer l = s.getLayer(actor.getLayer());
+			
+			if(!l.isDynamic())
+				l.orderByZIndex();
+		}
 		
 		return false;
 	}

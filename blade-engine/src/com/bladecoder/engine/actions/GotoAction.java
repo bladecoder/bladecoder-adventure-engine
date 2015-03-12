@@ -28,19 +28,19 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
 public class GotoAction extends BaseCallbackAction {
-	private static final float TARGET_SPACE = 30f;
-	
 	public static final String INFO = "Walks to the selected position";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.ACTOR, false),
 		new Param("pos", "The position to walk to", Type.VECTOR2),
 		new Param("target", "Walks to the target actor position", Type.ACTOR),
 		new Param("anchor", "When selecting a target actor, an anchor can be selected", Type.STRING, false, "", new String[] {"center", "left", "right"}),
+		new Param("distance", "When selecting a target actor, the relative distance to the anchor in each axis", Type.VECTOR2, false),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
 		};	
 	
 	private String actorId;
 	private Vector2 pos;
+	private Vector2 anchorDistance;
 	private String targetId;
 	private String anchor;
 
@@ -58,12 +58,13 @@ public class GotoAction extends BaseCallbackAction {
 			float y = target.getY();
 			
 			if(anchor.equals("left")) {
-				x = x - target.getBBox().getBoundingRectangle().width / 2 - actor.getBBox().getBoundingRectangle().width / 2 - TARGET_SPACE;
+				x = x - target.getBBox().getBoundingRectangle().width / 2 - actor.getBBox().getBoundingRectangle().width / 2;
 			} else if(anchor.equals("right")) {
-				x = x + target.getBBox().getBoundingRectangle().width / 2 + actor.getBBox().getBoundingRectangle().width / 2 + TARGET_SPACE;
-			} else {
-				y -= TARGET_SPACE;
+				x = x + target.getBBox().getBoundingRectangle().width / 2 + actor.getBBox().getBoundingRectangle().width / 2;
 			}
+			
+			x += anchorDistance.x;
+			y += anchorDistance.y;
 			
 			actor.goTo(new Vector2(x, y), getWait()?this:null);
 		} else 
@@ -84,6 +85,11 @@ public class GotoAction extends BaseCallbackAction {
 			
 			if(anchor == null)
 				anchor = "center";
+			
+			anchorDistance = Param.parseVector2(params.get("distance"));
+			
+			if(anchorDistance == null)
+				anchorDistance = new Vector2();
 		}
 		
 		if(params.get("wait") != null) {
@@ -134,6 +140,7 @@ public class GotoAction extends BaseCallbackAction {
 		json.writeValue("targetId", targetId);
 		json.writeValue("actorId", actorId);
 		json.writeValue("anchor", anchor);
+		json.writeValue("anchorDistance", anchorDistance);
 		super.write(json);	
 	}
 
@@ -143,6 +150,7 @@ public class GotoAction extends BaseCallbackAction {
 		targetId = json.readValue("targetId", String.class, jsonData);
 		actorId = json.readValue("actorId", String.class, jsonData);
 		anchor = json.readValue("anchor", String.class, jsonData);
+		anchorDistance = json.readValue("anchorDistance", Vector2.class, jsonData);
 		super.read(json, jsonData);
 	}	
 	
