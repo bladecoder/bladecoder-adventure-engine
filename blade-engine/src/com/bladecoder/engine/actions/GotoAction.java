@@ -58,9 +58,9 @@ public class GotoAction extends BaseCallbackAction {
 			float y = target.getY();
 			
 			if(anchor.equals("left")) {
-				x = x - target.getBBox().getBoundingRectangle().width / 2 - TARGET_SPACE;
+				x = x - target.getBBox().getBoundingRectangle().width / 2 - actor.getBBox().getBoundingRectangle().width / 2 - TARGET_SPACE;
 			} else if(anchor.equals("right")) {
-				x = x + target.getBBox().getBoundingRectangle().width / 2 + TARGET_SPACE;
+				x = x + target.getBBox().getBoundingRectangle().width / 2 + actor.getBBox().getBoundingRectangle().width / 2 + TARGET_SPACE;
 			} else {
 				y -= TARGET_SPACE;
 			}
@@ -81,6 +81,9 @@ public class GotoAction extends BaseCallbackAction {
 		} else if(params.get("target") != null) {
 			targetId = params.get("target") ;
 			anchor = params.get("anchor") ;
+			
+			if(anchor == null)
+				anchor = "center";
 		}
 		
 		if(params.get("wait") != null) {
