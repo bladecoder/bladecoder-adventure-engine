@@ -336,6 +336,7 @@ public class World implements Serializable, AssetConsumer {
 		}
 
 		if (currentScene != null) {
+			testScene = null;
 			textManager.reset();
 			timers.clear();
 			currentScene.stopMusic();
