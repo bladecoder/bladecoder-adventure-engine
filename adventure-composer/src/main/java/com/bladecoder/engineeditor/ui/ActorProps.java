@@ -22,8 +22,12 @@ import org.w3c.dom.Element;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.components.PropertyTable;
+import com.bladecoder.engineeditor.undo.UndoOp;
+import com.bladecoder.engineeditor.undo.UndoSetAttr;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class ActorProps extends PropertyTable {
@@ -34,7 +38,6 @@ public class ActorProps extends PropertyTable {
 	public static final String VISIBLE_PROP = "visible";
 	public static final String ACTIVE_PROP = "active";
 	public static final String STATE_PROP = "state";
-	public static final String WALKING_SPEED_PROP = "Walking Speed";
 
 	private ChapterDocument doc;
 	private Element actor;
@@ -69,11 +72,9 @@ public class ActorProps extends PropertyTable {
 
 		if (a != null) {
 
-			if (!a.getAttribute("type").equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
-				Vector2 pos = doc.getPos(a);
-				addProperty(POS_X_PROP, Float.toString(pos.x), Types.FLOAT);
-				addProperty(POS_Y_PROP, Float.toString(pos.y), Types.FLOAT);
-			}
+			Vector2 pos = doc.getPos(a);
+			addProperty(POS_X_PROP, Float.toString(pos.x), Types.FLOAT);
+			addProperty(POS_Y_PROP, Float.toString(pos.y), Types.FLOAT);
 
 			addProperty(DESC_PROP, doc.getRootAttr(a, "desc"));
 
@@ -81,12 +82,6 @@ public class ActorProps extends PropertyTable {
 
 			addProperty(ACTIVE_PROP, doc.getRootAttr(a, "active"), Types.BOOLEAN);
 			addProperty(STATE_PROP, doc.getRootAttr(a, "state"));
-			
-			
-			if (!a.getAttribute("type").equals("background") && 
-				!a.getAttribute("type").equals("foreground")) {
-				addProperty(WALKING_SPEED_PROP, doc.getRootAttr(a, "walking_speed"));
-			}
 			
 			doc.addPropertyChangeListener(propertyChangeListener);
 			
@@ -100,20 +95,26 @@ public class ActorProps extends PropertyTable {
 			doc.setRootAttr(actor, "desc", value);
 		} else if (property.equals(POS_X_PROP)) {
 			Vector2 pos = doc.getPos(actor);
+			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
+					Param.toStringParam(pos));
+			Ctx.project.getUndoStack().add(undoOp);				
+			
 			pos.x = Float.parseFloat(value);
-			doc.setPos(actor, pos);
+			doc.setPos(actor, pos);		
 		} else if (property.equals(POS_Y_PROP)) {
 			Vector2 pos = doc.getPos(actor);
+			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
+					Param.toStringParam(pos));
+			Ctx.project.getUndoStack().add(undoOp);					
+			
 			pos.y = Float.parseFloat(value);
-			doc.setPos(actor, pos);
+			doc.setPos(actor, pos);	
 		} else if (property.equals(VISIBLE_PROP)) {
 			doc.setRootAttr(actor, "visible", value);
 		} else if (property.equals(ACTIVE_PROP)) {
 			doc.setRootAttr(actor, "active", value);
 		} else if (property.equals(STATE_PROP)) {
 			doc.setRootAttr(actor, "state", value);
-		} else if (property.equals(WALKING_SPEED_PROP)) {
-			doc.setRootAttr(actor, "walking_speed", value);			
 		}
 
 	}

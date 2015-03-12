@@ -28,7 +28,7 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
 public class GotoAction extends BaseCallbackAction {
-	private static final float TARGET_SPACE = 40f;
+	private static final float TARGET_SPACE = 30f;
 	
 	public static final String INFO = "Walks to the selected position";
 	public static final Param[] PARAMS = {
