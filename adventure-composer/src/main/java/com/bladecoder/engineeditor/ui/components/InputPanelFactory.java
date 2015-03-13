@@ -21,8 +21,8 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
 
 public class InputPanelFactory extends Table {
-	public static InputPanel createInputPanel(Skin skin, String title, String desc, String[] options) {
-    	return createInputPanel(skin, title, desc, Type.OPTION, false, null, options);
+	public static InputPanel createInputPanel(Skin skin, String title, String desc, String[] options, boolean mandatory) {
+    	return createInputPanel(skin, title, desc, Type.OPTION, mandatory, null, options);
     }
     
     public static InputPanel createInputPanel(Skin skin, String title, String desc) {

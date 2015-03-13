@@ -54,9 +54,9 @@ public class CreateAtlasDialog extends EditDialog {
 				true);
 
 		filterMin = InputPanelFactory.createInputPanel(skin, "Min Filter",
-				"The filter when the texture is scaled down", FILTERS);
+				"The filter when the texture is scaled down", FILTERS, true);
 		filterMag = InputPanelFactory.createInputPanel(skin, "Mag Filter",
-				"The filter when the texture is scaled up", FILTERS);
+				"The filter when the texture is scaled up", FILTERS, true);
 
 		addInputPanel(name);
 		addInputPanel(dir);

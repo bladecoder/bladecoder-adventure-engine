@@ -61,15 +61,15 @@ public class EditSceneDialog extends EditElementDialog {
 		inputs[0] = InputPanelFactory.createInputPanel(skin, "Scene ID",
 				"The ID is mandatory for scenes. \nIDs can not contain '.' or '_' characters.");
 		inputs[1] = InputPanelFactory.createInputPanel(skin, "Background",
-				"The background for the scene", bgList);
+				"The background for the scene", bgList, true);
 		inputs[2] = InputPanelFactory.createInputPanel(skin, "Lightmap",
-						"The lightmap for the scene", bgList);					
+						"The lightmap for the scene", bgList, true);					
 		inputs[3] = InputPanelFactory.createInputPanel(skin, "Depth Vector",
 						"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.", Param.Type.VECTOR2, false);
 		inputs[4] = InputPanelFactory.createInputPanel(skin, "State",
-				"The initial state for the scene.");
+				"The initial state for the scene.", true);
 		inputs[5] = InputPanelFactory.createInputPanel(skin, "Music Filename",
-				"The music for the scene", musicList);
+				"The music for the scene", musicList, true);
 		inputs[6] = InputPanelFactory.createInputPanel(skin, "Loop Music",
 				"If the music is playing in looping", Param.Type.BOOLEAN, false);
 		inputs[7] = InputPanelFactory.createInputPanel(skin, "Initial music delay",

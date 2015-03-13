@@ -54,13 +54,13 @@ public class EditActorDialog extends EditElementDialog {
 
 		inputs[0] = InputPanelFactory.createInputPanel(skin, "Actor Type",
 				"Actors can be from different types",
-				ChapterDocument.ACTOR_TYPES);
+				ChapterDocument.ACTOR_TYPES, true);
 
 		inputs[1] = InputPanelFactory.createInputPanel(skin, "Actor ID",
 				"IDs can not contain '.' or '_' characters.", true);
 
 		inputs[2] = InputPanelFactory.createInputPanel(skin, "Actor Layer",
-				"The layer for drawing order", getLayers(parent));
+				"The layer for drawing order", getLayers(parent), true);
 		
 		inputs[3] = InputPanelFactory.createInputPanel(skin, "Description",
 				"The text showed when the cursor is over the actor.");
@@ -78,7 +78,7 @@ public class EditActorDialog extends EditElementDialog {
 				false);
 		inputs[8] = InputPanelFactory.createInputPanel(skin, "Depth Type",
 				"Scene fake depth for scaling", new String[] { "none",
-						"vector"});
+						"vector"}, true);
 		inputs[9] = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions",
 				"The size of the 3d sprite", Param.Type.DIMENSION, true);
 		inputs[10] = InputPanelFactory.createInputPanel(skin, "Camera Name",

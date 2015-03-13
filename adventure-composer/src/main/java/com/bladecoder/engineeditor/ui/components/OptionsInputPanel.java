@@ -24,8 +24,23 @@ public class OptionsInputPanel extends InputPanel {
 	OptionsInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, String[] options) {
 		input = new SelectBox<String>(skin);
 		
+		int l = options.length;
+		if(!mandatory) l++;
+		String values[] = new String[l];
+		
+		if(!mandatory) {
+			values[0] = "";
+		}
+		
+		for(int i = 0; i < options.length; i++) {
+			if(mandatory)
+				values[i] = options[i];
+			else
+				values[i+1] = options[i];
+		}
+		
 		if(options != null)
-    		input.setItems(options);
+    		input.setItems(values);
 		
 		init(skin, title, desc, input, mandatory, defaultValue);
 	}

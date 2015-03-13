@@ -54,7 +54,7 @@ public class EditActionDialog extends EditElementDialog {
 		actions2[actions2.length - 1] = CUSTOM_ACTION_STR;
 
 		actionPanel = InputPanelFactory.createInputPanel(skin, "Action",
-				"Select the action to create.", actions2);
+				"Select the action to create.", actions2, true);
 		
 		classPanel = InputPanelFactory.createInputPanel(skin, "Class",
 				"Select the class for the custom action.", true);

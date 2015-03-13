@@ -42,7 +42,7 @@ public class EditSoundDialog extends EditElementDialog {
 		
 		inputs = new InputPanel [4];
 		inputs[0] = InputPanelFactory.createInputPanel(skin, "Sound ID", "The id of the sound");
-		inputs[1] = InputPanelFactory.createInputPanel(skin, "Filename", "Filename of the sound", getSoundList());
+		inputs[1] = InputPanelFactory.createInputPanel(skin, "Filename", "Filename of the sound", getSoundList(), true);
 		inputs[2] = InputPanelFactory.createInputPanel(skin, "Loop", "True if the sound is looping", Param.Type.BOOLEAN, false);
 		inputs[3] = InputPanelFactory.createInputPanel(skin, "Volume", "Select the volume");
 		

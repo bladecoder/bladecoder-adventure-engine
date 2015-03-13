@@ -42,7 +42,7 @@ public class RunVerbAction extends BaseCallbackAction {
 			new Param("repeat", "Repeat the verb the specified times. -1 to infinity",
 					Type.INTEGER),
 			new Param("chooseCriteria", "If the verb param is a comma separated verb list, one verb will be choose following this criteria",
-							Type.STRING, false, "first", new String[]{"first", "iterate", "random", "cycle"}),					
+							Type.OPTION, false, "", new String[]{"first", "iterate", "random", "cycle"}),					
 			new Param(
 					"wait",
 					"If this param is 'false' the text is showed and the action continues inmediatly",

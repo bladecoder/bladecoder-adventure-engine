@@ -68,10 +68,10 @@ public class PackageDialog extends EditDialog {
 	public PackageDialog(Skin skin) {
 		super("PACKAGE ADVENTURE", skin);
 
-		arch = InputPanelFactory.createInputPanel(skin, "Architecture", "Select the target Architecture for the game", ARCHS);
+		arch = InputPanelFactory.createInputPanel(skin, "Architecture", "Select the target Architecture for the game", ARCHS, true);
 		dir = new FileInputPanel(skin, "Output Directory", "Select the output directory to put the package", true);
-		type = InputPanelFactory.createInputPanel(skin, "Type", "Select the type of the package", TYPES);
-		os = InputPanelFactory.createInputPanel(skin, "OS", "Select the OS of the package", OSS);
+		type = InputPanelFactory.createInputPanel(skin, "Type", "Select the type of the package", TYPES, true);
+		os = InputPanelFactory.createInputPanel(skin, "OS", "Select the OS of the package", OSS, true);
 		linux64JRE = new FileInputPanel(skin, "JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file", false);
 		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file", false);
 		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle. Must be a ZIP file", false);

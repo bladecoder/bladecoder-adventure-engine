@@ -57,12 +57,12 @@ public class EditAnimationDialog extends EditElementDialog {
 
 		inputs[0] = InputPanelFactory.createInputPanel(skin, "Source",
 				"Select the source where the sprite or animation is defined",
-				new String[0]);
+				new String[0], true);
 		inputs[1] = InputPanelFactory.createInputPanel(skin, "ID",
-				"Select the id of the animation", new String[0]);
+				"Select the id of the animation", new String[0], true);
 		inputs[2] = InputPanelFactory.createInputPanel(skin, "Animation type",
 				"Select the type of the animation",
-				ChapterDocument.ANIMATION_TYPES);
+				ChapterDocument.ANIMATION_TYPES, true);
 		inputs[3] = InputPanelFactory.createInputPanel(skin, "Speed",
 				"Select the speed of the animation in secods",
 				Param.Type.FLOAT, true, "1.0");

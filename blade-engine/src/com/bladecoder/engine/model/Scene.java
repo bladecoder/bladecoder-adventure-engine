@@ -181,13 +181,7 @@ public class Scene implements Serializable,
 		if(depthVector==null)
 			return 1.0f;
 		
-		// interpolation equation
-//		return Math.max(0, depthVector.x + (depthVector.y - depthVector.x) * y
-//				/ camera.getScrollingHeight());
-		
 		return Math.max(0, (y - depthVector.x) / (depthVector.y - depthVector.x));
-		
-//		return Math.max(0, Interpolation.linear.apply(depthVector.x, depthVector.y, y));
 	}
 
 	public void setMusic(String filename, boolean loop, float initialDelay,
