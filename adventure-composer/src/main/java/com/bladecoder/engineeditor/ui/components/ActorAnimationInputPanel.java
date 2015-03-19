@@ -128,6 +128,9 @@ public class ActorAnimationInputPanel extends InputPanel {
 	public void setText(String s) {
 		String out[] = Param.parseString2(s);
 
+		if(out[0] == null)
+			out[0] = "";
+			
 		actor.setSelected(out[0]);
 		actorSelected();
 		animation.setSelected(out[1]);
