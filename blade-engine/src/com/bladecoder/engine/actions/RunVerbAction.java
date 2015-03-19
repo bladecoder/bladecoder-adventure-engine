@@ -42,7 +42,7 @@ public class RunVerbAction extends BaseCallbackAction {
 			new Param("repeat", "Repeat the verb the specified times. -1 to infinity",
 					Type.INTEGER),
 			new Param("chooseCriteria", "If the verb param is a comma separated verb list, one verb will be choose following this criteria",
-							Type.OPTION, false, "", new String[]{"first", "iterate", "random", "cycle"}),					
+							Type.OPTION, false, "", new String[]{"first", "iterate", "random", "cycle", "once"}),					
 			new Param(
 					"wait",
 					"If this param is 'false' the text is showed and the action continues inmediatly",
@@ -89,6 +89,10 @@ public class RunVerbAction extends BaseCallbackAction {
 		currentRepeat = 0;
 
 		ip = 0;
+		
+		if(chooseCount != 0)
+			return false;
+		
 		selectVerb();
 		nextStep();
 		return getWait();
@@ -133,6 +137,8 @@ public class RunVerbAction extends BaseCallbackAction {
 				chooseCount++;
 		} else if(chooseCriteria.equals("random")) {
 			v = verbs[MathUtils.random(0, verbs.length -1)];
+		} else if(chooseCriteria.equals("once")) {
+			chooseCount++;
 		} else if(chooseCriteria.equals("cycle")) {
 			v = verbs[chooseCount];
 			
