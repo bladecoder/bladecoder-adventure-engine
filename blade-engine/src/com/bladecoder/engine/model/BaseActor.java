@@ -369,7 +369,12 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 		float worldScale = EngineAssetManager.getInstance().getScale();
 		bbox = new Polygon();
 		bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
-		bbox.setVertices(json.readValue("bbox", float[].class, jsonData));
+		
+		float[] verts = json.readValue("bbox", float[].class, jsonData);
+		
+		if(verts.length > 0)
+			bbox.setVertices(verts);
+		
 		bbox.setScale(worldScale, worldScale);
 		
 		state = json.readValue("state", String.class, jsonData);
