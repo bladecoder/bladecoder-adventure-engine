@@ -43,6 +43,7 @@ import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -522,6 +523,25 @@ public class Sprite3DRenderer implements ActorRenderer {
 	@Override
 	public float getHeight() {
 		return height;
+	}
+	
+	
+	@Override
+	public void computeBbox(Polygon bbox) {
+		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
+			bbox.setVertices(new float[8]);
+		}
+		
+		float[] verts = bbox.getVertices();
+		
+		verts[0] = -getWidth()/2;
+		verts[1] = 0f;
+		verts[2] = -getWidth()/2;
+		verts[3] = getHeight();
+		verts[4] = getWidth()/2;
+		verts[5] = getHeight();
+		verts[6] = getWidth()/2;
+		verts[7] = 0f;			
 	}
 
 	@Override

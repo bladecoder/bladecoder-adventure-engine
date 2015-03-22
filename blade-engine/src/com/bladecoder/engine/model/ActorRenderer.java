@@ -18,6 +18,7 @@ package com.bladecoder.engine.model;
 import java.util.HashMap;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.bladecoder.engine.actions.ActionCallback;
@@ -49,5 +50,7 @@ public interface ActorRenderer extends Serializable, AssetConsumer {
 	
 	public String[] getInternalAnimations(String source);
 	public HashMap<String, AnimationDesc> getAnimations();
+	
+	public void computeBbox(Polygon bbox);
 }
 

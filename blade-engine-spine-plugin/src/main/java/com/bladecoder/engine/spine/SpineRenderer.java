@@ -24,6 +24,7 @@ import com.bladecoder.engine.model.World;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -360,24 +361,32 @@ public class SpineRenderer implements ActorRenderer {
 			
 			updateAnimation(lastAnimationTime);
 			
-			computeBounds();
 		} catch (Exception e) {
 			EngineLogger.error("SpineRenderer:setCurrentFA " + e.getMessage());
 		}
 	}
 
-	private void computeBounds() {
+	@Override
+	public void computeBbox(Polygon bbox) {
+		float minX, minY, maxX, maxY;
+		
+		currentSource.skeleton.setPosition(0,0);
+		currentSource.skeleton.updateWorldTransform();
 		bounds.update(currentSource.skeleton, true);
 
 		if (bounds.getWidth() > 0 && bounds.getHeight() > 0) {
 			width = bounds.getWidth();
 			height = bounds.getHeight();
+			minX = bounds.getMinX();
+			minY = bounds.getMinY();
+			maxX = bounds.getMaxX();
+			maxY = bounds.getMaxY();
 		} else {
-			currentSource.skeleton.updateWorldTransform();
 
-			float minX = Float.MAX_VALUE;
-			float minY = Float.MAX_VALUE;
-			float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE;
+			minX = Float.MAX_VALUE;
+			minY = Float.MAX_VALUE;
+			maxX = Float.MIN_VALUE;
+			maxY = Float.MIN_VALUE;
 
 			Array<Slot> slots = currentSource.skeleton.getSlots();
 
@@ -408,6 +417,23 @@ public class SpineRenderer implements ActorRenderer {
 				width = height = 200;
 			}
 		}
+		
+		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
+			bbox.setVertices(new float[8]);
+		}
+		
+		float[] verts = bbox.getVertices();
+		
+		verts[0] = minX;
+		verts[1] = minY;
+		verts[2] = minX;
+		verts[3] = maxY;
+		verts[4] = maxX;
+		verts[5] = maxY;
+		verts[6] = maxX;
+		verts[7] = minY;
+		
+		bbox.dirty();
 	}
 
 	private AnimationDesc getAnimation(String id) {

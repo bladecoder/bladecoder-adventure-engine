@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.bladecoder.engine.model.ActorRenderer;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -236,6 +236,24 @@ public class AtlasRenderer implements ActorRenderer {
 
 		return id;
 
+	}
+	
+	@Override
+	public void computeBbox(Polygon bbox) {
+		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
+			bbox.setVertices(new float[8]);
+		}
+		
+		float[] verts = bbox.getVertices();
+		
+		verts[0] = -getWidth()/2;
+		verts[1] = 0f;
+		verts[2] = -getWidth()/2;
+		verts[3] = getHeight();
+		verts[4] = getWidth()/2;
+		verts[5] = getHeight();
+		verts[6] = getWidth()/2;
+		verts[7] = 0f;			
 	}
 
 	@Override

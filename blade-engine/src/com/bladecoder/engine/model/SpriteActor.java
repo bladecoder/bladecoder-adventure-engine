@@ -97,9 +97,9 @@ public class SpriteActor extends BaseActor {
 
 	public void setBboxFromRenderer(boolean v) {
 		this.bboxFromRenderer = v;
-		
-		if(v)
-			updateBBox();
+//		
+//		if(v)
+//			renderer.computeBbox(bbox);
 	}
 
 	public float getWidth() {
@@ -123,6 +123,7 @@ public class SpriteActor extends BaseActor {
 	public void update(float delta) {
 		super.update(delta);
 		renderer.update(delta);
+		
 		if(posTween != null) {
 			posTween.update(this, delta);
 			if(posTween.isComplete()) {
@@ -181,7 +182,7 @@ public class SpriteActor extends BaseActor {
 					inNavGraph = scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
 				}
 				
-				updateBBox();
+				renderer.computeBbox(bbox);
 				
 				if(inNavGraph) {
 					scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
@@ -229,25 +230,25 @@ public class SpriteActor extends BaseActor {
 	public void lookat(Vector2 p) {
 		renderer.lookat(bbox.getX(), bbox.getY(), p);
 		if(bboxFromRenderer)
-			updateBBox();
+			renderer.computeBbox(bbox);
 	}
 
 	public void lookat(String direction) {
 		renderer.lookat(direction);
 		if(bboxFromRenderer)
-			updateBBox();
+			renderer.computeBbox(bbox);
 	}
 
 	public void stand() {
 		renderer.stand();
 		if(bboxFromRenderer)
-			updateBBox();
+			renderer.computeBbox(bbox);
 	}
 
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
 		renderer.walk(p0, pf);
 		if(bboxFromRenderer)
-			updateBBox();
+			renderer.computeBbox(bbox);
 	}
 
 	/**
@@ -279,26 +280,6 @@ public class SpriteActor extends BaseActor {
 
 		((WalkTween)posTween).start(this, walkingPath, walkingSpeed, cb);
 	}
-	
-	/**
-	 * Updates de bbox with the renderer width and height information
-	 */
-	private void updateBBox() {
-		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
-			bbox.setVertices(new float[8]);
-		}
-		
-		float[] verts = bbox.getVertices();
-		
-		verts[0] = -renderer.getWidth()/2;
-		verts[1] = 0f;
-		verts[2] = -renderer.getWidth()/2;
-		verts[3] = renderer.getHeight();
-		verts[4] = renderer.getWidth()/2;
-		verts[5] = renderer.getHeight();
-		verts[6] = renderer.getWidth()/2;
-		verts[7] = 0f;		
-	}	
 
 	@Override
 	public String toString() {
@@ -323,7 +304,7 @@ public class SpriteActor extends BaseActor {
 		renderer.retrieveAssets();
 		
 		if(bboxFromRenderer) {
-			updateBBox();
+			renderer.computeBbox(bbox);
 		}
 		
 		// Call setPosition to recalc fake depth and camera follow
