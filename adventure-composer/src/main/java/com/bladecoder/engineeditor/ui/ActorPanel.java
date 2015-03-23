@@ -88,6 +88,7 @@ public class ActorPanel extends HeaderPanel {
 						dialogList.addElements(doc, a, "dialog");
 						soundList.addElements(doc, a, "sound");
 						props.setActorDocument(doc, a);
+						
 					}
 
 				});

@@ -58,13 +58,11 @@ public class TabPanel extends Table {
 		buttonGroup.setMaxCheckCount(1);
 		buttonGroup.setMinCheckCount(1);
 		buttonGroup.setUncheckLast(true);
-//		top().left();
 		
 		add(header).expandX().fillX().left();
 		row();
 		add(body).expand().fill();
 
-//		body.size(0);
 		body.fill();
 	}
 	
@@ -115,15 +113,9 @@ public class TabPanel extends Table {
 	public void setTab(int i) {		
 		Actor panel = tabs.get(i).content;
 		tabs.get(i).button.setChecked(true);
+		body.setActor(null);
 		body.clear();
 		body.setActor(panel);
-
-//		if(panel instanceof Layout)
-//			body.prefHeight(((Layout)panel).getPrefHeight());
-//		else
-//			body.prefHeight(panel.getHeight());
-//		
-//		invalidateHierarchy();
 	}
 	
 	public void clear() {
@@ -132,6 +124,7 @@ public class TabPanel extends Table {
 		buttons.clear();		
 		header.clear();
 		tabs.clear();
+		body.setActor(null);
 		body.clear();
 	}
 }
