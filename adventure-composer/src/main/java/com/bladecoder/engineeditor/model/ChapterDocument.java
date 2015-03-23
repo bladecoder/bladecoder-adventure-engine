@@ -355,7 +355,9 @@ public class ChapterDocument extends BaseDocument {
 
 		} else if (type.equals(SPINE_ACTOR_TYPE)) {
 			a = new SpriteActor();
-			((SpriteActor) a).setRenderer(new SpineRenderer());
+			SpineRenderer r = new SpineRenderer();
+			r.enableEvents(false);
+			((SpriteActor) a).setRenderer(r);
 		} else if (type.equals(IMAGE_ACTOR_TYPE)) {
 			a = new SpriteActor();
 			((SpriteActor) a).setRenderer(new ImageRenderer());

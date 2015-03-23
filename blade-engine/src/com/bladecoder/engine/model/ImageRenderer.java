@@ -93,7 +93,8 @@ public class ImageRenderer implements ActorRenderer {
 		verts[4] = getWidth()/2;
 		verts[5] = getHeight();
 		verts[6] = getWidth()/2;
-		verts[7] = 0f;			
+		verts[7] = 0f;	
+		bbox.dirty();
 	}
 
 	@Override

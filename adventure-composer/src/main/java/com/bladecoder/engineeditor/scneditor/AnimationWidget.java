@@ -60,6 +60,7 @@ public class AnimationWidget extends Widget {
 			((Sprite3DRenderer)renderer).setSpriteSize(new Vector2( Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 		} else if(type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
 			renderer = new SpineRenderer();
+			((SpineRenderer)renderer).enableEvents(false);
 		} else if(type.equals(ChapterDocument.IMAGE_ACTOR_TYPE)) {
 			renderer = new ImageRenderer();			
 		} else {

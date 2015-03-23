@@ -82,6 +82,8 @@ public class SpineRenderer implements ActorRenderer {
 	private final HashMap<String, SkeletonCacheEntry> sourceCache = new HashMap<String, SkeletonCacheEntry>();
 
 	private float lastAnimationTime = 0;
+	
+	transient private boolean eventsEnabled = true;
 
 	class SkeletonCacheEntry {
 		int refCounter;
@@ -91,6 +93,11 @@ public class SpineRenderer implements ActorRenderer {
 
 	public SpineRenderer() {
 
+	}
+	
+
+	public void enableEvents(boolean v) {
+		eventsEnabled = v;
 	}
 
 	private AnimationStateListener animationListener = new AnimationStateListener() {
@@ -116,9 +123,12 @@ public class SpineRenderer implements ActorRenderer {
 		@Override
 		public void end(int arg0) {
 		}
-
+		
 		@Override
 		public void event(int trackIndex, Event event) {
+			if(!eventsEnabled)
+				return;
+			
 			String actorId = event.getData().getName();
 			BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
 			
@@ -370,6 +380,26 @@ public class SpineRenderer implements ActorRenderer {
 	public void computeBbox(Polygon bbox) {
 		float minX, minY, maxX, maxY;
 		
+		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
+			bbox.setVertices(new float[8]);
+		}
+		
+		float[] verts = bbox.getVertices();
+		
+		if(currentSource == null || currentSource.skeleton == null) {
+			
+			verts[0] = -getWidth()/2;
+			verts[1] = 0f;
+			verts[2] = -getWidth()/2;
+			verts[3] = getHeight();
+			verts[4] = getWidth()/2;
+			verts[5] = getHeight();
+			verts[6] = getWidth()/2;
+			verts[7] = 0f;
+			bbox.dirty();
+			return;
+		}
+		
 		currentSource.skeleton.setPosition(0,0);
 		currentSource.skeleton.updateWorldTransform();
 		bounds.update(currentSource.skeleton, true);
@@ -417,12 +447,6 @@ public class SpineRenderer implements ActorRenderer {
 				width = height = 200;
 			}
 		}
-		
-		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
-			bbox.setVertices(new float[8]);
-		}
-		
-		float[] verts = bbox.getVertices();
 		
 		verts[0] = minX;
 		verts[1] = minY;
@@ -478,13 +502,8 @@ public class SpineRenderer implements ActorRenderer {
 
 					if (fa != null) {
 						flipX = true;
-					} else if (s.endsWith(AnimationDesc.FRONT) || s.endsWith(AnimationDesc.BACK)) { // search
-																									// for
-																									// only
-																									// right
-																									// or
-																									// left
-																									// animations
+					} else if (s.endsWith(AnimationDesc.FRONT) || s.endsWith(AnimationDesc.BACK)) {
+						// search only for right or left animations
 						if (id.endsWith(AnimationDesc.LEFT)) {
 							sb.append(id.substring(0, id.lastIndexOf('.') + 1));
 							sb.append(AnimationDesc.LEFT);

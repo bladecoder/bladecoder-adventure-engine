@@ -63,6 +63,7 @@ public class SpriteDrawer {
 						.getWidth(), r.getHeight()));
 			} else if (r instanceof SpineRenderer) {
 				renderer = new SpineRenderer();
+				((SpineRenderer)renderer).enableEvents(false);
 			} else if (r instanceof ImageRenderer) {
 				renderer = new ImageRenderer();				
 			} else {
