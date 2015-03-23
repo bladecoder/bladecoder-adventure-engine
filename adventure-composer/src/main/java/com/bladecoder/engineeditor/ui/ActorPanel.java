@@ -64,10 +64,8 @@ public class ActorPanel extends HeaderPanel {
 							if (!type.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE))
 								tabPanel.addTab("Animations", faList);
 
-							if (!type.equals("foreground")) {
-								tabPanel.addTab("Verbs", verbList);
-								tabPanel.addTab("Sounds", soundList);
-							}
+							tabPanel.addTab("Verbs", verbList);
+							tabPanel.addTab("Sounds", soundList);
 
 							tabPanel.addTab("Dialogs", dialogList);
 							tabPanel.addTab("Properties", props);
@@ -81,7 +79,6 @@ public class ActorPanel extends HeaderPanel {
 									}
 								}
 							}
-
 						} else {
 							setTile("ACTOR");
 						}

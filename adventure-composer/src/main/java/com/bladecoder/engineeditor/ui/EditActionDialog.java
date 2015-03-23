@@ -41,7 +41,7 @@ public class EditActionDialog extends EditElementDialog {
 	private InputPanel actionPanel;
 	private InputPanel classPanel;
 
-	private InputPanel parameters[];	
+	private InputPanel parameters[] = new InputPanel[0];	
 
 	@SuppressWarnings("unchecked")
 	public EditActionDialog(Skin skin, BaseDocument doc, Element parent, Element e) {
@@ -58,8 +58,6 @@ public class EditActionDialog extends EditElementDialog {
 		
 		classPanel = InputPanelFactory.createInputPanel(skin, "Class",
 				"Select the class for the custom action.", true);
-
-		setAction();
 
 		((SelectBox<String>) actionPanel.getField())
 				.addListener(new ChangeListener() {
@@ -89,10 +87,10 @@ public class EditActionDialog extends EditElementDialog {
 				actionPanel.setText(CUSTOM_ACTION_STR);
 			}
 			
-			setAction();
 		}
 		
 		init(parameters, getAttrs(), doc, parent, "action", e);
+		setAction();
 	}
 	
 	private String[] getAttrs() {
@@ -146,7 +144,8 @@ public class EditActionDialog extends EditElementDialog {
 			i = new InputPanel[0];
 			a = new String[0];
 		}
-
+		
+//		((ScrollPane)(getContentTable().getCells().get(1).getActor())).setWidget(getCenterPanel());
 	}
 
 	@Override

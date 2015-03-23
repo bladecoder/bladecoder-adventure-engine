@@ -2,7 +2,24 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][unreleased]
+## [Unreleased]
+
+### Added
+- Added 'once' criteria to RunVerbAction
+- Added ActorAttrAction
+- GotoAction: Change margin. 
+- Added log when verb finished
+- GotoAction: add anchor parameter
+- PositionAction now works with BaseActors (no animation)
+
+### Fixed
+- Composer: fixes to inputpanels
+- fix OptionInputPanel when mandatory
+- Reset testScene when changing current scene
+- ActorProps: Show pos for BaseActors
+- Composer: change some edit defaults
+- walkzone fix when dinamic obstacles
+- fill animation/actor list when setText()
 
 ## [0.7.1]
 - Action refactor

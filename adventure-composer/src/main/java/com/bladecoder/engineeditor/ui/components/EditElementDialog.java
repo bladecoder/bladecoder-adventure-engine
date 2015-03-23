@@ -49,6 +49,8 @@ public abstract class EditElementDialog extends EditDialog {
 		this.parent = parent;
 		this.type = type;
 		
+		getCenterPanel().clear();
+		
 		for (InputPanel i : inputs) {
 			addInputPanel(i);
 		}

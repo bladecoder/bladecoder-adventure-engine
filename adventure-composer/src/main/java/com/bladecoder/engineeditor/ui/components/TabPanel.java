@@ -28,7 +28,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Layout;
 import com.badlogic.gdx.utils.Array;
 
 public class TabPanel extends Table {
@@ -60,12 +59,12 @@ public class TabPanel extends Table {
 		buttonGroup.setMinCheckCount(1);
 		buttonGroup.setUncheckLast(true);
 //		top().left();
-//		
+		
 		add(header).expandX().fillX().left();
 		row();
 		add(body).expand().fill();
 
-		body.size(0);
+//		body.size(0);
 		body.fill();
 	}
 	
@@ -119,12 +118,12 @@ public class TabPanel extends Table {
 		body.clear();
 		body.setActor(panel);
 
-		if(panel instanceof Layout)
-			body.prefHeight(((Layout)panel).getPrefHeight());
-		else
-			body.prefHeight(panel.getHeight());
-		
-		invalidateHierarchy();
+//		if(panel instanceof Layout)
+//			body.prefHeight(((Layout)panel).getPrefHeight());
+//		else
+//			body.prefHeight(panel.getHeight());
+//		
+//		invalidateHierarchy();
 	}
 	
 	public void clear() {
