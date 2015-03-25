@@ -18,11 +18,9 @@ package com.bladecoder.engine.model;
 import java.util.ArrayList;
 
 import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.RunVerbAction;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class Verb implements ActionCallback {
+public class Verb implements VerbRunner {
 	private String id;
 	
 	private ArrayList<Action> actions = new ArrayList <Action>();
@@ -95,11 +93,18 @@ public class Verb implements ActionCallback {
 		nextStep();	
 	}
 
+	public int getIP() {
+		return ip;
+	}
+	
+	public void setIP(int ip) {
+		this.ip = ip;
+	}
 
 	public void cancel() {
 		for(Action c:actions) {
-			if(c instanceof RunVerbAction)
-				((RunVerbAction)c).cancel();
+			if(c instanceof VerbRunner)
+				((VerbRunner)c).cancel();
 		}		
 		
 		ip = actions.size();

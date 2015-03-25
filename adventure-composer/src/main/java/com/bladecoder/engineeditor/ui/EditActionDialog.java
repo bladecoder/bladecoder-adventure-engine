@@ -32,16 +32,17 @@ import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public class EditActionDialog extends EditElementDialog {
 	private static final String CUSTOM_ACTION_STR = "CUSTOM ACTION";
 
-	private static final String CUSTOM_INFO="Custom action definition";
-	
+	private static final String CUSTOM_INFO = "Custom action definition";
+
 	private InputPanel actionPanel;
 	private InputPanel classPanel;
 
-	private InputPanel parameters[] = new InputPanel[0];	
+	private InputPanel parameters[] = new InputPanel[0];
 
 	@SuppressWarnings("unchecked")
 	public EditActionDialog(Skin skin, BaseDocument doc, Element parent, Element e) {
@@ -50,57 +51,67 @@ public class EditActionDialog extends EditElementDialog {
 		String[] actions = ActionFactory.getActionList();
 		Arrays.sort(actions);
 		String[] actions2 = new String[actions.length + 1];
-		System.arraycopy(actions, 0, actions2, 0, actions.length);		
+		System.arraycopy(actions, 0, actions2, 0, actions.length);
 		actions2[actions2.length - 1] = CUSTOM_ACTION_STR;
 
-		actionPanel = InputPanelFactory.createInputPanel(skin, "Action",
-				"Select the action to create.", actions2, true);
-		
-		classPanel = InputPanelFactory.createInputPanel(skin, "Class",
-				"Select the class for the custom action.", true);
+		actionPanel = InputPanelFactory
+				.createInputPanel(skin, "Action", "Select the action to create.", actions2, true);
 
-		((SelectBox<String>) actionPanel.getField())
-				.addListener(new ChangeListener() {
+		classPanel = InputPanelFactory.createInputPanel(skin, "Class", "Select the class for the custom action.", true);
 
-					@Override
-					public void changed(ChangeEvent event, Actor actor) {
-						setAction();
-					}
-				});
-		
+		((SelectBox<String>) actionPanel.getField()).addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				setAction();
+			}
+		});
+
 		((TextField) classPanel.getField()).addListener(new FocusListener() {
 			@Override
-			public void keyboardFocusChanged (FocusEvent event, Actor actor, boolean focused) {
-				if(!event.isFocused())
+			public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
+				if (!event.isFocused())
 					setAction();
 			}
 		});
 
-		if(e != null) {
+		if (e != null) {
 			classPanel.setText(e.getAttribute("class"));
-			
-			if(!e.getAttribute("action_name").isEmpty()) {
+
+			if (!e.getAttribute("action_name").isEmpty()) {
 				actionPanel.setText(e.getAttribute("action_name"));
-			} 
-			
-			if(!e.getAttribute("class").isEmpty()) {
+			}
+
+			if (!e.getAttribute("class").isEmpty()) {
 				actionPanel.setText(CUSTOM_ACTION_STR);
 			}
-			
+
 		}
-		
+
 		init(parameters, getAttrs(), doc, parent, "action", e);
+
 		setAction();
+
+		if (e != null) {
+			for (int pos = 0; pos < a.length; pos++) {
+				InputPanel input = i[pos];
+				if (I18NUtils.mustTraslateAttr(a[pos])) {
+					input.setText(doc.getTranslation(e.getAttribute(a[pos])));
+				} else {
+					input.setText(e.getAttribute(a[pos]));
+				}
+			}
+		}
 	}
-	
+
 	private String[] getAttrs() {
 		String inputs[] = new String[parameters.length];
-		
-		for (int j = 0; j < parameters.length ; j++) {
-			InputPanel i=  parameters[j];
+
+		for (int j = 0; j < parameters.length; j++) {
+			InputPanel i = parameters[j];
 			inputs[j] = i.getTitle();
 		}
-		
+
 		return inputs;
 	}
 
@@ -111,15 +122,15 @@ public class EditActionDialog extends EditElementDialog {
 		addInputPanel(actionPanel);
 
 		Action ac = null;
-		
+
 		if (id.equals(CUSTOM_ACTION_STR)) {
 			addInputPanel(classPanel);
-			if(!classPanel.getText().trim().isEmpty())
+			if (!classPanel.getText().trim().isEmpty())
 				ac = ActionFactory.createByClass(classPanel.getText(), null);
 		} else {
-			ac = ActionFactory.create(id, null);			
+			ac = ActionFactory.create(id, null);
 		}
-		
+
 		if (ac != null) {
 			setInfo(ac.getInfo());
 
@@ -128,15 +139,19 @@ public class EditActionDialog extends EditElementDialog {
 			parameters = new InputPanel[params.length];
 
 			for (int i = 0; i < params.length; i++) {
-				parameters[i] = InputPanelFactory.createInputPanel(getSkin(),params[i].name, params[i].desc,
+				parameters[i] = InputPanelFactory.createInputPanel(getSkin(), params[i].name, params[i].desc,
 						params[i].type, params[i].mandatory, params[i].defaultValue, params[i].options);
-				addInputPanel(parameters[i]);
 				
-				if(parameters[i].getField() instanceof TextField && params[i].name.toLowerCase().endsWith("text")) {
+				if(params[i].name.equals("endType"))
+					continue;
+				
+				addInputPanel(parameters[i]);
+
+				if (parameters[i].getField() instanceof TextField && params[i].name.toLowerCase().endsWith("text")) {
 					parameters[i].getCell(parameters[i].getField()).fillX();
 				}
 			}
-			
+
 			i = parameters;
 			a = getAttrs();
 		} else {
@@ -144,27 +159,26 @@ public class EditActionDialog extends EditElementDialog {
 			i = new InputPanel[0];
 			a = new String[0];
 		}
-		
-//		((ScrollPane)(getContentTable().getCells().get(1).getActor())).setWidget(getCenterPanel());
+
+		// ((ScrollPane)(getContentTable().getCells().get(1).getActor())).setWidget(getCenterPanel());
 	}
 
 	@Override
 	protected void fill() {
-		
+
 		// Remove previous params
-		while(e.getAttributes().getLength() > 0) {
+		while (e.getAttributes().getLength() > 0) {
 			e.removeAttribute(e.getAttributes().item(0).getNodeName());
 		}
 
-		
 		String id = actionPanel.getText();
-		
+
 		if (id.equals(CUSTOM_ACTION_STR)) {
 			e.setAttribute("class", classPanel.getText());
 		} else {
-			e.setAttribute("action_name", id);			
+			e.setAttribute("action_name", id);
 		}
-		
+
 		super.fill();
 	}
 }

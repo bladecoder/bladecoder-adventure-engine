@@ -162,8 +162,6 @@ public abstract class ElementList extends EditList<Element> {
 			list.setSelectedIndex(pos - 1);
 		else if (pos == 0 && list.getItems().size > 0)
 			list.setSelectedIndex(0);
-//		else
-//			list.clearSelection();
 	}
 
 	@Override

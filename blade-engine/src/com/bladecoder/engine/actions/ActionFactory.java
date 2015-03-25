@@ -83,7 +83,15 @@ public class ActionFactory {
 		actions.put("RemoveActor",
 				"com.bladecoder.engine.actions.RemoveActorAction");		
 		actions.put("ActorAttr",
-				"com.bladecoder.engine.actions.SetActorAttrAction");	
+				"com.bladecoder.engine.actions.SetActorAttrAction");
+		actions.put("Repeat",
+				"com.bladecoder.engine.actions.RepeatAction");
+		actions.put("IfAttr",
+				"com.bladecoder.engine.actions.IfAttrAction");
+		actions.put("Choose",
+				"com.bladecoder.engine.actions.ChooseAction");
+		actions.put("RunOnce",
+				"com.bladecoder.engine.actions.RunOnceAction");
 	}
 	
 	public static String []getActionList() {

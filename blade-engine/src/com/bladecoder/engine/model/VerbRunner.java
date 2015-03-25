@@ -13,26 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.bladecoder.engine.actions;
+package com.bladecoder.engine.model;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
+import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
 
-public interface Action {
+/**
+ * 
+ * Interface to define the methods needed to handle and execute verbs.
+ * 
+ * @author rgarcia
+ *
+ */
+public interface VerbRunner extends ActionCallback {
+	
 	/**
-	 * Execute the action
-	 * 
-	 * @param cb
-	 * @return If 'true', the verb must stops the execution and wait
-	 * for the action to call the cb.resume()
+	 * Method to retrieve the action list
+	 * @return the action list
 	 */
-	public boolean run(ActionCallback cb);
+	public ArrayList<Action> getActions();
+	
+	/**
+	 * Run the verb
+	 */
+	public void run();
 
-	public void setParams(HashMap<String, String> params);
+	/**
+	 * Return the current action pointer
+	 * @return
+	 */
+	public int getIP();
+	
+	/**
+	 * Sets the action pointer
+	 * @param ip the pointer (the action index to execute)
+	 */
+	public void setIP(int ip);
 
-	public String getInfo();
-
-	public Param[] getParams();
+	/**
+	 * Sets the IP to the end of the queue finishing the verb execution
+	 */
+	public void cancel();
 }
