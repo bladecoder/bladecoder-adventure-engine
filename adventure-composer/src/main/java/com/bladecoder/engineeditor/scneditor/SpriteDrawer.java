@@ -109,7 +109,11 @@ public class SpriteDrawer {
 
 	public void update(float delta) {
 		if (renderer != null && currentAnimation != null) {
-			renderer.update(delta);
+			try {
+				renderer.update(delta);
+			} catch(Exception e) {
+				
+			}
 		}
 	}
 
