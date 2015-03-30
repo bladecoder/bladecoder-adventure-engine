@@ -92,6 +92,8 @@ public class ActionFactory {
 				"com.bladecoder.engine.actions.ChooseAction");
 		actions.put("RunOnce",
 				"com.bladecoder.engine.actions.RunOnceAction");
+		actions.put("MoveToScene",
+				"com.bladecoder.engine.actions.MoveToSceneAction");
 	}
 	
 	public static String []getActionList() {
