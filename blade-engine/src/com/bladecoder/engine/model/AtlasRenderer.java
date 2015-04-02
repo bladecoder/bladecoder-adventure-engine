@@ -40,6 +40,7 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class AtlasRenderer implements ActorRenderer {
+	private final static float DEFAULT_DIM = 200;
 
 	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
 	
@@ -134,7 +135,7 @@ public class AtlasRenderer implements ActorRenderer {
 	@Override
 	public float getWidth() {
 		if (tex == null)
-			return 200;
+			return DEFAULT_DIM;
 
 		return tex.getRegionWidth();
 	}
@@ -142,7 +143,7 @@ public class AtlasRenderer implements ActorRenderer {
 	@Override
 	public float getHeight() {
 		if (tex == null)
-			return 200;
+			return DEFAULT_DIM;
 
 		return tex.getRegionHeight();
 	}

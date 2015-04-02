@@ -19,6 +19,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
@@ -99,6 +100,7 @@ public class AnimationWidget extends Widget {
 			renderer.addAnimation(fa);
 			
 			renderer.startAnimation(fa.id, Tween.FROM_FA, 1, null);
+			renderer.computeBbox(new Polygon());
 		}
 	}
 	
