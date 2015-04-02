@@ -61,6 +61,9 @@ public class GotoAction extends BaseCallbackAction {
 				x = x - target.getBBox().getBoundingRectangle().width / 2 - actor.getBBox().getBoundingRectangle().width / 2;
 			} else if(anchor.equals("right")) {
 				x = x + target.getBBox().getBoundingRectangle().width / 2 + actor.getBBox().getBoundingRectangle().width / 2;
+			} else if(anchor.equals("center")) {
+				if(!(target instanceof SpriteActor))
+					x = x + target.getBBox().getBoundingRectangle().width / 2;
 			}
 			
 			x += anchorDistance.x;
