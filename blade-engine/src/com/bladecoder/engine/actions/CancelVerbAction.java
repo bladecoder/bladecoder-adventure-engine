@@ -19,8 +19,8 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -32,8 +32,8 @@ import com.bladecoder.engine.util.EngineLogger;
 public class CancelVerbAction implements Action {
 	public static final String INFO = "Stops the named verb if it is in execution.";
 	public static final Param[] PARAMS = {
-			new Param("actor", "The target actor", Type.ACTOR, false),
-			new Param("verb", "The verb to stop", Type.STRING, true),
+			new Param("actor", "The target actor. Empty for the current actor.", Type.ACTOR, false),
+			new Param("verb", "The verb to stop. Empty for the current verb.", Type.STRING, false),
 			new Param("target", "If the verb is 'use', the target actor",
 					Type.ACTOR) };
 
@@ -51,9 +51,13 @@ public class CancelVerbAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 
-		Verb v = null;
+		VerbRunner v = null;
+		
+		if(verb == null) {
+			v = (VerbRunner)cb;
+		}
 
-		if (actorId != null) {
+		if (v == null && actorId != null) {
 			BaseActor a = World.getInstance().getCurrentScene()
 					.getActor(actorId, true);
 			v = a.getVerb(verb, target);
