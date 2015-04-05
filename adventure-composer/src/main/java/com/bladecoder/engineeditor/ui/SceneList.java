@@ -35,6 +35,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.model.WorldDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
@@ -241,12 +242,13 @@ public class SceneList extends ElementList {
 
 		@Override
 		public TextureRegion getCellImage(Element e) {
-			String bg = e.getAttribute("background");
+			String atlas = e.getAttribute(ChapterDocument.BACKGROUND_ATLAS_ATTR);
+			String region = e.getAttribute(ChapterDocument.BACKGROUND_REGION_ATTR);
 			
 			TextureRegion r = null;
 			
-			if(!bg.isEmpty()) 
-				r = Ctx.project.getBgIcon(bg);
+			if(!atlas.isEmpty()) 
+				r = Ctx.project.getBgIcon(atlas,region);
 
 			if (r == null)
 				r =  Ctx.assetManager.getIcon("ic_no_scene");

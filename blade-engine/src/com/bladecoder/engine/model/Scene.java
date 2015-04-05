@@ -22,14 +22,14 @@ import java.util.List;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -45,8 +45,6 @@ public class Scene implements Serializable,
 	
 	public static final Color ACTOR_BBOX_COLOR = new Color(0.2f, 0.2f, 0.8f,
 			1f);
-	private static final TextureFilter BG_TEXFILTER_MAG = TextureFilter.Linear;
-	private static final TextureFilter BG_TEXFILTER_MIN = TextureFilter.Linear;
 	public static final Color WALKZONE_COLOR = Color.GREEN;
 	public static final Color OBSTACLE_COLOR = Color.RED;
 
@@ -62,10 +60,12 @@ public class Scene implements Serializable,
 	
 	private SceneCamera camera = new SceneCamera();
 	
-	private Texture[] background;
-	private Texture[] lightMap;
-	private String backgroundFilename;
-	private String lightMapFilename;
+	private Array<AtlasRegion> background;
+	private Array<AtlasRegion> lightMap;
+	private String backgroundAtlas;
+	private String backgroundRegionId;
+	private String lightMapAtlas;
+	private String lightMapRegionId;
 	
 	/** For polygonal PathFinding */
 	private PolygonalNavGraph polygonalNavGraph;
@@ -246,9 +246,9 @@ public class Scene implements Serializable,
 
 			float x = 0;
 
-			for (Texture tile : background) {
+			for (AtlasRegion tile : background) {
 				spriteBatch.draw(tile, x, 0f);
-				x += tile.getWidth();
+				x += tile.getRegionWidth();
 			}
 
 			spriteBatch.enableBlending();
@@ -267,9 +267,9 @@ public class Scene implements Serializable,
 
 			float x = 0;
 
-			for (Texture tile : lightMap) {
+			for (AtlasRegion tile : lightMap) {
 				spriteBatch.draw(tile, x, 0f);
-				x += tile.getWidth();
+				x += tile.getRegionWidth();
 			}
 
 			spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA,
@@ -348,63 +348,11 @@ public class Scene implements Serializable,
 		layer.add(actor);
 	}
 
-	public void setBackground(String bgFilename, String lightMapFilename) {
-
-		if (bgFilename != null && !bgFilename.isEmpty()) {
-			ArrayList<String> tiles = getTilesByFilename(bgFilename);
-
-			if (tiles.size() > 0) {
-				backgroundFilename = bgFilename;
-				background = new Texture[tiles.size()];
-			}
-		}
-
-		// SET LIGHT MAP
-		if (lightMapFilename != null && !lightMapFilename.isEmpty()) {
-			ArrayList<String> tiles = getTilesByFilename(lightMapFilename);
-
-			if (tiles.size() > 0) {
-				this.lightMapFilename = lightMapFilename;
-				lightMap = new Texture[tiles.size()];
-			}
-		}
-	}
-
-	/**
-	 * Search for files based in the filename parameter. Used for bg images and maps.
-	 * 
-	 * ex. for filename 'bg_0.png': bg_0.png, bg_1.png, bg_2.png... ex. for
-	 * filename 'bg.png': bg.png, bg_1.png, bg_2.png...
-	 * 
-	 * @param filename
-	 *            The filename used as search base
-	 */
-	private ArrayList<String> getTilesByFilename(String filename) {
-		ArrayList<String> tiles = new ArrayList<String>();
-
-		StringBuilder sb = new StringBuilder();
-
-		// name without extension
-		String name = filename.substring(0, filename.lastIndexOf('.'));
-		// extension
-		String ext = filename.substring(filename.lastIndexOf('.'));
-		String nameWithoutIndex = name.endsWith("_0") ? name.substring(0,
-				name.length() - 2) : name;
-
-		int i = 0;
-
-		sb.append(EngineAssetManager.BACKGROUND_DIR).append(filename);
-
-		while (EngineAssetManager.getInstance().assetExists(sb.toString())) {
-			i++;
-
-			tiles.add(sb.toString());
-			sb.setLength(0);
-			sb.append(EngineAssetManager.BACKGROUND_DIR)
-					.append(nameWithoutIndex).append("_").append(i).append(ext);
-		}
-
-		return tiles;
+	public void setBackground(String bgAtlas, String bgId, String lightMapAtlas, String lightMapId) {
+		this.backgroundAtlas = bgAtlas;
+		this.backgroundRegionId = bgId;
+		this.lightMapAtlas = lightMapAtlas;
+		this.lightMapRegionId = lightMapId;
 	}
 
 	public BaseActor getActorAt(float x, float y) {
@@ -466,7 +414,7 @@ public class Scene implements Serializable,
 			
 	}
 
-	public Texture[] getBackground() {
+	public Array<AtlasRegion> getBackground() {
 		return background;
 	}
 	
@@ -495,23 +443,13 @@ public class Scene implements Serializable,
 	@Override
 	public void loadAssets() {
 
-		if (background != null) {
-			ArrayList<String> tiles = getTilesByFilename(backgroundFilename);
-
-			// LOAD BACKGROUND TEXTURES
-			for (String filename : tiles) {
-				EngineAssetManager.getInstance().loadTexture(filename);
-			}
-
+		if (backgroundAtlas != null && !backgroundAtlas.isEmpty()) {			
+			EngineAssetManager.getInstance().loadAtlas(backgroundAtlas);
 		}
 
 		// LOAD LIGHT MAP
-		if (lightMap != null) {
-			ArrayList<String> tiles = getTilesByFilename(lightMapFilename);
-
-			for (String filename : tiles) {
-				EngineAssetManager.getInstance().loadTexture(filename);
-			}
+		if (lightMapAtlas != null && !lightMapAtlas.isEmpty()) {
+			EngineAssetManager.getInstance().loadAtlas(lightMapAtlas);
 		}
 
 		if (musicFilename != null)
@@ -526,20 +464,16 @@ public class Scene implements Serializable,
 	public void retrieveAssets() {
 
 		// RETRIEVE BACKGROUND
-		if (background != null) {
-			ArrayList<String> tiles = getTilesByFilename(backgroundFilename);
+		if (backgroundAtlas != null && !backgroundAtlas.isEmpty()) {
+			background = EngineAssetManager.getInstance().getRegions(backgroundAtlas, backgroundRegionId);
 
 			int width = 0;
 
-			for (int i = 0; i < background.length; i++) {
-				Texture texture = EngineAssetManager.getInstance().getTexture(
-						tiles.get(i));
-				texture.setFilter(BG_TEXFILTER_MIN, BG_TEXFILTER_MAG);
-				background[i] = texture;
-				width += texture.getWidth();
+			for (int i = 0; i < background.size; i++) {
+				width += background.get(i).getRegionWidth();
 			}
 
-			int height = background[0].getHeight();
+			int height = background.get(0).getRegionHeight();
 			
 			// Sets the scrolling dimensions. It must be done here because 
 			// the background must be loaded to calculate the bbox
@@ -551,16 +485,8 @@ public class Scene implements Serializable,
 		}
 
 		// RETRIEVE LIGHT MAP
-		if (lightMap != null) {
-			ArrayList<String> tiles = getTilesByFilename(lightMapFilename);
-
-			for (int i = 0; i < lightMap.length; i++) {
-				Texture texture = EngineAssetManager.getInstance().getTexture(
-						tiles.get(i));
-				// texture.setFilter(BG_TEXFILTER_MIN, BG_TEXFILTER_MAG);
-				texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-				lightMap[i] = texture;
-			}
+		if (lightMapAtlas != null && !lightMapAtlas.isEmpty()) {
+			lightMap = EngineAssetManager.getInstance().getRegions(lightMapAtlas, lightMapRegionId);
 		}
 		
 		// CALC WALK GRAPH
@@ -595,16 +521,13 @@ public class Scene implements Serializable,
 	@Override
 	public void dispose() {
 
-		if (background != null) {
-			for (Texture tile : background)
-				if (tile != null)
-					EngineAssetManager.getInstance().disposeTexture(tile);
+		if (backgroundAtlas != null && !backgroundAtlas.isEmpty()) {			
+			EngineAssetManager.getInstance().disposeAtlas(backgroundAtlas);
 		}
 
-		if (lightMap != null) {
-			for (Texture tile : lightMap)
-				if (tile != null)
-					EngineAssetManager.getInstance().disposeTexture(tile);
+		// LOAD LIGHT MAP
+		if (lightMapAtlas != null && !lightMapAtlas.isEmpty()) {
+			EngineAssetManager.getInstance().disposeAtlas(lightMapAtlas);
 		}
 
 		// orderedActors.clear();
@@ -648,13 +571,21 @@ public class Scene implements Serializable,
 				player == null ? null : player.getClass());
 
 		json.writeValue(
-				"background",
-				backgroundFilename,
-				backgroundFilename == null ? null : backgroundFilename
+				"backgroundAtlas",
+				backgroundAtlas,
+				backgroundAtlas == null ? null : backgroundAtlas
+						.getClass());
+		json.writeValue(
+				"backgroundRegionId",
+				backgroundRegionId,
+				backgroundRegionId == null ? null : backgroundRegionId
 						.getClass());
 
-		json.writeValue("lightMap", lightMapFilename,
-				lightMapFilename == null ? null : lightMapFilename.getClass());
+		json.writeValue("lightMapAtlas", lightMapAtlas,
+				lightMapAtlas == null ? null : lightMapAtlas.getClass());
+		
+		json.writeValue("lightMapRegionId", lightMapRegionId,
+				lightMapRegionId == null ? null : lightMapRegionId.getClass());
 
 		json.writeValue("musicFilename", musicFilename,
 				musicFilename == null ? null : musicFilename.getClass());
@@ -700,11 +631,12 @@ public class Scene implements Serializable,
 		
 		orderLayersByZIndex();
 
-		backgroundFilename = json.readValue("background", String.class,
+		backgroundAtlas = json.readValue("backgroundAtlas", String.class,
 				jsonData);
-		lightMapFilename = json.readValue("lightMap", String.class, jsonData);
-
-		setBackground(backgroundFilename, lightMapFilename);
+		backgroundRegionId = json.readValue("backgroundRegionId", String.class,
+				jsonData);
+		lightMapAtlas = json.readValue("lightMapAtlas", String.class, jsonData);
+		lightMapRegionId = json.readValue("lightMapRegionId", String.class, jsonData);
 
 		musicFilename = json.readValue("musicFilename", String.class, jsonData);
 		loopMusic = json.readValue("loopMusic", Boolean.class, jsonData);

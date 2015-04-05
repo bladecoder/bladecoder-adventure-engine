@@ -43,7 +43,7 @@ import com.bladecoder.engineeditor.ui.components.EditToolbar;
 import com.bladecoder.engineeditor.utils.ImageUtils;
 
 public class AssetsList extends Table {
-	private static final String[] ASSET_TYPES = { "3d models", "backgrounds",
+	private static final String[] ASSET_TYPES = { "3d models", 
 			"atlases", "music", "sounds", "images", "spine" };
 
 	private SelectBox<String> assetTypes;
@@ -138,7 +138,7 @@ public class AssetsList extends Table {
 			String type = assetTypes.getSelected();
 			String dir = getAssetDir(type);
 
-			if (type.equals("backgrounds") || type.equals("images") || type.equals("atlases"))
+			if (type.equals("images") || type.equals("atlases"))
 				dir += "/1";
 
 			String[] files = new File(dir).list(new FilenameFilter() {
@@ -169,9 +169,7 @@ public class AssetsList extends Table {
 	private String getAssetDir(String type) {
 		String dir;
 
-		if (type.equals("backgrounds")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.BACKGROUNDS_PATH;
-		} else if (type.equals("atlases")) {
+		if (type.equals("atlases")) {
 			dir = Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH;
 		} else if (type.equals("music")) {
 			dir = Ctx.project.getProjectPath() + "/" + Project.MUSIC_PATH;
@@ -204,7 +202,7 @@ public class AssetsList extends Table {
 
 			FileNameExtensionFilter filter = null;
 
-			if (type.equals("backgrounds") || type.equals("images"))
+			if (type.equals("images"))
 				filter = new FileNameExtensionFilter("Images", "jpg", "png",
 						"etc1");
 			else if (type.equals("music") || type.equals("sounds"))
@@ -225,8 +223,7 @@ public class AssetsList extends Table {
 					lastDir = chooser.getSelectedFile();
 
 					for (File f : files) {
-						if (type.equals("backgrounds")
-								|| type.equals("images")) {
+						if ( type.equals("images")) {
 							List<String> res = Ctx.project.getResolutions();
 
 							for (String r : res) {
@@ -285,7 +282,7 @@ public class AssetsList extends Table {
 
 		String name = list.getSelected();
 		try {
-			if (type.equals("backgrounds") || type.equals("images")
+			if (type.equals("images")
 					|| type.equals("atlases")) {
 				List<String> res = Ctx.project.getResolutions();
 

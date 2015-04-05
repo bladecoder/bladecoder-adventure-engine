@@ -55,6 +55,11 @@ public class ChapterDocument extends BaseDocument {
 			SPRITE3D_ACTOR_TYPE, IMAGE_ACTOR_TYPE };
 
 	public static final String ANIMATION_TYPES[] = { "no_repeat", "repeat", "yoyo", "reverse" };
+	
+	public static final String BACKGROUND_ATLAS_ATTR = "background_atlas";
+	public static final String BACKGROUND_REGION_ATTR = "background_region";
+	public static final String LIGHTMAP_ATLAS_ATTR = "lightmap_atlas";
+	public static final String LIGHTMAP_REGION_ATTR = "lightmap_region";
 
 	public ChapterDocument(String modelPath) {
 		super();
@@ -172,22 +177,6 @@ public class ChapterDocument extends BaseDocument {
 		firePropertyChange("music", scn);
 	}
 
-	public String getBackground(Element scn) {
-		return scn.getAttribute("background");
-	}
-
-	public String getLightmap(Element scn) {
-		return doc.getDocumentElement().getAttribute("lightmap");
-	}
-
-	public void setBackground(Element scn, String value) {
-		setRootAttr(scn, "background", value);
-	}
-
-	public void setLightmap(Element scn, String value) {
-		setRootAttr(scn, "lightmap", value);
-	}
-
 	public Scene getEngineScene(Element s, int wWidth, int wHeight) {
 		Scene scn = new Scene();
 
@@ -195,9 +184,10 @@ public class ChapterDocument extends BaseDocument {
 
 		scn.getCamera().create(wWidth, wHeight);
 
-		String background = getBackground(s);
+		String background = s.getAttribute(BACKGROUND_ATLAS_ATTR);
 		if (background != null && !background.isEmpty()) {
-			scn.setBackground(background, getLightmap(s));
+			scn.setBackground(s.getAttribute(BACKGROUND_ATLAS_ATTR), s.getAttribute(BACKGROUND_REGION_ATTR), 
+					s.getAttribute(LIGHTMAP_ATLAS_ATTR), s.getAttribute(LIGHTMAP_REGION_ATTR));
 		}
 
 		String depthVector = s.getAttribute("depth_vector");

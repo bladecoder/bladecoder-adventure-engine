@@ -67,8 +67,6 @@ public class SceneProps extends PropertyTable {
 		clearProps();
 
 		if (scn != null) {
-			addProperty(BACKGROUND_PROP, doc.getBackground(scn));
-			addProperty(LIGHTMAP_PROP, doc.getLightmap(scn));
 			addProperty(MUSIC_PROP, doc.getMusic(scn));
 			addProperty(LOOP_MUSIC_PROP, doc.getRootAttr(scn,"loop_music"), Types.BOOLEAN);
 			addProperty(INITIAL_MUSIC_DELAY_PROP, doc.getRootAttr(scn,"initial_music_delay"), Types.FLOAT);
@@ -85,11 +83,7 @@ public class SceneProps extends PropertyTable {
 		if (property.equals(MUSIC_PROP)) {
 			doc.setRootAttr(scn,"music", value);
 		} else if (property.equals(LOOP_MUSIC_PROP)) {
-			doc.setRootAttr(scn,"loop_music", value);
-		} else if (property.equals(BACKGROUND_PROP)) {
-			doc.setBackground(scn,value);
-		} else if (property.equals(LIGHTMAP_PROP)) {
-			doc.setLightmap(scn,value);			
+			doc.setRootAttr(scn,"loop_music", value);		
 		} else if (property.equals(INITIAL_MUSIC_DELAY_PROP)) {
 			doc.setRootAttr(scn,"initial_music_delay", value);
 		} else if (property.equals(REPEAT_MUSIC_DELAY_PROP)) {
