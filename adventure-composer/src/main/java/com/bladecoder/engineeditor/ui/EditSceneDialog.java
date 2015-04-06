@@ -25,6 +25,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
@@ -40,6 +41,7 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class EditSceneDialog extends EditElementDialog {
 
@@ -52,6 +54,7 @@ public class EditSceneDialog extends EditElementDialog {
 	private InputPanel[] inputs = new InputPanel[11];
 	
 	private Image bgImage;
+	private Container<Image> infoContainer;
 	private TextureAtlas atlas;
 	
 	String attrs[] = {"id", "background_atlas", "background_region", "lightmap_atlas", "lightmap_region", "depth_vector", "state", "music", "loop_music", "initial_music_delay", "repeat_music_delay"};
@@ -87,6 +90,7 @@ public class EditSceneDialog extends EditElementDialog {
 		
 		bgImage = new Image();
 		bgImage.setScaling(Scaling.fit);
+		infoContainer = new Container<Image>(bgImage);
 		setInfo(INFO);
 		
 		inputs[0].setMandatory(true);
@@ -126,11 +130,11 @@ public class EditSceneDialog extends EditElementDialog {
 			}
 		});		
 		
-//		try {
-//			fillAnimations();
-//		} catch(Exception e2) {
-//			EditorLogger.error("Error loading regions from selected atlas");
-//		}
+		try {
+			fillBGRegions(inputs[1], inputs[2]);
+		} catch(Exception e2) {
+			EditorLogger.error("Error loading regions from selected atlas");
+		}
 	}
 	
 	
@@ -141,7 +145,10 @@ public class EditSceneDialog extends EditElementDialog {
 
 		bgImage.setDrawable(new TextureRegionDrawable(atlas.findRegion(r)));
 		
-		setInfoWidget(bgImage);
+
+		infoContainer.prefWidth(250);
+		infoContainer.prefHeight(250);
+		setInfoWidget(infoContainer);
 	}
 
 	private void fillBGRegions(InputPanel atlasInput, InputPanel regionInput) {
