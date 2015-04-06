@@ -237,7 +237,7 @@ public class SceneList extends ElementList {
 
 		@Override
 		protected String getCellSubTitle(Element e) {
-			return e.getAttribute("background");
+			return e.getAttribute(ChapterDocument.BACKGROUND_ATLAS_ATTR);
 		}
 
 		@Override

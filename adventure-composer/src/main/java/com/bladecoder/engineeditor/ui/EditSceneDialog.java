@@ -95,7 +95,7 @@ public class EditSceneDialog extends EditElementDialog {
 		
 		inputs[0].setMandatory(true);
 
-		init(inputs, attrs, doc, parent, "scene", e);
+		
 		
 		((SelectBox<String>) inputs[1].getField()).addListener(new ChangeListener() {
 
@@ -135,6 +135,8 @@ public class EditSceneDialog extends EditElementDialog {
 		} catch(Exception e2) {
 			EditorLogger.error("Error loading regions from selected atlas");
 		}
+		
+		init(inputs, attrs, doc, parent, "scene", e);
 	}
 	
 	
@@ -174,7 +176,8 @@ public class EditSceneDialog extends EditElementDialog {
 		Array<AtlasRegion> regions = atlas.getRegions();
 		
 		for (AtlasRegion r : regions)
-			cb.getItems().add(r.name);
+			if(cb.getItems().indexOf(r.name, false) == -1)
+				cb.getItems().add(r.name);
 
 		cb.getList().setItems(cb.getItems());
 		if (cb.getItems().size > 0)
@@ -198,7 +201,8 @@ public class EditSceneDialog extends EditElementDialog {
 		Array<AtlasRegion> regions = atlas.getRegions();
 		
 		for (AtlasRegion r : regions)
-			cb.getItems().add(r.name);
+			if(cb.getItems().indexOf(r.name, false) == -1)
+				cb.getItems().add(r.name);
 
 		cb.getList().setItems(cb.getItems());
 		if (cb.getItems().size > 0)
