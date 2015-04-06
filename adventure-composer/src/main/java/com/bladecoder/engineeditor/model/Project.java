@@ -33,8 +33,13 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.setup.Dependency;
@@ -57,7 +62,6 @@ public class Project extends PropertyChange {
 	public static final String ASSETS_PATH = "/android/assets";
 	public static final String MODEL_PATH = ASSETS_PATH + "/model";
 	public static final String ATLASES_PATH = ASSETS_PATH + "/atlases";
-	public static final String BACKGROUNDS_PATH = ASSETS_PATH + "/backgrounds";
 	public static final String FONTS_PATH = ASSETS_PATH + "/fonts";
 	public static final String MUSIC_PATH = ASSETS_PATH + "/music";
 	public static final String SOUND_PATH = ASSETS_PATH + "/sounds";
@@ -99,12 +103,13 @@ public class Project extends PropertyChange {
 		loadConfig();
 	}
 	
-	public TextureRegion getBgIcon(String s) {
+	public TextureRegion getBgIcon(String atlas, String region) {
+		String s = atlas + "#" + region;
 		TextureRegion icon = bgIconCache.get(s);
 		
 		if(icon == null) {
 			try {
-				bgIconCache.put(s, createBgIcon(s));
+				bgIconCache.put(s, createBgIcon(atlas, region));
 			} catch (Exception e) {
 				return null;
 			}
@@ -115,9 +120,32 @@ public class Project extends PropertyChange {
 		return icon;
 	}
 	
-	private TextureRegion createBgIcon(String bg) {
-		return new TextureRegion(new Texture(Gdx.files.absolute(getProjectPath() + "/" + BACKGROUNDS_PATH + 
-				"/1/" + bg)));
+	private TextureRegion createBgIcon(String atlas, String region) {
+		TextureAtlas a = new TextureAtlas(Gdx.files.absolute(getProjectPath() + "/" + ATLASES_PATH + 
+				"/1/" + atlas + ".atlas"));
+		AtlasRegion r = a.findRegion(region);
+		
+		FrameBuffer fbo = new FrameBuffer(Format.RGB888, 200, (int)(r.getRegionHeight() * 200f / r.getRegionWidth()), false);
+		
+		SpriteBatch fboBatch = new SpriteBatch();
+		OrthographicCamera camera = new OrthographicCamera();
+		camera.setToOrtho(false, fbo.getWidth(), fbo.getHeight());
+		fboBatch.setProjectionMatrix(camera.combined);
+		fbo.begin();
+		fboBatch.begin();
+		
+		fboBatch.draw(r, 0, 0, fbo.getWidth(), fbo.getHeight());
+		
+		fboBatch.end();
+		fboBatch.dispose();
+		fbo.end();
+		a.dispose();
+		
+		TextureRegion tex = new TextureRegion(fbo.getColorBufferTexture());
+		
+		tex.flip(false, true);
+		
+		return tex;
 	}
 	
 	public UndoStack getUndoStack() {

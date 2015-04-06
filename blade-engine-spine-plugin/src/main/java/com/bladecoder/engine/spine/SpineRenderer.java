@@ -58,6 +58,8 @@ public class SpineRenderer implements ActorRenderer {
 	private final static int PLAY_SOUND_EVENT = 1;
 	private final static int RUN_VERB_EVENT = 2;
 	private final static int LOOP_EVENT = 3;
+	
+	private final static float DEFAULT_DIM = 200;
 
 	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
 
@@ -77,7 +79,7 @@ public class SpineRenderer implements ActorRenderer {
 
 	private SkeletonRenderer renderer;
 	private SkeletonBounds bounds;
-	private float width = 200, height = 200;
+	private float width = DEFAULT_DIM, height = DEFAULT_DIM;
 
 	private final HashMap<String, SkeletonCacheEntry> sourceCache = new HashMap<String, SkeletonCacheEntry>();
 
@@ -444,7 +446,7 @@ public class SpineRenderer implements ActorRenderer {
 			height = (maxY - minY);
 			
 			if(width <= 0 || height <= 0) {
-				width = height = 200;
+				width = height = DEFAULT_DIM;
 			}
 		}
 		

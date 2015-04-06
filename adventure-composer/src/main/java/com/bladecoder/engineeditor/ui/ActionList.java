@@ -33,16 +33,16 @@ import com.bladecoder.engineeditor.ui.components.ElementList;
 
 public class ActionList extends ElementList {
 	private static final String END_ACTION = "com.bladecoder.engine.actions.EndAction";
-	
+
 	Skin skin;
-	
+
 	private ImageButton upBtn;
 	private ImageButton downBtn;
 
 	public ActionList(Skin skin) {
 		super(skin, true);
 		this.skin = skin;
-		
+
 		setCellRenderer(listCellRenderer);
 
 		upBtn = new ImageButton(skin);
@@ -60,19 +60,19 @@ public class ActionList extends ElementList {
 
 				toolbar.disableEdit(pos == -1);
 				upBtn.setDisabled(pos == -1 || pos == 0);
-				downBtn.setDisabled(pos == -1 || pos == list.getItems().size - 1);
+				downBtn.setDisabled(pos == -1
+						|| pos == list.getItems().size - 1);
 			}
 		});
 
 		upBtn.addListener(new ChangeListener() {
-			
+
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				up();
 			}
 		});
-		
-		
+
 		downBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -85,7 +85,7 @@ public class ActionList extends ElementList {
 	protected EditElementDialog getEditElementDialogInstance(Element e) {
 		return new EditActionDialog(skin, doc, parent, e);
 	}
-	
+
 	@Override
 	protected void create() {
 		EditElementDialog dialog = getEditElementDialogInstance(null);
@@ -94,31 +94,31 @@ public class ActionList extends ElementList {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				int pos = list.getSelectedIndex() + 1;
-				
-				Element e2 = null;							
-				
-				if(pos!=0 && pos < list.getItems().size) 
+
+				Element e2 = null;
+
+				if (pos != 0 && pos < list.getItems().size)
 					e2 = list.getItems().get(pos);
-				
-				Element e = ((EditElementDialog)actor).getElement();
+
+				Element e = ((EditElementDialog) actor).getElement();
 				list.getItems().insert(pos, e);
 
 				Node parent = e.getParentNode();
 				parent.removeChild(e);
-				parent.insertBefore(e, e2);					
-				
+				parent.insertBefore(e, e2);
+
 				list.setSelectedIndex(pos);
-				
-				if(!e.getAttribute("endType").isEmpty())
+
+				if (!e.getAttribute("endType").isEmpty())
 					insertEndAction(e);
-				
+
 				list.invalidateHierarchy();
-			}			
+			}
 		});
 	}
-	
+
 	Element editedElement;
-	
+
 	@Override
 	protected void edit() {
 
@@ -127,88 +127,108 @@ public class ActionList extends ElementList {
 		if (e == null || e.getAttribute("class").equals(END_ACTION))
 			return;
 
-		editedElement = (Element)e.cloneNode(true);
+		editedElement = (Element) e.cloneNode(true);
 
 		EditElementDialog dialog = getEditElementDialogInstance(e);
 		dialog.show(getStage());
 		dialog.setListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				Element e = ((EditElementDialog)actor).getElement();
+				Element e = ((EditElementDialog) actor).getElement();
 				doc.setModified(e);
-				
-				if(!editedElement.getAttribute("endType").isEmpty() && !editedElement.getAttribute("action_name").equals(e.getAttribute("action_name"))) {
+
+				if (!editedElement.getAttribute("endType").isEmpty()
+						&& !editedElement.getAttribute("action_name").equals(
+								e.getAttribute("action_name"))) {
 					int pos = list.getSelectedIndex();
 
-							
-					if(editedElement.getAttribute("endType").equals("else")) {
-						while(!list.getItems().get(pos).getAttribute("action_name").equals("Else")) pos++;
-						
+					if (editedElement.getAttribute("endType").equals("else")) {
+						while (!list.getItems().get(pos)
+								.getAttribute("action_name").equals("Else"))
+							pos++;
+
 						Element e2 = list.getItems().removeIndex(pos);
 						doc.deleteElement(e2);
-						
-						while(!list.getItems().get(pos).getAttribute("action_name").equals("End" + editedElement.getAttribute("action_name"))) pos++;
-						
+
+						while (!list
+								.getItems()
+								.get(pos)
+								.getAttribute("action_name")
+								.equals("End"
+										+ editedElement
+												.getAttribute("action_name")))
+							pos++;
+
 						e2 = list.getItems().removeIndex(pos);
-						doc.deleteElement(e2);			
-					} else if(!editedElement.getAttribute("endType").isEmpty()) {
-						
-						while(!list.getItems().get(pos).getAttribute("action_name").equals("End" + editedElement.getAttribute("action_name"))) pos++;
-						
+						doc.deleteElement(e2);
+					} else if (!editedElement.getAttribute("endType").isEmpty()) {
+
+						while (!list
+								.getItems()
+								.get(pos)
+								.getAttribute("action_name")
+								.equals("End"
+										+ editedElement
+												.getAttribute("action_name")))
+							pos++;
+
 						Element e2 = list.getItems().removeIndex(pos);
 						doc.deleteElement(e2);
 					}
-					
-					if(!e.getAttribute("endType").isEmpty())
-						insertEndAction(e);				
-				};
-			}			
-		});		
+
+					if (!e.getAttribute("endType").isEmpty())
+						insertEndAction(e);
+				}
+				;
+			}
+		});
 	}
-	
+
 	private void insertEndAction(Element e) {
 		int pos = list.getItems().indexOf(e, true);
 		pos++;
-		Element e2 = null;							
-		
-		if(pos!=0 && pos < list.getItems().size) 
+		Element e2 = null;
+
+		if (pos != 0 && pos < list.getItems().size)
 			e2 = list.getItems().get(pos);
-		
-		if(e.getAttribute("endType").equals("else")) {
-			Element elseEl = doc.createElement((Element)parent, "action");					
+
+		if (e.getAttribute("endType").equals("else")) {
+			Element elseEl = doc.createElement((Element) parent, "action");
 			elseEl.setAttribute("action_name", "Else");
 			elseEl.setAttribute("class", END_ACTION);
 			elseEl.setAttribute("endType", "else");
-			
-			Element endEl = doc.createElement((Element)parent, "action");
-			endEl.setAttribute("action_name", "End" + e.getAttribute("action_name"));
+
+			Element endEl = doc.createElement((Element) parent, "action");
+			endEl.setAttribute("action_name",
+					"End" + e.getAttribute("action_name"));
 			endEl.setAttribute("class", END_ACTION);
 			endEl.setAttribute("endType", "end");
-			
+
 			list.getItems().insert(pos, elseEl);
 			list.getItems().insert(pos + 1, endEl);
 
 			parent.insertBefore(elseEl, e2);
 			parent.insertBefore(endEl, e2);
 		} else {
-			Element endEl = doc.createElement((Element)parent, "action");
-			endEl.setAttribute("action_name", "End" + e.getAttribute("action_name"));
+			Element endEl = doc.createElement((Element) parent, "action");
+			endEl.setAttribute("action_name",
+					"End" + e.getAttribute("action_name"));
 			endEl.setAttribute("class", END_ACTION);
 			endEl.setAttribute("endType", e.getAttribute("endType"));
-			
+
 			list.getItems().insert(pos, endEl);
 
-			parent.insertBefore(endEl, e2);		
-		} 
+			parent.insertBefore(endEl, e2);
+		}
 	}
-	
+
 	@Override
 	protected void copy() {
 		Element e = list.getSelected();
 
-		if(e.getAttribute("class").equals(END_ACTION))
+		if (e.getAttribute("class").equals(END_ACTION))
 			return;
-		
+
 		super.copy();
 	}
 
@@ -216,11 +236,11 @@ public class ActionList extends ElementList {
 	protected void paste() {
 		super.paste();
 		Element e = list.getSelected();
-		
-		if(!e.getAttribute("endType").isEmpty())
+
+		if (!e.getAttribute("endType").isEmpty())
 			insertEndAction(e);
 	}
-	
+
 	@Override
 	protected void delete() {
 		int pos = list.getSelectedIndex();
@@ -229,26 +249,32 @@ public class ActionList extends ElementList {
 			return;
 
 		Element e = list.getItems().get(pos);
-		
-		if(e.getAttribute("class").equals(END_ACTION))
+
+		if (e.getAttribute("class").equals(END_ACTION))
 			return;
-				
+
 		super.delete();
-		
-		if(e.getAttribute("endType").equals("else")) {
-			while(!list.getItems().get(pos).getAttribute("action_name").equals("Else")) pos++;
-			
+
+		if (e.getAttribute("endType").equals("else")) {
+			while (!list.getItems().get(pos).getAttribute("action_name")
+					.equals("Else"))
+				pos++;
+
 			Element e2 = list.getItems().removeIndex(pos);
 			doc.deleteElement(e2);
-			
-			while(!list.getItems().get(pos).getAttribute("action_name").equals("End" + e.getAttribute("action_name"))) pos++;
-			
+
+			while (!list.getItems().get(pos).getAttribute("action_name")
+					.equals("End" + e.getAttribute("action_name")))
+				pos++;
+
 			e2 = list.getItems().removeIndex(pos);
-			doc.deleteElement(e2);			
-		} else if(!e.getAttribute("endType").isEmpty()) {
-			
-			while(!list.getItems().get(pos).getAttribute("action_name").equals("End" + e.getAttribute("action_name"))) pos++;
-			
+			doc.deleteElement(e2);
+		} else if (!e.getAttribute("endType").isEmpty()) {
+
+			while (!list.getItems().get(pos).getAttribute("action_name")
+					.equals("End" + e.getAttribute("action_name")))
+				pos++;
+
 			Element e2 = list.getItems().removeIndex(pos);
 			doc.deleteElement(e2);
 		}
@@ -260,11 +286,12 @@ public class ActionList extends ElementList {
 		if (pos == -1 || pos == 0)
 			return;
 
-		Array<Element> items =  list.getItems();
+		Array<Element> items = list.getItems();
 		Element e = items.get(pos);
 		Element e2 = items.get(pos - 1);
-		
-		if(!e.getAttribute("endType").isEmpty() && !e2.getAttribute("endType").isEmpty()) {
+
+		if (!e.getAttribute("endType").isEmpty()
+				&& !e2.getAttribute("endType").isEmpty()) {
 			return;
 		}
 
@@ -273,7 +300,7 @@ public class ActionList extends ElementList {
 		parent.insertBefore(e, e2);
 
 		items.removeIndex(pos);
-		items.insert( pos - 1, e);
+		items.insert(pos - 1, e);
 		list.setSelectedIndex(pos - 1);
 		upBtn.setDisabled(list.getSelectedIndex() == 0);
 		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
@@ -283,7 +310,7 @@ public class ActionList extends ElementList {
 
 	private void down() {
 		int pos = list.getSelectedIndex();
-		Array<Element> items =  list.getItems();
+		Array<Element> items = list.getItems();
 
 		if (pos == -1 || pos == items.size - 1)
 			return;
@@ -291,8 +318,9 @@ public class ActionList extends ElementList {
 		Element e = items.get(pos);
 		Element e2 = pos + 2 < items.size ? items.get(pos + 2) : null;
 		Element e3 = items.get(pos + 1);
-		
-		if(!e.getAttribute("endType").isEmpty() && !e3.getAttribute("endType").isEmpty()) {
+
+		if (!e.getAttribute("endType").isEmpty()
+				&& !e3.getAttribute("endType").isEmpty()) {
 			return;
 		}
 
@@ -300,7 +328,6 @@ public class ActionList extends ElementList {
 		parent.removeChild(e);
 		parent.insertBefore(e, e2);
 
-		
 		items.removeIndex(pos);
 		items.insert(pos + 1, e);
 		list.setSelectedIndex(pos + 1);
@@ -317,31 +344,44 @@ public class ActionList extends ElementList {
 
 		@Override
 		protected String getCellTitle(Element e) {
-			String id = e.getAttribute("action_name").isEmpty()?e.getAttribute("class"): e.getAttribute("action_name");
+			String id = e.getAttribute("action_name").isEmpty() ? e
+					.getAttribute("class") : e.getAttribute("action_name");
 
 			String actor = e.getAttribute("actor");
-			boolean animationAction = e.getAttribute("action_name").equals("Animation");
+			boolean animationAction = e.getAttribute("action_name").equals(
+					"Animation");
 			boolean controlAction = !e.getAttribute("endType").isEmpty();
 
-			if (!actor.isEmpty()&&!animationAction) {
+			if (!actor.isEmpty() && !animationAction && !controlAction) {
 				String[] s = Param.parseString2(actor);
-				
-				if(s[0] != null)
-					id = MessageFormat.format("[GREEN]{0}[] {1}.{2}", s[0], s[1], id);
+
+				if (s[0] != null)
+					id = MessageFormat.format("[GREEN]{0}[] {1}.{2}", s[0],
+							s[1], id);
 				else
 					id = MessageFormat.format("{0}.{1}", actor, id);
-			} else if(animationAction){
+			} else if (animationAction) {
 				String a = e.getAttribute("animation");
 				String[] s = Param.parseString2(a);
-				
-				if(s[0] != null)
-					id =MessageFormat.format("{0}.{1} [GREEN]{2}[]", s[0], id, s[1]);
+
+				if (s[0] != null)
+					id = MessageFormat.format("{0}.{1} [GREEN]{2}[]", s[0], id,
+							s[1]);
 				else
-					id = MessageFormat.format("{0} [GREEN]{1}[]",id, a);
-			} else if(controlAction) {
-				id = MessageFormat.format("[BLUE]{0}[]",id);
+					id = MessageFormat.format("{0} [GREEN]{1}[]", id, a);
+			} else if (controlAction) {
+				if (!actor.isEmpty()) {
+					String[] s = Param.parseString2(actor);
+
+					if (s[0] != null)
+						id = MessageFormat.format("[GREEN]{0}[] [BLUE]{1}.{2}[]", s[0],
+								s[1], id);
+					else
+						id = MessageFormat.format("[BLUE]{0}.{1}[BLUE]", actor, id);
+				} else
+					id = MessageFormat.format("[BLUE]{0}[]", id);
 			}
-			
+
 			return id;
 		}
 
@@ -355,17 +395,23 @@ public class ActionList extends ElementList {
 				Node n = attr.item(i);
 				String name = n.getNodeName();
 
-				if (name.equals("endType") || name.equals("actor") || name.equals("class") || name.equals("action_name") || (e.getAttribute("action_name").equals("Animation") && name.equals("animation")))
+				if (name.equals("endType")
+						|| name.equals("actor")
+						|| name.equals("class")
+						|| name.equals("action_name")
+						|| (e.getAttribute("action_name").equals("Animation") && name
+								.equals("animation")))
 					continue;
 
 				String v = n.getNodeValue();
 
-				sb.append(name).append(": ").append(doc.getTranslation(v)).append(' ');
+				sb.append(name).append(": ").append(doc.getTranslation(v))
+						.append(' ');
 			}
-			
+
 			return sb.toString();
 		}
-		
+
 		@Override
 		protected boolean hasSubtitle() {
 			return true;

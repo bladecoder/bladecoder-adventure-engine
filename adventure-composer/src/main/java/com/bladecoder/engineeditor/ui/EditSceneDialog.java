@@ -17,17 +17,21 @@ package com.bladecoder.engineeditor.ui;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.w3c.dom.Element;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.Ctx;
@@ -42,15 +46,15 @@ public class EditSceneDialog extends EditElementDialog {
 	public static final String INFO = "An adventure is composed of many scenes (screens).\n" +
 			"Inside a scene there are actors and a 'player'.\nThe player/user can interact with the actors throught 'verbs'.";
 	
-	private String bgList[] = getBgList();
+	private String atlasList[] = getAtlasList();
 	private String musicList[] = getMusicList();
 	
-	private InputPanel[] inputs = new InputPanel[9];
+	private InputPanel[] inputs = new InputPanel[11];
 	
 	private Image bgImage;
-					
+	private TextureAtlas atlas;
 	
-	String attrs[] = {"id", "background", "lightmap", "depth_vector", "state", "music", "loop_music", "initial_music_delay", "repeat_music_delay"};
+	String attrs[] = {"id", "background_atlas", "background_region", "lightmap_atlas", "lightmap_region", "depth_vector", "state", "music", "loop_music", "initial_music_delay", "repeat_music_delay"};
 
 	@SuppressWarnings("unchecked")
 	public EditSceneDialog(Skin skin, BaseDocument doc, Element parent,
@@ -60,21 +64,25 @@ public class EditSceneDialog extends EditElementDialog {
 		
 		inputs[0] = InputPanelFactory.createInputPanel(skin, "Scene ID",
 				"The ID is mandatory for scenes. \nIDs can not contain '.' or '_' characters.");
-		inputs[1] = InputPanelFactory.createInputPanel(skin, "Background",
-				"The background for the scene", bgList, false);
-		inputs[2] = InputPanelFactory.createInputPanel(skin, "Lightmap",
-						"The lightmap for the scene", bgList, false);					
-		inputs[3] = InputPanelFactory.createInputPanel(skin, "Depth Vector",
+		inputs[1] = InputPanelFactory.createInputPanel(skin, "Background Atlas",
+				"The atlas where the background for the scene is located", atlasList, false);
+		inputs[2] = InputPanelFactory.createInputPanel(skin, "Background Region Id",
+				"The region id for the background.", new String[0], false);
+		inputs[3] = InputPanelFactory.createInputPanel(skin, "Lightmap Atlas",
+						"The atlas where the lightmap for the scene is located", atlasList, false);	
+		inputs[4] = InputPanelFactory.createInputPanel(skin, "Lightmap Region Id",
+				"The region id for the lightmap", new String[0], false);
+		inputs[5] = InputPanelFactory.createInputPanel(skin, "Depth Vector",
 						"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.", Param.Type.VECTOR2, false);
-		inputs[4] = InputPanelFactory.createInputPanel(skin, "State",
+		inputs[6] = InputPanelFactory.createInputPanel(skin, "State",
 				"The initial state for the scene.", false);
-		inputs[5] = InputPanelFactory.createInputPanel(skin, "Music Filename",
+		inputs[7] = InputPanelFactory.createInputPanel(skin, "Music Filename",
 				"The music for the scene", musicList, false);
-		inputs[6] = InputPanelFactory.createInputPanel(skin, "Loop Music",
+		inputs[8] = InputPanelFactory.createInputPanel(skin, "Loop Music",
 				"If the music is playing in looping", Param.Type.BOOLEAN, false);
-		inputs[7] = InputPanelFactory.createInputPanel(skin, "Initial music delay",
+		inputs[9] = InputPanelFactory.createInputPanel(skin, "Initial music delay",
 				"The time to wait before playing", Param.Type.FLOAT, false);
-		inputs[8] = InputPanelFactory.createInputPanel(skin, "Repeat music delay",
+		inputs[10] = InputPanelFactory.createInputPanel(skin, "Repeat music delay",
 				"The time to wait before repetitions", Param.Type.FLOAT, false);		
 		
 		bgImage = new Image();
@@ -89,15 +97,110 @@ public class EditSceneDialog extends EditElementDialog {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				String bg = inputs[1].getText();
+				try {
+					fillBGRegions(inputs[1], inputs[2]);
+				} catch(Exception e) {
+					Ctx.msg.show(getStage(), "Error loading regions from selected atlas", 4);
+				}
+			}
+		});
+		
 
-				if(!bg.isEmpty())
-					bgImage.setDrawable(new TextureRegionDrawable(Ctx.project.getBgIcon(bg)));
-				
-				setInfoWidget(bgImage);
+		((SelectBox<String>) inputs[2].getField())
+			.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				showBgImage(inputs[2].getText());
+			}
+		});
+		
+		((SelectBox<String>) inputs[3].getField()).addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				try {
+					fillLightmapRegions(inputs[3], inputs[4]);
+				} catch(Exception e) {
+					Ctx.msg.show(getStage(), "Error loading regions from selected atlas", 4);
+				}
 			}
 		});		
+		
+//		try {
+//			fillAnimations();
+//		} catch(Exception e2) {
+//			EditorLogger.error("Error loading regions from selected atlas");
+//		}
 	}
+	
+	
+
+	private void showBgImage(String r) {
+		if(atlas == null)
+			return;
+
+		bgImage.setDrawable(new TextureRegionDrawable(atlas.findRegion(r)));
+		
+		setInfoWidget(bgImage);
+	}
+
+	private void fillBGRegions(InputPanel atlasInput, InputPanel regionInput) {
+		@SuppressWarnings("unchecked")
+		SelectBox<String> cb = (SelectBox<String>) regionInput.getField();
+		
+//		cb.clearItems();
+		cb.getItems().clear();
+		
+		if(atlas != null) {
+			atlas.dispose();
+			atlas = null;
+		}
+		
+		if(inputs[1].getText().isEmpty()) {
+			setInfoWidget(new Label(INFO, getSkin()));
+			return;
+		}
+		
+		atlas = new TextureAtlas(Gdx.files.absolute(Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
+				+ Ctx.project.getResDir() + "/" + atlasInput.getText() + ".atlas"));
+
+		Array<AtlasRegion> regions = atlas.getRegions();
+		
+		for (AtlasRegion r : regions)
+			cb.getItems().add(r.name);
+
+		cb.getList().setItems(cb.getItems());
+		if (cb.getItems().size > 0)
+			cb.setSelectedIndex(0);
+
+		cb.invalidateHierarchy();
+
+		showBgImage(regionInput.getText());
+	}
+	
+	private void fillLightmapRegions(InputPanel atlasInput, InputPanel regionInput) {
+		@SuppressWarnings("unchecked")
+		SelectBox<String> cb = (SelectBox<String>) regionInput.getField();
+		
+//		cb.clearItems();
+		cb.getItems().clear();
+		
+		TextureAtlas atlas = new TextureAtlas(Gdx.files.absolute(Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
+				+ Ctx.project.getResDir() + "/" + atlasInput.getText() + ".atlas"));
+
+		Array<AtlasRegion> regions = atlas.getRegions();
+		
+		for (AtlasRegion r : regions)
+			cb.getItems().add(r.name);
+
+		cb.getList().setItems(cb.getItems());
+		if (cb.getItems().size > 0)
+			cb.setSelectedIndex(0);
+
+		cb.invalidateHierarchy();
+
+		atlas.dispose();
+	}		
 	
 	@Override
 	protected void create() {
@@ -123,8 +226,8 @@ public class EditSceneDialog extends EditElementDialog {
 		getElement().appendChild(layer);
 	}
 
-	private String[] getBgList() {
-		String bgPath = Ctx.project.getProjectPath() + Project.BACKGROUNDS_PATH + "/"
+	private String[] getAtlasList() {
+		String bgPath = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
 				+ Ctx.project.getResDir();
 
 		File f = new File(bgPath);
@@ -133,19 +236,22 @@ public class EditSceneDialog extends EditElementDialog {
 
 			@Override
 			public boolean accept(File arg0, String arg1) {
-				if ((arg1.matches("_[1-9]\\.")))
-					return false;
+				if (arg1.endsWith(".atlas"))
+					return true;
 
-				return true;
+				return false;
 			}
 		});
 
 		Arrays.sort(bgs);
-		
-		ArrayList<String> l = new ArrayList<String>(Arrays.asList(bgs));
-		l.add(0,"");
 
-		return l.toArray(new String[bgs.length + 1]);
+		for(int i = 0; i < bgs.length; i++) {
+			int idx = bgs[i].lastIndexOf('.');
+			if(idx != -1)
+				bgs[i] = bgs[i].substring(0, idx);
+		}
+		
+		return bgs;
 	}
 	
 	private String[] getMusicList() {
@@ -173,5 +279,13 @@ public class EditSceneDialog extends EditElementDialog {
 			musicFiles2[i + 1] = musicFiles[i];
 
 		return musicFiles2;
-	}	
+	}
+	
+	@Override
+	protected void result(Object object) {
+		if(atlas != null)
+			atlas.dispose();
+		
+		super.result(object);
+	}
 }

@@ -30,9 +30,9 @@ public class IfAttrAction implements Action {
 	public static final String INFO = "Execute the actions inside the If/EndIf if the attribute has the specified value.";
 	public static final Param[] PARAMS = { 
 			new Param("actor", "The actor to check its attribute", Type.SCENE_ACTOR),
-			new Param("attr", "The actor attribute", Type.STRING, true, "state", new String[] { "state" }),
+			new Param("attr", "The actor attribute", Type.STRING, true, "state", new String[] { "state", "visible" }),
 			new Param("value", "The attribute value", Type.STRING),
-			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, true, "else")};
+			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, "else")};
 
 	String attr;
 	String value;
@@ -69,23 +69,30 @@ public class IfAttrAction implements Action {
 			a = World.getInstance().getInventory().getItem(actorId);
 		}
 
-		VerbRunner v = (VerbRunner) cb;
-
-		int ip = v.getIP();
-		ArrayList<Action> actions = v.getActions();
-
 		if (attr.equals("state")) {
-			if (!value.equals(a.getState())) {
-				// TODO: Handle If to allow nested Ifs
-				while (!(actions.get(ip) instanceof EndAction)
-						|| !((EndAction) actions.get(ip)).getType().equals("else"))
-					ip++;
-
-				v.setIP(ip);
+			if ((a.getState() == null && value == null) || (a.getState() != null && !value.equals(a.getState()))) {
+				gotoElse((VerbRunner) cb);
+			}
+		} if (attr.equals("visible")) {
+			boolean val = Boolean.parseBoolean(value);
+			if (val != a.isVisible()) {
+				gotoElse((VerbRunner) cb);
 			}
 		}
 
 		return false;
+	}
+	
+	private void gotoElse(VerbRunner v) {
+		int ip = v.getIP();
+		ArrayList<Action> actions = v.getActions();
+		
+		// TODO: Handle If to allow nested Ifs
+		while (!(actions.get(ip) instanceof EndAction)
+				|| !((EndAction) actions.get(ip)).getType().equals("else"))
+			ip++;
+
+		v.setIP(ip);		
 	}
 
 	@Override

@@ -188,13 +188,15 @@ public class ChapterXMLLoader extends DefaultHandler {
 			initScene = this.scene.getId();
 
 		String idScn = atts.getValue("id");
-		String bgFilename = atts.getValue("background");
-		String lightmap = atts.getValue("lightmap");
 		String musicFilename = atts.getValue("music");
 		String loopMusicStr = atts.getValue("loop_music");
 		String initialMusicDelayStr = atts.getValue("initial_music_delay");
 		String repeatMusicDelayStr = atts.getValue("repeat_music_delay");
 		String state = atts.getValue("state");
+		
+
+		scene.setBackground(atts.getValue("background_atlas"), atts.getValue("background_region"), 
+				atts.getValue("lightmap_atlas"), atts.getValue("lightmap_region"));
 
 		if (state != null)
 			scene.setState(state);
@@ -210,8 +212,6 @@ public class ChapterXMLLoader extends DefaultHandler {
 		}
 
 		scene.setId(idScn);
-
-		scene.setBackground(bgFilename, lightmap);
 
 		if (musicFilename != null) {
 			boolean loopMusic = false;

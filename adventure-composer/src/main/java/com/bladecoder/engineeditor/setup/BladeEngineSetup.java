@@ -292,7 +292,6 @@ public class BladeEngineSetup {
 		// CREATE ASSETS EMPTY FOLDERS
 		new File(outputDir + "/" + assetPath + "/3d").mkdirs();
 		new File(outputDir + "/" + assetPath + "/atlases/1").mkdirs();
-		new File(outputDir + "/" + assetPath + "/backgrounds/1").mkdirs();
 		new File(outputDir + "/" + assetPath + "/images/1").mkdirs();
 		new File(outputDir + "/" + assetPath + "/model").mkdirs();
 		new File(outputDir + "/" + assetPath + "/music").mkdirs();

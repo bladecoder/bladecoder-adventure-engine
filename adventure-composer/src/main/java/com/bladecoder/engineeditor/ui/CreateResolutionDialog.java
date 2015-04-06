@@ -39,7 +39,6 @@ public class CreateResolutionDialog extends EditDialog {
 	protected ChangeListener listener;
 	
 	String atlasDir = Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH;
-	String bgDir = Ctx.project.getProjectPath() + "/" + Project.BACKGROUNDS_PATH;
 	String uiDir = Ctx.project.getProjectPath() + "/" + Project.UI_PATH;
 	String imageDir = Ctx.project.getProjectPath() + "/" + Project.IMAGE_PATH;
 
@@ -84,7 +83,6 @@ public class CreateResolutionDialog extends EditDialog {
 		String prefix = scale.getText().trim();
 		
 		new File(atlasDir + "/" + prefix).mkdir();
-		new File(bgDir + "/" + prefix).mkdir();
 		new File(uiDir + "/" + prefix).mkdir();
 		new File(imageDir + "/" + prefix).mkdir();		
 	}
@@ -100,7 +98,6 @@ public class CreateResolutionDialog extends EditDialog {
 		
 		try {
 			ImageUtils.scaleDirFiles(new File(uiDir + "/" + wPrefix), new File(uiDir + "/" + prefix), s);
-			ImageUtils.scaleDirFiles(new File(bgDir + "/" + wPrefix), new File(bgDir + "/" + prefix), s);
 			ImageUtils.scaleDirFiles(new File(imageDir + "/" + wPrefix), new File(imageDir + "/" + prefix), s);
 			
 			ImageUtils.scaleDirAtlases(new File(atlasDir + "/" + wPrefix), new File(atlasDir + "/" + prefix), s);

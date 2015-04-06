@@ -17,6 +17,7 @@ package com.bladecoder.engineeditor.scneditor;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
@@ -86,6 +87,8 @@ public class SpriteDrawer {
 				renderer.retrieveAssets();
 
 				renderer.startAnimation(fa.id, Tween.REPEAT, Tween.INFINITY, null);
+				
+				renderer.computeBbox(new Polygon());
 			}
 		}
 	}
@@ -93,7 +96,12 @@ public class SpriteDrawer {
 	public void draw(SpriteBatch batch) {
 		if (renderer != null && currentAnimation != null) {
 
-			float width = HEIGHT / renderer.getHeight() * renderer.getWidth();
+			float width;
+			
+			if(renderer.getWidth() < renderer.getHeight())
+				width = HEIGHT / renderer.getHeight() * renderer.getWidth();
+			else
+				width = HEIGHT / renderer.getWidth() * renderer.getHeight();
 
 			RectangleRenderer.draw(batch, viewportW - width - 5, viewportH
 					- HEIGHT - 55, width + 10, HEIGHT + 10, Color.BLACK);

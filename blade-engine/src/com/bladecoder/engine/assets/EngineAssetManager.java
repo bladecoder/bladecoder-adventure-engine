@@ -56,7 +56,6 @@ public class EngineAssetManager extends AssetManager {
 	public static final String NOT_DESKTOP_PREFS_DIR = "data/";
 
 	public static final String ATLASES_DIR = "atlases/";
-	public static final String BACKGROUND_DIR = "backgrounds/";
 	public static final String MODEL_DIR = "model/";
 	public static final String MUSIC_DIR = "music/";
 	public static final String IMAGE_DIR = "images/";
@@ -353,7 +352,7 @@ public class EngineAssetManager extends AssetManager {
 	private Resolution[] getResolutions(FileHandleResolver resolver, int worldWidth, int worldHeight) {
 		ArrayList<Resolution> rl = new ArrayList<Resolution>();
 
-		String list[] = listAssetFiles("/backgrounds");
+		String list[] = listAssetFiles("/atlases");
 
 		for (String name : list) {
 			try {
