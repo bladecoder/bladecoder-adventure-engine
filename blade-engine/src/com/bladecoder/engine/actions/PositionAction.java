@@ -32,13 +32,15 @@ public class PositionAction extends BaseCallbackAction {
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.ACTOR, false),
 		new Param("pos", "The target position", Type.VECTOR2, true),
-		new Param("speed", "Duration of the animation in seconds", Type.FLOAT, true, "1.0"),
+		new Param("speed", "Duration or speed of the animation", Type.FLOAT, true, "1.0"),
+		new Param("mode", "Duration or speed in pixels/sec. mode", Type.OPTION, false, "", new String[]{"duration", "speed"}),
 		new Param("count", "The times to repeat", Type.INTEGER),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
 		new Param("repeat", "The repeat mode", Type.OPTION, true, "no_repeat", new String[]{"repeat", "yoyo", "no_repeat"}),
 		};		
 	
 	private String actorId;
+	private String mode;
 	private float speed;
 	private Vector2 pos;
 	private int repeat = Tween.NO_REPEAT;
@@ -56,6 +58,8 @@ public class PositionAction extends BaseCallbackAction {
 		if(params.get("count") != null) {
 			count = Integer.parseInt(params.get("count"));
 		}
+		
+		mode = params.get("mode");
 		
 		if(params.get("wait") != null) {
 			setWait(Boolean.parseBoolean(params.get("wait")));
@@ -88,8 +92,19 @@ public class PositionAction extends BaseCallbackAction {
 			
 			return false;
 		} else {
-			// only spriteactors support animation
-			((SpriteActor)actor).startPosAnimation(repeat, count, speed, pos.x * scale, pos.y * scale, getWait()?this:null);
+			// WARNING: only spriteactors support animation
+			float s;
+			
+			if(mode != null && mode.equals("speed")) {
+				Vector2 p0 = new Vector2(actor.getX(), actor.getY());
+				
+				s = p0.dst(pos.x, pos.y)
+						/ (EngineAssetManager.getInstance().getScale() * speed);
+			} else {
+				s = speed;
+			}
+			
+			((SpriteActor)actor).startPosAnimation(repeat, count, s, pos.x * scale, pos.y * scale, getWait()?this:null);
 		}
 		
 		return getWait();

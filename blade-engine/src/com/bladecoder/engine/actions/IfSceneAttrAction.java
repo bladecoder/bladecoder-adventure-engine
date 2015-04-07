@@ -40,7 +40,7 @@ public class IfSceneAttrAction implements Action {
 	public void setParams(HashMap<String, String> params) {
 		attr = params.get("attr");
 		value = params.get("value");
-		sceneId = params.get("sceneId");
+		sceneId = params.get("scene");
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class IfSceneAttrAction implements Action {
 				.getCurrentScene();
 
 		if (attr.equals("state")) {
-			if ((s.getState() == null && value == null) || (s.getState() != null && !value.equals(s.getState()))) {
+			if (!((s.getState() == null && value == null) || (s.getState() != null && s.getState().equals(value)))) {
 				gotoElse((VerbRunner) cb);
 			}
 		}

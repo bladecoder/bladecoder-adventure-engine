@@ -70,7 +70,7 @@ public class IfAttrAction implements Action {
 		}
 
 		if (attr.equals("state")) {
-			if ((a.getState() == null && value == null) || (a.getState() != null && !value.equals(a.getState()))) {
+			if (!((a.getState() == null && value == null) || (a.getState() != null && a.getState().equals(value)))) {
 				gotoElse((VerbRunner) cb);
 			}
 		} if (attr.equals("visible")) {

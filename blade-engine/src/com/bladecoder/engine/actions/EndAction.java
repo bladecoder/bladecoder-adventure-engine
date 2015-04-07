@@ -51,8 +51,8 @@ public class EndAction implements Action {
 			int ip = v.getIP();
 			ArrayList<Action> actions = v.getActions();
 			
-			while(!(actions.get(ip) instanceof EndAction) || 
-					!((EndAction)actions.get(ip)).getType().equals("if")) ip++; 
+			while(!((actions.get(ip) instanceof EndAction) &&
+					((EndAction)actions.get(ip)).getType().equals("if"))) ip++; 
 			
 			v.setIP(ip);
 		}
