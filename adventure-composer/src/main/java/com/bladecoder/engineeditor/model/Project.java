@@ -22,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -32,14 +31,6 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.setup.Dependency;
@@ -87,8 +78,6 @@ public class Project extends PropertyChange {
 	private Element selectedScene;
 	private Element selectedActor;
 	private String selectedFA;
-	
-	private HashMap<String, TextureRegion> bgIconCache = new HashMap<String, TextureRegion>();
 
 	final PropertyChangeListener modelChangeListener = new PropertyChangeListener() {
 		@Override
@@ -101,51 +90,6 @@ public class Project extends PropertyChange {
 	public Project() {
 		world.addPropertyChangeListener(modelChangeListener);
 		loadConfig();
-	}
-	
-	public TextureRegion getBgIcon(String atlas, String region) {
-		String s = atlas + "#" + region;
-		TextureRegion icon = bgIconCache.get(s);
-		
-		if(icon == null) {
-			try {
-				bgIconCache.put(s, createBgIcon(atlas, region));
-			} catch (Exception e) {
-				return null;
-			}
-			
-			icon = bgIconCache.get(s);
-		}
-		
-		return icon;
-	}
-	
-	private TextureRegion createBgIcon(String atlas, String region) {
-		TextureAtlas a = new TextureAtlas(Gdx.files.absolute(getProjectPath() + "/" + ATLASES_PATH + 
-				"/1/" + atlas + ".atlas"));
-		AtlasRegion r = a.findRegion(region);
-		
-		FrameBuffer fbo = new FrameBuffer(Format.RGB888, 200, (int)(r.getRegionHeight() * 200f / r.getRegionWidth()), false);
-		
-		SpriteBatch fboBatch = new SpriteBatch();
-		OrthographicCamera camera = new OrthographicCamera();
-		camera.setToOrtho(false, fbo.getWidth(), fbo.getHeight());
-		fboBatch.setProjectionMatrix(camera.combined);
-		fbo.begin();
-		fboBatch.begin();
-		
-		fboBatch.draw(r, 0, 0, fbo.getWidth(), fbo.getHeight());
-		
-		fboBatch.end();
-		fboBatch.dispose();
-		fbo.end();
-		a.dispose();
-		
-		TextureRegion tex = new TextureRegion(fbo.getColorBufferTexture());
-		
-		tex.flip(false, true);
-		
-		return tex;
 	}
 	
 	public UndoStack getUndoStack() {
@@ -312,7 +256,6 @@ public class Project extends PropertyChange {
 
 		if (checkProjectStructure()) {
 			
-			
 			// Add 'bin' dir from project directory to classpath so we can get custom actions desc and params
 			// WARNING: Previous 'bin' folders are not deleted from the classpath
 			// That can not be a problem if the package of the custom actions is different
@@ -402,10 +345,5 @@ public class Project extends PropertyChange {
 //			else
 //				setSelectedScene(null);
 //		}
-	}
-	
-	public void dispose() {
-		for(TextureRegion r:bgIconCache.values())
-			r.getTexture().dispose();
 	}
 }

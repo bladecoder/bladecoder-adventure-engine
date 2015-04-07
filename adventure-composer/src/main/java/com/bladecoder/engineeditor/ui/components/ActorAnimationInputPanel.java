@@ -27,8 +27,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.ChapterDocument;
 
 public class ActorAnimationInputPanel extends InputPanel {
 	EditableSelectBox animation;
@@ -54,10 +54,10 @@ public class ActorAnimationInputPanel extends InputPanel {
 		// values.add("");
 
 		for (int i = 0; i < actors.getLength(); i++) {
-			String id = ((Element) actors.item(i)).getAttribute("id");
-			String type = ((Element) actors.item(i)).getAttribute("type");
+			String id = ((Element) actors.item(i)).getAttribute(XMLConstants.ID_ATTR);
+			String type = ((Element) actors.item(i)).getAttribute(XMLConstants.TYPE_ATTR);
 
-			if (!type.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
+			if (!type.equals(XMLConstants.NO_RENDERER_VALUE)) {
 				values.add(id);
 			}
 		}

@@ -5,7 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
-- Added 'once' criteria to RunVerbAction
+- Backround images must be in atlas now
+- Added control actions
 - Added ActorAttrAction
 - GotoAction: Change margin. 
 - Added log when verb finished

@@ -28,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.model.ChapterDocument;
@@ -44,8 +45,8 @@ public class EditAnimationDialog extends EditElementDialog {
 	private InputPanel[] inputs = new InputPanel[11];
 	InputPanel typePanel;
 
-	String attrs[] = { "source", "id", "animation_type", "speed", "delay",
-			"count", "inD", "outD", "sound", "preload", "disposed_when_played" };
+	String attrs[] = { XMLConstants.SOURCE_ATTR, XMLConstants.ID_ATTR, XMLConstants.ANIMATION_TYPE_ATTR, XMLConstants.SPEED_ATTR, XMLConstants.DELAY_ATTR,
+			XMLConstants.COUNT_ATTR, XMLConstants.IND_ATTR, XMLConstants.OUTD_ATTR, XMLConstants.SOUND_ATTR, XMLConstants.PRELOAD_ATTR, XMLConstants.DISPOSE_WHEN_PLAYED_ATTR };
 
 	AnimationWidget spriteWidget = new AnimationWidget(this);
 
@@ -99,7 +100,7 @@ public class EditAnimationDialog extends EditElementDialog {
 					public void changed(ChangeEvent event, Actor actor) {
 						String type = typePanel.getText();
 
-						if (type.equals("repeat") || type.equals("yoyo")) {
+						if (type.equals(XMLConstants.REPEAT_VALUE) || type.equals(XMLConstants.YOYO_VALUE)) {
 							setVisible(inputs[4],true);
 							setVisible(inputs[5],true);
 						} else {
@@ -116,7 +117,7 @@ public class EditAnimationDialog extends EditElementDialog {
 						EditorLogger.debug("EditAnimationDialog.setSource():"
 								+ inputs[0].getText());
 
-						spriteWidget.setSource(parent.getAttribute("type"),
+						spriteWidget.setSource(parent.getAttribute(XMLConstants.TYPE_ATTR),
 								inputs[0].getText());
 
 						
@@ -144,7 +145,7 @@ public class EditAnimationDialog extends EditElementDialog {
 		});	
 
 		setInfoWidget(spriteWidget);
-		init(inputs, attrs, doc, p, "animation", e);
+		init(inputs, attrs, doc, p, XMLConstants.ANIMATION_TAG, e);
 		
 		setVisible(inputs[4],false);
 		setVisible(inputs[5],false);
@@ -155,7 +156,7 @@ public class EditAnimationDialog extends EditElementDialog {
 		}
 
 		if (inputs[0].getText() != null && !inputs[0].getText().isEmpty()) {
-			spriteWidget.setSource(parent.getAttribute("type"),
+			spriteWidget.setSource(parent.getAttribute(XMLConstants.TYPE_ATTR),
 					inputs[0].getText());
 
 			fillAnimations();
@@ -219,19 +220,19 @@ public class EditAnimationDialog extends EditElementDialog {
 
 	private String[] getSources() {
 		String path = null;
-		String type = parent.getAttribute("type");
+		String type = parent.getAttribute(XMLConstants.TYPE_ATTR);
 
-		if (type.equals(ChapterDocument.ATLAS_ACTOR_TYPE)) {
+		if (type.equals(XMLConstants.ATLAS_VALUE)) {
 			path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
 					+ Ctx.project.getResDir();
 			ext = ".atlas";
-		} else if (type.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
+		} else if (type.equals(XMLConstants.S3D_VALUE)) {
 			path = Ctx.project.getProjectPath() + Project.SPRITE3D_PATH;
 			ext = ".g3db";
-		} else if (type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
+		} else if (type.equals(XMLConstants.SPINE_VALUE)) {
 			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
 			ext = ".skel";
-		} else if (type.equals(ChapterDocument.IMAGE_ACTOR_TYPE)) {
+		} else if (type.equals(XMLConstants.IMAGE_VALUE)) {
 			path = Ctx.project.getProjectPath() + Project.IMAGE_PATH + "/"
 					+ Ctx.project.getResDir();
 			ext = "";			

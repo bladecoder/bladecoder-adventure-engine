@@ -27,10 +27,11 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
-public class WorldDocument extends  BaseDocument {
+public class WorldDocument extends  BaseDocument {	
 	public static final int DEFAULT_WIDTH = 1920;
 	public static final int DEFAULT_HEIGHT = 1080;
 	
@@ -48,12 +49,12 @@ public class WorldDocument extends  BaseDocument {
 	};
 	
 	public WorldDocument() {
-		setFilename("world.xml");
+		setFilename(XMLConstants.WORLD_FILENAME);
 	}
 	
 	@Override
 	public String getRootTag() {
-		return "world";
+		return XMLConstants.WORLD_TAG;
 	}
 
 	@Override
@@ -64,8 +65,8 @@ public class WorldDocument extends  BaseDocument {
 	}
 	
 	public void setDimensions(int width, int height) {
-		doc.getDocumentElement().setAttribute("width", Integer.toString(width));
-		doc.getDocumentElement().setAttribute("height", Integer.toString(height));
+		doc.getDocumentElement().setAttribute(XMLConstants.WIDTH_ATTR, Integer.toString(width));
+		doc.getDocumentElement().setAttribute(XMLConstants.HEIGHT_ATTR, Integer.toString(height));
 		modified = true;
 		firePropertyChange();
 	}
@@ -76,7 +77,7 @@ public class WorldDocument extends  BaseDocument {
 		String[] chapters = new File(dir).list(new FilenameFilter() {
 			@Override
 			public boolean accept(File arg0, String arg1) {
-				if (!arg1.endsWith(".chapter"))
+				if (!arg1.endsWith(XMLConstants.CHAPTER_EXT))
 					return false;
 
 				return true;
@@ -91,7 +92,7 @@ public class WorldDocument extends  BaseDocument {
 
 	public int getWidth() {
 		if(width == -1) {
-			width = Integer.parseInt(doc.getDocumentElement().getAttribute("width"));
+			width = Integer.parseInt(doc.getDocumentElement().getAttribute(XMLConstants.WIDTH_ATTR));
 		}
 		
 		return width;
@@ -99,7 +100,7 @@ public class WorldDocument extends  BaseDocument {
 	
 	public int getHeight() {
 		if(height == -1) {
-			height = Integer.parseInt(doc.getDocumentElement().getAttribute("height"));	 
+			height = Integer.parseInt(doc.getDocumentElement().getAttribute(XMLConstants.HEIGHT_ATTR));	 
 		}
 		
 		return height;
@@ -107,21 +108,21 @@ public class WorldDocument extends  BaseDocument {
 
 	public void setWidth(String value) {
 		width = Integer.parseInt(value);
-		doc.getDocumentElement().setAttribute("width", value);
+		doc.getDocumentElement().setAttribute(XMLConstants.WIDTH_ATTR, value);
 		modified = true;
 		firePropertyChange();
 	}
 	
 	public void setHeight(String value) {
 		height = Integer.parseInt(value);
-		doc.getDocumentElement().setAttribute("height", value);
+		doc.getDocumentElement().setAttribute(XMLConstants.HEIGHT_ATTR, value);
 		modified = true;
 		firePropertyChange();
 	}
 	
 	public ChapterDocument loadChapter(String id) throws ParserConfigurationException, SAXException, IOException {
 			ChapterDocument chapter = new ChapterDocument(modelPath);
-			chapter.setFilename(id + ".chapter");
+			chapter.setFilename(id + XMLConstants.CHAPTER_EXT);
 			chapter.load();
 			chapter.addPropertyChangeListener(documentModifiedListener);
 			
@@ -129,19 +130,19 @@ public class WorldDocument extends  BaseDocument {
 	}
 	
 	public String getInitChapter() {
-		String init = getRootAttr("init_chapter");
+		String init = getRootAttr(XMLConstants.INIT_CHAPTER_ATTR);
 		
 		if(init == null || init.isEmpty()) {
 			init = getChapters()[0];
 			
-			setRootAttr("init_chapter", init);
+			setRootAttr(XMLConstants.INIT_CHAPTER_ATTR, init);
 		}
 		
 		return init;
 	}
 	
 	public void setInitChapter(String value) {
-		doc.getDocumentElement().setAttribute("init_chapter", value);
+		doc.getDocumentElement().setAttribute(XMLConstants.INIT_CHAPTER_ATTR, value);
 		modified = true;
 		firePropertyChange();
 	}
@@ -151,7 +152,7 @@ public class WorldDocument extends  BaseDocument {
 		String checkedId = getChapterCheckedId(id);
 		
 		chapter.create(checkedId);
-		firePropertyChange("chapter");
+		firePropertyChange(XMLConstants.CHAPTER_TAG);
 		
 		return chapter;
 	}
@@ -185,17 +186,17 @@ public class WorldDocument extends  BaseDocument {
 	public void renameChapter(String oldId, String newId) throws TransformerException, ParserConfigurationException, SAXException, IOException {
 		
 		ChapterDocument chapter = new ChapterDocument(modelPath);
-		chapter.setFilename(oldId + ".chapter");
+		chapter.setFilename(oldId + XMLConstants.CHAPTER_EXT);
 		chapter.load();
 		chapter.rename(newId);
-		firePropertyChange("chapter");
+		firePropertyChange(XMLConstants.CHAPTER_TAG);
 	}
 	
 	public void removeChapter(String id) throws FileNotFoundException, TransformerException {
 		
 		ChapterDocument chapter = new ChapterDocument(modelPath);
-		chapter.setFilename(id + ".chapter");
+		chapter.setFilename(id + XMLConstants.CHAPTER_EXT);
 		chapter.deleteFiles();
-		firePropertyChange("chapter");
+		firePropertyChange(XMLConstants.CHAPTER_TAG);
 	}
 }

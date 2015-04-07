@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.model.ChapterDocument;
@@ -173,10 +174,10 @@ public class ActorList extends ElementList {
 
 		Element e = list.getItems().get(pos);
 
-		if (!e.getAttribute("type").equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
-			String id = e.getAttribute("id");
+		if (!e.getAttribute(XMLConstants.TYPE_ATTR).equals(XMLConstants.NO_RENDERER_VALUE)) {
+			String id = e.getAttribute(XMLConstants.ID_ATTR);
 
-			scn.setRootAttr(parent, "player", id);
+			scn.setRootAttr(parent, XMLConstants.PLAYER_ATTR, id);
 		}
 	}
 
@@ -187,33 +188,33 @@ public class ActorList extends ElementList {
 
 		@Override
 		protected String getCellTitle(Element e) {
-			return e.getAttribute("id");
+			return e.getAttribute(XMLConstants.ID_ATTR);
 		}
 
 		@Override
 		protected String getCellSubTitle(Element e) {
-			return doc.getTranslation(e.getAttribute("desc"));
+			return doc.getTranslation(e.getAttribute(XMLConstants.DESC_ATTR));
 		}
 
 		@Override
 		public TextureRegion getCellImage(Element e) {
-			String type = e.getAttribute("type");
+			String type = e.getAttribute(XMLConstants.TYPE_ATTR);
 
-			boolean isPlayer = ((Element) e.getParentNode()).getAttribute("player").equals(e.getAttribute("id"));
+			boolean isPlayer = ((Element) e.getParentNode()).getAttribute(XMLConstants.PLAYER_ATTR).equals(e.getAttribute(XMLConstants.ID_ATTR));
 
 			String u = null;
 
 			if (isPlayer) {
 				u = "ic_character_actor";
-			} else if (type.equals(ChapterDocument.IMAGE_ACTOR_TYPE)) {
+			} else if (type.equals(XMLConstants.IMAGE_VALUE)) {
 				u = "ic_sprite_actor";
-			} else if (type.equals(ChapterDocument.ATLAS_ACTOR_TYPE)) {
+			} else if (type.equals(XMLConstants.ATLAS_VALUE)) {
 				u = "ic_sprite_actor";
-			} else if (type.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
+			} else if (type.equals(XMLConstants.NO_RENDERER_VALUE)) {
 				u = "ic_base_actor";
-			} else if (type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
+			} else if (type.equals(XMLConstants.SPINE_VALUE)) {
 				u = "ic_spine";
-			} else if (type.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
+			} else if (type.equals(XMLConstants.S3D_VALUE)) {
 				u = "ic_3d";
 			}
 

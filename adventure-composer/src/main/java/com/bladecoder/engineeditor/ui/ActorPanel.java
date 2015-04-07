@@ -21,6 +21,7 @@ import java.beans.PropertyChangeListener;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.model.Project;
@@ -61,7 +62,7 @@ public class ActorPanel extends HeaderPanel {
 
 							String type = doc.getType(a);
 
-							if (!type.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE))
+							if (!type.equals(XMLConstants.NO_RENDERER_VALUE))
 								tabPanel.addTab("Animations", faList);
 
 							tabPanel.addTab("Verbs", verbList);

@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
@@ -44,8 +45,8 @@ public class EditActorDialog extends EditElementDialog {
 	private InputPanel[] inputs = new InputPanel[14];
 	InputPanel typePanel;
 
-	String attrs[] = { "type", "id", "layer", "desc", "state", "interaction", "visible",
-			"walking_speed", "depth_type", "sprite_size", "camera", "fov", "scale", "zIndex" };
+	String attrs[] = { XMLConstants.TYPE_ATTR, XMLConstants.ID_ATTR, XMLConstants.LAYER_ATTR, XMLConstants.DESC_ATTR, XMLConstants.STATE_ATTR, XMLConstants.INTERACTION_ATTR, XMLConstants.VISIBLE_ATTR,
+			XMLConstants.WALKING_SPEED_ATTR, XMLConstants.DEPTH_TYPE_ATTR, XMLConstants.SPRITE_SIZE_ATTR, XMLConstants.CAMERA_NAME_ATTR, XMLConstants.FOV_ATTR, XMLConstants.SCALE_ATTR, XMLConstants.ZINDEX_ATTR };
 
 	@SuppressWarnings("unchecked")
 	public EditActorDialog(Skin skin, BaseDocument doc, Element parent,
@@ -109,19 +110,19 @@ public class EditActorDialog extends EditElementDialog {
 					}
 				});
 
-		init(inputs, attrs, doc, parent, "actor", e);
+		init(inputs, attrs, doc, parent, XMLConstants.ACTOR_TAG, e);
 
 		typeChanged();
 
 	}
 
 	private String[] getLayers(Element parent) {
-		NodeList layerList = parent.getElementsByTagName("layer");
+		NodeList layerList = parent.getElementsByTagName(XMLConstants.LAYER_TAG);
 		
 		String[] layers = new String[layerList.getLength()];
 		
 		for(int i = 0; i < layerList.getLength(); i++) {
-			layers[i] = ((Element)(layerList.item(i))).getAttribute("id");
+			layers[i] = ((Element)(layerList.item(i))).getAttribute(XMLConstants.ID_ATTR);
 		}
 		
 		return layers;
@@ -138,14 +139,14 @@ public class EditActorDialog extends EditElementDialog {
 		setVisible(inputs[12],false);
 
 		if (ChapterDocument.ACTOR_TYPES[i]
-				.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
+				.equals(XMLConstants.S3D_VALUE)) {
 			setVisible(inputs[9],true);
 			setVisible(inputs[10],true);
 			setVisible(inputs[11],true);
 		}
 		
 		if (!ChapterDocument.ACTOR_TYPES[i]
-				.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
+				.equals(XMLConstants.NO_RENDERER_VALUE)) {
 			setVisible(inputs[12],true);
 		}
 	}
@@ -154,7 +155,7 @@ public class EditActorDialog extends EditElementDialog {
 	protected void fill() {
 		int i = ((OptionsInputPanel)typePanel).getSelectedIndex();
 		if (((ChapterDocument)doc).getBBox(e) == null && ChapterDocument.ACTOR_TYPES[i]
-				.equals(ChapterDocument.NO_RENDERER_ACTOR_TYPE)) {
+				.equals(XMLConstants.NO_RENDERER_VALUE)) {
 			((ChapterDocument) doc).setBbox(e, null);
 		}
 		

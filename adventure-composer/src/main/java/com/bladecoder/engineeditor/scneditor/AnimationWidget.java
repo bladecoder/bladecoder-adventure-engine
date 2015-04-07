@@ -22,17 +22,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
-import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
-import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
-import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.util.RectangleRenderer;
-import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.EditAnimationDialog;
 
 public class AnimationWidget extends Widget {
@@ -56,13 +56,13 @@ public class AnimationWidget extends Widget {
 		}
 		
 		
-		if(type.equals(ChapterDocument.SPRITE3D_ACTOR_TYPE)) {
+		if(type.equals(XMLConstants.S3D_VALUE)) {
 			renderer = new Sprite3DRenderer();
 			((Sprite3DRenderer)renderer).setSpriteSize(new Vector2( Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-		} else if(type.equals(ChapterDocument.SPINE_ACTOR_TYPE)) {
+		} else if(type.equals(XMLConstants.SPINE_VALUE)) {
 			renderer = new SpineRenderer();
 			((SpineRenderer)renderer).enableEvents(false);
-		} else if(type.equals(ChapterDocument.IMAGE_ACTOR_TYPE)) {
+		} else if(type.equals(XMLConstants.IMAGE_VALUE)) {
 			renderer = new ImageRenderer();			
 		} else {
 			renderer = new AtlasRenderer();
@@ -86,7 +86,7 @@ public class AnimationWidget extends Widget {
 			if(!speedStr.isEmpty())
 				speed = Float.parseFloat(speedStr);
 			
-			if(typeStr.equals("yoyo"))
+			if(typeStr.equals(XMLConstants.YOYO_VALUE))
 				type = Tween.PINGPONG;
 			
 			if(renderer instanceof AtlasRenderer)

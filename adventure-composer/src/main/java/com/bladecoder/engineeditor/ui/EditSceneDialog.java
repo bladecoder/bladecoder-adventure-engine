@@ -35,6 +35,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.model.Project;
@@ -57,7 +58,9 @@ public class EditSceneDialog extends EditElementDialog {
 	private Container<Image> infoContainer;
 	private TextureAtlas atlas;
 	
-	String attrs[] = {"id", "background_atlas", "background_region", "lightmap_atlas", "lightmap_region", "depth_vector", "state", "music", "loop_music", "initial_music_delay", "repeat_music_delay"};
+	String attrs[] = {XMLConstants.ID_ATTR, XMLConstants.BACKGROUND_ATLAS_ATTR, XMLConstants.BACKGROUND_REGION_ATTR, XMLConstants.LIGHTMAP_ATLAS_ATTR, 
+			XMLConstants.LIGHTMAP_REGION_ATTR, XMLConstants.DEPTH_VECTOR_ATTR, XMLConstants.STATE_ATTR, XMLConstants.MUSIC_ATTR, 
+			XMLConstants.LOOP_MUSIC_ATTR, XMLConstants.INITIAL_MUSIC_DELAY_ATTR, XMLConstants.REPEAT_MUSIC_DELAY_ATTR};
 
 	@SuppressWarnings("unchecked")
 	public EditSceneDialog(Skin skin, BaseDocument doc, Element parent,
@@ -136,7 +139,7 @@ public class EditSceneDialog extends EditElementDialog {
 			EditorLogger.error("Error loading regions from selected atlas");
 		}
 		
-		init(inputs, attrs, doc, parent, "scene", e);
+		init(inputs, attrs, doc, parent, XMLConstants.SCENE_TAG, e);
 	}
 	
 	
@@ -294,8 +297,9 @@ public class EditSceneDialog extends EditElementDialog {
 	
 	@Override
 	protected void result(Object object) {
-		if(atlas != null)
+		if(atlas != null) {
 			atlas.dispose();
+		}
 		
 		super.result(object);
 	}

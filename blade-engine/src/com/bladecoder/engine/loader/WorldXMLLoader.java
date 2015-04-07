@@ -42,7 +42,6 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class WorldXMLLoader extends DefaultHandler {
-	private static final String WORLD_FILENAME = "world.xml";
 	
 	private World world;
 
@@ -62,7 +61,7 @@ public class WorldXMLLoader extends DefaultHandler {
 		XMLReader xmlReader = saxParser.getXMLReader();
 		xmlReader.setContentHandler(parser);
 		xmlReader.parse(new InputSource(EngineAssetManager.getInstance()
-				.getModelFile(WORLD_FILENAME).read()));
+				.getModelFile(XMLConstants.WORLD_FILENAME).read()));
 		
 		I18N.loadWorld(EngineAssetManager.MODEL_DIR + "world");
 	}
@@ -82,7 +81,7 @@ public class WorldXMLLoader extends DefaultHandler {
 		XMLReader xmlReader = saxParser.getXMLReader();
 		xmlReader.setContentHandler(parser);
 		xmlReader.parse(new InputSource(EngineAssetManager.getInstance()
-				.getModelFile(chapter + ".chapter").read()));
+				.getModelFile(chapter + XMLConstants.CHAPTER_EXT).read()));
 
 		I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapter);
 
@@ -110,12 +109,12 @@ public class WorldXMLLoader extends DefaultHandler {
 
 		if (currentVerb != null) {
 			parseAction(localName, atts);
-		} else if (localName.equals("world")) {
+		} else if (localName.equals(XMLConstants.WORLD_TAG)) {
 			int width, height;
 
 			try {
-				width = Integer.parseInt(atts.getValue("width"));
-				height = Integer.parseInt(atts.getValue("height"));
+				width = Integer.parseInt(atts.getValue(XMLConstants.WIDTH_ATTR));
+				height = Integer.parseInt(atts.getValue(XMLConstants.HEIGHT_ATTR));
 
 				// When we know the world width, we can put the scale
 				EngineAssetManager.getInstance().setScale(width, height);
@@ -134,9 +133,9 @@ public class WorldXMLLoader extends DefaultHandler {
 
 			world.setWidth(width);
 			world.setHeight(height);
-			world.setInitChapter(atts.getValue("init_chapter"));
-		} else if (localName.equals("verb")) {
-			String id = atts.getValue("id");
+			world.setInitChapter(atts.getValue(XMLConstants.INIT_CHAPTER_ATTR));
+		} else if (localName.equals(XMLConstants.VERB_TAG)) {
+			String id = atts.getValue(XMLConstants.ID_ATTR);
 
 			currentVerb = new Verb(id);
 
@@ -148,14 +147,14 @@ public class WorldXMLLoader extends DefaultHandler {
 	public void endElement(String namespaceURI, String localName, String qName)
 			throws SAXException {
 
-		if (localName.equals("verb")) {
+		if (localName.equals(XMLConstants.VERB_TAG)) {
 			currentVerb = null;
 		}
 	}
 
 	private void parseAction(String localName, Attributes atts) {
 
-		if (localName.equals("action")) {
+		if (localName.equals(XMLConstants.ACTION_TAG)) {
 			String actionName = null;
 			Action action = null;
 			HashMap<String, String> params = new HashMap<String, String>();
@@ -164,9 +163,9 @@ public class WorldXMLLoader extends DefaultHandler {
 			for (int i = 0; i < atts.getLength(); i++) {
 				String attName = atts.getLocalName(i);
 
-				if (attName.equals("class")) {
+				if (attName.equals(XMLConstants.CLASS_ATTR)) {
 					actionClass = atts.getValue(attName);
-				} else if (attName.equals("action_name")) {
+				} else if (attName.equals(XMLConstants.ACTION_NAME_ATTR)) {
 					actionName = atts.getValue(attName);
 				} else {
 					String value = atts.getValue(attName);
