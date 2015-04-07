@@ -278,7 +278,7 @@ public class SceneList extends ElementList {
 		fboBatch.end();
 
 		TextureRegion tex = ScreenUtils.getFrameBufferTexture(0,0,fbo.getWidth(), fbo.getHeight());		
-		tex.flip(false, true);		
+//		tex.flip(false, true);		
 		
 		fbo.end();
 		Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
