@@ -30,10 +30,13 @@
 
 package com.esotericsoftware.spine;
 
-import com.esotericsoftware.spine.attachments.Attachment;
-
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.esotericsoftware.spine.attachments.Attachment;
+import com.esotericsoftware.spine.attachments.MeshAttachment;
+import com.esotericsoftware.spine.attachments.RegionAttachment;
+import com.esotericsoftware.spine.attachments.SkinnedMeshAttachment;
 
 public class Skeleton {
 	final SkeletonData data;
@@ -117,16 +120,16 @@ public class Skeleton {
 
 	/** Caches information about bones and IK constraints. Must be called if bones or IK constraints are added or removed. */
 	public void updateCache () {
+		Array<Bone> bones = this.bones;
 		Array<Array<Bone>> boneCache = this.boneCache;
 		Array<IkConstraint> ikConstraints = this.ikConstraints;
 		int ikConstraintsCount = ikConstraints.size;
 
 		int arrayCount = ikConstraintsCount + 1;
-		boneCache.truncate(arrayCount);
-		for (int i = 0, n = boneCache.size; i < n; i++)
-			boneCache.get(i).clear();
 		while (boneCache.size < arrayCount)
 			boneCache.add(new Array());
+		for (int i = 0; i < arrayCount; i++)
+			boneCache.get(i).clear();
 
 		Array<Bone> nonIkBones = boneCache.first();
 
@@ -164,7 +167,7 @@ public class Skeleton {
 		}
 		Array<Array<Bone>> boneCache = this.boneCache;
 		Array<IkConstraint> ikConstraints = this.ikConstraints;
-		int i = 0, last = boneCache.size - 1;
+		int i = 0, last = ikConstraints.size;
 		while (true) {
 			Array<Bone> updateBones = boneCache.get(i);
 			for (int ii = 0, nn = updateBones.size; ii < nn; ii++)
@@ -282,9 +285,9 @@ public class Skeleton {
 		setSkin(skin);
 	}
 
-	/** Sets the skin used to look up attachments not found in the {@link SkeletonData#getDefaultSkin() default skin}. Attachments
-	 * from the new skin are attached if the corresponding attachment from the old skin was attached. If there was no old skin,
-	 * each slot's setup mode attachment is attached from the new skin.
+	/** Sets the skin used to look up attachments before looking in the {@link SkeletonData#getDefaultSkin() default skin}.
+	 * Attachments from the new skin are attached if the corresponding attachment from the old skin was attached. If there was no
+	 * old skin, each slot's setup mode attachment is attached from the new skin.
 	 * @param newSkin May be null. */
 	public void setSkin (Skin newSkin) {
 		if (newSkin != null) {
@@ -356,8 +359,52 @@ public class Skeleton {
 		return null;
 	}
 
+	/** Returns the axis aligned bounding box (AABB) of the region, mesh, and skinned mesh attachments for the current pose.
+	 * @param offset The distance from the skeleton origin to the bottom left corner of the AABB.
+	 * @param size The width and height of the AABB. */
+	public void getBounds (Vector2 offset, Vector2 size) {
+		Array<Slot> drawOrder = this.drawOrder;
+		float minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+		for (int i = 0, n = drawOrder.size; i < n; i++) {
+			Slot slot = drawOrder.get(i);
+			float[] vertices = null;
+			Attachment attachment = slot.attachment;
+			if (attachment instanceof RegionAttachment) {
+				RegionAttachment region = (RegionAttachment)attachment;
+				region.updateWorldVertices(slot, false);
+				vertices = region.getWorldVertices();
+
+			} else if (attachment instanceof MeshAttachment) {
+				MeshAttachment mesh = (MeshAttachment)attachment;
+				mesh.updateWorldVertices(slot, true);
+				vertices = mesh.getWorldVertices();
+
+			} else if (attachment instanceof SkinnedMeshAttachment) {
+				SkinnedMeshAttachment mesh = (SkinnedMeshAttachment)attachment;
+				mesh.updateWorldVertices(slot, true);
+				vertices = mesh.getWorldVertices();
+			}
+			if (vertices != null) {
+				for (int ii = 0, nn = vertices.length; ii < nn; ii += 5) {
+					float x = vertices[ii], y = vertices[ii + 1];
+					minX = Math.min(minX, x);
+					minY = Math.min(minY, y);
+					maxX = Math.max(maxX, x);
+					maxY = Math.max(maxY, y);
+				}
+			}
+		}
+		offset.set(minX, minY);
+		size.set(maxX - minX, maxY - minY);
+	}
+
 	public Color getColor () {
 		return color;
+	}
+
+	/** A convenience method for setting the skeleton color. The color can also be set by modifying {@link #getColor()}. */
+	public void setColor (Color color) {
+		this.color.set(color);
 	}
 
 	public boolean getFlipX () {

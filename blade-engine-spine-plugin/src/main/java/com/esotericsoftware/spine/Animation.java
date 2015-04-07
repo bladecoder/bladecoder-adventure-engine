@@ -272,9 +272,6 @@ public class Animation {
 			float[] frames = this.frames;
 			if (time < frames[0]) return; // Time is before first frame.
 
-			if(boneIndex < 0) // BUG FIX rgarcia
-				return;
-			
 			Bone bone = skeleton.bones.get(boneIndex);
 
 			if (time >= frames[frames.length - 2]) { // Time is after last frame.
@@ -344,9 +341,6 @@ public class Animation {
 		public void apply (Skeleton skeleton, float lastTime, float time, Array<Event> events, float alpha) {
 			float[] frames = this.frames;
 			if (time < frames[0]) return; // Time is before first frame.
-			
-			if(boneIndex < 0) // BUG FIX rgarcia
-				return;
 
 			Bone bone = skeleton.bones.get(boneIndex);
 
@@ -377,9 +371,6 @@ public class Animation {
 		public void apply (Skeleton skeleton, float lastTime, float time, Array<Event> events, float alpha) {
 			float[] frames = this.frames;
 			if (time < frames[0]) return; // Time is before first frame.
-			
-			if(boneIndex < 0) // BUG FIX rgarcia
-				return;
 
 			Bone bone = skeleton.bones.get(boneIndex);
 			if (time >= frames[frames.length - 3]) { // Time is after last frame.
@@ -556,7 +547,7 @@ public class Animation {
 			events[frameIndex] = event;
 		}
 
-		/** Fires events for frames &gt; lastTime and &lt;= time. */
+		/** Fires events for frames > lastTime and <= time. */
 		public void apply (Skeleton skeleton, float lastTime, float time, Array<Event> firedEvents, float alpha) {
 			if (firedEvents == null) return;
 			float[] frames = this.frames;
@@ -825,7 +816,7 @@ public class Animation {
 			} else if (lastTime > time) //
 				lastTime = -1;
 			int frameIndex = (time >= frames[frames.length - 2] ? frames.length : binarySearch(frames, time, 2)) - 2;
-			if (frames[frameIndex] <= lastTime) return;
+			if (frames[frameIndex] < lastTime) return;
 			setFlip(skeleton.bones.get(boneIndex), frames[frameIndex + 1] != 0);
 		}
 

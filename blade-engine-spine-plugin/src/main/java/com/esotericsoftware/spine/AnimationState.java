@@ -94,12 +94,9 @@ public class AnimationState {
 			if (!loop && time > endTime) time = endTime;
 
 			TrackEntry previous = current.previous;
-			if (previous == null) {
-				if (current.mix == 1)
-					current.animation.apply(skeleton, lastTime, time, loop, events);
-				else
-					current.animation.mix(skeleton, lastTime, time, loop, events, current.mix);
-			} else {
+			if (previous == null)
+				current.animation.mix(skeleton, lastTime, time, loop, events, current.mix);
+			else {
 				float previousTime = previous.time;
 				if (!previous.loop && previousTime > previous.endTime) previousTime = previous.endTime;
 				previous.animation.apply(skeleton, previousTime, previousTime, previous.loop, null);
@@ -228,7 +225,7 @@ public class AnimationState {
 	}
 
 	/** Adds an animation to be played delay seconds after the current or last queued animation.
-	 * @param delay May be &lt;= 0 to use duration of previous animation minus any mix duration plus the negative delay. */
+	 * @param delay May be <= 0 to use duration of previous animation minus any mix duration plus the negative delay. */
 	public TrackEntry addAnimation (int trackIndex, Animation animation, boolean loop, float delay) {
 		TrackEntry entry = trackEntryPool.obtain();
 		entry.animation = animation;
@@ -315,7 +312,7 @@ public class AnimationState {
 			animation = null;
 			listener = null;
 			timeScale = 1;
-			lastTime = -1;
+			lastTime = -1; // Trigger events on frame zero.
 			time = 0;
 		}
 
