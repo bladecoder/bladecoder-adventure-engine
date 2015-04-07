@@ -202,7 +202,7 @@ public class ActionList extends ElementList {
 			endEl.setAttribute("action_name",
 					"End" + e.getAttribute("action_name"));
 			endEl.setAttribute("class", END_ACTION);
-			endEl.setAttribute("endType", "end");
+			endEl.setAttribute("endType", "if");
 
 			list.getItems().insert(pos, elseEl);
 			list.getItems().insert(pos + 1, endEl);
