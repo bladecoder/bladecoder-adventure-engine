@@ -17,6 +17,7 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.Param;
@@ -24,6 +25,7 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
+import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
 public class SetActorAttrAction implements Action {
@@ -33,7 +35,9 @@ public class SetActorAttrAction implements Action {
 		new Param("visible", "sets the actor visibility", Type.BOOLEAN), 
 		new Param("interaction", "when 'true' the actor responds to the user input", Type.BOOLEAN),
 		new Param("layer", "The actor layer", Type.LAYER),
-		new Param("zIndex", "The order to draw bigger is near", Type.FLOAT)
+		new Param("zIndex", "The order to draw bigger is near", Type.FLOAT),
+		new Param("position", "Sets the actor position", Type.VECTOR2),
+		new Param("scale", "Sets the actor scale", Type.FLOAT),
 		};		
 	
 	String actorId;
@@ -42,6 +46,9 @@ public class SetActorAttrAction implements Action {
 	String interaction;
 	String layer;
 	String zIndex;
+	
+	String position;
+	String scale;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -54,6 +61,9 @@ public class SetActorAttrAction implements Action {
 		interaction = params.get("interaction");
 		layer = params.get("layer");
 		zIndex = params.get("zIndex");
+		
+		position = params.get("position");
+		scale = params.get("scale");
 	}
 
 	@Override
@@ -91,6 +101,16 @@ public class SetActorAttrAction implements Action {
 			
 			if(!l.isDynamic())
 				l.orderByZIndex();
+		}
+		
+		if(position != null) {
+			Vector2 pos = Param.parseVector2(position);
+			actor.setPosition(pos.x, pos.y);
+		}
+		
+		if(scale != null) {		
+			if(actor instanceof SpriteActor)
+				((SpriteActor)actor).setScale(Float.parseFloat(scale));
 		}
 		
 		return false;
