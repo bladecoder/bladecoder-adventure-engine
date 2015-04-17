@@ -36,20 +36,20 @@ public class LayerList extends ElementList {
 	
 	private ImageButton upBtn;
 	private ImageButton downBtn;
-	private ImageButton initBtn;
+	private ImageButton visibilityBtn;
 
 	public LayerList(Skin skin) {
 		super(skin, false);
 
 		list.setCellRenderer(listCellRenderer);
 		
-		initBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(initBtn, "ic_eye", "Toggle Visibility",
+		visibilityBtn = new ImageButton(skin);
+		toolbar.addToolBarButton(visibilityBtn, "ic_eye", "Toggle Visibility",
 				"Toggle Visibility");
 
-		initBtn.setDisabled(false);
+		visibilityBtn.setDisabled(false);
 
-		initBtn.addListener(new ChangeListener() {
+		visibilityBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				toggleVisibility();

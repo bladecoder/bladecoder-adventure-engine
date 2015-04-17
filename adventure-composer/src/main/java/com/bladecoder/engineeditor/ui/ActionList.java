@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ElementList;
@@ -38,12 +39,27 @@ public class ActionList extends ElementList {
 
 	private ImageButton upBtn;
 	private ImageButton downBtn;
+	
+	private ImageButton disableBtn;
 
 	public ActionList(Skin skin) {
 		super(skin, true);
 		this.skin = skin;
 
 		setCellRenderer(listCellRenderer);
+		
+		disableBtn = new ImageButton(skin);
+		toolbar.addToolBarButton(disableBtn, "ic_eye", "Enable/Disable",
+				"Enable/Disable");
+
+		disableBtn.setDisabled(false);
+
+		disableBtn.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				toggleEnabled();
+			}
+		});
 
 		upBtn = new ImageButton(skin);
 		downBtn = new ImageButton(skin);
@@ -59,6 +75,7 @@ public class ActionList extends ElementList {
 				int pos = list.getSelectedIndex();
 
 				toolbar.disableEdit(pos == -1);
+				disableBtn.setDisabled(pos == -1);
 				upBtn.setDisabled(pos == -1 || pos == 0);
 				downBtn.setDisabled(pos == -1
 						|| pos == list.getItems().size - 1);
@@ -80,6 +97,26 @@ public class ActionList extends ElementList {
 			}
 		});
 	}
+	
+	private void toggleEnabled() {
+
+		Element e = list.getSelected();
+
+		// CONTROL ACTIONS CAN'T BE DISABLED
+		if (e == null ||  !e.getAttribute("endType").isEmpty())
+			return;
+
+		String value = e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR);
+		
+		if(value.isEmpty() || value.equals(XMLConstants.TRUE_VALUE))
+			value = XMLConstants.FALSE_VALUE;
+		else
+			value = XMLConstants.TRUE_VALUE;
+		
+		e.setAttribute(XMLConstants.ACTION_ENABLED_ATTR, value);
+		doc.setModified(e);
+	}
+	
 
 	@Override
 	protected EditElementDialog getEditElementDialogInstance(Element e) {
@@ -138,13 +175,13 @@ public class ActionList extends ElementList {
 				doc.setModified(e);
 
 				if (!editedElement.getAttribute("endType").isEmpty()
-						&& !editedElement.getAttribute("action_name").equals(
-								e.getAttribute("action_name"))) {
+						&& !editedElement.getAttribute(XMLConstants.ACTION_NAME_ATTR).equals(
+								e.getAttribute(XMLConstants.ACTION_NAME_ATTR))) {
 					int pos = list.getSelectedIndex();
 
 					if (editedElement.getAttribute("endType").equals("else")) {
 						while (!list.getItems().get(pos)
-								.getAttribute("action_name").equals("Else"))
+								.getAttribute(XMLConstants.ACTION_NAME_ATTR).equals("Else"))
 							pos++;
 
 						Element e2 = list.getItems().removeIndex(pos);
@@ -153,10 +190,10 @@ public class ActionList extends ElementList {
 						while (!list
 								.getItems()
 								.get(pos)
-								.getAttribute("action_name")
+								.getAttribute(XMLConstants.ACTION_NAME_ATTR)
 								.equals("End"
 										+ editedElement
-												.getAttribute("action_name")))
+												.getAttribute(XMLConstants.ACTION_NAME_ATTR)))
 							pos++;
 
 						e2 = list.getItems().removeIndex(pos);
@@ -166,10 +203,10 @@ public class ActionList extends ElementList {
 						while (!list
 								.getItems()
 								.get(pos)
-								.getAttribute("action_name")
+								.getAttribute(XMLConstants.ACTION_NAME_ATTR)
 								.equals("End"
 										+ editedElement
-												.getAttribute("action_name")))
+												.getAttribute(XMLConstants.ACTION_NAME_ATTR)))
 							pos++;
 
 						Element e2 = list.getItems().removeIndex(pos);
@@ -194,13 +231,13 @@ public class ActionList extends ElementList {
 
 		if (e.getAttribute("endType").equals("else")) {
 			Element elseEl = doc.createElement((Element) parent, "action");
-			elseEl.setAttribute("action_name", "Else");
+			elseEl.setAttribute(XMLConstants.ACTION_NAME_ATTR, "Else");
 			elseEl.setAttribute("class", END_ACTION);
 			elseEl.setAttribute("endType", "else");
 
 			Element endEl = doc.createElement((Element) parent, "action");
-			endEl.setAttribute("action_name",
-					"End" + e.getAttribute("action_name"));
+			endEl.setAttribute(XMLConstants.ACTION_NAME_ATTR,
+					"End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR));
 			endEl.setAttribute("class", END_ACTION);
 			endEl.setAttribute("endType", "if");
 
@@ -211,8 +248,8 @@ public class ActionList extends ElementList {
 			parent.insertBefore(endEl, e2);
 		} else {
 			Element endEl = doc.createElement((Element) parent, "action");
-			endEl.setAttribute("action_name",
-					"End" + e.getAttribute("action_name"));
+			endEl.setAttribute(XMLConstants.ACTION_NAME_ATTR,
+					"End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR));
 			endEl.setAttribute("class", END_ACTION);
 			endEl.setAttribute("endType", e.getAttribute("endType"));
 
@@ -256,23 +293,23 @@ public class ActionList extends ElementList {
 		super.delete();
 
 		if (e.getAttribute("endType").equals("else")) {
-			while (!list.getItems().get(pos).getAttribute("action_name")
+			while (!list.getItems().get(pos).getAttribute(XMLConstants.ACTION_NAME_ATTR)
 					.equals("Else"))
 				pos++;
 
 			Element e2 = list.getItems().removeIndex(pos);
 			doc.deleteElement(e2);
 
-			while (!list.getItems().get(pos).getAttribute("action_name")
-					.equals("End" + e.getAttribute("action_name")))
+			while (!list.getItems().get(pos).getAttribute(XMLConstants.ACTION_NAME_ATTR)
+					.equals("End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR)))
 				pos++;
 
 			e2 = list.getItems().removeIndex(pos);
 			doc.deleteElement(e2);
 		} else if (!e.getAttribute("endType").isEmpty()) {
 
-			while (!list.getItems().get(pos).getAttribute("action_name")
-					.equals("End" + e.getAttribute("action_name")))
+			while (!list.getItems().get(pos).getAttribute(XMLConstants.ACTION_NAME_ATTR)
+					.equals("End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR)))
 				pos++;
 
 			Element e2 = list.getItems().removeIndex(pos);
@@ -344,15 +381,39 @@ public class ActionList extends ElementList {
 
 		@Override
 		protected String getCellTitle(Element e) {
-			String id = e.getAttribute("action_name").isEmpty() ? e
-					.getAttribute("class") : e.getAttribute("action_name");
+			String id = e.getAttribute(XMLConstants.ACTION_NAME_ATTR).isEmpty() ? e
+					.getAttribute("class") : e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
 
 			String actor = e.getAttribute("actor");
-			boolean animationAction = e.getAttribute("action_name").equals(
+			boolean animationAction = e.getAttribute(XMLConstants.ACTION_NAME_ATTR).equals(
 					"Animation");
 			boolean controlAction = !e.getAttribute("endType").isEmpty();
+			
+			boolean enabled = e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).isEmpty() || e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).equals(XMLConstants.TRUE_VALUE);
+			
+			if(!enabled && !controlAction) {
+				if (!actor.isEmpty() && !animationAction) {
+					String[] s = Param.parseString2(actor);
 
-			if (!actor.isEmpty() && !animationAction && !controlAction) {
+					if (s[0] != null)
+						id = MessageFormat.format("[GRAY]{0} {1}.{2}[]", s[0],
+								s[1], id);
+					else
+						id = MessageFormat.format("[GRAY]{0}.{1}[]", actor, id);
+				} else if (animationAction) {
+					String a = e.getAttribute("animation");
+					String[] s = Param.parseString2(a);
+
+					if (s[0] != null)
+						id = MessageFormat.format("[GRAY]{0}.{1} {2}[]", s[0], id,
+								s[1]);
+					else
+						id = MessageFormat.format("[GRAY]{0} {1}[]", id, a);
+				} else {
+					id = MessageFormat.format("[GRAY]{0}[]", id);
+				}
+
+			} else if (!actor.isEmpty() && !animationAction && !controlAction) {
 				String[] s = Param.parseString2(actor);
 
 				if (s[0] != null)
@@ -397,9 +458,10 @@ public class ActionList extends ElementList {
 
 				if (name.equals("endType")
 						|| name.equals("actor")
-						|| name.equals("class")
-						|| name.equals("action_name")
-						|| (e.getAttribute("action_name").equals("Animation") && name
+						|| name.equals(XMLConstants.CLASS_ATTR)
+						|| name.equals(XMLConstants.ACTION_NAME_ATTR)
+						|| name.equals(XMLConstants.ACTION_ENABLED_ATTR)
+						|| (e.getAttribute(XMLConstants.ACTION_NAME_ATTR).equals("Animation") && name
 								.equals("animation")))
 					continue;
 

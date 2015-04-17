@@ -22,6 +22,7 @@ public final class XMLConstants {
 	public static final String ACTION_TAG = "action";
 	public static final String CLASS_ATTR = "class";
 	public static final String ACTION_NAME_ATTR = "action_name";
+	public static final String ACTION_ENABLED_ATTR = "action_enabled";
 	
 	public static final String ACTOR_TAG = "actor";
 	public static final String TYPE_ATTR = "type";

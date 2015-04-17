@@ -622,6 +622,9 @@ public class ChapterXMLLoader extends DefaultHandler {
 				actionClass = atts.getValue(attName);
 			} else if (attName.equals(XMLConstants.ACTION_NAME_ATTR)) {
 				actionName = atts.getValue(attName);
+			} else if (attName.equals(XMLConstants.ACTION_ENABLED_ATTR)) {
+				if(atts.getValue(attName).equals(XMLConstants.FALSE_VALUE))
+					return;
 			} else {
 				String value = atts.getValue(attName);
 
