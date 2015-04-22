@@ -52,7 +52,7 @@ public abstract class EditTree extends Table {
 		ScrollPane scrollPane = new ScrollPane(tree, skin);
 		container = new Container<ScrollPane>(scrollPane);
 		container.fill();
-		container.prefHeight(100);
+		container.prefHeight(1000);
 		
 		toolbar = new EditToolbar(skin);
 //		debug();

@@ -15,21 +15,18 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.ui.SceneScreen;
-
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.HAlignment;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Align;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.DPIUtils;
-import com.bladecoder.engine.util.TextUtils;
 
 /**
  * TextManagerUI draws texts and dialogs on screen.
@@ -50,13 +47,15 @@ public class TextManagerUI extends Actor {
 
 	private TextManagerUIStyle style;
 	private Text subtitle;
-	private TextBounds b = null;
+	private final GlyphLayout layout = new GlyphLayout();
+	
+	private float fontX = 0;
 
 	public TextManagerUI(SceneScreen sceneScreen) {
 		this.sceneScreen = sceneScreen;
 		setTouchable(Touchable.disabled);
 		style = sceneScreen.getUI().getSkin().get(TextManagerUIStyle.class);
-		style.font.setMarkupEnabled(true);
+		style.font.getData().markupEnabled = true;
 		setVisible(false);
 	}
 
@@ -81,40 +80,41 @@ public class TextManagerUI extends Actor {
 
 				unprojectTmp.set(posx, posy, 0);
 				World.getInstance().getSceneCamera().scene2screen(sceneScreen.getViewport(), unprojectTmp);
+				
+				if (currentSubtitle.type == Text.Type.TALK) {
+					layout.setText(style.font, currentSubtitle.str, currentSubtitle.color, maxTalkWidth, Align.center, true);
+				} else {
+					layout.setText(style.font, currentSubtitle.str, currentSubtitle.color, maxRectangleWidth, Align.center, true);
+				}
 
-				if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE)
-					posx = TextUtils.getCenterX(style.font, currentSubtitle.str, maxRectangleWidth, (int) sceneScreen
-							.getViewport().getScreenWidth());
-				else
+				if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE) {					
+					posx = (sceneScreen.getViewport().getScreenWidth() - layout.width)/2;
+					fontX = (sceneScreen.getViewport().getScreenWidth() - maxRectangleWidth)/2;
+				} else {
 					posx = unprojectTmp.x;
+				}
 
-				if (posy == TextManager.POS_CENTER)
-					posy = TextUtils.getCenterY(style.font, currentSubtitle.str, maxRectangleWidth, (int) sceneScreen
-							.getViewport().getScreenHeight());
-				else if (posy == TextManager.POS_SUBTITLE)
-					posy = TextUtils.getSubtitleY(style.font, currentSubtitle.str, maxRectangleWidth, (int) sceneScreen
-							.getViewport().getScreenHeight());
-				else
+				if (posy == TextManager.POS_CENTER) {
+					posy = (sceneScreen.getViewport().getScreenHeight() - layout.height)/2;
+				} else if (posy == TextManager.POS_SUBTITLE) {
+					posy = sceneScreen.getViewport().getScreenHeight() - layout.height - DPIUtils.getMarginSize() * 4;
+				} else {
 					posy = unprojectTmp.y;
+				}
 
 				setPosition(posx - PADDING, posy - PADDING);
 
 				if (currentSubtitle.type == Text.Type.TALK) {
-					b = style.font.getWrappedBounds(currentSubtitle.str, maxTalkWidth);
-
 					if (style.talkBubble != null) {
 						setY(getY() + DPIUtils.getTouchMinSize() / 3 + PADDING);
 					}
 					
-					setX(getX() - (b.width) / 2);
-
-				} else {
-					b = style.font.getWrappedBounds(currentSubtitle.str, maxRectangleWidth);
+					setX(getX() - layout.width / 2);
+					
+					fontX = posx - maxTalkWidth / 2;
 				}
 
-				setSize(b.width + PADDING * 2, b.height + PADDING * 2);
-
-				style.font.setColor(currentSubtitle.color);
+				setSize(layout.width + PADDING * 2, layout.height + PADDING * 2);
 				
 				// check if the text exits the screen
 				if (getX() < 0) {
@@ -162,8 +162,7 @@ public class TextManagerUI extends Actor {
 			}
 		}
 
-		style.font.drawWrapped(batch, subtitle.str, getX() + PADDING, getY() + PADDING + b.height,
-				getWidth() - PADDING * 2, HAlignment.CENTER);
+		style.font.draw(batch, layout, fontX, getY() + PADDING + layout.height);
 	}
 
 	public void resize(int width, int height) {	

@@ -27,7 +27,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
@@ -88,6 +88,8 @@ public class ScnWidget extends Widget {
 	private WalkZoneWindow walkZoneWindow;
 
 	private boolean showWalkZone;
+	
+	private final GlyphLayout textLayout = new GlyphLayout();
 	
 	/**
 	 * The NOTIFY_PROJECT_LOADED listener is called from other thread.
@@ -328,12 +330,13 @@ public class ScnWidget extends Widget {
 			screenToWorldCoords(coords);
 			String str = MessageFormat.format("({0}, {1})", (int) coords.x,
 					(int) coords.y);
-
-			TextBounds bounds2 = defaultFont.getBounds(str);
+			
+			textLayout.setText(defaultFont, str);
+			
 			RectangleRenderer.draw((SpriteBatch) batch, 0f, getY()
-					+ getHeight() - bounds2.height - 15, bounds2.width + 10,
-					bounds2.height + 10, BLACK_TRANSPARENT);
-			defaultFont.draw(batch, str, 5, getHeight() + getY() - 10);
+					+ getHeight() - textLayout.height - 15, textLayout.width + 10,
+					textLayout.height + 10, BLACK_TRANSPARENT);
+			defaultFont.draw(batch, textLayout, 5, getHeight() + getY() - 10);
 
 			batch.setColor(tmp);
 
@@ -371,9 +374,11 @@ public class ScnWidget extends Widget {
 			} else {
 				s = "THERE ARE NO SCENES IN THIS CHAPTER YET";
 			}
+			
+			textLayout.setText(bigFont, s);
 
-			bigFont.draw(batch, s,
-					(getWidth() - bigFont.getBounds(s).width) / 2, getHeight()
+			bigFont.draw(batch, textLayout,
+					(getWidth() - textLayout.width) / 2, getHeight()
 							/ 2 + bigFont.getLineHeight() * 3);
 
 		}
@@ -393,31 +398,33 @@ public class ScnWidget extends Widget {
 		worldToScreenCoords(tmp2V2);
 		
 		String s = "100%";
-		TextBounds tb = defaultFont.getBounds(s);
 		
-		float posx = tmp2V2.x - tb.width - 20;
+		textLayout.setText(defaultFont, s);
+		
+		float posx = tmp2V2.x - textLayout.width - 20;
 		
 		RectangleRenderer.draw((SpriteBatch) batch, posx, tmp2V2.y,
-				tb.width + margin * 2, tb.height + margin * 2, Color.BLACK);
+				textLayout.width + margin * 2, textLayout.height + margin * 2, Color.BLACK);
 		RectangleRenderer.draw((SpriteBatch) batch, tmp2V2.x-20, tmp2V2.y,
 				20 , 2, Color.BLACK);
 		
-		defaultFont.draw(batch, s, posx + margin, tmp2V2.y + tb.height + margin);
+		defaultFont.draw(batch, textLayout, posx + margin, tmp2V2.y + textLayout.height + margin);
 		
 		tmp2V2.x = 0;
 		tmp2V2.y = d.x ;
 		worldToScreenCoords(tmp2V2);
 		s="0%";
-		tb = defaultFont.getBounds(s);
 		
-		posx = tmp2V2.x - tb.width - 20;
+		textLayout.setText(defaultFont, s);
+		
+		posx = tmp2V2.x - textLayout.width - 20;
 		
 		RectangleRenderer.draw((SpriteBatch) batch, posx, tmp2V2.y,
-				tb.width + margin * 2, tb.height + margin * 2, Color.BLACK);
+				textLayout.width + margin * 2, textLayout.height + margin * 2, Color.BLACK);
 		RectangleRenderer.draw((SpriteBatch) batch, tmp2V2.x-20, tmp2V2.y,
 				20 , 2, Color.BLACK);
 		
-		defaultFont.draw(batch, s, posx + margin, tmp2V2.y + tb.height + margin);
+		defaultFont.draw(batch, textLayout, posx + margin, tmp2V2.y + textLayout.height + margin);
 		
 	}
 

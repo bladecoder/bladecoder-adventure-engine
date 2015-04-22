@@ -18,14 +18,15 @@ package com.bladecoder.engineeditor.utils;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
-import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.utils.Align;
 
 public class Message extends Label {
 	static public float fadeDuration = 0.4f;
@@ -63,9 +64,11 @@ public class Message extends Label {
 		
 		setText(text);
 		
-		TextBounds bounds2 = getStyle().font.getWrappedBounds(text, stage.getWidth() * .8f);
+		GlyphLayout textLayout = new GlyphLayout();
 		
-		setSize(bounds2.width + bounds2.height, bounds2.height  + bounds2.height * 2);
+		textLayout.setText(getStyle().font, text, Color.BLACK, stage.getWidth() * .8f, Align.center, true);
+		
+		setSize(textLayout.width + textLayout.height, textLayout.height  + textLayout.height * 2);
 
 		stage.addActor(this);
 		setPosition(Math.round((stage.getWidth() - getWidth()) / 2), Math.round((stage.getHeight() - getHeight()) / 2));

@@ -18,8 +18,8 @@ package com.bladecoder.engineeditor.ui.components;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -123,15 +123,22 @@ public class CustomList<T> extends Widget implements Cullable {
 		final Drawable selectedDrawable = style.selection;
 		
 		cellRenderer.layout(style);
+		
+		
+		GlyphLayout textLayout = new GlyphLayout();
 
 		prefWidth = 0;
 		for (int i = 0; i < items.size; i++) {
-			TextBounds bounds = font.getBounds(cellRenderer.getCellTitle(items.get(i)));
-			prefWidth = Math.max(bounds.width, prefWidth);
+			
+			textLayout.setText(font, cellRenderer.getCellTitle(items.get(i)));
+			
+			prefWidth = Math.max(textLayout.width, prefWidth);
 			
 			if(cellRenderer.hasSubtitle()) {
-				bounds = font.getBounds(cellRenderer.getCellSubTitle(items.get(i)));
-				prefWidth = Math.max(bounds.width, prefWidth);
+				
+				textLayout.setText(font, cellRenderer.getCellSubTitle(items.get(i)));
+
+				prefWidth = Math.max(textLayout.width, prefWidth);
 			}
 			
 			if(cellRenderer.hasImage()) {

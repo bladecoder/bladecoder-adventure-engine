@@ -18,7 +18,7 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -43,6 +43,10 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 	private final SceneScreen sceneScreen;
 	
 	private int viewportWidth, viewportHeight;
+	
+	private final GlyphLayout layout = new GlyphLayout();
+	
+	private String desc = null;
 
 	public PieMenu(SceneScreen scr) {
 		sceneScreen = scr;
@@ -105,23 +109,18 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		// DRAW TARGET DESCRIPTION
 		String desc = baseActor.getDesc();
 
-		if (desc != null) {
-
-			if (desc.charAt(0) == '@')
-				desc = I18N.getString(desc.substring(1));
-					
-			TextBounds b = font.getBounds(desc);
+		if (desc != null) {			
 			float margin = DPIUtils.UI_SPACE;
 
-			float textX = x - b.width / 2;
-			float textY = y - b.height - DPIUtils.UI_SPACE;
+			float textX = x - layout.width / 2;
+			float textY = y - layout.height - DPIUtils.UI_SPACE;
 
 			if (textX < 0)
 				textX = 0;
 
-			RectangleRenderer.draw(batch, textX - margin, textY - b.height - margin,
-					b.width + margin*2, b.height + margin*2, Color.BLACK);
-			font.draw(batch, desc, textX, textY);
+			RectangleRenderer.draw(batch, textX - margin, textY - layout.height - margin,
+					layout.width + margin*2, layout.height + margin*2, Color.BLACK);
+			font.draw(batch, layout, textX, textY);
 		}
 	}
 
@@ -135,6 +134,18 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		this.x = x;
 		this.y = y;
 		baseActor = a;
+		
+		// DRAW TARGET DESCRIPTION
+		desc = baseActor.getDesc();
+
+		if (desc != null) {
+
+			if (desc.charAt(0) == '@')
+				desc = I18N.getString(desc.substring(1));
+					
+			layout.setText(font, desc);
+		}
+		
 		Actor rightButton;
 
 		if (a.getVerb("talkto") != null) {

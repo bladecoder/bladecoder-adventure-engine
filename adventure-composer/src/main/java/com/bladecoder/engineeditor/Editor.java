@@ -30,7 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engineeditor.model.Project;
@@ -71,7 +71,7 @@ public class Editor implements ApplicationListener {
 		Ctx.assetManager = new EditorAssetManager();
 
 		scnEditor = new ScnEditor(skin);
-		skin.getFont("default-font").setMarkupEnabled(true);
+		skin.getFont("default-font").getData().markupEnabled = true;
 
 		/*** STAGE SETUP ***/
 		stage = new Stage(new ScreenViewport());

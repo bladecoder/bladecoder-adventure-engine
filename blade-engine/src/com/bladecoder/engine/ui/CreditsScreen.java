@@ -26,20 +26,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.TextUtils;
 
 public class CreditsScreen implements BladeScreen, InputProcessor {
 
@@ -61,6 +63,8 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 	private final HashMap<String, Texture> images = new HashMap<String, Texture>();
 	
 	private Viewport viewport;
+	
+	private final GlyphLayout layout = new GlyphLayout();
 
 	public CreditsScreen() {
 	}
@@ -101,7 +105,7 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 			if(type == 't') {				
 				y -= style.titleFont.getLineHeight() * 2;
 				
-				TextUtils.drawCenteredScreenX(batch, style.titleFont, s, y, width);
+				drawCenteredScreenX(batch, style.titleFont, s, y, width);
 				y -= style.titleFont.getLineHeight();
 				
 				if (y > height + style.titleFont.getLineHeight()) {
@@ -134,7 +138,7 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 				music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset("music/" + s));
 				music.play();
 			} else {
-				TextUtils.drawCenteredScreenX(batch, style.font, s, y, width);
+				drawCenteredScreenX(batch, style.font, s, y, width);
 				y -= style.font.getLineHeight();
 				
 				if (y > height + style.font.getLineHeight()) {
@@ -289,6 +293,18 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 	@Override
 	public void setUI(UI ui) {
 		this.ui = ui;
+	}
+	
+	public void drawCenteredScreenX(SpriteBatch batch, BitmapFont font, CharSequence str, float y, 
+			int viewportWidth) {
+
+		float x = 0;
+		
+		layout.setText(font, str, Color.WHITE, viewportWidth, Align.center, true);
+		
+		//x = (viewportWidth - layout.width)/2;
+		
+		font.draw(batch, layout, x, y);
 	}
 	
 	/** The style for the CreditsScreen */

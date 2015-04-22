@@ -19,7 +19,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -52,6 +52,8 @@ public class Pointer {
 	private float pointerScale;
 	private float leaveRotation = 0f;
 //	private Skin skin;
+	
+	private final GlyphLayout layout = new GlyphLayout();
 
 	public Pointer(Skin skin) {
 //		this.skin = skin;
@@ -91,9 +93,14 @@ public class Pointer {
 
 	public void setDesc(String s) {
 		desc = s;
+		
+		if (desc != null) {
 
-		if (desc != null && desc.charAt(0) == '@')
-			desc = I18N.getString(desc.substring(1));
+			if (desc.charAt(0) == '@')
+				desc = I18N.getString(desc.substring(1));
+					
+			layout.setText(font, desc);
+		}
 	}
 
 	private void getInputUnproject(Viewport v, Vector2 out) {
@@ -108,18 +115,17 @@ public class Pointer {
 
 		// DRAW TARGET DESCRIPTION
 		if (desc != null) {
-			TextBounds b = font.getBounds(desc);
 			float margin = DPIUtils.UI_SPACE;
 
-			float textX = mousepos.x - b.width / 2;
-			float textY = mousepos.y + b.height + DPIUtils.UI_SPACE + DPIUtils.getTouchMinSize();
+			float textX = mousepos.x - layout.width / 2;
+			float textY = mousepos.y + layout.height + DPIUtils.UI_SPACE + DPIUtils.getTouchMinSize();
 
 			if (textX < 0)
 				textX = 0;
 
-			RectangleRenderer.draw(batch, textX - margin, textY - b.height - margin,
-					b.width + margin*2, b.height + margin*2, Color.BLACK);
-			font.draw(batch, desc, textX, textY);
+			RectangleRenderer.draw(batch, textX - margin, textY - layout.height - margin,
+					layout.width + margin*2, layout.height + margin*2, Color.BLACK);
+			font.draw(batch, layout, textX, textY);
 		}
 
 		if (draggingRenderer == null) {

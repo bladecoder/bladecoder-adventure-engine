@@ -108,7 +108,7 @@ public abstract class EditDialog extends Dialog {
 	}
 
 	public void setTitle(String title) {
-		super.setTitle(title);
+		getTitleLabel().setText(title);
 	}
 
 	public boolean isCancel() {

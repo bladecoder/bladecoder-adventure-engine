@@ -21,7 +21,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -82,6 +82,8 @@ public class SceneScreen implements BladeScreen {
 	};
 
 	private UIStates state = UIStates.SCENE_MODE;
+	
+	private final GlyphLayout textLayout = new GlyphLayout();
 
 	private final GestureDetector inputProcessor = new GestureDetector(new GestureDetector.GestureListener() {
 		@Override
@@ -503,10 +505,10 @@ public class SceneScreen implements BladeScreen {
 
 			String strDebug = sb.toString();
 
-			TextBounds b = ui.getSkin().getFont("debug").getBounds(strDebug);
-			RectangleRenderer.draw(batch, 0, viewport.getScreenHeight() - b.height - 10, b.width, b.height + 10,
+			textLayout.setText(ui.getSkin().getFont("debug"), strDebug);
+			RectangleRenderer.draw(batch, 0, viewport.getScreenHeight() - textLayout.height - 10, textLayout.width, textLayout.height + 10,
 					Color.BLACK);
-			ui.getSkin().getFont("debug").draw(batch, strDebug, 0, viewport.getScreenHeight());
+			ui.getSkin().getFont("debug").draw(batch, textLayout, 0, viewport.getScreenHeight());
 
 			// Draw actor states when debug
 			if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
@@ -572,15 +574,15 @@ public class SceneScreen implements BladeScreen {
 				String desc = a.getDesc();
 				if (desc.charAt(0) == '@')
 					desc = I18N.getString(desc.substring(1));
+				
+				textLayout.setText(font, desc);
 
-				TextBounds b = font.getBounds(desc);
-
-				float textX = unprojectTmp.x - b.width / 2;
-				float textY = unprojectTmp.y + b.height;
+				float textX = unprojectTmp.x - textLayout.width / 2;
+				float textY = unprojectTmp.y + textLayout.height;
 
 				RectangleRenderer
-						.draw(batch, textX - 8, textY - b.height - 8, b.width + 16, b.height + 16, Color.BLACK);
-				font.draw(batch, desc, textX, textY);
+						.draw(batch, textX - 8, textY - textLayout.height - 8, textLayout.width + 16, textLayout.height + 16, Color.BLACK);
+				font.draw(batch, textLayout, textX, textY);
 			}
 		}
 	}
