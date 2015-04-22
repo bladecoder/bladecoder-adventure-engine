@@ -4,8 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.7.2]
 ### Added
-- Backround images must be in atlas now
+- libgdx v1.5.6 update
+- update to the latest spine libgdx runtime
+- Composer: Enable/disable actions
+- Backround images must be inside atlas now
 - Added control actions
 - Added ActorAttrAction
 - GotoAction: Change margin. 
