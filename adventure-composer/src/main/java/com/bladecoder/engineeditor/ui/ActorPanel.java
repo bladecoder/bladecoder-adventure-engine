@@ -85,7 +85,7 @@ public class ActorPanel extends HeaderPanel {
 						}
 						
 						faList.addElements(doc, a, "animation");
-						verbList.addElements(doc, a, "verb");
+						verbList.changeActor(doc, a);
 						dialogList.addElements(doc, a, "dialog");
 						soundList.addElements(doc, a, "sound");
 						props.setActorDocument(doc, a);

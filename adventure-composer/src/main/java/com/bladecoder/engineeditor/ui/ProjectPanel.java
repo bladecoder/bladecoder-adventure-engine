@@ -30,7 +30,7 @@ public class ProjectPanel extends HeaderPanel  {
 
 	private TabPanel tabPanel;
 	private SceneList sceneList;
-	private VerbList verbList;
+//	private VerbList verbList;
 	private ChapterList chapterList;
 	
 	
@@ -39,15 +39,17 @@ public class ProjectPanel extends HeaderPanel  {
 		
 		tabPanel = new TabPanel(skin);
 		sceneList = new SceneList(skin);
-		verbList = new VerbList(skin);
+//		verbList = new VerbList(skin);
 		chapterList = new ChapterList(skin);
 	
 		setContent(tabPanel);
 		
 		tabPanel.addTab("Scenes", sceneList);
 		tabPanel.addTab("Chapters", chapterList);
-		tabPanel.addTab("Verbs", verbList);
-		tabPanel.addTab("Properties", new WorldProps(skin));
+//		tabPanel.addTab("Verbs", verbList);
+//		tabPanel.addTab("Properties", new WorldProps(skin));
+		tabPanel.addTab("Assets", new AssetsList(skin));
+		tabPanel.addTab("Resolutions", new ResolutionList(skin));
 
 
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED, new PropertyChangeListener() {
@@ -57,7 +59,7 @@ public class ProjectPanel extends HeaderPanel  {
 				ChapterDocument selectedChapter = Ctx.project.getSelectedChapter();
 				
 				sceneList.addElements(selectedChapter, selectedChapter.getElement(), "scene");
-				verbList.addElements(w, w.getElement(), "verb");
+//				verbList.addElements(w, w.getElement(), "verb");
 				chapterList.addElements(w);
 				setTile("ADVENTURE - " + (Ctx.project.getTitle() != null? Ctx.project.getTitle():""));
 			}
