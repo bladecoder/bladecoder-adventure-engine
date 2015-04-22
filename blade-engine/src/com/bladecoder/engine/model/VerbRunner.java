@@ -42,7 +42,6 @@ public interface VerbRunner extends ActionCallback {
 
 	/**
 	 * Return the current action pointer
-	 * @return
 	 */
 	public int getIP();
 	

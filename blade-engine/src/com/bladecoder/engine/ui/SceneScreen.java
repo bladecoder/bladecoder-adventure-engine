@@ -426,7 +426,6 @@ public class SceneScreen implements BladeScreen {
 	
 	/**
 	 * Calcs the rotation based in the actor screen position
-	 * @return
 	 */
 	private float calcLeaveArrowRotation() {
 
