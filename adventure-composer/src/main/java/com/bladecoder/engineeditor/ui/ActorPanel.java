@@ -69,7 +69,7 @@ public class ActorPanel extends HeaderPanel {
 							tabPanel.addTab("Sounds", soundList);
 
 							tabPanel.addTab("Dialogs", dialogList);
-							tabPanel.addTab("Properties", props);
+							tabPanel.addTab("Actor Props", props);
 							setTile("ACTOR " + doc.getId(a));
 
 							// select previous selected tab

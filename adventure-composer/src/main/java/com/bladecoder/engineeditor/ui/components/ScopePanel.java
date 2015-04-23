@@ -50,9 +50,9 @@ abstract public class ScopePanel extends Table {
 		addButton(SCENE_SCOPE);
 		addButton(ACTOR_SCOPE);
 		
-		add(hPanel).expandX().fillX().left();
+		add(hPanel).expandX().fillX().center();
 		
-		changeScope(buttonGroup.getButtons().get(2));
+		buttonGroup.getButtons().get(2).setChecked(true);
 	}
 	
 	private void addButton(String name) {

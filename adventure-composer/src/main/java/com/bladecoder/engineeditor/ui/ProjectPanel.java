@@ -47,7 +47,7 @@ public class ProjectPanel extends HeaderPanel  {
 		tabPanel.addTab("Scenes", sceneList);
 		tabPanel.addTab("Chapters", chapterList);
 //		tabPanel.addTab("Verbs", verbList);
-//		tabPanel.addTab("Properties", new WorldProps(skin));
+		tabPanel.addTab("Game Props", new WorldProps(skin));
 		tabPanel.addTab("Assets", new AssetsList(skin));
 		tabPanel.addTab("Resolutions", new ResolutionList(skin));
 

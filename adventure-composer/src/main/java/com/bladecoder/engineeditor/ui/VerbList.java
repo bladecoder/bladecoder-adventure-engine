@@ -38,8 +38,7 @@ public class VerbList extends ElementList {
 
 	private ActionList actionList;
 	
-	private Element actorElement;
-	private Element worldElement;
+	private Element sceneElement;
 	
 	private BaseDocument worldDocument;
 	private BaseDocument chapterDocument;
@@ -56,11 +55,11 @@ public class VerbList extends ElementList {
 			@Override
 			public void scopeChanged(String scope) {
 				if(WORLD_SCOPE.equals(scope))
-					addElements(worldDocument, worldElement, "verb");
+					addElements(worldDocument, worldDocument.getElement(), "verb");
 				else if(SCENE_SCOPE.equals(scope))
-					addElements(chapterDocument, (Element)actorElement.getParentNode().getParentNode(), "verb");
+					addElements(chapterDocument, sceneElement == null ? null: (Element)sceneElement.getParentNode(), "verb");
 				else if(ACTOR_SCOPE.equals(scope))
-					addElements(chapterDocument, (Element)actorElement.getParentNode(), "verb");
+					addElements(chapterDocument, sceneElement, "verb");
 			}
 		};
 		
@@ -88,13 +87,10 @@ public class VerbList extends ElementList {
 		container.maxHeight(listCellRenderer.getItemHeight() * 5);
 	}
 	
-	public void changeActor(BaseDocument doc, Element parent) {
-		
-//		sceneElement = parent;
-//		worldElement = ;
-//		
-//		worldDocument = Ctx.project.getWorld();
+	public void changeActor(BaseDocument doc, Element parent) {	
+		worldDocument = Ctx.project.getWorld();
 		chapterDocument = doc;
+		sceneElement = parent;
 		scopePanel.scopeChanged(scopePanel.getScope());
 	}
 
