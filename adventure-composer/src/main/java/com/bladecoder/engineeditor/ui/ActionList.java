@@ -424,6 +424,9 @@ public class ActionList extends ElementList {
 			} else if (animationAction) {
 				String a = e.getAttribute("animation");
 				String[] s = Param.parseString2(a);
+				
+				if(s[0] == null)
+					s[0] = actor;
 
 				if (s[0] != null)
 					id = MessageFormat.format("{0}.{1} [GREEN]{2}[]", s[0], id,
