@@ -30,7 +30,7 @@ import com.bladecoder.engineeditor.ui.components.TabPanel;
 public class ScenePanel extends HeaderPanel {
 	
 	private TabPanel tabPanel;
-	private VerbList verbList;	
+//	private VerbList verbList;	
 	private ActorList actorList;
 	private LayerList layerList;
 	private SceneProps sceneProps;
@@ -38,7 +38,7 @@ public class ScenePanel extends HeaderPanel {
 	public ScenePanel(Skin skin) {
 		super(skin, "SCENE");		
 		tabPanel = new TabPanel(skin);
-		verbList = new VerbList(skin);
+//		verbList = new VerbList(skin);
 		actorList = new ActorList(skin);
 		layerList = new LayerList(skin);
 		sceneProps = new SceneProps(skin);
@@ -46,9 +46,9 @@ public class ScenePanel extends HeaderPanel {
 		setContent(tabPanel);		
 		
 		tabPanel.addTab("Actors", actorList);
-		tabPanel.addTab("Verbs", verbList);
+//		tabPanel.addTab("Verbs", verbList);
 		tabPanel.addTab("Layers", layerList);
-		tabPanel.addTab("Properties", sceneProps);
+		tabPanel.addTab("Scene Props", sceneProps);
 		
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_SCENE_SELECTED, new PropertyChangeListener() {
 			@Override
@@ -63,7 +63,7 @@ public class ScenePanel extends HeaderPanel {
 				}
 				
 				actorList.addElements(doc, scn, "actor");
-				verbList.addElements(doc, scn, "verb");	
+//				verbList.addElements(doc, scn, "verb");	
 				layerList.addElements(doc, scn, "layer");		
 				sceneProps.setSceneDocument(doc, scn);
 				

@@ -36,7 +36,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.scneditor.ScnEditor;
 import com.bladecoder.engineeditor.ui.ActorPanel;
-import com.bladecoder.engineeditor.ui.AssetPanel;
 import com.bladecoder.engineeditor.ui.ProjectPanel;
 import com.bladecoder.engineeditor.ui.ProjectToolbar;
 import com.bladecoder.engineeditor.ui.ScenePanel;
@@ -83,8 +82,8 @@ public class Editor implements ApplicationListener {
 
 		Table rightPanel = new Table();
 		rightPanel.top().left();
-		rightPanel.add(scenePanel).expand().fill();
-		rightPanel.row();
+//		rightPanel.add(scenePanel).expand().fill();
+//		rightPanel.row();
 		rightPanel.add(actorPanel).expand().fill();
 
 		SplitPane splitPaneRight = new SplitPane(scnEditor, rightPanel,
@@ -92,7 +91,7 @@ public class Editor implements ApplicationListener {
 
 		// LEFT PANEL
 		ProjectPanel projectPanel = new ProjectPanel(skin);
-		AssetPanel assetPanel = new AssetPanel(skin);
+//		AssetPanel assetPanel = new AssetPanel(skin);
 		Image img = new Image(Ctx.assetManager.getIcon("title"));
 		img.setScaling(Scaling.none);
 		img.setAlign(Align.left);
@@ -105,7 +104,7 @@ public class Editor implements ApplicationListener {
 		leftPanel.row();
 		leftPanel.add(projectPanel).expand().fill();
 		leftPanel.row();
-		leftPanel.add(assetPanel).expand().fill();
+		leftPanel.add(scenePanel).expand().fill();
 
 		SplitPane splitPaneLeft = new SplitPane(leftPanel, splitPaneRight,
 				false, skin);

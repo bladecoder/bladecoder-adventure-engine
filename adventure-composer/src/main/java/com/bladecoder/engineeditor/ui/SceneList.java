@@ -61,6 +61,7 @@ public class SceneList extends ElementList {
 	private ImageButton initBtn;
 	private SelectBox<String> chapters;
 	private HashMap<String, TextureRegion> bgIconCache = new HashMap<String, TextureRegion>();
+	private boolean disposeBgCache = false;
 
 	public SceneList(Skin skin) {
 		super(skin, true);
@@ -119,7 +120,7 @@ public class SceneList extends ElementList {
 					public void propertyChange(PropertyChangeEvent arg0) {
 						toolbar.disableCreate(Ctx.project.getProjectDir() == null);
 
-						dispose();
+						disposeBgCache = true;
 						addChapters();
 					}
 				});
@@ -166,6 +167,7 @@ public class SceneList extends ElementList {
 				}
 
 				try {
+					
 					if(selChapter != null)
 						Ctx.project.loadChapter(selChapter);
 					
@@ -232,6 +234,14 @@ public class SceneList extends ElementList {
 	}
 	
 	public TextureRegion getBgIcon(String atlas, String region) {
+		
+		// check here for dispose instead in project loading because the opengl context lost in new project thread		
+		if(disposeBgCache) {
+			dispose();
+			disposeBgCache = false;
+		}
+		
+		
 		String s = atlas + "#" + region;
 		TextureRegion icon = bgIconCache.get(s);
 		

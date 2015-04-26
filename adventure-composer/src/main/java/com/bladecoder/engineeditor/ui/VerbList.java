@@ -28,6 +28,7 @@ import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ElementList;
+import com.bladecoder.engineeditor.ui.components.ScopePanel;
 
 
 public class VerbList extends ElementList {
@@ -36,12 +37,40 @@ public class VerbList extends ElementList {
 		"test", "custom" };
 
 	private ActionList actionList;
+	
+	private Element sceneElement;
+	
+	private BaseDocument worldDocument;
+	private BaseDocument chapterDocument;
+	
+	private ScopePanel scopePanel;
 
 	public VerbList(Skin skin) {
 		super(skin, true);
+		
+		clearChildren();
+		
+		scopePanel = new ScopePanel(skin) {
+			
+			@Override
+			public void scopeChanged(String scope) {
+				if(WORLD_SCOPE.equals(scope))
+					addElements(worldDocument, worldDocument.getElement(), "verb");
+				else if(SCENE_SCOPE.equals(scope))
+					addElements(chapterDocument, sceneElement == null ? null: (Element)sceneElement.getParentNode(), "verb");
+				else if(ACTOR_SCOPE.equals(scope))
+					addElements(chapterDocument, sceneElement, "verb");
+			}
+		};
+		
+		add(scopePanel).expandX().fillX();
+		row();
+		add(toolbar).expandX().fillX();
+		row().fill();
+		add(container).expandY().fill();
+		
 		actionList = new ActionList(skin);
 		
-//		addActor(actionList);
 		row();
 		add(actionList).expand().fill();
 
@@ -53,6 +82,16 @@ public class VerbList extends ElementList {
 		});
 
 		list.setCellRenderer(listCellRenderer);
+		listCellRenderer.layout(list.getStyle());
+		container.minHeight(listCellRenderer.getItemHeight() * 5);
+		container.maxHeight(listCellRenderer.getItemHeight() * 5);
+	}
+	
+	public void changeActor(BaseDocument doc, Element parent) {	
+		worldDocument = Ctx.project.getWorld();
+		chapterDocument = doc;
+		sceneElement = parent;
+		scopePanel.scopeChanged(scopePanel.getScope());
 	}
 
 	@Override

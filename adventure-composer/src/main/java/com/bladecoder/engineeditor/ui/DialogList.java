@@ -62,6 +62,9 @@ public class DialogList extends ElementList {
 		});
 		
 		list.setCellRenderer(listCellRenderer);
+		listCellRenderer.layout(list.getStyle());
+		container.minHeight(listCellRenderer.getItemHeight() * 5);
+		container.maxHeight(listCellRenderer.getItemHeight() * 5);
     }
     
     
