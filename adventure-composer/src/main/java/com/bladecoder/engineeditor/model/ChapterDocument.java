@@ -29,6 +29,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
+import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.ActorRenderer;
@@ -416,6 +417,12 @@ public class ChapterDocument extends BaseDocument {
 
 		if (type.equals(XMLConstants.ATLAS_VALUE)) {
 			fa = new AtlasAnimationDesc();
+		} else if (type.equals(XMLConstants.SPINE_VALUE)) {
+			fa = new SpineAnimationDesc();
+			
+			if (!faElement.getAttribute(XMLConstants.ATLAS_VALUE).isEmpty()) {
+				((SpineAnimationDesc)fa).atlas = faElement.getAttribute(XMLConstants.ATLAS_VALUE);
+			}
 		} else {
 			fa = new AnimationDesc();
 		}

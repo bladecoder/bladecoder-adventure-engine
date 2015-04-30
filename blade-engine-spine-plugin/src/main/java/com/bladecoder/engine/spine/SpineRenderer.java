@@ -33,6 +33,7 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
@@ -91,6 +92,7 @@ public class SpineRenderer implements ActorRenderer {
 		int refCounter;
 		Skeleton skeleton;
 		AnimationState animation;
+		String atlas;
 	}
 
 	public SpineRenderer() {
@@ -196,10 +198,10 @@ public class SpineRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public String[] getInternalAnimations(String source) {
-		retrieveSource(source);
+	public String[] getInternalAnimations(AnimationDesc anim) {
+		retrieveSource(anim.source, ((SpineAnimationDesc)anim).atlas);
 
-		Array<Animation> animations = sourceCache.get(source).skeleton.getData().getAnimations();
+		Array<Animation> animations = sourceCache.get(anim.source).skeleton.getData().getAnimations();
 		String[] result = new String[animations.size];
 
 		for (int i = 0; i < animations.size; i++) {
@@ -305,7 +307,7 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public void startAnimation(String id, int repeatType, int count, ActionCallback cb) {
-		AnimationDesc fa = getAnimation(id);
+		SpineAnimationDesc fa = (SpineAnimationDesc)getAnimation(id);
 
 		if (fa == null) {
 			EngineLogger.error("AnimationDesc not found: " + id);
@@ -323,10 +325,10 @@ public class SpineRenderer implements ActorRenderer {
 
 		// If the source is not loaded. Load it.
 		if (currentSource == null || currentSource.refCounter < 1) {
-			loadSource(fa.source);
+			loadSource(fa.source, fa.atlas);
 			EngineAssetManager.getInstance().finishLoading();
 
-			retrieveSource(fa.source);
+			retrieveSource(fa.source, fa.atlas);
 
 			currentSource = sourceCache.get(fa.source);
 
@@ -535,33 +537,34 @@ public class SpineRenderer implements ActorRenderer {
 		return fa;
 	}
 
-	private void loadSource(String source) {
+	private void loadSource(String source, String atlas) {
 		SkeletonCacheEntry entry = sourceCache.get(source);
 
 		if (entry == null) {
 			entry = new SkeletonCacheEntry();
+			entry.atlas = atlas;
 			sourceCache.put(source, entry);
-		}
+		} 
 
 		if (entry.refCounter == 0)
-			EngineAssetManager.getInstance().loadAtlas(source);
+			EngineAssetManager.getInstance().loadAtlas(atlas==null?source:atlas);
 
 		entry.refCounter++;
 	}
 
-	private void retrieveSource(String source) {
+	private void retrieveSource(String source, String atlas) {
 		SkeletonCacheEntry entry = sourceCache.get(source);
 
 		if (entry == null || entry.refCounter < 1) {
-			loadSource(source);
+			loadSource(source, atlas);
 			EngineAssetManager.getInstance().finishLoading();
 			entry = sourceCache.get(source);
 		}
 
 		if (entry.skeleton == null) {
-			TextureAtlas atlas = EngineAssetManager.getInstance().getTextureAtlas(source);
+			TextureAtlas atlasTex = EngineAssetManager.getInstance().getTextureAtlas(atlas == null?source:atlas);
 
-			SkeletonBinary skel = new SkeletonBinary(atlas);
+			SkeletonBinary skel = new SkeletonBinary(atlasTex);
 			skel.setScale(EngineAssetManager.getInstance().getScale());
 			SkeletonData skeletonData = skel.readSkeletonData(EngineAssetManager.getInstance().getSpine(source));
 
@@ -594,16 +597,16 @@ public class SpineRenderer implements ActorRenderer {
 	public void loadAssets() {
 		for (AnimationDesc fa : fanims.values()) {
 			if (fa.preload)
-				loadSource(fa.source);
+				loadSource(fa.source, ((SpineAnimationDesc)fa).atlas);
 		}
 
 		if (currentAnimation != null && !currentAnimation.preload) {
-			loadSource(currentAnimation.source);
+			loadSource(currentAnimation.source, ((SpineAnimationDesc)currentAnimation).atlas);
 		} else if (currentAnimation == null && initAnimation != null) {
 			AnimationDesc fa = fanims.get(initAnimation);
 
 			if (fa != null && !fa.preload)
-				loadSource(fa.source);
+				loadSource(fa.source, ((SpineAnimationDesc)fa).atlas);
 		}
 	}
 
@@ -615,7 +618,7 @@ public class SpineRenderer implements ActorRenderer {
 
 		for (String key : sourceCache.keySet()) {
 			if (sourceCache.get(key).refCounter > 0)
-				retrieveSource(key);
+				retrieveSource(key, sourceCache.get(key).atlas);
 		}
 
 		if (currentAnimation != null) {

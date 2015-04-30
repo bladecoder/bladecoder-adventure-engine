@@ -48,7 +48,7 @@ public interface ActorRenderer extends Serializable, AssetConsumer {
 	public void setInitAnimation(String fa);
 	public String getInitAnimation();
 	
-	public String[] getInternalAnimations(String source);
+	public String[] getInternalAnimations(AnimationDesc anim);
 	public HashMap<String, AnimationDesc> getAnimations();
 	
 	public void computeBbox(Polygon bbox);

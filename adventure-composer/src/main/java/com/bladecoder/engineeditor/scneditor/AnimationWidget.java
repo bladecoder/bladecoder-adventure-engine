@@ -34,93 +34,100 @@ import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engineeditor.ui.EditAnimationDialog;
+import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class AnimationWidget extends Widget {
-	private String source;
 	private AnimationDesc fa;
 	private ActorRenderer renderer;
 	EditAnimationDialog editFADialog;
-	
 
 	public AnimationWidget(EditAnimationDialog createEditFADialog) {
 		this.editFADialog = createEditFADialog;
 	}
 
-	
-	public void setSource(String type, String source) {
-		this.source = source;
-		
-		if(renderer != null) {
+	public void setSource(String type, AnimationDesc anim) {
+		fa = anim;
+
+		if (renderer != null) {
 			renderer.dispose();
 			renderer = null;
 		}
-		
-		
-		if(type.equals(XMLConstants.S3D_VALUE)) {
+
+		if (type.equals(XMLConstants.S3D_VALUE)) {
 			renderer = new Sprite3DRenderer();
-			((Sprite3DRenderer)renderer).setSpriteSize(new Vector2( Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-		} else if(type.equals(XMLConstants.SPINE_VALUE)) {
+			((Sprite3DRenderer) renderer).setSpriteSize(new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+		} else if (type.equals(XMLConstants.SPINE_VALUE)) {
 			renderer = new SpineRenderer();
-			((SpineRenderer)renderer).enableEvents(false);
-		} else if(type.equals(XMLConstants.IMAGE_VALUE)) {
-			renderer = new ImageRenderer();			
+			((SpineRenderer) renderer).enableEvents(false);
+		} else if (type.equals(XMLConstants.IMAGE_VALUE)) {
+			renderer = new ImageRenderer();
 		} else {
 			renderer = new AtlasRenderer();
 		}
-		
+
 		renderer.loadAssets();
 		EngineAssetManager.getInstance().finishLoading();
 		renderer.retrieveAssets();
 	}
-	
+
 	public String[] getAnimations() {
-		return renderer.getInternalAnimations(source);
+
+		try {
+			return renderer.getInternalAnimations(fa);
+		} catch (Exception e) {
+			// Ctx.msg.show(getStage(),
+			// "Error loading animations from selected source", 4);
+			EditorLogger.error("Error loading animations from selected source:" + fa.source);
+			return new String[0];
+		}
+
 	}
-	
+
 	public void setAnimation(String id, String speedStr, String typeStr) {
-		if (source!=null && id != null && !source.isEmpty() && !id.isEmpty()) {
+		if (fa != null && id != null &&  !id.isEmpty()) {
 			
+			if(fa instanceof AtlasAnimationDesc)
+				((AtlasAnimationDesc) fa).regions = null;
+
 			int type = Tween.REPEAT;
 			float speed = 2.0f;
-			
-			if(!speedStr.isEmpty())
+
+			if (!speedStr.isEmpty())
 				speed = Float.parseFloat(speedStr);
-			
-			if(typeStr.equals(XMLConstants.YOYO_VALUE))
+
+			if (typeStr.equals(XMLConstants.YOYO_VALUE))
 				type = Tween.PINGPONG;
+
+			fa.id = id;
+			fa.duration = speed;
+			fa.animationType = type;
 			
-			if(renderer instanceof AtlasRenderer)
-				fa = new AtlasAnimationDesc();
-			else 
-				fa = new AnimationDesc();
-			
-			fa.set(id, source, speed, 0.0f, Tween.INFINITY, type,
-					null, null, null, false, true);
-			
+			renderer.getAnimations().clear();
+
 			renderer.addAnimation(fa);
-			
+
 			renderer.startAnimation(fa.id, Tween.FROM_FA, 1, null);
 			renderer.computeBbox(new Polygon());
 		}
 	}
-	
-	public void draw (Batch batch, float parentAlpha) {
+
+	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
-		
-		if(renderer == null || renderer.getCurrentAnimation() == null)
+
+		if (renderer == null || renderer.getCurrentAnimation() == null)
 			return;
-		
+
 		Color tmp = batch.getColor();
 		batch.setColor(Color.WHITE);
-		
+
 		renderer.update(Gdx.graphics.getDeltaTime());
-		
-		RectangleRenderer.draw((SpriteBatch)batch, getX(), getY(), getWidth(), getHeight(), Color.MAGENTA);
-		
-		float scalew =   getWidth() /  renderer.getWidth();
-		float scaleh =   getHeight() /  renderer.getHeight();
-		float scale = scalew>scaleh?scaleh:scalew;
-		renderer.draw((SpriteBatch)batch, getX() + renderer.getWidth() * scale /2, getY(), scale);
+
+		RectangleRenderer.draw((SpriteBatch) batch, getX(), getY(), getWidth(), getHeight(), Color.MAGENTA);
+
+		float scalew = getWidth() / renderer.getWidth();
+		float scaleh = getHeight() / renderer.getHeight();
+		float scale = scalew > scaleh ? scaleh : scalew;
+		renderer.draw((SpriteBatch) batch, getX() + renderer.getWidth() * scale / 2, getY(), scale);
 		batch.setColor(tmp);
 	}
 

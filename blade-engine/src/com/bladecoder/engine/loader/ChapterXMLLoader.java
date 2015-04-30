@@ -34,7 +34,9 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
+import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
@@ -553,7 +555,24 @@ public class ChapterXMLLoader extends DefaultHandler {
 			animationType = Tween.NO_REPEAT;
 		}
 
-		AtlasAnimationDesc sa = new AtlasAnimationDesc();
+		AnimationDesc sa = null;
+		
+		boolean isSpine = false;
+		
+		try {
+			isSpine = ClassReflection.isAssignableFrom(((SpriteActor) actor).getRenderer().getClass(), ClassReflection.forName("com.bladecoder.engine.spine.SpineRenderer"));
+		} catch (ReflectionException e) {
+			EngineLogger.error("Error loading XML: " + e.getMessage());
+		}
+		
+		if(((SpriteActor) actor).getRenderer() instanceof AtlasRenderer) {
+			sa = new AtlasAnimationDesc();
+		} else if(isSpine) {
+			sa = new SpineAnimationDesc();
+			((SpineAnimationDesc)sa).atlas = atts.getValue(XMLConstants.ATLAS_VALUE);
+		} else {
+			sa = new AnimationDesc();
+		}
 
 		sa.set(id, source, speed, delay, count, animationType, soundId, inD,
 				outD, preload, disposeWhenPlayed);

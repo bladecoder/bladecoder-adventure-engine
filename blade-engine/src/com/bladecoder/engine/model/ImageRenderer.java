@@ -69,8 +69,8 @@ public class ImageRenderer implements ActorRenderer {
 	}
 	
 	@Override
-	public String[] getInternalAnimations(String source) {
-		return new String[]{source.substring(0,source.lastIndexOf('.'))};
+	public String[] getInternalAnimations(AnimationDesc anim) {
+		return new String[]{anim.source.substring(0,anim.source.lastIndexOf('.'))};
 	}	
 
 

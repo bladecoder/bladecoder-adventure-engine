@@ -167,10 +167,10 @@ public class Sprite3DRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public String[] getInternalAnimations(String source) {
-		retrieveSource(source);
+	public String[] getInternalAnimations(AnimationDesc anim) {
+		retrieveSource(anim.source);
 
-		Array<Animation> animations = sourceCache.get(source).modelInstance.animations;
+		Array<Animation> animations = sourceCache.get(anim.source).modelInstance.animations;
 		String[] result = new String[animations.size];
 
 		for (int i = 0; i < animations.size; i++) {

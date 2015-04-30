@@ -77,10 +77,10 @@ public class AtlasRenderer implements ActorRenderer {
 	}
 	
 	@Override
-	public String[] getInternalAnimations(String source) {
-		retrieveSource(source);
+	public String[] getInternalAnimations(AnimationDesc anim) {
+		retrieveSource(anim.source);
 		
-		TextureAtlas atlas = EngineAssetManager.getInstance().getTextureAtlas(source);
+		TextureAtlas atlas = EngineAssetManager.getInstance().getTextureAtlas(anim.source);
 		
 		Array<AtlasRegion> animations = atlas.getRegions();
 		ArrayList<String> l = new ArrayList<String>();
