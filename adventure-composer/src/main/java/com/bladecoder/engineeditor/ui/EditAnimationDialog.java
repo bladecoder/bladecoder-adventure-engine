@@ -32,6 +32,7 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
@@ -146,6 +147,16 @@ public class EditAnimationDialog extends EditElementDialog {
 						setAnimation();
 					}
 				});
+		
+		((SelectBox<String>) inputs[ATLAS_INPUTPANEL].getField())
+		.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				setSource();
+				fillAnimations();
+			}
+		});
+		
 
 		((TextField) inputs[SPEED_INPUTPANEL].getField()).addListener(new ChangeListener() {
 			@Override
@@ -186,6 +197,19 @@ public class EditAnimationDialog extends EditElementDialog {
 		
 		if (type.equals(XMLConstants.SPINE_VALUE)) {
 			anim = new SpineAnimationDesc();
+			
+			if(spineAtlasExists(source)) {
+				((SpineAnimationDesc)anim).atlas = null;
+				setVisible(inputs[ATLAS_INPUTPANEL],false);
+			} else {
+				if(!inputs[ATLAS_INPUTPANEL].isVisible()) {
+					setVisible(inputs[ATLAS_INPUTPANEL],true);
+				}
+				
+				((SpineAnimationDesc)anim).atlas = inputs[ATLAS_INPUTPANEL].getText();
+			}
+			
+			
 		} else if (type.equals(XMLConstants.ATLAS_VALUE)) {
 			anim = new AtlasAnimationDesc();
 		} else {
@@ -198,6 +222,10 @@ public class EditAnimationDialog extends EditElementDialog {
 		anim.disposeWhenPlayed = false;	
 		
 		spriteWidget.setSource(type, anim);
+	}
+	
+	public boolean spineAtlasExists(String source) {
+		return EngineAssetManager.getInstance().assetExists(Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH + "/" + source + ".atlas");
 	}
 
 	private void setAnimation() {

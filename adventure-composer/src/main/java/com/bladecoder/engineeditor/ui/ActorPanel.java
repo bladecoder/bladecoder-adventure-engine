@@ -62,10 +62,11 @@ public class ActorPanel extends HeaderPanel {
 
 							String type = doc.getType(a);
 
+							tabPanel.addTab("Verbs", verbList);
+							
 							if (!type.equals(XMLConstants.NO_RENDERER_VALUE))
 								tabPanel.addTab("Animations", faList);
 
-							tabPanel.addTab("Verbs", verbList);
 							tabPanel.addTab("Sounds", soundList);
 
 							tabPanel.addTab("Dialogs", dialogList);
