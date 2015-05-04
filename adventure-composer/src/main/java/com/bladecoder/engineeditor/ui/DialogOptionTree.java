@@ -25,6 +25,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
@@ -56,8 +58,8 @@ public class DialogOptionTree extends EditTree {
 
 		toolbar.disableCreate(dialog == null);
 		
-//		if(tree.getRootNodes().size > 0)
-//			tree.getSelection().add(tree.getRootNodes().first());
+		if(tree.getRootNodes().size > 0)
+			tree.getSelection().add(tree.getRootNodes().first());
 	}
 
 	@Override
@@ -65,7 +67,7 @@ public class DialogOptionTree extends EditTree {
 		Element parent = dialog;
 		
 		if(!tree.getSelection().isEmpty()) {
-			Node sel = tree.getSelection().getLastSelected();
+			Node sel = tree.getSelection().first();
 
 			if(sel.getParent() != null)
 				parent = (Element)sel.getParent().getObject();
@@ -79,24 +81,54 @@ public class DialogOptionTree extends EditTree {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				Node sel = null;
+				
 				if(!tree.getSelection().isEmpty())
-					sel = tree.getSelection().getLastSelected();
+					sel = tree.getSelection().first();
 							
 				Element e = ((EditElementDialog)actor).getElement();
 				
-				Node n = createNode(e);
 				if(sel != null) {
-					sel.add(n);
+					Element prev = (Element)sel.getObject();
+					
+					org.w3c.dom.Node parent = e.getParentNode();
+					parent.removeChild(e);
+				
+					parent.replaceChild(e, prev);		
+					parent.insertBefore(prev, e);
+//					doc.setModified(e);
+				}
+				
+				
+				Node n = createNode(e);
+
+				if(sel != null) {
+					Node p = sel.getParent();
+
+					// add in the selected position
+					if( p != null) {					
+						int pos = p.getChildren().indexOf(sel, true);
+						p.insert(pos + 1, n);
+						
+//						p.add(n);
+					} else {
+						int pos = tree.getRootNodes().indexOf(sel, true);
+						tree.insert(pos + 1, n);
+						
+//						tree.add(n);
+					}
 				} else {
 					tree.add(n);
 				}
+				
+				tree.getSelection().clear();
+				tree.getSelection().add(n);
 			}			
 		});
 	}
 
 	@Override
 	public void edit() {
-		Node sel = tree.getSelection().getLastSelected();
+		Node sel = tree.getSelection().first();
 		
 		Element parent = dialog;
 				
@@ -111,7 +143,7 @@ public class DialogOptionTree extends EditTree {
 		o.setListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				Node sel = tree.getSelection().getLastSelected();
+				Node sel = tree.getSelection().first();
 				
 				updateNode(sel);
 			}		
@@ -120,15 +152,11 @@ public class DialogOptionTree extends EditTree {
 
 	@Override
 	public void delete() {
-		Node sel = tree.getSelection().getLastSelected();
+		Node sel = tree.getSelection().first();
 		Element selElement = (Element)sel.getObject();
-//		Node parentNode = sel.getParent();
-		
-//		Element parentElement = dialog;
-//		
-//		if(parentNode != null) {
-//			parentElement = (Element)parentNode.getObject();
-//		}
+		Node parentNode = sel.getParent();
+		Array<Node> siblings = getSiblings();
+		int pos = siblings.indexOf(sel, true);
 
 		doc.deleteElement(selElement);
 
@@ -136,28 +164,33 @@ public class DialogOptionTree extends EditTree {
 		I18NUtils.putTranslationsInElement(doc, clipboard);
 		toolbar.disablePaste(false);
 			
-//		Node childBefore = parent.getChildBefore(on);
-//		Node childAfter = parent.getChildAfter(on);
+		Node childBefore = pos <= 0? null: siblings.get(pos - 1);
+		Node childAfter = pos >= siblings.size ? null: siblings.get(pos +1);
 		
 		tree.remove(sel);
 		
-//		Node nextPath = null;
+		Node nextPath = null;
 		
-		// TODO Set NEXT SELECTION
+		// Set NEXT SELECTION	
+		if(childBefore != null) {
+			nextPath = childBefore;
+		} else if(childAfter != null) {
+			nextPath = childAfter;
+		} else if(parentNode != null) {
+			nextPath = parentNode;
+		}
+				
+		tree.getSelection().clear();
 		
-//		if(childBefore != null) {
-//			nextPath = new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(childBefore));
-//		} else {
-//			nextPath = new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(childAfter));
-//		}
-//				
-//		tree.expandPath(nextPath);
-//		tree.setSelectionPath(nextPath);
+		if(nextPath != null)
+			tree.getSelection().add(nextPath);
+		else if(tree.getRootNodes().size > 0)
+			tree.getSelection().add(tree.getRootNodes().first());
 	}
 
 	@Override
 	public void copy() {
-		Node sel = tree.getSelection().getLastSelected();
+		Node sel = tree.getSelection().first();
 		Element selElement = (Element)sel.getObject();
 
 		clipboard = (Element) selElement.cloneNode(true);
@@ -168,7 +201,7 @@ public class DialogOptionTree extends EditTree {
 	@Override
 	public void paste() {
 		Element newElement = (Element) clipboard.cloneNode(true);
-		Node sel = tree.getSelection().getLastSelected();
+		Node sel = tree.getSelection().first();
 		
 		Element parent = dialog;
 		
@@ -192,128 +225,147 @@ public class DialogOptionTree extends EditTree {
 //		if(path != null)
 //			idx = parentOption.getIndex((OptionNode) path.getLastPathComponent());
 //		parentOption.insert(newOption, idx + 1);
-//		
-//		((DefaultTreeModel) tree.getModel()).reload(parentOption);
-//		
-//		tree.setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(newOption)));
+//			
+		tree.getSelection().clear();
+		tree.getSelection().add(newOption);
 	}
 
 	@Override
 	public void upNode() {
-//		TreePath path = tree.getSelectionPath();
-//		OptionNode on = (OptionNode) path.getLastPathComponent();
-//		
-//		Element e = on.getElement();
-//		
-//		Node n = e.getPreviousSibling();
-//		
-//		while(!(n instanceof Element)){
-//			n = n.getPreviousSibling();
-//		}
-//		
-//		Element e2 = (Element)n;
-//
-//		Node parent = e.getParentNode();
-//		parent.removeChild(e);
-//		parent.insertBefore(e, e2);
-//		doc.setModified(e);
-//		
-////		addOptions(doc, actor, dialog);
-//		
-//		OptionNode parentOption = (OptionNode) on.getParent();
-//		
-//		int idx = parentOption.getIndex(on);
-//		parentOption.insert(on, idx - 1);
-//		
-//		((DefaultTreeModel) tree.getModel()).reload(parentOption);
-//		
-//		tree.setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(on)));
+		
+		Node sel = tree.getSelection().first();
+		Element e = (Element)sel.getObject();
+		
+		org.w3c.dom.Node n = e.getPreviousSibling();
+		
+		while(!(n instanceof Element)){
+			n = n.getPreviousSibling();
+		}
+		
+		Element e2 = (Element)n;
+
+		org.w3c.dom.Node parent = e.getParentNode();
+		parent.removeChild(e);
+		parent.insertBefore(e, e2);
+		doc.setModified(e);
+		
+		Node p = sel.getParent();
+		
+		if(p == null) {
+			int pos = tree.getRootNodes().indexOf(sel, true);
+			tree.remove(sel);
+			tree.insert(pos - 1, sel);
+		} else {
+			int pos = p.getChildren().indexOf(sel, true);
+			p.remove(sel);
+			p.insert(pos - 1, sel);			
+		}
+		
+		
+		tree.getSelection().clear();
+		tree.getSelection().add(sel);
 	}
 
 	@Override
 	public void downNode() {
-//		TreePath path = tree.getSelectionPath();
-//		OptionNode on = (OptionNode) path.getLastPathComponent();
-//		
-//		Element e = on.getElement();
-//		Node n = e.getNextSibling();
-//		
-//		while(!(n instanceof Element)){
-//			n = n.getNextSibling();
-//		}
-//		
-//		Element e2 = (Element)n;	
-//
-//		Node parent = e.getParentNode();
-//		parent.removeChild(e2);
-//		parent.insertBefore(e2, e);
-//		doc.setModified(e);
-//		
-//		OptionNode parentOption = (OptionNode) on.getParent();
-//		
-//		int idx = parentOption.getIndex(on);
-//		parentOption.insert(on, idx + 1);
-//		
-//		((DefaultTreeModel) tree.getModel()).reload(parentOption);
-//		
-//		tree.setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(on)));
+		
+		Node sel = tree.getSelection().first();
+		Element e = (Element)sel.getObject();
+		
+		org.w3c.dom.Node n = e.getNextSibling();
+		
+		while(!(n instanceof Element)){
+			n = n.getNextSibling();
+		}		
+		
+		
+		Element e2 = (Element)n;	
+
+		org.w3c.dom.Node parent = e.getParentNode();
+		parent.removeChild(e2);
+		parent.insertBefore(e2, e);
+		doc.setModified(e);
+		
+		Node p = sel.getParent();
+		
+		if(p == null) {
+			int pos = tree.getRootNodes().indexOf(sel, true);
+			tree.remove(sel);
+			tree.insert(pos + 1, sel);
+		} else {
+			int pos = p.getChildren().indexOf(sel, true);
+			p.remove(sel);
+			p.insert(pos + 1, sel);			
+		}
+		
+		tree.getSelection().clear();
+		tree.getSelection().add(sel);
 	}
 
 	@Override
 	public void leftNode() {
-//		TreePath path = tree.getSelectionPath();
-//		OptionNode on = (OptionNode) path.getLastPathComponent();
-//		Element e = on.getElement();
-//		
-//		Node parent = e.getParentNode();
-//		parent.removeChild(e);
-//		
-//		Node grandpa = parent.getParentNode();
-//		grandpa.replaceChild(e, parent);		
-//		grandpa.insertBefore(parent, e);
-//		doc.setModified(e);
-//		
-//		OptionNode parentOption = (OptionNode) on.getParent();
-//		
-//		OptionNode grandpaOption = (OptionNode) parentOption.getParent();
-//		
-//		int idx = grandpaOption.getIndex(parentOption);
-//		grandpaOption.insert(on, idx + 1);
-//		
-//		((DefaultTreeModel) tree.getModel()).reload(grandpaOption);
-//		
-//		tree.setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(on)));		
+		Node sel = tree.getSelection().first();
+		Element e = (Element)sel.getObject();
+		
+		org.w3c.dom.Node parent = e.getParentNode();
+		parent.removeChild(e);
+		
+		org.w3c.dom.Node grandpa = parent.getParentNode();
+		grandpa.replaceChild(e, parent);		
+		grandpa.insertBefore(parent, e);
+		doc.setModified(e);
+		
+		Node p = sel.getParent();		
+		Node grandpaOption = p.getParent();
+		
+		tree.remove(sel);
+		if(grandpaOption != null) {
+			int idx = grandpaOption.getChildren().indexOf(p, true);
+			grandpaOption.insert(idx + 1, sel);
+		} else {
+			int idx = tree.getRootNodes().indexOf(p, true);
+			tree.insert(idx + 1, sel);			
+		}
+		
+		tree.getSelection().clear();
+		tree.getSelection().add(sel);		
 	}
 
 	@Override
 	public void rightNode() {
-//		TreePath path = tree.getSelectionPath();
-//		OptionNode on = (OptionNode) path.getLastPathComponent();
-//		Element e = on.getElement();
-//		
-//		Node n = e.getPreviousSibling();
-//		
-//		while(!(n instanceof Element)){
-//			n = n.getPreviousSibling();
-//		}
-//		
-//		Element e2 = (Element)n;
-//		
-//		Node parent = e.getParentNode();
-//		parent.removeChild(e);
-//		e2.appendChild(e);
-//		
-//		doc.setModified(e);
-//		
-//		OptionNode parentOption = (OptionNode)((OptionNode) on.getParent()).getChildBefore(on);
-//		
-//		OptionNode grandpaOption = (OptionNode) on.getParent();
-//		
-//		parentOption.add(on);
-//		
-//		((DefaultTreeModel) tree.getModel()).reload(grandpaOption);
-//		
-//		tree.setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(on)));		
+		Node sel = tree.getSelection().first();
+		Element e = (Element)sel.getObject();
+		
+		org.w3c.dom.Node n = e.getPreviousSibling();
+		
+		while(!(n instanceof Element)){
+			n = n.getPreviousSibling();
+		}
+		
+		Element e2 = (Element)n;
+		
+		org.w3c.dom.Node parent = e.getParentNode();
+		parent.removeChild(e);
+		e2.appendChild(e);
+		
+		doc.setModified(e);
+		
+		Node grandpaOption = sel.getParent();
+		Node parentOption = null;
+		
+		if(grandpaOption != null) {
+			int idx = grandpaOption.getChildren().indexOf(sel, true);
+			parentOption = grandpaOption.getChildren().get(idx - 1);
+		} else {
+			int idx = tree.getRootNodes().indexOf(sel, true);
+			parentOption = tree.getRootNodes().get(idx - 1);
+		}
+		
+		tree.remove(sel);
+		parentOption.add(sel);
+		
+		tree.getSelection().clear();
+		tree.getSelection().add(sel);	
 	}
 
 	
@@ -363,22 +415,13 @@ public class DialogOptionTree extends EditTree {
 		}
 		
 		infoLbl.setText(sb.toString());
-		
-//		NodeList childs = e.getChildNodes();
-//		int n = childs.getLength();
-//
-//		for (int i = 0; i < n; i++) {
-//			if (childs.item(i) instanceof Element) {
-//				node.add(createNode((Element) childs.item(i)));				
-//			}
-//		}		
 	}
 	
 	private Node createNode(Element e) {
 		Label textLbl = new Label(null, skin);
-		Label infoLbl = new Label(null, skin);
+		Label infoLbl = new Label(null, skin, "subtitle");
 
-		String text = e.getAttribute("text");
+		String text = e.getAttribute(XMLConstants.TEXT_ATTR);
 
 		textLbl.setText(Ctx.project.getSelectedChapter().getTranslation(text));
 
@@ -389,7 +432,7 @@ public class DialogOptionTree extends EditTree {
 
 		NamedNodeMap attr = e.getAttributes();
 
-		String response = e.getAttribute("response_text");
+		String response = e.getAttribute(XMLConstants.RESPONSE_TEXT_ATTR);
 
 		if (!response.isEmpty())
 			sb.append("R: ")
@@ -399,7 +442,7 @@ public class DialogOptionTree extends EditTree {
 			org.w3c.dom.Node n = attr.item(i);
 			String name = n.getNodeName();
 
-			if (name.equals("text") || name.equals("response_text"))
+			if (name.equals(XMLConstants.TEXT_ATTR) || name.equals(XMLConstants.RESPONSE_TEXT_ATTR))
 				continue;
 
 			String v = n.getNodeValue();

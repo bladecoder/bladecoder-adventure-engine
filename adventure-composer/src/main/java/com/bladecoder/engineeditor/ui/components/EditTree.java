@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Tree;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Selection;
+import com.badlogic.gdx.utils.Array;
 
 public abstract class EditTree extends Table {
 	
@@ -143,7 +144,7 @@ public abstract class EditTree extends Table {
 			public void changed(ChangeEvent event, Actor actor) {				
 				Selection<Node> selection = tree.getSelection();
 
-				if (selection.size() == 0) {
+				if (selection.isEmpty()) {
 					upBtn.setDisabled(true);
 					downBtn.setDisabled(true);
 
@@ -151,14 +152,17 @@ public abstract class EditTree extends Table {
 					rightBtn.setDisabled(true);
 				} else {
 
-					Node nodeSel = selection.getLastSelected();
+					Node nodeSel = selection.first();
+					
+					int level = nodeSel.getLevel();
+					Array<Node> siblings = getSiblings(); 
+					
 
-					upBtn.setDisabled(nodeSel.getParent() == null || nodeSel.getParent().getChildren().get(0) == nodeSel);
-					downBtn.setDisabled(nodeSel.getParent() == null || nodeSel.getParent().getChildren().get(
-							nodeSel.getParent().getChildren().size - 1) == nodeSel);
+					upBtn.setDisabled(siblings.get(0) == nodeSel);
+					downBtn.setDisabled(siblings.get(siblings.size - 1) == nodeSel);
 
-					leftBtn.setDisabled(nodeSel.getParent() != null);
-					rightBtn.setDisabled(nodeSel.getParent() == null || nodeSel.getParent().getChildren().get(0) == nodeSel);
+					leftBtn.setDisabled(level==1);
+					rightBtn.setDisabled(siblings.get(0) == nodeSel);
 				}
 				
 				toolbar.disableEdit(selection == null);
@@ -166,6 +170,16 @@ public abstract class EditTree extends Table {
 
 		});
     }
+	
+	public Array<Node> getSiblings() {
+		Selection<Node> selection = tree.getSelection();
+		Node nodeSel = selection.first();
+		
+		int level = nodeSel.getLevel();
+		Array<Node> siblings = (level == 1) ? tree.getRootNodes(): nodeSel.getParent().getChildren(); 
+		
+		return siblings;
+	}
 	
 	abstract protected void create();
 	abstract protected void edit();
