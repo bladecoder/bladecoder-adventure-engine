@@ -69,6 +69,8 @@ public class Dialog implements Serializable   {
 			
 			if(next.equalsIgnoreCase("parent"))
 				currentOption = currentOption.getParent();
+			else if(next.equalsIgnoreCase("root"))
+				currentOption = null;
 			else
 				currentOption = findSerOption(next);
 		}

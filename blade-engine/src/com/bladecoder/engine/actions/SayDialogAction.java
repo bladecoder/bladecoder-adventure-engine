@@ -144,10 +144,9 @@ public class SayDialogAction extends BaseCallbackAction {
 		
 		String fa = a.getRenderer().getCurrentAnimationId();
 		
-		if(fa.startsWith(talkAnim)){ // If the actor was already talking we restore the actor to the 'stand' pose
-			int idx = fa.indexOf('.');
-			String prevFA = AnimationDesc.STAND_ANIM + fa.substring(idx);
-			a.startAnimation(prevFA, null);
+		// If the actor was already talking we restore the actor to the 'stand' pose	
+		if(fa.startsWith(talkAnim)){ 		
+			a.stand();
 		}
 	}
 	

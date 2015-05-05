@@ -263,13 +263,24 @@ public class SpriteActor extends BaseActor {
 		Vector2 p0 = new Vector2(bbox.getX(), bbox.getY());
 
 		ArrayList<Vector2> walkingPath = null;
+		
+		// 
+		if(p0.dst(pf) < 2.0f) {
+			setPosition(pf.x, pf.y);
+			
+			// call the callback
+			if (cb != null)
+				ActionCallbackQueue.add(cb);
+
+			return;			
+		}
 
 		if(scene.getPolygonalNavGraph() != null) {
 			walkingPath = scene.getPolygonalNavGraph().findPath(p0.x, p0.y, pf.x, pf.y);
 		}
 
 		if (walkingPath == null || walkingPath.size() == 0) {
-			// llamamos al callback aunque el camino esté vacío
+			// call the callback even when the path is empty
 			if (cb != null)
 				ActionCallbackQueue.add(cb);
 

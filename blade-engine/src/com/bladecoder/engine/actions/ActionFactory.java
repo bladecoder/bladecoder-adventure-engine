@@ -60,8 +60,8 @@ public class ActionFactory {
 				"com.bladecoder.engine.actions.WaitAction");
 		actions.put("Talkto",
 				"com.bladecoder.engine.actions.TalktoAction");
-		actions.put("DialogOption",
-				"com.bladecoder.engine.actions.DialogOptionAction");
+		actions.put("DialogOptionAttr",
+				"com.bladecoder.engine.actions.SetDialogOptionAttrAction");
 		actions.put("SayDialog",
 				"com.bladecoder.engine.actions.SayDialogAction");
 		actions.put("RunVerb",

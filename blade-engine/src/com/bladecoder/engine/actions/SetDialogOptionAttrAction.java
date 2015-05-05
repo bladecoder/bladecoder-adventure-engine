@@ -20,18 +20,18 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.Param;
-
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
-import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class DialogOptionAction implements Action {
+public class SetDialogOptionAttrAction implements Action {
 	public static final String INFO = "Change the selected dialog option properties";
 	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.ACTOR, false),
+		new Param("actor", "The target actor", Type.SCENE_ACTOR, false),
 		new Param("dialog", "The dialog", Type.STRING, true),	
 		new Param("option", "The option", Type.STRING, true),
 		new Param("visible", "Shows/Hide the dialog option", Type.BOOLEAN),
@@ -40,6 +40,7 @@ public class DialogOptionAction implements Action {
 	
 	
 	String actorId;
+	String sceneId;
 	String dialog;
 	String option;
 	boolean setVisibility;
@@ -48,7 +49,11 @@ public class DialogOptionAction implements Action {
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
+		String[] a = Param.parseString2(params.get("actor"));
+		
+		sceneId = a[0];
+		actorId = a[1];
+
 		dialog = params.get("dialog");
 		option = params.get("option");
 
@@ -64,13 +69,20 @@ public class DialogOptionAction implements Action {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-
-		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene()
-				.getActor(actorId, false);
+		Scene s;
+		
+		if(sceneId != null && !sceneId.isEmpty()) {
+			s = World.getInstance().getScene(sceneId);
+		} else {
+			s = World.getInstance().getCurrentScene();
+		}
+		
+		BaseActor actor = s.getActor(actorId, true);
+		
 		Dialog d = actor.getDialog(dialog);
 
 		if (d == null) {
-			EngineLogger.error("DialogOptionAction: Dialog '" + dialog + "' not found");
+			EngineLogger.error("SetDialogOptionAttrAction: Dialog '" + dialog + "' not found");
 			return false;
 		}
 
@@ -80,7 +92,7 @@ public class DialogOptionAction implements Action {
 			o = d.findSerOption(option);
 
 			if (o == null) {
-				EngineLogger.error("DialogOptionAction: Option '" + option + "' not found");
+				EngineLogger.error("SetDialogOptionAttrAction: Option '" + option + "' not found");
 				return false;
 			}
 		}
@@ -88,7 +100,7 @@ public class DialogOptionAction implements Action {
 		if (setVisibility && o != null)
 			o.setVisible(visibility);
 
-		if (setCurrent) {
+		if (setCurrent && World.getInstance().getCurrentScene() == s) {
 			World.getInstance().setCurrentDialog(actor.getDialog(dialog));
 			d.setCurrentOption(o);
 		}
