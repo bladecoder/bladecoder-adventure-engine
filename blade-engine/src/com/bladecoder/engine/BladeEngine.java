@@ -18,8 +18,6 @@ package com.bladecoder.engine;
 import java.nio.IntBuffer;
 import java.text.MessageFormat;
 
-import com.bladecoder.engine.BladeEngine;
-
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -168,9 +166,17 @@ public class BladeEngine implements ApplicationListener {
 
 	@Override
 	public void pause() {
-		EngineLogger.debug("GAME PAUSE");
-		ui.pause();
-		World.getInstance().saveGameState();
+		SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
+		boolean bot = scnScr.getTesterBot().isEnabled();
+		boolean r = scnScr.getRecorder().isPlaying();
+		
+		if(!bot && !r) {
+			EngineLogger.debug("GAME PAUSE");
+			ui.pause();
+			World.getInstance().saveGameState();
+		} else {
+			EngineLogger.debug("NOT PAUSING WHEN BOT IS RUNNING OR PLAYING RECORDED GAME");
+		}
 	}
 
 	@Override
