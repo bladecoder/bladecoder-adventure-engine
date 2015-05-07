@@ -21,6 +21,15 @@ import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class Verb implements VerbRunner {
+	public static final String LOOKAT_VERB = "lookat";
+	public static final String ACTION_VERB = "pickup";
+	public static final String LEAVE_VERB = "leave";
+	public static final String TALKTO_VERB = "talkto";
+	public static final String USE_VERB = "use";
+	public static final String GOTO_VERB = "goto";
+	public static final String TEST_VERB = "test";
+	public static final String INIT_VERB = "init";
+	
 	private String id;
 	
 	private ArrayList<Action> actions = new ArrayList <Action>();

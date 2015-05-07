@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -42,8 +43,12 @@ public class DebugScreen implements BladeScreen {
 	private Stage stage;
 
 	private TextField speedText;
-	SelectBox<String> recordings;
-	SelectBox<String> scenes;
+	private SelectBox<String> recordings;
+	private SelectBox<String> scenes;
+	
+	private TextField testerTimeConf;
+	private TextField inSceneTimeConf;
+	private TextField testerExcludeList;
 
 	public DebugScreen() {
 	}
@@ -86,7 +91,7 @@ public class DebugScreen implements BladeScreen {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
 				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
-					ui.setCurrentScreen(Screens.MENU_SCREEN);
+					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 				return true;
 			}
 		});
@@ -95,7 +100,7 @@ public class DebugScreen implements BladeScreen {
 
 		Label title = new Label("DEBUG SCREEN", ui.getSkin(), "title");
 
-		table.add(title).padBottom(DPIUtils.getMarginSize() * 2).colspan(3);
+		table.add(title).padBottom(DPIUtils.getMarginSize() * 2).colspan(3).center();
 
 		// ------------- SPEED
 		speedText = new TextField(Float.toString(((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getSpeed()),
@@ -108,12 +113,16 @@ public class DebugScreen implements BladeScreen {
 				scnScr.setSpeed(Float.parseFloat(speedText.getText()));
 			}
 		});
+
+		speedButton.pad(2, 3, 2, 3);
+		HorizontalGroup sGroup = new HorizontalGroup();
+		sGroup.space(10);
+		sGroup.addActor(speedText);
+		sGroup.addActor(speedButton);
 		
-		speedButton.pad(2,3,2,3);
 		table.row().pad(5).align(Align.left);
 		table.add("Game Speed: ");
-		table.add(speedText);
-		table.add(speedButton);
+		table.add(sGroup);
 
 		// ------------- RECORDING
 
@@ -132,7 +141,7 @@ public class DebugScreen implements BladeScreen {
 					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 				} else {
 					r.setPlaying(false);
-					ui.setCurrentScreen(Screens.MENU_SCREEN);
+					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 				}
 			}
 		});
@@ -152,24 +161,28 @@ public class DebugScreen implements BladeScreen {
 		});
 
 		recordings = new SelectBox<String>(ui.getSkin());
-		
+
 		String[] testFiles = EngineAssetManager.getInstance().listAssetFiles("/tests");
 		ArrayList<String> al = new ArrayList<String>();
-		
-		for(String file:testFiles)
-			if(file.endsWith(".verbs.rec"))
-				al.add(file.substring(0,file.indexOf(".verbs.rec")));
-		
+
+		for (String file : testFiles)
+			if (file.endsWith(".verbs.rec"))
+				al.add(file.substring(0, file.indexOf(".verbs.rec")));
+
 		recordings.setItems(al.toArray(new String[al.size()]));
+
+		play.pad(2, 3, 2, 3);
+		rec.pad(2, 3, 2, 3);
 		
-		play.pad(2,3,2,3);
-		rec.pad(2,3,2,3);
+		HorizontalGroup rGroup = new HorizontalGroup();
+		rGroup.space(10);
+		rGroup.addActor(recordings);
+		rGroup.addActor(play);
+		rGroup.addActor(rec);
 
 		table.row().pad(5).align(Align.left);
 		table.add("Game Recording: ");
-		table.add(recordings);
-		table.add(play);
-		table.add(rec);
+		table.add(rGroup);
 
 		// ------------- SCENES
 		TextButton go = new TextButton("Go", ui.getSkin());
@@ -180,30 +193,142 @@ public class DebugScreen implements BladeScreen {
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
-		
-		go.pad(2,3,2,3);
+
+		go.pad(2, 3, 2, 3);
 
 		scenes = new SelectBox<String>(ui.getSkin());
-		scenes.setItems(World.getInstance().getScenes().keySet().toArray(new String[World.getInstance().getScenes().size()]));
+		scenes.setItems(World.getInstance().getScenes().keySet()
+				.toArray(new String[World.getInstance().getScenes().size()]));
+		
+		HorizontalGroup scGroup = new HorizontalGroup();
+		scGroup.space(10);
+		scGroup.addActor(scenes);
+		scGroup.addActor(go);
 
 		table.row().pad(5).align(Align.left);
 		table.add("Go to Scene: ");
-		table.add(scenes);
-		table.add(go);
+		table.add(scGroup);
+
+		// ------------- TESTERBOT
+		TesterBot bot = ((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getTesterBot();
+		
+		TextButton runBot = new TextButton(bot.isEnabled()?"Stop":"Run", ui.getSkin());
+		runBot.addListener(new ClickListener() {
+
+			public void clicked(InputEvent event, float x, float y) {
+				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
+				TesterBot bot = scnScr.getTesterBot();
+				
+				bot.setMaxWaitInverval(Float.parseFloat(testerTimeConf.getText()));
+				bot.setInSceneTime(Float.parseFloat(inSceneTimeConf.getText()));
+				bot.setExcludeList(testerExcludeList.getText());
+				bot.setEnabled(!bot.isEnabled());
+				
+				ui.setCurrentScreen(Screens.SCENE_SCREEN);
+			}
+		});
+
+		runBot.pad(2, 3, 2, 3);
+
+		scenes = new SelectBox<String>(ui.getSkin());
+		scenes.setItems(World.getInstance().getScenes().keySet()
+				.toArray(new String[World.getInstance().getScenes().size()]));
+		
+		testerTimeConf = new TextField(Float.toString(bot.getMaxWaitInverval()), ui.getSkin());
+		inSceneTimeConf = new TextField(Float.toString(bot.getInSceneTime()), ui.getSkin());
+		testerExcludeList = new TextField(bot.getExcludeList(), ui.getSkin());
+		
+		TextButton testerLeaveConf = new TextButton("Leave", ui.getSkin(), "toggle");
+		testerLeaveConf.addListener(new ClickListener() {
+
+			public void clicked(InputEvent event, float x, float y) {
+				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
+				TesterBot bot = scnScr.getTesterBot();
+				
+				bot.setRunLeaveVerbs(!bot.isRunLeaveVerbs());
+			}
+		});
+		
+		testerLeaveConf.setChecked(bot.isRunLeaveVerbs());
+		
+		TextButton testerGotoConf = new TextButton("Goto", ui.getSkin(), "toggle");
+		testerGotoConf.addListener(new ClickListener() {
+
+			public void clicked(InputEvent event, float x, float y) {
+				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
+				TesterBot bot = scnScr.getTesterBot();
+				
+				bot.setRunGoto(!bot.isRunGoto());
+			}
+		});
+		
+		testerGotoConf.setChecked(bot.isRunGoto());
+		
+		TextButton testerPassText = new TextButton("Pass Texts", ui.getSkin(), "toggle");
+		testerPassText.addListener(new ClickListener() {
+
+			public void clicked(InputEvent event, float x, float y) {
+				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
+				TesterBot bot = scnScr.getTesterBot();
+				
+				bot.setPassTexts(!bot.isPassTexts());
+			}
+		});
+		
+		testerPassText.setChecked(bot.isPassTexts());
+		
+		TextButton testerWaitWhenWalking = new TextButton("Wait When Walking", ui.getSkin(), "toggle");
+		testerWaitWhenWalking.addListener(new ClickListener() {
+
+			public void clicked(InputEvent event, float x, float y) {
+				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
+				TesterBot bot = scnScr.getTesterBot();
+				
+				bot.setWaitWhenWalking(!bot.isWaitWhenWalking());
+			}
+		});
+		
+		testerWaitWhenWalking.setChecked(bot.isWaitWhenWalking());
+		
+		HorizontalGroup botGroup = new HorizontalGroup();
+		botGroup.space(10);
+		
+		botGroup.addActor(testerLeaveConf);
+		botGroup.addActor(testerGotoConf);
+		botGroup.addActor(testerPassText);
+		botGroup.addActor(testerWaitWhenWalking);
+		
+		HorizontalGroup botGroup2 = new HorizontalGroup();
+		botGroup2.space(10);
+		
+		botGroup2.addActor(new Label("Excl. List: ", ui.getSkin()));
+		botGroup2.addActor(testerExcludeList);
+		botGroup2.addActor(new Label("Interval: ", ui.getSkin()));
+		botGroup2.addActor(testerTimeConf);
+		botGroup2.addActor(new Label("Scn Time: ", ui.getSkin()));
+		botGroup2.addActor(inSceneTimeConf);
+		botGroup2.addActor(runBot);
+
+		table.row().pad(5).align(Align.left);
+		table.add("Tester Bot: ");
+		table.add(botGroup);
+		table.row().pad(5).align(Align.left);
+		table.add();
+		table.add(botGroup2);
 
 		// ------------- BACK BUTTON
 
 		TextButton back = new TextButton("Back", ui.getSkin(), "menu");
 		back.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				ui.setCurrentScreen(Screens.MENU_SCREEN);
+				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
-		
-		back.pad(4,4,4,4);
+
+		back.pad(4, 4, 4, 4);
 
 		table.row().pad(5);
-		table.add(back).colspan(3);
+		table.add(back).colspan(3).center();
 
 		table.pack();
 

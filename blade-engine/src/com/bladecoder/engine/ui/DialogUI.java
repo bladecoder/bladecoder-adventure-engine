@@ -89,6 +89,8 @@ public class DialogUI extends Actor {
 
 	@Override
 	public void draw(Batch batch, float alpha) {
+		if(World.getInstance().getCurrentDialog() == null || World.getInstance().inCutMode())
+			return;
 		
 		ArrayList<DialogOption> options = World.getInstance()
 				.getCurrentDialog().getVisibleOptions();
@@ -132,6 +134,9 @@ public class DialogUI extends Actor {
 	}
 
 	private int getOption(float x, float y) {
+		if(World.getInstance().getCurrentDialog() == null)
+			return -1;
+		
 		float lineHeight = style.font.getLineHeight();
 
 		int selectedLine = (int) (y / lineHeight);
@@ -150,11 +155,10 @@ public class DialogUI extends Actor {
 
 		d.selectOption(i);
 
-		if (World.getInstance().getCurrentDialog().ended()) {
-			World.getInstance().setCurrentDialog(null);
-			selected = -1;
-			setVisible(false);
-		}
+//		if (World.getInstance().getCurrentDialog().ended()) {
+//			selected = -1;
+//			setVisible(false);
+//		}
 	}
 	
 	/** The style for the DialogUI */

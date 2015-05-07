@@ -37,6 +37,7 @@ import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Transition;
+import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.ui.UI.Screens;
@@ -61,6 +62,7 @@ public class SceneScreen implements BladeScreen {
 	private boolean pieMode;
 
 	private final Recorder recorder = new Recorder();
+	private final TesterBot testerBot = new TesterBot();
 	private InputMultiplexer multiplexer = new InputMultiplexer();
 
 	// private final SceneFitViewport viewport = new SceneFitViewport();
@@ -78,7 +80,7 @@ public class SceneScreen implements BladeScreen {
 	private float speed = 1.0f;
 
 	private static enum UIStates {
-		SCENE_MODE, CUT_MODE, PLAY_MODE, PAUSE_MODE, INVENTORY_MODE, DIALOG_MODE
+		SCENE_MODE, CUT_MODE, PLAY_MODE, PAUSE_MODE, INVENTORY_MODE, DIALOG_MODE, TESTER_BOT_MODE
 	};
 
 	private UIStates state = UIStates.SCENE_MODE;
@@ -97,7 +99,7 @@ public class SceneScreen implements BladeScreen {
 
 			World w = World.getInstance();
 
-			if (state == UIStates.PAUSE_MODE || state == UIStates.PLAY_MODE)
+			if (state == UIStates.PAUSE_MODE || state == UIStates.PLAY_MODE || state == UIStates.TESTER_BOT_MODE)
 				return true;
 			
 			if(pie.isVisible())
@@ -201,6 +203,9 @@ public class SceneScreen implements BladeScreen {
 			case 'l':
 				World.getInstance().loadGameState();
 				break;
+			case 't':
+				testerBot.setEnabled(!testerBot.isEnabled());
+				break;				
 			case '.':
 				if (getRecorder().isRecording())
 					getRecorder().setRecording(false);
@@ -254,6 +259,10 @@ public class SceneScreen implements BladeScreen {
 	public Recorder getRecorder() {
 		return recorder;
 	}
+	
+	public TesterBot getTesterBot() {
+		return testerBot;
+	}
 
 	private void setUIState(UIStates s) {
 		if (state == s)
@@ -262,6 +271,7 @@ public class SceneScreen implements BladeScreen {
 		switch (s) {
 		case PAUSE_MODE:
 		case PLAY_MODE:
+		case TESTER_BOT_MODE:
 		case CUT_MODE:
 			if (pieMode && pie.isVisible())
 				pie.hide();
@@ -371,6 +381,10 @@ public class SceneScreen implements BladeScreen {
 			if (!recorder.isPlaying())
 				setUIState(UIStates.SCENE_MODE);
 			break;
+		case TESTER_BOT_MODE:
+			if (!testerBot.isEnabled())
+				setUIState(UIStates.SCENE_MODE);
+			break;			
 		case SCENE_MODE:
 			if (w.isPaused())
 				setUIState(UIStates.PAUSE_MODE);
@@ -378,6 +392,8 @@ public class SceneScreen implements BladeScreen {
 				setUIState(UIStates.CUT_MODE);
 			else if (recorder.isPlaying())
 				setUIState(UIStates.PLAY_MODE);
+			else if (testerBot.isEnabled())
+				setUIState(UIStates.TESTER_BOT_MODE);			
 			else if (inventoryUI.isVisible())
 				setUIState(UIStates.INVENTORY_MODE);
 			else if (w.getCurrentDialog() != null)
@@ -391,6 +407,7 @@ public class SceneScreen implements BladeScreen {
 			return;
 
 		recorder.update(delta * speed);
+		testerBot.update(delta * speed);
 
 		if (state == UIStates.INVENTORY_MODE) {
 			unproject2Tmp.set(Gdx.input.getX(), Gdx.input.getY());
@@ -527,7 +544,7 @@ public class SceneScreen implements BladeScreen {
 			}
 		}
 
-		if (!World.getInstance().inCutMode() && !recorder.isPlaying()) {
+		if (!World.getInstance().inCutMode() && !recorder.isPlaying() && !testerBot.isEnabled()) {
 			ui.getPointer().draw(batch, viewport);
 		}
 
@@ -536,6 +553,7 @@ public class SceneScreen implements BladeScreen {
 		t.draw(batch, viewport.getScreenWidth(), viewport.getScreenHeight());
 
 		recorder.draw(batch);
+		testerBot.draw(batch);
 
 		if (drawHotspots)
 			drawHotspots(batch);
@@ -645,13 +663,13 @@ public class SceneScreen implements BladeScreen {
 
 	public void actorClick(BaseActor a, boolean lookat) {
 
-		if (a.getVerb("leave") != null) {
-			runVerb(a, "leave", null);
+		if (a.getVerb(Verb.LEAVE_VERB) != null) {
+			runVerb(a, Verb.LEAVE_VERB, null);
 		} else if (!pieMode) {
-			String verb = "lookat";
+			String verb = Verb.LOOKAT_VERB;
 
 			if (!lookat) {
-				verb = a.getVerb("talkto") != null ? "talkto" : "pickup";
+				verb = a.getVerb(Verb.TALKTO_VERB) != null ? Verb.TALKTO_VERB : Verb.ACTION_VERB;
 			}
 
 			runVerb(a, verb, null);

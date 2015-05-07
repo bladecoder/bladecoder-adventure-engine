@@ -75,6 +75,9 @@ public class Dialog implements Serializable   {
 				currentOption = findSerOption(next);
 		}
 		
+		if (ended()) {
+			World.getInstance().setCurrentDialog(null);
+		}
 	}
 	
 	public void addOption(DialogOption o) {

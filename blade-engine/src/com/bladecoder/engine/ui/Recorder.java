@@ -78,6 +78,10 @@ public class Recorder {
 					if (v.pos == null) { // DIALOG OPTION
 						Dialog d = World.getInstance().getCurrentDialog();
 						d.selectOption(v.dialogOption);
+						
+						if (World.getInstance().getCurrentDialog().ended()) {
+							World.getInstance().setCurrentDialog(null);
+						}
 
 						stringBuilder.append(" SELECT DIALOG OPTION: ").append(v.dialogOption);
 					} else { // GOTO
