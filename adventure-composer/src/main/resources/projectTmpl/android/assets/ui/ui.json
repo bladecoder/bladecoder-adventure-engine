@@ -1,6 +1,6 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
-		default: {file: fonts/Roboto-Regular.ttf, size: 20},
+		default: {file: fonts/Roboto-Regular.ttf, size: 17},
 		debug: {file: fonts/Roboto-Regular.ttf, size: 15}, 
 		big-font: {file: fonts/PaytoneOne.ttf, size: 33},
 		dialog-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 20},
@@ -59,7 +59,8 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		default: { font: default, up: grey, fontColor: white , downFontColor: grey, overFontColor: light-grey, disabledFontColor: dark-grey},
-		menu: { up: border-rect-trans, down: border-rect-trans-down, font: big-font, fontColor: white , downFontColor: grey, overFontColor: yellow, disabledFontColor: dark-grey}		
+		menu: { up: border-rect-trans, down: border-rect-trans-down, font: big-font, fontColor: white , downFontColor: grey, overFontColor: yellow, disabledFontColor: dark-grey},
+		toggle: { up: border-rect-trans, down: border-rect-trans-down, checked: border-rect-trans-down, font: default, fontColor: white , downFontColor: grey, overFontColor: yellow, disabledFontColor: dark-grey}			
 },
 com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 		default: {}		

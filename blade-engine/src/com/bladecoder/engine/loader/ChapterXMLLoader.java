@@ -562,7 +562,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		try {
 			isSpine = ClassReflection.isAssignableFrom(((SpriteActor) actor).getRenderer().getClass(), ClassReflection.forName("com.bladecoder.engine.spine.SpineRenderer"));
 		} catch (ReflectionException e) {
-			EngineLogger.error("Error loading XML: " + e.getMessage());
+			EngineLogger.debug("Spine plugin not found: " + e.getMessage());
 		}
 		
 		if(((SpriteActor) actor).getRenderer() instanceof AtlasRenderer) {
