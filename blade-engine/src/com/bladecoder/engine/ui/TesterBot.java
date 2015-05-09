@@ -108,7 +108,7 @@ public class TesterBot {
 
 						if (scnActor.getVerb(Verb.LEAVE_VERB) != null) {
 							verb = Verb.LEAVE_VERB;
-						} else if (MathUtils.randomBoolean()) {
+						} else if (MathUtils.randomBoolean(0.33f)) {
 							// LOOKAT
 							verb = Verb.LOOKAT_VERB;
 						} else {
@@ -133,7 +133,7 @@ public class TesterBot {
 							return;
 
 						// Select lookat, action or use
-						int choosedVerb = MathUtils.random(2);
+						int choosedVerb = MathUtils.random(3);
 
 						if (choosedVerb == 0) {
 							EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.LOOKAT_VERB);
@@ -141,11 +141,11 @@ public class TesterBot {
 						} else if (choosedVerb == 1) {
 							EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.ACTION_VERB);
 							invActor.runVerb(Verb.ACTION_VERB);
-						} else {
+						} else { // 2 and 3
 
 							BaseActor targetActor = null;
 
-							if (w.getInventory().getNumItems() > 1 && MathUtils.randomBoolean()) {
+							if (w.getInventory().getNumItems() > 1 && MathUtils.randomBoolean(0.33f)) {
 								// CHOOSE TARGET FROM INVENTORY
 								int pos2 = MathUtils.random(w.getInventory().getNumItems() - 1);
 
