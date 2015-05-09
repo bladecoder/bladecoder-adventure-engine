@@ -180,8 +180,8 @@ public class TesterBot {
 					}
 
 				} else if (s.getPlayer() != null) {
-					gotoVector.x = MathUtils.random() * w.getWidth();
-					gotoVector.y = MathUtils.random() * w.getHeight();
+					gotoVector.x = MathUtils.random() * w.getCurrentScene().getCamera().getScrollingWidth();
+					gotoVector.y = MathUtils.random() * w.getCurrentScene().getCamera().getScrollingHeight();
 
 					if (s.getPlayer().getVerb(Verb.GOTO_VERB) != null) {
 						EngineLogger.debug("<TESTERBOT> GOTO: GOTO VERB");
