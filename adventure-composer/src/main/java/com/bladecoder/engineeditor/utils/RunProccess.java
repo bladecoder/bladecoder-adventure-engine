@@ -45,7 +45,8 @@ public class RunProccess {
 		return builder.toString();
 	}
 
-	public static boolean runBladeEngine(File prjFolder, String chapter, String scene) throws IOException {
+	public static boolean runBladeEngine(File prjFolder, String chapter,
+			String scene) throws IOException {
 		String args = ":desktop:run -PappArgs=['-w'";
 
 		if (chapter != null) {
@@ -61,16 +62,44 @@ public class RunProccess {
 		return runGradle(prjFolder, args);
 	}
 
-	public static void runAnt(String buildFile, String target, String distDir, String projectDir, Properties props)
+	public static boolean runBladeEngineInternal(File prjFolder, String chapter,
+			String scene)
 			throws IOException {
+		List<String> args = new ArrayList<String>();
+		args.add("-w");
+		args.add("-adv-dir");
+		args.add(prjFolder.getAbsolutePath());
+		
+		if(scene != null) {
+			args.add("-t");
+			args.add(scene);
+		}
+		
+		if (chapter != null) {
+			args.add("-chapter");
+			args.add(chapter);
+		}
+
+		List<String> cp = new ArrayList<String>();
+		cp.add(System.getProperty("java.class.path"));
+
+		runJavaProccess("com.bladecoder.engineeditor.utils.DesktopLauncher", cp, args);
+		
+		return true;
+	}
+
+	public static void runAnt(String buildFile, String target, String distDir,
+			String projectDir, Properties props) throws IOException {
 		String packageFilesDir = "package-files/";
 
 		if (!new File(packageFilesDir).exists()) {
-			EditorLogger.error("package-files folder not found. Searching folder for IDE mode.");
+			EditorLogger
+					.error("package-files folder not found. Searching folder for IDE mode.");
 
 			packageFilesDir = "src/dist/package-files/";
 			if (!new File(packageFilesDir).exists()) {
-				EditorLogger.error(new File(packageFilesDir).getAbsolutePath() + " folder not found in IDE mode.");
+				EditorLogger.error(new File(packageFilesDir).getAbsolutePath()
+						+ " folder not found in IDE mode.");
 				return;
 			}
 		}
@@ -110,7 +139,8 @@ public class RunProccess {
 		}
 	}
 
-	public static Process runJavaProccess(String mainClass, List<String> classpathEntries, List<String> args)
+	public static Process runJavaProccess(String mainClass,
+			List<String> classpathEntries, List<String> args)
 			throws IOException {
 		String javaRT = System.getProperty("java.home") + "/bin/java";
 		String workingDirectory = ".";
@@ -128,7 +158,8 @@ public class RunProccess {
 		if (args != null)
 			argumentsList.addAll(args);
 
-		ProcessBuilder processBuilder = new ProcessBuilder(argumentsList.toArray(new String[argumentsList.size()]));
+		ProcessBuilder processBuilder = new ProcessBuilder(
+				argumentsList.toArray(new String[argumentsList.size()]));
 		// processBuilder.redirectErrorStream(true);
 		processBuilder.directory(new File(workingDirectory));
 		processBuilder.inheritIO();
@@ -137,8 +168,10 @@ public class RunProccess {
 	}
 
 	public static boolean runGradle(File workingDir, String parameters) {
-		String exec = workingDir.getAbsolutePath() + "/"
-				+ (System.getProperty("os.name").contains("Windows") ? "gradlew.bat" : "gradlew");
+		String exec = workingDir.getAbsolutePath()
+				+ "/"
+				+ (System.getProperty("os.name").contains("Windows") ? "gradlew.bat"
+						: "gradlew");
 		String command = "gradlew" + " " + parameters;
 		String[] split = command.split(" ");
 		split[0] = exec;
@@ -146,17 +179,17 @@ public class RunProccess {
 		EditorLogger.debug("Executing '" + command + "'");
 
 		try {
-			final ProcessBuilder pb = new ProcessBuilder(split).directory(workingDir).redirectErrorStream(
-					true);
-			;
+			final ProcessBuilder pb = new ProcessBuilder(split).directory(
+					workingDir).redirectErrorStream(true);
 
 			// TODO: READ OUTPUT FROM pb AND print in output stream
-//			if (System.console() != null)
-//				pb.inheritIO();
+			// if (System.console() != null)
+			// pb.inheritIO();
 
 			final Process process = pb.start();
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					process.getInputStream()));
 			String line;
 			while ((line = in.readLine()) != null) {
 				EditorLogger.debug(line);

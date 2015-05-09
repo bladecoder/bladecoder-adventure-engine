@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.0]
+### Added
+- Added a Tester Bot that plays the game randomly
+- Spine atlas in animations
+
+### Fixed
+- COMPOSER: Dialog editing fix
+
 ## [0.7.2]
 ### Added
 - libgdx v1.5.6 update
