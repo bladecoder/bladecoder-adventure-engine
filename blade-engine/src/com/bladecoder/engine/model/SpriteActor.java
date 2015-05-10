@@ -170,6 +170,10 @@ public class SpriteActor extends BaseActor {
 			}
 		}
 
+		// resets posTween when walking
+		if(posTween != null && posTween instanceof WalkTween)
+			posTween = null;
+		
 		renderer.startAnimation(id, repeatType, count, cb);
 
 		fa = renderer.getCurrentAnimation();
