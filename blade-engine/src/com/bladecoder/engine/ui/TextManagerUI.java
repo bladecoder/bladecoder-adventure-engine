@@ -81,17 +81,16 @@ public class TextManagerUI extends Actor {
 				unprojectTmp.set(posx, posy, 0);
 				World.getInstance().getSceneCamera().scene2screen(sceneScreen.getViewport(), unprojectTmp);
 				
-				if (currentSubtitle.type == Text.Type.TALK) {
-					layout.setText(style.font, currentSubtitle.str, currentSubtitle.color, maxTalkWidth, Align.center, true);
-				} else {
-					layout.setText(style.font, currentSubtitle.str, currentSubtitle.color, maxRectangleWidth, Align.center, true);
-				}
+				float maxWidth = currentSubtitle.type == Text.Type.TALK?maxTalkWidth:maxRectangleWidth;
+				
+				layout.setText(style.font, currentSubtitle.str, currentSubtitle.color, maxWidth, Align.center, true);
 
 				if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE) {					
 					posx = (sceneScreen.getViewport().getScreenWidth() - layout.width)/2;
-					fontX = (sceneScreen.getViewport().getScreenWidth() - maxRectangleWidth)/2;
+					fontX = (sceneScreen.getViewport().getScreenWidth() - maxWidth)/2;
 				} else {
 					posx = unprojectTmp.x;
+					fontX = unprojectTmp.x;
 				}
 
 				if (posy == TextManager.POS_CENTER) {
@@ -103,6 +102,7 @@ public class TextManagerUI extends Actor {
 				}
 
 				setPosition(posx - PADDING, posy - PADDING);
+				setSize(layout.width + PADDING * 2, layout.height + PADDING * 2);
 
 				if (currentSubtitle.type == Text.Type.TALK) {
 					if (style.talkBubble != null) {
@@ -111,20 +111,21 @@ public class TextManagerUI extends Actor {
 					
 					setX(getX() - layout.width / 2);
 					
-					fontX = posx - maxTalkWidth / 2;
-				}
+					fontX = posx - maxWidth / 2;
+					
+					// check if the text exits the screen
+					if (getX() < 0 && getX() > -getWidth()) {
+						setX(0);
+						fontX = getX() + PADDING;
+					} else if (getX() + getWidth() > sceneScreen.getViewport().getScreenWidth() && 
+							getX() + getWidth() < sceneScreen.getViewport().getScreenWidth() + getWidth()) {
+						setX(sceneScreen.getViewport().getScreenWidth() - getWidth());
+						fontX = sceneScreen.getViewport().getScreenWidth() - layout.width / 2 - PADDING - maxWidth / 2;
+					}
 
-				setSize(layout.width + PADDING * 2, layout.height + PADDING * 2);
-				
-				// check if the text exits the screen
-				if (getX() < 0) {
-					setX(0);
-				} else if (getX() + getWidth() > sceneScreen.getViewport().getScreenWidth()) {
-					setX(sceneScreen.getViewport().getScreenWidth() - getWidth());
-				}
-
-				if (getY() + getHeight() > sceneScreen.getViewport().getScreenHeight()) {
-					setY(sceneScreen.getViewport().getScreenHeight() - getHeight());
+					if (getY() + getHeight() > sceneScreen.getViewport().getScreenHeight()) {
+						setY(sceneScreen.getViewport().getScreenHeight() - getHeight());
+					}
 				}
 			}
 		}
@@ -141,14 +142,11 @@ public class TextManagerUI extends Actor {
 				unprojectTmp.set(subtitle.x, subtitle.y, 0);
 				World.getInstance().getSceneCamera().scene2screen(sceneScreen.getViewport(), unprojectTmp);
 				
-				float bubbleX = unprojectTmp.x  - style.talkBubble.getMinWidth() * scale / 2;
-				
+				float bubbleX = unprojectTmp.x  - style.talkBubble.getMinWidth() * scale / 2;				
 				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + 2;
-
-//				style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
-//						style.talkBubble.getMinHeight() * scale);
 				
-				style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
+				if(bubbleX + style.talkBubble.getMinWidth() * scale < getX() + getWidth() && bubbleX > getX())
+					style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
 						style.talkBubble.getMinHeight() * scale);
 			}
 

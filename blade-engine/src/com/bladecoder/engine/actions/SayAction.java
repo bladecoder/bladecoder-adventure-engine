@@ -51,7 +51,8 @@ public class SayAction extends BaseCallbackAction {
 					Type.STRING, true, "rectangle", new String[] { "rectangle",
 							"talk", "plain" }), 
 			new Param("animation",	"The animation to put when talking instead the default talk animation.",
-									Type.STRING)					
+									Type.STRING),
+			new Param("quee", "Quee the text if other text is showing or show it inmediatly.",Type.BOOLEAN, false, "false")
 	};
 	
 	private String soundId;
@@ -64,6 +65,7 @@ public class SayAction extends BaseCallbackAction {
 	private String previousAnim = null;
 	private String talkAnim = null;
 	private Vector2 pos = null;
+	private boolean quee = false;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -93,6 +95,10 @@ public class SayAction extends BaseCallbackAction {
 		if (params.get("pos") != null) {
 			pos = Param.parseVector2(params.get("pos"));
 		}
+		
+		if (params.get("quee") != null) {
+			quee = Boolean.parseBoolean(params.get("quee"));
+		}
 	}
 
 	@Override
@@ -109,7 +115,6 @@ public class SayAction extends BaseCallbackAction {
 
 		if (text != null) {
 			float x, y;
-			boolean quee = false;
 
 			if (pos != null) {
 				x = pos.x;
@@ -195,6 +200,8 @@ public class SayAction extends BaseCallbackAction {
 		json.writeValue("previousAnim", previousAnim);
 		json.writeValue("type", type);
 		json.writeValue("talkAnim", talkAnim);
+		json.writeValue("pos", pos);
+		json.writeValue("quee", quee);
 		super.write(json);
 	}
 
@@ -206,6 +213,8 @@ public class SayAction extends BaseCallbackAction {
 		previousAnim = json.readValue("previousAnim", String.class, jsonData);
 		type = json.readValue("type", Text.Type.class, jsonData);
 		talkAnim = json.readValue("talkAnim", String.class, jsonData);
+		pos = json.readValue("pos", Vector2.class, jsonData);
+		quee = json.readValue("quee", Boolean.class, jsonData);
 		super.read(json, jsonData);
 	}
 
