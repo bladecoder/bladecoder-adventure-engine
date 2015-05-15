@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.1]
+
+### Fixed
+- Tester Bot fixes
+- Dialog render fixes when character position is not inside the screen
+- Dialog nullpointer fix when playing recorded files
+
 ## [0.8.0]
 ### Added
 - Added a Tester Bot that plays the game randomly
