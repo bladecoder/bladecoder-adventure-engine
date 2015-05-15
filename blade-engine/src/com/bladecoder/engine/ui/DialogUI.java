@@ -17,9 +17,6 @@ package com.bladecoder.engine.ui;
 
 import java.util.ArrayList;
 
-import com.bladecoder.engine.ui.Recorder;
-import com.bladecoder.engine.ui.SceneScreen;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -28,7 +25,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.DPIUtils;
@@ -146,19 +142,12 @@ public class DialogUI extends Actor {
 	}
 
 	private void select(int i) {
-		Dialog d = World.getInstance().getCurrentDialog();
-
 		// RECORD
 		if (recorder.isRecording()) {
 			recorder.add(i);
 		}
 
-		d.selectOption(i);
-
-//		if (World.getInstance().getCurrentDialog().ended()) {
-//			selected = -1;
-//			setVisible(false);
-//		}
+		World.getInstance().selectDialogOption(i);
 	}
 	
 	/** The style for the DialogUI */

@@ -74,10 +74,6 @@ public class Dialog implements Serializable   {
 			else
 				currentOption = findSerOption(next);
 		}
-		
-		if (ended()) {
-			World.getInstance().setCurrentDialog(null);
-		}
 	}
 	
 	public void addOption(DialogOption o) {

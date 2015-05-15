@@ -75,13 +75,8 @@ public class Recorder {
 			// while (playing && v.time < time) {
 			if (playing && v.time < time) {
 				if (v.verb == null) {
-					if (v.pos == null) { // DIALOG OPTION
-						Dialog d = World.getInstance().getCurrentDialog();
-						d.selectOption(v.dialogOption);
-						
-						if (World.getInstance().getCurrentDialog().ended()) {
-							World.getInstance().setCurrentDialog(null);
-						}
+					if (v.pos == null) { // DIALOG OPTION						
+						World.getInstance().selectDialogOption(v.dialogOption);
 
 						stringBuilder.append(" SELECT DIALOG OPTION: ").append(v.dialogOption);
 					} else { // GOTO
