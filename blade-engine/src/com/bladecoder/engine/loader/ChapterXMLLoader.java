@@ -80,14 +80,12 @@ public class ChapterXMLLoader extends DefaultHandler {
 		return initScene;
 	}
 
-	public void startElement(String namespaceURI, String localName,
-			String qName, Attributes atts) throws SAXException {
+	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
 
 		if (currentVerb != null) { // INSIDE VERB
 
 			if (!localName.equals(XMLConstants.ACTION_TAG)) {
-				SAXParseException e2 = new SAXParseException(
-						"TAG not supported inside VERB: " + localName, locator);
+				SAXParseException e2 = new SAXParseException("TAG not supported inside VERB: " + localName, locator);
 				error(e2);
 				throw e2;
 			}
@@ -96,8 +94,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		} else if (currentDialog != null) { // INSIDE DIALOG
 
 			if (!localName.equals(XMLConstants.OPTION_TAG)) {
-				SAXParseException e2 = new SAXParseException(
-						"Only 'option' tag allowed in dialogs", locator);
+				SAXParseException e2 = new SAXParseException("Only 'option' tag allowed in dialogs", locator);
 				error(e2);
 				throw e2;
 			}
@@ -109,10 +106,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		} else if (localName.equals(XMLConstants.ANIMATION_TAG)) {
 			parseAnimation(atts);
 		} else if (localName.equals(XMLConstants.VERB_TAG)) {
-			parseVerb(
-					atts,
-					actor != null ? actor.getVerbManager() : scene
-							.getVerbManager());
+			parseVerb(atts, actor != null ? actor.getVerbManager() : scene.getVerbManager());
 		} else if (localName.equals(XMLConstants.DIALOG_TAG)) {
 			String id = atts.getValue(XMLConstants.ID_ATTR);
 
@@ -136,8 +130,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			scene.setPolygonalNavGraph(polygonalPathFinder);
 		} else if (localName.equals(XMLConstants.OBSTACLE_TAG)) {
-			PolygonalNavGraph polygonalPathFinder = scene
-					.getPolygonalNavGraph();
+			PolygonalNavGraph polygonalPathFinder = scene.getPolygonalNavGraph();
 			Polygon poly = Param.parsePolygon(atts.getValue(XMLConstants.POLYGON_ATTR),
 					atts.getValue(XMLConstants.POS_ATTR));
 			poly.setScale(scale, scale);
@@ -152,14 +145,13 @@ public class ChapterXMLLoader extends DefaultHandler {
 			// + localName + "' loading Scene.", locator);
 			// error(e);
 			// throw e;
-			EngineLogger.error("TAG not supported in Chapter document: "
-					+ localName + " LINE: " + locator.getLineNumber());
+			EngineLogger.error("TAG not supported in Chapter document: " + localName + " LINE: "
+					+ locator.getLineNumber());
 		}
 	}
 
 	@Override
-	public void endElement(String namespaceURI, String localName, String qName)
-			throws SAXException {
+	public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
 
 		if (localName.equals(XMLConstants.VERB_TAG))
 			currentVerb = null;
@@ -168,10 +160,8 @@ public class ChapterXMLLoader extends DefaultHandler {
 		else if (localName.equals(XMLConstants.OPTION_TAG))
 			currentOption = currentOption.getParent();
 		else if (localName.equals(XMLConstants.ACTOR_TAG)) {
-			if (actor instanceof SpriteActor && initAnimation != null
-					&& !initAnimation.isEmpty()) {
-				((SpriteActor) actor).getRenderer().setInitAnimation(
-						initAnimation);
+			if (actor instanceof SpriteActor && initAnimation != null && !initAnimation.isEmpty()) {
+				((SpriteActor) actor).getRenderer().setInitAnimation(initAnimation);
 			}
 
 			actor = null;
@@ -195,10 +185,10 @@ public class ChapterXMLLoader extends DefaultHandler {
 		String initialMusicDelayStr = atts.getValue(XMLConstants.INITIAL_MUSIC_DELAY_ATTR);
 		String repeatMusicDelayStr = atts.getValue(XMLConstants.REPEAT_MUSIC_DELAY_ATTR);
 		String state = atts.getValue(XMLConstants.STATE_ATTR);
-		
 
-		scene.setBackground(atts.getValue(XMLConstants.BACKGROUND_ATLAS_ATTR), atts.getValue(XMLConstants.BACKGROUND_REGION_ATTR), 
-				atts.getValue(XMLConstants.LIGHTMAP_ATLAS_ATTR), atts.getValue(XMLConstants.LIGHTMAP_REGION_ATTR));
+		scene.setBackground(atts.getValue(XMLConstants.BACKGROUND_ATLAS_ATTR),
+				atts.getValue(XMLConstants.BACKGROUND_REGION_ATTR), atts.getValue(XMLConstants.LIGHTMAP_ATLAS_ATTR),
+				atts.getValue(XMLConstants.LIGHTMAP_REGION_ATTR));
 
 		if (state != null)
 			scene.setState(state);
@@ -207,8 +197,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		player = atts.getValue(XMLConstants.PLAYER_ATTR);
 
 		if (idScn == null || idScn.isEmpty()) {
-			SAXParseException e2 = new SAXParseException(
-					"Scene 'id' not found or empty", locator);
+			SAXParseException e2 = new SAXParseException("Scene 'id' not found or empty", locator);
 			error(e2);
 			throw e2;
 		}
@@ -235,8 +224,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		String type = atts.getValue(XMLConstants.TYPE_ATTR);
 
 		if (type == null || type.isEmpty()) {
-			SAXParseException e2 = new SAXParseException(
-					"BaseActor 'type' attribute not found or empty", locator);
+			SAXParseException e2 = new SAXParseException("BaseActor 'type' attribute not found or empty", locator);
 			error(e2);
 			throw e2;
 		}
@@ -248,7 +236,8 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			if (type.equals(XMLConstants.ATLAS_VALUE)) { // ATLAS RENDERER
 				((SpriteActor) actor).setRenderer(new AtlasRenderer());
-			} else if (type.equals(XMLConstants.IMAGE_VALUE)) { // IMAGE RENDERER
+			} else if (type.equals(XMLConstants.IMAGE_VALUE)) { // IMAGE
+																// RENDERER
 				((SpriteActor) actor).setRenderer(new ImageRenderer());
 			} else if (type.equals(XMLConstants.S3D_VALUE)) { // 3D RENDERER
 				Sprite3DRenderer r = new Sprite3DRenderer();
@@ -258,8 +247,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 				float fov = 67;
 
 				try {
-					Vector2 spriteSize = Param.parseVector2(atts
-							.getValue(XMLConstants.SPRITE_SIZE_ATTR));
+					Vector2 spriteSize = Param.parseVector2(atts.getValue(XMLConstants.SPRITE_SIZE_ATTR));
 
 					spriteSize.x *= scale;
 					spriteSize.y *= scale;
@@ -287,22 +275,19 @@ public class ChapterXMLLoader extends DefaultHandler {
 					}
 
 				} catch (Exception e) {
-					SAXParseException e2 = new SAXParseException(
-							"Wrong sprite3d params", locator, e);
+					SAXParseException e2 = new SAXParseException("Wrong sprite3d params", locator, e);
 					error(e2);
 					throw e2;
 				}
 
-			} else if (type.equals(XMLConstants.SPINE_VALUE)) { // SPINE RENDERER
+			} else if (type.equals(XMLConstants.SPINE_VALUE)) { // SPINE
+																// RENDERER
 				try {
-					Class<?> c = ClassReflection
-							.forName("com.bladecoder.engine.spine.SpineRenderer");
-					ActorRenderer r = (ActorRenderer) ClassReflection
-							.newInstance(c);
+					Class<?> c = ClassReflection.forName("com.bladecoder.engine.spine.SpineRenderer");
+					ActorRenderer r = (ActorRenderer) ClassReflection.newInstance(c);
 					((SpriteActor) actor).setRenderer(r);
 				} catch (ReflectionException e) {
-					SAXParseException e2 = new SAXParseException(
-							"Spine plugin not found", locator, e);
+					SAXParseException e2 = new SAXParseException("Spine plugin not found", locator, e);
 					error(e2);
 					throw e2;
 				}
@@ -310,8 +295,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			if (atts.getValue(XMLConstants.WALKING_SPEED_ATTR) != null
 					&& !atts.getValue(XMLConstants.WALKING_SPEED_ATTR).isEmpty()) {
-				float s = Float.parseFloat(atts.getValue(XMLConstants.WALKING_SPEED_ATTR))
-						* scale;
+				float s = Float.parseFloat(atts.getValue(XMLConstants.WALKING_SPEED_ATTR)) * scale;
 				((SpriteActor) actor).setWalkingSpeed(s);
 			}
 
@@ -329,8 +313,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 		String id = atts.getValue(XMLConstants.ID_ATTR);
 		if (id == null || id.isEmpty()) {
-			SAXParseException e2 = new SAXParseException(
-					"BaseActor 'id' attribute not found or empty", locator);
+			SAXParseException e2 = new SAXParseException("BaseActor 'id' attribute not found or empty", locator);
 			error(e2);
 			throw e2;
 		}
@@ -354,16 +337,14 @@ public class ChapterXMLLoader extends DefaultHandler {
 				p = Param.parsePolygon(atts.getValue(XMLConstants.BBOX_ATTR));
 				p.setScale(scale, scale);
 			} catch (NumberFormatException e) {
-				SAXParseException e2 = new SAXParseException(
-						"Wrong Bounding Box Definition", locator, e);
+				SAXParseException e2 = new SAXParseException("Wrong Bounding Box Definition", locator, e);
 				error(e2);
 				throw e2;
 			}
 
 			actor.setBbox(p);
 		} else if (type.equals(XMLConstants.NO_RENDERER_VALUE)) {
-			SAXParseException e2 = new SAXParseException(
-					"Bounding box definition not set for actor", locator);
+			SAXParseException e2 = new SAXParseException("Bounding box definition not set for actor", locator);
 			error(e2);
 			throw e2;
 		} else {
@@ -375,8 +356,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		// PARSE POSTITION
 		Vector2 pos = Param.parseVector2(atts.getValue(XMLConstants.POS_ATTR));
 		if (pos == null) {
-			SAXParseException e2 = new SAXParseException(
-					"Wrong actor XML position", locator);
+			SAXParseException e2 = new SAXParseException("Wrong actor XML position", locator);
 			error(e2);
 			throw e2;
 		}
@@ -386,22 +366,18 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 		actor.setPosition(pos.x, pos.y);
 
-			
 		if (atts.getValue(XMLConstants.SCALE_ATTR) != null && actor instanceof SpriteActor) {
-			float s = Float
-					.parseFloat(atts.getValue(XMLConstants.SCALE_ATTR));
-			((SpriteActor)actor).setScale(s);
+			float s = Float.parseFloat(atts.getValue(XMLConstants.SCALE_ATTR));
+			((SpriteActor) actor).setScale(s);
 		}
-		
+
 		if (atts.getValue("zIndex") != null) {
-			float z = Float
-					.parseFloat(atts.getValue(XMLConstants.ZINDEX_ATTR));
+			float z = Float.parseFloat(atts.getValue(XMLConstants.ZINDEX_ATTR));
 			actor.setZIndex(z);
 		}
 
 		if (atts.getValue(XMLConstants.INTERACTION_ATTR) != null) {
-			boolean interaction = Boolean.parseBoolean(atts
-					.getValue(XMLConstants.INTERACTION_ATTR));
+			boolean interaction = Boolean.parseBoolean(atts.getValue(XMLConstants.INTERACTION_ATTR));
 			actor.setInteraction(interaction);
 		}
 
@@ -421,14 +397,14 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 		scene.addActor(actor);
 	}
-	
+
 	private void parseLayer(Attributes atts) throws SAXException {
 		SceneLayer layer = new SceneLayer();
-		
+
 		layer.setName(atts.getValue(XMLConstants.ID_ATTR));
 		layer.setVisible(Boolean.parseBoolean(atts.getValue(XMLConstants.VISIBLE_ATTR)));
 		layer.setDynamic(Boolean.parseBoolean(atts.getValue(XMLConstants.DYNAMIC_ATTR)));
-		
+
 		scene.addLayer(layer);
 	}
 
@@ -442,8 +418,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			verb = null;
 
 		if (text == null || text.trim().isEmpty()) {
-			SAXParseException e2 = new SAXParseException(
-					"'text' atribute mandatory for <option> tag", locator);
+			SAXParseException e2 = new SAXParseException("'text' atribute mandatory for <option> tag", locator);
 			error(e2);
 			throw e2;
 		}
@@ -472,8 +447,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 	private void parseAnimation(Attributes atts) throws SAXException {
 
 		if (actor == null || !(actor instanceof SpriteActor)) {
-			SAXParseException e = new SAXParseException(
-					"'animation' TAG must be inside sprite actors", locator);
+			SAXParseException e = new SAXParseException("'animation' TAG must be inside sprite actors", locator);
 			error(e);
 			throw e;
 		}
@@ -499,16 +473,14 @@ public class ChapterXMLLoader extends DefaultHandler {
 		String id = atts.getValue(XMLConstants.ID_ATTR);
 
 		if (id == null || id.isEmpty()) {
-			SAXParseException e = new SAXParseException(
-					"Animation 'id' not found or empty", locator);
+			SAXParseException e = new SAXParseException("Animation 'id' not found or empty", locator);
 			error(e);
 			throw e;
 		}
 
 		String source = atts.getValue(XMLConstants.SOURCE_ATTR);
 		if (source == null || source.isEmpty()) {
-			SAXParseException e2 = new SAXParseException(
-					"Source name not found or empty", locator);
+			SAXParseException e2 = new SAXParseException("Source name not found or empty", locator);
 			error(e2);
 			throw e2;
 		}
@@ -538,8 +510,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			}
 
 		} catch (NumberFormatException e) {
-			SAXParseException e2 = new SAXParseException(
-					"Wrong Sprite Animation parameters", locator, e);
+			SAXParseException e2 = new SAXParseException("Wrong Sprite Animation parameters", locator, e);
 			error(e2);
 			throw e2;
 		}
@@ -556,32 +527,38 @@ public class ChapterXMLLoader extends DefaultHandler {
 		}
 
 		AnimationDesc sa = null;
-		
+
 		boolean isSpine = false;
-		
-		try {
-			isSpine = ClassReflection.isAssignableFrom(((SpriteActor) actor).getRenderer().getClass(), ClassReflection.forName("com.bladecoder.engine.spine.SpineRenderer"));
-		} catch (ReflectionException e) {
-			EngineLogger.debug("Spine plugin not found: " + e.getMessage());
-		}
-		
-		if(((SpriteActor) actor).getRenderer() instanceof AtlasRenderer) {
+
+		ActorRenderer renderer = ((SpriteActor) actor).getRenderer();
+
+		if (renderer instanceof AtlasRenderer) {
 			sa = new AtlasAnimationDesc();
-		} else if(isSpine) {
-			sa = new SpineAnimationDesc();
-			((SpineAnimationDesc)sa).atlas = atts.getValue(XMLConstants.ATLAS_VALUE);
-		} else {
+		} else if (renderer instanceof ImageRenderer || renderer instanceof Sprite3DRenderer) {
 			sa = new AnimationDesc();
+		} else {
+
+			try {
+				isSpine = ClassReflection.isAssignableFrom(((SpriteActor) actor).getRenderer().getClass(),
+						ClassReflection.forName("com.bladecoder.engine.spine.SpineRenderer"));
+			} catch (ReflectionException e) {
+				EngineLogger.debug("Spine plugin not found: " + e.getMessage());
+			}
+			
+			if (isSpine) {
+				sa = new SpineAnimationDesc();
+				((SpineAnimationDesc) sa).atlas = atts.getValue(XMLConstants.ATLAS_VALUE);
+			} else {
+				sa = new AnimationDesc();
+			}
 		}
 
-		sa.set(id, source, speed, delay, count, animationType, soundId, inD,
-				outD, preload, disposeWhenPlayed);
+		sa.set(id, source, speed, delay, count, animationType, soundId, inD, outD, preload, disposeWhenPlayed);
 
 		((SpriteActor) actor).getRenderer().addAnimation(sa);
 	}
 
-	private void parseSound(Attributes atts, BaseActor actor)
-			throws SAXException {
+	private void parseSound(Attributes atts, BaseActor actor) throws SAXException {
 		String id = atts.getValue(XMLConstants.ID_ATTR);
 		String filename = atts.getValue(XMLConstants.FILENAME_ATTR);
 		String loopStr = atts.getValue(XMLConstants.LOOP_ATTR);
@@ -591,8 +568,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		float volume = 1f;
 
 		if (filename == null || filename.isEmpty())
-			error(new SAXParseException("Sound 'filename' not found or empty",
-					locator));
+			error(new SAXParseException("Sound 'filename' not found or empty", locator));
 
 		if (loopStr != null && !loopStr.isEmpty()) {
 			loop = Boolean.parseBoolean(loopStr);
@@ -642,7 +618,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			} else if (attName.equals(XMLConstants.ACTION_NAME_ATTR)) {
 				actionName = atts.getValue(attName);
 			} else if (attName.equals(XMLConstants.ACTION_ENABLED_ATTR)) {
-				if(atts.getValue(attName).equals(XMLConstants.FALSE_VALUE))
+				if (atts.getValue(attName).equals(XMLConstants.FALSE_VALUE))
 					return;
 			} else {
 				String value = atts.getValue(attName);
@@ -676,9 +652,8 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 	@Override
 	public void error(SAXParseException e) throws SAXException {
-		EngineLogger.error(MessageFormat.format(
-				"{0} Line: {1} Column: {2}. {3}", actor.getId(),
-				e.getLineNumber(), e.getColumnNumber(), e.getMessage()));
+		EngineLogger.error(MessageFormat.format("{0} Line: {1} Column: {2}. {3}", actor.getId(), e.getLineNumber(),
+				e.getColumnNumber(), e.getMessage()));
 		EngineLogger.error("CAUSA", (Exception) e.getCause());
 	}
 
