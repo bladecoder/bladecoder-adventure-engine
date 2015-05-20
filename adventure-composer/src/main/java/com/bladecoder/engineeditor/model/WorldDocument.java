@@ -91,18 +91,10 @@ public class WorldDocument extends  BaseDocument {
 	}
 
 	public int getWidth() {
-		if(width == -1) {
-			width = Integer.parseInt(doc.getDocumentElement().getAttribute(XMLConstants.WIDTH_ATTR));
-		}
-		
 		return width;
 	}
 	
-	public int getHeight() {
-		if(height == -1) {
-			height = Integer.parseInt(doc.getDocumentElement().getAttribute(XMLConstants.HEIGHT_ATTR));	 
-		}
-		
+	public int getHeight() {		
 		return height;
 	}
 
@@ -198,5 +190,13 @@ public class WorldDocument extends  BaseDocument {
 		chapter.setFilename(id + XMLConstants.CHAPTER_EXT);
 		chapter.deleteFiles();
 		firePropertyChange(XMLConstants.CHAPTER_TAG);
+	}
+	
+	@Override
+	public void load() throws ParserConfigurationException, SAXException, IOException {
+		super.load();
+		
+		width = Integer.parseInt(doc.getDocumentElement().getAttribute(XMLConstants.WIDTH_ATTR));
+		height = Integer.parseInt(doc.getDocumentElement().getAttribute(XMLConstants.HEIGHT_ATTR));	 
 	}
 }
