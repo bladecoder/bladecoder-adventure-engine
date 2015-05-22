@@ -398,11 +398,16 @@ public class Scene implements Serializable,
 
 	public void removeActor(BaseActor a) {
 
-		if (a.getId().equals(player)) {
+		if(player != null && a.getId().equals(player)) {
 			player = null;
 		}
 
-		actors.remove(a.getId());
+		BaseActor r = actors.remove(a.getId());
+		
+		if(r == null) {
+			EngineLogger.error("Removing actor from scene: Actor not found");
+			return;
+		}
 		
 		SceneLayer layer = getLayer(a.getLayer());
 		layer.getActors().remove(a);
