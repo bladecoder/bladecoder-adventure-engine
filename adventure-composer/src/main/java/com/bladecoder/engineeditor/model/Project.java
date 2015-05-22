@@ -124,8 +124,12 @@ public class Project extends PropertyChange {
 		}
 	}
 	
-	public Properties getConfig() {
+	public Properties getEditorConfig() {
 		return editorConfig;
+	}
+	
+	public Properties getProjectConfig() {
+		return projectConfig;
 	}
 
 	public void setSelectedScene(Element scn) {

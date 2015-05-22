@@ -23,7 +23,7 @@ import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class Inventory implements AssetConsumer {
-	ArrayList<SpriteActor> items;
+	private ArrayList<SpriteActor> items;
 	
 	private boolean visible = true;
 	transient private boolean disposed= true;

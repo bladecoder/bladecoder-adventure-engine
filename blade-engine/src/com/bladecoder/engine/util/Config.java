@@ -24,6 +24,7 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 public class Config {
 	public static final String PIE_MODE_DESKTOP_PROP="pie_mode.desktop";
 	public static final String INVENTORY_POS_PROP="inventory_pos";
+	public static final String INVENTORY_AUTOSIZE_PROP="inventory_autosize";
 	public static final String TITLE_PROP="title";
 	public static final String LOAD_GAMESTATE_PROP="load_gamestate";
 	public static final String PLAY_RECORD_PROP="play_recording";

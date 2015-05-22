@@ -65,7 +65,7 @@ public class CreateProjectDialog extends EditDialog {
 		addInputPanel(spinePlugin);
 		addInputPanel(androidSdk);
 		
-		String sdkprop = Ctx.project.getConfig().getProperty(ANDROID_SDK_PROP);
+		String sdkprop = Ctx.project.getEditorConfig().getProperty(ANDROID_SDK_PROP);
 		
 		if(sdkprop != null && new File(sdkprop).exists()) {
 			androidSdk.setText(sdkprop);
@@ -77,7 +77,7 @@ public class CreateProjectDialog extends EditDialog {
 	@Override
 	protected void ok() {
 		try {
-			Ctx.project.getConfig().setProperty(ANDROID_SDK_PROP, androidSdk.getText());
+			Ctx.project.getEditorConfig().setProperty(ANDROID_SDK_PROP, androidSdk.getText());
 			Ctx.project.saveProject();
 		} catch (Exception ex) {
 			String msg = "Something went wrong while saving the current project.\n\n"

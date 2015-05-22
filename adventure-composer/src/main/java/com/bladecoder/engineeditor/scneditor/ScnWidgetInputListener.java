@@ -360,14 +360,14 @@ public class ScnWidgetInputListener extends ClickListener {
 				depthVector.x += d.y;
 
 				Ctx.project.getSelectedScene().setAttribute("depth_vector", Param.toStringParam(depthVector));
-				Ctx.project.getSelectedChapter().setModified(true);
+				Ctx.project.getSelectedChapter().setModified();
 				updateFakeDepth();
 			} else if (draggingMode == DraggingModes.DRAGGING_MARKER_100) {
 				Vector2 depthVector = scnWidget.getScene().getDepthVector();
 
 				depthVector.y += d.y;
 				Ctx.project.getSelectedScene().setAttribute("depth_vector", Param.toStringParam(depthVector));
-				Ctx.project.getSelectedChapter().setModified(true);
+				Ctx.project.getSelectedChapter().setModified();
 				updateFakeDepth();
 			}
 

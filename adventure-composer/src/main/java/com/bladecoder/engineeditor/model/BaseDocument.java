@@ -228,8 +228,8 @@ public abstract class BaseDocument extends PropertyChange {
 		modified = true;
 	}
 
-	public void setModified(boolean b) {
-		modified = b;
+	public void setModified() {
+		modified = true;
 		firePropertyChange(DOCUMENT_CHANGED, null, doc.getDocumentElement());
 	}
 

@@ -109,11 +109,11 @@ public class PackageDialog extends EditDialog {
 
 		dir.setMandatory(true);
 
-		arch.setText(Ctx.project.getConfig().getProperty(ARCH_PROP, ARCHS[0]));
-		dir.setText(Ctx.project.getConfig().getProperty(DIR_PROP, ""));
+		arch.setText(Ctx.project.getEditorConfig().getProperty(ARCH_PROP, ARCHS[0]));
+		dir.setText(Ctx.project.getEditorConfig().getProperty(DIR_PROP, ""));
 
 		for (InputPanel i : options) {
-			String prop = Ctx.project.getConfig().getProperty("package." + i.getTitle());
+			String prop = Ctx.project.getEditorConfig().getProperty("package." + i.getTitle());
 
 			if (prop != null && !prop.isEmpty())
 				i.setText(prop);
@@ -163,11 +163,11 @@ public class PackageDialog extends EditDialog {
 					msg = "Error Generating package\n\n" + e.getMessage();
 				}
 
-				Ctx.project.getConfig().setProperty(ARCH_PROP, arch.getText());
-				Ctx.project.getConfig().setProperty(DIR_PROP, dir.getText());
+				Ctx.project.getEditorConfig().setProperty(ARCH_PROP, arch.getText());
+				Ctx.project.getEditorConfig().setProperty(DIR_PROP, dir.getText());
 
 				for (InputPanel i : options) {
-					Ctx.project.getConfig().setProperty("package." + i.getTitle(), i.getText());
+					Ctx.project.getEditorConfig().setProperty("package." + i.getTitle(), i.getText());
 				}
 				
 				Ctx.msg.hide();

@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -28,45 +29,53 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
-	private final static int TOP = 0;
-	private final static int DOWN = 1;
-	private final static int LEFT = 2;
-	private final static int RIGHT = 3;
+	public final static int TOP = 0;
+	public final static int DOWN = 1;
+	public final static int LEFT = 2;
+	public final static int RIGHT = 3;
+	public final static int CENTER = 4;
 
 	private final static String MENU_BUTTON = "config";
 
-	private Rectangle configBbox = new Rectangle();
+	private final Rectangle configBbox = new Rectangle();
 
 	private int tileSize;
-	private float destY;
 	private int margin;
-	private int inventoryPos = DOWN;
+	private float rowSpace;
+	private int cols, rows;
+	private int inventoryPos = CENTER;
+	private boolean autosize = true;
 
 	private SpriteActor draggedActor = null;
 
 	private AtlasRegion configIcon;
 
 	private final SceneScreen sceneScreen;
-	
+
 	private InventoryUIStyle style;
-	
+
 	private ImageButton menuButton;
 
+	private final Vector2 orgPos = new Vector2();
+	private final Vector2 targetPos = new Vector2();
+
 	public InventoryUI(SceneScreen scr) {
-		style = scr.getUI().getSkin().get(InventoryUIStyle.class);		
+		style = scr.getUI().getSkin().get(InventoryUIStyle.class);
 		sceneScreen = scr;
 
 		String pos = Config.getProperty(Config.INVENTORY_POS_PROP, "down");
+
+		autosize = Config.getProperty(Config.INVENTORY_AUTOSIZE_PROP, true);
 
 		if (pos.trim().equals("top"))
 			inventoryPos = TOP;
@@ -74,13 +83,14 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			inventoryPos = LEFT;
 		else if (pos.trim().equals("right"))
 			inventoryPos = RIGHT;
-		else
+		else if (pos.trim().equals("down"))
 			inventoryPos = DOWN;
+		else
+			inventoryPos = CENTER;
 
 		addListener(new InputListener() {
 			@Override
-			public void touchUp(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 
 				if (draggedActor != null) {
 					stopDragging(button);
@@ -95,7 +105,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 						hide();
 					}
 				}
-				
+
 			}
 
 			@Override
@@ -105,15 +115,13 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 
 			@Override
-			public void touchDragged(InputEvent event, float x, float y,
-					int pointer) {
+			public void touchDragged(InputEvent event, float x, float y, int pointer) {
 				if (draggedActor == null)
 					startDragging(x, y);
 			}
 
 			@Override
-			public boolean touchDown(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				return true;
 			}
 
@@ -122,18 +130,15 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 					com.badlogic.gdx.scenes.scene2d.Actor toActor) {
 
 				// EngineLogger.debug("EXIT EVENT: " + toActor);
-				if (!(toActor instanceof PieMenu)
-						&& !(toActor instanceof InventoryUI)
-						&& draggedActor != null)
+				if (!(toActor instanceof PieMenu) && !(toActor instanceof InventoryUI) && draggedActor != null)
 					hide();
 			}
 		});
-		
 
 		menuButton = new ImageButton(style.menuButtonStyle);
 
 		addActor(menuButton);
-		menuButton.addListener(new ChangeListener() {			
+		menuButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
 				sceneScreen.getUI().setCurrentScreen(UI.Screens.MENU_SCREEN);
@@ -143,40 +148,81 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	public void show() {
 		if (!isVisible()) {
+			resize((int) getStage().getCamera().viewportWidth, (int) getStage().getCamera().viewportHeight);
 			setVisible(true);
-			setY(-getHeight());
+			setPosition(orgPos.x, orgPos.y);
 
-			addAction(Actions
-					.moveTo(getX(), destY, .1f));
+			addAction(Actions.moveTo(targetPos.x, targetPos.y, .1f));
 		}
 	}
 
 	public void hide() {
-		if(isVisible())
-			addAction(Actions.sequence(Actions.moveTo(getX(), -getHeight(), .1f),
-				Actions.hide()));
+		if (isVisible())
+			addAction(Actions.sequence(Actions.moveTo(orgPos.x, orgPos.y, .1f), Actions.hide()));
 	}
 
 	public void resize(int width, int height) {
 
-		tileSize = (int)DPIUtils.getTouchMinSize() * 2;
-		margin = (int)DPIUtils.getMarginSize();
-		
-		float rowSpace = DPIUtils.getSpacing();
+		Inventory inventory = World.getInstance().getInventory();
+
+		tileSize = (int) DPIUtils.getTouchMinSize() * 2;
+		margin = (int) DPIUtils.getMarginSize();
+
+		rowSpace = DPIUtils.getSpacing();
 
 		int w = (int) (width * .8f / tileSize) * tileSize;
 		int h = (int) (height * .7f / tileSize) * tileSize;
 
+		if (autosize) {
+			if (inventoryPos == LEFT || inventoryPos == RIGHT) {
+				int w2 = tileSize * (inventory.getNumItems() / (h / tileSize) + 1);
+
+				if (w2 < w)
+					w = w2;
+			} else {
+
+				int h2 = tileSize * (inventory.getNumItems() / (w / tileSize) + 1);
+
+				if (h2 < h)
+					h = h2;
+			}
+		}
+
+		cols = w / tileSize;
+		rows = h / tileSize;
+
 		setVisible(false);
-		setSize(w + (w/tileSize - 1) * rowSpace + margin * 2 , h + (h/tileSize - 1) * rowSpace + margin * 2);
-		destY = ( height - getHeight()) / 2;
-		setX((width - getWidth()) / 2);
-		
+		setSize(w + (cols - 1) * rowSpace + margin * 2, h + (rows - 1) * rowSpace + margin * 2);
+
+		int capacity = cols * rows;
+		if (inventory.getNumItems() > capacity)
+			EngineLogger.error("Items in inventory excees the UI capacity");
+
+		if (inventoryPos == TOP) {
+			orgPos.set((width - getWidth()) / 2, height + getHeight());
+			targetPos.set((width - getWidth()) / 2, height - getHeight() - DPIUtils.getSpacing());
+		} else if (inventoryPos == DOWN) {
+			orgPos.set((width - getWidth()) / 2, -getHeight());
+			targetPos.set((width - getWidth()) / 2, DPIUtils.getSpacing());
+		} else if (inventoryPos == LEFT) {
+			orgPos.set(-getWidth(), (height - getHeight()) / 2);
+			targetPos.set(DPIUtils.getSpacing(), (height - getHeight()) / 2); // TODO
+		} else if (inventoryPos == RIGHT) {
+			orgPos.set(width + getWidth(), (height - getHeight()) / 2); // TODO
+			targetPos.set(width - getWidth() - DPIUtils.getSpacing(), (height - getHeight()) / 2); // TODO
+		} else {
+			orgPos.set((width - getWidth()) / 2, -getHeight());
+			targetPos.set((width - getWidth()) / 2, (height - getHeight()) / 2);
+		}
+
+		setX(orgPos.x);
+		setY(orgPos.y);
+
 		float size = DPIUtils.getPrefButtonSize();
-		float iconSize = Math.max(size/2, DPIUtils.ICON_SIZE);
+		float iconSize = Math.max(size / 2, DPIUtils.ICON_SIZE);
 		menuButton.setSize(size, size);
 		menuButton.getImageCell().maxSize(iconSize, iconSize);
-		menuButton.setPosition(getWidth()-menuButton.getWidth()/2, (getHeight() - menuButton.getHeight()) / 2);
+		menuButton.setPosition(getWidth() - menuButton.getWidth() / 2, (getHeight() - menuButton.getHeight()) / 2);
 	}
 
 	public void retrieveAssets(TextureAtlas atlas) {
@@ -192,45 +238,34 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			return;
 		}
 
-		
 		if (style.background != null) {
 			style.background.draw(batch, getX(), getY(), getWidth(), getHeight());
 		}
 
-		batch.draw(configIcon, configBbox.x, configBbox.y, configBbox.width,
-				configBbox.height);
-		
-		float rowSpace = DPIUtils.getSpacing();
-
-		int cols = (int) (getWidth() - margin) / (tileSize + (int)rowSpace);
-		int rows = (int) (getHeight() - margin) / (tileSize + (int)rowSpace) - 1;
-
-		int capacity = cols * (rows + 1);
-		if(inventory.getNumItems() >= capacity)
-			EngineLogger.error("Items in inventory excees the UI capacity");
+		batch.draw(configIcon, configBbox.x, configBbox.y, configBbox.width, configBbox.height);
 
 		// DRAW ITEMS
+		int capacity = cols * rows;
+
 		for (int i = 0; i < inventory.getNumItems() && i < capacity; i++) {
 
 			SpriteActor a = inventory.getItem(i);
 			ActorRenderer r = a.getRenderer();
 
-			float size = (tileSize - rowSpace)
-					/ (r.getHeight() > r.getWidth() ? r.getHeight() : r
-							.getWidth());
+			float size = (tileSize - rowSpace) / (r.getHeight() > r.getWidth() ? r.getHeight() : r.getWidth());
 
 			float x = i % cols;
-			float y = rows - i / cols;
+			float y = (rows - 1) - i / cols;
 
 			if (style.itemBackground != null) {
-				style.itemBackground.draw(batch, getX() + x * tileSize + x * rowSpace + margin,
-						getY() + y * tileSize + y * rowSpace + margin, tileSize, tileSize);
+				style.itemBackground.draw(batch, getX() + x * tileSize + x * rowSpace + margin, getY() + y * tileSize
+						+ y * rowSpace + margin, tileSize, tileSize);
 			}
-			
-			r.draw((SpriteBatch) batch, getX() + x * tileSize + x * rowSpace+ tileSize / 2 + margin,
-					getY() + (tileSize - r.getHeight() *size) / 2 + y * tileSize + y * rowSpace + margin, size);
+
+			r.draw((SpriteBatch) batch, getX() + x * tileSize + x * rowSpace + tileSize / 2 + margin, getY()
+					+ (tileSize - r.getHeight() * size) / 2 + y * tileSize + y * rowSpace + margin, size);
 		}
-		
+
 		super.draw(batch, alpha);
 	}
 
@@ -248,13 +283,12 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	private final Vector3 mousepos = new Vector3();
 
 	private void stopDragging(int button) {
-		World.getInstance().getSceneCamera()
-				.getInputUnProject(sceneScreen.getViewport(), mousepos);
+		World.getInstance().getSceneCamera().getInputUnProject(sceneScreen.getViewport(), mousepos);
 
 		BaseActor targetActor = sceneScreen.getCurrentActor();
 
 		if (targetActor != null) {
-			if(targetActor != draggedActor)
+			if (targetActor != draggedActor)
 				use(targetActor, draggedActor);
 			else
 				sceneScreen.actorClick(targetActor, button == 1);
@@ -273,17 +307,13 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	}
 
 	public SpriteActor getItemAt(float x, float y) {
-		if(x < margin || y < margin || x >= getWidth() - margin || y >= getHeight() - margin)
+		if (x < margin || y < margin || x >= getWidth() - margin || y >= getHeight() - margin)
 			return null;
 
 		Inventory inventory = World.getInstance().getInventory();
-		
-		float rowSpace = DPIUtils.getSpacing();
 
-		int cols = (int) (getWidth() - margin) / (tileSize + (int)rowSpace);
-		int rows = (int) (getHeight() - margin) / (tileSize + (int)rowSpace) - 1;
-
-		int i = (rows - ((int) (y - margin) / (tileSize + (int)rowSpace))) * cols + (int) ( x - margin) / (tileSize + (int)rowSpace);
+		int i = ((rows - 1) - ((int) (y - margin) / (tileSize + (int) rowSpace))) * cols + (int) (x - margin)
+				/ (tileSize + (int) rowSpace);
 
 		if (i >= 0 && i < inventory.getNumItems()) {
 			// EngineLogger.debug(" X: " + x + " Y:" + y + " DESC:" +
@@ -297,23 +327,30 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	public int getInventoryPos() {
 		return inventoryPos;
 	}
-	
-	/** The style for the InventoryUI.
-	 * @author Rafael Garcia */
+
+	/**
+	 * The style for the InventoryUI.
+	 * 
+	 * @author Rafael Garcia
+	 */
 	static public class InventoryUIStyle {
 		/** Optional. */
-		public Drawable background;		
+		public Drawable background;
 		/** Optional. */
-		public Drawable itemBackground;		
+		public Drawable itemBackground;
 		public ImageButtonStyle menuButtonStyle;
 
-		public InventoryUIStyle () {
+		public InventoryUIStyle() {
 		}
 
-		public InventoryUIStyle (InventoryUIStyle style) {
+		public InventoryUIStyle(InventoryUIStyle style) {
 			background = style.background;
 			menuButtonStyle = style.menuButtonStyle;
 			itemBackground = style.itemBackground;
 		}
+	}
+
+	public int getInvPosition() {
+		return inventoryPos;
 	}
 }

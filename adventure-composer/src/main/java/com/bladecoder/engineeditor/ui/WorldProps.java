@@ -19,28 +19,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.PropertyTable;
 
 
 public class WorldProps extends PropertyTable {
-
-	public static final String WIDTH_PROP = "width";
-	public static final String HEIGHT_PROP = "height";	
-	public static final String TITLE_PROP = "title";
-	
-//	TableModelListener tableModelListener = new TableModelListener() {
-//		@Override
-//		public void tableChanged(TableModelEvent e) {
-//			if (e.getType() == TableModelEvent.UPDATE) {
-//				int row = e.getFirstRow();
-//				updateModel((String) propertyTable.getModel().getValueAt(row, 0),
-//						(String) propertyTable.getModel().getValueAt(row, 1));
-//			}
-//		}
-//	};
-
 	public WorldProps(Skin skin) {
 		super(skin);
 
@@ -55,20 +41,34 @@ public class WorldProps extends PropertyTable {
 
 	@Override
 	protected void updateModel(String property, String value) {
-		if (property.equals(WIDTH_PROP)) {
+		if (property.equals(XMLConstants.WIDTH_ATTR)) {
 			Ctx.project.getWorld().setWidth(value);
-		} else if (property.equals(TITLE_PROP)) {
-			Ctx.project.getConfig().setProperty(TITLE_PROP, value);
-		} else if (property.equals(HEIGHT_PROP)) {
+		} else if (property.equals(Config.TITLE_PROP)) {
+			Ctx.project.getProjectConfig().setProperty(Config.TITLE_PROP, value);
+		} else if (property.equals(XMLConstants.HEIGHT_ATTR)) {
 			Ctx.project.getWorld().setHeight(value);
+		} else if (property.equals(Config.INVENTORY_POS_PROP)) {
+			Ctx.project.getProjectConfig().setProperty(Config.INVENTORY_POS_PROP, value);
+		} else if (property.equals(Config.INVENTORY_AUTOSIZE_PROP)) {
+			Ctx.project.getProjectConfig().setProperty(Config.INVENTORY_AUTOSIZE_PROP, value);
+		} else if (property.equals(Config.PIE_MODE_DESKTOP_PROP)) {
+			Ctx.project.getProjectConfig().setProperty(Config.PIE_MODE_DESKTOP_PROP, value);
+		} else if (property.equals(Config.DEBUG_PROP)) {
+			Ctx.project.getProjectConfig().setProperty(Config.DEBUG_PROP, value);
 		}
+		
+		Ctx.project.getWorld().setModified(); // TODO Add propertychange to Config
 	}
 
 	private void setProject() {
 		clearProps();
-		addProperty(WIDTH_PROP, Ctx.project.getWorld().getWidth());
-		addProperty(HEIGHT_PROP, Ctx.project.getWorld().getHeight());		
-		addProperty(TITLE_PROP, Ctx.project.getTitle());
+		addProperty(XMLConstants.WIDTH_ATTR, Ctx.project.getWorld().getWidth());
+		addProperty(XMLConstants.HEIGHT_ATTR, Ctx.project.getWorld().getHeight());		
+		addProperty(Config.TITLE_PROP, Ctx.project.getTitle());
+		addProperty(Config.INVENTORY_POS_PROP, Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_POS_PROP, "down"));
+		addProperty(Config.INVENTORY_AUTOSIZE_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_AUTOSIZE_PROP, "true")));
+		addProperty(Config.PIE_MODE_DESKTOP_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.PIE_MODE_DESKTOP_PROP, "false")));
+		addProperty(Config.DEBUG_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.DEBUG_PROP, "false")));
 		
 		invalidateHierarchy();
 	}

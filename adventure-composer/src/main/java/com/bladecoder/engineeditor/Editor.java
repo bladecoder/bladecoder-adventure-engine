@@ -113,7 +113,7 @@ public class Editor implements ApplicationListener {
 		stage.addActor(splitPaneLeft);
 
 		// LOAD LAST OPEN PROJECT
-		String lastProject = Ctx.project.getConfig().getProperty(
+		String lastProject = Ctx.project.getEditorConfig().getProperty(
 				Project.LAST_PROJECT_PROP, "");
 
 		if (!lastProject.isEmpty() && new File(lastProject).exists()) {

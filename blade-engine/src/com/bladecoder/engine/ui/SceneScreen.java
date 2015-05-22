@@ -76,7 +76,7 @@ public class SceneScreen implements BladeScreen {
 
 	private boolean drawHotspots = false;
 	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
-	
+
 	private float speed = 1.0f;
 
 	private static enum UIStates {
@@ -84,7 +84,7 @@ public class SceneScreen implements BladeScreen {
 	};
 
 	private UIStates state = UIStates.SCENE_MODE;
-	
+
 	private final GlyphLayout textLayout = new GlyphLayout();
 
 	private final GestureDetector inputProcessor = new GestureDetector(new GestureDetector.GestureListener() {
@@ -101,8 +101,8 @@ public class SceneScreen implements BladeScreen {
 
 			if (state == UIStates.PAUSE_MODE || state == UIStates.PLAY_MODE || state == UIStates.TESTER_BOT_MODE)
 				return true;
-			
-			if(pie.isVisible())
+
+			if (pie.isVisible())
 				pie.hide();
 
 			if (drawHotspots)
@@ -115,7 +115,12 @@ public class SceneScreen implements BladeScreen {
 				} else if (state == UIStates.INVENTORY_MODE) {
 					inventoryUI.hide();
 				} else if (state == UIStates.SCENE_MODE) {
-					sceneClick(button == 1);
+					if(button == 2) { // Show inventory with the middle button
+						if (!inventoryUI.isVisible())
+							inventoryUI.show();					
+					} else {
+						sceneClick(button == 1);
+					}
 				}
 			}
 
@@ -168,10 +173,10 @@ public class SceneScreen implements BladeScreen {
 				break;
 			case Input.Keys.SPACE:
 				if (drawHotspots)
-					drawHotspots = false;				
-				break;				
+					drawHotspots = false;
+				break;
 			}
-				
+
 			return true;
 		}
 
@@ -205,7 +210,7 @@ public class SceneScreen implements BladeScreen {
 				break;
 			case 't':
 				testerBot.setEnabled(!testerBot.isEnabled());
-				break;				
+				break;
 			case '.':
 				if (getRecorder().isRecording())
 					getRecorder().setRecording(false);
@@ -231,19 +236,24 @@ public class SceneScreen implements BladeScreen {
 				if (state == UIStates.SCENE_MODE) {
 					drawHotspots = true;
 				}
-				break;				
+				break;
 			}
 
 			return false;
 		}
-		
+
 		@Override
-		public boolean scrolled (int amount) {
-			if(amount > 0 && inventoryUI.isVisible())
-				inventoryUI.hide();
-			else if(amount < 0 && !inventoryUI.isVisible())
-				inventoryUI.show();
-			
+		public boolean scrolled(int amount) {
+			if (state == UIStates.SCENE_MODE || state == UIStates.INVENTORY_MODE) {
+				
+				boolean fromDown = (inventoryUI.getInvPosition() == InventoryUI.CENTER || inventoryUI.getInvPosition() == InventoryUI.DOWN);
+
+				if ((amount > 0 && fromDown || amount < 0 && !fromDown) && inventoryUI.isVisible())
+					inventoryUI.hide();
+				else if ((amount > 0 && !fromDown || amount < 0 && fromDown) && !inventoryUI.isVisible())
+					inventoryUI.show();
+			}
+
 			return true;
 		}
 	};
@@ -259,7 +269,7 @@ public class SceneScreen implements BladeScreen {
 	public Recorder getRecorder() {
 		return recorder;
 	}
-	
+
 	public TesterBot getTesterBot() {
 		return testerBot;
 	}
@@ -330,19 +340,20 @@ public class SceneScreen implements BladeScreen {
 
 		state = s;
 	}
-	
+
 	/**
 	 * Sets the game speed. Can be used to fastfordward
 	 * 
-	 * @param s The multiplier speed. ej. 2.0
+	 * @param s
+	 *            The multiplier speed. ej. 2.0
 	 */
 	public void setSpeed(float s) {
 		speed = s;
 	}
-	
+
 	public float getSpeed() {
 		return speed;
-	}	
+	}
 
 	private void update(float delta) {
 		World w = World.getInstance();
@@ -384,7 +395,7 @@ public class SceneScreen implements BladeScreen {
 		case TESTER_BOT_MODE:
 			if (!testerBot.isEnabled())
 				setUIState(UIStates.SCENE_MODE);
-			break;			
+			break;
 		case SCENE_MODE:
 			if (w.isPaused())
 				setUIState(UIStates.PAUSE_MODE);
@@ -393,7 +404,7 @@ public class SceneScreen implements BladeScreen {
 			else if (recorder.isPlaying())
 				setUIState(UIStates.PLAY_MODE);
 			else if (testerBot.isEnabled())
-				setUIState(UIStates.TESTER_BOT_MODE);			
+				setUIState(UIStates.TESTER_BOT_MODE);
 			else if (inventoryUI.isVisible())
 				setUIState(UIStates.INVENTORY_MODE);
 			else if (w.getCurrentDialog() != null)
@@ -430,7 +441,7 @@ public class SceneScreen implements BladeScreen {
 				if (showDesc)
 					ui.getPointer().setDesc(currentActor.getDesc());
 
-				if (currentActor.getVerb("leave") != null) {					
+				if (currentActor.getVerb("leave") != null) {
 					ui.getPointer().setLeaveIcon(calcLeaveArrowRotation());
 				} else
 					ui.getPointer().setHotspotIcon();
@@ -439,39 +450,37 @@ public class SceneScreen implements BladeScreen {
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Calcs the rotation based in the actor screen position
 	 */
 	private float calcLeaveArrowRotation() {
 
 		currentActor.getBBox().getBoundingRectangle().getCenter(unproject2Tmp);
-		
-		if(unproject2Tmp.x < stage.getViewport().getWorldWidth() / 3f) {
+
+		if (unproject2Tmp.x < stage.getViewport().getWorldWidth() / 3f) {
 			return 180;
 		}
-		
-		if(unproject2Tmp.x > stage.getViewport().getWorldWidth() / 3f * 2f ) {
+
+		if (unproject2Tmp.x > stage.getViewport().getWorldWidth() / 3f * 2f) {
 			return 0;
 		}
 
-		if(unproject2Tmp.y < stage.getViewport().getWorldHeight() / 5f) {
+		if (unproject2Tmp.y < stage.getViewport().getWorldHeight() / 5f) {
 			return -90;
 		}
-		
-		
+
 		return 90;
 	}
 
 	@Override
 	public void render(float delta) {
 		World w = World.getInstance();
-		
+
 		update(delta);
-		
-//		Gdx.gl.glClearColor(0, 0, 0, 1);
-//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);		
+
+		// Gdx.gl.glClearColor(0, 0, 0, 1);
+		// Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		if (w.getAssetState() != AssetState.LOADED)
 			return;
@@ -522,8 +531,8 @@ public class SceneScreen implements BladeScreen {
 			String strDebug = sb.toString();
 
 			textLayout.setText(ui.getSkin().getFont("debug"), strDebug);
-			RectangleRenderer.draw(batch, 0, viewport.getScreenHeight() - textLayout.height - 10, textLayout.width, textLayout.height + 10,
-					Color.BLACK);
+			RectangleRenderer.draw(batch, 0, viewport.getScreenHeight() - textLayout.height - 10, textLayout.width,
+					textLayout.height + 10, Color.BLACK);
 			ui.getSkin().getFont("debug").draw(batch, textLayout, 0, viewport.getScreenHeight());
 
 			// Draw actor states when debug
@@ -582,23 +591,22 @@ public class SceneScreen implements BladeScreen {
 				Drawable drawable = getUI().getSkin().getDrawable("circle");
 				batch.setColor(Color.RED);
 				float size = DPIUtils.ICON_SIZE * DPIUtils.getSizeMultiplier();
-				
-				drawable.draw(batch, unprojectTmp.x - size/2,
-						unprojectTmp.y - size/2, size,size);
+
+				drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size, size);
 				batch.setColor(Color.WHITE);
 			} else {
 				BitmapFont font = getUI().getSkin().getFont("desc");
 				String desc = a.getDesc();
 				if (desc.charAt(0) == '@')
 					desc = I18N.getString(desc.substring(1));
-				
+
 				textLayout.setText(font, desc);
 
 				float textX = unprojectTmp.x - textLayout.width / 2;
 				float textY = unprojectTmp.y + textLayout.height;
 
-				RectangleRenderer
-						.draw(batch, textX - 8, textY - textLayout.height - 8, textLayout.width + 16, textLayout.height + 16, Color.BLACK);
+				RectangleRenderer.draw(batch, textX - 8, textY - textLayout.height - 8, textLayout.width + 16,
+						textLayout.height + 16, Color.BLACK);
 				font.draw(batch, textLayout, textX, textY);
 			}
 		}
