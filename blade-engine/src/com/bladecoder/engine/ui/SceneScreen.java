@@ -32,6 +32,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
@@ -75,7 +76,8 @@ public class SceneScreen implements BladeScreen {
 	private BaseActor currentActor = null;
 
 	private boolean drawHotspots = false;
-	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
+	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP,
+			true);
 
 	private float speed = 1.0f;
 
@@ -87,82 +89,90 @@ public class SceneScreen implements BladeScreen {
 
 	private final GlyphLayout textLayout = new GlyphLayout();
 
-	private final GestureDetector inputProcessor = new GestureDetector(new GestureDetector.GestureListener() {
-		@Override
-		public boolean touchDown(float x, float y, int pointer, int button) {
-			return true;
-		}
-
-		@Override
-		public boolean tap(float x, float y, int count, int button) {
-			EngineLogger.debug("Event TAP button: " + button);
-
-			World w = World.getInstance();
-
-			if (state == UIStates.PAUSE_MODE || state == UIStates.PLAY_MODE || state == UIStates.TESTER_BOT_MODE)
-				return true;
-
-			if (pie.isVisible())
-				pie.hide();
-
-			if (drawHotspots)
-				drawHotspots = false;
-			else {
-				viewport.getInputUnProject(unprojectTmp);
-
-				if (w.inCutMode() && !recorder.isRecording()) {
-					w.getTextManager().next();
-				} else if (state == UIStates.INVENTORY_MODE) {
-					inventoryUI.hide();
-				} else if (state == UIStates.SCENE_MODE) {
-					if(button == 2) { // Show inventory with the middle button
-						if (!inventoryUI.isVisible())
-							inventoryUI.show();					
-					} else {
-						sceneClick(button == 1);
-					}
+	private final GestureDetector inputProcessor = new GestureDetector(
+			new GestureDetector.GestureListener() {
+				@Override
+				public boolean touchDown(float x, float y, int pointer,
+						int button) {
+					return true;
 				}
-			}
 
-			return true;
-		}
+				@Override
+				public boolean tap(float x, float y, int count, int button) {
+					EngineLogger.debug("Event TAP button: " + button);
 
-		@Override
-		public boolean longPress(float x, float y) {
-			EngineLogger.debug("Event LONG PRESS");
+					World w = World.getInstance();
 
-			if (state == UIStates.SCENE_MODE) {
-				drawHotspots = true;
-			}
+					if (state == UIStates.PAUSE_MODE
+							|| state == UIStates.PLAY_MODE
+							|| state == UIStates.TESTER_BOT_MODE)
+						return true;
 
-			return false;
-		}
+					if (pie.isVisible())
+						pie.hide();
 
-		@Override
-		public boolean pan(float x, float y, float deltaX, float deltaY) {
-			return true;
-		}
+					if (drawHotspots)
+						drawHotspots = false;
+					else {
+						viewport.getInputUnProject(unprojectTmp);
 
-		@Override
-		public boolean panStop(float x, float y, int pointer, int button) {
-			return true;
-		}
+						if (w.inCutMode() && !recorder.isRecording()) {
+							w.getTextManager().next();
+						} else if (state == UIStates.INVENTORY_MODE) {
+							inventoryUI.hide();
+						} else if (state == UIStates.SCENE_MODE) {
+							if (button == 2) { // Show inventory with the middle
+												// button
+								if (!inventoryUI.isVisible())
+									inventoryUI.show();
+							} else {
+								sceneClick(button == 1);
+							}
+						}
+					}
 
-		@Override
-		public boolean fling(float velocityX, float velocityY, int button) {
-			return false;
-		}
+					return true;
+				}
 
-		@Override
-		public boolean zoom(float initialDistance, float distance) {
-			return false;
-		}
+				@Override
+				public boolean longPress(float x, float y) {
+					EngineLogger.debug("Event LONG PRESS");
 
-		@Override
-		public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-			return false;
-		}
-	}) {
+					if (state == UIStates.SCENE_MODE) {
+						drawHotspots = true;
+					}
+
+					return false;
+				}
+
+				@Override
+				public boolean pan(float x, float y, float deltaX, float deltaY) {
+					return true;
+				}
+
+				@Override
+				public boolean panStop(float x, float y, int pointer, int button) {
+					return true;
+				}
+
+				@Override
+				public boolean fling(float velocityX, float velocityY,
+						int button) {
+					return false;
+				}
+
+				@Override
+				public boolean zoom(float initialDistance, float distance) {
+					return false;
+				}
+
+				@Override
+				public boolean pinch(Vector2 initialPointer1,
+						Vector2 initialPointer2, Vector2 pointer1,
+						Vector2 pointer2) {
+					return false;
+				}
+			}) {
 		@Override
 		public boolean keyUp(int keycode) {
 			switch (keycode) {
@@ -244,13 +254,17 @@ public class SceneScreen implements BladeScreen {
 
 		@Override
 		public boolean scrolled(int amount) {
-			if (state == UIStates.SCENE_MODE || state == UIStates.INVENTORY_MODE) {
-				
-				boolean fromDown = (inventoryUI.getInvPosition() == InventoryUI.CENTER || inventoryUI.getInvPosition() == InventoryUI.DOWN);
+			if (state == UIStates.SCENE_MODE
+					|| state == UIStates.INVENTORY_MODE) {
 
-				if ((amount > 0 && fromDown || amount < 0 && !fromDown) && inventoryUI.isVisible())
+				boolean fromDown = (inventoryUI.getInvPosition() == InventoryUI.CENTER || inventoryUI
+						.getInvPosition() == InventoryUI.DOWN);
+
+				if ((amount > 0 && fromDown || amount < 0 && !fromDown)
+						&& inventoryUI.isVisible())
 					inventoryUI.hide();
-				else if ((amount > 0 && !fromDown || amount < 0 && fromDown) && !inventoryUI.isVisible())
+				else if ((amount > 0 && !fromDown || amount < 0 && fromDown)
+						&& !inventoryUI.isVisible())
 					inventoryUI.show();
 			}
 
@@ -423,15 +437,18 @@ public class SceneScreen implements BladeScreen {
 		if (state == UIStates.INVENTORY_MODE) {
 			unproject2Tmp.set(Gdx.input.getX(), Gdx.input.getY());
 			inventoryUI.screenToLocalCoordinates(unproject2Tmp);
-			currentActor = inventoryUI.getItemAt(unproject2Tmp.x, unproject2Tmp.y);
+			currentActor = inventoryUI.getItemAt(unproject2Tmp.x,
+					unproject2Tmp.y);
 		} else if (state == UIStates.SCENE_MODE) {
 			w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
 
-			currentActor = w.getCurrentScene().getActorAt(unprojectTmp.x, unprojectTmp.y);
+			currentActor = w.getCurrentScene().getActorAt(unprojectTmp.x,
+					unprojectTmp.y);
 
 			if (!w.getInventory().isVisible() && inventoryButton.isVisible())
 				inventoryButton.setVisible(false);
-			else if (w.getInventory().isVisible() && !inventoryButton.isVisible())
+			else if (w.getInventory().isVisible()
+					&& !inventoryButton.isVisible())
 				inventoryButton.setVisible(true);
 		}
 
@@ -442,7 +459,7 @@ public class SceneScreen implements BladeScreen {
 					ui.getPointer().setDesc(currentActor.getDesc());
 
 				if (currentActor.getVerb("leave") != null) {
-					ui.getPointer().setLeaveIcon(calcLeaveArrowRotation());
+					ui.getPointer().setLeaveIcon(calcLeaveArrowRotation(currentActor));
 				} else
 					ui.getPointer().setHotspotIcon();
 			} else {
@@ -454,9 +471,9 @@ public class SceneScreen implements BladeScreen {
 	/**
 	 * Calcs the rotation based in the actor screen position
 	 */
-	private float calcLeaveArrowRotation() {
+	private float calcLeaveArrowRotation(BaseActor actor) {
 
-		currentActor.getBBox().getBoundingRectangle().getCenter(unproject2Tmp);
+		actor.getBBox().getBoundingRectangle().getCenter(unproject2Tmp);
 
 		if (unproject2Tmp.x < stage.getViewport().getWorldWidth() / 3f) {
 			return 180;
@@ -494,7 +511,8 @@ public class SceneScreen implements BladeScreen {
 		w.draw();
 
 		// DRAW DEBUG BBOXES
-		if (EngineLogger.debugMode() && EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
+		if (EngineLogger.debugMode()
+				&& EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
 			renderer.setProjectionMatrix(w.getSceneCamera().combined);
 			w.getCurrentScene().drawBBoxLines(renderer);
 			renderer.end();
@@ -531,9 +549,11 @@ public class SceneScreen implements BladeScreen {
 			String strDebug = sb.toString();
 
 			textLayout.setText(ui.getSkin().getFont("debug"), strDebug);
-			RectangleRenderer.draw(batch, 0, viewport.getScreenHeight() - textLayout.height - 10, textLayout.width,
+			RectangleRenderer.draw(batch, 0, viewport.getScreenHeight()
+					- textLayout.height - 10, textLayout.width,
 					textLayout.height + 10, Color.BLACK);
-			ui.getSkin().getFont("debug").draw(batch, textLayout, 0, viewport.getScreenHeight());
+			ui.getSkin().getFont("debug")
+					.draw(batch, textLayout, 0, viewport.getScreenHeight());
 
 			// Draw actor states when debug
 			if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
@@ -547,13 +567,17 @@ public class SceneScreen implements BladeScreen {
 
 					unprojectTmp.set(r.getX(), r.getY(), 0);
 					w.getSceneCamera().scene2screen(viewport, unprojectTmp);
-					ui.getSkin().getFont("debug").draw(batch, sb.toString(), unprojectTmp.x, unprojectTmp.y);
+					ui.getSkin()
+							.getFont("debug")
+							.draw(batch, sb.toString(), unprojectTmp.x,
+									unprojectTmp.y);
 				}
 
 			}
 		}
 
-		if (!World.getInstance().inCutMode() && !recorder.isPlaying() && !testerBot.isEnabled()) {
+		if (!World.getInstance().inCutMode() && !recorder.isPlaying()
+				&& !testerBot.isEnabled()) {
 			ui.getPointer().draw(batch, viewport);
 		}
 
@@ -572,8 +596,10 @@ public class SceneScreen implements BladeScreen {
 
 	private void drawHotspots(SpriteBatch batch) {
 
-		for (BaseActor a : World.getInstance().getCurrentScene().getActors().values()) {
-			if (a == World.getInstance().getCurrentScene().getPlayer() || !a.hasInteraction() || !a.isVisible())
+		for (BaseActor a : World.getInstance().getCurrentScene().getActors()
+				.values()) {
+			if (a == World.getInstance().getCurrentScene().getPlayer()
+					|| !a.hasInteraction() || !a.isVisible())
 				continue;
 
 			Polygon p = a.getBBox();
@@ -584,16 +610,32 @@ public class SceneScreen implements BladeScreen {
 
 			Rectangle r = a.getBBox().getBoundingRectangle();
 
-			unprojectTmp.set(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2, 0);
-			World.getInstance().getSceneCamera().scene2screen(viewport, unprojectTmp);
+			unprojectTmp.set(r.getX() + r.getWidth() / 2,
+					r.getY() + r.getHeight() / 2, 0);
+			World.getInstance().getSceneCamera()
+					.scene2screen(viewport, unprojectTmp);
 
 			if (!showDesc || a.getDesc() == null) {
-				Drawable drawable = getUI().getSkin().getDrawable("circle");
-				batch.setColor(Color.RED);
+
 				float size = DPIUtils.ICON_SIZE * DPIUtils.getSizeMultiplier();
 
-				drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size, size);
-				batch.setColor(Color.WHITE);
+				if (a.getVerb("leave") != null) {
+					TextureRegionDrawable drawable = (TextureRegionDrawable) getUI()
+							.getSkin().getDrawable("leave");
+
+					// drawable.draw(batch, unprojectTmp.x - size / 2,
+					// unprojectTmp.y - size / 2, size, size);
+
+					drawable.draw(batch, unprojectTmp.x - size / 2,
+							unprojectTmp.y - size / 2, size / 2, size / 2,
+							size, size, 1.0f, 1.0f, calcLeaveArrowRotation(a));
+				} else {
+					Drawable drawable = ((TextureRegionDrawable) getUI()
+							.getSkin().getDrawable("circle")).tint(Color.RED);
+
+					drawable.draw(batch, unprojectTmp.x - size / 2,
+							unprojectTmp.y - size / 2, size, size);
+				}
 			} else {
 				BitmapFont font = getUI().getSkin().getFont("desc");
 				String desc = a.getDesc();
@@ -605,7 +647,8 @@ public class SceneScreen implements BladeScreen {
 				float textX = unprojectTmp.x - textLayout.width / 2;
 				float textY = unprojectTmp.y + textLayout.height;
 
-				RectangleRenderer.draw(batch, textX - 8, textY - textLayout.height - 8, textLayout.width + 16,
+				RectangleRenderer.draw(batch, textX - 8, textY
+						- textLayout.height - 8, textLayout.width + 16,
 						textLayout.height + 16, Color.BLACK);
 				font.draw(batch, textLayout, textX, textY);
 			}
@@ -616,18 +659,23 @@ public class SceneScreen implements BladeScreen {
 	public void resize(int width, int height) {
 
 		if (!World.getInstance().isDisposed()) {
-			viewport.setWorldSize(World.getInstance().getWidth(), World.getInstance().getHeight());
+			viewport.setWorldSize(World.getInstance().getWidth(), World
+					.getInstance().getHeight());
 			viewport.update(width, height, true);
-			World.getInstance().resize(viewport.getWorldWidth(), viewport.getWorldHeight());
+			World.getInstance().resize(viewport.getWorldWidth(),
+					viewport.getWorldHeight());
 		} else {
 			viewport.setWorldSize(width, height);
 			viewport.update(width, height, true);
 		}
 
 		pie.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
-		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
-		textManagerUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
-		inventoryButton.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
+		inventoryUI.resize(viewport.getScreenWidth(),
+				viewport.getScreenHeight());
+		textManagerUI.resize(viewport.getScreenWidth(),
+				viewport.getScreenHeight());
+		inventoryButton.resize(viewport.getScreenWidth(),
+				viewport.getScreenHeight());
 	}
 
 	public void dispose() {
@@ -677,7 +725,8 @@ public class SceneScreen implements BladeScreen {
 			String verb = Verb.LOOKAT_VERB;
 
 			if (!lookat) {
-				verb = a.getVerb(Verb.TALKTO_VERB) != null ? Verb.TALKTO_VERB : Verb.ACTION_VERB;
+				verb = a.getVerb(Verb.TALKTO_VERB) != null ? Verb.TALKTO_VERB
+						: Verb.ACTION_VERB;
 			}
 
 			runVerb(a, verb, null);
