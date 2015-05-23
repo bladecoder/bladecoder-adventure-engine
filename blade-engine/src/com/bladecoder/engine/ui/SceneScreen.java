@@ -781,8 +781,8 @@ public class SceneScreen implements BladeScreen {
 		stage = new Stage(viewport);
 		stage.addActor(textManagerUI);
 		stage.addActor(dialogUI);
-		stage.addActor(inventoryUI);
 		stage.addActor(inventoryButton);
+		stage.addActor(inventoryUI);
 		stage.addActor(pie);
 
 		multiplexer = new InputMultiplexer();

@@ -18,7 +18,6 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -45,8 +44,6 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	public final static int RIGHT = 3;
 	public final static int CENTER = 4;
 
-	private final static String MENU_BUTTON = "config";
-
 	private final Rectangle configBbox = new Rectangle();
 
 	private int tileSize;
@@ -57,8 +54,6 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	private boolean autosize = true;
 
 	private SpriteActor draggedActor = null;
-
-	private AtlasRegion configIcon;
 
 	private final SceneScreen sceneScreen;
 
@@ -226,7 +221,6 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	}
 
 	public void retrieveAssets(TextureAtlas atlas) {
-		configIcon = atlas.findRegion(MENU_BUTTON);
 	}
 
 	@Override
@@ -241,8 +235,6 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		if (style.background != null) {
 			style.background.draw(batch, getX(), getY(), getWidth(), getHeight());
 		}
-
-		batch.draw(configIcon, configBbox.x, configBbox.y, configBbox.width, configBbox.height);
 
 		// DRAW ITEMS
 		int capacity = cols * rows;
