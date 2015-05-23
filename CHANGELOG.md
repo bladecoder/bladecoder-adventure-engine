@@ -4,6 +4,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.2]
+
+### Added
+
+- Inventory improved
+	- Added configurable align (top, down, left, right, center)
+	- Added configurable autosize behaviour
+- Added arrow icon for exits when showing hotspots
+- Composer: Added several config properties in the Game Properties tab
+
+### Fixed
+
+composer: fix world width and height was not recalculated when loading
+
 ## [0.8.1]
 
 ### Fixed
