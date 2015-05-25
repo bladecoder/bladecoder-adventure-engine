@@ -91,6 +91,14 @@ public class EditableSelectBox extends Table {
 		input.setText(str);
 	}
 	
+	public int getSelectedIndex() {
+		return selectList.list.getItems().indexOf(input.getText(), false);
+	}
+	
+	public TextField getInput() {
+		return input;
+	}
+	
 	public void setItems (String... newItems) {
 		if (newItems == null) throw new IllegalArgumentException("newItems cannot be null.");
 		float oldPrefWidth = getPrefWidth();

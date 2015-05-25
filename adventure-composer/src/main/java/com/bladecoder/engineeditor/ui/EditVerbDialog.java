@@ -18,157 +18,119 @@ package com.bladecoder.engineeditor.ui;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engineeditor.ui.components.EditableOptionsInputPanel;
+import com.bladecoder.engineeditor.ui.components.EditableSelectBox;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 
 public class EditVerbDialog extends EditElementDialog {
-	public static final String VERBS[] = { "lookat", "pickup", "talkto", "use",
-			"leave", "enter", "exit", "custom" };
+	private static final String VERBS[] = { "lookat", "pickup", "talkto", "use",
+			"leave", "enter", "exit" };
 
-	public static final String SCENE_VERBS[] = { "init", "test", "custom" };
+	private static final String SCENE_VERBS[] = { "init", "test" };
+	
+	private static final String DEFAULT_DESC = "Verbs are used to create the game interaction. Select or write the verb to create";
+	private static final String CUSTOM_VERB_DESC = "User defined verbs can be called\n from dialogs or inside other verbs using \nthe 'run_verb' action";
 
-	public static final String VERBS_INFO[] = {
+	private static final String VERBS_INFO[] = {
 			"Called when the user clicks\n in the 'lookat' icon\n over a object in scene",
 			"Called when the user clicks\n in the 'pickup' icon\n over a object in scene",
 			"Called when the user clicks\n in the 'talkto' icon\n over a character in scene",
 			"Called when the user drags and drops\n an inventory object over\n an object in scene or in inventory",
 			"Called when the user clicks\n in an exit zone in scene",
 			"Called when the player enters\n in the object bounding box",
-			"Called when the player exits\n the object bounding box",
-			"User defined verbs can be called\n from dialogs or inside actions using \nthe 'run_verb' action" };
+			"Called when the player exits\n the object bounding box"};
 
-	public static final String SCENE_VERBS_INFO[] = {
+	private static final String SCENE_VERBS_INFO[] = {
 			"Called every time\n that the scene is loaded",
-			"Called every time\n that the scene is loaded in test mode.\n'test' verb is called before the 'init' verb",
-			"User defined verbs can be called\n from dialogs or inside actions using \nthe 'run_verb' action" };
+			"Called every time\n that the scene is loaded in test mode.\n'test' verb is called before the 'init' verb"};
 
 	private InputPanel[] inputs;
 
 	String attrs[] = { "id", "state", "target" };
 
-	@SuppressWarnings("unchecked")
 	public EditVerbDialog(Skin skin, BaseDocument doc, Element parentElement,
 			Element e) {
 		super(skin);
 
-		inputs = new InputPanel[4];
+		inputs = new InputPanel[3];
+		
 		inputs[0] = InputPanelFactory.createInputPanel(skin, "Verb ID",
-				"Select the verb to create.", parentElement.getTagName()
-						.equals("scene") ? SCENE_VERBS : VERBS, true);
+				"Select the verb to create.", Type.EDITABLE_OPTION, true,
+				"",	parentElement.getTagName()
+						.equals("scene") ? SCENE_VERBS : VERBS);
 		inputs[1] = InputPanelFactory.createInputPanel(skin, "State",
 				"Select the state.");
 		inputs[2] = InputPanelFactory.createInputPanel(skin,
 				"Target BaseActor",
 				"Select the target actor id for the 'use' verb");
-		inputs[3] = InputPanelFactory.createInputPanel(skin,
-				"Custom Verb Name", "Select the Custom verb id");
 
 		if (parentElement.getTagName().equals("scene"))
 			setInfo(SCENE_VERBS_INFO[0]);
 		else
 			setInfo(VERBS_INFO[0]);
 
-		((SelectBox<String>) inputs[0].getField())
+		inputs[0].getField()
 				.addListener(new ChangeListener() {
 
 					@Override
 					public void changed(ChangeEvent event, Actor actor) {
-						String id = (String) inputs[0].getText();
-						int i = ((OptionsInputPanel) inputs[0])
-								.getSelectedIndex();
-
-						if (parent.getTagName().equals("scene"))
-							setInfo(SCENE_VERBS_INFO[i]);
-						else
-							setInfo(VERBS_INFO[i]);
-
-						if (id.equals("use"))
-							setVisible(inputs[2], true);
-						else
-							setVisible(inputs[2], false);
-
-						if (id.equals("custom"))
-							setVisible(inputs[3], true);
-						else
-							setVisible(inputs[3], false);
-
-						pack();
+						updateDesc();
 					}
 
 				});
+		
+		((EditableSelectBox)inputs[0].getField()).getInput().setTextFieldListener(new TextFieldListener() {
+			@Override
+			public void keyTyped(TextField actor, char c) {
+				updateDesc();
+			}
+		});		
 
 		init(inputs, attrs, doc, parentElement, "verb", e);
 
 		setVisible(inputs[2], false);
-		setVisible(inputs[3], false);
 
 		if (e != null) {
-			boolean isCustom = true;
 			String id = e.getAttribute("id");
-
-			String verbs[] = parent.getTagName().equals("scene") ? SCENE_VERBS
-					: VERBS;
-
-			for (String v : verbs) {
-				if (v.equals(id) && !id.equals("custom")) {
-					isCustom = false;
-					break;
-				}
-			}
-
-			if (isCustom) {
-				inputs[0].setText("custom");
-				setVisible(inputs[3], true);
-				inputs[3].setText(id);
-			}
 
 			if (id.equals("use"))
 				setVisible(inputs[2], true);
 		}
+		
+		updateDesc();
 	}
+	
+	private void updateDesc() {
+		String id = (String) inputs[0].getText();
+		int i = ((EditableOptionsInputPanel) inputs[0])
+				.getSelectedIndex();
 
-	@Override
-	protected boolean validateFields() {
-		boolean isOk = true;
-
-		if (inputs[0].getText().equals("custom")
-				&& inputs[3].getText().isEmpty()) {
-			inputs[3].setError(true);
-			isOk = false;
+		if(i == -1) {
+			if(id.isEmpty())
+				setInfo(DEFAULT_DESC);
+			else
+				setInfo(CUSTOM_VERB_DESC);
 		} else {
-			inputs[3].setError(false);
-		}
-
-		return isOk;
-	}
-
-	@Override
-	protected void fill() {
-		// Remove previous params
-		while (e.getAttributes().getLength() > 0) {
-			e.removeAttribute(e.getAttributes().item(0).getNodeName());
-		}
-
-		for (int j = 0; j < a.length; j++) {
-			InputPanel input = i[j];
-			
-			if(!i[j].isVisible())
-				continue;
-			
-			if (!input.getText().isEmpty()) {
-				e.setAttribute(a[j], input.getText());
+			if (parent.getTagName().equals("scene")) {
+				setInfo(SCENE_VERBS_INFO[i]);
 			} else {
-				e.removeAttribute(a[j]);
+				setInfo(VERBS_INFO[i]);	
 			}
 		}
 
-		if (e.getAttribute("id").equals("custom"))
-			e.setAttribute("id", inputs[3].getText());
+		if (id.equals("use"))
+			setVisible(inputs[2], true);
+		else
+			setVisible(inputs[2], false);
+
+		pack();		
 	}
 }

@@ -41,4 +41,8 @@ public class EditableOptionsInputPanel extends InputPanel {
 		
 		input.setSelected(s);
 	}
+
+	public int getSelectedIndex() {
+		return input.getSelectedIndex();
+	}
 }
