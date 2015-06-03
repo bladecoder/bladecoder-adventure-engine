@@ -319,6 +319,8 @@ public class DebugScreen implements BladeScreen {
 		// ------------- BACK BUTTON
 
 		TextButton back = new TextButton("Back", ui.getSkin(), "menu");
+		back.getLabelCell().padLeft(DPIUtils.MARGIN_SIZE);
+		back.getLabelCell().padRight(DPIUtils.MARGIN_SIZE);
 		back.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);

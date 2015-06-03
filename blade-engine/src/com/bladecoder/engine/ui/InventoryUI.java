@@ -24,7 +24,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -59,7 +58,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	private InventoryUIStyle style;
 
-	private ImageButton menuButton;
+	private CustomImageButton menuButton;
 
 	private final Vector2 orgPos = new Vector2();
 	private final Vector2 targetPos = new Vector2();
@@ -130,7 +129,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 		});
 
-		menuButton = new ImageButton(style.menuButtonStyle);
+		menuButton = new CustomImageButton(style.menuButtonStyle);
 
 		addActor(menuButton);
 		menuButton.addListener(new ChangeListener() {
@@ -213,10 +212,6 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		setX(orgPos.x);
 		setY(orgPos.y);
 
-		float size = DPIUtils.getPrefButtonSize();
-		float iconSize = Math.max(size / 2, DPIUtils.ICON_SIZE);
-		menuButton.setSize(size, size);
-		menuButton.getImageCell().maxSize(iconSize, iconSize);
 		menuButton.setPosition(getWidth() - menuButton.getWidth() / 2, (getHeight() - menuButton.getHeight()) / 2);
 	}
 

@@ -27,7 +27,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -135,6 +134,8 @@ public class LoadSaveScreen implements BladeScreen {
 		Label title = new Label(loadScreenMode ? "LOAD SCREEN" : "SAVE SCREEN", ui.getSkin(), "title");
 
 		TextButton back = new TextButton("Back", ui.getSkin(), "menu");
+		back.getLabelCell().padLeft(DPIUtils.MARGIN_SIZE);
+		back.getLabelCell().padRight(DPIUtils.MARGIN_SIZE);		
 		back.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
@@ -233,8 +234,8 @@ public class LoadSaveScreen implements BladeScreen {
 	private Button getSlotButton(int slot) {
 		Skin skin = ui.getSkin();
 		Button button = new Button(skin);
-		ButtonStyle style = button.getStyle();
-		style.up = style.down = skin.getDrawable("black");
+//		ButtonStyle style = button.getStyle();
+//		style.up = style.down = skin.getDrawable("black");
 
 		String textLabel = "New Slot";
 
@@ -250,9 +251,10 @@ public class LoadSaveScreen implements BladeScreen {
 		button.row();
 		
 		Label label = new Label(textLabel, skin);
+		label.getStyle().background = skin.getDrawable("black");
 		label.setAlignment(Align.center);
 		
-		button.add(label);
+		button.add(label).fillX();
 
 		button.setName(Integer.toString(slot));
 		button.addListener(levelClickListener);

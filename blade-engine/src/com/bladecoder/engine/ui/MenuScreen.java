@@ -231,21 +231,21 @@ public class MenuScreen implements BladeScreen {
 		
 		
 		// BOTTOM-RIGHT BUTTON STACK
-		ImageButton credits = new ImageButton(ui.getSkin(), "credits");
+		ImageButton credits = new CustomImageButton(ui.getSkin(), "credits");
 		credits.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.CREDIT_SCREEN);
 			}
 		});
 		
-		ImageButton help = new ImageButton(ui.getSkin(), "help");
+		ImageButton help = new CustomImageButton(ui.getSkin(), "help");
 		help.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.HELP_SCREEN);
 			}
 		});
 		
-		ImageButton debug = new ImageButton(ui.getSkin(), "debug");
+		ImageButton debug = new CustomImageButton(ui.getSkin(), "debug");
 		debug.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				DebugScreen debugScr = new DebugScreen();

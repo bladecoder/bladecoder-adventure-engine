@@ -52,7 +52,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		sceneScreen = scr;
 		font = scr.getUI().getSkin().getFont("desc");
 				
-		lookatButton = new ImageButton(scr.getUI().getSkin(), "pie_lookat");
+		lookatButton = new CustomImageButton(scr.getUI().getSkin(), "pie_lookat");
 		addActor(lookatButton);
 		lookatButton.addListener(new ChangeListener() {			
 			@Override
@@ -65,7 +65,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 		});
 		
-		talktoButton = new ImageButton(scr.getUI().getSkin(), "pie_talkto");
+		talktoButton = new CustomImageButton(scr.getUI().getSkin(), "pie_talkto");
 		addActor(talktoButton);
 		talktoButton.addListener(new ChangeListener() {			
 			@Override
@@ -78,7 +78,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 		});
 		
-		pickupButton = new ImageButton(scr.getUI().getSkin(), "pie_pickup");
+		pickupButton = new CustomImageButton(scr.getUI().getSkin(), "pie_pickup");
 		addActor(pickupButton);
 		pickupButton.addListener(new ChangeListener() {			
 			@Override
@@ -189,16 +189,5 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		viewportHeight = height;
 		
 		setBounds(0, 0, width, height);
-
-		float size = DPIUtils.getPrefButtonSize();
-		float iconSize = Math.max(size/2, DPIUtils.ICON_SIZE);
-		talktoButton.setSize(size, size);
-		talktoButton.getImageCell().maxSize(iconSize, iconSize);
-
-		pickupButton.setSize(size, size);
-		pickupButton.getImageCell().maxSize(iconSize, iconSize);
-		
-		lookatButton.setSize(size, size);
-		lookatButton.getImageCell().maxSize(iconSize, iconSize);
 	}
 }
