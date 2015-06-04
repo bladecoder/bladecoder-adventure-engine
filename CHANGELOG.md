@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.3]
+
+- UI Fixes
+  - Inventory ui over inventory icon
+  - Edit verbs dialog improvement
+  - Custom autosize button
+
+
 ## [0.8.2]
 
 ### Added
