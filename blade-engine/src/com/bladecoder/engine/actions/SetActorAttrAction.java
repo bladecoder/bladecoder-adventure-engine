@@ -22,6 +22,7 @@ import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
@@ -104,8 +105,10 @@ public class SetActorAttrAction implements Action {
 		}
 		
 		if(position != null) {
+			float scale = EngineAssetManager.getInstance().getScale();
+			
 			Vector2 pos = Param.parseVector2(position);
-			actor.setPosition(pos.x, pos.y);
+			actor.setPosition(pos.x * scale, pos.y * scale);
 		}
 		
 		if(scale != null) {		

@@ -210,6 +210,11 @@ public class World implements Serializable, AssetConsumer {
 		timeOfGame += delta;
 
 		ActionCallbackQueue.run();
+		
+		// Check because the ActionCallbackQueue can call to setCurrentScene()
+		if (assetState != AssetState.LOADED)
+			return;
+		
 		getCurrentScene().update(delta);
 		textManager.update(delta);
 		timers.update(delta);

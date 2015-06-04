@@ -220,7 +220,7 @@ public class AtlasRenderer implements ActorRenderer {
 		faTween.start(this, repeatType, count, currentAnimation.duration, cb);
 	}
 
-	public int getNumFrames() {
+	public int getNumFrames() {		
 		return currentAnimation.regions.size;
 	}
 
