@@ -237,6 +237,10 @@ public class Scene implements Serializable,
 		}
 		
 		camera.update(delta);
+		
+		if(followActor != null) {
+			camera.updatePos(followActor);
+		}
 	}
 
 	public void draw(SpriteBatch spriteBatch) {
@@ -572,28 +576,16 @@ public class Scene implements Serializable,
 		json.writeValue("verbs", verbs);
 		
 		json.writeValue("actors", actors);
-		json.writeValue("player", player,
-				player == null ? null : player.getClass());
+		json.writeValue("player", player);
 
-		json.writeValue(
-				"backgroundAtlas",
-				backgroundAtlas,
-				backgroundAtlas == null ? null : backgroundAtlas
-						.getClass());
-		json.writeValue(
-				"backgroundRegionId",
-				backgroundRegionId,
-				backgroundRegionId == null ? null : backgroundRegionId
-						.getClass());
+		json.writeValue("backgroundAtlas", backgroundAtlas);
+		json.writeValue("backgroundRegionId",backgroundRegionId);
 
-		json.writeValue("lightMapAtlas", lightMapAtlas,
-				lightMapAtlas == null ? null : lightMapAtlas.getClass());
+		json.writeValue("lightMapAtlas", lightMapAtlas);
 		
-		json.writeValue("lightMapRegionId", lightMapRegionId,
-				lightMapRegionId == null ? null : lightMapRegionId.getClass());
+		json.writeValue("lightMapRegionId", lightMapRegionId);
 
-		json.writeValue("musicFilename", musicFilename,
-				musicFilename == null ? null : musicFilename.getClass());
+		json.writeValue("musicFilename", musicFilename);
 		json.writeValue("loopMusic", loopMusic);
 		json.writeValue("initialMusicDelay", initialMusicDelay);
 		json.writeValue("repeatMusicDelay", repeatMusicDelay);

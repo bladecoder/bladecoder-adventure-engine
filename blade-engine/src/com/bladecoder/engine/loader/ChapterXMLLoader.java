@@ -295,7 +295,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			if (atts.getValue(XMLConstants.WALKING_SPEED_ATTR) != null
 					&& !atts.getValue(XMLConstants.WALKING_SPEED_ATTR).isEmpty()) {
-				float s = Float.parseFloat(atts.getValue(XMLConstants.WALKING_SPEED_ATTR)) * scale;
+				float s = Float.parseFloat(atts.getValue(XMLConstants.WALKING_SPEED_ATTR));
 				((SpriteActor) actor).setWalkingSpeed(s);
 			}
 

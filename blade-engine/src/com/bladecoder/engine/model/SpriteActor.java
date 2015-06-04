@@ -83,10 +83,6 @@ public class SpriteActor extends BaseActor {
 				
 				setScale(s);
 			}
-
-			if (scene.getCameraFollowActor() == this)
-				scene.getCamera().updatePos(this);
-
 		}
 
 	}

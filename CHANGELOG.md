@@ -4,7 +4,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.4]
+
+### Fixed
+
+- fix camera loading state
+- fix bad casting when read saved game
+- fix walking speed double scale multiply
+
 ## [0.8.3]
+
+### Added
 
 - UI Fixes
   - Inventory ui over inventory icon
@@ -24,7 +34,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-composer: fix world width and height was not recalculated when loading
+-composer: fix world width and height was not recalculated when loading
 
 ## [0.8.1]
 
