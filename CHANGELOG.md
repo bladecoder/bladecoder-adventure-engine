@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.5]
+
+### Fixed
+
+- SetActorAttrAction: multiply position by scale
+- Check because the ActionCallbackQueue can call to setCurrentScene()
+
 ## [0.8.4]
 
 ### Fixed
