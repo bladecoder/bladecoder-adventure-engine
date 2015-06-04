@@ -680,7 +680,7 @@ public class SpineRenderer implements ActorRenderer {
 		String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);
 
 		if (currentAnimationId != null)
-			currentAnimation = (AtlasAnimationDesc) fanims.get(currentAnimationId);
+			currentAnimation = fanims.get(currentAnimationId);
 
 		initAnimation = json.readValue("initAnimation", String.class, jsonData);
 
