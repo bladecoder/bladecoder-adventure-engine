@@ -181,7 +181,9 @@ public class Scene implements Serializable,
 		if(depthVector==null)
 			return 1.0f;
 		
-		return Math.max(0, (y - depthVector.x) / (depthVector.y - depthVector.x));
+		float worldScale = EngineAssetManager.getInstance().getScale();
+		
+		return Math.max(0, (y - depthVector.x * worldScale) / ((depthVector.y - depthVector.x) * worldScale));
 	}
 
 	public void setMusic(String filename, boolean loop, float initialDelay,
