@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [0.8.5]
+## [0.8.6]
 
 ### Fixed
 - Fix fakeDepthScale() calc: added world scale factor
