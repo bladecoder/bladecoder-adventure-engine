@@ -346,6 +346,8 @@ public class World implements Serializable, AssetConsumer {
 			timers.clear();
 			currentScene.stopMusic();
 			currentDialog = null;
+			
+			// TODO Stop sounds
 
 			if(CACHE_ENABLED) 
 				cachedScene = currentScene; // CACHE ENABLED

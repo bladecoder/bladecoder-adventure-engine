@@ -476,4 +476,20 @@ public class EngineAssetManager extends AssetManager {
 
 		return file;
 	}
+	
+	public FileHandle getUserFolder() {
+		FileHandle file = null;
+
+		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Applet) {
+			String dir = Config.getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
+			dir.replaceAll(" ", "");
+
+			StringBuilder sb = new StringBuilder(".");
+			file = Gdx.files.external(sb.append(dir).toString());
+		} else {
+			file = Gdx.files.local(NOT_DESKTOP_PREFS_DIR);
+		}
+
+		return file;
+	}
 }

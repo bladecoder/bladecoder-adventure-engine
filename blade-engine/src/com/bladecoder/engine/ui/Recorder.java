@@ -50,6 +50,7 @@ public class Recorder {
 	private boolean recording = false;
 	private float time;
 	private int pos;
+	private String fileName = DEFAULT_RECORD_FILENAME;
 
 	public void update(float delta) {
 
@@ -171,7 +172,7 @@ public class Recorder {
 
 		if (recording) {
 			EngineLogger.debug("RECORDING...");
-			World.getInstance().saveGameState(DEFAULT_RECORD_FILENAME + GAMESTATE_EXT);
+			World.getInstance().saveGameState(fileName + GAMESTATE_EXT);
 		} else
 			save();
 	}
@@ -208,23 +209,24 @@ public class Recorder {
 		int dialogOption;
 		Vector2 pos;
 	}
+	
 
-	public void load() {
-		load(null);
+	public String getFileName() {
+		return fileName;
+	}
+	
+	public void setFilename(String name) {
+		if (name != null && !name.trim().isEmpty()) {
+			fileName = name;
+		} else {
+			fileName = DEFAULT_RECORD_FILENAME;
+		}		
 	}
 
 	@SuppressWarnings("unchecked")
-	public void load(String name) {
-		String gameStateFileName;
-		String recordFileName;
-
-		if (name != null) {
-			gameStateFileName = name + GAMESTATE_EXT;
-			recordFileName = name + RECORD_EXT;
-		} else {
-			gameStateFileName = DEFAULT_RECORD_FILENAME + GAMESTATE_EXT;
-			recordFileName = DEFAULT_RECORD_FILENAME + RECORD_EXT;
-		}
+	public void load() {
+		String gameStateFileName = fileName + GAMESTATE_EXT;
+		String recordFileName = fileName + RECORD_EXT;
 
 		FileHandle verbsFile = EngineAssetManager.getInstance().getUserFile(recordFileName);
 
@@ -257,7 +259,7 @@ public class Recorder {
 
 		String s = json.prettyPrint(list);
 
-		Writer w = EngineAssetManager.getInstance().getUserFile(DEFAULT_RECORD_FILENAME + RECORD_EXT)
+		Writer w = EngineAssetManager.getInstance().getUserFile(fileName + RECORD_EXT)
 				.writer(false, "UTF-8");
 
 		try {

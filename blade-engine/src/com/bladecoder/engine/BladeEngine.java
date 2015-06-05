@@ -132,7 +132,8 @@ public class BladeEngine implements ApplicationListener {
 		
 		if (recordName != null) {
 			SceneScreen scr = (SceneScreen)ui.getScreen(Screens.SCENE_SCREEN);
-			scr.getRecorder().load(recordName);
+			scr.getRecorder().setFilename(recordName);
+			scr.getRecorder().load();
 			scr.getRecorder().setPlaying(true);
 		}
 

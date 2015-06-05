@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -138,7 +139,8 @@ public class DebugScreen implements BladeScreen {
 				Recorder r = scnScr.getRecorder();
 
 				if (!r.isPlaying()) {
-					r.load(recordings.getSelected());
+					r.setFilename(recordings.getSelected());
+					r.load();
 					r.setPlaying(true);
 					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 				} else {
@@ -158,10 +160,14 @@ public class DebugScreen implements BladeScreen {
 					r.setPlaying(false);
 				}
 				
-				// TODO SET REC FILENAME
+				if(!r.isRecording())
+					r.setFilename(recFilename.getText());
 
 				r.setRecording(!r.isRecording());
 				rec.setText(r.isRecording() ? "Stop Rec" : "Rec");
+				
+				if(r.isRecording())
+					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
 
@@ -171,20 +177,27 @@ public class DebugScreen implements BladeScreen {
 		ArrayList<String> al = new ArrayList<String>();
 
 		for (String file : testFiles)
-			if (file.endsWith(".verbs.rec"))
+			if (file.endsWith(Recorder.RECORD_EXT))
 				al.add(file.substring(0, file.indexOf(Recorder.RECORD_EXT)));
+		
+		FileHandle[] testFiles2 = EngineAssetManager.getInstance().getUserFolder().list();
+
+		for (FileHandle file : testFiles2)
+			if (file.name().endsWith(Recorder.RECORD_EXT))
+				al.add(file.name().substring(0, file.name().indexOf(Recorder.RECORD_EXT)));
 
 		recordings.setItems(al.toArray(new String[al.size()]));
 
 		play.pad(2, 3, 2, 3);
 		rec.pad(2, 3, 2, 3);
 		
-		recFilename = new TextField("", ui.getSkin());
+		recFilename = new TextField(r.getFileName(), ui.getSkin());
 		
 		HorizontalGroup rGroup = new HorizontalGroup();
 		rGroup.space(10);
 		rGroup.addActor(recordings);
 		rGroup.addActor(play);
+		rGroup.addActor(new Label("Rec. Filename", ui.getSkin()));
 		rGroup.addActor(recFilename);
 		rGroup.addActor(rec);
 
@@ -197,6 +210,8 @@ public class DebugScreen implements BladeScreen {
 		go.addListener(new ClickListener() {
 
 			public void clicked(InputEvent event, float x, float y) {
+				World.getInstance().resume();
+				World.getInstance().setCutMode(false);
 				World.getInstance().setCurrentScene(scenes.getSelected());
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
