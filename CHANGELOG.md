@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- Fix: use scale for speed in PositionAction
+
 ## [0.8.6]
 
 ### Fixed

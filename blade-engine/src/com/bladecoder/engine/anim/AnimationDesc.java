@@ -112,7 +112,7 @@ public class AnimationDesc {
 				}
 			}
 		} else { // HOR OR VERT MOVEMENT
-			if (Math.abs(dx) > Math.abs(dy)) { // HOR. MOVEMENT
+			if (Math.abs(dx) > Math.abs(dy) / DIRECTION_ASPECT_TOLERANCE) { // HOR. MOVEMENT
 				if (dx > 0) { // TO THE RIGHT
 					return RIGHT;
 				} else { // TO THE LEFT
