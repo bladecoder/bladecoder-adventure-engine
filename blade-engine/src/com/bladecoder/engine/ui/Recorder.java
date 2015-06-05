@@ -40,8 +40,9 @@ import com.bladecoder.engine.util.RectangleRenderer;
  * @author rgarcia
  */
 public class Recorder {
-	private static final String RECORD_FILENAME = "verbs.rec";
-	private static final String GAMESTATE_FILENAME = "gamestate.rec";
+	private static final String DEFAULT_RECORD_FILENAME = "record";
+	public static final String RECORD_EXT = ".verbs.rec";
+	public static final String GAMESTATE_EXT = ".gamestate.rec";
 	private static final float WAITING_TIME = .5f;
 
 	private ArrayList<TimeVerb> list = new ArrayList<TimeVerb>();
@@ -170,7 +171,7 @@ public class Recorder {
 
 		if (recording) {
 			EngineLogger.debug("RECORDING...");
-			World.getInstance().saveGameState(GAMESTATE_FILENAME);
+			World.getInstance().saveGameState(DEFAULT_RECORD_FILENAME + GAMESTATE_EXT);
 		} else
 			save();
 	}
@@ -218,11 +219,11 @@ public class Recorder {
 		String recordFileName;
 
 		if (name != null) {
-			gameStateFileName = name + "." + GAMESTATE_FILENAME;
-			recordFileName = name + "." + RECORD_FILENAME;
+			gameStateFileName = name + GAMESTATE_EXT;
+			recordFileName = name + RECORD_EXT;
 		} else {
-			gameStateFileName = GAMESTATE_FILENAME;
-			recordFileName = RECORD_FILENAME;
+			gameStateFileName = DEFAULT_RECORD_FILENAME + GAMESTATE_EXT;
+			recordFileName = DEFAULT_RECORD_FILENAME + RECORD_EXT;
 		}
 
 		FileHandle verbsFile = EngineAssetManager.getInstance().getUserFile(recordFileName);
@@ -256,7 +257,7 @@ public class Recorder {
 
 		String s = json.prettyPrint(list);
 
-		Writer w = EngineAssetManager.getInstance().getUserFile(RECORD_FILENAME)
+		Writer w = EngineAssetManager.getInstance().getUserFile(DEFAULT_RECORD_FILENAME + RECORD_EXT)
 				.writer(false, "UTF-8");
 
 		try {

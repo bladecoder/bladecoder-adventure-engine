@@ -45,6 +45,8 @@ public class DebugScreen implements BladeScreen {
 	private TextField speedText;
 	private SelectBox<String> recordings;
 	private SelectBox<String> scenes;
+	private TextField recFilename;
+	TextButton rec;
 	
 	private TextField testerTimeConf;
 	private TextField inSceneTimeConf;
@@ -128,7 +130,7 @@ public class DebugScreen implements BladeScreen {
 
 		Recorder r = ((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getRecorder();
 		TextButton play = new TextButton(r.isPlaying() ? "Stop" : "Play", ui.getSkin());
-		TextButton rec = new TextButton(r.isRecording() ? "Stop Rec" : "Rec", ui.getSkin());
+		rec = new TextButton(r.isRecording() ? "Stop Rec" : "Rec", ui.getSkin());
 		play.addListener(new ClickListener() {
 
 			public void clicked(InputEvent event, float x, float y) {
@@ -155,8 +157,11 @@ public class DebugScreen implements BladeScreen {
 				if (r.isPlaying()) {
 					r.setPlaying(false);
 				}
+				
+				// TODO SET REC FILENAME
 
 				r.setRecording(!r.isRecording());
+				rec.setText(r.isRecording() ? "Stop Rec" : "Rec");
 			}
 		});
 
@@ -167,17 +172,20 @@ public class DebugScreen implements BladeScreen {
 
 		for (String file : testFiles)
 			if (file.endsWith(".verbs.rec"))
-				al.add(file.substring(0, file.indexOf(".verbs.rec")));
+				al.add(file.substring(0, file.indexOf(Recorder.RECORD_EXT)));
 
 		recordings.setItems(al.toArray(new String[al.size()]));
 
 		play.pad(2, 3, 2, 3);
 		rec.pad(2, 3, 2, 3);
 		
+		recFilename = new TextField("", ui.getSkin());
+		
 		HorizontalGroup rGroup = new HorizontalGroup();
 		rGroup.space(10);
 		rGroup.addActor(recordings);
 		rGroup.addActor(play);
+		rGroup.addActor(recFilename);
 		rGroup.addActor(rec);
 
 		table.row().pad(5).align(Align.left);

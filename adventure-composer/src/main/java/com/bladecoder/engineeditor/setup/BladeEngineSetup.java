@@ -297,7 +297,7 @@ public class BladeEngineSetup {
 		new File(outputDir + "/" + assetPath + "/music").mkdirs();
 		new File(outputDir + "/" + assetPath + "/sounds").mkdirs();
 		new File(outputDir + "/" + assetPath + "/spine").mkdirs();
-		new File(outputDir + "/" + assetPath + "/test").mkdirs();
+		new File(outputDir + "/" + assetPath + "/tests").mkdirs();
 		new File(outputDir + "/" + assetPath + "/ui/1").mkdirs();
 		new File(outputDir + "/" + assetPath + "/ui/fonts").mkdirs();
 
