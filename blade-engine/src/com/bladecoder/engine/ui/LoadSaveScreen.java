@@ -15,10 +15,14 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -27,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -165,8 +170,12 @@ public class LoadSaveScreen implements BladeScreen {
 		Table slots = new Table().pad(pad);
 		slots.defaults().pad(pad, pad, pad, pad);
 
+		ArrayList<String> sl = getSlots();
+		
+		Collections.sort(sl);
+		
 		int c = 0;
-		while (slotExists(c)) {
+		for (String s:sl) {
 
 			if (c % ROW_SLOTS == 0 && c % (ROW_SLOTS * COL_SLOTS) != 0)
 				slots.row();
@@ -177,7 +186,7 @@ public class LoadSaveScreen implements BladeScreen {
 				slots.defaults().pad(pad, pad, pad, pad);
 			}
 
-			slots.add(getSlotButton(c)).expand().fill();
+			slots.add(getSlotButton(s)).expand().fill();
 			c++;
 		}
 
@@ -192,7 +201,7 @@ public class LoadSaveScreen implements BladeScreen {
 				slots.defaults().pad(20, 40, 20, 40);
 			}
 
-			slots.add(getSlotButton(c)).expand().fill();
+			slots.add(getSlotButton(Long.toString(new Date().getTime()))).expand().fill();
 		}
 
 		// Add last page
@@ -202,7 +211,7 @@ public class LoadSaveScreen implements BladeScreen {
 		table.add(title);
 		table.row();
 
-		if (loadScreenMode && !slotExists(0)) {
+		if (loadScreenMode && sl.size() == 0) {
 			Label lbl = new Label("No Saved Games Found", ui.getSkin(), "title");
 			lbl.setAlignment(Align.center);
 			table.add(lbl).expand().fill();
@@ -220,7 +229,7 @@ public class LoadSaveScreen implements BladeScreen {
 		Gdx.input.setInputProcessor(stage);
 	}
 
-	private boolean slotExists(int slot) {
+	private boolean slotExists(String slot) {
 		String filename = slot + World.GAMESTATE_EXT;
 		return World.getInstance().savedGameExists(filename);
 	}
@@ -231,37 +240,57 @@ public class LoadSaveScreen implements BladeScreen {
 	 * @param slot
 	 * @return The button to use for one slot
 	 */
-	private Button getSlotButton(int slot) {
+	private Button getSlotButton(String slot) {
 		Skin skin = ui.getSkin();
-		Button button = new Button(skin);
-//		ButtonStyle style = button.getStyle();
-//		style.up = style.down = skin.getDrawable("black");
+		Button button = new Button(new ButtonStyle());
+		ButtonStyle style = button.getStyle();
+		style.up = style.down = skin.getDrawable("black");
 
 		String textLabel = "New Slot";
 
 		if (slotExists(slot)) {
-			button.add(getScreenshot(slot)).size(slotWidth, slotHeight);
-			textLabel = Integer.toString(slot);
+			button.add(getScreenshot(slot)).size(slotWidth * .9f, slotHeight * .9f);
+			
+			try{ 
+				long l = Long.parseLong(slot);
+				
+				Date d = new Date(l);
+				textLabel = (new SimpleDateFormat()).format(d);
+			} catch(Exception e) {
+				textLabel = slot;	
+			}
 		} else {
 			Image fg = new Image(skin.getDrawable("plus"));
 			button.add(fg).size(slotHeight/2, slotHeight/2);
-			button.setSize(slotWidth, slotHeight);
 		}
+		
+		button.setSize(slotWidth, slotHeight);
 
 		button.row();
 		
 		Label label = new Label(textLabel, skin);
-		label.getStyle().background = skin.getDrawable("black");
 		label.setAlignment(Align.center);
 		
 		button.add(label).fillX();
 
-		button.setName(Integer.toString(slot));
+		button.setName(slot);
 		button.addListener(levelClickListener);
 		return button;
 	}
 	
-	private Image getScreenshot(int slot) {
+	private ArrayList<String> getSlots() {
+		ArrayList<String> al = new ArrayList<String>();
+		
+		FileHandle[] list = EngineAssetManager.getInstance().getUserFolder().list();
+
+		for (FileHandle file : list)
+			if (file.name().endsWith(World.GAMESTATE_EXT))
+				al.add(file.name().substring(0, file.name().indexOf(World.GAMESTATE_EXT)));
+		
+		return al;
+	}
+	
+	private Image getScreenshot(String slot) {
 		String filename = slot + World.GAMESTATE_EXT + ".png";
 		
 		Texture t = new Texture(EngineAssetManager.getInstance().getUserFile(filename));

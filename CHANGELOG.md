@@ -7,6 +7,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.8.5]
 
 ### Fixed
+- Fix fakeDepthScale() calc: added world scale factor
+- Change 'assets/test' folder name for 'assets/tests' when creating a project
+- Some debugscreen changes
+- Load/Save Game Screen improvements
+
+## [0.8.5]
+
+### Fixed
 
 - SetActorAttrAction: multiply position by scale
 - Check because the ActionCallbackQueue can call to setCurrentScene()
