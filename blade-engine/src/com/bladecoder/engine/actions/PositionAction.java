@@ -98,8 +98,8 @@ public class PositionAction extends BaseCallbackAction {
 			if(mode != null && mode.equals("speed")) {
 				Vector2 p0 = new Vector2(actor.getX(), actor.getY());
 				
-				s = p0.dst(pos.x, pos.y)
-						/ (EngineAssetManager.getInstance().getScale() * speed);
+				s = p0.dst(pos.x * scale, pos.y * scale)
+						/ (scale * speed);
 			} else {
 				s = speed;
 			}
