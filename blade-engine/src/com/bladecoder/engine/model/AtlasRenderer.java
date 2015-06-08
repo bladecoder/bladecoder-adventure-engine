@@ -222,7 +222,7 @@ public class AtlasRenderer implements ActorRenderer {
 		
 		faTween = new FATween();
 		faTween.start(this, repeatType, count, currentAnimation.duration, cb);
-		update(0);
+		setFrame(0);
 		computeBbox();
 	}
 
