@@ -132,5 +132,20 @@ public class EditVerbDialog extends EditElementDialog {
 			setVisible(inputs[2], false);
 
 		pack();		
-	}
+	}	
+
+	@Override
+	protected void fill() {
+		for (int j = 0; j < a.length; j++) {
+			InputPanel input = i[j];
+			
+			if (!input.getText().isEmpty() && input.isVisible()) {
+				e.setAttribute(a[j], input.getText());
+			} else {
+				e.removeAttribute(a[j]);
+			}		
+		}
+	
+		doc.setModified(e);
+	}	
 }
