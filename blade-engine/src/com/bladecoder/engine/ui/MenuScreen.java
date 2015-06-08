@@ -159,7 +159,7 @@ public class MenuScreen implements BladeScreen {
 		table.row();
 		table.add(newGame);
 
-		TextButton loadGame = new TextButton("Load Game", ui.getSkin(), style.textButtonStyle);
+		TextButton loadGame = new TextButton(I18N.getString("ui.load"), ui.getSkin(), style.textButtonStyle);
 		loadGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.LOAD_GAME);
@@ -170,7 +170,7 @@ public class MenuScreen implements BladeScreen {
 		table.add(loadGame);
 
 		if (World.getInstance().getCurrentScene() != null) {
-			TextButton saveGame = new TextButton("Save Game", ui.getSkin(), style.textButtonStyle);
+			TextButton saveGame = new TextButton(I18N.getString("ui.save"), ui.getSkin(), style.textButtonStyle);
 			saveGame.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
 					ui.setCurrentScreen(Screens.SAVE_GAME);

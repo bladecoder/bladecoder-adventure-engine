@@ -43,6 +43,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.DPIUtils;
@@ -136,9 +137,9 @@ public class LoadSaveScreen implements BladeScreen {
 		table.center();
 		table.pad(pad);
 
-		Label title = new Label(loadScreenMode ? "LOAD SCREEN" : "SAVE SCREEN", ui.getSkin(), "title");
+		Label title = new Label(loadScreenMode ? I18N.getString("ui.load") : I18N.getString("ui.save"), ui.getSkin(), "title");
 
-		TextButton back = new TextButton("Back", ui.getSkin(), "menu");
+		TextButton back = new TextButton(I18N.getString("ui.back"), ui.getSkin(), "menu");
 		back.getLabelCell().padLeft(DPIUtils.MARGIN_SIZE);
 		back.getLabelCell().padRight(DPIUtils.MARGIN_SIZE);		
 		back.addListener(new ClickListener() {
@@ -212,7 +213,7 @@ public class LoadSaveScreen implements BladeScreen {
 		table.row();
 
 		if (loadScreenMode && sl.size() == 0) {
-			Label lbl = new Label("No Saved Games Found", ui.getSkin(), "title");
+			Label lbl = new Label(I18N.getString("ui.noSavedGames"), ui.getSkin(), "title");
 			lbl.setAlignment(Align.center);
 			table.add(lbl).expand().fill();
 		} else {
@@ -246,7 +247,7 @@ public class LoadSaveScreen implements BladeScreen {
 		ButtonStyle style = button.getStyle();
 		style.up = style.down = skin.getDrawable("black");
 
-		String textLabel = "New Slot";
+		String textLabel = I18N.getString("ui.newSlot");
 
 		if (slotExists(slot)) {
 			button.add(getScreenshot(slot)).size(slotWidth * .9f, slotHeight * .9f);
