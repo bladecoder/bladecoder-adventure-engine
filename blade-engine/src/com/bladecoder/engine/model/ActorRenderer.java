@@ -51,6 +51,11 @@ public interface ActorRenderer extends Serializable, AssetConsumer {
 	public String[] getInternalAnimations(AnimationDesc anim);
 	public HashMap<String, AnimationDesc> getAnimations();
 	
-	public void computeBbox(Polygon bbox);
+	/**
+	 * Compute the bbox based in the size of the animation/sprite. T
+	 * 
+	 * @param bbox The polygon to update. It will be updated when start/finish an animation.
+	 */
+	public void updateBboxFromRenderer(Polygon bbox);
 }
 

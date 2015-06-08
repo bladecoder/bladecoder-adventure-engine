@@ -53,12 +53,12 @@ import com.esotericsoftware.spine.attachments.Attachment;
 import com.esotericsoftware.spine.attachments.RegionAttachment;
 
 public class SpineRenderer implements ActorRenderer {
-	
+
 	private final static int PLAY_ANIMATION_EVENT = 0;
 	private final static int PLAY_SOUND_EVENT = 1;
 	private final static int RUN_VERB_EVENT = 2;
 	private final static int LOOP_EVENT = 3;
-	
+
 	private final static float DEFAULT_DIM = 200;
 
 	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
@@ -84,8 +84,12 @@ public class SpineRenderer implements ActorRenderer {
 	private final HashMap<String, SkeletonCacheEntry> sourceCache = new HashMap<String, SkeletonCacheEntry>();
 
 	private float lastAnimationTime = 0;
-	
-	transient private boolean eventsEnabled = true;
+
+	private boolean complete = false;
+
+	private boolean eventsEnabled = true;
+
+	private Polygon bbox;
 
 	class SkeletonCacheEntry {
 		int refCounter;
@@ -97,7 +101,6 @@ public class SpineRenderer implements ActorRenderer {
 	public SpineRenderer() {
 
 	}
-	
 
 	public void enableEvents(boolean v) {
 		eventsEnabled = v;
@@ -106,11 +109,16 @@ public class SpineRenderer implements ActorRenderer {
 	private AnimationStateListener animationListener = new AnimationStateListener() {
 		@Override
 		public void complete(int trackIndex, int loopCount) {
+			if (complete)
+				return;
+
 			if (currentAnimationType == Tween.REPEAT && (currentCount == Tween.INFINITY || currentCount > loopCount)) {
 				return;
 			}
 
-			currentSource.animation.setTimeScale(0);
+			complete = true;
+			computeBbox();
+
 			if (animationCb != null || animationCbSer != null) {
 
 				if (animationCb == null) {
@@ -126,18 +134,18 @@ public class SpineRenderer implements ActorRenderer {
 		@Override
 		public void end(int arg0) {
 		}
-		
+
 		@Override
 		public void event(int trackIndex, Event event) {
-			if(!eventsEnabled)
+			if (!eventsEnabled)
 				return;
-			
+
 			String actorId = event.getData().getName();
 			BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
-			
-			switch(event.getInt()) {
+
+			switch (event.getInt()) {
 			case PLAY_ANIMATION_EVENT:
-				((SpriteActor)actor).startAnimation(event.getString(), null);
+				((SpriteActor) actor).startAnimation(event.getString(), null);
 				break;
 			case PLAY_SOUND_EVENT:
 				actor.playSound(event.getString());
@@ -147,7 +155,7 @@ public class SpineRenderer implements ActorRenderer {
 				break;
 			case LOOP_EVENT:
 				// used for looping from a starting frame
-				break;				
+				break;
 			default:
 				EngineLogger.error("Spine event not recognized.");
 			}
@@ -198,7 +206,7 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public String[] getInternalAnimations(AnimationDesc anim) {
-		retrieveSource(anim.source, ((SpineAnimationDesc)anim).atlas);
+		retrieveSource(anim.source, ((SpineAnimationDesc) anim).atlas);
 
 		Array<Animation> animations = sourceCache.get(anim.source).skeleton.getData().getAnimations();
 		String[] result = new String[animations.size];
@@ -213,25 +221,27 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public void update(float delta) {
+		if (complete)
+			return;
+
 		if (currentSource != null && currentSource.skeleton != null) {
 			float d = delta;
-			
-			if(currentAnimationType == Tween.REVERSE) {
+
+			if (currentAnimationType == Tween.REVERSE) {
 				d = -delta;
-				
-				if(lastAnimationTime < 0) {
+
+				if (lastAnimationTime < 0) {
 					animationListener.complete(0, 1);
-					lastAnimationTime = 0f; // to avoid trigger more complete evetns
 					return;
 				}
 			}
-			
+
 			updateAnimation(d);
 
 			lastAnimationTime += d;
 		}
 	}
-	
+
 	private void updateAnimation(float time) {
 		currentSource.animation.update(time);
 		currentSource.animation.apply(currentSource.skeleton);
@@ -306,7 +316,7 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public void startAnimation(String id, int repeatType, int count, ActionCallback cb) {
-		SpineAnimationDesc fa = (SpineAnimationDesc)getAnimation(id);
+		SpineAnimationDesc fa = (SpineAnimationDesc) getAnimation(id);
 
 		if (fa == null) {
 			EngineLogger.error("AnimationDesc not found: " + id);
@@ -347,12 +357,12 @@ public class SpineRenderer implements ActorRenderer {
 			currentAnimationType = repeatType;
 		}
 
-		if(currentAnimationType == Tween.REVERSE) {
+		if (currentAnimationType == Tween.REVERSE) {
 			// get animation duration
 			Array<Animation> animations = currentSource.skeleton.getData().getAnimations();
-			
-			for(Animation a: animations) {
-				if(a.getName().equals(currentAnimation.id)) {
+
+			for (Animation a : animations) {
+				if (a.getName().equals(currentAnimation.id)) {
 					lastAnimationTime = a.getDuration() - 0.01f;
 					break;
 				}
@@ -360,7 +370,8 @@ public class SpineRenderer implements ActorRenderer {
 		} else {
 			lastAnimationTime = 0f;
 		}
-		
+
+		complete = false;
 		setCurrentAnimation();
 	}
 
@@ -371,39 +382,42 @@ public class SpineRenderer implements ActorRenderer {
 			currentSource.skeleton.setFlipX(flipX);
 			currentSource.animation.setTimeScale(currentAnimation.duration);
 			currentSource.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.REPEAT);
-			
+
 			updateAnimation(lastAnimationTime);
-			
+			computeBbox();
+
 		} catch (Exception e) {
 			EngineLogger.error("SpineRenderer:setCurrentFA " + e.getMessage());
 		}
 	}
 
-	@Override
-	public void computeBbox(Polygon bbox) {
+	private void computeBbox() {
 		float minX, minY, maxX, maxY;
-		
-		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
+
+		if (bbox != null && (bbox.getVertices() == null || bbox.getVertices().length != 8)) {
 			bbox.setVertices(new float[8]);
 		}
-		
-		float[] verts = bbox.getVertices();
-		
-		if(currentSource == null || currentSource.skeleton == null) {
-			
-			verts[0] = -getWidth()/2;
-			verts[1] = 0f;
-			verts[2] = -getWidth()/2;
-			verts[3] = getHeight();
-			verts[4] = getWidth()/2;
-			verts[5] = getHeight();
-			verts[6] = getWidth()/2;
-			verts[7] = 0f;
-			bbox.dirty();
+
+		if (currentSource == null || currentSource.skeleton == null) {
+
+			if (bbox != null) {
+
+				float[] verts = bbox.getVertices();
+
+				verts[0] = -getWidth() / 2;
+				verts[1] = 0f;
+				verts[2] = -getWidth() / 2;
+				verts[3] = getHeight();
+				verts[4] = getWidth() / 2;
+				verts[5] = getHeight();
+				verts[6] = getWidth() / 2;
+				verts[7] = 0f;
+				bbox.dirty();
+			}
 			return;
 		}
-		
-		currentSource.skeleton.setPosition(0,0);
+
+		currentSource.skeleton.setPosition(0, 0);
 		currentSource.skeleton.updateWorldTransform();
 		bounds.update(currentSource.skeleton, true);
 
@@ -442,25 +456,28 @@ public class SpineRenderer implements ActorRenderer {
 					maxY = Math.max(maxY, vertices[ii + 1]);
 				}
 			}
-			
+
 			width = (maxX - minX);
 			height = (maxY - minY);
-			
-			if(width <= 0 || height <= 0) {
+
+			if (width <= 0 || height <= 0) {
 				width = height = DEFAULT_DIM;
 			}
 		}
-		
-		verts[0] = minX;
-		verts[1] = minY;
-		verts[2] = minX;
-		verts[3] = maxY;
-		verts[4] = maxX;
-		verts[5] = maxY;
-		verts[6] = maxX;
-		verts[7] = minY;
-		
-		bbox.dirty();
+
+		if (bbox != null) {
+			float[] verts = bbox.getVertices();
+			verts[0] = minX;
+			verts[1] = minY;
+			verts[2] = minX;
+			verts[3] = maxY;
+			verts[4] = maxX;
+			verts[5] = maxY;
+			verts[6] = maxX;
+			verts[7] = minY;
+			
+			bbox.dirty();
+		}
 	}
 
 	private AnimationDesc getAnimation(String id) {
@@ -536,6 +553,11 @@ public class SpineRenderer implements ActorRenderer {
 		return fa;
 	}
 
+	@Override
+	public void updateBboxFromRenderer(Polygon bbox) {
+		this.bbox = bbox;
+	}
+
 	private void loadSource(String source, String atlas) {
 		SkeletonCacheEntry entry = sourceCache.get(source);
 
@@ -543,10 +565,10 @@ public class SpineRenderer implements ActorRenderer {
 			entry = new SkeletonCacheEntry();
 			entry.atlas = atlas;
 			sourceCache.put(source, entry);
-		} 
+		}
 
 		if (entry.refCounter == 0)
-			EngineAssetManager.getInstance().loadAtlas(atlas==null?source:atlas);
+			EngineAssetManager.getInstance().loadAtlas(atlas == null ? source : atlas);
 
 		entry.refCounter++;
 	}
@@ -561,7 +583,7 @@ public class SpineRenderer implements ActorRenderer {
 		}
 
 		if (entry.skeleton == null) {
-			TextureAtlas atlasTex = EngineAssetManager.getInstance().getTextureAtlas(atlas == null?source:atlas);
+			TextureAtlas atlasTex = EngineAssetManager.getInstance().getTextureAtlas(atlas == null ? source : atlas);
 
 			SkeletonBinary skel = new SkeletonBinary(atlasTex);
 			skel.setScale(EngineAssetManager.getInstance().getScale());
@@ -596,16 +618,16 @@ public class SpineRenderer implements ActorRenderer {
 	public void loadAssets() {
 		for (AnimationDesc fa : fanims.values()) {
 			if (fa.preload)
-				loadSource(fa.source, ((SpineAnimationDesc)fa).atlas);
+				loadSource(fa.source, ((SpineAnimationDesc) fa).atlas);
 		}
 
 		if (currentAnimation != null && !currentAnimation.preload) {
-			loadSource(currentAnimation.source, ((SpineAnimationDesc)currentAnimation).atlas);
+			loadSource(currentAnimation.source, ((SpineAnimationDesc) currentAnimation).atlas);
 		} else if (currentAnimation == null && initAnimation != null) {
 			AnimationDesc fa = fanims.get(initAnimation);
 
 			if (fa != null && !fa.preload)
-				loadSource(fa.source, ((SpineAnimationDesc)fa).atlas);
+				loadSource(fa.source, ((SpineAnimationDesc) fa).atlas);
 		}
 	}
 
@@ -629,6 +651,8 @@ public class SpineRenderer implements ActorRenderer {
 		} else if (initAnimation != null) {
 			startAnimation(initAnimation, Tween.FROM_FA, 1, null);
 		}
+
+		computeBbox();
 	}
 
 	@Override
@@ -668,6 +692,7 @@ public class SpineRenderer implements ActorRenderer {
 		json.writeValue("currentCount", currentCount);
 		json.writeValue("currentAnimationType", currentAnimationType);
 		json.writeValue("lastAnimationTime", lastAnimationTime);
+		json.writeValue("complete", complete);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -688,5 +713,6 @@ public class SpineRenderer implements ActorRenderer {
 		currentCount = json.readValue("currentCount", Integer.class, jsonData);
 		currentAnimationType = json.readValue("currentAnimationType", Integer.class, jsonData);
 		lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
+		complete = json.readValue("complete", Boolean.class, jsonData);
 	}
 }

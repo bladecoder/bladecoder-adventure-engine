@@ -40,8 +40,8 @@ public class SpriteActor extends BaseActor {
 
 	public static enum DepthType {
 		NONE, VECTOR
-	};	
-	
+	};
+
 	private ActorRenderer renderer;
 	private SpritePosTween posTween;
 	private SpriteScaleTween scaleTween;
@@ -75,27 +75,26 @@ public class SpriteActor extends BaseActor {
 
 	public void setPosition(float x, float y) {
 		super.setPosition(x, y);
-		
+
 		if (scene != null) {
 			if (depthType == DepthType.VECTOR) {
 				// interpolation equation
 				float s = scene.getFakeDepthScale(y);
-				
+
 				setScale(s);
 			}
 		}
 
 	}
-	
+
 	public boolean isBboxFromRenderer() {
 		return bboxFromRenderer;
 	}
 
 	public void setBboxFromRenderer(boolean v) {
 		this.bboxFromRenderer = v;
-//		
-//		if(v)
-//			renderer.computeBbox(bbox);
+		
+		renderer.updateBboxFromRenderer(bbox);
 	}
 
 	public float getWidth() {
@@ -119,17 +118,18 @@ public class SpriteActor extends BaseActor {
 	public void update(float delta) {
 		super.update(delta);
 		renderer.update(delta);
-		
-		if(posTween != null) {
-			posTween.update(this, delta);
-			if(posTween.isComplete()) {
+
+		if (posTween != null) {
+			if (posTween.isComplete()) {
 				posTween = null;
+			} else {
+				posTween.update(this, delta);
 			}
 		}
-		
-		if(scaleTween != null) {
+
+		if (scaleTween != null) {
 			scaleTween.update(this, delta);
-			if(scaleTween.isComplete()) {
+			if (scaleTween.isComplete()) {
 				scaleTween = null;
 			}
 		}
@@ -137,7 +137,7 @@ public class SpriteActor extends BaseActor {
 
 	public void draw(SpriteBatch batch) {
 		if (isVisible()) {
-			if(scale != 0)
+			if (scale != 0)
 				renderer.draw(batch, getX(), getY(), scale);
 		}
 	}
@@ -146,10 +146,10 @@ public class SpriteActor extends BaseActor {
 		startAnimation(id, Tween.FROM_FA, 1, cb);
 	}
 
-	public void startAnimation(String id, int repeatType, int count,
-			ActionCallback cb) {
+	public void startAnimation(String id, int repeatType, int count, ActionCallback cb) {
 
 		AnimationDesc fa = renderer.getCurrentAnimation();
+		boolean inNavGraph = false;
 
 		if (fa != null) {
 
@@ -161,34 +161,30 @@ public class SpriteActor extends BaseActor {
 
 			if (outD != null) {
 				float s = EngineAssetManager.getInstance().getScale();
-				
+
 				setPosition(getX() + outD.x * s, getY() + outD.y * s);
+			}
+			
+
+			if (bboxFromRenderer && isWalkObstacle() && scene != null && scene.getPolygonalNavGraph() != null) {
+				inNavGraph = scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
 			}
 		}
 
 		// resets posTween when walking
-		if(posTween != null && posTween instanceof WalkTween)
+		if (posTween != null && posTween instanceof WalkTween)
 			posTween = null;
-		
+
 		renderer.startAnimation(id, repeatType, count, cb);
 
 		fa = renderer.getCurrentAnimation();
 
 		if (fa != null) {
-			if(bboxFromRenderer) {
-				boolean inNavGraph = false;
-		
-				if(isWalkObstacle() && scene != null && scene.getPolygonalNavGraph() != null) {
-					inNavGraph = scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
-				}
-				
-				renderer.computeBbox(bbox);
-				
-				if(inNavGraph) {
-					scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
-				}
+
+			if (bboxFromRenderer && inNavGraph) {
+				scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
 			}
-			
+
 			if (fa.sound != null) {
 				playSound(fa.sound);
 			}
@@ -197,7 +193,7 @@ public class SpriteActor extends BaseActor {
 
 			if (inD != null) {
 				float s = EngineAssetManager.getInstance().getScale();
-				
+
 				setPosition(getX() + inD.x * s, getY() + inD.y * s);
 			}
 		}
@@ -206,56 +202,49 @@ public class SpriteActor extends BaseActor {
 	/**
 	 * Create position animation.
 	 */
-	public void startPosAnimation(int repeatType, int count, float duration,
-			float destX, float destY, ActionCallback cb) {
+	public void startPosAnimation(int repeatType, int count, float duration, float destX, float destY, ActionCallback cb) {
 
 		posTween = new SpritePosTween();
 
-		posTween.start(this, repeatType, count, destX, destY, duration,
-				cb);
+		posTween.start(this, repeatType, count, destX, destY, duration, cb);
 	}
-	
+
 	/**
 	 * Create scale animation.
 	 */
-	public void startScaleAnimation(int repeatType, int count, float duration,
-			float scale, ActionCallback cb) {
+	public void startScaleAnimation(int repeatType, int count, float duration, float scale, ActionCallback cb) {
 
 		scaleTween = new SpriteScaleTween();
 
-		scaleTween.start(this, repeatType, count, scale, duration,
-				cb);
-	}	
+		scaleTween.start(this, repeatType, count, scale, duration, cb);
+	}
 
 	public void lookat(Vector2 p) {
 		renderer.lookat(bbox.getX(), bbox.getY(), p);
-		if(bboxFromRenderer)
-			renderer.computeBbox(bbox);
+		posTween = null;
 	}
 
 	public void lookat(String direction) {
 		renderer.lookat(direction);
-		if(bboxFromRenderer)
-			renderer.computeBbox(bbox);
+		posTween = null;
 	}
 
 	public void stand() {
 		renderer.stand();
-		if(bboxFromRenderer)
-			renderer.computeBbox(bbox);
+		posTween = null;
 	}
 
 	public void startWalkFA(Vector2 p0, Vector2 pf) {
 		renderer.walk(p0, pf);
-		if(bboxFromRenderer)
-			renderer.computeBbox(bbox);
 	}
 
 	/**
 	 * Walking Support
 	 * 
-	 * @param pf Final position to walk
-	 * @param cb The action callback
+	 * @param pf
+	 *            Final position to walk
+	 * @param cb
+	 *            The action callback
 	 */
 	public void goTo(Vector2 pf, ActionCallback cb) {
 		EngineLogger.debug(MessageFormat.format("GOTO {0},{1}", pf.x, pf.y));
@@ -263,19 +252,19 @@ public class SpriteActor extends BaseActor {
 		Vector2 p0 = new Vector2(bbox.getX(), bbox.getY());
 
 		ArrayList<Vector2> walkingPath = null;
-		
-		// 
-		if(p0.dst(pf) < 2.0f) {
+
+		//
+		if (p0.dst(pf) < 2.0f) {
 			setPosition(pf.x, pf.y);
-			
+
 			// call the callback
 			if (cb != null)
 				ActionCallbackQueue.add(cb);
 
-			return;			
+			return;
 		}
 
-		if(scene.getPolygonalNavGraph() != null) {
+		if (scene.getPolygonalNavGraph() != null) {
 			walkingPath = scene.getPolygonalNavGraph().findPath(p0.x, p0.y, pf.x, pf.y);
 		}
 
@@ -289,7 +278,7 @@ public class SpriteActor extends BaseActor {
 
 		posTween = new WalkTween();
 
-		((WalkTween)posTween).start(this, walkingPath, walkingSpeed, cb);
+		((WalkTween) posTween).start(this, walkingPath, walkingSpeed, cb);
 	}
 
 	@Override
@@ -313,14 +302,10 @@ public class SpriteActor extends BaseActor {
 	@Override
 	public void retrieveAssets() {
 		renderer.retrieveAssets();
-		
-		if(bboxFromRenderer) {
-			renderer.computeBbox(bbox);
-		}
-		
+
 		// Call setPosition to recalc fake depth and camera follow
 		setPosition(bbox.getX(), bbox.getY());
-		
+
 		super.retrieveAssets();
 	}
 
@@ -350,14 +335,14 @@ public class SpriteActor extends BaseActor {
 		walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);
 		posTween = json.readValue("posTween", SpritePosTween.class, jsonData);
 		depthType = json.readValue("depthType", DepthType.class, jsonData);
-		
+
 		renderer = json.readValue("renderer", ActorRenderer.class, jsonData);
-		
+
 		bboxFromRenderer = json.readValue("bboxFromRenderer", Boolean.class, jsonData);
-		
-//		if(bboxFromRenderer)
-//			bbox.setScale(1, 1);
-		
+
+		if (bboxFromRenderer)
+			renderer.updateBboxFromRenderer(bbox);
+
 		scaleTween = json.readValue("scaleTween", SpriteScaleTween.class, jsonData);
 		setScale(scale);
 	}

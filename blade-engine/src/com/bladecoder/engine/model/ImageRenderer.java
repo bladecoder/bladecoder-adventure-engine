@@ -47,6 +47,7 @@ public class ImageRenderer implements ActorRenderer {
 	private boolean flipX;
 	
 	private final HashMap<String, ImageCacheEntry> sourceCache = new HashMap<String, ImageCacheEntry>();
+	private Polygon bbox;
 
 	class ImageCacheEntry {
 		int refCounter;
@@ -77,9 +78,13 @@ public class ImageRenderer implements ActorRenderer {
 	@Override
 	public void update(float delta) {
 	}
-	
+
 	@Override
-	public void computeBbox(Polygon bbox) {
+	public void updateBboxFromRenderer(Polygon bbox) {
+		this.bbox = bbox;
+	}
+	
+	private void computeBbox() {
 		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
@@ -147,15 +152,15 @@ public class ImageRenderer implements ActorRenderer {
 	public void startAnimation(String id, int repeatType, int count,
 			ActionCallback cb) {
 		AnimationDesc fa = getAnimation(id);
-		
-		if(cb != null)
-			ActionCallbackQueue.add(cb);
 
 		if (fa == null) {
 			EngineLogger.error("AnimationDesc not found: " + id);
 
 			return;
 		}
+		
+		if(cb != null)
+			ActionCallbackQueue.add(cb);
 
 		if (currentAnimation != null
 				&& currentAnimation.disposeWhenPlayed)
@@ -177,9 +182,12 @@ public class ImageRenderer implements ActorRenderer {
 				EngineLogger.error("Could not load AnimationDesc: " + id);
 				currentAnimation = null;
 
+				computeBbox();
 				return;
 			}
 		}
+		
+		computeBbox();
 	}
 
 	@Override
@@ -388,6 +396,8 @@ public class ImageRenderer implements ActorRenderer {
 		} else if (initAnimation != null) {
 			startAnimation(initAnimation, Tween.FROM_FA, 1, null);
 		}
+		
+		computeBbox();
 	}
 
 	@Override

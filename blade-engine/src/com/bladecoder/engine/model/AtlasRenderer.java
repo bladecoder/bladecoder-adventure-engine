@@ -56,6 +56,7 @@ public class AtlasRenderer implements ActorRenderer {
 	private int currentFrameIndex;
 	
 	private final HashMap<String, AtlasCacheEntry> sourceCache = new HashMap<String, AtlasCacheEntry>();
+	private Polygon bbox;
 
 	class AtlasCacheEntry {
 		int refCounter;
@@ -102,6 +103,7 @@ public class AtlasRenderer implements ActorRenderer {
 			faTween.update(this, delta);
 			if(faTween.isComplete()) {
 				faTween = null;
+				computeBbox();
 			}
 		}
 	}
@@ -196,6 +198,7 @@ public class AtlasRenderer implements ActorRenderer {
 
 			tex = null;
 
+			computeBbox();
 			return;
 		}
 
@@ -203,6 +206,7 @@ public class AtlasRenderer implements ActorRenderer {
 				|| currentAnimation.duration == 0.0) {
 
 			setFrame(0);
+			computeBbox();
 
 			if (cb != null) {
 				ActionCallbackQueue.add(cb);
@@ -218,6 +222,8 @@ public class AtlasRenderer implements ActorRenderer {
 		
 		faTween = new FATween();
 		faTween.start(this, repeatType, count, currentAnimation.duration, cb);
+		update(0);
+		computeBbox();
 	}
 
 	public int getNumFrames() {		
@@ -239,8 +245,10 @@ public class AtlasRenderer implements ActorRenderer {
 
 	}
 	
-	@Override
-	public void computeBbox(Polygon bbox) {
+	private void computeBbox() {
+		if(bbox == null)
+			return;
+		
 		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
@@ -370,6 +378,12 @@ public class AtlasRenderer implements ActorRenderer {
 		startAnimation(sb.toString(), Tween.FROM_FA, 1, null);
 	}
 	
+
+	@Override
+	public void updateBboxFromRenderer(Polygon bbox) {
+		this.bbox = bbox;
+	}
+	
 	private void loadSource(String source) {
 		AtlasCacheEntry entry = sourceCache.get(source);
 		
@@ -447,6 +461,8 @@ public class AtlasRenderer implements ActorRenderer {
 		} else if(initAnimation != null){
 			startAnimation(initAnimation, Tween.FROM_FA, 1, null);
 		}
+		
+		computeBbox();
 	}
 
 	@Override

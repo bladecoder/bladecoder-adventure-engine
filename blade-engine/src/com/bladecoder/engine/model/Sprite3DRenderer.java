@@ -121,6 +121,8 @@ public class Sprite3DRenderer implements ActorRenderer {
 	private float lastAnimationTime = 0;
 
 	private boolean renderShadow = true;
+	
+	private Polygon bbox;
 
 	class ModelCacheEntry {
 		int refCounter;
@@ -395,6 +397,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 		if (currentSource.modelInstance.getAnimation(id) != null) {
 			animationCb = cb;
 			currentSource.controller.setAnimation(id, currentCount, speed, animationListener);
+			computeBbox();
 			return;
 		}
 
@@ -410,6 +413,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 				currentSource.controller.setAnimation(s, count,
 						speed, animationListener);
 
+				computeBbox();
 				return;
 			}
 		}
@@ -424,6 +428,8 @@ public class Sprite3DRenderer implements ActorRenderer {
 		if (cb != null) {
 			ActionCallbackQueue.add(cb);
 		}
+		
+		computeBbox();
 	}
 
 	@Override
@@ -525,9 +531,12 @@ public class Sprite3DRenderer implements ActorRenderer {
 		return height;
 	}
 	
-	
 	@Override
-	public void computeBbox(Polygon bbox) {
+	public void updateBboxFromRenderer(Polygon bbox) {
+		this.bbox = bbox;
+	}
+	
+	private void computeBbox() {
 		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
@@ -769,6 +778,8 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 			renderTex();
 		}
+		
+		computeBbox();
 	}
 
 	@Override
