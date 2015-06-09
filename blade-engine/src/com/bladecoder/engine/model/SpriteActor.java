@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -202,21 +203,21 @@ public class SpriteActor extends BaseActor {
 	/**
 	 * Create position animation.
 	 */
-	public void startPosAnimation(int repeatType, int count, float duration, float destX, float destY, ActionCallback cb) {
+	public void startPosAnimation(int repeatType, int count, float duration, float destX, float destY, Interpolation interpolation, ActionCallback cb) {
 
 		posTween = new SpritePosTween();
 
-		posTween.start(this, repeatType, count, destX, destY, duration, cb);
+		posTween.start(this, repeatType, count, destX, destY, duration, interpolation, cb);
 	}
 
 	/**
 	 * Create scale animation.
 	 */
-	public void startScaleAnimation(int repeatType, int count, float duration, float scale, ActionCallback cb) {
+	public void startScaleAnimation(int repeatType, int count, float duration, float scale, Interpolation interpolation, ActionCallback cb) {
 
 		scaleTween = new SpriteScaleTween();
 
-		scaleTween.start(this, repeatType, count, scale, duration, cb);
+		scaleTween.start(this, repeatType, count, scale, duration, interpolation, cb);
 	}
 
 	public void lookat(Vector2 p) {

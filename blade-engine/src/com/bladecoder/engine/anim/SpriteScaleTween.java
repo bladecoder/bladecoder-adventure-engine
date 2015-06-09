@@ -16,7 +16,7 @@
 package com.bladecoder.engine.anim;
 
 import com.bladecoder.engine.anim.Tween;
-
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
@@ -33,7 +33,7 @@ public class SpriteScaleTween extends Tween {
 	public SpriteScaleTween() {
 	}
 
-	public void start(SpriteActor target, int repeatType, int count, float tScl, float duration, ActionCallback cb) {
+	public void start(SpriteActor target, int repeatType, int count, float tScl, float duration, Interpolation interpolation, ActionCallback cb) {
 		
 		startScl = target.getScale();
 		targetScl = tScl;
@@ -41,6 +41,7 @@ public class SpriteScaleTween extends Tween {
 		setDuration(duration);
 		setType(repeatType);
 		setCount(count);
+		setInterpolation(interpolation);
 
 		if (cb != null) {
 			setCb(cb);

@@ -72,9 +72,9 @@ public class WalkTween extends SpritePosTween implements Serializable {
 				walkCbSer = null;
 			}
 			
-			start(target, NO_REPEAT, 1, pf.x, pf.y, segmentDuration, walkCb);
+			start(target, NO_REPEAT, 1, pf.x, pf.y, segmentDuration, null, walkCb);
 		} else {
-			start(target, NO_REPEAT, 1, pf.x, pf.y, segmentDuration, null);
+			start(target, NO_REPEAT, 1, pf.x, pf.y, segmentDuration, null, null);
 		}
 	}
 

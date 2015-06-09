@@ -169,7 +169,7 @@ public class LoadSaveScreen implements BladeScreen {
 		scroll.setPageSpacing(25);
 
 		Table slots = new Table().pad(pad);
-		slots.defaults().pad(pad, pad, pad, pad);
+		slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2);
 
 		ArrayList<String> sl = getSlots();
 		
@@ -184,10 +184,10 @@ public class LoadSaveScreen implements BladeScreen {
 			if (c != 0 && c % (ROW_SLOTS * COL_SLOTS) == 0) {
 				scroll.addPage(slots);
 				slots = new Table().pad(pad);
-				slots.defaults().pad(pad, pad, pad, pad);
+				slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2);
 			}
 
-			slots.add(getSlotButton(s)).expand().fill();
+			slots.add(getSlotButton(s)).fill().expand();
 			c++;
 		}
 
@@ -198,11 +198,11 @@ public class LoadSaveScreen implements BladeScreen {
 
 			if (c != 0 && c % (ROW_SLOTS * COL_SLOTS) == 0) {
 				scroll.addPage(slots);
-				slots = new Table().pad(50);
-				slots.defaults().pad(20, 40, 20, 40);
+				slots = new Table().pad(pad);
+				slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2);
 			}
 
-			slots.add(getSlotButton(Long.toString(new Date().getTime()))).expand().fill();
+			slots.add(getSlotButton(Long.toString(new Date().getTime()))).fill().expand();
 		}
 
 		// Add last page
@@ -248,9 +248,10 @@ public class LoadSaveScreen implements BladeScreen {
 		style.up = style.down = skin.getDrawable("black");
 
 		String textLabel = I18N.getString("ui.newSlot");
+		button.setSize(slotWidth, slotHeight);
 
 		if (slotExists(slot)) {
-			button.add(getScreenshot(slot)).size(slotWidth * .9f, slotHeight * .9f);
+			button.add(getScreenshot(slot)).maxSize(slotWidth * .9f, slotHeight * .9f);
 			
 			try{ 
 				long l = Long.parseLong(slot);
@@ -262,10 +263,8 @@ public class LoadSaveScreen implements BladeScreen {
 			}
 		} else {
 			Image fg = new Image(skin.getDrawable("plus"));
-			button.add(fg).size(slotHeight/2, slotHeight/2);
+			button.add(fg).maxSize(slotHeight/2, slotHeight/2);
 		}
-		
-		button.setSize(slotWidth, slotHeight);
 
 		button.row();
 		

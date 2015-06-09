@@ -17,10 +17,12 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.math.Interpolation;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.InterpolationUtils;
 
 public class ScaleAction implements Action {
 	public static final String INFO = "Sets an actor Scale animation";
@@ -31,6 +33,7 @@ public class ScaleAction implements Action {
 		new Param("count", "The times to repeat", Type.INTEGER),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
 		new Param("repeat", "The repeat mode", Type.STRING, true, "repeat", new String[]{"repeat", "yoyo", "no_repeat"}),
+		new Param("interpolation", "The interpolation mode", Type.OPTION, false, "", InterpolationUtils.NAMES)
 		};		
 	
 	private String actorId;
@@ -39,6 +42,7 @@ public class ScaleAction implements Action {
 	private int repeat = Tween.NO_REPEAT;
 	private int count = 1;
 	private boolean wait = true;
+	private String interpolation;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -69,13 +73,19 @@ public class ScaleAction implements Action {
 				repeat = Tween.FROM_FA;
 			}
 		}
+		
+		interpolation = params.get("interpolation");
 	}
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(ActionCallback cb) {				
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
 		
-		actor.startScaleAnimation(repeat, count, speed, scale, wait?cb:null);
+		Interpolation i = null;
+		if(interpolation != null)
+			i = InterpolationUtils.getInterpolation(interpolation);
+		
+		actor.startScaleAnimation(repeat, count, speed, scale, i, wait?cb:null);
 		
 		return wait;
 	}

@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
+import com.bladecoder.engine.util.InterpolationUtils;
 
 public class Tween implements Serializable {
 	public final static int NO_REPEAT = 0;
@@ -180,12 +181,18 @@ public class Tween implements Serializable {
 	public void write(Json json) {
 		json.writeValue("duration", duration);
 		json.writeValue("time", time);
-		json.writeValue("interpolation", interpolation);
 		json.writeValue("reverse", reverse);
 		json.writeValue("began", began);
 		json.writeValue("complete", complete);
 		json.writeValue("type", type);
 		json.writeValue("count", count);
+		
+		String i = null;
+		
+		if(interpolation != null)
+			i = InterpolationUtils.getName(interpolation);
+		
+		json.writeValue("interpolation", i);
 		
 		if(cbSer != null)
 			json.writeValue("cb", cbSer);
@@ -197,14 +204,17 @@ public class Tween implements Serializable {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		duration = json.readValue("duration", Float.class, jsonData);
-		time = json.readValue("time", Float.class, jsonData);
-		interpolation = json.readValue("interpolation", Interpolation.class,
-				jsonData);
+		time = json.readValue("time", Float.class, jsonData);;
 		reverse = json.readValue("reverse", Boolean.class, jsonData);
 		began = json.readValue("began", Boolean.class, jsonData);
 		complete = json.readValue("complete", Boolean.class, jsonData);
 		type = json.readValue("type", Integer.class, jsonData);
 		count = json.readValue("count", Integer.class, jsonData);
+		
+		String i = json.readValue("interpolation", String.class, jsonData);
+		
+		if(i != null)
+			interpolation = InterpolationUtils.getInterpolation(i);
 
 		cbSer = json.readValue("cb", String.class, jsonData);
 	}

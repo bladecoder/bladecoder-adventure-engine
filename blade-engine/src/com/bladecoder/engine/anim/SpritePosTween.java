@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
@@ -33,7 +34,7 @@ public class SpritePosTween extends Tween {
 	public SpritePosTween() {
 	}
 
-	public void start(SpriteActor target, int repeatType, int count, float tx, float ty, float duration, ActionCallback cb) {
+	public void start(SpriteActor target, int repeatType, int count, float tx, float ty, float duration, Interpolation interpolation, ActionCallback cb) {
 		
 		startX = target.getX();
 		startY = target.getY();
@@ -43,6 +44,7 @@ public class SpritePosTween extends Tween {
 		setDuration(duration);
 		setType(repeatType);
 		setCount(count);
+		setInterpolation(interpolation);
 
 		if (cb != null) {
 			setCb(cb);
