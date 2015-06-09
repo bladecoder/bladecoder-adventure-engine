@@ -284,8 +284,11 @@ public class LoadSaveScreen implements BladeScreen {
 		FileHandle[] list = EngineAssetManager.getInstance().getUserFolder().list();
 
 		for (FileHandle file : list)
-			if (file.name().endsWith(World.GAMESTATE_EXT))
-				al.add(file.name().substring(0, file.name().indexOf(World.GAMESTATE_EXT)));
+			if (file.name().endsWith(World.GAMESTATE_EXT)) {
+				String name = file.name().substring(0, file.name().indexOf(World.GAMESTATE_EXT));
+				if(!name.equals("default"))
+		            al.add(name);				
+			}
 		
 		return al;
 	}
