@@ -4,9 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.8]
+
+### Added
+- Interpolation support for position and scale actions
+
 ### Fixed
 - Compute BBox in renderer Refactor to allow recompute bbox when animation complete.
 - Fix animationTime when reverse animation in SpineRenderer
+- Fix save/game screen slot size
 
 ## [0.8.7]
 
