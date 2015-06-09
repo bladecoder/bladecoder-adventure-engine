@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Compute BBox in renderer Refactor to allow recompute bbox when animation complete.
+- Fix animationTime when reverse animation in SpineRenderer
+
 ## [0.8.7]
 
 ### Fixed

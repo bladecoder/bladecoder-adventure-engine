@@ -231,6 +231,7 @@ public class SpineRenderer implements ActorRenderer {
 				d = -delta;
 
 				if (lastAnimationTime < 0) {
+					lastAnimationTime = 0;
 					animationListener.complete(0, 1);
 					return;
 				}

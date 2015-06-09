@@ -17,14 +17,10 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.BaseCallbackAction;
-import com.bladecoder.engine.actions.Param;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 
-public class WaitAction extends BaseCallbackAction {
+public class WaitAction implements Action {
 	public static final String INFO = "Pause the action";
 	public static final Param[] PARAMS = {
 		new Param("time", "The time pause in seconds", Type.FLOAT, true, "1.0")
@@ -35,27 +31,14 @@ public class WaitAction extends BaseCallbackAction {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		setVerbCb(cb);
-		World.getInstance().addTimer(time, this);
-		return getWait();
+		World.getInstance().addTimer(time, cb);
+		return true;
 	}
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		time = Float.parseFloat(params.get("time"));
 	}
-	
-	@Override
-	public void write(Json json) {		
-		json.writeValue("time", time);
-		super.write(json);	
-	}
-
-	@Override
-	public void read (Json json, JsonValue jsonData) {
-		time = json.readValue("time", Float.class, jsonData);
-		super.read(json, jsonData);
-	}	
 	
 
 	@Override

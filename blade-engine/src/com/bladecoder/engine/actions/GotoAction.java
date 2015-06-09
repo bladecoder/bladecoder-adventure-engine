@@ -19,15 +19,13 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
-public class GotoAction extends BaseCallbackAction {
+public class GotoAction implements Action {
 	public static final String INFO = "Walks to the selected position";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.ACTOR, false),
@@ -43,10 +41,10 @@ public class GotoAction extends BaseCallbackAction {
 	private Vector2 anchorDistance;
 	private String targetId;
 	private String anchor;
+	private boolean wait = true;
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		setVerbCb(cb);
 		
 		float scale = EngineAssetManager.getInstance().getScale();
 		
@@ -69,11 +67,11 @@ public class GotoAction extends BaseCallbackAction {
 			x += anchorDistance.x;
 			y += anchorDistance.y;
 			
-			actor.goTo(new Vector2(x, y), getWait()?this:null);
+			actor.goTo(new Vector2(x, y), wait?cb:null);
 		} else 
-			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), getWait()?this:null);
+			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), wait?cb:null);
 		
-		return getWait();
+		return wait;
 	}
 
 	@Override
@@ -96,7 +94,7 @@ public class GotoAction extends BaseCallbackAction {
 		}
 		
 		if(params.get("wait") != null) {
-			setWait(Boolean.parseBoolean(params.get("wait")));
+			wait = Boolean.parseBoolean(params.get("wait"));
 		}
 	}
 	
@@ -110,7 +108,7 @@ public class GotoAction extends BaseCallbackAction {
 	 * @param actor
 	 */
 	@SuppressWarnings("unused")
-	private void goNear(SpriteActor player, BaseActor actor) {
+	private void goNear(SpriteActor player, BaseActor actor, ActionCallback cb) {
 		Rectangle rdest = actor.getBBox().getBoundingRectangle();
 
 		// Vector2 p0 = new Vector2(player.getSprite().getX(),
@@ -134,29 +132,8 @@ public class GotoAction extends BaseCallbackAction {
 			pf = p3;
 		}
 
-		player.goTo(pf, this);
+		player.goTo(pf, cb);
 	}		
-	
-	@Override
-	public void write(Json json) {		
-		json.writeValue("pos", pos);
-		json.writeValue("targetId", targetId);
-		json.writeValue("actorId", actorId);
-		json.writeValue("anchor", anchor);
-		json.writeValue("anchorDistance", anchorDistance);
-		super.write(json);	
-	}
-
-	@Override
-	public void read (Json json, JsonValue jsonData) {
-		pos = json.readValue("pos", Vector2.class, jsonData);
-		targetId = json.readValue("targetId", String.class, jsonData);
-		actorId = json.readValue("actorId", String.class, jsonData);
-		anchor = json.readValue("anchor", String.class, jsonData);
-		anchorDistance = json.readValue("anchorDistance", Vector2.class, jsonData);
-		super.read(json, jsonData);
-	}	
-	
 
 	@Override
 	public String getInfo() {

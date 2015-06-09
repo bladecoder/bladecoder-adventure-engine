@@ -17,16 +17,12 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.BaseCallbackAction;
-import com.bladecoder.engine.actions.Param;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.World;
 
-public class TransitionAction extends BaseCallbackAction {
+public class TransitionAction implements Action {
 	public static final String INFO = "Sets a transition effect (FADEIN/FADEOUT)";
 	public static final Param[] PARAMS = {
 		new Param("time", "Duration of the transition", Type.FLOAT, true, "1.0"),
@@ -38,14 +34,14 @@ public class TransitionAction extends BaseCallbackAction {
 	private float time = 1;
 	Color c = new Color(0,0,0,1);
 	Transition.Type type = Transition.Type.FADE_IN;
+	private boolean wait = true;
 	
 	@Override
 	public boolean run(ActionCallback cb) {
-		setVerbCb(cb);
 		Transition t = World.getInstance().getTransition();
-		t.create(time, c, type, getWait()?this:null);
+		t.create(time, c, type, wait?cb:null);
 		
-		return getWait();
+		return wait;
 	}
 
 	@Override
@@ -72,26 +68,9 @@ public class TransitionAction extends BaseCallbackAction {
 		}
 		
 		if(params.get("wait") != null) {
-			setWait(Boolean.parseBoolean(params.get("wait")));
+			wait = Boolean.parseBoolean(params.get("wait"));
 		}
 	}
-	
-	@Override
-	public void write(Json json) {		
-		json.writeValue("time", time);
-		json.writeValue("color", c);
-		json.writeValue("type", type);
-		super.write(json);	
-	}
-
-	@Override
-	public void read (Json json, JsonValue jsonData) {
-		time = json.readValue("time", Float.class, jsonData);
-		c = json.readValue("color", Color.class, jsonData);
-		type = json.readValue("type", Transition.Type.class, jsonData);
-		super.read(json, jsonData);
-	}	
-	
 
 	@Override
 	public String getInfo() {

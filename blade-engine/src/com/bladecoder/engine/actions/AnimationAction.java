@@ -18,12 +18,7 @@ package com.bladecoder.engine.actions;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.BaseCallbackAction;
-import com.bladecoder.engine.actions.Param;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -31,7 +26,7 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class AnimationAction extends BaseCallbackAction implements Action {
+public class AnimationAction implements Action {
 	public static final String INFO = "Sets the animation for an actor";
 	public static final Param[] PARAMS = {
 		new Param("animation", "The Animation to set", Type.ACTOR_ANIMATION, true),	
@@ -50,9 +45,9 @@ public class AnimationAction extends BaseCallbackAction implements Action {
 	private String actorId;
 	private float posx, posy;
 	private int setPos = NO_POS;
-	private boolean reverse = false;
 	private int repeat = Tween.FROM_FA;
 	private int count = 1;
+	private boolean wait = true;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -88,7 +83,7 @@ public class AnimationAction extends BaseCallbackAction implements Action {
 		}
 		
 		if(params.get("wait") != null) {
-			setWait(Boolean.parseBoolean(params.get("wait")));
+			wait = Boolean.parseBoolean(params.get("wait"));
 		}
 		
 		if(params.get("animation_type") != null) {
@@ -109,7 +104,6 @@ public class AnimationAction extends BaseCallbackAction implements Action {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		setVerbCb(cb);
 		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", animation));
 		
 		float scale =  EngineAssetManager.getInstance().getScale();
@@ -122,37 +116,10 @@ public class AnimationAction extends BaseCallbackAction implements Action {
 			actor.setPosition(actor.getX() + posx * scale, actor.getY() + posy * scale);
 		}
 		
-		actor.startAnimation(animation, repeat, count, getWait()?this:null);
+		actor.startAnimation(animation, repeat, count, wait?cb:null);
 		
-		return getWait();
+		return wait;
 	}
-
-	@Override
-	public void write(Json json) {		
-		json.writeValue("animation", animation);
-		json.writeValue("actorId", actorId);
-		json.writeValue("posx", posx);
-		json.writeValue("posy", posy);
-		json.writeValue("setPos", setPos);
-		json.writeValue("reverse", reverse);
-		json.writeValue("repeat", repeat);
-		json.writeValue("count", count);
-		super.write(json);	
-	}
-
-	@Override
-	public void read (Json json, JsonValue jsonData) {	
-		animation = json.readValue("animation", String.class, jsonData);
-		actorId = json.readValue("actorId", String.class, jsonData);
-		posx = json.readValue("posx", Float.class, jsonData);
-		posy = json.readValue("posy", Float.class, jsonData);
-		setPos = json.readValue("setPos", Integer.class, jsonData);
-		reverse = json.readValue("reverse", Boolean.class, jsonData);
-		repeat = json.readValue("repeat", Integer.class, jsonData);
-		count = json.readValue("count", Integer.class, jsonData);
-		super.read(json, jsonData);
-	}	
-	
 
 	@Override
 	public String getInfo() {

@@ -18,8 +18,6 @@ package com.bladecoder.engine.actions;
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -27,7 +25,7 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
-public class PositionAction extends BaseCallbackAction {
+public class PositionAction implements Action {
 	public static final String INFO = "Sets an actor Position animation";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.ACTOR, false),
@@ -45,6 +43,7 @@ public class PositionAction extends BaseCallbackAction {
 	private Vector2 pos;
 	private int repeat = Tween.NO_REPEAT;
 	private int count = 1;
+	private boolean wait = true;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -62,7 +61,7 @@ public class PositionAction extends BaseCallbackAction {
 		mode = params.get("mode");
 		
 		if(params.get("wait") != null) {
-			setWait(Boolean.parseBoolean(params.get("wait")));
+			wait = Boolean.parseBoolean(params.get("wait"));
 		}
 		
 		if(params.get("repeat") != null) {
@@ -81,7 +80,6 @@ public class PositionAction extends BaseCallbackAction {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		setVerbCb(cb);
 		
 		float scale = EngineAssetManager.getInstance().getScale();
 
@@ -104,32 +102,11 @@ public class PositionAction extends BaseCallbackAction {
 				s = speed;
 			}
 			
-			((SpriteActor)actor).startPosAnimation(repeat, count, s, pos.x * scale, pos.y * scale, getWait()?this:null);
+			((SpriteActor)actor).startPosAnimation(repeat, count, s, pos.x * scale, pos.y * scale, wait?cb:null);
 		}
 		
-		return getWait();
+		return wait;
 	}
-
-	@Override
-	public void write(Json json) {		
-		json.writeValue("actorId", actorId);
-		json.writeValue("pos", pos);
-		json.writeValue("speed", speed);
-		json.writeValue("repeat", repeat);
-		json.writeValue("count", count);
-		super.write(json);	
-	}
-
-	@Override
-	public void read (Json json, JsonValue jsonData) {	
-		actorId = json.readValue("actorId", String.class, jsonData);
-		pos = json.readValue("pos", Vector2.class, jsonData);
-		speed = json.readValue("speed", Float.class, jsonData);
-		repeat = json.readValue("repeat", Integer.class, jsonData);
-		count = json.readValue("count", Integer.class, jsonData);
-		super.read(json, jsonData);
-	}	
-	
 
 	@Override
 	public String getInfo() {

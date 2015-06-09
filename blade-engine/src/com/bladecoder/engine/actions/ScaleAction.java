@@ -17,14 +17,12 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
-public class ScaleAction extends BaseCallbackAction {
+public class ScaleAction implements Action {
 	public static final String INFO = "Sets an actor Scale animation";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.ACTOR, false),
@@ -40,7 +38,8 @@ public class ScaleAction extends BaseCallbackAction {
 	private float scale;
 	private int repeat = Tween.NO_REPEAT;
 	private int count = 1;
-
+	private boolean wait = true;
+	
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		actorId = params.get("actor");
@@ -55,7 +54,7 @@ public class ScaleAction extends BaseCallbackAction {
 		}
 		
 		if(params.get("wait") != null) {
-			setWait(Boolean.parseBoolean(params.get("wait")));
+			wait = Boolean.parseBoolean(params.get("wait"));
 		}
 		
 		if(params.get("repeat") != null) {
@@ -74,35 +73,12 @@ public class ScaleAction extends BaseCallbackAction {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		setVerbCb(cb);
-
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
 		
-		actor.startScaleAnimation(repeat, count, speed, scale, getWait()?this:null);
+		actor.startScaleAnimation(repeat, count, speed, scale, wait?cb:null);
 		
-		return getWait();
+		return wait;
 	}
-
-	@Override
-	public void write(Json json) {		
-		json.writeValue("actorId", actorId);
-		json.writeValue("scale", scale);
-		json.writeValue("speed", speed);
-		json.writeValue("repeat", repeat);
-		json.writeValue("count", count);
-		super.write(json);	
-	}
-
-	@Override
-	public void read (Json json, JsonValue jsonData) {	
-		actorId = json.readValue("actorId", String.class, jsonData);
-		scale = json.readValue("scale", Float.class, jsonData);
-		speed = json.readValue("speed", Float.class, jsonData);
-		repeat = json.readValue("repeat", Integer.class, jsonData);
-		count = json.readValue("count", Integer.class, jsonData);
-		super.read(json, jsonData);
-	}	
-	
 
 	@Override
 	public String getInfo() {

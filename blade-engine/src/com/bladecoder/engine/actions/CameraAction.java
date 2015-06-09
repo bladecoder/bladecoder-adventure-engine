@@ -18,15 +18,13 @@ package com.bladecoder.engine.actions;
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
-public class CameraAction extends BaseCallbackAction {
+public class CameraAction implements Action {
 	public static final String INFO = "Set/Animates the camera position and zoom. Also can stablish the follow character parameter";
 	public static final Param[] PARAMS = {
 			new Param("pos", "The target position", Type.VECTOR2),
@@ -44,6 +42,7 @@ public class CameraAction extends BaseCallbackAction {
 	private String followActorId;
 	private float zoom=-1, duration;
 	private Vector2 pos;
+	private boolean wait = true;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -61,15 +60,14 @@ public class CameraAction extends BaseCallbackAction {
 			duration = 0;
 
 		if (params.get("wait") != null) {
-			setWait(Boolean.parseBoolean(params.get("wait")));
+			wait = Boolean.parseBoolean(params.get("wait"));
 		}
 		
-		if(duration == 0) setWait(false);
+		if(duration == 0) wait = false;
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		setVerbCb(cb);
 
 		float scale = EngineAssetManager.getInstance().getScale();
 
@@ -96,29 +94,10 @@ public class CameraAction extends BaseCallbackAction {
 			camera.setZoom(zoom);
 			camera.setPosition(pos.x * scale, pos.y * scale);
 		} else {
-			camera.startAnimation(pos.x * scale, pos.y * scale, zoom, duration, getWait()?this:null);
+			camera.startAnimation(pos.x * scale, pos.y * scale, zoom, duration, wait?cb:null);
 		}
 		
-		return getWait();
-	}
-
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("followActorId", followActorId);
-		json.writeValue("pos", pos);
-		json.writeValue("zoom", zoom);
-		json.writeValue("duration", duration);
-		super.write(json);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		followActorId = json.readValue("followActorId", String.class, jsonData);
-		pos = json.readValue("pos", Vector2.class, jsonData);
-		zoom = json.readValue("zoom", Float.class, jsonData);
-		duration = json.readValue("duration", Float.class, jsonData);
-		super.read(json, jsonData);
+		return wait;
 	}
 
 	@Override
