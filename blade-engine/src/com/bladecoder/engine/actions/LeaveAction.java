@@ -21,7 +21,7 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 
 
-public class LeaveAction implements Action {
+public class LeaveAction implements Action, ActionCallback {
 	public static final String INFO = "Change the current scene.";
 	public static final Param[] PARAMS = {
 		new Param("scene", "The target scene", Type.SCENE, true),
@@ -32,9 +32,15 @@ public class LeaveAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 		
-		World.getInstance().setCurrentScene(scene);
+		// Queue the setCurrentScene to execute at the end of world update
+		ActionCallbackQueue.add(this);
 		
 		return false;
+	}
+	
+	@Override
+	public void resume() {
+		World.getInstance().setCurrentScene(scene);
 	}
 
 	@Override

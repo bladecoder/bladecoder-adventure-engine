@@ -20,6 +20,8 @@ import java.util.List;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 
 /**
@@ -50,8 +52,15 @@ public class ActionCallbackQueue {
 			runQueue.addAll(queue);				
 			queue.clear();
 			
-			for(ActionCallback cb: runQueue)
+			// TOFIX Quick hack to stop processing when changing scene
+			Scene scn = World.getInstance().getCurrentScene();
+			
+			for(ActionCallback cb: runQueue) {
 				cb.resume();
+								
+				if(scn != World.getInstance().getCurrentScene())
+					break;
+			}
 			
 			runQueue.clear();
 		}
