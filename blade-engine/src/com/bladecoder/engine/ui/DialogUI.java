@@ -20,10 +20,12 @@ import java.util.ArrayList;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Align;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.World;
@@ -37,6 +39,8 @@ public class DialogUI extends Actor {
 	private Recorder recorder;
 
 	private int selected = -1;
+	
+	private final GlyphLayout layout = new GlyphLayout();
 
 	public DialogUI(SceneScreen scr) {
 		style = scr.getUI().getSkin().get(DialogUIStyle.class);		
@@ -81,6 +85,11 @@ public class DialogUI extends Actor {
 		} else if( !isVisible() &&  World.getInstance().getCurrentDialog() != null && !World.getInstance().inCutMode()) {
 			setVisible(true);
 		}
+		
+		if(isVisible()) {
+			setWidth(getStage().getViewport().getScreenWidth());
+			setHeight(calcHeight());		
+		}
 	}
 
 	@Override
@@ -100,17 +109,14 @@ public class DialogUI extends Actor {
 			return;
 		}
 
-		float lineHeight = style.font.getLineHeight();
-		float y = lineHeight * options.size();
-		setWidth(getStage().getViewport().getScreenWidth());
 		float margin = DPIUtils.getMarginSize();
-		setHeight( margin + lineHeight * options.size());
+		float y = margin;		
 
 		if (style.background != null) {
 			style.background.draw(batch, getX(), getY(), getWidth(), getHeight());
 		}
 
-		for (int i = 0; i < options.size(); i++) {
+		for (int i = options.size() - 1; i >= 0; i--) {
 			DialogOption o = options.get(i);
 			String str = o.getText();
 
@@ -118,27 +124,65 @@ public class DialogUI extends Actor {
 				str = I18N.getString(str.substring(1));
 
 			if (i == selected) {
-				style.font.setColor(style.overFontColor);
-				style.font.draw(batch, str, margin, y);
+				layout.setText(style.font, str, style.overFontColor, getWidth() - margin * 2, Align.left, true);
 			} else {
-				style.font.setColor(style.fontColor);
-				style.font.draw(batch, str, margin, y);
+				layout.setText(style.font, str, style.fontColor, getWidth() - margin * 2, Align.left, true);			
 			}
 
-			y -= lineHeight;
+			y += layout.height - style.font.getDescent() + style.font.getAscent();
+			style.font.draw(batch, layout, margin, y);
 		}
+	}
+	
+	private float calcHeight() {
+		float height = 0;
+		float margin = DPIUtils.getMarginSize();
+		
+		ArrayList<DialogOption> options = World.getInstance()
+				.getCurrentDialog().getVisibleOptions();
+		
+		for (int i = 0; i < options.size(); i++) {
+			DialogOption o = options.get(i);
+			String str = o.getText();
+
+			if (str.charAt(0) == '@')
+				str = I18N.getString(str.substring(1));
+			layout.setText(style.font, str, style.overFontColor, getStage().getViewport().getScreenWidth() - margin * 2, Align.left, true);
+			height += layout.height - style.font.getDescent() + style.font.getAscent();
+		}
+		
+		return height + margin * 2;
 	}
 
 	private int getOption(float x, float y) {
 		if(World.getInstance().getCurrentDialog() == null)
 			return -1;
 		
-		float lineHeight = style.font.getLineHeight();
+		ArrayList<DialogOption> options = World.getInstance()
+				.getCurrentDialog().getVisibleOptions();
+		
+		float margin = DPIUtils.getMarginSize();
+		float oy = margin;
+		
+		int selectedLine = 0;
+		
+		for (int i = options.size() - 1; i >= 0; i--) {
+			DialogOption o = options.get(i);
+			String str = o.getText();
 
-		int selectedLine = (int) (y / lineHeight);
+			if (str.charAt(0) == '@')
+				str = I18N.getString(str.substring(1));
+			
+			layout.setText(style.font, str, style.overFontColor, getStage().getViewport().getScreenWidth() - margin * 2, Align.left, true);
+			oy += layout.height - style.font.getDescent() + style.font.getAscent();
+			
+			if(oy > y) {
+				selectedLine = i;
+				break;
+			}
+		}
 
-		return World.getInstance().getCurrentDialog().getNumVisibleOptions()
-				- selectedLine - 1;
+		return selectedLine;
 	}
 
 	private void select(int i) {
