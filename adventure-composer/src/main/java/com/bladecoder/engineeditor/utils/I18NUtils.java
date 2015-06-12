@@ -127,9 +127,11 @@ public class I18NUtils {
 				String actorId = p.getAttribute("id");
 				String sceneId = ((Element) p.getParentNode()).getAttribute("id");
 				key = sceneId + "." + actorId + "." + key + "." + attr;
-			} else { // SCENE VERB
+			} else if (p.getTagName().equals("scene")) { // SCENE VERB
 				String sceneId = p.getAttribute("id");
 				key = sceneId + "." + key + "." + attr;
+			} else { // WORLD VERB
+				key = "default." + key + "." + attr;
 			}
 
 		}
@@ -218,7 +220,8 @@ public class I18NUtils {
 		while(keys.hasMoreElements()) {
 			String key = (String)keys.nextElement();
 			
-			if(!usedKeys.contains(key)) {
+			if(!usedKeys.contains(key) && 
+					!key.startsWith("ui.")) { // Doesn't remove ui keys
 				doc.getI18N().remove(key);
 			}
 		}
