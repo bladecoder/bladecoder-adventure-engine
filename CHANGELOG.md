@@ -8,11 +8,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Interpolation support for position and scale actions
+- Update to libgdx v1.6.2. WARNING: Projects have to be modified in order to work the IOS version. 
+	More info: http://www.badlogicgames.com/wordpress/?p=3694
 
 ### Fixed
 - Compute BBox in renderer Refactor to allow recompute bbox when animation complete.
 - Fix animationTime when reverse animation in SpineRenderer
 - Fix save/game screen slot size
+- Composer: fix when generating world keys for i18n + doesn't remove ui.* keys.
 
 ## [0.8.7]
 
