@@ -285,11 +285,11 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		sceneScreen.getUI().getPointer().drag(null);
 	}
 
-	private void use(BaseActor a1, BaseActor a2) {
-		if (a1.getVerb("use", a2.getId()) != null) {
-			sceneScreen.runVerb(a1, "use", a2.getId());
+	private void use(BaseActor targetActor, BaseActor invActor) {
+		if (targetActor.getVerb("use", invActor.getId()) != null) {
+			sceneScreen.runVerb(targetActor, "use", invActor.getId());
 		} else {
-			sceneScreen.runVerb(a2, "use", a1.getId());
+			sceneScreen.runVerb(invActor, "use", targetActor.getId());
 		}
 	}
 
