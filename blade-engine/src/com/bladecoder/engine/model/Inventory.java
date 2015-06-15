@@ -72,7 +72,14 @@ public class Inventory implements AssetConsumer {
 		return null;
 	}
 	
+	/**
+	 * Dispose and remove all items.
+	 */
 	public void removeAllItems() {
+		for (SpriteActor a : items) {
+			a.dispose();
+		}
+		
 		items.clear();
 	}	
 

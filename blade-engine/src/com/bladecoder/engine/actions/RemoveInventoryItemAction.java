@@ -20,16 +20,15 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.Param;
-
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
 public class RemoveInventoryItemAction implements Action {
-	public static final String INFO = "Remove items from the inventory. If the removed items are not referenced in other actions.\n" +
-			"WARNING: This action does not 'dispose' the item.";
+	public static final String INFO = "Remove items from the inventory.";
 	public static final Param[] PARAMS = {
 		new Param("id", "The 'actorid' from the inventory item to remove. If empty remove all items.", Type.ACTOR)
-		};		
+	};		
 	
 	String itemId;
 	
@@ -41,10 +40,13 @@ public class RemoveInventoryItemAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 		
-		if(itemId!=null)
-			World.getInstance().getInventory().removeItem(itemId);
-		else
+		if(itemId!=null) {
+			SpriteActor a = World.getInstance().getInventory().removeItem(itemId);
+			if(a!=null)
+				a.dispose();
+		} else {
 			World.getInstance().getInventory().removeAllItems();
+		}
 		
 		return false;
 	}
