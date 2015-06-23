@@ -157,6 +157,14 @@ public class BladeEngine implements ApplicationListener {
 	@Override
 	public void render() {
 		ui.render();
+		
+		// Pause the game when an error is found
+		if(EngineLogger.lastError != null && EngineLogger.debugMode()) {
+			EngineLogger.lastError = null;
+			EngineLogger.lastException = null;
+			ui.pause();
+			World.getInstance().saveGameState();
+		}
 	}
 
 	@Override

@@ -15,6 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engine.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 
@@ -27,19 +31,37 @@ public class EngineLogger {
 	public static final int DEBUG2 = 2;
 
 	public static int debugLevel = DEBUG0;
+	
+	public static String lastError = null;
+	public static Exception lastException = null;
+	public static StringBuffer errorBuffer = new StringBuffer();
 
 	public static void debug(String message) {
 		Gdx.app.debug(TAG, message);
 	}
 
 	public static void error(String message) {
-		if(message != null)
+		if(message != null) {
 			Gdx.app.error(TAG, message);
+			lastError = message;
+			lastException = null;
+			errorBuffer.append(message);
+		}
 	}
 
 	public static void error(String message, Exception e) {
-		if(message != null && e != null)
+		if(message != null && e != null) {
 			Gdx.app.error(TAG, message, e);
+			lastError = message;
+			lastException = e;
+			errorBuffer.append(message);
+			
+			// print stack trace to buffer
+			Writer result = new StringWriter();
+		    PrintWriter printWriter = new PrintWriter(result);
+		    e.printStackTrace(printWriter);
+			errorBuffer.append(result.toString());
+		}
 	}
 
 	public static void toggle() {
