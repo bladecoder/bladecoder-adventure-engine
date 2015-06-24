@@ -73,7 +73,7 @@ public class PickUpAction implements Action {
 
 			if(animation != null)
 				a.startAnimation(animation, null);
-			else
+			else if(a.getRenderer().getAnimations().get(a.getId() + ".inventory") != null)
 				a.startAnimation(a.getId() + ".inventory", null);
 			
 			World.getInstance().getInventory().addItem(a);
