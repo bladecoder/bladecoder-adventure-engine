@@ -84,8 +84,10 @@ public class SceneExtendViewport extends Viewport {
 	public void setWorldSize(float worldWidth, float worldHeight) {
 		super.setWorldSize(worldWidth, worldHeight);
 
-		// The minimum aspect is 16:9, the maximum is the world aspect
-		minWorldWidth = worldWidth;
+		// The minimum height aspect is 4:3, the maximum is the world aspect
+		minWorldWidth = Math.min(worldHeight * 4f / 3f, worldWidth);
+		
+		// The minimum width aspect is 16:9, the maximum is the world aspect
 		minWorldHeight = Math.min(worldWidth * 9f / 16f, worldHeight);
 
 		maxWorldWidth = worldWidth;
