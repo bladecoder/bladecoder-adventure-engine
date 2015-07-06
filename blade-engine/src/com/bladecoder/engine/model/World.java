@@ -684,7 +684,7 @@ public class World implements Serializable, AssetConsumer {
 		String dialogId = json.readValue("currentDialog", String.class, jsonData);
 
 		if (dialogId != null) {
-			SpriteActor actor = (SpriteActor) instance.getCurrentScene().getActor(actorId, false);
+			BaseActor actor = instance.getCurrentScene().getActor(actorId, false);
 			instance.currentDialog = actor.getDialog(dialogId);
 		}
 
