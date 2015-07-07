@@ -34,13 +34,13 @@ public class Main extends LwjglApplication {
 		// cfg.samples = 2;
 		// cfg.useGL30 = true;
 
-		if (Main.class.getResource("/res/images/ic_app64.png") != null)
-			cfg.addIcon("images/ic_app64.png", FileType.Internal);
+		if (Main.class.getResource("/images/ic_app64.png") != null)
+			cfg.addIcon("ic_app64.png", FileType.Internal);
 
-		if (Main.class.getResource("/res/images/ic_app32.png") != null)
+		if (Main.class.getResource("/images/ic_app32.png") != null)
 			cfg.addIcon("images/ic_app32.png", FileType.Internal);
 
-		if (Main.class.getResource("/res/images/ic_app16.png") != null)
+		if (Main.class.getResource("/images/ic_app16.png") != null)
 			cfg.addIcon("images/ic_app16.png", FileType.Internal);
 
 		parseArgs(args);

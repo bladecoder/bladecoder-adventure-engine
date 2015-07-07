@@ -168,16 +168,13 @@ public class ChapterXMLLoader extends DefaultHandler {
 		} else if (localName.equals(XMLConstants.SCENE_TAG)) {
 			scene.setPlayer((SpriteActor) scene.getActor(player, false));
 			scene.orderLayersByZIndex();
+			scene = null;
 		}
 	}
 
 	private void parseScene(Attributes atts) throws SAXException {
 
 		this.scene = new Scene();
-		scenes.add(scene);
-
-		if (initScene == null)
-			initScene = this.scene.getId();
 
 		String idScn = atts.getValue(XMLConstants.ID_ATTR);
 		String musicFilename = atts.getValue(XMLConstants.MUSIC_ATTR);
@@ -218,6 +215,11 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			scene.setMusic(musicFilename, loopMusic, initialDelay, repeatDelay);
 		}
+		
+		scenes.add(scene);
+
+		if (initScene == null)
+			initScene = this.scene.getId();
 	}
 
 	private void parseActor(Attributes atts) throws SAXException {
@@ -652,8 +654,16 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 	@Override
 	public void error(SAXParseException e) throws SAXException {
-		EngineLogger.error(MessageFormat.format("{0} Line: {1} Column: {2}. {3}", actor.getId(), e.getLineNumber(),
+		if(actor != null) 
+			EngineLogger.error(MessageFormat.format("{0}.{1} Line: {2} Column: {3}. {4}", scene.getId(), actor.getId(), e.getLineNumber(),
 				e.getColumnNumber(), e.getMessage()));
+		else if(scene != null)
+			EngineLogger.error(MessageFormat.format("{0} Line: {1} Column: {2}. {3}", actor.getId(), e.getLineNumber(),
+					e.getColumnNumber(), e.getMessage()));
+		else
+			EngineLogger.error(MessageFormat.format("Line: {1} Column: {2}. {3}", e.getLineNumber(),
+					e.getColumnNumber(), e.getMessage()));
+		
 		EngineLogger.error("CAUSA", (Exception) e.getCause());
 	}
 

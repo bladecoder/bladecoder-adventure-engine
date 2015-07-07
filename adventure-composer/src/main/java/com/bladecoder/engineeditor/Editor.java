@@ -175,8 +175,8 @@ public class Editor implements ApplicationListener {
 	}
 
 	public void exit() {
-		if (Ctx.project.getWorld().isModified()
-				|| Ctx.project.getSelectedChapter().isModified()) {
+		if (Ctx.project.getProjectDir() != null && (Ctx.project.getWorld().isModified()
+				|| Ctx.project.getSelectedChapter().isModified())) {
 			new Dialog("Save Project", skin) {
 				protected void result(Object object) {
 					if (((Boolean) object).booleanValue()) {
