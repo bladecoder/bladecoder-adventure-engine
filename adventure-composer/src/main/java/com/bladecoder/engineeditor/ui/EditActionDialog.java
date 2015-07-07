@@ -20,6 +20,7 @@ import java.util.Arrays;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -147,7 +148,8 @@ public class EditActionDialog extends EditElementDialog {
 				
 				addInputPanel(parameters[i]);
 
-				if (parameters[i].getField() instanceof TextField && params[i].name.toLowerCase().endsWith("text")) {
+				if ((parameters[i].getField() instanceof TextField && params[i].name.toLowerCase().endsWith("text")) ||
+						parameters[i].getField() instanceof ScrollPane) {
 					parameters[i].getCell(parameters[i].getField()).fillX();
 				}
 			}

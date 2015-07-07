@@ -15,15 +15,31 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 
-public class BooleanInputPanel extends OptionsInputPanel {
-	private static final String[] booleanValues = {"true", "false"};
+public class TextInputPanel extends InputPanel {
+	TextArea input;
 	
-	BooleanInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
-		super(skin, title, desc, mandatory, defaultValue, booleanValues);
+	TextInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
+		input = new TextArea("", skin);
+		input.setPrefRows(10);
 		
-		if(defaultValue != null)
-    		setText(defaultValue);
+		ScrollPane scroll = new ScrollPane(input, skin);
+		
+		init(skin, title, desc, scroll, mandatory, defaultValue);
+	}
+
+	public String getText() {
+		return input.getText().replaceAll("\n", "\\\\n");
+	}
+
+	public void setText(String s) {	
+		input.setText(s.replaceAll("\\\\n", "\n"));
+	}
+	
+	public void setRows(float rows) {
+		input.setPrefRows(rows);
 	}
 }

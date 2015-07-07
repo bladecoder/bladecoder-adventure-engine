@@ -81,7 +81,17 @@ public class InputPanelFactory extends Table {
 		case VECTOR3:
 			break;
 		case FILE:
-			break;			
+			break;
+		case TEXT:			
+			return new TextInputPanel(skin, title, desc, mandatory, defaultValue);
+		case BIG_TEXT:
+			TextInputPanel i = new TextInputPanel(skin, title, desc, mandatory, defaultValue);
+			i.setRows(20);
+			return i;
+		case SMALL_TEXT:
+			TextInputPanel i2 = new TextInputPanel(skin, title, desc, mandatory, defaultValue);
+			i2.setRows(5);
+			return i2;			
 		}
     	
     	return new StringInputPanel(skin, title, desc, mandatory, defaultValue);
