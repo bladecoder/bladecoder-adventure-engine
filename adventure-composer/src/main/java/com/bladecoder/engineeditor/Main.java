@@ -35,7 +35,7 @@ public class Main extends LwjglApplication {
 		// cfg.useGL30 = true;
 
 		if (Main.class.getResource("/images/ic_app64.png") != null)
-			cfg.addIcon("ic_app64.png", FileType.Internal);
+			cfg.addIcon("images/ic_app64.png", FileType.Internal);
 
 		if (Main.class.getResource("/images/ic_app32.png") != null)
 			cfg.addIcon("images/ic_app32.png", FileType.Internal);
