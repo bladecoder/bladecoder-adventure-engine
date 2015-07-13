@@ -4,6 +4,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.9]
+
+### Added
+- Editor: Added input panels for text input.
+- Better aspect ratio support. Correct support for 4:3, 16:9 and 16:10.
+- Pause the game when an exception/error is thrown and debug mode is
+activated.
+- Updated to libgdx v0.6.4
+- Text from dialog ui wrap to screen size.
+ 
+### Fixed
+- fix: stop processing ActionCallbackQueue when changing scene
+
+
 ## [0.8.8]
 
 ### Added
