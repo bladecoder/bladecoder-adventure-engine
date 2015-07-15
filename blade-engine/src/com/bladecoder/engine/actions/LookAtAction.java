@@ -38,7 +38,7 @@ public class LookAtAction implements Action {
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.ACTOR, false),
 		new Param("speech", "The 'soundId' to play if selected", Type.STRING),
-		new Param("text", "The 'text' to show", Type.STRING),
+		new Param("text", "The 'text' to show", Type.SMALL_TEXT),
 		new Param("direction", "The direction to lookat. If empty, the player lookat to the actor", 
 				Type.STRING, false, "", new String[] {"", 
 				AnimationDesc.FRONT, AnimationDesc.BACK,AnimationDesc.LEFT,

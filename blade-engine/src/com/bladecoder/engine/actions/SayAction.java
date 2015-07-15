@@ -34,7 +34,7 @@ public class SayAction extends BaseCallbackAction {
 	public static final String INFO = "Says a text";
 	public static final Param[] PARAMS = {
 			new Param("actor", "The target actor", Type.ACTOR, false),
-			new Param("text", "The 'text' to show", Type.TEXT),
+			new Param("text", "The 'text' to show", Type.SMALL_TEXT),
 			new Param(
 					"pos",
 					"The position of the text. If null, the position will be calc based in actor",
