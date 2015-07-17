@@ -4,6 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.10]
+
+### Added
+- Change to TEXT_INPUT for Lookat and Say actions text fields.
+
+### Fixed
+
+- fix: set last frame in atlasrenderer when reverse mode
+
 ## [0.8.9]
 
 ### Added
@@ -13,7 +22,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 activated.
 - Updated to libgdx v0.6.4
 - Text from dialog ui wrap to screen size.
- 
+
 ### Fixed
 - fix: stop processing ActionCallbackQueue when changing scene
 
@@ -22,7 +31,7 @@ activated.
 
 ### Added
 - Interpolation support for position and scale actions
-- Update to libgdx v1.6.2. WARNING: Projects have to be modified in order to work the IOS version. 
+- Update to libgdx v1.6.2. WARNING: Projects have to be modified in order to work the IOS version.
 	More info: http://www.badlogicgames.com/wordpress/?p=3694
 
 ### Fixed
@@ -108,7 +117,7 @@ activated.
 - Backround images must be inside atlas now
 - Added control actions
 - Added ActorAttrAction
-- GotoAction: Change margin. 
+- GotoAction: Change margin.
 - Added log when verb finished
 - GotoAction: add anchor parameter
 - PositionAction now works with BaseActors (no animation)
@@ -189,7 +198,7 @@ activated.
 - fix enter/leave verb conflicts name. Rename to enter/exit
 - fix xml action loading
 - Call cb before cleaning text fifo
-- fix RunVerb action in repeat 
+- fix RunVerb action in repeat
 
 ## [0.6.1]
 - fix show assets folder
