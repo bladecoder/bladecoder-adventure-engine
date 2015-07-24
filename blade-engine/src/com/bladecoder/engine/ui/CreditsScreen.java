@@ -127,7 +127,7 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 				int space =(int) (Integer.valueOf(s) * EngineAssetManager.getInstance().getScale());
 				y -= space;
 				
-				if (y -  space > height) {
+				if (y > height) {
 					stringHead = i + 1;
 					scrollY -= space;
 				}
@@ -231,6 +231,9 @@ public class CreditsScreen implements BladeScreen, InputProcessor {
 		
 //		viewport = new ExtendViewport(wWidth, wHeight);
 		viewport = new ScreenViewport();
+		
+		stringHead = 0;
+		scrollY = 0; 
 	}
 
 	@Override
