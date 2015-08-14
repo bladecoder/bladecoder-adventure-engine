@@ -45,7 +45,6 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 
 	protected VerbManager verbs = new VerbManager();
 	protected HashMap<String, SoundFX> sounds;
-	protected HashMap<String, String> customProperties;
 	
 	private String playingSound;
 
@@ -203,17 +202,6 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 		
 		playingSound = null;
 	}
-	
-	public void setCustomProperty(String name, String value) {
-		if(customProperties == null)
-			customProperties = new HashMap<String, String>();
-		
-		customProperties.put(name, value);
-	}
-	
-	public String getCustomProperty(String name) {
-		return customProperties.get(name);
-	}
 
 	@Override
 	public String toString() {
@@ -346,7 +334,6 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 		json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass(), SoundFX.class);
 		json.writeValue("playingSound", playingSound, playingSound == null ? null : playingSound.getClass());
 		
-		json.writeValue("customProperties", customProperties, customProperties == null ? null : customProperties.getClass(), String.class);
 		json.writeValue("dialogs", dialogs, dialogs == null ? null : dialogs.getClass(), Dialog.class);
 		
 		json.writeValue("isWalkObstacle", isWalkObstacle);
@@ -380,7 +367,6 @@ public class BaseActor implements Comparable<BaseActor>, Serializable, AssetCons
 		state = json.readValue("state", String.class, jsonData);
 		sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);
 		playingSound = json.readValue("playingSound", String.class, jsonData);
-		customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
 		dialogs = json.readValue("dialogs", HashMap.class, Dialog.class, jsonData);
 		
 		isWalkObstacle = json.readValue("isWalkObstacle", Boolean.class, jsonData);

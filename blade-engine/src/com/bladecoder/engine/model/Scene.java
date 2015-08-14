@@ -96,12 +96,6 @@ public class Scene implements Serializable,
 	private String state;
 	
 	private VerbManager verbs = new VerbManager();
-	
-	/**
-	 * Add support for the use of global custom properties/variables in the game
-	 * logic
-	 */
-	private HashMap<String, String> customProperties;
 
 	public Scene() {	
 	}
@@ -137,18 +131,6 @@ public class Scene implements Serializable,
 	
 	public void addLayer(SceneLayer layer) {
 		layers.add(layer);
-	}
-
-	
-	public void setCustomProperty(String name, String value) {
-		if(customProperties == null)
-			customProperties = new HashMap<String, String>();
-		
-		customProperties.put(name, value);
-	}
-	
-	public String getCustomProperty(String name) {
-		return customProperties.get(name);
 	}
 
 	public void playMusic() {
@@ -600,8 +582,6 @@ public class Scene implements Serializable,
 		json.writeValue("followActor", followActor == null ? null : followActor.getId(),
 				followActor == null ? null : String.class);
 		
-		json.writeValue("customProperties", customProperties, customProperties == null ? null : customProperties.getClass());
-		
 		json.writeValue("depthVector", depthVector);
 		
 		json.writeValue("polygonalNavGraph", polygonalNavGraph, polygonalNavGraph == null ? null : PolygonalNavGraph.class);
@@ -652,8 +632,6 @@ public class Scene implements Serializable,
 				jsonData);
 		
 		setCameraFollowActor((SpriteActor)actors.get(followActorId));
-		
-		customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
 		
 		depthVector = json.readValue("depthVector", Vector2.class, jsonData);
 		polygonalNavGraph = json.readValue("polygonalNavGraph", PolygonalNavGraph.class, jsonData);

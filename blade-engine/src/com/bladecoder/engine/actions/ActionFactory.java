@@ -89,7 +89,11 @@ public class ActionFactory {
 		actions.put("IfAttr",
 				"com.bladecoder.engine.actions.IfAttrAction");
 		actions.put("IfSceneAttr",
-				"com.bladecoder.engine.actions.IfSceneAttrAction");		
+				"com.bladecoder.engine.actions.IfSceneAttrAction");	
+		actions.put("IfProperty",
+				"com.bladecoder.engine.actions.IfPropertyAction");
+		actions.put("Property",
+				"com.bladecoder.engine.actions.PropertyAction");
 		actions.put("Choose",
 				"com.bladecoder.engine.actions.ChooseAction");
 		actions.put("RunOnce",
