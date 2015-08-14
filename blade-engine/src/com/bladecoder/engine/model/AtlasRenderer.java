@@ -289,7 +289,8 @@ public class AtlasRenderer implements ActorRenderer {
 			sb.append(" ").append(v);
 		}
 
-		sb.append("\n  Current Anim: ").append(currentAnimation.id);
+		if(currentAnimation != null)
+			sb.append("\n  Current Anim: ").append(currentAnimation.id);
 
 		sb.append("\n");
 

@@ -100,13 +100,12 @@ public class Param {
 		return v;
 	}
 	
-	public static Polygon parsePolygon(String s) {
-		Polygon p = null;
+	public static void parsePolygon(Polygon p, String s) {
 		
 		String[] vs = s.split(NUMBER_PARAM_SEPARATOR);
 		
 		if(vs.length < 6)
-			return null;
+			return;
 		
 		float verts[] = new float[vs.length];
 		
@@ -114,17 +113,14 @@ public class Param {
 			verts[i] = Float.parseFloat(vs[i]);
 		}
 		
-		p = new Polygon(verts);
+		p.setVertices(verts);
 
-		return p;
 	}
 	
-	public static Polygon parsePolygon(String v, String pos) {
-		Polygon p = parsePolygon(v);
+	public static void parsePolygon(Polygon p, String v, String pos) {
+		parsePolygon(p, v);
 		Vector2 v2 = parseVector2(pos);
 		p.setPosition(v2.x, v2.y);
-		
-		return p;
 	}
 	
 	public static String toStringParam(Polygon p) {

@@ -23,6 +23,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.DialogOption;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Verb;
@@ -99,9 +100,15 @@ public class TesterBot {
 					if (chooseSceneActor && s.getActors().size() > 0) {
 						// SCENE ACTOR
 						int pos = MathUtils.random(s.getActors().size() - 1);
-						BaseActor scnActor = (BaseActor) (s.getActors().values().toArray()[pos]);
+						BaseActor a = (BaseActor) (s.getActors().values().toArray()[pos]);
+						
+						if(!(a instanceof InteractiveActor))
+							return;
+						
+						InteractiveActor scnActor = (InteractiveActor)a;
 
-						if (excludeList.contains(scnActor.getId()) || !scnActor.isVisible() || !scnActor.hasInteraction())
+						if (excludeList.contains(scnActor.getId()) || !scnActor.isVisible() || 
+								!scnActor.hasInteraction())
 							return;
 						
 						String verb;
@@ -127,7 +134,7 @@ public class TesterBot {
 					} else if (w.getInventory().getNumItems() > 0 && w.getInventory().isVisible()) {
 						// INVENTORY ACTOR
 						int pos = MathUtils.random(w.getInventory().getNumItems() - 1);
-						BaseActor invActor = w.getInventory().getItem(pos);
+						SpriteActor invActor = w.getInventory().getItem(pos);
 						
 						if(excludeList.contains(invActor.getId()))
 							return;
@@ -143,7 +150,7 @@ public class TesterBot {
 							invActor.runVerb(Verb.ACTION_VERB);
 						} else { // 2 and 3
 
-							BaseActor targetActor = null;
+							InteractiveActor targetActor = null;
 
 							if (w.getInventory().getNumItems() > 1 && MathUtils.randomBoolean(0.33f)) {
 								// CHOOSE TARGET FROM INVENTORY
@@ -165,7 +172,11 @@ public class TesterBot {
 									targetActor.runVerb(Verb.USE_VERB, invActor.getId());
 							} else {
 								int pos2 = MathUtils.random(s.getActors().size() - 1);
-								targetActor = (BaseActor) (s.getActors().values().toArray()[pos2]);
+								
+								if(!(s.getActors().values().toArray()[pos2] instanceof InteractiveActor))
+									return;
+								
+								targetActor = (InteractiveActor) (s.getActors().values().toArray()[pos2]);
 
 								if (!excludeList.contains(targetActor.getId()) && targetActor.isVisible() && targetActor.hasInteraction()) {
 									EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.USE_VERB + "::" + targetActor.getId());

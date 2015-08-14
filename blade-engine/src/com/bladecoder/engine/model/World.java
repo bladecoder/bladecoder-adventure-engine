@@ -47,7 +47,7 @@ import com.bladecoder.engine.util.EngineLogger;
 
 public class World implements Serializable, AssetConsumer {
 
-	public static final String GAMESTATE_EXT = ".gamestate.v10";
+	public static final String GAMESTATE_EXT = ".gamestate.v11";
 	private static final String GAMESTATE_FILENAME = "default" + GAMESTATE_EXT;
 
 	private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
@@ -684,7 +684,7 @@ public class World implements Serializable, AssetConsumer {
 		String dialogId = json.readValue("currentDialog", String.class, jsonData);
 
 		if (dialogId != null) {
-			BaseActor actor = instance.getCurrentScene().getActor(actorId, false);
+			CharacterActor actor = (CharacterActor)instance.getCurrentScene().getActor(actorId, false);
 			instance.currentDialog = actor.getDialog(dialogId);
 		}
 

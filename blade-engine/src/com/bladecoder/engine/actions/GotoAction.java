@@ -22,6 +22,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
@@ -48,7 +49,7 @@ public class GotoAction implements Action {
 		
 		float scale = EngineAssetManager.getInstance().getScale();
 		
-		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
+		CharacterActor actor = (CharacterActor) World.getInstance().getCurrentScene().getActor(actorId, false);
 		
 		if(targetId!=null) {
 			BaseActor target =  World.getInstance().getCurrentScene().getActor(targetId, false);
@@ -108,7 +109,7 @@ public class GotoAction implements Action {
 	 * @param actor
 	 */
 	@SuppressWarnings("unused")
-	private void goNear(SpriteActor player, BaseActor actor, ActionCallback cb) {
+	private void goNear(CharacterActor player, BaseActor actor, ActionCallback cb) {
 		Rectangle rdest = actor.getBBox().getBoundingRectangle();
 
 		// Vector2 p0 = new Vector2(player.getSprite().getX(),

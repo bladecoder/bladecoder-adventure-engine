@@ -32,7 +32,7 @@ import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.ActorRenderer;
-import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
@@ -141,7 +141,7 @@ public class SpineRenderer implements ActorRenderer {
 				return;
 
 			String actorId = event.getData().getName();
-			BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
+			InteractiveActor actor = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true);
 
 			switch (event.getInt()) {
 			case PLAY_ANIMATION_EVENT:

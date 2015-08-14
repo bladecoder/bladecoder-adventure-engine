@@ -17,12 +17,9 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
@@ -51,19 +48,19 @@ public class PickUpAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 
-		BaseActor actor = null;
+		InteractiveActor actor = null;
 		
 		Scene scn;
 		
 		if(sceneId != null) {
 			scn = World.getInstance().getScene(sceneId);
-			actor = scn.getActor(actorId, false);
+			actor = (InteractiveActor)scn.getActor(actorId, false);
 			actor.loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 			actor.retrieveAssets();
 		} else {
 			scn = World.getInstance().getCurrentScene();
-			actor = scn.getActor(actorId, false);
+			actor = (InteractiveActor)scn.getActor(actorId, false);
 		}
 		
 		scn.removeActor(actor);

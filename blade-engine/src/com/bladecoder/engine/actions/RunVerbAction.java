@@ -22,7 +22,8 @@ import java.util.HashMap;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.VerbRunner;
@@ -69,7 +70,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 		Verb v = null;
 
 		if (actorId != null) {
-			BaseActor a = World.getInstance().getCurrentScene().getActor(actorId, true);
+			InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true);
 
 			v = a.getVerbManager().getVerb(verb, state, target);
 		}
@@ -140,7 +141,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 		if (v == null) {
 			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for actor ''{1}({3})'' and target ''{2}''",
-					verb, actorId, target, World.getInstance().getCurrentScene().getActor(actorId, true).getState()));
+					verb, actorId, target, ((InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true)).getState()));
 
 			return new ArrayList<Action>(0);
 		}
@@ -151,13 +152,15 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	@Override
 	public void run() {
 		ip = 0;
+		
+		Scene s = World.getInstance().getCurrentScene();
 
 		// Gets the actor/scene state.
 		if (actorId != null
-				&& World.getInstance().getCurrentScene().getActor(actorId, true).getVerb(verb, target) != null) {
-			state = World.getInstance().getCurrentScene().getActor(actorId, true).getState();
-		} else if (World.getInstance().getCurrentScene().getVerb(verb) != null) {
-			state = World.getInstance().getCurrentScene().getState();
+				&& ((InteractiveActor)s.getActor(actorId, true)).getVerb(verb, target) != null) {
+			state = ((InteractiveActor)s.getActor(actorId, true)).getState();
+		} else if (s.getVerb(verb) != null) {
+			state = s.getState();
 		}
 
 		nextStep();

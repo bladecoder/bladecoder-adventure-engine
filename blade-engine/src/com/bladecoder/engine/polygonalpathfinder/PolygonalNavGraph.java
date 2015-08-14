@@ -16,6 +16,7 @@
 package com.bladecoder.engine.polygonalpathfinder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
@@ -23,6 +24,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.pathfinder.AStarPathFinder;
 import com.bladecoder.engine.pathfinder.NavContext;
 import com.bladecoder.engine.pathfinder.NavGraph;
@@ -42,7 +45,6 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 
 	private Polygon walkZone;
 	private ArrayList<Polygon> obstacles = new ArrayList<Polygon>();
-	private ArrayList<Polygon> dinamicObstacles = new ArrayList<Polygon>();
 
 	final private PathFinder pathfinder = new AStarPathFinder(this, 100,
 			new ManhattanDistance());
@@ -75,21 +77,6 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		}
 		
 		for (Polygon o : obstacles) {
-			if (PolygonUtils.isPointInside(o, target.x, target.y, false)) {
-				PolygonUtils.getClampedPoint(o, target.x, target.y, target);
-				
-				// If the clamped point is not in the walkzone 
-				// we search for the first vertex inside
-				if (!PolygonUtils.isPointInside(walkZone, target.x, target.y, true)) {
-					getFirstVertexInsideWalkzone(o, target);
-					// We exit after processing the first polygon with the point inside. 
-					// Overlaped obstacles are not supported
-					break;
-				}
-			}
-		}
-		
-		for (Polygon o : dinamicObstacles) {
 			if (PolygonUtils.isPointInside(o, target.x, target.y, false)) {
 				PolygonUtils.getClampedPoint(o, target.x, target.y, target);
 				
@@ -146,7 +133,7 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		}		
 	}
 
-	public void createInitialGraph() {
+	public void createInitialGraph(Collection<BaseActor> actors) {
 		graphNodes.clear();
 
 		// 1.- Add WalkZone convex nodes
@@ -158,7 +145,15 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 			}
 		}
 
-		// 2.- Add obstacle concave nodes
+		// 2.- Add obstacles concave nodes
+		obstacles.clear();
+		
+		for(BaseActor a:actors) {
+			if(a instanceof ObstacleActor && a.isVisible())
+				obstacles.add(a.getBBox());
+		}
+		
+		
 		for (Polygon o : obstacles) {
 			verts = o.getTransformedVertices();
 
@@ -185,10 +180,6 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 				}
 			}
 		}
-		
-		// 4.- ADD DINAMIC OBSTACLES
-		for(Polygon p:dinamicObstacles)
-			addObstacleToGrapth(p);
 	}
 
 	private boolean inLineOfSight(float p1X, float p1Y, float p2X, float p2Y) {
@@ -199,14 +190,8 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		if (!PolygonUtils.inLineOfSight(tmp, tmp2, walkZone, false)) {
 			return false;
 		}
-
-		for (Polygon o : obstacles) {
-			if (!PolygonUtils.inLineOfSight(tmp, tmp2, o, true)) {
-				return false;
-			}
-		}
 		
-		for (Polygon o : dinamicObstacles) {
+		for (Polygon o : obstacles) {
 			if (!PolygonUtils.inLineOfSight(tmp, tmp2, o, true)) {
 				return false;
 			}
@@ -244,14 +229,6 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 
 	public void setWalkZone(Polygon walkZone) {
 		this.walkZone = walkZone;
-	}
-
-	public void addObstacle(Polygon obstacle) {
-		obstacles.add(obstacle);
-	}
-
-	public ArrayList<Polygon> getObstacles() {
-		return obstacles;
 	}
 	
 	public ArrayList<NavNodePolygonal> getGraphNodes() {
@@ -294,17 +271,17 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 
 	public void addDinamicObstacle(Polygon poly) {
 		
-		int idx = dinamicObstacles.indexOf(poly);
+		int idx = obstacles.indexOf(poly);
 		
 		// CHECK TO AVOID ADDING THE ACTOR SEVERAL TIMES
 		if(idx == -1) {
-			dinamicObstacles.add(poly);
+			obstacles.add(poly);
 			addObstacleToGrapth(poly);
 		}
 	}
 	
 	public boolean removeDinamicObstacle(Polygon poly) {
-		boolean exists = dinamicObstacles.remove(poly);
+		boolean exists = obstacles.remove(poly);
 		
 		if(!exists)
 			return false;
@@ -339,20 +316,8 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		Polygon p = new Polygon(walkZone.getVertices());
 		p.setPosition(walkZone.getX()/walkZone.getScaleX(), walkZone.getY()/walkZone.getScaleY());
 		json.writeValue("walkZone", p);
-		
-		ArrayList<Polygon> tmp = new ArrayList<Polygon>();
-		
-		for(Polygon poly:obstacles) {
-			// To SAVE space not writing worldVertices
-			p = new Polygon(poly.getVertices());
-			p.setPosition(poly.getX()/poly.getScaleX(), poly.getY()/poly.getScaleY());
-			tmp.add(p);
-		}
-		
-		json.writeValue("obstacles", tmp, ArrayList.class, Polygon.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		float worldScale = EngineAssetManager.getInstance().getScale();
@@ -361,14 +326,5 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		walkZone.setScale(worldScale, worldScale);
 		walkZone.setPosition(walkZone.getX() * worldScale , 
 				walkZone.getY() * worldScale);
-		
-		obstacles = json.readValue("obstacles", ArrayList.class, Polygon.class,
-				jsonData);
-		
-		for(Polygon poly:obstacles) {
-			poly.setScale(worldScale, worldScale);
-			poly.setPosition(poly.getX() * worldScale , 
-					poly.getY() * worldScale);
-		}
 	}
 }

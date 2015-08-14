@@ -24,7 +24,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
-import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
@@ -104,7 +104,7 @@ public class SayAction extends BaseCallbackAction {
 	@Override
 	public boolean run(ActionCallback cb) {
 		setVerbCb(cb);	
-		BaseActor actor = World.getInstance().getCurrentScene()
+		InteractiveActor actor = (InteractiveActor)World.getInstance().getCurrentScene()
 				.getActor(actorId, false);
 
 		if (type == Text.Type.TALK)

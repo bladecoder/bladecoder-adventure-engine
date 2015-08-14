@@ -18,6 +18,7 @@ package com.bladecoder.engine.util;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
@@ -66,7 +67,7 @@ public class ActionCallbackSerialization {
 		return null;
 	}
 
-	private static String find(ActionCallback cb, BaseActor a) {
+	private static String find(ActionCallback cb, InteractiveActor a) {
 		if (a == null)
 			return null;
 
@@ -132,7 +133,10 @@ public class ActionCallbackSerialization {
 
 		// search in actors
 		for (BaseActor a : s.getActors().values()) {
-			id = find(cb, a);
+			if(!(a instanceof InteractiveActor))
+				continue;
+			
+			id = find(cb, (InteractiveActor)a);
 			if (id != null)
 				return id;
 		}
@@ -178,12 +182,12 @@ public class ActionCallbackSerialization {
 			v = VerbManager.getWorldVerbs().get(verbId);
 		} else {
 
-			BaseActor a;
+			InteractiveActor a;
 
 			if (actorId.equals(s.getId())) {
 				v = s.getVerbManager().getVerbs().get(verbId);
 			} else {
-				a = s.getActor(actorId, true);
+				a = (InteractiveActor)s.getActor(actorId, true);
 
 				if (a == null)
 					return null;

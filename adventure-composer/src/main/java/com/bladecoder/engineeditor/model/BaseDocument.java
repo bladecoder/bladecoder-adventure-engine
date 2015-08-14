@@ -48,6 +48,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.utils.I18NUtils;
 
@@ -348,7 +349,7 @@ public abstract class BaseDocument extends PropertyChange {
 	}
 
 	public String getType(Element e) {
-		return e.getAttribute("type");
+		return e.getAttribute(XMLConstants.TYPE_ATTR);
 	}
 
 	public NodeList getVerbs(Element e) {

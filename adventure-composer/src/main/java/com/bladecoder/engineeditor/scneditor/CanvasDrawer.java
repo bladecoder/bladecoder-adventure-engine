@@ -89,14 +89,6 @@ public class CanvasDrawer {
 			drawer.polygon(scn.getPolygonalNavGraph().getWalkZone()
 					.getTransformedVertices());
 
-			ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph()
-					.getObstacles();
-
-			drawer.setColor(Scene.OBSTACLE_COLOR);
-			for (Polygon p : obstacles) {
-				drawer.polygon(p.getTransformedVertices());
-			}
-
 			// DRAW LINEs OF SIGHT
 			if (lineOfSight) {
 				drawer.setColor(Color.WHITE);

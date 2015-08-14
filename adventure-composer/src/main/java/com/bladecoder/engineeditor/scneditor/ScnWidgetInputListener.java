@@ -44,7 +44,7 @@ public class ScnWidgetInputListener extends ClickListener {
 	private final ScnWidget scnWidget;
 
 	private static enum DraggingModes {
-		NONE, DRAGGING_ACTOR, DRAGGING_BBOX_POINT, DRAGGING_WALKZONE, DRAGGING_WALKZONE_POINT, DRAGGING_OBSTACLE, DRAGGING_OBSTACLE_POINT, DRAGGING_MARKER_0, DRAGGING_MARKER_100
+		NONE, DRAGGING_ACTOR, DRAGGING_BBOX_POINT, DRAGGING_WALKZONE, DRAGGING_WALKZONE_POINT, DRAGGING_MARKER_0, DRAGGING_MARKER_100
 	};
 
 	private DraggingModes draggingMode = DraggingModes.NONE;
@@ -54,8 +54,6 @@ public class ScnWidgetInputListener extends ClickListener {
 	private int vertIndex;
 	private Polygon selPolygon = null;
 	private int selObstacleIndex = 0;
-
-	private boolean deleteObstacle = false;
 
 	public ScnWidgetInputListener(ScnWidget w) {
 		this.scnWidget = w;
@@ -75,23 +73,6 @@ public class ScnWidgetInputListener extends ClickListener {
 		Vector2 p = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 		scnWidget.screenToWorldCoords(p);
 
-		if (deleteObstacle) {
-			deleteObstacle = false;
-
-			Ctx.msg.hide();
-			PolygonalNavGraph pf = scn.getPolygonalNavGraph();
-			ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph().getObstacles();
-
-			// SEARCH FOR OBSTACLE
-			for (int j = 0; j < obstacles.size(); j++) {
-				Polygon o = obstacles.get(j);
-				if (o.contains(p.x, p.y)) {
-					Ctx.project.getSelectedChapter().deleteObstacle(Ctx.project.getSelectedScene(), j);
-					pf.getObstacles().remove(j);
-					return;
-				}
-			}
-		}
 
 		// DOUBLE CLICK TO CREATE OR DELETE POINTS
 		if (getTapCount() == 2) {

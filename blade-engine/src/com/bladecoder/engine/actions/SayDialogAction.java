@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
@@ -81,7 +82,7 @@ public class SayDialogAction extends BaseCallbackAction {
 		restoreStandPose(w.getCurrentScene().getPlayer(), talkAnim);
 		
 		if(w.getCurrentScene().getActor(characterName, false) instanceof SpriteActor)
-			restoreStandPose((SpriteActor)w.getCurrentScene().getActor(characterName, false), charTalkAnim);
+			restoreStandPose((CharacterActor)w.getCurrentScene().getActor(characterName, false), charTalkAnim);
 
 		if (playerText != null) {
 			SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
@@ -139,7 +140,7 @@ public class SayDialogAction extends BaseCallbackAction {
 		}
 	}
 	
-	private void restoreStandPose(SpriteActor a, String talkAnim) {
+	private void restoreStandPose(CharacterActor a, String talkAnim) {
 		if(a == null) return;
 		
 		String fa = a.getRenderer().getCurrentAnimationId();

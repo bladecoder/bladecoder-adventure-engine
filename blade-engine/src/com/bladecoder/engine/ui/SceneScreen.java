@@ -37,6 +37,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.Verb;
@@ -76,7 +77,7 @@ public class SceneScreen implements BladeScreen {
 	private final StringBuilder sbTmp = new StringBuilder();
 
 	// BaseActor under the cursor
-	private BaseActor currentActor = null;
+	private InteractiveActor currentActor = null;
 
 	private boolean drawHotspots = false;
 	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
@@ -582,8 +583,8 @@ public class SceneScreen implements BladeScreen {
 				Rectangle r = a.getBBox().getBoundingRectangle();
 				sbTmp.setLength(0);
 				sbTmp.append(a.getId());
-				if (a.getState() != null)
-					sbTmp.append(".").append(a.getState());
+				if (a instanceof InteractiveActor && ((InteractiveActor)a).getState() != null)
+					sbTmp.append(".").append(((InteractiveActor)a).getState());
 
 				unprojectTmp.set(r.getX(), r.getY(), 0);
 				w.getSceneCamera().scene2screen(viewport, unprojectTmp);
@@ -596,7 +597,12 @@ public class SceneScreen implements BladeScreen {
 	private void drawHotspots(SpriteBatch batch) {
 
 		for (BaseActor a : World.getInstance().getCurrentScene().getActors().values()) {
-			if (a == World.getInstance().getCurrentScene().getPlayer() || !a.hasInteraction() || !a.isVisible())
+			if(!(a instanceof InteractiveActor) || !a.isVisible() || a == World.getInstance().getCurrentScene().getPlayer())
+				continue;
+			
+			InteractiveActor ia = (InteractiveActor)a;
+			
+			if (!ia.hasInteraction())
 				continue;
 
 			Polygon p = a.getBBox();
@@ -610,11 +616,11 @@ public class SceneScreen implements BladeScreen {
 			unprojectTmp.set(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2, 0);
 			World.getInstance().getSceneCamera().scene2screen(viewport, unprojectTmp);
 
-			if (!showDesc || a.getDesc() == null) {
+			if (!showDesc || ia.getDesc() == null) {
 
 				float size = DPIUtils.ICON_SIZE * DPIUtils.getSizeMultiplier();
 
-				if (a.getVerb("leave") != null) {
+				if (ia.getVerb("leave") != null) {
 					TextureRegionDrawable drawable = (TextureRegionDrawable) getUI().getSkin().getDrawable("leave");
 
 					// drawable.draw(batch, unprojectTmp.x - size / 2,
@@ -630,7 +636,7 @@ public class SceneScreen implements BladeScreen {
 				}
 			} else {
 				BitmapFont font = getUI().getSkin().getFont("desc");
-				String desc = a.getDesc();
+				String desc = ia.getDesc();
 				if (desc.charAt(0) == '@')
 					desc = I18N.getString(desc.substring(1));
 
@@ -703,7 +709,7 @@ public class SceneScreen implements BladeScreen {
 		}
 	}
 
-	public void actorClick(BaseActor a, boolean lookat) {
+	public void actorClick(InteractiveActor a, boolean lookat) {
 
 		if (a.getVerb(Verb.LEAVE_VERB) != null) {
 			runVerb(a, Verb.LEAVE_VERB, null);
@@ -729,7 +735,7 @@ public class SceneScreen implements BladeScreen {
 	 * @param verb
 	 * @param target
 	 */
-	public void runVerb(BaseActor a, String verb, String target) {
+	public void runVerb(InteractiveActor a, String verb, String target) {
 		if (inventoryUI.isVisible())
 			inventoryUI.hide();
 
@@ -810,7 +816,7 @@ public class SceneScreen implements BladeScreen {
 		return viewport;
 	}
 
-	public BaseActor getCurrentActor() {
+	public InteractiveActor getCurrentActor() {
 		return currentActor;
 	}
 

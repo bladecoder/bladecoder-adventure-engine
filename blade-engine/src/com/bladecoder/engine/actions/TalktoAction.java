@@ -17,11 +17,8 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.World;
 
 public class TalktoAction implements Action {
@@ -43,7 +40,7 @@ public class TalktoAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 		
-		BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, false);
+		CharacterActor actor = (CharacterActor)World.getInstance().getCurrentScene().getActor(actorId, false);
 		
 		World.getInstance().setCurrentDialog(actor.getDialog(dialog));
 		

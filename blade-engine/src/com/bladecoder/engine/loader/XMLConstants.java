@@ -26,6 +26,11 @@ public final class XMLConstants {
 	
 	public static final String ACTOR_TAG = "actor";
 	public static final String TYPE_ATTR = "type";
+	public static final String BACKGROUND_VALUE = "background";
+	public static final String CHARACTER_VALUE = "character";
+	public static final String OBSTACLE_VALUE = "obstacle";
+	public static final String SPRITE_VALUE = "sprite";
+	public static final String RENDERER_ATTR = "renderer";
 	public static final String ATLAS_VALUE = "atlas";
 	public static final String IMAGE_VALUE = "image";
 	public static final String S3D_VALUE = "3d";
@@ -41,13 +46,11 @@ public final class XMLConstants {
 	public static final String VECTOR_ATTR = "vector";
 	public static final String DESC_ATTR = "desc";
 	public static final String BBOX_ATTR = "bbox";
-	public static final String NO_RENDERER_VALUE = "no_renderer";
 	public static final String POS_ATTR = "pos";
 	public static final String SCALE_ATTR = "scale";
 	public static final String ZINDEX_ATTR = "zIndex";
 	public static final String INTERACTION_ATTR = "interaction";
 	public static final String VISIBLE_ATTR = "visible";
-	public static final String OBSTACLE_ATTR = "obstacle";
 	public static final String LAYER_ATTR = "layer";
 	
 	public static final String ANIMATION_TAG = "animation";
@@ -78,7 +81,6 @@ public final class XMLConstants {
 	
 	public static final String WALK_ZONE_TAG = "walk_zone";
 	
-	public static final String OBSTACLE_TAG = "obstacle";
 	public static final String POLYGON_ATTR = "polygon";
 	
 	public static final String SCENE_TAG = "scene";

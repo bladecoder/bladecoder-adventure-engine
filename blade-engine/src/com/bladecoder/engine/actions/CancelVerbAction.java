@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -60,7 +61,7 @@ public class CancelVerbAction implements Action {
 		if (v == null && actorId != null) {
 			BaseActor a = World.getInstance().getCurrentScene()
 					.getActor(actorId, true);
-			v = a.getVerb(verb, target);
+			v = ((InteractiveActor)a).getVerb(verb, target);
 		}
 
 		if (v == null) {

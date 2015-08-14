@@ -35,7 +35,10 @@ import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.ImageRenderer;
+import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
@@ -43,14 +46,17 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.spine.SpineRenderer;
-import com.bladecoder.engine.util.EngineLogger;
 
 public class ChapterDocument extends BaseDocument {
 
-	public static final String ACTOR_TYPES[] = { XMLConstants.NO_RENDERER_VALUE, XMLConstants.ATLAS_VALUE, XMLConstants.SPINE_VALUE,
-		XMLConstants.S3D_VALUE, XMLConstants.IMAGE_VALUE };
+	public static final String ACTOR_TYPES[] = { XMLConstants.BACKGROUND_VALUE, XMLConstants.CHARACTER_VALUE,
+			XMLConstants.SPRITE_VALUE, XMLConstants.OBSTACLE_VALUE };
 
-	public static final String ANIMATION_TYPES[] = { XMLConstants.NO_REPEAT_VALUE, XMLConstants.REPEAT_VALUE, XMLConstants.YOYO_VALUE, XMLConstants.REVERSE_VALUE };
+	public static final String ACTOR_RENDERERS[] = { XMLConstants.ATLAS_VALUE, XMLConstants.SPINE_VALUE,
+			XMLConstants.S3D_VALUE, XMLConstants.IMAGE_VALUE };
+
+	public static final String ANIMATION_TYPES[] = { XMLConstants.NO_REPEAT_VALUE, XMLConstants.REPEAT_VALUE,
+			XMLConstants.YOYO_VALUE, XMLConstants.REVERSE_VALUE };
 
 	public ChapterDocument(String modelPath) {
 		super();
@@ -83,7 +89,7 @@ public class ChapterDocument extends BaseDocument {
 
 		return actors;
 	}
-	
+
 	public NodeList getLayers(Element scn) {
 		NodeList actors = scn.getElementsByTagName(XMLConstants.LAYER_TAG);
 
@@ -177,14 +183,15 @@ public class ChapterDocument extends BaseDocument {
 
 		String background = s.getAttribute(XMLConstants.BACKGROUND_ATLAS_ATTR);
 		if (background != null && !background.isEmpty()) {
-			scn.setBackground(s.getAttribute(XMLConstants.BACKGROUND_ATLAS_ATTR), s.getAttribute(XMLConstants.BACKGROUND_REGION_ATTR), 
+			scn.setBackground(s.getAttribute(XMLConstants.BACKGROUND_ATLAS_ATTR),
+					s.getAttribute(XMLConstants.BACKGROUND_REGION_ATTR),
 					s.getAttribute(XMLConstants.LIGHTMAP_ATLAS_ATTR), s.getAttribute(XMLConstants.LIGHTMAP_REGION_ATTR));
 		}
 
 		String depthVector = s.getAttribute(XMLConstants.DEPTH_VECTOR_ATTR);
 		if (!depthVector.isEmpty())
 			scn.setDepthVector(Param.parseVector2(depthVector));
-		
+
 		// LAYERS
 		NodeList layers = getLayers(s);
 		for (int i = 0; i < layers.getLength(); i++) {
@@ -204,7 +211,7 @@ public class ChapterDocument extends BaseDocument {
 			scn.addActor(actor);
 
 			if (getId(a).equals(getRootAttr(XMLConstants.PLAYER_ATTR))) {
-				scn.setPlayer((SpriteActor) actor);
+				scn.setPlayer((CharacterActor) actor);
 			}
 		}
 
@@ -213,18 +220,13 @@ public class ChapterDocument extends BaseDocument {
 
 		if (wz != null) {
 			PolygonalNavGraph polygonalPathFinder = new PolygonalNavGraph();
-			polygonalPathFinder.setWalkZone(Param.parsePolygon(wz.getAttribute(XMLConstants.POLYGON_ATTR), wz.getAttribute(XMLConstants.POS_ATTR)));
+			Polygon p = new Polygon();
+			Param.parsePolygon(p, wz.getAttribute(XMLConstants.POLYGON_ATTR), wz.getAttribute(XMLConstants.POS_ATTR));
+			polygonalPathFinder.setWalkZone(p);
 
 			scn.setPolygonalNavGraph(polygonalPathFinder);
-
-			NodeList obstacles = wz.getElementsByTagName(XMLConstants.OBSTACLE_TAG);
-			for (int i = 0; i < obstacles.getLength(); i++) {
-				Element o = (Element) obstacles.item(i);
-
-				polygonalPathFinder.addObstacle(Param.parsePolygon(o.getAttribute(XMLConstants.POLYGON_ATTR), o.getAttribute(XMLConstants.POS_ATTR)));
-			}
 		}
-		
+
 		scn.orderLayersByZIndex();
 
 		return scn;
@@ -313,11 +315,11 @@ public class ChapterDocument extends BaseDocument {
 		return e.getElementsByTagName(XMLConstants.ANIMATION_TAG);
 	}
 
-	public Polygon getBBox(Element e) {
+	public void getBBox(Polygon p, Element e) {
 		if (e.getAttribute(XMLConstants.BBOX_ATTR).isEmpty())
-			return null;
+			return;
 
-		return Param.parsePolygon(e.getAttribute(XMLConstants.BBOX_ATTR));
+		Param.parsePolygon(p, e.getAttribute(XMLConstants.BBOX_ATTR));
 	}
 
 	public BaseActor getEngineActor(Element e) {
@@ -325,41 +327,41 @@ public class ChapterDocument extends BaseDocument {
 
 		String type = getType(e);
 
-		if (type.equals(XMLConstants.ATLAS_VALUE)) {
+		if (type.equals(XMLConstants.OBSTACLE_VALUE)) {
+			a = new ObstacleActor();
+		} else if (type.equals(XMLConstants.BACKGROUND_VALUE)) {
+			a = new InteractiveActor();
+		} else if (type.equals(XMLConstants.SPRITE_VALUE)) {
 			a = new SpriteActor();
-			((SpriteActor) a).setRenderer(new AtlasRenderer());
-		} else if (type.equals(XMLConstants.S3D_VALUE)) {
-			a = new SpriteActor();
-			Sprite3DRenderer r = new Sprite3DRenderer();
-			((SpriteActor) a).setRenderer(r);
-			r.setSpriteSize(Param.parseVector2(e.getAttribute(XMLConstants.SPRITE_SIZE_ATTR)));
+		} else if (type.equals(XMLConstants.CHARACTER_VALUE)) {
+			a = new CharacterActor();
+		}
 
-		} else if (type.equals(XMLConstants.SPINE_VALUE)) {
-			a = new SpriteActor();
-			SpineRenderer r = new SpineRenderer();
-			r.enableEvents(false);
-			((SpriteActor) a).setRenderer(r);
-		} else if (type.equals(XMLConstants.IMAGE_VALUE)) {
-			a = new SpriteActor();
-			((SpriteActor) a).setRenderer(new ImageRenderer());
-		} else if (type.equals(XMLConstants.NO_RENDERER_VALUE)) {
-			a = new BaseActor();
-		} else {
-			EngineLogger.error(" Wrong actor Type defined in XML");
-			return null;
+		if (a instanceof SpriteActor) {
+			String renderer = e.getAttribute(XMLConstants.RENDERER_ATTR);
+
+			if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
+				((SpriteActor) a).setRenderer(new AtlasRenderer());
+			} else if (renderer.equals(XMLConstants.S3D_VALUE)) {
+				Sprite3DRenderer r = new Sprite3DRenderer();
+				((SpriteActor) a).setRenderer(r);
+				r.setSpriteSize(Param.parseVector2(e.getAttribute(XMLConstants.SPRITE_SIZE_ATTR)));
+			} else if (renderer.equals(XMLConstants.SPINE_VALUE)) {
+				SpineRenderer r = new SpineRenderer();
+				r.enableEvents(false);
+				((SpriteActor) a).setRenderer(r);
+			} else if (renderer.equals(XMLConstants.IMAGE_VALUE)) {
+				((SpriteActor) a).setRenderer(new ImageRenderer());
+			}
 		}
 
 		String layer = e.getAttribute(XMLConstants.LAYER_ATTR);
 		a.setLayer(layer);
 
 		a.setId(getId(e));
-		Polygon bbox = getBBox(e);
-		a.setBbox(bbox);
+		getBBox(a.getBBox(), e);
 
-		if (bbox == null) {
-			bbox = new Polygon();
-			a.setBbox(bbox);
-
+		if (e.getAttribute(XMLConstants.BBOX_ATTR).isEmpty()) {
 			if (a instanceof SpriteActor)
 				((SpriteActor) a).setBboxFromRenderer(true);
 		}
@@ -368,7 +370,9 @@ public class ChapterDocument extends BaseDocument {
 		if (pos != null)
 			a.setPosition(pos.x, pos.y);
 
-		a.setDesc(e.getAttribute(XMLConstants.DESC_ATTR));
+		if (!e.getAttribute(XMLConstants.DESC_ATTR).isEmpty()) {
+			((InteractiveActor)a).setDesc(e.getAttribute(XMLConstants.DESC_ATTR));
+		}
 
 		if (a instanceof SpriteActor) {
 			ActorRenderer r = ((SpriteActor) a).getRenderer();
@@ -387,7 +391,7 @@ public class ChapterDocument extends BaseDocument {
 				((SpriteActor) a).getRenderer().setInitAnimation(e.getAttribute(XMLConstants.INIT_ANIMATION_ATTR));
 
 			}
-			
+
 			if (!e.getAttribute(XMLConstants.SCALE_ATTR).isEmpty()) {
 				((SpriteActor) a).setScale(Float.parseFloat(e.getAttribute(XMLConstants.SCALE_ATTR)));
 			}
@@ -401,12 +405,10 @@ public class ChapterDocument extends BaseDocument {
 					((SpriteActor) a).setDepthType(DepthType.VECTOR);
 			}
 		}
-		
-		if (e.getAttribute(XMLConstants.OBSTACLE_ATTR).equals(XMLConstants.TRUE_VALUE))
-			a.setWalkObstacle(true);
-		
+
+
 		if (!e.getAttribute(XMLConstants.ZINDEX_ATTR).isEmpty()) {
-			a.setZIndex(Float.parseFloat(e.getAttribute(XMLConstants.ZINDEX_ATTR)));
+			((InteractiveActor)a).setZIndex(Float.parseFloat(e.getAttribute(XMLConstants.ZINDEX_ATTR)));
 		}
 
 		return a;
@@ -419,9 +421,9 @@ public class ChapterDocument extends BaseDocument {
 			fa = new AtlasAnimationDesc();
 		} else if (type.equals(XMLConstants.SPINE_VALUE)) {
 			fa = new SpineAnimationDesc();
-			
+
 			if (!faElement.getAttribute(XMLConstants.ATLAS_VALUE).isEmpty()) {
-				((SpineAnimationDesc)fa).atlas = faElement.getAttribute(XMLConstants.ATLAS_VALUE);
+				((SpineAnimationDesc) fa).atlas = faElement.getAttribute(XMLConstants.ATLAS_VALUE);
 			}
 		} else {
 			fa = new AnimationDesc();
@@ -586,64 +588,16 @@ public class ChapterDocument extends BaseDocument {
 		firePropertyChange(XMLConstants.WALK_ZONE_TAG, e);
 	}
 
-	public Element createObstacle(Element scn, Polygon poly) {
-		Element e = doc.createElement(XMLConstants.OBSTACLE_ATTR);
-		e.setAttribute(XMLConstants.POLYGON_ATTR, Param.toStringParam(poly));
-		e.setAttribute(XMLConstants.POS_ATTR, Param.toStringParam(new Vector2(poly.getX(), poly.getY())));
-
-		getWalkZone(scn).appendChild(e);
-
-		modified = true;
-		firePropertyChange(XMLConstants.OBSTACLE_ATTR, e);
-
-		return e;
-	}
-
-	public Element getObstacle(Element scn, int i) {
-		Element wz = getWalkZone(scn);
-		Element e = null;
-
-		NodeList nl = wz.getElementsByTagName(XMLConstants.OBSTACLE_ATTR);
-
-		e = (Element) nl.item(i);
-
-		return e;
-	}
-
-	public void setObstaclePolygon(Element scn, int i, Polygon poly) {
-		Element e = getObstacle(scn, i);
-
-		if (e == null)
-			return;
-
-		e.setAttribute(XMLConstants.POLYGON_ATTR, Param.toStringParam(poly));
-		e.setAttribute(XMLConstants.POS_ATTR, Param.toStringParam(new Vector2(poly.getX(), poly.getY())));
-
-		modified = true;
-		firePropertyChange(XMLConstants.OBSTACLE_ATTR, e);
-	}
-
-	public void deleteObstacle(Element scn, int i) {
-		Element e = getObstacle(scn, i);
-
-		if (e != null) {
-			deleteElement(e);
-		}
-
-		modified = true;
-		firePropertyChange(XMLConstants.OBSTACLE_ATTR, e);
-	}
-
 	public Element getSceneById(String id) {
 		NodeList scenes = getScenes();
-		
-		for(int i = 0; i < scenes.getLength(); i++) {
+
+		for (int i = 0; i < scenes.getLength(); i++) {
 			Element e = (Element) scenes.item(i);
-			
-			if(e.getAttribute(XMLConstants.ID_ATTR).equals(id))
+
+			if (e.getAttribute(XMLConstants.ID_ATTR).equals(id))
 				return e;
 		}
-		
+
 		return null;
 	}
 }

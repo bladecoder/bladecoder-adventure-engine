@@ -17,12 +17,8 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
-
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.World;
 
 public class SoundAction implements Action {
@@ -47,7 +43,7 @@ public class SoundAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 		
-		BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, true);
+		InteractiveActor actor = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true);
 		
 		if(play!= null)	actor.playSound(play);
 		

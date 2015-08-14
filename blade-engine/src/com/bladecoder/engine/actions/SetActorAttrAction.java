@@ -24,6 +24,7 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
@@ -80,7 +81,8 @@ public class SetActorAttrAction implements Action {
 		BaseActor actor = s.getActor(actorId, true);
 		
 		if(visible != null) actor.setVisible(Boolean.parseBoolean(visible));
-		if(interaction != null) actor.setInteraction(Boolean.parseBoolean( interaction));
+		if(interaction != null && actor instanceof InteractiveActor) 
+			((InteractiveActor)actor).setInteraction(Boolean.parseBoolean( interaction));
 		
 		if(layer != null) {
 			String oldLayer = actor.getLayer();
@@ -96,8 +98,8 @@ public class SetActorAttrAction implements Action {
 				l.orderByZIndex();
 		}
 		
-		if(zIndex != null) {
-			actor.setZIndex(Float.parseFloat(zIndex));
+		if(zIndex != null && actor instanceof InteractiveActor) {
+			((InteractiveActor)actor).setZIndex(Float.parseFloat(zIndex));
 			SceneLayer l = s.getLayer(actor.getLayer());
 			
 			if(!l.isDynamic())

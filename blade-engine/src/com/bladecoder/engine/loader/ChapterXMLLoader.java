@@ -41,9 +41,12 @@ import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.AtlasRenderer;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.ImageRenderer;
+import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
@@ -106,7 +109,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		} else if (localName.equals(XMLConstants.ANIMATION_TAG)) {
 			parseAnimation(atts);
 		} else if (localName.equals(XMLConstants.VERB_TAG)) {
-			parseVerb(atts, actor != null ? actor.getVerbManager() : scene.getVerbManager());
+			parseVerb(atts, actor != null ? ((InteractiveActor) actor).getVerbManager() : scene.getVerbManager());
 		} else if (localName.equals(XMLConstants.DIALOG_TAG)) {
 			String id = atts.getValue(XMLConstants.ID_ATTR);
 
@@ -115,27 +118,21 @@ public class ChapterXMLLoader extends DefaultHandler {
 			currentDialog.setActor(actor.getId());
 			currentOption = null;
 
-			actor.addDialog(id, currentDialog);
+			((CharacterActor) actor).addDialog(id, currentDialog);
 		} else if (localName.equals(XMLConstants.SOUND_TAG)) {
-			parseSound(atts, actor);
+			parseSound(atts, (InteractiveActor)actor);
 		} else if (localName.equals(XMLConstants.CHAPTER_TAG)) {
 			initScene = atts.getValue(XMLConstants.INIT_SCENE_ATTR);
 		} else if (localName.equals(XMLConstants.WALK_ZONE_TAG)) {
 			PolygonalNavGraph polygonalPathFinder = new PolygonalNavGraph();
-			Polygon poly = Param.parsePolygon(atts.getValue(XMLConstants.POLYGON_ATTR),
-					atts.getValue(XMLConstants.POS_ATTR));
+			Polygon poly = new Polygon();
+
+			Param.parsePolygon(poly, atts.getValue(XMLConstants.POLYGON_ATTR), atts.getValue(XMLConstants.POS_ATTR));
 			poly.setScale(scale, scale);
 			poly.setPosition(poly.getX() * scale, poly.getY() * scale);
 			polygonalPathFinder.setWalkZone(poly);
 
 			scene.setPolygonalNavGraph(polygonalPathFinder);
-		} else if (localName.equals(XMLConstants.OBSTACLE_TAG)) {
-			PolygonalNavGraph polygonalPathFinder = scene.getPolygonalNavGraph();
-			Polygon poly = Param.parsePolygon(atts.getValue(XMLConstants.POLYGON_ATTR),
-					atts.getValue(XMLConstants.POS_ATTR));
-			poly.setScale(scale, scale);
-			poly.setPosition(poly.getX() * scale, poly.getY() * scale);
-			polygonalPathFinder.addObstacle(poly);
 		} else if (localName.equals(XMLConstants.SCENE_TAG)) {
 			parseScene(atts);
 		} else if (localName.equals(XMLConstants.LAYER_TAG)) {
@@ -166,7 +163,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			actor = null;
 		} else if (localName.equals(XMLConstants.SCENE_TAG)) {
-			scene.setPlayer((SpriteActor) scene.getActor(player, false));
+			scene.setPlayer((CharacterActor) scene.getActor(player, false));
 			scene.orderLayersByZIndex();
 			scene = null;
 		}
@@ -215,7 +212,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			scene.setMusic(musicFilename, loopMusic, initialDelay, repeatDelay);
 		}
-		
+
 		scenes.add(scene);
 
 		if (initScene == null)
@@ -231,17 +228,25 @@ public class ChapterXMLLoader extends DefaultHandler {
 			throw e2;
 		}
 
-		if (type.equals(XMLConstants.NO_RENDERER_VALUE)) {
-			actor = new BaseActor();
-		} else {
-			actor = new SpriteActor();
+		if (type.equals(XMLConstants.BACKGROUND_VALUE)) {
+			actor = new InteractiveActor();
+		} else if (type.equals(XMLConstants.OBSTACLE_VALUE)) {
+			actor = new ObstacleActor();
+		} else { // Sprite or character
+			String renderer = atts.getValue(XMLConstants.RENDERER_ATTR);
 
-			if (type.equals(XMLConstants.ATLAS_VALUE)) { // ATLAS RENDERER
+			if (type.equals(XMLConstants.CHARACTER_VALUE)) {
+				actor = new CharacterActor();
+			} else {
+				actor = new SpriteActor();
+			}
+
+			if (renderer.equals(XMLConstants.ATLAS_VALUE)) { // ATLAS RENDERER
 				((SpriteActor) actor).setRenderer(new AtlasRenderer());
-			} else if (type.equals(XMLConstants.IMAGE_VALUE)) { // IMAGE
-																// RENDERER
+			} else if (renderer.equals(XMLConstants.IMAGE_VALUE)) { // IMAGE
+				// RENDERER
 				((SpriteActor) actor).setRenderer(new ImageRenderer());
-			} else if (type.equals(XMLConstants.S3D_VALUE)) { // 3D RENDERER
+			} else if (renderer.equals(XMLConstants.S3D_VALUE)) { // 3D RENDERER
 				Sprite3DRenderer r = new Sprite3DRenderer();
 				((SpriteActor) actor).setRenderer(r);
 
@@ -282,8 +287,8 @@ public class ChapterXMLLoader extends DefaultHandler {
 					throw e2;
 				}
 
-			} else if (type.equals(XMLConstants.SPINE_VALUE)) { // SPINE
-																// RENDERER
+			} else if (renderer.equals(XMLConstants.SPINE_VALUE)) { // SPINE
+				// RENDERER
 				try {
 					Class<?> c = ClassReflection.forName("com.bladecoder.engine.spine.SpineRenderer");
 					ActorRenderer r = (ActorRenderer) ClassReflection.newInstance(c);
@@ -293,12 +298,6 @@ public class ChapterXMLLoader extends DefaultHandler {
 					error(e2);
 					throw e2;
 				}
-			}
-
-			if (atts.getValue(XMLConstants.WALKING_SPEED_ATTR) != null
-					&& !atts.getValue(XMLConstants.WALKING_SPEED_ATTR).isEmpty()) {
-				float s = Float.parseFloat(atts.getValue(XMLConstants.WALKING_SPEED_ATTR));
-				((SpriteActor) actor).setWalkingSpeed(s);
 			}
 
 			initAnimation = atts.getValue(XMLConstants.INIT_ANIMATION_ATTR);
@@ -311,6 +310,22 @@ public class ChapterXMLLoader extends DefaultHandler {
 				if (depthType.equals(XMLConstants.VECTOR_ATTR))
 					((SpriteActor) actor).setDepthType(DepthType.VECTOR);
 			}
+
+			if (actor instanceof CharacterActor) {
+				if (atts.getValue(XMLConstants.WALKING_SPEED_ATTR) != null
+						&& !atts.getValue(XMLConstants.WALKING_SPEED_ATTR).isEmpty()) {
+					float s = Float.parseFloat(atts.getValue(XMLConstants.WALKING_SPEED_ATTR));
+					((CharacterActor) actor).setWalkingSpeed(s);
+				}
+
+				// TODO Set text color
+				// if (atts.getValue(XMLConstants.TEXT_COLOR_ATTR) != null
+				// && !atts.getValue(XMLConstants.TEXT_COLOR_ATTR).isEmpty()) {
+				// float s =
+				// Float.parseFloat(atts.getValue(XMLConstants.TEXT_COLOR_ATTR));
+				// ((CharacterActor) actor).setTextColor(s);
+				// }
+			}
 		}
 
 		String id = atts.getValue(XMLConstants.ID_ATTR);
@@ -322,40 +337,26 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 		actor.setId(id);
 
-		String desc = atts.getValue(XMLConstants.DESC_ATTR);
-		if (desc != null)
-			actor.setDesc(desc);
-
-		String state = atts.getValue(XMLConstants.STATE_ATTR);
-		if (state != null)
-			actor.setState(state);
-
 		// PARSE BBOX
-		Polygon p = null;
-
 		if (atts.getValue(XMLConstants.BBOX_ATTR) != null) {
 
 			try {
-				p = Param.parsePolygon(atts.getValue(XMLConstants.BBOX_ATTR));
-				p.setScale(scale, scale);
+				Param.parsePolygon(actor.getBBox(), atts.getValue(XMLConstants.BBOX_ATTR));
+				actor.getBBox().setScale(scale, scale);
 			} catch (NumberFormatException e) {
 				SAXParseException e2 = new SAXParseException("Wrong Bounding Box Definition", locator, e);
 				error(e2);
 				throw e2;
 			}
-
-			actor.setBbox(p);
-		} else if (type.equals(XMLConstants.NO_RENDERER_VALUE)) {
+		} else if (!(actor instanceof SpriteActor)) {
 			SAXParseException e2 = new SAXParseException("Bounding box definition not set for actor", locator);
 			error(e2);
 			throw e2;
 		} else {
-			p = new Polygon();
-			actor.setBbox(p);
 			((SpriteActor) actor).setBboxFromRenderer(true);
 		}
 
-		// PARSE POSTITION
+		// PARSE POSITION
 		Vector2 pos = Param.parseVector2(atts.getValue(XMLConstants.POS_ATTR));
 		if (pos == null) {
 			SAXParseException e2 = new SAXParseException("Wrong actor XML position", locator);
@@ -367,35 +368,43 @@ public class ChapterXMLLoader extends DefaultHandler {
 		pos.y *= scale;
 
 		actor.setPosition(pos.x, pos.y);
-
-		if (atts.getValue(XMLConstants.SCALE_ATTR) != null && actor instanceof SpriteActor) {
-			float s = Float.parseFloat(atts.getValue(XMLConstants.SCALE_ATTR));
-			((SpriteActor) actor).setScale(s);
-		}
-
-		if (atts.getValue("zIndex") != null) {
-			float z = Float.parseFloat(atts.getValue(XMLConstants.ZINDEX_ATTR));
-			actor.setZIndex(z);
-		}
-
-		if (atts.getValue(XMLConstants.INTERACTION_ATTR) != null) {
-			boolean interaction = Boolean.parseBoolean(atts.getValue(XMLConstants.INTERACTION_ATTR));
-			actor.setInteraction(interaction);
-		}
-
+		
 		if (atts.getValue(XMLConstants.VISIBLE_ATTR) != null) {
 			boolean visible = Boolean.parseBoolean(atts.getValue(XMLConstants.VISIBLE_ATTR));
 			actor.setVisible(visible);
 		}
-
-		if (atts.getValue(XMLConstants.OBSTACLE_ATTR) != null) {
-			boolean obstacle = Boolean.parseBoolean(atts.getValue(XMLConstants.OBSTACLE_ATTR));
-			actor.setWalkObstacle(obstacle);
-		}
-
+		
 		String layerStr = atts.getValue(XMLConstants.LAYER_ATTR);
-
 		actor.setLayer(layerStr);
+		
+		
+		if (actor instanceof InteractiveActor) {
+
+			InteractiveActor ia = (InteractiveActor) actor;
+
+			String desc = atts.getValue(XMLConstants.DESC_ATTR);
+			if (desc != null)
+				ia.setDesc(desc);
+
+			String state = atts.getValue(XMLConstants.STATE_ATTR);
+			if (state != null)
+				ia.setState(state);
+			
+			if (atts.getValue("zIndex") != null) {
+				float z = Float.parseFloat(atts.getValue(XMLConstants.ZINDEX_ATTR));
+				ia.setZIndex(z);
+			}
+
+			if (atts.getValue(XMLConstants.INTERACTION_ATTR) != null) {
+				boolean interaction = Boolean.parseBoolean(atts.getValue(XMLConstants.INTERACTION_ATTR));
+				ia.setInteraction(interaction);
+			}
+			
+			if (atts.getValue(XMLConstants.SCALE_ATTR) != null && actor instanceof SpriteActor) {
+				float s = Float.parseFloat(atts.getValue(XMLConstants.SCALE_ATTR));
+				((SpriteActor) actor).setScale(s);
+			}
+		}
 
 		scene.addActor(actor);
 	}
@@ -546,7 +555,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			} catch (ReflectionException e) {
 				EngineLogger.debug("Spine plugin not found: " + e.getMessage());
 			}
-			
+
 			if (isSpine) {
 				sa = new SpineAnimationDesc();
 				((SpineAnimationDesc) sa).atlas = atts.getValue(XMLConstants.ATLAS_VALUE);
@@ -560,7 +569,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		((SpriteActor) actor).getRenderer().addAnimation(sa);
 	}
 
-	private void parseSound(Attributes atts, BaseActor actor) throws SAXException {
+	private void parseSound(Attributes atts, InteractiveActor actor) throws SAXException {
 		String id = atts.getValue(XMLConstants.ID_ATTR);
 		String filename = atts.getValue(XMLConstants.FILENAME_ATTR);
 		String loopStr = atts.getValue(XMLConstants.LOOP_ATTR);
@@ -654,16 +663,16 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 	@Override
 	public void error(SAXParseException e) throws SAXException {
-		if(actor != null) 
-			EngineLogger.error(MessageFormat.format("{0}.{1} Line: {2} Column: {3}. {4}", scene.getId(), actor.getId(), e.getLineNumber(),
-				e.getColumnNumber(), e.getMessage()));
-		else if(scene != null)
+		if (actor != null)
+			EngineLogger.error(MessageFormat.format("{0}.{1} Line: {2} Column: {3}. {4}", scene.getId(), actor.getId(),
+					e.getLineNumber(), e.getColumnNumber(), e.getMessage()));
+		else if (scene != null)
 			EngineLogger.error(MessageFormat.format("{0} Line: {1} Column: {2}. {3}", actor.getId(), e.getLineNumber(),
 					e.getColumnNumber(), e.getMessage()));
 		else
 			EngineLogger.error(MessageFormat.format("Line: {1} Column: {2}. {3}", e.getLineNumber(),
 					e.getColumnNumber(), e.getMessage()));
-		
+
 		EngineLogger.error("CAUSA", (Exception) e.getCause());
 	}
 

@@ -66,7 +66,10 @@ public class SceneLayer {
 
 			@Override
 			public int compare(BaseActor a1, BaseActor a2) {
-				return (int) (a1.getZIndex() - a2.getZIndex());
+				if(a1 instanceof InteractiveActor && a2 instanceof InteractiveActor)
+					return (int) (((InteractiveActor)a1).getZIndex() - ((InteractiveActor)a2).getZIndex());
+				else 
+					return 0;
 			}
 		});
 	}

@@ -17,11 +17,8 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
@@ -59,7 +56,7 @@ public class SetStateAction implements Action {
 			return false;
 		}
 		
-		BaseActor a = s.getActor(actorId, false);
+		InteractiveActor a = (InteractiveActor)s.getActor(actorId, false);
 		
 		if(a == null) { // search in inventory
 			a = World.getInstance().getInventory().getItem(actorId);

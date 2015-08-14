@@ -18,13 +18,13 @@ package com.bladecoder.engine.anim;
 import java.util.ArrayList;
 
 import com.bladecoder.engine.anim.SpritePosTween;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 
@@ -43,7 +43,7 @@ public class WalkTween extends SpritePosTween implements Serializable {
 	public WalkTween() {
 	}
 
-	public void start(SpriteActor target, ArrayList<Vector2> walkingPath,
+	public void start(CharacterActor target, ArrayList<Vector2> walkingPath,
 			float speed, ActionCallback cb) {
 		this.walkingPath = walkingPath;
 		this.speed = speed;
@@ -57,11 +57,11 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		walkToNextStep(target);
 	}
 	
-	private void walkToNextStep(SpriteActor target) {
+	private void walkToNextStep(CharacterActor target) {
 		Vector2 p0 = walkingPath.get(currentStep);
 		Vector2 pf = walkingPath.get(currentStep + 1);
 
-		target.startWalkFA(p0, pf);
+		target.startWalkAnim(p0, pf);
 
 		float segmentDuration = p0.dst(pf)
 				/ (EngineAssetManager.getInstance().getScale() * speed);
@@ -78,7 +78,7 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		}
 	}
 
-	private void segmentEnded(SpriteActor target) {
+	private void segmentEnded(CharacterActor target) {
 
 		currentStep++;
 
@@ -94,7 +94,7 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		super.update(a, delta);
 		
 		if(isComplete())
-			segmentEnded(a);
+			segmentEnded((CharacterActor)a);
 	}
 
 

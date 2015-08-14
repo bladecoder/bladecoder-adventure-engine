@@ -17,10 +17,6 @@ package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
 
-import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.DialogOption;
-import com.bladecoder.engine.model.World;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -61,7 +57,7 @@ public class Dialog implements Serializable   {
 		if(v == null) v = DEFAULT_DIALOG_VERB;
 		
 		// TODO: DELETE REFERENCE TO WORLD FROM DIALOG
-		BaseActor a = World.getInstance().getCurrentScene().getActor(actor, false);
+		InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, false);
 		a.runVerb(v);
 		
 		if(currentOption.getNext() != null) {

@@ -17,11 +17,8 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.Scene;
@@ -77,7 +74,7 @@ public class SetDialogOptionAttrAction implements Action {
 			s = World.getInstance().getCurrentScene();
 		}
 		
-		BaseActor actor = s.getActor(actorId, true);
+		CharacterActor actor = (CharacterActor)s.getActor(actorId, true);
 		
 		Dialog d = actor.getDialog(dialog);
 

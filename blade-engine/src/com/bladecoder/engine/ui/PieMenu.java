@@ -24,7 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -38,7 +38,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	private float x = 0, y = 0;
 
-	private BaseActor baseActor = null;
+	private InteractiveActor iActor = null;
 
 	private final SceneScreen sceneScreen;
 	
@@ -57,8 +57,8 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		lookatButton.addListener(new ChangeListener() {			
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-				if (baseActor != null) {
-					sceneScreen.runVerb(baseActor, "lookat", null);
+				if (iActor != null) {
+					sceneScreen.runVerb(iActor, "lookat", null);
 				}
 
 				hide();
@@ -70,8 +70,8 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		talktoButton.addListener(new ChangeListener() {			
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-				if (baseActor != null) {
-					sceneScreen.runVerb(baseActor, "talkto", null);
+				if (iActor != null) {
+					sceneScreen.runVerb(iActor, "talkto", null);
 				}
 
 				hide();
@@ -83,8 +83,8 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		pickupButton.addListener(new ChangeListener() {			
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-				if (baseActor != null) {
-					sceneScreen.runVerb(baseActor, "pickup", null);
+				if (iActor != null) {
+					sceneScreen.runVerb(iActor, "pickup", null);
 				}
 
 				hide();
@@ -107,7 +107,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		super.draw(batch, alpha);
 
 		// DRAW TARGET DESCRIPTION
-		String desc = baseActor.getDesc();
+		String desc = iActor.getDesc();
 
 		if (desc != null) {			
 			float margin = DPIUtils.UI_SPACE;
@@ -126,17 +126,17 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	public void hide() {
 		setVisible(false);
-		baseActor = null;
+		iActor = null;
 	}
 
-	public void show(BaseActor a, float x, float y) {
+	public void show(InteractiveActor a, float x, float y) {
 		setVisible(true);
 		this.x = x;
 		this.y = y;
-		baseActor = a;
+		iActor = a;
 		
 		// DRAW TARGET DESCRIPTION
-		desc = baseActor.getDesc();
+		desc = iActor.getDesc();
 
 		if (desc != null) {
 

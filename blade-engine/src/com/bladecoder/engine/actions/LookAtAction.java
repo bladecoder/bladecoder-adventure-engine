@@ -17,17 +17,13 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.AnimationDesc;
-import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.CharacterActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
@@ -67,9 +63,9 @@ public class LookAtAction implements Action {
 	public boolean run(ActionCallback cb) {
 
 		EngineLogger.debug("LOOKAT ACTION");
-		BaseActor actor = (BaseActor) World.getInstance().getCurrentScene().getActor(actorId, true);
+		InteractiveActor actor = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actorId, true);
 
-		SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
+		CharacterActor player = World.getInstance().getCurrentScene().getPlayer();
 		
 		if(direction!=null) player.lookat(direction);
 		else if(actor!=null && player != null) {
