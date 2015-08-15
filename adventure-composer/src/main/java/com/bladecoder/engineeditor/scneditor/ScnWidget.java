@@ -599,7 +599,6 @@ public class ScnWidget extends Widget {
 		selectedActor = a;
 		faRenderer.setActor(a);
 		setAnimation(null);
-		walkZoneWindow.setActor(a);
 	}
 
 	public void setSelectedFA(String selFA) {

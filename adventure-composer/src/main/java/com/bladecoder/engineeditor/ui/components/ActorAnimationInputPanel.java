@@ -57,7 +57,7 @@ public class ActorAnimationInputPanel extends InputPanel {
 			String id = ((Element) actors.item(i)).getAttribute(XMLConstants.ID_ATTR);
 			String type = ((Element) actors.item(i)).getAttribute(XMLConstants.TYPE_ATTR);
 
-			if (!type.equals(XMLConstants.NO_RENDERER_VALUE)) {
+			if (type.equals(XMLConstants.SPRITE_VALUE) || type.equals(XMLConstants.CHARACTER_VALUE)) {
 				values.add(id);
 			}
 		}

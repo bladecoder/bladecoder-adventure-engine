@@ -16,7 +16,6 @@
 package com.bladecoder.engineeditor.scneditor;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.xml.transform.TransformerException;
 
@@ -33,7 +32,6 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.util.PolygonUtils;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.undo.UndoDeleteElement;
@@ -52,16 +50,9 @@ public class ScnWidgetInputListener extends ClickListener {
 	private Vector2 org = new Vector2();
 	private Vector2 undoOrg = new Vector2();
 	private int vertIndex;
-	private Polygon selPolygon = null;
-	private int selObstacleIndex = 0;
 
 	public ScnWidgetInputListener(ScnWidget w) {
 		this.scnWidget = w;
-	}
-
-	public void setDeleteObstacle(boolean v) {
-		Ctx.msg.show(scnWidget.getStage(), "Select Obstacle to Delete");
-		deleteObstacle = v;
 	}
 
 	@Override
@@ -79,7 +70,6 @@ public class ScnWidgetInputListener extends ClickListener {
 			// Check WALKZONE
 			if (scn.getPolygonalNavGraph() != null && scnWidget.getShowWalkZone()) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
-				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph().getObstacles();
 
 				if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
 					// Delete the point if selected
@@ -88,16 +78,6 @@ public class ScnWidgetInputListener extends ClickListener {
 					if (deleted) {
 						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedScene(), poly);
 						return;
-					} else { // check obstacles
-						for (int i = 0; i < obstacles.size(); i++) {
-							Polygon o = obstacles.get(i);
-							deleted = PolygonUtils.deletePoint(o, p.x, p.y, CanvasDrawer.CORNER_DIST);
-							if (deleted) {
-								Ctx.project.getSelectedChapter().setObstaclePolygon(Ctx.project.getSelectedScene(), i,
-										o);
-								return;
-							}
-						}
 					}
 
 				} else {
@@ -107,16 +87,6 @@ public class ScnWidgetInputListener extends ClickListener {
 					if (created) {
 						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedScene(), poly);
 						return;
-					} else {
-						for (int i = 0; i < obstacles.size(); i++) {
-							Polygon o = obstacles.get(i);
-							created = PolygonUtils.addClampPointIfTolerance(o, p.x, p.y, CanvasDrawer.CORNER_DIST);
-							if (created) {
-								Ctx.project.getSelectedChapter().setObstaclePolygon(Ctx.project.getSelectedScene(), i,
-										o);
-								return;
-							}
-						}
 					}
 				}
 			}
@@ -182,34 +152,6 @@ public class ScnWidgetInputListener extends ClickListener {
 					}
 				}
 
-				// CHECK OBSTACLE VERTEXS
-				ArrayList<Polygon> obstacles = scn.getPolygonalNavGraph().getObstacles();
-
-				for (int j = 0; j < obstacles.size(); j++) {
-					Polygon o = obstacles.get(j);
-					verts = o.getTransformedVertices();
-
-					for (int i = 0; i < verts.length; i += 2) {
-						if (p.dst(verts[i], verts[i + 1]) < CanvasDrawer.CORNER_DIST) {
-							draggingMode = DraggingModes.DRAGGING_OBSTACLE_POINT;
-							selPolygon = o;
-							vertIndex = i;
-							selObstacleIndex = j;
-							return true;
-						}
-					}
-				}
-
-				// CHECK FOR OBSTACLE DRAGGING
-				for (int j = 0; j < obstacles.size(); j++) {
-					Polygon o = obstacles.get(j);
-					if (o.contains(p.x, p.y)) {
-						draggingMode = DraggingModes.DRAGGING_OBSTACLE;
-						selPolygon = o;
-						selObstacleIndex = j;
-						return true;
-					}
-				}
 
 				// CHECK FOR WALKZONE DRAGGING
 				if (wzPoly.contains(p.x, p.y)) {
@@ -319,18 +261,6 @@ public class ScnWidgetInputListener extends ClickListener {
 				poly.dirty();
 
 				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedScene(), poly);
-			} else if (draggingMode == DraggingModes.DRAGGING_OBSTACLE_POINT) {
-				float verts[] = selPolygon.getVertices();
-				verts[vertIndex] += d.x;
-				verts[vertIndex + 1] += d.y;
-				selPolygon.dirty();
-
-				Ctx.project.getSelectedChapter().setObstaclePolygon(Ctx.project.getSelectedScene(), selObstacleIndex,
-						selPolygon);
-			} else if (draggingMode == DraggingModes.DRAGGING_OBSTACLE) {
-				selPolygon.translate(d.x, d.y);
-				Ctx.project.getSelectedChapter().setObstaclePolygon(Ctx.project.getSelectedScene(), selObstacleIndex,
-						selPolygon);
 			} else if (draggingMode == DraggingModes.DRAGGING_WALKZONE) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 				poly.translate(d.x, d.y);

@@ -64,12 +64,17 @@ public class ActorPanel extends HeaderPanel {
 
 							tabPanel.addTab("Verbs", verbList);
 							
-							if (!type.equals(XMLConstants.NO_RENDERER_VALUE))
+							if (type.equals(XMLConstants.SPRITE_VALUE) || type.equals(XMLConstants.CHARACTER_VALUE))
 								tabPanel.addTab("Animations", faList);
 
-							tabPanel.addTab("Sounds", soundList);
+							if (!type.equals(XMLConstants.OBSTACLE_VALUE))
+								tabPanel.addTab("Sounds", soundList);
 
-							tabPanel.addTab("Dialogs", dialogList);
+							if (type.equals(XMLConstants.CHARACTER_VALUE)) {
+								tabPanel.addTab("Dialogs", dialogList);
+							}
+							
+							
 							tabPanel.addTab("Actor Props", props);
 							setTile("ACTOR " + doc.getId(a));
 

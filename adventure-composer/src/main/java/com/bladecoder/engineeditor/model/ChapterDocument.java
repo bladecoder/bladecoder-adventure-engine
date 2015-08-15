@@ -49,8 +49,8 @@ import com.bladecoder.engine.spine.SpineRenderer;
 
 public class ChapterDocument extends BaseDocument {
 
-	public static final String ACTOR_TYPES[] = { XMLConstants.BACKGROUND_VALUE, XMLConstants.CHARACTER_VALUE,
-			XMLConstants.SPRITE_VALUE, XMLConstants.OBSTACLE_VALUE };
+	public static final String ACTOR_TYPES[] = { XMLConstants.BACKGROUND_VALUE, XMLConstants.SPRITE_VALUE, XMLConstants.CHARACTER_VALUE,
+			XMLConstants.OBSTACLE_VALUE };
 
 	public static final String ACTOR_RENDERERS[] = { XMLConstants.ATLAS_VALUE, XMLConstants.SPINE_VALUE,
 			XMLConstants.S3D_VALUE, XMLConstants.IMAGE_VALUE };

@@ -110,7 +110,7 @@ public class ActorList extends ElementList {
 						for (Element e2 : list.getItems()) {
 							if (e2 == el) {
 								int pos = list.getItems().indexOf(e2, true);
-								
+
 								list.getItems().removeIndex(pos);
 
 								clipboard = e2;
@@ -126,16 +126,16 @@ public class ActorList extends ElementList {
 					}
 				} else if (e.getPropertyName().equals("actor") && e.getSource() instanceof UndoOp) {
 					Element el = (Element) e.getNewValue();
-					
-					if(getItems().indexOf(el, true) != -1)
+
+					if (getItems().indexOf(el, true) != -1)
 						return;
-					
+
 					addItem(el);
 
 					int i = getItems().indexOf(el, true);
-					if(i != -1)
+					if (i != -1)
 						list.setSelectedIndex(i);
-					
+
 					list.invalidateHierarchy();
 				}
 			}
@@ -174,7 +174,7 @@ public class ActorList extends ElementList {
 
 		Element e = list.getItems().get(pos);
 
-		if (!e.getAttribute(XMLConstants.TYPE_ATTR).equals(XMLConstants.NO_RENDERER_VALUE)) {
+		if (e.getAttribute(XMLConstants.TYPE_ATTR).equals(XMLConstants.CHARACTER_VALUE)) {
 			String id = e.getAttribute(XMLConstants.ID_ATTR);
 
 			scn.setRootAttr(parent, XMLConstants.PLAYER_ATTR, id);
@@ -199,23 +199,31 @@ public class ActorList extends ElementList {
 		@Override
 		public TextureRegion getCellImage(Element e) {
 			String type = e.getAttribute(XMLConstants.TYPE_ATTR);
+			String renderer = e.getAttribute(XMLConstants.RENDERER_ATTR);
 
-			boolean isPlayer = ((Element) e.getParentNode()).getAttribute(XMLConstants.PLAYER_ATTR).equals(e.getAttribute(XMLConstants.ID_ATTR));
+			boolean isPlayer = ((Element) e.getParentNode()).getAttribute(XMLConstants.PLAYER_ATTR)
+					.equals(e.getAttribute(XMLConstants.ID_ATTR));
 
 			String u = null;
 
 			if (isPlayer) {
-				u = "ic_character_actor";
-			} else if (type.equals(XMLConstants.IMAGE_VALUE)) {
-				u = "ic_sprite_actor";
-			} else if (type.equals(XMLConstants.ATLAS_VALUE)) {
-				u = "ic_sprite_actor";
-			} else if (type.equals(XMLConstants.NO_RENDERER_VALUE)) {
+				u = "ic_player";
+			} else if (type.equals(XMLConstants.BACKGROUND_VALUE)) {
 				u = "ic_base_actor";
-			} else if (type.equals(XMLConstants.SPINE_VALUE)) {
-				u = "ic_spine";
-			} else if (type.equals(XMLConstants.S3D_VALUE)) {
-				u = "ic_3d";
+			} else if (type.equals(XMLConstants.SPRITE_VALUE)) {
+				if (renderer.equals(XMLConstants.IMAGE_VALUE)) {
+					u = "ic_sprite_actor";
+				} else if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
+					u = "ic_sprite_actor";
+				} else if (renderer.equals(XMLConstants.SPINE_VALUE)) {
+					u = "ic_spine";
+				} else if (renderer.equals(XMLConstants.S3D_VALUE)) {
+					u = "ic_3d";
+				}
+			} else if (type.equals(XMLConstants.OBSTACLE_VALUE)) {
+				u = "ic_obstacle_actor";
+			} else if (type.equals(XMLConstants.CHARACTER_VALUE)) {
+				u = "ic_character_actor";
 			}
 
 			return Ctx.assetManager.getIcon(u);

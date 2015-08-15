@@ -35,18 +35,26 @@ import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 public class EditActorDialog extends EditElementDialog {
 
 	public static final String TYPES_INFO[] = {
-			"No renderer actor, only define an interactive area",
+			"Background actors don't have sprites or animations. The are used to use objects drawed in the background",
+			"Sprite actors have one or several sprites or animations",
+			"Character actors have dialogs and stand, walk and talk animations",
+			"Obstacle actors forbids zones for walking actors"
+			};
+	
+	public static final String RENDERERS_INFO[] = {
 			"Atlas actor allows 2d image and animations",
-			"3d actors allow 3d models and animations",
 			"Spine actors allow Spine 2d skeletal animations",
+			"3d actors allow 3d models and animations",
 			"Image actors show image files"
 			};
 
-	private InputPanel[] inputs = new InputPanel[14];
-	InputPanel typePanel;
+	private InputPanel typePanel;
+	private InputPanel rendererPanel;
 
-	String attrs[] = { XMLConstants.TYPE_ATTR, XMLConstants.ID_ATTR, XMLConstants.LAYER_ATTR, XMLConstants.DESC_ATTR, XMLConstants.STATE_ATTR, XMLConstants.INTERACTION_ATTR, XMLConstants.VISIBLE_ATTR,
-			XMLConstants.WALKING_SPEED_ATTR, XMLConstants.DEPTH_TYPE_ATTR, XMLConstants.SPRITE_SIZE_ATTR, XMLConstants.CAMERA_NAME_ATTR, XMLConstants.FOV_ATTR, XMLConstants.SCALE_ATTR, XMLConstants.ZINDEX_ATTR };
+	String attrs[] = { XMLConstants.TYPE_ATTR, XMLConstants.ID_ATTR, XMLConstants.LAYER_ATTR, XMLConstants.VISIBLE_ATTR, XMLConstants.INTERACTION_ATTR, XMLConstants.DESC_ATTR, XMLConstants.STATE_ATTR,
+			 XMLConstants.RENDERER_ATTR, XMLConstants.DEPTH_TYPE_ATTR, XMLConstants.SCALE_ATTR, XMLConstants.ZINDEX_ATTR, XMLConstants.WALKING_SPEED_ATTR, XMLConstants.SPRITE_SIZE_ATTR, XMLConstants.CAMERA_NAME_ATTR, XMLConstants.FOV_ATTR };
+	
+	private InputPanel[] inputs = new InputPanel[attrs.length];
 
 	@SuppressWarnings("unchecked")
 	public EditActorDialog(Skin skin, BaseDocument doc, Element parent,
@@ -59,47 +67,60 @@ public class EditActorDialog extends EditElementDialog {
 
 		inputs[1] = InputPanelFactory.createInputPanel(skin, "Actor ID",
 				"IDs can not contain '.' or '_' characters.", true);
+		
 
 		inputs[2] = InputPanelFactory.createInputPanel(skin, "Actor Layer",
 				"The layer for drawing order", getLayers(parent), true);
 		
-		inputs[3] = InputPanelFactory.createInputPanel(skin, "Description",
-				"The text showed when the cursor is over the actor.");
-		inputs[4] = InputPanelFactory.createInputPanel(
-				skin,
-				"State",
-				"Initial state of the actor. Actors can be in differentes states during the game.");
-		inputs[5] = InputPanelFactory.createInputPanel(skin, "Interaction",
+		inputs[3] = InputPanelFactory.createInputPanel(skin, "Visible", "The actor visibility.",
+				Param.Type.BOOLEAN, false);
+		
+		
+		inputs[4] = InputPanelFactory.createInputPanel(skin, "Interaction",
 				"True when the actor reacts to the user input.",
 				Param.Type.BOOLEAN, false);
-		inputs[6] = InputPanelFactory.createInputPanel(skin, "Visible", "The actor visibility.",
-				Param.Type.BOOLEAN, false);
-		inputs[7] = InputPanelFactory.createInputPanel(skin, "Walking Speed",
-				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT,
-				false);
+
+		inputs[5] = InputPanelFactory.createInputPanel(skin, "Description",
+				"The text showed when the cursor is over the actor.");
+		inputs[6] = InputPanelFactory.createInputPanel(
+				skin,
+				"State",
+				"Initial state of the actor. Actors can be in differentes states during the game.");		
+		
+		inputs[7] = InputPanelFactory.createInputPanel(skin, "Actor Renderer",
+				"Actors can be renderer from several sources",
+				ChapterDocument.ACTOR_RENDERERS, true);
+
 		inputs[8] = InputPanelFactory.createInputPanel(skin, "Depth Type",
 				"Scene fake depth for scaling", new String[] { "none",
 						"vector"}, true);
-		inputs[9] = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions",
-				"The size of the 3d sprite", Param.Type.DIMENSION, true);
-		inputs[10] = InputPanelFactory.createInputPanel(skin, "Camera Name",
-				"The name of the camera in the model", Param.Type.STRING, true,
-				"Camera", null);
-		inputs[11] = InputPanelFactory.createInputPanel(skin, "Camera FOV",
-				"The camera field of view", Param.Type.FLOAT, true, "49.3",
-				null);
 		
-		inputs[12] = InputPanelFactory.createInputPanel(skin, "Scale",
+		inputs[9] = InputPanelFactory.createInputPanel(skin, "Scale",
 				"The sprite scale", Param.Type.FLOAT, false, "1",
 				null);
 		
-		inputs[13] = InputPanelFactory.createInputPanel(skin, "zIndex",
+		inputs[10] = InputPanelFactory.createInputPanel(skin, "zIndex",
 				"The order to draw.", Param.Type.FLOAT, false, "0",
 				null);
+		
+		inputs[11] = InputPanelFactory.createInputPanel(skin, "Walking Speed",
+				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT,
+				false);
+		
+		inputs[12] = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions",
+				"The size of the 3d sprite", Param.Type.DIMENSION, true);
+		inputs[13] = InputPanelFactory.createInputPanel(skin, "Camera Name",
+				"The name of the camera in the model", Param.Type.STRING, true,
+				"Camera", null);
+		inputs[14] = InputPanelFactory.createInputPanel(skin, "Camera FOV",
+				"The camera field of view", Param.Type.FLOAT, true, "49.3",
+				null);
+		
 
 		setInfo(TYPES_INFO[0]);
 
 		typePanel = inputs[0];
+		rendererPanel = inputs[1];
 
 		((SelectBox<String>) typePanel.getField())
 				.addListener(new ChangeListener() {
@@ -109,6 +130,15 @@ public class EditActorDialog extends EditElementDialog {
 						typeChanged();
 					}
 				});
+		
+		((SelectBox<String>) rendererPanel.getField())
+			.addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				rendererChanged();
+			}
+		});
 
 		init(inputs, attrs, doc, parent, XMLConstants.ACTOR_TAG, e);
 
@@ -132,30 +162,67 @@ public class EditActorDialog extends EditElementDialog {
 		int i = ((OptionsInputPanel)typePanel).getSelectedIndex();
 
 		setInfo(TYPES_INFO[i]);
-
-		setVisible(inputs[9],false);
-		setVisible(inputs[10],false);
-		setVisible(inputs[11],false);
-		setVisible(inputs[12],false);
+		
+		hideAllInputs();
+		
+		if (!ChapterDocument.ACTOR_TYPES[i]
+				.equals(XMLConstants.OBSTACLE_VALUE)) {
+			setVisible(inputs[4],true);
+			setVisible(inputs[5],true);
+			setVisible(inputs[6],true);
+		}
 
 		if (ChapterDocument.ACTOR_TYPES[i]
-				.equals(XMLConstants.S3D_VALUE)) {
+				.equals(XMLConstants.SPRITE_VALUE) || 
+				ChapterDocument.ACTOR_TYPES[i]
+						.equals(XMLConstants.CHARACTER_VALUE)) {
+			setVisible(inputs[7],true);
+			setVisible(inputs[8],true);
 			setVisible(inputs[9],true);
 			setVisible(inputs[10],true);
+		}
+		
+		if (ChapterDocument.ACTOR_TYPES[i]
+						.equals(XMLConstants.CHARACTER_VALUE)) {
 			setVisible(inputs[11],true);
 		}
 		
-		if (!ChapterDocument.ACTOR_TYPES[i]
-				.equals(XMLConstants.NO_RENDERER_VALUE)) {
+		rendererChanged();
+	}
+	
+	private void rendererChanged() {
+		int i = ((OptionsInputPanel)rendererPanel).getSelectedIndex();
+
+//		setInfo(RENDERERS_INFO[i]);
+
+		setVisible(inputs[12],false);
+		setVisible(inputs[13],false);
+		setVisible(inputs[14],false);
+
+		if (rendererPanel.isVisible() &&
+				ChapterDocument.ACTOR_RENDERERS[i]
+				.equals(XMLConstants.S3D_VALUE)) {
 			setVisible(inputs[12],true);
+			setVisible(inputs[13],true);
+			setVisible(inputs[14],true);
+		}
+	}
+	
+	private void hideAllInputs() {
+				
+		for(int idx = 4; idx < inputs.length; idx ++) {
+			InputPanel i = inputs[idx];
+			
+			setVisible(i, false);
 		}
 	}
 
 	@Override
 	protected void fill() {
 		int i = ((OptionsInputPanel)typePanel).getSelectedIndex();
-		if (((ChapterDocument)doc).getBBox(e) == null && ChapterDocument.ACTOR_TYPES[i]
-				.equals(XMLConstants.NO_RENDERER_VALUE)) {
+		if (e.getAttribute(XMLConstants.BBOX_ATTR).isEmpty() && ChapterDocument.ACTOR_TYPES[i]
+				.equals(XMLConstants.BACKGROUND_VALUE) || ChapterDocument.ACTOR_TYPES[i]
+						.equals(XMLConstants.OBSTACLE_VALUE)) {
 			((ChapterDocument) doc).setBbox(e, null);
 		}
 		

@@ -31,32 +31,17 @@ import com.bladecoder.engineeditor.Ctx;
 public class WalkZoneWindow extends Container<Table> {
 	private static final String DELETE_WALK_ZONE_TEXT = "Delete Walk Zone";
 	private static final String CREATE_WALK_ZONE_TEXT = "Create Walk Zone";
-	private static final String SET_ACTOR_AS_OBSTACLE_TEXT = "Set Actor as Obstacle";
-	private static final String REMOVE_ACTOR_AS_OBSTACLE_TEXT = "Remove Actor as Obstacle";
-	private static final float OBSTACLE_WIDTH = 200;
 
 	TextButton createZoneBtn;
-	TextButton createObstacleBtn;
-	TextButton deleteObstacleBtn;
-	TextButton addObstacleActorBtn;
+
 	Scene scn;
 	com.bladecoder.engine.model.BaseActor actor;
 
-	private final ScnWidgetInputListener scnIL;
-
 	public WalkZoneWindow(Skin skin, ScnWidgetInputListener sIL) {
-		this.scnIL = sIL;
 
 		Table table = new Table(skin);
 		createZoneBtn = new TextButton(CREATE_WALK_ZONE_TEXT, skin);
-		createObstacleBtn = new TextButton("Create Obstacle", skin);
-		deleteObstacleBtn = new TextButton("Delete Obstacle", skin);
-		addObstacleActorBtn = new TextButton(SET_ACTOR_AS_OBSTACLE_TEXT, skin);
-
 		createZoneBtn.setDisabled(true);
-		createObstacleBtn.setDisabled(true);
-		deleteObstacleBtn.setDisabled(true);
-		addObstacleActorBtn.setDisabled(true);
 
 		table.top();
 		table.add(new Label("Walk Zone", skin, "big")).center();
@@ -65,12 +50,6 @@ public class WalkZoneWindow extends Container<Table> {
 		setBackground(drawable);
 		table.row();
 		table.add(createZoneBtn).expandX().fill();
-		table.row();
-		table.add(createObstacleBtn).expandX().fill();
-		table.row();
-		table.add(deleteObstacleBtn).expandX().fill();
-		table.row();
-		table.add(addObstacleActorBtn).expandX().fill();
 		setActor(table);
 
 		createZoneBtn.addListener(new ChangeListener() {
@@ -93,15 +72,12 @@ public class WalkZoneWindow extends Container<Table> {
 					pf.setWalkZone(poly);
 					scn.setPolygonalNavGraph(pf);
 					createZoneBtn.setText(DELETE_WALK_ZONE_TEXT);
-					createObstacleBtn.setDisabled(false);
-					addObstacleActorBtn.setDisabled(false);
+		
 					Ctx.project.getSelectedChapter().createWalkZone(
 							Ctx.project.getSelectedScene(), poly);
 				} else {
 					createZoneBtn.setText(CREATE_WALK_ZONE_TEXT);
-					createObstacleBtn.setDisabled(true);
-					deleteObstacleBtn.setDisabled(true);
-					addObstacleActorBtn.setDisabled(true);
+			
 					scn.setPolygonalNavGraph(null);
 					Ctx.project.getSelectedChapter().deleteWalkZone(
 							Ctx.project.getSelectedScene());
@@ -112,61 +88,6 @@ public class WalkZoneWindow extends Container<Table> {
 
 		});
 
-		createObstacleBtn.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				float[] verts = new float[8];
-
-				verts[3] = OBSTACLE_WIDTH;
-				verts[4] = OBSTACLE_WIDTH;
-				verts[5] = OBSTACLE_WIDTH;
-				verts[6] = OBSTACLE_WIDTH;
-
-				Polygon poly = new Polygon(verts);
-				PolygonalNavGraph pf = scn.getPolygonalNavGraph();
-				pf.addObstacle(poly);
-				Ctx.project.getSelectedChapter().createObstacle(
-						Ctx.project.getSelectedScene(), poly);
-				deleteObstacleBtn.setDisabled(false);
-
-				event.cancel();
-			}
-		});
-
-		deleteObstacleBtn.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				PolygonalNavGraph pf = scn.getPolygonalNavGraph();
-
-				if (pf.getObstacles().size() > 0)
-					scnIL.setDeleteObstacle(true);
-				else
-					Ctx.msg.show(getStage(),
-							"There are no obstacles to delete", 3);
-
-				// if(pf.getObstacles().size() == 0)
-				// deleteObstacleBtn.setDisabled(true);
-
-				event.cancel();
-			}
-		});
-
-		addObstacleActorBtn.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor a) {
-				if (actor.isWalkObstacle()) {
-					actor.setWalkObstacle(false);
-					Ctx.project.getSelectedChapter().setRootAttr(Ctx.project.getSelectedActor(), "obstacle", "false");
-					addObstacleActorBtn.setText(SET_ACTOR_AS_OBSTACLE_TEXT);
-				} else {
-					actor.setWalkObstacle(true);
-					Ctx.project.getSelectedChapter().setRootAttr(Ctx.project.getSelectedActor(), "obstacle", "true");
-					addObstacleActorBtn.setText(REMOVE_ACTOR_AS_OBSTACLE_TEXT);
-				}
-
-				event.cancel();
-			}
-		});
 
 		prefSize(200, 200);
 		setSize(200, 200);
@@ -178,8 +99,7 @@ public class WalkZoneWindow extends Container<Table> {
 
 		if (scn == null) {
 			createZoneBtn.setDisabled(true);
-			createObstacleBtn.setDisabled(true);
-			deleteObstacleBtn.setDisabled(true);
+	
 			return;
 		}
 
@@ -187,33 +107,11 @@ public class WalkZoneWindow extends Container<Table> {
 
 		if (scn.getPolygonalNavGraph() == null) {
 			createZoneBtn.setText(CREATE_WALK_ZONE_TEXT);
-			createObstacleBtn.setDisabled(true);
+			
 		} else {
 			createZoneBtn.setText(DELETE_WALK_ZONE_TEXT);
-			createObstacleBtn.setDisabled(false);
-		}
-
-		if (scn.getPolygonalNavGraph() != null
-				&& scn.getPolygonalNavGraph().getObstacles().size() > 0) {
-			deleteObstacleBtn.setDisabled(false);
-		} else {
-			deleteObstacleBtn.setDisabled(true);
-		}
-	}
-
-	public void setActor(com.bladecoder.engine.model.BaseActor a) {
-		this.actor = a;
-		
-		if(a == null) {
-			addObstacleActorBtn.setDisabled(true);			
-		} else {
-			addObstacleActorBtn.setDisabled(false);
 			
-			if(!a.isWalkObstacle()) {
-				addObstacleActorBtn.setText(SET_ACTOR_AS_OBSTACLE_TEXT);
-			} else {
-				addObstacleActorBtn.setText(REMOVE_ACTOR_AS_OBSTACLE_TEXT);
-			}
 		}
+
 	}
 }
