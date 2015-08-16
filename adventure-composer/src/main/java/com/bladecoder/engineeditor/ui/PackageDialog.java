@@ -69,17 +69,17 @@ public class PackageDialog extends EditDialog {
 		super("PACKAGE ADVENTURE", skin);
 
 		arch = InputPanelFactory.createInputPanel(skin, "Architecture", "Select the target Architecture for the game", ARCHS, true);
-		dir = new FileInputPanel(skin, "Output Directory", "Select the output directory to put the package", true);
+		dir = new FileInputPanel(skin, "Output Directory", "Select the output directory to put the package", FileInputPanel.DialogType.DIRECTORY);
 		type = InputPanelFactory.createInputPanel(skin, "Type", "Select the type of the package", TYPES, true);
 		os = InputPanelFactory.createInputPanel(skin, "OS", "Select the OS of the package", OSS, true);
-		linux64JRE = new FileInputPanel(skin, "JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file", false);
-		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file", false);
-		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle. Must be a ZIP file", false);
-		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle. Must be a ZIP file", false);
+		linux64JRE = new FileInputPanel(skin, "JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
+		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
+		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
+		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
 		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the version of the package");
-		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", false);
-		androidSDK = new FileInputPanel(skin, "SDK", "Select the Android SDK Location", true);
-		androidKeyStore = new FileInputPanel(skin, "KeyStore", "Select the Key Store Location", false);
+		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", FileInputPanel.DialogType.OPEN_FILE);
+		androidSDK = new FileInputPanel(skin, "SDK", "Select the Android SDK Location", FileInputPanel.DialogType.DIRECTORY);
+		androidKeyStore = new FileInputPanel(skin, "KeyStore", "Select the Key Store Location", FileInputPanel.DialogType.OPEN_FILE);
 		androidKeyAlias = InputPanelFactory.createInputPanel(skin, "KeyAlias", "Select the Key Alias Location");
 		androidKeyStorePassword = InputPanelFactory.createInputPanel(skin, "KeyStorePasswd", "Key Store Password", false);
 		androidKeyAliasPassword = InputPanelFactory.createInputPanel(skin, "KeyAliasPasswd", "Key Alias Password", false);

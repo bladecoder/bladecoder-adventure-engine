@@ -21,8 +21,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JFileChooser;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -37,6 +35,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.utils.RunProccess;
+import javafx.application.Platform;
+import javafx.stage.DirectoryChooser;
 
 public class ProjectToolbar extends Table {
 	private ImageButton newBtn;
@@ -183,25 +183,32 @@ public class ProjectToolbar extends Table {
 	}
 
 	private void loadProject() {
-		JFileChooser chooser = new JFileChooser(Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir()
-				: new File("."));
-		chooser.setDialogTitle("Select the project to load");
-		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		chooser.setMultiSelectionEnabled(false);
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				final DirectoryChooser chooser = new DirectoryChooser();
+				chooser.setTitle("Select the project to load");
+				chooser.setInitialDirectory(Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir()
+						: new File("."));
 
-		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			try {
-				Ctx.project.saveProject();
-				Ctx.project.loadProject(chooser.getSelectedFile());
-				playBtn.setDisabled(false);
-				packageBtn.setDisabled(false);
-			} catch (Exception ex) {
-				String msg = "Something went wrong while loading the project.\n\n" + ex.getClass().getSimpleName()
-						+ " - " + ex.getMessage();
-				Ctx.msg.show(getStage(), msg, 2);
-				ex.printStackTrace();
+				final File dir = chooser.showDialog(null);
+				if (dir == null) {
+					return;
+				}
+
+				try {
+					Ctx.project.saveProject();
+					Ctx.project.loadProject(dir);
+					playBtn.setDisabled(false);
+					packageBtn.setDisabled(false);
+				} catch (Exception ex) {
+					String msg = "Something went wrong while loading the project.\n\n" + ex.getClass().getSimpleName()
+							+ " - " + ex.getMessage();
+					Ctx.msg.show(getStage(), msg, 2);
+					ex.printStackTrace();
+				}
 			}
-		}
+		});
 	}
 
 	public void exit() {

@@ -25,9 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -41,6 +38,8 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CustomList;
 import com.bladecoder.engineeditor.ui.components.EditToolbar;
 import com.bladecoder.engineeditor.utils.ImageUtils;
+import javafx.application.Platform;
+import javafx.stage.FileChooser;
 
 public class AssetsList extends Table {
 	private static final String[] ASSET_TYPES = { "3d models", 
@@ -189,75 +188,87 @@ public class AssetsList extends Table {
 	}
 
 	private void create() {
-		String type = assetTypes.getSelected();
+		final String type = assetTypes.getSelected();
 
 		if (type.equals("atlases")) {
 			new CreateAtlasDialog(skin).setVisible(true);
+
+			addAssets();
 		} else {
+			final FileChooser.ExtensionFilter filter;
 
-			JFileChooser chooser = new JFileChooser(lastDir);
-			chooser.setDialogTitle("Select the '" + type + "' asset files");
-			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			chooser.setMultiSelectionEnabled(true);
-
-			FileNameExtensionFilter filter = null;
-
-			if (type.equals("images"))
-				filter = new FileNameExtensionFilter("Images", "jpg", "png",
-						"etc1");
-			else if (type.equals("music") || type.equals("sounds"))
-				filter = new FileNameExtensionFilter("Music", "wav", "mp3",
-						"ogg");
-			else if (type.equals("3d models"))
-				filter = new FileNameExtensionFilter("3D Models", "g3db", "png");
-			else if (type.equals("spine"))
-				filter = new FileNameExtensionFilter("Spine", "skel", "json");			
-
-			chooser.removeChoosableFileFilter(chooser.getChoosableFileFilters()[0]);
-			chooser.addChoosableFileFilter(filter);
-
-			if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-				try {
-					File[] files = chooser.getSelectedFiles();
-					String dir = getAssetDir(type);
-					lastDir = chooser.getSelectedFile();
-
-					for (File f : files) {
-						if ( type.equals("images")) {
-							List<String> res = Ctx.project.getResolutions();
-
-							for (String r : res) {
-								File destFile = new File(dir + "/" + r
-										+ "/" + f.getName());
-								float scale = Float.parseFloat(r);
-
-								if (scale != 1.0f) {
-
-									ImageUtils.scaleImageFile(f, destFile,
-											scale);
-								} else {
-									Files.copy(f.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-								}
-							}
-						} else {
-							File destFile = new File(dir + "/" + f.getName());
-							Files.copy(f.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-						}
-						
-					}
-
-				} catch (Exception ex) {
-					String msg = "Something went wrong while getting the assets.\n\n"
-							+ ex.getClass().getSimpleName()
-							+ " - "
-							+ ex.getMessage();
-					Ctx.msg.show(getStage(), msg, 4);
-					ex.printStackTrace();
-				}
+			switch (type) {
+				case "images":
+					filter = new FileChooser.ExtensionFilter("Images", "jpg", "png", "etc1");
+					break;
+				case "music":
+				case "sounds":
+					filter = new FileChooser.ExtensionFilter("Music", "wav", "mp3", "ogg");
+					break;
+				case "3d models":
+					filter = new FileChooser.ExtensionFilter("3D Models", "g3db", "png");
+					break;
+				case "spine":
+					filter = new FileChooser.ExtensionFilter("Spine", "skel", "json");
+					break;
+				default:
+					filter = null;
+					break;
 			}
+
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					final FileChooser chooser = new FileChooser();
+					chooser.setInitialDirectory(lastDir);
+					chooser.setTitle("Select the '" + type + "' asset files");
+					if (filter != null) {
+						chooser.getExtensionFilters().addAll(filter);
+					}
+					final List<File> files = chooser.showOpenMultipleDialog(null);
+					if (files == null) {
+						return;
+					}
+					try {
+						String dir = getAssetDir(type);
+						lastDir = files.get(0);
+
+						for (File f : files) {
+							if (type.equals("images")) {
+								List<String> res = Ctx.project.getResolutions();
+
+								for (String r : res) {
+									File destFile = new File(dir + "/" + r
+											+ "/" + f.getName());
+									float scale = Float.parseFloat(r);
+
+									if (scale != 1.0f) {
+
+										ImageUtils.scaleImageFile(f, destFile,
+												scale);
+									} else {
+										Files.copy(f.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+									}
+								}
+							} else {
+								File destFile = new File(dir + "/" + f.getName());
+								Files.copy(f.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+							}
+
+						}
+
+						addAssets();
+					} catch (Exception ex) {
+						String msg = "Something went wrong while getting the assets.\n\n"
+								+ ex.getClass().getSimpleName()
+								+ " - "
+								+ ex.getMessage();
+						Ctx.msg.show(getStage(), msg, 4);
+						ex.printStackTrace();
+					}
+				}
+			});
 		}
-			
-		addAssets();
 	}
 
 	private void edit() {

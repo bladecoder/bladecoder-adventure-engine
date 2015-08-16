@@ -51,7 +51,7 @@ public class CreateAtlasDialog extends EditDialog {
 				"The name of the sprite atlas", true);
 		dir = new FileInputPanel(skin, "Input Image Directory",
 				"Select the output directory with the images to create the Atlas",
-				true);
+				FileInputPanel.DialogType.DIRECTORY);
 
 		filterMin = InputPanelFactory.createInputPanel(skin, "Min Filter",
 				"The filter when the texture is scaled down", FILTERS, true);
