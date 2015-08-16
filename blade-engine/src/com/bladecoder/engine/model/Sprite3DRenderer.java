@@ -431,9 +431,24 @@ public class Sprite3DRenderer implements ActorRenderer {
 		
 		computeBbox();
 	}
+	
+	@Override
+	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, String direction) {
+		lookat(direction);
+		
+		startAnimation(id, repeatType, count, null);
+	}
 
 	@Override
-	public void lookat(String dir) {
+	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
+		Vector2 tmp = new Vector2(pf);
+		float angle = tmp.sub(p0).angle() + 90;
+		lookat(angle);
+		
+		startAnimation(id, repeatType, count, null);
+	}
+
+	private void lookat(String dir) {
 		EngineLogger.debug("LOOKAT DIRECTION - " + dir);
 
 		if (dir.equals(AnimationDesc.BACK))
@@ -457,27 +472,9 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 	}
 
-	@Override
-	public void lookat(float x, float y, Vector2 pf) {
-		Vector2 tmp = new Vector2(pf);
-		float angle = tmp.sub(x, y).angle() + 90;
-		lookat(angle);
-	}
-
 	private void lookat(float angle) {
 		currentSource.modelInstance.transform.setToRotation(Vector3.Y, angle);
 		modelRotation = angle;
-	}
-
-	@Override
-	public void stand() {
-		startAnimation(AnimationDesc.STAND_ANIM, Tween.NO_REPEAT, 1, null);
-	}
-
-	@Override
-	public void walk(Vector2 p0, Vector2 pf) {
-		lookat(p0.x, p0.y, pf);
-		startAnimation(AnimationDesc.WALK_ANIM, Tween.REPEAT, -1, null);
 	}
 
 	@Override

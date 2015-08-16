@@ -26,10 +26,6 @@ public class AnimationDesc {
 	public final static String BACKLEFT = "backleft";
 	public final static String FRONTRIGHT = "frontright";
 	public final static String FRONTLEFT = "frontleft";
-	public final static String STAND_ANIM = "stand";
-	public final static String WALK_ANIM = "walk";
-	public final static String TALK_ANIM = "talk";	
-		
 	
 	public	String id;
 	public  String source;
@@ -84,9 +80,9 @@ public class AnimationDesc {
 	
 	private final static float DIRECTION_ASPECT_TOLERANCE = 2.5f;
 
-	public static String getFrameDirection(float x, float y, Vector2 pf) {
-		float dx = pf.x - x;
-		float dy = pf.y - y;
+	public static String getDirectionString(Vector2 p0, Vector2 pf) {
+		float dx = pf.x - p0.x;
+		float dy = pf.y - p0.y;
 		float ratio = Math.abs(dx / dy);
 
 		if (ratio < 1.0)

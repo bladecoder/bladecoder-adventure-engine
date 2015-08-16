@@ -17,10 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.BaseCallbackAction;
-import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.anim.AnimationDesc;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -38,32 +34,20 @@ public class SayDialogAction extends BaseCallbackAction {
 			"\n- Sets the player 'talk' animation and say the player text" +
 			"\n- Restore the previous player animation and set the target actor 'talk' animation and say the response text" + 
 			"\n- Restore the target actor animation";
+	
 	public static final Param[] PARAMS = {
-			new Param("player_talk_animation", "The player animation for talking instead of the default talk animation.",
-								Type.STRING),
-			new Param("character_talk_animation", "The character animation for talking instead of the default talk animation.",
-										Type.STRING)								
-		};
+
+	};	
 
 	private boolean characterTurn = false;
 	private String characterName;
 	private String responseText;
 	
-	private String previousFA;
-	private String talkAnim = null;
-	private String charTalkAnim = null;
+	private String previousAnim;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		talkAnim = params.get("player_talk_animation");
-		
-		if(talkAnim == null)
-			talkAnim = AnimationDesc.TALK_ANIM;
-		
-		charTalkAnim = params.get("character_talk_animation");
-		
-		if(charTalkAnim == null)
-			charTalkAnim = AnimationDesc.TALK_ANIM;		
+	
 	}
 
 	@Override
@@ -76,16 +60,16 @@ public class SayDialogAction extends BaseCallbackAction {
 		characterName = w.getCurrentDialog().getActor();
 		
 		characterTurn = true;
-		previousFA = null;
+		previousAnim = null;
 		
 		// If the player or the character is talking restore to 'stand' pose
-		restoreStandPose(w.getCurrentScene().getPlayer(), talkAnim);
+		restoreStandPose(w.getCurrentScene().getPlayer());
 		
 		if(w.getCurrentScene().getActor(characterName, false) instanceof SpriteActor)
-			restoreStandPose((CharacterActor)w.getCurrentScene().getActor(characterName, false), charTalkAnim);
+			restoreStandPose((CharacterActor)w.getCurrentScene().getActor(characterName, false));
 
 		if (playerText != null) {
-			SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
+			CharacterActor player = World.getInstance().getCurrentScene().getPlayer();
 
 //			WorldCamera c = World.getInstance().getCamera();
 //			Vector3 p = c.scene2screen(pos.x, pos.y + player.getHeight());
@@ -93,7 +77,7 @@ public class SayDialogAction extends BaseCallbackAction {
 			World.getInstance().getTextManager()
 					.addSubtitle(playerText, player.getX(), player.getY() + player.getHeight(), false, Text.Type.TALK, Color.BLACK, this);
  
-			startTalkAnim(player, talkAnim);
+			startTalkAnim(player);
 
 		} else {
 			resume();
@@ -111,9 +95,9 @@ public class SayDialogAction extends BaseCallbackAction {
 		if (characterTurn) {
 			characterTurn = false;
 			
-			if(previousFA!= null){
+			if(previousAnim!= null){
 				SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
-				player.startAnimation(previousFA, null);
+				player.startAnimation(previousAnim, null);
 			}
 
 			if (responseText != null) {
@@ -126,69 +110,52 @@ public class SayDialogAction extends BaseCallbackAction {
 						.addSubtitle(responseText, actor.getX(), actor.getY() + actor.getBBox().getBoundingRectangle().getHeight() , false, Text.Type.TALK,
 								Color.BLACK, this);
 
-				if(actor instanceof SpriteActor) {
-					startTalkAnim((SpriteActor)actor, charTalkAnim);
+				if(actor instanceof CharacterActor) {
+					startTalkAnim((CharacterActor)actor);
 				}
 			} else {
 				super.resume();
 			}
 		} else {
 			if(actor instanceof SpriteActor) {
-				((SpriteActor)actor).startAnimation(previousFA, null);
+				((SpriteActor)actor).startAnimation(previousAnim, null);
 			}
 			super.resume();			
 		}
 	}
 	
-	private void restoreStandPose(CharacterActor a, String talkAnim) {
+	private void restoreStandPose(CharacterActor a) {
 		if(a == null) return;
 		
 		String fa = a.getRenderer().getCurrentAnimationId();
 		
 		// If the actor was already talking we restore the actor to the 'stand' pose	
-		if(fa.startsWith(talkAnim)){ 		
+		if(fa.startsWith(a.getTalkAnim())){ 		
 			a.stand();
 		}
 	}
 	
-	private void startTalkAnim(SpriteActor a, String talkAnim) {
-		previousFA = a.getRenderer().getCurrentAnimationId();
+	private void startTalkAnim(CharacterActor a) {
+		previousAnim = a.getRenderer().getCurrentAnimationId();
 		
-		String s = talkAnim;
-		
-		String l = s + "." + AnimationDesc.LEFT;
-		String r = s + "." + AnimationDesc.RIGHT;
-		
-		if (previousFA.endsWith(AnimationDesc.LEFT)) {
-			if(a.getRenderer().getAnimations().get(l) != null || a.getRenderer().getAnimations().get(r) != null)
-				s = l;
-		} else if (previousFA.endsWith(AnimationDesc.RIGHT)) {
-			if(a.getRenderer().getAnimations().get(l) != null || a.getRenderer().getAnimations().get(r) != null)
-				s = r;
-		}
-		
-		a.startAnimation(s, null);
+		a.talk();
 	}
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("previousFA", previousFA);
+		json.writeValue("previousFA", previousAnim);
 		json.writeValue("responseText", responseText);
 		json.writeValue("characterTurn", characterTurn);
 		json.writeValue("characterName", characterName);
-		json.writeValue("talkAnim", talkAnim);
-		json.writeValue("charTalkAnim", charTalkAnim);
 		super.write(json);
 	}
 
 	@Override
 	public void read (Json json, JsonValue jsonData) {
-		previousFA = json.readValue("previousFA", String.class, jsonData);
+		previousAnim = json.readValue("previousFA", String.class, jsonData);
 		responseText = json.readValue("responseText", String.class, jsonData);
 		characterTurn = json.readValue("characterTurn", Boolean.class, jsonData);
 		characterName = json.readValue("characterName", String.class, jsonData);
-		talkAnim = json.readValue("talkAnim", String.class, jsonData);
-		charTalkAnim = json.readValue("charTalkAnim", String.class, jsonData);
 		super.read(json, jsonData);
 	}
 	

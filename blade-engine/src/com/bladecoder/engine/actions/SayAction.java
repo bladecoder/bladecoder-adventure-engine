@@ -22,10 +22,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
-import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
@@ -50,8 +49,6 @@ public class SayAction extends BaseCallbackAction {
 					"The type of the text: 'talk', 'rectangle' (default) and 'plain'",
 					Type.STRING, true, "rectangle", new String[] { "rectangle",
 							"talk", "plain" }), 
-			new Param("animation",	"The animation to put when talking instead the default talk animation.",
-									Type.STRING),
 			new Param("quee", "Quee the text if other text is showing or show it inmediatly.",Type.BOOLEAN, false, "false")
 	};
 	
@@ -63,7 +60,6 @@ public class SayAction extends BaseCallbackAction {
 	private Text.Type type = Text.Type.RECTANGLE;
 
 	private String previousAnim = null;
-	private String talkAnim = null;
 	private Vector2 pos = null;
 	private boolean quee = false;
 
@@ -73,10 +69,6 @@ public class SayAction extends BaseCallbackAction {
 
 		soundId = params.get("speech");
 		text = params.get("text");
-		talkAnim = params.get("animation");
-		
-		if(talkAnim == null)
-			talkAnim = AnimationDesc.TALK_ANIM;
 
 		if (params.get("wait") != null) {
 			setWait(Boolean.parseBoolean(params.get("wait")));
@@ -107,9 +99,6 @@ public class SayAction extends BaseCallbackAction {
 		InteractiveActor actor = (InteractiveActor)World.getInstance().getCurrentScene()
 				.getActor(actorId, false);
 
-		if (type == Text.Type.TALK)
-			restoreStandPose((SpriteActor) actor);
-
 		if (soundId != null)
 			actor.playSound(soundId);
 
@@ -137,7 +126,8 @@ public class SayAction extends BaseCallbackAction {
 			}
 
 			if (type == Text.Type.TALK) {
-				startTalkAnim((SpriteActor)actor, talkAnim);
+				restoreStandPose((CharacterActor) actor);
+				startTalkAnim((CharacterActor)actor);
 			}
 
 			World.getInstance().getTextManager()
@@ -150,7 +140,7 @@ public class SayAction extends BaseCallbackAction {
 	@Override
 	public void resume() {
 		if (this.type == Text.Type.TALK) {
-			SpriteActor actor = (SpriteActor) World.getInstance()
+			CharacterActor actor = (CharacterActor) World.getInstance()
 					.getCurrentScene().getActor(actorId, false);
 			actor.startAnimation(previousAnim, Tween.FROM_FA, 0, null);
 		}
@@ -158,37 +148,21 @@ public class SayAction extends BaseCallbackAction {
 		super.resume();
 	}
 
-	private void restoreStandPose(SpriteActor a) {
-		if (a == null)
-			return;
-
+	private void restoreStandPose(CharacterActor a) {
+		if(a == null) return;
+		
 		String fa = a.getRenderer().getCurrentAnimationId();
-
-		if (fa.startsWith(talkAnim)) { // If the actor was already talking we
-										// restore the actor to the 'stand' pose
-			int idx = fa.indexOf('.');
-			String prevFA = AnimationDesc.STAND_ANIM + fa.substring(idx);
-			a.startAnimation(prevFA, null);
+		
+		// If the actor was already talking we restore the actor to the 'stand' pose	
+		if(fa.startsWith(a.getTalkAnim())){ 		
+			a.stand();
 		}
 	}
-
-	private void startTalkAnim(SpriteActor a, String talkAnim) {
+	
+	private void startTalkAnim(CharacterActor a) {
 		previousAnim = a.getRenderer().getCurrentAnimationId();
 		
-		String s = talkAnim;
-		
-		String l = s + "." + AnimationDesc.LEFT;
-		String r = s + "." + AnimationDesc.RIGHT;
-		
-		if (previousAnim.endsWith(AnimationDesc.LEFT)) {
-			if(a.getRenderer().getAnimations().get(l) != null || a.getRenderer().getAnimations().get(r) != null)
-				s = l;
-		} else if (previousAnim.endsWith(AnimationDesc.RIGHT)) {
-			if(a.getRenderer().getAnimations().get(l) != null || a.getRenderer().getAnimations().get(r) != null)
-				s = r;
-		}
-		
-		a.startAnimation(s, null);
+		a.talk();
 	}
 
 	@Override
@@ -199,7 +173,6 @@ public class SayAction extends BaseCallbackAction {
 		json.writeValue("actorId", actorId);
 		json.writeValue("previousAnim", previousAnim);
 		json.writeValue("type", type);
-		json.writeValue("talkAnim", talkAnim);
 		json.writeValue("pos", pos);
 		json.writeValue("quee", quee);
 		super.write(json);
@@ -212,7 +185,6 @@ public class SayAction extends BaseCallbackAction {
 		actorId = json.readValue("actorId", String.class, jsonData);
 		previousAnim = json.readValue("previousAnim", String.class, jsonData);
 		type = json.readValue("type", Text.Type.class, jsonData);
-		talkAnim = json.readValue("talkAnim", String.class, jsonData);
 		pos = json.readValue("pos", Vector2.class, jsonData);
 		quee = json.readValue("quee", Boolean.class, jsonData);
 		super.read(json, jsonData);
