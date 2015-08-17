@@ -20,10 +20,14 @@ import java.io.File;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import javafx.embed.swing.JFXPanel;
 
 public class Main extends LwjglApplication {
 
 	public static void main(final String[] args) {
+		// This dummy instantiation will initialize JavaFX for us
+		new JFXPanel();
+
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 
 		cfg.title = "Adventure Composer";

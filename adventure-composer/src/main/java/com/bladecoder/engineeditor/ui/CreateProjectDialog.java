@@ -54,10 +54,10 @@ public class CreateProjectDialog extends EditDialog {
 				"The game can use Spine animations, require Spine License to distribute the game. See http://www.esotericsoftware.com for more info.", Param.Type.BOOLEAN, true, "false");
 
 		location = new FileInputPanel(skin, "Location",
-				"Select the folder location for the project", true);
+				"Select the folder location for the project", FileInputPanel.DialogType.DIRECTORY);
 		
 		androidSdk = new FileInputPanel(skin, "Android SDK",
-				"Select the Android SDK folder. If empty, the ANDROID_HOME variable will be used", true);
+				"Select the Android SDK folder. If empty, the ANDROID_HOME variable will be used", FileInputPanel.DialogType.DIRECTORY);
 
 		addInputPanel(projectName);
 		addInputPanel(pkg);

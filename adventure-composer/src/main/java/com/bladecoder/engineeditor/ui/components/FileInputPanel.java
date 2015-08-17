@@ -17,53 +17,72 @@ package com.bladecoder.engineeditor.ui.components;
 
 import java.io.File;
 
-import javax.swing.JFileChooser;
-
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.bladecoder.engineeditor.Ctx;
+import javafx.application.Platform;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 
 public class FileInputPanel extends InputPanel {
-	
+	public enum DialogType {
+		OPEN_FILE, SAVE_FILE, DIRECTORY
+	}
+
 	private File cd;
 	private File selected;
-	
-	private boolean dirOnly = false;
+
 	private final static String FILE_TEXT = "Select file";
 	private final static String DIR_TEXT = "Select folder";
 	
-	public FileInputPanel(Skin skin, String title, String desc, boolean dirOnly) {
-		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."), dirOnly);
+	public FileInputPanel(Skin skin, String title, String desc, DialogType dialogType) {
+		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."), dialogType);
 	}
 
-	public FileInputPanel(Skin skin, String title, String desc, File current, boolean dOnly) {
-		init(skin, title, desc, new TextButton(dOnly?DIR_TEXT:FILE_TEXT, skin), true, null);
+	public FileInputPanel(Skin skin, String title, String desc, File current, final DialogType dialogType) {
+		init(skin, title, desc, new TextButton(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT, skin), true, null);
 		
 		this.cd = current;
-		this.dirOnly = dOnly;
 
 //		((TextField) getField()).setEditable(false);
 
 		((TextButton) getField()).addListener(new ClickListener() {
 			public void clicked (InputEvent event, float x, float y) {
-				JFileChooser chooser = new JFileChooser(cd);			
-				
-				if(dirOnly) {
-					chooser.setDialogTitle("Select folder");
-					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				} else {
-					chooser.setDialogTitle("Select file");
-				}
-				
-				chooser.setMultiSelectionEnabled(false);
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						final File result;
+						switch (dialogType) {
+							case DIRECTORY: {
+								DirectoryChooser chooser = new DirectoryChooser();
+								chooser.setInitialDirectory(cd);
+								chooser.setTitle(DIR_TEXT);
+								result = chooser.showDialog(null);
+								break;
+							}
+							case OPEN_FILE:
+							case SAVE_FILE: {
+								FileChooser chooser = new FileChooser();
+								chooser.setInitialDirectory(cd);
+								chooser.setTitle(FILE_TEXT);
+								result = dialogType == DialogType.OPEN_FILE
+										? chooser.showOpenDialog(null)
+										: chooser.showSaveDialog(null);
+								break;
+							}
+							default:
+								throw new RuntimeException("Unknown dialog type");
+						}
 
-				if (chooser.showDialog(null, "Ok") == JFileChooser.APPROVE_OPTION) {
-					((TextButton) getField()).setText(chooser.getSelectedFile().getAbsolutePath());
-					selected = cd = chooser.getSelectedFile();
-				}				
-			}		
+						if (result != null) {
+							((TextButton) getField()).setText(result.getAbsolutePath());
+							selected = cd = result;
+						}
+					}
+				});
+			}
 		});
 	}
 	
