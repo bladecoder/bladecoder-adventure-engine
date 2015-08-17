@@ -244,7 +244,7 @@ public class Recorder {
 			if (gameStateFile.exists())
 				World.getInstance().loadGameState(gameStateFile);
 			else
-				EngineLogger.error("LOADING RECORD: no saved file exists");
+				EngineLogger.debug("LOADING RECORD: no saved file exists");
 
 			// LOAD VERBS
 			list = new Json().fromJson(ArrayList.class, TimeVerb.class, verbsFile.reader("UTF-8"));

@@ -290,15 +290,20 @@ public class SpineRenderer implements ActorRenderer {
 
 			if (idx != -1) {
 				String dir = getCurrentAnimationId().substring(idx);
-				sb.append('.');
 				sb.append(dir);
 			}
 		} else {
 			sb.append('.');
 			sb.append(direction);
 		}
+		
+		String anim = sb.toString();
+				
+		if(getAnimation(anim) == null) {
+			anim = id;
+		}
 
-		startAnimation(sb.toString(), repeatType, count, null);
+		startAnimation(anim, repeatType, count, null);
 	}
 
 	@Override

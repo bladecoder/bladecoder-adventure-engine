@@ -40,84 +40,84 @@ public class BladeEngine implements ApplicationListener {
 	private boolean debug = false;
 	private boolean restart = false;
 	private UI ui;
-	
+
 	public static UI getAppUI() {
-		return ((BladeEngine)Gdx.app.getApplicationListener()).getUI();
+		return ((BladeEngine) Gdx.app.getApplicationListener()).getUI();
 	}
 
 	public void setTestMode(String s) {
 		testScene = s;
 	}
-	
+
 	public void loadGameState(String s) {
 		gameState = s;
 	}
-	
+
 	public void setPlayMode(String recordName) {
 		this.recordName = recordName;
 	}
-	
+
 	public void setDebugMode() {
 		debug = true;
 	}
-	
+
 	public void setRestart() {
 		restart = true;
 	}
-	
+
 	public void setChapter(String chapter) {
 		this.chapter = chapter;
 	}
-	
+
 	public void forceResolution(String forceRes) {
 		this.forceRes = forceRes;
 	}
-	
+
 	public UI getUI() {
 		return ui;
 	}
 
 	@Override
 	public void create() {
-		if(!debug)
+		if (!debug)
 			debug = Config.getProperty(Config.DEBUG_PROP, debug);
-		
-		if(debug)
+
+		if (debug)
 			EngineLogger.setDebug();
-		
+
 		EngineLogger.debug("GAME CREATE");
-		
-		if(forceRes == null)
+
+		if (forceRes == null)
 			forceRes = Config.getProperty(Config.FORCE_RES_PROP, forceRes);
-		
-		if(forceRes != null) {
+
+		if (forceRes != null) {
 			EngineAssetManager.getInstance().forceResolution(forceRes);
 		}
-		
+
 		World.getInstance().loadXMLWorld();
-		
+
 		ui = new UI();
 
-		if(chapter == null)
+		if (chapter == null)
 			chapter = Config.getProperty(Config.CHAPTER_PROP, chapter);
-		
-		if(testScene == null) {
+
+		if (testScene == null) {
 			testScene = Config.getProperty(Config.TEST_SCENE_PROP, testScene);
 		}
-		
+
 		if (testScene != null || chapter != null) {
 			World.getInstance().loadXMLChapter(chapter, testScene);
 			ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 		}
-		
-		if(gameState == null)
+
+		if (gameState == null)
 			gameState = Config.getProperty(Config.LOAD_GAMESTATE_PROP, gameState);
-		
+
 		if (gameState != null) {
 			World.getInstance().loadGameState(gameState);
 		}
-		
-		if(restart) {
+
+		if (restart) {
 			try {
 				World.getInstance().loadXMLChapter(null);
 			} catch (Exception e) {
@@ -126,12 +126,12 @@ public class BladeEngine implements ApplicationListener {
 				Gdx.app.exit();
 			}
 		}
-		
-		if(recordName == null)
+
+		if (recordName == null)
 			recordName = Config.getProperty(Config.PLAY_RECORD_PROP, recordName);
-		
+
 		if (recordName != null) {
-			SceneScreen scr = (SceneScreen)ui.getScreen(Screens.SCENE_SCREEN);
+			SceneScreen scr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
 			scr.getRecorder().setFilename(recordName);
 			scr.getRecorder().load();
 			scr.getRecorder().setPlaying(true);
@@ -157,11 +157,9 @@ public class BladeEngine implements ApplicationListener {
 	@Override
 	public void render() {
 		ui.render();
-		
-		// Pause the game when an error is found
-		if(EngineLogger.lastError != null && EngineLogger.debugMode()) {
-			EngineLogger.lastError = null;
-			EngineLogger.lastException = null;
+
+		// Pause the game and save state when an error is found
+		if (EngineLogger.lastError != null && EngineLogger.debugMode() && !World.getInstance().isPaused()) {
 			ui.pause();
 			World.getInstance().saveGameState();
 		}
@@ -178,8 +176,8 @@ public class BladeEngine implements ApplicationListener {
 		SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
 		boolean bot = scnScr.getTesterBot().isEnabled();
 		boolean r = scnScr.getRecorder().isPlaying();
-		
-		if(!bot && !r) {
+
+		if (!bot && !r) {
 			EngineLogger.debug("GAME PAUSE");
 			ui.pause();
 			World.getInstance().saveGameState();
@@ -192,6 +190,12 @@ public class BladeEngine implements ApplicationListener {
 	public void resume() {
 		EngineLogger.debug("GAME RESUME");
 		ui.resume();
+
+		// resets the error when continue
+		if (EngineLogger.lastError != null && EngineLogger.debugMode()) {
+			EngineLogger.lastError = null;
+			EngineLogger.lastException = null;
+		}
 	}
 
 }

@@ -119,7 +119,7 @@ public class ScnWidget extends Widget {
 				} else if (e.getPropertyName().equals(Project.NOTIFY_ACTOR_SELECTED)) {
 					if (!projectLoadedFlag)
 						setSelectedActor(Ctx.project.getSelectedActor());
-				} else if (e.getPropertyName().equals(Project.NOTIFY_FA_SELECTED)) {
+				} else if (e.getPropertyName().equals(Project.NOTIFY_ANIM_SELECTED)) {
 					if (!projectLoadedFlag)
 						setSelectedFA(Ctx.project.getSelectedFA());
 				} else if (e.getPropertyName().equals(Project.NOTIFY_PROJECT_LOADED)) {

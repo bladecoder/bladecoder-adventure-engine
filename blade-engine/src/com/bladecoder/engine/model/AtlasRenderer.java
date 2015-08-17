@@ -18,7 +18,6 @@ package com.bladecoder.engine.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.bladecoder.engine.model.ActorRenderer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -31,9 +30,9 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.FATween;
-import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
@@ -359,15 +358,20 @@ public class AtlasRenderer implements ActorRenderer {
 
 			if (idx != -1) {
 				String dir = getCurrentAnimationId().substring(idx);
-				sb.append('.');
 				sb.append(dir);
 			}
 		} else {
 			sb.append('.');
 			sb.append(direction);
 		}
+		
+		String anim = sb.toString();
+				
+		if(getAnimation(anim) == null) {
+			anim = id;
+		}
 
-		startAnimation(sb.toString(), repeatType, count, null);
+		startAnimation(anim, repeatType, count, null);
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public class Project extends PropertyChange {
 	public static final String PROP_PROJECTFILE = "projectFile";
 	public static final String NOTIFY_SCENE_SELECTED = "SCENE_SELECTED";
 	public static final String NOTIFY_ACTOR_SELECTED = "ACTOR_SELECTED";
-	public static final String NOTIFY_FA_SELECTED = "FA_SELECTED";
+	public static final String NOTIFY_ANIM_SELECTED = "ANIM_SELECTED";
 	public static final String NOTIFY_VERB_SELECTED = "VERB_SELECTED";
 	public static final String NOTIFY_PROJECT_LOADED = "PROJECT_LOADED";
 
@@ -177,7 +177,7 @@ public class Project extends PropertyChange {
 
 		selectedFA = id;
 
-		firePropertyChange(NOTIFY_FA_SELECTED, old, selectedFA);
+		firePropertyChange(NOTIFY_ANIM_SELECTED, old, selectedFA);
 	}
 
 	public String getModelPath() {

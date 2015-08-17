@@ -17,7 +17,6 @@ package com.bladecoder.engine.model;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.model.ActorRenderer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -292,15 +291,20 @@ public class ImageRenderer implements ActorRenderer {
 
 			if (idx != -1) {
 				String dir = getCurrentAnimationId().substring(idx);
-				sb.append('.');
 				sb.append(dir);
 			}
 		} else {
 			sb.append('.');
 			sb.append(direction);
 		}
+		
+		String anim = sb.toString();
+				
+		if(getAnimation(anim) == null) {
+			anim = id;
+		}
 
-		startAnimation(sb.toString(), repeatType, count, null);
+		startAnimation(anim, repeatType, count, null);
 	}
 
 	@Override
