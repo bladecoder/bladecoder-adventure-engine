@@ -112,9 +112,11 @@ public class Pointer {
 	public void draw(SpriteBatch batch, Viewport v) {
 
 		getInputUnproject(v, mousepos);
+		
+		boolean multiTouch = Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen);
 
 		// DRAW TARGET DESCRIPTION
-		if (desc != null) {
+		if (desc != null && (!multiTouch || Gdx.input.isTouched())) {
 			float margin = DPIUtils.UI_SPACE;
 
 			float textX = mousepos.x - layout.width / 2;
@@ -129,7 +131,7 @@ public class Pointer {
 		}
 
 		if (draggingRenderer == null) {
-			if (!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)
+			if (!multiTouch
 					|| currentIcon == leaveIcon) {
 				
 				batch.draw(currentIcon,
