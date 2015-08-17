@@ -18,14 +18,10 @@ package com.bladecoder.engine.model;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 
-import com.bladecoder.engine.model.ActorRenderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -53,8 +49,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
-import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
@@ -759,16 +755,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 			genShadowMap();
 
 		if (USE_FBO) {
-			fb = new FrameBuffer(FRAMEBUFFER_FORMAT, width, height, true) {
-				@Override
-				protected void setupTexture() {
-					colorTexture = new Texture(width, height, format);
-					colorTexture.setFilter(TextureFilter.Linear,
-							TextureFilter.Linear);
-					colorTexture.setWrap(TextureWrap.ClampToEdge,
-							TextureWrap.ClampToEdge);
-				}
-			};
+			fb = new FrameBuffer(FRAMEBUFFER_FORMAT, width, height, true);
 
 			tex = new TextureRegion(fb.getColorBufferTexture());
 			tex.flip(false, true);
