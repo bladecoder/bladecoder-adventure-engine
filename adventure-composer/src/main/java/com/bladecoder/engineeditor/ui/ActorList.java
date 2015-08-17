@@ -44,7 +44,7 @@ public class ActorList extends ElementList {
 		super(skin, true);
 
 		playerBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(playerBtn, "ic_check", "Set player", "Set player");
+		toolbar.addToolBarButton(playerBtn, "ic_player_small", "Set player", "Set player");
 		playerBtn.setDisabled(true);
 
 		list.addListener(new ChangeListener() {
