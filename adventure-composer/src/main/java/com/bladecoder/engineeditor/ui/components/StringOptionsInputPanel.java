@@ -15,22 +15,47 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
-import com.bladecoder.engineeditor.utils.OptionsInputPanelUtils;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engineeditor.Ctx;
 
-public class SceneInputPanel extends StringOptionsInputPanel {
-	SceneInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
-		super(skin, title, desc, mandatory, defaultValue, getValues(mandatory));
+public class StringOptionsInputPanel extends InputPanel implements OptionsInputPanel {
+	private final SelectBox<String> input;
+	
+	StringOptionsInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, String[] options) {
+		input = new SelectBox<>(skin);
+		
+		int l = options.length;
+		if(!mandatory) l++;
+		String values[] = new String[l];
+		
+		if(!mandatory) {
+			values[0] = "";
+		}
+
+		System.arraycopy(options, 0, values, mandatory ? 0 : 1, options.length);
+
+		input.setItems(values);
+		
+		init(skin, title, desc, input, mandatory, defaultValue);
+	}
+	
+	@Override
+	public String getText() {
+		return input.getSelected();
 	}
 
-	private static String[] getValues(boolean mandatory) {
-		NodeList scenes = Ctx.project.getSelectedChapter().getScenes();
-
-		return OptionsInputPanelUtils.getIdFromNodeList(mandatory, scenes);
+	@Override
+	public void setText(String s) {
+		if(s == null)
+			return;
+		
+		int idx = input.getItems().indexOf(s, false);
+		if(idx != -1)
+			input.setSelectedIndex(idx);
 	}
+
+	@Override
+	public int getSelectedIndex() {
+    	return input.getSelectedIndex();
+    }
 }

@@ -17,13 +17,10 @@ package com.bladecoder.engineeditor.ui.components;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-public class BooleanInputPanel extends OptionsInputPanel {
+public class BooleanInputPanel extends StringOptionsInputPanel {
 	private static final String[] booleanValues = {"true", "false"};
-	
+
 	BooleanInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
 		super(skin, title, desc, mandatory, defaultValue, booleanValues);
-		
-		if(defaultValue != null)
-    		setText(defaultValue);
 	}
 }
