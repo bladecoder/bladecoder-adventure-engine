@@ -15,33 +15,51 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Array;
 
-public class EditableOptionsInputPanel<T> extends InputPanel implements OptionsInputPanel {
-	private final EditableSelectBox<T> input;
+public class EnumOptionsInputPanel extends InputPanel {
+	private final SelectBox<Enum> input;
 
-	EditableOptionsInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, T[] options) {
-		input = new EditableSelectBox<>(skin);
+	EnumOptionsInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, Enum[] options) {
+		input = new SelectBox<>(skin);
+
+		int l = options.length;
+		if(!mandatory) l++;
+		Enum[] values = new Enum[l];
+
+		if(!mandatory) {
+			values[0] = null;
+		}
+
+		System.arraycopy(options, 0, values, mandatory ? 0 : 1, options.length);
+
+		input.setItems(values);
+
 		init(skin, title, desc, input, mandatory, defaultValue);
-
-		if(options != null)
-			input.setItems(options);
 	}
 
 	public String getText() {
-		return input.getSelected();
+		return input.getSelected().name();
 	}
 
-	@Override
 	public void setText(String s) {
 		if(s == null)
 			return;
 
-		input.setSelected(s);
+		if ("".equals(s) && !isMandatory()) {
+			input.setSelectedIndex(0);
+		}
+		Array<Enum> items = input.getItems();
+		for (Enum item : items) {
+			if (item != null && item.name().equalsIgnoreCase(s)) {
+				input.setSelected(item);
+			}
+		}
 	}
-
-	@Override
+	
 	public int getSelectedIndex() {
-		return input.getSelectedIndex();
-	}
+    	return input.getSelectedIndex();
+    }
 }

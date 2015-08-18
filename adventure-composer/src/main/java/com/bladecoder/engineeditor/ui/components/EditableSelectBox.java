@@ -41,12 +41,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
-public class EditableSelectBox extends Table {
+public class EditableSelectBox<T> extends Table {
 	static final Vector2 temp = new Vector2();
 	
 	private TextField input;
 	private TextButton showListButton;
-	private SelectList selectList;
+	private SelectList<T> selectList;
 	
 	@SuppressWarnings("unused")
 	private ClickListener clickListener;
@@ -58,7 +58,7 @@ public class EditableSelectBox extends Table {
 		
 		input = new TextField("", skin);
 		showListButton = new TextButton(">", skin);
-		selectList = new SelectList(skin, input);
+		selectList = new SelectList<>(skin, input);
 		
 		add(input);
 		add(showListButton);
@@ -92,14 +92,15 @@ public class EditableSelectBox extends Table {
 	}
 	
 	public int getSelectedIndex() {
-		return selectList.list.getItems().indexOf(input.getText(), false);
+		return selectList.list.getSelectedIndex();
 	}
 	
 	public TextField getInput() {
 		return input;
 	}
 	
-	public void setItems (String... newItems) {
+	@SafeVarargs
+	public final void setItems(T... newItems) {
 		if (newItems == null) throw new IllegalArgumentException("newItems cannot be null.");
 		float oldPrefWidth = getPrefWidth();
 
@@ -125,11 +126,12 @@ public class EditableSelectBox extends Table {
 		selectBoxList.addAction(fadeIn(0.3f, Interpolation.fade));
 	}
 	
-	static class SelectList extends ScrollPane {
+	static class SelectList<T> extends ScrollPane {
 		private final TextField selectBox;
+		private int selectedIndex;
 		int maxListCount;
 		private final Vector2 screenPosition = new Vector2();
-		final List<String> list;
+		final List<T> list;
 		private InputListener hideListener;
 		private Actor previousScrollFocus;
 
@@ -142,13 +144,14 @@ public class EditableSelectBox extends Table {
 			
 			ListStyle listStyle = skin.get(SelectBoxStyle.class).listStyle;
 
-			list = new List<String>(listStyle);
+			list = new List<>(listStyle);
 			list.setTouchable(Touchable.disabled);
 			setWidget(list);
 
 			list.addListener(new ClickListener() {
 				public void clicked (InputEvent event, float x, float y) {
-					inputBox.setText(list.getSelected());
+					selectBox.setText(list.getSelected().toString());
+					selectedIndex = list.getSelectedIndex();
 					hide();
 				}
 
@@ -160,7 +163,7 @@ public class EditableSelectBox extends Table {
 
 			addListener(new InputListener() {
 				public void exit (InputEvent event, float x, float y, int pointer, Actor toActor) {
-					if (toActor == null || !isAscendantOf(toActor)) list.setSelected(inputBox.getText());
+					if (toActor == null || !isAscendantOf(toActor)) list.setSelectedIndex(selectedIndex);
 				}
 			});
 
@@ -168,7 +171,7 @@ public class EditableSelectBox extends Table {
 				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 					Actor target = event.getTarget();
 					if (isAscendantOf(target)) return false;
-					list.setSelected(inputBox.getText());
+					list.setSelectedIndex(selectedIndex);
 					hide();
 					return false;
 				}
@@ -217,7 +220,7 @@ public class EditableSelectBox extends Table {
 			setSize(Math.max(getPrefWidth(), selectBox.getWidth()), height);
 
 			validate();
-			scrollTo(0, list.getHeight() - list.getItems().indexOf(selectBox.getText(), false) * itemHeight - itemHeight / 2, 0, 0, true, true);
+			scrollTo(0, list.getHeight() - selectedIndex * itemHeight - itemHeight / 2, 0, 0, true, true);
 			updateVisualScroll();
 
 			previousScrollFocus = null;
@@ -225,7 +228,7 @@ public class EditableSelectBox extends Table {
 			if (actor != null && !actor.isDescendantOf(this)) previousScrollFocus = actor;
 			stage.setScrollFocus(this);
 
-			list.setSelected(selectBox.getText());
+			list.setSelectedIndex(selectedIndex);
 			list.setTouchable(Touchable.enabled);
 			clearActions();
 			getColor().a = 0;
@@ -260,8 +263,12 @@ public class EditableSelectBox extends Table {
 			toFront();
 		}
 		
-		public List<String> getList() {
+		public List<T> getList() {
 			return list;
+		}
+
+		public int getSelectedIndex() {
+			return list.getSelectedIndex();
 		}
 	}
 }

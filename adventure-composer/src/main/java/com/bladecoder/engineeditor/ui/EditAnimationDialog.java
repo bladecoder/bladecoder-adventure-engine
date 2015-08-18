@@ -104,10 +104,10 @@ public class EditAnimationDialog extends EditElementDialog {
 				"Select the sound ID that will be play when displayed");
 		inputs[10] = InputPanelFactory.createInputPanel(skin, "Preload",
 				"Preload the animation when the scene is loaded",
-				Param.Type.BOOLEAN, true, "true", null);
+				Param.Type.BOOLEAN, true, "true");
 		inputs[11] = InputPanelFactory.createInputPanel(skin, "Dispose When Played",
 				"Dispose de animation when the animation is played",
-				Param.Type.BOOLEAN, true, "false", null);
+				Param.Type.BOOLEAN, true, "false");
 
 		typePanel = inputs[TYPE_INPUTPANEL];
 

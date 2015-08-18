@@ -15,33 +15,11 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engineeditor.Ctx;
 
-public class ChapterInputPanel extends OptionsInputPanel {	
-
-	ChapterInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {	
-		String[] chapters = Ctx.project.getWorld().getChapters();
-		int l = chapters.length;
-		if(!mandatory) l++;
-		String values[] = new String[l];
-		
-		if(!mandatory) {
-			values[0] = "";
-		}
-		
-		for(int i = 0; i < chapters.length; i++) {
-			if(mandatory)
-				values[i] = chapters[i];
-			else
-				values[i+1] = chapters[i];
-		}
-		
-		input = new SelectBox<String>(skin);
-		init(skin, title, desc, input, mandatory, defaultValue);
-		input.setItems(values);
-       	if(defaultValue != null)
-    		setText(defaultValue);	
+public class ChapterInputPanel extends StringOptionsInputPanel {
+	ChapterInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
+		super(skin, title, desc, mandatory, defaultValue, Ctx.project.getWorld().getChapters());
 	}
 }

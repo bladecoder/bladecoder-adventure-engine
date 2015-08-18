@@ -31,15 +31,15 @@ import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.Ctx;
 
 public class ActorAnimationInputPanel extends InputPanel {
-	EditableSelectBox animation;
-	EditableSelectBox actor;
+	EditableSelectBox<String> animation;
+	EditableSelectBox<String> actor;
 	Table panel;
 
 	ActorAnimationInputPanel(Skin skin, String title, String desc,
 			boolean mandatory, String defaultValue) {
 		panel = new Table(skin);
-		animation = new EditableSelectBox(skin);
-		actor = new EditableSelectBox(skin);
+		animation = new EditableSelectBox<>(skin);
+		actor = new EditableSelectBox<>(skin);
 
 		panel.add(new Label(" Actor ", skin));
 		panel.add(actor);

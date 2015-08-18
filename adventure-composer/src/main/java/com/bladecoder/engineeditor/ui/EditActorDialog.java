@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -30,7 +31,6 @@ import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 
 public class EditActorDialog extends EditElementDialog {
 
@@ -96,12 +96,10 @@ public class EditActorDialog extends EditElementDialog {
 						"vector"}, true);
 		
 		inputs[9] = InputPanelFactory.createInputPanel(skin, "Scale",
-				"The sprite scale", Param.Type.FLOAT, false, "1",
-				null);
+				"The sprite scale", Param.Type.FLOAT, false, "1");
 		
 		inputs[10] = InputPanelFactory.createInputPanel(skin, "zIndex",
-				"The order to draw.", Param.Type.FLOAT, false, "0",
-				null);
+				"The order to draw.", Param.Type.FLOAT, false, "0");
 		
 		inputs[11] = InputPanelFactory.createInputPanel(skin, "Walking Speed",
 				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT,
@@ -111,10 +109,9 @@ public class EditActorDialog extends EditElementDialog {
 				"The size of the 3d sprite", Param.Type.DIMENSION, true);
 		inputs[13] = InputPanelFactory.createInputPanel(skin, "Camera Name",
 				"The name of the camera in the model", Param.Type.STRING, true,
-				"Camera", null);
+				"Camera");
 		inputs[14] = InputPanelFactory.createInputPanel(skin, "Camera FOV",
-				"The camera field of view", Param.Type.FLOAT, true, "49.3",
-				null);
+				"The camera field of view", Param.Type.FLOAT, true, "49.3");
 		
 
 		setInfo(TYPES_INFO[0]);
