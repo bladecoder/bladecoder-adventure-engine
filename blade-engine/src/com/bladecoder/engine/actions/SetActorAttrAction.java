@@ -18,9 +18,6 @@ package com.bladecoder.engine.actions;
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.Vector2;
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
@@ -32,8 +29,8 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
+@ActionDescription("Change actor attributes.")
 public class SetActorAttrAction implements Action {
-	public static final String INFO = "Change actor attributes.";
 	public static final Param[] PARAMS = { new Param("actor", "The target actor", Type.SCENE_ACTOR, false),
 			new Param("visible", "sets the actor visibility", Type.BOOLEAN),
 			new Param("interaction", "when 'true' the actor responds to the user input", Type.BOOLEAN),
@@ -173,11 +170,6 @@ public class SetActorAttrAction implements Action {
 		}
 
 		return false;
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

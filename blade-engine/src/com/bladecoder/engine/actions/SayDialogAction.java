@@ -27,14 +27,11 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Says the selected option from the current dialog. This action does the next steps:\n" +
+"\n- Sets the player 'talk' animation and say the player text" +
+"\n- Restore the previous player animation and set the target actor 'talk' animation and say the response text" +
+"\n- Restore the target actor animation")
 public class SayDialogAction extends BaseCallbackAction {
-
-	public static final String INFO = 
-			"Says the selected option from the current dialog. This action does the next steps:\n" +
-			"\n- Sets the player 'talk' animation and say the player text" +
-			"\n- Restore the previous player animation and set the target actor 'talk' animation and say the response text" + 
-			"\n- Restore the target actor animation";
-	
 	public static final Param[] PARAMS = {
 
 	};	
@@ -158,12 +155,7 @@ public class SayDialogAction extends BaseCallbackAction {
 		characterName = json.readValue("characterName", String.class, jsonData);
 		super.read(json, jsonData);
 	}
-	
 
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

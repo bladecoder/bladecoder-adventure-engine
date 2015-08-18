@@ -29,8 +29,8 @@ import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
+@ActionDescription("Shows the text and sets the player to lookat in the selected actor direction")
 public class LookAtAction implements Action {
-	public static final String INFO = "Shows the text and sets the player to lookat in the selected actor direction";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.ACTOR, false),
 		new Param("speech", "The 'soundId' to play if selected", Type.STRING),
@@ -83,11 +83,6 @@ public class LookAtAction implements Action {
 		return false;
 	}
 
-
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

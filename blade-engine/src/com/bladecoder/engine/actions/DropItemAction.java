@@ -18,10 +18,6 @@ package com.bladecoder.engine.actions;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
-
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -30,8 +26,8 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
+@ActionDescription("Drops the inventory actor in the scene.")
 public class DropItemAction implements Action {
-	public static final String INFO = "Drops the inventory actor in the scene.";
 	public static final Param[] PARAMS = {
 		new Param("actor", "An actor in the inventory.", Type.STRING, false),
 		new Param("pos", "Position in the scene where de actor is dropped", Type.VECTOR2, false)
@@ -65,11 +61,6 @@ public class DropItemAction implements Action {
 			((SpriteActor)actor).setPosition(pos.x * scale, pos.y * scale);
 		
 		return false;
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

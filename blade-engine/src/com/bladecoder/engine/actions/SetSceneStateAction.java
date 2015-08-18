@@ -21,8 +21,8 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Sets the scene state")
 public class SetSceneStateAction implements Action {
-	public static final String INFO = "Sets the scene state";
 	public static final Param[] PARAMS = {
 		new Param("scene", "The scene", Type.SCENE),
 		new Param("state", "The scene 'state'", Type.STRING)
@@ -47,11 +47,6 @@ public class SetSceneStateAction implements Action {
 		return false;
 	}
 
-
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

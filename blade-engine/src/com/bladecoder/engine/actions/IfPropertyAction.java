@@ -22,9 +22,8 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Execute the actions inside the If/EndIf if the game propert has the specified value.")
 public class IfPropertyAction implements Action {
-
-	public static final String INFO = "Execute the actions inside the If/EndIf if the game propert has the specified value.";
 	public static final Param[] PARAMS = {
 			new Param("name", "The property name", Type.STRING, true),
 			new Param("value", "The property value", Type.STRING),
@@ -62,11 +61,6 @@ public class IfPropertyAction implements Action {
 			ip++;
 
 		v.setIP(ip);
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

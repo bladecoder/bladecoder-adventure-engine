@@ -24,8 +24,8 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationUtils;
 
+@ActionDescription("Sets an actor Scale animation")
 public class ScaleAction implements Action {
-	public static final String INFO = "Sets an actor Scale animation";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.ACTOR, false),
 		new Param("scale", "The target scale", Type.FLOAT, true),
@@ -88,11 +88,6 @@ public class ScaleAction implements Action {
 		actor.startScaleAnimation(repeat, count, speed, scale, i, wait?cb:null);
 		
 		return wait;
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

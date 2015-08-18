@@ -20,8 +20,8 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Sets a global game property")
 public class PropertyAction implements Action {
-	public static final String INFO = "Sets a global game property";
 	public static final Param[] PARAMS = { new Param("prop", "Property name", Type.STRING, true),
 			new Param("value", "Property value", Type.STRING, true), };
 
@@ -40,11 +40,6 @@ public class PropertyAction implements Action {
 		World.getInstance().setCustomProperty(prop, value);
 
 		return false;
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

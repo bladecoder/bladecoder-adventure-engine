@@ -27,8 +27,8 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationUtils;
 
+@ActionDescription("Sets an actor Position animation")
 public class PositionAction implements Action {
-	public static final String INFO = "Sets an actor Position animation";
 	public static final Param[] PARAMS = {
 			new Param("actor", "The target actor", Type.ACTOR, false),
 			new Param("pos", "The target position", Type.VECTOR2, true),
@@ -119,11 +119,6 @@ public class PositionAction implements Action {
 		}
 
 		return wait;
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

@@ -20,9 +20,8 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 
-
+@ActionDescription("Change the current scene.")
 public class LeaveAction implements Action, ActionCallback {
-	public static final String INFO = "Change the current scene.";
 	public static final Param[] PARAMS = {
 		new Param("scene", "The target scene", Type.SCENE, true),
 	};		
@@ -48,11 +47,6 @@ public class LeaveAction implements Action, ActionCallback {
 		scene = params.get("scene");
 	}
 
-
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

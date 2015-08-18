@@ -17,15 +17,11 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Set/Unset the cutmode. Also shows/hide the inventory")
 public class SetCutmodeAction implements Action {
-	public static final String INFO = "Set/Unset the cutmode. Also shows/hide the inventory";
 	public static final Param[] PARAMS = {
 		new Param("value", "when 'true' sets the scene in 'cutmode'", Type.BOOLEAN, true, "true")
 		};	
@@ -43,11 +39,6 @@ public class SetCutmodeAction implements Action {
 		World.getInstance().setCutMode(value);
 		
 		return false;
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

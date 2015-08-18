@@ -26,8 +26,8 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Walks to the selected position")
 public class GotoAction implements Action {
-	public static final String INFO = "Walks to the selected position";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.ACTOR, false),
 		new Param("pos", "The position to walk to", Type.VECTOR2),
@@ -134,11 +134,6 @@ public class GotoAction implements Action {
 		}
 
 		player.goTo(pf, cb);
-	}		
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

@@ -17,6 +17,7 @@ package com.bladecoder.engineeditor.ui;
 
 import java.util.Arrays;
 
+import com.bladecoder.engineeditor.utils.ActionUtils;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -133,7 +134,7 @@ public class EditActionDialog extends EditElementDialog {
 		}
 
 		if (ac != null) {
-			setInfo(ac.getInfo());
+			setInfo(ActionUtils.getInfo(ac));
 
 			Param[] params = ac.getParams();
 

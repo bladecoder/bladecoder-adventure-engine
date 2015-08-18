@@ -20,8 +20,8 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Pause the action")
 public class WaitAction implements Action {
-	public static final String INFO = "Pause the action";
 	public static final Param[] PARAMS = {
 		new Param("time", "The time pause in seconds", Type.FLOAT, true, "1.0")
 		};		
@@ -39,12 +39,7 @@ public class WaitAction implements Action {
 	public void setParams(HashMap<String, String> params) {
 		time = Float.parseFloat(params.get("time"));
 	}
-	
 
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

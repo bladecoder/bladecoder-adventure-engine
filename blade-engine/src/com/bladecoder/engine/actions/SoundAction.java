@@ -21,8 +21,8 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Play/Stop a sound")
 public class SoundAction implements Action {
-	public static final String INFO = "Play/Stop a sound";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.ACTOR, false),
 		new Param("play", "The 'soundId' to play", Type.STRING),
@@ -52,11 +52,6 @@ public class SoundAction implements Action {
 		return false;
 	}
 
-
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

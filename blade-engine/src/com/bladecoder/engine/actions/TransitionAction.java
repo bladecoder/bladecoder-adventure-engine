@@ -22,8 +22,8 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Sets a transition effect (FADEIN/FADEOUT)")
 public class TransitionAction implements Action {
-	public static final String INFO = "Sets a transition effect (FADEIN/FADEOUT)";
 	public static final Param[] PARAMS = {
 		new Param("time", "Duration of the transition", Type.FLOAT, true, "1.0"),
 		new Param("color", "The color to fade ('white', 'black' or RRGGBBAA).", Type.STRING, true, "black"),
@@ -70,11 +70,6 @@ public class TransitionAction implements Action {
 		if(params.get("wait") != null) {
 			wait = Boolean.parseBoolean(params.get("wait"));
 		}
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

@@ -26,21 +26,21 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
+@ActionDescription("Sets the animation for an actor")
 public class AnimationAction implements Action {
-	public static final String INFO = "Sets the animation for an actor";
 	public static final Param[] PARAMS = {
-		new Param("animation", "The Animation to set", Type.ACTOR_ANIMATION, true),	
+		new Param("animation", "The Animation to set", Type.ACTOR_ANIMATION, true),
 		new Param("count", "The times to repeat. -1 to infinity repeat", Type.INTEGER),
 		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
 		new Param("animation_type", "The repeat mode", Type.STRING, true, "sprite defined", new String[]{"repeat", "yoyo", "no_repeat", "reverse", "sprite defined"}),
 		new Param("pos", "Puts actor position after setting the animation", Type.VECTOR2, false),
-		new Param("absolute", "Sets the position absolute or relative", Type.BOOLEAN, false)		
-		};		
-	
+		new Param("absolute", "Sets the position absolute or relative", Type.BOOLEAN, false)
+		};
+
 	private static final int NO_POS = 0;
 	private static final int SET_POS_ABSOLUTE = 1;
 	private static final int SET_POS_RELATIVE = 2;
-	
+
 	private String animation;
 	private String actorId;
 	private float posx, posy;
@@ -53,12 +53,12 @@ public class AnimationAction implements Action {
 	public void setParams(HashMap<String, String> params) {
 		actorId = params.get("actor");
 		animation = params.get("animation");
-		
+
 		String a[] = Param.parseString2(animation);
-		
+
 		if(a[0] != null)
 			actorId = a[0];
-		
+
 		animation = a[1];
 
 		if (params.get("pos") != null) {
@@ -67,25 +67,25 @@ public class AnimationAction implements Action {
 			posy = p.y;
 			setPos = SET_POS_ABSOLUTE;
 		}
-		
+
 		if (params.get("absolute") != null) {
 			boolean absolute = Boolean.parseBoolean(params.get("absolute"));
-			
+
 			if(absolute)
 				setPos = SET_POS_ABSOLUTE;
 			else
 				setPos = SET_POS_RELATIVE;
 		}
-		
-		
+
+
 		if(params.get("count") != null) {
 			count = Integer.parseInt(params.get("count"));
 		}
-		
+
 		if(params.get("wait") != null) {
 			wait = Boolean.parseBoolean(params.get("wait"));
 		}
-		
+
 		if(params.get("animation_type") != null) {
 			String repeatStr = params.get("animation_type");
 			if (repeatStr.equalsIgnoreCase("repeat")) {
@@ -95,7 +95,7 @@ public class AnimationAction implements Action {
 			} else if (repeatStr.equalsIgnoreCase("no_repeat")) {
 				repeat = Tween.NO_REPEAT;
 			} else if (repeatStr.equalsIgnoreCase("reverse")) {
-				repeat = Tween.REVERSE;				
+				repeat = Tween.REVERSE;
 			} else {
 				repeat = Tween.FROM_FA;
 			}
@@ -105,25 +105,20 @@ public class AnimationAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", animation));
-		
+
 		float scale =  EngineAssetManager.getInstance().getScale();
 
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
-		
+
 		if (setPos == SET_POS_ABSOLUTE)
 			actor.setPosition(posx * scale, posy * scale);
-		else if (setPos == SET_POS_RELATIVE) {		
+		else if (setPos == SET_POS_RELATIVE) {
 			actor.setPosition(actor.getX() + posx * scale, actor.getY() + posy * scale);
 		}
-		
-		actor.startAnimation(animation, repeat, count, wait?cb:null);
-		
-		return wait;
-	}
 
-	@Override
-	public String getInfo() {
-		return INFO;
+		actor.startAnimation(animation, repeat, count, wait?cb:null);
+
+		return wait;
 	}
 
 	@Override

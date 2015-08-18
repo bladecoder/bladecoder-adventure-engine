@@ -30,9 +30,8 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
+@ActionDescription("Runs an actor verb")
 public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
-
-	public static final String INFO = "Runs an actor verb";
 	public static final Param[] PARAMS = {
 			new Param("actor", "The target actor", Type.ACTOR, false),
 			new Param("verb", "The 'verbId' to run.", Type.STRING, true),
@@ -194,11 +193,6 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 		target = json.readValue("target", String.class, jsonData);
 		state = json.readValue("state", String.class, jsonData);
 		super.read(json, jsonData);
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

@@ -24,8 +24,8 @@ import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
 public class CameraAction implements Action {
-	public static final String INFO = "Set/Animates the camera position and zoom. Also can stablish the follow character parameter";
 	public static final Param[] PARAMS = {
 			new Param("pos", "The target position", Type.VECTOR2),
 			new Param("zoom", "The target 'zoom'", Type.FLOAT),
@@ -98,11 +98,6 @@ public class CameraAction implements Action {
 		}
 		
 		return wait;
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

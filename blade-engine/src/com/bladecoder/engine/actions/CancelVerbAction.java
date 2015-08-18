@@ -30,8 +30,8 @@ import com.bladecoder.engine.util.EngineLogger;
  * 
  * @author rgarcia
  */
+@ActionDescription("Stops the named verb if it is in execution.")
 public class CancelVerbAction implements Action {
-	public static final String INFO = "Stops the named verb if it is in execution.";
 	public static final Param[] PARAMS = {
 			new Param("actor", "The target actor. Empty for the current actor.", Type.ACTOR, false),
 			new Param("verb", "The verb to stop. Empty for the current verb.", Type.STRING, false),
@@ -78,11 +78,6 @@ public class CancelVerbAction implements Action {
 			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actorId);
 
 		return false;
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

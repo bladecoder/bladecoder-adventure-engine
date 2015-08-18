@@ -26,10 +26,9 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
+@ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfAttrAction implements Action {
-
-	public static final String INFO = "Execute the actions inside the If/EndIf if the attribute has the specified value.";
-	public static final Param[] PARAMS = { 
+	public static final Param[] PARAMS = {
 			new Param("actor", "The actor to check its attribute", Type.SCENE_ACTOR),
 			new Param("attr", "The actor attribute", Type.STRING, true, "state", new String[] { "state", "visible"}),
 			new Param("value", "The attribute value", Type.STRING),
@@ -95,11 +94,6 @@ public class IfAttrAction implements Action {
 			ip++;
 
 		v.setIP(ip);		
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override
