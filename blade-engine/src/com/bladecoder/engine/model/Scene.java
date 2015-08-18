@@ -336,7 +336,11 @@ public class Scene implements Serializable, AssetConsumer {
 		this.lightMapRegionId = lightMapId;
 	}
 
-	public InteractiveActor getActorAt(float x, float y) {
+	
+	/**
+	 *  Returns the Interactive actor at the position. The actor must have the interaction property enabled.
+	 */
+	public InteractiveActor getInteractiveActorAt(float x, float y) {
 
 		for (SceneLayer layer : layers) {
 
@@ -349,6 +353,29 @@ public class Scene implements Serializable, AssetConsumer {
 
 				if (a instanceof InteractiveActor && ((InteractiveActor) a).hasInteraction() && a.hit(x, y)) {
 					return (InteractiveActor) a;
+				}
+			}
+		}
+
+		return null;
+	}
+	
+	/**
+	 *  Returns the actor at the position. 
+	 */
+	public BaseActor getActorAt(float x, float y) {
+
+		for (SceneLayer layer : layers) {
+
+			if (!layer.isVisible())
+				continue;
+
+			// Obtain actors in reverse (close to camera)
+			for (int i = layer.getActors().size() - 1; i >= 0; i--) {
+				BaseActor a = layer.getActors().get(i);
+
+				if (a.hit(x, y)) {
+					return a;
 				}
 			}
 		}

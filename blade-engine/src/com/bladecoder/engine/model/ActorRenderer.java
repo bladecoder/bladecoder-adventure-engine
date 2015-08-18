@@ -36,16 +36,17 @@ public interface ActorRenderer extends Serializable, AssetConsumer {
 	public AnimationDesc getCurrentAnimation();
 	public String getCurrentAnimationId();
 	
-	public void lookat(float x, float y, Vector2 pf);
-	public void lookat(String direction);
-	public void stand();
-	public void walk(Vector2 p0, Vector2 pf);
 	public void startAnimation(String id, int repeatType,
 			int count, ActionCallback cb);
 	
+	public void startAnimation(String id, int repeatType,
+			int count, ActionCallback cb, String direction);
 	
-	public void addAnimation(AnimationDesc fa);
-	public void setInitAnimation(String fa);
+	public void startAnimation(String id, int repeatType,
+			int count, ActionCallback cb, Vector2 p0, Vector2 pf);
+	
+	public void addAnimation(AnimationDesc anim);
+	public void setInitAnimation(String anim);
 	public String getInitAnimation();
 	
 	public String[] getInternalAnimations(AnimationDesc anim);

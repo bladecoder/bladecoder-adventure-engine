@@ -351,6 +351,10 @@ public abstract class BaseDocument extends PropertyChange {
 	public String getType(Element e) {
 		return e.getAttribute(XMLConstants.TYPE_ATTR);
 	}
+	
+	public String getRenderer(Element e) {
+		return e.getAttribute(XMLConstants.RENDERER_ATTR);
+	}
 
 	public NodeList getVerbs(Element e) {
 		// return e.getElementsByTagName("verb");

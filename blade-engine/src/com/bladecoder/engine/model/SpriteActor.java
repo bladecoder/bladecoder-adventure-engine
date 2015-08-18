@@ -81,7 +81,7 @@ public class SpriteActor extends InteractiveActor {
 
 	public void setBboxFromRenderer(boolean v) {
 		this.bboxFromRenderer = v;
-		
+
 		renderer.updateBboxFromRenderer(bbox);
 	}
 
@@ -105,20 +105,23 @@ public class SpriteActor extends InteractiveActor {
 	@Override
 	public void update(float delta) {
 		super.update(delta);
-		renderer.update(delta);
 
-		if (posTween != null) {
-			if (posTween.isComplete()) {
-				posTween = null;
-			} else {
-				posTween.update(this, delta);
+		if (visible) {
+			renderer.update(delta);
+
+			if (posTween != null) {
+				if (posTween.isComplete()) {
+					posTween = null;
+				} else {
+					posTween.update(this, delta);
+				}
 			}
-		}
 
-		if (scaleTween != null) {
-			scaleTween.update(this, delta);
-			if (scaleTween.isComplete()) {
-				scaleTween = null;
+			if (scaleTween != null) {
+				scaleTween.update(this, delta);
+				if (scaleTween.isComplete()) {
+					scaleTween = null;
+				}
 			}
 		}
 	}
@@ -180,7 +183,8 @@ public class SpriteActor extends InteractiveActor {
 	/**
 	 * Create position animation.
 	 */
-	public void startPosAnimation(int repeatType, int count, float duration, float destX, float destY, Interpolation interpolation, ActionCallback cb) {
+	public void startPosAnimation(int repeatType, int count, float duration, float destX, float destY,
+			Interpolation interpolation, ActionCallback cb) {
 
 		posTween = new SpritePosTween();
 
@@ -190,7 +194,8 @@ public class SpriteActor extends InteractiveActor {
 	/**
 	 * Create scale animation.
 	 */
-	public void startScaleAnimation(int repeatType, int count, float duration, float scale, Interpolation interpolation, ActionCallback cb) {
+	public void startScaleAnimation(int repeatType, int count, float duration, float scale,
+			Interpolation interpolation, ActionCallback cb) {
 
 		scaleTween = new SpriteScaleTween();
 

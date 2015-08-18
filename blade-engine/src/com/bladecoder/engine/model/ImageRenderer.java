@@ -17,7 +17,6 @@ package com.bladecoder.engine.model;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.model.ActorRenderer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -281,40 +280,36 @@ public class ImageRenderer implements ActorRenderer {
 
 		return fa;
 	}
-
+	
 	@Override
-	public void lookat(float x, float y, Vector2 pf) {
-		lookat(AnimationDesc.getFrameDirection(x, y, pf));
-	}
+	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, String direction) {
+		StringBuilder sb = new StringBuilder(id);
+		
+		// if dir==null gets the current animation direction
+		if(direction == null) {
+			int idx = getCurrentAnimationId().indexOf('.');
 
-	@Override
-	public void lookat(String dir) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(AnimationDesc.STAND_ANIM);
-		sb.append('.');
-		sb.append(dir);
-
-		startAnimation(sb.toString(), Tween.FROM_FA, 1, null);
-	}
-
-	@Override
-	public void stand() {
-		String standFA = AnimationDesc.STAND_ANIM;
-		int idx = getCurrentAnimationId().indexOf('.');
-
-		if (idx != -1) {
-			standFA += getCurrentAnimationId().substring(idx);
+			if (idx != -1) {
+				String dir = getCurrentAnimationId().substring(idx);
+				sb.append(dir);
+			}
+		} else {
+			sb.append('.');
+			sb.append(direction);
+		}
+		
+		String anim = sb.toString();
+				
+		if(getAnimation(anim) == null) {
+			anim = id;
 		}
 
-		startAnimation(standFA, Tween.FROM_FA, 1, null);
+		startAnimation(anim, repeatType, count, null);
 	}
 
 	@Override
-	public void walk(Vector2 p0, Vector2 pf) {
-		String currentDirection = AnimationDesc.getFrameDirection(p0.x, p0.y, pf);
-		StringBuilder sb = new StringBuilder();
-		sb.append(AnimationDesc.WALK_ANIM).append('.').append(currentDirection);
-		startAnimation(sb.toString(), Tween.FROM_FA, 1, null);
+	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
+		startAnimation(id, repeatType, count, cb, AnimationDesc.getDirectionString(p0, pf));
 	}
 	
 	private void loadSource(String source) {

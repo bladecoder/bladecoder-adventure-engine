@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
@@ -78,7 +78,7 @@ public class TesterBot {
 			boolean isWalking = false;
 			SpriteActor player = w.getCurrentScene().getPlayer();
 			if(player != null) {
-				if(player.getRenderer().getCurrentAnimationId().startsWith(AnimationDesc.WALK_ANIM))
+				if(player.getRenderer().getCurrentAnimationId().startsWith(CharacterActor.DEFAULT_WALK_ANIM))
 					isWalking = true;
 			}
 			

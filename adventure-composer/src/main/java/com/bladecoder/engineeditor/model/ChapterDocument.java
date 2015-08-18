@@ -338,7 +338,7 @@ public class ChapterDocument extends BaseDocument {
 		}
 
 		if (a instanceof SpriteActor) {
-			String renderer = e.getAttribute(XMLConstants.RENDERER_ATTR);
+			String renderer = getRenderer(e);
 
 			if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
 				((SpriteActor) a).setRenderer(new AtlasRenderer());
@@ -382,7 +382,7 @@ public class ChapterDocument extends BaseDocument {
 			for (int i = 0; i < faList.getLength(); i++) {
 				Element faElement = (Element) faList.item(i);
 
-				AnimationDesc fa = getEngineFA(type, faElement);
+				AnimationDesc fa = getEngineAnim(getRenderer(e), faElement);
 
 				r.addAnimation(fa);
 			}
@@ -414,12 +414,12 @@ public class ChapterDocument extends BaseDocument {
 		return a;
 	}
 
-	public AnimationDesc getEngineFA(String type, Element faElement) {
+	public AnimationDesc getEngineAnim(String renderer, Element faElement) {
 		AnimationDesc fa;
 
-		if (type.equals(XMLConstants.ATLAS_VALUE)) {
+		if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
 			fa = new AtlasAnimationDesc();
-		} else if (type.equals(XMLConstants.SPINE_VALUE)) {
+		} else if (renderer.equals(XMLConstants.SPINE_VALUE)) {
 			fa = new SpineAnimationDesc();
 
 			if (!faElement.getAttribute(XMLConstants.ATLAS_VALUE).isEmpty()) {

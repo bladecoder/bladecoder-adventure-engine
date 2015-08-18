@@ -433,7 +433,7 @@ public class SceneScreen implements BladeScreen {
 		} else if (state == UIStates.SCENE_MODE) {
 			w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
 
-			currentActor = w.getCurrentScene().getActorAt(unprojectTmp.x, unprojectTmp.y);
+			currentActor = w.getCurrentScene().getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y);
 
 			if (!w.getInventory().isVisible() && inventoryButton.isVisible())
 				inventoryButton.setVisible(false);

@@ -25,15 +25,56 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
+import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class CharacterActor extends SpriteActor {
 	private final static float DEFAULT_WALKING_SPEED = 700f; // Speed units:
 																// pix/sec.
+	
+	public final static String DEFAULT_STAND_ANIM = "stand";
+	public final static String DEFAULT_WALK_ANIM = "walk";
+	public final static String DEFAULT_TALK_ANIM = "talk";	
 
 	private float walkingSpeed = DEFAULT_WALKING_SPEED;
 	private Color textColor;
+	
+	private String standAnim = DEFAULT_STAND_ANIM;
+	public Color getTextColor() {
+		return textColor;
+	}
+
+	public void setTextColor(Color textColor) {
+		this.textColor = textColor;
+	}
+
+	public String getStandAnim() {
+		return standAnim;
+	}
+
+	public void setStandAnim(String standAnim) {
+		this.standAnim = standAnim;
+	}
+
+	public String getWalkAnim() {
+		return walkAnim;
+	}
+
+	public void setWalkAnim(String walkAnim) {
+		this.walkAnim = walkAnim;
+	}
+
+	public String getTalkAnim() {
+		return talkAnim;
+	}
+
+	public void setTalkAnim(String talkAnim) {
+		this.talkAnim = talkAnim;
+	}
+
+	private String walkAnim = DEFAULT_WALK_ANIM;
+	private String talkAnim = DEFAULT_TALK_ANIM;
 	
 	private HashMap<String, Dialog> dialogs;
 	
@@ -52,23 +93,29 @@ public class CharacterActor extends SpriteActor {
 		walkingSpeed = s;
 	}
 
-	public void lookat(Vector2 p) {
-		renderer.lookat(bbox.getX(), bbox.getY(), p);
+	public void lookat(Vector2 p) {		
+		renderer.startAnimation(standAnim, Tween.FROM_FA,-1, null, new Vector2(bbox.getX(), bbox.getY()), p);
+		
 		posTween = null;
 	}
 
 	public void lookat(String direction) {
-		renderer.lookat(direction);
+		renderer.startAnimation(standAnim, Tween.FROM_FA,-1, null, direction);
 		posTween = null;
 	}
 
 	public void stand() {
-		renderer.stand();
+		renderer.startAnimation(standAnim, Tween.FROM_FA,-1, null, null);
+		posTween = null;
+	}
+	
+	public void talk() {
+		renderer.startAnimation(talkAnim, Tween.FROM_FA,-1, null, null);
 		posTween = null;
 	}
 
 	public void startWalkAnim(Vector2 p0, Vector2 pf) {
-		renderer.walk(p0, pf);
+		renderer.startAnimation(walkAnim, Tween.FROM_FA,-1, null, p0, pf);
 	}
 
 	/**
@@ -131,6 +178,9 @@ public class CharacterActor extends SpriteActor {
 		json.writeValue("walkingSpeed", walkingSpeed);
 		json.writeValue("textColor", textColor);
 		json.writeValue("dialogs", dialogs);
+		json.writeValue("standAnim", standAnim);
+		json.writeValue("walkAnim", walkAnim);
+		json.writeValue("talkAnim", talkAnim);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -141,6 +191,9 @@ public class CharacterActor extends SpriteActor {
 		walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);
 		textColor = json.readValue("textColor", Color.class, jsonData);
 		dialogs = json.readValue("dialogs", HashMap.class, Dialog.class, jsonData);
+		standAnim = json.readValue("standAnim", String.class, jsonData);
+		walkAnim = json.readValue("walkAnim", String.class, jsonData);
+		talkAnim = json.readValue("talkAnim", String.class, jsonData);
 	}
 
 }

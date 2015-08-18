@@ -120,7 +120,7 @@ public class EditActorDialog extends EditElementDialog {
 		setInfo(TYPES_INFO[0]);
 
 		typePanel = inputs[0];
-		rendererPanel = inputs[1];
+		rendererPanel = inputs[7];
 
 		((SelectBox<String>) typePanel.getField())
 				.addListener(new ChangeListener() {

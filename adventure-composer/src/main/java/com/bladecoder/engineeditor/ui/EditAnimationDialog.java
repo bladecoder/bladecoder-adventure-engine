@@ -192,10 +192,10 @@ public class EditAnimationDialog extends EditElementDialog {
 	private void setSource() {
 		AnimationDesc anim = null;
 		
-		String type = parent.getAttribute(XMLConstants.TYPE_ATTR);
+		String renderer = parent.getAttribute(XMLConstants.RENDERER_ATTR);
 		String source = inputs[SOURCE_INPUTPANEL].getText();
 		
-		if (type.equals(XMLConstants.SPINE_VALUE)) {
+		if (renderer.equals(XMLConstants.SPINE_VALUE)) {
 			anim = new SpineAnimationDesc();
 			
 			if(spineAtlasExists(source)) {
@@ -210,7 +210,7 @@ public class EditAnimationDialog extends EditElementDialog {
 			}
 			
 			
-		} else if (type.equals(XMLConstants.ATLAS_VALUE)) {
+		} else if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
 			anim = new AtlasAnimationDesc();
 		} else {
 			anim = new AnimationDesc();
@@ -221,7 +221,7 @@ public class EditAnimationDialog extends EditElementDialog {
 		anim.preload = true;
 		anim.disposeWhenPlayed = false;	
 		
-		spriteWidget.setSource(type, anim);
+		spriteWidget.setSource(renderer, anim);
 	}
 	
 	public boolean spineAtlasExists(String source) {
@@ -281,19 +281,19 @@ public class EditAnimationDialog extends EditElementDialog {
 
 	private String[] getSources() {
 		String path = null;
-		String type = parent.getAttribute(XMLConstants.TYPE_ATTR);
+		String renderer = parent.getAttribute(XMLConstants.RENDERER_ATTR);
 
-		if (type.equals(XMLConstants.ATLAS_VALUE)) {
+		if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
 			path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
 					+ Ctx.project.getResDir();
 			ext = ".atlas";
-		} else if (type.equals(XMLConstants.S3D_VALUE)) {
+		} else if (renderer.equals(XMLConstants.S3D_VALUE)) {
 			path = Ctx.project.getProjectPath() + Project.SPRITE3D_PATH;
 			ext = ".g3db";
-		} else if (type.equals(XMLConstants.SPINE_VALUE)) {
+		} else if (renderer.equals(XMLConstants.SPINE_VALUE)) {
 			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
 			ext = ".skel";
-		} else if (type.equals(XMLConstants.IMAGE_VALUE)) {
+		} else if (renderer.equals(XMLConstants.IMAGE_VALUE)) {
 			path = Ctx.project.getProjectPath() + Project.IMAGE_PATH + "/"
 					+ Ctx.project.getResDir();
 			ext = "";			

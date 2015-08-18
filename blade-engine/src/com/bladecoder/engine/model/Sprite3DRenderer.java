@@ -18,14 +18,10 @@ package com.bladecoder.engine.model;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 
-import com.bladecoder.engine.model.ActorRenderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -53,8 +49,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
-import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
@@ -431,9 +427,24 @@ public class Sprite3DRenderer implements ActorRenderer {
 		
 		computeBbox();
 	}
+	
+	@Override
+	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, String direction) {
+		lookat(direction);
+		
+		startAnimation(id, repeatType, count, null);
+	}
 
 	@Override
-	public void lookat(String dir) {
+	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
+		Vector2 tmp = new Vector2(pf);
+		float angle = tmp.sub(p0).angle() + 90;
+		lookat(angle);
+		
+		startAnimation(id, repeatType, count, null);
+	}
+
+	private void lookat(String dir) {
 		EngineLogger.debug("LOOKAT DIRECTION - " + dir);
 
 		if (dir.equals(AnimationDesc.BACK))
@@ -457,27 +468,9 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 	}
 
-	@Override
-	public void lookat(float x, float y, Vector2 pf) {
-		Vector2 tmp = new Vector2(pf);
-		float angle = tmp.sub(x, y).angle() + 90;
-		lookat(angle);
-	}
-
 	private void lookat(float angle) {
 		currentSource.modelInstance.transform.setToRotation(Vector3.Y, angle);
 		modelRotation = angle;
-	}
-
-	@Override
-	public void stand() {
-		startAnimation(AnimationDesc.STAND_ANIM, Tween.NO_REPEAT, 1, null);
-	}
-
-	@Override
-	public void walk(Vector2 p0, Vector2 pf) {
-		lookat(p0.x, p0.y, pf);
-		startAnimation(AnimationDesc.WALK_ANIM, Tween.REPEAT, -1, null);
 	}
 
 	@Override
@@ -762,16 +755,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 			genShadowMap();
 
 		if (USE_FBO) {
-			fb = new FrameBuffer(FRAMEBUFFER_FORMAT, width, height, true) {
-				@Override
-				protected void setupTexture() {
-					colorTexture = new Texture(width, height, format);
-					colorTexture.setFilter(TextureFilter.Linear,
-							TextureFilter.Linear);
-					colorTexture.setWrap(TextureWrap.ClampToEdge,
-							TextureWrap.ClampToEdge);
-				}
-			};
+			fb = new FrameBuffer(FRAMEBUFFER_FORMAT, width, height, true);
 
 			tex = new TextureRegion(fb.getColorBufferTexture());
 			tex.flip(false, true);

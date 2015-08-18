@@ -1,7 +1,7 @@
 Bladecoder Adventure Engine
 ===========================
 
-The **Bladecoder Adventure Engine** is a set of tools to create interactive graphic adventures (classical point ant click games).
+The **Bladecoder Adventure Engine** is a set of tools to create interactive graphic adventures (classical point and click games).
 
 I think that this type of games are a great medium to tell stories and mobile devices provide a big opportunity to rebirth and evolve them.
 
@@ -11,7 +11,7 @@ The **Bladecoder Adventure Engine** is composed of the following subprojects:
 
 * **adventure-composer**: the graphical editor for creating point and click games.
 * **blade-engine**: the engine to run the games created with `adventure-composer`.
- 
+
 The **Bladecoder Adventure Engine** has been developed using the [LibGDX](http://libgdx.badlogicgames.com/) framework and the project generates a layout similar to any LibGDX project. This lowers the learning curve and eases development and deploy on several platforms.
 
 ### Adventure Composer
@@ -57,5 +57,3 @@ A zip package ready for distribution is created in the folder 'bladecoder-advent
 ### License
 The **Bladecoder Adventure Engine** is licensed under the [Apache 2 License](http://www.apache.org/licenses/LICENSE-2.0.html), meaning you
 can use it free of charge, without strings attached in commercial and non-commercial projects.
-
-

@@ -30,6 +30,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Tooltip;
+import com.badlogic.gdx.scenes.scene2d.ui.TooltipManager;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.bladecoder.engineeditor.Ctx;
@@ -150,6 +152,11 @@ public class ProjectToolbar extends Table {
 				atlasBtn.setDisabled(Ctx.project.getProjectDir() == null);
 			}
 		});
+		
+		TooltipManager.getInstance().instant();
+		
+		// TODO disable tooltips while not working in libgdx
+		TooltipManager.getInstance().enabled = false;
 	}
 
 	private void addToolBarButton(Skin skin, ImageButton button, String icon, String text, String tooltip) {
@@ -170,6 +177,8 @@ public class ProjectToolbar extends Table {
 
 		add(button);
 		button.setDisabled(true);
+		Tooltip t = new Tooltip(tooltip, skin);
+		button.addListener(t);		
 	}
 
 	private void newProject() {
