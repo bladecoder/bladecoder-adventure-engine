@@ -23,8 +23,8 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
+@ActionDescription("Deletes an actor from the game")
 public class RemoveActorAction implements Action {
-	public static final String INFO = "Deletes an actor from the game";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The actor to remove", Type.SCENE_ACTOR)
 		};		
@@ -69,11 +69,6 @@ public class RemoveActorAction implements Action {
 		return false;
 	}
 
-
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

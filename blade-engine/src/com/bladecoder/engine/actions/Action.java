@@ -32,7 +32,9 @@ public interface Action {
 
 	public void setParams(HashMap<String, String> params);
 
-	public String getInfo();
-
+	/**
+	 * @deprecated Need to remove when all Actions are annotated with @ActionDescription & friends
+	 */
+	@Deprecated
 	public Param[] getParams();
 }

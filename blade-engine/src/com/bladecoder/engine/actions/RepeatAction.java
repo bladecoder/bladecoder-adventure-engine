@@ -21,9 +21,8 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
 
+@ActionDescription("Repeats the actions inside the Repeat/EndRepeat actions.")
 public class RepeatAction implements Action {
-
-	public static final String INFO = "Repeats the actions inside the Repeat/EndRepeat actions.";
 	public static final Param[] PARAMS = {
 			new Param("repeat", "Repeat the actions the specified times. -1 to infinity",
 					Type.INTEGER, true, "1"),
@@ -55,11 +54,6 @@ public class RepeatAction implements Action {
 		}
 		
 		return false;
-	}
-	
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

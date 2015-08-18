@@ -25,8 +25,8 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
+@ActionDescription("Change the selected dialog option properties")
 public class SetDialogOptionAttrAction implements Action {
-	public static final String INFO = "Change the selected dialog option properties";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.SCENE_ACTOR, false),
 		new Param("dialog", "The dialog", Type.STRING, true),	
@@ -104,12 +104,7 @@ public class SetDialogOptionAttrAction implements Action {
 		
 		return false;
 	}
-	
 
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

@@ -17,15 +17,11 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Play/Stop the music of the current scene")
 public class MusicAction implements Action {
-	public static final String INFO = "Play/Stop the music of the current scene";
 	public static final Param[] PARAMS = { new Param("play",
 			"Play/Stops the music of the scene", Type.BOOLEAN, true), };
 
@@ -47,11 +43,6 @@ public class MusicAction implements Action {
 			World.getInstance().getCurrentScene().stopMusic();
 		
 		return false;
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

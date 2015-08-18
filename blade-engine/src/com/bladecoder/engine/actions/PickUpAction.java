@@ -24,8 +24,8 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Puts the selected actor in the inventory.")
 public class PickUpAction implements Action {
-	public static final String INFO = "Puts the selected actor in the inventory.";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.SCENE_ACTOR, false),
 		new Param("animation", "The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'", Type.STRING)
@@ -78,12 +78,7 @@ public class PickUpAction implements Action {
 		
 		return false;
 	}
-	
 
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

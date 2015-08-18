@@ -24,8 +24,8 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
+@ActionDescription("Move the actor to the selected scene")
 public class MoveToSceneAction implements Action {
-	public static final String INFO = "Move the actor to the selected scene";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The selected actor", Type.SCENE_ACTOR),
 		new Param("scene", "The target scene", Type.SCENE)
@@ -76,11 +76,6 @@ public class MoveToSceneAction implements Action {
 		return false;
 	}
 
-
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

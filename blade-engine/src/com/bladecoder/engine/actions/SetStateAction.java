@@ -23,8 +23,8 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
+@ActionDescription("Sets the actor state")
 public class SetStateAction implements Action {
-	public static final String INFO = "Sets the actor state";
 	public static final Param[] PARAMS = {
 		new Param("actor", "The target actor", Type.SCENE_ACTOR),
 		new Param("state", "The actor 'state'", Type.STRING)
@@ -70,11 +70,6 @@ public class SetStateAction implements Action {
 		return false;
 	}
 
-
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

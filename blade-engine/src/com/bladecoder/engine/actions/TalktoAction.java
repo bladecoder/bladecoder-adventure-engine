@@ -21,8 +21,8 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Sets the dialog mode")
 public class TalktoAction implements Action {
-	public static final String INFO = "Sets the dialog mode";
 	public static final Param[] PARAMS = {
 		new Param("actor",  "The target actor", Type.ACTOR, false),
 		new Param("dialog", "The 'dialogId' to show", Type.STRING, true)
@@ -47,11 +47,6 @@ public class TalktoAction implements Action {
 		return false;
 	}
 
-
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

@@ -21,9 +21,8 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
 
+@ActionDescription("Marks the end of a block for a control action")
 public class EndAction implements Action {
-
-	public static final String INFO = "Marks the end of a block for a control action";
 	public static final Param[] PARAMS = { new Param("endType", "The block type", Type.STRING) };
 
 	String type;
@@ -62,11 +61,6 @@ public class EndAction implements Action {
 
 	public String getType() {
 		return type;
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

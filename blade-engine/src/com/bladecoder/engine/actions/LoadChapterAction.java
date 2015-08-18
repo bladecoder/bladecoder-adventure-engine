@@ -20,9 +20,8 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 
-
+@ActionDescription("Load the specified Chapter. Scene can be empty to load the default scene.")
 public class LoadChapterAction implements Action {
-	public static final String INFO = "Load the specified Chapter. Scene can be empty to load the default scene.";
 	public static final Param[] PARAMS = {
 		new Param("chapter", "The target chapter", Type.CHAPTER, true),
 		new Param("scene", "The target scene", Type.STRING, false)
@@ -44,11 +43,6 @@ public class LoadChapterAction implements Action {
 		chapter = params.get("chapter");
 	}
 
-
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {

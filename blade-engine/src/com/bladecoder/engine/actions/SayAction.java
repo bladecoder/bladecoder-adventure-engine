@@ -30,8 +30,8 @@ import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Says a text")
 public class SayAction extends BaseCallbackAction {
-	public static final String INFO = "Says a text";
 	public static final Param[] PARAMS = {
 			new Param("actor", "The target actor", Type.ACTOR, false),
 			new Param("text", "The 'text' to show", Type.SMALL_TEXT),
@@ -216,11 +216,6 @@ public class SayAction extends BaseCallbackAction {
 		pos = json.readValue("pos", Vector2.class, jsonData);
 		quee = json.readValue("quee", Boolean.class, jsonData);
 		super.read(json, jsonData);
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

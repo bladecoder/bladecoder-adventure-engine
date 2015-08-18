@@ -22,13 +22,13 @@ import com.badlogic.gdx.math.MathUtils;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
 
+@ActionDescription("Execute only one action inside the Choose/EndChoose block.")
 public class ChooseAction implements Action {
 	private static final String ITERATE = "iterate";
 	private static final String RANDOM = "random";
 	private static final String CYCLE = "cycle";
 
-	public static final String INFO = "Execute only one action inside the Choose/EndChoose block.";
-	public static final Param[] PARAMS = { 
+	public static final Param[] PARAMS = {
 			new Param("chooseCriteria", "The action to execute will be selected following this criteria.",
 				Type.OPTION, true, CYCLE, new String[]{ITERATE, RANDOM, CYCLE}),
 				new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, "choose")
@@ -79,11 +79,6 @@ public class ChooseAction implements Action {
 		}
 
 		return false;
-	}
-
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

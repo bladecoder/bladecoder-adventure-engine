@@ -21,9 +21,8 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
 
+@ActionDescription("Execute the actions inside the RunOnce/EndRunOnce only once.")
 public class RunOnceAction implements Action {
-
-	public static final String INFO = "Execute the actions inside the RunOnce/EndRunOnce only once.";
 	public static final Param[] PARAMS = {
 			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, "runonce")};
 
@@ -50,11 +49,6 @@ public class RunOnceAction implements Action {
 		executed=true;
 		
 		return false;
-	}
-	
-	@Override
-	public String getInfo() {
-		return INFO;
 	}
 
 	@Override

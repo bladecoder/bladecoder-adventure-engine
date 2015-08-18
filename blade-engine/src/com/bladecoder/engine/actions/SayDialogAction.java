@@ -17,8 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.BaseCallbackAction;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.badlogic.gdx.graphics.Color;
@@ -31,13 +29,11 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.World;
 
+@ActionDescription("Says the selected option from the current dialog. This action does the next steps:\n" +
+"\n- Sets the player 'talk' animation and say the player text" +
+"\n- Restore the previous player animation and set the target actor 'talk' animation and say the response text" +
+"\n- Restore the target actor animation")
 public class SayDialogAction extends BaseCallbackAction {
-
-	public static final String INFO = 
-			"Says the selected option from the current dialog. This action does the next steps:\n" +
-			"\n- Sets the player 'talk' animation and say the player text" +
-			"\n- Restore the previous player animation and set the target actor 'talk' animation and say the response text" + 
-			"\n- Restore the target actor animation";
 	public static final Param[] PARAMS = {
 			new Param("player_talk_animation", "The player animation for talking instead of the default talk animation.",
 								Type.STRING),
@@ -191,12 +187,7 @@ public class SayDialogAction extends BaseCallbackAction {
 		charTalkAnim = json.readValue("charTalkAnim", String.class, jsonData);
 		super.read(json, jsonData);
 	}
-	
 
-	@Override
-	public String getInfo() {
-		return INFO;
-	}
 
 	@Override
 	public Param[] getParams() {
