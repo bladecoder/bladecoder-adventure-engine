@@ -17,7 +17,6 @@ package com.bladecoder.engine.anim;
 
 import java.util.ArrayList;
 
-import com.bladecoder.engine.anim.SpritePosTween;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
@@ -72,9 +71,9 @@ public class WalkTween extends SpritePosTween implements Serializable {
 				walkCbSer = null;
 			}
 			
-			start(target, NO_REPEAT, 1, pf.x, pf.y, segmentDuration, null, walkCb);
+			start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, null, walkCb);
 		} else {
-			start(target, NO_REPEAT, 1, pf.x, pf.y, segmentDuration, null, null);
+			start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, null, null);
 		}
 	}
 

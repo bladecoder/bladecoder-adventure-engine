@@ -32,10 +32,6 @@ import com.bladecoder.engine.model.World;
 "\n- Restore the previous player animation and set the target actor 'talk' animation and say the response text" +
 "\n- Restore the target actor animation")
 public class SayDialogAction extends BaseCallbackAction {
-	public static final Param[] PARAMS = {
-
-	};	
-
 	private boolean characterTurn = false;
 	private String characterName;
 	private String responseText;
@@ -159,6 +155,6 @@ public class SayDialogAction extends BaseCallbackAction {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

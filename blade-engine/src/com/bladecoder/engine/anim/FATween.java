@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
-import com.bladecoder.engine.anim.Tween;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
@@ -30,7 +28,7 @@ public class FATween extends Tween {
 	public FATween() {
 	}
 
-	public void start(AtlasRenderer target, int repeatType, int count, float duration, ActionCallback cb) {		
+	public void start(AtlasRenderer target, Tween.Type repeatType, int count, float duration, ActionCallback cb) {
 		setDuration(duration);
 		setType(repeatType);
 		setCount(count);

@@ -19,15 +19,15 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Pause the action")
 public class WaitAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("time", "The time pause in seconds", Type.FLOAT, true, "1.0")
-		};		
-	
+	@JsonProperty(required = true, defaultValue = "1.0")
+	@JsonPropertyDescription("The time pause in seconds")
+	@ActionPropertyType(Type.FLOAT)
 	private float time;
-	
 
 	@Override
 	public boolean run(ActionCallback cb) {
@@ -40,9 +40,8 @@ public class WaitAction implements Action {
 		time = Float.parseFloat(params.get("time"));
 	}
 
-
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

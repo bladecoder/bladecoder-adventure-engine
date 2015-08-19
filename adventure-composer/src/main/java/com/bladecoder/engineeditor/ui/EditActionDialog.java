@@ -137,12 +137,20 @@ public class EditActionDialog extends EditElementDialog {
 			setInfo(ActionUtils.getInfo(ac));
 
 			Param[] params = ac.getParams();
+			if (params == null) {
+				params = ActionUtils.getParams(ac);
+			}
 
 			parameters = new InputPanel[params.length];
 
 			for (int i = 0; i < params.length; i++) {
-				parameters[i] = InputPanelFactory.createInputPanel(getSkin(), params[i].name, params[i].desc,
-						params[i].type, params[i].mandatory, params[i].defaultValue, params[i].options);
+				if (params[i].options instanceof Enum[]) {
+					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), params[i].name, params[i].desc,
+							params[i].type, params[i].mandatory, params[i].defaultValue, (Enum[]) params[i].options);
+				} else {
+					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), params[i].name, params[i].desc,
+							params[i].type, params[i].mandatory, params[i].defaultValue, (String[]) params[i].options);
+				}
 				
 				if(params[i].name.equals("endType"))
 					continue;

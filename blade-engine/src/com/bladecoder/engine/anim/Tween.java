@@ -15,16 +15,47 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
-import com.bladecoder.engine.util.InterpolationUtils;
+import com.bladecoder.engine.util.InterpolationMode;
 
 public class Tween implements Serializable {
+	public enum Type {
+		NO_REPEAT(Tween.NO_REPEAT), REPEAT(Tween.REPEAT),
+		YOYO(Tween.PINGPONG),
+		REVERSE(Tween.REVERSE), REVERSE_REPEAT(Tween.REVERSE_REPEAT),
+		SPRITE_DEFINED(Tween.FROM_FA);
+
+		private int tweenId;
+
+		Type(int tweenId) {
+			this.tweenId = tweenId;
+		}
+
+		public int getTweenId() {
+				return tweenId;
+			}
+
+		/**
+		 * @deprecated Remove when we can break backwards compatibility without fear!
+		 */
+		@Deprecated
+		public static Type fromTweenId(Integer tweenId) {
+			if (tweenId == null)
+				return null;
+			for (Type type : values()) {
+				if (type.tweenId == tweenId) {
+					return type;
+				}
+			}
+			return null;
+		}
+	}
+
 	public final static int NO_REPEAT = 0;
 	public final static int REPEAT = 1;
 	public final static int PINGPONG = 2;
@@ -35,9 +66,9 @@ public class Tween implements Serializable {
 	public final static int INFINITY = -1;
 
 	private float duration, time;
-	private Interpolation interpolation;
+	private InterpolationMode interpolation;
 	private boolean reverse, began, complete;
-	private int type;
+	private Type type;
 	private int count;
 
 	private ActionCallback cb;
@@ -57,14 +88,14 @@ public class Tween implements Serializable {
 		time += delta;
 
 		if (time >= duration) {
-			if (type == NO_REPEAT || type == REVERSE || count == 1) {
+			if (type == Type.NO_REPEAT || type == Type.REVERSE || count == 1) {
 				complete = true;
 			} else if (count != 1) {
 				complete = false;
 				count--;
 				time = 0;
 
-				if (type == PINGPONG)
+				if (type == Type.YOYO)
 					reverse = !reverse;
 			}
 		}
@@ -92,7 +123,7 @@ public class Tween implements Serializable {
 		} else {
 			percent = time / duration;
 			if (interpolation != null)
-				percent = interpolation.apply(percent);
+				percent = interpolation.getInterpolation().apply(percent);
 		}
 
 		return (reverse ? 1 - percent : percent);
@@ -133,11 +164,11 @@ public class Tween implements Serializable {
 		this.duration = duration;
 	}
 
-	public Interpolation getInterpolation() {
+	public InterpolationMode getInterpolation() {
 		return interpolation;
 	}
 
-	public void setInterpolation(Interpolation interpolation) {
+	public void setInterpolation(InterpolationMode interpolation) {
 		this.interpolation = interpolation;
 	}
 
@@ -158,14 +189,14 @@ public class Tween implements Serializable {
 		return complete;
 	}
 
-	public int getType() {
+	public Tween.Type getType() {
 		return type;
 	}
 
-	public void setType(int type) {
+	public void setType(Tween.Type type) {
 		this.type = type;
 
-		if (type == REVERSE || type == REVERSE_REPEAT)
+		if (type == Tween.Type.REVERSE || type == Tween.Type.REVERSE_REPEAT)
 			reverse = true;
 	}
 
@@ -184,13 +215,13 @@ public class Tween implements Serializable {
 		json.writeValue("reverse", reverse);
 		json.writeValue("began", began);
 		json.writeValue("complete", complete);
-		json.writeValue("type", type);
+		json.writeValue("type", type.getTweenId());
 		json.writeValue("count", count);
 		
 		String i = null;
 		
 		if(interpolation != null)
-			i = InterpolationUtils.getName(interpolation);
+			i = interpolation.name();
 		
 		json.writeValue("interpolation", i);
 		
@@ -208,13 +239,13 @@ public class Tween implements Serializable {
 		reverse = json.readValue("reverse", Boolean.class, jsonData);
 		began = json.readValue("began", Boolean.class, jsonData);
 		complete = json.readValue("complete", Boolean.class, jsonData);
-		type = json.readValue("type", Integer.class, jsonData);
+		type = Tween.Type.fromTweenId(json.readValue("type", Integer.class, jsonData));
 		count = json.readValue("count", Integer.class, jsonData);
 		
 		String i = json.readValue("interpolation", String.class, jsonData);
 		
 		if(i != null)
-			interpolation = InterpolationUtils.getInterpolation(i);
+			interpolation = InterpolationMode.valueOf(i.trim().toUpperCase());
 
 		cbSer = json.readValue("cb", String.class, jsonData);
 	}

@@ -28,40 +28,42 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Says a text")
 public class SayAction extends BaseCallbackAction {
-	public static final Param[] PARAMS = {
-			new Param("actor", "The target actor", Type.ACTOR, false),
-			new Param("text", "The 'text' to show", Type.SMALL_TEXT),
-			new Param(
-					"pos",
-					"The position of the text. If null, the position will be calc based in actor",
-					Type.VECTOR2),
-			new Param("speech", "The 'soundId' to play if selected",
-					Type.STRING),
-			new Param(
-					"wait",
-					"If this param is 'false' the text is showed and the action continues inmediatly",
-					Type.BOOLEAN, true),
-			new Param(
-					"type",
-					"The type of the text: 'talk', 'rectangle' (default) and 'plain'",
-					Type.STRING, true, "rectangle", new String[] { "rectangle",
-							"talk", "plain" }), 
-			new Param("quee", "Quee the text if other text is showing or show it inmediatly.",Type.BOOLEAN, false, "false")
-	};
-	
-	private String soundId;
-	private String text;
-
+	@JsonProperty("actor")
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.ACTOR)
 	private String actorId;
 
+	@JsonProperty
+	@JsonPropertyDescription("The 'text' to show")
+	@ActionPropertyType(Type.SMALL_TEXT)
+	private String text;
+
+	@JsonProperty
+	@JsonPropertyDescription("The position of the text. If null, the position will be calc based in actor")
+	@ActionPropertyType(Type.VECTOR2)
+	private Vector2 pos;
+
+	@JsonProperty("speech")
+	@JsonPropertyDescription("The 'soundId' to play if selected")
+	@ActionPropertyType(Type.SOUND)
+	private String soundId;
+
+	@JsonProperty(required = true, defaultValue = "RECTANGLE")
+	@JsonPropertyDescription("The type of the text: 'talk', 'rectangle' (default) and 'plain'")
+	@ActionPropertyType(Type.STRING)
 	private Text.Type type = Text.Type.RECTANGLE;
 
+	@JsonProperty(defaultValue = "false")
+	@JsonPropertyDescription("Queue the text if other text is showing, or show it immediately.")
+	@ActionPropertyType(Type.BOOLEAN)
+	private boolean queue = false;
+
 	private String previousAnim = null;
-	private Vector2 pos = null;
-	private boolean quee = false;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -74,14 +76,9 @@ public class SayAction extends BaseCallbackAction {
 			setWait(Boolean.parseBoolean(params.get("wait")));
 		}
 
-		if (params.get("type") != null) {
-			if (params.get("type").equals("talk")) {
-				type = Text.Type.TALK;
-			} else if (params.get("type").equals("rectangle")) {
-				type = Text.Type.RECTANGLE;
-			} else if (params.get("type").equals("plain")) {
-				type = Text.Type.PLAIN;
-			}
+		final String strType = params.get("type");
+		if (strType != null) {
+			this.type = Text.Type.valueOf(strType.trim().toUpperCase());
 		}
 
 		if (params.get("pos") != null) {
@@ -89,7 +86,7 @@ public class SayAction extends BaseCallbackAction {
 		}
 		
 		if (params.get("quee") != null) {
-			quee = Boolean.parseBoolean(params.get("quee"));
+			queue = Boolean.parseBoolean(params.get("quee"));
 		}
 	}
 
@@ -131,7 +128,7 @@ public class SayAction extends BaseCallbackAction {
 			}
 
 			World.getInstance().getTextManager()
-						.addSubtitle(text, x, y, quee, type, Color.BLACK, getWait()?this:null);
+						.addSubtitle(text, x, y, queue, type, Color.BLACK, getWait()?this:null);
 		}
 		
 		return getWait();
@@ -142,7 +139,7 @@ public class SayAction extends BaseCallbackAction {
 		if (this.type == Text.Type.TALK) {
 			CharacterActor actor = (CharacterActor) World.getInstance()
 					.getCurrentScene().getActor(actorId, false);
-			actor.startAnimation(previousAnim, Tween.FROM_FA, 0, null);
+			actor.startAnimation(previousAnim, Tween.Type.SPRITE_DEFINED, 0, null);
 		}
 
 		super.resume();
@@ -174,7 +171,7 @@ public class SayAction extends BaseCallbackAction {
 		json.writeValue("previousAnim", previousAnim);
 		json.writeValue("type", type);
 		json.writeValue("pos", pos);
-		json.writeValue("quee", quee);
+		json.writeValue("quee", queue);
 		super.write(json);
 	}
 
@@ -186,12 +183,12 @@ public class SayAction extends BaseCallbackAction {
 		previousAnim = json.readValue("previousAnim", String.class, jsonData);
 		type = json.readValue("type", Text.Type.class, jsonData);
 		pos = json.readValue("pos", Vector2.class, jsonData);
-		quee = json.readValue("quee", Boolean.class, jsonData);
+		queue = json.readValue("quee", Boolean.class, jsonData);
 		super.read(json, jsonData);
 	}
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

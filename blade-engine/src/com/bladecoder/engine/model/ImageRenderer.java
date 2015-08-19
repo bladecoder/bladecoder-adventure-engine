@@ -151,7 +151,7 @@ public class ImageRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void startAnimation(String id, int repeatType, int count,
+	public void startAnimation(String id, Tween.Type repeatType, int count,
 			ActionCallback cb) {
 		AnimationDesc fa = getAnimation(id);
 
@@ -285,7 +285,7 @@ public class ImageRenderer implements ActorRenderer {
 	}
 	
 	@Override
-	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, String direction) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
 		StringBuilder sb = new StringBuilder(id);
 		
 		// if dir==null gets the current animation direction
@@ -311,7 +311,7 @@ public class ImageRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
 		startAnimation(id, repeatType, count, cb, AnimationDesc.getDirectionString(p0, pf));
 	}
 	
@@ -392,7 +392,7 @@ public class ImageRenderer implements ActorRenderer {
 					.get(currentAnimation.source);
 			currentSource = entry;
 		} else if (initAnimation != null) {
-			startAnimation(initAnimation, Tween.FROM_FA, 1, null);
+			startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
 		}
 		
 		computeBbox();

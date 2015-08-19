@@ -24,32 +24,43 @@ import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Change the selected dialog option properties")
 public class SetDialogOptionAttrAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.SCENE_ACTOR, false),
-		new Param("dialog", "The dialog", Type.STRING, true),	
-		new Param("option", "The option", Type.STRING, true),
-		new Param("visible", "Shows/Hide the dialog option", Type.BOOLEAN),
-		new Param("set_current", "Sets the selected option as the current dialog option", Type.BOOLEAN)		
-		};	
-	
-	
-	String actorId;
-	String sceneId;
-	String dialog;
-	String option;
-	boolean setVisibility;
-	boolean setCurrent = false;
-	boolean visibility;
+	@JsonProperty("actor")
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.SCENE_ACTOR)
+	private SceneActorRef sceneActorRef;
+
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("The dialog")
+	@ActionPropertyType(Type.STRING)
+	private String dialog;
+
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("The option")
+	@ActionPropertyType(Type.STRING)
+	private String option;
+
+	@JsonProperty("visible")
+	@JsonPropertyDescription("Show/Hide the dialog option")
+	@ActionPropertyType(Type.BOOLEAN)
+	private boolean visibility;
+
+	@JsonProperty
+	@JsonPropertyDescription("Sets the selected option as the current dialog option")
+	@ActionPropertyType(Type.BOOLEAN)
+	private boolean setCurrent = false;
+
+	private boolean setVisibility;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		String[] a = Param.parseString2(params.get("actor"));
-		
-		sceneId = a[0];
-		actorId = a[1];
+
+		sceneActorRef = new SceneActorRef(a[0], a[1]);
 
 		dialog = params.get("dialog");
 		option = params.get("option");
@@ -66,15 +77,9 @@ public class SetDialogOptionAttrAction implements Action {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		Scene s;
+		final Scene s = sceneActorRef.getScene();
 		
-		if(sceneId != null && !sceneId.isEmpty()) {
-			s = World.getInstance().getScene(sceneId);
-		} else {
-			s = World.getInstance().getCurrentScene();
-		}
-		
-		CharacterActor actor = (CharacterActor)s.getActor(actorId, true);
+		CharacterActor actor = (CharacterActor)s.getActor(sceneActorRef.getActorId(), true);
 		
 		Dialog d = actor.getDialog(dialog);
 
@@ -108,6 +113,6 @@ public class SetDialogOptionAttrAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

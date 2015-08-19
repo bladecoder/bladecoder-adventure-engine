@@ -16,7 +16,6 @@
 package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -27,6 +26,7 @@ import com.bladecoder.engine.anim.SpriteScaleTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.util.InterpolationMode;
 
 public class SpriteActor extends InteractiveActor {
 
@@ -134,10 +134,10 @@ public class SpriteActor extends InteractiveActor {
 	}
 
 	public void startAnimation(String id, ActionCallback cb) {
-		startAnimation(id, Tween.FROM_FA, 1, cb);
+		startAnimation(id, Tween.Type.SPRITE_DEFINED, 1, cb);
 	}
 
-	public void startAnimation(String id, int repeatType, int count, ActionCallback cb) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
 
 		AnimationDesc fa = renderer.getCurrentAnimation();
 
@@ -183,8 +183,8 @@ public class SpriteActor extends InteractiveActor {
 	/**
 	 * Create position animation.
 	 */
-	public void startPosAnimation(int repeatType, int count, float duration, float destX, float destY,
-			Interpolation interpolation, ActionCallback cb) {
+	public void startPosAnimation(Tween.Type repeatType, int count, float duration, float destX, float destY,
+	                              InterpolationMode interpolation, ActionCallback cb) {
 
 		posTween = new SpritePosTween();
 
@@ -194,8 +194,8 @@ public class SpriteActor extends InteractiveActor {
 	/**
 	 * Create scale animation.
 	 */
-	public void startScaleAnimation(int repeatType, int count, float duration, float scale,
-			Interpolation interpolation, ActionCallback cb) {
+	public void startScaleAnimation(Tween.Type repeatType, int count, float duration, float scale,
+			InterpolationMode interpolation, ActionCallback cb) {
 
 		scaleTween = new SpriteScaleTween();
 

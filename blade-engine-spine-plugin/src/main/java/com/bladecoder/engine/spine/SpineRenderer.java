@@ -71,7 +71,7 @@ public class SpineRenderer implements ActorRenderer {
 	private String animationCbSer = null;
 
 	private int currentCount;
-	private int currentAnimationType;
+	private Tween.Type currentAnimationType;
 
 	private boolean flipX;
 
@@ -112,7 +112,7 @@ public class SpineRenderer implements ActorRenderer {
 			if (complete)
 				return;
 
-			if (currentAnimationType == Tween.REPEAT && (currentCount == Tween.INFINITY || currentCount > loopCount)) {
+			if (currentAnimationType == Tween.Type.REPEAT && (currentCount == Tween.INFINITY || currentCount > loopCount)) {
 				return;
 			}
 
@@ -227,7 +227,7 @@ public class SpineRenderer implements ActorRenderer {
 		if (currentSource != null && currentSource.skeleton != null) {
 			float d = delta;
 
-			if (currentAnimationType == Tween.REVERSE) {
+			if (currentAnimationType == Tween.Type.REVERSE) {
 				d = -delta;
 
 				if (lastAnimationTime < 0) {
@@ -281,7 +281,7 @@ public class SpineRenderer implements ActorRenderer {
 	}
 	
 	@Override
-	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, String direction) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
 		StringBuilder sb = new StringBuilder(id);
 		
 		// if dir==null gets the current animation direction
@@ -307,12 +307,12 @@ public class SpineRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
 		startAnimation(id, repeatType, count, cb, AnimationDesc.getDirectionString(p0, pf));
 	}
 
 	@Override
-	public void startAnimation(String id, int repeatType, int count, ActionCallback cb) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
 		SpineAnimationDesc fa = (SpineAnimationDesc) getAnimation(id);
 
 		if (fa == null) {
@@ -346,7 +346,7 @@ public class SpineRenderer implements ActorRenderer {
 			}
 		}
 
-		if (repeatType == Tween.FROM_FA) {
+		if (repeatType == Tween.Type.SPRITE_DEFINED) {
 			currentAnimationType = currentAnimation.animationType;
 			currentCount = currentAnimation.count;
 		} else {
@@ -354,7 +354,7 @@ public class SpineRenderer implements ActorRenderer {
 			currentAnimationType = repeatType;
 		}
 
-		if (currentAnimationType == Tween.REVERSE) {
+		if (currentAnimationType == Tween.Type.REVERSE) {
 			// get animation duration
 			Array<Animation> animations = currentSource.skeleton.getData().getAnimations();
 
@@ -378,7 +378,7 @@ public class SpineRenderer implements ActorRenderer {
 			currentSource.skeleton.setToSetupPose();
 			currentSource.skeleton.setFlipX(flipX);
 			currentSource.animation.setTimeScale(currentAnimation.duration);
-			currentSource.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.REPEAT);
+			currentSource.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.Type.REPEAT);
 
 			updateAnimation(lastAnimationTime);
 			computeBbox();
@@ -646,7 +646,7 @@ public class SpineRenderer implements ActorRenderer {
 			setCurrentAnimation();
 
 		} else if (initAnimation != null) {
-			startAnimation(initAnimation, Tween.FROM_FA, 1, null);
+			startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
 		}
 
 		computeBbox();
@@ -687,7 +687,7 @@ public class SpineRenderer implements ActorRenderer {
 					: String.class);
 
 		json.writeValue("currentCount", currentCount);
-		json.writeValue("currentAnimationType", currentAnimationType);
+		json.writeValue("currentAnimationType", currentAnimationType.getTweenId());
 		json.writeValue("lastAnimationTime", lastAnimationTime);
 		json.writeValue("complete", complete);
 	}
@@ -708,7 +708,7 @@ public class SpineRenderer implements ActorRenderer {
 		flipX = json.readValue("flipX", Boolean.class, jsonData);
 		animationCbSer = json.readValue("cb", String.class, jsonData);
 		currentCount = json.readValue("currentCount", Integer.class, jsonData);
-		currentAnimationType = json.readValue("currentAnimationType", Integer.class, jsonData);
+		currentAnimationType = Tween.Type.fromTweenId(json.readValue("currentAnimationType", Integer.class, jsonData));
 		lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 		complete = json.readValue("complete", Boolean.class, jsonData);
 	}

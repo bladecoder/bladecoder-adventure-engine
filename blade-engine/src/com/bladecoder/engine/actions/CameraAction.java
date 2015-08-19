@@ -23,30 +23,39 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
 public class CameraAction implements Action {
-	public static final Param[] PARAMS = {
-			new Param("pos", "The target position", Type.VECTOR2),
-			new Param("zoom", "The target 'zoom'", Type.FLOAT),
-			new Param("duration",
-					"Duration of the animation in seconds. If not '0' and animation is triggered",
-					Type.FLOAT),
-			new Param("followActor", "Sets the actor to follow. 'none' puts no actor to follow",
-					Type.ACTOR),
-			new Param(
-					"wait",
-					"If this param is 'false' the text is showed and the action continues inmediatly",
-					Type.BOOLEAN, true) };
-
-	private String followActorId;
-	private float zoom=-1, duration;
+	@JsonProperty
+	@JsonPropertyDescription("The target position")
+	@ActionPropertyType(Type.VECTOR2)
 	private Vector2 pos;
+
+	@JsonProperty
+	@JsonPropertyDescription("The target 'zoom'")
+	@ActionPropertyType(Type.FLOAT)
+	private float zoom = -1;
+
+	@JsonProperty
+	@JsonPropertyDescription("Duration of the animation in seconds. If not '0' and animation is triggered")
+	@ActionPropertyType(Type.FLOAT)
+	private float duration;
+
+	@JsonProperty
+	@JsonPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
+	@ActionPropertyType(Type.ACTOR)
+	private String followActor;
+
+	@JsonProperty(defaultValue = "true", required = true)
+	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+	@ActionPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		followActorId = params.get("followActor");
+		followActor = params.get("followActor");
 
 		if (params.get("pos") != null)
 			pos = Param.parseVector2(params.get("pos"));
@@ -82,12 +91,12 @@ public class CameraAction implements Action {
 			pos.y /= scale;
 		}
 
-		if (followActorId != null) {
-			if (followActorId.equals("none"))
+		if (followActor != null) {
+			if (followActor.equals("none"))
 				World.getInstance().getCurrentScene().setCameraFollowActor(null);
 			else
 				camera.updatePos((SpriteActor) World.getInstance().getCurrentScene()
-						.getActor(followActorId, false));
+						.getActor(followActor, false));
 		}
 
 		if (duration == 0) {
@@ -102,6 +111,6 @@ public class CameraAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

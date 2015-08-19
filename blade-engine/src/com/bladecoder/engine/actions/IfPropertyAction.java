@@ -21,17 +21,28 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the game propert has the specified value.")
-public class IfPropertyAction implements Action {
+public class IfPropertyAction implements ControlAction {
+	public static final String ENDTYPE_VALUE = "else";
+
 	public static final Param[] PARAMS = {
 			new Param("name", "The property name", Type.STRING, true),
 			new Param("value", "The property value", Type.STRING),
 			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING,
 					false, "else") };
 
-	String name;
-	String value;
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("The property name")
+	@ActionPropertyType(Type.STRING)
+	private String name;
+
+	@JsonProperty
+	@JsonPropertyDescription("The property value")
+	@ActionPropertyType(Type.STRING)
+	private String value;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -57,7 +68,7 @@ public class IfPropertyAction implements Action {
 		ArrayList<Action> actions = v.getActions();
 
 		// TODO: Handle If to allow nested Ifs
-		while (!(actions.get(ip) instanceof EndAction) || !((EndAction) actions.get(ip)).getType().equals("else"))
+		while (!(actions.get(ip) instanceof EndAction) || !((EndAction) actions.get(ip)).getEndType().equals("else"))
 			ip++;
 
 		v.setIP(ip);
@@ -66,5 +77,10 @@ public class IfPropertyAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
+	}
+
+	@Override
+	public String getEndType() {
+		return ENDTYPE_VALUE;
 	}
 }

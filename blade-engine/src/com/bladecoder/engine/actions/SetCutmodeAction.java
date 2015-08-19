@@ -19,15 +19,16 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Set/Unset the cutmode. Also shows/hide the inventory")
 public class SetCutmodeAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("value", "when 'true' sets the scene in 'cutmode'", Type.BOOLEAN, true, "true")
-		};	
-	
-	boolean value = true;
-	
+	@JsonProperty(required = true, defaultValue = "true")
+	@JsonPropertyDescription("when 'true' sets the scene in 'cutmode'")
+	@ActionPropertyType(Type.BOOLEAN)
+	private boolean value = true;
+
 	@Override
 	public void setParams(HashMap<String, String> params) {	
 		if(params.get("value") != null)
@@ -43,6 +44,6 @@ public class SetCutmodeAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

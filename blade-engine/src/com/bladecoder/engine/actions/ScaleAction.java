@@ -17,32 +17,50 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.badlogic.gdx.math.Interpolation;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.InterpolationUtils;
+import com.bladecoder.engine.util.InterpolationMode;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets an actor Scale animation")
 public class ScaleAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.ACTOR, false),
-		new Param("scale", "The target scale", Type.FLOAT, true),
-		new Param("speed", "Duration of the animation in seconds", Type.FLOAT, true, "1.0"),
-		new Param("count", "The times to repeat", Type.INTEGER),
-		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
-		new Param("repeat", "The repeat mode", Type.STRING, true, "repeat", new String[]{"repeat", "yoyo", "no_repeat"}),
-		new Param("interpolation", "The interpolation mode", Type.OPTION, false, "", InterpolationUtils.NAMES)
-		};		
-	
+	@JsonProperty
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.ACTOR)
 	private String actorId;
-	private float speed;
+
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("The target scale")
+	@ActionPropertyType(Type.FLOAT)
 	private float scale;
-	private int repeat = Tween.NO_REPEAT;
+
+	@JsonProperty(required = true, defaultValue = "1.0")
+	@JsonPropertyDescription("Duration of the animation in seconds")
+	@ActionPropertyType(Type.FLOAT)
+	private float speed;
+
+	@JsonProperty
+	@JsonPropertyDescription("The The times to repeat")
+	@ActionPropertyType(Type.INTEGER)
 	private int count = 1;
+
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("If this param is 'false' the transition is showed and the action continues inmediatly")
+	@ActionPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
-	private String interpolation;
+
+	@JsonProperty(required = true, defaultValue = "REPEAT")
+	@JsonPropertyDescription("The repeat mode")
+	@ActionPropertyType(Type.STRING)
+	private Tween.Type repeat = Tween.Type.REPEAT;
+
+	@JsonProperty
+	@JsonPropertyDescription("The interpolation mode")
+	@ActionPropertyType(Type.OPTION)
+	private InterpolationMode interpolation;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -63,35 +81,23 @@ public class ScaleAction implements Action {
 		
 		if(params.get("repeat") != null) {
 			String repeatStr = params.get("repeat");
-			if (repeatStr.equalsIgnoreCase("repeat")) {
-				repeat = Tween.REPEAT;
-			} else if (repeatStr.equalsIgnoreCase("yoyo")) {
-				repeat = Tween.PINGPONG;
-			} else if (repeatStr.equalsIgnoreCase("no_repeat")) {
-				repeat = Tween.NO_REPEAT;
-			} else {
-				repeat = Tween.FROM_FA;
-			}
+			repeat = Tween.Type.valueOf(repeatStr.trim().toUpperCase());    // FIXME: Check that this is the value being stored
 		}
-		
-		interpolation = params.get("interpolation");
+
+		interpolation = InterpolationMode.valueOf(params.get("interpolation").trim().toUpperCase());
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {				
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
-		
-		Interpolation i = null;
-		if(interpolation != null)
-			i = InterpolationUtils.getInterpolation(interpolation);
-		
-		actor.startScaleAnimation(repeat, count, speed, scale, i, wait?cb:null);
+
+		actor.startScaleAnimation(repeat, count, speed, scale, interpolation, wait?cb:null);
 		
 		return wait;
 	}
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

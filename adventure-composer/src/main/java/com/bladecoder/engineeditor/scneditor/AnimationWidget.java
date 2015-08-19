@@ -88,14 +88,14 @@ public class AnimationWidget extends Widget {
 			if(fa instanceof AtlasAnimationDesc)
 				((AtlasAnimationDesc) fa).regions = null;
 
-			int type = Tween.REPEAT;
+			Tween.Type type = Tween.Type.REPEAT;
 			float speed = 2.0f;
 
 			if (!speedStr.isEmpty())
 				speed = Float.parseFloat(speedStr);
 
 			if (typeStr.equals(XMLConstants.YOYO_VALUE))
-				type = Tween.PINGPONG;
+				type = Tween.Type.YOYO;
 
 			fa.id = id;
 			fa.duration = speed;
@@ -104,7 +104,7 @@ public class AnimationWidget extends Widget {
 			renderer.getAnimations().clear();
 
 			renderer.addAnimation(fa);
-			renderer.startAnimation(fa.id, Tween.FROM_FA, 1, null);
+			renderer.startAnimation(fa.id, Tween.Type.SPRITE_DEFINED, 1, null);
 		}
 	}
 

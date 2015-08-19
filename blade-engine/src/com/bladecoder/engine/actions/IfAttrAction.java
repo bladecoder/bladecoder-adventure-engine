@@ -25,41 +25,55 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
-public class IfAttrAction implements Action {
+public class IfAttrAction implements ControlAction {
+	public static final String ENDTYPE_VALUE = "else";
+
+	public enum ActorAttribute {
+		STATE, VISIBLE
+	}
 	public static final Param[] PARAMS = {
 			new Param("actor", "The actor to check its attribute", Type.SCENE_ACTOR),
 			new Param("attr", "The actor attribute", Type.STRING, true, "state", new String[] { "state", "visible"}),
 			new Param("value", "The attribute value", Type.STRING),
 			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, "else")};
 
-	String attr;
-	String value;
-	String actorId;
-	String sceneId;
+	@JsonProperty("actor")
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.SCENE_ACTOR)
+	private SceneActorRef sceneActorRef;
+
+	@JsonProperty(required = true, defaultValue = "STATE")
+	@JsonPropertyDescription("The actor attribute")
+	@ActionPropertyType(Type.STRING)
+	private ActorAttribute attr;
+
+	@JsonProperty
+	@JsonPropertyDescription("The attribute value")
+	@ActionPropertyType(Type.STRING)
+	private String value;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		attr = params.get("attr");
+		attr = ActorAttribute.valueOf(params.get("attr").trim().toUpperCase());
 		value = params.get("value");
-		
+
 		String[] a = Param.parseString2(params.get("actor"));
-		if(a==null) // Called inside a scene
-			return;
-		
-		sceneId = a[0];
-		actorId = a[1];
+		// If a == null, called inside a scene
+		sceneActorRef = a == null ? new SceneActorRef() : new SceneActorRef(a[0], a[1]);
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		Scene s = (sceneId != null && !sceneId.isEmpty()) ? World.getInstance().getScene(sceneId) : World.getInstance()
-				.getCurrentScene();
+		Scene s = sceneActorRef.getScene();
 
+		final String actorId = sceneActorRef.getActorId();
 		if (actorId == null) {
 			// if called inside a scene verb and no actor is specified, return
-			EngineLogger.error("IfAttrAction::No actor especified");
+			EngineLogger.error(getClass() + ": No actor specified");
 			return false;
 		}
 
@@ -69,12 +83,13 @@ public class IfAttrAction implements Action {
 			a = World.getInstance().getInventory().getItem(actorId);
 		}
 
-		if (attr.equals("state") && a instanceof InteractiveActor) {
+		if (attr.equals(ActorAttribute.STATE) && a instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor)a;
 			if (!((ia.getState() == null && value == null) || (ia.getState() != null && ia.getState().equals(value)))) {
 				gotoElse((VerbRunner) cb);
 			}
-		} if (attr.equals("visible")) {
+		}
+		if (attr.equals(ActorAttribute.VISIBLE)) {
 			boolean val = Boolean.parseBoolean(value);
 			if (val != a.isVisible()) {
 				gotoElse((VerbRunner) cb);
@@ -90,7 +105,7 @@ public class IfAttrAction implements Action {
 		
 		// TODO: Handle If to allow nested Ifs
 		while (!(actions.get(ip) instanceof EndAction)
-				|| !((EndAction) actions.get(ip)).getType().equals("else"))
+				|| !((EndAction) actions.get(ip)).getEndType().equals("else"))
 			ip++;
 
 		v.setIP(ip);		
@@ -99,5 +114,10 @@ public class IfAttrAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
+	}
+
+	@Override
+	public String getEndType() {
+		return ENDTYPE_VALUE;
 	}
 }

@@ -25,20 +25,24 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Drops the inventory actor in the scene.")
 public class DropItemAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("actor", "An actor in the inventory.", Type.STRING, false),
-		new Param("pos", "Position in the scene where de actor is dropped", Type.VECTOR2, false)
-		};	
-	
-	String itemId;
-	Vector2 pos;
-	
+	@JsonProperty
+	@JsonPropertyDescription("An actor in the inventory.")
+	@ActionPropertyType(Type.STRING)
+	private String actor;
+
+	@JsonProperty
+	@JsonPropertyDescription("Position in the scene where de actor is dropped")
+	@ActionPropertyType(Type.VECTOR2)
+	private Vector2 pos;
+
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		itemId = params.get("actor");
+		actor = params.get("actor");
 		pos = Param.parseVector2(params.get("pos"));
 	}
 
@@ -46,25 +50,25 @@ public class DropItemAction implements Action {
 	public boolean run(ActionCallback cb) {
 		float scale =  EngineAssetManager.getInstance().getScale();
 		
-		BaseActor actor = World.getInstance().getInventory().getItem(itemId);
+		BaseActor actor = World.getInstance().getInventory().getItem(this.actor);
 		
 		if(actor==null) {
-			EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", itemId));
+			EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", this.actor));
 			return false;
 		}
 		
-		World.getInstance().getInventory().removeItem(itemId);
+		World.getInstance().getInventory().removeItem(this.actor);
 		
 		World.getInstance().getCurrentScene().addActor(actor);
 		
 		if(pos != null)
-			((SpriteActor)actor).setPosition(pos.x * scale, pos.y * scale);
+			actor.setPosition(pos.x * scale, pos.y * scale);
 		
 		return false;
 	}
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

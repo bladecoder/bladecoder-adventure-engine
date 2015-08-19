@@ -25,23 +25,43 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Walks to the selected position")
 public class GotoAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.ACTOR, false),
-		new Param("pos", "The position to walk to", Type.VECTOR2),
-		new Param("target", "Walks to the target actor position", Type.ACTOR),
-		new Param("anchor", "When selecting a target actor, an anchor can be selected", Type.STRING, false, "", new String[] {"center", "left", "right"}),
-		new Param("distance", "When selecting a target actor, the relative distance to the anchor in each axis", Type.VECTOR2, false),
-		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
-		};	
-	
-	private String actorId;
+	public enum Anchor {
+		CENTER, LEFT, RIGHT
+	}
+
+	@JsonProperty
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.ACTOR)
+	private String actor;
+
+	@JsonProperty
+	@JsonPropertyDescription("The position to walk to")
+	@ActionPropertyType(Type.VECTOR2)
 	private Vector2 pos;
-	private Vector2 anchorDistance;
-	private String targetId;
-	private String anchor;
+
+	@JsonProperty
+	@JsonPropertyDescription("Walks to the target actor position")
+	@ActionPropertyType(Type.ACTOR)
+	private String target;
+
+	@JsonProperty(defaultValue = "CENTER")
+	@JsonPropertyDescription("When selecting a target actor, an anchor can be selected")
+	@ActionPropertyType(Type.STRING)
+	private Anchor anchor;
+
+	@JsonProperty
+	@JsonPropertyDescription("When selecting a target actor, the relative distance to the anchor in each axis")
+	@ActionPropertyType(Type.VECTOR2)
+	private Vector2 distance;
+
+	@JsonProperty(required = true, defaultValue = "true")
+	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+	@ActionPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
 
 	@Override
@@ -49,25 +69,32 @@ public class GotoAction implements Action {
 		
 		float scale = EngineAssetManager.getInstance().getScale();
 		
-		CharacterActor actor = (CharacterActor) World.getInstance().getCurrentScene().getActor(actorId, false);
+		CharacterActor actor = (CharacterActor) World.getInstance().getCurrentScene().getActor(this.actor, false);
 		
-		if(targetId!=null) {
-			BaseActor target =  World.getInstance().getCurrentScene().getActor(targetId, false);
+		if(target !=null) {
+			BaseActor target =  World.getInstance().getCurrentScene().getActor(this.target, false);
 			float x = target.getX();
 			float y = target.getY();
-			
-			if(anchor.equals("left")) {
-				x = x - target.getBBox().getBoundingRectangle().width / 2 - actor.getBBox().getBoundingRectangle().width / 2;
-			} else if(anchor.equals("right")) {
-				x = x + target.getBBox().getBoundingRectangle().width / 2 + actor.getBBox().getBoundingRectangle().width / 2;
-			} else if(anchor.equals("center")) {
-				if(!(target instanceof SpriteActor))
-					x = x + target.getBBox().getBoundingRectangle().width / 2;
+
+			final float targetBBoxWidth2 = target.getBBox().getBoundingRectangle().width / 2;
+			final float actorBBoxWidth2 = actor.getBBox().getBoundingRectangle().width / 2;
+
+			switch (anchor) {
+				case LEFT:
+					x = x - targetBBoxWidth2 - actorBBoxWidth2;
+					break;
+				case RIGHT:
+					x = x + targetBBoxWidth2 + actorBBoxWidth2;
+					break;
+				case CENTER:
+					if(!(target instanceof SpriteActor))
+						x = x + targetBBoxWidth2;
+					break;
 			}
-			
-			x += anchorDistance.x;
-			y += anchorDistance.y;
-			
+
+			x += distance.x;
+			y += distance.y;
+
 			actor.goTo(new Vector2(x, y), wait?cb:null);
 		} else 
 			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), wait?cb:null);
@@ -77,21 +104,21 @@ public class GotoAction implements Action {
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
+		actor = params.get("actor");
 
 		if(params.get("pos") != null) {
 			pos = Param.parseVector2(params.get("pos"));
 		} else if(params.get("target") != null) {
-			targetId = params.get("target") ;
-			anchor = params.get("anchor") ;
+			target = params.get("target") ;
+			anchor = Anchor.valueOf(params.get("anchor").toUpperCase());
 			
 			if(anchor == null)
-				anchor = "center";
+				anchor = Anchor.CENTER;
 			
-			anchorDistance = Param.parseVector2(params.get("distance"));
+			distance = Param.parseVector2(params.get("distance"));
 			
-			if(anchorDistance == null)
-				anchorDistance = new Vector2();
+			if(distance == null)
+				distance = new Vector2();
 		}
 		
 		if(params.get("wait") != null) {
@@ -138,6 +165,6 @@ public class GotoAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

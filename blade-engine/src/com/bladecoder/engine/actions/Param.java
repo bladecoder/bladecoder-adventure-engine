@@ -18,24 +18,26 @@ package com.bladecoder.engine.actions;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import net.jcip.annotations.Immutable;
 
+@Immutable
 public class Param {
 	public enum Type {
 		STRING, BOOLEAN, FLOAT, INTEGER, VECTOR2, VECTOR3, DIMENSION, ACTOR, SCENE, CHAPTER, FILE, OPTION, SCENE_ACTOR, ACTOR_ANIMATION, LAYER, EDITABLE_OPTION,
-		TEXT, SMALL_TEXT, BIG_TEXT
+		TEXT, SMALL_TEXT, BIG_TEXT, COLOR, SOUND
 	};
 	
 	public static final String NUMBER_PARAM_SEPARATOR = ",";
 	public static final String STRING_PARAM_SEPARATOR = "#";
 
-	public String name;
-	public String desc;
-	public Type type;
-	public boolean mandatory;
-	public String defaultValue;
-	public String[] options; // availables values for combos
+	public final String name;
+	public final String desc;
+	public final Type type;
+	public final boolean mandatory;
+	public final String defaultValue;
+	public final Object[] options; // availables values for combos
 
-	public Param(String name, String desc, Type type, boolean mandatory, String defaultValue, String[] options) {
+	public Param(String name, String desc, Type type, boolean mandatory, String defaultValue, Object[] options) {
 		this.name = name;
 		this.desc = desc;
 		this.type = type;

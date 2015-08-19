@@ -23,6 +23,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.AssetConsumer;
 
 public interface ActorRenderer extends Serializable, AssetConsumer {
@@ -36,13 +37,13 @@ public interface ActorRenderer extends Serializable, AssetConsumer {
 	public AnimationDesc getCurrentAnimation();
 	public String getCurrentAnimationId();
 	
-	public void startAnimation(String id, int repeatType,
+	public void startAnimation(String id, Tween.Type repeatType,
 			int count, ActionCallback cb);
 	
-	public void startAnimation(String id, int repeatType,
+	public void startAnimation(String id, Tween.Type repeatType,
 			int count, ActionCallback cb, String direction);
 	
-	public void startAnimation(String id, int repeatType,
+	public void startAnimation(String id, Tween.Type repeatType,
 			int count, ActionCallback cb, Vector2 p0, Vector2 pf);
 	
 	public void addAnimation(AnimationDesc anim);

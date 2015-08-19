@@ -19,16 +19,20 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Load the specified Chapter. Scene can be empty to load the default scene.")
 public class LoadChapterAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("chapter", "The target chapter", Type.CHAPTER, true),
-		new Param("scene", "The target scene", Type.STRING, false)
-		};		
-	
-	String scene;
-	String chapter;
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("The target chapter")
+	@ActionPropertyType(Type.CHAPTER)
+	private String chapter;
+
+	@JsonProperty(required = false)
+	@JsonPropertyDescription("The target scene")
+	@ActionPropertyType(Type.SCENE)
+	private String scene;
 
 	@Override
 	public boolean run(ActionCallback cb) {
@@ -43,10 +47,8 @@ public class LoadChapterAction implements Action {
 		chapter = params.get("chapter");
 	}
 
-
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
-
 }

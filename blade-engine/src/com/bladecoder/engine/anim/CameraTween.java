@@ -34,7 +34,7 @@ public class CameraTween extends Tween {
 	public CameraTween() {
 	}
 
-	public void start( SceneCamera camera, int repeatType, int count, float targetX, float targetY, float targetZoom, float duration, ActionCallback cb) {
+	public void start( SceneCamera camera, Tween.Type repeatType, int count, float targetX, float targetY, float targetZoom, float duration, ActionCallback cb) {
 		
 		Vector2 currentPos = camera.getPosition();
 		

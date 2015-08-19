@@ -22,9 +22,11 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
 
 @ActionDescription("Execute the actions inside the RunOnce/EndRunOnce only once.")
-public class RunOnceAction implements Action {
+public class RunOnceAction implements ControlAction {
+	public static final String ENDTYPE_VALUE = "runonce";
+
 	public static final Param[] PARAMS = {
-			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, "runonce")};
+			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, ENDTYPE_VALUE)};
 
 	boolean executed = false;
 
@@ -41,7 +43,7 @@ public class RunOnceAction implements Action {
 			ArrayList<Action> actions = v.getActions();
 			
 			// TODO: Handle RepeatAction to allow nested Repeats
-			while(!(actions.get(ip) instanceof EndAction) || !((EndAction)actions.get(ip)).getType().equals("runonce")) ip++; 
+			while(!(actions.get(ip) instanceof EndAction) || !((EndAction)actions.get(ip)).getEndType().equals(ENDTYPE_VALUE)) ip++;
 			
 			v.setIP(ip);
 		}
@@ -54,5 +56,10 @@ public class RunOnceAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
+	}
+
+	@Override
+	public String getEndType() {
+		return ENDTYPE_VALUE;
 	}
 }

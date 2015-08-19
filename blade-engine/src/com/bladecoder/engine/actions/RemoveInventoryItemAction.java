@@ -20,14 +20,15 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Remove items from the inventory.")
 public class RemoveInventoryItemAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("id", "The 'actorid' from the inventory item to remove. If empty remove all items.", Type.ACTOR)
-	};		
-	
-	String itemId;
+	@JsonProperty("id")
+	@JsonPropertyDescription("The 'actorid' from the inventory item to remove. If empty remove all items.")
+	@ActionPropertyType(Type.ACTOR)
+	private String itemId;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -50,6 +51,6 @@ public class RemoveInventoryItemAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

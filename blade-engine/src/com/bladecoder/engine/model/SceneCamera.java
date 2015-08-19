@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
-import com.bladecoder.engine.model.SpriteActor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
@@ -135,7 +134,7 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 	public void startAnimation(float destX, float destY, float zoom, float duration, ActionCallback cb) {
 		cameraTween = new CameraTween();
 		
-		cameraTween.start(this, Tween.NO_REPEAT, 1, destX, destY, zoom, duration, cb);
+		cameraTween.start(this, Tween.Type.NO_REPEAT, 1, destX, destY, zoom, duration, cb);
 	}
 
 	public void getInputUnProject(Viewport viewport, Vector3 out) {

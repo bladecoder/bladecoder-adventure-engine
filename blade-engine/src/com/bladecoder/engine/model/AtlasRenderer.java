@@ -160,7 +160,7 @@ public class AtlasRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void startAnimation(String id, int repeatType, int count,
+	public void startAnimation(String id, Tween.Type repeatType, int count,
 			ActionCallback cb) {
 		
 		if(id == null)
@@ -214,7 +214,7 @@ public class AtlasRenderer implements ActorRenderer {
 			return;
 		}
 
-		if (repeatType == Tween.FROM_FA) {
+		if (repeatType == Tween.Type.SPRITE_DEFINED) {
 			repeatType = currentAnimation.animationType;
 			count = currentAnimation.count;
 		}
@@ -222,7 +222,7 @@ public class AtlasRenderer implements ActorRenderer {
 		faTween = new FATween();
 		faTween.start(this, repeatType, count, currentAnimation.duration, cb);
 		
-		if(repeatType == Tween.REVERSE)
+		if(repeatType == Tween.Type.REVERSE)
 			setFrame(getNumFrames() - 1);
 		else
 			setFrame(0);
@@ -349,7 +349,7 @@ public class AtlasRenderer implements ActorRenderer {
 	}
 	
 	@Override
-	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, String direction) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
 		StringBuilder sb = new StringBuilder(id);
 		
 		// if dir==null gets the current animation direction
@@ -375,7 +375,7 @@ public class AtlasRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
 		startAnimation(id, repeatType, count, cb, AnimationDesc.getDirectionString(p0, pf));
 	}
 
@@ -459,7 +459,7 @@ public class AtlasRenderer implements ActorRenderer {
 		if (currentAnimation != null) {		
 			setFrame(currentFrameIndex);
 		} else if(initAnimation != null){
-			startAnimation(initAnimation, Tween.FROM_FA, 1, null);
+			startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
 		}
 		
 		computeBbox();

@@ -22,40 +22,41 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets the actor state")
 public class SetStateAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.SCENE_ACTOR),
-		new Param("state", "The actor 'state'", Type.STRING)
-		};		
-	
-	String actorId;
-	String sceneId;
-	String state;
+	@JsonProperty("actor")
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.SCENE_ACTOR)
+	private SceneActorRef sceneActorRef;
+
+	@JsonProperty
+	@JsonPropertyDescription("The actor 'state'")
+	@ActionPropertyType(Type.STRING)
+	private String state;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		String[] a = Param.parseString2(params.get("actor"));
 		state = params.get("state");
-		
-		if(a==null) // Called inside a scene
-			return;
-		
-		sceneId = a[0];
-		actorId = a[1];
+
+		// If a == null, called inside a scene
+		sceneActorRef = a == null ? new SceneActorRef() : new SceneActorRef(a[0], a[1]);
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {			
-		Scene s = (sceneId != null && !sceneId.isEmpty())? World.getInstance().getScene(sceneId): World.getInstance().getCurrentScene();
-		
-		if(actorId == null) { 
+		final Scene s = sceneActorRef.getScene();
+
+		String actorId = sceneActorRef.getActorId();
+		if (actorId == null) {
 			// if called in a scene verb and no actor is specified, set the state of the scene
 			s.setState(state);
 			return false;
 		}
-		
+
 		InteractiveActor a = (InteractiveActor)s.getActor(actorId, false);
 		
 		if(a == null) { // search in inventory
@@ -73,6 +74,6 @@ public class SetStateAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }
