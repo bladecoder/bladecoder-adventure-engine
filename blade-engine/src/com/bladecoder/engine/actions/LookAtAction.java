@@ -28,27 +28,52 @@ import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Shows the text and sets the player to lookat in the selected actor direction")
 public class LookAtAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.ACTOR, false),
-		new Param("speech", "The 'soundId' to play if selected", Type.STRING),
-		new Param("text", "The 'text' to show", Type.SMALL_TEXT),
-		new Param("direction", "The direction to lookat. If empty, the player lookat to the actor", 
-				Type.STRING, false, "", new String[] {"", 
-				AnimationDesc.FRONT, AnimationDesc.BACK,AnimationDesc.LEFT,
-				AnimationDesc.RIGHT,	AnimationDesc.FRONTLEFT,
-				AnimationDesc.FRONTRIGHT,AnimationDesc.BACKLEFT,
-				AnimationDesc.BACKRIGHT})
-		};			
+	public enum Direction {
+		EMPTY(""),
+		FRONT(AnimationDesc.FRONT),
+		BACK(AnimationDesc.BACK),
+		LEFT(AnimationDesc.LEFT),
+		RIGHT(AnimationDesc.RIGHT),
+		FRONTLEFT(AnimationDesc.FRONTLEFT),
+		FRONTRIGHT(AnimationDesc.FRONTRIGHT),
+		BACKLEFT(AnimationDesc.BACKLEFT),
+		BACKRIGHT(AnimationDesc.BACKRIGHT);
 
+		private final String direction;
+
+		Direction(String direction) {
+			this.direction = direction;
+		}
+
+		public String getDirection() {
+			return direction;
+		}
+	}
+
+	@JsonProperty("actor")
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.ACTOR)
+	private String actorId;
+
+	@JsonProperty("speech")
+	@JsonPropertyDescription("The 'soundId' to play if selected")
+	@ActionPropertyType(Type.SOUND)
 	private String soundId;
+
+	@JsonProperty
+	@JsonPropertyDescription("The 'text' to show")
+	@ActionPropertyType(Type.SMALL_TEXT)
 	private String text;
 
-	private String actorId;
-	
-	private String direction;
+	@JsonProperty
+	@JsonPropertyDescription("The direction to lookat. If empty, the player lookat to the actor")
+	@ActionPropertyType(Type.STRING)
+	private Direction direction;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -56,7 +81,10 @@ public class LookAtAction implements Action {
 
 		soundId = params.get("speech");
 		text = params.get("text");
-		direction = params.get("direction");
+
+		// TODO: Check if EMPTY ("") works correctly
+		final String strDirection = params.get("direction");
+		this.direction = strDirection == null ? null : (strDirection.trim().equals("") ? Direction.EMPTY : Direction.valueOf(strDirection.trim().toUpperCase()));
 	}
 
 	@Override
@@ -67,14 +95,19 @@ public class LookAtAction implements Action {
 
 		CharacterActor player = World.getInstance().getCurrentScene().getPlayer();
 		
-		if(direction!=null) player.lookat(direction);
+		if(direction!=null) player.lookat(direction.getDirection());
 		else if(actor!=null && player != null) {
 			Rectangle bbox = actor.getBBox().getBoundingRectangle();
 			player.lookat(new Vector2(bbox.x, bbox.y));
 		}
 
-		if (soundId != null)
-			actor.playSound(soundId);
+		if (soundId != null) {
+			if (actor == null) {
+				EngineLogger.debug("Tried to play a sound (" + soundId + "), but there is no actor defined");
+			} else {
+				actor.playSound(soundId);
+			}
+		}
 
 		if(text !=null)
 			World.getInstance().getTextManager().addSubtitle(text, TextManager.POS_SUBTITLE,
@@ -86,6 +119,6 @@ public class LookAtAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

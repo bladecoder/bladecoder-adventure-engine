@@ -21,12 +21,20 @@ import java.util.HashMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute only one action inside the Choose/EndChoose block.")
-public class ChooseAction implements Action {
+public class ChooseAction implements ControlAction {
+	public static final String ENDTYPE_VALUE = "choose";
+
 	private static final String ITERATE = "iterate";
 	private static final String RANDOM = "random";
 	private static final String CYCLE = "cycle";
+
+	public enum ChooseCriteria {
+		ITERATE, RANDOM, CYCLE
+	}
 
 	public static final Param[] PARAMS = {
 			new Param("chooseCriteria", "The action to execute will be selected following this criteria.",
@@ -37,13 +45,17 @@ public class ChooseAction implements Action {
 	/** 
 	 * When the verb is a comma separated verb list, we use chooseCriteria as criteria to choose the verb to execute.
 	 */
-	String chooseCriteria;
+	@JsonProperty(required = true, defaultValue = "CYCLE")
+	@JsonPropertyDescription("The action to execute will be selected following this criteria.")
+	@ActionPropertyType(Type.OPTION)
+	private ChooseCriteria chooseCriteria = ChooseCriteria.CYCLE;
+
 	/** Used when choose_criteria is 'iterate' or 'cycle' */
 	int chooseCount = -1;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		chooseCriteria = params.get("chooseCriteria");
+		chooseCriteria = ChooseCriteria.valueOf(params.get("chooseCriteria").toUpperCase());
 	}
 
 	@Override
@@ -56,24 +68,28 @@ public class ChooseAction implements Action {
 		ArrayList<Action> actions = v.getActions();
 
 		while (!(actions.get(ip) instanceof EndAction)
-				|| !((EndAction) actions.get(ip)).getType().equals("choose")) {
+				|| !((EndAction) actions.get(ip)).getEndType().equals("choose")) {
 			ip++;
 			numActions++;
 		}
-		
+
 		if(numActions <= 0)
 			return false;
-		
-		if(chooseCriteria.equals(ITERATE)) {			
-			chooseCount++;
-		} else if(chooseCriteria.equals(RANDOM)) {
-			chooseCount = MathUtils.random(0, numActions - 1);
-		} else if(chooseCriteria.equals(CYCLE)) {
-			chooseCount = (chooseCount + 1) % numActions;
+
+		switch (chooseCriteria) {
+			case ITERATE:
+				chooseCount++;
+				break;
+			case RANDOM:
+				chooseCount = MathUtils.random(0, numActions - 1);
+				break;
+			case CYCLE:
+				chooseCount = (chooseCount + 1) % numActions;
+				break;
 		}
-		
+
 		v.setIP(ip);
-		
+
 		if(chooseCount < numActions) {
 			return v.getActions().get(ip0 + chooseCount).run(v);
 		}
@@ -84,5 +100,10 @@ public class ChooseAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
+	}
+
+	@Override
+	public String getEndType() {
+		return ENDTYPE_VALUE;
 	}
 }

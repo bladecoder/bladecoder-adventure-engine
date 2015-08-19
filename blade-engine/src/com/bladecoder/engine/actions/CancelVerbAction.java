@@ -24,6 +24,8 @@ import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 /**
  * Cancels a running verb.
@@ -32,19 +34,24 @@ import com.bladecoder.engine.util.EngineLogger;
  */
 @ActionDescription("Stops the named verb if it is in execution.")
 public class CancelVerbAction implements Action {
-	public static final Param[] PARAMS = {
-			new Param("actor", "The target actor. Empty for the current actor.", Type.ACTOR, false),
-			new Param("verb", "The verb to stop. Empty for the current verb.", Type.STRING, false),
-			new Param("target", "If the verb is 'use', the target actor",
-					Type.ACTOR) };
+	@JsonProperty
+	@JsonPropertyDescription("The target actor. Empty for the current actor.")
+	@ActionPropertyType(Type.ACTOR)
+	private String actor;
 
-	String actorId;
-	String verb;
-	String target;
+	@JsonProperty
+	@JsonPropertyDescription("The verb to stop. Empty for the current verb.")
+	@ActionPropertyType(Type.STRING)
+	private String verb;
+
+	@JsonProperty
+	@JsonPropertyDescription("If the verb is 'use', the target actor")
+	@ActionPropertyType(Type.ACTOR)
+	private String target;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
+		actor = params.get("actor");
 		verb = params.get("verb");
 		target = params.get("target");
 	}
@@ -58,9 +65,9 @@ public class CancelVerbAction implements Action {
 			v = (VerbRunner)cb;
 		}
 
-		if (v == null && actorId != null) {
+		if (v == null && actor != null) {
 			BaseActor a = World.getInstance().getCurrentScene()
-					.getActor(actorId, true);
+					.getActor(actor, true);
 			v = ((InteractiveActor)a).getVerb(verb, target);
 		}
 
@@ -75,14 +82,14 @@ public class CancelVerbAction implements Action {
 		if (v != null)
 			v.cancel();
 		else
-			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actorId);
+			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actor);
 
 		return false;
 	}
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 
 }

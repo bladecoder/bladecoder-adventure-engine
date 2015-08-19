@@ -17,7 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
@@ -25,31 +24,55 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.InterpolationUtils;
+import com.bladecoder.engine.util.InterpolationMode;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets an actor Position animation")
 public class PositionAction implements Action {
-	public static final Param[] PARAMS = {
-			new Param("actor", "The target actor", Type.ACTOR, false),
-			new Param("pos", "The target position", Type.VECTOR2, true),
-			new Param("speed", "Duration or speed of the animation", Type.FLOAT, true, "1.0"),
-			new Param("mode", "Duration or speed in pixels/sec. mode", Type.OPTION, false, "", new String[] {
-					"duration", "speed" }),
-			new Param("count", "The times to repeat", Type.INTEGER),
-			new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly",
-					Type.BOOLEAN, true),
-			new Param("repeat", "The repeat mode", Type.OPTION, true, "no_repeat", new String[] { "repeat", "yoyo",
-					"no_repeat" }),
-			new Param("interpolation", "The interpolation mode", Type.OPTION, false, "", InterpolationUtils.NAMES) };
+	public enum Mode {
+		DURATION, SPEED
+	}
 
+	@JsonProperty("actor")
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.ACTOR)
 	private String actorId;
-	private String mode;
-	private float speed;
+
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("The target position")
+	@ActionPropertyType(Type.VECTOR2)
 	private Vector2 pos;
-	private int repeat = Tween.NO_REPEAT;
+
+	@JsonProperty(required = true, defaultValue = "1.0")
+	@JsonPropertyDescription("Duration or speed in pixels/sec. mode")
+	@ActionPropertyType(Type.FLOAT)
+	private float speed;
+
+	@JsonProperty
+	@JsonPropertyDescription("Duration or speed of the animation")
+	@ActionPropertyType(Type.OPTION)
+	private Mode mode;
+
+	@JsonProperty
+	@JsonPropertyDescription("The times to repeat")
+	@ActionPropertyType(Type.INTEGER)
 	private int count = 1;
+
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+	@ActionPropertyType(Param.Type.BOOLEAN)
 	private boolean wait = true;
-	private String interpolation;
+
+	@JsonProperty(required = true, defaultValue = "NO_REPEAT")
+	@JsonPropertyDescription("The repeat mode")
+	@ActionPropertyType(Param.Type.BOOLEAN)
+	private Tween.Type repeat = Tween.Type.NO_REPEAT;   // FIXME: This adds more types not present here before
+
+	@JsonProperty
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.OPTION)
+	private InterpolationMode interpolation;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -65,7 +88,7 @@ public class PositionAction implements Action {
 			count = Integer.parseInt(params.get("count"));
 		}
 
-		mode = params.get("mode");
+		mode = Mode.valueOf(params.get("mode").trim().toUpperCase());
 
 		if (params.get("wait") != null) {
 			wait = Boolean.parseBoolean(params.get("wait"));
@@ -73,18 +96,10 @@ public class PositionAction implements Action {
 
 		if (params.get("repeat") != null) {
 			String repeatStr = params.get("repeat");
-			if (repeatStr.equalsIgnoreCase("repeat")) {
-				repeat = Tween.REPEAT;
-			} else if (repeatStr.equalsIgnoreCase("yoyo")) {
-				repeat = Tween.PINGPONG;
-			} else if (repeatStr.equalsIgnoreCase("no_repeat")) {
-				repeat = Tween.NO_REPEAT;
-			} else {
-				repeat = Tween.FROM_FA;
-			}
+			repeat = Tween.Type.valueOf(repeatStr.trim().toUpperCase());
 		}
-		
-		interpolation = params.get("interpolation");	
+
+		interpolation = InterpolationMode.valueOf(params.get("interpolation").trim().toUpperCase());
 	}
 
 	@Override
@@ -109,13 +124,9 @@ public class PositionAction implements Action {
 			} else {
 				s = speed;
 			}
-			
-			Interpolation i = null;
-			if(interpolation != null)
-				i = InterpolationUtils.getInterpolation(interpolation);
 
 			((SpriteActor) actor)
-					.startPosAnimation(repeat, count, s, pos.x * scale, pos.y * scale, i, wait ? cb : null);
+					.startPosAnimation(repeat, count, s, pos.x * scale, pos.y * scale, interpolation, wait ? cb : null);
 		}
 
 		return wait;
@@ -123,6 +134,6 @@ public class PositionAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

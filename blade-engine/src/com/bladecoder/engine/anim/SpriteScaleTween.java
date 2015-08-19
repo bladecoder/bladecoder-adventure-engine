@@ -15,12 +15,11 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
-import com.bladecoder.engine.anim.Tween;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.util.InterpolationMode;
 
 /**
  * Tween for spriteactor scale animation
@@ -33,7 +32,7 @@ public class SpriteScaleTween extends Tween {
 	public SpriteScaleTween() {
 	}
 
-	public void start(SpriteActor target, int repeatType, int count, float tScl, float duration, Interpolation interpolation, ActionCallback cb) {
+	public void start(SpriteActor target, Type repeatType, int count, float tScl, float duration, InterpolationMode interpolation, ActionCallback cb) {
 		
 		startScl = target.getScale();
 		targetScl = tScl;

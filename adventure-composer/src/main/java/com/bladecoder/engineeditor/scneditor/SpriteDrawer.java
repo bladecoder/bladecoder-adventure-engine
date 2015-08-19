@@ -85,7 +85,7 @@ public class SpriteDrawer {
 
 				renderer.retrieveAssets();
 
-				renderer.startAnimation(fa.id, Tween.REPEAT, Tween.INFINITY, null);
+				renderer.startAnimation(fa.id, Tween.Type.REPEAT, Tween.INFINITY, null);
 			}
 		}
 	}

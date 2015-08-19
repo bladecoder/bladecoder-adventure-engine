@@ -434,11 +434,11 @@ public class ChapterDocument extends BaseDocument {
 
 		if (faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).isEmpty()
 				|| faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).equalsIgnoreCase(XMLConstants.REPEAT_VALUE)) {
-			fa.animationType = Tween.REPEAT;
+			fa.animationType = Tween.Type.REPEAT;
 		} else if (faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).equalsIgnoreCase(XMLConstants.YOYO_VALUE)) {
-			fa.animationType = Tween.PINGPONG;
+			fa.animationType = Tween.Type.YOYO;
 		} else {
-			fa.animationType = Tween.NO_REPEAT;
+			fa.animationType = Tween.Type.NO_REPEAT;
 		}
 
 		if (!faElement.getAttribute(XMLConstants.SPEED_ATTR).isEmpty())

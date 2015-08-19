@@ -20,15 +20,23 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Repeats the actions inside the Repeat/EndRepeat actions.")
-public class RepeatAction implements Action {
+public class RepeatAction implements ControlAction {
+	public static final String ENDTYPE_VALUE = "repeat";
+
 	public static final Param[] PARAMS = {
 			new Param("repeat", "Repeat the actions the specified times. -1 to infinity",
 					Type.INTEGER, true, "1"),
-			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, "repeat")};
+			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, ENDTYPE_VALUE)};
 
-	int repeat = 1;
+	@JsonProperty(required = true, defaultValue = "1")
+	@JsonPropertyDescription("Repeat the actions the specified times. -1 to infinity")
+	@ActionPropertyType(Type.INTEGER)
+	private int repeat = 1;
+
 	int currentRepeat = 0;
 
 	@Override
@@ -47,7 +55,7 @@ public class RepeatAction implements Action {
 			ArrayList<Action> actions = v.getActions();
 			
 			// TODO: Handle RepeatAction to allow nested Repeats
-			while(!(actions.get(ip) instanceof EndAction) || !((EndAction)actions.get(ip)).getType().equals("repeat")) ip++; 
+			while(!(actions.get(ip) instanceof EndAction) || !((EndAction)actions.get(ip)).getEndType().equals(ENDTYPE_VALUE)) ip++;
 			
 			v.setIP(ip);
 			currentRepeat = 0;
@@ -59,5 +67,10 @@ public class RepeatAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
+	}
+
+	@Override
+	public String getEndType() {
+		return ENDTYPE_VALUE;
 	}
 }

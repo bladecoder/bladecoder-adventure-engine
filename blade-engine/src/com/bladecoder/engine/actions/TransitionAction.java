@@ -21,21 +21,31 @@ import com.badlogic.gdx.graphics.Color;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets a transition effect (FADEIN/FADEOUT)")
 public class TransitionAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("time", "Duration of the transition", Type.FLOAT, true, "1.0"),
-		new Param("color", "The color to fade ('white', 'black' or RRGGBBAA).", Type.STRING, true, "black"),
-		new Param("type", "The transition type (fadein/fadeout)", Type.STRING, true, "fadein", new String[] {"fadein", "fadeout"}),
-		new Param("wait", "If this param is 'false' the transition is showed and the action continues inmediatly", Type.BOOLEAN, true),
-		};		
-	
+	@JsonProperty(required = true, defaultValue = "1.0")
+	@JsonPropertyDescription("Duration of the transition")
+	@ActionPropertyType(Type.FLOAT)
 	private float time = 1;
-	Color c = new Color(0,0,0,1);
-	Transition.Type type = Transition.Type.FADE_IN;
+
+	@JsonProperty(value = "color", required = true, defaultValue = "black")
+	@JsonPropertyDescription("The color to fade ('white', 'black' or RRGGBBAA).")
+	@ActionPropertyType(Type.COLOR)
+	private Color c = new Color(0,0,0,1);
+
+	@JsonProperty(required = true, defaultValue = "FADE_IN")
+	@JsonPropertyDescription("The transition type (fadein/fadeout)")
+	@ActionPropertyType(Type.STRING)
+	private Transition.Type type = Transition.Type.FADE_IN;     // FIXME: This adds NONE as a valid value
+
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("If this param is 'false' the transition is showed and the action continues inmediatly")
+	@ActionPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
-	
+
 	@Override
 	public boolean run(ActionCallback cb) {
 		Transition t = World.getInstance().getTransition();
@@ -74,6 +84,6 @@ public class TransitionAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

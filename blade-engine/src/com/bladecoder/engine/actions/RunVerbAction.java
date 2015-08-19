@@ -29,21 +29,28 @@ import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Runs an actor verb")
 public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
-	public static final Param[] PARAMS = {
-			new Param("actor", "The target actor", Type.ACTOR, false),
-			new Param("verb", "The 'verbId' to run.", Type.STRING, true),
-			new Param("target", "Aditional actor for 'use' verb", Type.ACTOR),
-			new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly",
-					Type.BOOLEAN, true) };
+	@JsonProperty("actor")
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.ACTOR)
+	private String actorId;
 
-	String actorId;
-	String verb;
-	String target;
-	String state;
-	int ip = -1;;
+	@JsonProperty(value = "actor", required = true)
+	@JsonPropertyDescription("The 'verbId' to run")
+	@ActionPropertyType(Type.STRING)
+	private String verb;
+
+	@JsonProperty
+	@JsonPropertyDescription("Aditional actor for 'use' verb")
+	@ActionPropertyType(Type.STRING)
+	private String target;
+
+	private String state;
+	private int ip = -1;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -197,6 +204,6 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

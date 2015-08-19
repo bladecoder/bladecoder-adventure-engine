@@ -475,7 +475,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 		float speed = 1f;
 		float delay = 0f;
-		int animationType;
+		Tween.Type animationType;
 		int count = Tween.INFINITY;
 		Vector2 inD = null, outD = null;
 		boolean preload = true;
@@ -528,13 +528,13 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 		if (animationTypestr == null || animationTypestr.isEmpty()
 				|| animationTypestr.equalsIgnoreCase(XMLConstants.REPEAT_VALUE)) {
-			animationType = Tween.REPEAT;
+			animationType = Tween.Type.REPEAT;
 		} else if (animationTypestr.equalsIgnoreCase(XMLConstants.REVERSE_VALUE)) {
-			animationType = Tween.REVERSE;
+			animationType = Tween.Type.REVERSE;
 		} else if (animationTypestr.equalsIgnoreCase(XMLConstants.YOYO_VALUE)) {
-			animationType = Tween.PINGPONG;
+			animationType = Tween.Type.YOYO;
 		} else {
-			animationType = Tween.NO_REPEAT;
+			animationType = Tween.Type.NO_REPEAT;
 		}
 
 		AnimationDesc sa = null;

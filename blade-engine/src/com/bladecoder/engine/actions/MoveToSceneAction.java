@@ -23,42 +23,43 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Move the actor to the selected scene")
 public class MoveToSceneAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("actor", "The selected actor", Type.SCENE_ACTOR),
-		new Param("scene", "The target scene", Type.SCENE)
-		};		
-	
-	String actorId;
-	String sceneId;
-	String targetSceneId;
-	
+	@JsonProperty("actor")
+	@JsonPropertyDescription("The selected actor")
+	@ActionPropertyType(Type.SCENE_ACTOR)
+	private SceneActorRef sceneActorRef;
+
+	@JsonProperty("scene")
+	@JsonPropertyDescription("The target scene")
+	@ActionPropertyType(Type.SCENE)
+	private String targetSceneId;
+
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		String[] a = Param.parseString2(params.get("actor"));
 		targetSceneId = params.get("scene");
-		
-		if(a==null) // Called inside a scene
-			return;
-		
-		sceneId = a[0];
-		actorId = a[1];
+
+		// If a == null, called inside a scene
+		sceneActorRef = a == null ? new SceneActorRef() : new SceneActorRef(a[0], a[1]);
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {			
-		Scene s = (sceneId != null && !sceneId.isEmpty())? World.getInstance().getScene(sceneId): World.getInstance().getCurrentScene();
-		
-		if(actorId == null) { 
+		Scene s = sceneActorRef.getScene();
+
+		final String actorId = sceneActorRef.getActorId();
+		if (actorId == null) {
 			// if called in a scene verb and no actor is specified, we do nothing
-			EngineLogger.error("No actor selected.");
+			EngineLogger.error(getClass() + ": No actor specified");
 			return false;
 		}
-		
+
 		InteractiveActor a = (InteractiveActor)s.getActor(actorId, false);
-		
+
 		s.removeActor(a);
 		if(s == World.getInstance().getCurrentScene())
 			a.dispose();
@@ -79,6 +80,6 @@ public class MoveToSceneAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

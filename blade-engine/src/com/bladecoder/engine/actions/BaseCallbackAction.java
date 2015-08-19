@@ -15,19 +15,22 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 public abstract class BaseCallbackAction implements Action, ActionCallback, Serializable {	
 	private ActionCallback verbCb;
 	private String verbCbSer;
-	private boolean wait = true;	
-	
+
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+	@ActionPropertyType(Param.Type.BOOLEAN)
+	private boolean wait = true;
+
 	@Override
 	public void resume() {
 		if(verbCb != null || verbCbSer != null) {

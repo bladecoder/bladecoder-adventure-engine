@@ -75,7 +75,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 	private AnimationDesc currentAnimation;
 	private int currentCount;
-	private int currentAnimationType;
+	private Tween.Type currentAnimationType;
 
 	private TextureRegion tex;
 
@@ -340,7 +340,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 	// }
 
 	@Override
-	public void startAnimation(String id, int repeatType, int count,
+	public void startAnimation(String id, Tween.Type repeatType, int count,
 			ActionCallback cb) {
 		AnimationDesc fa = fanims.get(id);
 
@@ -375,7 +375,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 			}
 		}
 
-		if (repeatType == Tween.FROM_FA) {
+		if (repeatType == Tween.Type.SPRITE_DEFINED) {
 			currentAnimationType = currentAnimation.animationType;
 			currentCount = currentAnimation.count;
 		} else {
@@ -386,8 +386,8 @@ public class Sprite3DRenderer implements ActorRenderer {
 		lastAnimationTime = 0;
 		float speed = currentAnimation.duration;
 
-		if (currentAnimationType == Tween.REVERSE
-				|| currentAnimationType == Tween.REVERSE_REPEAT)
+		if (currentAnimationType == Tween.Type.REVERSE
+				|| currentAnimationType == Tween.Type.REVERSE_REPEAT)
 			speed *= -1;
 
 		if (currentSource.modelInstance.getAnimation(id) != null) {
@@ -429,14 +429,14 @@ public class Sprite3DRenderer implements ActorRenderer {
 	}
 	
 	@Override
-	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, String direction) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
 		lookat(direction);
 		
 		startAnimation(id, repeatType, count, null);
 	}
 
 	@Override
-	public void startAnimation(String id, int repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
 		Vector2 tmp = new Vector2(pf);
 		float angle = tmp.sub(p0).angle() + 90;
 		lookat(angle);
@@ -730,8 +730,8 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 			float speed = currentAnimation.duration;
 
-			if (currentAnimationType == Tween.REVERSE
-					|| currentAnimationType == Tween.REVERSE_REPEAT)
+			if (currentAnimationType == Tween.Type.REVERSE
+					|| currentAnimationType == Tween.Type.REVERSE_REPEAT)
 				speed *= -1;
 			
 			currentSource.controller.setAnimation(currentAnimation.id, currentCount, speed, animationListener);
@@ -739,7 +739,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 			update(lastAnimationTime);
 
 		} else if (initAnimation != null) {
-			startAnimation(initAnimation, Tween.FROM_FA, 1, null);
+			startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
 
 			if (currentAnimation != null)
 				lookat(modelRotation);
@@ -825,7 +825,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 					animationCb == null ? null : String.class);
 
 		json.writeValue("currentCount", currentCount);
-		json.writeValue("currentAnimationType", currentAnimationType);
+		json.writeValue("currentAnimationType", currentAnimationType.getTweenId());
 		json.writeValue("renderShadow", renderShadow);
 		json.writeValue("lastAnimationTime", lastAnimationTime);
 
@@ -859,8 +859,8 @@ public class Sprite3DRenderer implements ActorRenderer {
 		animationCbSer = json.readValue("animationCb", String.class, jsonData);
 
 		currentCount = json.readValue("currentCount", Integer.class, jsonData);
-		currentAnimationType = json.readValue("currentAnimationType",
-				Integer.class, jsonData);
+		currentAnimationType = Tween.Type.fromTweenId(json.readValue("currentAnimationType",
+				Integer.class, jsonData));
 		renderShadow = json.readValue("renderShadow", Boolean.class, jsonData);
 		lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 	}

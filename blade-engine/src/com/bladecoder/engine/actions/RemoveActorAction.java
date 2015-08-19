@@ -22,34 +22,28 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Deletes an actor from the game")
 public class RemoveActorAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("actor", "The actor to remove", Type.SCENE_ACTOR)
-		};		
-	
-	String actorId;
-	String sceneId;
+	@JsonProperty("actor")
+	@JsonPropertyDescription("The actor to remove")
+	@ActionPropertyType(Type.SCENE_ACTOR)
+	private SceneActorRef sceneActorRef;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		String[] a = Param.parseString2(params.get("actor"));
-		
-		sceneId = a[0];
-		actorId = a[1];
+
+		sceneActorRef = new SceneActorRef(a[0], a[1]);
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {		
-		Scene s;
-		
-		if(sceneId != null) {
-			s = World.getInstance().getScene(sceneId);
-		} else {
-			s = World.getInstance().getCurrentScene();
-		}
-		
+		final Scene s = sceneActorRef.getScene();
+
+		final String actorId = sceneActorRef.getActorId();
 		InteractiveActor a = (InteractiveActor)s.getActor(actorId, false);
 		
 		if(a == null) { // search in inventory
@@ -72,6 +66,6 @@ public class RemoveActorAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

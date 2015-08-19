@@ -15,11 +15,11 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.util.InterpolationMode;
 
 /**
  * Tween for spriteactor position animation
@@ -34,7 +34,7 @@ public class SpritePosTween extends Tween {
 	public SpritePosTween() {
 	}
 
-	public void start(SpriteActor target, int repeatType, int count, float tx, float ty, float duration, Interpolation interpolation, ActionCallback cb) {
+	public void start(SpriteActor target, Tween.Type repeatType, int count, float tx, float ty, float duration, InterpolationMode interpolation, ActionCallback cb) {
 		
 		startX = target.getX();
 		startY = target.getY();

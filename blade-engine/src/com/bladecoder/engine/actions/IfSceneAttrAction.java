@@ -22,22 +22,41 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
-public class IfSceneAttrAction implements Action {
+public class IfSceneAttrAction implements ControlAction {
+	public static final String ENDTYPE_VALUE = "else";
+
+	public enum SceneAttr {
+		STATE
+	}
+
 	public static final Param[] PARAMS = {
 			new Param("scene", "The scene to check its attribute", Type.SCENE),
 			new Param("attr", "The scene attribute", Type.STRING, true, "state", new String[] { "state" }),
 			new Param("value", "The attribute value", Type.STRING),
-			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, "else")};
+			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, ENDTYPE_VALUE)};
 
-	String attr;
-	String value;
-	String sceneId;
+	@JsonProperty
+	@JsonPropertyDescription("The scene to check its attribute")
+	@ActionPropertyType(Type.SCENE)
+	private String sceneId;
+
+	@JsonProperty(required = true, defaultValue = "state")
+	@JsonPropertyDescription("The scene attribute")
+	@ActionPropertyType(Type.STRING)
+	private SceneAttr attr;
+
+	@JsonProperty
+	@JsonPropertyDescription("The attribute value")
+	@ActionPropertyType(Type.STRING)
+	private String value;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		attr = params.get("attr");
+		attr = SceneAttr.valueOf(params.get("attr").trim().toUpperCase());
 		value = params.get("value");
 		sceneId = params.get("scene");
 	}
@@ -47,7 +66,7 @@ public class IfSceneAttrAction implements Action {
 		Scene s = (sceneId != null && !sceneId.isEmpty()) ? World.getInstance().getScene(sceneId) : World.getInstance()
 				.getCurrentScene();
 
-		if (attr.equals("state")) {
+		if (attr == SceneAttr.STATE) {
 			if (!((s.getState() == null && value == null) || (s.getState() != null && s.getState().equals(value)))) {
 				gotoElse((VerbRunner) cb);
 			}
@@ -62,7 +81,7 @@ public class IfSceneAttrAction implements Action {
 		
 		// TODO: Handle If to allow nested Ifs
 		while (!(actions.get(ip) instanceof EndAction)
-				|| !((EndAction) actions.get(ip)).getType().equals("else"))
+				|| !((EndAction) actions.get(ip)).getEndType().equals(ENDTYPE_VALUE))
 			ip++;
 
 		v.setIP(ip);		
@@ -71,5 +90,10 @@ public class IfSceneAttrAction implements Action {
 	@Override
 	public Param[] getParams() {
 		return PARAMS;
+	}
+
+	@Override
+	public String getEndType() {
+		return ENDTYPE_VALUE;
 	}
 }

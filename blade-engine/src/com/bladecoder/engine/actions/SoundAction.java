@@ -20,18 +20,25 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Play/Stop a sound")
 public class SoundAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.ACTOR, false),
-		new Param("play", "The 'soundId' to play", Type.STRING),
-		new Param("stop", "The 'soundId' to stop", Type.STRING)
-		};		
-	
-	String actorId;
-	String play;
-	String stop;
+	@JsonProperty("actor")
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.ACTOR)
+	private String actorId;
+
+	@JsonProperty
+	@JsonPropertyDescription("The 'soundId' to play")
+	@ActionPropertyType(Type.SOUND)
+	private String play;
+
+	@JsonProperty
+	@JsonPropertyDescription("The 'soundId' to stop")
+	@ActionPropertyType(Type.SOUND)
+	private String stop;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -55,6 +62,6 @@ public class SoundAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

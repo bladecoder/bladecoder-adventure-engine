@@ -94,28 +94,28 @@ public class CharacterActor extends SpriteActor {
 	}
 
 	public void lookat(Vector2 p) {		
-		renderer.startAnimation(standAnim, Tween.FROM_FA,-1, null, new Vector2(bbox.getX(), bbox.getY()), p);
+		renderer.startAnimation(standAnim, Tween.Type.SPRITE_DEFINED,-1, null, new Vector2(bbox.getX(), bbox.getY()), p);
 		
 		posTween = null;
 	}
 
 	public void lookat(String direction) {
-		renderer.startAnimation(standAnim, Tween.FROM_FA,-1, null, direction);
+		renderer.startAnimation(standAnim, Tween.Type.SPRITE_DEFINED,-1, null, direction);
 		posTween = null;
 	}
 
 	public void stand() {
-		renderer.startAnimation(standAnim, Tween.FROM_FA,-1, null, null);
+		renderer.startAnimation(standAnim, Tween.Type.SPRITE_DEFINED,-1, null, null);
 		posTween = null;
 	}
 	
 	public void talk() {
-		renderer.startAnimation(talkAnim, Tween.FROM_FA,-1, null, null);
+		renderer.startAnimation(talkAnim, Tween.Type.SPRITE_DEFINED,-1, null, null);
 		posTween = null;
 	}
 
 	public void startWalkAnim(Vector2 p0, Vector2 pf) {
-		renderer.startAnimation(walkAnim, Tween.FROM_FA,-1, null, p0, pf);
+		renderer.startAnimation(walkAnim, Tween.Type.SPRITE_DEFINED,-1, null, p0, pf);
 	}
 
 	/**

@@ -29,7 +29,6 @@ public class Vector2InputPanel extends InputPanel {
 	
 	Vector2InputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
 		dimPanel = new Table(skin);
-		init(skin, title, desc, dimPanel, mandatory, defaultValue);
 		x = new TextField("", skin);
 		y = new TextField("", skin);
 
@@ -37,6 +36,8 @@ public class Vector2InputPanel extends InputPanel {
 		dimPanel.add(x);
 		dimPanel.add(new Label("  y ", skin));
 		dimPanel.add(y);
+
+		init(skin, title, desc, dimPanel, mandatory, defaultValue);
 	}
 
 	public String getText() {

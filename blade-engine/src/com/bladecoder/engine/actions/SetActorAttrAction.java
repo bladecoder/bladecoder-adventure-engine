@@ -28,76 +28,113 @@ import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
+import javax.annotation.Nullable;
 
 @ActionDescription("Change actor attributes.")
 public class SetActorAttrAction implements Action {
-	public static final Param[] PARAMS = { new Param("actor", "The target actor", Type.SCENE_ACTOR, false),
-			new Param("visible", "sets the actor visibility", Type.BOOLEAN),
-			new Param("interaction", "when 'true' the actor responds to the user input", Type.BOOLEAN),
-			new Param("layer", "The actor layer", Type.LAYER),
-			new Param("zIndex", "The order to draw bigger is near", Type.FLOAT),
-			new Param("position", "Sets the actor position", Type.VECTOR2),
-			new Param("scale", "Sets the actor scale", Type.FLOAT),
-			new Param("standAnimation", "Sets the actor 'stand' animation. Only supported for character actors.", Type.STRING),
-			new Param("walkAnimation", "Sets the actor 'walk' animation. Only supported for character actors.", Type.STRING),
-			new Param("talkAnimation", "Sets the actor 'talk' animation. Only supported for character actors.", Type.STRING),
-			new Param("walkingSpeed", "Sets the actor speed for walking. Only supported for character actors.", Type.STRING),
-			};
+	@JsonProperty(value = "actor", required = true)
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.SCENE_ACTOR)
+	private SceneActorRef sceneActorRef;
 
-	String actorId;
-	String sceneId;
-	String visible;
-	String interaction;
-	String layer;
-	String zIndex;
+	@JsonProperty
+	@JsonPropertyDescription("Sets the actor visibility")
+	@ActionPropertyType(Type.BOOLEAN)
+	private Boolean visible;
 
-	String position;
-	String scale;
-	
-	String standAnimation;
-	String walkAnimation;
-	String talkAnimation;
-	String walkingSpeed;
+	@JsonProperty
+	@JsonPropertyDescription("When 'true' the actor responds to the user input")
+	@ActionPropertyType(Type.BOOLEAN)
+	private Boolean interaction;
+
+	@JsonProperty
+	@JsonPropertyDescription("The actor layer")
+	@ActionPropertyType(Type.LAYER)
+	private String layer;
+
+	@JsonProperty
+	@JsonPropertyDescription("The order to draw bigger is near")
+	@ActionPropertyType(Type.FLOAT)
+	private Float zIndex;
+
+	@JsonProperty
+	@JsonPropertyDescription("Sets the actor position")
+	@ActionPropertyType(Type.VECTOR2)
+	private Vector2 position;
+
+	@JsonProperty
+	@JsonPropertyDescription("Sets the actor scale")
+	@ActionPropertyType(Type.FLOAT)
+	private Float scale;
+
+
+	@JsonProperty
+	@JsonPropertyDescription("Sets the actor 'stand' animation. Only supported for character actors.")
+	@ActionPropertyType(Type.STRING)
+	private String standAnimation;
+	@JsonProperty
+	@JsonPropertyDescription("Sets the actor 'walk' animation. Only supported for character actors.")
+	@ActionPropertyType(Type.STRING)
+	private String walkAnimation;
+	@JsonProperty
+	@JsonPropertyDescription("Sets the actor 'talk' animation. Only supported for character actors.")
+	@ActionPropertyType(Type.STRING)
+	private String talkAnimation;
+	@JsonProperty
+	@JsonPropertyDescription("Sets the actor speed for walking. Only supported for character actors.")
+	@ActionPropertyType(Type.FLOAT)
+	private Float walkingSpeed;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		String[] a = Param.parseString2(params.get("actor"));
 
-		sceneId = a[0];
-		actorId = a[1];
+		sceneActorRef = a == null ? new SceneActorRef() : new SceneActorRef(a[0], a[1]);
 
-		visible = params.get("visible");
-		interaction = params.get("interaction");
+		visible = booleanOrNull(params.get("visible"));
+		interaction = booleanOrNull(params.get("interaction"));
 		layer = params.get("layer");
-		zIndex = params.get("zIndex");
+		zIndex = floatOrNull(params.get("zIndex"));
 
-		position = params.get("position");
-		scale = params.get("scale");
+		position = vector2OrNull(params.get("position"));
+		scale = floatOrNull(params.get("scale"));
 		
 		standAnimation = params.get("standAnimation");
 		walkAnimation = params.get("walkAnimation");
 		talkAnimation = params.get("talkAnimation");
-		walkingSpeed = params.get("walkingSpeed");
+		walkingSpeed = floatOrNull(params.get("walkingSpeed"));
+	}
+
+	@Nullable
+	private static Vector2 vector2OrNull(String str) {
+		return str != null ? Param.parseVector2(str) : null;
+	}
+
+	@Nullable
+	private static Boolean booleanOrNull(String str) {
+		return str != null ? Boolean.parseBoolean(str) : null;
+	}
+
+	@Nullable
+	private static Float floatOrNull(String str) {
+		return str != null ? Float.parseFloat(str) : null;
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		Scene s;
+		Scene s = sceneActorRef.getScene();
 
-		if (sceneId != null && !sceneId.isEmpty()) {
-			s = World.getInstance().getScene(sceneId);
-		} else {
-			s = World.getInstance().getCurrentScene();
-		}
-
-		BaseActor actor = s.getActor(actorId, true);
+		BaseActor actor = s.getActor(sceneActorRef.getActorId(), true);
 
 		if (visible != null)
-			actor.setVisible(Boolean.parseBoolean(visible));
+			actor.setVisible(visible);
 
 		if (interaction != null) {
 			if (actor instanceof InteractiveActor)
-				((InteractiveActor) actor).setInteraction(Boolean.parseBoolean(interaction));
+				((InteractiveActor) actor).setInteraction(interaction);
 			else
 				EngineLogger.error("Interaction property not supported for actor:" + actor.getId());
 		}
@@ -118,7 +155,7 @@ public class SetActorAttrAction implements Action {
 
 		if (zIndex != null) {
 			if (actor instanceof InteractiveActor) {
-				((InteractiveActor) actor).setZIndex(Float.parseFloat(zIndex));
+				((InteractiveActor) actor).setZIndex(zIndex);
 				SceneLayer l = s.getLayer(actor.getLayer());
 
 				if (!l.isDynamic())
@@ -130,13 +167,12 @@ public class SetActorAttrAction implements Action {
 		if (position != null) {
 			float scale = EngineAssetManager.getInstance().getScale();
 
-			Vector2 pos = Param.parseVector2(position);
-			actor.setPosition(pos.x * scale, pos.y * scale);
+			actor.setPosition(position.x * scale, position.y * scale);
 		}
 
 		if (scale != null) {
 			if (actor instanceof SpriteActor)
-				((SpriteActor) actor).setScale(Float.parseFloat(scale));
+				((SpriteActor) actor).setScale(scale);
 			else
 				EngineLogger.error("scale property not supported for actor:" + actor.getId());
 		}
@@ -164,7 +200,7 @@ public class SetActorAttrAction implements Action {
 		
 		if (walkingSpeed != null) {
 			if (actor instanceof CharacterActor)
-				((CharacterActor) actor).setWalkingSpeed(Float.parseFloat(scale));
+				((CharacterActor) actor).setWalkingSpeed(walkingSpeed);
 			else
 				EngineLogger.error("walkingSpeed property not supported for actor:" + actor.getId());
 		}
@@ -174,6 +210,6 @@ public class SetActorAttrAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

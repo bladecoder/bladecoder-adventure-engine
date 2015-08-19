@@ -25,29 +25,48 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets the animation for an actor")
 public class AnimationAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("animation", "The Animation to set", Type.ACTOR_ANIMATION, true),
-		new Param("count", "The times to repeat. -1 to infinity repeat", Type.INTEGER),
-		new Param("wait", "If this param is 'false' the text is showed and the action continues inmediatly", Type.BOOLEAN, true),
-		new Param("animation_type", "The repeat mode", Type.STRING, true, "sprite defined", new String[]{"repeat", "yoyo", "no_repeat", "reverse", "sprite defined"}),
-		new Param("pos", "Puts actor position after setting the animation", Type.VECTOR2, false),
-		new Param("absolute", "Sets the position absolute or relative", Type.BOOLEAN, false)
-		};
-
 	private static final int NO_POS = 0;
 	private static final int SET_POS_ABSOLUTE = 1;
 	private static final int SET_POS_RELATIVE = 2;
 
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("The Animation to set")
+	@ActionPropertyType(Type.ACTOR_ANIMATION)
 	private String animation;
-	private String actorId;
-	private float posx, posy;
-	private int setPos = NO_POS;
-	private int repeat = Tween.FROM_FA;
+
+	@JsonProperty
+	@JsonPropertyDescription("The times to repeat. -1 to infinity repeat")
+	@ActionPropertyType(Type.INTEGER)
 	private int count = 1;
+
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+	@ActionPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
+
+	@JsonProperty(required = true, defaultValue = "SPRITE_DEFINED")
+	@JsonPropertyDescription("The repeat mode")
+	@ActionPropertyType(Type.STRING)
+	private Tween.Type animationType;       // FIXME: This adds more types not present here before
+
+	@JsonProperty
+	@JsonPropertyDescription("Puts actor position after setting the animation")
+	@ActionPropertyType(Type.VECTOR2)
+	private Vector2 pos;
+
+	@JsonProperty
+	@JsonPropertyDescription("Sets the position absolute or relative")
+	@ActionPropertyType(Type.BOOLEAN)
+	private boolean absolute = false;
+
+	private String actorId;
+	private int setPos = NO_POS;
+	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -62,9 +81,7 @@ public class AnimationAction implements Action {
 		animation = a[1];
 
 		if (params.get("pos") != null) {
-			Vector2 p = Param.parseVector2(params.get("pos"));
-			posx = p.x;
-			posy = p.y;
+			pos = Param.parseVector2(params.get("pos"));
 			setPos = SET_POS_ABSOLUTE;
 		}
 
@@ -88,17 +105,7 @@ public class AnimationAction implements Action {
 
 		if(params.get("animation_type") != null) {
 			String repeatStr = params.get("animation_type");
-			if (repeatStr.equalsIgnoreCase("repeat")) {
-				repeat = Tween.REPEAT;
-			} else if (repeatStr.equalsIgnoreCase("yoyo")) {
-				repeat = Tween.PINGPONG;
-			} else if (repeatStr.equalsIgnoreCase("no_repeat")) {
-				repeat = Tween.NO_REPEAT;
-			} else if (repeatStr.equalsIgnoreCase("reverse")) {
-				repeat = Tween.REVERSE;
-			} else {
-				repeat = Tween.FROM_FA;
-			}
+			repeat = Tween.Type.valueOf(repeatStr.trim().toUpperCase());
 		}
 	}
 
@@ -111,9 +118,9 @@ public class AnimationAction implements Action {
 		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
 
 		if (setPos == SET_POS_ABSOLUTE)
-			actor.setPosition(posx * scale, posy * scale);
+			actor.setPosition(pos.x * scale, pos.y * scale);
 		else if (setPos == SET_POS_RELATIVE) {
-			actor.setPosition(actor.getX() + posx * scale, actor.getY() + posy * scale);
+			actor.setPosition(actor.getX() + pos.x * scale, actor.getY() + pos.y * scale);
 		}
 
 		actor.startAnimation(animation, repeat, count, wait?cb:null);
@@ -123,6 +130,6 @@ public class AnimationAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

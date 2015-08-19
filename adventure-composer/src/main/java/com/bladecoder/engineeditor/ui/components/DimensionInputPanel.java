@@ -29,7 +29,6 @@ public class DimensionInputPanel extends InputPanel {
 	
 	DimensionInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
 		dimPanel = new Table(skin);
-		init(skin, title, desc, dimPanel, mandatory, defaultValue);
 		width = new TextField("", skin);
 		height = new TextField("", skin);
 
@@ -37,6 +36,8 @@ public class DimensionInputPanel extends InputPanel {
 		dimPanel.add(width);
 		dimPanel.add(new Label("  height ", skin));
 		dimPanel.add(height);
+
+		init(skin, title, desc, dimPanel, mandatory, defaultValue);
 	}
 
 	public String getText() {

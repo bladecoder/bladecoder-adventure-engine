@@ -19,14 +19,15 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Change the current scene.")
 public class LeaveAction implements Action, ActionCallback {
-	public static final Param[] PARAMS = {
-		new Param("scene", "The target scene", Type.SCENE, true),
-	};		
-	
-	String scene;
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("The target scene")
+	@ActionPropertyType(Type.SCENE)
+	private String scene;
 
 	@Override
 	public boolean run(ActionCallback cb) {
@@ -47,10 +48,8 @@ public class LeaveAction implements Action, ActionCallback {
 		scene = params.get("scene");
 	}
 
-
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
-
 }

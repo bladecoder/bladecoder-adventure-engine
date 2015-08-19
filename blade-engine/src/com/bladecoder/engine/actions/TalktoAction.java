@@ -20,16 +20,20 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets the dialog mode")
 public class TalktoAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("actor",  "The target actor", Type.ACTOR, false),
-		new Param("dialog", "The 'dialogId' to show", Type.STRING, true)
-		};		
-	
-	String actorId;
-	String dialog;
+	@JsonProperty
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.ACTOR)
+	private String actorId;
+
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("The 'dialogId' to show")
+	@ActionPropertyType(Type.STRING)
+	private String dialog;
 	
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -50,6 +54,6 @@ public class TalktoAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 }

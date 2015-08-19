@@ -617,7 +617,7 @@ public class ScnWidget extends Widget {
 						|| ((SpriteActor) selectedActor).getRenderer().getInitAnimation().equals(selFA)) {
 					try {
 
-						((SpriteActor) selectedActor).startAnimation(selFA, Tween.REPEAT, Tween.INFINITY, null);
+						((SpriteActor) selectedActor).startAnimation(selFA, Tween.Type.REPEAT, Tween.INFINITY, null);
 					} catch (Exception e) {
 						setAnimation(null);
 						((SpriteActor) selectedActor).getRenderer().getAnimations().remove(selFA);

@@ -75,6 +75,8 @@ public class InputPanelFactory extends Table {
 			return new IntegerInputPanel(skin, title, desc, mandatory, defaultValue);
 		case SCENE:
 			return new SceneInputPanel(skin, title, desc, mandatory, defaultValue);
+		case COLOR:
+		case SOUND:
 		case STRING:
 			if(options != null)
 				return getReadOnlyOptionsInputPanel(skin, title, desc, mandatory, defaultValue, options);

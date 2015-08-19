@@ -23,17 +23,20 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Puts the selected actor in the inventory.")
 public class PickUpAction implements Action {
-	public static final Param[] PARAMS = {
-		new Param("actor", "The target actor", Type.SCENE_ACTOR, false),
-		new Param("animation", "The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'", Type.STRING)
-		};
-	
-	private String actorId;
+	@JsonProperty("actor")
+	@JsonPropertyDescription("The target actor")
+	@ActionPropertyType(Type.SCENE_ACTOR)
+	private SceneActorRef sceneActorRef;
+
+	@JsonProperty
+	@JsonPropertyDescription("The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'")
+	@ActionPropertyType(Type.STRING)
 	private String animation;
-	private String sceneId;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -41,26 +44,18 @@ public class PickUpAction implements Action {
 		
 		String[] a = Param.parseString2(params.get("actor"));
 		
-		actorId = a[1];
-		sceneId = a[0];
+		sceneActorRef = new SceneActorRef(a[0], a[1]);
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
+		Scene scn = this.sceneActorRef.getScene();
+		InteractiveActor actor = (InteractiveActor)scn.getActor(this.sceneActorRef.getSceneId(), false);
 
-		InteractiveActor actor = null;
-		
-		Scene scn;
-		
-		if(sceneId != null) {
-			scn = World.getInstance().getScene(sceneId);
-			actor = (InteractiveActor)scn.getActor(actorId, false);
+		if (this.sceneActorRef.getSceneId() != null) {
 			actor.loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 			actor.retrieveAssets();
-		} else {
-			scn = World.getInstance().getCurrentScene();
-			actor = (InteractiveActor)scn.getActor(actorId, false);
 		}
 		
 		scn.removeActor(actor);
@@ -82,7 +77,7 @@ public class PickUpAction implements Action {
 
 	@Override
 	public Param[] getParams() {
-		return PARAMS;
+		return null;
 	}
 
 }
