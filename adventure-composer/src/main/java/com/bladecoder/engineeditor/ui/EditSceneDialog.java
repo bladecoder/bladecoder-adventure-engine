@@ -283,6 +283,9 @@ public class EditSceneDialog extends EditElementDialog {
 				return false;
 			}
 		});
+		
+		if(musicFiles == null)
+			return new String[0];
 
 		Arrays.sort(musicFiles);
 		

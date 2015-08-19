@@ -84,6 +84,9 @@ public class ImageRenderer implements ActorRenderer {
 	}
 	
 	private void computeBbox() {
+		if(bbox == null)
+			return;
+		
 		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
