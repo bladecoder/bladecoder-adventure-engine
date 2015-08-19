@@ -50,7 +50,7 @@ public class PickUpAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 		Scene scn = this.sceneActorRef.getScene();
-		InteractiveActor actor = (InteractiveActor)scn.getActor(this.sceneActorRef.getSceneId(), false);
+		InteractiveActor actor = (InteractiveActor)scn.getActor(this.sceneActorRef.getActorId(), false);
 
 		if (this.sceneActorRef.getSceneId() != null) {
 			actor.loadAssets();

@@ -66,13 +66,13 @@ public class GotoAction implements Action {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		
+
 		float scale = EngineAssetManager.getInstance().getScale();
-		
+
 		CharacterActor actor = (CharacterActor) World.getInstance().getCurrentScene().getActor(this.actor, false);
-		
-		if(target !=null) {
-			BaseActor target =  World.getInstance().getCurrentScene().getActor(this.target, false);
+
+		if (target != null) {
+			BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
 			float x = target.getX();
 			float y = target.getY();
 
@@ -80,25 +80,25 @@ public class GotoAction implements Action {
 			final float actorBBoxWidth2 = actor.getBBox().getBoundingRectangle().width / 2;
 
 			switch (anchor) {
-				case LEFT:
-					x = x - targetBBoxWidth2 - actorBBoxWidth2;
-					break;
-				case RIGHT:
-					x = x + targetBBoxWidth2 + actorBBoxWidth2;
-					break;
-				case CENTER:
-					if(!(target instanceof SpriteActor))
-						x = x + targetBBoxWidth2;
-					break;
+			case LEFT:
+				x = x - targetBBoxWidth2 - actorBBoxWidth2;
+				break;
+			case RIGHT:
+				x = x + targetBBoxWidth2 + actorBBoxWidth2;
+				break;
+			case CENTER:
+				if (!(target instanceof SpriteActor))
+					x = x + targetBBoxWidth2;
+				break;
 			}
 
 			x += distance.x;
 			y += distance.y;
 
-			actor.goTo(new Vector2(x, y), wait?cb:null);
-		} else 
-			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), wait?cb:null);
-		
+			actor.goTo(new Vector2(x, y), wait ? cb : null);
+		} else
+			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), wait ? cb : null);
+
 		return wait;
 	}
 
@@ -106,32 +106,34 @@ public class GotoAction implements Action {
 	public void setParams(HashMap<String, String> params) {
 		actor = params.get("actor");
 
-		if(params.get("pos") != null) {
+		if (params.get("pos") != null) {
 			pos = Param.parseVector2(params.get("pos"));
-		} else if(params.get("target") != null) {
-			target = params.get("target") ;
-			anchor = Anchor.valueOf(params.get("anchor").toUpperCase());
-			
-			if(anchor == null)
+		} else if (params.get("target") != null) {
+			target = params.get("target");
+
+			if (anchor == null) {
 				anchor = Anchor.CENTER;
-			
+			} else {
+				anchor = Anchor.valueOf(params.get("anchor").toUpperCase());
+			}
+
 			distance = Param.parseVector2(params.get("distance"));
-			
-			if(distance == null)
+
+			if (distance == null)
 				distance = new Vector2();
 		}
-		
-		if(params.get("wait") != null) {
+
+		if (params.get("wait") != null) {
 			wait = Boolean.parseBoolean(params.get("wait"));
 		}
 	}
-	
+
 	/**
-	 *  If 'player' if far from 'actor', we bring it close. 
-	 *  If 'player' is closed from 'actor' do nothing.
-	 *  
-	 *  TODO: DOESN'T WORK NOW
-	 *  
+	 * If 'player' if far from 'actor', we bring it close. If 'player' is closed
+	 * from 'actor' do nothing.
+	 * 
+	 * TODO: DOESN'T WORK NOW
+	 * 
 	 * @param player
 	 * @param actor
 	 */

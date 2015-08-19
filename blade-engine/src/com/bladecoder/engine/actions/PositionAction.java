@@ -88,7 +88,9 @@ public class PositionAction implements Action {
 			count = Integer.parseInt(params.get("count"));
 		}
 
-		mode = Mode.valueOf(params.get("mode").trim().toUpperCase());
+		if (params.get("mode") != null) {
+			mode = Mode.valueOf(params.get("mode").trim().toUpperCase());
+		}
 
 		if (params.get("wait") != null) {
 			wait = Boolean.parseBoolean(params.get("wait"));
@@ -99,7 +101,9 @@ public class PositionAction implements Action {
 			repeat = Tween.Type.valueOf(repeatStr.trim().toUpperCase());
 		}
 
-		interpolation = InterpolationMode.valueOf(params.get("interpolation").trim().toUpperCase());
+		if (params.get("interpolation") != null) {
+			interpolation = InterpolationMode.valueOf(params.get("interpolation").trim().toUpperCase());
+		}
 	}
 
 	@Override

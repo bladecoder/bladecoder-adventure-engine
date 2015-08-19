@@ -25,7 +25,7 @@ public class SceneActorRef {
 
 	public Scene getScene() {
 		final World world = World.getInstance();
-		if (sceneId != null && sceneId.trim().isEmpty()) {
+		if (sceneId != null && !sceneId.trim().isEmpty()) {
 			return world.getScene(sceneId);
 		} else {
 			return world.getCurrentScene();
