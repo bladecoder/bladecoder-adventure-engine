@@ -121,7 +121,7 @@ public class PositionAction implements Action {
 			// WARNING: only spriteactors support animation
 			float s;
 
-			if (mode != null && mode.equals("speed")) {
+			if (mode != null && mode == Mode.SPEED) {
 				Vector2 p0 = new Vector2(actor.getX(), actor.getY());
 
 				s = p0.dst(pos.x * scale, pos.y * scale) / (scale * speed);

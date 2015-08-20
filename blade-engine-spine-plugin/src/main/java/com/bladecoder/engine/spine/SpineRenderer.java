@@ -687,7 +687,10 @@ public class SpineRenderer implements ActorRenderer {
 					: String.class);
 
 		json.writeValue("currentCount", currentCount);
-		json.writeValue("currentAnimationType", currentAnimationType.getTweenId());
+		
+		if(currentAnimationId != null)
+			json.writeValue("currentAnimationType", currentAnimationType.getTweenId());
+		
 		json.writeValue("lastAnimationTime", lastAnimationTime);
 		json.writeValue("complete", complete);
 	}
@@ -708,7 +711,10 @@ public class SpineRenderer implements ActorRenderer {
 		flipX = json.readValue("flipX", Boolean.class, jsonData);
 		animationCbSer = json.readValue("cb", String.class, jsonData);
 		currentCount = json.readValue("currentCount", Integer.class, jsonData);
-		currentAnimationType = Tween.Type.fromTweenId(json.readValue("currentAnimationType", Integer.class, jsonData));
+		
+		if(currentAnimationId != null)
+			currentAnimationType = Tween.Type.fromTweenId(json.readValue("currentAnimationType", Integer.class, jsonData));
+		
 		lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 		complete = json.readValue("complete", Boolean.class, jsonData);
 	}

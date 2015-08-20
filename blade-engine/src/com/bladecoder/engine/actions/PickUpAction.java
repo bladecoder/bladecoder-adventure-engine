@@ -51,14 +51,13 @@ public class PickUpAction implements Action {
 	public boolean run(ActionCallback cb) {
 		Scene scn = this.sceneActorRef.getScene();
 		InteractiveActor actor = (InteractiveActor)scn.getActor(this.sceneActorRef.getActorId(), false);
+		scn.removeActor(actor);
 
-		if (this.sceneActorRef.getSceneId() != null) {
+		if (scn !=  World.getInstance().getCurrentScene()) {
 			actor.loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 			actor.retrieveAssets();
 		}
-		
-		scn.removeActor(actor);
 		
 		if (actor instanceof SpriteActor) {
 			SpriteActor a = (SpriteActor) actor;
