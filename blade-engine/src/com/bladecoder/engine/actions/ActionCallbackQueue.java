@@ -20,7 +20,6 @@ import java.util.List;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
