@@ -15,33 +15,28 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.VerbRunner;
 
 @ActionDescription("Execute the actions inside the RunOnce/EndRunOnce only once.")
-public class RunOnceAction implements ControlAction {
-	public static final String ENDTYPE_VALUE = "runonce";
-
+public class RunOnceAction extends AbstractControlAction {
 	boolean executed = false;
+	private String caID;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
+		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
 		VerbRunner v = (VerbRunner)cb;
 		
-		if(executed) {
-			int ip = v.getIP();
-			ArrayList<Action> actions = v.getActions();
-			
-			// TODO: Handle RepeatAction to allow nested Repeats
-			while(!(actions.get(ip) instanceof EndAction) || !((EndAction)actions.get(ip)).getEndType().equals(ENDTYPE_VALUE)) ip++;
-			
+		if (executed) {
+			final int ip = skipControlIdBlock(v.getActions(), v.getIP());
+
 			v.setIP(ip);
 		}
 		
@@ -51,7 +46,7 @@ public class RunOnceAction implements ControlAction {
 	}
 
 	@Override
-	public String getEndType() {
-		return ENDTYPE_VALUE;
+	public String getControlActionID() {
+		return caID;
 	}
 }

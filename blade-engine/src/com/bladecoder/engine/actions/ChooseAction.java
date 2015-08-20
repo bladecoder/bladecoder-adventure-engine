@@ -15,18 +15,19 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.VerbRunner;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute only one action inside the Choose/EndChoose block.")
-public class ChooseAction implements ControlAction {
-	public static final String ENDTYPE_VALUE = "choose";
+public class ChooseAction extends AbstractControlAction {
+	private String caID;
 
 	public enum ChooseCriteria {
 		ITERATE, RANDOM, CYCLE
@@ -46,22 +47,19 @@ public class ChooseAction implements ControlAction {
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		chooseCriteria = ChooseCriteria.valueOf(params.get("chooseCriteria").toUpperCase());
+		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
 		VerbRunner v = (VerbRunner) cb;
 
-		int ip = v.getIP();
-		int ip0 = ip + 1;
-		int numActions = -1;
-		ArrayList<Action> actions = v.getActions();
+		int startIp = v.getIP();
+		int ip0 = startIp + 1;
+		final List<Action> actions = v.getActions();
 
-		while (!(actions.get(ip) instanceof EndAction)
-				|| !((EndAction) actions.get(ip)).getEndType().equals("choose")) {
-			ip++;
-			numActions++;
-		}
+		int ip = skipControlIdBlock(actions, startIp);
+		int numActions = ip - startIp;
 
 		if(numActions <= 0)
 			return false;
@@ -81,14 +79,14 @@ public class ChooseAction implements ControlAction {
 		v.setIP(ip);
 
 		if(chooseCount < numActions) {
-			return v.getActions().get(ip0 + chooseCount).run(v);
+			return actions.get(ip0 + chooseCount).run(v);
 		}
 
 		return false;
 	}
 
 	@Override
-	public String getEndType() {
-		return ENDTYPE_VALUE;
+	public String getControlActionID() {
+		return caID;
 	}
 }

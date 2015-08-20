@@ -19,6 +19,7 @@ import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.badlogic.gdx.math.MathUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -36,8 +37,7 @@ import com.bladecoder.engineeditor.ui.components.ElementList;
 
 public class ActionList extends ElementList {
 	private static final String END_ACTION = "com.bladecoder.engine.actions.EndAction";
-	private static final String ENDTYPE_ATTR = "endType";
-	private static final String ENDTYPE_VALUE_ELSE = "Else";
+	private static final String ACTION_NAME_VALUE_ELSE = "Else";
 
 	// FIXME: This needs to go, just added here in the interim while we work on replacing the DOM with Beans
 	private static final Set<String> CONTROL_ACTIONS = new HashSet<String>() {{
@@ -215,18 +215,32 @@ public class ActionList extends ElementList {
 
 		final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
 		if (IF_CONTROL_ACTIONS.contains(actionName)) {
-			saveEndAction(pos, e2, ENDTYPE_VALUE_ELSE);
+			String id = getOrCreateControlActionId(e);
+			saveEndAction(pos, e2, ACTION_NAME_VALUE_ELSE, id);
 
 			pos++;
 		}
 
-		saveEndAction(pos, e2, "End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR));
+		String id = getOrCreateControlActionId(e);
+		saveEndAction(pos, e2, "End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR), id);
 	}
 
-	private void saveEndAction(int pos, Element e2, String actionName) {
+	private String getOrCreateControlActionId(Element e) {
+		String id = e.getAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR);
+		if (id.isEmpty()) {
+			// FIXME: While highly, highly, highly unlikely, this might still cause collisions. Replace it with a count or similar
+			final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
+			id = actionName + MathUtils.random(1, Integer.MAX_VALUE);
+			e.setAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR, id);
+		}
+		return id;
+	}
+
+	private void saveEndAction(int pos, Element e2, String actionName, String id) {
 		final Element e = doc.createElement(parent, "action");
 		e.setAttribute(XMLConstants.ACTION_NAME_ATTR, actionName);
 		e.setAttribute("class", END_ACTION);
+		e.setAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR, id);
 
 		list.getItems().insert(pos, e);
 		parent.insertBefore(e, e2);
@@ -276,7 +290,7 @@ public class ActionList extends ElementList {
 	private void deleteControlAction(int pos, final Element e) {
 		final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
 		if (IF_CONTROL_ACTIONS.contains(actionName)) {
-			pos = deleteFirstActionNamed(pos, ENDTYPE_VALUE_ELSE);
+			pos = deleteFirstActionNamed(pos, ACTION_NAME_VALUE_ELSE);
 		}
 		if (isControlAction(e)) {
 			deleteFirstActionNamed(pos, "End" + actionName);
@@ -434,11 +448,11 @@ public class ActionList extends ElementList {
 				Node n = attr.item(i);
 				String name = n.getNodeName();
 
-				if (name.equals(ENDTYPE_ATTR)
-						|| name.equals("actor")
+				if (name.equals("actor")
 						|| name.equals(XMLConstants.CLASS_ATTR)
 						|| name.equals(XMLConstants.ACTION_NAME_ATTR)
 						|| name.equals(XMLConstants.ACTION_ENABLED_ATTR)
+						|| name.equals(XMLConstants.CONTROL_ACTION_ID_ATTR)
 						|| (e.getAttribute(XMLConstants.ACTION_NAME_ATTR).equals("Animation") && name
 								.equals("animation")))
 					continue;

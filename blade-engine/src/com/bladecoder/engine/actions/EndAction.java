@@ -15,8 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
@@ -24,47 +24,46 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Marks the end of a block for a control action")
-public class EndAction implements ControlAction {
+public class EndAction extends AbstractControlAction {
 	@JsonProperty
-	@JsonPropertyDescription("The block type")
+	@JsonPropertyDescription("The block ID")
 	@ActionPropertyType(Type.STRING)
-	private String endType;
+	private String caID;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		endType = params.get("endType");
+		caID = params.get("caID");
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		if (endType.equals(RepeatAction.ENDTYPE_VALUE)) {
+		// FIXME: This is now more generic than before, but also less optimized (we always get our "parent")
+		final VerbRunner v = (VerbRunner) cb;
+		final List<Action> actions = v.getActions();
+		final int ip = v.getIP();
 
-			VerbRunner v = (VerbRunner) cb;
-			int ip = v.getIP();
-			ArrayList<Action> actions = v.getActions();
+		final int parentIp = getParentControlAction(caID, actions, ip);
+		final AbstractControlAction parent = (AbstractControlAction) actions.get(parentIp);
 
-			// Find the previous repeat action for the next loop
-			while (!(actions.get(ip) instanceof RepeatAction))
-				ip--;
-			ip--;
-			v.setIP(ip);
-		} else if (endType.equals(IfAttrAction.ENDTYPE_VALUE)) {
-			VerbRunner v = (VerbRunner) cb;
-			int ip = v.getIP();
-			ArrayList<Action> actions = v.getActions();
+		if (parent instanceof RepeatAction) {
+			v.setIP(parentIp - 1);
+		} else if (parent instanceof AbstractIfAction) {
+			int newIp = skipControlIdBlock(actions, parentIp);
 
-			while(!((actions.get(ip) instanceof EndAction) &&
-					((EndAction)actions.get(ip)).getEndType().equals("if"))) ip++;
-
-			v.setIP(ip);
+			v.setIP(newIp);
 		}
 
 		return false;
 	}
 
-	@Override
-	public String getEndType() {
-		return endType;
+	private int getParentControlAction(String caID, List<Action> actions, int ip) {
+		while (!(actions.get(ip) instanceof AbstractControlAction) || !((AbstractControlAction) actions.get(ip)).getControlActionID().equals(caID))
+			ip--;
+		return ip;
 	}
 
+	@Override
+	public String getControlActionID() {
+		return caID;
+	}
 }

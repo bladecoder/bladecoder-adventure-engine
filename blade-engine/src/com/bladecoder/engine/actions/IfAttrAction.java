@@ -15,10 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
@@ -29,8 +29,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
-public class IfAttrAction implements ControlAction {
+public class IfAttrAction extends AbstractIfAction {
 	public static final String ENDTYPE_VALUE = "else";
+	private String caID;
 
 	public enum ActorAttribute {
 		STATE, VISIBLE
@@ -59,6 +60,8 @@ public class IfAttrAction implements ControlAction {
 		String[] a = Param.parseString2(params.get("actor"));
 		// If a == null, called inside a scene
 		sceneActorRef = a == null ? new SceneActorRef() : new SceneActorRef(a[0], a[1]);
+
+		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
 	}
 
 	@Override
@@ -93,21 +96,9 @@ public class IfAttrAction implements ControlAction {
 
 		return false;
 	}
-	
-	private void gotoElse(VerbRunner v) {
-		int ip = v.getIP();
-		ArrayList<Action> actions = v.getActions();
-		
-		// TODO: Handle If to allow nested Ifs
-		while (!(actions.get(ip) instanceof EndAction)
-				|| !((EndAction) actions.get(ip)).getEndType().equals("else"))
-			ip++;
-
-		v.setIP(ip);		
-	}
 
 	@Override
-	public String getEndType() {
-		return ENDTYPE_VALUE;
+	public String getControlActionID() {
+		return caID;
 	}
 }
