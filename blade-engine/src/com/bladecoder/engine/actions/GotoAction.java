@@ -31,17 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 @ActionDescription("Walks to the selected position")
 public class GotoAction implements Action {
 	public enum Anchor {
-		CENTER("CENTER"), LEFT("LEFT"), RIGHT("RIGHT");
-		
-		private final String anchor;
-
-		Anchor(String anchor) {
-			this.anchor = anchor;
-		}
-
-		public String getAnchor() {
-			return anchor;
-		}
+		CENTER, LEFT, RIGHT
 	}
 
 	@JsonProperty
