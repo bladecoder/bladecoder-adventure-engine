@@ -15,10 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -26,20 +26,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
-public class IfSceneAttrAction implements ControlAction {
-	public static final String ENDTYPE_VALUE = "else";
+public class IfSceneAttrAction extends AbstractIfAction {
+	private String caID;
 
 	public enum SceneAttr {
 		STATE
 	}
 
-	public static final Param[] PARAMS = {
-			new Param("scene", "The scene to check its attribute", Type.SCENE),
-			new Param("attr", "The scene attribute", Type.STRING, true, "state", new String[] { "state" }),
-			new Param("value", "The attribute value", Type.STRING),
-			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, ENDTYPE_VALUE)};
-
-	@JsonProperty
+	@JsonProperty("scene")
 	@JsonPropertyDescription("The scene to check its attribute")
 	@ActionPropertyType(Type.SCENE)
 	private String sceneId;
@@ -59,6 +53,8 @@ public class IfSceneAttrAction implements ControlAction {
 		attr = SceneAttr.valueOf(params.get("attr").trim().toUpperCase());
 		value = params.get("value");
 		sceneId = params.get("scene");
+
+		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
 	}
 
 	@Override
@@ -74,26 +70,9 @@ public class IfSceneAttrAction implements ControlAction {
 
 		return false;
 	}
-	
-	private void gotoElse(VerbRunner v) {
-		int ip = v.getIP();
-		ArrayList<Action> actions = v.getActions();
-		
-		// TODO: Handle If to allow nested Ifs
-		while (!(actions.get(ip) instanceof EndAction)
-				|| !((EndAction) actions.get(ip)).getEndType().equals(ENDTYPE_VALUE))
-			ip++;
-
-		v.setIP(ip);		
-	}
 
 	@Override
-	public Param[] getParams() {
-		return PARAMS;
-	}
-
-	@Override
-	public String getEndType() {
-		return ENDTYPE_VALUE;
+	public String getControlActionID() {
+		return caID;
 	}
 }

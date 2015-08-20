@@ -52,8 +52,4 @@ public class TalktoAction implements Action {
 	}
 
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

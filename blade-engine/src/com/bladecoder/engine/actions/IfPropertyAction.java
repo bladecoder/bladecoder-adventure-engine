@@ -15,25 +15,17 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the game propert has the specified value.")
-public class IfPropertyAction implements ControlAction {
-	public static final String ENDTYPE_VALUE = "else";
-
-	public static final Param[] PARAMS = {
-			new Param("name", "The property name", Type.STRING, true),
-			new Param("value", "The property value", Type.STRING),
-			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING,
-					false, "else") };
-
+public class IfPropertyAction extends AbstractIfAction {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The property name")
 	@ActionPropertyType(Type.STRING)
@@ -44,10 +36,14 @@ public class IfPropertyAction implements ControlAction {
 	@ActionPropertyType(Type.STRING)
 	private String value;
 
+	private String caID;
+
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		name = params.get("name");
 		value = params.get("value");
+
+		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
 	}
 
 	@Override
@@ -63,24 +59,8 @@ public class IfPropertyAction implements ControlAction {
 		return false;
 	}
 
-	private void gotoElse(VerbRunner v) {
-		int ip = v.getIP();
-		ArrayList<Action> actions = v.getActions();
-
-		// TODO: Handle If to allow nested Ifs
-		while (!(actions.get(ip) instanceof EndAction) || !((EndAction) actions.get(ip)).getEndType().equals("else"))
-			ip++;
-
-		v.setIP(ip);
-	}
-
 	@Override
-	public Param[] getParams() {
-		return PARAMS;
-	}
-
-	@Override
-	public String getEndType() {
-		return ENDTYPE_VALUE;
+	public String getControlActionID() {
+		return caID;
 	}
 }

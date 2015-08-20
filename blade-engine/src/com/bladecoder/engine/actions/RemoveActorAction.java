@@ -64,8 +64,4 @@ public class RemoveActorAction implements Action {
 	}
 
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

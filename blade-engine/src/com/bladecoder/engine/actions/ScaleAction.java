@@ -96,8 +96,4 @@ public class ScaleAction implements Action {
 		return wait;
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

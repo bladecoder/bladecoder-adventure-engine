@@ -187,8 +187,4 @@ public class SayAction extends BaseCallbackAction {
 		super.read(json, jsonData);
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

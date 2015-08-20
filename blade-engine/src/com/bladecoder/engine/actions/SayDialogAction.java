@@ -153,8 +153,4 @@ public class SayDialogAction extends BaseCallbackAction {
 	}
 
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

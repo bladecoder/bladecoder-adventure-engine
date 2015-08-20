@@ -47,8 +47,4 @@ public class LoadChapterAction implements Action {
 		chapter = params.get("chapter");
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

@@ -202,8 +202,4 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 		super.read(json, jsonData);
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

@@ -165,8 +165,4 @@ public class GotoAction implements Action {
 		player.goTo(pf, cb);
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }
