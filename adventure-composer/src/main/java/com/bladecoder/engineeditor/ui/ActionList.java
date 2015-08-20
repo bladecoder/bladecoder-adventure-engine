@@ -16,6 +16,8 @@
 package com.bladecoder.engineeditor.ui;
 
 import java.text.MessageFormat;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -35,7 +37,22 @@ import com.bladecoder.engineeditor.ui.components.ElementList;
 public class ActionList extends ElementList {
 	private static final String END_ACTION = "com.bladecoder.engine.actions.EndAction";
 	private static final String ENDTYPE_ATTR = "endType";
-	public static final String ENDTYPE_VALUE_ELSE = "Else";
+	private static final String ENDTYPE_VALUE_ELSE = "Else";
+
+	// FIXME: This needs to go, just added here in the interim while we work on replacing the DOM with Beans
+	private static final Set<String> CONTROL_ACTIONS = new HashSet<String>() {{
+		add("Choose");
+		add("IfAttr");
+		add("IfProperty");
+		add("IfSceneAttr");
+		add("Repeat");
+		add("RunOnce");
+	}};
+	private static final Set<String> IF_CONTROL_ACTIONS = new HashSet<String>() {{
+		add("IfAttr");
+		add("IfProperty");
+		add("IfSceneAttr");
+	}};
 
 	Skin skin;
 
@@ -196,22 +213,20 @@ public class ActionList extends ElementList {
 		if (pos != 0 && pos < list.getItems().size)
 			e2 = list.getItems().get(pos);
 
-		String endType = e.getAttribute(ENDTYPE_ATTR);
-		if (endType.equals("else")) {
-			saveEndAction(pos, e2, ENDTYPE_VALUE_ELSE, endType);
+		final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
+		if (IF_CONTROL_ACTIONS.contains(actionName)) {
+			saveEndAction(pos, e2, ENDTYPE_VALUE_ELSE);
 
 			pos++;
-			endType = "if";
 		}
 
-		saveEndAction(pos, e2, "End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR), endType);
+		saveEndAction(pos, e2, "End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR));
 	}
 
-	private void saveEndAction(int pos, Element e2, String actionName, String endType) {
+	private void saveEndAction(int pos, Element e2, String actionName) {
 		final Element e = doc.createElement(parent, "action");
 		e.setAttribute(XMLConstants.ACTION_NAME_ATTR, actionName);
 		e.setAttribute("class", END_ACTION);
-		e.setAttribute(ENDTYPE_ATTR, endType);
 
 		list.getItems().insert(pos, e);
 		parent.insertBefore(e, e2);
@@ -254,15 +269,17 @@ public class ActionList extends ElementList {
 	}
 
 	private boolean isControlAction(Element e) {
-		return !e.getAttribute(ENDTYPE_ATTR).isEmpty();
+		final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
+		return CONTROL_ACTIONS.contains(actionName) || e.getAttribute(XMLConstants.CLASS_ATTR).equals(END_ACTION);
 	}
 
 	private void deleteControlAction(int pos, final Element e) {
-		if (e.getAttribute(ENDTYPE_ATTR).equals("else")) {
+		final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
+		if (IF_CONTROL_ACTIONS.contains(actionName)) {
 			pos = deleteFirstActionNamed(pos, ENDTYPE_VALUE_ELSE);
 		}
-		if (!e.getAttribute(ENDTYPE_ATTR).isEmpty()) {
-			deleteFirstActionNamed(pos, "End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR));
+		if (isControlAction(e)) {
+			deleteFirstActionNamed(pos, "End" + actionName);
 		}
 	}
 
