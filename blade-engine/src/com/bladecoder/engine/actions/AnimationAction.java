@@ -49,10 +49,10 @@ public class AnimationAction implements Action {
 	@ActionPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
 
-	@JsonProperty(required = true, defaultValue = "SPRITE_DEFINED")
+	@JsonProperty(value = "animation_type", required = true, defaultValue = "SPRITE_DEFINED")
 	@JsonPropertyDescription("The repeat mode")
 	@ActionPropertyType(Type.STRING)
-	private Tween.Type animationType;       // FIXME: This adds more types not present here before
+	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;       // FIXME: This adds more types not present here before
 
 	@JsonProperty
 	@JsonPropertyDescription("Puts actor position after setting the animation")
@@ -66,7 +66,6 @@ public class AnimationAction implements Action {
 
 	private String actorId;
 	private int setPos = NO_POS;
-	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
