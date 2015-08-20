@@ -35,6 +35,7 @@ import com.bladecoder.engineeditor.ui.components.ElementList;
 public class ActionList extends ElementList {
 	private static final String END_ACTION = "com.bladecoder.engine.actions.EndAction";
 	private static final String ENDTYPE_ATTR = "endType";
+	public static final String ENDTYPE_VALUE_ELSE = "Else";
 
 	Skin skin;
 
@@ -195,34 +196,25 @@ public class ActionList extends ElementList {
 		if (pos != 0 && pos < list.getItems().size)
 			e2 = list.getItems().get(pos);
 
-		if (e.getAttribute(ENDTYPE_ATTR).equals("else")) {
-			Element elseEl = doc.createElement((Element) parent, "action");
-			elseEl.setAttribute(XMLConstants.ACTION_NAME_ATTR, "Else");
-			elseEl.setAttribute("class", END_ACTION);
-			elseEl.setAttribute(ENDTYPE_ATTR, "else");
+		String endType = e.getAttribute(ENDTYPE_ATTR);
+		if (endType.equals("else")) {
+			saveEndAction(pos, e2, ENDTYPE_VALUE_ELSE, endType);
 
-			Element endEl = doc.createElement((Element) parent, "action");
-			endEl.setAttribute(XMLConstants.ACTION_NAME_ATTR,
-					"End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR));
-			endEl.setAttribute("class", END_ACTION);
-			endEl.setAttribute(ENDTYPE_ATTR, "if");
-
-			list.getItems().insert(pos, elseEl);
-			list.getItems().insert(pos + 1, endEl);
-
-			parent.insertBefore(elseEl, e2);
-			parent.insertBefore(endEl, e2);
-		} else {
-			Element endEl = doc.createElement((Element) parent, "action");
-			endEl.setAttribute(XMLConstants.ACTION_NAME_ATTR,
-					"End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR));
-			endEl.setAttribute("class", END_ACTION);
-			endEl.setAttribute(ENDTYPE_ATTR, e.getAttribute(ENDTYPE_ATTR));
-
-			list.getItems().insert(pos, endEl);
-
-			parent.insertBefore(endEl, e2);
+			pos++;
+			endType = "if";
 		}
+
+		saveEndAction(pos, e2, "End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR), endType);
+	}
+
+	private void saveEndAction(int pos, Element e2, String actionName, String endType) {
+		final Element e = doc.createElement(parent, "action");
+		e.setAttribute(XMLConstants.ACTION_NAME_ATTR, actionName);
+		e.setAttribute("class", END_ACTION);
+		e.setAttribute(ENDTYPE_ATTR, endType);
+
+		list.getItems().insert(pos, e);
+		parent.insertBefore(e, e2);
 	}
 
 	@Override
@@ -267,7 +259,7 @@ public class ActionList extends ElementList {
 
 	private void deleteControlAction(int pos, final Element e) {
 		if (e.getAttribute(ENDTYPE_ATTR).equals("else")) {
-			pos = deleteFirstActionNamed(pos, "Else");
+			pos = deleteFirstActionNamed(pos, ENDTYPE_VALUE_ELSE);
 		}
 		if (!e.getAttribute(ENDTYPE_ATTR).isEmpty()) {
 			deleteFirstActionNamed(pos, "End" + e.getAttribute(XMLConstants.ACTION_NAME_ATTR));
