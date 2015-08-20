@@ -27,11 +27,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 public class RepeatAction implements ControlAction {
 	public static final String ENDTYPE_VALUE = "repeat";
 
-	public static final Param[] PARAMS = {
-			new Param("repeat", "Repeat the actions the specified times. -1 to infinity",
-					Type.INTEGER, true, "1"),
-			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, ENDTYPE_VALUE)};
-
 	@JsonProperty(required = true, defaultValue = "1")
 	@JsonPropertyDescription("Repeat the actions the specified times. -1 to infinity")
 	@ActionPropertyType(Type.INTEGER)

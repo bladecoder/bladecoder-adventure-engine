@@ -25,9 +25,6 @@ import com.bladecoder.engine.model.VerbRunner;
 public class RunOnceAction implements ControlAction {
 	public static final String ENDTYPE_VALUE = "runonce";
 
-	public static final Param[] PARAMS = {
-			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, ENDTYPE_VALUE)};
-
 	boolean executed = false;
 
 	@Override

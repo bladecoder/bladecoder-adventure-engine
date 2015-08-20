@@ -33,13 +33,7 @@ public class IfSceneAttrAction implements ControlAction {
 		STATE
 	}
 
-	public static final Param[] PARAMS = {
-			new Param("scene", "The scene to check its attribute", Type.SCENE),
-			new Param("attr", "The scene attribute", Type.STRING, true, "state", new String[] { "state" }),
-			new Param("value", "The attribute value", Type.STRING),
-			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, ENDTYPE_VALUE)};
-
-	@JsonProperty
+	@JsonProperty("scene")
 	@JsonPropertyDescription("The scene to check its attribute")
 	@ActionPropertyType(Type.SCENE)
 	private String sceneId;

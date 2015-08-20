@@ -28,12 +28,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 public class IfPropertyAction implements ControlAction {
 	public static final String ENDTYPE_VALUE = "else";
 
-	public static final Param[] PARAMS = {
-			new Param("name", "The property name", Type.STRING, true),
-			new Param("value", "The property value", Type.STRING),
-			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING,
-					false, "else") };
-
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The property name")
 	@ActionPropertyType(Type.STRING)

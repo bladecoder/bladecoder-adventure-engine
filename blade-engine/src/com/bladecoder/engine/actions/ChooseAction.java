@@ -28,21 +28,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 public class ChooseAction implements ControlAction {
 	public static final String ENDTYPE_VALUE = "choose";
 
-	private static final String ITERATE = "iterate";
-	private static final String RANDOM = "random";
-	private static final String CYCLE = "cycle";
-
 	public enum ChooseCriteria {
 		ITERATE, RANDOM, CYCLE
 	}
 
-	public static final Param[] PARAMS = {
-			new Param("chooseCriteria", "The action to execute will be selected following this criteria.",
-				Type.OPTION, true, CYCLE, new String[]{ITERATE, RANDOM, CYCLE}),
-				new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, "choose")
-			};
-
-	/** 
+	/**
 	 * When the verb is a comma separated verb list, we use chooseCriteria as criteria to choose the verb to execute.
 	 */
 	@JsonProperty(required = true, defaultValue = "CYCLE")

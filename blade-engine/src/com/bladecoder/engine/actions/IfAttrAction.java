@@ -35,11 +35,6 @@ public class IfAttrAction implements ControlAction {
 	public enum ActorAttribute {
 		STATE, VISIBLE
 	}
-	public static final Param[] PARAMS = {
-			new Param("actor", "The actor to check its attribute", Type.SCENE_ACTOR),
-			new Param("attr", "The actor attribute", Type.STRING, true, "state", new String[] { "state", "visible"}),
-			new Param("value", "The attribute value", Type.STRING),
-			new Param("endType", "The type for the end action. All control actions must have this attr.", Type.STRING, false, "else")};
 
 	@JsonProperty("actor")
 	@JsonPropertyDescription("The target actor")
