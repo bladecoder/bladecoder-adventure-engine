@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Change the current scene.")
-public class LeaveAction implements Action, ActionCallback {
+public class LeaveAction implements Action {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The target scene")
 	@ActionPropertyType(Type.SCENE)
@@ -31,16 +31,9 @@ public class LeaveAction implements Action, ActionCallback {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		
-		// Queue the setCurrentScene to execute at the end of world update
-		ActionCallbackQueue.add(this);
+		World.getInstance().setCurrentScene(scene);
 		
 		return false;
-	}
-	
-	@Override
-	public void resume() {
-		World.getInstance().setCurrentScene(scene);
 	}
 
 	@Override

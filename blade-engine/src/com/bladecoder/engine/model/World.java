@@ -323,7 +323,10 @@ public class World implements Serializable, AssetConsumer {
 
 	public void setCurrentScene(Scene scene) {	
 		
-		initLoadingTime = System.currentTimeMillis();		
+		initLoadingTime = System.currentTimeMillis();	
+		
+		// Clear all pending callbacks
+		ActionCallbackQueue.clear();
 		
 		if(cachedScene == scene) {
 			assetState = AssetState.LOADING_AND_INIT_SCENE;		
@@ -351,9 +354,6 @@ public class World implements Serializable, AssetConsumer {
 				currentScene.dispose(); // CACHE DISABLED
 
 			transition.reset();
-
-			// Clear all pending callbacks
-			ActionCallbackQueue.clear();
 		}
 
 		currentScene = scene;

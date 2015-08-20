@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 
 /**
@@ -38,7 +39,8 @@ public class ActionCallbackQueue {
 	private static final List<ActionCallback> runQueue = new ArrayList<ActionCallback>();
 	
 	public static void add(ActionCallback cb) {
-		queue.add(cb);
+		if(World.getInstance().getAssetState() == AssetState.LOADED)
+			queue.add(cb);
 	}
 	
 	/**
@@ -52,13 +54,11 @@ public class ActionCallbackQueue {
 			runQueue.addAll(queue);				
 			queue.clear();
 			
-			// TOFIX Quick hack to stop processing when changing scene
-			Scene scn = World.getInstance().getCurrentScene();
-			
 			for(ActionCallback cb: runQueue) {
 				cb.resume();
 								
-				if(scn != World.getInstance().getCurrentScene())
+				// Break when changing scene
+				if(World.getInstance().getAssetState() != AssetState.LOADED)
 					break;
 			}
 			
