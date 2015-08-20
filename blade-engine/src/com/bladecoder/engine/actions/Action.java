@@ -31,10 +31,4 @@ public interface Action {
 	public boolean run(ActionCallback cb);
 
 	public void setParams(HashMap<String, String> params);
-
-	/**
-	 * @deprecated Need to remove when all Actions are annotated with @ActionDescription & friends
-	 */
-	@Deprecated
-	public Param[] getParams();
 }

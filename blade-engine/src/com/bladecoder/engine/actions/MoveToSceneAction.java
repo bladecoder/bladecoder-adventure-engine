@@ -78,8 +78,4 @@ public class MoveToSceneAction implements Action {
 	}
 
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

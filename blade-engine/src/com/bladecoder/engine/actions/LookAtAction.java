@@ -117,8 +117,4 @@ public class LookAtAction implements Action {
 	}
 
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

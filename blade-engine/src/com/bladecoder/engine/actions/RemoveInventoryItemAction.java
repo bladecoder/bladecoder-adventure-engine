@@ -49,8 +49,4 @@ public class RemoveInventoryItemAction implements Action {
 		return false;
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

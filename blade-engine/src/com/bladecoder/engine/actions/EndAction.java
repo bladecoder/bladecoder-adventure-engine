@@ -67,8 +67,4 @@ public class EndAction implements ControlAction {
 		return endType;
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

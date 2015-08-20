@@ -136,10 +136,7 @@ public class EditActionDialog extends EditElementDialog {
 		if (ac != null) {
 			setInfo(ActionUtils.getInfo(ac));
 
-			Param[] params = ac.getParams();
-			if (params == null) {
-				params = ActionUtils.getParams(ac);
-			}
+			Param[] params = ActionUtils.getParams(ac);
 
 			parameters = new InputPanel[params.length];
 

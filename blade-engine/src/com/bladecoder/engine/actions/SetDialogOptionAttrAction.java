@@ -111,8 +111,4 @@ public class SetDialogOptionAttrAction implements Action {
 	}
 
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

@@ -26,7 +26,6 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -208,8 +207,4 @@ public class SetActorAttrAction implements Action {
 		return false;
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

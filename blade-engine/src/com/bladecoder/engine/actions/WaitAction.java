@@ -40,8 +40,4 @@ public class WaitAction implements Action {
 		time = Float.parseFloat(params.get("time"));
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

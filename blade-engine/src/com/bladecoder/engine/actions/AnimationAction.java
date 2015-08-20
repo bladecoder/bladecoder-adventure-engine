@@ -127,8 +127,4 @@ public class AnimationAction implements Action {
 		return wait;
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

@@ -42,8 +42,4 @@ public class SetCutmodeAction implements Action {
 		return false;
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

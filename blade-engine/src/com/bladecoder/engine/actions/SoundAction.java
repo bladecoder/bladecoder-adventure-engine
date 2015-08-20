@@ -60,8 +60,4 @@ public class SoundAction implements Action {
 	}
 
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

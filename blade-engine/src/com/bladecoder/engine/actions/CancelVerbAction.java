@@ -87,9 +87,4 @@ public class CancelVerbAction implements Action {
 		return false;
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
-
 }

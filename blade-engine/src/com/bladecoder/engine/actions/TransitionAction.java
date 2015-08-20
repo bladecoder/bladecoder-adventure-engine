@@ -82,8 +82,4 @@ public class TransitionAction implements Action {
 		}
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

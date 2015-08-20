@@ -41,8 +41,4 @@ public class LeaveAction implements Action {
 		scene = params.get("scene");
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

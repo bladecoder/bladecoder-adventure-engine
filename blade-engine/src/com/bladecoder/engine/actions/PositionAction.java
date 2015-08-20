@@ -136,8 +136,4 @@ public class PositionAction implements Action {
 		return wait;
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

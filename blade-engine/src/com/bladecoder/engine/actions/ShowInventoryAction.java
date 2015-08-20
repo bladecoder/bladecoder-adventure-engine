@@ -42,8 +42,4 @@ public class ShowInventoryAction implements Action {
 		return false;
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

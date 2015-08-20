@@ -51,8 +51,4 @@ public class SetSceneStateAction implements Action {
 	}
 
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

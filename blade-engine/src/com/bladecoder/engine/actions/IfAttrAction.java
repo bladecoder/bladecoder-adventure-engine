@@ -112,11 +112,6 @@ public class IfAttrAction implements ControlAction {
 	}
 
 	@Override
-	public Param[] getParams() {
-		return PARAMS;
-	}
-
-	@Override
 	public String getEndType() {
 		return ENDTYPE_VALUE;
 	}

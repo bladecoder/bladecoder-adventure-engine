@@ -74,9 +74,4 @@ public class PickUpAction implements Action {
 	}
 
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
-
 }

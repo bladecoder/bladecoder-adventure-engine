@@ -72,8 +72,4 @@ public class SetStateAction implements Action {
 	}
 
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }

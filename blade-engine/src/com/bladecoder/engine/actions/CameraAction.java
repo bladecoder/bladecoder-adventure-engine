@@ -109,8 +109,4 @@ public class CameraAction implements Action {
 		return wait;
 	}
 
-	@Override
-	public Param[] getParams() {
-		return null;
-	}
 }
