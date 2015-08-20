@@ -48,7 +48,8 @@ public class EndAction extends AbstractControlAction {
 		if (parent instanceof RepeatAction) {
 			v.setIP(parentIp - 1);
 		} else if (parent instanceof AbstractIfAction) {
-			int newIp = skipControlIdBlock(actions, parentIp);
+			int newIp = skipControlIdBlock(actions, parentIp); // goto Else
+			newIp = skipControlIdBlock(actions, newIp); // goto EndIf
 
 			v.setIP(newIp);
 		}
@@ -57,8 +58,10 @@ public class EndAction extends AbstractControlAction {
 	}
 
 	private int getParentControlAction(String caID, List<Action> actions, int ip) {
-		while (!(actions.get(ip) instanceof AbstractControlAction) || !((AbstractControlAction) actions.get(ip)).getControlActionID().equals(caID))
+		do {
 			ip--;
+		} while (!(actions.get(ip) instanceof AbstractControlAction) || !((AbstractControlAction) actions.get(ip)).getControlActionID().equals(caID));
+		
 		return ip;
 	}
 

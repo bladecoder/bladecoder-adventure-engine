@@ -75,11 +75,7 @@ public class IfAttrAction extends AbstractIfAction {
 			return false;
 		}
 
-		BaseActor a = s.getActor(actorId, false);
-
-		if (a == null) { // search in inventory
-			a = World.getInstance().getInventory().getItem(actorId);
-		}
+		BaseActor a = s.getActor(actorId, true);
 
 		if (attr.equals(ActorAttribute.STATE) && a instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor)a;

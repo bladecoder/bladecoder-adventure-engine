@@ -8,8 +8,10 @@ public abstract class AbstractControlAction implements Action {
 	protected int skipControlIdBlock(List<Action> actions, int ip) {
 		final String caID = getControlActionID();
 
-		while (!(actions.get(ip) instanceof AbstractControlAction) || !((AbstractControlAction) actions.get(ip)).getControlActionID().equals(caID))
+		do {
 			ip++;
+		} while (!(actions.get(ip) instanceof AbstractControlAction)
+				|| !((AbstractControlAction) actions.get(ip)).getControlActionID().equals(caID));
 
 		return ip;
 	}
