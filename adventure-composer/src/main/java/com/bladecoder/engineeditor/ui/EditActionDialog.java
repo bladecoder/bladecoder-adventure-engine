@@ -16,6 +16,7 @@
 package com.bladecoder.engineeditor.ui;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.bladecoder.engineeditor.utils.ActionUtils;
 import org.w3c.dom.Element;
@@ -136,22 +137,24 @@ public class EditActionDialog extends EditElementDialog {
 		if (ac != null) {
 			setInfo(ActionUtils.getInfo(ac));
 
-			Param[] params = ActionUtils.getParams(ac);
+			List<Param> params = ActionUtils.getParams(ac);
 
-			parameters = new InputPanel[params.length];
+			parameters = new InputPanel[params.size()];
 
-			for (int i = 0; i < params.length; i++) {
-				if (params[i].options instanceof Enum[]) {
-					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), params[i].name, params[i].desc,
-							params[i].type, params[i].mandatory, params[i].defaultValue, (Enum[]) params[i].options);
+			for (int i = 0; i < params.size(); i++) {
+				final Param param = params.get(i);
+
+				if (param.options instanceof Enum[]) {
+					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), param.name, param.desc,
+							param.type, param.mandatory, param.defaultValue, (Enum[]) param.options);
 				} else {
-					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), params[i].name, params[i].desc,
-							params[i].type, params[i].mandatory, params[i].defaultValue, (String[]) params[i].options);
+					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), param.name, param.desc,
+							param.type, param.mandatory, param.defaultValue, (String[]) param.options);
 				}
 
 				addInputPanel(parameters[i]);
 
-				if ((parameters[i].getField() instanceof TextField && params[i].name.toLowerCase().endsWith("text")) ||
+				if ((parameters[i].getField() instanceof TextField && param.name.toLowerCase().endsWith("text")) ||
 						parameters[i].getField() instanceof ScrollPane) {
 					parameters[i].getCell(parameters[i].getField()).fillX();
 				}

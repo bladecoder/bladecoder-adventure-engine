@@ -18,9 +18,10 @@ public class ActionUtils {
 	}
 
 	@Nonnull
-	public static Param[] getParams(@Nonnull Action action) {
-		List<Param> params = new ArrayList<>();
-		Class<?> clazz = action.getClass();
+	public static List<Param> getParams(@Nonnull Object obj) {
+		final List<Param> params = new ArrayList<>();
+		Class<?> clazz = obj.getClass();
+
 		while (clazz != null && clazz != Object.class) {
 			for (Field field : clazz.getDeclaredFields()) {
 				final JsonProperty property = field.getAnnotation(JsonProperty.class);
@@ -43,6 +44,6 @@ public class ActionUtils {
 			}
 			clazz = clazz.getSuperclass();
 		}
-		return params.toArray(new Param[params.size()]);
+		return params;
 	}
 }
