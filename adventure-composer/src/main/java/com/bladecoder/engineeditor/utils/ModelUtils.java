@@ -60,11 +60,29 @@ public class ModelUtils {
 						throw new RuntimeException(clazz.getName() + '.' + field.getName() + " is an OPTION type, but we can't find suitable options for it");
 					}
 				}
-				params.add(new Param(name, propertyDescription.value(), type, property.required(), property.defaultValue(), options));
+				params.add(new Param(formatName(name), propertyDescription.value(), type, property.required(), property.defaultValue(), options));
 			}
 			clazz = clazz.getSuperclass();
 		}
 		return params;
+	}
+
+	private static String formatName(String name) {
+		StringBuilder sb = new StringBuilder();
+		char[] charArray = name.toCharArray();
+		for (int j = 0; j < charArray.length; j++) {
+			char c = charArray[j];
+
+			if (Character.isUpperCase(c) && j != 0) {
+				sb.append(' ');
+				sb.append(Character.toLowerCase(c));
+			} else if (j == 0) {
+				sb.append(Character.toUpperCase(c));
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
 	}
 
 	private static Object[] optionsFromFieldType(Field field) {

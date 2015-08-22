@@ -34,8 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 abstract public class BaseActor extends AbstractModel implements Comparable<BaseActor>, Serializable {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The layer for drawing order")
-//	@ModelPropertyType(Param.Type.OPTION)
-	@ModelPropertyType(Param.Type.STRING)   // FIXME: This should be options, but will change it when this field becomes SceneLayer
+	@ModelPropertyType(Param.Type.LAYER)
 	protected String layer;
 
 	@JsonProperty
