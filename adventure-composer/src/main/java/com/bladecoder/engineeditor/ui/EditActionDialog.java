@@ -145,17 +145,17 @@ public class EditActionDialog extends EditElementDialog {
 			for (int i = 0; i < params.size(); i++) {
 				final Param param = params.get(i);
 
-				if (param.options instanceof Enum[]) {
-					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), param.name, param.desc,
-							param.type, param.mandatory, param.defaultValue, (Enum[]) param.options);
+				if (param.getOptions() instanceof Enum[]) {
+					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), param.getName(), param.getDesc(),
+							param.getType(), param.isMandatory(), param.getDefaultValue(), (Enum[]) param.getOptions());
 				} else {
-					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), param.name, param.desc,
-							param.type, param.mandatory, param.defaultValue, (String[]) param.options);
+					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), param.getName(), param.getDesc(),
+							param.getType(), param.isMandatory(), param.getDefaultValue(), (String[]) param.getOptions());
 				}
 
 				addInputPanel(parameters[i]);
 
-				if ((parameters[i].getField() instanceof TextField && param.name.toLowerCase().endsWith("text")) ||
+				if ((parameters[i].getField() instanceof TextField && param.getName().toLowerCase().endsWith("text")) ||
 						parameters[i].getField() instanceof ScrollPane) {
 					parameters[i].getCell(parameters[i].getField()).fillX();
 				}

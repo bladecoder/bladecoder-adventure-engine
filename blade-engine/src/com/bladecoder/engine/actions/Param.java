@@ -20,6 +20,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import net.jcip.annotations.Immutable;
 
+import java.util.Arrays;
+
 @Immutable
 public class Param {
 	public enum Type {
@@ -30,12 +32,12 @@ public class Param {
 	public static final String NUMBER_PARAM_SEPARATOR = ",";
 	public static final String STRING_PARAM_SEPARATOR = "#";
 
-	public final String name;
-	public final String desc;
-	public final Type type;
-	public final boolean mandatory;
-	public final String defaultValue;
-	public final Object[] options; // availables values for combos
+	private final String name;
+	private final String desc;
+	private final Type type;
+	private final boolean mandatory;
+	private final String defaultValue;
+	private final Object[] options; // availables values for combos
 
 	public Param(String name, String desc, Type type, boolean mandatory, String defaultValue, Object[] options) {
 		this.name = name;
@@ -56,6 +58,30 @@ public class Param {
 	
 	public Param(String name, String desc, Type type) {
 		this(name, desc, type, false, null, null);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public boolean isMandatory() {
+		return mandatory;
+	}
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public Object[] getOptions() {
+		return options;
 	}
 
 	public static Vector2 parseVector2(String s) {
@@ -171,5 +197,17 @@ public class Param {
 			return s2;
 		
 		return s1 + STRING_PARAM_SEPARATOR + s2;
+	}
+
+	@Override
+	public String toString() {
+		return "Param{" +
+				"name='" + name + '\'' +
+				", desc='" + desc + '\'' +
+				", type=" + type +
+				", mandatory=" + mandatory +
+				", defaultValue='" + defaultValue + '\'' +
+				", options=" + Arrays.toString(options) +
+				'}';
 	}
 }
