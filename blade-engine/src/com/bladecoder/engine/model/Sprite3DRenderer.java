@@ -56,7 +56,9 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.Utils3D;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("3d")
 @SuppressWarnings("deprecation")
 public class Sprite3DRenderer implements ActorRenderer {
 

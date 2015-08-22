@@ -19,7 +19,11 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.actions.ModelPropertyType;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.assets.AssetConsumer;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 /**
  * An InteractiveActor is any object in a scene or in the inventory that has user interaction.
@@ -27,11 +31,23 @@ import com.bladecoder.engine.assets.AssetConsumer;
  * @author rgarcia
  */
 public class InteractiveActor extends BaseActor implements AssetConsumer {
-	protected String desc;
-	protected float zIndex;
+	@JsonProperty
+	@JsonPropertyDescription("True when the actor reacts to the user input")
 	protected boolean interaction = true;
 
+	@JsonProperty
+	@JsonPropertyDescription("The text shown when the cursor is over the actor")
+	@ModelPropertyType(Param.Type.STRING)
+	protected String desc;
+
+	@JsonProperty
+	@JsonPropertyDescription("The order to draw")
+	protected float zIndex;
+
 	/** internal state. Can be used for actions to maintain a state machine */
+	@JsonProperty
+	@JsonPropertyDescription("Initial state of the actor. Actors can be in different states during the game")
+	@ModelPropertyType(Param.Type.STRING)
 	protected String state;
 
 	protected VerbManager verbs = new VerbManager();

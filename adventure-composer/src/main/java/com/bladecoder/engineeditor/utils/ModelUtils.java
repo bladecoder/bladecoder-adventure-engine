@@ -7,6 +7,8 @@ import com.bladecoder.engine.actions.ModelPropertyType;
 import com.bladecoder.engine.actions.Param;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
@@ -45,12 +47,18 @@ public class ModelUtils {
 
 				final String name = property.value() == null || property.value().trim().isEmpty() ? field.getName() : property.value();
 
-				Enum[] options = null;
+				Object[] options = null;
 				if (field.getType().isEnum()) {
 					final boolean accessible = field.isAccessible();
 					field.setAccessible(true);
-					options = (Enum[]) field.getType().getEnumConstants();
+					options = field.getType().getEnumConstants();
 					field.setAccessible(accessible);
+				}
+				if (options == null && type == Param.Type.OPTION) {
+					options = optionsFromFieldType(field);
+					if (options == null) {
+						throw new RuntimeException(clazz.getName() + '.' + field.getName() + " is an OPTION type, but we can't find suitable options for it");
+					}
 				}
 				params.add(new Param(name, propertyDescription.value(), type, property.required(), property.defaultValue(), options));
 			}
@@ -59,12 +67,42 @@ public class ModelUtils {
 		return params;
 	}
 
+	private static Object[] optionsFromFieldType(Field field) {
+		final Class<?> type = field.getType();
+		// FIXME: This can miss values, as converters can be registered thorugh other means
+		final JsonSubTypes jsonSubTypes = type.getAnnotation(JsonSubTypes.class);
+		if (jsonSubTypes == null) {
+			return null;
+		}
+
+		final List<String> result = new ArrayList<>();
+		for (JsonSubTypes.Type jsonType : jsonSubTypes.value()) {
+			String name = jsonType.name();
+			if (name.isEmpty()) {
+				final JsonTypeName jsonTypeName = jsonType.value().getAnnotation(JsonTypeName.class);
+				if (jsonTypeName == null) {
+					throw new RuntimeException(jsonType.value().getName() + " is a JSON SubType, but it doesn't have a @JsonTypeName or a name on its parent (" + type.getName() + ")");
+				}
+				name = jsonTypeName.value();
+			}
+			result.add(name);
+		}
+
+		return result.toArray(new String[result.size()]);
+	}
+
 	private static Param.Type typeFromFieldType(Field field) {
 		final Class<?> type = field.getType();
 		if (type == String.class) {
 			return null;        // Strings have special meaning, so they always need an explicit annotation
+		} else if (type == Boolean.class || type == boolean.class) {
+			return Param.Type.BOOLEAN;
+		} else if (type.isEnum()) {
+			return Param.Type.OPTION;
 		} else if (type == Integer.class || type == int.class) {
 			return Param.Type.INTEGER;
+		} else if (type == Float.class || type == float.class) {
+			return Param.Type.FLOAT;
 		} else if (type == Vector2.class) {
 			return Param.Type.VECTOR2;
 		} else if (type == Vector3.class) {
