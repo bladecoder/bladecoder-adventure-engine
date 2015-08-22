@@ -607,7 +607,8 @@ public class ChapterXMLLoader extends DefaultHandler {
 		if (state != null)
 			id = id + "." + state;
 
-		currentVerb = new Verb(id);
+		currentVerb = new Verb();
+		currentVerb.setId(id);
 
 		v.addVerb(id, currentVerb);
 	}

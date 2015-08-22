@@ -27,20 +27,11 @@ import com.bladecoder.engine.assets.EngineAssetManager;
  * 
  * @author rgarcia
  */
-abstract public class BaseActor implements Comparable<BaseActor>, Serializable {
-	protected String id;
+abstract public class BaseActor extends AbstractModel implements Comparable<BaseActor>, Serializable {
 	protected Scene scene = null;
 	protected boolean visible = true;
 	protected final Polygon bbox = new Polygon();	
 	protected String layer;
-	
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public Polygon getBBox() {
 		return bbox;

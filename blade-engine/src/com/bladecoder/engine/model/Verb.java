@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class Verb implements VerbRunner {
+public class Verb extends AbstractModel implements VerbRunner {
 	public static final String LOOKAT_VERB = "lookat";
 	public static final String ACTION_VERB = "pickup";
 	public static final String LEAVE_VERB = "leave";
@@ -30,25 +30,11 @@ public class Verb implements VerbRunner {
 	public static final String TEST_VERB = "test";
 	public static final String INIT_VERB = "init";
 	
-	private String id;
-	
 	private ArrayList<Action> actions = new ArrayList <Action>();
 	
 	private int ip = -1;
 	
 	public Verb() {
-	}
-	
-	public Verb(String id) {
-		this.id=id;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 	
 	public void add(Action a) {
