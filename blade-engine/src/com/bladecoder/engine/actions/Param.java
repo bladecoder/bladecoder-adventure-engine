@@ -32,6 +32,7 @@ public class Param {
 	public static final String NUMBER_PARAM_SEPARATOR = ",";
 	public static final String STRING_PARAM_SEPARATOR = "#";
 
+	private final String id;
 	private final String name;
 	private final String desc;
 	private final Type type;
@@ -39,7 +40,8 @@ public class Param {
 	private final String defaultValue;
 	private final Object[] options; // availables values for combos
 
-	public Param(String name, String desc, Type type, boolean mandatory, String defaultValue, Object[] options) {
+	public Param(String id, String name, String desc, Type type, boolean mandatory, String defaultValue, Object[] options) {
+		this.id = id;
 		this.name = name;
 		this.desc = desc;
 		this.type = type;
@@ -48,16 +50,20 @@ public class Param {
 		this.options = options;
 	}
 	
-	public Param(String name, String desc, Type type, boolean mandatory, String defaultValue) {
-		this(name, desc, type, mandatory, defaultValue, null);
+	public Param(String id, String name, String desc, Type type, boolean mandatory, String defaultValue) {
+		this(id, name, desc, type, mandatory, defaultValue, null);
 	}
 	
-	public Param(String name, String desc, Type type, boolean mandatory) {
-		this(name, desc, type, mandatory, null, null);
+	public Param(String id, String name, String desc, Type type, boolean mandatory) {
+		this(id, name, desc, type, mandatory, null, null);
 	}
 	
-	public Param(String name, String desc, Type type) {
-		this(name, desc, type, false, null, null);
+	public Param(String id, String name, String desc, Type type) {
+		this(id, name, desc, type, false, null, null);
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	public String getName() {

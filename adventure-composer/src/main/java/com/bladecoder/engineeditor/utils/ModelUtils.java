@@ -60,7 +60,7 @@ public class ModelUtils {
 						throw new RuntimeException(clazz.getName() + '.' + field.getName() + " is an OPTION type, but we can't find suitable options for it");
 					}
 				}
-				params.add(new Param(formatName(name), propertyDescription.value(), type, property.required(), property.defaultValue(), options));
+				params.add(new Param(name, formatName(name), propertyDescription.value(), type, property.required(), property.defaultValue(), options));
 			}
 			clazz = clazz.getSuperclass();
 		}
