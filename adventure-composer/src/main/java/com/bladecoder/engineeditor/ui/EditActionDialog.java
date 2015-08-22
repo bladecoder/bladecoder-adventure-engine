@@ -135,9 +135,10 @@ public class EditActionDialog extends EditElementDialog {
 		}
 
 		if (ac != null) {
-			setInfo(ModelUtils.getInfo(ac));
+			final Class<?> clazz = ac.getClass();
 
-			List<Param> params = ModelUtils.getParams(ac);
+			setInfo(ModelUtils.getInfo(clazz));
+			List<Param> params = ModelUtils.getParams(clazz);
 
 			parameters = new InputPanel[params.size()];
 
