@@ -28,6 +28,8 @@ import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 public class CharacterActor extends SpriteActor {
 	private final static float DEFAULT_WALKING_SPEED = 700f; // Speed units:
@@ -35,9 +37,12 @@ public class CharacterActor extends SpriteActor {
 	
 	public final static String DEFAULT_STAND_ANIM = "stand";
 	public final static String DEFAULT_WALK_ANIM = "walk";
-	public final static String DEFAULT_TALK_ANIM = "talk";	
+	public final static String DEFAULT_TALK_ANIM = "talk";
 
+	@JsonProperty(defaultValue = "700")
+	@JsonPropertyDescription("The walking speed in pix/sec")
 	private float walkingSpeed = DEFAULT_WALKING_SPEED;
+
 	private Color textColor;
 	
 	private String standAnim = DEFAULT_STAND_ANIM;

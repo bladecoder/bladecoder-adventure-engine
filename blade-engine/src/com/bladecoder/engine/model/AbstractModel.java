@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 
 public abstract class AbstractModel {
 	@JsonProperty(required = true)
-	@JsonPropertyDescription("The id of the element. Ids can only contain letters, numbers or the symbol '$'.")
+	@JsonPropertyDescription("The id of the element.\nIds can only contain letters, numbers or the symbol '$'.")
 	@ModelPropertyType(Param.Type.STRING)
 	@NotNull
 	@Pattern(regexp = "[a-zA-Z0-9$]")

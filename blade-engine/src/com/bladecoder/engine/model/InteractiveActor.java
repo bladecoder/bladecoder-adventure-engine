@@ -40,15 +40,15 @@ public class InteractiveActor extends BaseActor implements AssetConsumer {
 	@ModelPropertyType(Param.Type.STRING)
 	protected String desc;
 
-	@JsonProperty
-	@JsonPropertyDescription("The order to draw")
-	protected float zIndex;
-
 	/** internal state. Can be used for actions to maintain a state machine */
 	@JsonProperty
 	@JsonPropertyDescription("Initial state of the actor. Actors can be in different states during the game")
 	@ModelPropertyType(Param.Type.STRING)
 	protected String state;
+
+	@JsonProperty
+	@JsonPropertyDescription("The order to draw")
+	protected float zIndex;
 
 	protected VerbManager verbs = new VerbManager();
 	protected HashMap<String, SoundFX> sounds;
