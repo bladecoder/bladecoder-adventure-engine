@@ -7,8 +7,7 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class SceneLayer {
-	private String name;
+public class SceneLayer extends AbstractModel {
 	private boolean visible = true;
 	private boolean dynamic;
 	
@@ -31,14 +30,6 @@ public class SceneLayer {
 	
 	public void add(BaseActor actor) {
 		actors.add(actor);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public boolean isVisible() {

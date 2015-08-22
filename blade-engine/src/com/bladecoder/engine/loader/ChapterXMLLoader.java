@@ -412,7 +412,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 	private void parseLayer(Attributes atts) throws SAXException {
 		SceneLayer layer = new SceneLayer();
 
-		layer.setName(atts.getValue(XMLConstants.ID_ATTR));
+		layer.setId(atts.getValue(XMLConstants.ID_ATTR));
 		layer.setVisible(Boolean.parseBoolean(atts.getValue(XMLConstants.VISIBLE_ATTR)));
 		layer.setDynamic(Boolean.parseBoolean(atts.getValue(XMLConstants.DYNAMIC_ATTR)));
 

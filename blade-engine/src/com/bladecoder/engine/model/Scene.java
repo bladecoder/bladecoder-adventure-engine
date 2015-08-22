@@ -122,7 +122,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 	public SceneLayer getLayer(String name) {
 		for (SceneLayer l : layers) {
-			if (name.equals(l.getName()))
+			if (name.equals(l.getId()))
 				return l;
 		}
 
@@ -322,7 +322,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 		if (layer == null) { // fallback for compatibility
 			layer = new SceneLayer();
-			layer.setName(actor.getLayer());
+			layer.setId(actor.getLayer());
 			layers.add(layer);
 		}
 
