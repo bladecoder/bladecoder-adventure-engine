@@ -25,7 +25,7 @@ import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
+@ModelDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfSceneAttrAction extends AbstractIfAction {
 	private String caID;
 
@@ -35,17 +35,17 @@ public class IfSceneAttrAction extends AbstractIfAction {
 
 	@JsonProperty("scene")
 	@JsonPropertyDescription("The scene to check its attribute")
-	@ActionPropertyType(Type.SCENE)
+	@ModelPropertyType(Type.SCENE)
 	private String sceneId;
 
 	@JsonProperty(required = true, defaultValue = "state")
 	@JsonPropertyDescription("The scene attribute")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private SceneAttr attr;
 
 	@JsonProperty
 	@JsonPropertyDescription("The attribute value")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String value;
 
 	@Override

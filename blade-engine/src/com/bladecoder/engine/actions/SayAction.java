@@ -31,36 +31,36 @@ import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Says a text")
+@ModelDescription("Says a text")
 public class SayAction extends BaseCallbackAction {
 	@JsonProperty("actor")
 	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ModelPropertyType(Type.ACTOR)
 	private String actorId;
 
 	@JsonProperty
 	@JsonPropertyDescription("The 'text' to show")
-	@ActionPropertyType(Type.SMALL_TEXT)
+	@ModelPropertyType(Type.SMALL_TEXT)
 	private String text;
 
 	@JsonProperty
 	@JsonPropertyDescription("The position of the text. If null, the position will be calc based in actor")
-	@ActionPropertyType(Type.VECTOR2)
+	@ModelPropertyType(Type.VECTOR2)
 	private Vector2 pos;
 
 	@JsonProperty("speech")
 	@JsonPropertyDescription("The 'soundId' to play if selected")
-	@ActionPropertyType(Type.SOUND)
+	@ModelPropertyType(Type.SOUND)
 	private String soundId;
 
 	@JsonProperty(required = true, defaultValue = "RECTANGLE")
 	@JsonPropertyDescription("The type of the text: 'talk', 'rectangle' (default) and 'plain'")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private Text.Type type = Text.Type.RECTANGLE;
 
 	@JsonProperty(defaultValue = "false")
 	@JsonPropertyDescription("Queue the text if other text is showing, or show it immediately.")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private boolean queue = false;
 
 	private String previousAnim = null;

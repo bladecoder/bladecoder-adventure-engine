@@ -1,8 +1,7 @@
 package com.bladecoder.engineeditor.utils;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionDescription;
-import com.bladecoder.engine.actions.ActionPropertyType;
+import com.bladecoder.engine.actions.ModelDescription;
+import com.bladecoder.engine.actions.ModelPropertyType;
 import com.bladecoder.engine.actions.Param;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -12,9 +11,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActionUtils {
-	public static String getInfo(@Nonnull Action action) {
-		return action.getClass().getAnnotation(ActionDescription.class).value();
+public class ModelUtils {
+	public static String getInfo(@Nonnull Object obj) {
+		return obj.getClass().getAnnotation(ModelDescription.class).value();
 	}
 
 	@Nonnull
@@ -28,7 +27,7 @@ public class ActionUtils {
 				if (property == null) {
 					continue;
 				}
-				final ActionPropertyType propertyType = field.getAnnotation(ActionPropertyType.class);
+				final ModelPropertyType propertyType = field.getAnnotation(ModelPropertyType.class);
 				final JsonPropertyDescription propertyDescription = field.getAnnotation(JsonPropertyDescription.class);
 
 				final String name = property.value() == null || property.value().trim().isEmpty() ? field.getName() : property.value();

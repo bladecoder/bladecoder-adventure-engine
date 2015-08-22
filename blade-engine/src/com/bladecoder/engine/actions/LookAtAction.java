@@ -31,7 +31,7 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Shows the text and sets the player to lookat in the selected actor direction")
+@ModelDescription("Shows the text and sets the player to lookat in the selected actor direction")
 public class LookAtAction implements Action {
 	public enum Direction {
 		EMPTY(""),
@@ -57,22 +57,22 @@ public class LookAtAction implements Action {
 
 	@JsonProperty("actor")
 	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ModelPropertyType(Type.ACTOR)
 	private String actorId;
 
 	@JsonProperty("speech")
 	@JsonPropertyDescription("The 'soundId' to play if selected")
-	@ActionPropertyType(Type.SOUND)
+	@ModelPropertyType(Type.SOUND)
 	private String soundId;
 
 	@JsonProperty
 	@JsonPropertyDescription("The 'text' to show")
-	@ActionPropertyType(Type.SMALL_TEXT)
+	@ModelPropertyType(Type.SMALL_TEXT)
 	private String text;
 
 	@JsonProperty
 	@JsonPropertyDescription("The direction to lookat. If empty, the player lookat to the actor")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private Direction direction;
 
 	@Override

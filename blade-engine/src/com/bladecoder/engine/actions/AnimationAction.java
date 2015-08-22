@@ -28,7 +28,7 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Sets the animation for an actor")
+@ModelDescription("Sets the animation for an actor")
 public class AnimationAction implements Action {
 	private static final int NO_POS = 0;
 	private static final int SET_POS_ABSOLUTE = 1;
@@ -36,32 +36,32 @@ public class AnimationAction implements Action {
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The Animation to set")
-	@ActionPropertyType(Type.ACTOR_ANIMATION)
+	@ModelPropertyType(Type.ACTOR_ANIMATION)
 	private String animation;
 
 	@JsonProperty
 	@JsonPropertyDescription("The times to repeat. -1 to infinity repeat")
-	@ActionPropertyType(Type.INTEGER)
+	@ModelPropertyType(Type.INTEGER)
 	private int count = 1;
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
 
 	@JsonProperty(value = "animation_type", required = true, defaultValue = "SPRITE_DEFINED")
 	@JsonPropertyDescription("The repeat mode")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;       // FIXME: This adds more types not present here before
 
 	@JsonProperty
 	@JsonPropertyDescription("Puts actor position after setting the animation")
-	@ActionPropertyType(Type.VECTOR2)
+	@ModelPropertyType(Type.VECTOR2)
 	private Vector2 pos;
 
 	@JsonProperty
 	@JsonPropertyDescription("Sets the position absolute or relative")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private boolean absolute = false;
 
 	private String actorId;

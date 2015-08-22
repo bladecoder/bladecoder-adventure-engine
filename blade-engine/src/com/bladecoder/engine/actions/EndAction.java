@@ -23,11 +23,11 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Marks the end of a block for a control action")
+@ModelDescription("Marks the end of a block for a control action")
 public class EndAction extends AbstractControlAction {
 	@JsonProperty
 	@JsonPropertyDescription("The block ID")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String caID;
 
 	@Override

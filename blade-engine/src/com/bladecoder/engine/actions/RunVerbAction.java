@@ -32,21 +32,21 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Runs an actor verb")
+@ModelDescription("Runs an actor verb")
 public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	@JsonProperty("actor")
 	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ModelPropertyType(Type.ACTOR)
 	private String actorId;
 
 	@JsonProperty(value = "actor", required = true)
 	@JsonPropertyDescription("The 'verbId' to run")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String verb;
 
 	@JsonProperty
 	@JsonPropertyDescription("Aditional actor for 'use' verb")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String target;
 
 	private String state;

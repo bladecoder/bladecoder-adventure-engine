@@ -22,11 +22,11 @@ import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Pause the action")
+@ModelDescription("Pause the action")
 public class WaitAction implements Action {
 	@JsonProperty(required = true, defaultValue = "1.0")
 	@JsonPropertyDescription("The time pause in seconds")
-	@ActionPropertyType(Type.FLOAT)
+	@ModelPropertyType(Type.FLOAT)
 	private float time;
 
 	@Override

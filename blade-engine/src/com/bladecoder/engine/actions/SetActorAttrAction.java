@@ -32,59 +32,59 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import javax.annotation.Nullable;
 
-@ActionDescription("Change actor attributes.")
+@ModelDescription("Change actor attributes.")
 public class SetActorAttrAction implements Action {
 	@JsonProperty(value = "actor", required = true)
 	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
+	@ModelPropertyType(Type.SCENE_ACTOR)
 	private SceneActorRef sceneActorRef;
 
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor visibility")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private Boolean visible;
 
 	@JsonProperty
 	@JsonPropertyDescription("When 'true' the actor responds to the user input")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private Boolean interaction;
 
 	@JsonProperty
 	@JsonPropertyDescription("The actor layer")
-	@ActionPropertyType(Type.LAYER)
+	@ModelPropertyType(Type.LAYER)
 	private String layer;
 
 	@JsonProperty
 	@JsonPropertyDescription("The order to draw bigger is near")
-	@ActionPropertyType(Type.FLOAT)
+	@ModelPropertyType(Type.FLOAT)
 	private Float zIndex;
 
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor position")
-	@ActionPropertyType(Type.VECTOR2)
+	@ModelPropertyType(Type.VECTOR2)
 	private Vector2 position;
 
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor scale")
-	@ActionPropertyType(Type.FLOAT)
+	@ModelPropertyType(Type.FLOAT)
 	private Float scale;
 
 
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor 'stand' animation. Only supported for character actors.")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String standAnimation;
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor 'walk' animation. Only supported for character actors.")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String walkAnimation;
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor 'talk' animation. Only supported for character actors.")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String talkAnimation;
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor speed for walking. Only supported for character actors.")
-	@ActionPropertyType(Type.FLOAT)
+	@ModelPropertyType(Type.FLOAT)
 	private Float walkingSpeed;
 
 	@Override

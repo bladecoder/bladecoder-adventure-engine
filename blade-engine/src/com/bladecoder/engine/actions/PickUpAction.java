@@ -26,16 +26,16 @@ import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Puts the selected actor in the inventory.")
+@ModelDescription("Puts the selected actor in the inventory.")
 public class PickUpAction implements Action {
 	@JsonProperty("actor")
 	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
+	@ModelPropertyType(Type.SCENE_ACTOR)
 	private SceneActorRef sceneActorRef;
 
 	@JsonProperty
 	@JsonPropertyDescription("The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String animation;
 
 	@Override

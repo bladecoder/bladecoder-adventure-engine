@@ -24,16 +24,16 @@ import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Execute the actions inside the If/EndIf if the game propert has the specified value.")
+@ModelDescription("Execute the actions inside the If/EndIf if the game propert has the specified value.")
 public class IfPropertyAction extends AbstractIfAction {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The property name")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String name;
 
 	@JsonProperty
 	@JsonPropertyDescription("The property value")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String value;
 
 	private String caID;

@@ -22,11 +22,11 @@ import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Set/Unset the cutmode. Also shows/hide the inventory")
+@ModelDescription("Set/Unset the cutmode. Also shows/hide the inventory")
 public class SetCutmodeAction implements Action {
 	@JsonProperty(required = true, defaultValue = "true")
 	@JsonPropertyDescription("when 'true' sets the scene in 'cutmode'")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private boolean value = true;
 
 	@Override

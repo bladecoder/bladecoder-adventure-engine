@@ -25,41 +25,41 @@ import com.bladecoder.engine.util.InterpolationMode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Sets an actor Scale animation")
+@ModelDescription("Sets an actor Scale animation")
 public class ScaleAction implements Action {
 	@JsonProperty
 	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ModelPropertyType(Type.ACTOR)
 	private String actorId;
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The target scale")
-	@ActionPropertyType(Type.FLOAT)
+	@ModelPropertyType(Type.FLOAT)
 	private float scale;
 
 	@JsonProperty(required = true, defaultValue = "1.0")
 	@JsonPropertyDescription("Duration of the animation in seconds")
-	@ActionPropertyType(Type.FLOAT)
+	@ModelPropertyType(Type.FLOAT)
 	private float speed;
 
 	@JsonProperty
 	@JsonPropertyDescription("The The times to repeat")
-	@ActionPropertyType(Type.INTEGER)
+	@ModelPropertyType(Type.INTEGER)
 	private int count = 1;
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("If this param is 'false' the transition is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
 
 	@JsonProperty(required = true, defaultValue = "REPEAT")
 	@JsonPropertyDescription("The repeat mode")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private Tween.Type repeat = Tween.Type.REPEAT;
 
 	@JsonProperty
 	@JsonPropertyDescription("The interpolation mode")
-	@ActionPropertyType(Type.OPTION)
+	@ModelPropertyType(Type.OPTION)
 	private InterpolationMode interpolation;
 	
 	@Override

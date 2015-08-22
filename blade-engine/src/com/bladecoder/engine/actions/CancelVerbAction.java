@@ -32,21 +32,21 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
  * 
  * @author rgarcia
  */
-@ActionDescription("Stops the named verb if it is in execution.")
+@ModelDescription("Stops the named verb if it is in execution.")
 public class CancelVerbAction implements Action {
 	@JsonProperty
 	@JsonPropertyDescription("The target actor. Empty for the current actor.")
-	@ActionPropertyType(Type.ACTOR)
+	@ModelPropertyType(Type.ACTOR)
 	private String actor;
 
 	@JsonProperty
 	@JsonPropertyDescription("The verb to stop. Empty for the current verb.")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String verb;
 
 	@JsonProperty
 	@JsonPropertyDescription("If the verb is 'use', the target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ModelPropertyType(Type.ACTOR)
 	private String target;
 
 	@Override

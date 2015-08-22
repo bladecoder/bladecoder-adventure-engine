@@ -18,7 +18,7 @@ package com.bladecoder.engineeditor.ui;
 import java.util.Arrays;
 import java.util.List;
 
-import com.bladecoder.engineeditor.utils.ActionUtils;
+import com.bladecoder.engineeditor.utils.ModelUtils;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -135,9 +135,9 @@ public class EditActionDialog extends EditElementDialog {
 		}
 
 		if (ac != null) {
-			setInfo(ActionUtils.getInfo(ac));
+			setInfo(ModelUtils.getInfo(ac));
 
-			List<Param> params = ActionUtils.getParams(ac);
+			List<Param> params = ModelUtils.getParams(ac);
 
 			parameters = new InputPanel[params.size()];
 

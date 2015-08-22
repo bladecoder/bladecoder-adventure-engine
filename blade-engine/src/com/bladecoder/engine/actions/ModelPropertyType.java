@@ -8,6 +8,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Deprecated
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ActionPropertyType {
+public @interface ModelPropertyType {
 	Param.Type value();
 }
