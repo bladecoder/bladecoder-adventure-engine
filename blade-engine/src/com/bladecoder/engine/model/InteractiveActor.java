@@ -19,17 +19,21 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.actions.ModelDescription;
 import com.bladecoder.engine.actions.ModelPropertyType;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * An InteractiveActor is any object in a scene or in the inventory that has user interaction.
  * 
  * @author rgarcia
  */
+@JsonTypeName("background")
+@ModelDescription("Background actors don't have sprites or animations. They are used to make objects drawn in the background interactive")
 public class InteractiveActor extends BaseActor implements AssetConsumer {
 	@JsonProperty
 	@JsonPropertyDescription("True when the actor reacts to the user input")

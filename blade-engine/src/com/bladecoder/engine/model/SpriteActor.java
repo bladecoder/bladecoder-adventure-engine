@@ -20,6 +20,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.actions.ModelDescription;
 import com.bladecoder.engine.actions.ModelPropertyType;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.anim.AnimationDesc;
@@ -31,7 +32,10 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.InterpolationMode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("sprite")
+@ModelDescription("Sprite actors have one or several sprites or animations")
 public class SpriteActor extends InteractiveActor {
 	public enum DepthType {
 		NONE, VECTOR
