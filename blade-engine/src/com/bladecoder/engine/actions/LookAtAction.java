@@ -24,6 +24,7 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.ModelTypeLink;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
@@ -33,6 +34,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ModelDescription("Shows the text and sets the player to lookat in the selected actor direction")
 public class LookAtAction implements Action {
+	private static final String ACTOR_PROPERTY_ID = "actor";
+
 	public enum Direction {
 		EMPTY(""),
 		FRONT(AnimationDesc.FRONT),
@@ -55,7 +58,7 @@ public class LookAtAction implements Action {
 		}
 	}
 
-	@JsonProperty("actor")
+	@JsonProperty(ACTOR_PROPERTY_ID)
 	@JsonPropertyDescription("The target actor")
 	@ModelPropertyType(Type.ACTOR)
 	private String actorId;
@@ -63,6 +66,7 @@ public class LookAtAction implements Action {
 	@JsonProperty("speech")
 	@JsonPropertyDescription("The 'soundId' to play if selected")
 	@ModelPropertyType(Type.SOUND)
+	@ModelTypeLink(ACTOR_PROPERTY_ID)
 	private String soundId;
 
 	@JsonProperty
