@@ -60,6 +60,9 @@ import com.bladecoder.engine.util.Utils3D;
 @SuppressWarnings("deprecation")
 public class Sprite3DRenderer implements ActorRenderer {
 
+	private static final String FRAGMENT_SHADER = "com/bladecoder/engine/shading/cel.fragment.glsl";
+	private static final String FLOOR_FRAGMENT_SHADER = "com/bladecoder/engine/shading/floor.fragment.glsl";
+	private static final String VERTEX_SHADER = "com/bladecoder/engine/shading/cel.vertex.glsl";
 	private final static boolean USE_FBO = false;
 	private final static int MAX_BONES = 40;
 	private final static Format FRAMEBUFFER_FORMAT = Format.RGBA4444;
@@ -430,7 +433,8 @@ public class Sprite3DRenderer implements ActorRenderer {
 	
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
-		lookat(direction);
+		if(direction!=null)
+			lookat(direction);
 		
 		startAnimation(id, repeatType, count, null);
 	}
@@ -530,6 +534,9 @@ public class Sprite3DRenderer implements ActorRenderer {
 	}
 	
 	private void computeBbox() {
+		if(bbox == null)
+			return;
+		
 		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
@@ -634,9 +641,9 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 	public static void createBatchs() {
 		Config modelConfigShader = new Config(Gdx.files.classpath(
-				"org/bladecoder/engine/shading/cel.vertex.glsl").readString(),
+				VERTEX_SHADER).readString(),
 				Gdx.files.classpath(
-						"org/bladecoder/engine/shading/cel.fragment.glsl")
+						FRAGMENT_SHADER)
 						.readString());
 
 		modelConfigShader.numBones = MAX_BONES;
@@ -651,9 +658,9 @@ public class Sprite3DRenderer implements ActorRenderer {
 		floorBatch = new ModelBatch(
 				new DefaultShaderProvider(
 						Gdx.files
-								.classpath("org/bladecoder/engine/shading/cel.vertex.glsl"),
+								.classpath(VERTEX_SHADER),
 						Gdx.files
-								.classpath("org/bladecoder/engine/shading/floor.fragment.glsl")));
+								.classpath(FLOOR_FRAGMENT_SHADER)));
 	}
 
 	private void loadSource(String source) {
