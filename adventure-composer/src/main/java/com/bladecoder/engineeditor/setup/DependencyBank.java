@@ -53,7 +53,7 @@ public class DependencyBank {
 	 */
 	public enum ProjectDependency {
 		GDX(
-			new String[]{"com.badlogicgames.gdx:gdx:$gdxVersion", "fileTree(dir: '../libs', include: '*.jar')", "com.bladecoder.engine:blade-engine:$bladeEngineVersion", "com.fasterxml.jackson.core:jackson-databind:2.6.1"},
+			new String[]{"com.badlogicgames.gdx:gdx:$gdxVersion", "fileTree(dir: '../libs', include: '*.jar')", "com.bladecoder.engine:blade-engine:$bladeEngineVersion"},
 			new String[]{"com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"},
 			new String[]{"com.badlogicgames.gdx:gdx-backend-android:$gdxVersion", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86", "fileTree(dir: '../libs', include: '*.jar')", "com.bladecoder.engine:blade-engine:$bladeEngineVersion"},
 			new String[]{"org.robovm:robovm-rt:$roboVMVersion", "org.robovm:robovm-cocoatouch:$roboVMVersion", "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"},
