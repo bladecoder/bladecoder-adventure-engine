@@ -8,8 +8,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-public class SoundInputPanel extends EditableOptionsInputPanel<String> {
-	SoundInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
+public class SoundFileInputPanel extends EditableOptionsInputPanel<String> {
+	SoundFileInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
 		super(skin, title, desc, mandatory, defaultValue, getValues(mandatory));
 	}
 
