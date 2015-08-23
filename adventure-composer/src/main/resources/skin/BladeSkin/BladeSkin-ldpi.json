@@ -130,7 +130,7 @@
 		default: { minus: tree_minus, plus: tree_plus, over: text_focused, selection: text_selected , background: text_opaque}
 	},
 
-	com.badlogic.gdx.scenes.scene2d.ui.Tooltip$TooltipStyle: {
+	com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
 		default: {label: default, background: message}
 	},
 }
