@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.SceneLayer;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -159,9 +161,8 @@ public class LayerList extends ElementList {
 	}	
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(
-			Element e) {
-		return new EditLayerDialog(skin, doc, parent, e);
+	protected EditAnnotatedDialog<SceneLayer> getEditElementDialogInstance(Element e) {
+		return new EditAnnotatedDialog<>(skin, SceneLayer.class, doc, parent, XMLConstants.LAYER_TAG, e);
 	}
 	
 	@Override
