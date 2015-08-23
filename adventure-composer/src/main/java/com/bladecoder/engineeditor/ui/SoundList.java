@@ -15,13 +15,15 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.SoundFX;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.ElementList;
 
-public class SoundList extends ElementList {	
+public class SoundList extends ElementList {
 	
 	public SoundList(Skin skin) {
 		super(skin, true);
@@ -30,8 +32,8 @@ public class SoundList extends ElementList {
 	}	
 
 	@Override
-	protected EditSoundDialog getEditElementDialogInstance(Element e) {
-		return new EditSoundDialog(skin, doc, parent, e);
+	protected EditAnnotatedDialog<SoundFX> getEditElementDialogInstance(Element e) {
+		return new EditAnnotatedDialog<>(skin, SoundFX.class, doc, parent, XMLConstants.SOUND_TAG, e);
 	}	
 
 	// -------------------------------------------------------------------------
