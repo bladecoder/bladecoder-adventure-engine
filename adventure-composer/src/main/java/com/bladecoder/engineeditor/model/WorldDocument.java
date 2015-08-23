@@ -74,15 +74,7 @@ public class WorldDocument extends  BaseDocument {
 	public String[] getChapters() {
 		String dir = Ctx.project.getProjectPath() + Project.MODEL_PATH;
 		
-		String[] chapters = new File(dir).list(new FilenameFilter() {
-			@Override
-			public boolean accept(File arg0, String arg1) {
-				if (!arg1.endsWith(XMLConstants.CHAPTER_EXT))
-					return false;
-
-				return true;
-			}
-		});
+		String[] chapters = new File(dir).list((arg0, arg1) -> arg1.endsWith(XMLConstants.CHAPTER_EXT));
 		
 		for(int i = 0; i < chapters.length; i++)
 			chapters[i] = chapters[i].substring(0, chapters[i].lastIndexOf('.'));
