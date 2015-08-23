@@ -22,11 +22,11 @@ import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Change the current scene.")
+@ModelDescription("Change the current scene.")
 public class LeaveAction implements Action {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The target scene")
-	@ActionPropertyType(Type.SCENE)
+	@ModelPropertyType(Type.SCENE)
 	private String scene;
 
 	@Override

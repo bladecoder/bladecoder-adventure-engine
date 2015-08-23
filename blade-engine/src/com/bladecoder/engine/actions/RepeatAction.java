@@ -23,11 +23,11 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Repeats the actions inside the Repeat/EndRepeat actions.")
+@ModelDescription("Repeats the actions inside the Repeat/EndRepeat actions.")
 public class RepeatAction extends AbstractControlAction {
 	@JsonProperty(required = true, defaultValue = "1")
 	@JsonPropertyDescription("Repeat the actions the specified times. -1 to infinity")
-	@ActionPropertyType(Type.INTEGER)
+	@ModelPropertyType(Type.INTEGER)
 	private int repeat = 1;
 
 	int currentRepeat = 0;

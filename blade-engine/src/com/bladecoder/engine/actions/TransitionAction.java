@@ -24,26 +24,26 @@ import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Sets a transition effect (FADEIN/FADEOUT)")
+@ModelDescription("Sets a transition effect (FADEIN/FADEOUT)")
 public class TransitionAction implements Action {
 	@JsonProperty(required = true, defaultValue = "1.0")
 	@JsonPropertyDescription("Duration of the transition")
-	@ActionPropertyType(Type.FLOAT)
+	@ModelPropertyType(Type.FLOAT)
 	private float time = 1;
 
 	@JsonProperty(value = "color", required = true, defaultValue = "black")
 	@JsonPropertyDescription("The color to fade ('white', 'black' or RRGGBBAA).")
-	@ActionPropertyType(Type.COLOR)
+	@ModelPropertyType(Type.COLOR)
 	private Color c = new Color(0,0,0,1);
 
 	@JsonProperty(required = true, defaultValue = "FADE_IN")
 	@JsonPropertyDescription("The transition type (fadein/fadeout)")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private Transition.Type type = Transition.Type.FADE_IN;     // FIXME: This adds NONE as a valid value
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("If this param is 'false' the transition is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
 
 	@Override

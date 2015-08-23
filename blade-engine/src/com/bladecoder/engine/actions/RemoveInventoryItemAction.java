@@ -23,11 +23,11 @@ import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Remove items from the inventory.")
+@ModelDescription("Remove items from the inventory.")
 public class RemoveInventoryItemAction implements Action {
 	@JsonProperty("id")
 	@JsonPropertyDescription("The 'actorid' from the inventory item to remove. If empty remove all items.")
-	@ActionPropertyType(Type.ACTOR)
+	@ModelPropertyType(Type.ACTOR)
 	private String itemId;
 	
 	@Override

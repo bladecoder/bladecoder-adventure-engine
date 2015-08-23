@@ -20,27 +20,29 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.actions.ModelPropertyType;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 /**
  * A BaseActor is the foundation for all actors in Scenes
  * 
  * @author rgarcia
  */
-abstract public class BaseActor implements Comparable<BaseActor>, Serializable {
-	protected String id;
-	protected Scene scene = null;
-	protected boolean visible = true;
-	protected final Polygon bbox = new Polygon();	
+abstract public class BaseActor extends AbstractModel implements Comparable<BaseActor>, Serializable {
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("The layer for drawing order")
+	@ModelPropertyType(Param.Type.LAYER)
 	protected String layer;
-	
-	public String getId() {
-		return id;
-	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
+	@JsonProperty
+	@JsonPropertyDescription("The actor visibility")
+	protected boolean visible = true;
+
+	protected Scene scene = null;
+	protected final Polygon bbox = new Polygon();
 
 	public Polygon getBBox() {
 		return bbox;

@@ -197,7 +197,7 @@ public class ChapterDocument extends BaseDocument {
 		for (int i = 0; i < layers.getLength(); i++) {
 			Element l = (Element) layers.item(i);
 			SceneLayer layer = new SceneLayer();
-			layer.setName(l.getAttribute(XMLConstants.ID_ATTR));
+			layer.setId(l.getAttribute(XMLConstants.ID_ATTR));
 			layer.setVisible(Boolean.parseBoolean(l.getAttribute(XMLConstants.VISIBLE_ATTR)));
 			layer.setDynamic(Boolean.parseBoolean(l.getAttribute(XMLConstants.DYNAMIC_ATTR)));
 			scn.addLayer(layer);

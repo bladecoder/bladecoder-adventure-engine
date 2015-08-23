@@ -20,42 +20,68 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import net.jcip.annotations.Immutable;
 
+import java.util.Arrays;
+
 @Immutable
 public class Param {
 	public enum Type {
 		STRING, BOOLEAN, FLOAT, INTEGER, VECTOR2, VECTOR3, DIMENSION, ACTOR, SCENE, CHAPTER, FILE, OPTION, SCENE_ACTOR, ACTOR_ANIMATION, LAYER, EDITABLE_OPTION,
-		TEXT, SMALL_TEXT, BIG_TEXT, COLOR, SOUND
-	};
+		TEXT, SMALL_TEXT, BIG_TEXT, COLOR, SOUND_FILE, SOUND
+	}
 	
 	public static final String NUMBER_PARAM_SEPARATOR = ",";
 	public static final String STRING_PARAM_SEPARATOR = "#";
 
-	public final String name;
-	public final String desc;
-	public final Type type;
-	public final boolean mandatory;
-	public final String defaultValue;
-	public final Object[] options; // availables values for combos
+	private final String id;
+	private final String name;
+	private final String desc;
+	private final Type type;
+	private final boolean mandatory;
+	private final String defaultValue;
+	private final Object[] options; // availables values for combos
+	private final String link;
 
-	public Param(String name, String desc, Type type, boolean mandatory, String defaultValue, Object[] options) {
+	public Param(String id, String name, String desc, Type type, boolean mandatory, String defaultValue, Object[] options, String link) {
+		this.id = id;
 		this.name = name;
 		this.desc = desc;
 		this.type = type;
 		this.mandatory = mandatory;
 		this.defaultValue = defaultValue;
 		this.options = options;
+		this.link = link;
 	}
-	
-	public Param(String name, String desc, Type type, boolean mandatory, String defaultValue) {
-		this(name, desc, type, mandatory, defaultValue, null);
+
+	public String getId() {
+		return id;
 	}
-	
-	public Param(String name, String desc, Type type, boolean mandatory) {
-		this(name, desc, type, mandatory, null, null);
+
+	public String getName() {
+		return name;
 	}
-	
-	public Param(String name, String desc, Type type) {
-		this(name, desc, type, false, null, null);
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public boolean isMandatory() {
+		return mandatory;
+	}
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public Object[] getOptions() {
+		return options;
+	}
+
+	public String getLink() {
+		return link;
 	}
 
 	public static Vector2 parseVector2(String s) {
@@ -171,5 +197,17 @@ public class Param {
 			return s2;
 		
 		return s1 + STRING_PARAM_SEPARATOR + s2;
+	}
+
+	@Override
+	public String toString() {
+		return "Param{" +
+				"name='" + name + '\'' +
+				", desc='" + desc + '\'' +
+				", type=" + type +
+				", mandatory=" + mandatory +
+				", defaultValue='" + defaultValue + '\'' +
+				", options=" + Arrays.toString(options) +
+				'}';
 	}
 }

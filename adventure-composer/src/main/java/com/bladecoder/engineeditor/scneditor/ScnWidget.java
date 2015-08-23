@@ -174,19 +174,19 @@ public class ScnWidget extends Widget {
 					createAndSelectActor((Element) e.getNewValue());
 				} else if (e.getPropertyName().equals("layer")) {
 					Element el = (Element) e.getNewValue();
-					String name = el.getAttribute("id");
+					String id = el.getAttribute("id");
 					NodeList layersNodes = ((Element) el.getParentNode()).getElementsByTagName("layer");
 					boolean visible = Boolean.parseBoolean(el.getAttribute("visible"));
 					boolean dynamic = Boolean.parseBoolean(el.getAttribute("dynamic"));
 					// Element previousSibling =
 					// (Element)el.getPreviousSibling();
 
-					SceneLayer layer = scn.getLayer(name);
+					SceneLayer layer = scn.getLayer(id);
 
 					if (layer == null && layersNodes.getLength() > scn.getLayers().size()) {
 						// NEW LAYER CREATED
 						layer = new SceneLayer();
-						layer.setName(name);
+						layer.setId(id);
 						layer.setVisible(visible);
 						layer.setDynamic(dynamic);
 

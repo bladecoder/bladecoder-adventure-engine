@@ -25,7 +25,16 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.AssetConsumer;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include= JsonTypeInfo.As.PROPERTY)
+@JsonSubTypes({
+		@JsonSubTypes.Type(value = AtlasRenderer.class),
+		@JsonSubTypes.Type(value = ImageRenderer.class),
+//		@JsonSubTypes.Type(value = SpineRenderer.class),    // FIXME: This one will be added using some other means
+		@JsonSubTypes.Type(value = Sprite3DRenderer.class)
+})
 public interface ActorRenderer extends Serializable, AssetConsumer {
 
 	public void update(float delta);

@@ -1,12 +1,12 @@
-package com.bladecoder.engine.actions;
+package com.bladecoder.engine.model;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ActionDescription {
+public @interface ModelTypeLink {
 	String value();
 }

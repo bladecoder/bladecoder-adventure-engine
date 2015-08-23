@@ -51,7 +51,9 @@ import com.esotericsoftware.spine.SkeletonRenderer;
 import com.esotericsoftware.spine.Slot;
 import com.esotericsoftware.spine.attachments.Attachment;
 import com.esotericsoftware.spine.attachments.RegionAttachment;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("spine")
 public class SpineRenderer implements ActorRenderer {
 
 	private final static int PLAY_ANIMATION_EVENT = 0;

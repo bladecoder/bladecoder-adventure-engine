@@ -38,6 +38,7 @@ jar {
     }
 
 dependencies {
+  compile 'javax.validation:validation-api:1.1.0.Final'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'com.google.code.findbugs:jsr305:3.0.0'
   compile "com.fasterxml.jackson.core:jackson-databind:2.6.1"

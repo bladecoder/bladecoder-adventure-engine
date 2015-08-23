@@ -16,12 +16,12 @@
 package com.bladecoder.engineeditor.ui;
 
 import java.util.Arrays;
+import java.util.List;
 
-import com.bladecoder.engineeditor.utils.ActionUtils;
+import com.bladecoder.engineeditor.utils.ModelUtils;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -29,7 +29,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
@@ -134,30 +133,13 @@ public class EditActionDialog extends EditElementDialog {
 		}
 
 		if (ac != null) {
-			setInfo(ActionUtils.getInfo(ac));
+			final Class<?> clazz = ac.getClass();
 
-			Param[] params = ActionUtils.getParams(ac);
+			setInfo(ModelUtils.getInfo(clazz));
+			List<InputPanel> inputs = ModelUtils.getInputsFromModelClass(ModelUtils.getParams(clazz), getSkin());
+			inputs.forEach(this::addInputPanel);
 
-			parameters = new InputPanel[params.length];
-
-			for (int i = 0; i < params.length; i++) {
-				if (params[i].options instanceof Enum[]) {
-					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), params[i].name, params[i].desc,
-							params[i].type, params[i].mandatory, params[i].defaultValue, (Enum[]) params[i].options);
-				} else {
-					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), params[i].name, params[i].desc,
-							params[i].type, params[i].mandatory, params[i].defaultValue, (String[]) params[i].options);
-				}
-
-				addInputPanel(parameters[i]);
-
-				if ((parameters[i].getField() instanceof TextField && params[i].name.toLowerCase().endsWith("text")) ||
-						parameters[i].getField() instanceof ScrollPane) {
-					parameters[i].getCell(parameters[i].getField()).fillX();
-				}
-			}
-
-			i = parameters;
+			i = inputs.toArray(new InputPanel[inputs.size()]);
 			a = getAttrs();
 		} else {
 			setInfo(CUSTOM_INFO);

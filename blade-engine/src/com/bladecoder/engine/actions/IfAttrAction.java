@@ -23,12 +23,11 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
+@ModelDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfAttrAction extends AbstractIfAction {
 	public static final String ENDTYPE_VALUE = "else";
 	private String caID;
@@ -39,17 +38,17 @@ public class IfAttrAction extends AbstractIfAction {
 
 	@JsonProperty("actor")
 	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
+	@ModelPropertyType(Type.SCENE_ACTOR)
 	private SceneActorRef sceneActorRef;
 
 	@JsonProperty(required = true, defaultValue = "STATE")
 	@JsonPropertyDescription("The actor attribute")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private ActorAttribute attr;
 
 	@JsonProperty
 	@JsonPropertyDescription("The attribute value")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String value;
 
 	@Override

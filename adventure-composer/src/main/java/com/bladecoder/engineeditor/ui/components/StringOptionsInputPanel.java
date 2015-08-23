@@ -17,6 +17,7 @@ package com.bladecoder.engineeditor.ui.components;
 
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class StringOptionsInputPanel extends InputPanel implements OptionsInputPanel {
 	private final SelectBox<String> input;
@@ -58,4 +59,9 @@ public class StringOptionsInputPanel extends InputPanel implements OptionsInputP
 	public int getSelectedIndex() {
     	return input.getSelectedIndex();
     }
+
+	@Override
+	public void addChangeListener(ChangeListener listener) {
+		input.addListener(listener);
+	}
 }

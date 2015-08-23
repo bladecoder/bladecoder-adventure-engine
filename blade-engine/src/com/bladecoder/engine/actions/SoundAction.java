@@ -19,25 +19,30 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.ModelTypeLink;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Play/Stop a sound")
+@ModelDescription("Play/Stop a sound")
 public class SoundAction implements Action {
-	@JsonProperty("actor")
+	private static final String ACTOR_PROPERTY_ID = "actor";
+
+	@JsonProperty(ACTOR_PROPERTY_ID)
 	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ModelPropertyType(Type.ACTOR)
 	private String actorId;
 
 	@JsonProperty
 	@JsonPropertyDescription("The 'soundId' to play")
-	@ActionPropertyType(Type.SOUND)
+	@ModelPropertyType(Type.SOUND)
+	@ModelTypeLink(ACTOR_PROPERTY_ID)
 	private String play;
 
 	@JsonProperty
 	@JsonPropertyDescription("The 'soundId' to stop")
-	@ActionPropertyType(Type.SOUND)
+	@ModelPropertyType(Type.SOUND)
+	@ModelTypeLink(ACTOR_PROPERTY_ID)
 	private String stop;
 	
 	@Override

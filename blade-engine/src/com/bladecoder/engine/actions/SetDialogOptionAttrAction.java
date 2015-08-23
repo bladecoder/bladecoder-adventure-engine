@@ -27,31 +27,31 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Change the selected dialog option properties")
+@ModelDescription("Change the selected dialog option properties")
 public class SetDialogOptionAttrAction implements Action {
 	@JsonProperty("actor")
 	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
+	@ModelPropertyType(Type.SCENE_ACTOR)
 	private SceneActorRef sceneActorRef;
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The dialog")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String dialog;
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The option")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String option;
 
 	@JsonProperty("visible")
 	@JsonPropertyDescription("Show/Hide the dialog option")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private boolean visibility;
 
 	@JsonProperty
 	@JsonPropertyDescription("Sets the selected option as the current dialog option")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private boolean setCurrent = false;
 
 	private boolean setVisibility;

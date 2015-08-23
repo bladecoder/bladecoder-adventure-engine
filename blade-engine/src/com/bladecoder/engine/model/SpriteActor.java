@@ -20,6 +20,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.actions.ModelPropertyType;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.SpritePosTween;
 import com.bladecoder.engine.anim.SpriteScaleTween;
@@ -27,20 +29,30 @@ import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.InterpolationMode;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 public class SpriteActor extends InteractiveActor {
-
-	public static enum DepthType {
+	public enum DepthType {
 		NONE, VECTOR
-	};
+	}
 
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("Actors can be renderer from several sources")
+	@ModelPropertyType(Param.Type.OPTION)
 	protected ActorRenderer renderer;
-	protected SpritePosTween posTween;
-	private SpriteScaleTween scaleTween;
-	private float scale = 1.0f;
 
 	/** Scale sprite acording to the scene depth map */
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("Scene fake depth for scaling")
 	private DepthType depthType = DepthType.NONE;
+
+	@JsonProperty
+	@JsonPropertyDescription("The sprite scale")
+	private float scale = 1.0f;
+
+	protected SpritePosTween posTween;
+	private SpriteScaleTween scaleTween;
 
 	private boolean bboxFromRenderer = false;
 

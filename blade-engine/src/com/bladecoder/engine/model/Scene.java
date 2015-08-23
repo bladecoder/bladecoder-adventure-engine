@@ -32,18 +32,77 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.actions.ModelDescription;
+import com.bladecoder.engine.actions.ModelPropertyType;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.pathfinder.NavNode;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
+@ModelDescription("An adventure is composed of many scenes (screens).\n" +
+		"Inside a scene there are actors and a 'player'.\n" +
+		"The player/user can interact with the actors through 'verbs'")
 public class Scene implements Serializable, AssetConsumer {
 
 	public static final Color ACTOR_BBOX_COLOR = new Color(0.2f, 0.2f, 0.8f, 1f);
 	public static final Color WALKZONE_COLOR = Color.GREEN;
 	public static final Color OBSTACLE_COLOR = Color.RED;
+
+	@JsonProperty
+	@JsonPropertyDescription("The atlas where the background for the scene is located")
+//	@ModelPropertyType(Param.Type.OPTION)
+	@ModelPropertyType(Param.Type.STRING)   // FIXME: This should be OPTION, but not until we convert this field to some other type than String
+	private String backgroundAtlas;
+
+	@JsonProperty
+	@JsonPropertyDescription("The region id for the background")
+	@ModelPropertyType(Param.Type.STRING)
+	private String backgroundRegionId;
+
+	@JsonProperty
+	@JsonPropertyDescription("The atlas where the lightmap for the scene is located")
+//	@ModelPropertyType(Param.Type.OPTION)
+	@ModelPropertyType(Param.Type.STRING)   // FIXME: This should be OPTION
+	private String lightMapAtlas;
+
+	@JsonProperty
+	@JsonPropertyDescription("The region id for the lightmap")
+	@ModelPropertyType(Param.Type.STRING)
+	private String lightMapRegionId;
+
+	@JsonProperty
+	@JsonPropertyDescription("X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale")
+	@ModelPropertyType(Param.Type.STRING)
+	private Vector2 depthVector;
+
+	/** internal state. Can be used for actions to maintain a state machine */
+	@JsonProperty
+	@JsonPropertyDescription("The initial state for the scene")
+	@ModelPropertyType(Param.Type.STRING)
+	private String state;
+
+	@JsonProperty
+	@JsonPropertyDescription("The music for the scene")
+//	@ModelPropertyType(Param.Type.OPTION)
+	@ModelPropertyType(Param.Type.STRING)   // FIXME: This should be OPTION
+	private String musicFilename;
+
+	@JsonProperty
+	@JsonPropertyDescription("If the music is playing in a loop")
+	private boolean loopMusic = false;
+
+	@JsonProperty
+	@JsonPropertyDescription("The time to wait before playing")
+	private float initialMusicDelay = 0;
+
+	@JsonProperty
+	@JsonPropertyDescription("The time to wait before repetitions")
+	private float repeatMusicDelay = 0;
 
 	/**
 	 * All actors in the scene
@@ -59,19 +118,10 @@ public class Scene implements Serializable, AssetConsumer {
 
 	private Array<AtlasRegion> background;
 	private Array<AtlasRegion> lightMap;
-	private String backgroundAtlas;
-	private String backgroundRegionId;
-	private String lightMapAtlas;
-	private String lightMapRegionId;
 
 	/** For polygonal PathFinding */
 	private PolygonalNavGraph polygonalNavGraph;
 
-	/**
-	 * depth vector. X: the actor 'y' position for a 0.0 scale, Y: the actor 'y'
-	 * position for a 1.0 scale.
-	 */
-	private Vector2 depthVector;
 
 	private String player;
 
@@ -79,21 +129,15 @@ public class Scene implements Serializable, AssetConsumer {
 	private SpriteActor followActor;
 
 	private Music music = null;
-	private boolean loopMusic = false;
-	private float repeatMusicDelay = 0;
-	private float initialMusicDelay = 0;
+
 	private float currentMusicDelay = 0;
 
-	private String musicFilename;
 	private boolean isPlayingSer = false;
 	private float musicPosSer = 0;
 
 	transient private boolean isMusicPaused = false;
 
 	private String id;
-
-	/** internal state. Can be used for actions to maintain a state machine */
-	private String state;
 
 	private VerbManager verbs = new VerbManager();
 
@@ -122,7 +166,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 	public SceneLayer getLayer(String name) {
 		for (SceneLayer l : layers) {
-			if (name.equals(l.getName()))
+			if (name.equals(l.getId()))
 				return l;
 		}
 
@@ -322,7 +366,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 		if (layer == null) { // fallback for compatibility
 			layer = new SceneLayer();
-			layer.setName(actor.getLayer());
+			layer.setId(actor.getLayer());
 			layers.add(layer);
 		}
 

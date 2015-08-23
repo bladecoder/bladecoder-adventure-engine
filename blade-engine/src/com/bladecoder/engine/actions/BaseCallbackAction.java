@@ -28,7 +28,7 @@ public abstract class BaseCallbackAction implements Action, ActionCallback, Seri
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Param.Type.BOOLEAN)
+	@ModelPropertyType(Param.Type.BOOLEAN)
 	private boolean wait = true;
 
 	@Override

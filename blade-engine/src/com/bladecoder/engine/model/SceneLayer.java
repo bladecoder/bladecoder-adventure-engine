@@ -6,12 +6,22 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.bladecoder.engine.actions.ModelDescription;
+import com.bladecoder.engine.actions.ModelPropertyType;
+import com.bladecoder.engine.actions.Param;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-public class SceneLayer {
-	private String name;
+@ModelDescription("Scenes can have a list of layers. Actors are added to a specific layer to control the draw order")
+public class SceneLayer extends AbstractModel {
+	@JsonProperty(required = true, defaultValue = "true")
+	@JsonPropertyDescription("Layer visibility")
 	private boolean visible = true;
+
+	@JsonProperty(defaultValue = "false")
+	@JsonPropertyDescription("True for actor reordering based in y position")
 	private boolean dynamic;
-	
+
 	transient private final List<BaseActor> actors = new ArrayList<BaseActor>();
 	
 	public void update() {
@@ -31,14 +41,6 @@ public class SceneLayer {
 	
 	public void add(BaseActor actor) {
 		actors.add(actor);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public boolean isVisible() {

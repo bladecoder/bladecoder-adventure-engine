@@ -16,15 +16,31 @@
 package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.audio.Sound;
+import com.bladecoder.engine.actions.ModelDescription;
+import com.bladecoder.engine.actions.ModelPropertyType;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-public class SoundFX implements AssetConsumer {
-	transient private Sound s;
-	private boolean loop;
+@ModelDescription("Actors can have a list of sounds that can be associated to Sprites or played with the 'sound' action")
+public class SoundFX extends AbstractModel implements AssetConsumer {
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("Filename of the sound")
+	@ModelPropertyType(Param.Type.SOUND_FILE)
 	private String filename;
+
+	@JsonProperty
+	@JsonPropertyDescription("True if the sound is looping")
+	private boolean loop;
+
+	@JsonProperty
+	@JsonPropertyDescription("Select the volume")
 	private float volume = 1f;
-	
+
+	transient private Sound s;
+
 	public SoundFX() {
 		
 	}

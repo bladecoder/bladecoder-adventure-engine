@@ -26,31 +26,31 @@ import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
+@ModelDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
 public class CameraAction implements Action {
 	@JsonProperty
 	@JsonPropertyDescription("The target position")
-	@ActionPropertyType(Type.VECTOR2)
+	@ModelPropertyType(Type.VECTOR2)
 	private Vector2 pos;
 
 	@JsonProperty
 	@JsonPropertyDescription("The target 'zoom'")
-	@ActionPropertyType(Type.FLOAT)
+	@ModelPropertyType(Type.FLOAT)
 	private float zoom = -1;
 
 	@JsonProperty
 	@JsonPropertyDescription("Duration of the animation in seconds. If not '0' and animation is triggered")
-	@ActionPropertyType(Type.FLOAT)
+	@ModelPropertyType(Type.FLOAT)
 	private float duration;
 
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
-	@ActionPropertyType(Type.ACTOR)
+	@ModelPropertyType(Type.ACTOR)
 	private String followActor;
 
 	@JsonProperty(defaultValue = "true", required = true)
 	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
 
 	@Override

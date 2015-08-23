@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
@@ -199,17 +200,17 @@ public class AssetsList extends Table {
 
 			switch (type) {
 				case "images":
-					filter = new FileChooser.ExtensionFilter("Images", "jpg", "png", "etc1");
+					filter = new FileChooser.ExtensionFilter("Images", "*.jpg", "*.png", "*.etc1");
 					break;
 				case "music":
 				case "sounds":
-					filter = new FileChooser.ExtensionFilter("Music", "wav", "mp3", "ogg");
+					filter = new FileChooser.ExtensionFilter("Music", "*.wav", "*.mp3", "*.ogg");
 					break;
 				case "3d models":
-					filter = new FileChooser.ExtensionFilter("3D Models", "g3db", "png");
+					filter = new FileChooser.ExtensionFilter("3D Models", "*.g3db", "*.png");
 					break;
 				case "spine":
-					filter = new FileChooser.ExtensionFilter("Spine", "skel", "json");
+					filter = new FileChooser.ExtensionFilter("Spine", "*.skel", "*.json");
 					break;
 				default:
 					filter = null;
@@ -231,6 +232,7 @@ public class AssetsList extends Table {
 					}
 					try {
 						String dir = getAssetDir(type);
+						Files.createDirectories(Paths.get(dir));
 						lastDir = files.get(0);
 
 						for (File f : files) {

@@ -137,7 +137,8 @@ public class WorldXMLLoader extends DefaultHandler {
 		} else if (localName.equals(XMLConstants.VERB_TAG)) {
 			String id = atts.getValue(XMLConstants.ID_ATTR);
 
-			currentVerb = new Verb(id);
+			currentVerb = new Verb();
+			currentVerb.setId(id);
 
 			VerbManager.addDefaultVerb(id, currentVerb);
 		}

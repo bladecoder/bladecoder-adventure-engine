@@ -25,7 +25,7 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Execute only one action inside the Choose/EndChoose block.")
+@ModelDescription("Execute only one action inside the Choose/EndChoose block.")
 public class ChooseAction extends AbstractControlAction {
 	private String caID;
 
@@ -38,7 +38,7 @@ public class ChooseAction extends AbstractControlAction {
 	 */
 	@JsonProperty(required = true, defaultValue = "CYCLE")
 	@JsonPropertyDescription("The action to execute will be selected following this criteria.")
-	@ActionPropertyType(Type.OPTION)
+	@ModelPropertyType(Type.OPTION)
 	private ChooseCriteria chooseCriteria = ChooseCriteria.CYCLE;
 
 	/** Used when choose_criteria is 'iterate' or 'cycle' */

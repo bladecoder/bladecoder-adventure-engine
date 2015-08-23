@@ -21,11 +21,17 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
 
 public class InputPanelFactory extends Table {
-	public static InputPanel createInputPanel(Skin skin, String title, String desc, String[] options, boolean mandatory) {
-    	return createInputPanel(skin, title, desc, Type.OPTION, mandatory, null, options);
-    }
+	public static InputPanel createInputPanel(Skin skin, Param param) {
+		if (param.getOptions() instanceof Enum[]) {
+			return createInputPanel(skin, param.getName(), param.getDesc(),
+					param.getType(), param.isMandatory(), param.getDefaultValue(), (Enum[]) param.getOptions());
+		} else {
+			return createInputPanel(skin, param.getName(), param.getDesc(),
+					param.getType(), param.isMandatory(), param.getDefaultValue(), (String[]) param.getOptions());
+		}
+	}
 
-	public static InputPanel createInputPanel(Skin skin, String title, String desc, Enum[] options, boolean mandatory) {
+	public static InputPanel createInputPanel(Skin skin, String title, String desc, String[] options, boolean mandatory) {
     	return createInputPanel(skin, title, desc, Type.OPTION, mandatory, null, options);
     }
 
@@ -49,7 +55,7 @@ public class InputPanelFactory extends Table {
     	return createInputPanel(skin, title, desc, type, mandatory, defaultValue, (String[])null);
     }
     
-    public static InputPanel createInputPanel(Skin skin, String title, String desc, Param.Type type, boolean mandatory, String defaultValue, Enum[] options) {
+    private static InputPanel createInputPanel(Skin skin, String title, String desc, Param.Type type, boolean mandatory, String defaultValue, Enum[] options) {
 	    return createInputPanel(skin, title, desc, type, mandatory, defaultValue, (Object[])options);
     }
 
@@ -62,7 +68,7 @@ public class InputPanelFactory extends Table {
 		case ACTOR:
 			return new ActorInputPanel(skin, title, desc, mandatory, defaultValue);
 		case LAYER:
-			return new LayerInputPanel(skin, title, desc, mandatory, defaultValue);			
+			return new LayerInputPanel(skin, title, desc, mandatory, defaultValue);
 		case BOOLEAN:
 			return new BooleanInputPanel(skin, title, desc, mandatory, defaultValue);
 		case CHAPTER:
@@ -75,8 +81,11 @@ public class InputPanelFactory extends Table {
 			return new IntegerInputPanel(skin, title, desc, mandatory, defaultValue);
 		case SCENE:
 			return new SceneInputPanel(skin, title, desc, mandatory, defaultValue);
-		case COLOR:
+		case SOUND_FILE:
+			return new SoundFileInputPanel(skin, title, desc, mandatory, defaultValue);
 		case SOUND:
+			return new SoundInputPanel(skin, title, desc, mandatory, defaultValue);
+		case COLOR:
 		case STRING:
 			if(options != null)
 				return getReadOnlyOptionsInputPanel(skin, title, desc, mandatory, defaultValue, options);

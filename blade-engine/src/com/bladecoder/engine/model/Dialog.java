@@ -20,25 +20,17 @@ import java.util.ArrayList;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.actions.ModelDescription;
 
-public class Dialog implements Serializable   {
-
+@ModelDescription("Actors can have several dialogs defined. Dialogs have a tree of options to choose")
+public class Dialog extends AbstractModel implements Serializable {
 	public final static String DEFAULT_DIALOG_VERB = "dialog";
 	
 	private ArrayList<DialogOption> options = new ArrayList<DialogOption>();
 	
 	private DialogOption currentOption;
 	
-	private String id;
 	private String actor;
-	
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 	
 	public String getActor() {
 		return actor;

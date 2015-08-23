@@ -28,7 +28,7 @@ import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Walks to the selected position")
+@ModelDescription("Walks to the selected position")
 public class GotoAction implements Action {
 	public enum Anchor {
 		CENTER, LEFT, RIGHT
@@ -36,32 +36,32 @@ public class GotoAction implements Action {
 
 	@JsonProperty
 	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ModelPropertyType(Type.ACTOR)
 	private String actor;
 
 	@JsonProperty
 	@JsonPropertyDescription("The position to walk to")
-	@ActionPropertyType(Type.VECTOR2)
+	@ModelPropertyType(Type.VECTOR2)
 	private Vector2 pos;
 
 	@JsonProperty
 	@JsonPropertyDescription("Walks to the target actor position")
-	@ActionPropertyType(Type.ACTOR)
+	@ModelPropertyType(Type.ACTOR)
 	private String target;
 
 	@JsonProperty(defaultValue = "CENTER")
 	@JsonPropertyDescription("When selecting a target actor, an anchor can be selected")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private Anchor anchor;
 
 	@JsonProperty
 	@JsonPropertyDescription("When selecting a target actor, the relative distance to the anchor in each axis")
-	@ActionPropertyType(Type.VECTOR2)
+	@ModelPropertyType(Type.VECTOR2)
 	private Vector2 distance;
 
 	@JsonProperty(required = true, defaultValue = "true")
 	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ModelPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
 
 	@Override

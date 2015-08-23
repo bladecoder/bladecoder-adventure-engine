@@ -27,7 +27,7 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.World;
 
-@ActionDescription("Says the selected option from the current dialog. This action does the next steps:\n" +
+@ModelDescription("Says the selected option from the current dialog. This action does the next steps:\n" +
 "\n- Sets the player 'talk' animation and say the player text" +
 "\n- Restore the previous player animation and set the target actor 'talk' animation and say the response text" +
 "\n- Restore the target actor animation")

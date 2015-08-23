@@ -37,7 +37,9 @@ import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("atlas")
 public class AtlasRenderer implements ActorRenderer {
 	private final static float DEFAULT_DIM = 200;
 

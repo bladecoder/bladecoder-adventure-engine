@@ -27,16 +27,16 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Drops the inventory actor in the scene.")
+@ModelDescription("Drops the inventory actor in the scene.")
 public class DropItemAction implements Action {
 	@JsonProperty
 	@JsonPropertyDescription("An actor in the inventory.")
-	@ActionPropertyType(Type.STRING)
+	@ModelPropertyType(Type.STRING)
 	private String actor;
 
 	@JsonProperty
 	@JsonPropertyDescription("Position in the scene where de actor is dropped")
-	@ActionPropertyType(Type.VECTOR2)
+	@ModelPropertyType(Type.VECTOR2)
 	private Vector2 pos;
 
 	@Override
