@@ -15,52 +15,14 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Arrays;
-
-import com.bladecoder.engine.model.SoundFX;
-import org.w3c.dom.Element;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engineeditor.model.BaseDocument;
-import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
-import com.bladecoder.engineeditor.ui.components.InputPanel;
-import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.w3c.dom.Element;
 
 public class EditSoundDialog extends EditAnnotatedDialog<SoundFX> {
 	public EditSoundDialog(Skin skin, BaseDocument doc, Element parent, Element e) {
-		super(skin, SoundFX.class, doc, parent, "sound", e);
+		super(skin, SoundFX.class, doc, parent, XMLConstants.SOUND_TAG, e);
 	}
-
-	@Nonnull
-	private String[] getSoundList() {
-		String path = Ctx.project.getProjectPath() + Project.SOUND_PATH;
-
-		File f = new File(path);
-
-		String soundFiles[] = f.list(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File arg0, String arg1) {
-				if (arg1.endsWith(".ogg") || arg1.endsWith(".wav") || arg1.endsWith(".mp3"))
-					return true;
-
-				return false;
-			}
-		});
-
-		if (soundFiles == null) {
-			return new String[0];
-		}
-		Arrays.sort(soundFiles);
-
-		return soundFiles;
-	}	
 }

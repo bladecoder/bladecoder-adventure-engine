@@ -62,7 +62,7 @@ public class InputPanelFactory extends Table {
 		case ACTOR:
 			return new ActorInputPanel(skin, title, desc, mandatory, defaultValue);
 		case LAYER:
-			return new LayerInputPanel(skin, title, desc, mandatory, defaultValue);			
+			return new LayerInputPanel(skin, title, desc, mandatory, defaultValue);
 		case BOOLEAN:
 			return new BooleanInputPanel(skin, title, desc, mandatory, defaultValue);
 		case CHAPTER:
@@ -75,8 +75,9 @@ public class InputPanelFactory extends Table {
 			return new IntegerInputPanel(skin, title, desc, mandatory, defaultValue);
 		case SCENE:
 			return new SceneInputPanel(skin, title, desc, mandatory, defaultValue);
-		case COLOR:
 		case SOUND:
+			return new SoundInputPanel(skin, title, desc, mandatory, defaultValue);
+		case COLOR:
 		case STRING:
 			if(options != null)
 				return getReadOnlyOptionsInputPanel(skin, title, desc, mandatory, defaultValue, options);
