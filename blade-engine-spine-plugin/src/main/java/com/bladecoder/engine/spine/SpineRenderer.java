@@ -176,9 +176,9 @@ public class SpineRenderer implements ActorRenderer {
 	@Override
 	public void addAnimation(AnimationDesc fa) {
 		if (initAnimation == null)
-			initAnimation = fa.id;
+			initAnimation = fa.getId();
 
-		fanims.put(fa.id, fa);
+		fanims.put(fa.getId(), fa);
 	}
 
 	@Override
@@ -186,7 +186,7 @@ public class SpineRenderer implements ActorRenderer {
 		if (currentAnimation == null)
 			return null;
 
-		String id = currentAnimation.id;
+		String id = currentAnimation.getId();
 
 		if (flipX) {
 			id = AnimationDesc.getFlipId(id);
@@ -208,9 +208,9 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public String[] getInternalAnimations(AnimationDesc anim) {
-		retrieveSource(anim.source, ((SpineAnimationDesc) anim).atlas);
+		retrieveSource(anim.getSource(), ((SpineAnimationDesc) anim).atlas);
 
-		Array<Animation> animations = sourceCache.get(anim.source).skeleton.getData().getAnimations();
+		Array<Animation> animations = sourceCache.get(anim.getSource()).skeleton.getData().getAnimations();
 		String[] result = new String[animations.size];
 
 		for (int i = 0; i < animations.size; i++) {
@@ -323,22 +323,22 @@ public class SpineRenderer implements ActorRenderer {
 			return;
 		}
 
-		if (currentAnimation != null && currentAnimation.disposeWhenPlayed)
-			disposeSource(currentAnimation.source);
+		if (currentAnimation != null && currentAnimation.isDisposeWhenPlayed())
+			disposeSource(currentAnimation.getSource());
 
 		currentAnimation = fa;
-		currentSource = sourceCache.get(fa.source);
+		currentSource = sourceCache.get(fa.getSource());
 
 		animationCb = cb;
 
 		// If the source is not loaded. Load it.
 		if (currentSource == null || currentSource.refCounter < 1) {
-			loadSource(fa.source, fa.atlas);
+			loadSource(fa.getSource(), fa.atlas);
 			EngineAssetManager.getInstance().finishLoading();
 
-			retrieveSource(fa.source, fa.atlas);
+			retrieveSource(fa.getSource(), fa.atlas);
 
-			currentSource = sourceCache.get(fa.source);
+			currentSource = sourceCache.get(fa.getSource());
 
 			if (currentSource == null) {
 				EngineLogger.error("Could not load AnimationDesc: " + id);
@@ -349,8 +349,8 @@ public class SpineRenderer implements ActorRenderer {
 		}
 
 		if (repeatType == Tween.Type.SPRITE_DEFINED) {
-			currentAnimationType = currentAnimation.animationType;
-			currentCount = currentAnimation.count;
+			currentAnimationType = currentAnimation.getAnimationType();
+			currentCount = currentAnimation.getCount();
 		} else {
 			currentCount = count;
 			currentAnimationType = repeatType;
@@ -361,7 +361,7 @@ public class SpineRenderer implements ActorRenderer {
 			Array<Animation> animations = currentSource.skeleton.getData().getAnimations();
 
 			for (Animation a : animations) {
-				if (a.getName().equals(currentAnimation.id)) {
+				if (a.getName().equals(currentAnimation.getId())) {
 					lastAnimationTime = a.getDuration() - 0.01f;
 					break;
 				}
@@ -379,8 +379,8 @@ public class SpineRenderer implements ActorRenderer {
 			// TODO Make setup pose parametrizable in the AnimationDesc
 			currentSource.skeleton.setToSetupPose();
 			currentSource.skeleton.setFlipX(flipX);
-			currentSource.animation.setTimeScale(currentAnimation.duration);
-			currentSource.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.Type.REPEAT);
+			currentSource.animation.setTimeScale(currentAnimation.getSpeed());
+			currentSource.animation.setAnimation(0, currentAnimation.getId(), currentAnimationType == Tween.Type.REPEAT);
 
 			updateAnimation(lastAnimationTime);
 			computeBbox();
@@ -616,17 +616,17 @@ public class SpineRenderer implements ActorRenderer {
 	@Override
 	public void loadAssets() {
 		for (AnimationDesc fa : fanims.values()) {
-			if (fa.preload)
-				loadSource(fa.source, ((SpineAnimationDesc) fa).atlas);
+			if (fa.isPreload())
+				loadSource(fa.getSource(), ((SpineAnimationDesc) fa).atlas);
 		}
 
-		if (currentAnimation != null && !currentAnimation.preload) {
-			loadSource(currentAnimation.source, ((SpineAnimationDesc) currentAnimation).atlas);
+		if (currentAnimation != null && !currentAnimation.isPreload()) {
+			loadSource(currentAnimation.getSource(), ((SpineAnimationDesc) currentAnimation).atlas);
 		} else if (currentAnimation == null && initAnimation != null) {
 			AnimationDesc fa = fanims.get(initAnimation);
 
-			if (fa != null && !fa.preload)
-				loadSource(fa.source, ((SpineAnimationDesc) fa).atlas);
+			if (fa != null && !fa.isPreload())
+				loadSource(fa.getSource(), ((SpineAnimationDesc) fa).atlas);
 		}
 	}
 
@@ -642,7 +642,7 @@ public class SpineRenderer implements ActorRenderer {
 		}
 
 		if (currentAnimation != null) {
-			SkeletonCacheEntry entry = sourceCache.get(currentAnimation.source);
+			SkeletonCacheEntry entry = sourceCache.get(currentAnimation.getSource());
 			currentSource = entry;
 
 			setCurrentAnimation();
@@ -674,7 +674,7 @@ public class SpineRenderer implements ActorRenderer {
 		String currentAnimationId = null;
 
 		if (currentAnimation != null)
-			currentAnimationId = currentAnimation.id;
+			currentAnimationId = currentAnimation.getId();
 
 		json.writeValue("currentAnimation", currentAnimationId, currentAnimationId == null ? null : String.class);
 

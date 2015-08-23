@@ -408,7 +408,7 @@ public class ScnWidget extends Widget {
 		try {
 			faRenderer.setAnimation(fa);
 		} catch (Exception e) {
-			Ctx.msg.show(getStage(), "Could not retrieve assets for sprite: " + fa.id, 4);
+			Ctx.msg.show(getStage(), "Could not retrieve assets for sprite: " + fa.getId(), 4);
 			e.printStackTrace();
 
 			faRenderer.setAnimation(null);

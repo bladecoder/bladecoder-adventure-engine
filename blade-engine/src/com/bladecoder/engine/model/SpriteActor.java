@@ -159,11 +159,11 @@ public class SpriteActor extends InteractiveActor {
 
 		if (fa != null) {
 
-			if (fa.sound != null) {
-				stopSound(fa.sound);
+			if (fa.getSound() != null) {
+				stopSound(fa.getSound());
 			}
 
-			Vector2 outD = fa.outD;
+			Vector2 outD = fa.getOutD();
 
 			if (outD != null) {
 				float s = EngineAssetManager.getInstance().getScale();
@@ -182,11 +182,11 @@ public class SpriteActor extends InteractiveActor {
 
 		if (fa != null) {
 
-			if (fa.sound != null) {
-				playSound(fa.sound);
+			if (fa.getSound() != null) {
+				playSound(fa.getSound());
 			}
 
-			Vector2 inD = fa.inD;
+			Vector2 inD = fa.getInD();
 
 			if (inD != null) {
 				float s = EngineAssetManager.getInstance().getScale();

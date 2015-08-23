@@ -16,8 +16,9 @@
 package com.bladecoder.engine.anim;
 
 import com.badlogic.gdx.math.Vector2;
+import com.bladecoder.engine.model.AbstractModel;
 
-public class AnimationDesc {
+public class AnimationDesc extends AbstractModel {
 	public final static String BACK = "back";
 	public final static String FRONT = "front";
 	public final static String RIGHT = "right";
@@ -27,43 +28,99 @@ public class AnimationDesc {
 	public final static String FRONTRIGHT = "frontright";
 	public final static String FRONTLEFT = "frontleft";
 	
-	public	String id;
-	public  String source;
-	public	float duration;
-	public	float delay;
-	public  Vector2 inD;
-	public  Vector2 outD;
-	public	Tween.Type animationType;
-	public	int count;
+	private String source;
+	private float speed;
+	private float delay;
+	private Vector2 inD;
+	private Vector2 outD;
+	private Tween.Type animationType;
+	private int count;
 	
-	public String sound;
+	private String sound;
 	
-	public boolean preload;
-	public boolean disposeWhenPlayed;
-	
-	public AnimationDesc() {
-		
+	private boolean preload;
+	private boolean disposeWhenPlayed;
+
+	public String getSource() {
+		return source;
 	}
-	
-	public void set(String id, String source, float duration, 
-			float delay, int count, Tween.Type animationType, String sound,
-			Vector2 inD, Vector2 outD, boolean preload, boolean disposeWhenPlayed) {
-		this.id = id;
-		this.duration = duration;
-		this.delay = delay;
-		this.animationType = animationType;
-		this.count = count;
-		
+
+	public void setSource(String source) {
 		this.source = source;
-		this.sound = sound;
-		
+	}
+
+	public float getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(float speed) {
+		this.speed = speed;
+	}
+
+	public float getDelay() {
+		return delay;
+	}
+
+	public void setDelay(float delay) {
+		this.delay = delay;
+	}
+
+	public Vector2 getInD() {
+		return inD;
+	}
+
+	public void setInD(Vector2 inD) {
 		this.inD = inD;
+	}
+
+	public Vector2 getOutD() {
+		return outD;
+	}
+
+	public void setOutD(Vector2 outD) {
 		this.outD = outD;
-		
+	}
+
+	public Tween.Type getAnimationType() {
+		return animationType;
+	}
+
+	public void setAnimationType(Tween.Type animationType) {
+		this.animationType = animationType;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	public String getSound() {
+		return sound;
+	}
+
+	public void setSound(String sound) {
+		this.sound = sound;
+	}
+
+	public boolean isPreload() {
+		return preload;
+	}
+
+	public void setPreload(boolean preload) {
 		this.preload = preload;
+	}
+
+	public boolean isDisposeWhenPlayed() {
+		return disposeWhenPlayed;
+	}
+
+	public void setDisposeWhenPlayed(boolean disposeWhenPlayed) {
 		this.disposeWhenPlayed = disposeWhenPlayed;
 	}
-	
+
 	public static String getFlipId(String id) {
 		StringBuilder sb = new StringBuilder();
 
@@ -123,5 +180,5 @@ public class AnimationDesc {
 				}
 			}
 		}
-	}	
+	}
 }

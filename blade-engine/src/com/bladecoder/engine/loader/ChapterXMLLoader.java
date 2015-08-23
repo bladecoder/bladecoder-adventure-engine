@@ -564,7 +564,17 @@ public class ChapterXMLLoader extends DefaultHandler {
 			}
 		}
 
-		sa.set(id, source, speed, delay, count, animationType, soundId, inD, outD, preload, disposeWhenPlayed);
+		sa.setId(id);
+		sa.setSource(source);
+		sa.setSpeed(speed);
+		sa.setDelay(delay);
+		sa.setCount(count);
+		sa.setAnimationType(animationType);
+		sa.setSound(soundId);
+		sa.setInD(inD);
+		sa.setOutD(outD);
+		sa.setPreload(preload);
+		sa.setDisposeWhenPlayed(disposeWhenPlayed);
 
 		((SpriteActor) actor).getRenderer().addAnimation(sa);
 	}

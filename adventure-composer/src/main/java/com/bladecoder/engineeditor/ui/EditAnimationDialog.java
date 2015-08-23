@@ -215,10 +215,10 @@ public class EditAnimationDialog extends EditElementDialog {
 			anim = new AnimationDesc();
 		}
 		
-		anim.source = source;
-		anim.count = Tween.INFINITY;
-		anim.preload = true;
-		anim.disposeWhenPlayed = false;	
+		anim.setSource(source);
+		anim.setCount(Tween.INFINITY);
+		anim.setPreload(true);
+		anim.setDisposeWhenPlayed(false);
 		
 		spriteWidget.setSource(renderer, anim);
 	}
