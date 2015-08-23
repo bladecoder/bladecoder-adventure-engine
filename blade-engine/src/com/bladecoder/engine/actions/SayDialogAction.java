@@ -26,7 +26,9 @@ import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.World;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("SayDialog")
 @ModelDescription("Says the selected option from the current dialog. This action does the next steps:\n" +
 "\n- Sets the player 'talk' animation and say the player text" +
 "\n- Restore the previous player animation and set the target actor 'talk' animation and say the response text" +

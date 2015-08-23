@@ -26,12 +26,14 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Cancels a running verb.
  * 
  * @author rgarcia
  */
+@JsonTypeName("CancelVerb")
 @ModelDescription("Stops the named verb if it is in execution.")
 public class CancelVerbAction implements Action {
 	@JsonProperty

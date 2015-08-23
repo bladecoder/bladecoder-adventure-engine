@@ -15,10 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
-import java.util.ArrayList;
-
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
+
+import java.util.List;
 
 /**
  * 
@@ -33,7 +33,7 @@ public interface VerbRunner extends ActionCallback {
 	 * Method to retrieve the action list
 	 * @return the action list
 	 */
-	public ArrayList<Action> getActions();
+	public List<Action> getActions();
 	
 	/**
 	 * Run the verb

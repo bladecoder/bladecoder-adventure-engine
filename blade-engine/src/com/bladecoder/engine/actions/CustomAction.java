@@ -15,50 +15,28 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.loader.XMLConstants;
-import com.bladecoder.engine.model.VerbRunner;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonTypeName("Repeat")
-@ModelDescription("Repeats the actions inside the Repeat/EndRepeat actions.")
-public class RepeatAction extends AbstractControlAction {
-	@JsonProperty(required = true, defaultValue = "1")
-	@JsonPropertyDescription("Repeat the actions the specified times. -1 to infinity")
-	@ModelPropertyType(Type.INTEGER)
-	private int repeat = 1;
+import java.util.HashMap;
 
-	int currentRepeat = 0;
-	private String caID;
+@JsonTypeName("Custom")
+@ModelDescription("With this action, you can specify your own code")
+public class CustomAction implements Action {
+	@JsonProperty(value = "class", required = true)
+	@JsonPropertyDescription("The full class name for this custom action")
+	@ModelPropertyType(Type.VECTOR2)
+	private String className;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		repeat = Integer.parseInt(params.get("repeat"));
-		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
+		className = params.get("class");
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		VerbRunner v = (VerbRunner)cb;
-		
-		currentRepeat++;
-		
-		if(currentRepeat > repeat && repeat >= 0) {
-			final int ip = skipControlIdBlock(v.getActions(), v.getIP());
-
-			v.setIP(ip);
-			currentRepeat = 0;
-		}
-		
 		return false;
-	}
-
-	@Override
-	public String getControlActionID() {
-		return caID;
 	}
 }

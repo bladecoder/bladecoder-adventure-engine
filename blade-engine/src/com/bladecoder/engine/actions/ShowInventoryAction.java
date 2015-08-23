@@ -21,7 +21,9 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("ShowInventory")
 @ModelDescription("Shows/Hide the inventory")
 public class ShowInventoryAction implements Action {
 	@JsonProperty(required = true, defaultValue = "true")

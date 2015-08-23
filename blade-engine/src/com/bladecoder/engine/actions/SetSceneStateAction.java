@@ -22,7 +22,9 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("SetSceneState")
 @ModelDescription("Sets the scene state")
 public class SetSceneStateAction implements Action {
 	@JsonProperty("scene")

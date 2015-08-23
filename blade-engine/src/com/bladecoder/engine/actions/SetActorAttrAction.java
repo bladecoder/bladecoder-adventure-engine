@@ -29,9 +29,11 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import javax.annotation.Nullable;
 
+@JsonTypeName("SetActorAttr")
 @ModelDescription("Change actor attributes.")
 public class SetActorAttrAction implements Action {
 	@JsonProperty(value = "actor", required = true)

@@ -24,7 +24,9 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationMode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("Scale")
 @ModelDescription("Sets an actor Scale animation")
 public class ScaleAction implements Action {
 	@JsonProperty

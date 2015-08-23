@@ -23,7 +23,9 @@ import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("Transition")
 @ModelDescription("Sets a transition effect (FADEIN/FADEOUT)")
 public class TransitionAction implements Action {
 	@JsonProperty(required = true, defaultValue = "1.0")

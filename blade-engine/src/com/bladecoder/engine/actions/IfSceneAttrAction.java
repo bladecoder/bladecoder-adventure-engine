@@ -24,7 +24,9 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("IfSceneAttr")
 @ModelDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfSceneAttrAction extends AbstractIfAction {
 	private String caID;

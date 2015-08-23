@@ -31,7 +31,9 @@ import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("Say")
 @ModelDescription("Says a text")
 public class SayAction extends BaseCallbackAction {
 	private static final String ACTOR_PROPERTY_ID = "actor";

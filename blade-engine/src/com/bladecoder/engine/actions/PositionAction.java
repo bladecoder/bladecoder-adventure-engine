@@ -27,7 +27,9 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationMode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("Position")
 @ModelDescription("Sets an actor Position animation")
 public class PositionAction implements Action {
 	public enum Mode {
