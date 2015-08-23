@@ -21,6 +21,8 @@ import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import javafx.embed.swing.JFXPanel;
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
 
 public class Main extends LwjglApplication {
 
@@ -31,8 +33,9 @@ public class Main extends LwjglApplication {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 
 		cfg.title = "Adventure Composer";
-		cfg.width = 1920 / 2;
-		cfg.height = 1080 / 2;
+		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+		cfg.width = (int) (bounds.getWidth() - bounds.getWidth() * 0.1);
+		cfg.height = (int) (bounds.getHeight() - bounds.getHeight() * 0.1);
 
 		cfg.resizable = true;
 		// cfg.samples = 2;
