@@ -2,14 +2,21 @@ package com.bladecoder.engineeditor.utils;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.ModelDescription;
 import com.bladecoder.engine.actions.ModelPropertyType;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.model.ModelTypeLink;
+import com.bladecoder.engineeditor.ui.components.EditableSelectBox;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.components.LinkableInputPanel;
+import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -18,7 +25,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ModelUtils {
 	public static String getInfo(@Nonnull Class<?> clazz) {
@@ -72,35 +82,64 @@ public class ModelUtils {
 						throw new RuntimeException(clazz.getName() + '.' + field.getName() + " is an OPTION type, but we can't find suitable options for it");
 					}
 				}
-				params.add(idx++, new Param(name, formatName(name), propertyDescription.value(), type, property.required(), property.defaultValue(), options));
+
+				final ModelTypeLink modelTypeLink = field.getAnnotation(ModelTypeLink.class);
+				final String link = modelTypeLink != null ? modelTypeLink.value() : null;
+
+				params.add(idx++, new Param(
+						name, formatName(name), propertyDescription.value(), type,
+						property.required(), property.defaultValue(),
+						options, link));
 			}
 			clazz = clazz.getSuperclass();
 		}
 		return params;
 	}
 
-	public static List<InputPanel> getInputsFromModelClass(List<Param> params, Skin skin) {
-		List<InputPanel> parameters = new ArrayList<>(params.size());
+	public static Collection<InputPanel> getInputsFromModelClass(List<Param> params, Skin skin) {
+		Map<String, InputPanel> parameters = new LinkedHashMap<>(params.size());
 
 		for (final Param param : params) {
-			final InputPanel parameter;
-			if (param.getOptions() instanceof Enum[]) {
-				parameter = InputPanelFactory.createInputPanel(skin, param.getName(), param.getDesc(),
-						param.getType(), param.isMandatory(), param.getDefaultValue(), (Enum[]) param.getOptions());
-			} else {
-				parameter = InputPanelFactory.createInputPanel(skin, param.getName(), param.getDesc(),
-						param.getType(), param.isMandatory(), param.getDefaultValue(), (String[]) param.getOptions());
-			}
+			final InputPanel parameter = InputPanelFactory.createInputPanel(skin, param);
 
-			parameters.add(parameter);
+			parameters.put(param.getId(), parameter);
 
 			if ((parameter.getField() instanceof TextField && param.getName().toLowerCase().endsWith("text")) ||
 					parameter.getField() instanceof ScrollPane) {
 				parameter.getCell(parameter.getField()).fillX();
 			}
 		}
+		for (Param param : params) {
+			String link = param.getLink();
+			if (link != null) {
 
-		return parameters;
+				InputPanel listeningInputPanel = parameters.get(param.getId());
+				if (!(listeningInputPanel instanceof LinkableInputPanel)) {
+					throw new RuntimeException("Param '" + param.getId() + "' has a link to '" + link + "' but '" + param.getId() + "' is not a LinkableInputPanel");
+				}
+				InputPanel parentInputPanel = parameters.get(link);
+				if (!(parentInputPanel instanceof OptionsInputPanel)) {
+					throw new RuntimeException("Param '" + param.getId() + "' has a link to '" + link + "' but '" + link + "' is not a OptionsInputPanel");
+				}
+				((OptionsInputPanel)parentInputPanel).addChangeListener(new ChangeListener() {
+					@Override
+					public void changed(ChangeEvent event, Actor actor) {
+						final String selected;
+						if (actor instanceof SelectBox) {
+							// FIXME: After we change everything to be a bean, this won't be a String anymore
+							selected = ((SelectBox<String>) actor).getSelected();
+						} else if (actor instanceof EditableSelectBox) {
+							selected = ((EditableSelectBox) actor).getSelected();
+						} else {
+							return;
+						}
+						((LinkableInputPanel)listeningInputPanel).linkChanged(selected);
+					}
+				});
+			}
+		}
+
+		return parameters.values();
 	}
 
 	private static String formatName(String name) {

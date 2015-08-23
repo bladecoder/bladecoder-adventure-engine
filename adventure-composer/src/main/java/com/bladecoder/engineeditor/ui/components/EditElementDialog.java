@@ -16,6 +16,7 @@
 package com.bladecoder.engineeditor.ui.components;
 
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -42,7 +43,7 @@ public abstract class EditElementDialog extends EditDialog {
 		super("", skin);
 	}
 	
-	protected void init(List<InputPanel> inputs, List<String> attrs, BaseDocument doc, Element parent, String type, Element e) {
+	protected void init(Collection<InputPanel> inputs, Collection<String> attrs, BaseDocument doc, Element parent, String type, Element e) {
 		init(inputs.toArray(new InputPanel[inputs.size()]), attrs.toArray(new String[attrs.size()]), doc, parent, type, e);
 	}
 

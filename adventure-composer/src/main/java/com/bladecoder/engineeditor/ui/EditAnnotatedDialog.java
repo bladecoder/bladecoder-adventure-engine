@@ -8,6 +8,7 @@ import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.utils.ModelUtils;
 import org.w3c.dom.Element;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,9 +22,8 @@ public class EditAnnotatedDialog<T> extends EditElementDialog {
 	private void initFromParams(Class<T> modelClass, BaseDocument doc, Element parent, String type, Element e) {
 		setInfo(ModelUtils.getInfo(modelClass));
 		List<Param> params = ModelUtils.getParams(modelClass);
-		List<InputPanel> inputs = ModelUtils.getInputsFromModelClass(params, getSkin());
+		Collection<InputPanel> inputs = ModelUtils.getInputsFromModelClass(params, getSkin());
 		List<String> attrs = params.stream().map(Param::getId).collect(Collectors.toList());
-		inputs.forEach(this::addInputPanel);
 
 		init(inputs, attrs, doc, parent, type, e);
 	}

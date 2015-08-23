@@ -27,7 +27,7 @@ public class Param {
 	public enum Type {
 		STRING, BOOLEAN, FLOAT, INTEGER, VECTOR2, VECTOR3, DIMENSION, ACTOR, SCENE, CHAPTER, FILE, OPTION, SCENE_ACTOR, ACTOR_ANIMATION, LAYER, EDITABLE_OPTION,
 		TEXT, SMALL_TEXT, BIG_TEXT, COLOR, SOUND_FILE, SOUND
-	};
+	}
 	
 	public static final String NUMBER_PARAM_SEPARATOR = ",";
 	public static final String STRING_PARAM_SEPARATOR = "#";
@@ -39,8 +39,9 @@ public class Param {
 	private final boolean mandatory;
 	private final String defaultValue;
 	private final Object[] options; // availables values for combos
+	private final String link;
 
-	public Param(String id, String name, String desc, Type type, boolean mandatory, String defaultValue, Object[] options) {
+	public Param(String id, String name, String desc, Type type, boolean mandatory, String defaultValue, Object[] options, String link) {
 		this.id = id;
 		this.name = name;
 		this.desc = desc;
@@ -48,18 +49,7 @@ public class Param {
 		this.mandatory = mandatory;
 		this.defaultValue = defaultValue;
 		this.options = options;
-	}
-	
-	public Param(String id, String name, String desc, Type type, boolean mandatory, String defaultValue) {
-		this(id, name, desc, type, mandatory, defaultValue, null);
-	}
-	
-	public Param(String id, String name, String desc, Type type, boolean mandatory) {
-		this(id, name, desc, type, mandatory, null, null);
-	}
-	
-	public Param(String id, String name, String desc, Type type) {
-		this(id, name, desc, type, false, null, null);
+		this.link = link;
 	}
 
 	public String getId() {
@@ -88,6 +78,10 @@ public class Param {
 
 	public Object[] getOptions() {
 		return options;
+	}
+
+	public String getLink() {
+		return link;
 	}
 
 	public static Vector2 parseVector2(String s) {
