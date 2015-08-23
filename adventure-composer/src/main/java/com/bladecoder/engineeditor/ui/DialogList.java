@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import com.bladecoder.engine.model.Dialog;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -24,16 +25,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ElementList;
 
-public class DialogList extends ElementList {	
+public class DialogList extends ElementList {
 	
     private DialogOptionTree options;
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(Element e) {
-		return new EditDialogDialog(skin, doc, parent, e);
+	protected EditAnnotatedDialog<Dialog> getEditElementDialogInstance(Element e) {
+		return new EditAnnotatedDialog<>(skin, Dialog.class, doc, parent, "dialog", e);
 	}
 	
     public DialogList(Skin skin) {
