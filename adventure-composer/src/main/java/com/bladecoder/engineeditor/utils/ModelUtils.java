@@ -2,9 +2,14 @@ package com.bladecoder.engineeditor.utils;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.bladecoder.engine.actions.ModelDescription;
 import com.bladecoder.engine.actions.ModelPropertyType;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engineeditor.ui.components.InputPanel;
+import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -17,14 +22,21 @@ import java.util.List;
 
 public class ModelUtils {
 	public static String getInfo(@Nonnull Class<?> clazz) {
-		return clazz.getAnnotation(ModelDescription.class).value();
+		ModelDescription modelDescription = clazz.getAnnotation(ModelDescription.class);
+		if (modelDescription == null) {
+			throw new RuntimeException(clazz.getName() + " doesn't seem to be annotated with @ModelDescription");
+		}
+		return modelDescription.value();
 	}
 
 	@Nonnull
 	public static List<Param> getParams(@Nonnull Class<?> clazz) {
 		final List<Param> params = new ArrayList<>();
 
+		// Used to insert parent classes properties at the top
+		int idx;
 		while (clazz != null && clazz != Object.class) {
+			idx = 0;
 			for (Field field : clazz.getDeclaredFields()) {
 				final JsonProperty property = field.getAnnotation(JsonProperty.class);
 				if (property == null) {
@@ -60,11 +72,35 @@ public class ModelUtils {
 						throw new RuntimeException(clazz.getName() + '.' + field.getName() + " is an OPTION type, but we can't find suitable options for it");
 					}
 				}
-				params.add(new Param(name, formatName(name), propertyDescription.value(), type, property.required(), property.defaultValue(), options));
+				params.add(idx++, new Param(name, formatName(name), propertyDescription.value(), type, property.required(), property.defaultValue(), options));
 			}
 			clazz = clazz.getSuperclass();
 		}
 		return params;
+	}
+
+	public static List<InputPanel> getInputsFromModelClass(List<Param> params, Skin skin) {
+		List<InputPanel> parameters = new ArrayList<>(params.size());
+
+		for (final Param param : params) {
+			final InputPanel parameter;
+			if (param.getOptions() instanceof Enum[]) {
+				parameter = InputPanelFactory.createInputPanel(skin, param.getName(), param.getDesc(),
+						param.getType(), param.isMandatory(), param.getDefaultValue(), (Enum[]) param.getOptions());
+			} else {
+				parameter = InputPanelFactory.createInputPanel(skin, param.getName(), param.getDesc(),
+						param.getType(), param.isMandatory(), param.getDefaultValue(), (String[]) param.getOptions());
+			}
+
+			parameters.add(parameter);
+
+			if ((parameter.getField() instanceof TextField && param.getName().toLowerCase().endsWith("text")) ||
+					parameter.getField() instanceof ScrollPane) {
+				parameter.getCell(parameter.getField()).fillX();
+			}
+		}
+
+		return parameters;
 	}
 
 	private static String formatName(String name) {

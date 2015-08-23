@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 
+import com.bladecoder.engine.model.SoundFX;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -30,30 +31,15 @@ import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
-public class EditSoundDialog extends EditElementDialog {
-	
-	private InputPanel[] inputs;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-
-	String attrs[] = { "id", "filename", "loop", "volume"};	
-
+public class EditSoundDialog extends EditAnnotatedDialog<SoundFX> {
 	public EditSoundDialog(Skin skin, BaseDocument doc, Element parent, Element e) {
-		super(skin);
-		
-		inputs = new InputPanel [4];
-		inputs[0] = InputPanelFactory.createInputPanel(skin, "Sound ID", "The id of the sound");
-		inputs[1] = InputPanelFactory.createInputPanel(skin, "Filename", "Filename of the sound", getSoundList(), true);
-		inputs[2] = InputPanelFactory.createInputPanel(skin, "Loop", "True if the sound is looping", Param.Type.BOOLEAN, false);
-		inputs[3] = InputPanelFactory.createInputPanel(skin, "Volume", "Select the volume");
-		
-		inputs[0].setMandatory(true);
-		inputs[1].setMandatory(true);
-
-		setInfo("Actors can have a list of sounds that can be associated to Sprites or played with the 'sound' action");
-
-		init(inputs, attrs, doc, parent, "sound", e);
+		super(skin, SoundFX.class, doc, parent, "sound", e);
 	}
-	
+
+	@Nonnull
 	private String[] getSoundList() {
 		String path = Ctx.project.getProjectPath() + Project.SOUND_PATH;
 
@@ -70,6 +56,9 @@ public class EditSoundDialog extends EditElementDialog {
 			}
 		});
 
+		if (soundFiles == null) {
+			return new String[0];
+		}
 		Arrays.sort(soundFiles);
 
 		return soundFiles;

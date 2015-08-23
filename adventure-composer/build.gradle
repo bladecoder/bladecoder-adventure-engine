@@ -6,7 +6,7 @@ apply plugin: 'application'
 mainClassName = 'com.bladecoder.engineeditor.Main'
 
 // java
-    sourceCompatibility = 1.7
+    sourceCompatibility = 1.8
     [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 jar {
@@ -32,6 +32,7 @@ jar {
     }
 
 dependencies {
+  compile 'net.bytebuddy:byte-buddy:0.7-rc1'
   compile "com.badlogicgames.gdx:gdx:$gdxVersion"
   compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
   compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"

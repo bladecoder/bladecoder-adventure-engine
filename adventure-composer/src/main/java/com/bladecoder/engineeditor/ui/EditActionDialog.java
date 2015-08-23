@@ -22,7 +22,6 @@ import com.bladecoder.engineeditor.utils.ModelUtils;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -30,7 +29,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
@@ -138,30 +136,10 @@ public class EditActionDialog extends EditElementDialog {
 			final Class<?> clazz = ac.getClass();
 
 			setInfo(ModelUtils.getInfo(clazz));
-			List<Param> params = ModelUtils.getParams(clazz);
+			List<InputPanel> inputs = ModelUtils.getInputsFromModelClass(ModelUtils.getParams(clazz), getSkin());
+			inputs.forEach(this::addInputPanel);
 
-			parameters = new InputPanel[params.size()];
-
-			for (int i = 0; i < params.size(); i++) {
-				final Param param = params.get(i);
-
-				if (param.getOptions() instanceof Enum[]) {
-					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), param.getName(), param.getDesc(),
-							param.getType(), param.isMandatory(), param.getDefaultValue(), (Enum[]) param.getOptions());
-				} else {
-					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), param.getName(), param.getDesc(),
-							param.getType(), param.isMandatory(), param.getDefaultValue(), (String[]) param.getOptions());
-				}
-
-				addInputPanel(parameters[i]);
-
-				if ((parameters[i].getField() instanceof TextField && param.getName().toLowerCase().endsWith("text")) ||
-						parameters[i].getField() instanceof ScrollPane) {
-					parameters[i].getCell(parameters[i].getField()).fillX();
-				}
-			}
-
-			i = parameters;
+			i = inputs.toArray(new InputPanel[inputs.size()]);
 			a = getAttrs();
 		} else {
 			setInfo(CUSTOM_INFO);
