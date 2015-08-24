@@ -71,7 +71,7 @@ public class EditChapterDialog extends EditDialog {
 	private void create() {
 		try {
 			newId = ((WorldDocument) doc).createChapter(inputId.getText()).getRootAttr("id");
-		} catch (FileNotFoundException | TransformerException
+		} catch (IOException | TransformerException
 				| ParserConfigurationException e) {
 			String msg = "Something went wrong while creating the chapter.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();

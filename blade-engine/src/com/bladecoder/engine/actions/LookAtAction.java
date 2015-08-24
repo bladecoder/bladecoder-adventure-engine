@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonTypeName("LookAt")
+@JsonTypeName("Lookat")
 @ModelDescription("Shows the text and sets the player to lookat in the selected actor direction")
 public class LookAtAction implements Action {
 	private static final String ACTOR_PROPERTY_ID = "actor";

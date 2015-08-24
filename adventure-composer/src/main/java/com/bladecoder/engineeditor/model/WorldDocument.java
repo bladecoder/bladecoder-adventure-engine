@@ -25,6 +25,8 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.model.XML2Bean;
 import org.xml.sax.SAXException;
 
 import com.bladecoder.engine.loader.XMLConstants;
@@ -37,9 +39,7 @@ public class WorldDocument extends  BaseDocument {
 	
 	public static final String NOTIFY_DOCUMENT_MODIFIED = "DOCUMENT_MODIFIED";
 	
-	private int width = -1, height = -1;
-	
-    private PropertyChangeListener documentModifiedListener = new PropertyChangeListener() {	
+    private PropertyChangeListener documentModifiedListener = new PropertyChangeListener() {
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 //			if(!evt.getPropertyName().equals(NOTIFY_DOCUMENT_MODIFIED))
@@ -47,7 +47,8 @@ public class WorldDocument extends  BaseDocument {
 			EditorLogger.debug("WorldDocument Listener: " +  evt.getPropertyName());
 		}
 	};
-	
+	private World world;
+
 	public WorldDocument() {
 		setFilename(XMLConstants.WORLD_FILENAME);
 	}
@@ -65,8 +66,8 @@ public class WorldDocument extends  BaseDocument {
 	}
 	
 	public void setDimensions(int width, int height) {
-		doc.getDocumentElement().setAttribute(XMLConstants.WIDTH_ATTR, Integer.toString(width));
-		doc.getDocumentElement().setAttribute(XMLConstants.HEIGHT_ATTR, Integer.toString(height));
+		world.setWidth(width);
+		world.setHeight(height);
 		modified = true;
 		firePropertyChange();
 	}
@@ -83,23 +84,23 @@ public class WorldDocument extends  BaseDocument {
 	}
 
 	public int getWidth() {
-		return width;
+		return world.getWidth();
 	}
 	
 	public int getHeight() {		
-		return height;
+		return world.getHeight();
 	}
 
 	public void setWidth(String value) {
-		width = Integer.parseInt(value);
-		doc.getDocumentElement().setAttribute(XMLConstants.WIDTH_ATTR, value);
+		world.setWidth(Integer.parseInt(value));
+
 		modified = true;
 		firePropertyChange();
 	}
 	
 	public void setHeight(String value) {
-		height = Integer.parseInt(value);
-		doc.getDocumentElement().setAttribute(XMLConstants.HEIGHT_ATTR, value);
+		world.setHeight(Integer.parseInt(value));
+
 		modified = true;
 		firePropertyChange();
 	}
@@ -114,24 +115,25 @@ public class WorldDocument extends  BaseDocument {
 	}
 	
 	public String getInitChapter() {
-		String init = getRootAttr(XMLConstants.INIT_CHAPTER_ATTR);
+		String init = world.getInitChapter();
 		
 		if(init == null || init.isEmpty()) {
 			init = getChapters()[0];
 			
-			setRootAttr(XMLConstants.INIT_CHAPTER_ATTR, init);
+			world.setInitChapter(init);
 		}
 		
 		return init;
 	}
 	
 	public void setInitChapter(String value) {
-		doc.getDocumentElement().setAttribute(XMLConstants.INIT_CHAPTER_ATTR, value);
+		world.setInitChapter(value);
+
 		modified = true;
 		firePropertyChange();
 	}
 	
-	public ChapterDocument createChapter(String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
+	public ChapterDocument createChapter(String id) throws IOException, TransformerException, ParserConfigurationException {
 		ChapterDocument chapter = new ChapterDocument(modelPath);	
 		String checkedId = getChapterCheckedId(id);
 		
@@ -186,9 +188,27 @@ public class WorldDocument extends  BaseDocument {
 	
 	@Override
 	public void load() throws ParserConfigurationException, SAXException, IOException {
-		super.load();
-		
-		width = Integer.parseInt(doc.getDocumentElement().getAttribute(XMLConstants.WIDTH_ATTR));
-		height = Integer.parseInt(doc.getDocumentElement().getAttribute(XMLConstants.HEIGHT_ATTR));	 
+		File file = new File(getAbsoluteName());
+		this.world = XML2Bean.loadJson(file, World.class);
+		loadI18N();
+	}
+
+	@Override
+	public void save() throws TransformerException, IOException {
+		if (!modified)
+			return;
+
+		File file = new File(getAbsoluteName());
+		XML2Bean.saveJson(file, world);
+		saveI18N();
+
+		modified = false;
+		firePropertyChange(NOTIFY_DOCUMENT_SAVED);
+	}
+
+	@Override
+	public void setModified() {
+		modified = true;
+		firePropertyChange(DOCUMENT_CHANGED, null, world);
 	}
 }

@@ -2,8 +2,8 @@ package com.bladecoder.engine.loader;
 
 public final class XMLConstants {
 
-	public static final String WORLD_FILENAME = "world.xml";
-	public static final String CHAPTER_EXT = ".chapter";	
+	public static final String WORLD_FILENAME = "world.json";
+	public static final String CHAPTER_EXT = ".chapter";
 	
 	public static final String TRUE_VALUE = "true";
 	public static final String FALSE_VALUE = "false";

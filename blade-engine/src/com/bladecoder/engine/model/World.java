@@ -18,10 +18,12 @@ package com.bladecoder.engine.model;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.ByteBuffer;
+import java.util.Collection;
 import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.Gdx;
@@ -46,24 +48,38 @@ import com.bladecoder.engine.loader.WorldXMLLoader;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class World implements Serializable, AssetConsumer {
-
 	public static final String GAMESTATE_EXT = ".gamestate.v11";
 	private static final String GAMESTATE_FILENAME = "default" + GAMESTATE_EXT;
 
 	private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
 
-	public static enum AssetState {
+	public enum AssetState {
 		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
-	};
+	}
 	
 	private static final boolean CACHE_ENABLED = true;
 
 	private static final World instance = new World();
 
-	private AssetState assetState;
-
+	@JsonProperty
 	private int width;
+	@JsonProperty
 	private int height;
+	@JsonProperty
+	private String initChapter;
+
+	@JsonProperty
+	private Collection<Verb> getVerbs() {
+		return VerbManager.getWorldVerbs().values();
+	}
+
+	private void setVerbs(Collection<Verb> verbs) {
+		for (Verb verb : verbs) {
+			VerbManager.addDefaultVerb(verb.getId(), verb);
+		}
+	}
+
+	private AssetState assetState;
 
 	private HashMap<String, Scene> scenes;
 
@@ -97,7 +113,6 @@ public class World implements Serializable, AssetConsumer {
 	 */
 	private HashMap<String, String> customProperties;
 
-	private String initChapter;
 	private String currentChapter;
 
 	/** For FADEIN/FADEOUT */

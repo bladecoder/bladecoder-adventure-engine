@@ -7,8 +7,6 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.bladecoder.engine.actions.ModelDescription;
-import com.bladecoder.engine.actions.ModelPropertyType;
-import com.bladecoder.engine.actions.Param;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 

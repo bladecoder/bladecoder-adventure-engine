@@ -17,6 +17,7 @@ package com.bladecoder.engineeditor.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -232,14 +233,14 @@ public class ChapterDocument extends BaseDocument {
 		return scn;
 	}
 
-	public void create(String id) throws ParserConfigurationException, FileNotFoundException, TransformerException {
+	public void create(String id) throws ParserConfigurationException, IOException, TransformerException {
 		create();
 		setId(id);
 		setFilenameFromId();
 		save();
 	}
 
-	public void rename(String newId) throws FileNotFoundException, TransformerException {
+	public void rename(String newId) throws IOException, TransformerException {
 
 		deleteFiles();
 

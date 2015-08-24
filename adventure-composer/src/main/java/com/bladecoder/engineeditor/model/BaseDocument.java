@@ -100,7 +100,7 @@ public abstract class BaseDocument extends PropertyChange {
 	}
 
 	@SuppressWarnings("serial")
-	private void loadI18N() {
+	protected void loadI18N() {
 		String i18nFilename = getI18NFilename();
 
 		// To save in alphabetical order we override the keys method
@@ -136,7 +136,7 @@ public abstract class BaseDocument extends PropertyChange {
 		return i18n;
 	}
 
-	private void saveI18N() {
+	protected void saveI18N() {
 		String i18nFilename = getI18NFilename();
 		
 		I18NUtils.deleteUnusedKeys(this);
@@ -161,7 +161,7 @@ public abstract class BaseDocument extends PropertyChange {
 		modified = false;
 	}
 
-	public void save() throws TransformerException, FileNotFoundException {
+	public void save() throws TransformerException, IOException {
 
 		if (!modified)
 			return;
