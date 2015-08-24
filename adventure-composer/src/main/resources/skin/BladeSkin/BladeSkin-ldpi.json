@@ -21,7 +21,8 @@
 	com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 		dialogDim: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.45 } },
 		message: { name: white_pixel, color: holo-blue },
-		trans: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.75 } }
+		trans: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.75 } },
+		holo-trans: { name: white_pixel, color: { r: 0.2, g: 0.7, b: 0.89, a: 0.5 } }
 	},
 
 
@@ -47,7 +48,7 @@
 	com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 		default: { up: btn_default_normal, down: btn_default_pressed, over: btn_default_focused, disabled: btn_default_disabled},
 		toggle: { up: btn_toggle_off_normal, down: btn_toggle_on_pressed, over: btn_toggle_off_focused, checked: btn_toggle_on_normal, checkedOver: btn_toggle_on_focused, disabled: btn_toggle_off_disabled },
-		plain: { down: btn_default_pressed, over: btn_default_focused},
+		plain: { down: btn_default_pressed, over: holo-trans},
 	},
 
 

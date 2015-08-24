@@ -81,10 +81,11 @@ public class EditToolbar extends HorizontalGroup {
 		
 		ImageButtonStyle style = new ImageButtonStyle(skin.get("plain", ButtonStyle.class));
 		style.imageUp = new TextureRegionDrawable(image);
+		
 		if(imageDisabled != null)
 			style.imageDisabled = new TextureRegionDrawable(imageDisabled);
 		button.setStyle(style);
-//		button.pad(4, 2, 4, 2);
+		button.pad(0,0,0,0);
         addActor(button);
         button.setDisabled(true);
         TextTooltip t = new TextTooltip(tooltip, skin);
