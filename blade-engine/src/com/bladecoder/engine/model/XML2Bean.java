@@ -183,6 +183,10 @@ public final class XML2Bean {
 		return jsonMapper.readValue(file, clazz);
 	}
 
+	public static <T> T loadJson(File file, T bean) throws IOException {
+		return jsonMapper.readerForUpdating(bean).readValue(file);
+	}
+
 	public static <T> void saveJson(File file, T bean) throws IOException {
 		jsonMapper.writeValue(file, bean);
 	}

@@ -15,12 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.model;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -29,8 +27,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import com.bladecoder.engine.model.BlueprintWorld;
-import com.bladecoder.engine.model.Log;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.XML2Bean;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.utils.I18NUtils;
@@ -43,16 +39,10 @@ import com.bladecoder.engineeditor.utils.EditorLogger;
 public class WorldDocument extends  BaseDocument {	
 	public static final int DEFAULT_WIDTH = 1920;
 	public static final int DEFAULT_HEIGHT = 1080;
-	
-	public static final String NOTIFY_DOCUMENT_MODIFIED = "DOCUMENT_MODIFIED";
-	
-    private PropertyChangeListener documentModifiedListener = new PropertyChangeListener() {
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-//			if(!evt.getPropertyName().equals(NOTIFY_DOCUMENT_MODIFIED))
-			firePropertyChange(evt);
-			EditorLogger.debug("WorldDocument Listener: " +  evt.getPropertyName());
-		}
+
+	private PropertyChangeListener documentModifiedListener = evt -> {
+		firePropertyChange(evt);
+		EditorLogger.debug("WorldDocument Listener: " +  evt.getPropertyName());
 	};
 
 	private BlueprintWorld world;
@@ -106,7 +96,6 @@ public class WorldDocument extends  BaseDocument {
 		firePropertyChange();
 	}
 
-	@Log
 	public void setHeight(String value) {
 		world.setHeight(Integer.parseInt(value));
 
