@@ -40,16 +40,14 @@ import com.bladecoder.engine.actions.TransitionAction;
 import com.bladecoder.engine.actions.WaitAction;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -187,5 +185,9 @@ public final class XML2Bean {
 
 	public static <T> void saveJson(File file, T bean) throws IOException {
 		jsonMapper.writeValue(file, bean);
+	}
+
+	public static <T> JsonNode getProperties(T bean) {
+		return jsonMapper.valueToTree(bean);
 	}
 }

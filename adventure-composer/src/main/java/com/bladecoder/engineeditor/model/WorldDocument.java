@@ -19,14 +19,19 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.XML2Bean;
+import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engineeditor.utils.I18NUtils;
 import org.xml.sax.SAXException;
 
 import com.bladecoder.engine.loader.XMLConstants;
@@ -210,5 +215,20 @@ public class WorldDocument extends  BaseDocument {
 	public void setModified() {
 		modified = true;
 		firePropertyChange(DOCUMENT_CHANGED, null, world);
+	}
+
+	@Override
+	protected void saveI18N() {
+		String i18nFilename = getI18NFilename();
+
+		I18NUtils.deleteUnusedKeys(this, world);
+
+		try {
+			FileOutputStream os = new FileOutputStream(i18nFilename);
+			Writer out = new OutputStreamWriter(os, "ISO-8859-1");  // FIXME: This really should be UTF-8
+			i18n.store(out, getFilename());
+		} catch (IOException e) {
+			EngineLogger.error("ERROR WRITING BUNDLE: " + i18nFilename);
+		}
 	}
 }
