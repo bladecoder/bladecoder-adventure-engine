@@ -18,12 +18,10 @@ package com.bladecoder.engine.model;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.ByteBuffer;
-import java.util.Collection;
 import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.Gdx;
@@ -47,7 +45,7 @@ import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.loader.WorldXMLLoader;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class World implements Serializable, AssetConsumer {
+public class World extends BlueprintWorld implements Serializable, AssetConsumer {
 	public static final String GAMESTATE_EXT = ".gamestate.v11";
 	private static final String GAMESTATE_FILENAME = "default" + GAMESTATE_EXT;
 
@@ -60,24 +58,6 @@ public class World implements Serializable, AssetConsumer {
 	private static final boolean CACHE_ENABLED = true;
 
 	private static final World instance = new World();
-
-	@JsonProperty
-	private int width;
-	@JsonProperty
-	private int height;
-	@JsonProperty
-	private String initChapter;
-
-	@JsonProperty
-	private Collection<Verb> getVerbs() {
-		return VerbManager.getWorldVerbs().values();
-	}
-
-	private void setVerbs(Collection<Verb> verbs) {
-		for (Verb verb : verbs) {
-			VerbManager.addDefaultVerb(verb.getId(), verb);
-		}
-	}
 
 	private AssetState assetState;
 
@@ -436,22 +416,6 @@ public class World implements Serializable, AssetConsumer {
 		}
 	}
 
-	public int getWidth() {
-		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
 	public void showInventory(boolean b) {
 		inventory.setVisible(b);
 	}
@@ -514,14 +478,6 @@ public class World implements Serializable, AssetConsumer {
 
 	public void setChapter(String chapter) {
 		this.currentChapter = chapter;
-	}
-
-	public String getInitChapter() {
-		return initChapter;
-	}
-
-	public void setInitChapter(String initChapter) {
-		this.initChapter = initChapter;
 	}
 
 	public boolean isPaused() {

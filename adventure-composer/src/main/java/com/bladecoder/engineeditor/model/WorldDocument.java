@@ -28,6 +28,8 @@ import java.io.Writer;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import com.bladecoder.engine.model.BlueprintWorld;
+import com.bladecoder.engine.model.Log;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.XML2Bean;
 import com.bladecoder.engine.util.EngineLogger;
@@ -52,7 +54,8 @@ public class WorldDocument extends  BaseDocument {
 			EditorLogger.debug("WorldDocument Listener: " +  evt.getPropertyName());
 		}
 	};
-	private World world;
+
+	private BlueprintWorld world;
 
 	public WorldDocument() {
 		setFilename(XMLConstants.WORLD_FILENAME);
@@ -102,7 +105,8 @@ public class WorldDocument extends  BaseDocument {
 		modified = true;
 		firePropertyChange();
 	}
-	
+
+	@Log
 	public void setHeight(String value) {
 		world.setHeight(Integer.parseInt(value));
 
@@ -194,7 +198,7 @@ public class WorldDocument extends  BaseDocument {
 	@Override
 	public void load() throws ParserConfigurationException, SAXException, IOException {
 		File file = new File(getAbsoluteName());
-		this.world = XML2Bean.loadJson(file, World.class);
+		this.world = XML2Bean.loadJson(file, BlueprintWorld.class);
 		loadI18N();
 	}
 
