@@ -33,6 +33,7 @@ jar {
 
 dependencies {
   compile 'net.bytebuddy:byte-buddy:0.7-rc1'
+  compile 'net.bytebuddy:byte-buddy-agent:0.7-rc1'
   compile "com.badlogicgames.gdx:gdx:$gdxVersion"
   compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
   compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"

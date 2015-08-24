@@ -15,18 +15,38 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor;
 
-import java.io.File;
-
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.bladecoder.engine.model.TrackPropertyChanges;
+import com.bladecoder.engineeditor.model.PropertyChange;
 import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
+import net.bytebuddy.agent.ByteBuddyAgent;
+import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.matcher.ElementMatchers;
+
+import java.io.File;
 
 public class Main extends LwjglApplication {
-
 	public static void main(final String[] args) {
+		ByteBuddyAgent.installOnOpenJDK();
+
+		new AgentBuilder.Default()
+				.rebase(ElementMatchers.nameStartsWith("com.bladecoder.engine"))
+				.transform((builder, typeDescription) -> builder
+								.method(ElementMatchers.isPublic().and(ElementMatchers.isAnnotatedWith(TrackPropertyChanges.class)))
+								.intercept(
+										MethodDelegation
+												.to(TrackPropertyChangesInterceptor.class)
+								)
+								.defineField(TrackPropertyChangesInterceptor.PROPERTY_CHANGE_FIELD, PropertyChange.class)
+								.defineField(TrackPropertyChangesInterceptor.MODIFIED_FIELD, boolean.class)
+				)
+				.installOnByteBuddyAgent();
+
 		// This dummy instantiation will initialize JavaFX for us
 		new JFXPanel();
 

@@ -27,6 +27,7 @@ public class BlueprintWorld {
 		return width;
 	}
 
+	@TrackPropertyChanges
 	public void setWidth(int width) {
 		this.width = width;
 	}
@@ -35,6 +36,7 @@ public class BlueprintWorld {
 		return height;
 	}
 
+	@TrackPropertyChanges
 	public void setHeight(int height) {
 		this.height = height;
 	}
@@ -43,6 +45,7 @@ public class BlueprintWorld {
 		return initChapter;
 	}
 
+	@TrackPropertyChanges
 	public void setInitChapter(String initChapter) {
 		this.initChapter = initChapter;
 	}
