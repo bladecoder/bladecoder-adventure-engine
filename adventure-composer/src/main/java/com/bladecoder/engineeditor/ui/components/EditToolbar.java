@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
