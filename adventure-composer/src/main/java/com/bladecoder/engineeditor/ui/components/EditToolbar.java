@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
@@ -81,10 +82,11 @@ public class EditToolbar extends HorizontalGroup {
 		
 		ImageButtonStyle style = new ImageButtonStyle(skin.get("plain", ButtonStyle.class));
 		style.imageUp = new TextureRegionDrawable(image);
+		
 		if(imageDisabled != null)
 			style.imageDisabled = new TextureRegionDrawable(imageDisabled);
 		button.setStyle(style);
-//		button.pad(4, 2, 4, 2);
+		button.pad(0,0,0,0);
         addActor(button);
         button.setDisabled(true);
         TextTooltip t = new TextTooltip(tooltip, skin);
