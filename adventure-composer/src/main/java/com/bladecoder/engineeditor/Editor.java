@@ -133,9 +133,6 @@ public class Editor implements ApplicationListener {
 		stage.setKeyboardFocus(scnEditor.getScnWidget());
 		
 		TooltipManager.getInstance().instant();
-		
-		// TODO disable tooltips while not working in libgdx
-		TooltipManager.getInstance().enabled = false;
 	}
 
 	@Override
