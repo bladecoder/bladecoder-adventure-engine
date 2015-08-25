@@ -132,6 +132,6 @@
 	},
 
 	com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
-		default: {label: default, background: message}
+		default: {label: { font: default-font, fontColor: text-dark}, background: message}
 	},
 }
