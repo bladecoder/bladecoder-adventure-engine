@@ -16,7 +16,7 @@
 package com.bladecoder.engineeditor.ui;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import com.bladecoder.engineeditor.utils.ModelUtils;
 import org.w3c.dom.Element;
@@ -136,7 +136,7 @@ public class EditActionDialog extends EditElementDialog {
 			final Class<?> clazz = ac.getClass();
 
 			setInfo(ModelUtils.getInfo(clazz));
-			List<InputPanel> inputs = ModelUtils.getInputsFromModelClass(ModelUtils.getParams(clazz), getSkin());
+			Collection<InputPanel> inputs = ModelUtils.getInputsFromModelClass(ModelUtils.getParams(clazz), getSkin());
 			inputs.forEach(this::addInputPanel);
 
 			i = inputs.toArray(new InputPanel[inputs.size()]);

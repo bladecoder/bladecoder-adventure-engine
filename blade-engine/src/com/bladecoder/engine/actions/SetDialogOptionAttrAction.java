@@ -25,7 +25,9 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("SetDialogOptionAttr")
 @ModelDescription("Change the selected dialog option properties")
 public class SetDialogOptionAttrAction implements Action {
 	@JsonProperty("actor")

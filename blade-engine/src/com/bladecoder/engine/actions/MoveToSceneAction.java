@@ -25,7 +25,9 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("MoveToScene")
 @ModelDescription("Move the actor to the selected scene")
 public class MoveToSceneAction implements Action {
 	@JsonProperty("actor")

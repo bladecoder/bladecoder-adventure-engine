@@ -25,7 +25,9 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("PickUp")
 @ModelDescription("Puts the selected actor in the inventory.")
 public class PickUpAction implements Action {
 	@JsonProperty("actor")

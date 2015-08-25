@@ -80,9 +80,9 @@ public class AtlasRenderer implements ActorRenderer {
 	
 	@Override
 	public String[] getInternalAnimations(AnimationDesc anim) {
-		retrieveSource(anim.source);
+		retrieveSource(anim.getSource());
 		
-		TextureAtlas atlas = EngineAssetManager.getInstance().getTextureAtlas(anim.source);
+		TextureAtlas atlas = EngineAssetManager.getInstance().getTextureAtlas(anim.getSource());
 		
 		Array<AtlasRegion> animations = atlas.getRegions();
 		ArrayList<String> l = new ArrayList<String>();
@@ -176,8 +176,8 @@ public class AtlasRenderer implements ActorRenderer {
 			return;
 		}
 		
-		if(currentAnimation != null && currentAnimation.disposeWhenPlayed) {
-			disposeSource(currentAnimation.source);
+		if(currentAnimation != null && currentAnimation.isDisposeWhenPlayed()) {
+			disposeSource(currentAnimation.getSource());
 			currentAnimation.regions = null;
 		}
 
@@ -190,8 +190,8 @@ public class AtlasRenderer implements ActorRenderer {
 			retrieveFA(fa);
 
 			if (currentAnimation.regions == null || currentAnimation.regions.size == 0) {
-				EngineLogger.error(currentAnimation.id + " has no regions in ATLAS " + currentAnimation.source);
-				fanims.remove(currentAnimation.id);
+				EngineLogger.error(currentAnimation.getId() + " has no regions in ATLAS " + currentAnimation.getSource());
+				fanims.remove(currentAnimation.getId());
 			}
 		}
 
@@ -204,7 +204,7 @@ public class AtlasRenderer implements ActorRenderer {
 		}
 
 		if (currentAnimation.regions.size == 1
-				|| currentAnimation.duration == 0.0) {
+				|| currentAnimation.getSpeed() == 0.0) {
 
 			setFrame(0);
 			computeBbox();
@@ -217,12 +217,12 @@ public class AtlasRenderer implements ActorRenderer {
 		}
 
 		if (repeatType == Tween.Type.SPRITE_DEFINED) {
-			repeatType = currentAnimation.animationType;
-			count = currentAnimation.count;
+			repeatType = currentAnimation.getAnimationType();
+			count = currentAnimation.getCount();
 		}
 		
 		faTween = new FATween();
-		faTween.start(this, repeatType, count, currentAnimation.duration, cb);
+		faTween.start(this, repeatType, count, currentAnimation.getSpeed(), cb);
 		
 		if(repeatType == Tween.Type.REVERSE)
 			setFrame(getNumFrames() - 1);
@@ -241,7 +241,7 @@ public class AtlasRenderer implements ActorRenderer {
 		if (currentAnimation == null)
 			return null;
 
-		String id = currentAnimation.id;
+		String id = currentAnimation.getId();
 
 		if (flipX) {
 			id = AnimationDesc.getFlipId(id);
@@ -275,9 +275,9 @@ public class AtlasRenderer implements ActorRenderer {
 	@Override
 	public void addAnimation(AnimationDesc fa) {
 		if(initAnimation == null)
-			initAnimation = fa.id; 
+			initAnimation = fa.getId();
 			
-		fanims.put(fa.id, (AtlasAnimationDesc)fa);
+		fanims.put(fa.getId(), (AtlasAnimationDesc)fa);
 	}
 
 	@Override
@@ -291,7 +291,7 @@ public class AtlasRenderer implements ActorRenderer {
 		}
 
 		if(currentAnimation != null)
-			sb.append("\n  Current Anim: ").append(currentAnimation.id);
+			sb.append("\n  Current Anim: ").append(currentAnimation.getId());
 
 		sb.append("\n");
 
@@ -401,8 +401,8 @@ public class AtlasRenderer implements ActorRenderer {
 	}
 	
 	private void retrieveFA(AtlasAnimationDesc fa) {
-		retrieveSource(fa.source);
-		fa.regions = EngineAssetManager.getInstance().getRegions(fa.source, fa.id);
+		retrieveSource(fa.getSource());
+		fa.regions = EngineAssetManager.getInstance().getRegions(fa.getSource(), fa.getId());
 	}
 
 	private void retrieveSource(String source) {
@@ -428,33 +428,33 @@ public class AtlasRenderer implements ActorRenderer {
 	@Override
 	public void loadAssets() {
 		for (AnimationDesc fa : fanims.values()) {
-			if (fa.preload)
-				loadSource(fa.source);
+			if (fa.isPreload())
+				loadSource(fa.getSource());
 		}
 
-		if (currentAnimation != null && !currentAnimation.preload) {
-			loadSource(currentAnimation.source);
+		if (currentAnimation != null && !currentAnimation.isPreload()) {
+			loadSource(currentAnimation.getSource());
 		} else if (currentAnimation == null && initAnimation != null) {
 			AnimationDesc fa = fanims.get(initAnimation);
 
-			if (!fa.preload)
-				loadSource(fa.source);
+			if (!fa.isPreload())
+				loadSource(fa.getSource());
 		}
 	}
 
 	@Override
 	public void retrieveAssets() {
 		for (AnimationDesc fa : fanims.values()) {
-			if(fa.preload)
+			if(fa.isPreload())
 				retrieveFA((AtlasAnimationDesc)fa);
 		}
 		
-		if(currentAnimation != null && !currentAnimation.preload) {
+		if(currentAnimation != null && !currentAnimation.isPreload()) {
 			retrieveFA(currentAnimation);
 		} else if(currentAnimation == null && initAnimation != null) {
 			AtlasAnimationDesc fa = (AtlasAnimationDesc)fanims.get(initAnimation);
 			
-			if(!fa.preload)
+			if(!fa.isPreload())
 				retrieveFA(fa);		
 		}
 
@@ -484,7 +484,7 @@ public class AtlasRenderer implements ActorRenderer {
 		String currentAnimationId = null;
 
 		if (currentAnimation != null)
-			currentAnimationId = currentAnimation.id;
+			currentAnimationId = currentAnimation.getId();
 
 		json.writeValue("currentAnimation", currentAnimationId);
 		

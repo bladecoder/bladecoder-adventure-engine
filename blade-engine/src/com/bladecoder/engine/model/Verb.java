@@ -16,9 +16,11 @@
 package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.util.EngineLogger;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Verb extends AbstractModel implements VerbRunner {
 	public static final String LOOKAT_VERB = "lookat";
@@ -29,8 +31,9 @@ public class Verb extends AbstractModel implements VerbRunner {
 	public static final String GOTO_VERB = "goto";
 	public static final String TEST_VERB = "test";
 	public static final String INIT_VERB = "init";
-	
-	private ArrayList<Action> actions = new ArrayList <Action>();
+
+	@JsonProperty
+	private List<Action> actions = new ArrayList <Action>();
 	
 	private int ip = -1;
 	
@@ -41,7 +44,7 @@ public class Verb extends AbstractModel implements VerbRunner {
 		actions.add(a);
 	}
 	
-	public ArrayList<Action> getActions() {
+	public List<Action> getActions() {
 		return actions;
 	}
 	

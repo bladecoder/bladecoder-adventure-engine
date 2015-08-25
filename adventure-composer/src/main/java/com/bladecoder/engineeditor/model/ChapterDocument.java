@@ -17,6 +17,7 @@ package com.bladecoder.engineeditor.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -232,14 +233,14 @@ public class ChapterDocument extends BaseDocument {
 		return scn;
 	}
 
-	public void create(String id) throws ParserConfigurationException, FileNotFoundException, TransformerException {
+	public void create(String id) throws ParserConfigurationException, IOException, TransformerException {
 		create();
 		setId(id);
 		setFilenameFromId();
 		save();
 	}
 
-	public void rename(String newId) throws FileNotFoundException, TransformerException {
+	public void rename(String newId) throws IOException, TransformerException {
 
 		deleteFiles();
 
@@ -429,46 +430,46 @@ public class ChapterDocument extends BaseDocument {
 			fa = new AnimationDesc();
 		}
 
-		fa.id = faElement.getAttribute(XMLConstants.ID_ATTR);
-		fa.source = faElement.getAttribute(XMLConstants.SOURCE_ATTR);
+		fa.setId(faElement.getAttribute(XMLConstants.ID_ATTR));
+		fa.setSource(faElement.getAttribute(XMLConstants.SOURCE_ATTR));
 
 		if (faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).isEmpty()
 				|| faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).equalsIgnoreCase(XMLConstants.REPEAT_VALUE)) {
-			fa.animationType = Tween.Type.REPEAT;
+			fa.setAnimationType(Tween.Type.REPEAT);
 		} else if (faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).equalsIgnoreCase(XMLConstants.YOYO_VALUE)) {
-			fa.animationType = Tween.Type.YOYO;
+			fa.setAnimationType(Tween.Type.YOYO);
 		} else {
-			fa.animationType = Tween.Type.NO_REPEAT;
+			fa.setAnimationType(Tween.Type.NO_REPEAT);
 		}
 
 		if (!faElement.getAttribute(XMLConstants.SPEED_ATTR).isEmpty())
-			fa.duration = Float.parseFloat(faElement.getAttribute(XMLConstants.SPEED_ATTR));
+			fa.setSpeed(Float.parseFloat(faElement.getAttribute(XMLConstants.SPEED_ATTR)));
 
 		if (!faElement.getAttribute(XMLConstants.DELAY_ATTR).isEmpty())
-			fa.delay = Float.parseFloat(faElement.getAttribute(XMLConstants.DELAY_ATTR));
+			fa.setDelay(Float.parseFloat(faElement.getAttribute(XMLConstants.DELAY_ATTR)));
 
 		if (!faElement.getAttribute(XMLConstants.COUNT_ATTR).isEmpty())
-			fa.count = Integer.parseInt(faElement.getAttribute(XMLConstants.COUNT_ATTR));
+			fa.setCount(Integer.parseInt(faElement.getAttribute(XMLConstants.COUNT_ATTR)));
 		else
-			fa.count = Tween.INFINITY;
+			fa.setCount(Tween.INFINITY);
 
 		if (!faElement.getAttribute(XMLConstants.SOUND_ATTR).isEmpty())
-			fa.sound = faElement.getAttribute(XMLConstants.SOUND_ATTR);
+			fa.setSound(faElement.getAttribute(XMLConstants.SOUND_ATTR));
 
 		if (!faElement.getAttribute(XMLConstants.IND_ATTR).isEmpty()) {
-			fa.inD = Param.parseVector2(faElement.getAttribute(XMLConstants.IND_ATTR));
+			fa.setInD(Param.parseVector2(faElement.getAttribute(XMLConstants.IND_ATTR)));
 		}
 
 		if (!faElement.getAttribute(XMLConstants.OUTD_ATTR).isEmpty()) {
-			fa.outD = Param.parseVector2(faElement.getAttribute(XMLConstants.OUTD_ATTR));
+			fa.setOutD(Param.parseVector2(faElement.getAttribute(XMLConstants.OUTD_ATTR)));
 		}
 
 		if (!faElement.getAttribute(XMLConstants.PRELOAD_ATTR).isEmpty()) {
-			fa.outD = Param.parseVector2(faElement.getAttribute(XMLConstants.PRELOAD_ATTR));
+			fa.setOutD(Param.parseVector2(faElement.getAttribute(XMLConstants.PRELOAD_ATTR)));
 		}
 
 		if (!faElement.getAttribute(XMLConstants.DISPOSE_WHEN_PLAYED_ATTR).isEmpty()) {
-			fa.outD = Param.parseVector2(faElement.getAttribute(XMLConstants.DISPOSE_WHEN_PLAYED_ATTR));
+			fa.setOutD(Param.parseVector2(faElement.getAttribute(XMLConstants.DISPOSE_WHEN_PLAYED_ATTR)));
 		}
 
 		return fa;

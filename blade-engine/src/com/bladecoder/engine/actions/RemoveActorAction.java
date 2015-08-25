@@ -24,7 +24,9 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("RemoveActor")
 @ModelDescription("Deletes an actor from the game")
 public class RemoveActorAction implements Action {
 	@JsonProperty("actor")

@@ -19,7 +19,9 @@ import java.util.HashMap;
 
 import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.VerbRunner;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("RunOnce")
 @ModelDescription("Execute the actions inside the RunOnce/EndRunOnce only once.")
 public class RunOnceAction extends AbstractControlAction {
 	boolean executed = false;

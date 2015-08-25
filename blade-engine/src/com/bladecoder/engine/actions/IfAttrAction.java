@@ -26,7 +26,9 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("IfAttr")
 @ModelDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfAttrAction extends AbstractIfAction {
 	public static final String ENDTYPE_VALUE = "else";

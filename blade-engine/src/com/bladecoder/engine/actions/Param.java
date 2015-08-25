@@ -38,8 +38,16 @@ public class Param {
 	private final Type type;
 	private final boolean mandatory;
 	private final String defaultValue;
-	private final Object[] options; // availables values for combos
+	private final Object[] options; // available values for combos
 	private final String link;
+
+	public Param(String id, String name, String desc, Type type, boolean mandatory, String defaultValue, String[] options, String link) {
+		this(id, name, desc, type, mandatory, defaultValue, (Object[])options, link);
+	}
+
+	public Param(String id, String name, String desc, Type type, boolean mandatory, String defaultValue, Enum[] options, String link) {
+		this(id, name, desc, type, mandatory, defaultValue, (Object[])options, link);
+	}
 
 	public Param(String id, String name, String desc, Type type, boolean mandatory, String defaultValue, Object[] options, String link) {
 		this.id = id;
@@ -197,6 +205,37 @@ public class Param {
 			return s2;
 		
 		return s1 + STRING_PARAM_SEPARATOR + s2;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Param param = (Param) o;
+
+		if (mandatory != param.mandatory) return false;
+		if (id != null ? !id.equals(param.id) : param.id != null) return false;
+		if (name != null ? !name.equals(param.name) : param.name != null) return false;
+		if (desc != null ? !desc.equals(param.desc) : param.desc != null) return false;
+		if (type != param.type) return false;
+		if (defaultValue != null ? !defaultValue.equals(param.defaultValue) : param.defaultValue != null) return false;
+		if (!Arrays.equals(options, param.options)) return false;
+		return !(link != null ? !link.equals(param.link) : param.link != null);
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		result = 31 * result + (desc != null ? desc.hashCode() : 0);
+		result = 31 * result + (type != null ? type.hashCode() : 0);
+		result = 31 * result + (mandatory ? 1 : 0);
+		result = 31 * result + (defaultValue != null ? defaultValue.hashCode() : 0);
+		result = 31 * result + (options != null ? Arrays.hashCode(options) : 0);
+		result = 31 * result + (link != null ? link.hashCode() : 0);
+		return result;
 	}
 
 	@Override

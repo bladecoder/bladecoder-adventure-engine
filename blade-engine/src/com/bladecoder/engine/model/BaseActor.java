@@ -25,12 +25,21 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * A BaseActor is the foundation for all actors in Scenes
  * 
  * @author rgarcia
  */
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include= JsonTypeInfo.As.PROPERTY)
+@JsonSubTypes({
+		@JsonSubTypes.Type(value = ObstacleActor.class),
+		@JsonSubTypes.Type(value = InteractiveActor.class),
+		@JsonSubTypes.Type(value = SpriteActor.class),
+		@JsonSubTypes.Type(value = CharacterActor.class)
+})
 abstract public class BaseActor extends AbstractModel implements Comparable<BaseActor>, Serializable {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The layer for drawing order")

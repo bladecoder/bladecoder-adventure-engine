@@ -16,11 +16,16 @@
 package com.bladecoder.engine.model;
 
 
+import com.bladecoder.engine.actions.ModelDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 /**
  * An Obstacle actor is used to restrict the walk zone in the scene
  * 
  * @author rgarcia
  */
+@JsonTypeName("obstacle")
+@ModelDescription("Obstacle actors create impassable zones for walking actors")
 public class ObstacleActor extends BaseActor {
 
 	public void setVisible(boolean visible) {

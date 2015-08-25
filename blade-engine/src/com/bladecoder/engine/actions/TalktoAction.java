@@ -22,7 +22,9 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("Talkto")
 @ModelDescription("Sets the dialog mode")
 public class TalktoAction implements Action {
 	@JsonProperty

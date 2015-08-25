@@ -23,7 +23,9 @@ import com.bladecoder.engine.model.ModelTypeLink;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("Sound")
 @ModelDescription("Play/Stop a sound")
 public class SoundAction implements Action {
 	private static final String ACTOR_PROPERTY_ID = "actor";

@@ -76,7 +76,7 @@ public class AnimationWidget extends Widget {
 		} catch (Exception e) {
 			// Ctx.msg.show(getStage(),
 			// "Error loading animations from selected source", 4);
-			EditorLogger.error("Error loading animations from selected source:" + fa.source + ": " + e.getMessage());
+			EditorLogger.error("Error loading animations from selected source:" + fa.getSource() + ": " + e.getMessage());
 			return new String[0];
 		}
 
@@ -97,14 +97,14 @@ public class AnimationWidget extends Widget {
 			if (typeStr.equals(XMLConstants.YOYO_VALUE))
 				type = Tween.Type.YOYO;
 
-			fa.id = id;
-			fa.duration = speed;
-			fa.animationType = type;
+			fa.setId(id);
+			fa.setSpeed(speed);
+			fa.setAnimationType(type);
 			
 			renderer.getAnimations().clear();
 
 			renderer.addAnimation(fa);
-			renderer.startAnimation(fa.id, Tween.Type.SPRITE_DEFINED, 1, null);
+			renderer.startAnimation(fa.getId(), Tween.Type.SPRITE_DEFINED, 1, null);
 		}
 	}
 

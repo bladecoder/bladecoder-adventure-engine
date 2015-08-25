@@ -27,7 +27,9 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("Animation")
 @ModelDescription("Sets the animation for an actor")
 public class AnimationAction implements Action {
 	private static final int NO_POS = 0;

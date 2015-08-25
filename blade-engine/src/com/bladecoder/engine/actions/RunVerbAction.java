@@ -18,6 +18,7 @@ package com.bladecoder.engine.actions;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -31,7 +32,9 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("RunVerb")
 @ModelDescription("Runs an actor verb")
 public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	@JsonProperty("actor")
@@ -99,7 +102,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 		boolean stop = false;
 
-		ArrayList<Action> actions = getActions();
+		List<Action> actions = getActions();
 
 		while (ip < actions.size() && !stop) {
 			Action a = actions.get(ip);
@@ -130,7 +133,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	@Override
 	public void cancel() {
-		ArrayList<Action> actions = getActions();
+		List<Action> actions = getActions();
 
 		for (Action c : actions) {
 			if (c instanceof VerbRunner)
@@ -142,7 +145,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	
 
 	@Override
-	public ArrayList<Action> getActions() {
+	public List<Action> getActions() {
 		Verb v = getVerb(verb, target, state);
 
 		if (v == null) {

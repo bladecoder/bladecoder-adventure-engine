@@ -21,7 +21,9 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("LoadChapter")
 @ModelDescription("Load the specified Chapter. Scene can be empty to load the default scene.")
 public class LoadChapterAction implements Action {
 	@JsonProperty(required = true)

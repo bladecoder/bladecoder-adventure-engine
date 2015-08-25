@@ -17,6 +17,8 @@ package com.bladecoder.engine.model;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.bladecoder.engine.model.Verb;
 
@@ -26,8 +28,8 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class VerbManager implements Serializable {
-	protected static HashMap<String, Verb> worldVerbs = new HashMap<String, Verb>();
-	protected HashMap<String, Verb> verbs = new HashMap<String, Verb>();
+	protected static Map<String, Verb> worldVerbs = new LinkedHashMap<String, Verb>();
+	protected Map<String, Verb> verbs = new LinkedHashMap<String, Verb>();
 
 	public void addVerb(String id, Verb v) {
 		verbs.put(id, v);
@@ -82,11 +84,11 @@ public class VerbManager implements Serializable {
 		return v;
 	}
 	
-	public static HashMap<String, Verb> getWorldVerbs() {
+	public static Map<String, Verb> getWorldVerbs() {
 		return worldVerbs;
 	}
 
-	public HashMap<String, Verb> getVerbs() {
+	public Map<String, Verb> getVerbs() {
 		return verbs;
 	}
 

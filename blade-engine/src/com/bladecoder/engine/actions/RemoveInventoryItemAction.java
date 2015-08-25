@@ -22,7 +22,9 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("RemoveInventoryItem")
 @ModelDescription("Remove items from the inventory.")
 public class RemoveInventoryItemAction implements Action {
 	@JsonProperty("id")

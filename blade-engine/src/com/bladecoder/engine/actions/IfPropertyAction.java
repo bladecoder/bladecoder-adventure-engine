@@ -23,7 +23,9 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("IfProperty")
 @ModelDescription("Execute the actions inside the If/EndIf if the game propert has the specified value.")
 public class IfPropertyAction extends AbstractIfAction {
 	@JsonProperty(required = true)

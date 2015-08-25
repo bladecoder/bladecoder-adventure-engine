@@ -16,7 +16,6 @@
 package com.bladecoder.engineeditor.ui;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.Arrays;
 
 import org.w3c.dom.Element;
@@ -221,10 +220,10 @@ public class EditAnimationDialog extends EditElementDialog {
 			anim = new AnimationDesc();
 		}
 		
-		anim.source = source;
-		anim.count = Tween.INFINITY;
-		anim.preload = true;
-		anim.disposeWhenPlayed = false;	
+		anim.setSource(source);
+		anim.setCount(Tween.INFINITY);
+		anim.setPreload(true);
+		anim.setDisposeWhenPlayed(false);
 		
 		spriteWidget.setSource(renderer, anim);
 	}
@@ -304,61 +303,32 @@ public class EditAnimationDialog extends EditElementDialog {
 			ext = "";			
 		}
 
+		return getListOfFilenames(path, ext);
+	}
+
+	private String[] getListOfFilenames(String path, String ext) {
 		File f = new File(path);
 
-		String sources[] = f.list(new FilenameFilter() {
+		String files[] = f.list((file, name) -> name.endsWith(ext));
 
-			@Override
-			public boolean accept(File arg0, String arg1) {
-				if (arg1.endsWith(ext))
-					return true;
-
-				return false;
-			}
-		});
-
-		if (sources != null) {
-			Arrays.sort(sources);
-
-			for (int i = 0; i < sources.length; i++)
-				sources[i] = sources[i].substring(0,
-						sources[i].length() - ext.length());
-		} else {
-			sources = new String[0];
+		if (files == null) {
+			return new String[0];
 		}
 
-		return sources;
+		Arrays.sort(files);
+
+		for (int i = 0; i < files.length; i++)
+			files[i] = files[i].substring(0, files[i].length() - ext.length());
+
+		return files;
 	}
-	
+
 	private String[] getAtlases() {
 		String path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
 				+ Ctx.project.getResDir();
 
-		File f = new File(path);
-
-		String atlases[] = f.list(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File arg0, String arg1) {
-				if (arg1.endsWith(ATLAS_EXT))
-					return true;
-
-				return false;
-			}
-		});
-
-		if (atlases != null) {
-			Arrays.sort(atlases);
-
-			for (int i = 0; i < atlases.length; i++)
-				atlases[i] = atlases[i].substring(0,
-						atlases[i].length() - ATLAS_EXT.length());
-		} else {
-			atlases = new String[0];
-		}
-
-		return atlases;
-	}	
+		return getListOfFilenames(path, ATLAS_EXT);
+	}
 
 	/**
 	 * Override to append all animations if selected.

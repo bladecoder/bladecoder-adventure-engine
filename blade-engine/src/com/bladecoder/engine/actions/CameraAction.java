@@ -25,7 +25,9 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("Camera")
 @ModelDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
 public class CameraAction implements Action {
 	@JsonProperty

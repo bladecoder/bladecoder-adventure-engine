@@ -141,17 +141,7 @@ public class AssetsList extends Table {
 			if (type.equals("images") || type.equals("atlases"))
 				dir += "/1";
 
-			String[] files = new File(dir).list(new FilenameFilter() {
-				@Override
-				public boolean accept(File arg0, String arg1) {
-					String type = assetTypes.getSelected();
-
-					if (type.equals("atlases") && !arg1.endsWith(".atlas"))
-						return false;
-
-					return true;
-				}
-			});
+			String[] files = new File(dir).list((file, name) -> !(assetTypes.getSelected().equals("atlases") && !name.endsWith(".atlas")));
 
 			if (files != null)
 				for (String f : files)

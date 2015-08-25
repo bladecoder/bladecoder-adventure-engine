@@ -20,6 +20,7 @@ import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import javax.annotation.Nonnull;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ModelUtils {
 	public static String getInfo(@Nonnull Class<?> clazz) {
@@ -170,15 +172,7 @@ public class ModelUtils {
 
 		final List<String> result = new ArrayList<>();
 		for (JsonSubTypes.Type jsonType : jsonSubTypes.value()) {
-			String name = jsonType.name();
-			if (name.isEmpty()) {
-				final JsonTypeName jsonTypeName = jsonType.value().getAnnotation(JsonTypeName.class);
-				if (jsonTypeName == null) {
-					throw new RuntimeException(jsonType.value().getName() + " is a JSON SubType, but it doesn't have a @JsonTypeName or a name on its parent (" + type.getName() + ")");
-				}
-				name = jsonTypeName.value();
-			}
-			result.add(name);
+			result.add(getJsonTypeName(jsonType, type));
 		}
 
 		return result.toArray(new String[result.size()]);
@@ -202,5 +196,40 @@ public class ModelUtils {
 			return Param.Type.VECTOR3;
 		}
 		return null;
+	}
+
+	/**
+	 *
+	 * @param modelClass
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> Optional<Map<String, Class<?>>> getModelClassChoiceChildren(Class<T> modelClass) {
+		JsonTypeInfo jsonTypeInfo = modelClass.getAnnotation(JsonTypeInfo.class);
+		if (jsonTypeInfo == null)
+			return Optional.empty();
+
+		// FIXME: This can miss values, as converters can be registered thorugh other means
+		JsonSubTypes jsonSubTypes = modelClass.getAnnotation(JsonSubTypes.class);
+		if (jsonSubTypes == null) {
+			throw new RuntimeException(modelClass.getName() + " is a polymorphic type, but we can't find its children (no @JsonSubTypes annotation)");
+		}
+		final Map<String, Class<?>> result = new LinkedHashMap<>();
+		for (JsonSubTypes.Type jsonType : jsonSubTypes.value()) {
+			result.put(getJsonTypeName(jsonType, modelClass), jsonType.value());
+		}
+		return Optional.of(result);
+	}
+
+	private static String getJsonTypeName(JsonSubTypes.Type jsonType, Class<?> parentClass) {
+		String name = jsonType.name();
+		if (name.isEmpty()) {
+			final JsonTypeName jsonTypeName = jsonType.value().getAnnotation(JsonTypeName.class);
+			if (jsonTypeName == null) {
+				throw new RuntimeException(jsonType.value().getName() + " is a JSON SubType, but it doesn't have a @JsonTypeName or a name on its parent (" + parentClass.getName() + ")");
+			}
+			name = jsonTypeName.value();
+		}
+		return name;
 	}
 }

@@ -45,25 +45,21 @@ import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.loader.WorldXMLLoader;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class World implements Serializable, AssetConsumer {
-
+public class World extends BlueprintWorld implements Serializable, AssetConsumer {
 	public static final String GAMESTATE_EXT = ".gamestate.v11";
 	private static final String GAMESTATE_FILENAME = "default" + GAMESTATE_EXT;
 
 	private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
 
-	public static enum AssetState {
+	public enum AssetState {
 		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
-	};
+	}
 	
 	private static final boolean CACHE_ENABLED = true;
 
 	private static final World instance = new World();
 
 	private AssetState assetState;
-
-	private int width;
-	private int height;
 
 	private HashMap<String, Scene> scenes;
 
@@ -97,7 +93,6 @@ public class World implements Serializable, AssetConsumer {
 	 */
 	private HashMap<String, String> customProperties;
 
-	private String initChapter;
 	private String currentChapter;
 
 	/** For FADEIN/FADEOUT */
@@ -426,22 +421,6 @@ public class World implements Serializable, AssetConsumer {
 		currentDialog = currentDialog.selectOption(currentDialog.getVisibleOptions().get(i));	
 	}
 
-	public int getWidth() {
-		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
 	public void showInventory(boolean b) {
 		inventory.setVisible(b);
 	}
@@ -504,14 +483,6 @@ public class World implements Serializable, AssetConsumer {
 
 	public void setChapter(String chapter) {
 		this.currentChapter = chapter;
-	}
-
-	public String getInitChapter() {
-		return initChapter;
-	}
-
-	public void setInitChapter(String initChapter) {
-		this.initChapter = initChapter;
 	}
 
 	public boolean isPaused() {

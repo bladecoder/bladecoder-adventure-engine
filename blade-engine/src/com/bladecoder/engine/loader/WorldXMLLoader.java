@@ -23,6 +23,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import com.bladecoder.engine.model.BlueprintWorld;
+import com.bladecoder.engine.model.XML2Bean;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -53,16 +55,9 @@ public class WorldXMLLoader extends DefaultHandler {
 
 	public static void loadWorld(World world)
 			throws ParserConfigurationException, SAXException, IOException {
-		SAXParserFactory spf = SAXParserFactory.newInstance();
-		spf.setNamespaceAware(true);
-		SAXParser saxParser = spf.newSAXParser();
+		XML2Bean.loadJson(EngineAssetManager.getInstance()
+				.getModelFile(XMLConstants.WORLD_FILENAME).file(), world);
 
-		WorldXMLLoader parser = new WorldXMLLoader(world);
-		XMLReader xmlReader = saxParser.getXMLReader();
-		xmlReader.setContentHandler(parser);
-		xmlReader.parse(new InputSource(EngineAssetManager.getInstance()
-				.getModelFile(XMLConstants.WORLD_FILENAME).read()));
-		
 		I18N.loadWorld(EngineAssetManager.MODEL_DIR + "world");
 	}
 	

@@ -25,12 +25,16 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
+import com.bladecoder.engine.actions.ModelDescription;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("character")
+@ModelDescription("Character actors have dialogs and stand, walk and talk animations")
 public class CharacterActor extends SpriteActor {
 	private final static float DEFAULT_WALKING_SPEED = 700f; // Speed units:
 																// pix/sec.

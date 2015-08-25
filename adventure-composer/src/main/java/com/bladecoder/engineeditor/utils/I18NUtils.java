@@ -15,9 +15,14 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
+import com.bladecoder.engine.model.XML2Bean;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
@@ -212,7 +217,7 @@ public class I18NUtils {
 	}
 	
 	public static void deleteUnusedKeys(BaseDocument doc) {
-		ArrayList<String> usedKeys = new ArrayList<String>();
+		List<String> usedKeys = new ArrayList<String>();
 		getUsedKeys(doc.getRootElement(), usedKeys);
 		
 		Enumeration<Object> keys = doc.getI18N().keys();
@@ -227,7 +232,7 @@ public class I18NUtils {
 		}
 	}
 	
-	private static void getUsedKeys(Element e, ArrayList<String> usedKeys) {
+	private static void getUsedKeys(Element e, List<String> usedKeys) {
 		NamedNodeMap attrs = e.getAttributes();
 		
 		for(int i = 0; i < attrs.getLength(); i++) {
@@ -241,6 +246,45 @@ public class I18NUtils {
 		for(int i = 0; i < childs.getLength(); i++) {
 			if(childs.item(i) instanceof Element)
 				getUsedKeys((Element)childs.item(i), usedKeys);
-		}		
+		}
+	}
+
+	private static <T> List<String> getUsedKeys(T bean) {
+		final List<String> result = new ArrayList<>();
+
+		// FIXME: We can do even better than this, by parsing the models and really looking only for fields that ARE Strings, not for everything that LOOKS like one
+		final JsonNode tree = XML2Bean.getProperties(bean);
+		final JsonParser parser = tree.traverse();
+		try {
+			while (!parser.isClosed()) {
+				String value = parser.nextTextValue();
+				if (value == null) {
+					continue;
+				}
+
+				if (value.charAt(0) == BaseDocument.I18NPREFIX) {
+					result.add(value.substring(1));
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	public static <T> void deleteUnusedKeys(BaseDocument doc, T bean) {
+		List<String> usedKeys = getUsedKeys(bean);
+
+		Enumeration<Object> keys = doc.getI18N().keys();
+
+		while (keys.hasMoreElements()) {
+			String key = (String) keys.nextElement();
+
+			if (!usedKeys.contains(key) &&
+					!key.startsWith("ui.")) { // Doesn't remove ui keys
+				doc.getI18N().remove(key);
+			}
+		}
 	}
 }

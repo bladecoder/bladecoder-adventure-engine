@@ -42,6 +42,11 @@ dependencies {
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'com.google.code.findbugs:jsr305:3.0.0'
   compile "com.fasterxml.jackson.core:jackson-databind:2.6.1"
+
+  // FIXME: To remove when XML is no more
+  compile "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.6.1"
+  compile 'org.codehaus.woodstox:woodstox-core-asl:4.4.1'
+
   compile "com.badlogicgames.gdx:gdx:$gdxVersion"
   compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
   compile fileTree(dir: 'libs', include: '*.jar')

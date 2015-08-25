@@ -72,7 +72,7 @@ public class ImageRenderer implements ActorRenderer {
 	
 	@Override
 	public String[] getInternalAnimations(AnimationDesc anim) {
-		return new String[]{anim.source.substring(0,anim.source.lastIndexOf('.'))};
+		return new String[]{anim.getSource().substring(0, anim.getSource().lastIndexOf('.'))};
 	}	
 
 
@@ -167,20 +167,20 @@ public class ImageRenderer implements ActorRenderer {
 			ActionCallbackQueue.add(cb);
 
 		if (currentAnimation != null
-				&& currentAnimation.disposeWhenPlayed)
-			disposeSource(currentAnimation.source);
+				&& currentAnimation.isDisposeWhenPlayed())
+			disposeSource(currentAnimation.getSource());
 
 		currentAnimation = fa;
-		currentSource = sourceCache.get(fa.source);
+		currentSource = sourceCache.get(fa.getSource());
 
 		// If the source is not loaded. Load it.
 		if (currentSource == null || currentSource.refCounter < 1) {
-			loadSource(fa.source);
+			loadSource(fa.getSource());
 			EngineAssetManager.getInstance().finishLoading();
 
-			retrieveSource(fa.source);
+			retrieveSource(fa.getSource());
 
-			currentSource = sourceCache.get(fa.source);
+			currentSource = sourceCache.get(fa.getSource());
 
 			if (currentSource == null) {
 				EngineLogger.error("Could not load AnimationDesc: " + id);
@@ -199,7 +199,7 @@ public class ImageRenderer implements ActorRenderer {
 		if (currentAnimation == null)
 			return null;
 
-		String id = currentAnimation.id;
+		String id = currentAnimation.getId();
 
 		if (flipX) {
 			id = AnimationDesc.getFlipId(id);
@@ -212,9 +212,9 @@ public class ImageRenderer implements ActorRenderer {
 	@Override
 	public void addAnimation(AnimationDesc fa) {
 		if(initAnimation == null)
-			initAnimation = fa.id; 
+			initAnimation = fa.getId();
 			
-		fanims.put(fa.id, fa);
+		fanims.put(fa.getId(), fa);
 	}
 
 	@Override
@@ -227,7 +227,7 @@ public class ImageRenderer implements ActorRenderer {
 			sb.append(" ").append(v);
 		}
 
-		sb.append("\n  Current Anim: ").append(currentAnimation.id);
+		sb.append("\n  Current Anim: ").append(currentAnimation.getId());
 
 		sb.append("\n");
 
@@ -367,17 +367,17 @@ public class ImageRenderer implements ActorRenderer {
 	@Override
 	public void loadAssets() {
 		for (AnimationDesc fa : fanims.values()) {
-			if (fa.preload)
-				loadSource(fa.source);
+			if (fa.isPreload())
+				loadSource(fa.getSource());
 		}
 
-		if (currentAnimation != null && !currentAnimation.preload) {
-			loadSource(currentAnimation.source);
+		if (currentAnimation != null && !currentAnimation.isPreload()) {
+			loadSource(currentAnimation.getSource());
 		} else if (currentAnimation == null && initAnimation != null) {
 			AnimationDesc fa = fanims.get(initAnimation);
 
-			if (!fa.preload)
-				loadSource(fa.source);
+			if (!fa.isPreload())
+				loadSource(fa.getSource());
 		}
 	}
 
@@ -391,7 +391,7 @@ public class ImageRenderer implements ActorRenderer {
 
 		if (currentAnimation != null) {
 			ImageCacheEntry entry = sourceCache
-					.get(currentAnimation.source);
+					.get(currentAnimation.getSource());
 			currentSource = entry;
 		} else if (initAnimation != null) {
 			startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
@@ -418,7 +418,7 @@ public class ImageRenderer implements ActorRenderer {
 		String currentAnimationId = null;
 
 		if (currentAnimation != null)
-			currentAnimationId = currentAnimation.id;
+			currentAnimationId = currentAnimation.getId();
 
 		json.writeValue("currentAnimation", currentAnimationId);
 		

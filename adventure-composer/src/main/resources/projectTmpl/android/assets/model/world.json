@@ -1,0 +1,51 @@
+{
+	"width": 1920,
+	"height": 1200,
+	"initChapter": "00",
+	"verbs": [
+		{
+			"id": "lookat",
+			"actions": [
+				{
+					"@type": "Lookat",
+					"text": "@default.lookat.0.text"
+				}
+			]
+		}, {
+			"id": "pickup",
+			"actions": [
+				{
+					"@type": "Lookat",
+					"text": "@default.pickup.0.text"
+				}
+			]
+		}, {
+			"id": "use",
+			"actions": [
+				{
+					"@type": "Say",
+					"wait": false,
+					"text": "@default.use.0.text",
+					"type": "RECTANGLE",
+					"queue": false
+				}
+			]
+		}, {
+			"id": "dialog",
+			"actions": [
+				{
+					"@type": "Cutmode",
+					"value": true,
+					"inventory": false
+				}, {
+					"@type": "SayDialog",
+					"wait": true
+				}, {
+					"@type": "Cutmode",
+					"value": false,
+					"inventory": true
+				}
+			]
+		}
+	]
+}
