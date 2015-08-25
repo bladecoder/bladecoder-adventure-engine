@@ -315,7 +315,7 @@ public class SceneScreen implements BladeScreen {
 				inventoryButton.setVisible(false);
 
 			if (!dialogUI.isVisible())
-				dialogUI.setVisible(true);
+				dialogUI.show();
 
 			inventoryUI.cancelDragging();
 			break;
@@ -340,7 +340,7 @@ public class SceneScreen implements BladeScreen {
 				inventoryUI.hide();
 
 			if (dialogUI.isVisible())
-				dialogUI.setVisible(false);
+				dialogUI.hide();
 			break;
 		}
 
@@ -385,6 +385,8 @@ public class SceneScreen implements BladeScreen {
 		case DIALOG_MODE:
 			if (w.getCurrentDialog() == null)
 				setUIState(UIStates.SCENE_MODE);
+			else if(w.inCutMode())
+				setUIState(UIStates.CUT_MODE);
 			break;
 		case INVENTORY_MODE:
 			if (!inventoryUI.isVisible())
@@ -556,10 +558,12 @@ public class SceneScreen implements BladeScreen {
 			sbTmp.append((int) unprojectTmp.y);
 			sbTmp.append(") FPS:");
 			sbTmp.append(Gdx.graphics.getFramesPerSecond());
-			sbTmp.append(" Density:");
-			sbTmp.append(Gdx.graphics.getDensity());
-			sbTmp.append(" UI Multiplier:");
-			sbTmp.append(DPIUtils.getSizeMultiplier());
+//			sbTmp.append(" Density:");
+//			sbTmp.append(Gdx.graphics.getDensity());
+//			sbTmp.append(" UI Multiplier:");
+//			sbTmp.append(DPIUtils.getSizeMultiplier());
+			sbTmp.append(" UI STATE: ");
+			sbTmp.append(state.toString());
 
 			if (w.getCurrentScene().getPlayer() != null) {
 				sbTmp.append(" Depth Scl: ");

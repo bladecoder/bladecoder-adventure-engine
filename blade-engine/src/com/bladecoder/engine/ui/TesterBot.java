@@ -209,7 +209,7 @@ public class TesterBot {
 				if(visibleOptions.size() > 0) {
 					int pos = MathUtils.random(visibleOptions.size() - 1);
 					EngineLogger.debug("<TESTERBOT> SELECT OPTION: " + pos);
-					w.selectDialogOption(pos);
+					w.selectVisibleDialogOption(pos);
 				}
 			}
 		} 

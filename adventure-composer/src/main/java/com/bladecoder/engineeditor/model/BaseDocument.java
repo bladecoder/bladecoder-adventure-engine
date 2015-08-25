@@ -441,4 +441,21 @@ public abstract class BaseDocument extends PropertyChange {
 
 		return es;
 	}
+	
+	public int indexOf(Element parent, Element e) {
+		int idx = -1;
+
+		NodeList childNodes = parent.getChildNodes();
+
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			if (childNodes.item(i) instanceof Element)
+				idx++;
+
+			if (e == childNodes.item(i)) {
+				break;
+			}
+		}
+
+		return idx;
+	}
 }

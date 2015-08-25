@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
@@ -29,7 +30,7 @@ import com.bladecoder.engineeditor.ui.components.ElementList;
 
 public class DialogList extends ElementList {
 	
-    private DialogOptionTree options;
+    private DialogOptionList options;
 
 	@Override
 	protected EditAnnotatedDialog<Dialog> getEditElementDialogInstance(Element e) {
@@ -39,7 +40,7 @@ public class DialogList extends ElementList {
     public DialogList(Skin skin) {
     	super(skin, true);
     	
-    	options = new DialogOptionTree(skin);
+    	options = new DialogOptionList(skin);
     	row();
     	add(options).expand().fill();
 
@@ -52,9 +53,9 @@ public class DialogList extends ElementList {
 				
 				if(pos != -1) {
 					v = list.getItems().get(pos);
-					options.addOptions(doc, parent, v);
+					options.addElements(doc, v, XMLConstants.OPTION_TAG);
 				} else {
-					options.addOptions(doc, parent, null);
+					options.addElements(doc, null, XMLConstants.OPTION_TAG);
 				}
 				
 				toolbar.disableEdit(pos == -1);
@@ -70,7 +71,7 @@ public class DialogList extends ElementList {
     
 	@Override
 	public void addElements(BaseDocument doc, Element parent, String tag) {
-		options.addOptions(doc, null, null);
+		options.addElements(doc, null, XMLConstants.OPTION_TAG);
 		super.addElements(doc, parent, tag);
     }	
 

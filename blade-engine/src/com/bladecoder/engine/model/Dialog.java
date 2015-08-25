@@ -17,18 +17,15 @@ package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.Json.Serializable;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ModelDescription;
 
 @ModelDescription("Actors can have several dialogs defined. Dialogs have a tree of options to choose")
-public class Dialog extends AbstractModel implements Serializable {
+public class Dialog extends AbstractModel {
 	public final static String DEFAULT_DIALOG_VERB = "dialog";
 	
 	private ArrayList<DialogOption> options = new ArrayList<DialogOption>();
 	
-	private DialogOption currentOption;
+	private int currentOption = -1;
 	
 	private String actor;
 	
@@ -40,52 +37,47 @@ public class Dialog extends AbstractModel implements Serializable {
 		this.actor = actor;
 	}
 	
-	public void selectOption(int i) {
+	public Dialog selectOption(DialogOption o) {
 		
-		currentOption = getVisibleOptions().get(i);
+		currentOption = options.indexOf(o);
 		
-		String v = currentOption.getVerbId();
+		String v = o.getVerbId();
 		
 		if(v == null) v = DEFAULT_DIALOG_VERB;
 		
 		// TODO: DELETE REFERENCE TO WORLD FROM DIALOG
-		InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, false);
+		CharacterActor a = (CharacterActor)World.getInstance().getCurrentScene().getActor(actor, false);
 		a.runVerb(v);
 		
-		if(currentOption.getNext() != null) {
-			String next = currentOption.getNext();
+		if(o.isOnce())
+			o.setVisible(false);
+		
+		currentOption = -1;
+		
+		if(o.getNext() != null) {
+			String next = o.getNext();
 			
-			if(next.equalsIgnoreCase("parent"))
-				currentOption = currentOption.getParent();
-			else if(next.equalsIgnoreCase("root"))
-				currentOption = null;
-			else
-				currentOption = findSerOption(next);
+			if(next.equals("this"))
+				return this;
+			else 
+				return a.getDialog(next);
 		}
+		
+		return null;
 	}
 	
 	public void addOption(DialogOption o) {
 		options.add(o);
 	}
-	
-	public boolean ended() {
-		 return (getNumVisibleOptions() == 0);
-	}
 
-	private ArrayList<DialogOption> getOptions() {
-		if(currentOption == null) return options;
-			
-		return currentOption.options;
+	public ArrayList<DialogOption> getOptions() {
+		return options;
 	}
 	
 	public ArrayList<DialogOption> getVisibleOptions() {
-		ArrayList<DialogOption> current;
 		ArrayList<DialogOption> visible = new ArrayList<DialogOption>();
 		
-		if(currentOption == null) current = options;
-		else current =  currentOption.options;
-		
-		for(DialogOption o: current) {
+		for(DialogOption o: options) {
 			if(o.isVisible()) visible.add(o);
 		}
 		
@@ -93,7 +85,7 @@ public class Dialog extends AbstractModel implements Serializable {
 	}	
 	
 	public void reset() {
-		currentOption = null;
+		currentOption = -1;
 	}
 	
 	public int getNumVisibleOptions() {
@@ -106,93 +98,7 @@ public class Dialog extends AbstractModel implements Serializable {
 		return num;
 	}
 	
-	public void setCurrentOption(DialogOption o) {
-		currentOption = o;
-	}
-	
 	public DialogOption getCurrentOption() {
-		return currentOption;
+		return currentOption == -1?null: options.get(currentOption);
 	}
-
-	
-	// ---------------------- SERIALIZATION --------------------------
-	
-	@Override
-	public void write(Json json) {
-		json.writeValue("id", id);
-		json.writeValue("actor", actor);
-		json.writeValue("options", options, ArrayList.class, DialogOption.class);
-		
-		String serCurrent = serOption(currentOption);		
-		json.writeValue("currentOption", serCurrent);	
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void read (Json json, JsonValue jsonData) {
-//	public void read(Json json, OrderedMap<String, Object> jsonData) {
-		id = json.readValue("id", String.class, jsonData);
-		actor = json.readValue("actor", String.class, jsonData);
-		options = json.readValue("options", ArrayList.class, DialogOption.class, jsonData);
-		String currentSer = json.readValue("currentOption", String.class, jsonData);
-		currentOption = findSerOption(currentSer);
-		
-		// Recalculate parents
-		setParents(options, null);
-	}
-
-	private void setParents(ArrayList<DialogOption> list, DialogOption parent) {
-		for(DialogOption o:list) {
-			o.setParent(parent);
-			setParents(o.getOptions(), o);
-		}		
-	}
-	
-	public String serOption(DialogOption o) {
-		
-		if(o == null) return null;
-		
-		StringBuffer sb = new StringBuffer();
-		
-		DialogOption co = o;
-		DialogOption parent;
-		
-		do {
-			parent = co.getParent();
-			
-			int i;
-			
-			if(parent == null) {
-				i = options.indexOf(co);
-				sb.insert(0, i);
-			} else {
-				i = parent.getOptions().indexOf(co);
-				co = parent;
-				sb.insert(0, i);
-				sb.insert(0, ".");
-			}						
-		
-		} while(parent != null);
-		
-		return sb.toString();
-	}
-	
-	
-	public DialogOption findSerOption(String currentSer) {
-		if(currentSer == null) return null;
-		
-		String []list = currentSer.split("[.]");
-		
-		DialogOption o = null;
-		
-		for(String s:list) {
-			int i = Integer.parseInt(s);
-			
-			if(o == null) o = options.get(i);
-			else o = o.getOptions().get(i);
-		}
-		
-		return o;
-	}
-
 }

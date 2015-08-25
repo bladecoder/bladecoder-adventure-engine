@@ -406,19 +406,24 @@ public class World implements Serializable, AssetConsumer {
 
 	public void setCurrentDialog(Dialog dialog) {
 		this.currentDialog = dialog;
-		if (dialog != null)
+		if (dialog != null) {
 			dialog.reset();
+			
+			int visibleOptions = dialog.getNumVisibleOptions();
+			
+			if(visibleOptions == 0)
+				currentDialog = null;
+			else if(visibleOptions == 1) {
+				selectVisibleDialogOption(0);
+			}
+		}
 	}
 	
-	public void selectDialogOption(int i) {
+	public void selectVisibleDialogOption(int i) {
 		if(currentDialog == null)
 			return;
 		
-		currentDialog.selectOption(i);
-		
-		if (currentDialog.ended()) {
-			currentDialog = null;
-		}
+		currentDialog = currentDialog.selectOption(currentDialog.getVisibleOptions().get(i));	
 	}
 
 	public int getWidth() {
