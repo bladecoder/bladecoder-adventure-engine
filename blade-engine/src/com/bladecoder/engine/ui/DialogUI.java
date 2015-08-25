@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
@@ -75,7 +76,7 @@ public class DialogUI extends ScrollPane {
 			if (str.charAt(0) == '@')
 				str = I18N.getString(str.substring(1));
 
-			TextButton ob = new TextButton(str, panel.getSkin(), style.textButtonStyle);
+			TextButton ob = new TextButton(str, style.textButtonStyle);
 			ob.setUserObject(o);
 			panel.row();
 			panel.add(ob);
@@ -123,7 +124,7 @@ public class DialogUI extends ScrollPane {
 		/** Optional. */
 		public Drawable background;
 
-		public String textButtonStyle;
+		public TextButtonStyle textButtonStyle;
 
 		public DialogUIStyle() {
 		}
