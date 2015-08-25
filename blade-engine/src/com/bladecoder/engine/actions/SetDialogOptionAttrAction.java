@@ -22,7 +22,6 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.Scene;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -41,18 +40,13 @@ public class SetDialogOptionAttrAction implements Action {
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The option")
-	@ActionPropertyType(Type.STRING)
-	private String option;
+	@ActionPropertyType(Type.INTEGER)
+	private int option;
 
 	@JsonProperty("visible")
 	@JsonPropertyDescription("Show/Hide the dialog option")
 	@ActionPropertyType(Type.BOOLEAN)
 	private boolean visibility;
-
-	@JsonProperty
-	@JsonPropertyDescription("Sets the selected option as the current dialog option")
-	@ActionPropertyType(Type.BOOLEAN)
-	private boolean setCurrent = false;
 
 	private boolean setVisibility;
 
@@ -63,24 +57,20 @@ public class SetDialogOptionAttrAction implements Action {
 		sceneActorRef = new SceneActorRef(a[0], a[1]);
 
 		dialog = params.get("dialog");
-		option = params.get("option");
+		option = Integer.parseInt(params.get("option"));
 
 		if (params.get("visible") != null) {
 			setVisibility = true;
 			visibility = Boolean.parseBoolean(params.get("visible"));
-		}
-
-		if (params.get("set_current") != null) {
-			setCurrent = Boolean.parseBoolean(params.get("set_current"));
 		}
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
 		final Scene s = sceneActorRef.getScene();
-		
-		CharacterActor actor = (CharacterActor)s.getActor(sceneActorRef.getActorId(), true);
-		
+
+		CharacterActor actor = (CharacterActor) s.getActor(sceneActorRef.getActorId(), true);
+
 		Dialog d = actor.getDialog(dialog);
 
 		if (d == null) {
@@ -88,27 +78,17 @@ public class SetDialogOptionAttrAction implements Action {
 			return false;
 		}
 
-		DialogOption o = null;
-		
-		if (option != null) {
-			o = d.findSerOption(option);
+		DialogOption o = d.getOptions().get(option);
 
-			if (o == null) {
-				EngineLogger.error("SetDialogOptionAttrAction: Option '" + option + "' not found");
-				return false;
-			}
+		if (o == null) {
+			EngineLogger.error("SetDialogOptionAttrAction: Option '" + option + "' not found");
+			return false;
 		}
 
 		if (setVisibility && o != null)
 			o.setVisible(visibility);
 
-		if (setCurrent && World.getInstance().getCurrentScene() == s) {
-			World.getInstance().setCurrentDialog(actor.getDialog(dialog));
-			d.setCurrentOption(o);
-		}
-		
 		return false;
 	}
-
 
 }

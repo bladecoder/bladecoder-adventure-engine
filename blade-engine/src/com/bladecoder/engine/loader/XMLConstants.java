@@ -104,4 +104,5 @@ public final class XMLConstants {
 	public static final String VERB_ATTR = "verb";
 	public static final String NEXT_ATTR = "next";
 	public static final String CONTROL_ACTION_ID_ATTR = "caID";
+	public static final String ONCE_ATTR = "once";
 }

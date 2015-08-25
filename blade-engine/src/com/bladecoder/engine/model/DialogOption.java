@@ -15,26 +15,13 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
-import java.util.ArrayList;
-
-import com.bladecoder.engine.model.DialogOption;
-
-public class DialogOption {
-	ArrayList<DialogOption> options = new ArrayList<DialogOption>();
-	
-	transient private DialogOption parent;
-		
+public class DialogOption {		
 	private String text;
 	private String responseText;
 	private String verbId;
 	private String next;
 	private boolean visible = true;
-	
-	
-	public void addOption(DialogOption o) {
-		options.add(o);
-	}
-
+	private boolean once = false;
 
 	public boolean isVisible() {
 		return visible;
@@ -65,22 +52,6 @@ public class DialogOption {
 		this.text = text;
 	}
 
-
-	public DialogOption getParent() {
-		return parent;
-	}
-
-
-	public void setParent(DialogOption parent) {
-		this.parent = parent;
-	}
-
-
-	public ArrayList<DialogOption> getOptions() {
-		return options;
-	}
-
-
 	public void setResponseText(String responseText) {
 		this.responseText = responseText;
 	}
@@ -97,6 +68,16 @@ public class DialogOption {
 
 	public void setNext(String next) {
 		this.next = next;
+	}
+
+
+	public boolean isOnce() {
+		return once;
+	}
+
+
+	public void setOnce(boolean once) {
+		this.once = once;
 	}
 
 }

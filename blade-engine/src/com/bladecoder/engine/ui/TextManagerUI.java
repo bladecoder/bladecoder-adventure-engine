@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -134,6 +135,7 @@ public class TextManagerUI extends Actor {
 
 	@Override
 	public void draw(Batch batch, float alpha) {
+		batch.setColor(Color.WHITE);
 
 		if (subtitle.type == Text.Type.TALK) {
 			if (style.talkBubble != null) {
