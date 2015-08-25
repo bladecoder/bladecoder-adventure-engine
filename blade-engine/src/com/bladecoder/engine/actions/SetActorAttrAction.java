@@ -17,6 +17,8 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
+import javax.annotation.Nullable;
+
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -26,11 +28,10 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-
-import javax.annotation.Nullable;
 
 @ActionDescription("Change actor attributes.")
 public class SetActorAttrAction implements Action {
@@ -65,15 +66,20 @@ public class SetActorAttrAction implements Action {
 	private Vector2 position;
 
 	@JsonProperty
+	@JsonPropertyDescription("Enable/Disable the Fake Depth for the actor")
+	@ActionPropertyType(Type.BOOLEAN)
+	private Boolean fakeDepth;
+	
+	@JsonProperty
 	@JsonPropertyDescription("Sets the actor scale")
 	@ActionPropertyType(Type.FLOAT)
 	private Float scale;
-
 
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor 'stand' animation. Only supported for character actors.")
 	@ActionPropertyType(Type.STRING)
 	private String standAnimation;
+	
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor 'walk' animation. Only supported for character actors.")
 	@ActionPropertyType(Type.STRING)
@@ -100,6 +106,7 @@ public class SetActorAttrAction implements Action {
 
 		position = vector2OrNull(params.get("position"));
 		scale = floatOrNull(params.get("scale"));
+		fakeDepth = booleanOrNull(params.get("fakeDepth"));
 		
 		standAnimation = params.get("standAnimation");
 		walkAnimation = params.get("walkAnimation");
@@ -174,6 +181,16 @@ public class SetActorAttrAction implements Action {
 				((SpriteActor) actor).setScale(scale);
 			else
 				EngineLogger.error("scale property not supported for actor:" + actor.getId());
+		}
+		
+		if (fakeDepth != null) {
+			if (actor instanceof SpriteActor) {
+				if(fakeDepth)
+					((SpriteActor) actor).setDepthType(DepthType.VECTOR);
+				else
+					((SpriteActor) actor).setDepthType(DepthType.NONE);
+			} else
+				EngineLogger.error("fakeDepth property not supported for actor:" + actor.getId());			
 		}
 		
 		if (standAnimation != null) {
