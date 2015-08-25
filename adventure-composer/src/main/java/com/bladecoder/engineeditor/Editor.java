@@ -30,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TooltipManager;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -130,6 +131,11 @@ public class Editor implements ApplicationListener {
 		
 		stage.setScrollFocus(scnEditor.getScnWidget());
 		stage.setKeyboardFocus(scnEditor.getScnWidget());
+		
+		TooltipManager.getInstance().instant();
+		
+		// TODO disable tooltips while not working in libgdx
+		TooltipManager.getInstance().enabled = false;
 	}
 
 	@Override
@@ -139,13 +145,10 @@ public class Editor implements ApplicationListener {
 
 		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		stage.draw();
-//		Table.drawDebug(stage);
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		EditorLogger.debug("RESIZE - w:" + width + " h:" + height);
-
 		stage.getViewport().update(width, height, true);
 	}
 

@@ -44,6 +44,7 @@ import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class EditAnimationDialog extends EditElementDialog {
+
 	public static final String INFO = "Define sprites and animations";
 	
 	private static final int SOURCE_INPUTPANEL = 0;
@@ -55,13 +56,17 @@ public class EditAnimationDialog extends EditElementDialog {
 	private static final int COUNT_INPUTPANEL = 6;
 	
 	private static final String ATLAS_EXT = ".atlas";
+	private static final String SPINE_EXT = ".skel";
+	private static final String G3DB_EXT = ".g3db";
 
-	private InputPanel[] inputs = new InputPanel[12];
 	InputPanel typePanel;
 
 	String attrs[] = { XMLConstants.SOURCE_ATTR, XMLConstants.ATLAS_VALUE, XMLConstants.ID_ATTR, XMLConstants.ANIMATION_TYPE_ATTR, XMLConstants.SPEED_ATTR, XMLConstants.DELAY_ATTR,
 			XMLConstants.COUNT_ATTR, XMLConstants.IND_ATTR, XMLConstants.OUTD_ATTR, XMLConstants.SOUND_ATTR, XMLConstants.PRELOAD_ATTR, XMLConstants.DISPOSE_WHEN_PLAYED_ATTR };
 
+	
+	private InputPanel[] inputs = new InputPanel[attrs.length];
+	
 	AnimationWidget spriteWidget = new AnimationWidget(this);
 
 	@SuppressWarnings("unchecked")
@@ -288,10 +293,10 @@ public class EditAnimationDialog extends EditElementDialog {
 			ext = ATLAS_EXT;
 		} else if (renderer.equals(XMLConstants.S3D_VALUE)) {
 			path = Ctx.project.getProjectPath() + Project.SPRITE3D_PATH;
-			ext = ".g3db";
+			ext = G3DB_EXT;
 		} else if (renderer.equals(XMLConstants.SPINE_VALUE)) {
 			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
-			ext = ".skel";
+			ext = SPINE_EXT;
 		} else if (renderer.equals(XMLConstants.IMAGE_VALUE)) {
 			path = Ctx.project.getProjectPath() + Project.IMAGE_PATH + "/"
 					+ Ctx.project.getResDir();

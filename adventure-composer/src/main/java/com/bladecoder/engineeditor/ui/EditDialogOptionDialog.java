@@ -16,10 +16,12 @@
 package com.bladecoder.engineeditor.ui;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
@@ -40,8 +42,8 @@ public class EditDialogOptionDialog extends EditElementDialog {
 		inputs[0] = InputPanelFactory.createInputPanel(skin, "Text", "The sentence of the dialog to say by the player", Type.SMALL_TEXT, true);
 		inputs[1] = InputPanelFactory.createInputPanel(skin, "Response Text", "The response by the character", Type.TEXT, false);
 		inputs[2] = InputPanelFactory.createInputPanel(skin, "Verb", "The verb to execute when choosing this option");
-		inputs[3] = InputPanelFactory.createInputPanel(skin, "Next Option",
-						"The next option to show when this option is selected");
+		inputs[3] = InputPanelFactory.createInputPanel(skin, "Next Dialog",
+						"The next dialog to show when this option is selected", getActorDialogs((Element)parent.getParentNode()), false);
 		inputs[4] = InputPanelFactory.createInputPanel(skin, "Visible", "The visibility", Param.Type.BOOLEAN, false);
 		inputs[5] = InputPanelFactory.createInputPanel(skin, "Once", "When true, the option is hidden after selection", Param.Type.BOOLEAN, false);
 
@@ -51,5 +53,18 @@ public class EditDialogOptionDialog extends EditElementDialog {
 		inputs[1].getCell(inputs[1].getField()).fillX();
 		
 		init(inputs, attrs, doc, parent, "option", e);
+	}
+	
+	String []getActorDialogs(Element actor) {
+		NodeList dialogs = actor.getElementsByTagName(XMLConstants.DIALOG_TAG);
+		
+		String []result = new String[dialogs.getLength() + 1];
+		result[0] = "this";
+		
+		for(int i = 0; i < dialogs.getLength(); i++) {
+			result[i + 1] = dialogs.item(i).getNodeName();
+		}
+		
+		return result;
 	}
 }

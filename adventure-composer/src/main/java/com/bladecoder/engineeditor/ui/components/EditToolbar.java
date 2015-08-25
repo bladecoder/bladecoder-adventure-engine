@@ -22,7 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Tooltip;
+import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.bladecoder.engineeditor.Ctx;
 
@@ -81,13 +81,14 @@ public class EditToolbar extends HorizontalGroup {
 		
 		ImageButtonStyle style = new ImageButtonStyle(skin.get("plain", ButtonStyle.class));
 		style.imageUp = new TextureRegionDrawable(image);
+		
 		if(imageDisabled != null)
 			style.imageDisabled = new TextureRegionDrawable(imageDisabled);
 		button.setStyle(style);
-//		button.pad(4, 2, 4, 2);
+		button.pad(0,0,0,0);
         addActor(button);
         button.setDisabled(true);
-        Tooltip t = new Tooltip(tooltip, skin);
+        TextTooltip t = new TextTooltip(tooltip, skin);
 		button.addListener(t);
 	}
 	

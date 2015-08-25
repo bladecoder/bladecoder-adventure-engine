@@ -64,7 +64,6 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 	private Verb currentVerb;
 	private Dialog currentDialog;
-	private DialogOption currentOption;
 	private String initAnimation = null;
 	private String player = null;
 
@@ -116,7 +115,6 @@ public class ChapterXMLLoader extends DefaultHandler {
 			currentDialog = new Dialog();
 			currentDialog.setId(id);
 			currentDialog.setActor(actor.getId());
-			currentOption = null;
 
 			((CharacterActor) actor).addDialog(id, currentDialog);
 		} else if (localName.equals(XMLConstants.SOUND_TAG)) {
@@ -154,8 +152,6 @@ public class ChapterXMLLoader extends DefaultHandler {
 			currentVerb = null;
 		else if (localName.equals(XMLConstants.DIALOG_TAG))
 			currentDialog = null;
-		else if (localName.equals(XMLConstants.OPTION_TAG))
-			currentOption = currentOption.getParent();
 		else if (localName.equals(XMLConstants.ACTOR_TAG)) {
 			if (actor instanceof SpriteActor && initAnimation != null && !initAnimation.isEmpty()) {
 				((SpriteActor) actor).getRenderer().setInitAnimation(initAnimation);
@@ -424,6 +420,8 @@ public class ChapterXMLLoader extends DefaultHandler {
 		String responseText = atts.getValue(XMLConstants.RESPONSE_TEXT_ATTR);
 		String verb = atts.getValue(XMLConstants.VERB_ATTR);
 		String next = atts.getValue(XMLConstants.NEXT_ATTR);
+		String visibleStr = atts.getValue(XMLConstants.VISIBLE_ATTR);
+		String onceStr = atts.getValue(XMLConstants.ONCE_ATTR);
 
 		if (verb != null && verb.trim().isEmpty())
 			verb = null;
@@ -434,25 +432,21 @@ public class ChapterXMLLoader extends DefaultHandler {
 			throw e2;
 		}
 
-		String visibleStr = atts.getValue(XMLConstants.VISIBLE_ATTR);
-
 		DialogOption o = new DialogOption();
 		o.setText(text);
 		o.setResponseText(responseText);
 		o.setVerbId(verb);
 		o.setNext(next);
-		o.setParent(currentOption);
 
 		if (visibleStr != null && !visibleStr.trim().isEmpty()) {
 			o.setVisible(Boolean.parseBoolean(visibleStr));
 		}
-
-		currentOption = o;
-
-		if (o.getParent() == null)
-			currentDialog.addOption(o);
-		else
-			o.getParent().addOption(o);
+		
+		if (onceStr != null && !onceStr.trim().isEmpty()) {
+			o.setOnce(Boolean.parseBoolean(onceStr));
+		}
+		
+		currentDialog.addOption(o);
 	}
 
 	private void parseAnimation(Attributes atts) throws SAXException {
