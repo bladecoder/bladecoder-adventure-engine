@@ -18,7 +18,7 @@ import com.bladecoder.engine.actions.MoveToSceneAction;
 import com.bladecoder.engine.actions.MusicAction;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.PickUpAction;
-import com.bladecoder.engine.actions.PositionAction;
+import com.bladecoder.engine.actions.PositionAnimAction;
 import com.bladecoder.engine.actions.PropertyAction;
 import com.bladecoder.engine.actions.RemoveActorAction;
 import com.bladecoder.engine.actions.RemoveInventoryItemAction;
@@ -27,7 +27,7 @@ import com.bladecoder.engine.actions.RunOnceAction;
 import com.bladecoder.engine.actions.RunVerbAction;
 import com.bladecoder.engine.actions.SayAction;
 import com.bladecoder.engine.actions.SayDialogAction;
-import com.bladecoder.engine.actions.ScaleAction;
+import com.bladecoder.engine.actions.ScaleAnimAction;
 import com.bladecoder.engine.actions.SetActorAttrAction;
 import com.bladecoder.engine.actions.SetCutmodeAction;
 import com.bladecoder.engine.actions.SetDialogOptionAttrAction;
@@ -117,7 +117,7 @@ public final class XML2Bean {
 				MoveToSceneAction.class,
 				MusicAction.class,
 				PickUpAction.class,
-				PositionAction.class,
+				PositionAnimAction.class,
 				PropertyAction.class,
 				RemoveActorAction.class,
 				RemoveInventoryItemAction.class,
@@ -126,7 +126,7 @@ public final class XML2Bean {
 				RunVerbAction.class,
 				SayAction.class,
 				SayDialogAction.class,
-				ScaleAction.class,
+				ScaleAnimAction.class,
 				SetActorAttrAction.class,
 				SetCutmodeAction.class,
 				SetDialogOptionAttrAction.class,
