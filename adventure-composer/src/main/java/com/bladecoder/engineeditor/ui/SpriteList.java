@@ -37,7 +37,7 @@ public class SpriteList extends ElementList {
 		super(skin, true);
 		
 		initBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(initBtn, "ic_check", "Set init scene", "Set init scene");
+		toolbar.addToolBarButton(initBtn, "ic_check", "Set init animation", "Set init animation");
 		initBtn.setDisabled(true);
 		
 		setCellRenderer(listCellRenderer);
