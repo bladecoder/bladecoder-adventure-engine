@@ -61,12 +61,12 @@ public class PositionAction implements Action {
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Param.Type.BOOLEAN)
+	@ActionPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
 
 	@JsonProperty(required = true, defaultValue = "NO_REPEAT")
 	@JsonPropertyDescription("The repeat mode")
-	@ActionPropertyType(Param.Type.BOOLEAN)
+	@ActionPropertyType(Type.OPTION)
 	private Tween.Type repeat = Tween.Type.NO_REPEAT;   // FIXME: This adds more types not present here before
 
 	@JsonProperty
