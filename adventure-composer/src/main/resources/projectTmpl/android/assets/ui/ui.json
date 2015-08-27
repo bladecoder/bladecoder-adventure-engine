@@ -50,7 +50,6 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	pie_pickup: {up:circle-border, down: circle-border-light, over: circle-border-over, imageUp: pickup},
 	pie_talkto: {up:circle-border, down: circle-border-light, over: circle-border-over, imageUp: talkto},
 	inventory: {up:inventory},
-	showMenu: {up:circle, down: circle-light, imageUp: menu},
 
 	help: {up:circle, over: circle-light, down: circle-grey, imageUp:help},
 	credits: {up:circle, over: circle-light, down: circle-grey,imageUp:credits},
@@ -79,11 +78,12 @@ com.bladecoder.engine.ui.LoadSaveScreen$LoadSaveScreenStyle: {
 com.bladecoder.engine.ui.CreditsScreen$CreditScreenStyle: {
 	default: {titleFont: credits-title, font: credits}
 },
+
 com.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
-	default: {background: black08, itemBackground: dark-grey, menuButtonStyle: showMenu}
+	default: {background: black08, itemBackground: dark-grey, menuButtonStyle: {up:circle, down: circle-light, imageUp: menu}}
 },
 com.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
-	default: {background: black08, font: dialog-font, fontColor: white, overFontColor: light-grey}
+	default: {background: black08, textButtonStyle: {font: dialog-font, fontColor: white, overFontColor: light-grey}}
 },
 
 com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle: {

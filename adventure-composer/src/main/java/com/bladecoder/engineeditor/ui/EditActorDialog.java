@@ -167,6 +167,7 @@ public class EditActorDialog extends EditElementDialog {
 			setVisible(inputs[4],true);
 			setVisible(inputs[5],true);
 			setVisible(inputs[6],true);
+			setVisible(inputs[10],true);
 		}
 
 		if (ChapterDocument.ACTOR_TYPES[i]
@@ -176,7 +177,6 @@ public class EditActorDialog extends EditElementDialog {
 			setVisible(inputs[7],true);
 			setVisible(inputs[8],true);
 			setVisible(inputs[9],true);
-			setVisible(inputs[10],true);
 		}
 		
 		if (ChapterDocument.ACTOR_TYPES[i]

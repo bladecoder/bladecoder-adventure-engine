@@ -62,7 +62,8 @@ public class EditDialogOptionDialog extends EditElementDialog {
 		result[0] = "this";
 		
 		for(int i = 0; i < dialogs.getLength(); i++) {
-			result[i + 1] = dialogs.item(i).getNodeName();
+			Element d = (Element)dialogs.item(i);
+			result[i + 1] = d.getAttribute("id");
 		}
 		
 		return result;

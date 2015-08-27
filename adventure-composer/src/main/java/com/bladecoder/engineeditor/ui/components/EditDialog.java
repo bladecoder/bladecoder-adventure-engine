@@ -64,7 +64,8 @@ public abstract class EditDialog extends Dialog {
 
 		button("OK", true);
 		button("Cancel", false);
-		key(Keys.ENTER, true);
+		// DISABLE the enter key because conflicts when newline in TextFields
+//		key(Keys.ENTER, true);
 		key(Keys.ESCAPE, false);
 
 		padBottom(10);
