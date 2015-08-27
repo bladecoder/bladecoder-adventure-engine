@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets the dialog mode")
 public class TalktoAction implements Action {
-	@JsonProperty
+	@JsonProperty("actor")
 	@JsonPropertyDescription("The target actor")
 	@ActionPropertyType(Type.ACTOR)
 	private String actorId;
