@@ -31,6 +31,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -234,6 +235,19 @@ public class World implements Serializable, AssetConsumer {
 			inventory.retrieveAssets();
 
 		getCurrentScene().retrieveAssets();
+		
+		// Print loaded assets for scene
+		if(EngineLogger.debugMode()) {
+			Array<String> assetNames = EngineAssetManager.getInstance().getAssetNames();
+			
+			assetNames.sort();
+			
+			EngineLogger.debug("Assets loaded for SCENE: " + currentScene.getId());
+			
+			for(String n:assetNames) {
+				EngineLogger.debug("\t" + n);
+			}
+		}		
 	}
 
 	public Transition getTransition() {
