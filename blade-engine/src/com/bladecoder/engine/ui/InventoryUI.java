@@ -266,6 +266,10 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		if (draggedActor != null)
 			sceneScreen.getUI().getPointer().drag(draggedActor.getRenderer());
 	}
+	
+	public boolean isDragging() {
+		return draggedActor != null;
+	}
 
 	private final Vector3 mousepos = new Vector3();
 
