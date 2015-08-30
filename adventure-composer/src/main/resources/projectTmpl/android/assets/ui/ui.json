@@ -44,12 +44,15 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	border-rect-dark-grey: { name: border_rect2, color: { a: 1, b: 0.6, g: 0.6, r: 0.6 }},
 	border-rect-trans: { name: border_rect4, color: { a: 0.2, b: 0.6, g: 0.6, r: 0.6 }},
 	border-rect-trans-down: { name: border_rect4, color: { a: 0.5, b: 0.6, g: 0.6, r: 0.6 }},
+
+	menu-up: { name: menu, color: white-trans},
 },
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 	pie_lookat: {up:circle-border, down: circle-border-light, over: circle-border-over, imageUp: lookat},
 	pie_pickup: {up:circle-border, down: circle-border-light, over: circle-border-over, imageUp: pickup},
 	pie_talkto: {up:circle-border, down: circle-border-light, over: circle-border-over, imageUp: talkto},
 	inventory: {up:inventory},
+	menu: {up:menu-up, over: menu, down: menu},
 
 	help: {up:circle, over: circle-light, down: circle-grey, imageUp:help},
 	credits: {up:circle, over: circle-light, down: circle-grey,imageUp:credits},
@@ -80,7 +83,7 @@ com.bladecoder.engine.ui.CreditsScreen$CreditScreenStyle: {
 },
 
 com.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
-	default: {background: black08, itemBackground: dark-grey, menuButtonStyle: {up:circle, down: circle-light, imageUp: menu}}
+	default: {background: black08, itemBackground: dark-grey}
 },
 com.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
 	default: {background: black08, textButtonStyle: {font: dialog-font, fontColor: white, overFontColor: light-grey}}

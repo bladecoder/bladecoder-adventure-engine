@@ -58,10 +58,12 @@ public class SceneScreen implements BladeScreen {
 
 	private PieMenu pie;
 	private InventoryUI inventoryUI;
-	private InventoryButton inventoryButton;
 	private DialogUI dialogUI;
 	private TextManagerUI textManagerUI;
 	private ShapeRenderer renderer;
+	
+	private InventoryButton inventoryButton;
+	private MenuButton menuButton;
 
 	private boolean pieMode;
 
@@ -330,8 +332,8 @@ public class SceneScreen implements BladeScreen {
 			if (!inventoryButton.isVisible())
 				inventoryButton.setVisible(true);
 
-			if (!dialogUI.isVisible())
-				dialogUI.setVisible(true);
+			if (dialogUI.isVisible())
+				dialogUI.setVisible(false);
 			break;
 		case SCENE_MODE:
 			if (pieMode && pie.isVisible())
@@ -678,7 +680,8 @@ public class SceneScreen implements BladeScreen {
 		pie.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 		textManagerUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
-		inventoryButton.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
+		inventoryButton.resize();
+		menuButton.resize();
 	}
 
 	public void dispose() {
@@ -784,6 +787,7 @@ public class SceneScreen implements BladeScreen {
 		stage.addActor(textManagerUI);
 		stage.addActor(dialogUI);
 		stage.addActor(inventoryButton);
+		stage.addActor(menuButton);
 		stage.addActor(inventoryUI);
 		stage.addActor(pie);
 
@@ -839,6 +843,7 @@ public class SceneScreen implements BladeScreen {
 		textManagerUI = new TextManagerUI(this);
 		inventoryUI = new InventoryUI(this);
 		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
+		menuButton = new MenuButton(ui.getSkin(), ui);
 		dialogUI = new DialogUI(this);
 
 		this.pieMode = ui.isPieMode();
