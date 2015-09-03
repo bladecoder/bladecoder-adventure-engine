@@ -101,15 +101,23 @@ public class ActorProps extends PropertyTable {
 					Param.toStringParam(pos));
 			Ctx.project.getUndoStack().add(undoOp);
 
-			pos.x = Float.parseFloat(value);
+			try {
+				pos.x = Float.parseFloat(value);
+			} catch (NumberFormatException e) {
+
+			}
 			doc.setPos(actor, pos);
 		} else if (property.equals(POS_Y_PROP)) {
 			Vector2 pos = doc.getPos(actor);
 			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
 					Param.toStringParam(pos));
 			Ctx.project.getUndoStack().add(undoOp);
+			try {
+				pos.y = Float.parseFloat(value);
+			} catch (NumberFormatException e) {
 
-			pos.y = Float.parseFloat(value);
+			}
+
 			doc.setPos(actor, pos);
 		} else if (property.equals(VISIBLE_PROP)) {
 			doc.setRootAttr(actor, XMLConstants.VISIBLE_ATTR, value);

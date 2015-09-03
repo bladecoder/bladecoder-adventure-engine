@@ -17,6 +17,7 @@ package com.bladecoder.engine.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -57,10 +58,12 @@ public class SceneScreen implements BladeScreen {
 
 	private PieMenu pie;
 	private InventoryUI inventoryUI;
-	private InventoryButton inventoryButton;
 	private DialogUI dialogUI;
 	private TextManagerUI textManagerUI;
 	private ShapeRenderer renderer;
+	
+	private InventoryButton inventoryButton;
+	private MenuButton menuButton;
 
 	private boolean pieMode;
 
@@ -329,8 +332,8 @@ public class SceneScreen implements BladeScreen {
 			if (!inventoryButton.isVisible())
 				inventoryButton.setVisible(true);
 
-			if (!dialogUI.isVisible())
-				dialogUI.setVisible(true);
+			if (dialogUI.isVisible())
+				dialogUI.setVisible(false);
 			break;
 		case SCENE_MODE:
 			if (pieMode && pie.isVisible())
@@ -434,8 +437,14 @@ public class SceneScreen implements BladeScreen {
 			currentActor = inventoryUI.getItemAt(unproject2Tmp.x, unproject2Tmp.y);
 		} else if (state == UIStates.SCENE_MODE) {
 			w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
-
-			currentActor = w.getCurrentScene().getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y);
+			
+			if(inventoryUI.isDragging())
+				currentActor = w.getCurrentScene().getInteractiveActorAtWithTolerance(unprojectTmp.x, unprojectTmp.y, DPIUtils.getTouchMinSize() * 2f);
+			else if(Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
+				currentActor = w.getCurrentScene().getInteractiveActorAtWithTolerance(unprojectTmp.x, unprojectTmp.y, DPIUtils.getTouchMinSize());
+			else
+				currentActor = w.getCurrentScene().getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y);
+				
 
 			if (!w.getInventory().isVisible() && inventoryButton.isVisible())
 				inventoryButton.setVisible(false);
@@ -467,18 +476,18 @@ public class SceneScreen implements BladeScreen {
 		actor.getBBox().getBoundingRectangle().getCenter(unproject2Tmp);
 
 		if (unproject2Tmp.x < stage.getViewport().getWorldWidth() / 3f) {
-			return 180;
+			return 180; // LEFT
 		}
 
 		if (unproject2Tmp.x > stage.getViewport().getWorldWidth() / 3f * 2f) {
-			return 0;
+			return 0; // RIGHT
 		}
 
 		if (unproject2Tmp.y < stage.getViewport().getWorldHeight() / 5f) {
-			return -90;
+			return -90; // DOWN
 		}
 
-		return 90;
+		return 90; // UP
 	}
 
 	@Override
@@ -671,7 +680,8 @@ public class SceneScreen implements BladeScreen {
 		pie.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 		textManagerUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
-		inventoryButton.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
+		inventoryButton.resize();
+		menuButton.resize();
 	}
 
 	public void dispose() {
@@ -777,6 +787,7 @@ public class SceneScreen implements BladeScreen {
 		stage.addActor(textManagerUI);
 		stage.addActor(dialogUI);
 		stage.addActor(inventoryButton);
+		stage.addActor(menuButton);
 		stage.addActor(inventoryUI);
 		stage.addActor(pie);
 
@@ -832,6 +843,7 @@ public class SceneScreen implements BladeScreen {
 		textManagerUI = new TextManagerUI(this);
 		inventoryUI = new InventoryUI(this);
 		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
+		menuButton = new MenuButton(ui.getSkin(), ui);
 		dialogUI = new DialogUI(this);
 
 		this.pieMode = ui.isPieMode();

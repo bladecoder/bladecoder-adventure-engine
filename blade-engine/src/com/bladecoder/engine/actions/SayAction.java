@@ -106,7 +106,7 @@ public class SayAction extends BaseCallbackAction {
 			actor.playSound(soundId);
 
 		if (text != null) {
-			float x, y;
+			float x =  TextManager.POS_CENTER, y =  TextManager.POS_CENTER;
 
 			if (pos != null) {
 				x = pos.x;
@@ -115,7 +115,7 @@ public class SayAction extends BaseCallbackAction {
 
 				if (type == Text.Type.RECTANGLE) {
 					x = y = TextManager.POS_SUBTITLE;
-				} else {
+				} else if (type == Text.Type.TALK) {
 					// WorldCamera c = World.getInstance().getCamera();
 					// Vector3 p = c.scene2screen(pos.x, pos.y +
 					// ((SpriteActor)actor).getHeight());

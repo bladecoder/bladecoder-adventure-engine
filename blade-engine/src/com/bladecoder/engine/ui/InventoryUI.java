@@ -129,15 +129,17 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 		});
 
-		menuButton = new CustomImageButton(style.menuButtonStyle);
+		if (style.menuButtonStyle != null) {
+			menuButton = new CustomImageButton(style.menuButtonStyle);
 
-		addActor(menuButton);
-		menuButton.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-				sceneScreen.getUI().setCurrentScreen(UI.Screens.MENU_SCREEN);
-			}
-		});
+			addActor(menuButton);
+			menuButton.addListener(new ChangeListener() {
+				@Override
+				public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+					sceneScreen.getUI().setCurrentScreen(UI.Screens.MENU_SCREEN);
+				}
+			});
+		}
 	}
 
 	public void show() {
@@ -212,7 +214,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		setX(orgPos.x);
 		setY(orgPos.y);
 
-		menuButton.setPosition(getWidth() - menuButton.getWidth() / 2, (getHeight() - menuButton.getHeight()) / 2);
+		if(menuButton != null)
+			menuButton.setPosition(getWidth() - menuButton.getWidth() / 2, (getHeight() - menuButton.getHeight()) / 2);
 	}
 
 	public void retrieveAssets(TextureAtlas atlas) {
@@ -245,12 +248,12 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			float y = (rows - 1) - i / cols;
 
 			if (style.itemBackground != null) {
-				style.itemBackground.draw(batch, getX() + x * tileSize + x * rowSpace + margin, getY() + y * tileSize
-						+ y * rowSpace + margin, tileSize, tileSize);
+				style.itemBackground.draw(batch, getX() + x * tileSize + x * rowSpace + margin,
+						getY() + y * tileSize + y * rowSpace + margin, tileSize, tileSize);
 			}
 
-			r.draw((SpriteBatch) batch, getX() + x * tileSize + x * rowSpace + tileSize / 2 + margin, getY()
-					+ (tileSize - r.getHeight() * size) / 2 + y * tileSize + y * rowSpace + margin, size);
+			r.draw((SpriteBatch) batch, getX() + x * tileSize + x * rowSpace + tileSize / 2 + margin,
+					getY() + (tileSize - r.getHeight() * size) / 2 + y * tileSize + y * rowSpace + margin, size);
 		}
 
 		super.draw(batch, alpha);
@@ -265,6 +268,10 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		draggedActor = getItemAt(x, y);
 		if (draggedActor != null)
 			sceneScreen.getUI().getPointer().drag(draggedActor.getRenderer());
+	}
+
+	public boolean isDragging() {
+		return draggedActor != null;
 	}
 
 	private final Vector3 mousepos = new Vector3();
@@ -299,8 +306,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 		Inventory inventory = World.getInstance().getInventory();
 
-		int i = ((rows - 1) - ((int) (y - margin) / (tileSize + (int) rowSpace))) * cols + (int) (x - margin)
-				/ (tileSize + (int) rowSpace);
+		int i = ((rows - 1) - ((int) (y - margin) / (tileSize + (int) rowSpace))) * cols
+				+ (int) (x - margin) / (tileSize + (int) rowSpace);
 
 		if (i >= 0 && i < inventory.getNumItems()) {
 			// EngineLogger.debug(" X: " + x + " Y:" + y + " DESC:" +

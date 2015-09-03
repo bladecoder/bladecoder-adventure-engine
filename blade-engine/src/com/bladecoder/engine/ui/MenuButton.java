@@ -1,31 +1,27 @@
 package com.bladecoder.engine.ui;
 
 
-import com.bladecoder.engine.ui.InventoryUI;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.util.DPIUtils;
 
-public class InventoryButton extends ImageButton {
+public class MenuButton extends ImageButton {
 	
-	private final InventoryUI inventory;
+	private final UI ui;
 
-	public InventoryButton(Skin skin, InventoryUI inv) {
-		super(skin, "inventory");
-		this.inventory = inv;
+	public MenuButton(Skin skin, UI u) {
+		super(skin, "menu");
+		this.ui = u;
 		
 		addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				if(!inventory.isVisible())
-					inventory.show();
-				else
-					inventory.hide();
+				ui.setCurrentScreen(UI.Screens.MENU_SCREEN);
 			}
 		});
+		
 	}
 	
 	public void resize() {
@@ -39,6 +35,11 @@ public class InventoryButton extends ImageButton {
 		float iconSize = Math.max(size/2, DPIUtils.ICON_SIZE);
 		getImageCell().maxSize(iconSize, iconSize);
 		
-		setPosition(margin, margin);
+		setPosition(
+				getStage().getViewport().getScreenWidth() - getWidth()
+						- margin, getStage().getViewport()
+						.getScreenHeight()
+						- getHeight()
+						- margin);
 	}
 }

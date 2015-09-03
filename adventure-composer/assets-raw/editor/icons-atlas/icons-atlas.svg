@@ -28,8 +28,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7062793"
-     inkscape:cx="612.22042"
-     inkscape:cy="-433.25875"
+     inkscape:cx="-73.060887"
+     inkscape:cy="-1396.0507"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -3773,6 +3773,77 @@
          transform="translate(0,924.3622)"
          d="M 766.00586 6.109375 A 58.818829 58.818829 0 0 0 707.1875 64.927734 A 58.818829 58.818829 0 0 0 766.00586 123.74805 A 58.818829 58.818829 0 0 0 824.82422 64.927734 A 58.818829 58.818829 0 0 0 766.00586 6.109375 z M 720.45312 51.326172 L 811.55859 51.326172 L 811.55859 78.53125 L 720.45312 78.53125 L 720.45312 51.326172 z "
          style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:10.2528944;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:70px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="342.64066"
+       y="2551.769"
+       id="text4695"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4693"
+         x="342.64066"
+         y="2551.769" /></text>
+    <g
+       id="g4709"
+       inkscape:export-filename="images/ic_flip.png"
+       inkscape:export-xdpi="11"
+       inkscape:export-ydpi="11">
+      <g
+         style="stroke:#000000"
+         id="g4682"
+         transform="rotate(90,33.5722,2570.396)"
+         inkscape:export-filename="/home/rgarcia/WORKSPACES/ENGINE/engine-editor/src/res/images/ic_left_disabled.png"
+         inkscape:export-xdpi="11.425782"
+         inkscape:export-ydpi="11.425782">
+        <g
+           transform="translate(-27.142861,404.54946)"
+           id="g4680"
+           inkscape:export-filename="/home/rgarcia/WORKSPACES/ENGINE/engine-editor/src/res/images/ic_add.png"
+           inkscape:export-xdpi="11.425782"
+           inkscape:export-ydpi="11.425782"
+           style="stroke:#000000">
+          <g
+             id="g4676"
+             style="stroke:#000000"
+             inkscape:export-filename="/home/rgarcia/WORKSPACES/ENGINE/engine-editor/src/res/images/ic_talkto.png"
+             inkscape:export-xdpi="22.851559"
+             inkscape:export-ydpi="22.851559"
+             transform="translate(-288.68382,513.5698)">
+            <rect
+               y="1262.6561"
+               x="261.38272"
+               height="126.03077"
+               width="126.03078"
+               id="rect4672"
+               style="fill:none;stroke:none" />
+            <g
+               style="fill:#000000;stroke:#000000"
+               inkscape:export-ydpi="84"
+               inkscape:export-xdpi="84"
+               inkscape:export-filename="/home/rgarcia/Dropbox/art/2013.Proyecto Indiana/diosa/assets/sprites/ui/talkto.png"
+               transform="matrix(0.97543825,0,0,0.97543825,-715.26429,450.63449)"
+               id="g4674" />
+          </g>
+          <g
+             transform="matrix(1.4137931,0,0,1.4137931,-18.817729,-757.90375)"
+             id="g4678"
+             style="stroke:#000000" />
+        </g>
+      </g>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4699"
+         y="2600.6936"
+         x="309.46921"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:153.72576904px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+         xml:space="preserve"><tspan
+           style="stroke-width:1px;fill:#ffffff;"
+           y="2600.6936"
+           x="309.46921"
+           id="tspan4697"
+           sodipodi:role="line">F</tspan></text>
     </g>
   </g>
 </svg>

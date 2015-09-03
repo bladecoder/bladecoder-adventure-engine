@@ -23,6 +23,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
@@ -32,6 +34,7 @@ import com.bladecoder.engineeditor.ui.components.ElementList;
 public class SpriteList extends ElementList {
 	
 	private ImageButton initBtn;
+	private ImageButton flipInitBtn;
 	
 	public SpriteList(Skin skin) {
 		super(skin, true);
@@ -39,6 +42,10 @@ public class SpriteList extends ElementList {
 		initBtn = new ImageButton(skin);
 		toolbar.addToolBarButton(initBtn, "ic_check", "Set init animation", "Set init animation");
 		initBtn.setDisabled(true);
+		
+		flipInitBtn = new ImageButton(skin);
+		toolbar.addToolBarButton(flipInitBtn, "ic_flip", "Set init animation flipped", "Set init animation flipped");
+		flipInitBtn.setDisabled(true);
 		
 		setCellRenderer(listCellRenderer);
 
@@ -57,6 +64,7 @@ public class SpriteList extends ElementList {
 				
 				toolbar.disableEdit(pos== -1);
 				initBtn.setDisabled(pos== -1);
+				flipInitBtn.setDisabled(pos== -1);
 			}
 		});
 		
@@ -64,6 +72,13 @@ public class SpriteList extends ElementList {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				setDefault();
+			}
+		});
+		
+		flipInitBtn.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				flipInit();
 			}
 		});
 	}
@@ -78,6 +93,22 @@ public class SpriteList extends ElementList {
 
 		String id = list.getItems().get(pos).getAttribute("id");
 //		String prev = w.getRootAttr("init_scene");
+		
+		scn.setRootAttr((Element)list.getItems().get(pos).getParentNode(), "init_animation", id);
+	}	
+	
+	private void flipInit() {
+		ChapterDocument scn = (ChapterDocument) doc;
+
+		int pos = list.getSelectedIndex();
+
+		if (pos == -1)
+			return;
+
+		String id = list.getItems().get(pos).getAttribute("id");
+//		String prev = w.getRootAttr("init_scene");
+		
+		id = AnimationDesc.getFlipId(id);
 		
 		scn.setRootAttr((Element)list.getItems().get(pos).getParentNode(), "init_animation", id);
 	}	
@@ -111,7 +142,7 @@ public class SpriteList extends ElementList {
 
 		@Override
 		protected String getCellTitle(Element e) {
-			String name =  e.getAttribute("id");
+			String name =  e.getAttribute(XMLConstants.ID_ATTR);
 			Element actor = (Element)e.getParentNode();
 			
 			String init = actor.getAttribute("init_animation");
@@ -121,10 +152,10 @@ public class SpriteList extends ElementList {
 				while(!(n instanceof Element))
 					n = n.getNextSibling();
 				
-				init = ((Element)n).getAttribute("id");
+				init = ((Element)n).getAttribute(XMLConstants.ID_ATTR);
 			}
 			
-			if(init.equals(name))
+			if(init.equals(name) || AnimationDesc.getFlipId(init).equals(name))
 				name += " <init>";
 			
 			return name;

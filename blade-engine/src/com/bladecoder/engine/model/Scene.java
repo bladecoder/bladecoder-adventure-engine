@@ -27,6 +27,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -397,6 +398,60 @@ public class Scene implements Serializable, AssetConsumer {
 
 				if (a instanceof InteractiveActor && ((InteractiveActor) a).hasInteraction() && a.hit(x, y)) {
 					return (InteractiveActor) a;
+				}
+			}
+		}
+
+		return null;
+	}
+	
+	private Rectangle tmpToleranceRect = new Rectangle();
+
+	/**
+	 * Obtains the actor at (x,y) with TOLERANCE.
+	 * 
+	 * Creates a square with size = TOLERANCE and checks:
+	 * 
+	 *  1. if some vertex from the TOLERANCE square is inside an actor bbox
+	 *  2. if some actor bbox vertex is inside the TOLERANCE square
+	 */
+	public InteractiveActor getInteractiveActorAtWithTolerance(float x, float y, float tolerance) {
+		
+		List<SceneLayer> layers = getLayers();
+		
+		tmpToleranceRect.x = x - tolerance / 2;
+		tmpToleranceRect.y = y - tolerance / 2;
+		tmpToleranceRect.width = tolerance;
+		tmpToleranceRect.height = tolerance;
+		
+		for (SceneLayer layer : layers) {
+
+			if (!layer.isVisible())
+				continue;
+
+			// Obtain actors in reverse (close to camera)
+			for (int l = layer.getActors().size() - 1; l >= 0; l--) {
+				BaseActor a = layer.getActors().get(l);
+
+				if (a instanceof InteractiveActor && ((InteractiveActor) a).hasInteraction()) {
+					
+					if(
+							a.hit(x, y) ||
+							a.hit(tmpToleranceRect.x,  tmpToleranceRect.y) ||
+							a.hit(tmpToleranceRect.x + tmpToleranceRect.width,  tmpToleranceRect.y) ||
+							a.hit(tmpToleranceRect.x,  tmpToleranceRect.y + tmpToleranceRect.height) ||
+							a.hit(tmpToleranceRect.x + tmpToleranceRect.width,  tmpToleranceRect.y + tmpToleranceRect.height)
+							)
+						return (InteractiveActor) a;
+					
+					float[] verts = a.getBBox().getTransformedVertices();
+					for (int i = 0; i < verts.length; i += 2) {
+						float vx = verts[i];
+						float vy = verts[i + 1];
+						
+						if(tmpToleranceRect.contains(vx, vy))
+							return (InteractiveActor) a;	
+					}
 				}
 			}
 		}

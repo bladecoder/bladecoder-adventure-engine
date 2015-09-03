@@ -221,6 +221,13 @@ ic_fg_actor
   orig: 32, 32
   offset: 0, 0
   index: -1
+ic_flip
+  rotate: false
+  xy: 1008, 94
+  size: 14, 14
+  orig: 14, 14
+  offset: 0, 0
+  index: -1
 ic_init
   rotate: false
   xy: 253, 45
