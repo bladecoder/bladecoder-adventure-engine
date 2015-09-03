@@ -25,7 +25,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @ModelDescription("Execute the actions inside the RunOnce/EndRunOnce only once.")
 public class RunOnceAction extends AbstractControlAction {
 	boolean executed = false;
-	private String caID;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -45,10 +44,5 @@ public class RunOnceAction extends AbstractControlAction {
 		executed=true;
 		
 		return false;
-	}
-
-	@Override
-	public String getControlActionID() {
-		return caID;
 	}
 }

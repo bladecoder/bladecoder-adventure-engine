@@ -25,11 +25,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ModelDescription("Marks the end of a block for a control action")
 public class EndAction extends AbstractControlAction {
-	@JsonProperty
-	@JsonPropertyDescription("The block ID")
-	@ModelPropertyType(Type.STRING)
-	private String caID;
-
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		caID = params.get("caID");
@@ -63,10 +58,5 @@ public class EndAction extends AbstractControlAction {
 		} while (!(actions.get(ip) instanceof AbstractControlAction) || !((AbstractControlAction) actions.get(ip)).getControlActionId().equals(caID));
 		
 		return ip;
-	}
-
-	@Override
-	public String getControlActionID() {
-		return caID;
 	}
 }

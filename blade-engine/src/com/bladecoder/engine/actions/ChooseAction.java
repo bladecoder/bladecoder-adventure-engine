@@ -29,8 +29,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("Choose")
 @ModelDescription("Execute only one action inside the Choose/EndChoose block.")
 public class ChooseAction extends AbstractControlAction {
-	private String caID;
-
 	public enum ChooseCriteria {
 		ITERATE, RANDOM, CYCLE
 	}
@@ -85,10 +83,5 @@ public class ChooseAction extends AbstractControlAction {
 		}
 
 		return false;
-	}
-
-	@Override
-	public String getControlActionID() {
-		return caID;
 	}
 }

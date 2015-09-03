@@ -29,8 +29,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("IfSceneAttr")
 @ModelDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfSceneAttrAction extends AbstractIfAction {
-	private String caID;
-
 	public enum SceneAttr {
 		STATE
 	}
@@ -71,10 +69,5 @@ public class IfSceneAttrAction extends AbstractIfAction {
 		}
 
 		return false;
-	}
-
-	@Override
-	public String getControlActionID() {
-		return caID;
 	}
 }
