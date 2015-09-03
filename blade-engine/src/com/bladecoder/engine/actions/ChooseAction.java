@@ -58,7 +58,7 @@ public class ChooseAction extends AbstractControlAction {
 
 		int startIp = v.getIP();
 		int ip0 = startIp + 1;
-		final List<Action> actions = v.getActions();
+		final List<AbstractAction> actions = v.getActions();
 
 		int ip = skipControlIdBlock(actions, startIp);
 		int numActions = ip - startIp;

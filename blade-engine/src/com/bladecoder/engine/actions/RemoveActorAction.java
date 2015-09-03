@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("RemoveActor")
 @ModelDescription("Deletes an actor from the game")
-public class RemoveActorAction implements Action {
+public class RemoveActorAction extends AbstractAction {
 	@JsonProperty("actor")
 	@JsonPropertyDescription("The actor to remove")
 	@ModelPropertyType(Type.SCENE_ACTOR)

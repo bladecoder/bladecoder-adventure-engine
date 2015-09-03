@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Goto")
 @ModelDescription("Walks to the selected position")
-public class GotoAction implements Action {
+public class GotoAction extends AbstractAction {
 	public enum Anchor {
 		CENTER, LEFT, RIGHT
 	}

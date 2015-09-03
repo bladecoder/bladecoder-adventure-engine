@@ -22,7 +22,7 @@ import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-public abstract class BaseCallbackAction implements Action, ActionCallback, Serializable {	
+public abstract class BaseCallbackAction extends AbstractAction implements ActionCallback, Serializable {
 	private ActionCallback verbCb;
 	private String verbCbSer;
 

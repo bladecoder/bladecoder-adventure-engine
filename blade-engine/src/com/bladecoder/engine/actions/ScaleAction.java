@@ -27,9 +27,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Scale")
-@ModelDescription("Change actor scale.")
-
-public class ScaleAction implements Action {
+@ModelDescription("Change actor scale")
+public class ScaleAction extends AbstractAction {
 	@JsonProperty(value = "actor", required = true)
 	@JsonPropertyDescription("The target actor")
 	@ModelPropertyType(Type.SCENE_ACTOR)

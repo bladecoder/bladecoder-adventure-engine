@@ -42,7 +42,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	@ModelPropertyType(Type.ACTOR)
 	private String actorId;
 
-	@JsonProperty(value = "actor", required = true)
+	@JsonProperty(required = true)
 	@JsonPropertyDescription("The 'verbId' to run")
 	@ModelPropertyType(Type.STRING)
 	private String verb;
@@ -78,18 +78,19 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	private Verb getVerb(String verb, String target, String state) {
 		Verb v = null;
 
+		final World world = World.getInstance();
 		if (actorId != null) {
-			InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true);
+			final InteractiveActor a = (InteractiveActor) world.getCurrentScene().getActor(actorId, true);
 
 			v = a.getVerbManager().getVerb(verb, state, target);
 		}
 
 		if (v == null) {
-			v = World.getInstance().getCurrentScene().getVerb(verb);
+			v = world.getCurrentScene().getVerb(verb);
 		}
 
 		if (v == null) {
-			v = VerbManager.getWorldVerbs().get(verb);
+			v = world.getVerbManager().getVerbs().get(verb);
 		}
 
 		if (v == null)
@@ -102,10 +103,10 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 		boolean stop = false;
 
-		List<Action> actions = getActions();
+		List<AbstractAction> actions = getActions();
 
 		while (ip < actions.size() && !stop) {
-			Action a = actions.get(ip);
+			AbstractAction a = actions.get(ip);
 
 			if (EngineLogger.debugMode())
 				EngineLogger.debug("RunVerbAction: " + verb + "(" + ip + ") " + a.getClass().getSimpleName());
@@ -133,9 +134,9 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	@Override
 	public void cancel() {
-		List<Action> actions = getActions();
+		List<AbstractAction> actions = getActions();
 
-		for (Action c : actions) {
+		for (AbstractAction c : actions) {
 			if (c instanceof VerbRunner)
 				((VerbRunner) c).cancel();
 		}
@@ -145,14 +146,14 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	
 
 	@Override
-	public List<Action> getActions() {
+	public List<AbstractAction> getActions() {
 		Verb v = getVerb(verb, target, state);
 
 		if (v == null) {
 			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for actor ''{1}({3})'' and target ''{2}''",
 					verb, actorId, target, ((InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true)).getState()));
 
-			return new ArrayList<Action>(0);
+			return new ArrayList<>(0);
 		}
 
 		return v.getActions();

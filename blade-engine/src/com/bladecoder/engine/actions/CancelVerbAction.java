@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonTypeName("CancelVerb")
 @ModelDescription("Stops the named verb if it is in execution.")
-public class CancelVerbAction implements Action {
+public class CancelVerbAction extends AbstractAction {
 	@JsonProperty
 	@JsonPropertyDescription("The target actor. Empty for the current actor.")
 	@ModelPropertyType(Type.ACTOR)
@@ -60,25 +60,24 @@ public class CancelVerbAction implements Action {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-
 		VerbRunner v = null;
-		
-		if(verb == null) {
+
+		if (verb == null) {
 			v = (VerbRunner)cb;
 		}
 
+		final World world = World.getInstance();
 		if (v == null && actor != null) {
-			BaseActor a = World.getInstance().getCurrentScene()
-					.getActor(actor, true);
+			BaseActor a = world.getCurrentScene().getActor(actor, true);
 			v = ((InteractiveActor)a).getVerb(verb, target);
 		}
 
 		if (v == null) {
-			v = World.getInstance().getCurrentScene().getVerb(verb);
+			v = world.getCurrentScene().getVerb(verb);
 		}
 
 		if (v == null) {
-			v = VerbManager.getWorldVerbs().get(verb);
+			v = world.getVerbManager().getVerbs().get(verb);
 		}
 
 		if (v != null)

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Music")
 @ModelDescription("Play/Stop the music of the current scene")
-public class MusicAction implements Action {
+public class MusicAction extends AbstractAction {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("Play/Stops the music of the scene")
 	@ModelPropertyType(Type.BOOLEAN)

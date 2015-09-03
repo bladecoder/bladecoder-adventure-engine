@@ -32,13 +32,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("SetActorAttr")
 @ModelDescription("Change actor attributes.")
-
-public class SetActorAttrAction implements Action {
-	
+public class SetActorAttrAction extends AbstractAction {
 	public enum ActorAttribute {
 		VISIBLE, INTERACTION, LAYER, ZINDEX, FAKE_DEPTH, STAND_ANIMATION, TALK_ANIMATION, WALK_ANIMATION, WALKING_SPEED
 	}
-	
+
 	@JsonProperty(value = "actor", required = true)
 	@JsonPropertyDescription("The target actor")
 	@ModelPropertyType(Type.SCENE_ACTOR)
@@ -69,12 +67,12 @@ public class SetActorAttrAction implements Action {
 		Scene s = sceneActorRef.getScene();
 
 		BaseActor actor = s.getActor(sceneActorRef.getActorId(), true);
-		
+
 		switch(attr) {
 		case FAKE_DEPTH:
 			if (actor instanceof SpriteActor) {
 				boolean fakeDepth = Boolean.parseBoolean(value);
-				
+
 				if(fakeDepth)
 					((SpriteActor) actor).setDepthType(DepthType.VECTOR);
 				else
@@ -107,7 +105,7 @@ public class SetActorAttrAction implements Action {
 			if (actor instanceof CharacterActor)
 				((CharacterActor) actor).setStandAnim(value);
 			else
-				EngineLogger.error("standAnimation property not supported for actor:" + actor.getId());			
+				EngineLogger.error("standAnimation property not supported for actor:" + actor.getId());
 			break;
 		case TALK_ANIMATION:
 			if (actor instanceof CharacterActor)
@@ -142,7 +140,7 @@ public class SetActorAttrAction implements Action {
 			break;
 		default:
 			break;
-		
+
 		}
 
 		return false;

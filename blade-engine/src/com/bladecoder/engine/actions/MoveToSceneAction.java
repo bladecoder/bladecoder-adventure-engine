@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("MoveToScene")
 @ModelDescription("Move the actor to the selected scene")
-public class MoveToSceneAction implements Action {
+public class MoveToSceneAction extends AbstractAction {
 	@JsonProperty("actor")
 	@JsonPropertyDescription("The selected actor")
 	@ModelPropertyType(Type.SCENE_ACTOR)

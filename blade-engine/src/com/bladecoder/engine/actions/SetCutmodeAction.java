@@ -17,7 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -25,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Cutmode")
 @ModelDescription("Set/Unset the cutmode. Also shows/hide the inventory")
-public class SetCutmodeAction implements Action {
+public class SetCutmodeAction extends AbstractAction {
 	@JsonProperty(required = true, defaultValue = "true")
 	@JsonPropertyDescription("When 'true', sets the scene in 'cutmode'")
 	private boolean value = true;

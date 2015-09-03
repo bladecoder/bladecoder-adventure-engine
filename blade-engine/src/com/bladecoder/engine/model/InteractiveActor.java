@@ -15,7 +15,9 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
+import java.util.Collection
 import java.util.HashMap;
+import java.util.Map;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -34,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  */
 @JsonTypeName("background")
 @ModelDescription("Background actors don't have sprites or animations. They are used to make objects drawn in the background interactive")
-public class InteractiveActor extends BaseActor implements AssetConsumer {
+public class InteractiveActor extends BaseActor implements AssetConsumer, VerbContainer {
 	@JsonProperty
 	@JsonPropertyDescription("True when the actor reacts to the user input")
 	protected boolean interaction = true;
@@ -54,9 +56,35 @@ public class InteractiveActor extends BaseActor implements AssetConsumer {
 	@JsonPropertyDescription("The order to draw")
 	protected float zIndex;
 
-	protected VerbManager verbs = new VerbManager();
-	protected HashMap<String, SoundFX> sounds;
-	private String playingSound;	
+	protected VerbManager verbManager = new VerbManager();
+
+	@JsonProperty
+	private Collection<Verb> getVerbs() {
+		return verbManager.getVerbs().values();
+	}
+
+	private void setVerbs(Collection<Verb> verbs) {
+		for (Verb verb : verbs) {
+			this.verbManager.addVerb(verb);
+		}
+	}
+
+	protected Map<String, SoundFX> sounds = new HashMap<>();
+
+	@JsonProperty
+	private Collection<SoundFX> getSounds() {
+		return sounds.values();
+	}
+
+	private void setSounds(Collection<SoundFX> sounds) {
+		this.sounds = new HashMap<>();
+
+		for (SoundFX sound : sounds) {
+			this.sounds.put(sound.getId(), sound);
+		}
+	}
+
+	private String playingSound;
 	
 	/** State to know when the player is inside this actor to trigger the enter/exit verbs */ 
 	private boolean playerInside = false;
@@ -79,8 +107,9 @@ public class InteractiveActor extends BaseActor implements AssetConsumer {
 		this.desc = desc;
 	}
 
+	@Override
 	public VerbManager getVerbManager() {
-		return verbs;
+		return verbManager;
 	}
 	
 	@Override
@@ -107,19 +136,19 @@ public class InteractiveActor extends BaseActor implements AssetConsumer {
 	}
 
 	public Verb getVerb(String id) {
-		return verbs.getVerb(id, state, null);
+		return verbManager.getVerb(id, state, null);
 	}
 
 	public Verb getVerb(String id, String target) {
-		return verbs.getVerb(id, state, target);
+		return verbManager.getVerb(id, state, target);
 	}
 	
 	public void runVerb(String id) {
-		verbs.runVerb(id, state, null);
+		verbManager.runVerb(id, state, null);
 	}
 	
 	public void runVerb(String id, String target) {
-		verbs.runVerb(id, state, target);
+		verbManager.runVerb(id, state, target);
 	}
 
 	public void addSound(String id, String filename, boolean loop, float volume) {
@@ -166,7 +195,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer {
 		sb.append("\n  Desc: ").append(desc);
 		sb.append("\n  Verbs:");
 
-		for (String v : verbs.getVerbs().keySet()) {
+		for (String v : verbManager.getVerbs().keySet()) {
 			sb.append(" ").append(v);
 		}
 
@@ -232,7 +261,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer {
 		
 		json.writeValue("interaction", interaction);
 		json.writeValue("desc", desc);
-		json.writeValue("verbs", verbs);
+		json.writeValue("verbs", verbManager);
 
 		json.writeValue("state", state);
 		json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass(), SoundFX.class);
@@ -249,7 +278,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer {
 		
 		interaction = json.readValue("interaction", Boolean.class, jsonData);
 		desc = json.readValue("desc", String.class, jsonData);
-		verbs = json.readValue("verbs", VerbManager.class, jsonData);
+		verbManager = json.readValue("verbs", VerbManager.class, jsonData);
 		
 		state = json.readValue("state", String.class, jsonData);
 		sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);

@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Transition")
 @ModelDescription("Sets a transition effect (FADEIN/FADEOUT)")
-public class TransitionAction implements Action {
+public class TransitionAction extends AbstractAction {
 	@JsonProperty(required = true, defaultValue = "1.0")
 	@JsonPropertyDescription("Duration of the transition")
 	@ModelPropertyType(Type.FLOAT)

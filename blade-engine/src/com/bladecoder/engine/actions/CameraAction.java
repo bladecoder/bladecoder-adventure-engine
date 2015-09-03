@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Camera")
 @ModelDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
-public class CameraAction implements Action {
+public class CameraAction extends AbstractAction {
 	@JsonProperty
 	@JsonPropertyDescription("The target position")
 	@ModelPropertyType(Type.VECTOR2)

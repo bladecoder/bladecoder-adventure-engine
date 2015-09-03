@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
-import com.bladecoder.engine.actions.Action;
+import com.bladecoder.engine.actions.AbstractAction;
 import com.bladecoder.engine.actions.ActionCallback;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public interface VerbRunner extends ActionCallback {
 	 * Method to retrieve the action list
 	 * @return the action list
 	 */
-	public List<Action> getActions();
+	public List<AbstractAction> getActions();
 	
 	/**
 	 * Run the verb

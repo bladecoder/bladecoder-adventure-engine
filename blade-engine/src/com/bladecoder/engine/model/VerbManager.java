@@ -20,25 +20,18 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.bladecoder.engine.model.Verb;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class VerbManager implements Serializable {
-	protected static Map<String, Verb> worldVerbs = new LinkedHashMap<String, Verb>();
-	protected Map<String, Verb> verbs = new LinkedHashMap<String, Verb>();
+	private Map<String, Verb> verbs = new LinkedHashMap<>();
 
-	public void addVerb(String id, Verb v) {
-		verbs.put(id, v);
+	public void addVerb(Verb v) {
+		verbs.put(v.getCompositeId(), v);
 	}
 
-	public static void addDefaultVerb(String id, Verb v) {
-		worldVerbs.put(id, v);
-	}
-	
 	// Used only in getVerb(). It is a class variable to avoid allocations
 	private StringBuilder tmpsb = new StringBuilder();
 
@@ -60,20 +53,20 @@ public class VerbManager implements Serializable {
 		if(target != null) {
 			tmpsb.setLength(0);
 			if(state != null) {
-				tmpsb.append(id).append(".").append(target).append(".").append(state);
+				tmpsb.append(id).append(Verb.COMPOSITE_ID_SEPARATOR).append(target).append(Verb.COMPOSITE_ID_SEPARATOR).append(state);
 				v = verbs.get(tmpsb.toString()); // id.target.state
 			}
 
 			if (v == null) {
 				tmpsb.setLength(0);
-				tmpsb.append(id).append(".").append(target);
+				tmpsb.append(id).append(Verb.COMPOSITE_ID_SEPARATOR).append(target);
 				v = verbs.get(tmpsb.toString()); // id.target
 			}
 		}
 		
 		if (v == null && state != null) {
 			tmpsb.setLength(0);
-			tmpsb.append(id).append(".").append(state);
+			tmpsb.append(id).append(Verb.COMPOSITE_ID_SEPARATOR).append(state);
 			
 			v = verbs.get(tmpsb.toString()); // id.state
 		}
@@ -83,10 +76,6 @@ public class VerbManager implements Serializable {
 
 		return v;
 	}
-	
-	public static Map<String, Verb> getWorldVerbs() {
-		return worldVerbs;
-	}
 
 	public Map<String, Verb> getVerbs() {
 		return verbs;
@@ -95,55 +84,48 @@ public class VerbManager implements Serializable {
 	/**
 	 * Run Verb
 	 * 
-	 * @param verb Verb
+	 * @param id Verb
 	 * @param target When one object is used with another object.
 	 */
-	public void runVerb(String verb, String state, String target) {
+	public void runVerb(String id, String state, String target) {
+		EngineLogger.debug(MessageFormat.format("Run Verb:{0} State: {1} Target: {2}", id, state, target));
 
-		Verb v = null;
-		
-		EngineLogger.debug(MessageFormat.format("Run Verb:{0} State: {1} Target: {2}", verb, state, target));
-		
-		v = getVerb(verb, state, target);
+		Verb v = getVerb(id, state, target);
 
 		if (v == null) {
-			v = worldVerbs.get(verb);
+			v = World.getInstance().getVerbManager().getVerb(id, null, null);
 		}
 
 		if (v != null) {
 			v.run();
 		} else {
-			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}''",
-					verb, target) );
+			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}'' and state ''{2}''", id, target, state));
 		}
 	}
 	
 	/**
 	 * Cancels the execution of a running verb
 	 * 
-	 * @param verb
+	 * @param id
 	 * @param target
 	 */
-	public void cancelVerb(String verb, String state, String target) {
-		Verb v = null;
-		
-		v = getVerb(verb, state, target);
+	public void cancelVerb(String id, String state, String target) {
+		Verb v = getVerb(id, state, target);
 
 		if (v == null) {
-			v = worldVerbs.get(verb);
+			v = World.getInstance().getVerbManager().getVerb(id, null, null);
 		}
 
 		if (v != null)
 			v.cancel();
 		else {
-			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}''",
-					verb, target) );
+			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}'' and state ''{2}''", id, target, state));
 		}	
 	}	
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("verbs", verbs, verbs == null ? null : verbs.getClass(), Verb.class);
+		json.writeValue("verbs", verbs, verbs.getClass(), Verb.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -151,6 +133,4 @@ public class VerbManager implements Serializable {
 	public void read (Json json, JsonValue jsonData) {
 		verbs = json.readValue("verbs", HashMap.class, Verb.class, jsonData);
 	}
-
-
 }

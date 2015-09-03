@@ -636,7 +636,6 @@ public class World extends BlueprintWorld implements Serializable, AssetConsumer
 		json.writeValue("inventory", inventory);
 		json.writeValue("timeOfGame", timeOfGame);
 		json.writeValue("cutmode", cutMode);
-		json.writeValue("worldVerbs", VerbManager.worldVerbs, HashMap.class, Verb.class);
 		json.writeValue("timers", timers);
 		json.writeValue("textmanager", textManager);
 		json.writeValue("customProperties", customProperties);
@@ -664,7 +663,6 @@ public class World extends BlueprintWorld implements Serializable, AssetConsumer
 
 		instance.timeOfGame = json.readValue("timeOfGame", Float.class, jsonData);
 		instance.cutMode = json.readValue("cutmode", Boolean.class, jsonData);
-		VerbManager.worldVerbs = json.readValue("worldVerbs", HashMap.class, Verb.class, jsonData);
 		instance.timers = json.readValue("timers", Timers.class, jsonData);
 
 		instance.textManager = json.readValue("textmanager", TextManager.class, jsonData);

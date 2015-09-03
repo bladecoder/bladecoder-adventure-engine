@@ -17,9 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionFactory;
-
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.util.EngineLogger;
@@ -110,8 +107,8 @@ public class ActionFactory {
 		return  actions.keySet().toArray(new String[actions.size()]);
 	}
 
-	public static Action create(String name,
-			HashMap<String, String> params) {
+	public static AbstractAction create(String name,
+	                                    HashMap<String, String> params) {
 		String className = actions.get(name);
 
 		if (className == null) {
@@ -126,14 +123,14 @@ public class ActionFactory {
 	
 	
 	
-	public static Action createByClass(String className,
-			HashMap<String, String> params) {
+	public static AbstractAction createByClass(String className,
+	                                           HashMap<String, String> params) {
 
-		Action a = null;
+		AbstractAction a = null;
 
 		try {
 			Class<?> c = ClassReflection.forName(className);
-			a = (Action) ClassReflection.newInstance(c);
+			a = (AbstractAction) ClassReflection.newInstance(c);
 			
 			if(params != null)
 				a.setParams(params);

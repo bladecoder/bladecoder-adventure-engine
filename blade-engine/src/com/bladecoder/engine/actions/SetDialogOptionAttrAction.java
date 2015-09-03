@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("SetDialogOptionAttr")
 @ModelDescription("Change the selected dialog option properties")
-public class SetDialogOptionAttrAction implements Action {
+public class SetDialogOptionAttrAction extends AbstractAction {
 	@JsonProperty("actor")
 	@JsonPropertyDescription("The target actor")
 	@ModelPropertyType(Type.SCENE_ACTOR)

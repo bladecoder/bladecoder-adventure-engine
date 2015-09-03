@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("RemoveInventoryItem")
 @ModelDescription("Remove items from the inventory.")
-public class RemoveInventoryItemAction implements Action {
+public class RemoveInventoryItemAction extends AbstractAction {
 	@JsonProperty("id")
 	@JsonPropertyDescription("The 'actorid' from the inventory item to remove. If empty remove all items.")
 	@ModelPropertyType(Type.ACTOR)

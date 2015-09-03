@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("ShowInventory")
 @ModelDescription("Shows/Hide the inventory")
-public class ShowInventoryAction implements Action {
+public class ShowInventoryAction extends AbstractAction {
 	@JsonProperty(required = true, defaultValue = "true")
 	@JsonPropertyDescription("When 'true' sets the scene in 'cutmode'")
 	@ModelPropertyType(Type.BOOLEAN)

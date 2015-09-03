@@ -26,9 +26,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonTypeName("SetActorAttr")
-@ModelDescription("Change actor attributes.")
-public class PositionAction implements Action {
+@JsonTypeName("Position")
+@ModelDescription("Changes the actor position")
+public class PositionAction extends AbstractAction {
 	@JsonProperty(value = "actor", required = true)
 	@JsonPropertyDescription("The target actor")
 	@ModelPropertyType(Type.SCENE_ACTOR)

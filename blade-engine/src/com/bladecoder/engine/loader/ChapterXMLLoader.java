@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.bladecoder.engine.actions.AbstractAction;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -31,7 +32,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
-import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.anim.AnimationDesc;
@@ -600,21 +600,16 @@ public class ChapterXMLLoader extends DefaultHandler {
 	}
 
 	private void parseVerb(Attributes atts, VerbManager v) {
-
-		String id = atts.getValue(XMLConstants.ID_ATTR);
-		String target = atts.getValue(XMLConstants.TARGET_ATTR);
-		String state = atts.getValue(XMLConstants.STATE_ATTR);
-
-		if (target != null)
-			id = id + "." + target;
-
-		if (state != null)
-			id = id + "." + state;
+		final String id = atts.getValue(XMLConstants.ID_ATTR);
+		final String target = atts.getValue(XMLConstants.TARGET_ATTR);
+		final String state = atts.getValue(XMLConstants.STATE_ATTR);
 
 		currentVerb = new Verb();
 		currentVerb.setId(id);
+		currentVerb.setTarget(target);
+		currentVerb.setState(state);
 
-		v.addVerb(id, currentVerb);
+		v.addVerb(currentVerb);
 	}
 
 	private final HashMap<String, String> actionParams = new HashMap<String, String>();
@@ -622,7 +617,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 	private void parseAction(Attributes atts, String actor) {
 
 		String actionName = null;
-		Action action = null;
+		AbstractAction action = null;
 		String actionClass = null;
 		actionParams.clear();
 
@@ -653,7 +648,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		}
 
 		if (action != null) {
-			currentVerb.add(action);
+			currentVerb.addAction(action);
 		}
 	}
 

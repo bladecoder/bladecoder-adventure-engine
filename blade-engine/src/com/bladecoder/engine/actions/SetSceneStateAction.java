@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("SetSceneState")
 @ModelDescription("Sets the scene state")
-public class SetSceneStateAction implements Action {
+public class SetSceneStateAction extends AbstractAction {
 	@JsonProperty("scene")
 	@JsonPropertyDescription("The scene")
 	@ModelPropertyType(Type.SCENE)
