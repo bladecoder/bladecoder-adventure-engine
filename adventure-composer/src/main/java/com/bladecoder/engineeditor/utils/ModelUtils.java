@@ -54,6 +54,10 @@ public class ModelUtils {
 				if (property == null) {
 					continue;
 				}
+				final JsonPropertyDescription propertyDescription = field.getAnnotation(JsonPropertyDescription.class);
+				if (propertyDescription == null) {
+					continue;
+				}
 				final ModelPropertyType propertyType = field.getAnnotation(ModelPropertyType.class);
 				final Param.Type type;
 				if (propertyType != null) {
@@ -63,10 +67,6 @@ public class ModelUtils {
 					if (type == null) {
 						throw new RuntimeException(clazz.getName() + '.' + field.getName() + " doesn't seem to be annotated with @ModelPropertyType, and its type can't be determined automatically");
 					}
-				}
-				final JsonPropertyDescription propertyDescription = field.getAnnotation(JsonPropertyDescription.class);
-				if (propertyDescription == null) {
-					throw new RuntimeException(clazz.getName() + '.' + field.getName() + " doesn't seem to be annotated with @JsonPropertyDescription");
 				}
 
 				final String name = property.value() == null || property.value().trim().isEmpty() ? field.getName() : property.value();
