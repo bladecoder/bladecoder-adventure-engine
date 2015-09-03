@@ -12,7 +12,7 @@ public class BlueprintWorld implements VerbContainer {
 	@JsonProperty
 	protected String initChapter;
 
-	private VerbManager verbManager = new VerbManager();
+	protected VerbManager verbManager = new VerbManager();
 
 	@JsonProperty
 	private Collection<Verb> getVerbs() {
