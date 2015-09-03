@@ -465,7 +465,7 @@ public class EngineAssetManager extends AssetManager {
 
 		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Applet) {
 			String dir = Config.getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
-			dir.replaceAll(" ", "");
+			dir = dir.replaceAll(" ", "");
 
 			StringBuilder sb = new StringBuilder();
 			sb.append(".").append(dir).append("/").append(filename);
@@ -482,7 +482,7 @@ public class EngineAssetManager extends AssetManager {
 
 		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Applet) {
 			String dir = Config.getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
-			dir.replaceAll(" ", "");
+			dir = dir.replaceAll(" ", "");
 
 			StringBuilder sb = new StringBuilder(".");
 			file = Gdx.files.external(sb.append(dir).toString());

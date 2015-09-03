@@ -48,7 +48,7 @@ public class TemplateUtils {
 	    		String orgStr = "\\$\\{" + var +"\\}";
 	    		String destStr = vars.get(var);
 	    	
-	    		line.replaceAll(orgStr, destStr);
+	    		line = line.replaceAll(orgStr, destStr);
 	    	}
 	    	
 	    	lines.add(line);
