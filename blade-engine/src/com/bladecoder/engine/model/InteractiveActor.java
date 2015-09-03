@@ -121,14 +121,14 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, VerbCo
 				// the player leaves
 				playerInside = false;
 				
-				Verb v = getVerb("exit");
+				Verb v = getVerb(Verb.EXIT_VERB);
 				if(v!=null)
 					v.run();
 			} else if(hit && !playerInside){
 				// the player enters
 				playerInside = true;
 				
-				Verb v = getVerb("enter");
+				Verb v = getVerb(Verb.ENTER_VERB);
 				if(v!=null)
 					v.run();				
 			}

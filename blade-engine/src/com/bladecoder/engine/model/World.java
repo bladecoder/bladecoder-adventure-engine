@@ -370,12 +370,12 @@ public class World extends BlueprintWorld implements Serializable, AssetConsumer
 
 	public void initCurrentScene() {
 		// If in test mode run 'test' verb
-		if (testScene != null && testScene.equals(currentScene.getId()) && currentScene.getVerb("test") != null)
-			currentScene.runVerb("test");
+		if (testScene != null && testScene.equals(currentScene.getId()) && currentScene.getVerb(Verb.TEST_VERB) != null)
+			currentScene.runVerb(Verb.TEST_VERB);
 
 		// Run INIT action
-		if (currentScene.getVerb("init") != null)
-			currentScene.runVerb("init");
+		if (currentScene.getVerb(Verb.INIT_VERB) != null)
+			currentScene.runVerb(Verb.INIT_VERB);
 	}
 
 	public Inventory getInventory() {

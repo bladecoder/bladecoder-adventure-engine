@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 import org.w3c.dom.Element;
 
@@ -31,11 +32,14 @@ import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
 public class EditVerbDialog extends EditElementDialog {
-	private static final String VERBS[] = { "lookat", "pickup", "talkto", "use",
-			"leave", "enter", "exit" };
+	private static final String VERBS[] = {
+			Verb.LOOKAT_VERB, Verb.ACTION_VERB, Verb.TALKTO_VERB,
+			Verb.USE_VERB, Verb.LEAVE_VERB, Verb.ENTER_VERB,
+			Verb.EXIT_VERB
+	};
 
-	private static final String SCENE_VERBS[] = { "init", "test" };
-	
+	private static final String SCENE_VERBS[] = { Verb.INIT_VERB, Verb.TEST_VERB };
+
 	private static final String DEFAULT_DESC = "Verbs are used to create the game interaction. Select or write the verb to create";
 	private static final String CUSTOM_VERB_DESC = "User defined verbs can be called\n from dialogs or inside other verbs using \nthe 'run_verb' action";
 
@@ -101,7 +105,7 @@ public class EditVerbDialog extends EditElementDialog {
 		if (e != null) {
 			String id = e.getAttribute("id");
 
-			if (id.equals("use"))
+			if (id.equals(Verb.USE_VERB))
 				setVisible(inputs[2], true);
 		}
 		
@@ -126,7 +130,7 @@ public class EditVerbDialog extends EditElementDialog {
 			}
 		}
 
-		if (id.equals("use"))
+		if (id.equals(Verb.USE_VERB))
 			setVisible(inputs[2], true);
 		else
 			setVisible(inputs[2], false);
