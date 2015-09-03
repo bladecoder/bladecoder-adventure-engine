@@ -1,6 +1,6 @@
 {
 	com.badlogic.gdx.graphics.g2d.BitmapFont: { 
-		default-font: {file: ubuntu-medium-14.fnt}, 
+		default-font: {file: ubuntu-medium-14.fnt},
 		thin-font: {file: ubuntu-light-12.fnt}, 
 		big-font: {file: paytone-one-18.fnt}
 	},
@@ -105,7 +105,7 @@
 
 
 	com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
-		default: { selection: textfield_selection, background: textfield_default, focusedBackground: textfield_focused, disabledBackground: textfield_disabled, font: default-font, fontColor: text-dark, focusedFontColor: text-dark, disabledFontColor: text-dark, cursor: textfield_cursor, messageFont: default-font, messageFontColor: text-dark }
+		default: { selection: textfield_selection, background: textfield_default, focusedBackground: textfield_focused, disabledBackground: textfield_disabled, font: thin-font, fontColor: text-dark, focusedFontColor: text-dark, disabledFontColor: text-dark, cursor: textfield_cursor, messageFont: default-font, messageFontColor: text-dark }
 	},
 
 
