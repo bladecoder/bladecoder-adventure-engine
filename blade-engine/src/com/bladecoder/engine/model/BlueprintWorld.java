@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Collection;
 
-public class BlueprintWorld {
+public class BlueprintWorld implements VerbContainer {
 	@JsonProperty
 	protected int width;
 	@JsonProperty
@@ -12,14 +12,16 @@ public class BlueprintWorld {
 	@JsonProperty
 	protected String initChapter;
 
+	protected VerbManager verbManager = new VerbManager();
+
 	@JsonProperty
 	private Collection<Verb> getVerbs() {
-		return VerbManager.getWorldVerbs().values();
+		return verbManager.getVerbs().values();
 	}
 
 	private void setVerbs(Collection<Verb> verbs) {
 		for (Verb verb : verbs) {
-			VerbManager.addDefaultVerb(verb.getId(), verb);
+			verbManager.addVerb(verb);
 		}
 	}
 
@@ -48,5 +50,10 @@ public class BlueprintWorld {
 	@TrackPropertyChanges
 	public void setInitChapter(String initChapter) {
 		this.initChapter = initChapter;
+	}
+
+	@Override
+	public VerbManager getVerbManager() {
+		return verbManager;
 	}
 }

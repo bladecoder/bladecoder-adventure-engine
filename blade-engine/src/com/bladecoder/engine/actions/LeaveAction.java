@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Leave")
 @ModelDescription("Change the current scene.")
-public class LeaveAction implements Action {
+public class LeaveAction extends AbstractAction {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The target scene")
 	@ModelPropertyType(Type.SCENE)

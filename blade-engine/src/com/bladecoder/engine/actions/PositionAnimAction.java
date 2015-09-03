@@ -29,9 +29,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonTypeName("Position")
+@JsonTypeName("PositionAnim")
 @ModelDescription("Sets an actor Position animation")
-public class PositionAnimAction implements Action {
+public class PositionAnimAction extends AbstractAction {
 	public enum Mode {
 		DURATION, SPEED
 	}

@@ -23,7 +23,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import com.bladecoder.engine.model.BlueprintWorld;
+import com.bladecoder.engine.actions.AbstractAction;
 import com.bladecoder.engine.model.XML2Bean;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -33,13 +33,11 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -135,7 +133,7 @@ public class WorldXMLLoader extends DefaultHandler {
 			currentVerb = new Verb();
 			currentVerb.setId(id);
 
-			VerbManager.addDefaultVerb(id, currentVerb);
+			world.getVerbManager().addVerb(currentVerb);
 		}
 	}
 
@@ -152,7 +150,7 @@ public class WorldXMLLoader extends DefaultHandler {
 
 		if (localName.equals(XMLConstants.ACTION_TAG)) {
 			String actionName = null;
-			Action action = null;
+			AbstractAction action = null;
 			HashMap<String, String> params = new HashMap<String, String>();
 			String actionClass = null;
 
@@ -177,7 +175,7 @@ public class WorldXMLLoader extends DefaultHandler {
 			}
 
 			if (action != null) {
-				currentVerb.add(action);
+				currentVerb.addAction(action);
 			}
 		} else {
 			EngineLogger.error("TAG not supported inside VERB: " + localName

@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -58,7 +59,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
 				if (iActor != null) {
-					sceneScreen.runVerb(iActor, "lookat", null);
+					sceneScreen.runVerb(iActor, Verb.LOOKAT_VERB, null);
 				}
 
 				hide();
@@ -71,7 +72,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
 				if (iActor != null) {
-					sceneScreen.runVerb(iActor, "talkto", null);
+					sceneScreen.runVerb(iActor, Verb.TALKTO_VERB, null);
 				}
 
 				hide();
@@ -84,7 +85,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
 				if (iActor != null) {
-					sceneScreen.runVerb(iActor, "pickup", null);
+					sceneScreen.runVerb(iActor, Verb.ACTION_VERB, null);
 				}
 
 				hide();
@@ -148,7 +149,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		
 		Actor rightButton;
 
-		if (a.getVerb("talkto") != null) {
+		if (a.getVerb(Verb.TALKTO_VERB) != null) {
 			talktoButton.setVisible(true);
 			pickupButton.setVisible(false);
 			rightButton = talktoButton;

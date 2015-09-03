@@ -31,6 +31,7 @@ import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
@@ -293,10 +294,10 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	}
 
 	private void use(InteractiveActor targetActor, InteractiveActor invActor) {
-		if (targetActor.getVerb("use", invActor.getId()) != null) {
-			sceneScreen.runVerb(targetActor, "use", invActor.getId());
+		if (targetActor.getVerb(Verb.USE_VERB, invActor.getId()) != null) {
+			sceneScreen.runVerb(targetActor, Verb.USE_VERB, invActor.getId());
 		} else {
-			sceneScreen.runVerb(invActor, "use", targetActor.getId());
+			sceneScreen.runVerb(invActor, Verb.USE_VERB, targetActor.getId());
 		}
 	}
 

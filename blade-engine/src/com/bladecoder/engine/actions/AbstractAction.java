@@ -17,10 +17,24 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
+import com.bladecoder.engine.model.TrackPropertyChanges;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include= JsonTypeInfo.As.PROPERTY)
-public interface Action {
+public abstract class AbstractAction implements Cloneable {
+	@JsonProperty
+	private Boolean enabled;
+
+	public boolean getEnabled() {
+		return enabled != null && enabled;
+	}
+
+	@TrackPropertyChanges
+	public void setEnabled(boolean enabled) {
+		this.enabled = !enabled ? null : true;
+	}
+
 	/**
 	 * Execute the action
 	 * 
@@ -28,7 +42,8 @@ public interface Action {
 	 * @return If 'true', the verb must stops the execution and wait
 	 * for the action to call the cb.resume()
 	 */
-	public boolean run(ActionCallback cb);
+	public abstract boolean run(ActionCallback cb);
 
-	public void setParams(HashMap<String, String> params);
+	@Deprecated
+	public abstract void setParams(HashMap<String, String> params);
 }

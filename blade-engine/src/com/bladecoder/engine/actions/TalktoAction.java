@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Talkto")
 @ModelDescription("Sets the dialog mode")
-public class TalktoAction implements Action {
+public class TalktoAction extends AbstractAction {
 	@JsonProperty("actor")
 	@JsonPropertyDescription("The target actor")
 	@ModelPropertyType(Type.ACTOR)

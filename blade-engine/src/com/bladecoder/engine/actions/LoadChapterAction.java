@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("LoadChapter")
 @ModelDescription("Load the specified Chapter. Scene can be empty to load the default scene.")
-public class LoadChapterAction implements Action {
+public class LoadChapterAction extends AbstractAction {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The target chapter")
 	@ModelPropertyType(Type.CHAPTER)

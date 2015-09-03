@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("ScaleAnim")
 @ModelDescription("Sets an actor Scale animation")
-public class ScaleAnimAction implements Action {
+public class ScaleAnimAction extends AbstractAction {
 	@JsonProperty
 	@JsonPropertyDescription("The target actor")
 	@ModelPropertyType(Type.ACTOR)

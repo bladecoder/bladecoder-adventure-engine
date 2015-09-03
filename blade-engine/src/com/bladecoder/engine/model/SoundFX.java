@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 public class SoundFX extends AbstractModel implements AssetConsumer {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("Filename of the sound")
-	@ModelPropertyType(Param.Type.SOUND_FILE)
+	@ModelPropertyType(Param.Type.FILE_SOUND)
 	private String filename;
 
 	@JsonProperty

@@ -15,13 +15,14 @@
  ******************************************************************************/
 package com.bladecoder.engine.util;
 
-import com.bladecoder.engine.actions.Action;
+import com.bladecoder.engine.actions.AbstractAction;
 import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.model.AbstractModel;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.VerbManager;
+import com.bladecoder.engine.model.VerbContainer;
 import com.bladecoder.engine.model.World;
 
 /**
@@ -43,7 +44,8 @@ import com.bladecoder.engine.model.World;
  * @author rgarcia
  */
 public class ActionCallbackSerialization {
-	public static final String SEPARATION_SYMBOL = "#";
+	private static final String SEPARATION_SYMBOL = "#";
+	private static final String DEFAULT_VERB = "DEFAULT_VERB";
 
 	private static String find(ActionCallback cb, Verb v) {
 		String id = v.getId();
@@ -53,12 +55,9 @@ public class ActionCallbackSerialization {
 
 		int pos = 0;
 
-		for (Action a : v.getActions()) {
+		for (AbstractAction a : v.getActions()) {
 			if (cb == a) {
-				StringBuilder stringBuilder = new StringBuilder(id);
-				stringBuilder.append(SEPARATION_SYMBOL).append(pos);
-
-				return stringBuilder.toString();
+				return id + SEPARATION_SYMBOL + pos;
 			}
 
 			pos++;
@@ -67,7 +66,7 @@ public class ActionCallbackSerialization {
 		return null;
 	}
 
-	private static String find(ActionCallback cb, InteractiveActor a) {
+	private static <T extends AbstractModel & VerbContainer> String find(ActionCallback cb, T a) {
 		if (a == null)
 			return null;
 
@@ -77,30 +76,7 @@ public class ActionCallbackSerialization {
 			String result = find(cb, v);
 
 			if (result != null) {
-				StringBuilder stringBuilder = new StringBuilder(id);
-				stringBuilder.append(SEPARATION_SYMBOL).append(result);
-
-				return stringBuilder.toString();
-			}
-		}
-
-		return null;
-	}
-
-	private static String find(ActionCallback cb, Scene s) {
-		if (s == null)
-			return null;
-
-		String id = s.getId();
-
-		for (Verb v : s.getVerbManager().getVerbs().values()) {
-			String result = find(cb, v);
-
-			if (result != null) {
-				StringBuilder stringBuilder = new StringBuilder(id);
-				stringBuilder.append(SEPARATION_SYMBOL).append(result);
-
-				return stringBuilder.toString();
+				return id + SEPARATION_SYMBOL + result;
 			}
 		}
 
@@ -120,7 +96,8 @@ public class ActionCallbackSerialization {
 			return null;
 
 		// search in scene verbs
-		Scene s = World.getInstance().getCurrentScene();
+		final World world = World.getInstance();
+		final Scene s = world.getCurrentScene();
 
 		id = find(cb, s);
 
@@ -142,13 +119,10 @@ public class ActionCallbackSerialization {
 		}
 
 		// search in worldVerbs
-		for (Verb v : VerbManager.getWorldVerbs().values()) {
+		for (Verb v : world.getVerbManager().getVerbs().values()) {
 			id = find(cb, v);
 			if (id != null) {
-				StringBuilder stringBuilder = new StringBuilder("DEFAULT_VERB");
-				stringBuilder.append(SEPARATION_SYMBOL).append(id);
-
-				return stringBuilder.toString();
+				return DEFAULT_VERB + SEPARATION_SYMBOL + id;
 			}
 		}
 
@@ -161,7 +135,8 @@ public class ActionCallbackSerialization {
 	 * @param id
 	 */
 	public static ActionCallback find(String id) {
-		Scene s = World.getInstance().getCurrentScene();
+		final World world = World.getInstance();
+		final Scene s = world.getCurrentScene();
 
 		String[] split = id.split(SEPARATION_SYMBOL);
 
@@ -177,9 +152,8 @@ public class ActionCallbackSerialization {
 
 		Verb v = null;
 
-		if (actorId.equals("DEFAULT_VERB")) {
-
-			v = VerbManager.getWorldVerbs().get(verbId);
+		if (actorId.equals(DEFAULT_VERB)) {
+			v = world.getVerbManager().getVerb(verbId, null, null);
 		} else {
 
 			InteractiveActor a;
@@ -202,7 +176,7 @@ public class ActionCallbackSerialization {
 		if (split.length == 2)
 			return v;
 
-		Action action = v.getActions().get(actionPos);
+		AbstractAction action = v.getActions().get(actionPos);
 
 		if (action instanceof ActionCallback)
 			return (ActionCallback) action;

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Property")
 @ModelDescription("Sets a global game property")
-public class PropertyAction implements Action {
+public class PropertyAction extends AbstractAction {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("Property name")
 	@ModelPropertyType(Type.STRING)

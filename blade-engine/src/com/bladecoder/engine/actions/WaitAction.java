@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Wait")
 @ModelDescription("Pause the action")
-public class WaitAction implements Action {
+public class WaitAction extends AbstractAction {
 	@JsonProperty(required = true, defaultValue = "1.0")
 	@JsonPropertyDescription("The time pause in seconds")
 	@ModelPropertyType(Type.FLOAT)

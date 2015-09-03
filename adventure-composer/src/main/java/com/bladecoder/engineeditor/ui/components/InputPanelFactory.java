@@ -81,7 +81,7 @@ public class InputPanelFactory extends Table {
 			return new IntegerInputPanel(skin, title, desc, mandatory, defaultValue);
 		case SCENE:
 			return new SceneInputPanel(skin, title, desc, mandatory, defaultValue);
-		case SOUND_FILE:
+		case FILE_SOUND:
 			return new SoundFileInputPanel(skin, title, desc, mandatory, defaultValue);
 		case SOUND:
 			return new SoundInputPanel(skin, title, desc, mandatory, defaultValue);

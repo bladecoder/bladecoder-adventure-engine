@@ -370,12 +370,12 @@ public class World extends BlueprintWorld implements Serializable, AssetConsumer
 
 	public void initCurrentScene() {
 		// If in test mode run 'test' verb
-		if (testScene != null && testScene.equals(currentScene.getId()) && currentScene.getVerb("test") != null)
-			currentScene.runVerb("test");
+		if (testScene != null && testScene.equals(currentScene.getId()) && currentScene.getVerb(Verb.TEST_VERB) != null)
+			currentScene.runVerb(Verb.TEST_VERB);
 
 		// Run INIT action
-		if (currentScene.getVerb("init") != null)
-			currentScene.runVerb("init");
+		if (currentScene.getVerb(Verb.INIT_VERB) != null)
+			currentScene.runVerb(Verb.INIT_VERB);
 	}
 
 	public Inventory getInventory() {
@@ -636,7 +636,7 @@ public class World extends BlueprintWorld implements Serializable, AssetConsumer
 		json.writeValue("inventory", inventory);
 		json.writeValue("timeOfGame", timeOfGame);
 		json.writeValue("cutmode", cutMode);
-		json.writeValue("worldVerbs", VerbManager.worldVerbs, HashMap.class, Verb.class);
+		json.writeValue("worldVerbs", verbManager);
 		json.writeValue("timers", timers);
 		json.writeValue("textmanager", textManager);
 		json.writeValue("customProperties", customProperties);
@@ -664,7 +664,7 @@ public class World extends BlueprintWorld implements Serializable, AssetConsumer
 
 		instance.timeOfGame = json.readValue("timeOfGame", Float.class, jsonData);
 		instance.cutMode = json.readValue("cutmode", Boolean.class, jsonData);
-		VerbManager.worldVerbs = json.readValue("worldVerbs", HashMap.class, Verb.class, jsonData);
+		instance.verbManager = json.readValue("verbs", VerbManager.class, jsonData);
 		instance.timers = json.readValue("timers", Timers.class, jsonData);
 
 		instance.textManager = json.readValue("textmanager", TextManager.class, jsonData);

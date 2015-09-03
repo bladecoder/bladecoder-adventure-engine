@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Animation")
 @ModelDescription("Sets the animation for an actor")
-public class AnimationAction implements Action {
+public class AnimationAction extends AbstractAction {
 	private static final int NO_POS = 0;
 	private static final int SET_POS_ABSOLUTE = 1;
 	private static final int SET_POS_RELATIVE = 2;
@@ -66,8 +66,57 @@ public class AnimationAction implements Action {
 	@ModelPropertyType(Type.BOOLEAN)
 	private boolean absolute = false;
 
+	// FIXME: Shouldn't this be a parameter as well?
 	private String actorId;
 	private int setPos = NO_POS;
+
+	public String getAnimation() {
+		return animation;
+	}
+
+	public void setAnimation(String animation) {
+		this.animation = animation;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	public boolean isWait() {
+		return wait;
+	}
+
+	public void setWait(boolean wait) {
+		this.wait = wait;
+	}
+
+	public Tween.Type getRepeat() {
+		return repeat;
+	}
+
+	public void setRepeat(Tween.Type repeat) {
+		this.repeat = repeat;
+	}
+
+	public Vector2 getPos() {
+		return pos;
+	}
+
+	public void setPos(Vector2 pos) {
+		this.pos = pos;
+	}
+
+	public boolean isAbsolute() {
+		return absolute;
+	}
+
+	public void setAbsolute(boolean absolute) {
+		this.absolute = absolute;
+	}
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -128,5 +177,4 @@ public class AnimationAction implements Action {
 
 		return wait;
 	}
-
 }

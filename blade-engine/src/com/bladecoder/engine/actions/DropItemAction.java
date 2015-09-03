@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("DropItem")
 @ModelDescription("Drops the inventory actor in the scene.")
-public class DropItemAction implements Action {
+public class DropItemAction extends AbstractAction {
 	@JsonProperty
 	@JsonPropertyDescription("An actor in the inventory.")
 	@ModelPropertyType(Type.STRING)

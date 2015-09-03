@@ -25,11 +25,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ModelDescription("Marks the end of a block for a control action")
 public class EndAction extends AbstractControlAction {
-	@JsonProperty
-	@JsonPropertyDescription("The block ID")
-	@ModelPropertyType(Type.STRING)
-	private String caID;
-
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		caID = params.get("caID");
@@ -39,7 +34,7 @@ public class EndAction extends AbstractControlAction {
 	public boolean run(ActionCallback cb) {
 		// FIXME: This is now more generic than before, but also less optimized (we always get our "parent")
 		final VerbRunner v = (VerbRunner) cb;
-		final List<Action> actions = v.getActions();
+		final List<AbstractAction> actions = v.getActions();
 		final int ip = v.getIP();
 
 		final int parentIp = getParentControlAction(caID, actions, ip);
@@ -57,16 +52,11 @@ public class EndAction extends AbstractControlAction {
 		return false;
 	}
 
-	private int getParentControlAction(String caID, List<Action> actions, int ip) {
+	private int getParentControlAction(String caID, List<AbstractAction> actions, int ip) {
 		do {
 			ip--;
-		} while (!(actions.get(ip) instanceof AbstractControlAction) || !((AbstractControlAction) actions.get(ip)).getControlActionID().equals(caID));
+		} while (!(actions.get(ip) instanceof AbstractControlAction) || !((AbstractControlAction) actions.get(ip)).getControlActionId().equals(caID));
 		
 		return ip;
-	}
-
-	@Override
-	public String getControlActionID() {
-		return caID;
 	}
 }

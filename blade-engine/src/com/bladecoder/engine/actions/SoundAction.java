@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("Sound")
 @ModelDescription("Play/Stop a sound")
-public class SoundAction implements Action {
+public class SoundAction extends AbstractAction {
 	private static final String ACTOR_PROPERTY_ID = "actor";
 
 	@JsonProperty(ACTOR_PROPERTY_ID)

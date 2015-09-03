@@ -458,7 +458,7 @@ public class SceneScreen implements BladeScreen {
 				if (showDesc)
 					ui.getPointer().setDesc(currentActor.getDesc());
 
-				if (currentActor.getVerb("leave") != null) {
+				if (currentActor.getVerb(Verb.LEAVE_VERB) != null) {
 					ui.getPointer().setLeaveIcon(calcLeaveArrowRotation(currentActor));
 				} else
 					ui.getPointer().setHotspotIcon();
@@ -633,7 +633,7 @@ public class SceneScreen implements BladeScreen {
 
 				float size = DPIUtils.ICON_SIZE * DPIUtils.getSizeMultiplier();
 
-				if (ia.getVerb("leave") != null) {
+				if (ia.getVerb(Verb.LEAVE_VERB) != null) {
 					TextureRegionDrawable drawable = (TextureRegionDrawable) getUI().getSkin().getDrawable("leave");
 
 					// drawable.draw(batch, unprojectTmp.x - size / 2,
@@ -709,8 +709,8 @@ public class SceneScreen implements BladeScreen {
 
 			actorClick(currentActor, lookat);
 		} else if (s.getPlayer() != null) {
-			if (s.getPlayer().getVerb("goto") != null) {
-				runVerb(s.getPlayer(), "goto", null);
+			if (s.getPlayer().getVerb(Verb.GOTO_VERB) != null) {
+				runVerb(s.getPlayer(), Verb.GOTO_VERB, null);
 			} else {
 				Vector2 pos = new Vector2(unprojectTmp.x, unprojectTmp.y);
 

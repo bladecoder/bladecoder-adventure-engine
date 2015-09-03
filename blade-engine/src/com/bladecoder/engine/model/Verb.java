@@ -15,36 +15,79 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
+import com.bladecoder.engine.actions.AbstractAction;
+import com.bladecoder.engine.actions.ModelDescription;
+import com.bladecoder.engine.actions.ModelPropertyType;
+import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.StringUtils;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+@ModelDescription("Verbs are used to create the game interaction. Select or write the verb to create")
 public class Verb extends AbstractModel implements VerbRunner {
+	static final char COMPOSITE_ID_SEPARATOR = '.';
+
 	public static final String LOOKAT_VERB = "lookat";
 	public static final String ACTION_VERB = "pickup";
 	public static final String LEAVE_VERB = "leave";
+	public static final String ENTER_VERB = "enter";
+	public static final String EXIT_VERB = "exit";
 	public static final String TALKTO_VERB = "talkto";
 	public static final String USE_VERB = "use";
 	public static final String GOTO_VERB = "goto";
 	public static final String TEST_VERB = "test";
 	public static final String INIT_VERB = "init";
+	public static final String CUSTOM_VERB = "custom";
 
 	@JsonProperty
-	private List<Action> actions = new ArrayList <Action>();
-	
+	@JsonPropertyDescription("The target actor id for the 'use' verb")
+	@ModelPropertyType(Param.Type.ACTOR)
+	private String target;
+
+	@JsonProperty
+	@JsonPropertyDescription("The state")
+	@ModelPropertyType(Param.Type.STRING)
+	private String state;
+
+	@JsonProperty
+	private List<AbstractAction> actions = new ArrayList<>();
+
 	private int ip = -1;
-	
+
 	public Verb() {
 	}
-	
-	public void add(Action a) {
-		actions.add(a);
+
+	public String getTarget() {
+		return target;
 	}
-	
-	public List<Action> getActions() {
+
+	public void setTarget(String target) {
+		this.target = target;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	@TrackPropertyChanges
+	public void addAction(AbstractAction action) {
+		actions.add(action);
+	}
+
+	@TrackPropertyChanges
+	public void removeAction(AbstractAction action) {
+		actions.remove(action);
+	}
+
+	public List<AbstractAction> getActions() {
 		return actions;
 	}
 	
@@ -61,7 +104,7 @@ public class Verb extends AbstractModel implements VerbRunner {
 		boolean stop = false;
 		
 		while( !isFinished() && !stop) {
-			Action a = actions.get(ip);
+			AbstractAction a = actions.get(ip);
 			
 			if(EngineLogger.debugMode())
 				EngineLogger.debug(ip + ". " + a.getClass().getSimpleName());
@@ -88,7 +131,7 @@ public class Verb extends AbstractModel implements VerbRunner {
 	@Override
 	public void resume() {
 		ip++;
-		nextStep();	
+		nextStep();
 	}
 
 	public int getIP() {
@@ -100,11 +143,26 @@ public class Verb extends AbstractModel implements VerbRunner {
 	}
 
 	public void cancel() {
-		for(Action c:actions) {
-			if(c instanceof VerbRunner)
-				((VerbRunner)c).cancel();
-		}		
-		
+		for (AbstractAction c : actions) {
+			if (c instanceof VerbRunner)
+				((VerbRunner) c).cancel();
+		}
+
 		ip = actions.size();
-	}	
+	}
+
+	public String getCompositeId() {
+		final StringBuilder sb = new StringBuilder(50);
+		sb.append(id);
+
+		if (!StringUtils.isEmpty(target)) {
+			sb.append(COMPOSITE_ID_SEPARATOR).append(target);
+		}
+
+		if (!StringUtils.isEmpty(state)) {
+			sb.append(COMPOSITE_ID_SEPARATOR).append(state);
+		}
+
+		return sb.toString();
+	}
 }

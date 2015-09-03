@@ -33,7 +33,6 @@ public class RepeatAction extends AbstractControlAction {
 	private int repeat = 1;
 
 	int currentRepeat = 0;
-	private String caID;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -55,10 +54,5 @@ public class RepeatAction extends AbstractControlAction {
 		}
 		
 		return false;
-	}
-
-	@Override
-	public String getControlActionID() {
-		return caID;
 	}
 }

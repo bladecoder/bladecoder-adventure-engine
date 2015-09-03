@@ -18,6 +18,7 @@ package com.bladecoder.engineeditor.ui;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.bladecoder.engine.actions.AbstractAction;
 import com.bladecoder.engineeditor.utils.ModelUtils;
 import org.w3c.dom.Element;
 
@@ -27,7 +28,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
-import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
@@ -122,7 +122,7 @@ public class EditActionDialog extends EditElementDialog {
 		getCenterPanel().clear();
 		addInputPanel(actionPanel);
 
-		Action ac = null;
+		AbstractAction ac = null;
 
 		if (id.equals(CUSTOM_ACTION_STR)) {
 			addInputPanel(classPanel);
