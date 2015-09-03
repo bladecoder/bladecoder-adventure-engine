@@ -17,8 +17,12 @@ package com.bladecoder.engineeditor.ui;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.bladecoder.engine.actions.AbstractAction;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.utils.ModelUtils;
 import org.w3c.dom.Element;
 
@@ -43,7 +47,7 @@ public class EditActionDialog extends EditElementDialog {
 	private InputPanel actionPanel;
 	private InputPanel classPanel;
 
-	private InputPanel parameters[] = new InputPanel[0];
+	private List<Param> params = Collections.emptyList();
 
 	@SuppressWarnings("unchecked")
 	public EditActionDialog(Skin skin, BaseDocument doc, Element parent, Element e) {
@@ -60,7 +64,7 @@ public class EditActionDialog extends EditElementDialog {
 
 		classPanel = InputPanelFactory.createInputPanel(skin, "Class", "Select the class for the custom action.", true);
 
-		((SelectBox<String>) actionPanel.getField()).addListener(new ChangeListener() {
+		actionPanel.getField().addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -68,7 +72,7 @@ public class EditActionDialog extends EditElementDialog {
 			}
 		});
 
-		((TextField) classPanel.getField()).addListener(new FocusListener() {
+		classPanel.getField().addListener(new FocusListener() {
 			@Override
 			public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
 				if (!event.isFocused())
@@ -89,7 +93,7 @@ public class EditActionDialog extends EditElementDialog {
 
 		}
 
-		init(parameters, getAttrs(), doc, parent, "action", e);
+		init(new InputPanel[0], getAttrs(), doc, parent, "action", e);
 
 		setAction();
 
@@ -106,14 +110,8 @@ public class EditActionDialog extends EditElementDialog {
 	}
 
 	private String[] getAttrs() {
-		String inputs[] = new String[parameters.length];
-
-		for (int j = 0; j < parameters.length; j++) {
-			InputPanel i = parameters[j];
-			inputs[j] = i.getTitle();
-		}
-
-		return inputs;
+		final List<String> list = params.stream().map(Param::getId).collect(Collectors.toList());
+		return list.toArray(new String[list.size()]);
 	}
 
 	private void setAction() {
@@ -136,13 +134,15 @@ public class EditActionDialog extends EditElementDialog {
 			final Class<?> clazz = ac.getClass();
 
 			setInfo(ModelUtils.getInfo(clazz));
-			Collection<InputPanel> inputs = ModelUtils.getInputsFromModelClass(ModelUtils.getParams(clazz), getSkin());
+			params = ModelUtils.getParams(clazz);
+			Collection<InputPanel> inputs = ModelUtils.getInputsFromModelClass(params, getSkin());
 			inputs.forEach(this::addInputPanel);
 
 			i = inputs.toArray(new InputPanel[inputs.size()]);
 			a = getAttrs();
 		} else {
 			setInfo(CUSTOM_INFO);
+			params = Collections.emptyList();
 			i = new InputPanel[0];
 			a = new String[0];
 		}
