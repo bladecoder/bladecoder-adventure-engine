@@ -605,7 +605,7 @@ public class ScnWidget extends Widget {
 		if (selectedActor instanceof SpriteActor) {
 			ActorRenderer s = ((SpriteActor) selectedActor).getRenderer();
 
-			if (selFA == null || s.getAnimations().get(selFA) == null || s.getAnimations().get(AnimationDesc.getFlipId(selFA)) == null) {
+			if (selFA == null || (s.getAnimations().get(selFA) == null && s.getAnimations().get(AnimationDesc.getFlipId(selFA)) == null)) {
 				selFA = ((SpriteActor) selectedActor).getRenderer().getInitAnimation();
 			}
 

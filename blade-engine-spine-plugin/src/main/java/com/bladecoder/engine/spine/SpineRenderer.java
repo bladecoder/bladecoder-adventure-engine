@@ -457,8 +457,13 @@ public class SpineRenderer implements ActorRenderer {
 			width = (maxX - minX);
 			height = (maxY - minY);
 
-			if (width <= 0 || height <= 0) {
+			if (width <= minX || height <= minY) {
 				width = height = DEFAULT_DIM;
+				float dim2 = DEFAULT_DIM/2;
+				minX = -dim2;
+				minY = -dim2;
+				maxX = dim2;
+				maxY = dim2;
 			}
 		}
 
