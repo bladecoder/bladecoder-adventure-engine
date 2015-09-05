@@ -34,15 +34,23 @@ public class SceneExtendViewport extends Viewport {
 
 	@Override
 	public void update(int screenWidth, int screenHeight, boolean centerCamera) {
+
+		Vector2 s = Scaling.fill.apply(getWorldWidth(), getWorldHeight(), screenWidth, screenHeight);
+
+		if (s.x > screenWidth)
+			setWorldWidth(minWorldWidth);
+		else
+			setWorldHeight(minWorldHeight);
+
 		// Fit min size to the screen.
-		super.setWorldSize(minWorldWidth, minWorldHeight);		
-		Vector2 scaled = Scaling.fit.apply(getWorldWidth(), getWorldHeight(),
-				screenWidth, screenHeight);
+		// super.setWorldSize(minWorldWidth, minWorldHeight);
+
+		Vector2 scaled = Scaling.fit.apply(getWorldWidth(), getWorldHeight(), screenWidth, screenHeight);
 
 		// Extend in the short direction.
 		setScreenWidth(Math.round(scaled.x));
 		setScreenHeight(Math.round(scaled.y));
-		
+
 		if (getScreenWidth() < screenWidth) {
 			float toViewportSpace = getScreenHeight() / getWorldHeight();
 			float toWorldSpace = getWorldHeight() / getScreenHeight();
@@ -68,10 +76,11 @@ public class SceneExtendViewport extends Viewport {
 		apply(centerCamera);
 
 		EngineLogger.debug("SCREEN VIEWPORT: " + getScreenWidth() + "x" + getScreenHeight());
+		EngineLogger.debug("SCREEN WORLD: " + getWorldWidth() + "x" + getWorldHeight());
 	}
-	
+
 	@Override
-	public void apply (boolean centerCamera) {
+	public void apply(boolean centerCamera) {
 		Gdx.gl.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
 		getCamera().viewportWidth = getScreenWidth();
 		getCamera().viewportHeight = getScreenHeight();
@@ -86,7 +95,7 @@ public class SceneExtendViewport extends Viewport {
 
 		// The minimum height aspect is 4:3, the maximum is the world aspect
 		minWorldWidth = Math.min(worldHeight * 4f / 3f, worldWidth);
-		
+
 		// The minimum width aspect is 16:9, the maximum is the world aspect
 		minWorldHeight = Math.min(worldWidth * 9f / 16f, worldHeight);
 
@@ -120,8 +129,8 @@ public class SceneExtendViewport extends Viewport {
 		else if (out.x < 0)
 			out.x = 0;
 
-		if (out.y >=  getScreenHeight())
-			out.y =  getScreenHeight() - 1;
+		if (out.y >= getScreenHeight())
+			out.y = getScreenHeight() - 1;
 		else if (out.y < 0)
 			out.y = 0;
 
