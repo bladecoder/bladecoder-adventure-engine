@@ -256,6 +256,8 @@ public class Project extends PropertyChange {
 
 	public void loadProject(File projectFile) throws IOException, ParserConfigurationException,
 			SAXException {
+		
+		File oldProjectFile = this.projectFile;
 		this.projectFile = projectFile;
 
 		if (checkProjectStructure()) {
@@ -282,7 +284,7 @@ public class Project extends PropertyChange {
 			projectConfig.load(new FileInputStream(projectFile.getAbsolutePath()+ ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME));
 			firePropertyChange(NOTIFY_PROJECT_LOADED);
 		} else {
-			this.projectFile = null;
+			this.projectFile = oldProjectFile;
 			throw new IOException("Project not found.");
 		}	
 	}

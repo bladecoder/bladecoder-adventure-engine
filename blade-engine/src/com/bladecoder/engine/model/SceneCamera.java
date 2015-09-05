@@ -78,8 +78,8 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 	}
 
 	public void setScrollingDimensions(float w, float h) {
-		scrollingWidth = w;
-		scrollingHeight = h;
+		scrollingWidth = Math.max(w, viewportWidth);
+		scrollingHeight =  Math.max(h, viewportHeight);
 	}
 	
 	public void update(float delta) {

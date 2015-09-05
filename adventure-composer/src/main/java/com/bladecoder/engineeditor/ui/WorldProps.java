@@ -56,7 +56,9 @@ public class WorldProps extends PropertyTable {
 		} else if (property.equals(Config.DEBUG_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.DEBUG_PROP, value);
 		} else if (property.equals(Config.SHOW_DESC_PROP)) {
-			Ctx.project.getProjectConfig().setProperty(Config.SHOW_DESC_PROP, value);			
+			Ctx.project.getProjectConfig().setProperty(Config.SHOW_DESC_PROP, value);	
+		} else if (property.equals(Config.EXTEND_VIEWPORT_PROP)) {
+			Ctx.project.getProjectConfig().setProperty(Config.EXTEND_VIEWPORT_PROP, value);					
 		}
 		
 		Ctx.project.getWorld().setModified(); // TODO Add propertychange to Config
@@ -72,6 +74,7 @@ public class WorldProps extends PropertyTable {
 		addProperty(Config.PIE_MODE_DESKTOP_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.PIE_MODE_DESKTOP_PROP, "false")));
 		addProperty(Config.DEBUG_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.DEBUG_PROP, "false")));
 		addProperty(Config.SHOW_DESC_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.SHOW_DESC_PROP, "true")));
+		addProperty(Config.EXTEND_VIEWPORT_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.EXTEND_VIEWPORT_PROP, "true")));
 		
 		invalidateHierarchy();
 	}

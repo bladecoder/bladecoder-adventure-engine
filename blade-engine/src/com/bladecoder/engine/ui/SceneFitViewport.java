@@ -49,19 +49,6 @@ public class SceneFitViewport extends Viewport {
 			getCamera().position.set(getScreenWidth() / 2, getScreenHeight() / 2, 0);
 		getCamera().update();
 	}
-
-
-	public void getInputUnProject(Vector2 out) {
-		out.set(Gdx.input.getX(), Gdx.input.getY());
-
-		unproject(out);
-	}
-	
-	public void getInputUnProject(Vector3 out) {
-		out.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-
-		unproject(out);	
-	}
 	
 	@Override
 	public Vector2 unproject(Vector2 out) {

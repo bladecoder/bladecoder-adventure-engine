@@ -71,8 +71,7 @@ public class SceneScreen implements BladeScreen {
 	private final TesterBot testerBot = new TesterBot();
 	private InputMultiplexer multiplexer = new InputMultiplexer();
 
-	// private final SceneFitViewport viewport = new SceneFitViewport();
-	private final SceneExtendViewport viewport = new SceneExtendViewport();
+	private final Viewport viewport;
 
 	private final Vector3 unprojectTmp = new Vector3();
 	private final Vector2 unproject2Tmp = new Vector2();
@@ -83,7 +82,7 @@ public class SceneScreen implements BladeScreen {
 	private InteractiveActor currentActor = null;
 
 	private boolean drawHotspots = false;
-	private final boolean showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
+	private final boolean showDesc;
 
 	private float speed = 1.0f;
 
@@ -116,7 +115,7 @@ public class SceneScreen implements BladeScreen {
 			if (drawHotspots)
 				drawHotspots = false;
 			else {
-				viewport.getInputUnProject(unprojectTmp);
+				getInputUnProject(unprojectTmp);
 
 				if (w.inCutMode() && !recorder.isRecording()) {
 					w.getTextManager().next();
@@ -268,7 +267,8 @@ public class SceneScreen implements BladeScreen {
 	};
 
 	public SceneScreen() {
-
+		viewport = Config.getProperty(Config.EXTEND_VIEWPORT_PROP, true)?new SceneExtendViewport():new SceneFitViewport();
+		showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
 	}
 
 	public UI getUI() {
@@ -736,10 +736,16 @@ public class SceneScreen implements BladeScreen {
 
 			runVerb(a, verb, null);
 		} else {
-			viewport.getInputUnProject(unprojectTmp);
+			getInputUnProject(unprojectTmp);
 			pie.show(a, unprojectTmp.x, unprojectTmp.y);
 			ui.getPointer().reset();
 		}
+	}
+	
+	private void getInputUnProject(Vector3 out) {
+		out.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+
+		viewport.unproject(out);	
 	}
 
 	/**

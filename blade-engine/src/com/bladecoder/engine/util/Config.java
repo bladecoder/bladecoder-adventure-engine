@@ -37,6 +37,7 @@ public class Config {
 	public static final String HELP_SCREEN_CLASS_PROP = "help_screen";
 	public static final String CREDIT_SCREEN_CLASS_PROP = "credit_screen";
 	public static final String INIT_SCREEN_CLASS_PROP = "init_screen";
+	public static final String EXTEND_VIEWPORT_PROP = "extend_viewport";
 	
 	public static final String PROPERTIES_FILENAME = "BladeEngine.properties";
 

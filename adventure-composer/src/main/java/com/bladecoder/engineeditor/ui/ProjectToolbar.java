@@ -187,6 +187,7 @@ public class ProjectToolbar extends Table {
 	}
 
 	private void loadProject() {
+		
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
