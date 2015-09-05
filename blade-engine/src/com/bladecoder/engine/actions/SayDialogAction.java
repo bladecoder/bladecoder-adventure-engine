@@ -35,7 +35,9 @@ public class SayDialogAction extends BaseCallbackAction {
 	private boolean characterTurn = false;
 	private String characterName;
 	private String responseText;
-	
+	private String font;
+	private Color color;
+
 	private String previousAnim;
 
 	@Override
@@ -49,6 +51,8 @@ public class SayDialogAction extends BaseCallbackAction {
 		World w = World.getInstance();
 		DialogOption o = World.getInstance().getCurrentDialog().getCurrentOption();
 		String playerText = o.getText();
+		font = o.getFont();
+		color = o.getColor();
 		responseText = o.getResponseText();
 		characterName = w.getCurrentDialog().getActor();
 		
@@ -68,7 +72,7 @@ public class SayDialogAction extends BaseCallbackAction {
 //			Vector3 p = c.scene2screen(pos.x, pos.y + player.getHeight());
 
 			World.getInstance().getTextManager()
-					.addSubtitle(playerText, player.getX(), player.getY() + player.getHeight(), false, Text.Type.TALK, Color.BLACK, this);
+					.addSubtitle(playerText, player.getX(), player.getY() + player.getHeight(), false, Text.Type.TALK, color, font, this);
  
 			startTalkAnim(player);
 
@@ -101,7 +105,7 @@ public class SayDialogAction extends BaseCallbackAction {
 				World.getInstance()
 						.getTextManager()
 						.addSubtitle(responseText, actor.getX(), actor.getY() + actor.getBBox().getBoundingRectangle().getHeight() , false, Text.Type.TALK,
-								Color.BLACK, this);
+								color, font, this);
 
 				if(actor instanceof CharacterActor) {
 					startTalkAnim((CharacterActor)actor);

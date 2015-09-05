@@ -65,18 +65,9 @@ public class TransitionAction implements Action {
 			if(params.get("type").equals("fadeout"))
 				type = Transition.Type.FADE_OUT;
 		}
-		
-		if(params.get("color") != null && !params.get("color").trim().isEmpty()) {
-			String color = params.get("color").trim();
-		
-			if(color.equals("black"))
-				c =  new Color(0,0,0,1);
-			else if(color.equals("white"))
-				c = new Color(1,1,1,1);
-			else
-				c = Color.valueOf(color);
-		}
-		
+
+		c = Param.parseColor(params.get("color"));
+
 		if(params.get("wait") != null) {
 			wait = Boolean.parseBoolean(params.get("wait"));
 		}
