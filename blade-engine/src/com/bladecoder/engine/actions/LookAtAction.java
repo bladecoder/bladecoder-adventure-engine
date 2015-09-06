@@ -76,6 +76,16 @@ public class LookAtAction extends AbstractAction {
 	@ModelPropertyType(Type.SMALL_TEXT)
 	private String text;
 
+	@JsonProperty(required = true, defaultValue = "default")
+	@JsonPropertyDescription("The font to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section)")
+	@ActionPropertyType(Type.FONT)
+	private String font;
+
+	@JsonProperty(required = true, defaultValue = "black")
+	@JsonPropertyDescription("The color to use for the font ('white', 'black' or RRGGBBAA)")
+	@ActionPropertyType(Type.COLOR)
+	private Color color = new Color(0,0,0,1);
+
 	@JsonProperty
 	@JsonPropertyDescription("The direction to lookat. If empty, the player lookat to the actor")
 	@ModelPropertyType(Type.STRING)
@@ -87,6 +97,8 @@ public class LookAtAction extends AbstractAction {
 
 		soundId = params.get("speech");
 		text = params.get("text");
+		font = params.get("font");
+		color = Param.parseColor(params.get("color"));
 
 		// TODO: Check if EMPTY ("") works correctly
 		final String strDirection = params.get("direction");
@@ -117,7 +129,7 @@ public class LookAtAction extends AbstractAction {
 
 		if(text !=null)
 			World.getInstance().getTextManager().addSubtitle(text, TextManager.POS_SUBTITLE,
-					TextManager.POS_SUBTITLE, false, Text.Type.RECTANGLE, Color.BLACK, null);
+					TextManager.POS_SUBTITLE, false, Text.Type.RECTANGLE, color, font, null);
 		
 		return false;
 	}
