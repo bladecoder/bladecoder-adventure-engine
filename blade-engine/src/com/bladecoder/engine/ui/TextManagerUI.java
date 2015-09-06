@@ -29,7 +29,6 @@ import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.DPIUtils;
-import com.bladecoder.engine.util.StringUtils;
 
 /**
  * TextManagerUI draws texts and dialogs on screen.
@@ -68,7 +67,7 @@ public class TextManagerUI extends Actor {
 	public void act(float delta) {
 		super.act(delta);
 
-		Text currentSubtitle = World.getInstance().getTextManager().getCurrentSubtitle();
+		Text currentSubtitle = World.getInstance().getTextManager().getCurrentText();
 
 		if (subtitle != currentSubtitle) {
 			subtitle = currentSubtitle;
@@ -89,8 +88,13 @@ public class TextManagerUI extends Actor {
 				float maxWidth = currentSubtitle.type == Text.Type.TALK?maxTalkWidth:maxRectangleWidth;
 
 				final TextManagerUIStyle style = getStyle(currentSubtitle);
+				
+				Color color = currentSubtitle.color != null?currentSubtitle.color:style.color;
+				
+				if(color == null)
+					color = Color.WHITE;
 
-				layout.setText(style.font, currentSubtitle.str, currentSubtitle.color, maxWidth, Align.center, true);
+				layout.setText(style.font, currentSubtitle.str, color, maxWidth, Align.center, true);
 
 				if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE) {					
 					posx = (sceneScreen.getViewport().getScreenWidth() - layout.width)/2;
@@ -174,7 +178,7 @@ public class TextManagerUI extends Actor {
 	}
 
 	public void resize(int width, int height) {
-		final Text currentSubtitle = subtitle != null ? subtitle : World.getInstance().getTextManager().getCurrentSubtitle();
+		final Text currentSubtitle = subtitle != null ? subtitle : World.getInstance().getTextManager().getCurrentText();
 		final TextManagerUIStyle style = getStyle(currentSubtitle);
 
 		maxRectangleWidth = Math.min(width - DPIUtils.getMarginSize() * 2, style.font.getSpaceWidth() * 80);
@@ -184,9 +188,9 @@ public class TextManagerUI extends Actor {
 	private TextManagerUIStyle getStyle(Text text) {
 		String key = "default";
 		if (text != null) {
-			key = text.font;
+			key = text.style;
 		}
-		if (StringUtils.isEmpty(key)) {
+		if (key == null || key.isEmpty()) {
 			key = "default";
 		}
 		return styles.get(key);
@@ -199,6 +203,7 @@ public class TextManagerUI extends Actor {
 		public Drawable talkBackground;
 		public Drawable talkBubble;
 		public BitmapFont font;
+		public Color color;
 
 		public TextManagerUIStyle() {
 		}
@@ -208,6 +213,7 @@ public class TextManagerUI extends Actor {
 			talkBackground = style.talkBackground;
 			talkBubble = style.talkBubble;
 			font = style.font;
+			color = style.color;
 		}
 	}
 }

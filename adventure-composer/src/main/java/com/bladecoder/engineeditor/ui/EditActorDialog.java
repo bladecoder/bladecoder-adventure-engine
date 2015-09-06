@@ -52,7 +52,8 @@ public class EditActorDialog extends EditElementDialog {
 	private InputPanel rendererPanel;
 
 	String attrs[] = { XMLConstants.TYPE_ATTR, XMLConstants.ID_ATTR, XMLConstants.LAYER_ATTR, XMLConstants.VISIBLE_ATTR, XMLConstants.INTERACTION_ATTR, XMLConstants.DESC_ATTR, XMLConstants.STATE_ATTR,
-			 XMLConstants.RENDERER_ATTR, XMLConstants.DEPTH_TYPE_ATTR, XMLConstants.SCALE_ATTR, XMLConstants.ZINDEX_ATTR, XMLConstants.WALKING_SPEED_ATTR, XMLConstants.SPRITE_SIZE_ATTR, XMLConstants.CAMERA_NAME_ATTR, XMLConstants.FOV_ATTR };
+			 XMLConstants.RENDERER_ATTR, XMLConstants.DEPTH_TYPE_ATTR, XMLConstants.SCALE_ATTR, XMLConstants.ZINDEX_ATTR, XMLConstants.WALKING_SPEED_ATTR, XMLConstants.SPRITE_SIZE_ATTR, XMLConstants.CAMERA_NAME_ATTR, XMLConstants.FOV_ATTR,
+			 XMLConstants.TEXT_COLOR_ATTR};
 	
 	private InputPanel[] inputs = new InputPanel[attrs.length];
 
@@ -113,6 +114,8 @@ public class EditActorDialog extends EditElementDialog {
 		inputs[14] = InputPanelFactory.createInputPanel(skin, "Camera FOV",
 				"The camera field of view", Param.Type.FLOAT, true, "49.3");
 		
+		inputs[15] = InputPanelFactory.createInputPanel(skin, "Text Color",
+				"The text color when the actor talks", Param.Type.COLOR, false);
 
 		setInfo(TYPES_INFO[0]);
 
@@ -182,6 +185,7 @@ public class EditActorDialog extends EditElementDialog {
 		if (ChapterDocument.ACTOR_TYPES[i]
 						.equals(XMLConstants.CHARACTER_VALUE)) {
 			setVisible(inputs[11],true);
+			setVisible(inputs[15],true);
 		}
 		
 		rendererChanged();

@@ -118,7 +118,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 			((CharacterActor) actor).addDialog(id, currentDialog);
 		} else if (localName.equals(XMLConstants.SOUND_TAG)) {
-			parseSound(atts, (InteractiveActor)actor);
+			parseSound(atts, (InteractiveActor) actor);
 		} else if (localName.equals(XMLConstants.CHAPTER_TAG)) {
 			initScene = atts.getValue(XMLConstants.INIT_SCENE_ATTR);
 		} else if (localName.equals(XMLConstants.WALK_ZONE_TAG)) {
@@ -140,8 +140,8 @@ public class ChapterXMLLoader extends DefaultHandler {
 			// + localName + "' loading Scene.", locator);
 			// error(e);
 			// throw e;
-			EngineLogger.error("TAG not supported in Chapter document: " + localName + " LINE: "
-					+ locator.getLineNumber());
+			EngineLogger
+					.error("TAG not supported in Chapter document: " + localName + " LINE: " + locator.getLineNumber());
 		}
 	}
 
@@ -314,13 +314,11 @@ public class ChapterXMLLoader extends DefaultHandler {
 					((CharacterActor) actor).setWalkingSpeed(s);
 				}
 
-				// TODO Set text color
-				// if (atts.getValue(XMLConstants.TEXT_COLOR_ATTR) != null
-				// && !atts.getValue(XMLConstants.TEXT_COLOR_ATTR).isEmpty()) {
-				// float s =
-				// Float.parseFloat(atts.getValue(XMLConstants.TEXT_COLOR_ATTR));
-				// ((CharacterActor) actor).setTextColor(s);
-				// }
+				if (atts.getValue(XMLConstants.TEXT_COLOR_ATTR) != null
+						&& !atts.getValue(XMLConstants.TEXT_COLOR_ATTR).isEmpty()) {
+					String s = atts.getValue(XMLConstants.TEXT_COLOR_ATTR);
+					((CharacterActor) actor).setTextColor(Param.parseColor(s));
+				}
 			}
 		}
 
@@ -364,16 +362,15 @@ public class ChapterXMLLoader extends DefaultHandler {
 		pos.y *= scale;
 
 		actor.setPosition(pos.x, pos.y);
-		
+
 		if (atts.getValue(XMLConstants.VISIBLE_ATTR) != null) {
 			boolean visible = Boolean.parseBoolean(atts.getValue(XMLConstants.VISIBLE_ATTR));
 			actor.setVisible(visible);
 		}
-		
+
 		String layerStr = atts.getValue(XMLConstants.LAYER_ATTR);
 		actor.setLayer(layerStr);
-		
-		
+
 		if (actor instanceof InteractiveActor) {
 
 			InteractiveActor ia = (InteractiveActor) actor;
@@ -385,7 +382,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			String state = atts.getValue(XMLConstants.STATE_ATTR);
 			if (state != null)
 				ia.setState(state);
-			
+
 			if (atts.getValue("zIndex") != null) {
 				float z = Float.parseFloat(atts.getValue(XMLConstants.ZINDEX_ATTR));
 				ia.setZIndex(z);
@@ -395,7 +392,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 				boolean interaction = Boolean.parseBoolean(atts.getValue(XMLConstants.INTERACTION_ATTR));
 				ia.setInteraction(interaction);
 			}
-			
+
 			if (atts.getValue(XMLConstants.SCALE_ATTR) != null && actor instanceof SpriteActor) {
 				float s = Float.parseFloat(atts.getValue(XMLConstants.SCALE_ATTR));
 				((SpriteActor) actor).setScale(s);
@@ -422,7 +419,6 @@ public class ChapterXMLLoader extends DefaultHandler {
 		String next = atts.getValue(XMLConstants.NEXT_ATTR);
 		String visibleStr = atts.getValue(XMLConstants.VISIBLE_ATTR);
 		String onceStr = atts.getValue(XMLConstants.ONCE_ATTR);
-		String font = atts.getValue(XMLConstants.FONT_ATTR);
 
 		if (verb != null && verb.trim().isEmpty())
 			verb = null;
@@ -435,7 +431,6 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 		DialogOption o = new DialogOption();
 		o.setText(text);
-		o.setFont(font);
 		o.setResponseText(responseText);
 		o.setVerbId(verb);
 		o.setNext(next);
@@ -443,11 +438,11 @@ public class ChapterXMLLoader extends DefaultHandler {
 		if (visibleStr != null && !visibleStr.trim().isEmpty()) {
 			o.setVisible(Boolean.parseBoolean(visibleStr));
 		}
-		
+
 		if (onceStr != null && !onceStr.trim().isEmpty()) {
 			o.setOnce(Boolean.parseBoolean(onceStr));
 		}
-		
+
 		currentDialog.addOption(o);
 	}
 

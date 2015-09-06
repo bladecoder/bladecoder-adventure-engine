@@ -46,7 +46,7 @@ public class TextManager implements Serializable {
 	public static final float RECT_BORDER = 2f;
 
 	private float inScreenTime;
-	private Text currentSubtitle = null;
+	private Text currentText = null;
 
 	private Queue<Text> fifo;
 
@@ -54,7 +54,7 @@ public class TextManager implements Serializable {
 		fifo = new LinkedList<Text>();
 	}
 
-	public void addSubtitle(String str, float x, float y, boolean quee, Text.Type type,
+	public void addText(String str, float x, float y, boolean quee, Text.Type type,
 			Color color, String font, ActionCallback cb) {
 		
 		if(str.charAt(0) == '@')
@@ -91,44 +91,44 @@ public class TextManager implements Serializable {
 			fifo.add(sub);
 		}
 
-		if (!quee || currentSubtitle == null) {
-			if (currentSubtitle != null) {
+		if (!quee || currentText == null) {
+			if (currentText != null) {
 				next();
 			} else {
-				setCurrentSubtitle(fifo.poll());
+				setCurrentText(fifo.poll());
 			}
 		}
 
 	}
 	
-	public Text getCurrentSubtitle() {
-		return currentSubtitle;
+	public Text getCurrentText() {
+		return currentText;
 	}
 
-	private void setCurrentSubtitle(Text sub) {
+	private void setCurrentText(Text t) {
 		inScreenTime = 0f;
-		currentSubtitle = sub;
+		currentText = t;
 	}
 
 	public void update(float delta) {
 
-		if (currentSubtitle == null) {
+		if (currentText == null) {
 			return;
 		}
 
 		inScreenTime += delta;
 
-		if (inScreenTime > currentSubtitle.time) {
+		if (inScreenTime > currentText.time) {
 			next();
 		}
 	}
 
 	public void next() {
-		if (currentSubtitle != null) {
+		if (currentText != null) {
 
-			currentSubtitle.callCb();
+			currentText.callCb();
 
-			setCurrentSubtitle(fifo.poll());
+			setCurrentText(fifo.poll());
 		}
 	}
 
@@ -136,7 +136,7 @@ public class TextManager implements Serializable {
 		//fifo.clear();
 		
 		// CLEAR FIFO
-		while(currentSubtitle != null)
+		while(currentText != null)
 			next();
 		
 		inScreenTime = 0;
@@ -156,7 +156,7 @@ public class TextManager implements Serializable {
 	@Override
 	public void write(Json json) {
 		json.writeValue("inScreenTime", inScreenTime);
-		json.writeValue("currentSubtitle", currentSubtitle);
+		json.writeValue("currentText", currentText);
 		json.writeValue("fifo", new ArrayList<Text>(fifo), ArrayList.class, Text.class);
 	}
 
@@ -164,7 +164,7 @@ public class TextManager implements Serializable {
 	@Override
 	public void read (Json json, JsonValue jsonData) {
 		inScreenTime = json.readValue("inScreenTime", Float.class, jsonData);
-		currentSubtitle = json.readValue("currentSubtitle", Text.class, jsonData);
+		currentText = json.readValue("currentText", Text.class, jsonData);
 		fifo = new LinkedList<Text>(json.readValue("fifo", ArrayList.class, Text.class, jsonData));
 	}
 }

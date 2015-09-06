@@ -38,7 +38,7 @@ public class CharacterActor extends SpriteActor {
 	public final static String DEFAULT_TALK_ANIM = "talk";	
 
 	private float walkingSpeed = DEFAULT_WALKING_SPEED;
-	private Color textColor;
+	private Color textColor = Color.BLACK;
 	
 	private String standAnim = DEFAULT_STAND_ANIM;
 	public Color getTextColor() {

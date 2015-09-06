@@ -18,7 +18,6 @@ package com.bladecoder.engine.actions;
 import java.util.HashMap;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
@@ -43,30 +42,15 @@ public class SayAction extends BaseCallbackAction {
 	@ActionPropertyType(Type.SMALL_TEXT)
 	private String text;
 
-	@JsonProperty(required = true, defaultValue = "default")
-	@JsonPropertyDescription("The font to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section)")
-	@ActionPropertyType(Type.FONT)
-	private String font;
-
-	@JsonProperty(required = true, defaultValue = "black")
-	@JsonPropertyDescription("The color to use for the font ('white', 'black' or RRGGBBAA)")
-	@ActionPropertyType(Type.COLOR)
-	private Color color = new Color(0,0,0,1);
-
-	@JsonProperty
-	@JsonPropertyDescription("The position of the text. If null, the position will be calc based in actor")
-	@ActionPropertyType(Type.VECTOR2)
-	private Vector2 pos;
-
 	@JsonProperty("speech")
 	@JsonPropertyDescription("The 'soundId' to play if selected")
 	@ActionPropertyType(Type.SOUND)
 	private String soundId;
 
 	@JsonProperty(required = true, defaultValue = "RECTANGLE")
-	@JsonPropertyDescription("The type of the text: 'talk', 'rectangle' (default) and 'plain'")
+	@JsonPropertyDescription("The type of the text.")
 	@ActionPropertyType(Type.STRING)
-	private Text.Type type = Text.Type.RECTANGLE;
+	private Text.Type type = Text.Type.PLAIN;
 
 	@JsonProperty(defaultValue = "false")
 	@JsonPropertyDescription("Queue the text if other text is showing, or show it immediately.")
@@ -81,8 +65,6 @@ public class SayAction extends BaseCallbackAction {
 
 		soundId = params.get("speech");
 		text = params.get("text");
-		font = params.get("font");
-		color = Param.parseColor(params.get("color"));
 
 		if (params.get("wait") != null) {
 			setWait(Boolean.parseBoolean(params.get("wait")));
@@ -93,10 +75,6 @@ public class SayAction extends BaseCallbackAction {
 			this.type = Text.Type.valueOf(strType.trim().toUpperCase());
 		}
 
-		if (params.get("pos") != null) {
-			pos = Param.parseVector2(params.get("pos"));
-		}
-		
 		if (params.get("quee") != null) {
 			queue = Boolean.parseBoolean(params.get("quee"));
 		}
@@ -104,53 +82,37 @@ public class SayAction extends BaseCallbackAction {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		setVerbCb(cb);	
-		InteractiveActor actor = (InteractiveActor)World.getInstance().getCurrentScene()
-				.getActor(actorId, false);
+		float x, y;
+		Color color = Color.BLACK;
+
+		setVerbCb(cb);
+		InteractiveActor actor = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, false);
 
 		if (soundId != null)
 			actor.playSound(soundId);
 
 		if (text != null) {
-			float x =  TextManager.POS_CENTER, y =  TextManager.POS_CENTER;
-
-			if (pos != null) {
-				x = pos.x;
-				y = pos.y;
+			if (type != Text.Type.TALK) {
+				x = y = TextManager.POS_SUBTITLE;
 			} else {
-
-				if (type == Text.Type.RECTANGLE) {
-					x = y = TextManager.POS_SUBTITLE;
-				} else if (type == Text.Type.TALK) {
-					// WorldCamera c = World.getInstance().getCamera();
-					// Vector3 p = c.scene2screen(pos.x, pos.y +
-					// ((SpriteActor)actor).getHeight());
-
-					x = actor.getX();
-					y = actor.getY()
-							+ actor.getBBox().getBoundingRectangle()
-									.getHeight();
-					// quee = true;
-				}
-			}
-
-			if (type == Text.Type.TALK) {
-				restoreStandPose((CharacterActor) actor);
+				x = actor.getX();
+				y = actor.getY() + actor.getBBox().getBoundingRectangle().getHeight();
+				color = ((CharacterActor)actor).getTextColor();
+				restoreStandPose((CharacterActor)actor);
 				startTalkAnim((CharacterActor)actor);
 			}
 
-			World.getInstance().getTextManager()
-						.addSubtitle(text, x, y, queue, type, color, font, getWait()?this:null);
+			World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null,
+					getWait() ? this : null);
 		}
-		
+
 		return getWait();
 	}
 
 	@Override
 	public void resume() {
-		if (this.type == Text.Type.TALK) {
-			CharacterActor actor = (CharacterActor) World.getInstance()
-					.getCurrentScene().getActor(actorId, false);
+		if (type == Text.Type.TALK) {
+			CharacterActor actor = (CharacterActor) World.getInstance().getCurrentScene().getActor(actorId, false);
 			actor.startAnimation(previousAnim, Tween.Type.SPRITE_DEFINED, 0, null);
 		}
 
@@ -158,19 +120,21 @@ public class SayAction extends BaseCallbackAction {
 	}
 
 	private void restoreStandPose(CharacterActor a) {
-		if(a == null) return;
-		
+		if (a == null)
+			return;
+
 		String fa = a.getRenderer().getCurrentAnimationId();
-		
-		// If the actor was already talking we restore the actor to the 'stand' pose	
-		if(fa.startsWith(a.getTalkAnim())){ 		
+
+		// If the actor was already talking we restore the actor to the 'stand'
+		// pose
+		if (fa.startsWith(a.getTalkAnim())) {
 			a.stand();
 		}
 	}
-	
+
 	private void startTalkAnim(CharacterActor a) {
 		previousAnim = a.getRenderer().getCurrentAnimationId();
-		
+
 		a.talk();
 	}
 
@@ -182,7 +146,6 @@ public class SayAction extends BaseCallbackAction {
 		json.writeValue("actorId", actorId);
 		json.writeValue("previousAnim", previousAnim);
 		json.writeValue("type", type);
-		json.writeValue("pos", pos);
 		json.writeValue("quee", queue);
 		super.write(json);
 	}
@@ -194,7 +157,6 @@ public class SayAction extends BaseCallbackAction {
 		actorId = json.readValue("actorId", String.class, jsonData);
 		previousAnim = json.readValue("previousAnim", String.class, jsonData);
 		type = json.readValue("type", Text.Type.class, jsonData);
-		pos = json.readValue("pos", Vector2.class, jsonData);
 		queue = json.readValue("quee", Boolean.class, jsonData);
 		super.read(json, jsonData);
 	}
