@@ -15,41 +15,56 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
-public class DialogOption {		
+import com.badlogic.gdx.graphics.Color;
+
+public class DialogOption {
 	private String text;
+	private String font;
 	private String responseText;
 	private String verbId;
 	private String next;
 	private boolean visible = true;
 	private boolean once = false;
+	private Color color;
 
 	public boolean isVisible() {
 		return visible;
 	}
 
-
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
-
 
 	public String getVerbId() {
 		return verbId;
 	}
 
-
 	public void setVerbId(String verbId) {
 		this.verbId = verbId;
 	}
-
 
 	public String getText() {
 		return text;
 	}
 
-
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public String getFont() {
+		return font;
+	}
+
+	public void setFont(String font) {
+		this.font = font;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
 	}
 
 	public void setResponseText(String responseText) {
@@ -60,24 +75,19 @@ public class DialogOption {
 		return responseText;
 	}
 
-
 	public String getNext() {
 		return next;
 	}
-
 
 	public void setNext(String next) {
 		this.next = next;
 	}
 
-
 	public boolean isOnce() {
 		return once;
 	}
 
-
 	public void setOnce(boolean once) {
 		this.once = once;
 	}
-
 }

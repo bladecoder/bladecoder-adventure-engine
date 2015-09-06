@@ -24,10 +24,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.StringUtils;
 
 /**
  * TextManagerUI draws texts and dialogs on screen.
@@ -46,7 +48,7 @@ public class TextManagerUI extends Actor {
 	private SceneScreen sceneScreen;
 	private final Vector3 unprojectTmp = new Vector3();
 
-	private TextManagerUIStyle style;
+	private ObjectMap<String, TextManagerUIStyle> styles;
 	private Text subtitle;
 	private final GlyphLayout layout = new GlyphLayout();
 	
@@ -55,8 +57,10 @@ public class TextManagerUI extends Actor {
 	public TextManagerUI(SceneScreen sceneScreen) {
 		this.sceneScreen = sceneScreen;
 		setTouchable(Touchable.disabled);
-		style = sceneScreen.getUI().getSkin().get(TextManagerUIStyle.class);
-		style.font.getData().markupEnabled = true;
+		styles = sceneScreen.getUI().getSkin().getAll(TextManagerUIStyle.class);
+		for (TextManagerUIStyle style : styles.values()) {
+			style.font.getData().markupEnabled = true;
+		}
 		setVisible(false);
 	}
 
@@ -83,7 +87,9 @@ public class TextManagerUI extends Actor {
 				World.getInstance().getSceneCamera().scene2screen(sceneScreen.getViewport(), unprojectTmp);
 				
 				float maxWidth = currentSubtitle.type == Text.Type.TALK?maxTalkWidth:maxRectangleWidth;
-				
+
+				final TextManagerUIStyle style = getStyle(currentSubtitle);
+
 				layout.setText(style.font, currentSubtitle.str, currentSubtitle.color, maxWidth, Align.center, true);
 
 				if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE) {					
@@ -137,6 +143,8 @@ public class TextManagerUI extends Actor {
 	public void draw(Batch batch, float alpha) {
 		batch.setColor(Color.WHITE);
 
+		final TextManagerUIStyle style = getStyle(subtitle);
+
 		if (subtitle.type == Text.Type.TALK) {
 			if (style.talkBubble != null) {
 				float scale = DPIUtils.getTouchMinSize() / 4 / style.talkBubble.getMinHeight();
@@ -144,7 +152,7 @@ public class TextManagerUI extends Actor {
 				unprojectTmp.set(subtitle.x, subtitle.y, 0);
 				World.getInstance().getSceneCamera().scene2screen(sceneScreen.getViewport(), unprojectTmp);
 				
-				float bubbleX = unprojectTmp.x  - style.talkBubble.getMinWidth() * scale / 2;				
+				float bubbleX = unprojectTmp.x  - style.talkBubble.getMinWidth() * scale / 2;
 				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + 2;
 				
 				if(bubbleX + style.talkBubble.getMinWidth() * scale < getX() + getWidth() && bubbleX > getX())
@@ -165,9 +173,23 @@ public class TextManagerUI extends Actor {
 		style.font.draw(batch, layout, fontX, getY() + PADDING + layout.height);
 	}
 
-	public void resize(int width, int height) {	
+	public void resize(int width, int height) {
+		final Text currentSubtitle = subtitle != null ? subtitle : World.getInstance().getTextManager().getCurrentSubtitle();
+		final TextManagerUIStyle style = getStyle(currentSubtitle);
+
 		maxRectangleWidth = Math.min(width - DPIUtils.getMarginSize() * 2, style.font.getSpaceWidth() * 80);
 		maxTalkWidth = Math.min(width - DPIUtils.getMarginSize() * 2, style.font.getSpaceWidth() * 35);
+	}
+
+	private TextManagerUIStyle getStyle(Text text) {
+		String key = "default";
+		if (text != null) {
+			key = text.font;
+		}
+		if (StringUtils.isEmpty(key)) {
+			key = "default";
+		}
+		return styles.get(key);
 	}
 
 	/** The style for the TextManagerUI */

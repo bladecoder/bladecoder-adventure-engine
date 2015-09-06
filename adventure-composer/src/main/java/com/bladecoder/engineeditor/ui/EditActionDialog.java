@@ -93,7 +93,7 @@ public class EditActionDialog extends EditElementDialog {
 
 		}
 
-		init(new InputPanel[0], getAttrs(), doc, parent, "action", e);
+		init(new InputPanel[0], new String[0], doc, parent, "action", e);
 
 		setAction();
 
