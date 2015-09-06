@@ -78,12 +78,12 @@ public class LookAtAction extends AbstractAction {
 
 	@JsonProperty(required = true, defaultValue = "default")
 	@JsonPropertyDescription("The font to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section)")
-	@ActionPropertyType(Type.FONT)
+	@ModelPropertyType(Type.FONT)
 	private String font;
 
 	@JsonProperty(required = true, defaultValue = "black")
 	@JsonPropertyDescription("The color to use for the font ('white', 'black' or RRGGBBAA)")
-	@ActionPropertyType(Type.COLOR)
+	@ModelPropertyType(Type.COLOR)
 	private Color color = new Color(0,0,0,1);
 
 	@JsonProperty
