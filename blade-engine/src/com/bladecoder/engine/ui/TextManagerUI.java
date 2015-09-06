@@ -29,6 +29,7 @@ import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.StringUtils;
 
 /**
  * TextManagerUI draws texts and dialogs on screen.
@@ -87,7 +88,7 @@ public class TextManagerUI extends Actor {
 				
 				float maxWidth = currentSubtitle.type == Text.Type.TALK?maxTalkWidth:maxRectangleWidth;
 
-				final TextManagerUIStyle style = styles.get(currentSubtitle.font);
+				final TextManagerUIStyle style = getStyle(currentSubtitle);
 
 				layout.setText(style.font, currentSubtitle.str, currentSubtitle.color, maxWidth, Align.center, true);
 
@@ -142,7 +143,7 @@ public class TextManagerUI extends Actor {
 	public void draw(Batch batch, float alpha) {
 		batch.setColor(Color.WHITE);
 
-		final TextManagerUIStyle style = styles.get(subtitle.font);
+		final TextManagerUIStyle style = getStyle(subtitle);
 
 		if (subtitle.type == Text.Type.TALK) {
 			if (style.talkBubble != null) {
@@ -174,10 +175,21 @@ public class TextManagerUI extends Actor {
 
 	public void resize(int width, int height) {
 		final Text currentSubtitle = subtitle != null ? subtitle : World.getInstance().getTextManager().getCurrentSubtitle();
-		final TextManagerUIStyle style = styles.get(currentSubtitle == null ? "default" : currentSubtitle.font);
+		final TextManagerUIStyle style = getStyle(currentSubtitle);
 
 		maxRectangleWidth = Math.min(width - DPIUtils.getMarginSize() * 2, style.font.getSpaceWidth() * 80);
 		maxTalkWidth = Math.min(width - DPIUtils.getMarginSize() * 2, style.font.getSpaceWidth() * 35);
+	}
+
+	private TextManagerUIStyle getStyle(Text text) {
+		String key = "default";
+		if (text != null) {
+			key = text.font;
+		}
+		if (StringUtils.isEmpty(key)) {
+			key = "default";
+		}
+		return styles.get(key);
 	}
 
 	/** The style for the TextManagerUI */
