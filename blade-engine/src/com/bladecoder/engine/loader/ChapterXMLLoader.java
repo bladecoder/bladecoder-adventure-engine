@@ -422,6 +422,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		String next = atts.getValue(XMLConstants.NEXT_ATTR);
 		String visibleStr = atts.getValue(XMLConstants.VISIBLE_ATTR);
 		String onceStr = atts.getValue(XMLConstants.ONCE_ATTR);
+		String font = atts.getValue(XMLConstants.FONT_ATTR);
 
 		if (verb != null && verb.trim().isEmpty())
 			verb = null;
@@ -434,6 +435,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 		DialogOption o = new DialogOption();
 		o.setText(text);
+		o.setFont(font);
 		o.setResponseText(responseText);
 		o.setVerbId(verb);
 		o.setNext(next);

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -24,8 +25,8 @@ import net.jcip.annotations.Immutable;
 public class Param {
 	public enum Type {
 		STRING, BOOLEAN, FLOAT, INTEGER, VECTOR2, VECTOR3, DIMENSION, ACTOR, SCENE, CHAPTER, FILE, OPTION, SCENE_ACTOR, ACTOR_ANIMATION, LAYER, EDITABLE_OPTION,
-		TEXT, SMALL_TEXT, BIG_TEXT, COLOR, SOUND
-	};
+		TEXT, SMALL_TEXT, BIG_TEXT, COLOR, SOUND, FONT
+	}
 	
 	public static final String NUMBER_PARAM_SEPARATOR = ",";
 	public static final String STRING_PARAM_SEPARATOR = "#";
@@ -156,7 +157,22 @@ public class Param {
 		}
 
 		return v;
-	}	
+	}
+
+	public static Color parseColor(String color) {
+		if (color == null || color.trim().isEmpty()) {
+			return Color.BLACK;
+		}
+
+		switch (color.trim()) {
+			case "black":
+				return new Color(0, 0, 0, 1);
+			case "white":
+				return new Color(1, 1, 1, 1);
+			default:
+				return Color.valueOf(color);
+		}
+	}
 
 	public static String toStringParam(Vector2 v) {
 		return v.x + NUMBER_PARAM_SEPARATOR + v.y;

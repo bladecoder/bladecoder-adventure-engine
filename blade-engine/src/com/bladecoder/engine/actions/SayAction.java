@@ -43,6 +43,16 @@ public class SayAction extends BaseCallbackAction {
 	@ActionPropertyType(Type.SMALL_TEXT)
 	private String text;
 
+	@JsonProperty(required = true, defaultValue = "default")
+	@JsonPropertyDescription("The font to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section)")
+	@ActionPropertyType(Type.FONT)
+	private String font;
+
+	@JsonProperty(required = true, defaultValue = "black")
+	@JsonPropertyDescription("The color to use for the font ('white', 'black' or RRGGBBAA)")
+	@ActionPropertyType(Type.COLOR)
+	private Color color = new Color(0,0,0,1);
+
 	@JsonProperty
 	@JsonPropertyDescription("The position of the text. If null, the position will be calc based in actor")
 	@ActionPropertyType(Type.VECTOR2)
@@ -71,6 +81,8 @@ public class SayAction extends BaseCallbackAction {
 
 		soundId = params.get("speech");
 		text = params.get("text");
+		font = params.get("font");
+		color = Param.parseColor(params.get("color"));
 
 		if (params.get("wait") != null) {
 			setWait(Boolean.parseBoolean(params.get("wait")));
@@ -128,7 +140,7 @@ public class SayAction extends BaseCallbackAction {
 			}
 
 			World.getInstance().getTextManager()
-						.addSubtitle(text, x, y, queue, type, Color.BLACK, getWait()?this:null);
+						.addSubtitle(text, x, y, queue, type, color, font, getWait()?this:null);
 		}
 		
 		return getWait();
