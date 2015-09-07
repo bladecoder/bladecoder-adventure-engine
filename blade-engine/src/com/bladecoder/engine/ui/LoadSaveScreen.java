@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,9 +19,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -48,7 +50,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.DPIUtils;
 
-public class LoadSaveScreen implements BladeScreen {
+public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 	private static final int ROW_SLOTS = 3;
 	private static final int COL_SLOTS = 2;
 
@@ -58,10 +60,10 @@ public class LoadSaveScreen implements BladeScreen {
 	private Texture bgTexFile = null;
 
 	private boolean loadScreenMode = true;
-	
+
 	private int slotWidth = 0;
 	private int slotHeight = 0;
-	
+
 	// texture list for final dispose
 	private final ArrayList<Texture> textureList = new ArrayList<Texture>();
 
@@ -97,27 +99,25 @@ public class LoadSaveScreen implements BladeScreen {
 		}
 
 		bgTexFile = null;
-		
-		for(Texture t:textureList)
+
+		for (Texture t : textureList)
 			t.dispose();
 	}
 
 	@Override
 	public void show() {
-		if (ui.getScreen(UI.Screens.LOAD_GAME) == this)
-			loadScreenMode = true;
-		else
-			loadScreenMode = false;
+		loadScreenMode = ui.getScreen(Screens.LOAD_GAME) == this;
 
 		stage = new Stage(new ScreenViewport());
-		
-		float pad = DPIUtils.getMarginSize();
-		
-		
-		slotWidth = (int) (stage.getViewport().getWorldWidth() / (ROW_SLOTS + 1) - 2 * pad);
-		slotHeight = (int)(slotWidth * ((float)World.getInstance().getHeight()/(float)World.getInstance().getWidth()));
 
-		LoadSaveScreenStyle style = ui.getSkin().get(LoadSaveScreenStyle.class);
+		final Skin skin = ui.getSkin();
+		final World world = World.getInstance();
+		final float pad = DPIUtils.getMarginSize();
+
+		slotWidth = (int) (stage.getViewport().getWorldWidth() / (ROW_SLOTS + 1) - 2 * pad);
+		slotHeight = (int) (slotWidth * ((float) world.getHeight() / (float) world.getWidth()));
+
+		LoadSaveScreenStyle style = skin.get(LoadSaveScreenStyle.class);
 		// BitmapFont f = ui.getSkin().get(style.textButtonStyle,
 		// TextButtonStyle.class).font;
 		// float buttonWidth = f.getCapHeight() * 15f;
@@ -132,16 +132,16 @@ public class LoadSaveScreen implements BladeScreen {
 			bg = new TextureRegionDrawable(new TextureRegion(bgTexFile));
 		}
 
-		Table table = new Table(ui.getSkin());
+		Table table = new Table(skin);
 		table.setFillParent(true);
 		table.center();
 		table.pad(pad);
 
-		Label title = new Label(loadScreenMode ? I18N.getString("ui.load") : I18N.getString("ui.save"), ui.getSkin(), "title");
+		Label title = new Label(loadScreenMode ? I18N.getString("ui.load") : I18N.getString("ui.save"), skin, "title");
 
-		TextButton back = new TextButton(I18N.getString("ui.back"), ui.getSkin(), "menu");
+		TextButton back = new TextButton(I18N.getString("ui.back"), skin, "menu");
 		back.getLabelCell().padLeft(DPIUtils.MARGIN_SIZE);
-		back.getLabelCell().padRight(DPIUtils.MARGIN_SIZE);		
+		back.getLabelCell().padRight(DPIUtils.MARGIN_SIZE);
 		back.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
@@ -157,27 +157,26 @@ public class LoadSaveScreen implements BladeScreen {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
 				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
-					if (World.getInstance().getCurrentScene() != null)
+					if (world.getCurrentScene() != null)
 						ui.setCurrentScreen(Screens.SCENE_SCREEN);
 
 				return true;
 			}
 		});
 
-		PagedScrollPane scroll = new PagedScrollPane();
+		final PagedScrollPane scroll = new PagedScrollPane();
 		scroll.setFlingTime(0.1f);
 		scroll.setPageSpacing(25);
 
 		Table slots = new Table().pad(pad);
 		slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2);
 
-		ArrayList<String> sl = getSlots();
-		
-		Collections.sort(sl);
-		
-		int c = 0;
-		for (String s:sl) {
+		final List<String> sl = getSlots();
 
+		Collections.sort(sl);
+
+		int c = 0;
+		for (String s : sl) {
 			if (c % ROW_SLOTS == 0 && c % (ROW_SLOTS * COL_SLOTS) != 0)
 				slots.row();
 
@@ -213,7 +212,7 @@ public class LoadSaveScreen implements BladeScreen {
 		table.row();
 
 		if (loadScreenMode && sl.size() == 0) {
-			Label lbl = new Label(I18N.getString("ui.noSavedGames"), ui.getSkin(), "title");
+			Label lbl = new Label(I18N.getString("ui.noSavedGames"), skin, "title");
 			lbl.setAlignment(Align.center);
 			table.add(lbl).expand().fill();
 		} else {
@@ -237,14 +236,14 @@ public class LoadSaveScreen implements BladeScreen {
 
 	/**
 	 * Creates a button to represent one slot
-	 * 
+	 *
 	 * @param slot
 	 * @return The button to use for one slot
 	 */
 	private Button getSlotButton(String slot) {
-		Skin skin = ui.getSkin();
-		Button button = new Button(new ButtonStyle());
-		ButtonStyle style = button.getStyle();
+		final Skin skin = ui.getSkin();
+		final Button button = new Button(new ButtonStyle());
+		final ButtonStyle style = button.getStyle();
 		style.up = style.down = skin.getDrawable("black");
 
 		String textLabel = I18N.getString("ui.newSlot");
@@ -252,55 +251,55 @@ public class LoadSaveScreen implements BladeScreen {
 
 		if (slotExists(slot)) {
 			button.add(getScreenshot(slot)).maxSize(slotWidth * .9f, slotHeight * .9f);
-			
-			try{ 
+
+			try {
 				long l = Long.parseLong(slot);
-				
+
 				Date d = new Date(l);
 				textLabel = (new SimpleDateFormat()).format(d);
-			} catch(Exception e) {
-				textLabel = slot;	
+			} catch (Exception e) {
+				textLabel = slot;
 			}
 		} else {
 			Image fg = new Image(skin.getDrawable("plus"));
-			button.add(fg).maxSize(slotHeight/2, slotHeight/2);
+			button.add(fg).maxSize(slotHeight / 2, slotHeight / 2);
 		}
 
 		button.row();
-		
+
 		Label label = new Label(textLabel, skin);
 		label.setAlignment(Align.center);
-		
+
 		button.add(label).fillX();
 
 		button.setName(slot);
 		button.addListener(levelClickListener);
 		return button;
 	}
-	
-	private ArrayList<String> getSlots() {
-		ArrayList<String> al = new ArrayList<String>();
-		
+
+	private List<String> getSlots() {
+		final List<String> al = new ArrayList<String>();
+
 		FileHandle[] list = EngineAssetManager.getInstance().getUserFolder().list();
 
 		for (FileHandle file : list)
 			if (file.name().endsWith(World.GAMESTATE_EXT)) {
 				String name = file.name().substring(0, file.name().indexOf(World.GAMESTATE_EXT));
-				if(!name.equals("default"))
-		            al.add(name);				
+				if (!name.equals("default"))
+					al.add(name);
 			}
-		
+
 		return al;
 	}
-	
+
 	private Image getScreenshot(String slot) {
 		String filename = slot + World.GAMESTATE_EXT + ".png";
-		
+
 		Texture t = new Texture(EngineAssetManager.getInstance().getUserFile(filename));
-		
+
 		// add to the list for proper dispose when hide the screen
 		textureList.add(t);
-		
+
 		return new Image(t);
 	}
 
@@ -310,11 +309,12 @@ public class LoadSaveScreen implements BladeScreen {
 	private ClickListener levelClickListener = new ClickListener() {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
-
-			if (loadScreenMode == true) {
-				World.getInstance().loadGameState(event.getListenerActor().getName() + World.GAMESTATE_EXT);
+			final World world = World.getInstance();
+			final String filename = event.getListenerActor().getName() + World.GAMESTATE_EXT;
+			if (loadScreenMode) {
+				world.loadGameState(filename);
 			} else {
-				World.getInstance().saveGameState(event.getListenerActor().getName() + World.GAMESTATE_EXT);
+				world.saveGameState(filename);
 			}
 
 			ui.setCurrentScreen(Screens.SCENE_SCREEN);
@@ -327,23 +327,21 @@ public class LoadSaveScreen implements BladeScreen {
 	}
 
 	@Override
-	public void pause() {
-	}
-
-	@Override
-	public void resume() {
-	}
-
-	@Override
 	public void setUI(UI ui) {
 		this.ui = ui;
 	}
 
-	/** The style for the MenuScreen */
-	static public class LoadSaveScreenStyle {
-		/** Optional. */
+	/**
+	 * The style for the MenuScreen
+	 */
+	public static class LoadSaveScreenStyle {
+		/**
+		 * Optional.
+		 */
 		public Drawable background;
-		/** if 'bg' not specified try to load the bgFile */
+		/**
+		 * if 'bg' not specified try to load the bgFile
+		 */
 		public String bgFile;
 
 		public String textButtonStyle;

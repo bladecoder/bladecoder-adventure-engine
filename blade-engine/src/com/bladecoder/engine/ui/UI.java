@@ -15,14 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.ui.BladeSkin;
-import com.bladecoder.engine.ui.CreditsScreen;
-import com.bladecoder.engine.ui.HelpScreen;
-import com.bladecoder.engine.ui.InitScreen;
-import com.bladecoder.engine.ui.LoadingScreen;
-import com.bladecoder.engine.ui.MenuScreen;
-import com.bladecoder.engine.ui.Pointer;
-import com.bladecoder.engine.ui.SceneScreen;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Peripheral;
@@ -52,10 +44,10 @@ public class UI {
 	private SpriteBatch batch;
 	private Skin skin;
 
-	public static enum Screens {
+	public enum Screens {
 		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN, LOAD_GAME, SAVE_GAME
-	};
-	
+	}
+
 	private final BladeScreen screens[];
 
 	public UI() {
@@ -71,19 +63,19 @@ public class UI {
 		else {
 			setPieMode(Config.getProperty(Config.PIE_MODE_DESKTOP_PROP, false));
 		}
-		
+
 		loadAssets();
-		
+
 		screens[Screens.INIT_SCREEN.ordinal()] = getCustomScreenInstance(Config.INIT_SCREEN_CLASS_PROP, InitScreen.class);
-		screens[Screens.SCENE_SCREEN.ordinal()] = new SceneScreen();
-		screens[Screens.LOADING_SCREEN.ordinal()] = new LoadingScreen();
+		screens[Screens.SCENE_SCREEN.ordinal()] = getCustomScreenInstance(Config.SCENE_SCREEN_CLASS_PROP, SceneScreen.class);
+		screens[Screens.LOADING_SCREEN.ordinal()] = getCustomScreenInstance(Config.LOADING_SCREEN_CLASS_PROP, LoadingScreen.class);
 		screens[Screens.MENU_SCREEN.ordinal()] = getCustomScreenInstance(Config.MENU_SCREEN_CLASS_PROP, MenuScreen.class);
 		screens[Screens.HELP_SCREEN.ordinal()] = getCustomScreenInstance(Config.HELP_SCREEN_CLASS_PROP, HelpScreen.class);
 		screens[Screens.CREDIT_SCREEN.ordinal()] =  getCustomScreenInstance(Config.CREDIT_SCREEN_CLASS_PROP, CreditsScreen.class);
-		screens[Screens.LOAD_GAME.ordinal()] = new LoadSaveScreen();
-		screens[Screens.SAVE_GAME.ordinal()] = new LoadSaveScreen();
-		
-		for(BladeScreen s:screens)
+		screens[Screens.LOAD_GAME.ordinal()] = getCustomScreenInstance(Config.LOAD_SCREEN_CLASS_PROP, LoadSaveScreen.class);
+		screens[Screens.SAVE_GAME.ordinal()] = getCustomScreenInstance(Config.SAVE_SCREEN_CLASS_PROP, LoadSaveScreen.class);
+
+		for (BladeScreen s:screens)
 			s.setUI(this);
 
 		setCurrentScreen(Screens.INIT_SCREEN);
@@ -99,6 +91,7 @@ public class UI {
 				return (BladeScreen)ClassReflection.newInstance(instanceClass);
 			} catch (Exception e) {
 				EngineLogger.error("Error instancing screen. " + e.getMessage());
+				// FIXME: Probably we just want to fail in this case, instead of creating a different screen than the one expected?
 				instanceClass = defaultClass;
 			}
 		} 
