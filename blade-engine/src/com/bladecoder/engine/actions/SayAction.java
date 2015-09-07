@@ -50,7 +50,7 @@ public class SayAction extends BaseCallbackAction {
 	@JsonProperty(required = true, defaultValue = "RECTANGLE")
 	@JsonPropertyDescription("The type of the text.")
 	@ActionPropertyType(Type.STRING)
-	private Text.Type type = Text.Type.PLAIN;
+	private Text.Type type = Text.Type.RECTANGLE;
 
 	@JsonProperty(defaultValue = "false")
 	@JsonPropertyDescription("Queue the text if other text is showing, or show it immediately.")

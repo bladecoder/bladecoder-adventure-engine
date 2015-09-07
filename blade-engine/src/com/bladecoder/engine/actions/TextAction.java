@@ -38,10 +38,10 @@ public class TextAction implements Action {
 	@ActionPropertyType(Type.TEXT_STYLE)
 	private String style;
 
-	@JsonProperty(required = true, defaultValue = "black")
-	@JsonPropertyDescription("The color to use for the font ('white', 'black' or RRGGBBAA)")
+	@JsonProperty
+	@JsonPropertyDescription("The color to use for the font ('white', 'black' or RRGGBBAA). If not set, the default color defined in the style is used.")
 	@ActionPropertyType(Type.COLOR)
-	private Color color = new Color(0,0,0,1);
+	private Color color;
 
 	@JsonProperty
 	@JsonPropertyDescription("The position of the text. -1 for center")

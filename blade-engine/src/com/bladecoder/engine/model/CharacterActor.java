@@ -38,9 +38,15 @@ public class CharacterActor extends SpriteActor {
 	public final static String DEFAULT_TALK_ANIM = "talk";	
 
 	private float walkingSpeed = DEFAULT_WALKING_SPEED;
-	private Color textColor = Color.BLACK;
+	private Color textColor;
 	
 	private String standAnim = DEFAULT_STAND_ANIM;
+	private String walkAnim = DEFAULT_WALK_ANIM;
+	private String talkAnim = DEFAULT_TALK_ANIM;
+	
+	private HashMap<String, Dialog> dialogs;	
+	
+	
 	public Color getTextColor() {
 		return textColor;
 	}
@@ -73,10 +79,6 @@ public class CharacterActor extends SpriteActor {
 		this.talkAnim = talkAnim;
 	}
 
-	private String walkAnim = DEFAULT_WALK_ANIM;
-	private String talkAnim = DEFAULT_TALK_ANIM;
-	
-	private HashMap<String, Dialog> dialogs;
 	
 	public Dialog getDialog(String dialog) {
 		return dialogs.get(dialog);

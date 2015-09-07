@@ -161,7 +161,7 @@ public class Param {
 
 	public static Color parseColor(String color) {
 		if (color == null || color.trim().isEmpty()) {
-			return Color.WHITE;
+			return null; // the default color in the style will be used
 		}
 
 		switch (color.trim()) {

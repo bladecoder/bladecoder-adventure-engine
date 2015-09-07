@@ -89,7 +89,7 @@ public class TextManagerUI extends Actor {
 
 				final TextManagerUIStyle style = getStyle(currentSubtitle);
 				
-				Color color = currentSubtitle.color != null?currentSubtitle.color:style.color;
+				Color color = currentSubtitle.color != null?currentSubtitle.color:style.defaultColor;
 				
 				if(color == null)
 					color = Color.WHITE;
@@ -203,7 +203,7 @@ public class TextManagerUI extends Actor {
 		public Drawable talkBackground;
 		public Drawable talkBubble;
 		public BitmapFont font;
-		public Color color;
+		public Color defaultColor;
 
 		public TextManagerUIStyle() {
 		}
@@ -213,7 +213,7 @@ public class TextManagerUI extends Actor {
 			talkBackground = style.talkBackground;
 			talkBubble = style.talkBubble;
 			font = style.font;
-			color = style.color;
+			defaultColor = style.defaultColor;
 		}
 	}
 }
