@@ -22,6 +22,7 @@ import java.beans.PropertyChangeListener;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.components.PropertyTable;
 
@@ -68,9 +69,9 @@ public class SceneProps extends PropertyTable {
 
 		if (scn != null) {
 			addProperty(MUSIC_PROP, doc.getMusic(scn));
-			addProperty(LOOP_MUSIC_PROP, doc.getRootAttr(scn,"loop_music"), Types.BOOLEAN);
-			addProperty(INITIAL_MUSIC_DELAY_PROP, doc.getRootAttr(scn,"initial_music_delay"), Types.FLOAT);
-			addProperty(REPEAT_MUSIC_DELAY_PROP, doc.getRootAttr(scn,"repeat_music_delay"), Types.FLOAT);
+			addProperty(LOOP_MUSIC_PROP, doc.getRootAttr(scn,XMLConstants.LOOP_MUSIC_ATTR), Types.BOOLEAN);
+			addProperty(INITIAL_MUSIC_DELAY_PROP, doc.getRootAttr(scn, XMLConstants.INITIAL_MUSIC_DELAY_ATTR), Types.FLOAT);
+			addProperty(REPEAT_MUSIC_DELAY_PROP, doc.getRootAttr(scn, XMLConstants.REPEAT_MUSIC_DELAY_ATTR), Types.FLOAT);
 			
 			this.doc.addPropertyChangeListener("scene", propertyChangeListener);
 			
@@ -83,11 +84,11 @@ public class SceneProps extends PropertyTable {
 		if (property.equals(MUSIC_PROP)) {
 			doc.setRootAttr(scn,"music", value);
 		} else if (property.equals(LOOP_MUSIC_PROP)) {
-			doc.setRootAttr(scn,"loop_music", value);		
+			doc.setRootAttr(scn, XMLConstants.LOOP_MUSIC_ATTR, value);		
 		} else if (property.equals(INITIAL_MUSIC_DELAY_PROP)) {
-			doc.setRootAttr(scn,"initial_music_delay", value);
+			doc.setRootAttr(scn,XMLConstants.INITIAL_MUSIC_DELAY_ATTR, value);
 		} else if (property.equals(REPEAT_MUSIC_DELAY_PROP)) {
-			doc.setRootAttr(scn,"repeat_music_delay", value);
+			doc.setRootAttr(scn,XMLConstants.REPEAT_MUSIC_DELAY_ATTR, value);
 		}
 	}
 }

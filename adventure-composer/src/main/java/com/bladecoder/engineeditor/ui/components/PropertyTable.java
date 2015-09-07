@@ -22,8 +22,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
+import com.badlogic.gdx.utils.SnapshotArray;
+import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class PropertyTable extends Container<Table> {
 	private static final String[] BOOLEAN_VALUES = {"", "true", "false"};
@@ -86,22 +89,44 @@ public class PropertyTable extends Container<Table> {
 			tf.setTextFieldListener(new TextFieldListener() {
 				@Override
 				public void keyTyped(TextField actor, char c) {
-					updateModel(actor.getName(), ((TextField)actor).getText());
+					if(c == 13) { // ENTER KEY
+						updateModel(actor.getName(), ((TextField)actor).getText());
+						EditorLogger.debug("Updating property: " + actor.getName());
+					}
 				}
 			});			
 			
 			
-//			tf.addListener(new FocusListener() {
-//				
-//				@Override
-//				public void keyboardFocusChanged (FocusEvent event, Actor actor, boolean focused) {
-//					if(!focused)
-//						updateModel(actor.getName(), ((TextField)actor).getText());
-//				}
-//			});
+			tf.addListener(new FocusListener() {
+				
+				@Override
+				public void keyboardFocusChanged (FocusEvent event, Actor actor, boolean focused) {
+					if(!focused) {
+						updateModel(actor.getName(), ((TextField)actor).getText());
+						EditorLogger.debug("Updating property: " + actor.getName());
+					}
+				}
+			});
 		}
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	public void setProperty(String name, String value) {
+		SnapshotArray<Actor> actors = table.getChildren();
+		
+		for(Actor a: actors) {
+			if(name.equals(a.getName())) {
+				if(a instanceof SelectBox<?>) {
+					((SelectBox<String>)a).setSelected(value==null?"":value);
+				} else {
+					((TextField)a).setText(value==null?"":value);
+				}
+				
+				return;
+			}
+		}
+	}
+ 
 	public void addProperty(String name, int value) {
 		addProperty(name, Integer.toString(value), Types.INTEGER);
 	}
