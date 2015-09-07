@@ -34,6 +34,9 @@ public class UI {
 
 	private static final String SKIN_FILENAME = "ui/ui.json";
 
+	private final Recorder recorder = new Recorder();
+	private final TesterBot testerBot = new TesterBot();
+	
 	private boolean fullscreen = false;
 	private Pointer pointer;
 
@@ -79,6 +82,14 @@ public class UI {
 			s.setUI(this);
 
 		setCurrentScreen(Screens.INIT_SCREEN);
+	}
+	
+	public Recorder getRecorder() {
+		return recorder;
+	}
+	
+	public TesterBot getTesterbot() {
+		return testerBot;
 	}
 	
 	private BladeScreen getCustomScreenInstance(String prop, Class<?> defaultClass) {
