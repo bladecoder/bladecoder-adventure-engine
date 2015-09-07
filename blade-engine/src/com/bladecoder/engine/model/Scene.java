@@ -371,8 +371,11 @@ public class Scene implements Serializable, AssetConsumer {
 	 *  1. if some vertex from the TOLERANCE square is inside an actor bbox
 	 *  2. if some actor bbox vertex is inside the TOLERANCE square
 	 */
-	public InteractiveActor getInteractiveActorAtWithTolerance(float x, float y, float tolerance) {
-		
+	public InteractiveActor getInteractiveActorAt(float x, float y, float tolerance) {
+		if (tolerance <= 0) {
+			return getInteractiveActorAt(x, y);
+		}
+
 		List<SceneLayer> layers = getLayers();
 		
 		tmpToleranceRect.x = x - tolerance / 2;

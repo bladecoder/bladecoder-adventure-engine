@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,6 +17,7 @@ package com.bladecoder.engine.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -42,7 +44,7 @@ import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class MenuScreen implements BladeScreen {
+public class MenuScreen extends ScreenAdapter implements BladeScreen {
 	private final static float BUTTON_PADDING = DPIUtils.UI_SPACE;
 
 	private UI ui;
@@ -88,8 +90,11 @@ public class MenuScreen implements BladeScreen {
 	public void show() {
 		stage = new Stage(new ScreenViewport());
 
-		MenuScreenStyle style = ui.getSkin().get(MenuScreenStyle.class);
-		BitmapFont f = ui.getSkin().get(style.textButtonStyle, TextButtonStyle.class).font;
+		final Skin skin = ui.getSkin();
+		final World world = World.getInstance();
+
+		final MenuScreenStyle style = skin.get(MenuScreenStyle.class);
+		final BitmapFont f = skin.get(style.textButtonStyle, TextButtonStyle.class).font;
 		float buttonWidth = f.getCapHeight() * 15f;
 
 		// Image background = new Image(style.background);
@@ -102,7 +107,7 @@ public class MenuScreen implements BladeScreen {
 			bg = new TextureRegionDrawable(new TextureRegion(bgTexFile));
 		}
 
-		Table table = new Table();
+		final Table table = new Table();
 		table.setFillParent(true);
 		table.center();
 
@@ -113,33 +118,33 @@ public class MenuScreen implements BladeScreen {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
 				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
-					if (World.getInstance().getCurrentScene() != null)
+					if (world.getCurrentScene() != null)
 						ui.setCurrentScreen(Screens.SCENE_SCREEN);
 
 				return true;
 			}
 		});
-		
+
 		table.defaults().pad(BUTTON_PADDING).width(buttonWidth);
 
 		stage.setKeyboardFocus(table);
 
 		if (style.showTitle) {
 
-			Label title = new Label(Config.getProperty(Config.TITLE_PROP, "Adventure Blade Engine"), ui.getSkin(),
+			Label title = new Label(Config.getProperty(Config.TITLE_PROP, "Adventure Blade Engine"), skin,
 					style.titleStyle);
 
 			table.add(title).padBottom(DPIUtils.getMarginSize() * 2);
 			table.row();
 		}
 
-		if (World.getInstance().savedGameExists() || World.getInstance().getCurrentScene() != null) {
-			TextButton continueGame = new TextButton(I18N.getString("ui.continue"), ui.getSkin(), style.textButtonStyle);
+		if (world.savedGameExists() || world.getCurrentScene() != null) {
+			TextButton continueGame = new TextButton(I18N.getString("ui.continue"), skin, style.textButtonStyle);
 
 			continueGame.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
-					if (World.getInstance().getCurrentScene() == null)
-						World.getInstance().load();
+					if (world.getCurrentScene() == null)
+						world.load();
 
 					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 				}
@@ -148,10 +153,10 @@ public class MenuScreen implements BladeScreen {
 			table.add(continueGame);
 		}
 
-		TextButton newGame = new TextButton(I18N.getString("ui.new"), ui.getSkin(), style.textButtonStyle);
+		TextButton newGame = new TextButton(I18N.getString("ui.new"), skin, style.textButtonStyle);
 		newGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				World.getInstance().newGame();
+				world.newGame();
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
@@ -159,7 +164,7 @@ public class MenuScreen implements BladeScreen {
 		table.row();
 		table.add(newGame);
 
-		TextButton loadGame = new TextButton(I18N.getString("ui.load"), ui.getSkin(), style.textButtonStyle);
+		TextButton loadGame = new TextButton(I18N.getString("ui.load"), skin, style.textButtonStyle);
 		loadGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.LOAD_GAME);
@@ -169,8 +174,8 @@ public class MenuScreen implements BladeScreen {
 		table.row();
 		table.add(loadGame);
 
-		if (World.getInstance().getCurrentScene() != null) {
-			TextButton saveGame = new TextButton(I18N.getString("ui.save"), ui.getSkin(), style.textButtonStyle);
+		if (world.getCurrentScene() != null) {
+			TextButton saveGame = new TextButton(I18N.getString("ui.save"), skin, style.textButtonStyle);
 			saveGame.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
 					ui.setCurrentScreen(Screens.SAVE_GAME);
@@ -215,7 +220,7 @@ public class MenuScreen implements BladeScreen {
 //			table.add(debug);
 //		}
 
-		TextButton quit = new TextButton(I18N.getString("ui.quit"), ui.getSkin(), style.textButtonStyle);
+		TextButton quit = new TextButton(I18N.getString("ui.quit"), skin, style.textButtonStyle);
 		quit.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				Gdx.app.exit();
@@ -228,24 +233,23 @@ public class MenuScreen implements BladeScreen {
 		table.pack();
 
 		stage.addActor(table);
-		
-		
+
 		// BOTTOM-RIGHT BUTTON STACK
-		ImageButton credits = new CustomImageButton(ui.getSkin(), "credits");
+		ImageButton credits = new CustomImageButton(skin, "credits");
 		credits.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.CREDIT_SCREEN);
 			}
 		});
-		
-		ImageButton help = new CustomImageButton(ui.getSkin(), "help");
+
+		ImageButton help = new CustomImageButton(skin, "help");
 		help.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.HELP_SCREEN);
 			}
 		});
-		
-		ImageButton debug = new CustomImageButton(ui.getSkin(), "debug");
+
+		ImageButton debug = new CustomImageButton(skin, "debug");
 		debug.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				DebugScreen debugScr = new DebugScreen();
@@ -253,16 +257,16 @@ public class MenuScreen implements BladeScreen {
 				ui.setCurrentScreen(debugScr);
 			}
 		});
-		
+
 		Table buttonStack = new Table();
 		buttonStack.defaults().pad(DPIUtils.getSpacing()).size(DPIUtils.getPrefButtonSize(), DPIUtils.getPrefButtonSize());
 		buttonStack.pad(DPIUtils.getMarginSize() * 2);
-		
-		if (EngineLogger.debugMode() && World.getInstance().getCurrentScene() != null) {		
+
+		if (EngineLogger.debugMode() && world.getCurrentScene() != null) {
 			buttonStack.add(debug);
 			buttonStack.row();
 		}
-		
+
 		buttonStack.add(help);
 		buttonStack.row();
 		buttonStack.add(credits);
@@ -270,7 +274,6 @@ public class MenuScreen implements BladeScreen {
 		buttonStack.setFillParent(true);
 		buttonStack.pack();
 		stage.addActor(buttonStack);
-
 
 		Gdx.input.setInputProcessor(stage);
 	}
@@ -281,20 +284,12 @@ public class MenuScreen implements BladeScreen {
 	}
 
 	@Override
-	public void pause() {
-	}
-
-	@Override
-	public void resume() {
-	}
-
-	@Override
 	public void setUI(UI ui) {
 		this.ui = ui;
 	}
 
 	/** The style for the MenuScreen */
-	static public class MenuScreenStyle {
+	public static class MenuScreenStyle {
 		/** Optional. */
 		public Drawable background;
 		/** if 'bg' not specified try to load the bgFile */
