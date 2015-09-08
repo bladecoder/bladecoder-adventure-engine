@@ -12,22 +12,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.ui.UI;
 
 public class VerbUI extends Table {
-	private final List<String> VERBS = new ArrayList<String>(
-			Arrays.asList("give", "pickup", "use", "open", "talkto", "push", "close", "lookat", "pull"));
+	private static final List<String> VERBS = Arrays.asList("give", "pickup", "use", "open", "talkto", "push", "close", "lookat", "pull");
+	private static final List<String> VERBS_DESC = Arrays.asList("Give", "Pick up", "Use", "Open", "Talk to", "Push", "Close", "Lookat", "Pull");
 
-	private final List<String> VERBS_DESC = new ArrayList<String>(
-			Arrays.asList("Give", "Pick up", "Use", "Open", "Talk to", "Push", "Close", "Lookat", "Pull"));
+	private static final int VERB_COLS = 3;
 
-	private final int VERB_COLS = 3;
-
-	private final int INVENTORY_COLS = 3;
-	private final int INVENTORY_ROWS = 3;
+	private static final int INVENTORY_COLS = 3;
+	private static final int INVENTORY_ROWS = 3;
 	
 	private final List<RendererDrawable> inventorySlots = new ArrayList<RendererDrawable>();
 
-	private final SceneScreen sceneScreen;
+	private final UI ui;
 
 	private final String DEFAULT_VERB = "lookat";
 
@@ -39,12 +37,12 @@ public class VerbUI extends Table {
 	
 	private String target;
 
-	public VerbUI(SceneScreen scn) {
-		super(scn.getUI().getSkin());
+	public VerbUI(UI ui) {
+		super(ui.getSkin());
 
-		sceneScreen = scn;
+		this.ui = ui;
 
-		verbInfo = new Label(VERBS_DESC.get(VERBS.indexOf(DEFAULT_VERB)), scn.getUI().getSkin());
+		verbInfo = new Label(VERBS_DESC.get(VERBS.indexOf(DEFAULT_VERB)), ui.getSkin());
 		add(verbInfo).fillX().expandX();
 		row();
 
@@ -56,13 +54,13 @@ public class VerbUI extends Table {
 	}
 
 	private Table createVerbPanel() {
-		Table verbs = new Table(sceneScreen.getUI().getSkin());
+		Table verbs = new Table(ui.getSkin());
 
 		for (int i = 0; i < VERBS.size(); i++) {
 			if (i % VERB_COLS == 0)
 				verbs.row();
 
-			TextButton b = new TextButton(VERBS_DESC.get(i), sceneScreen.getUI().getSkin());
+			TextButton b = new TextButton(VERBS_DESC.get(i), ui.getSkin());
 			b.setName(VERBS.get(i));
 			b.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
@@ -94,7 +92,7 @@ public class VerbUI extends Table {
 	}
 
 	private Table createInventoryPanel() {
-		Table inventory = new Table(sceneScreen.getUI().getSkin());
+		Table inventory = new Table(ui.getSkin());
 		
 		for(int i=0; i < INVENTORY_COLS * INVENTORY_ROWS; i++) {
 			if (i % INVENTORY_COLS == 0)
@@ -126,7 +124,6 @@ public class VerbUI extends Table {
 		actorDesc = desc;
 		
 		String verbDesc = VERBS_DESC.get(VERBS.indexOf(currentVerb));
-		
 		
 		if(desc != null)
 			verbInfo.setText(verbDesc + " " + desc);

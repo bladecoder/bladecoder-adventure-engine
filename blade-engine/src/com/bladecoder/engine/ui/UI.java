@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.ui.defaults.DefaultSceneScreen;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
@@ -70,7 +71,7 @@ public class UI {
 		loadAssets();
 
 		screens[Screens.INIT_SCREEN.ordinal()] = getCustomScreenInstance(Config.INIT_SCREEN_CLASS_PROP, InitScreen.class);
-		screens[Screens.SCENE_SCREEN.ordinal()] = getCustomScreenInstance(Config.SCENE_SCREEN_CLASS_PROP, SceneScreen.class);
+		screens[Screens.SCENE_SCREEN.ordinal()] = getCustomScreenInstance(Config.SCENE_SCREEN_CLASS_PROP, DefaultSceneScreen.class);
 		screens[Screens.LOADING_SCREEN.ordinal()] = getCustomScreenInstance(Config.LOADING_SCREEN_CLASS_PROP, LoadingScreen.class);
 		screens[Screens.MENU_SCREEN.ordinal()] = getCustomScreenInstance(Config.MENU_SCREEN_CLASS_PROP, MenuScreen.class);
 		screens[Screens.HELP_SCREEN.ordinal()] = getCustomScreenInstance(Config.HELP_SCREEN_CLASS_PROP, HelpScreen.class);
@@ -88,7 +89,7 @@ public class UI {
 		return recorder;
 	}
 	
-	public TesterBot getTesterbot() {
+	public TesterBot getTesterBot() {
 		return testerBot;
 	}
 	

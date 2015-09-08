@@ -170,7 +170,7 @@ public class BladeEngine implements ApplicationListener {
 
 	@Override
 	public void pause() {
-		boolean bot = ui.getTesterbot().isEnabled();
+		boolean bot = ui.getTesterBot().isEnabled();
 		boolean r = ui.getRecorder().isPlaying();
 
 		if (!bot && !r) {
