@@ -39,11 +39,11 @@ public class DialogUI extends ScrollPane {
 
 	private Table panel;
 
-	public DialogUI(SceneScreen scr) {
-		super(new Table(scr.getUI().getSkin()));
+	public DialogUI(UI ui) {
+		super(new Table(ui.getSkin()));
 		panel = (Table) getWidget();
-		style = scr.getUI().getSkin().get(DialogUIStyle.class);
-		this.recorder = scr.getRecorder();
+		style = ui.getSkin().get(DialogUIStyle.class);
+		this.recorder = ui.getRecorder();
 
 		if (style.background != null)
 			panel.setBackground(style.background);

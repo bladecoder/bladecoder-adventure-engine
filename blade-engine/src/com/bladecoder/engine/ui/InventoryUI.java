@@ -94,7 +94,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 					InteractiveActor actor = getItemAt(x, y);
 
 					if (actor != null) {
-						sceneScreen.actorClick(actor, button == 1);
+						sceneScreen.actorClick(actor, button);
 					} else {
 						hide();
 					}
@@ -285,7 +285,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			if (targetActor != draggedActor)
 				use(targetActor, draggedActor);
 			else
-				sceneScreen.actorClick(targetActor, button == 1);
+				sceneScreen.actorClick(targetActor, button);
 		}
 
 		draggedActor = null;
