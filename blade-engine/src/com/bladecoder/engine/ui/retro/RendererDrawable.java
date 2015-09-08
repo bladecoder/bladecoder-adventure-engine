@@ -26,6 +26,6 @@ public class RendererDrawable extends BaseDrawable {
 			scale = height / renderer.getHeight();
 				
 		renderer.draw((SpriteBatch) batch, x,
-				y, 1);		
+				y - renderer.getHeight() / 2, 1);		
 	}
 }

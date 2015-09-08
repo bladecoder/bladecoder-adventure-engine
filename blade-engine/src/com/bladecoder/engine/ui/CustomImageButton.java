@@ -9,19 +9,28 @@ public class CustomImageButton extends ImageButton {
 	public CustomImageButton(ImageButtonStyle menuButtonStyle) {
 		super(menuButtonStyle);
 		
-		resize();
+		setSize();
 	}
 
 	public CustomImageButton(Skin skin, String string) {
 		super(skin, string);
 		
-		resize();
+		setSize();
+	}
+	
+	private void setSize() {
+		float size = DPIUtils.getPrefButtonSize();
+		setSize(size, size);		
 	}
 
-	public void resize() {
-		float size = DPIUtils.getPrefButtonSize();
-		float iconSize = Math.max(size / 1.5f, DPIUtils.ICON_SIZE);
-		setSize(size, size);
+	@Override
+	public void sizeChanged() {
+
+		if(getImageCell() == null)
+			return;
+		
+		float iconSize = Math.max(getWidth() / 1.5f, DPIUtils.ICON_SIZE);
+
 		getImageCell().maxSize(iconSize, iconSize);		
 	}
 }

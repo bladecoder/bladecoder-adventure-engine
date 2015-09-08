@@ -5,11 +5,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Align;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI;
@@ -26,24 +31,28 @@ public class VerbUI extends Table {
 	private final List<RendererDrawable> inventorySlots = new ArrayList<RendererDrawable>();
 
 	private final UI ui;
-
 	private final String DEFAULT_VERB = "lookat";
-
-	private final Label verbInfo;
+	private final Label infoLine;
 
 	private String currentVerb = DEFAULT_VERB;
-	
-	private String actorDesc;
-	
+	private String actorDesc;	
 	private String target;
+	
+	private VerbUIStyle style;
 
 	public VerbUI(UI ui) {
 		super(ui.getSkin());
+		
+		style = ui.getSkin().get(VerbUIStyle.class);
+		
+		if (style.background != null)
+			setBackground(style.background);
 
 		this.ui = ui;
 
-		verbInfo = new Label(VERBS_DESC.get(VERBS.indexOf(DEFAULT_VERB)), ui.getSkin());
-		add(verbInfo).fillX().expandX();
+		infoLine = new Label(VERBS_DESC.get(VERBS.indexOf(DEFAULT_VERB)), style.infoLineLabelStyle);
+		infoLine.setAlignment(Align.center);
+		add(infoLine).colspan(2).fillX().expandX();
 		row();
 
 		Table verbs = createVerbPanel();
@@ -60,12 +69,12 @@ public class VerbUI extends Table {
 			if (i % VERB_COLS == 0)
 				verbs.row();
 
-			TextButton b = new TextButton(VERBS_DESC.get(i), ui.getSkin());
+			TextButton b = new TextButton(VERBS_DESC.get(i),style.verbButtonStyle);
 			b.setName(VERBS.get(i));
 			b.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
 					currentVerb = event.getListenerActor().getName();
-					verbInfo.setText(((TextButton) event.getListenerActor()).getText());
+					infoLine.setText(((TextButton) event.getListenerActor()).getText());
 				}
 			});
 
@@ -90,6 +99,16 @@ public class VerbUI extends Table {
 			}
 		}
 	}
+	
+	@Override
+	public void layout() {
+		super.layout();
+		
+		for(int i = 0; i < inventorySlots.size(); i++) {
+			inventorySlots.get(i).setMinWidth(100);
+			inventorySlots.get(i).setMinHeight(100);
+		}
+	}
 
 	private Table createInventoryPanel() {
 		Table inventory = new Table(ui.getSkin());
@@ -98,12 +117,12 @@ public class VerbUI extends Table {
 			if (i % INVENTORY_COLS == 0)
 				inventory.row();
 			
-			ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+			ImageButton.ImageButtonStyle s = new ImageButton.ImageButtonStyle(style.inventoryButtonStyle);
 			RendererDrawable r = new RendererDrawable();
 			inventorySlots.add(r);
-			style.imageUp = r;
+			s.imageUp = r;
 			
-			ImageButton b = new ImageButton(style);
+			ImageButton b = new ImageButton(s);
 			inventory.add(b).fill().expand();
 			b.setUserObject(i);
 		}
@@ -126,8 +145,28 @@ public class VerbUI extends Table {
 		String verbDesc = VERBS_DESC.get(VERBS.indexOf(currentVerb));
 		
 		if(desc != null)
-			verbInfo.setText(verbDesc + " " + desc);
+			infoLine.setText(verbDesc + " " + desc);
 		else
-			verbInfo.setText(verbDesc);
+			infoLine.setText(verbDesc);
+	}
+	
+	/** The style for the VerbUI */
+	static public class VerbUIStyle {
+		/** Optional. */
+		public Drawable background;
+
+		public TextButtonStyle verbButtonStyle;
+		public ButtonStyle inventoryButtonStyle;
+		public LabelStyle infoLineLabelStyle;
+
+		public VerbUIStyle() {
+		}
+
+		public VerbUIStyle(VerbUIStyle style) {
+			background = style.background;
+			verbButtonStyle = style.verbButtonStyle;
+			inventoryButtonStyle = style.inventoryButtonStyle;
+			infoLineLabelStyle = style.infoLineLabelStyle;
+		}
 	}
 }
