@@ -22,9 +22,11 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
@@ -44,7 +46,7 @@ public class TextManagerUI extends Actor {
 	private float maxRectangleWidth;
 	private float maxTalkWidth;
 
-	private SceneScreen sceneScreen;
+	private Viewport viewport;
 	private final Vector3 unprojectTmp = new Vector3();
 
 	private ObjectMap<String, TextManagerUIStyle> styles;
@@ -53,14 +55,17 @@ public class TextManagerUI extends Actor {
 	
 	private float fontX = 0;
 
-	public TextManagerUI(SceneScreen sceneScreen) {
-		this.sceneScreen = sceneScreen;
+	public TextManagerUI(Skin skin, Viewport viewport) {
 		setTouchable(Touchable.disabled);
-		styles = sceneScreen.getUI().getSkin().getAll(TextManagerUIStyle.class);
+		styles = skin.getAll(TextManagerUIStyle.class);
+		
 		for (TextManagerUIStyle style : styles.values()) {
 			style.font.getData().markupEnabled = true;
 		}
+		
 		setVisible(false);
+		
+		this.viewport = viewport;
 	}
 
 	@Override
@@ -83,7 +88,7 @@ public class TextManagerUI extends Actor {
 				float posy = currentSubtitle.y;
 
 				unprojectTmp.set(posx, posy, 0);
-				World.getInstance().getSceneCamera().scene2screen(sceneScreen.getViewport(), unprojectTmp);
+				World.getInstance().getSceneCamera().scene2screen(viewport, unprojectTmp);
 				
 				float maxWidth = currentSubtitle.type == Text.Type.TALK?maxTalkWidth:maxRectangleWidth;
 
@@ -97,17 +102,17 @@ public class TextManagerUI extends Actor {
 				layout.setText(style.font, currentSubtitle.str, color, maxWidth, Align.center, true);
 
 				if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE) {					
-					posx = (sceneScreen.getViewport().getScreenWidth() - layout.width)/2;
-					fontX = (sceneScreen.getViewport().getScreenWidth() - maxWidth)/2;
+					posx = (viewport.getScreenWidth() - layout.width)/2;
+					fontX = (viewport.getScreenWidth() - maxWidth)/2;
 				} else {
 					posx = unprojectTmp.x;
 					fontX = unprojectTmp.x;
 				}
 
 				if (posy == TextManager.POS_CENTER) {
-					posy = (sceneScreen.getViewport().getScreenHeight() - layout.height)/2;
+					posy = (viewport.getScreenHeight() - layout.height)/2;
 				} else if (posy == TextManager.POS_SUBTITLE) {
-					posy = sceneScreen.getViewport().getScreenHeight() - layout.height - DPIUtils.getMarginSize() * 4;
+					posy = viewport.getScreenHeight() - layout.height - DPIUtils.getMarginSize() * 4;
 				} else {
 					posy = unprojectTmp.y;
 				}
@@ -128,14 +133,14 @@ public class TextManagerUI extends Actor {
 					if (getX() < 0 && getX() > -getWidth()) {
 						setX(0);
 						fontX = getX() + PADDING;
-					} else if (getX() + getWidth() > sceneScreen.getViewport().getScreenWidth() && 
-							getX() + getWidth() < sceneScreen.getViewport().getScreenWidth() + getWidth()) {
-						setX(sceneScreen.getViewport().getScreenWidth() - getWidth());
-						fontX = sceneScreen.getViewport().getScreenWidth() - layout.width / 2 - PADDING - maxWidth / 2;
+					} else if (getX() + getWidth() > viewport.getScreenWidth() && 
+							getX() + getWidth() < viewport.getScreenWidth() + getWidth()) {
+						setX(viewport.getScreenWidth() - getWidth());
+						fontX = viewport.getScreenWidth() - layout.width / 2 - PADDING - maxWidth / 2;
 					}
 
-					if (getY() + getHeight() > sceneScreen.getViewport().getScreenHeight()) {
-						setY(sceneScreen.getViewport().getScreenHeight() - getHeight());
+					if (getY() + getHeight() > viewport.getScreenHeight()) {
+						setY(viewport.getScreenHeight() - getHeight());
 					}
 				}
 			}
@@ -154,7 +159,7 @@ public class TextManagerUI extends Actor {
 				float scale = DPIUtils.getTouchMinSize() / 4 / style.talkBubble.getMinHeight();
 //				float bubbleX = getX() + (getWidth()  - style.talkBubble.getMinWidth() * scale)/ 2;
 				unprojectTmp.set(subtitle.x, subtitle.y, 0);
-				World.getInstance().getSceneCamera().scene2screen(sceneScreen.getViewport(), unprojectTmp);
+				World.getInstance().getSceneCamera().scene2screen(viewport, unprojectTmp);
 				
 				float bubbleX = unprojectTmp.x  - style.talkBubble.getMinWidth() * scale / 2;
 				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + 2;

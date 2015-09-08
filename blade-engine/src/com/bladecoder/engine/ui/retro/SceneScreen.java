@@ -47,13 +47,11 @@ import com.bladecoder.engine.ui.BladeScreen;
 import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.MenuButton;
 import com.bladecoder.engine.ui.Recorder;
-import com.bladecoder.engine.ui.SceneExtendViewport;
 import com.bladecoder.engine.ui.SceneFitViewport;
 import com.bladecoder.engine.ui.TesterBot;
 import com.bladecoder.engine.ui.TextManagerUI;
 import com.bladecoder.engine.ui.UI;
 import com.bladecoder.engine.ui.UI.Screens;
-import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
@@ -64,7 +62,6 @@ public class SceneScreen implements BladeScreen {
 	private Stage stage;
 
 	private VerbUI verbUI;
-//	private InventoryUI inventoryUI;
 	private DialogUI dialogUI;
 	private TextManagerUI textManagerUI;
 	private ShapeRenderer renderer;
@@ -74,10 +71,10 @@ public class SceneScreen implements BladeScreen {
 	private Recorder recorder;
 	private TesterBot testerBot;
 
-	private final Viewport viewport;
+	private final Viewport verbViewport;
+	private final Viewport worldViewport;
 
 	private final Vector3 unprojectTmp = new Vector3();
-	private final Vector2 unproject2Tmp = new Vector2();
 
 	private final StringBuilder sbTmp = new StringBuilder();
 
@@ -89,7 +86,7 @@ public class SceneScreen implements BladeScreen {
 	private float speed = 1.0f;
 
 	private static enum UIStates {
-		SCENE_MODE, CUT_MODE, PLAY_MODE, PAUSE_MODE, INVENTORY_MODE, DIALOG_MODE, TESTER_BOT_MODE
+		SCENE_MODE, CUT_MODE, PLAY_MODE, PAUSE_MODE, DIALOG_MODE, TESTER_BOT_MODE
 	};
 
 	private UIStates state = UIStates.SCENE_MODE;
@@ -114,12 +111,8 @@ public class SceneScreen implements BladeScreen {
 			if (drawHotspots)
 				drawHotspots = false;
 			else {
-				getInputUnProject(unprojectTmp);
-
 				if (w.inCutMode() && !recorder.isRecording()) {
 					w.getTextManager().next();
-				} else if (state == UIStates.INVENTORY_MODE) {
-					// inventoryUI.hide();
 				} else if (state == UIStates.SCENE_MODE) {
 					sceneClick();
 				}
@@ -232,8 +225,8 @@ public class SceneScreen implements BladeScreen {
 	};
 
 	public SceneScreen() {
-		viewport = Config.getProperty(Config.EXTEND_VIEWPORT_PROP, true) ? new SceneExtendViewport()
-				: new SceneFitViewport();
+		verbViewport = new SceneFitViewport();		
+		worldViewport = new SceneFitViewport();
 	}
 
 	public UI getUI() {
@@ -257,28 +250,24 @@ public class SceneScreen implements BladeScreen {
 		case PLAY_MODE:
 		case TESTER_BOT_MODE:
 		case CUT_MODE:
-			// inventoryUI.hide();
 			// inventoryButton.setVisible(false);
 			// dialogUI.setVisible(false);
 			//
 			// inventoryUI.cancelDragging();
+			verbUI.setVisible(false);
 			ui.getPointer().reset();
 			break;
 		case DIALOG_MODE:
-			// inventoryUI.hide();
 			// inventoryButton.setVisible(false);
 			// dialogUI.show();
 			//
 			// inventoryUI.cancelDragging();
-			break;
-		case INVENTORY_MODE:
-			// inventoryUI.show();
-			// inventoryButton.setVisible(true);
-			// dialogUI.setVisible(false);
+
+			verbUI.setVisible(false);
 			break;
 		case SCENE_MODE:
-			// inventoryUI.hide();
 			// dialogUI.hide();
+
 			break;
 		}
 
@@ -327,10 +316,6 @@ public class SceneScreen implements BladeScreen {
 			else if (world.inCutMode())
 				setUIState(UIStates.CUT_MODE);
 			break;
-		case INVENTORY_MODE:
-			// if (!inventoryUI.isVisible())
-			// setUIState(UIStates.SCENE_MODE);
-			break;
 		case PAUSE_MODE:
 			if (!world.isPaused())
 				setUIState(UIStates.SCENE_MODE);
@@ -352,8 +337,6 @@ public class SceneScreen implements BladeScreen {
 				setUIState(UIStates.PLAY_MODE);
 			else if (testerBot.isEnabled())
 				setUIState(UIStates.TESTER_BOT_MODE);
-			// else if (inventoryUI.isVisible())
-			// setUIState(UIStates.INVENTORY_MODE);
 			else if (world.getCurrentDialog() != null)
 				setUIState(UIStates.DIALOG_MODE);
 			break;
@@ -367,15 +350,8 @@ public class SceneScreen implements BladeScreen {
 		recorder.update(delta * speed);
 		testerBot.update(delta * speed);
 
-		switch (state) {
-		case INVENTORY_MODE:
-			// unproject2Tmp.set(Gdx.input.getX(), Gdx.input.getY());
-			// inventoryUI.screenToLocalCoordinates(unproject2Tmp);
-			// currentActor = inventoryUI.getItemAt(unproject2Tmp.x,
-			// unproject2Tmp.y);
-			break;
-		case SCENE_MODE:
-			world.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
+		if (state == UIStates.SCENE_MODE) {
+			world.getSceneCamera().getInputUnProject(worldViewport, unprojectTmp);
 
 			final Scene currentScene = world.getCurrentScene();
 
@@ -388,7 +364,22 @@ public class SceneScreen implements BladeScreen {
 
 			currentActor = currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
 
-			break;
+			String desc = null;
+
+			if (currentActor != null) {
+				desc = currentActor.getDesc();
+
+				if (desc.charAt(0) == '@')
+					desc = I18N.getString(desc.substring(1));
+			}
+
+			verbUI.setActorDesc(desc);
+
+			if (world.getInventory().isVisible())
+				verbUI.setVisible(true);
+			else
+				verbUI.setVisible(false);
+
 		}
 	}
 
@@ -410,10 +401,14 @@ public class SceneScreen implements BladeScreen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// WORLD CAMERA
-		if(world.getInventory().isVisible())
-			Gdx.gl.glViewport(viewport.getScreenX(), viewport.getScreenY() + (int)verbUI.getHeight(), viewport.getScreenWidth(), viewport.getScreenHeight());
-		else
-			Gdx.gl.glViewport(viewport.getScreenX(), viewport.getScreenY(), viewport.getScreenWidth(), viewport.getScreenHeight());
+		if (world.getInventory().isVisible()) {
+			worldViewport.setScreenY(verbViewport.getScreenY() + (int) verbUI.getHeight());
+			
+		} else {
+			worldViewport.setScreenY(verbViewport.getScreenY());
+		}
+
+		worldViewport.apply();
 		
 		world.draw();
 
@@ -425,11 +420,11 @@ public class SceneScreen implements BladeScreen {
 		}
 
 		// STAGE CAMERA
-		Gdx.gl.glViewport(viewport.getScreenX(), viewport.getScreenY(), viewport.getScreenWidth(), viewport.getScreenHeight());
+		verbViewport.apply();
 		stage.draw();
 
 		// SCREEN CAMERA
-		batch.setProjectionMatrix(viewport.getCamera().combined);
+		batch.setProjectionMatrix(verbViewport.getCamera().combined);
 		batch.begin();
 
 		// DRAW DEBUG STRING
@@ -438,12 +433,12 @@ public class SceneScreen implements BladeScreen {
 		}
 
 		if (!world.inCutMode() && !recorder.isPlaying() && !testerBot.isEnabled()) {
-			ui.getPointer().draw(batch, viewport);
+			ui.getPointer().draw(batch, verbViewport);
 		}
 
 		Transition t = world.getTransition();
 
-		t.draw(batch, viewport.getScreenWidth(), viewport.getScreenHeight());
+		t.draw(batch, verbViewport.getScreenWidth(), verbViewport.getScreenHeight());
 
 		recorder.draw(batch);
 		testerBot.draw(batch);
@@ -457,7 +452,7 @@ public class SceneScreen implements BladeScreen {
 	private void drawDebugText(SpriteBatch batch) {
 		World w = World.getInstance();
 
-		getWorldInputUnProject(viewport, unprojectTmp);
+		w.getSceneCamera().getInputUnProject(worldViewport, unprojectTmp);
 
 		Color color;
 
@@ -492,10 +487,10 @@ public class SceneScreen implements BladeScreen {
 
 		String strDebug = sbTmp.toString();
 
-		textLayout.setText(ui.getSkin().getFont("debug"), strDebug, color, viewport.getScreenWidth(), Align.left, true);
-		RectangleRenderer.draw(batch, 0, viewport.getScreenHeight() - textLayout.height - 10, textLayout.width,
+		textLayout.setText(ui.getSkin().getFont("debug"), strDebug, color, verbViewport.getScreenWidth(), Align.left, true);
+		RectangleRenderer.draw(batch, 0, verbViewport.getScreenHeight() - textLayout.height - 10, textLayout.width,
 				textLayout.height + 10, Color.BLACK);
-		ui.getSkin().getFont("debug").draw(batch, textLayout, 0, viewport.getScreenHeight() - 5);
+		ui.getSkin().getFont("debug").draw(batch, textLayout, 0, verbViewport.getScreenHeight() - 5);
 
 		// Draw actor states when debug
 		if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
@@ -508,7 +503,7 @@ public class SceneScreen implements BladeScreen {
 					sbTmp.append(".").append(((InteractiveActor) a).getState());
 
 				unprojectTmp.set(r.getX(), r.getY(), 0);
-				w.getSceneCamera().scene2screen(viewport, unprojectTmp);
+				w.getSceneCamera().scene2screen(verbViewport, unprojectTmp);
 				ui.getSkin().getFont("debug").draw(batch, sbTmp.toString(), unprojectTmp.x, unprojectTmp.y);
 			}
 
@@ -535,7 +530,7 @@ public class SceneScreen implements BladeScreen {
 			Rectangle r = a.getBBox().getBoundingRectangle();
 
 			unprojectTmp.set(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2, 0);
-			world.getSceneCamera().scene2screen(viewport, unprojectTmp);
+			world.getSceneCamera().scene2screen(worldViewport, unprojectTmp);
 
 			if (ia.getDesc() == null) {
 
@@ -565,24 +560,25 @@ public class SceneScreen implements BladeScreen {
 	@Override
 	public void resize(int width, int height) {
 		final World world = World.getInstance();
+		
 		if (!world.isDisposed()) {
-			viewport.setWorldSize(world.getWidth(), world.getHeight());
-			viewport.update(width, height, true);
-			world.resize(viewport.getWorldWidth(), viewport.getWorldHeight());
-		} else {
-			viewport.setWorldSize(width, height);
-			viewport.update(width, height, true);
+			verbViewport.setWorldSize(world.getWidth(), world.getHeight());
+			verbViewport.update(width, height, true);
+			
+			worldViewport.setWorldSize(world.getWidth(), world.getHeight());
+			worldViewport.update(width, height, true);
+			world.resize(worldViewport.getWorldWidth(), worldViewport.getWorldHeight());
 		}
 
-		
-//		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
-//		textManagerUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
+		// inventoryUI.resize(viewport.getScreenWidth(),
+		// viewport.getScreenHeight());
+		textManagerUI.resize(worldViewport.getScreenWidth(), worldViewport.getScreenHeight());
 
 		menuButton.resize();
-		
-		float factor = 1 - 144.0f/200.0f;
-		
-		verbUI.setSize(viewport.getScreenWidth(), viewport.getScreenHeight() * factor);
+
+		float factor = 1 - 144.0f / 200.0f;
+
+		verbUI.setSize(verbViewport.getScreenWidth(), verbViewport.getScreenHeight() * factor);
 	}
 
 	public void dispose() {
@@ -592,13 +588,13 @@ public class SceneScreen implements BladeScreen {
 
 	private void retrieveAssets(TextureAtlas atlas) {
 		renderer = new ShapeRenderer();
-//		inventoryUI.retrieveAssets(atlas);
+		// inventoryUI.retrieveAssets(atlas);
 	}
 
 	private void sceneClick() {
 		World w = World.getInstance();
 
-		getWorldInputUnProject(viewport, unprojectTmp);
+		w.getSceneCamera().getInputUnProject(worldViewport, unprojectTmp);
 
 		Scene s = w.getCurrentScene();
 
@@ -623,42 +619,9 @@ public class SceneScreen implements BladeScreen {
 			}
 		}
 	}
-	
-	private void getWorldInputUnProject(Viewport viewport, Vector3 out) {
-		World w = World.getInstance();
 
-		out.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-		
-		int h;
-
-		if(!w.getInventory().isVisible())
-			h = viewport.getScreenY();
-		else
-			h = viewport.getScreenY() + (int)verbUI.getHeight();
-
-				
-		w.getSceneCamera().unproject(out, viewport.getScreenX(), h, 
-				viewport.getScreenWidth(), viewport.getScreenHeight());
-
-		if (out.x >= w.getSceneCamera().getScrollingWidth())
-			out.x =  w.getSceneCamera().getScrollingWidth() - 1;
-		else if (out.x < 0)
-			out.x = 0;
-
-		if (out.y >=  w.getSceneCamera().getScrollingHeight())
-			out.y = w.getSceneCamera().getScrollingHeight() - 1;
-		else if (out.y < 0)
-			out.y = 0;
-	}
-
-	public void actorClick(InteractiveActor a) {		
+	public void actorClick(InteractiveActor a) {
 		runVerb(a, verbUI.getCurrentVerb(), verbUI.getTarget());
-	}
-
-	private void getInputUnProject(Vector3 out) {
-		out.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-
-		viewport.unproject(out);
 	}
 
 	/**
@@ -690,16 +653,16 @@ public class SceneScreen implements BladeScreen {
 		currentActor = null;
 	}
 
-//	public InventoryUI getInventoryUI() {
-//		return inventoryUI;
-//	}
+	// public InventoryUI getInventoryUI() {
+	// return inventoryUI;
+	// }
 
 	@Override
 	public void show() {
 		retrieveAssets(ui.getUIAtlas());
 
-		stage = new Stage(viewport);
-		// stage.addActor(textManagerUI);
+		stage = new Stage(verbViewport);
+		stage.addActor(textManagerUI);
 		// stage.addActor(dialogUI);
 		stage.addActor(menuButton);
 		// stage.addActor(inventoryUI);
@@ -742,7 +705,7 @@ public class SceneScreen implements BladeScreen {
 	}
 
 	public Viewport getViewport() {
-		return viewport;
+		return verbViewport;
 	}
 
 	public InteractiveActor getCurrentActor() {
@@ -752,12 +715,11 @@ public class SceneScreen implements BladeScreen {
 	@Override
 	public void setUI(UI ui) {
 		this.ui = ui;
-		
+
 		recorder = ui.getRecorder();
 		testerBot = ui.getTesterbot();
 
-		// textManagerUI = new TextManagerUI(this);
-		// inventoryUI = new InventoryUI(this);
+		textManagerUI = new TextManagerUI(ui.getSkin(), verbViewport);
 		menuButton = new MenuButton(ui.getSkin(), ui);
 		// dialogUI = new DialogUI(this);
 

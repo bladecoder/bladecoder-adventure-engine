@@ -809,7 +809,7 @@ public class SceneScreen implements BladeScreen {
 		testerBot = ui.getTesterbot();
 
 		pie = new PieMenu(this);
-		textManagerUI = new TextManagerUI(this);
+		textManagerUI = new TextManagerUI(ui.getSkin(), viewport);
 		inventoryUI = new InventoryUI(this);
 		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
 		menuButton = new MenuButton(ui.getSkin(), ui);
