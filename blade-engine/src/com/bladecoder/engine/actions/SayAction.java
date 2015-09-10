@@ -83,7 +83,7 @@ public class SayAction extends BaseCallbackAction {
 	@Override
 	public boolean run(ActionCallback cb) {
 		float x, y;
-		Color color = Color.BLACK;
+		Color color = null;
 
 		setVerbCb(cb);
 		InteractiveActor actor = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, false);
@@ -97,13 +97,15 @@ public class SayAction extends BaseCallbackAction {
 			} else {
 				x = actor.getX();
 				y = actor.getY() + actor.getBBox().getBoundingRectangle().getHeight();
+				
 				color = ((CharacterActor)actor).getTextColor();
+				
 				restoreStandPose((CharacterActor)actor);
 				startTalkAnim((CharacterActor)actor);
 			}
 
 			World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null,
-					getWait() ? this : null);
+					this);
 		}
 
 		return getWait();

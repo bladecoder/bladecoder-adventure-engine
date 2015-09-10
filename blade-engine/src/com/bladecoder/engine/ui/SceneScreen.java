@@ -25,13 +25,9 @@ public interface SceneScreen extends BladeScreen {
 
 	InteractiveActor getCurrentActor();
 
-	void showMenu();
-
 	void actorClick(InteractiveActor actor, int button);
-
 	void runVerb(InteractiveActor a, String verb, String target);
 
 	float getSpeed();
-
 	void setSpeed(float speed);
 }

@@ -49,7 +49,6 @@ import com.bladecoder.engine.ui.InventoryButton;
 import com.bladecoder.engine.ui.InventoryUI;
 import com.bladecoder.engine.ui.MenuButton;
 import com.bladecoder.engine.ui.PieMenu;
-import com.bladecoder.engine.ui.Pointer;
 import com.bladecoder.engine.ui.Recorder;
 import com.bladecoder.engine.ui.SceneExtendViewport;
 import com.bladecoder.engine.ui.SceneFitViewport;
@@ -96,6 +95,8 @@ public class DefaultSceneScreen implements SceneScreen {
 	private final boolean showDesc;
 
 	private float speed = 1.0f;
+	
+	private ScenePointer pointer;
 
 	private static enum UIStates {
 		SCENE_MODE, CUT_MODE, PLAY_MODE, PAUSE_MODE, INVENTORY_MODE, DIALOG_MODE, TESTER_BOT_MODE
@@ -291,7 +292,7 @@ public class DefaultSceneScreen implements SceneScreen {
 				dialogUI.setVisible(false);
 
 				inventoryUI.cancelDragging();
-				ui.getPointer().reset();
+				pointer.reset();
 				break;
 			case DIALOG_MODE:
 				inventoryUI.hide();
@@ -421,7 +422,6 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 
 		if (!pie.isVisible()) {
-			final Pointer pointer = ui.getPointer();
 			if (currentActor != null) {
 				if (showDesc)
 					pointer.setDesc(currentActor.getDesc());
@@ -497,7 +497,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 
 		if (!world.inCutMode() && !recorder.isPlaying() && !testerBot.isEnabled()) {
-			ui.getPointer().draw(batch, viewport);
+			pointer.draw(batch, viewport);
 		}
 
 		Transition t = world.getTransition();
@@ -646,7 +646,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		pie.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
-		textManagerUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
+		textManagerUI.resize();
 		inventoryButton.resize();
 		menuButton.resize();
 	}
@@ -706,7 +706,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		} else {
 			getInputUnProject(unprojectTmp);
 			pie.show(a, unprojectTmp.x, unprojectTmp.y);
-			ui.getPointer().reset();
+			pointer.reset();
 		}
 	}
 
@@ -734,7 +734,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		a.runVerb(verb, target);
 	}
 
-	public void showMenu() {
+	private void showMenu() {
 		ui.setCurrentScreen(Screens.MENU_SCREEN);
 	}
 
@@ -743,7 +743,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			pie.hide();
 		}
 
-		ui.getPointer().reset();
+		pointer.reset();
 
 		currentActor = null;
 	}
@@ -816,11 +816,12 @@ public class DefaultSceneScreen implements SceneScreen {
 		testerBot = ui.getTesterBot();
 
 		pie = new PieMenu(this);
-		textManagerUI = new TextManagerUI(ui.getSkin(), viewport);
-		inventoryUI = new InventoryUI(this);
+		textManagerUI = new TextManagerUI(ui.getSkin());
 		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
 		menuButton = new MenuButton(ui);
 		dialogUI = new DialogUI(ui);
+		pointer = new ScenePointer(ui.getSkin());
+		inventoryUI = new InventoryUI(this, pointer);
 
 		this.pieMode = ui.isPieMode();
 

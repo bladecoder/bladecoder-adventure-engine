@@ -45,6 +45,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.MenuButton;
+import com.bladecoder.engine.ui.Pointer;
 import com.bladecoder.engine.ui.Recorder;
 import com.bladecoder.engine.ui.SceneFitViewport;
 import com.bladecoder.engine.ui.SceneScreen;
@@ -57,9 +58,14 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class RetroSceneScreen implements SceneScreen {
+	private static final float UI_SCREEN_PERCENT = 1 - 144.0f / 200.0f; // % of screen height of verbui;
+
 	private UI ui;
 
 	private Stage stage;
+	
+	// we need an stage for the TextManagerUI because it runs inside the world viewport
+	private Stage worldViewportStage;
 
 	private VerbUI verbUI;
 	private DialogUI dialogUI;
@@ -71,7 +77,7 @@ public class RetroSceneScreen implements SceneScreen {
 	private Recorder recorder;
 	private TesterBot testerBot;
 
-	private final Viewport verbViewport;
+	private final Viewport screenViewport;
 	private final Viewport worldViewport;
 
 	private final Vector3 unprojectTmp = new Vector3();
@@ -92,6 +98,8 @@ public class RetroSceneScreen implements SceneScreen {
 	private UIStates state = UIStates.SCENE_MODE;
 
 	private final GlyphLayout textLayout = new GlyphLayout();
+	
+	private Pointer pointer;
 
 	private final GestureDetector inputProcessor = new GestureDetector(new GestureDetector.GestureAdapter() {
 		@Override
@@ -145,15 +153,15 @@ public class RetroSceneScreen implements SceneScreen {
 		@Override
 		public boolean keyUp(int keycode) {
 			switch (keycode) {
-				case Input.Keys.ESCAPE:
-				case Input.Keys.BACK:
-				case Input.Keys.MENU:
-					showMenu();
-					break;
-				case Input.Keys.SPACE:
-					if (drawHotspots)
-						drawHotspots = false;
-					break;
+			case Input.Keys.ESCAPE:
+			case Input.Keys.BACK:
+			case Input.Keys.MENU:
+				ui.setCurrentScreen(Screens.MENU_SCREEN);
+				break;
+			case Input.Keys.SPACE:
+				if (drawHotspots)
+					drawHotspots = false;
+				break;
 			}
 
 			return true;
@@ -163,59 +171,59 @@ public class RetroSceneScreen implements SceneScreen {
 		public boolean keyTyped(char character) {
 			switch (character) {
 
-				case 'd':
-					EngineLogger.toggle();
-					break;
-				case '1':
-					EngineLogger.setDebugLevel(EngineLogger.DEBUG0);
-					break;
-				case '2':
-					EngineLogger.setDebugLevel(EngineLogger.DEBUG1);
-					break;
-				case '3':
-					EngineLogger.setDebugLevel(EngineLogger.DEBUG2);
-					break;
-				case 'f':
-					// ui.toggleFullScreen();
-					break;
-				case 's':
-					World.getInstance().saveGameState();
-					break;
-				case 'r':
-					World.getInstance().newGame();
-					break;
-				case 'l':
-					World.getInstance().loadGameState();
-					break;
-				case 't':
-					testerBot.setEnabled(!testerBot.isEnabled());
-					break;
-				case '.':
-					if (recorder.isRecording())
-						recorder.setRecording(false);
-					else
-						recorder.setRecording(true);
-					break;
-				case ',':
-					if (recorder.isPlaying())
-						recorder.setPlaying(false);
-					else {
-						recorder.load();
-						recorder.setPlaying(true);
-					}
-					break;
-				case 'p':
-					if (World.getInstance().isPaused()) {
-						World.getInstance().resume();
-					} else {
-						World.getInstance().pause();
-					}
-					break;
-				case ' ':
-					if (state == UIStates.SCENE_MODE) {
-						drawHotspots = true;
-					}
-					break;
+			case 'd':
+				EngineLogger.toggle();
+				break;
+			case '1':
+				EngineLogger.setDebugLevel(EngineLogger.DEBUG0);
+				break;
+			case '2':
+				EngineLogger.setDebugLevel(EngineLogger.DEBUG1);
+				break;
+			case '3':
+				EngineLogger.setDebugLevel(EngineLogger.DEBUG2);
+				break;
+			case 'f':
+				// ui.toggleFullScreen();
+				break;
+			case 's':
+				World.getInstance().saveGameState();
+				break;
+			case 'r':
+				World.getInstance().newGame();
+				break;
+			case 'l':
+				World.getInstance().loadGameState();
+				break;
+			case 't':
+				testerBot.setEnabled(!testerBot.isEnabled());
+				break;
+			case '.':
+				if (recorder.isRecording())
+					recorder.setRecording(false);
+				else
+					recorder.setRecording(true);
+				break;
+			case ',':
+				if (recorder.isPlaying())
+					recorder.setPlaying(false);
+				else {
+					recorder.load();
+					recorder.setPlaying(true);
+				}
+				break;
+			case 'p':
+				if (World.getInstance().isPaused()) {
+					World.getInstance().resume();
+				} else {
+					World.getInstance().pause();
+				}
+				break;
+			case ' ':
+				if (state == UIStates.SCENE_MODE) {
+					drawHotspots = true;
+				}
+				break;
 			}
 
 			// FIXME: This is returning false even in the cases where we
@@ -225,8 +233,22 @@ public class RetroSceneScreen implements SceneScreen {
 	};
 
 	public RetroSceneScreen() {
-		verbViewport = new SceneFitViewport();
-		worldViewport = new SceneFitViewport();
+		screenViewport = new SceneFitViewport();
+		
+		worldViewport = new Viewport() {
+			// This is the World Viewport. It is like a ScreenViewport but the camera is the same that the screenViewport;
+			@Override
+			public void apply (boolean centerCamera) {
+				Gdx.gl.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
+				getCamera().viewportWidth = getScreenWidth();
+				getCamera().viewportHeight = getScreenHeight();
+				if (centerCamera)
+					getCamera().position.set(getScreenWidth() / 2, getScreenHeight() / 2, 0);
+				getCamera().update();
+			}
+		};
+		
+		worldViewport.setCamera(screenViewport.getCamera());
 	}
 
 	public UI getUI() {
@@ -238,29 +260,24 @@ public class RetroSceneScreen implements SceneScreen {
 			return;
 
 		switch (s) {
-			case PAUSE_MODE:
-			case PLAY_MODE:
-			case TESTER_BOT_MODE:
-			case CUT_MODE:
-				// inventoryButton.setVisible(false);
-				// dialogUI.setVisible(false);
-				//
-				// inventoryUI.cancelDragging();
-				verbUI.setVisible(false);
-				ui.getPointer().reset();
-				break;
-			case DIALOG_MODE:
-				// inventoryButton.setVisible(false);
-				// dialogUI.show();
-				//
-				// inventoryUI.cancelDragging();
-
-				verbUI.setVisible(false);
-				break;
-			case SCENE_MODE:
-				// dialogUI.hide();
-
-				break;
+		case PAUSE_MODE:
+		case PLAY_MODE:
+		case TESTER_BOT_MODE:
+		case CUT_MODE:
+			dialogUI.setVisible(false);
+			verbUI.hide();
+			pointer.hide();
+			break;
+		case DIALOG_MODE:
+			dialogUI.show();
+			verbUI.hide();
+			pointer.show();
+			break;
+		case SCENE_MODE:
+			dialogUI.hide();
+			verbUI.show();
+			pointer.show();
+			break;
 		}
 
 		state = s;
@@ -298,43 +315,44 @@ public class RetroSceneScreen implements SceneScreen {
 
 		// CHECK FOR STATE CHANGES
 		switch (state) {
-			case CUT_MODE:
-				if (!world.inCutMode())
-					setUIState(UIStates.SCENE_MODE);
-				break;
-			case DIALOG_MODE:
-				if (world.getCurrentDialog() == null)
-					setUIState(UIStates.SCENE_MODE);
-				else if (world.inCutMode())
-					setUIState(UIStates.CUT_MODE);
-				break;
-			case PAUSE_MODE:
-				if (!world.isPaused())
-					setUIState(UIStates.SCENE_MODE);
-				break;
-			case PLAY_MODE:
-				if (!recorder.isPlaying())
-					setUIState(UIStates.SCENE_MODE);
-				break;
-			case TESTER_BOT_MODE:
-				if (!testerBot.isEnabled())
-					setUIState(UIStates.SCENE_MODE);
-				break;
-			case SCENE_MODE:
-				if (world.isPaused())
-					setUIState(UIStates.PAUSE_MODE);
-				else if (world.inCutMode())
-					setUIState(UIStates.CUT_MODE);
-				else if (recorder.isPlaying())
-					setUIState(UIStates.PLAY_MODE);
-				else if (testerBot.isEnabled())
-					setUIState(UIStates.TESTER_BOT_MODE);
-				else if (world.getCurrentDialog() != null)
-					setUIState(UIStates.DIALOG_MODE);
-				break;
+		case CUT_MODE:
+			if (!world.inCutMode())
+				setUIState(UIStates.SCENE_MODE);
+			break;
+		case DIALOG_MODE:
+			if (world.getCurrentDialog() == null)
+				setUIState(UIStates.SCENE_MODE);
+			else if (world.inCutMode())
+				setUIState(UIStates.CUT_MODE);
+			break;
+		case PAUSE_MODE:
+			if (!world.isPaused())
+				setUIState(UIStates.SCENE_MODE);
+			break;
+		case PLAY_MODE:
+			if (!recorder.isPlaying())
+				setUIState(UIStates.SCENE_MODE);
+			break;
+		case TESTER_BOT_MODE:
+			if (!testerBot.isEnabled())
+				setUIState(UIStates.SCENE_MODE);
+			break;
+		case SCENE_MODE:
+			if (world.isPaused())
+				setUIState(UIStates.PAUSE_MODE);
+			else if (world.inCutMode())
+				setUIState(UIStates.CUT_MODE);
+			else if (recorder.isPlaying())
+				setUIState(UIStates.PLAY_MODE);
+			else if (testerBot.isEnabled())
+				setUIState(UIStates.TESTER_BOT_MODE);
+			else if (world.getCurrentDialog() != null)
+				setUIState(UIStates.DIALOG_MODE);
+			break;
 		}
 
 		stage.act(delta);
+		worldViewportStage.act(delta);
 
 		if (state == UIStates.PAUSE_MODE)
 			return;
@@ -356,21 +374,12 @@ public class RetroSceneScreen implements SceneScreen {
 
 			currentActor = currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
 
-			String desc = null;
-
-			if (currentActor != null) {
-				desc = currentActor.getDesc();
-
-				if (desc.charAt(0) == '@')
-					desc = I18N.getString(desc.substring(1));
-			}
-
-			verbUI.setActorDesc(desc);
+			verbUI.setCurrentActor(currentActor);
 
 			if (world.getInventory().isVisible())
-				verbUI.setVisible(true);
+				verbUI.show();
 			else
-				verbUI.setVisible(false);
+				verbUI.hide();
 
 		}
 	}
@@ -393,14 +402,17 @@ public class RetroSceneScreen implements SceneScreen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// WORLD CAMERA
-		if (world.getInventory().isVisible()) {
-			worldViewport.setScreenY(verbViewport.getScreenY() + (int) verbUI.getHeight());
-
+		if (world.getInventory().isVisible()) {			
+			worldViewport.setScreenY(screenViewport.getScreenY() + (int)verbUI.getHeight());
+			worldViewport.setScreenHeight(screenViewport.getScreenHeight() - (int) verbUI.getHeight());
+			world.resize(world.getWidth(), world.getHeight() * (1 - UI_SCREEN_PERCENT));
 		} else {
-			worldViewport.setScreenY(verbViewport.getScreenY());
+			worldViewport.setScreenY(screenViewport.getScreenY());
+			worldViewport.setScreenHeight(screenViewport.getScreenHeight());
+			world.resize(world.getWidth(), world.getHeight());
 		}
-
-		worldViewport.apply();
+		
+		worldViewport.apply(true);
 
 		world.draw();
 
@@ -411,12 +423,8 @@ public class RetroSceneScreen implements SceneScreen {
 			renderer.end();
 		}
 
-		// STAGE CAMERA
-		verbViewport.apply();
-		stage.draw();
-
 		// SCREEN CAMERA
-		batch.setProjectionMatrix(verbViewport.getCamera().combined);
+		batch.setProjectionMatrix(worldViewport.getCamera().combined);
 		batch.begin();
 
 		// DRAW DEBUG STRING
@@ -424,13 +432,9 @@ public class RetroSceneScreen implements SceneScreen {
 			drawDebugText(batch);
 		}
 
-		if (!world.inCutMode() && !recorder.isPlaying() && !testerBot.isEnabled()) {
-			ui.getPointer().draw(batch, verbViewport);
-		}
-
 		Transition t = world.getTransition();
 
-		t.draw(batch, verbViewport.getScreenWidth(), verbViewport.getScreenHeight());
+		t.draw(batch, worldViewport.getScreenWidth(), worldViewport.getScreenHeight());
 
 		recorder.draw(batch);
 		testerBot.draw(batch);
@@ -439,6 +443,12 @@ public class RetroSceneScreen implements SceneScreen {
 			drawHotspots(batch);
 
 		batch.end();
+		
+		worldViewportStage.draw();
+		
+		// STAGE CAMERA
+		screenViewport.apply(true);
+		stage.draw();
 	}
 
 	private void drawDebugText(SpriteBatch batch) {
@@ -479,10 +489,12 @@ public class RetroSceneScreen implements SceneScreen {
 
 		String strDebug = sbTmp.toString();
 
-		textLayout.setText(ui.getSkin().getFont("debug"), strDebug, color, verbViewport.getScreenWidth(), Align.left, true);
-		RectangleRenderer.draw(batch, 0, verbViewport.getScreenHeight() - textLayout.height - 10, textLayout.width,
+		textLayout.setText(ui.getSkin().getFont("debug"), strDebug, color, worldViewport.getScreenWidth(), Align.left,
+				true);
+		
+		RectangleRenderer.draw(batch, 0, worldViewport.getScreenHeight() - textLayout.height - 10, textLayout.width,
 				textLayout.height + 10, Color.BLACK);
-		ui.getSkin().getFont("debug").draw(batch, textLayout, 0, verbViewport.getScreenHeight() - 5);
+		ui.getSkin().getFont("debug").draw(batch, textLayout, 0, worldViewport.getScreenHeight() - 5);
 
 		// Draw actor states when debug
 		if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
@@ -495,7 +507,12 @@ public class RetroSceneScreen implements SceneScreen {
 					sbTmp.append(".").append(((InteractiveActor) a).getState());
 
 				unprojectTmp.set(r.getX(), r.getY(), 0);
-				w.getSceneCamera().scene2screen(verbViewport, unprojectTmp);
+				w.getSceneCamera().scene2screen(worldViewport, unprojectTmp);
+				
+				if (w.getInventory().isVisible()) {	
+//					 unprojectTmp.y += verbUI.getHeight();
+				}
+				
 				ui.getSkin().getFont("debug").draw(batch, sbTmp.toString(), unprojectTmp.x, unprojectTmp.y);
 			}
 
@@ -523,6 +540,10 @@ public class RetroSceneScreen implements SceneScreen {
 
 			unprojectTmp.set(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2, 0);
 			world.getSceneCamera().scene2screen(worldViewport, unprojectTmp);
+			
+			if (world.getInventory().isVisible()) {	
+//				 unprojectTmp.y += verbUI.getHeight();
+			}
 
 			if (ia.getDesc() == null) {
 
@@ -554,33 +575,30 @@ public class RetroSceneScreen implements SceneScreen {
 		final World world = World.getInstance();
 
 		if (!world.isDisposed()) {
-			verbViewport.setWorldSize(world.getWidth(), world.getHeight());
-			verbViewport.update(width, height, true);
+			screenViewport.setWorldSize(world.getWidth(), world.getHeight());
+			screenViewport.update(width, height, true);
 
-			worldViewport.setWorldSize(world.getWidth(), world.getHeight());
-			worldViewport.update(width, height, true);
-			world.resize(worldViewport.getWorldWidth(), worldViewport.getWorldHeight());
+			worldViewport.setScreenBounds(screenViewport.getScreenX(), screenViewport.getScreenY(), 
+					screenViewport.getScreenWidth(), screenViewport.getScreenHeight());
+
+			world.resize(screenViewport.getWorldWidth(), screenViewport.getWorldHeight());
 		}
 
-		// inventoryUI.resize(viewport.getScreenWidth(),
-		// viewport.getScreenHeight());
-		textManagerUI.resize(worldViewport.getScreenWidth(), worldViewport.getScreenHeight());
-
+		textManagerUI.resize();
 		menuButton.resize();
-
-		float factor = 1 - 144.0f / 200.0f;
-
-		verbUI.setSize(verbViewport.getScreenWidth(), verbViewport.getScreenHeight() * factor);
+		pointer.resize();
+		
+		verbUI.setSize(screenViewport.getScreenWidth(), screenViewport.getScreenHeight() * UI_SCREEN_PERCENT);
 	}
 
 	public void dispose() {
 		renderer.dispose();
 		stage.dispose();
+		worldViewportStage.dispose();
 	}
 
 	private void retrieveAssets(TextureAtlas atlas) {
 		renderer = new ShapeRenderer();
-		// inventoryUI.retrieveAssets(atlas);
 	}
 
 	private void sceneClick(int button) {
@@ -624,8 +642,6 @@ public class RetroSceneScreen implements SceneScreen {
 	 * @param target
 	 */
 	public void runVerb(InteractiveActor a, String verb, String target) {
-		// if (inventoryUI.isVisible())
-		// inventoryUI.hide();
 
 		if (recorder.isRecording()) {
 			recorder.add(a.getId(), verb, target);
@@ -634,31 +650,19 @@ public class RetroSceneScreen implements SceneScreen {
 		a.runVerb(verb, target);
 	}
 
-	public void showMenu() {
-		ui.setCurrentScreen(Screens.MENU_SCREEN);
-	}
-
-	private void resetUI() {
-
-		ui.getPointer().reset();
-
-		currentActor = null;
-	}
-
-	// public InventoryUI getInventoryUI() {
-	// return inventoryUI;
-	// }
-
 	@Override
 	public void show() {
 		retrieveAssets(ui.getUIAtlas());
 
-		stage = new Stage(verbViewport);
-		stage.addActor(textManagerUI);
-		// stage.addActor(dialogUI);
+		stage = new Stage(screenViewport);
+//		stage.addActor(textManagerUI);
+		stage.addActor(dialogUI);
 		stage.addActor(menuButton);
-		// stage.addActor(inventoryUI);
 		stage.addActor(verbUI);
+		stage.addActor(pointer);
+		
+		worldViewportStage = new Stage(worldViewport);
+		worldViewportStage.addActor(textManagerUI);
 
 		final InputMultiplexer multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(stage);
@@ -682,7 +686,7 @@ public class RetroSceneScreen implements SceneScreen {
 	@Override
 	public void hide() {
 		World.getInstance().pause();
-		resetUI();
+		currentActor = null;
 		dispose();
 	}
 
@@ -697,7 +701,7 @@ public class RetroSceneScreen implements SceneScreen {
 	}
 
 	public Viewport getViewport() {
-		return verbViewport;
+		return screenViewport;
 	}
 
 	public InteractiveActor getCurrentActor() {
@@ -711,10 +715,12 @@ public class RetroSceneScreen implements SceneScreen {
 		recorder = ui.getRecorder();
 		testerBot = ui.getTesterBot();
 
-		textManagerUI = new TextManagerUI(ui.getSkin(), verbViewport);
+		textManagerUI = new TextManagerUI(ui.getSkin());
 		menuButton = new MenuButton(ui);
-		// dialogUI = new DialogUI(this);
+		dialogUI = new DialogUI(ui);
 
-		verbUI = new VerbUI(ui);
+		verbUI = new VerbUI(this);
+		
+		pointer = new Pointer(ui.getSkin());
 	}
 }

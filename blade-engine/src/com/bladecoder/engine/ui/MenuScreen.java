@@ -51,6 +51,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 	private Stage stage;
 	private Texture bgTexFile = null;
+	Pointer pointer;
 
 	public MenuScreen() {
 	}
@@ -62,16 +63,12 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 		stage.act(delta);
 		stage.draw();
-
-		ui.getBatch().setProjectionMatrix(stage.getViewport().getCamera().combined);
-		ui.getBatch().begin();
-		ui.getPointer().draw(ui.getBatch(), stage.getViewport());
-		ui.getBatch().end();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
+		pointer.resize();
 	}
 
 	@Override
@@ -274,6 +271,9 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		buttonStack.setFillParent(true);
 		buttonStack.pack();
 		stage.addActor(buttonStack);
+		
+		pointer = new Pointer(skin);
+		stage.addActor(pointer);
 
 		Gdx.input.setInputProcessor(stage);
 	}

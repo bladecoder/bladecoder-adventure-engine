@@ -18,7 +18,6 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -32,6 +31,7 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.ui.defaults.ScenePointer;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
@@ -42,8 +42,6 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	public final static int LEFT = 2;
 	public final static int RIGHT = 3;
 	public final static int CENTER = 4;
-
-	private final Rectangle configBbox = new Rectangle();
 
 	private int tileSize;
 	private int margin;
@@ -62,10 +60,13 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	private final Vector2 orgPos = new Vector2();
 	private final Vector2 targetPos = new Vector2();
+	
+	private final ScenePointer pointer;
 
-	public InventoryUI(SceneScreen scr) {
+	public InventoryUI(SceneScreen scr, ScenePointer pointer) {
 		style = scr.getUI().getSkin().get(InventoryUIStyle.class);
 		sceneScreen = scr;
+		this.pointer = pointer;
 
 		String pos = Config.getProperty(Config.INVENTORY_POS_PROP, "down");
 
@@ -88,8 +89,6 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 				if (draggedActor != null) {
 					stopDragging(button);
-				} else if (configBbox.contains(x, y)) {
-					sceneScreen.showMenu();
 				} else {
 					InteractiveActor actor = getItemAt(x, y);
 
@@ -261,13 +260,13 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	public void cancelDragging() {
 		draggedActor = null;
-		sceneScreen.getUI().getPointer().drag(null);
+		pointer.drag(null);
 	}
 
 	private void startDragging(float x, float y) {
 		draggedActor = getItemAt(x, y);
 		if (draggedActor != null)
-			sceneScreen.getUI().getPointer().drag(draggedActor.getRenderer());
+			pointer.drag(draggedActor.getRenderer());
 	}
 
 	public boolean isDragging() {
@@ -289,7 +288,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		}
 
 		draggedActor = null;
-		sceneScreen.getUI().getPointer().drag(null);
+		pointer.drag(null);
 	}
 
 	private void use(InteractiveActor targetActor, InteractiveActor invActor) {

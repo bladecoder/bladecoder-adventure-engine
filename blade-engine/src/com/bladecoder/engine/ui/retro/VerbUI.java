@@ -15,40 +15,45 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.ui.UI;
+import com.bladecoder.engine.ui.SceneScreen;
 
 public class VerbUI extends Table {
-	private static final List<String> VERBS = Arrays.asList("give", "pickup", "use", "open", "talkto", "push", "close", "lookat", "pull");
-	private static final List<String> VERBS_DESC = Arrays.asList("Give", "Pick up", "Use", "Open", "Talk to", "Push", "Close", "Lookat", "Pull");
+	private final static float MARGIN = 1;
+	
+	private static final List<String> VERBS = Arrays.asList("give", "pickup", "use", "open", "talkto", "push", "close",
+			"lookat", "pull");
+	private static final List<String> VERBS_DESC = Arrays.asList("Give", "Pick up", "Use", "Open", "Talk to", "Push",
+			"Close", "Lookat", "Pull");
 
 	private static final int VERB_COLS = 3;
 
 	private static final int INVENTORY_COLS = 3;
 	private static final int INVENTORY_ROWS = 3;
-	
-	private final List<RendererDrawable> inventorySlots = new ArrayList<RendererDrawable>();
 
-	private final UI ui;
+	private final List<ImageButton> inventorySlots = new ArrayList<ImageButton>();
+
+	private final SceneScreen sceneScreen;
 	private final String DEFAULT_VERB = "lookat";
 	private final Label infoLine;
 
 	private String currentVerb = DEFAULT_VERB;
-	private String actorDesc;	
-	private String target;
-	
+	private InteractiveActor target;
+
 	private VerbUIStyle style;
 
-	public VerbUI(UI ui) {
-		super(ui.getSkin());
-		
-		style = ui.getSkin().get(VerbUIStyle.class);
-		
+	public VerbUI(SceneScreen scn) {
+		super(scn.getUI().getSkin());
+
+		style = scn.getUI().getSkin().get(VerbUIStyle.class);
+
 		if (style.background != null)
 			setBackground(style.background);
 
-		this.ui = ui;
+		this.sceneScreen = scn;
 
 		infoLine = new Label(VERBS_DESC.get(VERBS.indexOf(DEFAULT_VERB)), style.infoLineLabelStyle);
 		infoLine.setAlignment(Align.center);
@@ -63,18 +68,21 @@ public class VerbUI extends Table {
 	}
 
 	private Table createVerbPanel() {
-		Table verbs = new Table(ui.getSkin());
+		Table verbs = new Table();
+		
+		verbs.defaults().pad(MARGIN);
 
 		for (int i = 0; i < VERBS.size(); i++) {
 			if (i % VERB_COLS == 0)
 				verbs.row();
 
-			TextButton b = new TextButton(VERBS_DESC.get(i),style.verbButtonStyle);
+			TextButton b = new TextButton(VERBS_DESC.get(i), style.verbButtonStyle);
 			b.setName(VERBS.get(i));
 			b.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
 					currentVerb = event.getListenerActor().getName();
 					infoLine.setText(((TextButton) event.getListenerActor()).getText());
+					target = null;
 				}
 			});
 
@@ -83,50 +91,63 @@ public class VerbUI extends Table {
 
 		return verbs;
 	}
-	
+
 	@Override
 	public void act(float delta) {
 		super.act(delta);
-		
+
 		Inventory inv = World.getInstance().getInventory();
-		
+
 		// fill inventory
-		for(int i = 0; i < inventorySlots.size(); i++) {
-			if(i < inv.getNumItems()) {
-				inventorySlots.get(i).setRenderer(inv.getItem(i).getRenderer());
+		for (int i = 0; i < inventorySlots.size(); i++) {
+			RendererDrawable r = (RendererDrawable) inventorySlots.get(i).getImage().getDrawable();
+
+			if (i < inv.getNumItems()) {
+				r.setRenderer(inv.getItem(i).getRenderer());
 			} else {
-				inventorySlots.get(i).setRenderer(null);
+				r.setRenderer(null);
 			}
-		}
-	}
-	
-	@Override
-	public void layout() {
-		super.layout();
-		
-		for(int i = 0; i < inventorySlots.size(); i++) {
-			inventorySlots.get(i).setMinWidth(100);
-			inventorySlots.get(i).setMinHeight(100);
 		}
 	}
 
 	private Table createInventoryPanel() {
-		Table inventory = new Table(ui.getSkin());
+		Table inventory = new Table();
 		
-		for(int i=0; i < INVENTORY_COLS * INVENTORY_ROWS; i++) {
+		inventory.defaults().pad(MARGIN);
+
+		for (int i = 0; i < INVENTORY_COLS * INVENTORY_ROWS; i++) {
 			if (i % INVENTORY_COLS == 0)
 				inventory.row();
-			
+
 			ImageButton.ImageButtonStyle s = new ImageButton.ImageButtonStyle(style.inventoryButtonStyle);
 			RendererDrawable r = new RendererDrawable();
-			inventorySlots.add(r);
 			s.imageUp = r;
-			
+
 			ImageButton b = new ImageButton(s);
+
 			inventory.add(b).fill().expand();
 			b.setUserObject(i);
+			inventorySlots.add(b);
+
+			b.addListener(new ClickListener() {
+				public void clicked(InputEvent event, float x, float y) {
+					int i = (Integer) event.getListenerActor().getUserObject();
+					Inventory inv = World.getInstance().getInventory();
+					target = null;
+
+					if (i < inv.getNumItems()) {
+						InteractiveActor actor = inv.getItem(i);
+
+						if (currentVerb.equals("use") || currentVerb.equals("give")) {
+							target = actor;
+						} else {
+							sceneScreen.runVerb(actor, currentVerb, null);
+						}
+					}
+				}
+			});
 		}
-		
+
 		return inventory;
 	}
 
@@ -135,21 +156,59 @@ public class VerbUI extends Table {
 	}
 
 	public String getTarget() {
-		// TODO Auto-generated method stub
-		return null;
+		return target == null ? null : target.getId();
 	}
-	
-	public void setActorDesc(String desc) {
-		actorDesc = desc;
-		
+
+	public void setCurrentActor(InteractiveActor actor) {
 		String verbDesc = VERBS_DESC.get(VERBS.indexOf(currentVerb));
-		
-		if(desc != null)
-			infoLine.setText(verbDesc + " " + desc);
-		else
-			infoLine.setText(verbDesc);
+		String desc = getTranslatedDesc(actor);
+
+		if (target != null) {
+			String prep;
+
+			if (currentVerb.equals("give")) {
+				prep = " to ";
+			} else {
+				prep = " with ";
+			}
+
+			if (desc != null)
+				infoLine.setText(verbDesc + " " + getTranslatedDesc(target) + prep + desc);
+			else
+				infoLine.setText(verbDesc + " " + getTranslatedDesc(target) + prep);
+		} else {
+			if (desc != null)
+				infoLine.setText(verbDesc + " " + desc);
+			else
+				infoLine.setText(verbDesc);
+		}
 	}
-	
+
+	private String getTranslatedDesc(InteractiveActor actor) {
+		String desc = null;
+
+		if (actor != null) {
+			desc = actor.getDesc();
+
+			if (desc.charAt(0) == '@')
+				desc = I18N.getString(desc.substring(1));
+		}
+
+		return desc;
+	}
+
+	public void show() {
+		setVisible(true);
+	}
+
+	public void hide() {
+		target = null;
+		currentVerb = DEFAULT_VERB;
+		setCurrentActor(null);
+
+		setVisible(false);
+	}
+
 	/** The style for the VerbUI */
 	static public class VerbUIStyle {
 		/** Optional. */

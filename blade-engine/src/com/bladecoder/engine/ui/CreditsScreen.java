@@ -140,8 +140,6 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 			}
 		}
 
-		ui.getPointer().draw(batch, viewport);
-
 		batch.end();
 	}
 
@@ -313,11 +311,9 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 		public BitmapFont titleFont;
 		public BitmapFont font;
 
-		@SuppressWarnings("unused")
 		public CreditScreenStyle() {
 		}
 
-		@SuppressWarnings("unused")
 		public CreditScreenStyle(CreditScreenStyle style) {
 			background = style.background;
 			bgFile = style.bgFile;

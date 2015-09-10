@@ -52,6 +52,8 @@ public class DebugScreen implements BladeScreen {
 	private TextField testerTimeConf;
 	private TextField inSceneTimeConf;
 	private TextField testerExcludeList;
+	
+	private Pointer pointer;
 
 	public DebugScreen() {
 	}
@@ -63,16 +65,12 @@ public class DebugScreen implements BladeScreen {
 
 		stage.act(delta);
 		stage.draw();
-
-		ui.getBatch().setProjectionMatrix(stage.getViewport().getCamera().combined);
-		ui.getBatch().begin();
-		ui.getPointer().draw(ui.getBatch(), stage.getViewport());
-		ui.getBatch().end();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
+		pointer.resize();
 	}
 
 	@Override
@@ -351,6 +349,9 @@ public class DebugScreen implements BladeScreen {
 		table.pack();
 
 		stage.addActor(table);
+		
+		pointer = new Pointer(ui.getSkin());
+		stage.addActor(pointer);
 
 		Gdx.input.setInputProcessor(stage);
 	}

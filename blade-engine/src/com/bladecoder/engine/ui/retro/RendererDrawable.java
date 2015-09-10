@@ -15,17 +15,17 @@ public class RendererDrawable extends BaseDrawable {
 
 	@Override
 	public void draw(Batch batch, float x, float y, float width, float height) {
-		float scale;
-		
 		if(renderer == null)
 			return;
 		
-		if(renderer.getWidth() > renderer.getHeight())
-			scale = width / renderer.getWidth();
-		else
-			scale = height / renderer.getHeight();
+//		float scale;
+//		
+//		if(renderer.getWidth() > renderer.getHeight())
+//			scale = width / renderer.getWidth();
+//		else
+//			scale = height / renderer.getHeight();
 				
 		renderer.draw((SpriteBatch) batch, x,
-				y - renderer.getHeight() / 2, 1);		
+				y - renderer.getHeight() / 2, 1);
 	}
 }

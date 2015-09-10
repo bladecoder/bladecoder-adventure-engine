@@ -96,7 +96,6 @@ public class InitScreen extends ScreenAdapter implements BladeScreen {
 		time = fadeTime = 0;
 		Gdx.input.setInputProcessor(null);
 		retrieveAssets();
-		ui.getPointer().reset();
 	}
 
 	@Override

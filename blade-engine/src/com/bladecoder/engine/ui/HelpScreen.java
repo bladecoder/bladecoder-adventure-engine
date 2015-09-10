@@ -74,7 +74,6 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();
 		batch.draw(tex, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
-		ui.getPointer().draw(batch, viewport);
 		batch.end();
 	}
 

@@ -17,12 +17,22 @@ package com.bladecoder.engine.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.util.EngineLogger;
 
+/**
+ * This is a Custom ExtendViewport:
+ * 
+ *   - The camera uses screen coordinates. This is used to draw fonts and UI 1:1
+ *   - The world dimensions is used only to calculate the dimensions of the viewport
+ *   - The dimensions of the viewport is calculated to extend the world between 4:3 and 16:9
+ * 
+ * @author rgarcia
+ */
 public class SceneExtendViewport extends Viewport {
 	private float minWorldWidth, minWorldHeight;
 	private float maxWorldWidth, maxWorldHeight;
@@ -106,16 +116,9 @@ public class SceneExtendViewport extends Viewport {
 	@Override
 	public Vector2 unproject(Vector2 out) {
 		super.unproject(out);
-
-		if (out.x >= getScreenWidth())
-			out.x = getScreenWidth() - 1;
-		else if (out.x < 0)
-			out.x = 0;
-
-		if (out.y >= getScreenHeight())
-			out.y = getScreenHeight() - 1;
-		else if (out.y < 0)
-			out.y = 0;
+		
+		out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
+		out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
 
 		return out;
 	}
@@ -124,15 +127,8 @@ public class SceneExtendViewport extends Viewport {
 	public Vector3 unproject(Vector3 out) {
 		super.unproject(out);
 
-		if (out.x >= getScreenWidth())
-			out.x = getScreenWidth() - 1;
-		else if (out.x < 0)
-			out.x = 0;
-
-		if (out.y >= getScreenHeight())
-			out.y = getScreenHeight() - 1;
-		else if (out.y < 0)
-			out.y = 0;
+		out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
+		out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
 
 		return out;
 	}

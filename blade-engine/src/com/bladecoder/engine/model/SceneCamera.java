@@ -17,6 +17,7 @@ package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
@@ -78,8 +79,8 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 	}
 
 	public void setScrollingDimensions(float w, float h) {
-		scrollingWidth = Math.max(w, viewportWidth);
-		scrollingHeight =  Math.max(h, viewportHeight);
+		scrollingWidth = w;
+		scrollingHeight =  h;
 	}
 	
 	public void update(float delta) {
@@ -99,15 +100,8 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		float maxbottom = viewportHeight / 2 * zoom;
 		float maxtop = (scrollingHeight - viewportHeight / 2 * zoom);
 
-		if (x <= maxleft )
-			x = maxleft;
-		else if (x >= maxright)
-			x = maxright;
-		
-		if (y <= maxbottom)
-			y = maxbottom;
-		else if (y >= maxtop)
-			y = maxtop;
+		x = MathUtils.clamp(x, maxleft, maxright);	
+		y = MathUtils.clamp(x, maxbottom, maxtop);
 
 		position.set(x, y, 0);
 		
@@ -144,15 +138,8 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		unproject(out, viewport.getScreenX(), viewport.getScreenY(), 
 				viewport.getScreenWidth(), viewport.getScreenHeight());
 
-		if (out.x >= scrollingWidth)
-			out.x = scrollingWidth - 1;
-		else if (out.x < 0)
-			out.x = 0;
-
-		if (out.y >= scrollingHeight)
-			out.y = scrollingHeight - 1;
-		else if (out.y < 0)
-			out.y = 0;
+		out.x = MathUtils.clamp(out.x, 0, scrollingWidth - 1);
+		out.y = MathUtils.clamp(out.y, 0, scrollingHeight - 1);
 	}
 
 	public void updatePos(SpriteActor followActor) {

@@ -66,6 +66,8 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 	// texture list for final dispose
 	private final ArrayList<Texture> textureList = new ArrayList<Texture>();
+	
+	private Pointer pointer;
 
 	public LoadSaveScreen() {
 	}
@@ -77,16 +79,12 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 		stage.act(delta);
 		stage.draw();
-
-		ui.getBatch().setProjectionMatrix(stage.getViewport().getCamera().combined);
-		ui.getBatch().begin();
-		ui.getPointer().draw(ui.getBatch(), stage.getViewport());
-		ui.getBatch().end();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
+		pointer.resize();
 	}
 
 	@Override
@@ -225,6 +223,9 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 		stage.setKeyboardFocus(table);
 		stage.addActor(table);
+		
+		pointer = new Pointer(ui.getSkin());
+		stage.addActor(pointer);
 
 		Gdx.input.setInputProcessor(stage);
 	}

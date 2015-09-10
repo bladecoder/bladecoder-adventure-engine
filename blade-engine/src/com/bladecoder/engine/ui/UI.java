@@ -39,7 +39,6 @@ public class UI {
 	private final TesterBot testerBot = new TesterBot();
 	
 	private boolean fullscreen = false;
-	private Pointer pointer;
 
 	private BladeScreen screen;
 
@@ -128,10 +127,6 @@ public class UI {
 	public SpriteBatch getBatch() {
 		return batch;
 	}
-	
-	public Pointer getPointer() {
-		return pointer;
-	}
 
 	public BladeScreen getCurrentScreen() {
 		return screen;
@@ -182,12 +177,9 @@ public class UI {
 		TextureAtlas atlas = new TextureAtlas(EngineAssetManager.getInstance().getResAsset(
 				SKIN_FILENAME.substring(0,SKIN_FILENAME.lastIndexOf('.')) + ".atlas"));
 		skin = new BladeSkin(skinFile, atlas);
-		pointer = new Pointer(skin);
 	}
 
 	public void resize(int width, int height) {
-		pointer.resize(width, height);
-
 		if (screen != null)
 			screen.resize(width, height);
 	}
