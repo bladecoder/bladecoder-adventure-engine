@@ -101,7 +101,7 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		float maxtop = (scrollingHeight - viewportHeight / 2 * zoom);
 
 		x = MathUtils.clamp(x, maxleft, maxright);	
-		y = MathUtils.clamp(x, maxbottom, maxtop);
+		y = MathUtils.clamp(y, maxbottom, maxtop);
 
 		position.set(x, y, 0);
 		

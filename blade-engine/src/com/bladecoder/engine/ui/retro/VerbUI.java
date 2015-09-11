@@ -260,7 +260,7 @@ public class VerbUI extends Table {
 	private String getTranslatedDesc(InteractiveActor actor) {
 		String desc = null;
 
-		if (actor != null) {
+		if (actor != null && actor.getDesc() != null) {
 			desc = actor.getDesc();
 
 			if (desc.charAt(0) == '@')
