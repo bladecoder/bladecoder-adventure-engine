@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -20,6 +21,7 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.SceneScreen;
+import com.bladecoder.engine.util.DPIUtils;
 
 public class VerbUI extends Table {
 	private final static float MARGIN = 1;
@@ -44,6 +46,11 @@ public class VerbUI extends Table {
 	private InteractiveActor target;
 
 	private VerbUIStyle style;
+	
+	private int scroll = 0;
+	
+	private Table arrowPanel;
+	private Table invPanel;
 
 	public VerbUI(SceneScreen scn) {
 		super(scn.getUI().getSkin());
@@ -57,14 +64,59 @@ public class VerbUI extends Table {
 
 		infoLine = new Label(VERBS_DESC.get(VERBS.indexOf(DEFAULT_VERB)), style.infoLineLabelStyle);
 		infoLine.setAlignment(Align.center);
-		add(infoLine).colspan(2).fillX().expandX();
+		add(infoLine).colspan(3).fillX().expandX();
 		row();
 
 		Table verbs = createVerbPanel();
 		add(verbs).fill().expand();
+		
+		arrowPanel = createArrowPanel();
+		add(arrowPanel).fillY().expandY();
 
-		Table inventory = createInventoryPanel();
-		add(inventory).fill().expand();
+		invPanel = createInventoryPanel();
+		add(invPanel).fill().expand();
+	}
+	
+	private Table createArrowPanel() {
+		Table arrows = new Table();
+		
+		arrows.defaults().pad(MARGIN);
+		
+		ImageButton.ImageButtonStyle s = new ImageButton.ImageButtonStyle(style.inventoryButtonStyle);
+		s.imageUp = style.upArrow;
+
+		ImageButton up = new ImageButton(s);
+
+		arrows.add(up).fillY().expandY();
+
+		up.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				if(scroll > 0)
+					scroll--;
+			}
+		});
+		
+		arrows.row();
+		
+		ImageButton.ImageButtonStyle s2 = new ImageButton.ImageButtonStyle(style.inventoryButtonStyle);
+		s2.imageUp = style.downArrow;
+
+		ImageButton down = new ImageButton(s2);
+
+		arrows.add(down).fillY().expandY();
+
+		down.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				Inventory inv = World.getInstance().getInventory();
+				
+				int itemsLeft = inv.getNumItems() - scroll * INVENTORY_COLS;
+				
+				if(itemsLeft > inventorySlots.size())
+					scroll++;
+			}
+		});
+		
+		return arrows;
 	}
 
 	private Table createVerbPanel() {
@@ -91,6 +143,21 @@ public class VerbUI extends Table {
 
 		return verbs;
 	}
+	
+	@Override
+	public void sizeChanged() {
+		super.sizeChanged();
+
+		for(Actor a:arrowPanel.getChildren()) {
+			ImageButton b = (ImageButton)a;
+			float h = (getHeight() / 2)  - style.infoLineLabelStyle.font.getLineHeight() / 2 - DPIUtils.getSpacing();
+			float ih = b.getImage().getDrawable().getMinHeight();
+			float iw = b.getImage().getDrawable().getMinWidth() *  h / ih;
+			b.getImageCell().maxSize(iw, h);
+		}
+
+		arrowPanel.invalidateHierarchy();
+	}
 
 	@Override
 	public void act(float delta) {
@@ -101,12 +168,16 @@ public class VerbUI extends Table {
 		// fill inventory
 		for (int i = 0; i < inventorySlots.size(); i++) {
 			RendererDrawable r = (RendererDrawable) inventorySlots.get(i).getImage().getDrawable();
+			
+			int pos = scroll * INVENTORY_COLS + i;
 
-			if (i < inv.getNumItems()) {
-				r.setRenderer(inv.getItem(i).getRenderer());
+			if (pos < inv.getNumItems()) {
+				r.setRenderer(inv.getItem(pos).getRenderer());				
 			} else {
 				r.setRenderer(null);
 			}
+			
+			inventorySlots.get(i).getImage().invalidate();
 		}
 	}
 
@@ -146,6 +217,8 @@ public class VerbUI extends Table {
 					}
 				}
 			});
+			
+			b.getImageCell().pad(MARGIN).expand().fill();
 		}
 
 		return inventory;
@@ -217,6 +290,8 @@ public class VerbUI extends Table {
 		public TextButtonStyle verbButtonStyle;
 		public ButtonStyle inventoryButtonStyle;
 		public LabelStyle infoLineLabelStyle;
+		public Drawable upArrow;
+		public Drawable downArrow;
 
 		public VerbUIStyle() {
 		}
@@ -226,6 +301,8 @@ public class VerbUI extends Table {
 			verbButtonStyle = style.verbButtonStyle;
 			inventoryButtonStyle = style.inventoryButtonStyle;
 			infoLineLabelStyle = style.infoLineLabelStyle;
+			upArrow = style.upArrow;
+			downArrow = style.downArrow;
 		}
 	}
 }

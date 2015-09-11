@@ -27,8 +27,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.46421796"
-     inkscape:cx="304.43418"
-     inkscape:cy="-120.87595"
+     inkscape:cx="1326.5398"
+     inkscape:cy="1270.0341"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -2823,5 +2823,23 @@
            transform="scale(-1,1)" />
       </g>
     </g>
+    <path
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:9;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker:none;enable-background:accumulate"
+       d="m 1336.3631,-381.97331 -50.6258,1.02111 -0.8584,-98.79824 h -16.9495 l 42.5385,-56.96468 40.9104,57.87842 -14.7101,0.11318 z"
+       id="path5276-5-3"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc"
+       inkscape:export-filename="images/inv_up.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       inkscape:export-ydpi="100"
+       inkscape:export-xdpi="100"
+       inkscape:export-filename="images/inv_down.png"
+       sodipodi:nodetypes="cccccccc"
+       inkscape:connector-curvature="0"
+       id="path4587"
+       d="m 1282.9446,-359.27196 50.6258,-1.02111 0.8584,98.79824 h 16.9495 l -42.5385,56.96467 -40.9104,-57.87841 14.71,-0.11319 z"
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:9;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker:none;enable-background:accumulate" />
   </g>
 </svg>
