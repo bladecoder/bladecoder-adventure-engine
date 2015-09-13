@@ -37,17 +37,15 @@ import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
-	public final static int TOP = 0;
-	public final static int DOWN = 1;
-	public final static int LEFT = 2;
-	public final static int RIGHT = 3;
-	public final static int CENTER = 4;
+	public enum InventoryPos {
+		TOP, DOWN, LEFT, RIGHT, CENTER
+	};
 
 	private int tileSize;
 	private int margin;
 	private float rowSpace;
 	private int cols, rows;
-	private int inventoryPos = CENTER;
+	private final InventoryPos inventoryPos;
 	private boolean autosize = true;
 
 	private SpriteActor draggedActor = null;
@@ -68,20 +66,9 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		sceneScreen = scr;
 		this.pointer = pointer;
 
-		String pos = Config.getProperty(Config.INVENTORY_POS_PROP, "down");
+		inventoryPos = InventoryPos.valueOf(Config.getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase());
 
 		autosize = Config.getProperty(Config.INVENTORY_AUTOSIZE_PROP, true);
-
-		if (pos.trim().equals("top"))
-			inventoryPos = TOP;
-		else if (pos.trim().equals("left"))
-			inventoryPos = LEFT;
-		else if (pos.trim().equals("right"))
-			inventoryPos = RIGHT;
-		else if (pos.trim().equals("down"))
-			inventoryPos = DOWN;
-		else
-			inventoryPos = CENTER;
 
 		addListener(new InputListener() {
 			@Override
@@ -169,7 +156,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		int h = (int) (height * .7f / tileSize) * tileSize;
 
 		if (autosize) {
-			if (inventoryPos == LEFT || inventoryPos == RIGHT) {
+			if (inventoryPos == InventoryPos.LEFT || inventoryPos == InventoryPos.RIGHT) {
 				int w2 = tileSize * (inventory.getNumItems() / (h / tileSize) + 1);
 
 				if (w2 < w)
@@ -193,16 +180,16 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		if (inventory.getNumItems() > capacity)
 			EngineLogger.error("Items in inventory excees the UI capacity");
 
-		if (inventoryPos == TOP) {
+		if (inventoryPos == InventoryPos.TOP) {
 			orgPos.set((width - getWidth()) / 2, height + getHeight());
 			targetPos.set((width - getWidth()) / 2, height - getHeight() - DPIUtils.getSpacing());
-		} else if (inventoryPos == DOWN) {
+		} else if (inventoryPos == InventoryPos.DOWN) {
 			orgPos.set((width - getWidth()) / 2, -getHeight());
 			targetPos.set((width - getWidth()) / 2, DPIUtils.getSpacing());
-		} else if (inventoryPos == LEFT) {
+		} else if (inventoryPos == InventoryPos.LEFT) {
 			orgPos.set(-getWidth(), (height - getHeight()) / 2);
 			targetPos.set(DPIUtils.getSpacing(), (height - getHeight()) / 2); // TODO
-		} else if (inventoryPos == RIGHT) {
+		} else if (inventoryPos == InventoryPos.RIGHT) {
 			orgPos.set(width + getWidth(), (height - getHeight()) / 2); // TODO
 			targetPos.set(width - getWidth() - DPIUtils.getSpacing(), (height - getHeight()) / 2); // TODO
 		} else {
@@ -317,7 +304,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		return null;
 	}
 
-	public int getInventoryPos() {
+	public InventoryPos getInventoryPos() {
 		return inventoryPos;
 	}
 
@@ -341,9 +328,5 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			menuButtonStyle = style.menuButtonStyle;
 			itemBackground = style.itemBackground;
 		}
-	}
-
-	public int getInvPosition() {
-		return inventoryPos;
 	}
 }

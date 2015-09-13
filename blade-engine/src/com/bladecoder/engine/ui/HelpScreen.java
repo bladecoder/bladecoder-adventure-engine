@@ -23,6 +23,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -31,10 +32,13 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.ui.defaults.DefaultSceneScreen.UIModes;
+import com.bladecoder.engine.util.Config;
 
 public class HelpScreen extends ScreenAdapter implements BladeScreen {
 	private final static String PIE_FILENAME = "ui/helpPie";
-	private final static String DESKTOP_FILENAME = "ui/helpDesktop";
+	private final static String TWO_BUTTONS_FILENAME = "ui/helpDesktop";
+	private final static String SINGLE_CLICK_FILENAME = "ui/helpDesktop"; // TODO Help for single button
 
 	private Texture tex;
 
@@ -105,8 +109,26 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 		this.ui = ui;
 
 		final Locale locale = Locale.getDefault();
-
-		final String filename = ui.isPieMode() ? PIE_FILENAME : DESKTOP_FILENAME;
+		String filename = null;
+		
+		UIModes uiMode = UIModes.valueOf(Config.getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase());
+		
+		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen) && uiMode == UIModes.TWO_BUTTONS) {
+			uiMode = UIModes.PIE;
+		}
+		
+		switch(uiMode) {
+		case PIE:
+			filename =  PIE_FILENAME;
+			break;
+		case SINGLE_CLICK:
+			filename = SINGLE_CLICK_FILENAME;
+			break;
+		case TWO_BUTTONS:
+			filename = TWO_BUTTONS_FILENAME;
+			break;
+		
+		}
 
 		localeFilename = MessageFormat.format("{0}_{1}.png", filename, locale.getLanguage());
 

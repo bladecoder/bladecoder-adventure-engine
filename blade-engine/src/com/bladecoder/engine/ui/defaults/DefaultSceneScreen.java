@@ -47,6 +47,7 @@ import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.InventoryButton;
 import com.bladecoder.engine.ui.InventoryUI;
+import com.bladecoder.engine.ui.InventoryUI.InventoryPos;
 import com.bladecoder.engine.ui.MenuButton;
 import com.bladecoder.engine.ui.PieMenu;
 import com.bladecoder.engine.ui.Recorder;
@@ -76,7 +77,9 @@ public class DefaultSceneScreen implements SceneScreen {
 	private InventoryButton inventoryButton;
 	private MenuButton menuButton;
 
-	private boolean pieMode;
+	public static enum UIModes {TWO_BUTTONS, PIE, SINGLE_CLICK};
+	
+	private UIModes uiMode = UIModes.TWO_BUTTONS;
 
 	private Recorder recorder;
 	private TesterBot testerBot;
@@ -100,9 +103,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 	private static enum UIStates {
 		SCENE_MODE, CUT_MODE, PLAY_MODE, PAUSE_MODE, INVENTORY_MODE, DIALOG_MODE, TESTER_BOT_MODE
-	}
-
-	;
+	};
 
 	private UIStates state = UIStates.SCENE_MODE;
 
@@ -254,7 +255,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		public boolean scrolled(int amount) {
 			if (state == UIStates.SCENE_MODE || state == UIStates.INVENTORY_MODE) {
 
-				boolean fromDown = (inventoryUI.getInvPosition() == InventoryUI.CENTER || inventoryUI.getInvPosition() == InventoryUI.DOWN);
+				boolean fromDown = (inventoryUI.getInventoryPos() == InventoryPos.CENTER || inventoryUI.getInventoryPos() == InventoryPos.DOWN);
 
 				if ((amount > 0 && fromDown || amount < 0 && !fromDown) && inventoryUI.isVisible())
 					inventoryUI.hide();
@@ -279,7 +280,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		if (state == s)
 			return;
 
-		if (pieMode && pie.isVisible())
+		if (uiMode == UIModes.PIE && pie.isVisible())
 			pie.hide();
 
 		switch (s) {
@@ -649,6 +650,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		textManagerUI.resize();
 		inventoryButton.resize();
 		menuButton.resize();
+		pointer.resize(width, height);
 	}
 
 	public void dispose() {
@@ -695,7 +697,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		if (a.getVerb(Verb.LEAVE_VERB) != null) {
 			runVerb(a, Verb.LEAVE_VERB, null);
-		} else if (!pieMode) {
+		} else if (uiMode == UIModes.TWO_BUTTONS) {
 			String verb = Verb.LOOKAT_VERB;
 
 			if (!lookat) {
@@ -703,10 +705,22 @@ public class DefaultSceneScreen implements SceneScreen {
 			}
 
 			runVerb(a, verb, null);
-		} else {
+		} else if (uiMode == UIModes.PIE) {
 			getInputUnProject(unprojectTmp);
 			pie.show(a, unprojectTmp.x, unprojectTmp.y);
 			pointer.reset();
+		} else {
+			// SINGLE CLICK UI
+			// Preference  TALK_TO, PICKUP, LOOK_AT
+			String verb = Verb.TALKTO_VERB;
+			
+			if(a.getVerb(verb) == null) 
+				verb = Verb.ACTION_VERB;
+			
+			if(a.getVerb(verb) == null)
+				verb = Verb.LOOKAT_VERB;
+			
+			runVerb(a, verb, null);
 		}
 	}
 
@@ -817,13 +831,17 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		pie = new PieMenu(this);
 		textManagerUI = new TextManagerUI(ui.getSkin());
-		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
 		menuButton = new MenuButton(ui);
 		dialogUI = new DialogUI(ui);
 		pointer = new ScenePointer(ui.getSkin());
 		inventoryUI = new InventoryUI(this, pointer);
+		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
 
-		this.pieMode = ui.isPieMode();
+		uiMode = UIModes.valueOf(Config.getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase());
+		
+		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen) && uiMode == UIModes.TWO_BUTTONS) {
+			uiMode = UIModes.PIE;
+		}
 
 		pie.setVisible(false);
 	}

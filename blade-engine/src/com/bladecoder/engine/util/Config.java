@@ -20,7 +20,6 @@ import java.util.Properties;
 import com.bladecoder.engine.assets.EngineAssetManager;
 
 public class Config {
-	public static final String PIE_MODE_DESKTOP_PROP="pie_mode.desktop";
 	public static final String INVENTORY_POS_PROP="inventory_pos";
 	public static final String INVENTORY_AUTOSIZE_PROP="inventory_autosize";
 	public static final String TITLE_PROP="title";
@@ -40,6 +39,7 @@ public class Config {
 	public static final String LOAD_SCREEN_CLASS_PROP = "load_screen";
 	public static final String SAVE_SCREEN_CLASS_PROP = "save_screen";
 	public static final String EXTEND_VIEWPORT_PROP = "extend_viewport";
+	public static final String UI_MODE = "ui_mode";
 
 	public static final String PROPERTIES_FILENAME = "BladeEngine.properties";
 

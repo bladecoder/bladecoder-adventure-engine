@@ -51,8 +51,8 @@ public class WorldProps extends PropertyTable {
 			Ctx.project.getProjectConfig().setProperty(Config.INVENTORY_POS_PROP, value);
 		} else if (property.equals(Config.INVENTORY_AUTOSIZE_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.INVENTORY_AUTOSIZE_PROP, value);
-		} else if (property.equals(Config.PIE_MODE_DESKTOP_PROP)) {
-			Ctx.project.getProjectConfig().setProperty(Config.PIE_MODE_DESKTOP_PROP, value);
+		} else if (property.equals(Config.UI_MODE)) {
+			Ctx.project.getProjectConfig().setProperty(Config.UI_MODE, value);
 		} else if (property.equals(Config.DEBUG_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.DEBUG_PROP, value);
 		} else if (property.equals(Config.SHOW_DESC_PROP)) {
@@ -71,7 +71,7 @@ public class WorldProps extends PropertyTable {
 		addProperty(Config.TITLE_PROP, Ctx.project.getTitle());
 		addProperty(Config.INVENTORY_POS_PROP, Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_POS_PROP, "down"));
 		addProperty(Config.INVENTORY_AUTOSIZE_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_AUTOSIZE_PROP, "true")));
-		addProperty(Config.PIE_MODE_DESKTOP_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.PIE_MODE_DESKTOP_PROP, "false")));
+		addProperty(Config.UI_MODE, Ctx.project.getProjectConfig().getProperty(Config.UI_MODE, "TWO_BUTTONS"));
 		addProperty(Config.DEBUG_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.DEBUG_PROP, "false")));
 		addProperty(Config.SHOW_DESC_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.SHOW_DESC_PROP, "true")));
 		addProperty(Config.EXTEND_VIEWPORT_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.EXTEND_VIEWPORT_PROP, "true")));

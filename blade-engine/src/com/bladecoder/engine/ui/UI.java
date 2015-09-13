@@ -42,8 +42,6 @@ public class UI {
 
 	private BladeScreen screen;
 
-	private boolean pieMode;
-
 	private SpriteBatch batch;
 	private Skin skin;
 
@@ -60,12 +58,6 @@ public class UI {
 
 		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setCatchMenuKey(true);
-
-		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
-			setPieMode(true);
-		else {
-			setPieMode(Config.getProperty(Config.PIE_MODE_DESKTOP_PROP, false));
-		}
 
 		loadAssets();
 
@@ -155,14 +147,6 @@ public class UI {
 	
 	public Skin getSkin() {
 		return skin;
-	}
-
-	private void setPieMode(boolean m) {
-		pieMode = m;
-	}
-	
-	public boolean isPieMode() {
-		return pieMode;
 	}
 
 	public void render() {
