@@ -27,7 +27,7 @@ import java.util.Arrays;
 public class Param {
 	public enum Type {
 		STRING, BOOLEAN, FLOAT, INTEGER, VECTOR2, VECTOR3, DIMENSION, ACTOR, SCENE, CHAPTER, FILE, OPTION, SCENE_ACTOR, ACTOR_ANIMATION, LAYER, EDITABLE_OPTION,
-		TEXT, SMALL_TEXT, BIG_TEXT, COLOR, SOUND, FONT,
+		TEXT, SMALL_TEXT, BIG_TEXT, COLOR, SOUND, TEXT_STYLE,
 		FILE_SOUND, FILE_MUSIC, FILE_ATLAS, FILE_S3D, FILE_SPINE, FILE_IMAGE
 	}
 	
@@ -196,14 +196,14 @@ public class Param {
 
 	public static Color parseColor(String color) {
 		if (color == null || color.trim().isEmpty()) {
-			return Color.BLACK;
+			return null; // the default color in the style will be used
 		}
 
 		switch (color.trim()) {
 			case "black":
-				return new Color(0, 0, 0, 1);
+				return Color.BLACK;
 			case "white":
-				return new Color(1, 1, 1, 1);
+				return Color.WHITE;
 			default:
 				return Color.valueOf(color);
 		}

@@ -105,5 +105,6 @@ public final class XMLConstants {
 	public static final String NEXT_ATTR = "next";
 	public static final String CONTROL_ACTION_ID_ATTR = "caID";
 	public static final String ONCE_ATTR = "once";
-	public static final String FONT_ATTR = "font";
+	public static final String TEXT_STYLE_ATTR = "text_style";
+	public static final String TEXT_COLOR_ATTR = "text_color";
 }

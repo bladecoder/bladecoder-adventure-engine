@@ -90,7 +90,7 @@ com.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
 },
 
 com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle: {
-	default: {rectBackground: border_black_rect4, talkBackground: white, font: text-manager-font, talkBubble: bubblepointer}
+	default: {rectBackground: border_black_rect4, talkBackground: white, font: text-manager-font, talkBubble: bubblepointer, defaultColor: black}
 },
 
 

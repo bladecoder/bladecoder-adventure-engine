@@ -24,9 +24,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.ui.SceneScreen;
 import com.bladecoder.engine.ui.UI;
-import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -131,10 +129,9 @@ public class BladeEngine implements ApplicationListener {
 			recordName = Config.getProperty(Config.PLAY_RECORD_PROP, recordName);
 
 		if (recordName != null) {
-			SceneScreen scr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
-			scr.getRecorder().setFilename(recordName);
-			scr.getRecorder().load();
-			scr.getRecorder().setPlaying(true);
+			ui.getRecorder().setFilename(recordName);
+			ui.getRecorder().load();
+			ui.getRecorder().setPlaying(true);
 		}
 
 		if (EngineLogger.debugMode()) {
@@ -173,9 +170,8 @@ public class BladeEngine implements ApplicationListener {
 
 	@Override
 	public void pause() {
-		SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
-		boolean bot = scnScr.getTesterBot().isEnabled();
-		boolean r = scnScr.getRecorder().isPlaying();
+		boolean bot = ui.getTesterBot().isEnabled();
+		boolean r = ui.getRecorder().isPlaying();
 
 		if (!bot && !r) {
 			EngineLogger.debug("GAME PAUSE");

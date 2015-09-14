@@ -541,6 +541,7 @@ public class ScnWidget extends Widget {
 	public void setSelectedScene(Element e) {
 		if (scn != null) {
 			scn.dispose();
+			faRenderer.dispose();
 			scn = null;
 
 			EngineAssetManager.getInstance().clear();

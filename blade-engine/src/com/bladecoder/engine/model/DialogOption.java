@@ -15,17 +15,13 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
-import com.badlogic.gdx.graphics.Color;
-
 public class DialogOption {
 	private String text;
-	private String font;
 	private String responseText;
 	private String verbId;
 	private String next;
 	private boolean visible = true;
 	private boolean once = false;
-	private Color color;
 
 	public boolean isVisible() {
 		return visible;
@@ -49,22 +45,6 @@ public class DialogOption {
 
 	public void setText(String text) {
 		this.text = text;
-	}
-
-	public String getFont() {
-		return font;
-	}
-
-	public void setFont(String font) {
-		this.font = font;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
 	}
 
 	public void setResponseText(String responseText) {

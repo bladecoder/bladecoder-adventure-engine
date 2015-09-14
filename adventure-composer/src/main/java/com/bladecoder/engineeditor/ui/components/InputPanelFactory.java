@@ -86,7 +86,7 @@ public class InputPanelFactory extends Table {
 		case SOUND:
 			return new SoundInputPanel(skin, title, desc, mandatory, defaultValue);
 		case COLOR:
-		case FONT:
+		case TEXT_STYLE:
 		case STRING:
 			if(options != null)
 				return getReadOnlyOptionsInputPanel(skin, title, desc, mandatory, defaultValue, options);

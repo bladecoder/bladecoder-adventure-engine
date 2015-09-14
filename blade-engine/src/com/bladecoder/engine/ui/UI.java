@@ -15,14 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.bladecoder.engine.ui.BladeSkin;
-import com.bladecoder.engine.ui.CreditsScreen;
-import com.bladecoder.engine.ui.HelpScreen;
-import com.bladecoder.engine.ui.InitScreen;
-import com.bladecoder.engine.ui.LoadingScreen;
-import com.bladecoder.engine.ui.MenuScreen;
-import com.bladecoder.engine.ui.Pointer;
-import com.bladecoder.engine.ui.SceneScreen;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Peripheral;
@@ -33,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.ui.defaults.DefaultSceneScreen;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
@@ -42,20 +35,20 @@ public class UI {
 
 	private static final String SKIN_FILENAME = "ui/ui.json";
 
+	private final Recorder recorder = new Recorder();
+	private final TesterBot testerBot = new TesterBot();
+	
 	private boolean fullscreen = false;
-	private Pointer pointer;
 
 	private BladeScreen screen;
-
-	private boolean pieMode;
 
 	private SpriteBatch batch;
 	private Skin skin;
 
-	public static enum Screens {
+	public enum Screens {
 		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN, LOAD_GAME, SAVE_GAME
-	};
-	
+	}
+
 	private final BladeScreen screens[];
 
 	public UI() {
@@ -66,27 +59,29 @@ public class UI {
 		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setCatchMenuKey(true);
 
-		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
-			setPieMode(true);
-		else {
-			setPieMode(Config.getProperty(Config.PIE_MODE_DESKTOP_PROP, false));
-		}
-		
 		loadAssets();
-		
+
 		screens[Screens.INIT_SCREEN.ordinal()] = getCustomScreenInstance(Config.INIT_SCREEN_CLASS_PROP, InitScreen.class);
-		screens[Screens.SCENE_SCREEN.ordinal()] = new SceneScreen();
-		screens[Screens.LOADING_SCREEN.ordinal()] = new LoadingScreen();
+		screens[Screens.SCENE_SCREEN.ordinal()] = getCustomScreenInstance(Config.SCENE_SCREEN_CLASS_PROP, DefaultSceneScreen.class);
+		screens[Screens.LOADING_SCREEN.ordinal()] = getCustomScreenInstance(Config.LOADING_SCREEN_CLASS_PROP, LoadingScreen.class);
 		screens[Screens.MENU_SCREEN.ordinal()] = getCustomScreenInstance(Config.MENU_SCREEN_CLASS_PROP, MenuScreen.class);
 		screens[Screens.HELP_SCREEN.ordinal()] = getCustomScreenInstance(Config.HELP_SCREEN_CLASS_PROP, HelpScreen.class);
 		screens[Screens.CREDIT_SCREEN.ordinal()] =  getCustomScreenInstance(Config.CREDIT_SCREEN_CLASS_PROP, CreditsScreen.class);
-		screens[Screens.LOAD_GAME.ordinal()] = new LoadSaveScreen();
-		screens[Screens.SAVE_GAME.ordinal()] = new LoadSaveScreen();
-		
-		for(BladeScreen s:screens)
+		screens[Screens.LOAD_GAME.ordinal()] = getCustomScreenInstance(Config.LOAD_SCREEN_CLASS_PROP, LoadSaveScreen.class);
+		screens[Screens.SAVE_GAME.ordinal()] = getCustomScreenInstance(Config.SAVE_SCREEN_CLASS_PROP, LoadSaveScreen.class);
+
+		for (BladeScreen s:screens)
 			s.setUI(this);
 
 		setCurrentScreen(Screens.INIT_SCREEN);
+	}
+	
+	public Recorder getRecorder() {
+		return recorder;
+	}
+	
+	public TesterBot getTesterBot() {
+		return testerBot;
 	}
 	
 	private BladeScreen getCustomScreenInstance(String prop, Class<?> defaultClass) {
@@ -99,6 +94,7 @@ public class UI {
 				return (BladeScreen)ClassReflection.newInstance(instanceClass);
 			} catch (Exception e) {
 				EngineLogger.error("Error instancing screen. " + e.getMessage());
+				// FIXME: Probably we just want to fail in this case, instead of creating a different screen than the one expected?
 				instanceClass = defaultClass;
 			}
 		} 
@@ -122,10 +118,6 @@ public class UI {
 	
 	public SpriteBatch getBatch() {
 		return batch;
-	}
-	
-	public Pointer getPointer() {
-		return pointer;
 	}
 
 	public BladeScreen getCurrentScreen() {
@@ -157,14 +149,6 @@ public class UI {
 		return skin;
 	}
 
-	private void setPieMode(boolean m) {
-		pieMode = m;
-	}
-	
-	public boolean isPieMode() {
-		return pieMode;
-	}
-
 	public void render() {
 		// for long processing frames, limit delta to 1/30f to avoid skipping animations 
 		float delta = Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f);
@@ -177,12 +161,9 @@ public class UI {
 		TextureAtlas atlas = new TextureAtlas(EngineAssetManager.getInstance().getResAsset(
 				SKIN_FILENAME.substring(0,SKIN_FILENAME.lastIndexOf('.')) + ".atlas"));
 		skin = new BladeSkin(skinFile, atlas);
-		pointer = new Pointer(skin);
 	}
 
 	public void resize(int width, int height) {
-		pointer.resize(width, height);
-
 		if (screen != null)
 			screen.resize(width, height);
 	}

@@ -17,11 +17,21 @@ package com.bladecoder.engine.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+
+/**
+ * This is a Custom FitViewport with the next differences with the libgdx FitViewport
+ * 
+ *   - The camera uses screen coordinates. This is used to draw fonts and UI 1:1
+ *   - The world dimensions is used only to calculate the dimensions of the viewport
+ * 
+ * @author rgarcia
+ */
 public class SceneFitViewport extends Viewport {
 
 	/** Creates a new viewport using a new {@link OrthographicCamera}. */
@@ -49,51 +59,24 @@ public class SceneFitViewport extends Viewport {
 			getCamera().position.set(getScreenWidth() / 2, getScreenHeight() / 2, 0);
 		getCamera().update();
 	}
-
-
-	public void getInputUnProject(Vector2 out) {
-		out.set(Gdx.input.getX(), Gdx.input.getY());
-
-		unproject(out);
-	}
-	
-	public void getInputUnProject(Vector3 out) {
-		out.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-
-		unproject(out);	
-	}
 	
 	@Override
 	public Vector2 unproject(Vector2 out) {
 		super.unproject(out);
 		
-		if (out.x >= getScreenWidth())
-			out.x = getScreenWidth() - 1;
-		else if (out.x < 0)
-			out.x = 0;
+		out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
+		out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
 
-		if (out.y >= getScreenHeight())
-			out.y = getScreenHeight() - 1;
-		else if (out.y < 0)
-			out.y = 0;
-		
 		return out;
 	}
-	
+
 	@Override
 	public Vector3 unproject(Vector3 out) {
 		super.unproject(out);
-		
-		if (out.x >= getScreenWidth())
-			out.x = getScreenWidth() - 1;
-		else if (out.x < 0)
-			out.x = 0;
 
-		if (out.y >= getScreenHeight())
-			out.y = getScreenHeight() - 1;
-		else if (out.y < 0)
-			out.y = 0;
-		
+		out.x = MathUtils.clamp(out.x, 0, getScreenWidth() - 1);
+		out.y = MathUtils.clamp(out.y, 0, getScreenHeight() - 1);
+
 		return out;
-	}	
+	}
 }

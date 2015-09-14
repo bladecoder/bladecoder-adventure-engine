@@ -36,20 +36,20 @@ public class Text implements Serializable {
 	public float time;
 	public Type type;
 	public Color color;
-	public String font;
+	public String style;
 	private ActionCallback cb;
 
 	public Text() {
 	}
 
-	public Text(String str, float x, float y, float time, Type type, Color color, String font, ActionCallback cb) {
+	public Text(String str, float x, float y, float time, Type type, Color color, String style, ActionCallback cb) {
 		this.str = str;
 		this.x = x;
 		this.y = y;
 		this.time = time;
 		this.type = type;
 		this.color = color;
-		this.font = font;
+		this.style = style;
 		this.cb = cb;
 
 		if (this.time <= 0) {
@@ -72,7 +72,7 @@ public class Text implements Serializable {
 		json.writeValue("time",time);
 		json.writeValue("type", type);
 		json.writeValue("color", color);
-		json.writeValue("font", font);
+		json.writeValue("style", style);
 		json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null
 				: String.class);
 	}
@@ -85,7 +85,7 @@ public class Text implements Serializable {
 		time = json.readValue("time", Float.class, jsonData);
 		type = json.readValue("type", Type.class, jsonData);
 		color = json.readValue("color", Color.class, jsonData);
-		font = json.readValue("font", String.class, jsonData);
+		style = json.readValue("style", String.class, jsonData);
 		String cbSer = json.readValue("cb", String.class, jsonData);
 		if(cbSer != null)
 			cb = ActionCallbackSerialization.find(cbSer);

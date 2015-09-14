@@ -8,13 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.util.DPIUtils;
 
 public class MenuButton extends ImageButton {
-	
-	private final UI ui;
+	public MenuButton(final UI ui) {
+		super(ui.getSkin(), "menu");
 
-	public MenuButton(Skin skin, UI u) {
-		super(skin, "menu");
-		this.ui = u;
-		
 		addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {

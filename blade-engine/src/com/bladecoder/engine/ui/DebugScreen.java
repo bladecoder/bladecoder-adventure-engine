@@ -52,6 +52,8 @@ public class DebugScreen implements BladeScreen {
 	private TextField testerTimeConf;
 	private TextField inSceneTimeConf;
 	private TextField testerExcludeList;
+	
+	private Pointer pointer;
 
 	public DebugScreen() {
 	}
@@ -63,16 +65,12 @@ public class DebugScreen implements BladeScreen {
 
 		stage.act(delta);
 		stage.draw();
-
-		ui.getBatch().setProjectionMatrix(stage.getViewport().getCamera().combined);
-		ui.getBatch().begin();
-		ui.getPointer().draw(ui.getBatch(), stage.getViewport());
-		ui.getBatch().end();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
+		pointer.resize();
 	}
 
 	@Override
@@ -129,14 +127,13 @@ public class DebugScreen implements BladeScreen {
 
 		// ------------- RECORDING
 
-		Recorder r = ((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getRecorder();
+		final Recorder r = ui.getRecorder();
 		TextButton play = new TextButton(r.isPlaying() ? "Stop" : "Play", ui.getSkin());
 		rec = new TextButton(r.isRecording() ? "Stop Rec" : "Rec", ui.getSkin());
 		play.addListener(new ClickListener() {
 
 			public void clicked(InputEvent event, float x, float y) {
-				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
-				Recorder r = scnScr.getRecorder();
+				final Recorder r = ui.getRecorder();
 
 				if (!r.isPlaying()) {
 					r.setFilename(recordings.getSelected());
@@ -153,8 +150,7 @@ public class DebugScreen implements BladeScreen {
 		rec.addListener(new ClickListener() {
 
 			public void clicked(InputEvent event, float x, float y) {
-				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
-				Recorder r = scnScr.getRecorder();
+				final Recorder r = ui.getRecorder();
 
 				if (r.isPlaying()) {
 					r.setPlaying(false);
@@ -233,14 +229,13 @@ public class DebugScreen implements BladeScreen {
 		table.add(scGroup);
 
 		// ------------- TESTERBOT
-		TesterBot bot = ((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getTesterBot();
+		final TesterBot bot = ui.getTesterBot();
 		
 		TextButton runBot = new TextButton(bot.isEnabled()?"Stop":"Run", ui.getSkin());
 		runBot.addListener(new ClickListener() {
 
 			public void clicked(InputEvent event, float x, float y) {
-				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
-				TesterBot bot = scnScr.getTesterBot();
+				final TesterBot bot = ui.getTesterBot();
 				
 				bot.setMaxWaitInverval(Float.parseFloat(testerTimeConf.getText()));
 				bot.setInSceneTime(Float.parseFloat(inSceneTimeConf.getText()));
@@ -265,8 +260,7 @@ public class DebugScreen implements BladeScreen {
 		testerLeaveConf.addListener(new ClickListener() {
 
 			public void clicked(InputEvent event, float x, float y) {
-				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
-				TesterBot bot = scnScr.getTesterBot();
+				final TesterBot bot = ui.getTesterBot();
 				
 				bot.setRunLeaveVerbs(!bot.isRunLeaveVerbs());
 			}
@@ -278,8 +272,7 @@ public class DebugScreen implements BladeScreen {
 		testerGotoConf.addListener(new ClickListener() {
 
 			public void clicked(InputEvent event, float x, float y) {
-				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
-				TesterBot bot = scnScr.getTesterBot();
+				final TesterBot bot = ui.getTesterBot();
 				
 				bot.setRunGoto(!bot.isRunGoto());
 			}
@@ -291,8 +284,7 @@ public class DebugScreen implements BladeScreen {
 		testerPassText.addListener(new ClickListener() {
 
 			public void clicked(InputEvent event, float x, float y) {
-				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
-				TesterBot bot = scnScr.getTesterBot();
+				final TesterBot bot = ui.getTesterBot();
 				
 				bot.setPassTexts(!bot.isPassTexts());
 			}
@@ -304,8 +296,7 @@ public class DebugScreen implements BladeScreen {
 		testerWaitWhenWalking.addListener(new ClickListener() {
 
 			public void clicked(InputEvent event, float x, float y) {
-				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
-				TesterBot bot = scnScr.getTesterBot();
+				final TesterBot bot = ui.getTesterBot();
 				
 				bot.setWaitWhenWalking(!bot.isWaitWhenWalking());
 			}
@@ -358,6 +349,9 @@ public class DebugScreen implements BladeScreen {
 		table.pack();
 
 		stage.addActor(table);
+		
+		pointer = new Pointer(ui.getSkin());
+		stage.addActor(pointer);
 
 		Gdx.input.setInputProcessor(stage);
 	}
