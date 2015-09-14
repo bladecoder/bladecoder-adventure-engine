@@ -66,7 +66,7 @@ public class TextAction implements Action {
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		text = params.get("text");
-		style = params.get("text_style");
+		style = params.get("style");
 		color = Param.parseColor(params.get("color"));
 
 		final String strType = params.get("type");
