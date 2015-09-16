@@ -364,6 +364,9 @@ public class ChapterDocument extends BaseDocument {
 		if (e.getAttribute(XMLConstants.BBOX_ATTR).isEmpty()) {
 			if (a instanceof SpriteActor)
 				((SpriteActor) a).setBboxFromRenderer(true);
+		} else {
+			if (a instanceof SpriteActor)
+				((SpriteActor) a).setBboxFromRenderer(false);
 		}
 
 		Vector2 pos = getPos(e);

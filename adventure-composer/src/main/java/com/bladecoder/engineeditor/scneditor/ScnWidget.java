@@ -39,6 +39,7 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
@@ -138,15 +139,26 @@ public class ScnWidget extends Widget {
 					setSelectedScene(Ctx.project.getSelectedScene());
 					setSelectedActor(Ctx.project.getSelectedActor());
 				} else if (e.getPropertyName().equals("bbox")) {
-					Element selActor = (Element) e.getNewValue();
+					// Element selActor = (Element) e.getNewValue();
+					Element selActor = Ctx.project.getSelectedActor();
 					String id = doc.getId(selActor);
 					BaseActor a = scn.getActor(id, false);
+
 					if (a == null)
 						return;
 
 					doc.getBBox(a.getBBox(), selActor);
 					Vector2 p = doc.getPos(selActor);
 					a.setPosition(p.x, p.y);
+
+					if (a instanceof SpriteActor) {
+						SpriteActor sa = (SpriteActor) a;
+						if (!selActor.getAttribute(XMLConstants.BBOX_ATTR).isEmpty())
+							sa.setBboxFromRenderer(false);
+						else
+							sa.setBboxFromRenderer(true);
+					}
+
 				} else if (e.getPropertyName().equals("pos")) {
 					Element selActor = (Element) e.getNewValue();
 					String id = doc.getId(selActor);
@@ -373,8 +385,8 @@ public class ScnWidget extends Widget {
 
 		float posx = tmp2V2.x - textLayout.width - 20;
 
-		RectangleRenderer.draw((SpriteBatch) batch, posx, tmp2V2.y, textLayout.width + margin * 2, textLayout.height
-				+ margin * 2, Color.BLACK);
+		RectangleRenderer.draw((SpriteBatch) batch, posx, tmp2V2.y, textLayout.width + margin * 2,
+				textLayout.height + margin * 2, Color.BLACK);
 		RectangleRenderer.draw((SpriteBatch) batch, tmp2V2.x - 20, tmp2V2.y, 20, 2, Color.BLACK);
 
 		defaultFont.draw(batch, textLayout, posx + margin, tmp2V2.y + textLayout.height + margin);
@@ -388,8 +400,8 @@ public class ScnWidget extends Widget {
 
 		posx = tmp2V2.x - textLayout.width - 20;
 
-		RectangleRenderer.draw((SpriteBatch) batch, posx, tmp2V2.y, textLayout.width + margin * 2, textLayout.height
-				+ margin * 2, Color.BLACK);
+		RectangleRenderer.draw((SpriteBatch) batch, posx, tmp2V2.y, textLayout.width + margin * 2,
+				textLayout.height + margin * 2, Color.BLACK);
 		RectangleRenderer.draw((SpriteBatch) batch, tmp2V2.x - 20, tmp2V2.y, 20, 2, Color.BLACK);
 
 		defaultFont.draw(batch, textLayout, posx + margin, tmp2V2.y + textLayout.height + margin);
@@ -436,7 +448,7 @@ public class ScnWidget extends Widget {
 		// EditorLogger.debug("Last Point coords - X: " + (getX() + getWidth())
 		// + " Y: " + (getY() + getHeight()));
 		localToScreenCoords(tmpV2.set(getX() + getWidth(), getY() + getHeight()));
-		// EditorLogger.debug("Screen Last Point coords:  " + tmpV2);
+		// EditorLogger.debug("Screen Last Point coords: " + tmpV2);
 
 		faRenderer.setViewport(getWidth(), getHeight());
 		bounds.set(getX(), getY(), getWidth(), getHeight());
@@ -606,11 +618,13 @@ public class ScnWidget extends Widget {
 		if (selectedActor instanceof SpriteActor) {
 			ActorRenderer s = ((SpriteActor) selectedActor).getRenderer();
 
-			if (selFA == null || (s.getAnimations().get(selFA) == null && s.getAnimations().get(AnimationDesc.getFlipId(selFA)) == null)) {
+			if (selFA == null || (s.getAnimations().get(selFA) == null
+					&& s.getAnimations().get(AnimationDesc.getFlipId(selFA)) == null)) {
 				selFA = ((SpriteActor) selectedActor).getRenderer().getInitAnimation();
 			}
 
-			if (selFA != null && (s.getAnimations().get(selFA) != null || s.getAnimations().get(AnimationDesc.getFlipId(selFA)) != null)) {
+			if (selFA != null && (s.getAnimations().get(selFA) != null
+					|| s.getAnimations().get(AnimationDesc.getFlipId(selFA)) != null)) {
 
 				setAnimation(s.getAnimations().get(selFA));
 
@@ -645,9 +659,9 @@ public class ScnWidget extends Widget {
 		l.orderByZIndex();
 
 		if (a instanceof AssetConsumer) {
-			((AssetConsumer)a).loadAssets();
+			((AssetConsumer) a).loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
-			((AssetConsumer)a).retrieveAssets();
+			((AssetConsumer) a).retrieveAssets();
 		}
 
 		return a;
@@ -658,9 +672,9 @@ public class ScnWidget extends Widget {
 		if (a != null) {
 			scn.removeActor(a);
 
-			if (a instanceof AssetConsumer) 
-				((AssetConsumer)a).dispose();
-			
+			if (a instanceof AssetConsumer)
+				((AssetConsumer) a).dispose();
+
 			setSelectedActor(null);
 		}
 	}

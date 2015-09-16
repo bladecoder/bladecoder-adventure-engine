@@ -87,9 +87,9 @@ public class ActorProps extends PropertyTable {
 		} else if (modelProperty.equals(XMLConstants.STATE_ATTR)) {
 			setProperty(STATE_PROP, value);
 		} else if (modelProperty.equals(XMLConstants.BBOX_ATTR)) {
-			boolean v = value == null;
+			boolean v = value.isEmpty();
 			
-			setProperty(BBOX_FROM_RENDERER_PROP, Boolean.toString(v));
+//			setProperty(BBOX_FROM_RENDERER_PROP, Boolean.toString(v));
 		}
 	}
 
@@ -113,7 +113,7 @@ public class ActorProps extends PropertyTable {
 			}
 			
 			if (a.getAttribute(XMLConstants.TYPE_ATTR).equals(XMLConstants.SPRITE_VALUE)) {
-				boolean v = doc.getRootAttr(a, XMLConstants.BBOX_ATTR) == null;
+				boolean v = doc.getRootAttr(a, XMLConstants.BBOX_ATTR).isEmpty();
 				
 				addProperty(BBOX_FROM_RENDERER_PROP, Boolean.toString(v), Types.BOOLEAN);
 			}
@@ -167,10 +167,11 @@ public class ActorProps extends PropertyTable {
 				
 			}
 			
-			if(v)
+			if(!v) {
 				doc.setBbox(actor, null); // TODO get image size
-			else 
+			} else { 
 				doc.setRootAttr(actor, XMLConstants.BBOX_ATTR, null);
+			}
 		}
 
 	}
