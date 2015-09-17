@@ -30,7 +30,7 @@ public class RepeatAction extends AbstractControlAction {
 	@ActionPropertyType(Type.INTEGER)
 	private int repeat = 1;
 
-	int currentRepeat = 0;
+	private int currentRepeat = 0;
 	private String caID;
 
 	@Override

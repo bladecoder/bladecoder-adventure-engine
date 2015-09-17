@@ -39,26 +39,34 @@ public class ActionList extends ElementList {
 	private static final String END_ACTION = "com.bladecoder.engine.actions.EndAction";
 	private static final String ACTION_NAME_VALUE_ELSE = "Else";
 
-	// FIXME: This needs to go, just added here in the interim while we work on replacing the DOM with Beans
-	private static final Set<String> CONTROL_ACTIONS = new HashSet<String>() {{
-		add("Choose");
-		add("IfAttr");
-		add("IfProperty");
-		add("IfSceneAttr");
-		add("Repeat");
-		add("RunOnce");
-	}};
-	private static final Set<String> IF_CONTROL_ACTIONS = new HashSet<String>() {{
-		add("IfAttr");
-		add("IfProperty");
-		add("IfSceneAttr");
-	}};
+	// FIXME: This needs to go, just added here in the interim while we work on
+	// replacing the DOM with Beans
+	@SuppressWarnings("serial")
+	private static final Set<String> CONTROL_ACTIONS = new HashSet<String>() {
+		{
+			add("Choose");
+			add("IfAttr");
+			add("IfProperty");
+			add("IfSceneAttr");
+			add("Repeat");
+			add("RunOnce");
+		}
+	};
+	
+	@SuppressWarnings("serial")
+	private static final Set<String> IF_CONTROL_ACTIONS = new HashSet<String>() {
+		{
+			add("IfAttr");
+			add("IfProperty");
+			add("IfSceneAttr");
+		}
+	};
 
 	Skin skin;
 
 	private ImageButton upBtn;
 	private ImageButton downBtn;
-	
+
 	private ImageButton disableBtn;
 
 	public ActionList(Skin skin) {
@@ -66,10 +74,9 @@ public class ActionList extends ElementList {
 		this.skin = skin;
 
 		setCellRenderer(listCellRenderer);
-		
+
 		disableBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(disableBtn, "ic_eye", "Enable/Disable",
-				"Enable/Disable");
+		toolbar.addToolBarButton(disableBtn, "ic_eye", "Enable/Disable", "Enable/Disable");
 
 		disableBtn.setDisabled(false);
 
@@ -96,8 +103,7 @@ public class ActionList extends ElementList {
 				toolbar.disableEdit(pos == -1);
 				disableBtn.setDisabled(pos == -1);
 				upBtn.setDisabled(pos == -1 || pos == 0);
-				downBtn.setDisabled(pos == -1
-						|| pos == list.getItems().size - 1);
+				downBtn.setDisabled(pos == -1 || pos == list.getItems().size - 1);
 			}
 		});
 
@@ -116,7 +122,7 @@ public class ActionList extends ElementList {
 			}
 		});
 	}
-	
+
 	private void toggleEnabled() {
 
 		Element e = list.getSelected();
@@ -126,12 +132,12 @@ public class ActionList extends ElementList {
 			return;
 
 		String value = e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR);
-		
-		if(value.isEmpty() || value.equals(XMLConstants.TRUE_VALUE))
+
+		if (value.isEmpty() || value.equals(XMLConstants.TRUE_VALUE))
 			value = XMLConstants.FALSE_VALUE;
 		else
 			value = XMLConstants.TRUE_VALUE;
-		
+
 		e.setAttribute(XMLConstants.ACTION_ENABLED_ATTR, value);
 		doc.setModified(e);
 	}
@@ -179,7 +185,7 @@ public class ActionList extends ElementList {
 
 		Element e = list.getSelected();
 
-		if (e == null || e.getAttribute("class").equals(END_ACTION))
+		if (e == null || e.getAttribute(XMLConstants.CLASS_ATTR).equals(END_ACTION))
 			return;
 
 		editedElement = (Element) e.cloneNode(true);
@@ -192,14 +198,19 @@ public class ActionList extends ElementList {
 				Element e = ((EditElementDialog) actor).getElement();
 				doc.setModified(e);
 
-				if (isControlAction(editedElement)
-						&& !editedElement.getAttribute(XMLConstants.ACTION_NAME_ATTR).equals(
-								e.getAttribute(XMLConstants.ACTION_NAME_ATTR))) {
+				if (isControlAction(editedElement)) {
+					if (!editedElement.getAttribute(XMLConstants.ACTION_NAME_ATTR)
+							.equals(e.getAttribute(XMLConstants.ACTION_NAME_ATTR))) {
 
-					deleteControlAction(list.getSelectedIndex(), editedElement);
+						deleteControlAction(list.getSelectedIndex(), editedElement);
 
-					if (isControlAction(e))
-						insertEndAction(e);
+						if (isControlAction(e))
+							insertEndAction(e);
+					} else {
+						// insert previous caId
+						e.setAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR, 
+								editedElement.getAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR));
+					}
 				}
 			}
 		});
@@ -228,7 +239,8 @@ public class ActionList extends ElementList {
 	private String getOrCreateControlActionId(Element e) {
 		String id = e.getAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR);
 		if (id.isEmpty()) {
-			// FIXME: While highly, highly, highly unlikely, this might still cause collisions. Replace it with a count or similar
+			// FIXME: While highly, highly, highly unlikely, this might still
+			// cause collisions. Replace it with a count or similar
 			final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
 			id = actionName + MathUtils.random(1, Integer.MAX_VALUE);
 			e.setAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR, id);
@@ -316,8 +328,7 @@ public class ActionList extends ElementList {
 		Element e = items.get(pos);
 		Element e2 = items.get(pos - 1);
 
-		if (isControlAction(e)
-				&& isControlAction(e2)) {
+		if (isControlAction(e) && isControlAction(e2)) {
 			return;
 		}
 
@@ -345,8 +356,7 @@ public class ActionList extends ElementList {
 		Element e2 = pos + 2 < items.size ? items.get(pos + 2) : null;
 		Element e3 = items.get(pos + 1);
 
-		if (isControlAction(e)
-				&& isControlAction(e3)) {
+		if (isControlAction(e) && isControlAction(e3)) {
 			return;
 		}
 
@@ -370,23 +380,22 @@ public class ActionList extends ElementList {
 
 		@Override
 		protected String getCellTitle(Element e) {
-			String id = e.getAttribute(XMLConstants.ACTION_NAME_ATTR).isEmpty() ? e
-					.getAttribute("class") : e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
+			String id = e.getAttribute(XMLConstants.ACTION_NAME_ATTR).isEmpty() ? e.getAttribute("class")
+					: e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
 
 			String actor = e.getAttribute("actor");
-			boolean animationAction = e.getAttribute(XMLConstants.ACTION_NAME_ATTR).equals(
-					"Animation");
+			boolean animationAction = e.getAttribute(XMLConstants.ACTION_NAME_ATTR).equals("Animation");
 			boolean controlAction = isControlAction(e);
-			
-			boolean enabled = e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).isEmpty() || e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).equals(XMLConstants.TRUE_VALUE);
-			
-			if(!enabled && !controlAction) {
+
+			boolean enabled = e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).isEmpty()
+					|| e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).equals(XMLConstants.TRUE_VALUE);
+
+			if (!enabled && !controlAction) {
 				if (!actor.isEmpty() && !animationAction) {
 					String[] s = Param.parseString2(actor);
 
 					if (s[0] != null)
-						id = MessageFormat.format("[GRAY]{0} {1}.{2}[]", s[0],
-								s[1], id);
+						id = MessageFormat.format("[GRAY]{0} {1}.{2}[]", s[0], s[1], id);
 					else
 						id = MessageFormat.format("[GRAY]{0}.{1}[]", actor, id);
 				} else if (animationAction) {
@@ -394,8 +403,7 @@ public class ActionList extends ElementList {
 					String[] s = Param.parseString2(a);
 
 					if (s[0] != null)
-						id = MessageFormat.format("[GRAY]{0}.{1} {2}[]", s[0], id,
-								s[1]);
+						id = MessageFormat.format("[GRAY]{0}.{1} {2}[]", s[0], id, s[1]);
 					else
 						id = MessageFormat.format("[GRAY]{0} {1}[]", id, a);
 				} else {
@@ -406,20 +414,18 @@ public class ActionList extends ElementList {
 				String[] s = Param.parseString2(actor);
 
 				if (s[0] != null)
-					id = MessageFormat.format("[GREEN]{0}[] {1}.{2}", s[0],
-							s[1], id);
+					id = MessageFormat.format("[GREEN]{0}[] {1}.{2}", s[0], s[1], id);
 				else
 					id = MessageFormat.format("{0}.{1}", actor, id);
 			} else if (animationAction) {
 				String a = e.getAttribute("animation");
 				String[] s = Param.parseString2(a);
-				
-				if(s[0] == null)
+
+				if (s[0] == null)
 					s[0] = actor;
 
 				if (s[0] != null)
-					id = MessageFormat.format("{0}.{1} [GREEN]{2}[]", s[0], id,
-							s[1]);
+					id = MessageFormat.format("{0}.{1} [GREEN]{2}[]", s[0], id, s[1]);
 				else
 					id = MessageFormat.format("{0} [GREEN]{1}[]", id, a);
 			} else if (controlAction) {
@@ -427,8 +433,7 @@ public class ActionList extends ElementList {
 					String[] s = Param.parseString2(actor);
 
 					if (s[0] != null)
-						id = MessageFormat.format("[GREEN]{0}[] [BLUE]{1}.{2}[]", s[0],
-								s[1], id);
+						id = MessageFormat.format("[GREEN]{0}[] [BLUE]{1}.{2}[]", s[0], s[1], id);
 					else
 						id = MessageFormat.format("[BLUE]{0}.{1}[BLUE]", actor, id);
 				} else
@@ -448,19 +453,16 @@ public class ActionList extends ElementList {
 				Node n = attr.item(i);
 				String name = n.getNodeName();
 
-				if (name.equals("actor")
-						|| name.equals(XMLConstants.CLASS_ATTR)
-						|| name.equals(XMLConstants.ACTION_NAME_ATTR)
-						|| name.equals(XMLConstants.ACTION_ENABLED_ATTR)
+				if (name.equals("actor") || name.equals(XMLConstants.CLASS_ATTR)
+						|| name.equals(XMLConstants.ACTION_NAME_ATTR) || name.equals(XMLConstants.ACTION_ENABLED_ATTR)
 						|| name.equals(XMLConstants.CONTROL_ACTION_ID_ATTR)
-						|| (e.getAttribute(XMLConstants.ACTION_NAME_ATTR).equals("Animation") && name
-								.equals("animation")))
+						|| (e.getAttribute(XMLConstants.ACTION_NAME_ATTR).equals("Animation")
+								&& name.equals("animation")))
 					continue;
 
 				String v = n.getNodeValue();
 
-				sb.append(name).append(": ").append(doc.getTranslation(v))
-						.append(' ');
+				sb.append(name).append(": ").append(doc.getTranslation(v)).append(' ');
 			}
 
 			return sb.toString();
