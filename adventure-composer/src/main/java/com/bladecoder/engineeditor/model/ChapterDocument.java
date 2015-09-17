@@ -32,7 +32,6 @@ import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.loader.XMLConstants;
-import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
@@ -49,8 +48,8 @@ import com.bladecoder.engine.spine.SpineRenderer;
 
 public class ChapterDocument extends BaseDocument {
 
-	public static final String ACTOR_TYPES[] = { XMLConstants.BACKGROUND_VALUE, XMLConstants.SPRITE_VALUE, XMLConstants.CHARACTER_VALUE,
-			XMLConstants.OBSTACLE_VALUE };
+	public static final String ACTOR_TYPES[] = { XMLConstants.BACKGROUND_VALUE, XMLConstants.SPRITE_VALUE,
+			XMLConstants.CHARACTER_VALUE, XMLConstants.OBSTACLE_VALUE };
 
 	public static final String ACTOR_RENDERERS[] = { XMLConstants.ATLAS_VALUE, XMLConstants.SPINE_VALUE,
 			XMLConstants.S3D_VALUE, XMLConstants.IMAGE_VALUE };
@@ -185,7 +184,8 @@ public class ChapterDocument extends BaseDocument {
 		if (background != null && !background.isEmpty()) {
 			scn.setBackground(s.getAttribute(XMLConstants.BACKGROUND_ATLAS_ATTR),
 					s.getAttribute(XMLConstants.BACKGROUND_REGION_ATTR),
-					s.getAttribute(XMLConstants.LIGHTMAP_ATLAS_ATTR), s.getAttribute(XMLConstants.LIGHTMAP_REGION_ATTR));
+					s.getAttribute(XMLConstants.LIGHTMAP_ATLAS_ATTR),
+					s.getAttribute(XMLConstants.LIGHTMAP_REGION_ATTR));
 		}
 
 		String depthVector = s.getAttribute(XMLConstants.DEPTH_VECTOR_ATTR);
@@ -337,48 +337,54 @@ public class ChapterDocument extends BaseDocument {
 			a = new CharacterActor();
 		}
 
-		if (a instanceof SpriteActor) {
-			String renderer = getRenderer(e);
-
-			if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
-				((SpriteActor) a).setRenderer(new AtlasRenderer());
-			} else if (renderer.equals(XMLConstants.S3D_VALUE)) {
-				Sprite3DRenderer r = new Sprite3DRenderer();
-				((SpriteActor) a).setRenderer(r);
-				r.setSpriteSize(Param.parseVector2(e.getAttribute(XMLConstants.SPRITE_SIZE_ATTR)));
-			} else if (renderer.equals(XMLConstants.SPINE_VALUE)) {
-				SpineRenderer r = new SpineRenderer();
-				r.enableEvents(false);
-				((SpriteActor) a).setRenderer(r);
-			} else if (renderer.equals(XMLConstants.IMAGE_VALUE)) {
-				((SpriteActor) a).setRenderer(new ImageRenderer());
-			}
-		}
-
-		String layer = e.getAttribute(XMLConstants.LAYER_ATTR);
-		a.setLayer(layer);
-
 		a.setId(getId(e));
 		getBBox(a.getBBox(), e);
-
-		if (e.getAttribute(XMLConstants.BBOX_ATTR).isEmpty()) {
-			if (a instanceof SpriteActor)
-				((SpriteActor) a).setBboxFromRenderer(true);
-		} else {
-			if (a instanceof SpriteActor)
-				((SpriteActor) a).setBboxFromRenderer(false);
-		}
-
 		Vector2 pos = getPos(e);
 		if (pos != null)
 			a.setPosition(pos.x, pos.y);
 
-		if (!e.getAttribute(XMLConstants.DESC_ATTR).isEmpty()) {
-			((InteractiveActor)a).setDesc(e.getAttribute(XMLConstants.DESC_ATTR));
+		if (a instanceof InteractiveActor) {
+			InteractiveActor iActor = (InteractiveActor) a;
+
+			String layer = e.getAttribute(XMLConstants.LAYER_ATTR);
+			if (!layer.isEmpty()) {
+				iActor.setLayer(layer);
+			}
+			
+			String desc = e.getAttribute(XMLConstants.DESC_ATTR);
+			if (!desc.isEmpty()) {
+				iActor.setDesc(desc);
+			}
+			
+			if (!e.getAttribute(XMLConstants.ZINDEX_ATTR).isEmpty()) {
+				iActor.setZIndex(Float.parseFloat(e.getAttribute(XMLConstants.ZINDEX_ATTR)));
+			}
 		}
 
 		if (a instanceof SpriteActor) {
-			ActorRenderer r = ((SpriteActor) a).getRenderer();
+			SpriteActor sActor = (SpriteActor) a;
+			
+			String renderer = getRenderer(e);
+
+			if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
+				sActor.setRenderer(new AtlasRenderer());
+			} else if (renderer.equals(XMLConstants.S3D_VALUE)) {
+				Sprite3DRenderer r = new Sprite3DRenderer();
+				sActor.setRenderer(r);
+				r.setSpriteSize(Param.parseVector2(e.getAttribute(XMLConstants.SPRITE_SIZE_ATTR)));
+			} else if (renderer.equals(XMLConstants.SPINE_VALUE)) {
+				SpineRenderer r = new SpineRenderer();
+				r.enableEvents(false);
+				sActor.setRenderer(r);
+			} else if (renderer.equals(XMLConstants.IMAGE_VALUE)) {
+				sActor.setRenderer(new ImageRenderer());
+			}
+
+			if (e.getAttribute(XMLConstants.BBOX_ATTR).isEmpty()) {
+				sActor.setBboxFromRenderer(true);
+			} else {
+				sActor.setBboxFromRenderer(false);
+			}
 
 			NodeList faList = getAnimations(e);
 
@@ -386,32 +392,27 @@ public class ChapterDocument extends BaseDocument {
 				Element faElement = (Element) faList.item(i);
 
 				AnimationDesc fa = getEngineAnim(getRenderer(e), faElement);
-
-				r.addAnimation(fa);
+				
+				sActor.getRenderer().addAnimation(fa);
 			}
 
 			if (!e.getAttribute(XMLConstants.INIT_ANIMATION_ATTR).isEmpty()) {
-				((SpriteActor) a).getRenderer().setInitAnimation(e.getAttribute(XMLConstants.INIT_ANIMATION_ATTR));
+				sActor.getRenderer().setInitAnimation(e.getAttribute(XMLConstants.INIT_ANIMATION_ATTR));
 
 			}
 
 			if (!e.getAttribute(XMLConstants.SCALE_ATTR).isEmpty()) {
-				((SpriteActor) a).setScale(Float.parseFloat(e.getAttribute(XMLConstants.SCALE_ATTR)));
+				sActor.setScale(Float.parseFloat(e.getAttribute(XMLConstants.SCALE_ATTR)));
 			}
 
 			// PARSE DEPTH TYPE
 			String depthType = e.getAttribute(XMLConstants.DEPTH_TYPE_ATTR);
-			((SpriteActor) a).setDepthType(DepthType.NONE);
+			sActor.setDepthType(DepthType.NONE);
 
 			if (!depthType.isEmpty()) {
 				if (depthType.equals(XMLConstants.VECTOR_ATTR))
-					((SpriteActor) a).setDepthType(DepthType.VECTOR);
+					sActor.setDepthType(DepthType.VECTOR);
 			}
-		}
-
-
-		if (!e.getAttribute(XMLConstants.ZINDEX_ATTR).isEmpty()) {
-			((InteractiveActor)a).setZIndex(Float.parseFloat(e.getAttribute(XMLConstants.ZINDEX_ATTR)));
 		}
 
 		return a;
@@ -435,8 +436,8 @@ public class ChapterDocument extends BaseDocument {
 		fa.id = faElement.getAttribute(XMLConstants.ID_ATTR);
 		fa.source = faElement.getAttribute(XMLConstants.SOURCE_ATTR);
 
-		if (faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).isEmpty()
-				|| faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).equalsIgnoreCase(XMLConstants.REPEAT_VALUE)) {
+		if (faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).isEmpty() || faElement
+				.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).equalsIgnoreCase(XMLConstants.REPEAT_VALUE)) {
 			fa.animationType = Tween.Type.REPEAT;
 		} else if (faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).equalsIgnoreCase(XMLConstants.YOYO_VALUE)) {
 			fa.animationType = Tween.Type.YOYO;

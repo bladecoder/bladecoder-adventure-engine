@@ -26,6 +26,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneCamera;
@@ -59,9 +60,6 @@ public class CanvasDrawer {
 		drawer.begin(ShapeType.Line);
 
 		for (BaseActor a : scn.getActors().values()) {
-			if(!scn.getLayer(a.getLayer()).isVisible()) {
-				continue;
-			}
 			
 			Polygon p = a.getBBox();
 
@@ -71,10 +69,16 @@ public class CanvasDrawer {
 
 			// Rectangle r = a.getBBox().getBoundingRectangle();
 
-			if(a instanceof ObstacleActor)
+			if(a instanceof ObstacleActor) {
 				drawer.setColor(Scene.OBSTACLE_COLOR);
-			else				
+			} else if(a instanceof InteractiveActor) {	
+				InteractiveActor iActor = (InteractiveActor) a;
+				
+				if(!scn.getLayer(iActor.getLayer()).isVisible())
+					continue;
+				
 				drawer.setColor(Scene.ACTOR_BBOX_COLOR);
+			}
 			
 			drawer.polygon(p.getTransformedVertices());
 			// drawer.rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());

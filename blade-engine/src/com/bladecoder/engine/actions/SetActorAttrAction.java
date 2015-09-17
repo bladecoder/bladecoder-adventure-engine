@@ -69,7 +69,7 @@ public class SetActorAttrAction implements Action {
 	@JsonPropertyDescription("Enable/Disable the Fake Depth for the actor")
 	@ActionPropertyType(Type.BOOLEAN)
 	private Boolean fakeDepth;
-	
+
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor scale")
 	@ActionPropertyType(Type.FLOAT)
@@ -79,7 +79,7 @@ public class SetActorAttrAction implements Action {
 	@JsonPropertyDescription("Sets the actor 'stand' animation. Only supported for character actors.")
 	@ActionPropertyType(Type.STRING)
 	private String standAnimation;
-	
+
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor 'walk' animation. Only supported for character actors.")
 	@ActionPropertyType(Type.STRING)
@@ -107,7 +107,7 @@ public class SetActorAttrAction implements Action {
 		position = vector2OrNull(params.get("position"));
 		scale = floatOrNull(params.get("scale"));
 		fakeDepth = booleanOrNull(params.get("fakeDepth"));
-		
+
 		standAnimation = params.get("standAnimation");
 		walkAnimation = params.get("walkAnimation");
 		talkAnimation = params.get("talkAnimation");
@@ -146,23 +146,30 @@ public class SetActorAttrAction implements Action {
 		}
 
 		if (layer != null) {
-			String oldLayer = actor.getLayer();
+			if (actor instanceof InteractiveActor) {
+				InteractiveActor iActor = (InteractiveActor) actor;
+				
+				String oldLayer = iActor.getLayer();
 
-			s.getLayer(oldLayer).remove(actor);
+				s.getLayer(oldLayer).remove(iActor);
 
-			actor.setLayer(layer);
+				iActor.setLayer(layer);
 
-			SceneLayer l = s.getLayer(layer);
-			l.add(actor);
+				SceneLayer l = s.getLayer(layer);
+				l.add(iActor);
 
-			if (!l.isDynamic())
-				l.orderByZIndex();
+				if (!l.isDynamic())
+					l.orderByZIndex();
+			} else
+				EngineLogger.error("layer property not supported for actor:" + actor.getId());
 		}
 
 		if (zIndex != null) {
 			if (actor instanceof InteractiveActor) {
-				((InteractiveActor) actor).setZIndex(zIndex);
-				SceneLayer l = s.getLayer(actor.getLayer());
+				InteractiveActor iActor = (InteractiveActor) actor;
+				
+				iActor.setZIndex(zIndex);
+				SceneLayer l = s.getLayer(iActor.getLayer());
 
 				if (!l.isDynamic())
 					l.orderByZIndex();
@@ -182,38 +189,38 @@ public class SetActorAttrAction implements Action {
 			else
 				EngineLogger.error("scale property not supported for actor:" + actor.getId());
 		}
-		
+
 		if (fakeDepth != null) {
 			if (actor instanceof SpriteActor) {
-				if(fakeDepth)
+				if (fakeDepth)
 					((SpriteActor) actor).setDepthType(DepthType.VECTOR);
 				else
 					((SpriteActor) actor).setDepthType(DepthType.NONE);
 			} else
-				EngineLogger.error("fakeDepth property not supported for actor:" + actor.getId());			
+				EngineLogger.error("fakeDepth property not supported for actor:" + actor.getId());
 		}
-		
+
 		if (standAnimation != null) {
 			if (actor instanceof CharacterActor)
 				((CharacterActor) actor).setStandAnim(standAnimation);
 			else
 				EngineLogger.error("standAnimation property not supported for actor:" + actor.getId());
 		}
-		
+
 		if (walkAnimation != null) {
 			if (actor instanceof CharacterActor)
 				((CharacterActor) actor).setWalkAnim(walkAnimation);
 			else
 				EngineLogger.error("walkAnimation property not supported for actor:" + actor.getId());
 		}
-		
+
 		if (talkAnimation != null) {
 			if (actor instanceof CharacterActor)
 				((CharacterActor) actor).setTalkAnim(talkAnimation);
 			else
 				EngineLogger.error("talkAnimation property not supported for actor:" + actor.getId());
 		}
-		
+
 		if (walkingSpeed != null) {
 			if (actor instanceof CharacterActor)
 				((CharacterActor) actor).setWalkingSpeed(walkingSpeed);

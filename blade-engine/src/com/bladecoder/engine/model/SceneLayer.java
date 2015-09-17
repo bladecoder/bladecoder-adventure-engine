@@ -12,7 +12,7 @@ public class SceneLayer {
 	private boolean visible = true;
 	private boolean dynamic;
 	
-	transient private final List<BaseActor> actors = new ArrayList<BaseActor>();
+	transient private final List<InteractiveActor> actors = new ArrayList<InteractiveActor>();
 	
 	public void update() {
 		if(dynamic && visible)
@@ -29,7 +29,7 @@ public class SceneLayer {
 		}
 	}
 	
-	public void add(BaseActor actor) {
+	public void add(InteractiveActor actor) {
 		actors.add(actor);
 	}
 
@@ -57,19 +57,16 @@ public class SceneLayer {
 		this.dynamic = dynamic;
 	}
 
-	public List<BaseActor> getActors() {
+	public List<InteractiveActor> getActors() {
 		return actors;
 	}
 
 	public void orderByZIndex() {
-		Collections.sort(actors, new Comparator<BaseActor>() {
+		Collections.sort(actors, new Comparator<InteractiveActor>() {
 
 			@Override
-			public int compare(BaseActor a1, BaseActor a2) {
-				if(a1 instanceof InteractiveActor && a2 instanceof InteractiveActor)
-					return (int) (((InteractiveActor)a1).getZIndex() - ((InteractiveActor)a2).getZIndex());
-				else 
-					return 0;
+			public int compare(InteractiveActor a1, InteractiveActor a2) {
+				return (int) (a1.getZIndex() - a2.getZIndex());
 			}
 		});
 	}

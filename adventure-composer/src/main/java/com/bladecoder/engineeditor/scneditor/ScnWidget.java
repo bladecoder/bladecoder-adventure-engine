@@ -42,6 +42,7 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
@@ -655,8 +656,12 @@ public class ScnWidget extends Widget {
 	private BaseActor createActor(ChapterDocument doc, Element e) {
 		BaseActor a = doc.getEngineActor(e);
 		scn.addActor(a);
-		SceneLayer l = scn.getLayer(a.getLayer());
-		l.orderByZIndex();
+
+		if (a instanceof InteractiveActor) {
+			InteractiveActor iActor = (InteractiveActor) a;
+			SceneLayer l = scn.getLayer(iActor.getLayer());
+			l.orderByZIndex();
+		}
 
 		if (a instanceof AssetConsumer) {
 			((AssetConsumer) a).loadAssets();

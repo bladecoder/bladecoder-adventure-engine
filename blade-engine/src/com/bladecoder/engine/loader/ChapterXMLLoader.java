@@ -368,12 +368,12 @@ public class ChapterXMLLoader extends DefaultHandler {
 			actor.setVisible(visible);
 		}
 
-		String layerStr = atts.getValue(XMLConstants.LAYER_ATTR);
-		actor.setLayer(layerStr);
-
 		if (actor instanceof InteractiveActor) {
 
 			InteractiveActor ia = (InteractiveActor) actor;
+			
+			String layerStr = atts.getValue(XMLConstants.LAYER_ATTR);
+			ia.setLayer(layerStr);
 
 			String desc = atts.getValue(XMLConstants.DESC_ATTR);
 			if (desc != null)

@@ -27,12 +27,11 @@ import com.bladecoder.engine.assets.EngineAssetManager;
  * 
  * @author rgarcia
  */
-abstract public class BaseActor implements Comparable<BaseActor>, Serializable {
+abstract public class BaseActor implements Serializable {
 	protected String id;
 	protected Scene scene = null;
 	protected boolean visible = true;
 	protected final Polygon bbox = new Polygon();	
-	protected String layer;
 	
 	public String getId() {
 		return id;
@@ -44,14 +43,6 @@ abstract public class BaseActor implements Comparable<BaseActor>, Serializable {
 
 	public Polygon getBBox() {
 		return bbox;
-	}
-	
-	public void setLayer(String layer) {
-		this.layer = layer;
-	}
-	
-	public String getLayer() {
-		return layer;
 	}
 	
 	public boolean hit(float x, float y) {
@@ -88,12 +79,6 @@ abstract public class BaseActor implements Comparable<BaseActor>, Serializable {
 		return sb.toString();
 	}
 
-	@Override
-	public int compareTo(BaseActor o) {
-		return (int) (o.getBBox().getY() - this.getBBox().getY());
-	}
-	
-
 	public float getX() {
 		return bbox.getX();
 	}
@@ -115,7 +100,6 @@ abstract public class BaseActor implements Comparable<BaseActor>, Serializable {
 		Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
 		json.writeValue("pos", scaledPos);	
 		json.writeValue("bbox", bbox.getVertices());
-		json.writeValue("layer", layer);
 	}
 
 	@Override
@@ -134,7 +118,6 @@ abstract public class BaseActor implements Comparable<BaseActor>, Serializable {
 			bbox.setVertices(verts);
 		
 		bbox.setScale(worldScale, worldScale);		
-		layer = json.readValue("layer", String.class, jsonData);
 	}
 
 }

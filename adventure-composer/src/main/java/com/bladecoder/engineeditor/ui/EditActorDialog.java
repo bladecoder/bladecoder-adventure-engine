@@ -167,6 +167,7 @@ public class EditActorDialog extends EditElementDialog {
 		
 		if (!ChapterDocument.ACTOR_TYPES[i]
 				.equals(XMLConstants.OBSTACLE_VALUE)) {
+			setVisible(inputs[2], true);
 			setVisible(inputs[4],true);
 			setVisible(inputs[5],true);
 			setVisible(inputs[6],true);
@@ -210,7 +211,9 @@ public class EditActorDialog extends EditElementDialog {
 	}
 	
 	private void hideAllInputs() {
-				
+		
+		setVisible(inputs[2], false);
+		
 		for(int idx = 4; idx < inputs.length; idx ++) {
 			InputPanel i = inputs[idx];
 			

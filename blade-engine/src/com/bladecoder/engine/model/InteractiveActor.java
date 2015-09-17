@@ -26,7 +26,7 @@ import com.bladecoder.engine.assets.AssetConsumer;
  * 
  * @author rgarcia
  */
-public class InteractiveActor extends BaseActor implements AssetConsumer {
+public class InteractiveActor extends BaseActor implements AssetConsumer, Comparable<InteractiveActor> {
 	protected String desc;
 	protected float zIndex;
 	protected boolean interaction = true;
@@ -40,6 +40,17 @@ public class InteractiveActor extends BaseActor implements AssetConsumer {
 	
 	/** State to know when the player is inside this actor to trigger the enter/exit verbs */ 
 	private boolean playerInside = false;
+	
+	protected String layer;
+	
+	
+	public void setLayer(String layer) {
+		this.layer = layer;
+	}
+	
+	public String getLayer() {
+		return layer;
+	}
 
 
 	public boolean hasInteraction() {
@@ -205,6 +216,11 @@ public class InteractiveActor extends BaseActor implements AssetConsumer {
 			playingSound = null;
 		}
 	}
+	
+	@Override
+	public int compareTo(InteractiveActor o) {
+		return (int) (o.getBBox().getY() - this.getBBox().getY());
+	}
 
 	@Override
 	public void write(Json json) {
@@ -220,6 +236,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer {
 		
 		json.writeValue("playerInside", playerInside);
 		json.writeValue("zIndex", zIndex);
+		json.writeValue("layer", layer);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -237,6 +254,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer {
 
 		playerInside = json.readValue("playerInside", Boolean.class, jsonData);
 		zIndex = json.readValue("zIndex", Float.class, jsonData);
+		layer = json.readValue("layer", String.class, jsonData);
 	}
 
 }

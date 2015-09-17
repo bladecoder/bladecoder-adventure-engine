@@ -319,15 +319,19 @@ public class Scene implements Serializable, AssetConsumer {
 		actors.put(actor.getId(), actor);
 		actor.setScene(this);
 
-		SceneLayer layer = getLayer(actor.getLayer());
+		if (actor instanceof InteractiveActor) {
+			InteractiveActor ia = (InteractiveActor) actor;
 
-		if (layer == null) { // fallback for compatibility
-			layer = new SceneLayer();
-			layer.setName(actor.getLayer());
-			layers.add(layer);
+			SceneLayer layer = getLayer(ia.getLayer());
+
+			if (layer == null) { // fallback for compatibility
+				layer = new SceneLayer();
+				layer.setName(ia.getLayer());
+				layers.add(layer);
+			}
+
+			layer.add(ia);
 		}
-
-		layer.add(actor);
 	}
 
 	public void setBackground(String bgAtlas, String bgId, String lightMapAtlas, String lightMapId) {
@@ -337,9 +341,9 @@ public class Scene implements Serializable, AssetConsumer {
 		this.lightMapRegionId = lightMapId;
 	}
 
-	
 	/**
-	 *  Returns the Interactive actor at the position. The actor must have the interaction property enabled.
+	 * Returns the Interactive actor at the position. The actor must have the
+	 * interaction property enabled.
 	 */
 	public InteractiveActor getInteractiveActorAt(float x, float y) {
 
@@ -360,7 +364,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 		return null;
 	}
-	
+
 	private Rectangle tmpToleranceRect = new Rectangle();
 
 	/**
@@ -368,8 +372,8 @@ public class Scene implements Serializable, AssetConsumer {
 	 * 
 	 * Creates a square with size = TOLERANCE and checks:
 	 * 
-	 *  1. if some vertex from the TOLERANCE square is inside an actor bbox
-	 *  2. if some actor bbox vertex is inside the TOLERANCE square
+	 * 1. if some vertex from the TOLERANCE square is inside an actor bbox 2. if
+	 * some actor bbox vertex is inside the TOLERANCE square
 	 */
 	public InteractiveActor getInteractiveActorAt(float x, float y, float tolerance) {
 		if (tolerance <= 0) {
@@ -377,12 +381,12 @@ public class Scene implements Serializable, AssetConsumer {
 		}
 
 		List<SceneLayer> layers = getLayers();
-		
+
 		tmpToleranceRect.x = x - tolerance / 2;
 		tmpToleranceRect.y = y - tolerance / 2;
 		tmpToleranceRect.width = tolerance;
 		tmpToleranceRect.height = tolerance;
-		
+
 		for (SceneLayer layer : layers) {
 
 			if (!layer.isVisible())
@@ -393,23 +397,21 @@ public class Scene implements Serializable, AssetConsumer {
 				BaseActor a = layer.getActors().get(l);
 
 				if (a instanceof InteractiveActor && ((InteractiveActor) a).hasInteraction()) {
-					
-					if(
-							a.hit(x, y) ||
-							a.hit(tmpToleranceRect.x,  tmpToleranceRect.y) ||
-							a.hit(tmpToleranceRect.x + tmpToleranceRect.width,  tmpToleranceRect.y) ||
-							a.hit(tmpToleranceRect.x,  tmpToleranceRect.y + tmpToleranceRect.height) ||
-							a.hit(tmpToleranceRect.x + tmpToleranceRect.width,  tmpToleranceRect.y + tmpToleranceRect.height)
-							)
+
+					if (a.hit(x, y) || a.hit(tmpToleranceRect.x, tmpToleranceRect.y)
+							|| a.hit(tmpToleranceRect.x + tmpToleranceRect.width, tmpToleranceRect.y)
+							|| a.hit(tmpToleranceRect.x, tmpToleranceRect.y + tmpToleranceRect.height)
+							|| a.hit(tmpToleranceRect.x + tmpToleranceRect.width,
+									tmpToleranceRect.y + tmpToleranceRect.height))
 						return (InteractiveActor) a;
-					
+
 					float[] verts = a.getBBox().getTransformedVertices();
 					for (int i = 0; i < verts.length; i += 2) {
 						float vx = verts[i];
 						float vy = verts[i + 1];
-						
-						if(tmpToleranceRect.contains(vx, vy))
-							return (InteractiveActor) a;	
+
+						if (tmpToleranceRect.contains(vx, vy))
+							return (InteractiveActor) a;
 					}
 				}
 			}
@@ -417,9 +419,9 @@ public class Scene implements Serializable, AssetConsumer {
 
 		return null;
 	}
-	
+
 	/**
-	 *  Returns the actor at the position. 
+	 * Returns the actor at the position. Include not interactive actors.
 	 */
 	public BaseActor getActorAt(float x, float y) {
 
@@ -435,6 +437,13 @@ public class Scene implements Serializable, AssetConsumer {
 				if (a.hit(x, y)) {
 					return a;
 				}
+			}
+		}
+		
+		// if not found check for obstacles
+		for(BaseActor a:actors.values()) {
+			if(a instanceof ObstacleActor && a.hit(x, y)) {
+				return a;
 			}
 		}
 
@@ -475,8 +484,11 @@ public class Scene implements Serializable, AssetConsumer {
 			return;
 		}
 
-		SceneLayer layer = getLayer(a.getLayer());
-		layer.getActors().remove(a);
+		if (a instanceof InteractiveActor) {
+			InteractiveActor ia = (InteractiveActor)a;
+			SceneLayer layer = getLayer(ia.getLayer());
+			layer.getActors().remove(ia);
+		}
 
 		if (a instanceof ObstacleActor && polygonalNavGraph != null)
 			polygonalNavGraph.removeDinamicObstacle(a.getBBox());
@@ -651,13 +663,13 @@ public class Scene implements Serializable, AssetConsumer {
 
 		json.writeValue("camera", camera);
 
-		json.writeValue("followActor", followActor == null ? null : followActor.getId(), followActor == null ? null
-				: String.class);
+		json.writeValue("followActor", followActor == null ? null : followActor.getId(),
+				followActor == null ? null : String.class);
 
 		json.writeValue("depthVector", depthVector);
 
-		json.writeValue("polygonalNavGraph", polygonalNavGraph, polygonalNavGraph == null ? null
-				: PolygonalNavGraph.class);
+		json.writeValue("polygonalNavGraph", polygonalNavGraph,
+				polygonalNavGraph == null ? null : PolygonalNavGraph.class);
 
 	}
 
@@ -675,8 +687,12 @@ public class Scene implements Serializable, AssetConsumer {
 		for (BaseActor actor : actors.values()) {
 			actor.setScene(this);
 
-			SceneLayer layer = getLayer(actor.getLayer());
-			layer.add(actor);
+			if(actor instanceof InteractiveActor) {
+				InteractiveActor ia = (InteractiveActor) actor;
+				
+				SceneLayer layer = getLayer(ia.getLayer());
+				layer.add(ia);
+			}
 		}
 
 		orderLayersByZIndex();
