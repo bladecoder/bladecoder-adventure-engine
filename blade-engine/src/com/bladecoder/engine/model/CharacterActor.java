@@ -95,29 +95,38 @@ public class CharacterActor extends SpriteActor {
 		walkingSpeed = s;
 	}
 
-	public void lookat(Vector2 p) {		
-		renderer.startAnimation(standAnim, Tween.Type.SPRITE_DEFINED,-1, null, new Vector2(bbox.getX(), bbox.getY()), p);
-		
+	public void lookat(Vector2 p) {
+		inAnim();
 		posTween = null;
+		renderer.startAnimation(standAnim, Tween.Type.SPRITE_DEFINED,-1, null, new Vector2(bbox.getX(), bbox.getY()), p);
+		outAnim();
 	}
 
 	public void lookat(String direction) {
-		renderer.startAnimation(standAnim, Tween.Type.SPRITE_DEFINED,-1, null, direction);
+		inAnim();
 		posTween = null;
+		renderer.startAnimation(standAnim, Tween.Type.SPRITE_DEFINED,-1, null, direction);
+		outAnim();
 	}
 
 	public void stand() {
-		renderer.startAnimation(standAnim, Tween.Type.SPRITE_DEFINED,-1, null, null);
+		inAnim();
 		posTween = null;
+		renderer.startAnimation(standAnim, Tween.Type.SPRITE_DEFINED,-1, null, null);
+		outAnim();
 	}
 	
 	public void talk() {
-		renderer.startAnimation(talkAnim, Tween.Type.SPRITE_DEFINED,-1, null, null);
+		inAnim();
 		posTween = null;
+		renderer.startAnimation(talkAnim, Tween.Type.SPRITE_DEFINED,-1, null, null);
+		outAnim();
 	}
 
 	public void startWalkAnim(Vector2 p0, Vector2 pf) {
+		inAnim();
 		renderer.startAnimation(walkAnim, Tween.Type.SPRITE_DEFINED,-1, null, p0, pf);
+		outAnim();
 	}
 
 	/**

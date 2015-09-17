@@ -140,6 +140,23 @@ public class SpriteActor extends InteractiveActor {
 
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
 
+		inAnim();
+
+		// resets posTween when walking
+		if (posTween != null && posTween instanceof WalkTween)
+			posTween = null;
+
+		renderer.startAnimation(id, repeatType, count, cb);
+
+		outAnim();
+	}
+	
+	/**
+	 * Actions to do when setting an animation:
+	 *   - stop previous animation sound
+	 *   - add 'out' distance from previous animation
+	 */
+	protected void inAnim() {
 		AnimationDesc fa = renderer.getCurrentAnimation();
 
 		if (fa != null) {
@@ -155,15 +172,16 @@ public class SpriteActor extends InteractiveActor {
 
 				setPosition(getX() + outD.x * s, getY() + outD.y * s);
 			}
-		}
+		}		
+	}
 
-		// resets posTween when walking
-		if (posTween != null && posTween instanceof WalkTween)
-			posTween = null;
-
-		renderer.startAnimation(id, repeatType, count, cb);
-
-		fa = renderer.getCurrentAnimation();
+	/**
+	 * Actions to do when setting an animation:
+	 *   - play animation sound
+	 *   - add 'in' distance
+	 */
+	protected void outAnim() {
+		AnimationDesc fa = renderer.getCurrentAnimation();
 
 		if (fa != null) {
 
@@ -178,7 +196,7 @@ public class SpriteActor extends InteractiveActor {
 
 				setPosition(getX() + inD.x * s, getY() + inD.y * s);
 			}
-		}
+		}		
 	}
 
 	/**
