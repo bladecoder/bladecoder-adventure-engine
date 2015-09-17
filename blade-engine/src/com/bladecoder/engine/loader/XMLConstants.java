@@ -29,6 +29,7 @@ public final class XMLConstants {
 	public static final String BACKGROUND_VALUE = "background";
 	public static final String CHARACTER_VALUE = "character";
 	public static final String OBSTACLE_VALUE = "obstacle";
+	public static final String ANCHOR_VALUE = "anchor";	
 	public static final String SPRITE_VALUE = "sprite";
 	public static final String RENDERER_ATTR = "renderer";
 	public static final String ATLAS_VALUE = "atlas";

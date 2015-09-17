@@ -17,123 +17,68 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
+import javax.annotation.Nullable;
+
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.InterpolationMode;
+import com.bladecoder.engine.model.Scene;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-@ActionDescription("Sets an actor Position animation")
+@ActionDescription("Change actor attributes.")
 public class PositionAction implements Action {
-	public enum Mode {
-		DURATION, SPEED
-	}
-
-	@JsonProperty("actor")
+	@JsonProperty(value = "actor", required = true)
 	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
-	private String actorId;
+	@ActionPropertyType(Type.SCENE_ACTOR)
+	private SceneActorRef sceneActorRef;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The target position")
+	@JsonProperty
+	@JsonPropertyDescription("Sets the actor position")
 	@ActionPropertyType(Type.VECTOR2)
-	private Vector2 pos;
-
-	@JsonProperty(required = true, defaultValue = "1.0")
-	@JsonPropertyDescription("Duration or speed in pixels/sec. mode")
-	@ActionPropertyType(Type.FLOAT)
-	private float speed;
-
-	@JsonProperty
-	@JsonPropertyDescription("Duration or speed of the animation")
-	@ActionPropertyType(Type.OPTION)
-	private Mode mode;
-
-	@JsonProperty
-	@JsonPropertyDescription("The times to repeat")
-	@ActionPropertyType(Type.INTEGER)
-	private int count = 1;
-
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
-	private boolean wait = true;
-
-	@JsonProperty(required = true, defaultValue = "NO_REPEAT")
-	@JsonPropertyDescription("The repeat mode")
-	@ActionPropertyType(Type.OPTION)
-	private Tween.Type repeat = Tween.Type.NO_REPEAT;   // FIXME: This adds more types not present here before
-
-	@JsonProperty
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.OPTION)
-	private InterpolationMode interpolation;
+	private Vector2 position;
+	
+	@JsonProperty(value = "anchor", required = true)
+	@JsonPropertyDescription("The anchor actor")
+	@ActionPropertyType(Type.SCENE_ACTOR)
+	private SceneActorRef anchorActorRef;
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
+		String[] a = Param.parseString2(params.get("actor"));
 
-		// get final position. We need to scale the coordinates to the current
-		// resolution
-		pos = Param.parseVector2(params.get("pos"));
+		sceneActorRef = a == null ? new SceneActorRef() : new SceneActorRef(a[0], a[1]);
 
-		speed = Float.parseFloat(params.get("speed"));
+		position = vector2OrNull(params.get("position"));
+		
+		
+		String[] b = Param.parseString2(params.get("anchor"));
+		anchorActorRef = b == null ? null : new SceneActorRef(b[0], b[1]);
+	}
 
-		if (params.get("count") != null) {
-			count = Integer.parseInt(params.get("count"));
-		}
-
-		if (params.get("mode") != null) {
-			mode = Mode.valueOf(params.get("mode").trim().toUpperCase());
-		}
-
-		if (params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
-
-		if (params.get("repeat") != null) {
-			String repeatStr = params.get("repeat");
-			repeat = Tween.Type.valueOf(repeatStr.trim().toUpperCase());
-		}
-
-		if (params.get("interpolation") != null) {
-			interpolation = InterpolationMode.valueOf(params.get("interpolation").trim().toUpperCase());
-		}
+	@Nullable
+	private static Vector2 vector2OrNull(String str) {
+		return str != null ? Param.parseVector2(str) : null;
 	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
+		Scene s = sceneActorRef.getScene();
 
-		float scale = EngineAssetManager.getInstance().getScale();
+		BaseActor actor = s.getActor(sceneActorRef.getActorId(), true);
 
-		BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, false);
+		if (position != null) {
+			float scale = EngineAssetManager.getInstance().getScale();
 
-		if (speed == 0 || !(actor instanceof SpriteActor)) {
-			actor.setPosition(pos.x * scale, pos.y * scale);
-
-			return false;
-		} else {
-			// WARNING: only spriteactors support animation
-			float s;
-
-			if (mode != null && mode == Mode.SPEED) {
-				Vector2 p0 = new Vector2(actor.getX(), actor.getY());
-
-				s = p0.dst(pos.x * scale, pos.y * scale) / (scale * speed);
-			} else {
-				s = speed;
-			}
-
-			((SpriteActor) actor)
-					.startPosAnimation(repeat, count, s, pos.x * scale, pos.y * scale, interpolation, wait ? cb : null);
+			actor.setPosition(position.x * scale, position.y * scale);
+		} else if(anchorActorRef != null) {
+			BaseActor anchor = s.getActor(anchorActorRef.getActorId(), true);
+			
+			actor.setPosition(anchor.getX(), anchor.getY());
 		}
 
-		return wait;
+		return false;
 	}
 
 }

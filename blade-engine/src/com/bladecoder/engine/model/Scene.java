@@ -45,6 +45,8 @@ public class Scene implements Serializable, AssetConsumer {
 	public static final Color ACTOR_BBOX_COLOR = new Color(0.2f, 0.2f, 0.8f, 1f);
 	public static final Color WALKZONE_COLOR = Color.GREEN;
 	public static final Color OBSTACLE_COLOR = Color.RED;
+	public static final Color ANCHOR_COLOR = Color.RED;
+	public static final float ANCHOR_RADIUS = 14f;
 
 	/**
 	 * All actors in the scene
@@ -273,12 +275,17 @@ public class Scene implements Serializable, AssetConsumer {
 				EngineLogger.error("ERROR DRAWING BBOX FOR: " + a.getId());
 			}
 
-			if (a instanceof ObstacleActor)
+			if (a instanceof ObstacleActor) {
 				renderer.setColor(OBSTACLE_COLOR);
-			else
+				renderer.polygon(p.getTransformedVertices());
+			} else if (a instanceof AnchorActor) {
+				renderer.setColor(Scene.ANCHOR_COLOR);
+				renderer.line(p.getX() - Scene.ANCHOR_RADIUS, p.getY(), p.getX() + Scene.ANCHOR_RADIUS, p.getY());
+				renderer.line(p.getX(), p.getY() - Scene.ANCHOR_RADIUS, p.getX(), p.getY() + Scene.ANCHOR_RADIUS);
+			} else {
 				renderer.setColor(ACTOR_BBOX_COLOR);
-
-			renderer.polygon(p.getTransformedVertices());
+				renderer.polygon(p.getTransformedVertices());
+			}
 
 			// Rectangle r = a.getBBox().getBoundingRectangle();
 			// renderer.rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
@@ -439,11 +446,16 @@ public class Scene implements Serializable, AssetConsumer {
 				}
 			}
 		}
-		
-		// if not found check for obstacles
-		for(BaseActor a:actors.values()) {
-			if(a instanceof ObstacleActor && a.hit(x, y)) {
+
+		// if not found check for obstacles and anchors
+		for (BaseActor a : actors.values()) {
+			if (a instanceof ObstacleActor && a.hit(x, y)) {
 				return a;
+			} else if (a instanceof AnchorActor) {
+				float dst = Vector2.dst(x, y, a.getX(), a.getY());
+
+				if (dst < ANCHOR_RADIUS)
+					return a;
 			}
 		}
 
@@ -485,7 +497,7 @@ public class Scene implements Serializable, AssetConsumer {
 		}
 
 		if (a instanceof InteractiveActor) {
-			InteractiveActor ia = (InteractiveActor)a;
+			InteractiveActor ia = (InteractiveActor) a;
 			SceneLayer layer = getLayer(ia.getLayer());
 			layer.getActors().remove(ia);
 		}
@@ -687,9 +699,9 @@ public class Scene implements Serializable, AssetConsumer {
 		for (BaseActor actor : actors.values()) {
 			actor.setScene(this);
 
-			if(actor instanceof InteractiveActor) {
+			if (actor instanceof InteractiveActor) {
 				InteractiveActor ia = (InteractiveActor) actor;
-				
+
 				SceneLayer layer = getLayer(ia.getLayer());
 				layer.add(ia);
 			}

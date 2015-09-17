@@ -47,6 +47,8 @@ public class ActionFactory {
 		actions.put("Animation",
 				"com.bladecoder.engine.actions.AnimationAction");
 		actions.put("PositionAnim",
+				"com.bladecoder.engine.actions.PositionAnimAction");
+		actions.put("Position",
 				"com.bladecoder.engine.actions.PositionAction");
 		actions.put("ScaleAnim",
 				"com.bladecoder.engine.actions.ScaleAction");		

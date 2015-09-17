@@ -52,6 +52,7 @@ import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
@@ -228,6 +229,8 @@ public class ChapterXMLLoader extends DefaultHandler {
 			actor = new InteractiveActor();
 		} else if (type.equals(XMLConstants.OBSTACLE_VALUE)) {
 			actor = new ObstacleActor();
+		} else if (type.equals(XMLConstants.ANCHOR_VALUE)) {
+			actor = new AnchorActor();			
 		} else { // Sprite or character
 			String renderer = atts.getValue(XMLConstants.RENDERER_ATTR);
 
@@ -342,11 +345,11 @@ public class ChapterXMLLoader extends DefaultHandler {
 				error(e2);
 				throw e2;
 			}
-		} else if (!(actor instanceof SpriteActor)) {
+		} else if (!(actor instanceof SpriteActor) && !(actor instanceof AnchorActor)) {
 			SAXParseException e2 = new SAXParseException("Bounding box definition not set for actor", locator);
 			error(e2);
 			throw e2;
-		} else {
+		} else if(actor instanceof SpriteActor) {
 			((SpriteActor) actor).setBboxFromRenderer(true);
 		}
 

@@ -222,6 +222,8 @@ public class ActorList extends ElementList {
 				}
 			} else if (type.equals(XMLConstants.OBSTACLE_VALUE)) {
 				u = "ic_obstacle_actor";
+			} else if (type.equals(XMLConstants.ANCHOR_VALUE)) {
+				u = "ic_anchor";				
 			} else if (type.equals(XMLConstants.CHARACTER_VALUE)) {
 				u = "ic_character_actor";
 			}

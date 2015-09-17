@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
+import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.ObstacleActor;
@@ -39,10 +40,8 @@ import com.bladecoder.engineeditor.Ctx;
 public class CanvasDrawer {
 	public static final float CORNER_DIST = 20;
 
-	private static final Color MOUSESELECTION_FILL_COLOR = new Color(0.2f,
-			0.2f, 0.8f, 0.4f);
-	private static final Color MOUSESELECTION_STROKE_COLOR = new Color(0.2f,
-			0.2f, 0.8f, 1f);
+	private static final Color MOUSESELECTION_FILL_COLOR = new Color(0.2f, 0.2f, 0.8f, 0.4f);
+	private static final Color MOUSESELECTION_STROKE_COLOR = new Color(0.2f, 0.2f, 0.8f, 1f);
 
 	private final ShapeRenderer drawer = new ShapeRenderer();
 	private SceneCamera camera;
@@ -60,7 +59,7 @@ public class CanvasDrawer {
 		drawer.begin(ShapeType.Line);
 
 		for (BaseActor a : scn.getActors().values()) {
-			
+
 			Polygon p = a.getBBox();
 
 			if (p == null) {
@@ -69,18 +68,23 @@ public class CanvasDrawer {
 
 			// Rectangle r = a.getBBox().getBoundingRectangle();
 
-			if(a instanceof ObstacleActor) {
+			if (a instanceof ObstacleActor) {
 				drawer.setColor(Scene.OBSTACLE_COLOR);
-			} else if(a instanceof InteractiveActor) {	
+				drawer.polygon(p.getTransformedVertices());
+			} else if (a instanceof InteractiveActor) {
 				InteractiveActor iActor = (InteractiveActor) a;
-				
-				if(!scn.getLayer(iActor.getLayer()).isVisible())
+
+				if (!scn.getLayer(iActor.getLayer()).isVisible())
 					continue;
-				
+
 				drawer.setColor(Scene.ACTOR_BBOX_COLOR);
+				drawer.polygon(p.getTransformedVertices());
+			} else if (a instanceof AnchorActor) {
+				drawer.setColor(Scene.ANCHOR_COLOR);
+				drawer.line(p.getX() - Scene.ANCHOR_RADIUS, p.getY(), p.getX() + Scene.ANCHOR_RADIUS, p.getY());
+				drawer.line(p.getX(), p.getY() - Scene.ANCHOR_RADIUS, p.getX(), p.getY() + Scene.ANCHOR_RADIUS);
 			}
-			
-			drawer.polygon(p.getTransformedVertices());
+
 			// drawer.rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 		}
 
@@ -93,20 +97,17 @@ public class CanvasDrawer {
 			drawer.setProjectionMatrix(camera.combined);
 			drawer.setTransformMatrix(new Matrix4());
 			drawer.begin(ShapeType.Line);
-			
+
 			drawer.setColor(Scene.WALKZONE_COLOR);
-			drawer.polygon(scn.getPolygonalNavGraph().getWalkZone()
-					.getTransformedVertices());
+			drawer.polygon(scn.getPolygonalNavGraph().getWalkZone().getTransformedVertices());
 
 			// DRAW LINEs OF SIGHT
 			if (lineOfSight) {
 				drawer.setColor(Color.WHITE);
-				ArrayList<NavNodePolygonal> nodes = scn.getPolygonalNavGraph()
-						.getGraphNodes();
+				ArrayList<NavNodePolygonal> nodes = scn.getPolygonalNavGraph().getGraphNodes();
 				for (NavNodePolygonal n : nodes) {
 					for (NavNode n2 : n.neighbors) {
-						drawer.line(n.x, n.y, ((NavNodePolygonal) n2).x,
-								((NavNodePolygonal) n2).y);
+						drawer.line(n.x, n.y, ((NavNodePolygonal) n2).x, ((NavNodePolygonal) n2).y);
 					}
 				}
 			}
@@ -118,30 +119,40 @@ public class CanvasDrawer {
 		// Gdx.gl20.glLineWidth(3);
 		Gdx.gl20.glEnable(GL20.GL_BLEND);
 		// Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-		Rectangle rect = selectedActor.getBBox().getBoundingRectangle();
+		
 		drawer.setProjectionMatrix(camera.combined);
-		drawer.setTransformMatrix(new Matrix4());
+//		drawer.setTransformMatrix(new Matrix4());
+		
+		if (selectedActor instanceof AnchorActor) {
+			drawer.begin(ShapeRenderer.ShapeType.Line);
+			drawer.setColor(MOUSESELECTION_STROKE_COLOR);
+			drawer.rect(selectedActor.getX() - Scene.ANCHOR_RADIUS, selectedActor.getY() - Scene.ANCHOR_RADIUS, 
+					Scene.ANCHOR_RADIUS * 2, Scene.ANCHOR_RADIUS * 2);
+			drawer.end();
+		} else {
 
-		drawer.begin(ShapeRenderer.ShapeType.Filled);
-		drawer.setColor(MOUSESELECTION_FILL_COLOR);
-		drawer.rect(rect.x, rect.y, rect.width, rect.height);
-		drawer.end();
+			Rectangle rect = selectedActor.getBBox().getBoundingRectangle();
 
-		drawer.begin(ShapeRenderer.ShapeType.Line);
-		drawer.setColor(MOUSESELECTION_STROKE_COLOR);
-		drawer.rect(rect.x, rect.y, rect.width, rect.height);
+			drawer.begin(ShapeRenderer.ShapeType.Filled);
+			drawer.setColor(MOUSESELECTION_FILL_COLOR);
+			drawer.rect(rect.x, rect.y, rect.width, rect.height);
+			drawer.end();
 
-		// DRAW SELECTION BOUNDS
-		if (!(selectedActor instanceof SpriteActor)
-				|| !((SpriteActor) selectedActor).isBboxFromRenderer()) {
-			float verts[] = selectedActor.getBBox().getTransformedVertices();
-			for (int i = 0; i < verts.length; i += 2)
-				drawer.rect(verts[i] - CORNER_DIST / 2, verts[i + 1]
-						- CORNER_DIST / 2, CORNER_DIST, CORNER_DIST);
+			drawer.begin(ShapeRenderer.ShapeType.Line);
+			drawer.setColor(MOUSESELECTION_STROKE_COLOR);
+			drawer.rect(rect.x, rect.y, rect.width, rect.height);
+
+			// DRAW SELECTION BOUNDS
+			if ((!(selectedActor instanceof SpriteActor) || !((SpriteActor) selectedActor).isBboxFromRenderer())
+					&& !(selectedActor instanceof AnchorActor)) {
+				float verts[] = selectedActor.getBBox().getTransformedVertices();
+				for (int i = 0; i < verts.length; i += 2)
+					drawer.rect(verts[i] - CORNER_DIST / 2, verts[i + 1] - CORNER_DIST / 2, CORNER_DIST, CORNER_DIST);
+			}
+			
+			drawer.end();
 		}
 
-		drawer.end();
 	}
 
 	public void drawBGBounds() {
@@ -153,8 +164,7 @@ public class CanvasDrawer {
 
 		drawer.begin(ShapeRenderer.ShapeType.Line);
 		drawer.setColor(Color.MAGENTA);
-		drawer.rect(0, 0, Ctx.project.getWorld().getWidth(), Ctx.project
-				.getWorld().getHeight());
+		drawer.rect(0, 0, Ctx.project.getWorld().getWidth(), Ctx.project.getWorld().getHeight());
 		drawer.end();
 	}
 
@@ -168,8 +178,7 @@ public class CanvasDrawer {
 		drawer.setColor(c);
 
 		for (int i = 0; i < verts.length; i += 2)
-			drawer.rect(verts[i] - CORNER_DIST / 2, verts[i + 1] - CORNER_DIST
-					/ 2, CORNER_DIST, CORNER_DIST);
+			drawer.rect(verts[i] - CORNER_DIST / 2, verts[i + 1] - CORNER_DIST / 2, CORNER_DIST, CORNER_DIST);
 
 		drawer.end();
 	}

@@ -21,7 +21,6 @@ import javax.annotation.Nullable;
 
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -59,11 +58,6 @@ public class SetActorAttrAction implements Action {
 	@JsonPropertyDescription("The order to draw bigger is near")
 	@ActionPropertyType(Type.FLOAT)
 	private Float zIndex;
-
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor position")
-	@ActionPropertyType(Type.VECTOR2)
-	private Vector2 position;
 
 	@JsonProperty
 	@JsonPropertyDescription("Enable/Disable the Fake Depth for the actor")
@@ -104,7 +98,6 @@ public class SetActorAttrAction implements Action {
 		layer = params.get("layer");
 		zIndex = floatOrNull(params.get("zIndex"));
 
-		position = vector2OrNull(params.get("position"));
 		scale = floatOrNull(params.get("scale"));
 		fakeDepth = booleanOrNull(params.get("fakeDepth"));
 
@@ -175,12 +168,6 @@ public class SetActorAttrAction implements Action {
 					l.orderByZIndex();
 			} else
 				EngineLogger.error("zIndex property not supported for actor:" + actor.getId());
-		}
-
-		if (position != null) {
-			float scale = EngineAssetManager.getInstance().getScale();
-
-			actor.setPosition(position.x * scale, position.y * scale);
 		}
 
 		if (scale != null) {

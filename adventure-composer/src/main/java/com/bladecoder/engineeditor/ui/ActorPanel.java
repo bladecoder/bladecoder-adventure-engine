@@ -67,7 +67,8 @@ public class ActorPanel extends HeaderPanel {
 							if (type.equals(XMLConstants.SPRITE_VALUE) || type.equals(XMLConstants.CHARACTER_VALUE))
 								tabPanel.addTab("Animations", faList);
 
-							if (!type.equals(XMLConstants.OBSTACLE_VALUE))
+							if (!type.equals(XMLConstants.OBSTACLE_VALUE) &&
+									!type.equals(XMLConstants.ANCHOR_VALUE))
 								tabPanel.addTab("Sounds", soundList);
 
 							if (type.equals(XMLConstants.CHARACTER_VALUE)) {

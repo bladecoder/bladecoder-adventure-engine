@@ -38,7 +38,8 @@ public class EditActorDialog extends EditElementDialog {
 			"Background actors don't have sprites or animations. The are used to use objects drawed in the background",
 			"Sprite actors have one or several sprites or animations",
 			"Character actors have dialogs and stand, walk and talk animations",
-			"Obstacle actors forbids zones for walking actors"
+			"Obstacle actors forbids zones for walking actors",
+			"Anchor actors are used por positioning other actors"
 			};
 	
 	public static final String RENDERERS_INFO[] = {
@@ -166,8 +167,16 @@ public class EditActorDialog extends EditElementDialog {
 		hideAllInputs();
 		
 		if (!ChapterDocument.ACTOR_TYPES[i]
-				.equals(XMLConstants.OBSTACLE_VALUE)) {
-			setVisible(inputs[2], true);
+				.equals(XMLConstants.ANCHOR_VALUE)) {
+			setVisible(inputs[3], true);
+		}
+		
+		if (!ChapterDocument.ACTOR_TYPES[i]
+				.equals(XMLConstants.OBSTACLE_VALUE) && 
+				!ChapterDocument.ACTOR_TYPES[i]
+						.equals(XMLConstants.ANCHOR_VALUE)
+				) {
+			setVisible(inputs[2], true);			
 			setVisible(inputs[4],true);
 			setVisible(inputs[5],true);
 			setVisible(inputs[6],true);
@@ -212,9 +221,7 @@ public class EditActorDialog extends EditElementDialog {
 	
 	private void hideAllInputs() {
 		
-		setVisible(inputs[2], false);
-		
-		for(int idx = 4; idx < inputs.length; idx ++) {
+		for(int idx = 2; idx < inputs.length; idx ++) {
 			InputPanel i = inputs[idx];
 			
 			setVisible(i, false);

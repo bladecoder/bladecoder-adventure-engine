@@ -37,6 +37,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
@@ -561,6 +562,10 @@ public class DefaultSceneScreen implements SceneScreen {
 		if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
 
 			for (BaseActor a : w.getCurrentScene().getActors().values()) {
+				
+				if(a instanceof AnchorActor)
+					continue;
+				
 				Rectangle r = a.getBBox().getBoundingRectangle();
 				sbTmp.setLength(0);
 				sbTmp.append(a.getId());

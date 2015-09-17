@@ -23,11 +23,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -253,6 +255,35 @@ public class ScnWidget extends Widget {
 			if (!inScene)
 				faRenderer.update(delta);
 			scn.update(delta);
+
+			handleKeyPositioning();
+		}
+	}
+
+	private void handleKeyPositioning() {
+		if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isKeyPressed(Keys.DOWN) || Gdx.input.isKeyPressed(Keys.LEFT)
+				|| Gdx.input.isKeyPressed(Keys.RIGHT)) {
+
+			BaseActor selActor = getSelectedActor();
+			Polygon p = selActor.getBBox();
+			// undoOrg.set(p.getX(), p.getY());
+
+			if (Gdx.input.isKeyPressed(Keys.UP))
+				p.translate(0, 1);
+			else if (Gdx.input.isKeyPressed(Keys.DOWN))
+				p.translate(0, -1);
+			else if (Gdx.input.isKeyPressed(Keys.LEFT))
+				p.translate(-1, 0);
+			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
+				p.translate(1, 0);
+
+			Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(),
+					new Vector2(selActor.getX(), selActor.getY()));
+
+			// undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(),
+			// Ctx.project.getSelectedActor(), "pos",
+			// Param.toStringParam(undoOrg));
+			// Ctx.project.getUndoStack().add(undoOp);
 		}
 	}
 

@@ -28,15 +28,15 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7062793"
-     inkscape:cx="-73.060887"
-     inkscape:cy="-1396.0507"
+     inkscape:cx="1555.4961"
+     inkscape:cy="181.88364"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      showborder="true"
      borderlayer="true"
-     inkscape:window-width="1855"
-     inkscape:window-height="1056"
+     inkscape:window-width="1301"
+     inkscape:window-height="744"
      inkscape:window-x="65"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -3844,6 +3844,29 @@
            x="309.46921"
            id="tspan4697"
            sodipodi:role="line">F</tspan></text>
+    </g>
+    <g
+       id="g4705"
+       inkscape:export-filename="images/ic_anchor.png"
+       inkscape:export-xdpi="24.379999"
+       inkscape:export-ydpi="24.379999">
+      <rect
+         y="928.18427"
+         x="1360.6228"
+         height="126.03077"
+         width="126.03078"
+         id="rect4684"
+         style="fill:none;fill-rule:evenodd;stroke:none;stroke-width:1.96923077px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4698"
+         d="m 1369.6028,991.29073 h 110.1288"
+         style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+         d="M 1424.6672,1046.3551 V 936.22633"
+         id="path4700"
+         inkscape:connector-curvature="0" />
     </g>
   </g>
 </svg>

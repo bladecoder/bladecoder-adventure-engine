@@ -32,6 +32,7 @@ import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
@@ -49,7 +50,7 @@ import com.bladecoder.engine.spine.SpineRenderer;
 public class ChapterDocument extends BaseDocument {
 
 	public static final String ACTOR_TYPES[] = { XMLConstants.BACKGROUND_VALUE, XMLConstants.SPRITE_VALUE,
-			XMLConstants.CHARACTER_VALUE, XMLConstants.OBSTACLE_VALUE };
+			XMLConstants.CHARACTER_VALUE, XMLConstants.OBSTACLE_VALUE, XMLConstants.ANCHOR_VALUE };
 
 	public static final String ACTOR_RENDERERS[] = { XMLConstants.ATLAS_VALUE, XMLConstants.SPINE_VALUE,
 			XMLConstants.S3D_VALUE, XMLConstants.IMAGE_VALUE };
@@ -329,6 +330,8 @@ public class ChapterDocument extends BaseDocument {
 
 		if (type.equals(XMLConstants.OBSTACLE_VALUE)) {
 			a = new ObstacleActor();
+		} else if (type.equals(XMLConstants.ANCHOR_VALUE)) {
+			a = new AnchorActor();			
 		} else if (type.equals(XMLConstants.BACKGROUND_VALUE)) {
 			a = new InteractiveActor();
 		} else if (type.equals(XMLConstants.SPRITE_VALUE)) {

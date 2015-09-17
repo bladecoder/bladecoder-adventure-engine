@@ -29,6 +29,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
@@ -95,8 +96,10 @@ public class ScnWidgetInputListener extends ClickListener {
 
 				Polygon poly = scnWidget.getSelectedActor().getBBox();
 
-				if (!(scnWidget.getSelectedActor() instanceof SpriteActor)
-						|| !((SpriteActor) scnWidget.getSelectedActor()).isBboxFromRenderer()) {
+				if ((!(scnWidget.getSelectedActor() instanceof SpriteActor)
+						|| !((SpriteActor) scnWidget.getSelectedActor()).isBboxFromRenderer()) &&
+						!(scnWidget.getSelectedActor() instanceof AnchorActor)
+						) {
 					if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
 
 						// Delete the point if selected
@@ -163,7 +166,8 @@ public class ScnWidgetInputListener extends ClickListener {
 
 			// SELACTOR VERTEXs DRAGGING
 			if (selActor != null
-					&& (!(selActor instanceof SpriteActor) || !((SpriteActor) selActor).isBboxFromRenderer())) {
+					&& (!(selActor instanceof SpriteActor) || !((SpriteActor) selActor).isBboxFromRenderer()) &&
+					!(scnWidget.getSelectedActor() instanceof AnchorActor)) {
 
 				Polygon bbox = selActor.getBBox();
 				float verts[] = bbox.getTransformedVertices();
@@ -326,6 +330,21 @@ public class ScnWidgetInputListener extends ClickListener {
 
 		return;
 	}
+	
+	@Override
+	public boolean keyUp (InputEvent event, int keycode) {
+		switch (keycode) {
+		case Keys.UP:
+		case Keys.DOWN:
+		case Keys.LEFT:
+		case Keys.RIGHT:
+			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
+					Param.toStringParam(undoOrg));
+			Ctx.project.getUndoStack().add(undoOp);
+		}
+		
+		return false;
+	}
 
 	@Override
 	public boolean keyDown(InputEvent event, int keycode) {
@@ -370,52 +389,49 @@ public class ScnWidgetInputListener extends ClickListener {
 			break;
 			
 		case Keys.UP:
-			selActor = scnWidget.getSelectedActor();
-			p = selActor.getBBox();
-			undoOrg.set(p.getX(), p.getY());
-			p.translate(0, 1);
-			Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(),
-					new Vector2(selActor.getX(), selActor.getY()));
-			undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
-					Param.toStringParam(undoOrg));
-			Ctx.project.getUndoStack().add(undoOp);
-			break;
-
 		case Keys.DOWN:
-			selActor = scnWidget.getSelectedActor();
-			p = selActor.getBBox();
-			undoOrg.set(p.getX(), p.getY());
-			p.translate(0, -1);
-			Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(),
-					new Vector2(selActor.getX(), selActor.getY()));
-			undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
-					Param.toStringParam(undoOrg));
-			Ctx.project.getUndoStack().add(undoOp);
-			break;
-
 		case Keys.LEFT:
-			selActor = scnWidget.getSelectedActor();
-			p = selActor.getBBox();
-			undoOrg.set(p.getX(), p.getY());
-			p.translate(-1, 0);
-			Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(),
-					new Vector2(selActor.getX(), selActor.getY()));
-			undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
-					Param.toStringParam(undoOrg));
-			Ctx.project.getUndoStack().add(undoOp);
-			break;
-
 		case Keys.RIGHT:
 			selActor = scnWidget.getSelectedActor();
 			p = selActor.getBBox();
 			undoOrg.set(p.getX(), p.getY());
-			p.translate(1, 0);
-			Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(),
-					new Vector2(selActor.getX(), selActor.getY()));
-			undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
-					Param.toStringParam(undoOrg));
-			Ctx.project.getUndoStack().add(undoOp);
-			break;			
+			break;
+//
+//		case Keys.DOWN:
+//			selActor = scnWidget.getSelectedActor();
+//			p = selActor.getBBox();
+//			undoOrg.set(p.getX(), p.getY());
+//			p.translate(0, -1);
+//			Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(),
+//					new Vector2(selActor.getX(), selActor.getY()));
+//			undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
+//					Param.toStringParam(undoOrg));
+//			Ctx.project.getUndoStack().add(undoOp);
+//			break;
+//
+//		case Keys.LEFT:
+//			selActor = scnWidget.getSelectedActor();
+//			p = selActor.getBBox();
+//			undoOrg.set(p.getX(), p.getY());
+//			p.translate(-1, 0);
+//			Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(),
+//					new Vector2(selActor.getX(), selActor.getY()));
+//			undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
+//					Param.toStringParam(undoOrg));
+//			Ctx.project.getUndoStack().add(undoOp);
+//			break;
+//
+//		case Keys.RIGHT:
+//			selActor = scnWidget.getSelectedActor();
+//			p = selActor.getBBox();
+//			undoOrg.set(p.getX(), p.getY());
+//			p.translate(1, 0);
+//			Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(),
+//					new Vector2(selActor.getX(), selActor.getY()));
+//			undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
+//					Param.toStringParam(undoOrg));
+//			Ctx.project.getUndoStack().add(undoOp);
+//			break;			
 			
 		}
 

@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.SpriteActor;
@@ -75,9 +76,12 @@ public class GotoAction implements Action {
 			BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
 			float x = target.getX();
 			float y = target.getY();
-
-			final float targetBBoxWidth2 = target.getBBox().getBoundingRectangle().width / 2;
+			float targetBBoxWidth2 = 0;
 			final float actorBBoxWidth2 = actor.getBBox().getBoundingRectangle().width / 2;
+			
+			if(!(target instanceof AnchorActor)) {
+				targetBBoxWidth2 = target.getBBox().getBoundingRectangle().width / 2;
+			}
 
 			switch (anchor) {
 			case LEFT:
@@ -129,7 +133,7 @@ public class GotoAction implements Action {
 	}
 
 	/**
-	 * If 'player' if far from 'actor', we bring it close. If 'player' is closed
+	 * If 'player' is far from 'actor', we bring it close. If 'player' is closed
 	 * from 'actor' do nothing.
 	 * 
 	 * TODO: DOESN'T WORK NOW
