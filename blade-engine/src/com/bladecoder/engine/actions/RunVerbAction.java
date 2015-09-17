@@ -39,7 +39,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	@ActionPropertyType(Type.ACTOR)
 	private String actorId;
 
-	@JsonProperty(value = "actor", required = true)
+	@JsonProperty(required = true)
 	@JsonPropertyDescription("The 'verbId' to run")
 	@ActionPropertyType(Type.STRING)
 	private String verb;
