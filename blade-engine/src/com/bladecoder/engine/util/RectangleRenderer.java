@@ -26,7 +26,7 @@ public final class RectangleRenderer {
 	private static Texture makePixel() {
 		Texture _temp;
 		Pixmap p = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-		p.setColor(new Color(1, 1, 1, 1));
+		p.setColor(Color.WHITE);
 		p.fillRectangle(0, 0, 1, 1);
 		_temp = new Texture(p, true);
 		p.dispose();

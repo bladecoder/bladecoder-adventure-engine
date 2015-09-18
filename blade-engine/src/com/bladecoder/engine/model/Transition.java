@@ -77,7 +77,7 @@ public class Transition implements Serializable {
 	
 	public void create(float time, Color color, Type type, ActionCallback cb) {
 		this.currentTime = 0f;
-		this.c = color;
+		this.c = color.cpy();
 		this.type = type;
 		this.time = time;
 		this.cb = cb;

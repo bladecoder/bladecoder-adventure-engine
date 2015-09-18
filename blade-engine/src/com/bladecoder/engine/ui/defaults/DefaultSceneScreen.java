@@ -421,6 +421,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 				inventoryButton.setVisible(world.getInventory().isVisible());
 				break;
+			default:
 		}
 
 		if (!pie.isVisible()) {
