@@ -169,6 +169,8 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		@Override
 		public boolean panStop(float x, float y, int pointer, int button) {
+			tap(x, y, 1, button);
+			
 			return true;
 		}
 	}) {
