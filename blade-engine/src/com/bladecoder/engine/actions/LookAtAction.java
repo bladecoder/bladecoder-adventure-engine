@@ -73,6 +73,11 @@ public class LookAtAction implements Action {
 	@JsonPropertyDescription("The direction to lookat. If empty, the player lookat to the actor")
 	@ActionPropertyType(Type.STRING)
 	private Direction direction;
+	
+	@JsonProperty(required = true)
+	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+	@ActionPropertyType(Type.BOOLEAN)
+	private boolean wait = true;	
 
 	@Override
 	public void setParams(HashMap<String, String> params) {
@@ -84,6 +89,10 @@ public class LookAtAction implements Action {
 		// TODO: Check if EMPTY ("") works correctly
 		final String strDirection = params.get("direction");
 		this.direction = strDirection == null ? null : (strDirection.trim().equals("") ? Direction.EMPTY : Direction.valueOf(strDirection.trim().toUpperCase()));
+		
+		if(params.get("wait") != null) {
+			wait = Boolean.parseBoolean(params.get("wait"));
+		}
 	}
 
 	@Override
@@ -110,7 +119,7 @@ public class LookAtAction implements Action {
 
 		if(text !=null)
 			World.getInstance().getTextManager().addText(text, TextManager.POS_SUBTITLE,
-					TextManager.POS_SUBTITLE, false, Text.Type.RECTANGLE, player.getTextColor(), null, null);
+					TextManager.POS_SUBTITLE, false, Text.Type.RECTANGLE, player.getTextColor(), null,  wait?cb:null);
 		
 		return false;
 	}
