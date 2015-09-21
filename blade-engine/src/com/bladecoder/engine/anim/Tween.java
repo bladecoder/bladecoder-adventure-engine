@@ -25,43 +25,8 @@ import com.bladecoder.engine.util.InterpolationMode;
 
 public class Tween implements Serializable {
 	public enum Type {
-		NO_REPEAT(Tween.NO_REPEAT), REPEAT(Tween.REPEAT),
-		YOYO(Tween.PINGPONG),
-		REVERSE(Tween.REVERSE), REVERSE_REPEAT(Tween.REVERSE_REPEAT),
-		SPRITE_DEFINED(Tween.FROM_FA);
-
-		private int tweenId;
-
-		Type(int tweenId) {
-			this.tweenId = tweenId;
-		}
-
-		public int getTweenId() {
-				return tweenId;
-			}
-
-		/**
-		 * @deprecated Remove when we can break backwards compatibility without fear!
-		 */
-		@Deprecated
-		public static Type fromTweenId(Integer tweenId) {
-			if (tweenId == null)
-				return null;
-			for (Type type : values()) {
-				if (type.tweenId == tweenId) {
-					return type;
-				}
-			}
-			return null;
-		}
+		NO_REPEAT, REPEAT,YOYO,REVERSE, REVERSE_REPEAT,	SPRITE_DEFINED;
 	}
-
-	public final static int NO_REPEAT = 0;
-	public final static int REPEAT = 1;
-	public final static int PINGPONG = 2;
-	public final static int REVERSE = 3;
-	public final static int REVERSE_REPEAT = 4;
-	public final static int FROM_FA = 5;
 
 	public final static int INFINITY = -1;
 
@@ -215,7 +180,7 @@ public class Tween implements Serializable {
 		json.writeValue("reverse", reverse);
 		json.writeValue("began", began);
 		json.writeValue("complete", complete);
-		json.writeValue("type", type.getTweenId());
+		json.writeValue("type", type);
 		json.writeValue("count", count);
 		
 		String i = null;
@@ -239,7 +204,7 @@ public class Tween implements Serializable {
 		reverse = json.readValue("reverse", Boolean.class, jsonData);
 		began = json.readValue("began", Boolean.class, jsonData);
 		complete = json.readValue("complete", Boolean.class, jsonData);
-		type = Tween.Type.fromTweenId(json.readValue("type", Integer.class, jsonData));
+		type =json.readValue("type", Type.class, jsonData);
 		count = json.readValue("count", Integer.class, jsonData);
 		
 		String i = json.readValue("interpolation", String.class, jsonData);

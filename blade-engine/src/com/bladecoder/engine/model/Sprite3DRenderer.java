@@ -832,7 +832,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 					animationCb == null ? null : String.class);
 
 		json.writeValue("currentCount", currentCount);
-		json.writeValue("currentAnimationType", currentAnimationType.getTweenId());
+		json.writeValue("currentAnimationType", currentAnimationType);
 		json.writeValue("renderShadow", renderShadow);
 		json.writeValue("lastAnimationTime", lastAnimationTime);
 
@@ -866,8 +866,8 @@ public class Sprite3DRenderer implements ActorRenderer {
 		animationCbSer = json.readValue("animationCb", String.class, jsonData);
 
 		currentCount = json.readValue("currentCount", Integer.class, jsonData);
-		currentAnimationType = Tween.Type.fromTweenId(json.readValue("currentAnimationType",
-				Integer.class, jsonData));
+		currentAnimationType = json.readValue("currentAnimationType",
+				Tween.Type.class, jsonData);
 		renderShadow = json.readValue("renderShadow", Boolean.class, jsonData);
 		lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 	}

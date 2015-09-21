@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Walks to the selected position")
 public class GotoAction implements Action {
-	public enum Anchor {
+	public enum Align {
 		CENTER, LEFT, RIGHT
 	}
 
@@ -51,9 +51,9 @@ public class GotoAction implements Action {
 	private String target;
 
 	@JsonProperty(defaultValue = "CENTER")
-	@JsonPropertyDescription("When selecting a target actor, an anchor can be selected")
+	@JsonPropertyDescription("When selecting a target actor, an align can be selected")
 	@ActionPropertyType(Type.STRING)
-	private Anchor anchor;
+	private Align align;
 
 	@JsonProperty
 	@JsonPropertyDescription("When selecting a target actor, the relative distance to the anchor in each axis")
@@ -83,7 +83,7 @@ public class GotoAction implements Action {
 				targetBBoxWidth2 = target.getBBox().getBoundingRectangle().width / 2;
 			}
 
-			switch (anchor) {
+			switch (align) {
 			case LEFT:
 				x = x - targetBBoxWidth2 - actorBBoxWidth2;
 				break;
@@ -116,9 +116,9 @@ public class GotoAction implements Action {
 			target = params.get("target");
 
 			if (params.get("anchor") == null) {
-				anchor = Anchor.CENTER;
+				align = Align.CENTER;
 			} else {
-				anchor = Anchor.valueOf(params.get("anchor").toUpperCase());
+				align = Align.valueOf(params.get("anchor").toUpperCase());
 			}
 
 			distance = Param.parseVector2(params.get("distance"));
