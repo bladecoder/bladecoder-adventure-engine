@@ -75,10 +75,19 @@ public class EditableSelectBox<T> extends Table {
 			}
 		});
 		
-		selectList.getList().addListener(new ChangeListener() {
+//		selectList.getList().addListener(new ChangeListener() {
+//			@Override
+//			public void changed(ChangeEvent event, Actor actor) {
+//					fire(event);				
+//			}
+//		});
+		
+		input.setProgrammaticChangeEvents(true);
+		input.addListener(new ChangeListener() {
+			
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-					fire(event);				
+				fire(event);	
 			}
 		});
 	}
