@@ -91,8 +91,13 @@ public class AnimationWidget extends Widget {
 			Tween.Type type = Tween.Type.REPEAT;
 			float speed = 2.0f;
 
-			if (!speedStr.isEmpty())
-				speed = Float.parseFloat(speedStr);
+			if (!speedStr.isEmpty()) {
+				try {
+					speed = Float.parseFloat(speedStr);
+				} catch(NumberFormatException e) {
+					speed = 0;
+				}
+			}
 
 			if (typeStr.equals(XMLConstants.YOYO_VALUE))
 				type = Tween.Type.YOYO;

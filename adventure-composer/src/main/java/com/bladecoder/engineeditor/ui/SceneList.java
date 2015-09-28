@@ -69,12 +69,12 @@ public class SceneList extends ElementList {
 		HorizontalGroup chapterPanel = new HorizontalGroup();
 		chapters = new SelectBox<String>(skin);
 		chapters.setFillParent(true);
-		
+
 		chapterPanel.addActor(new Label("CHAPTER ", skin, "big"));
 		chapterPanel.addActor(chapters);
-		
+
 		clearChildren();
-		
+
 		add(chapterPanel).expandX().fillX();
 		row();
 		add(toolbar).expandX().fillX();
@@ -82,8 +82,7 @@ public class SceneList extends ElementList {
 		add(container).expandY().fill();
 
 		initBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(initBtn, "ic_check",
-				"Set init scene", "Set init scene");
+		toolbar.addToolBarButton(initBtn, "ic_check", "Set init scene", "Set init scene");
 
 		initBtn.setDisabled(true);
 
@@ -114,40 +113,35 @@ public class SceneList extends ElementList {
 
 		});
 
-		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED,
-				new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent arg0) {
-						toolbar.disableCreate(Ctx.project.getProjectDir() == null);
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent arg0) {
+				toolbar.disableCreate(Ctx.project.getProjectDir() == null);
 
-						disposeBgCache = true;
-						addChapters();
-					}
-				});
+				disposeBgCache = true;
+				addChapters();
+			}
+		});
 
 		chapters.addListener(chapterListener);
 
-		Ctx.project.getWorld().addPropertyChangeListener(
-				new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						EditorLogger.debug(evt.getPropertyName() + " NEW:"
-								+ evt.getNewValue() + " OLD:"
-								+ evt.getOldValue());
+		Ctx.project.getWorld().addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				EditorLogger.debug(evt.getPropertyName() + " NEW:" + evt.getNewValue() + " OLD:" + evt.getOldValue());
 
-						if (evt.getPropertyName().equals(XMLConstants.CHAPTER_TAG)) {
-							addChapters();
-						} else if (evt.getPropertyName().equals(
-								"ELEMENT_DELETED")) {
-							Element e = (Element) evt.getNewValue();
+				if (evt.getPropertyName().equals(XMLConstants.CHAPTER_TAG)) {
+					addChapters();
+				} else if (evt.getPropertyName().equals("ELEMENT_DELETED")) {
+					Element e = (Element) evt.getNewValue();
 
-							if (e.getTagName().equals(XMLConstants.CHAPTER_TAG)) {								
-								addChapters();
-							}
-						}
+					if (e.getTagName().equals(XMLConstants.CHAPTER_TAG)) {
+						addChapters();
 					}
-				});
-		
+				}
+			}
+		});
+
 	}
 
 	ChangeListener chapterListener = new ChangeListener() {
@@ -161,21 +155,19 @@ public class SceneList extends ElementList {
 				try {
 					Ctx.project.saveProject();
 				} catch (IOException | TransformerException e1) {
-					Ctx.msg.show(getStage(),
-							"Error saving project", 3);
+					Ctx.msg.show(getStage(), "Error saving project", 3);
 					EditorLogger.error(e1.getMessage());
 				}
 
 				try {
-					
-					if(selChapter != null)
+
+					if (selChapter != null)
 						Ctx.project.loadChapter(selChapter);
-					
+
 					doc = Ctx.project.getSelectedChapter();
-					
+
 					addElements(doc, doc.getElement(), "scene");
-				} catch (ParserConfigurationException | SAXException
-						| IOException e1) {
+				} catch (ParserConfigurationException | SAXException | IOException e1) {
 					e1.printStackTrace();
 				}
 			}
@@ -205,11 +197,10 @@ public class SceneList extends ElementList {
 
 		String id = list.getItems().get(pos).getAttribute(XMLConstants.ID_ATTR);
 
-		doc.setRootAttr((Element) list.getItems().get(pos).getParentNode(),
-				XMLConstants.INIT_SCENE_ATTR, id);
+		doc.setRootAttr((Element) list.getItems().get(pos).getParentNode(), XMLConstants.INIT_SCENE_ATTR, id);
 
 	}
-	
+
 	@Override
 	protected void delete() {
 		int pos = list.getSelectedIndex();
@@ -218,68 +209,78 @@ public class SceneList extends ElementList {
 			return;
 
 		Element e = list.getItems().get(pos);
-		
-		// delete init_scene attr if the scene to delete is the chapter init_scene
-		if(((Element)e.getParentNode()).getAttribute(XMLConstants.INIT_SCENE_ATTR).equals(e.getAttribute(XMLConstants.ID_ATTR))) {
-			((Element)e.getParentNode()).removeAttribute(XMLConstants.INIT_SCENE_ATTR);
+
+		// delete init_scene attr if the scene to delete is the chapter
+		// init_scene
+		if (((Element) e.getParentNode()).getAttribute(XMLConstants.INIT_SCENE_ATTR)
+				.equals(e.getAttribute(XMLConstants.ID_ATTR))) {
+			((Element) e.getParentNode()).removeAttribute(XMLConstants.INIT_SCENE_ATTR);
 		}
-		
+
 		super.delete();
 	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(
-			Element e) {
+	protected EditElementDialog getEditElementDialogInstance(Element e) {
 		return new EditSceneDialog(skin, doc, parent, e);
 	}
-	
+
 	public TextureRegion getBgIcon(String atlas, String region) {
-		
-		// check here for dispose instead in project loading because the opengl context lost in new project thread		
-		if(disposeBgCache) {
+
+		// check here for dispose instead in project loading because the opengl
+		// context lost in new project thread
+		if (disposeBgCache) {
 			dispose();
 			disposeBgCache = false;
 		}
-		
-		
+
 		String s = atlas + "#" + region;
 		TextureRegion icon = bgIconCache.get(s);
-		
-		if(icon == null) {
-			try {
-				Batch batch = getStage().getBatch();
-				batch.end();
-				bgIconCache.put(s, createBgIcon(atlas, region));
-				batch.begin();
-			} catch (Exception e) {
+
+		if (icon == null) {
+			Batch batch = getStage().getBatch();
+			batch.end();
+
+			icon = createBgIcon(atlas, region);
+
+			if (icon != null) {
+				bgIconCache.put(s, icon);
+			} else {
 				EngineLogger.error("Error creating Background icon");
-				return null;
 			}
-			
-			icon = bgIconCache.get(s);
+
+			batch.begin();
+
 		}
-		
+
 		return icon;
 	}
-	
+
 	public void dispose() {
-		for(TextureRegion r:bgIconCache.values())
+		for (TextureRegion r : bgIconCache.values())
 			r.getTexture().dispose();
-		
+
 		bgIconCache.clear();
 	}
-	
+
 	private TextureRegion createBgIcon(String atlas, String region) {
-		TextureAtlas a = new TextureAtlas(Gdx.files.absolute(Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH + 
-				"/1/" + atlas + ".atlas"));
-		AtlasRegion r = a.findRegion(region);	
-		FrameBuffer fbo = new FrameBuffer(Format.RGBA8888, 200, (int)(r.getRegionHeight() * 200f / r.getRegionWidth()), false);
-		
+		TextureAtlas a = new TextureAtlas(Gdx.files
+				.absolute(Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH + "/1/" + atlas + ".atlas"));
+		AtlasRegion r = a.findRegion(region);
+
+		if (r == null) {
+			a.dispose();
+			return null;
+		}
+
+		FrameBuffer fbo = new FrameBuffer(Format.RGBA8888, 200, (int) (r.getRegionHeight() * 200f / r.getRegionWidth()),
+				false);
+
 		SpriteBatch fboBatch = new SpriteBatch();
 		fboBatch.setColor(Color.WHITE);
 		OrthographicCamera camera = new OrthographicCamera();
 		camera.setToOrtho(false, fbo.getWidth(), fbo.getHeight());
-		fboBatch.setProjectionMatrix(camera.combined);		
+		fboBatch.setProjectionMatrix(camera.combined);
 
 		Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
 		fbo.begin();
@@ -287,16 +288,16 @@ public class SceneList extends ElementList {
 		fboBatch.draw(r, 0, 0, fbo.getWidth(), fbo.getHeight());
 		fboBatch.end();
 
-		TextureRegion tex = ScreenUtils.getFrameBufferTexture(0,0,fbo.getWidth(), fbo.getHeight());		
-//		tex.flip(false, true);		
-		
+		TextureRegion tex = ScreenUtils.getFrameBufferTexture(0, 0, fbo.getWidth(), fbo.getHeight());
+		// tex.flip(false, true);
+
 		fbo.end();
 		Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
-		
+
 		fbo.dispose();
 		a.dispose();
 		fboBatch.dispose();
-		
+
 		return tex;
 	}
 
@@ -328,23 +329,23 @@ public class SceneList extends ElementList {
 		public TextureRegion getCellImage(Element e) {
 			String atlas = e.getAttribute(XMLConstants.BACKGROUND_ATLAS_ATTR);
 			String region = e.getAttribute(XMLConstants.BACKGROUND_REGION_ATTR);
-			
+
 			TextureRegion r = null;
-			
-			if(!atlas.isEmpty() && !region.isEmpty()) 
-				r = getBgIcon(atlas,region);
+
+			if (!atlas.isEmpty() && !region.isEmpty())
+				r = getBgIcon(atlas, region);
 
 			if (r == null)
-				r =  Ctx.assetManager.getIcon("ic_no_scene");
+				r = Ctx.assetManager.getIcon("ic_no_scene");
 
 			return r;
 		}
-		
+
 		@Override
 		protected boolean hasSubtitle() {
 			return true;
 		}
-		
+
 		@Override
 		protected boolean hasImage() {
 			return true;
