@@ -59,7 +59,7 @@ public class ChooseAction extends AbstractControlAction {
 		final List<Action> actions = v.getActions();
 
 		int ip = skipControlIdBlock(actions, startIp);
-		int numActions = ip - startIp;
+		int numActions = ip - startIp - 1;
 
 		if(numActions <= 0)
 			return false;
