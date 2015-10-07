@@ -115,10 +115,10 @@ public class GotoAction implements Action {
 		} else if (params.get("target") != null) {
 			target = params.get("target");
 
-			if (params.get("anchor") == null) {
+			if (params.get("align") == null) {
 				align = Align.CENTER;
 			} else {
-				align = Align.valueOf(params.get("anchor").toUpperCase());
+				align = Align.valueOf(params.get("align").toUpperCase());
 			}
 
 			distance = Param.parseVector2(params.get("distance"));
