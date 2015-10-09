@@ -647,9 +647,58 @@ public class Scene implements Serializable, AssetConsumer {
 	public void setPolygonalNavGraph(PolygonalNavGraph polygonalNavGraph) {
 		this.polygonalNavGraph = polygonalNavGraph;
 	}
+	
+	private void writeMutable(Json json) {
+		json.writeValue("state", state, state == null ? null : state.getClass());
+		json.writeValue("verbs", verbs);
+		
+		json.writeValue("actors", actors);
+		json.writeValue("player", player);
+		
+		json.writeValue("isPlaying", music != null && music.isPlaying());
+		json.writeValue("musicPos", music != null && music.isPlaying() ? music.getPosition() : 0f);
 
-	@Override
-	public void write(Json json) {
+		json.writeValue("camera", camera);
+		
+		json.writeValue("followActor", followActor == null ? null : followActor.getId(),
+				followActor == null ? null : String.class);
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void readMutable(Json json, JsonValue jsonData) {
+		
+		// TODO FIX DO NOT REPLACE MUTABLE OBJECTS
+		
+		
+		state = json.readValue("state", String.class, jsonData);
+		verbs = json.readValue("verbs", VerbManager.class, jsonData);
+		actors = json.readValue("actors", HashMap.class, BaseActor.class, jsonData);
+		player = json.readValue("player", String.class, jsonData);
+
+		for (BaseActor actor : actors.values()) {
+			actor.setScene(this);
+
+			if (actor instanceof InteractiveActor) {
+				InteractiveActor ia = (InteractiveActor) actor;
+
+				SceneLayer layer = getLayer(ia.getLayer());
+				layer.add(ia);
+			}
+		}
+
+		orderLayersByZIndex();
+
+		isPlayingSer = json.readValue("isPlaying", Boolean.class, jsonData);
+		musicPosSer = json.readValue("musicPos", Float.class, jsonData);
+
+		camera = json.readValue("camera", SceneCamera.class, jsonData);
+		String followActorId = json.readValue("followActor", String.class, jsonData);
+
+		setCameraFollowActor((SpriteActor) actors.get(followActorId));
+	}		
+	
+	private void writeInmutable(Json json) {
 		json.writeValue("layers", layers);
 		json.writeValue("id", id);
 		json.writeValue("state", state, state == null ? null : state.getClass());
@@ -681,13 +730,11 @@ public class Scene implements Serializable, AssetConsumer {
 		json.writeValue("depthVector", depthVector);
 
 		json.writeValue("polygonalNavGraph", polygonalNavGraph,
-				polygonalNavGraph == null ? null : PolygonalNavGraph.class);
-
+				polygonalNavGraph == null ? null : PolygonalNavGraph.class);		
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	@Override
-	public void read(Json json, JsonValue jsonData) {
+	public void readInmutable(Json json, JsonValue jsonData) {
 		layers = json.readValue("layers", ArrayList.class, SceneLayer.class, jsonData);
 		id = json.readValue("id", String.class, jsonData);
 		state = json.readValue("state", String.class, jsonData);
@@ -729,5 +776,17 @@ public class Scene implements Serializable, AssetConsumer {
 
 		depthVector = json.readValue("depthVector", Vector2.class, jsonData);
 		polygonalNavGraph = json.readValue("polygonalNavGraph", PolygonalNavGraph.class, jsonData);
+	}
+
+	@Override
+	public void write(Json json) {
+//		writeInmutable(json);
+		writeMutable(json);
+	}
+
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+//		readInmutable(json, jsonData);
+		readMutable(json, jsonData);		
 	}
 }
