@@ -483,6 +483,46 @@ public class Scene implements Serializable, AssetConsumer {
 		depthVector = v;
 	}
 
+	public String getBackgroundAtlas() {
+		return backgroundAtlas;
+	}
+
+	public void setBackgroundAtlas(String backgroundAtlas) {
+		this.backgroundAtlas = backgroundAtlas;
+	}
+
+	public String getBackgroundRegionId() {
+		return backgroundRegionId;
+	}
+
+	public void setBackgroundRegionId(String backgroundRegionId) {
+		this.backgroundRegionId = backgroundRegionId;
+	}
+
+	public String getLightMapAtlas() {
+		return lightMapAtlas;
+	}
+
+	public void setLightMapAtlas(String lightMapAtlas) {
+		this.lightMapAtlas = lightMapAtlas;
+	}
+
+	public String getLightMapRegionId() {
+		return lightMapRegionId;
+	}
+
+	public void setLightMapRegionId(String lightMapRegionId) {
+		this.lightMapRegionId = lightMapRegionId;
+	}
+
+	public String getMusicFilename() {
+		return musicFilename;
+	}
+
+	public void setMusicFilename(String musicFilename) {
+		this.musicFilename = musicFilename;
+	}
+
 	public void removeActor(BaseActor a) {
 
 		if (player != null && a.getId().equals(player)) {

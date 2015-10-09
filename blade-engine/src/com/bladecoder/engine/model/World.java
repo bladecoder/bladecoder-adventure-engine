@@ -67,6 +67,7 @@ public class World implements Serializable, AssetConsumer {
 	private int height;
 
 	private HashMap<String, Scene> scenes;
+	private String initScene;
 
 	private Scene currentScene;
 	private Dialog currentDialog;
@@ -333,6 +334,14 @@ public class World implements Serializable, AssetConsumer {
 
 	public Scene getCurrentScene() {
 		return currentScene;
+	}
+
+	public String getInitScene() {
+		return initScene;
+	}
+
+	public void setInitScene(String initScene) {
+		this.initScene = initScene;
 	}
 
 	public void setCurrentScene(Scene scene) {	

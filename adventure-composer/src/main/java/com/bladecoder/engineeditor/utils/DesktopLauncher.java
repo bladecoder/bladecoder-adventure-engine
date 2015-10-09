@@ -95,7 +95,7 @@ public class DesktopLauncher extends BladeEngine {
 			} else if (s.equals("-adv-dir")) {
 				if (i + 1 < args.length) {
 					i++;
-					EngineAssetManager.createEditInstance(args[i], 1920, 1080);
+					EngineAssetManager.createEditInstance(args[i]);
 				}			
 			} else if (s.equals("-w")) {
 				fullscreen = false;

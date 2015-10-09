@@ -57,7 +57,8 @@ public class FileInputPanel extends InputPanel {
 						switch (dialogType) {
 							case DIRECTORY: {
 								DirectoryChooser chooser = new DirectoryChooser();
-								chooser.setInitialDirectory(cd);
+//								if(cd != null)
+//									chooser.setInitialDirectory(cd);
 								chooser.setTitle(DIR_TEXT);
 								result = chooser.showDialog(null);
 								break;

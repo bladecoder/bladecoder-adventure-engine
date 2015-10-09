@@ -31,7 +31,10 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
+import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.setup.Dependency;
 import com.bladecoder.engineeditor.setup.DependencyBank;
@@ -275,6 +278,9 @@ public class Project extends PropertyChange {
 				System.exit(0);
 			}
 			
+			EngineAssetManager.getInstance().dispose();
+			EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
+			World.getInstance().loadXMLWorld();
 			world.setModelPath(projectFile.getAbsolutePath() + "/" + MODEL_PATH);
 			world.load();
 			selectedChapter = world.loadChapter(world.getInitChapter());

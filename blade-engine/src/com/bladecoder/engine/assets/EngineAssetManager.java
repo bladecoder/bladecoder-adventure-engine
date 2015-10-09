@@ -125,13 +125,12 @@ public class EngineAssetManager extends AssetManager {
 	 * @param base is the project base folder
 	 * @param worldWidth the width
 	 */
-	public static void createEditInstance(String base, int worldWidth, int worldHeight) {
+	public static void createEditInstance(String base) {
 		if (instance != null)
 			instance.dispose();
 
 		instance = new EngineAssetManager(new BasePathResolver(base));
 		instance.forceResolution("1");
-		instance.setScale(worldWidth, worldHeight);
 	}
 
 	public void forceResolution(String suffix) {

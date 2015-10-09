@@ -239,12 +239,8 @@ public class ScnWidget extends Widget {
 
 			if (scn != null) {
 				scn.dispose();
-				EngineAssetManager.getInstance().dispose();
 				scn = null;
 			}
-
-			EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH,
-					Ctx.project.getWorld().getWidth(), Ctx.project.getWorld().getHeight());
 
 			setSelectedScene(Ctx.project.getSelectedScene());
 			setSelectedActor(Ctx.project.getSelectedActor());

@@ -18,6 +18,7 @@ package com.bladecoder.engineeditor.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,6 +48,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
@@ -54,9 +57,10 @@ import com.bladecoder.engineeditor.model.WorldDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ElementList;
+import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
-public class SceneList extends ElementList {
+public class SceneList extends ModelList<Scene> {
 
 	private ImageButton initBtn;
 	private SelectBox<String> chapters;
@@ -94,8 +98,9 @@ public class SceneList extends ElementList {
 				if (pos == -1) {
 					Ctx.project.setSelectedScene(null);
 				} else {
-					Element a = list.getItems().get(pos);
-					Ctx.project.setSelectedScene(a);
+					Scene a = list.getItems().get(pos);
+					//TODO
+//					Ctx.project.setSelectedScene(a);
 				}
 
 				toolbar.disableEdit(pos == -1);
@@ -164,9 +169,9 @@ public class SceneList extends ElementList {
 					if (selChapter != null)
 						Ctx.project.loadChapter(selChapter);
 
-					doc = Ctx.project.getSelectedChapter();
+//					doc = Ctx.project.getSelectedChapter();
 
-					addElements(doc, doc.getElement(), "scene");
+					addElements(Arrays.asList((Scene[])World.getInstance().getScenes().values().toArray()));
 				} catch (ParserConfigurationException | SAXException | IOException e1) {
 					e1.printStackTrace();
 				}
@@ -195,34 +200,34 @@ public class SceneList extends ElementList {
 		if (pos == -1)
 			return;
 
-		String id = list.getItems().get(pos).getAttribute(XMLConstants.ID_ATTR);
-
-		doc.setRootAttr((Element) list.getItems().get(pos).getParentNode(), XMLConstants.INIT_SCENE_ATTR, id);
-
+		String id = list.getItems().get(pos).getId();
+		World.getInstance().setInitScene(id);
 	}
 
 	@Override
 	protected void delete() {
-		int pos = list.getSelectedIndex();
-
-		if (pos == -1)
-			return;
-
-		Element e = list.getItems().get(pos);
-
-		// delete init_scene attr if the scene to delete is the chapter
-		// init_scene
-		if (((Element) e.getParentNode()).getAttribute(XMLConstants.INIT_SCENE_ATTR)
-				.equals(e.getAttribute(XMLConstants.ID_ATTR))) {
-			((Element) e.getParentNode()).removeAttribute(XMLConstants.INIT_SCENE_ATTR);
-		}
-
-		super.delete();
+//		int pos = list.getSelectedIndex();
+//
+//		if (pos == -1)
+//			return;
+//
+//		Element e = list.getItems().get(pos);
+//
+//		// delete init_scene attr if the scene to delete is the chapter
+//		// init_scene
+//		if (((Element) e.getParentNode()).getAttribute(XMLConstants.INIT_SCENE_ATTR)
+//				.equals(e.getAttribute(XMLConstants.ID_ATTR))) {
+//			((Element) e.getParentNode()).removeAttribute(XMLConstants.INIT_SCENE_ATTR);
+//		}
+//
+//		super.delete();
 	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(Element e) {
-		return new EditSceneDialog(skin, doc, parent, e);
+	protected EditElementDialog getEditElementDialogInstance(Scene e) {
+//		return new EditSceneDialog(skin, doc, parent, e);
+		
+		return null;
 	}
 
 	public TextureRegion getBgIcon(String atlas, String region) {
@@ -304,15 +309,14 @@ public class SceneList extends ElementList {
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
-	private final CellRenderer<Element> listCellRenderer = new CellRenderer<Element>() {
+	private final CellRenderer<Scene> listCellRenderer = new CellRenderer<Scene>() {
 
 		@Override
-		protected String getCellTitle(Element e) {
-			String name = e.getAttribute(XMLConstants.ID_ATTR);
+		protected String getCellTitle(Scene e) {
+			String name = e.getId();
 
-			Element chapter = (Element) e.getParentNode();
-
-			String init = chapter.getAttribute(XMLConstants.INIT_SCENE_ATTR);
+			// TODO SET INIT SCENE
+			String init = World.getInstance().getInitScene();
 
 			if (init.equals(name))
 				name += " <init>";
@@ -321,14 +325,14 @@ public class SceneList extends ElementList {
 		}
 
 		@Override
-		protected String getCellSubTitle(Element e) {
-			return e.getAttribute(XMLConstants.BACKGROUND_ATLAS_ATTR);
+		protected String getCellSubTitle(Scene e) {
+			return e.getBackgroundAtlas();
 		}
 
 		@Override
-		public TextureRegion getCellImage(Element e) {
-			String atlas = e.getAttribute(XMLConstants.BACKGROUND_ATLAS_ATTR);
-			String region = e.getAttribute(XMLConstants.BACKGROUND_REGION_ATTR);
+		public TextureRegion getCellImage(Scene e) {
+			String atlas = e.getBackgroundAtlas();
+			String region = e.getBackgroundRegionId();
 
 			TextureRegion r = null;
 
