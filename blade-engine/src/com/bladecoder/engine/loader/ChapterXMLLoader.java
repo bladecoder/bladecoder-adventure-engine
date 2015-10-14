@@ -39,6 +39,7 @@ import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.CharacterActor;
@@ -55,6 +56,7 @@ import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.util.EngineLogger;
@@ -122,6 +124,9 @@ public class ChapterXMLLoader extends DefaultHandler {
 			parseSound(atts, (InteractiveActor) actor);
 		} else if (localName.equals(XMLConstants.CHAPTER_TAG)) {
 			initScene = atts.getValue(XMLConstants.INIT_SCENE_ATTR);
+
+			World.getInstance().getScenes().clear();
+			
 		} else if (localName.equals(XMLConstants.WALK_ZONE_TAG)) {
 			PolygonalNavGraph polygonalPathFinder = new PolygonalNavGraph();
 			Polygon poly = new Polygon();
@@ -401,8 +406,14 @@ public class ChapterXMLLoader extends DefaultHandler {
 				((SpriteActor) actor).setScale(s);
 			}
 		}
-
-		scene.addActor(actor);
+		
+		actor.setInitScene(scene.getId());
+		
+		if(SerializationHelper.getInstance().getMode() == Mode.MUTABLE) {
+			SerializationHelper.getInstance().addActor(actor);
+		} else {
+			scene.addActor(actor);
+		}
 	}
 
 	private void parseLayer(Attributes atts) throws SAXException {

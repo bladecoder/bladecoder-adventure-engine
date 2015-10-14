@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui.defaults;
 
+import java.io.IOException;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Peripheral;
@@ -211,13 +213,21 @@ public class DefaultSceneScreen implements SceneScreen {
 					// ui.toggleFullScreen();
 					break;
 				case 's':
-					World.getInstance().saveGameState();
+					try {
+						World.getInstance().saveGameState();
+					} catch (IOException e) {
+						EngineLogger.error(e.getMessage());
+					}
 					break;
 				case 'r':
 					World.getInstance().newGame();
 					break;
 				case 'l':
-					World.getInstance().loadGameState();
+					try {
+						World.getInstance().loadGameState();
+					} catch (IOException e) {
+						EngineLogger.error(e.getMessage());
+					}
 					break;
 				case 't':
 					testerBot.setEnabled(!testerBot.isEnabled());

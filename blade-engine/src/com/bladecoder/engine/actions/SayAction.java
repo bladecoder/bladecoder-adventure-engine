@@ -75,8 +75,8 @@ public class SayAction extends BaseCallbackAction {
 			this.type = Text.Type.valueOf(strType.trim().toUpperCase());
 		}
 
-		if (params.get("quee") != null) {
-			queue = Boolean.parseBoolean(params.get("quee"));
+		if (params.get("queue") != null) {
+			queue = Boolean.parseBoolean(params.get("queue"));
 		}
 	}
 
@@ -142,24 +142,13 @@ public class SayAction extends BaseCallbackAction {
 
 	@Override
 	public void write(Json json) {
-
-		json.writeValue("soundId", soundId);
-		json.writeValue("text", text);
-		json.writeValue("actorId", actorId);
 		json.writeValue("previousAnim", previousAnim);
-		json.writeValue("type", type);
-		json.writeValue("quee", queue);
 		super.write(json);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		soundId = json.readValue("soundId", String.class, jsonData);
-		text = json.readValue("text", String.class, jsonData);
-		actorId = json.readValue("actorId", String.class, jsonData);
 		previousAnim = json.readValue("previousAnim", String.class, jsonData);
-		type = json.readValue("type", Text.Type.class, jsonData);
-		queue = json.readValue("quee", Boolean.class, jsonData);
 		super.read(json, jsonData);
 	}
 

@@ -20,9 +20,12 @@ import java.util.HashMap;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.AssetConsumer;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
 
 /**
- * An InteractiveActor is any object in a scene or in the inventory that has user interaction.
+ * An InteractiveActor is any object in a scene or in the inventory that has
+ * user interaction.
  * 
  * @author rgarcia
  */
@@ -36,22 +39,23 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 	protected VerbManager verbs = new VerbManager();
 	protected HashMap<String, SoundFX> sounds;
-	private String playingSound;	
-	
-	/** State to know when the player is inside this actor to trigger the enter/exit verbs */ 
+	private String playingSound;
+
+	/**
+	 * State to know when the player is inside this actor to trigger the
+	 * enter/exit verbs
+	 */
 	private boolean playerInside = false;
-	
+
 	protected String layer;
-	
-	
+
 	public void setLayer(String layer) {
 		this.layer = layer;
 	}
-	
+
 	public String getLayer() {
 		return layer;
 	}
-
 
 	public boolean hasInteraction() {
 		return interaction && visible;
@@ -60,7 +64,6 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	public void setInteraction(boolean interaction) {
 		this.interaction = interaction;
 	}
-
 
 	public String getDesc() {
 		return desc;
@@ -73,26 +76,26 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	public VerbManager getVerbManager() {
 		return verbs;
 	}
-	
+
 	@Override
 	public void update(float delta) {
 		InteractiveActor player = scene.getPlayer();
-		if(visible && player != null) {
+		if (visible && player != null) {
 			boolean hit = hit(player.getX(), player.getY());
-			if(!hit && playerInside) {
+			if (!hit && playerInside) {
 				// the player leaves
 				playerInside = false;
-				
+
 				Verb v = getVerb("exit");
-				if(v!=null)
+				if (v != null)
 					v.run();
-			} else if(hit && !playerInside){
+			} else if (hit && !playerInside) {
 				// the player enters
 				playerInside = true;
-				
+
 				Verb v = getVerb("enter");
-				if(v!=null)
-					v.run();				
+				if (v != null)
+					v.run();
 			}
 		}
 	}
@@ -104,11 +107,11 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	public Verb getVerb(String id, String target) {
 		return verbs.getVerb(id, state, target);
 	}
-	
+
 	public void runVerb(String id) {
 		verbs.runVerb(id, state, null);
 	}
-	
+
 	public void runVerb(String id, String target) {
 		verbs.runVerb(id, state, target);
 	}
@@ -121,30 +124,32 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	}
 
 	public void playSound(String id) {
-		if(sounds == null) return;
-		
+		if (sounds == null)
+			return;
+
 		SoundFX s = sounds.get(id);
 
 		if (s != null) {
-			if(playingSound != null) {
+			if (playingSound != null) {
 				SoundFX s2 = sounds.get(playingSound);
 				s2.stop();
 			}
-			
+
 			s.play();
 			playingSound = id;
 		}
 	}
-	
+
 	public void stopSound(String id) {
-		if(sounds == null) return;
-		
+		if (sounds == null)
+			return;
+
 		SoundFX s = sounds.get(id);
 
 		if (s != null) {
 			s.stop();
 		}
-		
+
 		playingSound = null;
 	}
 
@@ -165,11 +170,11 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 		return sb.toString();
 	}
-	
+
 	public float getZIndex() {
 		return zIndex;
 	}
-	
+
 	public void setZIndex(float z) {
 		zIndex = z;
 	}
@@ -181,7 +186,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	public void setState(String state) {
 		this.state = state;
 	}
-	
+
 	@Override
 	public void loadAssets() {
 		if (sounds != null) {
@@ -197,12 +202,12 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 			for (SoundFX s : sounds.values()) {
 				s.retrieveAssets();
 			}
-			
-			if(playingSound != null && sounds.get(playingSound).isLooping() == true) {
+
+			if (playingSound != null && sounds.get(playingSound).isLooping() == true) {
 				playSound(playingSound);
 			}
 		}
-	}	
+	}
 
 	@Override
 	public void dispose() {
@@ -216,7 +221,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 			playingSound = null;
 		}
 	}
-	
+
 	@Override
 	public int compareTo(InteractiveActor o) {
 		return (int) (o.getBBox().getY() - this.getBBox().getY());
@@ -225,36 +230,38 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	@Override
 	public void write(Json json) {
 		super.write(json);
-		
-		json.writeValue("interaction", interaction);
-		json.writeValue("desc", desc);
-		json.writeValue("verbs", verbs);
 
-		json.writeValue("state", state);
-		json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass(), SoundFX.class);
-		json.writeValue("playingSound", playingSound, playingSound == null ? null : playingSound.getClass());
-		
-		json.writeValue("playerInside", playerInside);
-		json.writeValue("zIndex", zIndex);
-		json.writeValue("layer", layer);
+		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+			json.writeValue("desc", desc);
+			json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass(), SoundFX.class);
+		} else {
+			verbs.write(json);
+			json.writeValue("interaction", interaction);
+			json.writeValue("state", state);
+			json.writeValue("playingSound", playingSound, playingSound == null ? null : playingSound.getClass());
+			json.writeValue("playerInside", playerInside);
+			json.writeValue("zIndex", zIndex);
+			json.writeValue("layer", layer);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void read (Json json, JsonValue jsonData) {
+	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
-		
-		interaction = json.readValue("interaction", Boolean.class, jsonData);
-		desc = json.readValue("desc", String.class, jsonData);
-		verbs = json.readValue("verbs", VerbManager.class, jsonData);
-		
-		state = json.readValue("state", String.class, jsonData);
-		sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);
-		playingSound = json.readValue("playingSound", String.class, jsonData);
 
-		playerInside = json.readValue("playerInside", Boolean.class, jsonData);
-		zIndex = json.readValue("zIndex", Float.class, jsonData);
-		layer = json.readValue("layer", String.class, jsonData);
+		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+			desc = json.readValue("desc", String.class, jsonData);
+			sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);
+		} else {
+			verbs.read(json, jsonData);
+			interaction = json.readValue("interaction", Boolean.class, jsonData);
+			state = json.readValue("state", String.class, jsonData);			
+			playingSound = json.readValue("playingSound", String.class, jsonData);
+			playerInside = json.readValue("playerInside", Boolean.class, jsonData);
+			zIndex = json.readValue("zIndex", Float.class, jsonData);
+			layer = json.readValue("layer", String.class, jsonData);
+		}
 	}
 
 }

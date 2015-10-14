@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine;
 
+import java.io.IOException;
 import java.nio.IntBuffer;
 import java.text.MessageFormat;
 
@@ -112,7 +113,11 @@ public class BladeEngine implements ApplicationListener {
 			gameState = Config.getProperty(Config.LOAD_GAMESTATE_PROP, gameState);
 
 		if (gameState != null) {
-			World.getInstance().loadGameState(gameState);
+			try {
+				World.getInstance().loadGameState(gameState);
+			} catch (IOException e) {
+				EngineLogger.error(e.getMessage());
+			}
 		}
 
 		if (restart) {
@@ -158,7 +163,11 @@ public class BladeEngine implements ApplicationListener {
 		// Pause the game and save state when an error is found
 		if (EngineLogger.lastError != null && EngineLogger.debugMode() && !World.getInstance().isPaused()) {
 			ui.pause();
-			World.getInstance().saveGameState();
+			try {
+				World.getInstance().saveGameState();
+			} catch (IOException e) {
+				EngineLogger.error(e.getMessage());
+			}
 		}
 	}
 
@@ -176,7 +185,11 @@ public class BladeEngine implements ApplicationListener {
 		if (!bot && !r) {
 			EngineLogger.debug("GAME PAUSE");
 			ui.pause();
-			World.getInstance().saveGameState();
+			try {
+				World.getInstance().saveGameState();
+			} catch (IOException e) {
+				EngineLogger.error(e.getMessage());
+			}
 		} else {
 			EngineLogger.debug("NOT PAUSING WHEN BOT IS RUNNING OR PLAYING RECORDED GAME");
 		}
