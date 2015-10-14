@@ -43,7 +43,7 @@ public class PositionAnimAction implements Action {
 	@JsonPropertyDescription("The target position")
 	@ActionPropertyType(Type.VECTOR2)
 	private Vector2 pos;
-	
+
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor position as target")
 	@ActionPropertyType(Type.ACTOR)
@@ -72,7 +72,9 @@ public class PositionAnimAction implements Action {
 	@JsonProperty(required = true, defaultValue = "NO_REPEAT")
 	@JsonPropertyDescription("The repeat mode")
 	@ActionPropertyType(Type.OPTION)
-	private Tween.Type repeat = Tween.Type.NO_REPEAT;   // FIXME: This adds more types not present here before
+	private Tween.Type repeat = Tween.Type.NO_REPEAT; // FIXME: This adds more
+														// types not present
+														// here before
 
 	@JsonProperty
 	@JsonPropertyDescription("The target actor")
@@ -82,13 +84,13 @@ public class PositionAnimAction implements Action {
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		actorId = params.get("actor");
-		
+
 		if (params.get("pos") != null) {
 			pos = Param.parseVector2(params.get("pos"));
 		} else if (params.get("target") != null) {
 			target = params.get("target");
 		}
-		
+
 		speed = Float.parseFloat(params.get("speed"));
 
 		if (params.get("count") != null) {
@@ -121,7 +123,12 @@ public class PositionAnimAction implements Action {
 		BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, false);
 
 		if (speed == 0 || !(actor instanceof SpriteActor)) {
-			actor.setPosition(pos.x * scale, pos.y * scale);
+			if (target == null) {
+				actor.setPosition(pos.x * scale, pos.y * scale);
+			} else {
+				BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
+				actor.setPosition(target.getX(), target.getY());
+			}
 
 			return false;
 		} else {
@@ -136,8 +143,14 @@ public class PositionAnimAction implements Action {
 				s = speed;
 			}
 
-			((SpriteActor) actor)
-					.startPosAnimation(repeat, count, s, pos.x * scale, pos.y * scale, interpolation, wait ? cb : null);
+			if (target == null) {
+				((SpriteActor) actor).startPosAnimation(repeat, count, s, pos.x * scale, pos.y * scale, interpolation,
+						wait ? cb : null);
+			} else {
+				BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
+				((SpriteActor) actor).startPosAnimation(repeat, count, s, target.getX(), target.getY(), interpolation,
+						wait ? cb : null);
+			}
 		}
 
 		return wait;
