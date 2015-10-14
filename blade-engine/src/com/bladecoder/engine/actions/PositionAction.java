@@ -40,7 +40,7 @@ public class PositionAction implements Action {
 	private Vector2 position;
 	
 	@JsonProperty(value = "anchor")
-	@JsonPropertyDescription("The anchor actor")
+	@JsonPropertyDescription("Sets the position of this actor")
 	@ActionPropertyType(Type.SCENE_ACTOR)
 	private SceneActorRef anchorActorRef;
 

@@ -43,6 +43,11 @@ public class PositionAnimAction implements Action {
 	@JsonPropertyDescription("The target position")
 	@ActionPropertyType(Type.VECTOR2)
 	private Vector2 pos;
+	
+	@JsonProperty
+	@JsonPropertyDescription("Sets the actor position as target")
+	@ActionPropertyType(Type.ACTOR)
+	private String target;
 
 	@JsonProperty(required = true, defaultValue = "1.0")
 	@JsonPropertyDescription("Duration or speed in pixels/sec. mode")
@@ -77,11 +82,13 @@ public class PositionAnimAction implements Action {
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		actorId = params.get("actor");
-
-		// get final position. We need to scale the coordinates to the current
-		// resolution
-		pos = Param.parseVector2(params.get("pos"));
-
+		
+		if (params.get("pos") != null) {
+			pos = Param.parseVector2(params.get("pos"));
+		} else if (params.get("target") != null) {
+			target = params.get("target");
+		}
+		
 		speed = Float.parseFloat(params.get("speed"));
 
 		if (params.get("count") != null) {
