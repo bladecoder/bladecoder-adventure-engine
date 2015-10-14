@@ -148,6 +148,7 @@ public class PositionAnimAction implements Action {
 						wait ? cb : null);
 			} else {
 				BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
+				
 				((SpriteActor) actor).startPosAnimation(repeat, count, s, target.getX(), target.getY(), interpolation,
 						wait ? cb : null);
 			}
