@@ -77,7 +77,7 @@ public class Recorder {
 			// while (playing && v.time < time) {
 			if (playing && v.time < time) {
 				if (v.verb == null) {
-					if (v.pos == null) { // DIALOG OPTION						
+					if (v.pos == null) { // DIALOG OPTION
 						World.getInstance().selectVisibleDialogOption(v.dialogOption);
 
 						stringBuilder.append(" SELECT DIALOG OPTION: ").append(v.dialogOption);
@@ -88,7 +88,7 @@ public class Recorder {
 					}
 				} else {
 
-					InteractiveActor a = (InteractiveActor)s.getActor(v.actorId, true);
+					InteractiveActor a = (InteractiveActor) s.getActor(v.actorId, true);
 
 					if (a != null) {
 						stringBuilder.append(v.verb);
@@ -172,7 +172,11 @@ public class Recorder {
 
 		if (recording) {
 			EngineLogger.debug("RECORDING...");
-			World.getInstance().saveGameState(fileName + GAMESTATE_EXT);
+			try {
+				World.getInstance().saveGameState(fileName + GAMESTATE_EXT);
+			} catch (IOException e) {
+				EngineLogger.error(e.getMessage());
+			}
 		} else
 			save();
 	}
@@ -209,18 +213,17 @@ public class Recorder {
 		int dialogOption;
 		Vector2 pos;
 	}
-	
 
 	public String getFileName() {
 		return fileName;
 	}
-	
+
 	public void setFilename(String name) {
 		if (name != null && !name.trim().isEmpty()) {
 			fileName = name;
 		} else {
 			fileName = DEFAULT_RECORD_FILENAME;
-		}		
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -235,14 +238,17 @@ public class Recorder {
 
 		if (verbsFile.exists()) {
 			// LOAD GAME STATE IF EXISTS
-			FileHandle gameStateFile = EngineAssetManager.getInstance().getUserFile(
-					gameStateFileName);
+			FileHandle gameStateFile = EngineAssetManager.getInstance().getUserFile(gameStateFileName);
 
 			if (!gameStateFile.exists())
 				gameStateFile = Gdx.files.internal("tests/" + gameStateFileName);
 
 			if (gameStateFile.exists())
-				World.getInstance().loadGameState(gameStateFile);
+				try {
+					World.getInstance().loadGameState(gameStateFile);
+				} catch (IOException e) {
+					EngineLogger.error(e.getMessage());
+				}
 			else
 				EngineLogger.debug("LOADING RECORD: no saved file exists");
 
@@ -259,8 +265,7 @@ public class Recorder {
 
 		String s = json.prettyPrint(list);
 
-		Writer w = EngineAssetManager.getInstance().getUserFile(fileName + RECORD_EXT)
-				.writer(false, "UTF-8");
+		Writer w = EngineAssetManager.getInstance().getUserFile(fileName + RECORD_EXT).writer(false, "UTF-8");
 
 		try {
 			w.write(s);

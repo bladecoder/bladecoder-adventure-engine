@@ -26,6 +26,8 @@ import com.bladecoder.engine.anim.SpriteScaleTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.util.InterpolationMode;
 
 public class SpriteActor extends InteractiveActor {
@@ -82,7 +84,7 @@ public class SpriteActor extends InteractiveActor {
 	public void setBboxFromRenderer(boolean v) {
 		this.bboxFromRenderer = v;
 
-		if(v)
+		if (v)
 			renderer.updateBboxFromRenderer(bbox);
 	}
 
@@ -150,11 +152,10 @@ public class SpriteActor extends InteractiveActor {
 
 		outAnim();
 	}
-	
+
 	/**
-	 * Actions to do when setting an animation:
-	 *   - stop previous animation sound
-	 *   - add 'out' distance from previous animation
+	 * Actions to do when setting an animation: - stop previous animation sound
+	 * - add 'out' distance from previous animation
 	 */
 	protected void inAnim() {
 		AnimationDesc fa = renderer.getCurrentAnimation();
@@ -172,13 +173,12 @@ public class SpriteActor extends InteractiveActor {
 
 				setPosition(getX() + outD.x * s, getY() + outD.y * s);
 			}
-		}		
+		}
 	}
 
 	/**
-	 * Actions to do when setting an animation:
-	 *   - play animation sound
-	 *   - add 'in' distance
+	 * Actions to do when setting an animation: - play animation sound - add
+	 * 'in' distance
 	 */
 	protected void outAnim() {
 		AnimationDesc fa = renderer.getCurrentAnimation();
@@ -196,14 +196,14 @@ public class SpriteActor extends InteractiveActor {
 
 				setPosition(getX() + inD.x * s, getY() + inD.y * s);
 			}
-		}		
+		}
 	}
 
 	/**
 	 * Create position animation.
 	 */
 	public void startPosAnimation(Tween.Type repeatType, int count, float duration, float destX, float destY,
-	                              InterpolationMode interpolation, ActionCallback cb) {
+			InterpolationMode interpolation, ActionCallback cb) {
 
 		posTween = new SpritePosTween();
 
@@ -257,32 +257,40 @@ public class SpriteActor extends InteractiveActor {
 	@Override
 	public void write(Json json) {
 		super.write(json);
-
-		json.writeValue("scale", scale);
-		json.writeValue("posTween", posTween, null);
-		json.writeValue("depthType", depthType);
 		json.writeValue("renderer", renderer, null);
-		json.writeValue("bboxFromRenderer", bboxFromRenderer);
-		json.writeValue("scaleTween", scaleTween, null);
+
+		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+
+		} else {
+			json.writeValue("scale", scale);
+			json.writeValue("posTween", posTween, null);
+			json.writeValue("depthType", depthType);
+			json.writeValue("bboxFromRenderer", bboxFromRenderer);
+			json.writeValue("scaleTween", scaleTween, null);
+		}
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
+		
+		renderer.read(json, jsonData.get("renderer"));
 
-		scale = json.readValue("scale", Float.class, jsonData);
-		posTween = json.readValue("posTween", SpritePosTween.class, jsonData);
-		depthType = json.readValue("depthType", DepthType.class, jsonData);
+		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
 
-		renderer = json.readValue("renderer", ActorRenderer.class, jsonData);
+		} else {
 
-		bboxFromRenderer = json.readValue("bboxFromRenderer", Boolean.class, jsonData);
+			scale = json.readValue("scale", Float.class, jsonData);
+			posTween = json.readValue("posTween", SpritePosTween.class, jsonData);
+			depthType = json.readValue("depthType", DepthType.class, jsonData);
+			bboxFromRenderer = json.readValue("bboxFromRenderer", Boolean.class, jsonData);
 
-		if (bboxFromRenderer)
-			renderer.updateBboxFromRenderer(bbox);
+			if (bboxFromRenderer)
+				renderer.updateBboxFromRenderer(bbox);
 
-		scaleTween = json.readValue("scaleTween", SpriteScaleTween.class, jsonData);
-		setScale(scale);
+			scaleTween = json.readValue("scaleTween", SpriteScaleTween.class, jsonData);
+			setScale(scale);
+		}
 	}
 
 }

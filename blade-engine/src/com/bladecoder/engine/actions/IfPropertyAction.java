@@ -36,8 +36,6 @@ public class IfPropertyAction extends AbstractIfAction {
 	@ActionPropertyType(Type.STRING)
 	private String value;
 
-	private String caID;
-
 	@Override
 	public void setParams(HashMap<String, String> params) {
 		name = params.get("name");
@@ -59,8 +57,4 @@ public class IfPropertyAction extends AbstractIfAction {
 		return false;
 	}
 
-	@Override
-	public String getControlActionID() {
-		return caID;
-	}
 }

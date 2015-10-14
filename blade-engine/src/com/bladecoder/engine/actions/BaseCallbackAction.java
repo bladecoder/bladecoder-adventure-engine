@@ -59,8 +59,6 @@ public abstract class BaseCallbackAction implements Action, ActionCallback, Seri
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("wait", wait);
-		
 		if(verbCbSer != null)
 			json.writeValue("cb", verbCbSer);
 		else
@@ -68,9 +66,7 @@ public abstract class BaseCallbackAction implements Action, ActionCallback, Seri
 	}
 
 	@Override
-	public void read (Json json, JsonValue jsonData) {
-		wait = json.readValue("wait", Boolean.class, jsonData);
-		
+	public void read (Json json, JsonValue jsonData) {		
 		verbCbSer = json.readValue("cb", String.class, jsonData);
 	}
 }

@@ -21,6 +21,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
 
 /**
  * A BaseActor is the foundation for all actors in Scenes
@@ -31,8 +33,9 @@ abstract public class BaseActor implements Serializable {
 	protected String id;
 	protected Scene scene = null;
 	protected boolean visible = true;
-	protected final Polygon bbox = new Polygon();	
-	
+	protected final Polygon bbox = new Polygon();
+	private String initScene;
+
 	public String getId() {
 		return id;
 	}
@@ -44,27 +47,27 @@ abstract public class BaseActor implements Serializable {
 	public Polygon getBBox() {
 		return bbox;
 	}
-	
+
 	public boolean hit(float x, float y) {
 		return getBBox().contains(x, y);
 	}
 
-	public boolean isVisible() {			
+	public boolean isVisible() {
 		return visible;
 	}
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
-	
+
 	public void setScene(Scene s) {
 		scene = s;
 	}
-	
+
 	public Scene getScene() {
 		return scene;
 	}
-	
+
 	abstract public void update(float delta);
 
 	@Override
@@ -82,42 +85,57 @@ abstract public class BaseActor implements Serializable {
 	public float getX() {
 		return bbox.getX();
 	}
-	
+
 	public float getY() {
 		return bbox.getY();
 	}
 
-	public void setPosition(float x, float y) {		
+	public void setPosition(float x, float y) {
 		bbox.setPosition(x, y);
 	}
-	
-	@Override
-	public void write(Json json) {
-		json.writeValue("id", id);
-		json.writeValue("visible", visible);
 
-		float worldScale = EngineAssetManager.getInstance().getScale();
-		Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
-		json.writeValue("pos", scaledPos);	
-		json.writeValue("bbox", bbox.getVertices());
+	public String getInitScene() {
+		return initScene;
+	}
+
+	public void setInitScene(String initScene) {
+		this.initScene = initScene;
 	}
 
 	@Override
-	public void read (Json json, JsonValue jsonData) {
-		id = json.readValue("id", String.class, jsonData);
-		visible = json.readValue("visible", Boolean.class, jsonData);
+	public void write(Json json) {
+		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+			json.writeValue("id", id);
+			json.writeValue("bbox", bbox.getVertices());
+		} else {
+			json.writeValue("visible", visible);
 
-		Vector2 pos = json.readValue("pos", Vector2.class, jsonData);
+			float worldScale = EngineAssetManager.getInstance().getScale();
+			Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
+			json.writeValue("pos", scaledPos);
+		}
+	}
 
-		float worldScale = EngineAssetManager.getInstance().getScale();
-		bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
-		
-		float[] verts = json.readValue("bbox", float[].class, jsonData);
-		
-		if(verts.length > 0)
-			bbox.setVertices(verts);
-		
-		bbox.setScale(worldScale, worldScale);		
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+			id = json.readValue("id", String.class, jsonData);
+
+			float[] verts = json.readValue("bbox", float[].class, jsonData);
+
+			if (verts.length > 0)
+				bbox.setVertices(verts);
+
+		} else {
+
+			visible = json.readValue("visible", Boolean.class, jsonData);
+
+			Vector2 pos = json.readValue("pos", Vector2.class, jsonData);
+
+			float worldScale = EngineAssetManager.getInstance().getScale();
+			bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
+			bbox.setScale(worldScale, worldScale);
+		}
 	}
 
 }

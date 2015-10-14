@@ -17,7 +17,13 @@ package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
 
-public class Dialog  {
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
+
+public class Dialog implements Serializable {
 
 	public final static String DEFAULT_DIALOG_VERB = "dialog";
 	
@@ -108,4 +114,29 @@ public class Dialog  {
 	public DialogOption getCurrentOption() {
 		return currentOption == -1?null: options.get(currentOption);
 	}
+	
+	@Override
+	public void write(Json json) {
+	
+		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+			json.writeValue("id", id);
+			json.writeValue("actor", actor);
+			json.writeValue("options", options);
+		} else {
+			json.writeValue("currentOption", currentOption);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+				
+		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+			id = json.readValue("id", String.class, jsonData);
+			actor = json.readValue("actor", String.class, jsonData);
+			options = json.readValue("options", ArrayList.class, DialogOption.class, jsonData);
+		} else {
+			currentOption = json.readValue("currentOption", Integer.class, jsonData);
+		}
+	}	
 }

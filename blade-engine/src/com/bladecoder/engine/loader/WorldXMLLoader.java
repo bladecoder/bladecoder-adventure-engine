@@ -37,7 +37,6 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -139,7 +138,7 @@ public class WorldXMLLoader extends DefaultHandler {
 
 			currentVerb = new Verb(id);
 
-			VerbManager.addDefaultVerb(id, currentVerb);
+			world.getVerbManager().addVerb(id, currentVerb);
 		}
 	}
 

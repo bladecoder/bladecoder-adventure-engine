@@ -17,12 +17,14 @@ package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
 
-import com.bladecoder.engine.model.SpriteActor;
-
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.AssetConsumer;
+import com.bladecoder.engine.loader.SerializationHelper;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class Inventory implements AssetConsumer {
+public class Inventory implements AssetConsumer, Serializable  {
 	private ArrayList<SpriteActor> items;
 	
 	private boolean visible = true;
@@ -117,5 +119,32 @@ public class Inventory implements AssetConsumer {
 	public boolean isDisposed() {
 		return disposed;
 	}
+
 	
+	@Override
+	public void write(Json json) {		
+		json.writeValue("visible", visible);
+		
+		json.writeObjectStart("items");
+		for(SpriteActor a:items) {
+			json.writeValue(a.getInitScene() + "." + a.getId(), a);
+		}
+		json.writeObjectEnd();
+	}
+
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+		visible = json.readValue("visible", Boolean.class, jsonData);
+		
+		items.clear();
+		
+		JsonValue jsonValueActors = jsonData.get("items");
+		
+		for(int i = 0; i < jsonValueActors.size; i++) {
+			JsonValue jsonValueAct = jsonValueActors.get(i);
+			BaseActor actor = SerializationHelper.getInstance().getActor(jsonValueAct.name);
+			actor.read(json, jsonValueAct);
+			items.add((SpriteActor)actor);
+		}
+	}
 }

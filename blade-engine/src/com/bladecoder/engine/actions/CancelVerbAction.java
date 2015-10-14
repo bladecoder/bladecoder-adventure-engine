@@ -20,7 +20,6 @@ import java.util.HashMap;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
-import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
@@ -76,7 +75,7 @@ public class CancelVerbAction implements Action {
 		}
 
 		if (v == null) {
-			v = VerbManager.getWorldVerbs().get(verb);
+			v = World.getInstance().getVerbManager().getVerb(verb, null, null);
 		}
 
 		if (v != null)

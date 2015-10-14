@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui.retro;
 
+import java.io.IOException;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Peripheral;
@@ -58,13 +60,18 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class RetroSceneScreen implements SceneScreen {
-	private static final float UI_SCREEN_PERCENT = 1 - 144.0f / 200.0f; // % of screen height of verbui;
+	private static final float UI_SCREEN_PERCENT = 1 - 144.0f / 200.0f; // % of
+																		// screen
+																		// height
+																		// of
+																		// verbui;
 
 	private UI ui;
 
 	private Stage stage;
-	
-	// we need an stage for the TextManagerUI because it runs inside the world viewport
+
+	// we need an stage for the TextManagerUI because it runs inside the world
+	// viewport
 	private Stage worldViewportStage;
 
 	private VerbUI verbUI;
@@ -98,7 +105,7 @@ public class RetroSceneScreen implements SceneScreen {
 	private UIStates state = UIStates.SCENE_MODE;
 
 	private final GlyphLayout textLayout = new GlyphLayout();
-	
+
 	private Pointer pointer;
 
 	private final GestureDetector inputProcessor = new GestureDetector(new GestureDetector.GestureAdapter() {
@@ -187,13 +194,21 @@ public class RetroSceneScreen implements SceneScreen {
 				// ui.toggleFullScreen();
 				break;
 			case 's':
-				World.getInstance().saveGameState();
+				try {
+					World.getInstance().saveGameState();
+				} catch (IOException e) {
+					EngineLogger.error(e.getMessage());
+				}
 				break;
 			case 'r':
 				World.getInstance().newGame();
 				break;
 			case 'l':
-				World.getInstance().loadGameState();
+				try {
+					World.getInstance().loadGameState();
+				} catch (IOException e) {
+					EngineLogger.error(e.getMessage());
+				}
 				break;
 			case 't':
 				testerBot.setEnabled(!testerBot.isEnabled());
@@ -234,11 +249,12 @@ public class RetroSceneScreen implements SceneScreen {
 
 	public RetroSceneScreen() {
 		screenViewport = new SceneFitViewport();
-		
+
 		worldViewport = new Viewport() {
-			// This is the World Viewport. It is like a ScreenViewport but the camera is the same that the screenViewport;
+			// This is the World Viewport. It is like a ScreenViewport but the
+			// camera is the same that the screenViewport;
 			@Override
-			public void apply (boolean centerCamera) {
+			public void apply(boolean centerCamera) {
 				Gdx.gl.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
 				getCamera().viewportWidth = getScreenWidth();
 				getCamera().viewportHeight = getScreenHeight();
@@ -247,7 +263,7 @@ public class RetroSceneScreen implements SceneScreen {
 				getCamera().update();
 			}
 		};
-		
+
 		worldViewport.setCamera(screenViewport.getCamera());
 	}
 
@@ -402,8 +418,8 @@ public class RetroSceneScreen implements SceneScreen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// WORLD CAMERA
-		if (world.getInventory().isVisible()) {			
-			worldViewport.setScreenY(screenViewport.getScreenY() + (int)verbUI.getHeight());
+		if (world.getInventory().isVisible()) {
+			worldViewport.setScreenY(screenViewport.getScreenY() + (int) verbUI.getHeight());
 			worldViewport.setScreenHeight(screenViewport.getScreenHeight() - (int) verbUI.getHeight());
 			world.resize(world.getWidth(), world.getHeight() * (1 - UI_SCREEN_PERCENT));
 		} else {
@@ -411,7 +427,7 @@ public class RetroSceneScreen implements SceneScreen {
 			worldViewport.setScreenHeight(screenViewport.getScreenHeight());
 			world.resize(world.getWidth(), world.getHeight());
 		}
-		
+
 		worldViewport.apply(true);
 
 		world.draw();
@@ -443,9 +459,9 @@ public class RetroSceneScreen implements SceneScreen {
 			drawHotspots(batch);
 
 		batch.end();
-		
+
 		worldViewportStage.draw();
-		
+
 		// STAGE CAMERA
 		screenViewport.apply(true);
 		stage.draw();
@@ -491,7 +507,7 @@ public class RetroSceneScreen implements SceneScreen {
 
 		textLayout.setText(ui.getSkin().getFont("debug"), strDebug, color, worldViewport.getScreenWidth(), Align.left,
 				true);
-		
+
 		RectangleRenderer.draw(batch, 0, worldViewport.getScreenHeight() - textLayout.height - 10, textLayout.width,
 				textLayout.height + 10, Color.BLACK);
 		ui.getSkin().getFont("debug").draw(batch, textLayout, 0, worldViewport.getScreenHeight() - 5);
@@ -508,11 +524,11 @@ public class RetroSceneScreen implements SceneScreen {
 
 				unprojectTmp.set(r.getX(), r.getY(), 0);
 				w.getSceneCamera().scene2screen(worldViewport, unprojectTmp);
-				
-				if (w.getInventory().isVisible()) {	
-//					 unprojectTmp.y += verbUI.getHeight();
+
+				if (w.getInventory().isVisible()) {
+					// unprojectTmp.y += verbUI.getHeight();
 				}
-				
+
 				ui.getSkin().getFont("debug").draw(batch, sbTmp.toString(), unprojectTmp.x, unprojectTmp.y);
 			}
 
@@ -540,9 +556,9 @@ public class RetroSceneScreen implements SceneScreen {
 
 			unprojectTmp.set(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2, 0);
 			world.getSceneCamera().scene2screen(worldViewport, unprojectTmp);
-			
-			if (world.getInventory().isVisible()) {	
-//				 unprojectTmp.y += verbUI.getHeight();
+
+			if (world.getInventory().isVisible()) {
+				// unprojectTmp.y += verbUI.getHeight();
 			}
 
 			if (ia.getDesc() == null) {
@@ -578,7 +594,7 @@ public class RetroSceneScreen implements SceneScreen {
 			screenViewport.setWorldSize(world.getWidth(), world.getHeight());
 			screenViewport.update(width, height, true);
 
-			worldViewport.setScreenBounds(screenViewport.getScreenX(), screenViewport.getScreenY(), 
+			worldViewport.setScreenBounds(screenViewport.getScreenX(), screenViewport.getScreenY(),
 					screenViewport.getScreenWidth(), screenViewport.getScreenHeight());
 
 			world.resize(screenViewport.getWorldWidth(), screenViewport.getWorldHeight());
@@ -587,7 +603,7 @@ public class RetroSceneScreen implements SceneScreen {
 		textManagerUI.resize();
 		menuButton.resize();
 		pointer.resize();
-		
+
 		verbUI.setSize(screenViewport.getScreenWidth(), screenViewport.getScreenHeight() * UI_SCREEN_PERCENT);
 	}
 
@@ -655,12 +671,12 @@ public class RetroSceneScreen implements SceneScreen {
 		retrieveAssets(ui.getUIAtlas());
 
 		stage = new Stage(screenViewport);
-//		stage.addActor(textManagerUI);
+		// stage.addActor(textManagerUI);
 		stage.addActor(dialogUI);
 		stage.addActor(menuButton);
 		stage.addActor(verbUI);
 		stage.addActor(pointer);
-		
+
 		worldViewportStage = new Stage(worldViewport);
 		worldViewportStage.addActor(textManagerUI);
 
@@ -720,7 +736,7 @@ public class RetroSceneScreen implements SceneScreen {
 		dialogUI = new DialogUI(ui);
 
 		verbUI = new VerbUI(this);
-		
+
 		pointer = new Pointer(ui.getSkin());
 	}
 }

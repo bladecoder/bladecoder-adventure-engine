@@ -21,7 +21,6 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
 
 /**
@@ -142,7 +141,7 @@ public class ActionCallbackSerialization {
 		}
 
 		// search in worldVerbs
-		for (Verb v : VerbManager.getWorldVerbs().values()) {
+		for (Verb v : World.getInstance().getVerbManager().getVerbs().values()) {
 			id = find(cb, v);
 			if (id != null) {
 				StringBuilder stringBuilder = new StringBuilder("DEFAULT_VERB");
@@ -178,8 +177,7 @@ public class ActionCallbackSerialization {
 		Verb v = null;
 
 		if (actorId.equals("DEFAULT_VERB")) {
-
-			v = VerbManager.getWorldVerbs().get(verbId);
+			v = World.getInstance().getVerbManager().getVerb(verbId, null, null);
 		} else {
 
 			InteractiveActor a;

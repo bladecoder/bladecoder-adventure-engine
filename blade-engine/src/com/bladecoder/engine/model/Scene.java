@@ -35,6 +35,8 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.pathfinder.NavNode;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
@@ -647,146 +649,165 @@ public class Scene implements Serializable, AssetConsumer {
 	public void setPolygonalNavGraph(PolygonalNavGraph polygonalNavGraph) {
 		this.polygonalNavGraph = polygonalNavGraph;
 	}
-	
-	private void writeMutable(Json json) {
-		json.writeValue("state", state, state == null ? null : state.getClass());
-		json.writeValue("verbs", verbs);
-		
-		json.writeValue("actors", actors);
-		json.writeValue("player", player);
-		
-		json.writeValue("isPlaying", music != null && music.isPlaying());
-		json.writeValue("musicPos", music != null && music.isPlaying() ? music.getPosition() : 0f);
-
-		json.writeValue("camera", camera);
-		
-		json.writeValue("followActor", followActor == null ? null : followActor.getId(),
-				followActor == null ? null : String.class);
-
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void readMutable(Json json, JsonValue jsonData) {
-		
-		// TODO FIX DO NOT REPLACE MUTABLE OBJECTS
-		
-		
-		state = json.readValue("state", String.class, jsonData);
-		verbs = json.readValue("verbs", VerbManager.class, jsonData);
-		actors = json.readValue("actors", HashMap.class, BaseActor.class, jsonData);
-		player = json.readValue("player", String.class, jsonData);
-
-		for (BaseActor actor : actors.values()) {
-			actor.setScene(this);
-
-			if (actor instanceof InteractiveActor) {
-				InteractiveActor ia = (InteractiveActor) actor;
-
-				SceneLayer layer = getLayer(ia.getLayer());
-				layer.add(ia);
-			}
-		}
-
-		orderLayersByZIndex();
-
-		isPlayingSer = json.readValue("isPlaying", Boolean.class, jsonData);
-		musicPosSer = json.readValue("musicPos", Float.class, jsonData);
-
-		camera = json.readValue("camera", SceneCamera.class, jsonData);
-		String followActorId = json.readValue("followActor", String.class, jsonData);
-
-		setCameraFollowActor((SpriteActor) actors.get(followActorId));
-	}		
-	
-	private void writeInmutable(Json json) {
-		json.writeValue("layers", layers);
-		json.writeValue("id", id);
-		json.writeValue("state", state, state == null ? null : state.getClass());
-		json.writeValue("verbs", verbs);
-
-		json.writeValue("actors", actors);
-		json.writeValue("player", player);
-
-		json.writeValue("backgroundAtlas", backgroundAtlas);
-		json.writeValue("backgroundRegionId", backgroundRegionId);
-
-		json.writeValue("lightMapAtlas", lightMapAtlas);
-
-		json.writeValue("lightMapRegionId", lightMapRegionId);
-
-		json.writeValue("musicFilename", musicFilename);
-		json.writeValue("loopMusic", loopMusic);
-		json.writeValue("initialMusicDelay", initialMusicDelay);
-		json.writeValue("repeatMusicDelay", repeatMusicDelay);
-
-		json.writeValue("isPlaying", music != null && music.isPlaying());
-		json.writeValue("musicPos", music != null && music.isPlaying() ? music.getPosition() : 0f);
-
-		json.writeValue("camera", camera);
-
-		json.writeValue("followActor", followActor == null ? null : followActor.getId(),
-				followActor == null ? null : String.class);
-
-		json.writeValue("depthVector", depthVector);
-
-		json.writeValue("polygonalNavGraph", polygonalNavGraph,
-				polygonalNavGraph == null ? null : PolygonalNavGraph.class);		
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void readInmutable(Json json, JsonValue jsonData) {
-		layers = json.readValue("layers", ArrayList.class, SceneLayer.class, jsonData);
-		id = json.readValue("id", String.class, jsonData);
-		state = json.readValue("state", String.class, jsonData);
-		verbs = json.readValue("verbs", VerbManager.class, jsonData);
-
-		actors = json.readValue("actors", HashMap.class, BaseActor.class, jsonData);
-		player = json.readValue("player", String.class, jsonData);
-
-		for (BaseActor actor : actors.values()) {
-			actor.setScene(this);
-
-			if (actor instanceof InteractiveActor) {
-				InteractiveActor ia = (InteractiveActor) actor;
-
-				SceneLayer layer = getLayer(ia.getLayer());
-				layer.add(ia);
-			}
-		}
-
-		orderLayersByZIndex();
-
-		backgroundAtlas = json.readValue("backgroundAtlas", String.class, jsonData);
-		backgroundRegionId = json.readValue("backgroundRegionId", String.class, jsonData);
-		lightMapAtlas = json.readValue("lightMapAtlas", String.class, jsonData);
-		lightMapRegionId = json.readValue("lightMapRegionId", String.class, jsonData);
-
-		musicFilename = json.readValue("musicFilename", String.class, jsonData);
-		loopMusic = json.readValue("loopMusic", Boolean.class, jsonData);
-		initialMusicDelay = json.readValue("initialMusicDelay", Float.class, jsonData);
-		repeatMusicDelay = json.readValue("repeatMusicDelay", Float.class, jsonData);
-
-		isPlayingSer = json.readValue("isPlaying", Boolean.class, jsonData);
-		musicPosSer = json.readValue("musicPos", Float.class, jsonData);
-
-		camera = json.readValue("camera", SceneCamera.class, jsonData);
-		String followActorId = json.readValue("followActor", String.class, jsonData);
-
-		setCameraFollowActor((SpriteActor) actors.get(followActorId));
-
-		depthVector = json.readValue("depthVector", Vector2.class, jsonData);
-		polygonalNavGraph = json.readValue("polygonalNavGraph", PolygonalNavGraph.class, jsonData);
-	}
 
 	@Override
 	public void write(Json json) {
-//		writeInmutable(json);
-		writeMutable(json);
+		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+
+			// json.writeValue("layers", layers);
+			// json.writeValue("id", id);
+			// json.writeValue("state", state, state == null ? null :
+			// state.getClass());
+			// json.writeValue("verbs", verbs);
+			//
+			// json.writeValue("actors", actors);
+			// json.writeValue("player", player);
+			//
+			// json.writeValue("backgroundAtlas", backgroundAtlas);
+			// json.writeValue("backgroundRegionId", backgroundRegionId);
+			//
+			// json.writeValue("lightMapAtlas", lightMapAtlas);
+			//
+			// json.writeValue("lightMapRegionId", lightMapRegionId);
+			//
+			// json.writeValue("musicFilename", musicFilename);
+			// json.writeValue("loopMusic", loopMusic);
+			// json.writeValue("initialMusicDelay", initialMusicDelay);
+			// json.writeValue("repeatMusicDelay", repeatMusicDelay);
+			//
+			// json.writeValue("isPlaying", music != null && music.isPlaying());
+			// json.writeValue("musicPos", music != null && music.isPlaying() ?
+			// music.getPosition() : 0f);
+			//
+			// json.writeValue("camera", camera);
+			//
+			// json.writeValue("followActor", followActor == null ? null :
+			// followActor.getId(),
+			// followActor == null ? null : String.class);
+			//
+			// json.writeValue("depthVector", depthVector);
+			//
+			// json.writeValue("polygonalNavGraph", polygonalNavGraph,
+			// polygonalNavGraph == null ? null : PolygonalNavGraph.class);
+
+		} else {
+			json.writeValue("state", state, state == null ? null : state.getClass());
+			verbs.write(json);
+
+			// set the scene as part of the key
+//			json.writeValue("actors", actors);
+			
+			json.writeObjectStart("actors");
+			for(BaseActor a:actors.values()) {
+				json.writeValue(a.getInitScene() + "." + a.getId(), a);
+			}
+			json.writeObjectEnd();
+			
+			json.writeValue("player", player);
+
+			json.writeValue("isPlaying", music != null && music.isPlaying());
+			json.writeValue("musicPos", music != null && music.isPlaying() ? music.getPosition() : 0f);
+
+			json.writeValue("camera", camera);
+
+			json.writeValue("followActor", followActor == null ? null : followActor.getId(),
+					followActor == null ? null : String.class);
+		}
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-//		readInmutable(json, jsonData);
-		readMutable(json, jsonData);		
+		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+
+			// layers = json.readValue("layers", ArrayList.class,
+			// SceneLayer.class,
+			// jsonData);
+			// id = json.readValue("id", String.class, jsonData);
+			// state = json.readValue("state", String.class, jsonData);
+			// verbs = json.readValue("verbs", VerbManager.class, jsonData);
+			//
+			// actors = json.readValue("actors", HashMap.class, BaseActor.class,
+			// jsonData);
+			// player = json.readValue("player", String.class, jsonData);
+			//
+			// for (BaseActor actor : actors.values()) {
+			// actor.setScene(this);
+			//
+			// if (actor instanceof InteractiveActor) {
+			// InteractiveActor ia = (InteractiveActor) actor;
+			//
+			// SceneLayer layer = getLayer(ia.getLayer());
+			// layer.add(ia);
+			// }
+			// }
+			//
+			// orderLayersByZIndex();
+			//
+			// backgroundAtlas = json.readValue("backgroundAtlas", String.class,
+			// jsonData);
+			// backgroundRegionId = json.readValue("backgroundRegionId",
+			// String.class, jsonData);
+			// lightMapAtlas = json.readValue("lightMapAtlas", String.class,
+			// jsonData);
+			// lightMapRegionId = json.readValue("lightMapRegionId",
+			// String.class,
+			// jsonData);
+			//
+			// musicFilename = json.readValue("musicFilename", String.class,
+			// jsonData);
+			// loopMusic = json.readValue("loopMusic", Boolean.class, jsonData);
+			// initialMusicDelay = json.readValue("initialMusicDelay",
+			// Float.class,
+			// jsonData);
+			// repeatMusicDelay = json.readValue("repeatMusicDelay",
+			// Float.class,
+			// jsonData);
+			//
+			// isPlayingSer = json.readValue("isPlaying", Boolean.class,
+			// jsonData);
+			// musicPosSer = json.readValue("musicPos", Float.class, jsonData);
+			//
+			// camera = json.readValue("camera", SceneCamera.class, jsonData);
+			// String followActorId = json.readValue("followActor",
+			// String.class,
+			// jsonData);
+			//
+			// setCameraFollowActor((SpriteActor) actors.get(followActorId));
+			//
+			// depthVector = json.readValue("depthVector", Vector2.class,
+			// jsonData);
+			// polygonalNavGraph = json.readValue("polygonalNavGraph",
+			// PolygonalNavGraph.class, jsonData);
+
+		} else {
+
+			state = json.readValue("state", String.class, jsonData);
+			verbs.read(json, jsonData);
+			
+//			actors = json.readValue("actors", HashMap.class, BaseActor.class, jsonData);
+			
+			actors.clear();
+			
+			JsonValue jsonValueActors = jsonData.get("actors");
+			
+			for(int i = 0; i < jsonValueActors.size; i++) {
+				JsonValue jsonValueAct = jsonValueActors.get(i);
+				BaseActor actor = SerializationHelper.getInstance().getActor(jsonValueAct.name);
+				actor.read(json, jsonValueAct);
+				addActor(actor);
+			}
+			
+			player = json.readValue("player", String.class, jsonData);
+
+			orderLayersByZIndex();
+
+			isPlayingSer = json.readValue("isPlaying", Boolean.class, jsonData);
+			musicPosSer = json.readValue("musicPos", Float.class, jsonData);
+
+			camera = json.readValue("camera", SceneCamera.class, jsonData);
+			String followActorId = json.readValue("followActor", String.class, jsonData);
+
+			setCameraFollowActor((SpriteActor) actors.get(followActorId));
+		}
 	}
 }

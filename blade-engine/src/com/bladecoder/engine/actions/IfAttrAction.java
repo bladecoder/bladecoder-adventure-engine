@@ -23,7 +23,6 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -31,7 +30,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 @ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfAttrAction extends AbstractIfAction {
 	public static final String ENDTYPE_VALUE = "else";
-	private String caID;
 
 	public enum ActorAttribute {
 		STATE, VISIBLE
@@ -91,10 +89,5 @@ public class IfAttrAction extends AbstractIfAction {
 		}
 
 		return false;
-	}
-
-	@Override
-	public String getControlActionID() {
-		return caID;
 	}
 }

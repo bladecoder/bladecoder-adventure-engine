@@ -25,7 +25,6 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
@@ -86,7 +85,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 		}
 
 		if (v == null) {
-			v = VerbManager.getWorldVerbs().get(verb);
+			v = World.getInstance().getVerbManager().getVerb(verb, null, null);
 		}
 
 		if (v == null)
@@ -184,20 +183,14 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("actorId", actorId);
 		json.writeValue("ip", ip);
-		json.writeValue("verb", verb);
-		json.writeValue("target", target);
 		json.writeValue("state", state);
 		super.write(json);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		actorId = json.readValue("actorId", String.class, jsonData);
 		ip = json.readValue("ip", Integer.class, jsonData);
-		verb = json.readValue("verb", String.class, jsonData);
-		target = json.readValue("target", String.class, jsonData);
 		state = json.readValue("state", String.class, jsonData);
 		super.read(json, jsonData);
 	}

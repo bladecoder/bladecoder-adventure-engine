@@ -169,7 +169,6 @@ public class Editor implements ApplicationListener {
 //		try {
 //			Ctx.project.saveProject();
 //		} catch (Exception ex) {
-//			System.out.println("Something went wrong while saving the project.\n");
 //			ex.printStackTrace();
 //		}
 	}
