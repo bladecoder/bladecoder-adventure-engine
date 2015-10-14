@@ -17,8 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import javax.annotation.Nullable;
-
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -57,7 +55,6 @@ public class PositionAction implements Action {
 		anchorActorRef = b == null ? null : new SceneActorRef(b[0], b[1]);
 	}
 
-	@Nullable
 	private static Vector2 vector2OrNull(String str) {
 		return str != null ? Param.parseVector2(str) : null;
 	}

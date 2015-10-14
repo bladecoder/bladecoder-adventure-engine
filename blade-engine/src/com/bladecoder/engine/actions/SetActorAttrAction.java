@@ -16,10 +16,6 @@
 package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
-
-import javax.annotation.Nullable;
-
-import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
@@ -107,17 +103,10 @@ public class SetActorAttrAction implements Action {
 		walkingSpeed = floatOrNull(params.get("walkingSpeed"));
 	}
 
-	@Nullable
-	private static Vector2 vector2OrNull(String str) {
-		return str != null ? Param.parseVector2(str) : null;
-	}
-
-	@Nullable
 	private static Boolean booleanOrNull(String str) {
 		return str != null ? Boolean.parseBoolean(str) : null;
 	}
 
-	@Nullable
 	private static Float floatOrNull(String str) {
 		return str != null ? Float.parseFloat(str) : null;
 	}

@@ -7,18 +7,16 @@ import com.bladecoder.engine.actions.Param;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ActionUtils {
-	public static String getInfo(@Nonnull Action action) {
+	public static String getInfo(Action action) {
 		return action.getClass().getAnnotation(ActionDescription.class).value();
 	}
 
-	@Nonnull
-	public static Param[] getParams(@Nonnull Action action) {
+	public static Param[] getParams(Action action) {
 		List<Param> params = new ArrayList<>();
 		Class<?> clazz = action.getClass();
 		while (clazz != null && clazz != Object.class) {
@@ -32,7 +30,7 @@ public class ActionUtils {
 
 				final String name = property.value() == null || property.value().trim().isEmpty() ? field.getName() : property.value();
 
-				Enum[] options = null;
+				Enum<?>[] options = null;
 				if (field.getType().isEnum()) {
 					final boolean accessible = field.isAccessible();
 					field.setAccessible(true);
