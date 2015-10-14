@@ -121,14 +121,20 @@ public class PositionAnimAction implements Action {
 		float scale = EngineAssetManager.getInstance().getScale();
 
 		BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, false);
+		
+		float x,y;
+		
+		if (target == null) {
+			x = pos.x * scale; 
+			y = pos.y * scale;
+		} else {
+			BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
+			x = target.getX();
+			y = target.getY();
+		}
 
 		if (speed == 0 || !(actor instanceof SpriteActor)) {
-			if (target == null) {
-				actor.setPosition(pos.x * scale, pos.y * scale);
-			} else {
-				BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
-				actor.setPosition(target.getX(), target.getY());
-			}
+			actor.setPosition(x, y);
 
 			return false;
 		} else {
@@ -138,20 +144,13 @@ public class PositionAnimAction implements Action {
 			if (mode != null && mode == Mode.SPEED) {
 				Vector2 p0 = new Vector2(actor.getX(), actor.getY());
 
-				s = p0.dst(pos.x * scale, pos.y * scale) / (scale * speed);
+				s = p0.dst(x, y) / (scale * speed);
 			} else {
 				s = speed;
 			}
 
-			if (target == null) {
-				((SpriteActor) actor).startPosAnimation(repeat, count, s, pos.x * scale, pos.y * scale, interpolation,
-						wait ? cb : null);
-			} else {
-				BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
-				
-				((SpriteActor) actor).startPosAnimation(repeat, count, s, target.getX(), target.getY(), interpolation,
-						wait ? cb : null);
-			}
+			((SpriteActor) actor).startPosAnimation(repeat, count, s, x, y, interpolation,
+					wait ? cb : null);
 		}
 
 		return wait;
