@@ -24,62 +24,59 @@ import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Change actor attributes.")
 public class SetActorAttrAction implements Action {
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The target actor")
+	
 	private SceneActorRef actor;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor visibility")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor visibility")
+
 	private Boolean visible;
 
-	@JsonProperty
-	@JsonPropertyDescription("When 'true' the actor responds to the user input")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty
+	@ActionPropertyDescription("When 'true' the actor responds to the user input")
+
 	private Boolean interaction;
 
-	@JsonProperty
-	@JsonPropertyDescription("The actor layer")
-	@ActionPropertyType(Type.LAYER)
+	@ActionPropertyDescription("The actor layer")
+	@ActionProperty(type = Type.LAYER)
 	private String layer;
 
-	@JsonProperty
-	@JsonPropertyDescription("The order to draw bigger is near")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty
+	@ActionPropertyDescription("The order to draw bigger is near")
+
 	private Float zIndex;
 
-	@JsonProperty
-	@JsonPropertyDescription("Enable/Disable the Fake Depth for the actor")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty
+	@ActionPropertyDescription("Enable/Disable the Fake Depth for the actor")
+
 	private Boolean fakeDepth;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor scale")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor scale")
+
 	private Float scale;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor 'stand' animation. Only supported for character actors.")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor 'stand' animation. Only supported for character actors.")
+
 	private String standAnimation;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor 'walk' animation. Only supported for character actors.")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor 'walk' animation. Only supported for character actors.")
+
 	private String walkAnimation;
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor 'talk' animation. Only supported for character actors.")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor 'talk' animation. Only supported for character actors.")
+
 	private String talkAnimation;
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor speed for walking. Only supported for character actors.")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor speed for walking. Only supported for character actors.")
+
 	private Float walkingSpeed;
 
 	@Override

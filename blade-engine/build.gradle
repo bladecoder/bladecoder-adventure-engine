@@ -38,7 +38,6 @@ jar {
     }
 
 dependencies {
-  compile "com.fasterxml.jackson.core:jackson-databind:2.6.1"
   compile "com.badlogicgames.gdx:gdx:$gdxVersion"
   compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
   compile fileTree(dir: 'libs', include: '*.jar')

@@ -25,34 +25,29 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Says a text")
 public class SayAction extends BaseCallbackAction {
-	@JsonProperty
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("The target actor")
+	@ActionProperty(type = Type.ACTOR)
 	private String actor;
 
-	@JsonProperty
-	@JsonPropertyDescription("The 'text' to show")
-	@ActionPropertyType(Type.SMALL_TEXT)
+	@ActionPropertyDescription("The 'text' to show")
+	@ActionProperty(type = Type.SMALL_TEXT)
 	private String text;
 
-	@JsonProperty
-	@JsonPropertyDescription("The 'soundId' to play if selected")
-	@ActionPropertyType(Type.SOUND)
+	@ActionPropertyDescription("The 'soundId' to play if selected")
+	@ActionProperty(type = Type.SOUND)
 	private String soundId;
 
-	@JsonProperty(required = true, defaultValue = "RECTANGLE")
-	@JsonPropertyDescription("The type of the text.")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true, defaultValue = "RECTANGLE")
+	@ActionPropertyDescription("The type of the text.")
+
 	private Text.Type type = Text.Type.RECTANGLE;
 
-	@JsonProperty(defaultValue = "false")
-	@JsonPropertyDescription("Queue the text if other text is showing, or show it immediately.")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(defaultValue = "false")
+	@ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")
+
 	private boolean queue = false;
 
 	private String previousAnim = null;

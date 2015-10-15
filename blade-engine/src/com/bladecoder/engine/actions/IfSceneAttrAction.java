@@ -19,8 +19,6 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfSceneAttrAction extends AbstractIfAction {
@@ -29,19 +27,16 @@ public class IfSceneAttrAction extends AbstractIfAction {
 		STATE
 	}
 
-	@JsonProperty
-	@JsonPropertyDescription("The scene to check its attribute")
-	@ActionPropertyType(Type.SCENE)
+	@ActionPropertyDescription("The scene to check its attribute")
+	@ActionProperty(type = Type.SCENE)
 	private String scene;
 
-	@JsonProperty(required = true, defaultValue = "state")
-	@JsonPropertyDescription("The scene attribute")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true, defaultValue = "state")
+	@ActionPropertyDescription("The scene attribute")
 	private SceneAttr attr;
 
-	@JsonProperty
-	@JsonPropertyDescription("The attribute value")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("The attribute value")
 	private String value;
 
 	@Override

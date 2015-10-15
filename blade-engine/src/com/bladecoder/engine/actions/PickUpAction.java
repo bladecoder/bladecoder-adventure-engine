@@ -15,25 +15,22 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Puts the selected actor in the inventory.")
 public class PickUpAction implements Action {
-	@JsonProperty()
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
+	@ActionProperty()
+	@ActionPropertyDescription("The target actor")
+	
 	private SceneActorRef actor;
 
-	@JsonProperty
-	@JsonPropertyDescription("The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'")
+
 	private String animation;
 
 	@Override

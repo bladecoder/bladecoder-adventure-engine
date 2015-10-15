@@ -21,8 +21,6 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 /**
  * Cancels a running verb.
@@ -31,19 +29,16 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
  */
 @ActionDescription("Stops the named verb if it is in execution.")
 public class CancelVerbAction implements Action {
-	@JsonProperty
-	@JsonPropertyDescription("The target actor. Empty for the current actor.")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("The target actor. Empty for the current actor.")
+	@ActionProperty(type=Type.ACTOR)
 	private String actor;
 
-	@JsonProperty
-	@JsonPropertyDescription("The verb to stop. Empty for the current verb.")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("The verb to stop. Empty for the current verb.")
 	private String verb;
 
-	@JsonProperty
-	@JsonPropertyDescription("If the verb is 'use', the target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("If the verb is 'use', the target actor")
+	@ActionProperty(type=Type.ACTOR)
 	private String target;
 
 	@Override

@@ -16,28 +16,23 @@
 package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.math.Vector2;
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Change actor attributes.")
 public class PositionAction implements Action {
-	@JsonProperty( required = true)
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
+	@ActionProperty( required = true)
+	@ActionPropertyDescription("The target actor")
+	
 	private SceneActorRef actor;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor position")
-	@ActionPropertyType(Type.VECTOR2)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor position")
 	private Vector2 position;
 	
-	@JsonProperty
-	@JsonPropertyDescription("Sets the position of this actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the position of this actor")	
 	private SceneActorRef anchor;
 
 	@Override

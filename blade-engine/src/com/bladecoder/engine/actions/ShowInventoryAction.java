@@ -15,16 +15,13 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Shows/Hide the inventory")
 public class ShowInventoryAction implements Action {
-	@JsonProperty(required = true, defaultValue = "true")
-	@JsonPropertyDescription("When 'true' sets the scene in 'cutmode'")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(required = true, defaultValue = "true")
+	@ActionPropertyDescription("When 'true' sets the scene in 'cutmode'")
+
 	private boolean value = true;
 
 	@Override

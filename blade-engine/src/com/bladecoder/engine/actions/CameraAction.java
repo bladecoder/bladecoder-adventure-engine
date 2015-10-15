@@ -21,34 +21,27 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
 public class CameraAction implements Action {
-	@JsonProperty
-	@JsonPropertyDescription("The target position")
-	@ActionPropertyType(Type.VECTOR2)
+	@ActionProperty
+	@ActionPropertyDescription("The target position")
 	private Vector2 pos;
 
-	@JsonProperty
-	@JsonPropertyDescription("The target 'zoom'")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty
+	@ActionPropertyDescription("The target 'zoom'")
 	private float zoom = -1;
 
-	@JsonProperty
-	@JsonPropertyDescription("Duration of the animation in seconds. If not '0' and animation is triggered")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty
+	@ActionPropertyDescription("Duration of the animation in seconds. If not '0' and animation is triggered")
 	private float duration = 0;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
+	@ActionProperty(type = Type.ACTOR)
 	private String followActor;
 
-	@JsonProperty(defaultValue = "true", required = true)
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(defaultValue = "true", required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
 
 	@Override

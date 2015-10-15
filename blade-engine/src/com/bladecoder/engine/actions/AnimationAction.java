@@ -17,35 +17,28 @@ package com.bladecoder.engine.actions;
 
 import java.text.MessageFormat;
 
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets the animation for an actor")
 public class AnimationAction implements Action {
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The Animation to set")
-	@ActionPropertyType(Type.ACTOR_ANIMATION)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The Animation to set")
 	private ActorAnimationRef animation;
 
-	@JsonProperty
-	@JsonPropertyDescription("The times to repeat. -1 to infinity repeat")
-	@ActionPropertyType(Type.INTEGER)
+	@ActionProperty
+	@ActionPropertyDescription("The times to repeat. -1 to infinity repeat")
 	private int count = 1;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
 
-	@JsonProperty(required = true, defaultValue = "SPRITE_DEFINED")
-	@JsonPropertyDescription("The repeat mode")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true, defaultValue = "SPRITE_DEFINED")
+	@ActionPropertyDescription("The repeat mode")
 	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
 
 	private String actor;

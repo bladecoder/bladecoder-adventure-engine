@@ -20,44 +20,41 @@ import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationMode;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets an actor Scale animation")
 public class ScaleAction implements Action {
-	@JsonProperty
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("The target actor")
+	@ActionProperty(type = Type.ACTOR)
 	private String actor;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The target scale")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The target scale")
+
 	private float scale;
 
-	@JsonProperty(required = true, defaultValue = "1.0")
-	@JsonPropertyDescription("Duration of the animation in seconds")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty(required = true, defaultValue = "1.0")
+	@ActionPropertyDescription("Duration of the animation in seconds")
+
 	private float speed;
 
-	@JsonProperty
-	@JsonPropertyDescription("The The times to repeat")
-	@ActionPropertyType(Type.INTEGER)
+	@ActionProperty
+	@ActionPropertyDescription("The The times to repeat")
+
 	private int count = 1;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("If this param is 'false' the transition is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the transition is showed and the action continues inmediatly")
+
 	private boolean wait = true;
 
-	@JsonProperty(required = true, defaultValue = "REPEAT")
-	@JsonPropertyDescription("The repeat mode")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true, defaultValue = "REPEAT")
+	@ActionPropertyDescription("The repeat mode")
+
 	private Tween.Type repeat = Tween.Type.REPEAT;
 
-	@JsonProperty
-	@JsonPropertyDescription("The interpolation mode")
-	@ActionPropertyType(Type.OPTION)
+	@ActionProperty
+	@ActionPropertyDescription("The interpolation mode")
+
 	private InterpolationMode interpolation;
 
 	@Override

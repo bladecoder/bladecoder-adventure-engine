@@ -15,35 +15,32 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Change the selected dialog option properties")
 public class SetDialogOptionAttrAction implements Action {
-	@JsonProperty
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
+	@ActionProperty
+	@ActionPropertyDescription("The target actor")
+	
 	private SceneActorRef actor;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The dialog")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The dialog")
+
 	private String dialog;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The option")
-	@ActionPropertyType(Type.INTEGER)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The option")
+
 	private int option;
 
-	@JsonProperty
-	@JsonPropertyDescription("Show/Hide the dialog option")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty
+	@ActionPropertyDescription("Show/Hide the dialog option")
+
 	private Boolean visible;
 
 	@Override

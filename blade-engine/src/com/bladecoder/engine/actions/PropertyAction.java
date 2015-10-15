@@ -15,21 +15,18 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets a global game property")
 public class PropertyAction implements Action {
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("Property name")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("Property name")
+
 	private String prop;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("Property value")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("Property value")
+
 	private String value;
 
 	@Override

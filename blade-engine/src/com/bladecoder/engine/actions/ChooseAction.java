@@ -21,10 +21,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute only one action inside the Choose/EndChoose block.")
 public class ChooseAction extends AbstractControlAction implements Serializable {
@@ -35,9 +32,8 @@ public class ChooseAction extends AbstractControlAction implements Serializable 
 	/**
 	 * When the verb is a comma separated verb list, we use chooseCriteria as criteria to choose the verb to execute.
 	 */
-	@JsonProperty(required = true, defaultValue = "CYCLE")
-	@JsonPropertyDescription("The action to execute will be selected following this criteria.")
-	@ActionPropertyType(Type.OPTION)
+	@ActionProperty(required = true, defaultValue = "CYCLE")
+	@ActionPropertyDescription("The action to execute will be selected following this criteria.")
 	private ChooseCriteria chooseCriteria = ChooseCriteria.CYCLE;
 
 	/** Used when choose_criteria is 'iterate' or 'cycle' */

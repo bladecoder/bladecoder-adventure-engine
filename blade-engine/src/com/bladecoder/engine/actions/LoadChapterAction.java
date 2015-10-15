@@ -17,19 +17,15 @@ package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Load the specified Chapter. Scene can be empty to load the default scene.")
 public class LoadChapterAction implements Action {
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The target chapter")
-	@ActionPropertyType(Type.CHAPTER)
+	@ActionPropertyDescription("The target chapter")
+	@ActionProperty(type = Type.CHAPTER, required = true)
 	private String chapter;
 
-	@JsonProperty(required = false)
-	@JsonPropertyDescription("The target scene")
-	@ActionPropertyType(Type.SCENE)
+	@ActionPropertyDescription("The target scene")
+	@ActionProperty(type=Type.SCENE, required = false)
 	private String scene;
 
 	@Override

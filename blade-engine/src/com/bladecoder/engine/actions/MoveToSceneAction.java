@@ -21,19 +21,15 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Move the actor to the selected scene")
 public class MoveToSceneAction implements Action {
-	@JsonProperty
-	@JsonPropertyDescription("The selected actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
+	@ActionProperty
+	@ActionPropertyDescription("The selected actor")	
 	private SceneActorRef actor;
 
-	@JsonProperty
-	@JsonPropertyDescription("The target scene")
-	@ActionPropertyType(Type.SCENE)
+	@ActionPropertyDescription("The target scene")
+	@ActionProperty(type = Type.SCENE)
 	private String scene;
 
 	@Override

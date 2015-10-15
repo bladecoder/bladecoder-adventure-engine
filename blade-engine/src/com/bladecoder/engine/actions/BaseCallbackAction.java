@@ -19,16 +19,13 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 public abstract class BaseCallbackAction implements Action, ActionCallback, Serializable {	
 	private ActionCallback verbCb;
 	private String verbCbSer;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Param.Type.BOOLEAN)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
 
 	@Override

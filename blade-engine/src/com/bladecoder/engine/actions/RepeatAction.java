@@ -18,16 +18,13 @@ package com.bladecoder.engine.actions;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Repeats the actions inside the Repeat/EndRepeat actions.")
 public class RepeatAction extends AbstractControlAction implements Serializable {
-	@JsonProperty(required = true, defaultValue = "1")
-	@JsonPropertyDescription("Repeat the actions the specified times. -1 to infinity")
-	@ActionPropertyType(Type.INTEGER)
+	@ActionProperty(required = true, defaultValue = "1")
+	@ActionPropertyDescription("Repeat the actions the specified times. -1 to infinity")
+
 	private int repeat = 1;
 
 	private int currentRepeat = 0;

@@ -24,8 +24,6 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Walks to the selected position")
 public class GotoAction implements Action {
@@ -33,34 +31,28 @@ public class GotoAction implements Action {
 		CENTER, LEFT, RIGHT
 	}
 
-	@JsonProperty
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("The target actor")
+	@ActionProperty(type = Type.ACTOR)
 	private String actor;
 
-	@JsonProperty
-	@JsonPropertyDescription("The position to walk to")
-	@ActionPropertyType(Type.VECTOR2)
+	@ActionProperty
+	@ActionPropertyDescription("The position to walk to")
 	private Vector2 pos;
 
-	@JsonProperty
-	@JsonPropertyDescription("Walks to the target actor position")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("Walks to the target actor position")
+	@ActionProperty(type = Type.ACTOR)
 	private String target;
 
-	@JsonProperty(defaultValue = "CENTER")
-	@JsonPropertyDescription("When selecting a target actor, an align can be selected")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(defaultValue = "CENTER")
+	@ActionPropertyDescription("When selecting a target actor, an align can be selected")
 	private Align align;
 
-	@JsonProperty
-	@JsonPropertyDescription("When selecting a target actor, the relative distance to the anchor in each axis")
-	@ActionPropertyType(Type.VECTOR2)
+	@ActionProperty
+	@ActionPropertyDescription("When selecting a target actor, the relative distance to the anchor in each axis")
 	private Vector2 distance;
 
-	@JsonProperty(required = true, defaultValue = "true")
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(required = true, defaultValue = "true")
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
 
 	@Override

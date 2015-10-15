@@ -18,19 +18,16 @@ package com.bladecoder.engine.actions;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets the dialog mode")
 public class TalktoAction implements Action {
-	@JsonProperty
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("The target actor")
+	@ActionProperty(type = Type.ACTOR)
 	private String actor;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The 'dialogId' to show")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The 'dialogId' to show")
+
 	private String dialog;
 
 	@Override

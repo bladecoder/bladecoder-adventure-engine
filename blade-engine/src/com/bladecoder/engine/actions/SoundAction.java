@@ -18,24 +18,19 @@ package com.bladecoder.engine.actions;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Play/Stop a sound")
 public class SoundAction implements Action {
-	@JsonProperty
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("The target actor")
+	@ActionProperty(type = Type.ACTOR)
 	private String actor;
 
-	@JsonProperty
-	@JsonPropertyDescription("The 'soundId' to play")
-	@ActionPropertyType(Type.SOUND)
+	@ActionPropertyDescription("The 'soundId' to play")
+	@ActionProperty(type = Type.SOUND)
 	private String play;
 
-	@JsonProperty
-	@JsonPropertyDescription("The 'soundId' to stop")
-	@ActionPropertyType(Type.SOUND)
+	@ActionPropertyDescription("The 'soundId' to stop")
+	@ActionProperty(type = Type.SOUND)
 	private String stop;
 
 	@Override

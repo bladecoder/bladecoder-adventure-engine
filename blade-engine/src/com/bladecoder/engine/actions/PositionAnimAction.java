@@ -23,8 +23,6 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationMode;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets an actor Position animation")
 public class PositionAnimAction implements Action {
@@ -32,51 +30,45 @@ public class PositionAnimAction implements Action {
 		DURATION, SPEED
 	}
 
-	@JsonProperty
-	@JsonPropertyDescription("The actor to move")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("The actor to move")
+	@ActionProperty(type = Type.ACTOR)
 	private String actor;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The target position")
-	@ActionPropertyType(Type.VECTOR2)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The target position")
+
 	private Vector2 pos;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor position as target")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("Sets the actor position as target")
+	@ActionProperty(type = Type.ACTOR)
 	private String target;
 
-	@JsonProperty(required = true, defaultValue = "1.0")
-	@JsonPropertyDescription("Duration or speed in pixels/sec. mode")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty(required = true, defaultValue = "1.0")
+	@ActionPropertyDescription("Duration or speed in pixels/sec. mode")
 	private float speed;
 
-	@JsonProperty
-	@JsonPropertyDescription("Duration or speed of the animation")
-	@ActionPropertyType(Type.OPTION)
+	@ActionProperty
+	@ActionPropertyDescription("Duration or speed of the animation")
 	private Mode mode;
 
-	@JsonProperty
-	@JsonPropertyDescription("The times to repeat")
-	@ActionPropertyType(Type.INTEGER)
+	@ActionProperty
+	@ActionPropertyDescription("The times to repeat")
 	private int count = 1;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
 
-	@JsonProperty(required = true, defaultValue = "NO_REPEAT")
-	@JsonPropertyDescription("The repeat mode")
-	@ActionPropertyType(Type.OPTION)
+	@ActionProperty(required = true, defaultValue = "NO_REPEAT")
+	@ActionPropertyDescription("The repeat mode")
+
 	private Tween.Type repeat = Tween.Type.NO_REPEAT; // FIXME: This adds more
 														// types not present
 														// here before
 
-	@JsonProperty
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.OPTION)
+	@ActionProperty
+	@ActionPropertyDescription("The target actor")
+
 	private InterpolationMode interpolation;
 
 	@Override

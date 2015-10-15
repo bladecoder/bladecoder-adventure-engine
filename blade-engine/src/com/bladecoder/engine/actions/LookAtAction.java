@@ -25,8 +25,6 @@ import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Shows the text and sets the player to lookat in the selected actor direction")
 public class LookAtAction implements Action {
@@ -52,29 +50,24 @@ public class LookAtAction implements Action {
 		}
 	}
 
-	@JsonProperty
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("The target actor")
+	@ActionProperty(type = Type.ACTOR)
 	private String actor;
 
-	@JsonProperty("speech")
-	@JsonPropertyDescription("The 'soundId' to play if selected")
-	@ActionPropertyType(Type.SOUND)
+	@ActionPropertyDescription("The 'soundId' to play if selected")
+	@ActionProperty(type = Type.SOUND)
 	private String soundId;
 
-	@JsonProperty
-	@JsonPropertyDescription("The 'text' to show")
-	@ActionPropertyType(Type.SMALL_TEXT)
+	@ActionPropertyDescription("The 'text' to show")
+	@ActionProperty(type = Type.SMALL_TEXT)
 	private String text;
 
-	@JsonProperty
-	@JsonPropertyDescription("The direction to lookat. If empty, the player lookat to the actor")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("The direction to lookat. If empty, the player lookat to the actor")
 	private Direction direction;
 	
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;	
 
 	@Override

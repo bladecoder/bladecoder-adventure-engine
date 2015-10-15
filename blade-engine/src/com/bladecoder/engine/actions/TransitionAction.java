@@ -19,29 +19,23 @@ import com.badlogic.gdx.graphics.Color;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets a transition effect (FADEIN/FADEOUT)")
 public class TransitionAction implements Action {
-	@JsonProperty(required = true, defaultValue = "1.0")
-	@JsonPropertyDescription("Duration of the transition")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty(required = true, defaultValue = "1.0")
+	@ActionPropertyDescription("Duration of the transition")
 	private float time = 1;
 
-	@JsonProperty(required = true, defaultValue = "black")
-	@JsonPropertyDescription("The color to fade ('white', 'black' or RRGGBBAA).")
-	@ActionPropertyType(Type.COLOR)
+	@ActionPropertyDescription("The color to fade ('white', 'black' or RRGGBBAA).")
+	@ActionProperty(type = Type.COLOR, required = true, defaultValue = "black")
 	private Color color = new Color(0,0,0,1);
 
-	@JsonProperty(required = true, defaultValue = "FADE_IN")
-	@JsonPropertyDescription("The transition type (fadein/fadeout)")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true, defaultValue = "FADE_IN")
+	@ActionPropertyDescription("The transition type (fadein/fadeout)")
 	private Transition.Type type = Transition.Type.FADE_IN;     // FIXME: This adds NONE as a valid value
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("If this param is 'false' the transition is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the transition is showed and the action continues inmediatly")
 	private boolean wait = true;
 
 	@Override
