@@ -118,7 +118,7 @@ public class Dialog implements Serializable {
 	@Override
 	public void write(Json json) {
 	
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("id", id);
 			json.writeValue("actor", actor);
 			json.writeValue("options", options);
@@ -131,7 +131,7 @@ public class Dialog implements Serializable {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 				
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			id = json.readValue("id", String.class, jsonData);
 			actor = json.readValue("actor", String.class, jsonData);
 			options = json.readValue("options", ArrayList.class, DialogOption.class, jsonData);

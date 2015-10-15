@@ -57,7 +57,6 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
@@ -124,10 +123,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		} else if (localName.equals(XMLConstants.SOUND_TAG)) {
 			parseSound(atts, (InteractiveActor) actor);
 		} else if (localName.equals(XMLConstants.CHAPTER_TAG)) {
-			initScene = atts.getValue(XMLConstants.INIT_SCENE_ATTR);
-
-			World.getInstance().getScenes().clear();
-			
+			initScene = atts.getValue(XMLConstants.INIT_SCENE_ATTR);			
 		} else if (localName.equals(XMLConstants.WALK_ZONE_TAG)) {
 			PolygonalNavGraph polygonalPathFinder = new PolygonalNavGraph();
 			Polygon poly = new Polygon();
@@ -410,7 +406,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		
 		actor.setInitScene(scene.getId());
 		
-		if(SerializationHelper.getInstance().getMode() == Mode.MUTABLE) {
+		if(SerializationHelper.getInstance().getMode() == Mode.STATE) {
 			SerializationHelper.getInstance().addActor(actor);
 		} else {
 			scene.addActor(actor);

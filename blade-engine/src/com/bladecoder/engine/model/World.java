@@ -16,6 +16,7 @@
 package com.bladecoder.engine.model;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -70,7 +71,7 @@ public class World implements Serializable, AssetConsumer {
 	private int height;
 
 	private final HashMap<String, Scene> scenes = new HashMap<String, Scene>();
-	private VerbManager verbs = new VerbManager();
+	private final VerbManager verbs = new VerbManager();
 
 	private Scene currentScene;
 	private Dialog currentDialog;
@@ -123,7 +124,8 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	private void init() {
-//		scenes = new HashMap<String, Scene>();
+		// scenes = new HashMap<String, Scene>();
+		scenes.clear();
 		inventory = new Inventory();
 		textManager = new TextManager();
 
@@ -158,7 +160,7 @@ public class World implements Serializable, AssetConsumer {
 		else
 			customProperties.put(name, value);
 	}
-	
+
 	public VerbManager getVerbManager() {
 		return verbs;
 	}
@@ -268,71 +270,6 @@ public class World implements Serializable, AssetConsumer {
 
 	public AssetState getAssetState() {
 		return assetState;
-	}
-
-	/**
-	 * Try to load the save game if exists. In other case, load the game from
-	 * XML.
-	 * 
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws ParserConfigurationException
-	 */
-	public void load() {
-		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
-			// 2.- SAVEGAME EXISTS
-			try {
-				instance.loadGameState();
-			} catch (Exception e) {
-				EngineLogger.error("ERROR LOADING SAVED GAME", e);
-				instance.loadXMLChapter(null);
-			}
-		} else {
-			// 3.- XML LOADING
-			instance.loadXMLChapter(null);
-		}
-	}
-
-	public void loadXMLWorld() {
-		try {
-			WorldXMLLoader.loadWorld(this);
-		} catch (Exception e) {
-			EngineLogger.error("ERROR LOADING WORLD XML", e);
-			instance.dispose();
-			Gdx.app.exit();
-		}
-	}
-
-	public void loadXMLChapter(String chapterName) {
-		if (!disposed)
-			dispose();
-
-		init();
-
-		assetState = AssetState.LOAD_ASSETS;
-
-		long initTime = System.currentTimeMillis();
-
-		try {
-			WorldXMLLoader.loadChapter(chapterName, this);
-		} catch (Exception e) {
-			EngineLogger.error("ERROR LOADING GAME", e);
-			instance.dispose();
-			Gdx.app.exit();
-		}
-
-		EngineLogger.debug("XML LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
-	}
-
-	public void loadXMLChapter(String chapter, String scene) {
-		this.testScene = scene;
-
-		instance.loadXMLChapter(chapter);
-
-		if (testScene != null) {
-			currentScene = null;
-			setCurrentScene(testScene);
-		}
 	}
 
 	public Dialog getCurrentDialog() {
@@ -565,7 +502,139 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void newGame() {
-		loadXMLChapter(null);
+		loadChapter(null);
+		// TODO: Delete this comment
+		 try {
+		 saveWorldDesc(EngineAssetManager.getInstance().getUserFile("world.json"));
+		 } catch (IOException e) {
+		 // TODO Auto-generated catch block
+		 e.printStackTrace();
+		 }
+	}
+
+	// ********** SERIALIZATION **********
+
+	/**
+	 * Try to load the save game if exists. In other case, load the game from
+	 * XML.
+	 * 
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws ParserConfigurationException
+	 */
+	public void load() {
+		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
+			// SAVEGAME EXISTS
+			try {
+				instance.loadGameState();
+			} catch (Exception e) {
+				EngineLogger.error("ERROR LOADING SAVED GAME", e);
+				instance.loadChapter(null);
+			}
+		} else {
+			// XML LOADING
+			instance.loadChapter(null);
+		}
+	}
+
+	/**
+	 * Load the world description. First try to load 'world.json'. If doesn't
+	 * exists try 'world.xml'.
+	 */
+	public void loadWorldDesc() {
+		if (EngineAssetManager.getInstance().getModelFile(EngineAssetManager.WORLD_FILENAME_JSON).exists()) {
+			SerializationHelper.getInstance().setMode(Mode.MODEL);
+
+			JsonValue root = new JsonReader().parse(EngineAssetManager.getInstance()
+					.getModelFile(EngineAssetManager.WORLD_FILENAME_JSON).reader("UTF-8"));
+
+			Json json = new Json();
+
+			int width = json.readValue("width", Integer.class, root);
+			int height = json.readValue("height", Integer.class, root);
+
+			// When we know the world width, we can put the scale
+			EngineAssetManager.getInstance().setScale(width, height);
+			float scale = EngineAssetManager.getInstance().getScale();
+
+			setWidth((int) (width * scale));
+			setHeight((int) (height * scale));
+			setInitChapter(json.readValue("initChapter", String.class, root));
+			verbs.read(json, root);
+			I18N.loadWorld(EngineAssetManager.MODEL_DIR + "world");
+		} else {
+			try {
+				WorldXMLLoader.loadWorld(this);
+			} catch (Exception e) {
+				EngineLogger.error("ERROR LOADING WORLD XML", e);
+				dispose();
+				Gdx.app.exit();
+			}
+		}
+	}
+
+	public void saveWorldDesc(FileHandle file) throws IOException {
+
+		float scale = EngineAssetManager.getInstance().getScale();
+
+		Json json = new Json();
+		json.setOutputType(OutputType.javascript);
+
+		SerializationHelper.getInstance().setMode(Mode.MODEL);
+
+		json.setWriter(new StringWriter());
+
+		json.writeObjectStart();
+		json.writeValue("width", width / scale);
+		json.writeValue("height", height / scale);
+		json.writeValue("initChapter", initChapter);
+		verbs.write(json);
+		json.writeObjectEnd();
+
+		String s = null;
+
+		if (EngineLogger.debugMode())
+			s = json.prettyPrint(json.getWriter().getWriter().toString());
+		else
+			s = json.getWriter().getWriter().toString();
+
+		Writer w = file.writer(false, "UTF-8");
+		w.write(s);
+		w.close();
+	}
+
+	public void loadChapter(String chapterName) {
+		if (!disposed)
+			dispose();
+
+		init();
+
+		assetState = AssetState.LOAD_ASSETS;
+
+		long initTime = System.currentTimeMillis();
+
+		SerializationHelper.getInstance().setMode(Mode.MODEL);
+
+		try {
+			WorldXMLLoader.loadChapter(chapterName, this);
+		} catch (Exception e) {
+			EngineLogger.error("ERROR LOADING GAME", e);
+			dispose();
+			Gdx.app.exit();
+		}
+
+		EngineLogger.debug("XML LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+	}
+
+	public void loadChapter(String chapter, String scene) {
+		this.testScene = scene;
+
+		loadChapter(chapter);
+
+		if (testScene != null) {
+			currentScene = null;
+			setCurrentScene(testScene);
+		}
 	}
 
 	public boolean savedGameExists() {
@@ -576,18 +645,13 @@ public class World implements Serializable, AssetConsumer {
 		return EngineAssetManager.getInstance().getUserFile(filename).exists();
 	}
 
-	// ********** JSON SERIALIZATION FOR GAME SAVING **********
-	public void saveGameState() throws IOException {
-		saveGameState(GAMESTATE_FILENAME);
-	}
-
-	public void loadGameState() throws  IOException {
+	public void loadGameState() throws IOException {
 		long initTime = System.currentTimeMillis();
 		loadGameState(GAMESTATE_FILENAME);
 		EngineLogger.debug("JSON LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 	}
 
-	public void loadGameState(String filename) throws  IOException {
+	public void loadGameState(String filename) throws IOException {
 		FileHandle savedFile = EngineAssetManager.getInstance().getUserFile(filename);
 
 		loadGameState(savedFile);
@@ -604,20 +668,24 @@ public class World implements Serializable, AssetConsumer {
 		if (savedFile.exists()) {
 			assetState = AssetState.LOAD_ASSETS;
 
-//			new Json().fromJson(World.class, savedFile.reader("UTF-8"));
-			
-			SerializationHelper.getInstance().start(Mode.MUTABLE);
-			
+			// new Json().fromJson(World.class, savedFile.reader("UTF-8"));
+
+			SerializationHelper.getInstance().setMode(Mode.STATE);
+
 			JsonValue root = new JsonReader().parse(savedFile.reader("UTF-8"));
-			
+
 			read(new Json(), root);
-			
-			SerializationHelper.getInstance().dispose();
+
+			SerializationHelper.getInstance().clearActors();
 
 		} else {
-			SerializationHelper.getInstance().dispose();
+			SerializationHelper.getInstance().clearActors();
 			throw new IOException("LOADGAMESTATE: no saved game exists");
-		} 
+		}
+	}
+
+	public void saveGameState() throws IOException {
+		saveGameState(GAMESTATE_FILENAME);
 	}
 
 	public void saveGameState(String filename) throws IOException {
@@ -630,15 +698,15 @@ public class World implements Serializable, AssetConsumer {
 		json.setOutputType(OutputType.javascript);
 
 		String s = null;
-		
-		SerializationHelper.getInstance().start(Mode.MUTABLE);
+
+		SerializationHelper.getInstance().setMode(Mode.STATE);
 
 		if (EngineLogger.debugMode())
-			s = json.prettyPrint(instance);
+			s = json.prettyPrint(this);
 		else
-			s = json.toJson(instance);
-		
-		SerializationHelper.getInstance().dispose();
+			s = json.toJson(this);
+
+		SerializationHelper.getInstance().clearActors();
 
 		Writer w = EngineAssetManager.getInstance().getUserFile(filename).writer(false, "UTF-8");
 
@@ -682,11 +750,13 @@ public class World implements Serializable, AssetConsumer {
 	@Override
 	public void write(Json json) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
-//			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
-//			json.writeValue("worldVerbs", VerbManager.worldVerbs, HashMap.class, Verb.class);
-//			json.writeValue("chapter", currentChapter);
+			// json.writeValue("scenes", scenes, scenes.getClass(),
+			// Scene.class);
+			// json.writeValue("worldVerbs", VerbManager.worldVerbs,
+			// HashMap.class, Verb.class);
+			// json.writeValue("chapter", currentChapter);
 
 		} else {
 
@@ -719,39 +789,39 @@ public class World implements Serializable, AssetConsumer {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
-//			 instance.scenes = json.readValue("scenes", HashMap.class,
-//			 Scene.class, jsonData);
-//			 VerbManager.worldVerbs = json.readValue("worldVerbs",
-//			 HashMap.class, Verb.class, jsonData);
-//			 instance.currentChapter = json.readValue("chapter", String.class,
-//			 jsonData);
+			// instance.scenes = json.readValue("scenes", HashMap.class,
+			// Scene.class, jsonData);
+			// VerbManager.worldVerbs = json.readValue("worldVerbs",
+			// HashMap.class, Verb.class, jsonData);
+			// instance.currentChapter = json.readValue("chapter", String.class,
+			// jsonData);
 
 		} else {
 			currentChapter = json.readValue("chapter", String.class, jsonData);
-			
+
 			try {
 				WorldXMLLoader.loadChapter(currentChapter, this);
 			} catch (ParserConfigurationException | SAXException | IOException e) {
-				EngineLogger.error("Error Loading Chapter");			
+				EngineLogger.error("Error Loading Chapter");
 				return;
 			}
-			
+
 			currentScene = scenes.get(json.readValue("currentScene", String.class, jsonData));
 			assetState = AssetState.LOAD_ASSETS;
-			
-			for(Scene s: scenes.values()) {
+
+			for (Scene s : scenes.values()) {
 				s.read(json, jsonData.get("scenes").get(s.getId()));
 			}
-			
+
 			inventory = json.readValue("inventory", Inventory.class, jsonData);
 
 			timeOfGame = json.readValue("timeOfGame", Float.class, jsonData);
 			cutMode = json.readValue("cutmode", Boolean.class, jsonData);
-			
+
 			verbs.read(json, jsonData);
-			
+
 			timers = json.readValue("timers", Timers.class, jsonData);
 
 			textManager = json.readValue("textmanager", TextManager.class, jsonData);

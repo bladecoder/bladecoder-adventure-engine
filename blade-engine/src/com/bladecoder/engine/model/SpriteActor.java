@@ -259,7 +259,7 @@ public class SpriteActor extends InteractiveActor {
 		super.write(json);
 		json.writeValue("renderer", renderer, null);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
 		} else {
 			json.writeValue("scale", scale);
@@ -276,7 +276,7 @@ public class SpriteActor extends InteractiveActor {
 		
 		renderer.read(json, jsonData.get("renderer"));
 
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
 		} else {
 

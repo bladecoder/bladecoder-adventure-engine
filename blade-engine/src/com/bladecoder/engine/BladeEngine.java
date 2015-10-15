@@ -93,7 +93,7 @@ public class BladeEngine implements ApplicationListener {
 			EngineAssetManager.getInstance().forceResolution(forceRes);
 		}
 
-		World.getInstance().loadXMLWorld();
+		World.getInstance().loadWorldDesc();
 
 		ui = new UI();
 
@@ -105,7 +105,7 @@ public class BladeEngine implements ApplicationListener {
 		}
 
 		if (testScene != null || chapter != null) {
-			World.getInstance().loadXMLChapter(chapter, testScene);
+			World.getInstance().loadChapter(chapter, testScene);
 			ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 		}
 
@@ -122,7 +122,7 @@ public class BladeEngine implements ApplicationListener {
 
 		if (restart) {
 			try {
-				World.getInstance().loadXMLChapter(null);
+				World.getInstance().loadChapter(null);
 			} catch (Exception e) {
 				EngineLogger.error("ERROR LOADING GAME", e);
 				dispose();

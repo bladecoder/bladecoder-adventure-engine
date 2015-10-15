@@ -30,7 +30,7 @@ public class LoadChapterAction implements Action {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		World.getInstance().loadXMLChapter(chapter, scene);
+		World.getInstance().loadChapter(chapter, scene);
 		
 		return false;
 	}

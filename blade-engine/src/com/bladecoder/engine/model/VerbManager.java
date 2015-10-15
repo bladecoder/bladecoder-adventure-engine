@@ -131,21 +131,13 @@ public class VerbManager implements Serializable {
 	@Override
 	public void write(Json json) {
 		json.writeValue("verbs", verbs, verbs.getClass(), Verb.class);
-		
-//		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
-//			json.writeValue("verbs", verbs, verbs == null ? null : verbs.getClass(), Verb.class);
-//		} else {
-//			for(Verb v: verbs.values()) {
-//				v.write(json);
-//			}
-//		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			verbs = json.readValue("verbs", HashMap.class, Verb.class, jsonData);
 		} else {
 			for(String v: verbs.keySet()) {

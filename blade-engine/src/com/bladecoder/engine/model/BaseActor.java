@@ -104,7 +104,7 @@ abstract public class BaseActor implements Serializable {
 
 	@Override
 	public void write(Json json) {
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("id", id);
 			json.writeValue("bbox", bbox.getVertices());
 		} else {
@@ -118,7 +118,7 @@ abstract public class BaseActor implements Serializable {
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			id = json.readValue("id", String.class, jsonData);
 
 			float[] verts = json.readValue("bbox", float[].class, jsonData);

@@ -45,7 +45,7 @@ public class AnimationAction implements Action {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", animation));
+		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", animation.getAnimationId()));
 		
 		String actorId = animation.getActorId();
 		

@@ -7,14 +7,14 @@ import com.bladecoder.engine.model.BaseActor;
 public class SerializationHelper {
 
 	public enum Mode {
-		INMUTABLE, MUTABLE
+		MODEL, STATE
 	};
 
 	private static SerializationHelper instance;
 
 	private final HashMap<String, BaseActor> actors = new HashMap<String, BaseActor>();
 
-	private Mode mode = Mode.INMUTABLE;
+	private Mode mode = Mode.MODEL;
 
 	private SerializationHelper() {
 
@@ -41,16 +41,15 @@ public class SerializationHelper {
 		return actors.get(internalId);
 	}
 
-	public void start(Mode m) {
-		mode = m;
-	}
-
 	public Mode getMode() {
 		return mode;
 	}
+	
+	public void setMode(Mode m) {
+		this.mode = m;
+	}
 
-	public void dispose() {
+	public void clearActors() {
 		actors.clear();
-		mode = Mode.INMUTABLE;
 	}
 }

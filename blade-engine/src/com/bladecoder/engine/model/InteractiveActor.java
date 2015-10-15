@@ -231,7 +231,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	public void write(Json json) {
 		super.write(json);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("desc", desc);
 			json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass(), SoundFX.class);
 		} else {
@@ -250,7 +250,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			desc = json.readValue("desc", String.class, jsonData);
 			sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);
 		} else {

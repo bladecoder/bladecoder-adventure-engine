@@ -778,7 +778,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 	@Override
 	public void write(Json json) {
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 		} else {
 			json.writeValue("fanims", fanims, HashMap.class, AnimationDesc.class);
 
@@ -818,7 +818,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 		} else {
 			fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
 

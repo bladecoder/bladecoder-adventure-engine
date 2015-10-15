@@ -80,7 +80,7 @@ public class DialogOption implements Serializable {
 	@Override
 	public void write(Json json) {
 	
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("text", text);
 			json.writeValue("responseText", responseText);
 			json.writeValue("verbId", verbId);
@@ -94,7 +94,7 @@ public class DialogOption implements Serializable {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 				
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			text = json.readValue("text", String.class, jsonData);
 			responseText = json.readValue("responseText", String.class, jsonData);
 			verbId = json.readValue("verbId", String.class, jsonData);

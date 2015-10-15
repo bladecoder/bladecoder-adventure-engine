@@ -652,7 +652,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 	@Override
 	public void write(Json json) {
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
 			// json.writeValue("layers", layers);
 			// json.writeValue("id", id);
@@ -717,7 +717,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
 			// layers = json.readValue("layers", ArrayList.class,
 			// SceneLayer.class,
@@ -780,9 +780,6 @@ public class Scene implements Serializable, AssetConsumer {
 			// PolygonalNavGraph.class, jsonData);
 
 		} else {
-
-			state = json.readValue("state", String.class, jsonData);
-			verbs.read(json, jsonData);
 			
 //			actors = json.readValue("actors", HashMap.class, BaseActor.class, jsonData);
 			
@@ -797,7 +794,10 @@ public class Scene implements Serializable, AssetConsumer {
 				addActor(actor);
 			}
 			
-			player = json.readValue("player", String.class, jsonData);
+			player = json.readValue("player", String.class, jsonData);			
+			state = json.readValue("state", String.class, jsonData);
+			
+			verbs.read(json, jsonData);
 
 			orderLayersByZIndex();
 

@@ -188,7 +188,7 @@ public class CharacterActor extends SpriteActor {
 		super.write(json);
 		json.writeValue("dialogs", dialogs);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 		} else {
 
 			// MUTABLE
@@ -207,7 +207,7 @@ public class CharacterActor extends SpriteActor {
 		super.read(json, jsonData);
 		dialogs = json.readValue("dialogs", HashMap.class, Dialog.class, jsonData);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.INMUTABLE) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 		} else {
 			// MUTABLE
 			walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);

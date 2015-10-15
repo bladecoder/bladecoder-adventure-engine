@@ -52,6 +52,9 @@ import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class EngineAssetManager extends AssetManager {
+	
+	public static final String WORLD_FILENAME_JSON = "world.json";
+	
 	public static final String DESKTOP_PREFS_DIR = "BladeEngine";
 	public static final String NOT_DESKTOP_PREFS_DIR = "data/";
 
