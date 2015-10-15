@@ -15,11 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.Param;
-
 public interface Action {
 	/**
 	 * Execute the action
@@ -29,6 +24,4 @@ public interface Action {
 	 * for the action to call the cb.resume()
 	 */
 	public boolean run(ActionCallback cb);
-
-	public void setParams(HashMap<String, String> params);
 }

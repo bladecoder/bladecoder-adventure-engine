@@ -40,8 +40,10 @@ import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.loader.SerializationHelper.Mode;
-import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.AtlasRenderer;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
@@ -52,13 +54,12 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.ActorRenderer;
-import com.bladecoder.engine.model.AnchorActor;
+import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
+import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class ChapterXMLLoader extends DefaultHandler {
@@ -643,13 +644,27 @@ public class ChapterXMLLoader extends DefaultHandler {
 			}
 		}
 
-		if (atts.getValue("", XMLConstants.ACTOR_TAG) == null)
-			actionParams.put(XMLConstants.ACTOR_TAG, actor);
-
 		if (actionClass != null) {
 			action = ActionFactory.createByClass(actionClass, actionParams);
 		} else if (actionName != null) {
 			action = ActionFactory.create(actionName, actionParams);
+		} else {
+			SAXParseException e2 = new SAXParseException("Action with no name", locator, null);
+			try {
+				error(e2);
+			} catch (SAXException e) {
+			}
+		}
+		
+		
+		// inject current actor if not setting in params
+		if (action != null && atts.getValue("", XMLConstants.ACTOR_TAG) == null && 
+				ActionUtils.getParam(action.getClass(), XMLConstants.ACTOR_TAG) != null) {
+			try {
+				ActionUtils.setParam(action, XMLConstants.ACTOR_TAG, actor);
+			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+				EngineLogger.error("Error setting action actor: " + action.getClass());
+			}
 		}
 
 		if (action != null) {

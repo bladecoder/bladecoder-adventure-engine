@@ -16,8 +16,8 @@
 
 package com.bladecoder.engine.polygonalpathfinder;
 
-import com.bladecoder.engine.pathfinder.NavContext;
 import com.bladecoder.engine.pathfinder.AStarPathFinder.AStarHeuristicCalculator;
+import com.bladecoder.engine.pathfinder.NavContext;
 
 /** 
  * Implementation of a heuristic calculator for a polygonal map. It simply calculates the Manhattan distance between two points.

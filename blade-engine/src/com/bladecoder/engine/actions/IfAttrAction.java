@@ -15,10 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
@@ -35,10 +32,10 @@ public class IfAttrAction extends AbstractIfAction {
 		STATE, VISIBLE
 	}
 
-	@JsonProperty("actor")
+	@JsonProperty
 	@JsonPropertyDescription("The target actor")
 	@ActionPropertyType(Type.SCENE_ACTOR)
-	private SceneActorRef sceneActorRef;
+	private SceneActorRef actor;
 
 	@JsonProperty(required = true, defaultValue = "STATE")
 	@JsonPropertyDescription("The actor attribute")
@@ -51,22 +48,10 @@ public class IfAttrAction extends AbstractIfAction {
 	private String value;
 
 	@Override
-	public void setParams(HashMap<String, String> params) {
-		attr = ActorAttribute.valueOf(params.get("attr").trim().toUpperCase());
-		value = params.get("value");
-
-		String[] a = Param.parseString2(params.get("actor"));
-		// If a == null, called inside a scene
-		sceneActorRef = a == null ? new SceneActorRef() : new SceneActorRef(a[0], a[1]);
-
-		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
-	}
-
-	@Override
 	public boolean run(ActionCallback cb) {
-		Scene s = sceneActorRef.getScene();
+		Scene s = actor.getScene();
 
-		final String actorId = sceneActorRef.getActorId();
+		final String actorId = actor.getActorId();
 		if (actorId == null) {
 			// if called inside a scene verb and no actor is specified, return
 			EngineLogger.error(getClass() + ": No actor specified");

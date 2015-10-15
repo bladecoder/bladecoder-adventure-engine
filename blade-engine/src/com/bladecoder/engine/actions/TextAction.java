@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
@@ -62,30 +60,6 @@ public class TextAction implements Action {
 	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	@ActionPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		text = params.get("text");
-		style = params.get("style");
-		color = Param.parseColor(params.get("color"));
-
-		final String strType = params.get("type");
-		if (strType != null) {
-			this.type = Text.Type.valueOf(strType.trim().toUpperCase());
-		}
-
-		if (params.get("pos") != null) {
-			pos = Param.parseVector2(params.get("pos"));
-		}
-		
-		if (params.get("quee") != null) {
-			queue = Boolean.parseBoolean(params.get("quee"));
-		}
-		
-		if(params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

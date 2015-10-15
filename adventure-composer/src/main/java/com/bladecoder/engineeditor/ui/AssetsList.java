@@ -38,6 +38,7 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CustomList;
 import com.bladecoder.engineeditor.ui.components.EditToolbar;
 import com.bladecoder.engineeditor.utils.ImageUtils;
+
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
 

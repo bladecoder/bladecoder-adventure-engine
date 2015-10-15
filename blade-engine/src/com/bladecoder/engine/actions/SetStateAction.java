@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
@@ -27,30 +25,21 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets the actor state")
 public class SetStateAction implements Action {
-	@JsonProperty("actor")
+	@JsonProperty
 	@JsonPropertyDescription("The target actor")
 	@ActionPropertyType(Type.SCENE_ACTOR)
-	private SceneActorRef sceneActorRef;
+	private SceneActorRef actor;
 
 	@JsonProperty
 	@JsonPropertyDescription("The actor 'state'")
 	@ActionPropertyType(Type.STRING)
 	private String state;
-	
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		String[] a = Param.parseString2(params.get("actor"));
-		state = params.get("state");
-
-		// If a == null, called inside a scene
-		sceneActorRef = a == null ? new SceneActorRef() : new SceneActorRef(a[0], a[1]);
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {			
-		final Scene s = sceneActorRef.getScene();
+		final Scene s = actor.getScene();
 
-		String actorId = sceneActorRef.getActorId();
+		String actorId = actor.getActorId();
 		if (actorId == null) {
 			// if called in a scene verb and no actor is specified, set the state of the scene
 			s.setState(state);

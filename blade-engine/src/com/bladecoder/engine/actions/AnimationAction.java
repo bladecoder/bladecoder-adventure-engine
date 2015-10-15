@@ -16,7 +16,6 @@
 package com.bladecoder.engine.actions;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
@@ -32,7 +31,7 @@ public class AnimationAction implements Action {
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The Animation to set")
 	@ActionPropertyType(Type.ACTOR_ANIMATION)
-	private String animation;
+	private ActorAnimationRef animation;
 
 	@JsonProperty
 	@JsonPropertyDescription("The times to repeat. -1 to infinity repeat")
@@ -44,46 +43,25 @@ public class AnimationAction implements Action {
 	@ActionPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
 
-	@JsonProperty(value = "animation_type", required = true, defaultValue = "SPRITE_DEFINED")
+	@JsonProperty(required = true, defaultValue = "SPRITE_DEFINED")
 	@JsonPropertyDescription("The repeat mode")
 	@ActionPropertyType(Type.STRING)
 	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
 
-	private String actorId;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-		animation = params.get("animation");
-
-		String a[] = Param.parseString2(animation);
-
-		if(a[0] != null)
-			actorId = a[0];
-
-		animation = a[1];
-
-		if(params.get("count") != null) {
-			count = Integer.parseInt(params.get("count"));
-		}
-
-		if(params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
-
-		if(params.get("animation_type") != null) {
-			String repeatStr = params.get("animation_type");
-			repeat = Tween.Type.valueOf(repeatStr.trim().toUpperCase());
-		}
-	}
+	private String actor;
 
 	@Override
 	public boolean run(ActionCallback cb) {
 		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", animation));
+		
+		String actorId = animation.getActorId();
+		
+		if(actorId == null)
+			actorId = actor;
 
-		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
+		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
 
-		actor.startAnimation(animation, repeat, count, wait?cb:null);
+		a.startAnimation(animation.getAnimationId(), repeat, count, wait?cb:null);
 
 		return wait;
 	}

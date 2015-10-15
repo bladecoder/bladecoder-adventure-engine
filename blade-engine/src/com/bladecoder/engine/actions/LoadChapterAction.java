@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -39,12 +37,6 @@ public class LoadChapterAction implements Action {
 		World.getInstance().loadXMLChapter(chapter, scene);
 		
 		return false;
-	}
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		scene = params.get("scene");
-		chapter = params.get("chapter");
 	}
 
 }

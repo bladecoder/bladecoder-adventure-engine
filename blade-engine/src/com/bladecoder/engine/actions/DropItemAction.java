@@ -16,7 +16,6 @@
 package com.bladecoder.engine.actions;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
@@ -38,12 +37,6 @@ public class DropItemAction implements Action {
 	@JsonPropertyDescription("Position in the scene where de actor is dropped")
 	@ActionPropertyType(Type.VECTOR2)
 	private Vector2 pos;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actor = params.get("actor");
-		pos = Param.parseVector2(params.get("pos"));
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

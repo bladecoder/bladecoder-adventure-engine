@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -29,6 +28,7 @@ import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.EditableSelectBox;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 
 public class EditVerbDialog extends EditElementDialog {
 	private static final String VERBS[] = { "lookat", "pickup", "talkto", "use",

@@ -15,13 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.VerbRunner;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -34,12 +31,6 @@ public class RepeatAction extends AbstractControlAction implements Serializable 
 	private int repeat = 1;
 
 	private int currentRepeat = 0;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		repeat = Integer.parseInt(params.get("repeat"));
-		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

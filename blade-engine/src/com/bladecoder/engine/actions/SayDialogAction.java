@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.BaseActor;
@@ -36,11 +34,6 @@ public class SayDialogAction extends BaseCallbackAction {
 	private String responseText;
 
 	private String previousAnim;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-	
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

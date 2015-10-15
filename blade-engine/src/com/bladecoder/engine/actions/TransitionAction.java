@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.graphics.Color;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Transition;
@@ -31,10 +29,10 @@ public class TransitionAction implements Action {
 	@ActionPropertyType(Type.FLOAT)
 	private float time = 1;
 
-	@JsonProperty(value = "color", required = true, defaultValue = "black")
+	@JsonProperty(required = true, defaultValue = "black")
 	@JsonPropertyDescription("The color to fade ('white', 'black' or RRGGBBAA).")
 	@ActionPropertyType(Type.COLOR)
-	private Color c = new Color(0,0,0,1);
+	private Color color = new Color(0,0,0,1);
 
 	@JsonProperty(required = true, defaultValue = "FADE_IN")
 	@JsonPropertyDescription("The transition type (fadein/fadeout)")
@@ -49,28 +47,9 @@ public class TransitionAction implements Action {
 	@Override
 	public boolean run(ActionCallback cb) {
 		Transition t = World.getInstance().getTransition();
-		t.create(time, c, type, wait?cb:null);
+		t.create(time, color, type, wait?cb:null);
 		
 		return wait;
-	}
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		
-		if(params.get("time") != null) {
-			time = Float.parseFloat(params.get("time"));
-		}
-		
-		if(params.get("type") != null) {
-			if(params.get("type").equals("fadeout"))
-				type = Transition.Type.FADE_OUT;
-		}
-
-		c = Param.parseColor(params.get("color"));
-
-		if(params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
 	}
 
 }

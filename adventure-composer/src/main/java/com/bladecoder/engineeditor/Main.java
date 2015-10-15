@@ -20,6 +20,7 @@ import java.io.File;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+
 import javafx.embed.swing.JFXPanel;
 
 public class Main extends LwjglApplication {

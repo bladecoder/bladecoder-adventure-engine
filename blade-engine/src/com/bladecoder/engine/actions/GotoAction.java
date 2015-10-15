@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
@@ -78,8 +76,8 @@ public class GotoAction implements Action {
 			float y = target.getY();
 			float targetBBoxWidth2 = 0;
 			final float actorBBoxWidth2 = actor.getBBox().getBoundingRectangle().width / 2;
-			
-			if(!(target instanceof AnchorActor)) {
+
+			if (!(target instanceof AnchorActor)) {
 				targetBBoxWidth2 = target.getBBox().getBoundingRectangle().width / 2;
 			}
 
@@ -96,40 +94,16 @@ public class GotoAction implements Action {
 				break;
 			}
 
-			x += distance.x;
-			y += distance.y;
+			if (distance != null) {
+				x += distance.x;
+				y += distance.y;
+			}
 
 			actor.goTo(new Vector2(x, y), wait ? cb : null);
 		} else
 			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), wait ? cb : null);
 
 		return wait;
-	}
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actor = params.get("actor");
-
-		if (params.get("pos") != null) {
-			pos = Param.parseVector2(params.get("pos"));
-		} else if (params.get("target") != null) {
-			target = params.get("target");
-
-			if (params.get("align") == null) {
-				align = Align.CENTER;
-			} else {
-				align = Align.valueOf(params.get("align").toUpperCase());
-			}
-
-			distance = Param.parseVector2(params.get("distance"));
-
-			if (distance == null)
-				distance = new Vector2();
-		}
-
-		if (params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
 	}
 
 	/**

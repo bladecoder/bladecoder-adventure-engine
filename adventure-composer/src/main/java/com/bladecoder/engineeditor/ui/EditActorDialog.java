@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -31,6 +30,7 @@ import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 
 public class EditActorDialog extends EditElementDialog {
 

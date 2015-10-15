@@ -31,12 +31,14 @@
 
 package com.esotericsoftware.spine;
 
-import com.esotericsoftware.spine.attachments.Attachment;
-import com.esotericsoftware.spine.attachments.MeshAttachment;
-import com.esotericsoftware.spine.attachments.RegionAttachment;
-import com.esotericsoftware.spine.attachments.SkinnedMeshAttachment;
-
-import static com.badlogic.gdx.graphics.g2d.Batch.*;
+import static com.badlogic.gdx.graphics.g2d.Batch.X1;
+import static com.badlogic.gdx.graphics.g2d.Batch.X2;
+import static com.badlogic.gdx.graphics.g2d.Batch.X3;
+import static com.badlogic.gdx.graphics.g2d.Batch.X4;
+import static com.badlogic.gdx.graphics.g2d.Batch.Y1;
+import static com.badlogic.gdx.graphics.g2d.Batch.Y2;
+import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
+import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -45,6 +47,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
+import com.esotericsoftware.spine.attachments.Attachment;
+import com.esotericsoftware.spine.attachments.MeshAttachment;
+import com.esotericsoftware.spine.attachments.RegionAttachment;
+import com.esotericsoftware.spine.attachments.SkinnedMeshAttachment;
 
 public class SkeletonRendererDebug {
 	static private final Color boneLineColor = Color.RED;

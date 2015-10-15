@@ -18,8 +18,8 @@ package com.bladecoder.engine.model;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.loader.SerializationHelper;
 import com.bladecoder.engine.loader.SerializationHelper.Mode;

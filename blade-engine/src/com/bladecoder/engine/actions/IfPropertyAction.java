@@ -15,10 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,14 +32,6 @@ public class IfPropertyAction extends AbstractIfAction {
 	@JsonPropertyDescription("The property value")
 	@ActionPropertyType(Type.STRING)
 	private String value;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		name = params.get("name");
-		value = params.get("value");
-
-		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

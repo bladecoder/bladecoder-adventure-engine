@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -34,10 +32,4 @@ public class WaitAction implements Action {
 		World.getInstance().addTimer(time, cb);
 		return true;
 	}
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		time = Float.parseFloat(params.get("time"));
-	}
-
 }

@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.World;
@@ -25,28 +23,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets the dialog mode")
 public class TalktoAction implements Action {
-	@JsonProperty("actor")
+	@JsonProperty
 	@JsonPropertyDescription("The target actor")
 	@ActionPropertyType(Type.ACTOR)
-	private String actorId;
+	private String actor;
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The 'dialogId' to show")
 	@ActionPropertyType(Type.STRING)
 	private String dialog;
-	
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-		dialog = params.get("dialog");
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
 		
-		CharacterActor actor = (CharacterActor)World.getInstance().getCurrentScene().getActor(actorId, false);
+		CharacterActor a = (CharacterActor)World.getInstance().getCurrentScene().getActor(actor, false);
 		
-		World.getInstance().setCurrentDialog(actor.getDialog(dialog));
+		World.getInstance().setCurrentDialog(a.getDialog(dialog));
 		
 		return false;
 	}

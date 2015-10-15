@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -47,13 +45,6 @@ public class CancelVerbAction implements Action {
 	@JsonPropertyDescription("If the verb is 'use', the target actor")
 	@ActionPropertyType(Type.ACTOR)
 	private String target;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actor = params.get("actor");
-		verb = params.get("verb");
-		target = params.get("target");
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

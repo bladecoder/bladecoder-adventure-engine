@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -28,30 +26,21 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Move the actor to the selected scene")
 public class MoveToSceneAction implements Action {
-	@JsonProperty("actor")
+	@JsonProperty
 	@JsonPropertyDescription("The selected actor")
 	@ActionPropertyType(Type.SCENE_ACTOR)
-	private SceneActorRef sceneActorRef;
+	private SceneActorRef actor;
 
-	@JsonProperty("scene")
+	@JsonProperty
 	@JsonPropertyDescription("The target scene")
 	@ActionPropertyType(Type.SCENE)
-	private String targetSceneId;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		String[] a = Param.parseString2(params.get("actor"));
-		targetSceneId = params.get("scene");
-
-		// If a == null, called inside a scene
-		sceneActorRef = a == null ? new SceneActorRef() : new SceneActorRef(a[0], a[1]);
-	}
+	private String scene;
 
 	@Override
 	public boolean run(ActionCallback cb) {			
-		Scene s = sceneActorRef.getScene();
+		Scene s = actor.getScene();
 
-		final String actorId = sceneActorRef.getActorId();
+		final String actorId = actor.getActorId();
 		if (actorId == null) {
 			// if called in a scene verb and no actor is specified, we do nothing
 			EngineLogger.error(getClass() + ": No actor specified");
@@ -64,7 +53,7 @@ public class MoveToSceneAction implements Action {
 		if(s == World.getInstance().getCurrentScene())
 			a.dispose();
 		
-		Scene ts =  (targetSceneId != null && !targetSceneId.isEmpty())? World.getInstance().getScene(targetSceneId): World.getInstance().getCurrentScene();
+		Scene ts =  (scene != null && !scene.isEmpty())? World.getInstance().getScene(scene): World.getInstance().getCurrentScene();
 		
 		if(ts == World.getInstance().getCurrentScene()) {
 			a.loadAssets();

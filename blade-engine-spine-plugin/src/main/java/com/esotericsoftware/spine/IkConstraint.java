@@ -31,7 +31,9 @@
 
 package com.esotericsoftware.spine;
 
-import static com.badlogic.gdx.math.MathUtils.*;
+import static com.badlogic.gdx.math.MathUtils.clamp;
+import static com.badlogic.gdx.math.MathUtils.radDeg;
+import static com.badlogic.gdx.math.MathUtils.sin;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;

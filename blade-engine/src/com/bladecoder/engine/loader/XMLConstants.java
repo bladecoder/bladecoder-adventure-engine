@@ -56,7 +56,7 @@ public final class XMLConstants {
 	
 	public static final String ANIMATION_TAG = "animation";
 	public static final String SPEED_ATTR = "speed";
-	public static final String ANIMATION_TYPE_ATTR = "animation_type";
+	public static final String ANIMATION_TYPE_ATTR = "repeat";
 	public static final String DELAY_ATTR = "delay";
 	public static final String COUNT_ATTR = "count";
 	public static final String SOUND_ATTR = "sound";

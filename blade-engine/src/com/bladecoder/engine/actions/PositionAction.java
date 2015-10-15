@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -27,52 +25,35 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Change actor attributes.")
 public class PositionAction implements Action {
-	@JsonProperty(value = "actor", required = true)
+	@JsonProperty( required = true)
 	@JsonPropertyDescription("The target actor")
 	@ActionPropertyType(Type.SCENE_ACTOR)
-	private SceneActorRef sceneActorRef;
+	private SceneActorRef actor;
 
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor position")
 	@ActionPropertyType(Type.VECTOR2)
 	private Vector2 position;
 	
-	@JsonProperty(value = "anchor")
+	@JsonProperty
 	@JsonPropertyDescription("Sets the position of this actor")
 	@ActionPropertyType(Type.SCENE_ACTOR)
-	private SceneActorRef anchorActorRef;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		String[] a = Param.parseString2(params.get("actor"));
-
-		sceneActorRef = a == null ? new SceneActorRef() : new SceneActorRef(a[0], a[1]);
-
-		position = vector2OrNull(params.get("position"));
-		
-		
-		String[] b = Param.parseString2(params.get("anchor"));
-		anchorActorRef = b == null ? null : new SceneActorRef(b[0], b[1]);
-	}
-
-	private static Vector2 vector2OrNull(String str) {
-		return str != null ? Param.parseVector2(str) : null;
-	}
+	private SceneActorRef anchor;
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		Scene s = sceneActorRef.getScene();
+		Scene s = actor.getScene();
 
-		BaseActor actor = s.getActor(sceneActorRef.getActorId(), true);
+		BaseActor a = s.getActor(actor.getActorId(), true);
 
 		if (position != null) {
 			float scale = EngineAssetManager.getInstance().getScale();
 
-			actor.setPosition(position.x * scale, position.y * scale);
-		} else if(anchorActorRef != null) {
-			BaseActor anchor = s.getActor(anchorActorRef.getActorId(), true);
+			a.setPosition(position.x * scale, position.y * scale);
+		} else if(anchor != null) {
+			BaseActor anchorActor = s.getActor(anchor.getActorId(), true);
 			
-			actor.setPosition(anchor.getX(), anchor.getY());
+			a.setPosition(anchorActor.getX(), anchorActor.getY());
 		}
 
 		return false;

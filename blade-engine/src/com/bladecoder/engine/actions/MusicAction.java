@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,11 +26,6 @@ public class MusicAction implements Action {
 	@JsonPropertyDescription("Play/Stops the music of the scene")
 	@ActionPropertyType(Type.BOOLEAN)
 	String play;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		play = params.get("play");
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

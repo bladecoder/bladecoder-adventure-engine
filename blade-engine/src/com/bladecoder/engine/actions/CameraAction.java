@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -41,7 +39,7 @@ public class CameraAction implements Action {
 	@JsonProperty
 	@JsonPropertyDescription("Duration of the animation in seconds. If not '0' and animation is triggered")
 	@ActionPropertyType(Type.FLOAT)
-	private float duration;
+	private float duration = 0;
 
 	@JsonProperty
 	@JsonPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
@@ -52,28 +50,6 @@ public class CameraAction implements Action {
 	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	@ActionPropertyType(Type.BOOLEAN)
 	private boolean wait = true;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		followActor = params.get("followActor");
-
-		if (params.get("pos") != null)
-			pos = Param.parseVector2(params.get("pos"));
-
-		if (params.get("zoom") != null)
-			zoom = Float.parseFloat(params.get("zoom"));
-
-		if (params.get("duration") != null)
-			duration = Float.parseFloat(params.get("duration"));
-		else
-			duration = 0;
-
-		if (params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
-		
-		if(duration == 0) wait = false;
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
@@ -102,6 +78,7 @@ public class CameraAction implements Action {
 		if (duration == 0) {
 			camera.setZoom(zoom);
 			camera.setPosition(pos.x * scale, pos.y * scale);
+			return false;
 		} else {
 			camera.startAnimation(pos.x * scale, pos.y * scale, zoom, duration, wait?cb:null);
 		}

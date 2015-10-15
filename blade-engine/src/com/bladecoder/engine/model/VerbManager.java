@@ -18,13 +18,11 @@ package com.bladecoder.engine.model;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
-import com.bladecoder.engine.loader.SerializationHelper;
-import com.bladecoder.engine.loader.SerializationHelper.Mode;
-import com.bladecoder.engine.model.Verb;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class VerbManager implements Serializable {

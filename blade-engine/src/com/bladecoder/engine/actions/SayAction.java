@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -32,17 +30,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Says a text")
 public class SayAction extends BaseCallbackAction {
-	@JsonProperty("actor")
+	@JsonProperty
 	@JsonPropertyDescription("The target actor")
 	@ActionPropertyType(Type.ACTOR)
-	private String actorId;
+	private String actor;
 
 	@JsonProperty
 	@JsonPropertyDescription("The 'text' to show")
 	@ActionPropertyType(Type.SMALL_TEXT)
 	private String text;
 
-	@JsonProperty("speech")
+	@JsonProperty
 	@JsonPropertyDescription("The 'soundId' to play if selected")
 	@ActionPropertyType(Type.SOUND)
 	private String soundId;
@@ -60,48 +58,27 @@ public class SayAction extends BaseCallbackAction {
 	private String previousAnim = null;
 
 	@Override
-	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-
-		soundId = params.get("speech");
-		text = params.get("text");
-
-		if (params.get("wait") != null) {
-			setWait(Boolean.parseBoolean(params.get("wait")));
-		}
-
-		final String strType = params.get("type");
-		if (strType != null) {
-			this.type = Text.Type.valueOf(strType.trim().toUpperCase());
-		}
-
-		if (params.get("queue") != null) {
-			queue = Boolean.parseBoolean(params.get("queue"));
-		}
-	}
-
-	@Override
 	public boolean run(ActionCallback cb) {
 		float x, y;
 		Color color = null;
 
 		setVerbCb(cb);
-		InteractiveActor actor = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, false);
+		InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, false);
 
 		if (soundId != null)
-			actor.playSound(soundId);
+			a.playSound(soundId);
 
 		if (text != null) {
 			if (type != Text.Type.TALK) {
 				x = y = TextManager.POS_SUBTITLE;
 			} else {
-				x = actor.getX();
-				y = actor.getY() + actor.getBBox().getBoundingRectangle().getHeight();
+				x = a.getX();
+				y = a.getY() + a.getBBox().getBoundingRectangle().getHeight();
 				
-				color = ((CharacterActor)actor).getTextColor();
+				color = ((CharacterActor)a).getTextColor();
 				
-				restoreStandPose((CharacterActor)actor);
-				startTalkAnim((CharacterActor)actor);
+				restoreStandPose((CharacterActor)a);
+				startTalkAnim((CharacterActor)a);
 			}
 
 			World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null,
@@ -114,8 +91,8 @@ public class SayAction extends BaseCallbackAction {
 	@Override
 	public void resume() {
 		if (type == Text.Type.TALK) {
-			CharacterActor actor = (CharacterActor) World.getInstance().getCurrentScene().getActor(actorId, false);
-			actor.startAnimation(previousAnim, Tween.Type.SPRITE_DEFINED, 0, null);
+			CharacterActor a = (CharacterActor) World.getInstance().getCurrentScene().getActor(actor, false);
+			a.startAnimation(previousAnim, Tween.Type.SPRITE_DEFINED, 0, null);
 		}
 
 		super.resume();

@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,12 +26,6 @@ public class ShowInventoryAction implements Action {
 	@JsonPropertyDescription("When 'true' sets the scene in 'cutmode'")
 	@ActionPropertyType(Type.BOOLEAN)
 	private boolean value = true;
-	
-	@Override
-	public void setParams(HashMap<String, String> params) {	
-		if(params.get("value") != null)
-			value = Boolean.parseBoolean(params.get("value"));
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

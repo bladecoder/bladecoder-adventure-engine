@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
@@ -34,10 +32,10 @@ public class PositionAnimAction implements Action {
 		DURATION, SPEED
 	}
 
-	@JsonProperty("actor")
+	@JsonProperty
 	@JsonPropertyDescription("The actor to move")
 	@ActionPropertyType(Type.ACTOR)
-	private String actorId;
+	private String actor;
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The target position")
@@ -82,45 +80,11 @@ public class PositionAnimAction implements Action {
 	private InterpolationMode interpolation;
 
 	@Override
-	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-
-		if (params.get("pos") != null) {
-			pos = Param.parseVector2(params.get("pos"));
-		} else if (params.get("target") != null) {
-			target = params.get("target");
-		}
-
-		speed = Float.parseFloat(params.get("speed"));
-
-		if (params.get("count") != null) {
-			count = Integer.parseInt(params.get("count"));
-		}
-
-		if (params.get("mode") != null) {
-			mode = Mode.valueOf(params.get("mode").trim().toUpperCase());
-		}
-
-		if (params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
-
-		if (params.get("repeat") != null) {
-			String repeatStr = params.get("repeat");
-			repeat = Tween.Type.valueOf(repeatStr.trim().toUpperCase());
-		}
-
-		if (params.get("interpolation") != null) {
-			interpolation = InterpolationMode.valueOf(params.get("interpolation").trim().toUpperCase());
-		}
-	}
-
-	@Override
 	public boolean run(ActionCallback cb) {
 
 		float scale = EngineAssetManager.getInstance().getScale();
 
-		BaseActor actor = World.getInstance().getCurrentScene().getActor(actorId, false);
+		BaseActor a = World.getInstance().getCurrentScene().getActor(actor, false);
 		
 		float x,y;
 		
@@ -133,8 +97,8 @@ public class PositionAnimAction implements Action {
 			y = target.getY();
 		}
 
-		if (speed == 0 || !(actor instanceof SpriteActor)) {
-			actor.setPosition(x, y);
+		if (speed == 0 || !(a instanceof SpriteActor)) {
+			a.setPosition(x, y);
 
 			return false;
 		} else {
@@ -142,14 +106,14 @@ public class PositionAnimAction implements Action {
 			float s;
 
 			if (mode != null && mode == Mode.SPEED) {
-				Vector2 p0 = new Vector2(actor.getX(), actor.getY());
+				Vector2 p0 = new Vector2(a.getX(), a.getY());
 
 				s = p0.dst(x, y) / (scale * speed);
 			} else {
 				s = speed;
 			}
 
-			((SpriteActor) actor).startPosAnimation(repeat, count, s, x, y, interpolation,
+			((SpriteActor) a).startPosAnimation(repeat, count, s, x, y, interpolation,
 					wait ? cb : null);
 		}
 

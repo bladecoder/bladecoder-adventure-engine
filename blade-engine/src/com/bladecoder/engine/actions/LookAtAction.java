@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
@@ -54,10 +52,10 @@ public class LookAtAction implements Action {
 		}
 	}
 
-	@JsonProperty("actor")
+	@JsonProperty
 	@JsonPropertyDescription("The target actor")
 	@ActionPropertyType(Type.ACTOR)
-	private String actorId;
+	private String actor;
 
 	@JsonProperty("speech")
 	@JsonPropertyDescription("The 'soundId' to play if selected")
@@ -80,40 +78,24 @@ public class LookAtAction implements Action {
 	private boolean wait = true;	
 
 	@Override
-	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-
-		soundId = params.get("speech");
-		text = params.get("text");
-
-		// TODO: Check if EMPTY ("") works correctly
-		final String strDirection = params.get("direction");
-		this.direction = strDirection == null ? null : (strDirection.trim().equals("") ? Direction.EMPTY : Direction.valueOf(strDirection.trim().toUpperCase()));
-		
-		if(params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
-	}
-
-	@Override
 	public boolean run(ActionCallback cb) {
 
 		EngineLogger.debug("LOOKAT ACTION");
-		InteractiveActor actor = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actorId, true);
+		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, true);
 
 		CharacterActor player = World.getInstance().getCurrentScene().getPlayer();
 		
 		if(direction!=null) player.lookat(direction.getDirection());
-		else if(actor!=null && player != null) {
-			Rectangle bbox = actor.getBBox().getBoundingRectangle();
+		else if(a!=null && player != null) {
+			Rectangle bbox = a.getBBox().getBoundingRectangle();
 			player.lookat(new Vector2(bbox.x, bbox.y));
 		}
 
 		if (soundId != null) {
-			if (actor == null) {
+			if (a == null) {
 				EngineLogger.debug("Tried to play a sound (" + soundId + "), but there is no actor defined");
 			} else {
-				actor.playSound(soundId);
+				a.playSound(soundId);
 			}
 		}
 

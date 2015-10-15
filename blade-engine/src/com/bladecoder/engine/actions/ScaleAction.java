@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
@@ -30,7 +28,7 @@ public class ScaleAction implements Action {
 	@JsonProperty
 	@JsonPropertyDescription("The target actor")
 	@ActionPropertyType(Type.ACTOR)
-	private String actorId;
+	private String actor;
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The target scale")
@@ -61,37 +59,12 @@ public class ScaleAction implements Action {
 	@JsonPropertyDescription("The interpolation mode")
 	@ActionPropertyType(Type.OPTION)
 	private InterpolationMode interpolation;
-	
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-
-		// get final position. We need to scale the coordinates to the current resolution
-		scale = Float.parseFloat(params.get("scale"));
-		
-		speed = Float.parseFloat(params.get("speed"));
-		
-		if(params.get("count") != null) {
-			count = Integer.parseInt(params.get("count"));
-		}
-		
-		if(params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
-		
-		if(params.get("repeat") != null) {
-			String repeatStr = params.get("repeat");
-			repeat = Tween.Type.valueOf(repeatStr.trim().toUpperCase());    // FIXME: Check that this is the value being stored
-		}
-
-		interpolation = InterpolationMode.valueOf(params.get("interpolation").trim().toUpperCase());
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {				
-		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, false);
+		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, false);
 
-		actor.startScaleAnimation(repeat, count, speed, scale, interpolation, wait?cb:null);
+		a.startScaleAnimation(repeat, count, speed, scale, interpolation, wait?cb:null);
 		
 		return wait;
 	}

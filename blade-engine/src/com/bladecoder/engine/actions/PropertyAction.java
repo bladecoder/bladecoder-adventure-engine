@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,12 +31,6 @@ public class PropertyAction implements Action {
 	@JsonPropertyDescription("Property value")
 	@ActionPropertyType(Type.STRING)
 	private String value;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		prop = params.get("prop");
-		value = params.get("value");
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

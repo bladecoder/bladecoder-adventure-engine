@@ -17,7 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -33,10 +32,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Runs an actor verb")
 public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
-	@JsonProperty("actor")
+	@JsonProperty
 	@JsonPropertyDescription("The target actor")
 	@ActionPropertyType(Type.ACTOR)
-	private String actorId;
+	private String actor;
 
 	@JsonProperty(required = true)
 	@JsonPropertyDescription("The 'verbId' to run")
@@ -52,17 +51,6 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	private int ip = -1;
 
 	@Override
-	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-		verb = params.get("verb");
-		target = params.get("target");
-
-		if (params.get("wait") != null) {
-			setWait(Boolean.parseBoolean(params.get("wait")));
-		}
-	}
-
-	@Override
 	public boolean run(ActionCallback cb) {
 		setVerbCb(cb);
 		
@@ -74,8 +62,8 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	private Verb getVerb(String verb, String target, String state) {
 		Verb v = null;
 
-		if (actorId != null) {
-			InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true);
+		if (actor != null) {
+			InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, true);
 
 			v = a.getVerbManager().getVerb(verb, state, target);
 		}
@@ -89,7 +77,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 		}
 
 		if (v == null)
-			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actorId);
+			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actor);
 
 		return v;
 	}
@@ -146,7 +134,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 		if (v == null) {
 			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for actor ''{1}({3})'' and target ''{2}''",
-					verb, actorId, target, ((InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true)).getState()));
+					verb, actor, target, ((InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, true)).getState()));
 
 			return new ArrayList<Action>(0);
 		}
@@ -161,9 +149,9 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 		Scene s = World.getInstance().getCurrentScene();
 
 		// Gets the actor/scene state.
-		if (actorId != null
-				&& ((InteractiveActor)s.getActor(actorId, true)).getVerb(verb, target) != null) {
-			state = ((InteractiveActor)s.getActor(actorId, true)).getState();
+		if (actor != null
+				&& ((InteractiveActor)s.getActor(actor, true)).getVerb(verb, target) != null) {
+			state = ((InteractiveActor)s.getActor(actor, true)).getState();
 		} else if (s.getVerb(verb) != null) {
 			state = s.getState();
 		}

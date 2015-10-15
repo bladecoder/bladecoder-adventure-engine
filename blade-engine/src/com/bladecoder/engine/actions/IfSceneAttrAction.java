@@ -15,10 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -32,10 +29,10 @@ public class IfSceneAttrAction extends AbstractIfAction {
 		STATE
 	}
 
-	@JsonProperty("scene")
+	@JsonProperty
 	@JsonPropertyDescription("The scene to check its attribute")
 	@ActionPropertyType(Type.SCENE)
-	private String sceneId;
+	private String scene;
 
 	@JsonProperty(required = true, defaultValue = "state")
 	@JsonPropertyDescription("The scene attribute")
@@ -48,17 +45,8 @@ public class IfSceneAttrAction extends AbstractIfAction {
 	private String value;
 
 	@Override
-	public void setParams(HashMap<String, String> params) {
-		attr = SceneAttr.valueOf(params.get("attr").trim().toUpperCase());
-		value = params.get("value");
-		sceneId = params.get("scene");
-
-		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
-	}
-
-	@Override
 	public boolean run(ActionCallback cb) {
-		Scene s = (sceneId != null && !sceneId.isEmpty()) ? World.getInstance().getScene(sceneId) : World.getInstance()
+		Scene s = (scene != null && !scene.isEmpty()) ? World.getInstance().getScene(scene) : World.getInstance()
 				.getCurrentScene();
 
 		if (attr == SceneAttr.STATE) {

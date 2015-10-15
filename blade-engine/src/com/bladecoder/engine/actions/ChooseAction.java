@@ -15,15 +15,13 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.VerbRunner;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -44,12 +42,6 @@ public class ChooseAction extends AbstractControlAction implements Serializable 
 
 	/** Used when choose_criteria is 'iterate' or 'cycle' */
 	int chooseCount = -1;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		chooseCriteria = ChooseCriteria.valueOf(params.get("chooseCriteria").toUpperCase());
-		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

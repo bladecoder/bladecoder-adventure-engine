@@ -15,18 +15,12 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.bladecoder.engine.model.VerbRunner;
 
 @ActionDescription("Marks the end of a block for a control action")
 public class EndAction extends AbstractControlAction {
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		caID = params.get("caID");
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
