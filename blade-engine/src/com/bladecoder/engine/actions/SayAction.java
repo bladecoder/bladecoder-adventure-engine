@@ -42,12 +42,10 @@ public class SayAction extends BaseCallbackAction {
 
 	@ActionProperty(required = true, defaultValue = "RECTANGLE")
 	@ActionPropertyDescription("The type of the text.")
-
 	private Text.Type type = Text.Type.RECTANGLE;
 
 	@ActionProperty(defaultValue = "false")
 	@ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")
-
 	private boolean queue = false;
 
 	private String previousAnim = null;

@@ -22,7 +22,6 @@ import com.bladecoder.engine.util.ActionCallbackSerialization;
 
 public abstract class BaseCallbackAction implements Action, ActionCallback, Serializable {	
 	private ActionCallback verbCb;
-	private String verbCbSer;
 
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
@@ -30,12 +29,7 @@ public abstract class BaseCallbackAction implements Action, ActionCallback, Seri
 
 	@Override
 	public void resume() {
-		if(verbCb != null || verbCbSer != null) {
-			if(verbCb==null) {
-				verbCb =  ActionCallbackSerialization.find(verbCbSer);
-				verbCbSer = null;
-			}
-			
+		if(verbCb != null) {			
 			ActionCallback cb2 = verbCb;
 			verbCb = null;
 			cb2.resume();
@@ -56,14 +50,11 @@ public abstract class BaseCallbackAction implements Action, ActionCallback, Seri
 
 	@Override
 	public void write(Json json) {
-		if(verbCbSer != null)
-			json.writeValue("cb", verbCbSer);
-		else
-			json.writeValue("cb", ActionCallbackSerialization.find(verbCb), verbCb == null ? null : String.class);	
+		json.writeValue("cb", ActionCallbackSerialization.find(verbCb), verbCb == null ? null : String.class);	
 	}
 
 	@Override
 	public void read (Json json, JsonValue jsonData) {		
-		verbCbSer = json.readValue("cb", String.class, jsonData);
+		verbCb = ActionCallbackSerialization.find(json.readValue("cb", String.class, jsonData));
 	}
 }

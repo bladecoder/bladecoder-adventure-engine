@@ -53,7 +53,7 @@ public class Scene implements Serializable, AssetConsumer {
 	/**
 	 * All actors in the scene
 	 */
-	private HashMap<String, BaseActor> actors = new HashMap<String, BaseActor>();
+	private final HashMap<String, BaseActor> actors = new HashMap<String, BaseActor>();
 
 	/**
 	 * BaseActor layers
