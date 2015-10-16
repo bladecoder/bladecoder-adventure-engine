@@ -15,7 +15,13 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
-public class DialogOption {
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
+
+public class DialogOption implements Serializable {
 	private String text;
 	private String responseText;
 	private String verbId;
@@ -70,4 +76,32 @@ public class DialogOption {
 	public void setOnce(boolean once) {
 		this.once = once;
 	}
+	
+	@Override
+	public void write(Json json) {
+	
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+			json.writeValue("text", text);
+			json.writeValue("responseText", responseText);
+			json.writeValue("verbId", verbId);
+			json.writeValue("next", next);
+			json.writeValue("once", once);
+		} else {
+			json.writeValue("visible", visible);
+		}
+	}
+
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+				
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+			text = json.readValue("text", String.class, jsonData);
+			responseText = json.readValue("responseText", String.class, jsonData);
+			verbId = json.readValue("verbId", String.class, jsonData);
+			next = json.readValue("next", String.class, jsonData);
+			once = json.readValue("once", Boolean.class, jsonData);
+		} else {
+			visible = json.readValue("visible", Boolean.class, jsonData);
+		}
+	}		
 }

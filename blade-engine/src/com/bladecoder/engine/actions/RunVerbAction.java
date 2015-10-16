@@ -17,7 +17,6 @@ package com.bladecoder.engine.actions;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -25,43 +24,28 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Runs an actor verb")
 public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
-	@JsonProperty("actor")
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
-	private String actorId;
+	@ActionPropertyDescription("The target actor")
+	@ActionProperty(type = Type.ACTOR)
+	private String actor;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The 'verbId' to run")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The 'verbId' to run")
+
 	private String verb;
 
-	@JsonProperty
-	@JsonPropertyDescription("Aditional actor for 'use' verb")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("Aditional actor for 'use' verb")
+
 	private String target;
 
 	private String state;
 	private int ip = -1;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-		verb = params.get("verb");
-		target = params.get("target");
-
-		if (params.get("wait") != null) {
-			setWait(Boolean.parseBoolean(params.get("wait")));
-		}
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
@@ -75,8 +59,8 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	private Verb getVerb(String verb, String target, String state) {
 		Verb v = null;
 
-		if (actorId != null) {
-			InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true);
+		if (actor != null) {
+			InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, true);
 
 			v = a.getVerbManager().getVerb(verb, state, target);
 		}
@@ -86,11 +70,11 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 		}
 
 		if (v == null) {
-			v = VerbManager.getWorldVerbs().get(verb);
+			v = World.getInstance().getVerbManager().getVerb(verb, null, null);
 		}
 
 		if (v == null)
-			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actorId);
+			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actor);
 
 		return v;
 	}
@@ -147,7 +131,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 		if (v == null) {
 			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for actor ''{1}({3})'' and target ''{2}''",
-					verb, actorId, target, ((InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true)).getState()));
+					verb, actor, target, ((InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, true)).getState()));
 
 			return new ArrayList<Action>(0);
 		}
@@ -162,9 +146,9 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 		Scene s = World.getInstance().getCurrentScene();
 
 		// Gets the actor/scene state.
-		if (actorId != null
-				&& ((InteractiveActor)s.getActor(actorId, true)).getVerb(verb, target) != null) {
-			state = ((InteractiveActor)s.getActor(actorId, true)).getState();
+		if (actor != null
+				&& ((InteractiveActor)s.getActor(actor, true)).getVerb(verb, target) != null) {
+			state = ((InteractiveActor)s.getActor(actor, true)).getState();
 		} else if (s.getVerb(verb) != null) {
 			state = s.getState();
 		}
@@ -184,20 +168,14 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("actorId", actorId);
 		json.writeValue("ip", ip);
-		json.writeValue("verb", verb);
-		json.writeValue("target", target);
 		json.writeValue("state", state);
 		super.write(json);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		actorId = json.readValue("actorId", String.class, jsonData);
 		ip = json.readValue("ip", Integer.class, jsonData);
-		verb = json.readValue("verb", String.class, jsonData);
-		target = json.readValue("target", String.class, jsonData);
 		state = json.readValue("state", String.class, jsonData);
 		super.read(json, jsonData);
 	}

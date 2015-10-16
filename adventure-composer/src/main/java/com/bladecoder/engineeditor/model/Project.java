@@ -280,7 +280,7 @@ public class Project extends PropertyChange {
 			
 			EngineAssetManager.getInstance().dispose();
 			EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
-			World.getInstance().loadXMLWorld();
+			World.getInstance().loadWorldDesc();
 			world.setModelPath(projectFile.getAbsolutePath() + "/" + MODEL_PATH);
 			world.load();
 			selectedChapter = world.loadChapter(world.getInitChapter());

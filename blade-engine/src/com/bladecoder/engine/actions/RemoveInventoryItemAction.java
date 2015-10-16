@@ -15,31 +15,21 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Remove items from the inventory.")
 public class RemoveInventoryItemAction implements Action {
-	@JsonProperty("id")
-	@JsonPropertyDescription("The 'actorid' from the inventory item to remove. If empty remove all items.")
-	@ActionPropertyType(Type.ACTOR)
-	private String itemId;
-	
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		itemId = params.get("id");
-	}
+	@ActionPropertyDescription("The 'actorid' from the inventory item to remove. If empty remove all items.")
+	@ActionProperty(type = Type.ACTOR)
+	private String id;
 
 	@Override
 	public boolean run(ActionCallback cb) {
 		
-		if(itemId!=null) {
-			SpriteActor a = World.getInstance().getInventory().removeItem(itemId);
+		if(id!=null) {
+			SpriteActor a = World.getInstance().getInventory().removeItem(id);
 			if(a!=null)
 				a.dispose();
 		} else {

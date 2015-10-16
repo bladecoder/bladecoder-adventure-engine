@@ -15,36 +15,20 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
-import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the game propert has the specified value.")
 public class IfPropertyAction extends AbstractIfAction {
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The property name")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The property name")
+
 	private String name;
 
-	@JsonProperty
-	@JsonPropertyDescription("The property value")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("The property value")
+
 	private String value;
-
-	private String caID;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		name = params.get("name");
-		value = params.get("value");
-
-		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
@@ -59,8 +43,4 @@ public class IfPropertyAction extends AbstractIfAction {
 		return false;
 	}
 
-	@Override
-	public String getControlActionID() {
-		return caID;
-	}
 }

@@ -16,113 +16,45 @@
 package com.bladecoder.engine.actions;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 
-import com.badlogic.gdx.math.Vector2;
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
-import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets the animation for an actor")
 public class AnimationAction implements Action {
-	private static final int NO_POS = 0;
-	private static final int SET_POS_ABSOLUTE = 1;
-	private static final int SET_POS_RELATIVE = 2;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The Animation to set")
-	@ActionPropertyType(Type.ACTOR_ANIMATION)
-	private String animation;
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The Animation to set")
+	private ActorAnimationRef animation;
 
-	@JsonProperty
-	@JsonPropertyDescription("The times to repeat. -1 to infinity repeat")
-	@ActionPropertyType(Type.INTEGER)
+	@ActionProperty
+	@ActionPropertyDescription("The times to repeat. -1 to infinity repeat")
 	private int count = 1;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
 
-	@JsonProperty(value = "animation_type", required = true, defaultValue = "SPRITE_DEFINED")
-	@JsonPropertyDescription("The repeat mode")
-	@ActionPropertyType(Type.STRING)
-	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;       // FIXME: This adds more types not present here before
+	@ActionProperty(required = true, defaultValue = "SPRITE_DEFINED")
+	@ActionPropertyDescription("The repeat mode")
+	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
 
-	@JsonProperty
-	@JsonPropertyDescription("Puts actor position after setting the animation")
-	@ActionPropertyType(Type.VECTOR2)
-	private Vector2 pos;
-
-	@JsonProperty
-	@JsonPropertyDescription("Sets the position absolute or relative")
-	@ActionPropertyType(Type.BOOLEAN)
-	private boolean absolute = false;
-
-	private String actorId;
-	private int setPos = NO_POS;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-		animation = params.get("animation");
-
-		String a[] = Param.parseString2(animation);
-
-		if(a[0] != null)
-			actorId = a[0];
-
-		animation = a[1];
-
-		if (params.get("pos") != null) {
-			pos = Param.parseVector2(params.get("pos"));
-			setPos = SET_POS_ABSOLUTE;
-		}
-
-		if (params.get("absolute") != null) {
-			boolean absolute = Boolean.parseBoolean(params.get("absolute"));
-
-			if(absolute)
-				setPos = SET_POS_ABSOLUTE;
-			else
-				setPos = SET_POS_RELATIVE;
-		}
-
-
-		if(params.get("count") != null) {
-			count = Integer.parseInt(params.get("count"));
-		}
-
-		if(params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
-
-		if(params.get("animation_type") != null) {
-			String repeatStr = params.get("animation_type");
-			repeat = Tween.Type.valueOf(repeatStr.trim().toUpperCase());
-		}
-	}
+	private String actor;
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", animation));
+		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", animation.getAnimationId()));
+		
+		String actorId = animation.getActorId();
+		
+		if(actorId == null)
+			actorId = actor;
 
-		float scale =  EngineAssetManager.getInstance().getScale();
+		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
 
-		SpriteActor actor = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
-
-		if (setPos == SET_POS_ABSOLUTE)
-			actor.setPosition(pos.x * scale, pos.y * scale);
-		else if (setPos == SET_POS_RELATIVE) {
-			actor.setPosition(actor.getX() + pos.x * scale, actor.getY() + pos.y * scale);
-		}
-
-		actor.startAnimation(animation, repeat, count, wait?cb:null);
+		a.startAnimation(animation.getAnimationId(), repeat, count, wait?cb:null);
 
 		return wait;
 	}

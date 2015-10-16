@@ -15,11 +15,11 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
-import com.bladecoder.engineeditor.utils.OptionsInputPanelUtils;
 import org.w3c.dom.NodeList;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.utils.OptionsInputPanelUtils;
 
 public class LayerInputPanel extends EditableOptionsInputPanel<String> {
 	LayerInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {

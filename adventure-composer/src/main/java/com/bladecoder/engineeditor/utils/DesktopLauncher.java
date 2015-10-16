@@ -5,10 +5,6 @@ import java.io.InputStream;
 import java.nio.IntBuffer;
 import java.util.Properties;
 
-import com.bladecoder.engine.BladeEngine;
-import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.util.Config;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Cursor;
@@ -18,6 +14,9 @@ import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.bladecoder.engine.BladeEngine;
+import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.util.Config;
 
 public class DesktopLauncher extends BladeEngine {
 

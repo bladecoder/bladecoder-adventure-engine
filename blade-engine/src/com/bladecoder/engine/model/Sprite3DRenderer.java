@@ -53,6 +53,8 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.Utils3D;
@@ -68,8 +70,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 	private final static Format FRAMEBUFFER_FORMAT = Format.RGBA4444;
 
 	private static final Rectangle VIEWPORT = new Rectangle();
-	private final static IntBuffer VIEWPORT_RESULTS = BufferUtils
-			.newIntBuffer(16);
+	private final static IntBuffer VIEWPORT_RESULTS = BufferUtils.newIntBuffer(16);
 
 	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
 
@@ -105,8 +106,8 @@ public class Sprite3DRenderer implements ActorRenderer {
 	// TODO Move shadowLight to static for memory eficiency.
 	// This implies that the shadow must be calculated in the draw method and
 	// not in the update
-	private final DirectionalShadowLight shadowLight = (DirectionalShadowLight) new DirectionalShadowLight(
-			1024, 1024, 30f, 30f, 1f, 100f).set(1f, 1f, 1f, 0.01f, -1f, 0.01f);
+	private final DirectionalShadowLight shadowLight = (DirectionalShadowLight) new DirectionalShadowLight(1024, 1024,
+			30f, 30f, 1f, 100f).set(1f, 1f, 1f, 0.01f, -1f, 0.01f);
 
 	PointLight celLight;
 
@@ -120,7 +121,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 	private float lastAnimationTime = 0;
 
 	private boolean renderShadow = true;
-	
+
 	private Polygon bbox;
 
 	class ModelCacheEntry {
@@ -195,8 +196,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 		drawModel();
 
-		fb.end((int) VIEWPORT.x, (int) VIEWPORT.y, (int) VIEWPORT.width,
-				(int) VIEWPORT.height);
+		fb.end((int) VIEWPORT.x, (int) VIEWPORT.y, (int) VIEWPORT.width, (int) VIEWPORT.height);
 	}
 
 	/**
@@ -211,8 +211,8 @@ public class Sprite3DRenderer implements ActorRenderer {
 		shadowBatch.end();
 		shadowLight.end();
 
-		Gdx.graphics.getGL20().glViewport((int) VIEWPORT.x, (int) VIEWPORT.y,
-				(int) VIEWPORT.width, (int) VIEWPORT.height);
+		Gdx.graphics.getGL20().glViewport((int) VIEWPORT.x, (int) VIEWPORT.y, (int) VIEWPORT.width,
+				(int) VIEWPORT.height);
 	}
 
 	private void drawModel() {
@@ -228,8 +228,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 			// DRAW MODEL
 			modelBatch.begin(currentSource.camera3d);
 
-			if (EngineLogger.debugMode()
-					&& EngineLogger.debugLevel == EngineLogger.DEBUG1)
+			if (EngineLogger.debugMode() && EngineLogger.debugLevel == EngineLogger.DEBUG1)
 				modelBatch.render(Utils3D.getAxes(), environment);
 
 			modelBatch.render(currentSource.modelInstance, environment);
@@ -265,8 +264,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 	}
 
 	private PerspectiveCamera getCamera(ModelInstance modelInstance) {
-		PerspectiveCamera camera3d = new PerspectiveCamera(cameraFOV, width,
-				height);
+		PerspectiveCamera camera3d = new PerspectiveCamera(cameraFOV, width, height);
 
 		if (cameraPos == null) {
 			Node n = null;
@@ -288,16 +286,13 @@ public class Sprite3DRenderer implements ActorRenderer {
 			n = modelInstance.getNode(cameraName);
 
 			if (n != null) {
-				float rx = (float) (MathUtils.radiansToDegrees * Math.asin(2
-						* n.rotation.x * n.rotation.y + 2 * n.rotation.z
-						* n.rotation.w));
-				float ry = (float) (MathUtils.radiansToDegrees * Math.atan2(2
-						* n.rotation.x * n.rotation.w - 2 * n.rotation.y
-						* n.rotation.z, 1 - 2 * n.rotation.x * n.rotation.x - 2
-						* n.rotation.z * n.rotation.z));
-				float rz = (float) (Math.atan2(2 * n.rotation.y * n.rotation.w
-						- 2 * n.rotation.x * n.rotation.z, 1 - 2 * n.rotation.y
-						* n.rotation.y - 2 * n.rotation.z * n.rotation.z));
+				float rx = (float) (MathUtils.radiansToDegrees
+						* Math.asin(2 * n.rotation.x * n.rotation.y + 2 * n.rotation.z * n.rotation.w));
+				float ry = (float) (MathUtils.radiansToDegrees
+						* Math.atan2(2 * n.rotation.x * n.rotation.w - 2 * n.rotation.y * n.rotation.z,
+								1 - 2 * n.rotation.x * n.rotation.x - 2 * n.rotation.z * n.rotation.z));
+				float rz = (float) (Math.atan2(2 * n.rotation.y * n.rotation.w - 2 * n.rotation.x * n.rotation.z,
+						1 - 2 * n.rotation.y * n.rotation.y - 2 * n.rotation.z * n.rotation.z));
 
 				setCameraRot(rx, ry, rz);
 			} else {
@@ -328,8 +323,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 		public void onEnd(com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc animation) {
 			if (animationCb != null || animationCbSer != null) {
 				if (animationCb == null) {
-					animationCb = ActionCallbackSerialization
-							.find(animationCbSer);
+					animationCb = ActionCallbackSerialization.find(animationCbSer);
 					animationCbSer = null;
 				}
 
@@ -343,8 +337,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 	// }
 
 	@Override
-	public void startAnimation(String id, Tween.Type repeatType, int count,
-			ActionCallback cb) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
 		AnimationDesc fa = fanims.get(id);
 
 		if (fa == null) {
@@ -353,8 +346,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 			return;
 		}
 
-		if (currentAnimation != null
-				&& currentAnimation.disposeWhenPlayed)
+		if (currentAnimation != null && currentAnimation.disposeWhenPlayed)
 			disposeSource(currentAnimation.source);
 
 		currentAnimation = fa;
@@ -389,8 +381,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 		lastAnimationTime = 0;
 		float speed = currentAnimation.duration;
 
-		if (currentAnimationType == Tween.Type.REVERSE
-				|| currentAnimationType == Tween.Type.REVERSE_REPEAT)
+		if (currentAnimationType == Tween.Type.REVERSE || currentAnimationType == Tween.Type.REVERSE_REPEAT)
 			speed *= -1;
 
 		if (currentSource.modelInstance.getAnimation(id) != null) {
@@ -409,8 +400,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 			lookat(dir);
 
 			if (currentSource.modelInstance.getAnimation(s) != null) {
-				currentSource.controller.setAnimation(s, count,
-						speed, animationListener);
+				currentSource.controller.setAnimation(s, count, speed, animationListener);
 
 				computeBbox();
 				return;
@@ -427,15 +417,15 @@ public class Sprite3DRenderer implements ActorRenderer {
 		if (cb != null) {
 			ActionCallbackQueue.add(cb);
 		}
-		
+
 		computeBbox();
 	}
-	
+
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
-		if(direction!=null)
+		if (direction != null)
 			lookat(direction);
-		
+
 		startAnimation(id, repeatType, count, null);
 	}
 
@@ -444,7 +434,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 		Vector2 tmp = new Vector2(pf);
 		float angle = tmp.sub(p0).angle() + 90;
 		lookat(angle);
-		
+
 		startAnimation(id, repeatType, count, null);
 	}
 
@@ -488,8 +478,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 		}
 
 		if (currentSource.controller.current != null)
-			sb.append("\n  Current Anim: ").append(
-					currentSource.controller.current.animation.id);
+			sb.append("\n  Current Anim: ").append(currentSource.controller.current.animation.id);
 
 		sb.append("\n");
 
@@ -510,7 +499,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 			lastAnimationTime += delta;
 
 			// GENERATE SHADOW MAP
-			if(renderShadow)
+			if (renderShadow)
 				genShadowMap();
 
 			if (USE_FBO)
@@ -527,30 +516,30 @@ public class Sprite3DRenderer implements ActorRenderer {
 	public float getHeight() {
 		return height;
 	}
-	
+
 	@Override
 	public void updateBboxFromRenderer(Polygon bbox) {
 		this.bbox = bbox;
 	}
-	
+
 	private void computeBbox() {
-		if(bbox == null)
+		if (bbox == null)
 			return;
-		
-		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
+
+		if (bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
-		
+
 		float[] verts = bbox.getVertices();
-		
-		verts[0] = -getWidth()/2;
+
+		verts[0] = -getWidth() / 2;
 		verts[1] = 0f;
-		verts[2] = -getWidth()/2;
+		verts[2] = -getWidth() / 2;
 		verts[3] = getHeight();
-		verts[4] = getWidth()/2;
+		verts[4] = getWidth() / 2;
 		verts[5] = getHeight();
-		verts[6] = getWidth()/2;
-		verts[7] = 0f;		
+		verts[6] = getWidth() / 2;
+		verts[7] = 0f;
 		bbox.dirty();
 	}
 
@@ -583,25 +572,22 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 			batch.end();
 
-			Gdx.gl20.glViewport((int) (p0x + VIEWPORT.x),
-					(int) (p0y + VIEWPORT.y), (int) (pfx - p0x),
+			Gdx.gl20.glViewport((int) (p0x + VIEWPORT.x), (int) (p0y + VIEWPORT.y), (int) (pfx - p0x),
 					(int) (pfy - p0y));
 
 			Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT
-					| (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV
-							: 0));
+					| (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
 
 			drawModel();
 
-			Gdx.gl20.glViewport((int) VIEWPORT.x, (int) VIEWPORT.y,
-					(int) VIEWPORT.width, (int) VIEWPORT.height);
+			Gdx.gl20.glViewport((int) VIEWPORT.x, (int) VIEWPORT.y, (int) VIEWPORT.width, (int) VIEWPORT.height);
 			batch.begin();
 		}
 	}
 
 	private void createEnvirontment() {
 		environment = new Environment();
-		
+
 		// environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f,
 		// 0.8f, 0.8f, 1f));
 
@@ -623,7 +609,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 		environment.add(celLight);
 
-		if(renderShadow) {
+		if (renderShadow) {
 			shadowEnvironment = new Environment();
 			shadowEnvironment.add(shadowLight);
 			shadowEnvironment.shadowMap = shadowLight;
@@ -640,27 +626,19 @@ public class Sprite3DRenderer implements ActorRenderer {
 	}
 
 	public static void createBatchs() {
-		Config modelConfigShader = new Config(Gdx.files.classpath(
-				VERTEX_SHADER).readString(),
-				Gdx.files.classpath(
-						FRAGMENT_SHADER)
-						.readString());
+		Config modelConfigShader = new Config(Gdx.files.classpath(VERTEX_SHADER).readString(),
+				Gdx.files.classpath(FRAGMENT_SHADER).readString());
 
 		modelConfigShader.numBones = MAX_BONES;
 		modelConfigShader.numDirectionalLights = 0;
 		modelConfigShader.numPointLights = 0;
 		modelConfigShader.numSpotLights = 0;
 
-		modelBatch = new ModelBatch(
-				new DefaultShaderProvider(modelConfigShader));
+		modelBatch = new ModelBatch(new DefaultShaderProvider(modelConfigShader));
 
 		shadowBatch = new ModelBatch(new DepthShaderProvider());
-		floorBatch = new ModelBatch(
-				new DefaultShaderProvider(
-						Gdx.files
-								.classpath(VERTEX_SHADER),
-						Gdx.files
-								.classpath(FLOOR_FRAGMENT_SHADER)));
+		floorBatch = new ModelBatch(new DefaultShaderProvider(Gdx.files.classpath(VERTEX_SHADER),
+				Gdx.files.classpath(FLOOR_FRAGMENT_SHADER)));
 	}
 
 	private void loadSource(String source) {
@@ -731,18 +709,16 @@ public class Sprite3DRenderer implements ActorRenderer {
 		}
 
 		if (currentAnimation != null) { // RESTORE FA
-			ModelCacheEntry entry = sourceCache
-					.get(currentAnimation.source);
+			ModelCacheEntry entry = sourceCache.get(currentAnimation.source);
 			currentSource = entry;
 
 			float speed = currentAnimation.duration;
 
-			if (currentAnimationType == Tween.Type.REVERSE
-					|| currentAnimationType == Tween.Type.REVERSE_REPEAT)
+			if (currentAnimationType == Tween.Type.REVERSE || currentAnimationType == Tween.Type.REVERSE_REPEAT)
 				speed *= -1;
-			
+
 			currentSource.controller.setAnimation(currentAnimation.id, currentCount, speed, animationListener);
-			
+
 			update(lastAnimationTime);
 
 		} else if (initAnimation != null) {
@@ -769,7 +745,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 			renderTex();
 		}
-		
+
 		computeBbox();
 	}
 
@@ -789,10 +765,10 @@ public class Sprite3DRenderer implements ActorRenderer {
 	}
 
 	public static void disposeBatchs() {
-		
-		if(modelBatch == null)
+
+		if (modelBatch == null)
 			return;
-		
+
 		modelBatch.dispose();
 		shadowBatch.dispose();
 		floorBatch.dispose();
@@ -802,73 +778,70 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("fanims", fanims, HashMap.class, AnimationDesc.class);
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		} else {
+			json.writeValue("fanims", fanims, HashMap.class, AnimationDesc.class);
 
-		String currentAnimationId = null;
+			String currentAnimationId = null;
 
-		if (currentAnimation != null)
-			currentAnimationId = currentAnimation.id;
+			if (currentAnimation != null)
+				currentAnimationId = currentAnimation.id;
 
-		json.writeValue("currentAnimation", currentAnimationId);
+			json.writeValue("currentAnimation", currentAnimationId);
 
-		json.writeValue("initAnimation", initAnimation);
+			json.writeValue("initAnimation", initAnimation);
 
-		json.writeValue("width", width);
-		json.writeValue("height", height);
-		json.writeValue("cameraPos", cameraPos, cameraPos == null ? null
-				: Vector3.class);
-		json.writeValue("cameraRot", cameraRot, cameraRot == null ? null
-				: Vector3.class);
-		json.writeValue("cameraName", cameraName, cameraName == null ? null
-				: String.class);
-		json.writeValue("cameraFOV", cameraFOV);
-		json.writeValue("modelRotation", modelRotation);
+			json.writeValue("width", width);
+			json.writeValue("height", height);
+			json.writeValue("cameraPos", cameraPos, cameraPos == null ? null : Vector3.class);
+			json.writeValue("cameraRot", cameraRot, cameraRot == null ? null : Vector3.class);
+			json.writeValue("cameraName", cameraName, cameraName == null ? null : String.class);
+			json.writeValue("cameraFOV", cameraFOV);
+			json.writeValue("modelRotation", modelRotation);
 
-		if (animationCbSer != null)
-			json.writeValue("cb", animationCbSer);
-		else
-			json.writeValue("animationCb",
-					ActionCallbackSerialization.find(animationCb),
-					animationCb == null ? null : String.class);
+			if (animationCbSer != null)
+				json.writeValue("cb", animationCbSer);
+			else
+				json.writeValue("animationCb", ActionCallbackSerialization.find(animationCb),
+						animationCb == null ? null : String.class);
 
-		json.writeValue("currentCount", currentCount);
-		json.writeValue("currentAnimationType", currentAnimationType);
-		json.writeValue("renderShadow", renderShadow);
-		json.writeValue("lastAnimationTime", lastAnimationTime);
+			json.writeValue("currentCount", currentCount);
+			json.writeValue("currentAnimationType", currentAnimationType);
+			json.writeValue("renderShadow", renderShadow);
+			json.writeValue("lastAnimationTime", lastAnimationTime);
 
-		// TODO: SAVE AND RESTORE CURRENT DIRECTION
-		// TODO: shadowlight, cel light
+			// TODO: SAVE AND RESTORE CURRENT DIRECTION
+			// TODO: shadowlight, cel light
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		fanims = json.readValue("fanims", HashMap.class,
-				AnimationDesc.class, jsonData);
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		} else {
+			fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
 
-		String currentAnimationId = json.readValue(
-				"currentAnimation", String.class, jsonData);
+			String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);
 
-		if (currentAnimationId != null)
-			currentAnimation = (AtlasAnimationDesc) fanims
-					.get(currentAnimationId);
+			if (currentAnimationId != null)
+				currentAnimation = (AtlasAnimationDesc) fanims.get(currentAnimationId);
 
-		initAnimation = json.readValue("initAnimation", String.class,
-				jsonData);
+			initAnimation = json.readValue("initAnimation", String.class, jsonData);
 
-		width = json.readValue("width", Integer.class, jsonData);
-		height = json.readValue("height", Integer.class, jsonData);
-		cameraPos = json.readValue("cameraPos", Vector3.class, jsonData);
-		cameraRot = json.readValue("cameraRot", Vector3.class, jsonData);
-		cameraName = json.readValue("cameraName", String.class, jsonData);
-		cameraFOV = json.readValue("cameraFOV", Float.class, jsonData);
-		modelRotation = json.readValue("modelRotation", Float.class, jsonData);
-		animationCbSer = json.readValue("animationCb", String.class, jsonData);
+			width = json.readValue("width", Integer.class, jsonData);
+			height = json.readValue("height", Integer.class, jsonData);
+			cameraPos = json.readValue("cameraPos", Vector3.class, jsonData);
+			cameraRot = json.readValue("cameraRot", Vector3.class, jsonData);
+			cameraName = json.readValue("cameraName", String.class, jsonData);
+			cameraFOV = json.readValue("cameraFOV", Float.class, jsonData);
+			modelRotation = json.readValue("modelRotation", Float.class, jsonData);
+			animationCbSer = json.readValue("animationCb", String.class, jsonData);
 
-		currentCount = json.readValue("currentCount", Integer.class, jsonData);
-		currentAnimationType = json.readValue("currentAnimationType",
-				Tween.Type.class, jsonData);
-		renderShadow = json.readValue("renderShadow", Boolean.class, jsonData);
-		lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
+			currentCount = json.readValue("currentCount", Integer.class, jsonData);
+			currentAnimationType = json.readValue("currentAnimationType", Tween.Type.class, jsonData);
+			renderShadow = json.readValue("renderShadow", Boolean.class, jsonData);
+			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
+		}
 	}
 }

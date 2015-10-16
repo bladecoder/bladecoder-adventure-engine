@@ -15,25 +15,12 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
 import java.util.List;
 
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Marks the end of a block for a control action")
 public class EndAction extends AbstractControlAction {
-	@JsonProperty
-	@JsonPropertyDescription("The block ID")
-	@ActionPropertyType(Type.STRING)
-	private String caID;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		caID = params.get("caID");
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
@@ -63,10 +50,5 @@ public class EndAction extends AbstractControlAction {
 		} while (!(actions.get(ip) instanceof AbstractControlAction) || !((AbstractControlAction) actions.get(ip)).getControlActionID().equals(caID));
 		
 		return ip;
-	}
-
-	@Override
-	public String getControlActionID() {
-		return caID;
 	}
 }

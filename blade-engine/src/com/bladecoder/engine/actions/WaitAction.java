@@ -15,18 +15,13 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Pause the action")
 public class WaitAction implements Action {
-	@JsonProperty(required = true, defaultValue = "1.0")
-	@JsonPropertyDescription("The time pause in seconds")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty(required = true, defaultValue = "1.0")
+	@ActionPropertyDescription("The time pause in seconds")
+
 	private float time;
 
 	@Override
@@ -34,10 +29,4 @@ public class WaitAction implements Action {
 		World.getInstance().addTimer(time, cb);
 		return true;
 	}
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		time = Float.parseFloat(params.get("time"));
-	}
-
 }

@@ -16,34 +16,22 @@
 package com.bladecoder.engine.actions;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 import com.badlogic.gdx.math.Vector2;
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Drops the inventory actor in the scene.")
 public class DropItemAction implements Action {
-	@JsonProperty
-	@JsonPropertyDescription("An actor in the inventory.")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("An actor in the inventory.")
 	private String actor;
 
-	@JsonProperty
-	@JsonPropertyDescription("Position in the scene where de actor is dropped")
-	@ActionPropertyType(Type.VECTOR2)
+	@ActionProperty
+	@ActionPropertyDescription("Position in the scene where de actor is dropped")
 	private Vector2 pos;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actor = params.get("actor");
-		pos = Param.parseVector2(params.get("pos"));
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

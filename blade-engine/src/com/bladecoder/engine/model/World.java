@@ -16,6 +16,7 @@
 package com.bladecoder.engine.model;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -43,6 +45,8 @@ import com.bladecoder.engine.anim.Timers;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.loader.WorldXMLLoader;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -56,7 +60,7 @@ public class World implements Serializable, AssetConsumer {
 	public static enum AssetState {
 		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
 	};
-	
+
 	private static final boolean CACHE_ENABLED = true;
 
 	private static final World instance = new World();
@@ -66,8 +70,9 @@ public class World implements Serializable, AssetConsumer {
 	private int width;
 	private int height;
 
-	private HashMap<String, Scene> scenes;
 	private String initScene;
+	private final HashMap<String, Scene> scenes = new HashMap<String, Scene>();
+	private final VerbManager verbs = new VerbManager();
 
 	private Scene currentScene;
 	private Dialog currentDialog;
@@ -120,7 +125,8 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	private void init() {
-		scenes = new HashMap<String, Scene>();
+		// scenes = new HashMap<String, Scene>();
+		scenes.clear();
 		inventory = new Inventory();
 		textManager = new TextManager();
 
@@ -156,6 +162,10 @@ public class World implements Serializable, AssetConsumer {
 			customProperties.put(name, value);
 	}
 
+	public VerbManager getVerbManager() {
+		return verbs;
+	}
+
 	public void draw() {
 		if (assetState == AssetState.LOADED) {
 
@@ -175,21 +185,21 @@ public class World implements Serializable, AssetConsumer {
 			else
 				assetState = AssetState.LOADING_AND_INIT_SCENE;
 
-//			initLoadingTime = System.currentTimeMillis();
-			
-			
-			// Try to load scene for 100ms before. If not loaded in this time, show the loading screen
+			// initLoadingTime = System.currentTimeMillis();
+
+			// Try to load scene for 100ms before. If not loaded in this time,
+			// show the loading screen
 			float t0 = System.currentTimeMillis();
 			float t = 0f;
-			while(EngineAssetManager.getInstance().isLoading() && t -t0 < 100f) {
+			while (EngineAssetManager.getInstance().isLoading() && t - t0 < 100f) {
 				t = System.currentTimeMillis();
 			}
 
-		} 
-		
+		}
+
 		if ((assetState == AssetState.LOADING || assetState == AssetState.LOADING_AND_INIT_SCENE)
 				&& !EngineAssetManager.getInstance().isLoading()) {
-			
+
 			retrieveAssets();
 
 			boolean initScene = (assetState == AssetState.LOADING_AND_INIT_SCENE);
@@ -210,7 +220,7 @@ public class World implements Serializable, AssetConsumer {
 			return;
 
 		timeOfGame += delta;
-		
+
 		getCurrentScene().update(delta);
 		textManager.update(delta);
 		timers.update(delta);
@@ -218,7 +228,7 @@ public class World implements Serializable, AssetConsumer {
 		if (!transition.isFinish()) {
 			transition.update(delta);
 		}
-		
+
 		ActionCallbackQueue.run();
 	}
 
@@ -236,19 +246,19 @@ public class World implements Serializable, AssetConsumer {
 			inventory.retrieveAssets();
 
 		getCurrentScene().retrieveAssets();
-		
+
 		// Print loaded assets for scene
-		if(EngineLogger.debugMode()) {
+		if (EngineLogger.debugMode()) {
 			Array<String> assetNames = EngineAssetManager.getInstance().getAssetNames();
-			
+
 			assetNames.sort();
-			
+
 			EngineLogger.debug("Assets loaded for SCENE: " + currentScene.getId());
-			
-			for(String n:assetNames) {
+
+			for (String n : assetNames) {
 				EngineLogger.debug("\t" + n);
 			}
-		}		
+		}
 	}
 
 	public Transition getTransition() {
@@ -261,71 +271,6 @@ public class World implements Serializable, AssetConsumer {
 
 	public AssetState getAssetState() {
 		return assetState;
-	}
-
-	/**
-	 * Try to load the save game if exists. In other case, load the game from
-	 * XML.
-	 * 
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws ParserConfigurationException
-	 */
-	public void load() {
-		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
-			// 2.- SAVEGAME EXISTS
-			try {
-				instance.loadGameState();
-			} catch (Exception e) {
-				EngineLogger.error("ERROR LOADING SAVED GAME", e);
-				instance.loadXMLChapter(null);
-			}
-		} else {
-			// 3.- XML LOADING
-			instance.loadXMLChapter(null);
-		}
-	}
-
-	public void loadXMLWorld() {
-		try {
-			WorldXMLLoader.loadWorld(this);
-		} catch (Exception e) {
-			EngineLogger.error("ERROR LOADING WORLD XML", e);
-			instance.dispose();
-			Gdx.app.exit();
-		}
-	}
-
-	public void loadXMLChapter(String chapterName) {
-		if (!disposed)
-			dispose();
-
-		init();
-
-		assetState = AssetState.LOAD_ASSETS;
-
-		long initTime = System.currentTimeMillis();
-
-		try {
-			WorldXMLLoader.loadChapter(chapterName, this);
-		} catch (Exception e) {
-			EngineLogger.error("ERROR LOADING GAME", e);
-			instance.dispose();
-			Gdx.app.exit();
-		}
-
-		EngineLogger.debug("XML LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
-	}
-
-	public void loadXMLChapter(String chapter, String scene) {
-		this.testScene = scene;
-
-		instance.loadXMLChapter(chapter);
-
-		if (testScene != null) {
-			currentScene = null;
-			setCurrentScene(testScene);
-		}
 	}
 
 	public Dialog getCurrentDialog() {
@@ -344,22 +289,22 @@ public class World implements Serializable, AssetConsumer {
 		this.initScene = initScene;
 	}
 
-	public void setCurrentScene(Scene scene) {	
-		
-		initLoadingTime = System.currentTimeMillis();	
-		
+	public void setCurrentScene(Scene scene) {
+
+		initLoadingTime = System.currentTimeMillis();
+
 		// Clear all pending callbacks
 		ActionCallbackQueue.clear();
-		
-		if(cachedScene == scene) {
-			assetState = AssetState.LOADING_AND_INIT_SCENE;		
+
+		if (cachedScene == scene) {
+			assetState = AssetState.LOADING_AND_INIT_SCENE;
 		} else {
-			if(cachedScene != null) {
+			if (cachedScene != null) {
 				cachedScene.dispose();
 				cachedScene = null;
 			}
-			
-			assetState = AssetState.LOAD_ASSETS_AND_INIT_SCENE;	
+
+			assetState = AssetState.LOAD_ASSETS_AND_INIT_SCENE;
 		}
 
 		if (currentScene != null) {
@@ -368,10 +313,10 @@ public class World implements Serializable, AssetConsumer {
 			timers.clear();
 			currentScene.stopMusic();
 			currentDialog = null;
-			
+
 			// TODO Stop sounds
 
-			if(CACHE_ENABLED) 
+			if (CACHE_ENABLED)
 				cachedScene = currentScene; // CACHE ENABLED
 			else
 				currentScene.dispose(); // CACHE DISABLED
@@ -431,22 +376,22 @@ public class World implements Serializable, AssetConsumer {
 		this.currentDialog = dialog;
 		if (dialog != null) {
 			dialog.reset();
-			
+
 			int visibleOptions = dialog.getNumVisibleOptions();
-			
-			if(visibleOptions == 0)
+
+			if (visibleOptions == 0)
 				currentDialog = null;
-			else if(visibleOptions == 1) {
+			else if (visibleOptions == 1) {
 				selectVisibleDialogOption(0);
 			}
 		}
 	}
-	
+
 	public void selectVisibleDialogOption(int i) {
-		if(currentDialog == null)
+		if (currentDialog == null)
 			return;
-		
-		currentDialog = currentDialog.selectOption(currentDialog.getVisibleOptions().get(i));	
+
+		currentDialog = currentDialog.selectOption(currentDialog.getVisibleOptions().get(i));
 	}
 
 	public int getWidth() {
@@ -477,7 +422,7 @@ public class World implements Serializable, AssetConsumer {
 	public void dispose() {
 
 		try {
-			
+
 			textManager.reset();
 			timers.clear();
 			currentScene.stopMusic();
@@ -486,14 +431,14 @@ public class World implements Serializable, AssetConsumer {
 			transition.reset();
 
 			// Clear all pending callbacks
-			ActionCallbackQueue.clear();					
+			ActionCallbackQueue.clear();
 
 			// ONLY dispose currentscene because other scenes are already
 			// disposed
 			currentScene.dispose();
 			currentScene = null;
-			
-			if(cachedScene != null) {
+
+			if (cachedScene != null) {
 				cachedScene.dispose();
 				cachedScene = null;
 			}
@@ -566,7 +511,139 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void newGame() {
-		loadXMLChapter(null);
+		loadChapter(null);
+		// TODO: Delete this comment
+		 try {
+		 saveWorldDesc(EngineAssetManager.getInstance().getUserFile("world.json"));
+		 } catch (IOException e) {
+		 // TODO Auto-generated catch block
+		 e.printStackTrace();
+		 }
+	}
+
+	// ********** SERIALIZATION **********
+
+	/**
+	 * Try to load the save game if exists. In other case, load the game from
+	 * XML.
+	 * 
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws ParserConfigurationException
+	 */
+	public void load() {
+		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
+			// SAVEGAME EXISTS
+			try {
+				instance.loadGameState();
+			} catch (Exception e) {
+				EngineLogger.error("ERROR LOADING SAVED GAME", e);
+				instance.loadChapter(null);
+			}
+		} else {
+			// XML LOADING
+			instance.loadChapter(null);
+		}
+	}
+
+	/**
+	 * Load the world description. First try to load 'world.json'. If doesn't
+	 * exists try 'world.xml'.
+	 */
+	public void loadWorldDesc() {
+		if (EngineAssetManager.getInstance().getModelFile(EngineAssetManager.WORLD_FILENAME_JSON).exists()) {
+			SerializationHelper.getInstance().setMode(Mode.MODEL);
+
+			JsonValue root = new JsonReader().parse(EngineAssetManager.getInstance()
+					.getModelFile(EngineAssetManager.WORLD_FILENAME_JSON).reader("UTF-8"));
+
+			Json json = new Json();
+
+			int width = json.readValue("width", Integer.class, root);
+			int height = json.readValue("height", Integer.class, root);
+
+			// When we know the world width, we can put the scale
+			EngineAssetManager.getInstance().setScale(width, height);
+			float scale = EngineAssetManager.getInstance().getScale();
+
+			setWidth((int) (width * scale));
+			setHeight((int) (height * scale));
+			setInitChapter(json.readValue("initChapter", String.class, root));
+			verbs.read(json, root);
+			I18N.loadWorld(EngineAssetManager.MODEL_DIR + "world");
+		} else {
+			try {
+				WorldXMLLoader.loadWorld(this);
+			} catch (Exception e) {
+				EngineLogger.error("ERROR LOADING WORLD XML", e);
+				dispose();
+				Gdx.app.exit();
+			}
+		}
+	}
+
+	public void saveWorldDesc(FileHandle file) throws IOException {
+
+		float scale = EngineAssetManager.getInstance().getScale();
+
+		Json json = new Json();
+		json.setOutputType(OutputType.javascript);
+
+		SerializationHelper.getInstance().setMode(Mode.MODEL);
+
+		json.setWriter(new StringWriter());
+
+		json.writeObjectStart();
+		json.writeValue("width", width / scale);
+		json.writeValue("height", height / scale);
+		json.writeValue("initChapter", initChapter);
+		verbs.write(json);
+		json.writeObjectEnd();
+
+		String s = null;
+
+		if (EngineLogger.debugMode())
+			s = json.prettyPrint(json.getWriter().getWriter().toString());
+		else
+			s = json.getWriter().getWriter().toString();
+
+		Writer w = file.writer(false, "UTF-8");
+		w.write(s);
+		w.close();
+	}
+
+	public void loadChapter(String chapterName) {
+		if (!disposed)
+			dispose();
+
+		init();
+
+		assetState = AssetState.LOAD_ASSETS;
+
+		long initTime = System.currentTimeMillis();
+
+		SerializationHelper.getInstance().setMode(Mode.MODEL);
+
+		try {
+			WorldXMLLoader.loadChapter(chapterName, this);
+		} catch (Exception e) {
+			EngineLogger.error("ERROR LOADING GAME", e);
+			dispose();
+			Gdx.app.exit();
+		}
+
+		EngineLogger.debug("XML LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+	}
+
+	public void loadChapter(String chapter, String scene) {
+		this.testScene = scene;
+
+		loadChapter(chapter);
+
+		if (testScene != null) {
+			currentScene = null;
+			setCurrentScene(testScene);
+		}
 	}
 
 	public boolean savedGameExists() {
@@ -577,24 +654,19 @@ public class World implements Serializable, AssetConsumer {
 		return EngineAssetManager.getInstance().getUserFile(filename).exists();
 	}
 
-	// ********** JSON SERIALIZATION FOR GAME SAVING **********
-	public void saveGameState() {
-		saveGameState(GAMESTATE_FILENAME);
-	}
-
-	public void loadGameState() {
+	public void loadGameState() throws IOException {
 		long initTime = System.currentTimeMillis();
 		loadGameState(GAMESTATE_FILENAME);
 		EngineLogger.debug("JSON LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 	}
 
-	public void loadGameState(String filename) {
+	public void loadGameState(String filename) throws IOException {
 		FileHandle savedFile = EngineAssetManager.getInstance().getUserFile(filename);
 
 		loadGameState(savedFile);
 	}
 
-	public void loadGameState(FileHandle savedFile) {
+	public void loadGameState(FileHandle savedFile) throws IOException {
 		EngineLogger.debug("LOADING GAME STATE");
 
 		if (!disposed)
@@ -605,14 +677,27 @@ public class World implements Serializable, AssetConsumer {
 		if (savedFile.exists()) {
 			assetState = AssetState.LOAD_ASSETS;
 
-			new Json().fromJson(World.class, savedFile.reader("UTF-8"));
+			// new Json().fromJson(World.class, savedFile.reader("UTF-8"));
+
+			SerializationHelper.getInstance().setMode(Mode.STATE);
+
+			JsonValue root = new JsonReader().parse(savedFile.reader("UTF-8"));
+
+			read(new Json(), root);
+
+			SerializationHelper.getInstance().clearActors();
 
 		} else {
-			EngineLogger.error("LOADGAMESTATE: no saved game exists");
+			SerializationHelper.getInstance().clearActors();
+			throw new IOException("LOADGAMESTATE: no saved game exists");
 		}
 	}
 
-	public void saveGameState(String filename) {
+	public void saveGameState() throws IOException {
+		saveGameState(GAMESTATE_FILENAME);
+	}
+
+	public void saveGameState(String filename) throws IOException {
 		EngineLogger.debug("SAVING GAME STATE");
 
 		if (disposed)
@@ -623,10 +708,14 @@ public class World implements Serializable, AssetConsumer {
 
 		String s = null;
 
+		SerializationHelper.getInstance().setMode(Mode.STATE);
+
 		if (EngineLogger.debugMode())
-			s = json.prettyPrint(instance);
+			s = json.prettyPrint(this);
 		else
-			s = json.toJson(instance);
+			s = json.toJson(this);
+
+		SerializationHelper.getInstance().clearActors();
 
 		Writer w = EngineAssetManager.getInstance().getUserFile(filename).writer(false, "UTF-8");
 
@@ -634,7 +723,7 @@ public class World implements Serializable, AssetConsumer {
 			w.write(s);
 			w.close();
 		} catch (IOException e) {
-			EngineLogger.error("ERROR SAVING GAME", e);
+			throw new IOException("ERROR SAVING GAME", e);
 		}
 
 		// Save Screenshot
@@ -669,60 +758,97 @@ public class World implements Serializable, AssetConsumer {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
-		json.writeValue("currentScene", currentScene.getId());
-		json.writeValue("inventory", inventory);
-		json.writeValue("timeOfGame", timeOfGame);
-		json.writeValue("cutmode", cutMode);
-		json.writeValue("worldVerbs", VerbManager.worldVerbs, HashMap.class, Verb.class);
-		json.writeValue("timers", timers);
-		json.writeValue("textmanager", textManager);
-		json.writeValue("customProperties", customProperties);
 
-		if (currentDialog == null) {
-			json.writeValue("dialogActor", (String) null, null);
-			json.writeValue("currentDialog", (String) null, null);
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+
+			// json.writeValue("scenes", scenes, scenes.getClass(),
+			// Scene.class);
+			// json.writeValue("worldVerbs", VerbManager.worldVerbs,
+			// HashMap.class, Verb.class);
+			// json.writeValue("chapter", currentChapter);
+
 		} else {
-			json.writeValue("dialogActor", currentDialog.getActor());
-			json.writeValue("currentDialog", currentDialog.getId());
+
+			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
+			json.writeValue("currentScene", currentScene.getId());
+			json.writeValue("inventory", inventory);
+			json.writeValue("timeOfGame", timeOfGame);
+			json.writeValue("cutmode", cutMode);
+			verbs.write(json);
+			json.writeValue("timers", timers);
+			json.writeValue("textmanager", textManager);
+			json.writeValue("customProperties", customProperties);
+
+			if (currentDialog == null) {
+				json.writeValue("dialogActor", (String) null, null);
+				json.writeValue("currentDialog", (String) null, null);
+			} else {
+				json.writeValue("dialogActor", currentDialog.getActor());
+				json.writeValue("currentDialog", currentDialog.getId());
+			}
+
+			json.writeValue("transition", transition, transition == null ? null : transition.getClass());
+
+			json.writeValue("chapter", currentChapter);
+			ActionCallbackQueue.write(json);
 		}
-
-		json.writeValue("transition", transition, transition == null ? null : transition.getClass());
-
-		json.writeValue("chapter", currentChapter);
-		ActionCallbackQueue.write(json);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		instance.scenes = json.readValue("scenes", HashMap.class, Scene.class, jsonData);
-		instance.currentScene = instance.scenes.get(json.readValue("currentScene", String.class, jsonData));
-		instance.inventory = json.readValue("inventory", Inventory.class, jsonData);
 
-		instance.timeOfGame = json.readValue("timeOfGame", Float.class, jsonData);
-		instance.cutMode = json.readValue("cutmode", Boolean.class, jsonData);
-		VerbManager.worldVerbs = json.readValue("worldVerbs", HashMap.class, Verb.class, jsonData);
-		instance.timers = json.readValue("timers", Timers.class, jsonData);
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
-		instance.textManager = json.readValue("textmanager", TextManager.class, jsonData);
-		instance.customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
+			// instance.scenes = json.readValue("scenes", HashMap.class,
+			// Scene.class, jsonData);
+			// VerbManager.worldVerbs = json.readValue("worldVerbs",
+			// HashMap.class, Verb.class, jsonData);
+			// instance.currentChapter = json.readValue("chapter", String.class,
+			// jsonData);
 
-		String actorId = json.readValue("dialogActor", String.class, jsonData);
-		String dialogId = json.readValue("currentDialog", String.class, jsonData);
+		} else {
+			currentChapter = json.readValue("chapter", String.class, jsonData);
 
-		if (dialogId != null) {
-			CharacterActor actor = (CharacterActor)instance.getCurrentScene().getActor(actorId, false);
-			instance.currentDialog = actor.getDialog(dialogId);
+			try {
+				WorldXMLLoader.loadChapter(currentChapter, this);
+			} catch (ParserConfigurationException | SAXException | IOException e) {
+				EngineLogger.error("Error Loading Chapter");
+				return;
+			}
+
+			currentScene = scenes.get(json.readValue("currentScene", String.class, jsonData));
+			assetState = AssetState.LOAD_ASSETS;
+
+			for (Scene s : scenes.values()) {
+				s.read(json, jsonData.get("scenes").get(s.getId()));
+			}
+
+			inventory = json.readValue("inventory", Inventory.class, jsonData);
+
+			timeOfGame = json.readValue("timeOfGame", Float.class, jsonData);
+			cutMode = json.readValue("cutmode", Boolean.class, jsonData);
+
+			verbs.read(json, jsonData);
+
+			timers = json.readValue("timers", Timers.class, jsonData);
+
+			textManager = json.readValue("textmanager", TextManager.class, jsonData);
+			customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
+
+			String actorId = json.readValue("dialogActor", String.class, jsonData);
+			String dialogId = json.readValue("currentDialog", String.class, jsonData);
+
+			if (dialogId != null) {
+				CharacterActor actor = (CharacterActor) getCurrentScene().getActor(actorId, false);
+				currentDialog = actor.getDialog(dialogId);
+			}
+
+			transition = json.readValue("transition", Transition.class, jsonData);
+
+			ActionCallbackQueue.read(json, jsonData);
+
+			I18N.loadChapter(EngineAssetManager.MODEL_DIR + instance.currentChapter);
 		}
-
-		transition = json.readValue("transition", Transition.class, jsonData);
-
-		instance.currentChapter = json.readValue("chapter", String.class, jsonData);
-
-		ActionCallbackQueue.read(json, jsonData);
-
-		I18N.loadChapter(EngineAssetManager.MODEL_DIR + instance.currentChapter);
-
 	}
 }

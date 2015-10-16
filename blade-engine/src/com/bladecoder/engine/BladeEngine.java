@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine;
 
+import java.io.IOException;
 import java.nio.IntBuffer;
 import java.text.MessageFormat;
 
@@ -92,7 +93,7 @@ public class BladeEngine implements ApplicationListener {
 			EngineAssetManager.getInstance().forceResolution(forceRes);
 		}
 
-		World.getInstance().loadXMLWorld();
+		World.getInstance().loadWorldDesc();
 
 		ui = new UI();
 
@@ -104,7 +105,7 @@ public class BladeEngine implements ApplicationListener {
 		}
 
 		if (testScene != null || chapter != null) {
-			World.getInstance().loadXMLChapter(chapter, testScene);
+			World.getInstance().loadChapter(chapter, testScene);
 			ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 		}
 
@@ -112,12 +113,16 @@ public class BladeEngine implements ApplicationListener {
 			gameState = Config.getProperty(Config.LOAD_GAMESTATE_PROP, gameState);
 
 		if (gameState != null) {
-			World.getInstance().loadGameState(gameState);
+			try {
+				World.getInstance().loadGameState(gameState);
+			} catch (IOException e) {
+				EngineLogger.error(e.getMessage());
+			}
 		}
 
 		if (restart) {
 			try {
-				World.getInstance().loadXMLChapter(null);
+				World.getInstance().loadChapter(null);
 			} catch (Exception e) {
 				EngineLogger.error("ERROR LOADING GAME", e);
 				dispose();
@@ -158,7 +163,11 @@ public class BladeEngine implements ApplicationListener {
 		// Pause the game and save state when an error is found
 		if (EngineLogger.lastError != null && EngineLogger.debugMode() && !World.getInstance().isPaused()) {
 			ui.pause();
-			World.getInstance().saveGameState();
+			try {
+				World.getInstance().saveGameState();
+			} catch (IOException e) {
+				EngineLogger.error(e.getMessage());
+			}
 		}
 	}
 
@@ -176,7 +185,11 @@ public class BladeEngine implements ApplicationListener {
 		if (!bot && !r) {
 			EngineLogger.debug("GAME PAUSE");
 			ui.pause();
-			World.getInstance().saveGameState();
+			try {
+				World.getInstance().saveGameState();
+			} catch (IOException e) {
+				EngineLogger.error(e.getMessage());
+			}
 		} else {
 			EngineLogger.debug("NOT PAUSING WHEN BOT IS RUNNING OR PLAYING RECORDED GAME");
 		}

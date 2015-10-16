@@ -71,6 +71,9 @@ public class ActorProps extends PropertyTable {
 	
 	private void updateField(String modelProperty) {
 		
+		if(actor==null)
+			return;
+		
 		String value = doc.getRootAttr(actor, modelProperty);
 		
 		if (modelProperty.equals(XMLConstants.DESC_ATTR)) {
@@ -87,7 +90,10 @@ public class ActorProps extends PropertyTable {
 		} else if (modelProperty.equals(XMLConstants.STATE_ATTR)) {
 			setProperty(STATE_PROP, value);
 		} else if (modelProperty.equals(XMLConstants.BBOX_ATTR)) {
-			boolean v = value.isEmpty();
+			
+			// TODO Conflict with scnwidget
+			
+//			boolean v = value.isEmpty();
 			
 //			setProperty(BBOX_FROM_RENDERER_PROP, Boolean.toString(v));
 		}

@@ -15,11 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
-import javax.annotation.Nullable;
-
-import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
@@ -29,118 +24,80 @@ import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Change actor attributes.")
 public class SetActorAttrAction implements Action {
-	@JsonProperty(value = "actor", required = true)
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
-	private SceneActorRef sceneActorRef;
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The target actor")
+	
+	private SceneActorRef actor;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor visibility")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor visibility")
+
 	private Boolean visible;
 
-	@JsonProperty
-	@JsonPropertyDescription("When 'true' the actor responds to the user input")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty
+	@ActionPropertyDescription("When 'true' the actor responds to the user input")
+
 	private Boolean interaction;
 
-	@JsonProperty
-	@JsonPropertyDescription("The actor layer")
-	@ActionPropertyType(Type.LAYER)
+	@ActionPropertyDescription("The actor layer")
+	@ActionProperty(type = Type.LAYER)
 	private String layer;
 
-	@JsonProperty
-	@JsonPropertyDescription("The order to draw bigger is near")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty
+	@ActionPropertyDescription("The order to draw bigger is near")
+
 	private Float zIndex;
 
-	@JsonProperty
-	@JsonPropertyDescription("Enable/Disable the Fake Depth for the actor")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty
+	@ActionPropertyDescription("Enable/Disable the Fake Depth for the actor")
+
 	private Boolean fakeDepth;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor scale")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor scale")
+
 	private Float scale;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor 'stand' animation. Only supported for character actors.")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor 'stand' animation. Only supported for character actors.")
+
 	private String standAnimation;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor 'walk' animation. Only supported for character actors.")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor 'walk' animation. Only supported for character actors.")
+
 	private String walkAnimation;
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor 'talk' animation. Only supported for character actors.")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor 'talk' animation. Only supported for character actors.")
+
 	private String talkAnimation;
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor speed for walking. Only supported for character actors.")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor speed for walking. Only supported for character actors.")
+
 	private Float walkingSpeed;
 
 	@Override
-	public void setParams(HashMap<String, String> params) {
-		String[] a = Param.parseString2(params.get("actor"));
-
-		sceneActorRef = a == null ? new SceneActorRef() : new SceneActorRef(a[0], a[1]);
-
-		visible = booleanOrNull(params.get("visible"));
-		interaction = booleanOrNull(params.get("interaction"));
-		layer = params.get("layer");
-		zIndex = floatOrNull(params.get("zIndex"));
-
-		scale = floatOrNull(params.get("scale"));
-		fakeDepth = booleanOrNull(params.get("fakeDepth"));
-
-		standAnimation = params.get("standAnimation");
-		walkAnimation = params.get("walkAnimation");
-		talkAnimation = params.get("talkAnimation");
-		walkingSpeed = floatOrNull(params.get("walkingSpeed"));
-	}
-
-	@Nullable
-	private static Vector2 vector2OrNull(String str) {
-		return str != null ? Param.parseVector2(str) : null;
-	}
-
-	@Nullable
-	private static Boolean booleanOrNull(String str) {
-		return str != null ? Boolean.parseBoolean(str) : null;
-	}
-
-	@Nullable
-	private static Float floatOrNull(String str) {
-		return str != null ? Float.parseFloat(str) : null;
-	}
-
-	@Override
 	public boolean run(ActionCallback cb) {
-		Scene s = sceneActorRef.getScene();
+		Scene s = actor.getScene();
 
-		BaseActor actor = s.getActor(sceneActorRef.getActorId(), true);
+		BaseActor a = s.getActor(actor.getActorId(), true);
 
 		if (visible != null)
-			actor.setVisible(visible);
+			a.setVisible(visible);
 
 		if (interaction != null) {
-			if (actor instanceof InteractiveActor)
-				((InteractiveActor) actor).setInteraction(interaction);
+			if (a instanceof InteractiveActor)
+				((InteractiveActor) a).setInteraction(interaction);
 			else
-				EngineLogger.error("Interaction property not supported for actor:" + actor.getId());
+				EngineLogger.error("Interaction property not supported for actor:" + a.getId());
 		}
 
 		if (layer != null) {
-			if (actor instanceof InteractiveActor) {
-				InteractiveActor iActor = (InteractiveActor) actor;
+			if (a instanceof InteractiveActor) {
+				InteractiveActor iActor = (InteractiveActor) a;
 				
 				String oldLayer = iActor.getLayer();
 
@@ -154,12 +111,12 @@ public class SetActorAttrAction implements Action {
 				if (!l.isDynamic())
 					l.orderByZIndex();
 			} else
-				EngineLogger.error("layer property not supported for actor:" + actor.getId());
+				EngineLogger.error("layer property not supported for actor:" + a.getId());
 		}
 
 		if (zIndex != null) {
-			if (actor instanceof InteractiveActor) {
-				InteractiveActor iActor = (InteractiveActor) actor;
+			if (a instanceof InteractiveActor) {
+				InteractiveActor iActor = (InteractiveActor) a;
 				
 				iActor.setZIndex(zIndex);
 				SceneLayer l = s.getLayer(iActor.getLayer());
@@ -167,52 +124,52 @@ public class SetActorAttrAction implements Action {
 				if (!l.isDynamic())
 					l.orderByZIndex();
 			} else
-				EngineLogger.error("zIndex property not supported for actor:" + actor.getId());
+				EngineLogger.error("zIndex property not supported for actor:" + a.getId());
 		}
 
 		if (scale != null) {
-			if (actor instanceof SpriteActor)
-				((SpriteActor) actor).setScale(scale);
+			if (a instanceof SpriteActor)
+				((SpriteActor) a).setScale(scale);
 			else
-				EngineLogger.error("scale property not supported for actor:" + actor.getId());
+				EngineLogger.error("scale property not supported for actor:" + a.getId());
 		}
 
 		if (fakeDepth != null) {
-			if (actor instanceof SpriteActor) {
+			if (a instanceof SpriteActor) {
 				if (fakeDepth)
-					((SpriteActor) actor).setDepthType(DepthType.VECTOR);
+					((SpriteActor) a).setDepthType(DepthType.VECTOR);
 				else
-					((SpriteActor) actor).setDepthType(DepthType.NONE);
+					((SpriteActor) a).setDepthType(DepthType.NONE);
 			} else
-				EngineLogger.error("fakeDepth property not supported for actor:" + actor.getId());
+				EngineLogger.error("fakeDepth property not supported for actor:" + a.getId());
 		}
 
 		if (standAnimation != null) {
-			if (actor instanceof CharacterActor)
-				((CharacterActor) actor).setStandAnim(standAnimation);
+			if (a instanceof CharacterActor)
+				((CharacterActor) a).setStandAnim(standAnimation);
 			else
-				EngineLogger.error("standAnimation property not supported for actor:" + actor.getId());
+				EngineLogger.error("standAnimation property not supported for actor:" + a.getId());
 		}
 
 		if (walkAnimation != null) {
-			if (actor instanceof CharacterActor)
-				((CharacterActor) actor).setWalkAnim(walkAnimation);
+			if (a instanceof CharacterActor)
+				((CharacterActor) a).setWalkAnim(walkAnimation);
 			else
-				EngineLogger.error("walkAnimation property not supported for actor:" + actor.getId());
+				EngineLogger.error("walkAnimation property not supported for actor:" + a.getId());
 		}
 
 		if (talkAnimation != null) {
-			if (actor instanceof CharacterActor)
-				((CharacterActor) actor).setTalkAnim(talkAnimation);
+			if (a instanceof CharacterActor)
+				((CharacterActor) a).setTalkAnim(talkAnimation);
 			else
-				EngineLogger.error("talkAnimation property not supported for actor:" + actor.getId());
+				EngineLogger.error("talkAnimation property not supported for actor:" + a.getId());
 		}
 
 		if (walkingSpeed != null) {
-			if (actor instanceof CharacterActor)
-				((CharacterActor) actor).setWalkingSpeed(walkingSpeed);
+			if (a instanceof CharacterActor)
+				((CharacterActor) a).setWalkingSpeed(walkingSpeed);
 			else
-				EngineLogger.error("walkingSpeed property not supported for actor:" + actor.getId());
+				EngineLogger.error("walkingSpeed property not supported for actor:" + a.getId());
 		}
 
 		return false;

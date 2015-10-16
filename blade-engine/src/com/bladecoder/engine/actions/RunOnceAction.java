@@ -15,20 +15,14 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
-import com.bladecoder.engine.loader.XMLConstants;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.VerbRunner;
 
 @ActionDescription("Execute the actions inside the RunOnce/EndRunOnce only once.")
-public class RunOnceAction extends AbstractControlAction {
+public class RunOnceAction extends AbstractControlAction implements Serializable {
 	boolean executed = false;
-	private String caID;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
@@ -45,8 +39,14 @@ public class RunOnceAction extends AbstractControlAction {
 		return false;
 	}
 
+	
 	@Override
-	public String getControlActionID() {
-		return caID;
+	public void write(Json json) {
+		json.writeValue("executed", executed);
+	}
+
+	@Override
+	public void read (Json json, JsonValue jsonData) {
+		executed = json.readValue("executed", Boolean.class, jsonData);
 	}
 }

@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
@@ -27,8 +25,6 @@ import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Shows the text and sets the player to lookat in the selected actor direction")
 public class LookAtAction implements Action {
@@ -54,66 +50,45 @@ public class LookAtAction implements Action {
 		}
 	}
 
-	@JsonProperty("actor")
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
-	private String actorId;
+	@ActionPropertyDescription("The target actor")
+	@ActionProperty(type = Type.ACTOR)
+	private String actor;
 
-	@JsonProperty("speech")
-	@JsonPropertyDescription("The 'soundId' to play if selected")
-	@ActionPropertyType(Type.SOUND)
+	@ActionPropertyDescription("The 'soundId' to play if selected")
+	@ActionProperty(type = Type.SOUND)
 	private String soundId;
 
-	@JsonProperty
-	@JsonPropertyDescription("The 'text' to show")
-	@ActionPropertyType(Type.SMALL_TEXT)
+	@ActionPropertyDescription("The 'text' to show")
+	@ActionProperty(type = Type.SMALL_TEXT)
 	private String text;
 
-	@JsonProperty
-	@JsonPropertyDescription("The direction to lookat. If empty, the player lookat to the actor")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("The direction to lookat. If empty, the player lookat to the actor")
 	private Direction direction;
 	
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;	
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actorId = params.get("actor");
-
-		soundId = params.get("speech");
-		text = params.get("text");
-
-		// TODO: Check if EMPTY ("") works correctly
-		final String strDirection = params.get("direction");
-		this.direction = strDirection == null ? null : (strDirection.trim().equals("") ? Direction.EMPTY : Direction.valueOf(strDirection.trim().toUpperCase()));
-		
-		if(params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
 
 		EngineLogger.debug("LOOKAT ACTION");
-		InteractiveActor actor = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actorId, true);
+		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, true);
 
 		CharacterActor player = World.getInstance().getCurrentScene().getPlayer();
 		
 		if(direction!=null) player.lookat(direction.getDirection());
-		else if(actor!=null && player != null) {
-			Rectangle bbox = actor.getBBox().getBoundingRectangle();
+		else if(a!=null && player != null) {
+			Rectangle bbox = a.getBBox().getBoundingRectangle();
 			player.lookat(new Vector2(bbox.x, bbox.y));
 		}
 
 		if (soundId != null) {
-			if (actor == null) {
+			if (a == null) {
 				EngineLogger.debug("Tried to play a sound (" + soundId + "), but there is no actor defined");
 			} else {
-				actor.playSound(soundId);
+				a.playSound(soundId);
 			}
 		}
 

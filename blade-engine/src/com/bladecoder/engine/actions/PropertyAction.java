@@ -15,30 +15,19 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets a global game property")
 public class PropertyAction implements Action {
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("Property name")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("Property name")
+
 	private String prop;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("Property value")
-	@ActionPropertyType(Type.STRING)
-	private String value;
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("Property value")
 
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		prop = params.get("prop");
-		value = params.get("value");
-	}
+	private String value;
 
 	@Override
 	public boolean run(ActionCallback cb) {

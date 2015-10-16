@@ -17,7 +17,6 @@ package com.bladecoder.engineeditor.ui;
 
 import java.util.Arrays;
 
-import com.bladecoder.engineeditor.utils.ActionUtils;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -30,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;

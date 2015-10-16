@@ -187,9 +187,9 @@ public class SpriteList extends ElementList {
 		public TextureRegion getCellImage(Element e) {
 			String u = null;	
 
-			if (e.getAttribute("animation_type").equalsIgnoreCase("repeat")) {
+			if (e.getAttribute("repeat").equalsIgnoreCase("repeat")) {
 				u = "ic_repeat";
-			} else if (e.getAttribute("animation_type").equalsIgnoreCase("yoyo")) {
+			} else if (e.getAttribute("repeat").equalsIgnoreCase("yoyo")) {
 				u = "ic_yoyo";
 			} else {
 				u = "ic_sprite_actor";

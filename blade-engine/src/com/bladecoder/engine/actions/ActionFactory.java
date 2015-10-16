@@ -17,11 +17,9 @@ package com.bladecoder.engine.actions;
 
 import java.util.HashMap;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionFactory;
-
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
+import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class ActionFactory {
@@ -135,8 +133,20 @@ public class ActionFactory {
 			Class<?> c = ClassReflection.forName(className);
 			a = (Action) ClassReflection.newInstance(c);
 			
-			if(params != null)
-				a.setParams(params);
+			if(params != null) {
+//				a.setParams(params);
+				
+				for(String key:params.keySet()) {
+					String value = params.get(key);
+					
+					try {
+						ActionUtils.setParam(a, key, value);
+					} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+						EngineLogger.error("Error Setting Action Param - Action:" + className + 
+								" Param: " + key + " Value: " + value + " Msg: NOT FOUND " + e.getMessage());
+					}
+				}
+			}
 		} catch (ReflectionException e) {
 			EngineLogger.error(e.getMessage());
 		}

@@ -15,20 +15,16 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.loader.XMLConstants;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.VerbRunner;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute only one action inside the Choose/EndChoose block.")
-public class ChooseAction extends AbstractControlAction {
-	private String caID;
-
+public class ChooseAction extends AbstractControlAction implements Serializable {
 	public enum ChooseCriteria {
 		ITERATE, RANDOM, CYCLE
 	}
@@ -36,19 +32,12 @@ public class ChooseAction extends AbstractControlAction {
 	/**
 	 * When the verb is a comma separated verb list, we use chooseCriteria as criteria to choose the verb to execute.
 	 */
-	@JsonProperty(required = true, defaultValue = "CYCLE")
-	@JsonPropertyDescription("The action to execute will be selected following this criteria.")
-	@ActionPropertyType(Type.OPTION)
+	@ActionProperty(required = true, defaultValue = "CYCLE")
+	@ActionPropertyDescription("The action to execute will be selected following this criteria.")
 	private ChooseCriteria chooseCriteria = ChooseCriteria.CYCLE;
 
 	/** Used when choose_criteria is 'iterate' or 'cycle' */
 	int chooseCount = -1;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		chooseCriteria = ChooseCriteria.valueOf(params.get("chooseCriteria").toUpperCase());
-		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
@@ -88,5 +77,16 @@ public class ChooseAction extends AbstractControlAction {
 	@Override
 	public String getControlActionID() {
 		return caID;
+	}
+	
+	
+	@Override
+	public void write(Json json) {
+		json.writeValue("chooseCount", chooseCount);
+	}
+
+	@Override
+	public void read (Json json, JsonValue jsonData) {
+		chooseCount = json.readValue("chooseCount", Integer.class, jsonData);
 	}
 }

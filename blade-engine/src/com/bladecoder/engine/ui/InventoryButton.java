@@ -1,8 +1,6 @@
 package com.bladecoder.engine.ui;
 
 
-import com.bladecoder.engine.ui.InventoryUI;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;

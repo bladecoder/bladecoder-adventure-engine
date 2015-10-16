@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.util;
 
-import com.bladecoder.engine.util.PolygonUtils;
-
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;

@@ -18,46 +18,39 @@ package com.bladecoder.engine.model;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
-import com.bladecoder.engine.model.Verb;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class VerbManager implements Serializable {
-	protected static HashMap<String, Verb> worldVerbs = new HashMap<String, Verb>();
 	protected HashMap<String, Verb> verbs = new HashMap<String, Verb>();
 
 	public void addVerb(String id, Verb v) {
 		verbs.put(id, v);
 	}
 
-	public static void addDefaultVerb(String id, Verb v) {
-		worldVerbs.put(id, v);
-	}
-	
 	// Used only in getVerb(). It is a class variable to avoid allocations
 	private StringBuilder tmpsb = new StringBuilder();
 
 	/**
 	 * Returns an actor Verb.
 	 * 
-	 * Search order:
-	 *   - id.target.state
-	 *   - id.target
-	 *   - id.state
-	 *   - id
+	 * Search order: - id.target.state - id.target - id.state - id
 	 * 
-	 * @param id Verb id
-	 * @param target When an object is used by other object.
+	 * @param id
+	 *            Verb id
+	 * @param target
+	 *            When an object is used by other object.
 	 */
 	public Verb getVerb(String id, String state, String target) {
 		Verb v = null;
-		
-		if(target != null) {
+
+		if (target != null) {
 			tmpsb.setLength(0);
-			if(state != null) {
+			if (state != null) {
 				tmpsb.append(id).append(".").append(target).append(".").append(state);
 				v = verbs.get(tmpsb.toString()); // id.target.state
 			}
@@ -68,11 +61,11 @@ public class VerbManager implements Serializable {
 				v = verbs.get(tmpsb.toString()); // id.target
 			}
 		}
-		
+
 		if (v == null && state != null) {
 			tmpsb.setLength(0);
 			tmpsb.append(id).append(".").append(state);
-			
+
 			v = verbs.get(tmpsb.toString()); // id.state
 		}
 
@@ -80,10 +73,6 @@ public class VerbManager implements Serializable {
 			v = verbs.get(id); // id
 
 		return v;
-	}
-	
-	public static HashMap<String, Verb> getWorldVerbs() {
-		return worldVerbs;
 	}
 
 	public HashMap<String, Verb> getVerbs() {
@@ -93,29 +82,30 @@ public class VerbManager implements Serializable {
 	/**
 	 * Run Verb
 	 * 
-	 * @param verb Verb
-	 * @param target When one object is used with another object.
+	 * @param verb
+	 *            Verb
+	 * @param target
+	 *            When one object is used with another object.
 	 */
 	public void runVerb(String verb, String state, String target) {
 
 		Verb v = null;
-		
+
 		EngineLogger.debug(MessageFormat.format("Run Verb:{0} State: {1} Target: {2}", verb, state, target));
-		
+
 		v = getVerb(verb, state, target);
 
 		if (v == null) {
-			v = worldVerbs.get(verb);
+			v = World.getInstance().getVerbManager().getVerb(verb, null, null);
 		}
 
 		if (v != null) {
 			v.run();
 		} else {
-			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}''",
-					verb, target) );
+			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}''", verb, target));
 		}
 	}
-	
+
 	/**
 	 * Cancels the execution of a running verb
 	 * 
@@ -124,31 +114,39 @@ public class VerbManager implements Serializable {
 	 */
 	public void cancelVerb(String verb, String state, String target) {
 		Verb v = null;
-		
+
 		v = getVerb(verb, state, target);
 
 		if (v == null) {
-			v = worldVerbs.get(verb);
+			v = World.getInstance().getVerbManager().getVerb(verb, null, null);
 		}
 
 		if (v != null)
 			v.cancel();
 		else {
-			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}''",
-					verb, target) );
-		}	
-	}	
+			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}''", verb, target));
+		}
+	}
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("verbs", verbs, verbs == null ? null : verbs.getClass(), Verb.class);
+		json.writeValue("verbs", verbs, verbs.getClass(), Verb.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void read (Json json, JsonValue jsonData) {
-		verbs = json.readValue("verbs", HashMap.class, Verb.class, jsonData);
+	public void read(Json json, JsonValue jsonData) {
+		
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+			verbs = json.readValue("verbs", HashMap.class, Verb.class, jsonData);
+		} else {
+			for(String v: verbs.keySet()) {
+				Verb verb = verbs.get(v);
+							
+				JsonValue jsonValue = jsonData.get("verbs").get(v);
+				verb.read(json, jsonValue);
+			}
+		}
 	}
-
 
 }

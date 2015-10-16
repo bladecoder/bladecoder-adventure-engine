@@ -15,77 +15,46 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Draw a text in the screen")
 public class TextAction implements Action {
-	@JsonProperty
-	@JsonPropertyDescription("The 'text' to show")
-	@ActionPropertyType(Type.SMALL_TEXT)
+	@ActionPropertyDescription("The 'text' to show")
+	@ActionProperty(type = Type.SMALL_TEXT)
 	private String text;
 
-	@JsonProperty(required = true, defaultValue = "default")
-	@JsonPropertyDescription("The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section)")
-	@ActionPropertyType(Type.TEXT_STYLE)
+	@ActionPropertyDescription("The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section)")
+	@ActionProperty(type = Type.TEXT_STYLE, required = true, defaultValue = "default")
 	private String style;
 
-	@JsonProperty
-	@JsonPropertyDescription("The color to use for the font ('white', 'black' or RRGGBBAA). If not set, the default color defined in the style is used.")
-	@ActionPropertyType(Type.COLOR)
+	@ActionPropertyDescription("The color to use for the font ('white', 'black' or RRGGBBAA). If not set, the default color defined in the style is used.")
+	@ActionProperty(type = Type.COLOR)
 	private Color color;
 
-	@JsonProperty
-	@JsonPropertyDescription("The position of the text. -1 for center")
-	@ActionPropertyType(Type.VECTOR2)
+	@ActionProperty
+	@ActionPropertyDescription("The position of the text. -1 for center")
+
 	private Vector2 pos;
 
-	@JsonProperty(required = true, defaultValue = "RECTANGLE")
-	@JsonPropertyDescription("The type of the text.")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true, defaultValue = "RECTANGLE")
+	@ActionPropertyDescription("The type of the text.")
+
 	private Text.Type type = Text.Type.PLAIN;
 
-	@JsonProperty(defaultValue = "false")
-	@JsonPropertyDescription("Queue the text if other text is showing, or show it immediately.")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(defaultValue = "false")
+	@ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")
+
 	private boolean queue = false;
 	
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+
 	private boolean wait = true;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		text = params.get("text");
-		style = params.get("style");
-		color = Param.parseColor(params.get("color"));
-
-		final String strType = params.get("type");
-		if (strType != null) {
-			this.type = Text.Type.valueOf(strType.trim().toUpperCase());
-		}
-
-		if (params.get("pos") != null) {
-			pos = Param.parseVector2(params.get("pos"));
-		}
-		
-		if (params.get("quee") != null) {
-			queue = Boolean.parseBoolean(params.get("quee"));
-		}
-		
-		if(params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {

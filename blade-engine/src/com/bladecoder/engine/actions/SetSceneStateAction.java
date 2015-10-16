@@ -15,35 +15,24 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Sets the scene state")
 public class SetSceneStateAction implements Action {
-	@JsonProperty("scene")
-	@JsonPropertyDescription("The scene")
-	@ActionPropertyType(Type.SCENE)
-	private String sceneId;
+	@ActionPropertyDescription("The scene")
+	@ActionProperty(type = Type.SCENE)
+	private String scene;
 
-	@JsonProperty
-	@JsonPropertyDescription("The scene 'state'")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("The scene 'state'")
+
 	private String state;
-	
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		sceneId = params.get("scene");
-		state = params.get("state");
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {			
-		Scene s = (sceneId != null && !sceneId.isEmpty())? World.getInstance().getScene(sceneId): World.getInstance().getCurrentScene();
+		Scene s = (scene != null && !scene.isEmpty())? World.getInstance().getScene(scene): World.getInstance().getCurrentScene();
 		
 		s.setState(state);
 		

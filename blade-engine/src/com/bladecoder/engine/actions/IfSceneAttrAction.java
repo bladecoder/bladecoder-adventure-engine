@@ -15,51 +15,33 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfSceneAttrAction extends AbstractIfAction {
-	private String caID;
 
 	public enum SceneAttr {
 		STATE
 	}
 
-	@JsonProperty("scene")
-	@JsonPropertyDescription("The scene to check its attribute")
-	@ActionPropertyType(Type.SCENE)
-	private String sceneId;
+	@ActionPropertyDescription("The scene to check its attribute")
+	@ActionProperty(type = Type.SCENE)
+	private String scene;
 
-	@JsonProperty(required = true, defaultValue = "state")
-	@JsonPropertyDescription("The scene attribute")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true, defaultValue = "state")
+	@ActionPropertyDescription("The scene attribute")
 	private SceneAttr attr;
 
-	@JsonProperty
-	@JsonPropertyDescription("The attribute value")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty
+	@ActionPropertyDescription("The attribute value")
 	private String value;
 
 	@Override
-	public void setParams(HashMap<String, String> params) {
-		attr = SceneAttr.valueOf(params.get("attr").trim().toUpperCase());
-		value = params.get("value");
-		sceneId = params.get("scene");
-
-		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
-	}
-
-	@Override
 	public boolean run(ActionCallback cb) {
-		Scene s = (sceneId != null && !sceneId.isEmpty()) ? World.getInstance().getScene(sceneId) : World.getInstance()
+		Scene s = (scene != null && !scene.isEmpty()) ? World.getInstance().getScene(scene) : World.getInstance()
 				.getCurrentScene();
 
 		if (attr == SceneAttr.STATE) {
@@ -69,10 +51,5 @@ public class IfSceneAttrAction extends AbstractIfAction {
 		}
 
 		return false;
-	}
-
-	@Override
-	public String getControlActionID() {
-		return caID;
 	}
 }

@@ -15,65 +15,34 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
 public class CameraAction implements Action {
-	@JsonProperty
-	@JsonPropertyDescription("The target position")
-	@ActionPropertyType(Type.VECTOR2)
+	@ActionProperty
+	@ActionPropertyDescription("The target position")
 	private Vector2 pos;
 
-	@JsonProperty
-	@JsonPropertyDescription("The target 'zoom'")
-	@ActionPropertyType(Type.FLOAT)
+	@ActionProperty
+	@ActionPropertyDescription("The target 'zoom'")
 	private float zoom = -1;
 
-	@JsonProperty
-	@JsonPropertyDescription("Duration of the animation in seconds. If not '0' and animation is triggered")
-	@ActionPropertyType(Type.FLOAT)
-	private float duration;
+	@ActionProperty
+	@ActionPropertyDescription("Duration of the animation in seconds. If not '0' and animation is triggered")
+	private float duration = 0;
 
-	@JsonProperty
-	@JsonPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
+	@ActionProperty(type = Type.ACTOR)
 	private String followActor;
 
-	@JsonProperty(defaultValue = "true", required = true)
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(defaultValue = "true", required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		followActor = params.get("followActor");
-
-		if (params.get("pos") != null)
-			pos = Param.parseVector2(params.get("pos"));
-
-		if (params.get("zoom") != null)
-			zoom = Float.parseFloat(params.get("zoom"));
-
-		if (params.get("duration") != null)
-			duration = Float.parseFloat(params.get("duration"));
-		else
-			duration = 0;
-
-		if (params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
-		
-		if(duration == 0) wait = false;
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
@@ -102,6 +71,7 @@ public class CameraAction implements Action {
 		if (duration == 0) {
 			camera.setZoom(zoom);
 			camera.setPosition(pos.x * scale, pos.y * scale);
+			return false;
 		} else {
 			camera.startAnimation(pos.x * scale, pos.y * scale, zoom, duration, wait?cb:null);
 		}

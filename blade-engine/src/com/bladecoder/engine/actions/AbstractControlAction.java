@@ -3,7 +3,8 @@ package com.bladecoder.engine.actions;
 import java.util.List;
 
 public abstract class AbstractControlAction implements Action {
-	public abstract String getControlActionID();
+	
+	protected String caID;
 
 	protected int skipControlIdBlock(List<Action> actions, int ip) {
 		final String caID = getControlActionID();
@@ -14,5 +15,9 @@ public abstract class AbstractControlAction implements Action {
 				|| !((AbstractControlAction) actions.get(ip)).getControlActionID().equals(caID));
 
 		return ip;
+	}
+
+	public String getControlActionID() {
+		return caID;
 	}
 }

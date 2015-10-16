@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
@@ -26,8 +24,6 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Walks to the selected position")
 public class GotoAction implements Action {
@@ -35,34 +31,28 @@ public class GotoAction implements Action {
 		CENTER, LEFT, RIGHT
 	}
 
-	@JsonProperty
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("The target actor")
+	@ActionProperty(type = Type.ACTOR)
 	private String actor;
 
-	@JsonProperty
-	@JsonPropertyDescription("The position to walk to")
-	@ActionPropertyType(Type.VECTOR2)
+	@ActionProperty
+	@ActionPropertyDescription("The position to walk to")
 	private Vector2 pos;
 
-	@JsonProperty
-	@JsonPropertyDescription("Walks to the target actor position")
-	@ActionPropertyType(Type.ACTOR)
+	@ActionPropertyDescription("Walks to the target actor position")
+	@ActionProperty(type = Type.ACTOR)
 	private String target;
 
-	@JsonProperty(defaultValue = "CENTER")
-	@JsonPropertyDescription("When selecting a target actor, an align can be selected")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(defaultValue = "CENTER")
+	@ActionPropertyDescription("When selecting a target actor, an align can be selected")
 	private Align align;
 
-	@JsonProperty
-	@JsonPropertyDescription("When selecting a target actor, the relative distance to the anchor in each axis")
-	@ActionPropertyType(Type.VECTOR2)
+	@ActionProperty
+	@ActionPropertyDescription("When selecting a target actor, the relative distance to the anchor in each axis")
 	private Vector2 distance;
 
-	@JsonProperty(required = true, defaultValue = "true")
-	@JsonPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	@ActionPropertyType(Type.BOOLEAN)
+	@ActionProperty(required = true, defaultValue = "true")
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
 
 	@Override
@@ -78,8 +68,8 @@ public class GotoAction implements Action {
 			float y = target.getY();
 			float targetBBoxWidth2 = 0;
 			final float actorBBoxWidth2 = actor.getBBox().getBoundingRectangle().width / 2;
-			
-			if(!(target instanceof AnchorActor)) {
+
+			if (!(target instanceof AnchorActor)) {
 				targetBBoxWidth2 = target.getBBox().getBoundingRectangle().width / 2;
 			}
 
@@ -96,40 +86,16 @@ public class GotoAction implements Action {
 				break;
 			}
 
-			x += distance.x;
-			y += distance.y;
+			if (distance != null) {
+				x += distance.x;
+				y += distance.y;
+			}
 
 			actor.goTo(new Vector2(x, y), wait ? cb : null);
 		} else
 			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), wait ? cb : null);
 
 		return wait;
-	}
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		actor = params.get("actor");
-
-		if (params.get("pos") != null) {
-			pos = Param.parseVector2(params.get("pos"));
-		} else if (params.get("target") != null) {
-			target = params.get("target");
-
-			if (params.get("anchor") == null) {
-				align = Align.CENTER;
-			} else {
-				align = Align.valueOf(params.get("anchor").toUpperCase());
-			}
-
-			distance = Param.parseVector2(params.get("distance"));
-
-			if (distance == null)
-				distance = new Vector2();
-		}
-
-		if (params.get("wait") != null) {
-			wait = Boolean.parseBoolean(params.get("wait"));
-		}
 	}
 
 	/**

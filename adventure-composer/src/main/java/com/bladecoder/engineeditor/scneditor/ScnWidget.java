@@ -301,7 +301,6 @@ public class ScnWidget extends Widget {
 
 			batch.end();
 
-			// System.out.println("X: " + v.x+ " Y:" + v.y);
 			Gdx.gl.glViewport((int) v.x, (int) v.y, (int) getWidth(), (int) (getHeight()));
 
 			getStage().calculateScissors(bounds, scissors);

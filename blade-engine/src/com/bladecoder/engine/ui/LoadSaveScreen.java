@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +50,7 @@ import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 	private static final int ROW_SLOTS = 3;
@@ -66,7 +68,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 	// texture list for final dispose
 	private final ArrayList<Texture> textureList = new ArrayList<Texture>();
-	
+
 	private Pointer pointer;
 
 	public LoadSaveScreen() {
@@ -223,7 +225,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 		stage.setKeyboardFocus(table);
 		stage.addActor(table);
-		
+
 		pointer = new Pointer(ui.getSkin());
 		stage.addActor(pointer);
 
@@ -312,13 +314,19 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		public void clicked(InputEvent event, float x, float y) {
 			final World world = World.getInstance();
 			final String filename = event.getListenerActor().getName() + World.GAMESTATE_EXT;
-			if (loadScreenMode) {
-				world.loadGameState(filename);
-			} else {
-				world.saveGameState(filename);
-			}
 
-			ui.setCurrentScreen(Screens.SCENE_SCREEN);
+			try {
+				if (loadScreenMode) {
+					world.loadGameState(filename);
+				} else {
+					world.saveGameState(filename);
+				}
+
+				ui.setCurrentScreen(Screens.SCENE_SCREEN);
+
+			} catch (IOException e) {
+				EngineLogger.error(e.getMessage());
+			}
 		}
 	};
 

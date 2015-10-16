@@ -15,29 +15,19 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
-import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.loader.XMLConstants;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.VerbRunner;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Repeats the actions inside the Repeat/EndRepeat actions.")
-public class RepeatAction extends AbstractControlAction {
-	@JsonProperty(required = true, defaultValue = "1")
-	@JsonPropertyDescription("Repeat the actions the specified times. -1 to infinity")
-	@ActionPropertyType(Type.INTEGER)
+public class RepeatAction extends AbstractControlAction implements Serializable {
+	@ActionProperty(required = true, defaultValue = "1")
+	@ActionPropertyDescription("Repeat the actions the specified times. -1 to infinity")
+
 	private int repeat = 1;
 
 	private int currentRepeat = 0;
-	private String caID;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		repeat = Integer.parseInt(params.get("repeat"));
-		caID = params.get(XMLConstants.CONTROL_ACTION_ID_ATTR);
-	}
 
 	@Override
 	public boolean run(ActionCallback cb) {
@@ -54,9 +44,15 @@ public class RepeatAction extends AbstractControlAction {
 		
 		return false;
 	}
+	
+	
+	@Override
+	public void write(Json json) {
+		json.writeValue("currentRepeat", currentRepeat);
+	}
 
 	@Override
-	public String getControlActionID() {
-		return caID;
+	public void read (Json json, JsonValue jsonData) {
+		currentRepeat = json.readValue("currentRepeat", Integer.class, jsonData);
 	}
 }

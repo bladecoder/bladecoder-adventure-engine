@@ -30,13 +30,15 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class ImageRenderer implements ActorRenderer {
 
 	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
-	
+
 	/** Starts this anim the first time that the scene is loaded */
 	private String initAnimation;
 
@@ -44,35 +46,34 @@ public class ImageRenderer implements ActorRenderer {
 
 	private ImageCacheEntry currentSource;
 	private boolean flipX;
-	
+
 	private final HashMap<String, ImageCacheEntry> sourceCache = new HashMap<String, ImageCacheEntry>();
 	private Polygon bbox;
 
 	class ImageCacheEntry {
 		int refCounter;
-		
+
 		Texture tex;
-	}	
-	
+	}
+
 	public ImageRenderer() {
-		
+
 	}
 
 	@Override
 	public void setInitAnimation(String fa) {
 		initAnimation = fa;
 	}
-	
+
 	@Override
 	public String getInitAnimation() {
 		return initAnimation;
 	}
-	
+
 	@Override
 	public String[] getInternalAnimations(AnimationDesc anim) {
-		return new String[]{anim.source.substring(0,anim.source.lastIndexOf('.'))};
-	}	
-
+		return new String[] { anim.source.substring(0, anim.source.lastIndexOf('.')) };
+	}
 
 	@Override
 	public void update(float delta) {
@@ -82,44 +83,44 @@ public class ImageRenderer implements ActorRenderer {
 	public void updateBboxFromRenderer(Polygon bbox) {
 		this.bbox = bbox;
 	}
-	
+
 	private void computeBbox() {
-		if(bbox == null)
+		if (bbox == null)
 			return;
-		
-		if(bbox.getVertices() == null || bbox.getVertices().length != 8) {
+
+		if (bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
-		
+
 		float[] verts = bbox.getVertices();
-		
-		verts[0] = -getWidth()/2;
+
+		verts[0] = -getWidth() / 2;
 		verts[1] = 0f;
-		verts[2] = -getWidth()/2;
+		verts[2] = -getWidth() / 2;
 		verts[3] = getHeight();
-		verts[4] = getWidth()/2;
+		verts[4] = getWidth() / 2;
 		verts[5] = getHeight();
-		verts[6] = getWidth()/2;
-		verts[7] = 0f;	
+		verts[6] = getWidth() / 2;
+		verts[7] = 0f;
 		bbox.dirty();
 	}
 
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale) {
-		
-		x = x - getWidth() / 2 * scale; // SET THE X ORIGIN TO THE CENTER OF THE SPRITE
+
+		x = x - getWidth() / 2 * scale; // SET THE X ORIGIN TO THE CENTER OF THE
+										// SPRITE
 
 		if (currentSource == null || currentSource.tex == null) {
-			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight()
-					* scale, Color.RED);
+			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
 			return;
 		}
 
 		if (!flipX) {
-			batch.draw(currentSource.tex, x, y, currentSource.tex.getWidth() *  scale,
+			batch.draw(currentSource.tex, x, y, currentSource.tex.getWidth() * scale,
 					currentSource.tex.getHeight() * scale);
 		} else {
-			batch.draw(currentSource.tex, x, y, -currentSource.tex.getWidth() *  scale,
+			batch.draw(currentSource.tex, x, y, -currentSource.tex.getWidth() * scale,
 					currentSource.tex.getHeight() * scale);
 		}
 	}
@@ -147,12 +148,11 @@ public class ImageRenderer implements ActorRenderer {
 
 	@Override
 	public HashMap<String, AnimationDesc> getAnimations() {
-		return (HashMap<String, AnimationDesc>)fanims;
+		return (HashMap<String, AnimationDesc>) fanims;
 	}
 
 	@Override
-	public void startAnimation(String id, Tween.Type repeatType, int count,
-			ActionCallback cb) {
+	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
 		AnimationDesc fa = getAnimation(id);
 
 		if (fa == null) {
@@ -160,12 +160,11 @@ public class ImageRenderer implements ActorRenderer {
 
 			return;
 		}
-		
-		if(cb != null)
+
+		if (cb != null)
 			ActionCallbackQueue.add(cb);
 
-		if (currentAnimation != null
-				&& currentAnimation.disposeWhenPlayed)
+		if (currentAnimation != null && currentAnimation.disposeWhenPlayed)
 			disposeSource(currentAnimation.source);
 
 		currentAnimation = fa;
@@ -188,7 +187,7 @@ public class ImageRenderer implements ActorRenderer {
 				return;
 			}
 		}
-		
+
 		computeBbox();
 	}
 
@@ -209,9 +208,9 @@ public class ImageRenderer implements ActorRenderer {
 
 	@Override
 	public void addAnimation(AnimationDesc fa) {
-		if(initAnimation == null)
-			initAnimation = fa.id; 
-			
+		if (initAnimation == null)
+			initAnimation = fa.id;
+
 		fanims.put(fa.id, fa);
 	}
 
@@ -247,7 +246,7 @@ public class ImageRenderer implements ActorRenderer {
 			else {
 				// search for .left if .frontleft not found and viceversa
 				StringBuilder sb = new StringBuilder();
-				
+
 				if (id.endsWith(AnimationDesc.FRONTLEFT)) {
 					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
 					sb.append(AnimationDesc.LEFT);
@@ -262,7 +261,7 @@ public class ImageRenderer implements ActorRenderer {
 					sb.append(AnimationDesc.FRONTLEFT);
 				} else if (id.endsWith(AnimationDesc.RIGHT)) {
 					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
-					sb.append(AnimationDesc.FRONTRIGHT);			
+					sb.append(AnimationDesc.FRONTRIGHT);
 				}
 
 				String s = sb.toString();
@@ -283,13 +282,13 @@ public class ImageRenderer implements ActorRenderer {
 
 		return fa;
 	}
-	
+
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
 		StringBuilder sb = new StringBuilder(id);
-		
+
 		// if dir==null gets the current animation direction
-		if(direction == null) {
+		if (direction == null) {
 			int idx = getCurrentAnimationId().indexOf('.');
 
 			if (idx != -1) {
@@ -300,10 +299,10 @@ public class ImageRenderer implements ActorRenderer {
 			sb.append('.');
 			sb.append(direction);
 		}
-		
+
 		String anim = sb.toString();
-				
-		if(getAnimation(anim) == null) {
+
+		if (getAnimation(anim) == null) {
 			anim = id;
 		}
 
@@ -314,7 +313,7 @@ public class ImageRenderer implements ActorRenderer {
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
 		startAnimation(id, repeatType, count, cb, AnimationDesc.getDirectionString(p0, pf));
 	}
-	
+
 	private void loadSource(String source) {
 		ImageCacheEntry entry = sourceCache.get(source);
 
@@ -325,8 +324,8 @@ public class ImageRenderer implements ActorRenderer {
 
 		if (entry.refCounter == 0) {
 			// I18N for images
-			if(source.charAt(0) == '@')
-			source = I18N.getString(source.substring(1));
+			if (source.charAt(0) == '@')
+				source = I18N.getString(source.substring(1));
 			EngineAssetManager.getInstance().loadTexture(EngineAssetManager.IMAGE_DIR + source);
 		}
 
@@ -344,9 +343,9 @@ public class ImageRenderer implements ActorRenderer {
 
 		if (entry.tex == null) {
 			// I18N for images
-			if(source.charAt(0) == '@')
+			if (source.charAt(0) == '@')
 				source = I18N.getString(source.substring(1));
-			
+
 			entry.tex = EngineAssetManager.getInstance().getTexture(EngineAssetManager.IMAGE_DIR + source);
 		}
 	}
@@ -388,13 +387,12 @@ public class ImageRenderer implements ActorRenderer {
 		}
 
 		if (currentAnimation != null) {
-			ImageCacheEntry entry = sourceCache
-					.get(currentAnimation.source);
+			ImageCacheEntry entry = sourceCache.get(currentAnimation.source);
 			currentSource = entry;
 		} else if (initAnimation != null) {
 			startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
 		}
-		
+
 		computeBbox();
 	}
 
@@ -411,37 +409,40 @@ public class ImageRenderer implements ActorRenderer {
 	@Override
 	public void write(Json json) {
 
-		json.writeValue("fanims", fanims, HashMap.class, AnimationDesc.class);
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
-		String currentAnimationId = null;
+			json.writeValue("fanims", fanims, HashMap.class, AnimationDesc.class);
+			json.writeValue("initAnimation", initAnimation);
 
-		if (currentAnimation != null)
-			currentAnimationId = currentAnimation.id;
+		} else {
 
-		json.writeValue("currentAnimation", currentAnimationId);
-		
-		json.writeValue("initAnimation", initAnimation);
+			String currentAnimationId = null;
 
-		json.writeValue("flipX", flipX);
+			if (currentAnimation != null)
+				currentAnimationId = currentAnimation.id;
+
+			json.writeValue("currentAnimation", currentAnimationId);
+
+			json.writeValue("flipX", flipX);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
-		fanims = json.readValue("fanims", HashMap.class,
-				AnimationDesc.class, jsonData);
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+			fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
+			initAnimation = json.readValue("initAnimation", String.class, jsonData);
 
-		String currentAnimationId = json.readValue(
-				"currentAnimation", String.class, jsonData);
+		} else {
 
-		if (currentAnimationId != null)
-			currentAnimation = fanims.get(currentAnimationId);
-		
-		initAnimation = json.readValue("initAnimation", String.class,
-				jsonData);
+			String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);
 
-		flipX = json.readValue("flipX", Boolean.class, jsonData);
+			if (currentAnimationId != null)
+				currentAnimation = fanims.get(currentAnimationId);
+			flipX = json.readValue("flipX", Boolean.class, jsonData);
+		}
 	}
 
 }

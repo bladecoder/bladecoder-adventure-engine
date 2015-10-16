@@ -15,63 +15,41 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.HashMap;
-
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.util.EngineLogger;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 @ActionDescription("Change the selected dialog option properties")
 public class SetDialogOptionAttrAction implements Action {
-	@JsonProperty("actor")
-	@JsonPropertyDescription("The target actor")
-	@ActionPropertyType(Type.SCENE_ACTOR)
-	private SceneActorRef sceneActorRef;
+	@ActionProperty
+	@ActionPropertyDescription("The target actor")
+	
+	private SceneActorRef actor;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The dialog")
-	@ActionPropertyType(Type.STRING)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The dialog")
+
 	private String dialog;
 
-	@JsonProperty(required = true)
-	@JsonPropertyDescription("The option")
-	@ActionPropertyType(Type.INTEGER)
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The option")
+
 	private int option;
 
-	@JsonProperty("visible")
-	@JsonPropertyDescription("Show/Hide the dialog option")
-	@ActionPropertyType(Type.BOOLEAN)
-	private boolean visibility;
+	@ActionProperty
+	@ActionPropertyDescription("Show/Hide the dialog option")
 
-	private boolean setVisibility;
-
-	@Override
-	public void setParams(HashMap<String, String> params) {
-		String[] a = Param.parseString2(params.get("actor"));
-
-		sceneActorRef = new SceneActorRef(a[0], a[1]);
-
-		dialog = params.get("dialog");
-		option = Integer.parseInt(params.get("option"));
-
-		if (params.get("visible") != null) {
-			setVisibility = true;
-			visibility = Boolean.parseBoolean(params.get("visible"));
-		}
-	}
+	private Boolean visible;
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		final Scene s = sceneActorRef.getScene();
+		final Scene s = actor.getScene();
 
-		CharacterActor actor = (CharacterActor) s.getActor(sceneActorRef.getActorId(), true);
+		CharacterActor a = (CharacterActor) s.getActor(actor.getActorId(), true);
 
-		Dialog d = actor.getDialog(dialog);
+		Dialog d = a.getDialog(dialog);
 
 		if (d == null) {
 			EngineLogger.error("SetDialogOptionAttrAction: Dialog '" + dialog + "' not found");
@@ -85,8 +63,8 @@ public class SetDialogOptionAttrAction implements Action {
 			return false;
 		}
 
-		if (setVisibility && o != null)
-			o.setVisible(visibility);
+		if (visible != null)
+			o.setVisible(visible);
 
 		return false;
 	}
