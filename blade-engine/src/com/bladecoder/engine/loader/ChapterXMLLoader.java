@@ -123,7 +123,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		} else if (localName.equals(XMLConstants.SOUND_TAG)) {
 			parseSound(atts, (InteractiveActor) actor);
 		} else if (localName.equals(XMLConstants.CHAPTER_TAG)) {
-			initScene = atts.getValue(XMLConstants.INIT_SCENE_ATTR);			
+			initScene = atts.getValue(XMLConstants.INIT_SCENE_ATTR);
 		} else if (localName.equals(XMLConstants.WALK_ZONE_TAG)) {
 			PolygonalNavGraph polygonalPathFinder = new PolygonalNavGraph();
 			Polygon poly = new Polygon();
@@ -232,7 +232,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		} else if (type.equals(XMLConstants.OBSTACLE_VALUE)) {
 			actor = new ObstacleActor();
 		} else if (type.equals(XMLConstants.ANCHOR_VALUE)) {
-			actor = new AnchorActor();			
+			actor = new AnchorActor();
 		} else { // Sprite or character
 			String renderer = atts.getValue(XMLConstants.RENDERER_ATTR);
 
@@ -351,7 +351,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			SAXParseException e2 = new SAXParseException("Bounding box definition not set for actor", locator);
 			error(e2);
 			throw e2;
-		} else if(actor instanceof SpriteActor) {
+		} else if (actor instanceof SpriteActor) {
 			((SpriteActor) actor).setBboxFromRenderer(true);
 		}
 
@@ -376,7 +376,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		if (actor instanceof InteractiveActor) {
 
 			InteractiveActor ia = (InteractiveActor) actor;
-			
+
 			String layerStr = atts.getValue(XMLConstants.LAYER_ATTR);
 			ia.setLayer(layerStr);
 
@@ -403,10 +403,10 @@ public class ChapterXMLLoader extends DefaultHandler {
 				((SpriteActor) actor).setScale(s);
 			}
 		}
-		
+
 		actor.setInitScene(scene.getId());
-		
-		if(SerializationHelper.getInstance().getMode() == Mode.STATE) {
+
+		if (SerializationHelper.getInstance().getMode() == Mode.STATE) {
 			SerializationHelper.getInstance().addActor(actor);
 		} else {
 			scene.addActor(actor);
@@ -651,11 +651,10 @@ public class ChapterXMLLoader extends DefaultHandler {
 			} catch (SAXException e) {
 			}
 		}
-		
-		
+
 		// inject current actor if not setting in params
-		if (action != null && atts.getValue("", XMLConstants.ACTOR_TAG) == null && 
-				ActionUtils.getParam(action.getClass(), XMLConstants.ACTOR_TAG) != null) {
+		if (action != null && atts.getValue("", XMLConstants.ACTOR_TAG) == null
+				&& ActionUtils.getParam(action.getClass(), XMLConstants.ACTOR_TAG) != null) {
 			try {
 				ActionUtils.setParam(action, XMLConstants.ACTOR_TAG, actor);
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {

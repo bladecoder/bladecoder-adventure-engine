@@ -56,7 +56,6 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.model.WorldDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
-import com.bladecoder.engineeditor.ui.components.ElementList;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
@@ -99,8 +98,8 @@ public class SceneList extends ModelList<Scene> {
 					Ctx.project.setSelectedScene(null);
 				} else {
 					Scene a = list.getItems().get(pos);
-					//TODO
-//					Ctx.project.setSelectedScene(a);
+					
+					Ctx.project.setSelectedScene(Ctx.project.getSelectedChapter().getSceneById(a.getId()));
 				}
 
 				toolbar.disableEdit(pos == -1);

@@ -41,7 +41,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class WorldXMLLoader extends DefaultHandler {
-	
+
 	private World world;
 
 	private Verb currentVerb;
@@ -50,8 +50,7 @@ public class WorldXMLLoader extends DefaultHandler {
 
 	private Locator locator;
 
-	public static void loadWorld(World world)
-			throws ParserConfigurationException, SAXException, IOException {
+	public static void loadWorld(World world) throws ParserConfigurationException, SAXException, IOException {
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		spf.setNamespaceAware(true);
 		SAXParser saxParser = spf.newSAXParser();
@@ -59,12 +58,11 @@ public class WorldXMLLoader extends DefaultHandler {
 		WorldXMLLoader parser = new WorldXMLLoader(world);
 		XMLReader xmlReader = saxParser.getXMLReader();
 		xmlReader.setContentHandler(parser);
-		xmlReader.parse(new InputSource(EngineAssetManager.getInstance()
-				.getModelFile(XMLConstants.WORLD_FILENAME).read()));
-		
+		xmlReader.parse(
+				new InputSource(EngineAssetManager.getInstance().getModelFile(XMLConstants.WORLD_FILENAME).read()));
+
 		I18N.loadWorld(EngineAssetManager.MODEL_DIR + "world");
 	}
-	
 
 	public static void loadChapter(String chapter, World world)
 			throws ParserConfigurationException, SAXException, IOException {
@@ -79,8 +77,8 @@ public class WorldXMLLoader extends DefaultHandler {
 		ChapterXMLLoader parser = new ChapterXMLLoader();
 		XMLReader xmlReader = saxParser.getXMLReader();
 		xmlReader.setContentHandler(parser);
-		xmlReader.parse(new InputSource(EngineAssetManager.getInstance()
-				.getModelFile(chapter + XMLConstants.CHAPTER_EXT).read()));
+		xmlReader.parse(new InputSource(
+				EngineAssetManager.getInstance().getModelFile(chapter + XMLConstants.CHAPTER_EXT).read()));
 
 		I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapter);
 
@@ -92,19 +90,18 @@ public class WorldXMLLoader extends DefaultHandler {
 			world.addScene(s);
 		}
 
-		if (parser.getInitScene() != null)
+		if (parser.getInitScene() != null) {
+			world.setInitScene(parser.getInitScene());
 			world.setCurrentScene(parser.getInitScene());
-		else if (parser.getScenes().size() > 0)
-			world.setCurrentScene(parser.getScenes().get(0).getId());
-	}	
+		}
+	}
 
 	public WorldXMLLoader(World world) {
 		this.world = world;
 	}
 
 	@Override
-	public void startElement(String namespaceURI, String localName,
-			String qName, Attributes atts) throws SAXException {
+	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
 
 		if (currentVerb != null) {
 			parseAction(localName, atts);
@@ -123,8 +120,7 @@ public class WorldXMLLoader extends DefaultHandler {
 				height = (int) (height * scale);
 
 			} catch (NumberFormatException e) {
-				SAXParseException e2 = new SAXParseException(
-						"World 'width' or 'height' missing or incorrect in XML.",
+				SAXParseException e2 = new SAXParseException("World 'width' or 'height' missing or incorrect in XML.",
 						locator);
 				error(e2);
 				throw e2;
@@ -143,8 +139,7 @@ public class WorldXMLLoader extends DefaultHandler {
 	}
 
 	@Override
-	public void endElement(String namespaceURI, String localName, String qName)
-			throws SAXException {
+	public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
 
 		if (localName.equals(XMLConstants.VERB_TAG)) {
 			currentVerb = null;
@@ -183,8 +178,7 @@ public class WorldXMLLoader extends DefaultHandler {
 				currentVerb.add(action);
 			}
 		} else {
-			EngineLogger.error("TAG not supported inside VERB: " + localName
-					+ " LINE: " + locator.getLineNumber());
+			EngineLogger.error("TAG not supported inside VERB: " + localName + " LINE: " + locator.getLineNumber());
 		}
 	}
 
@@ -195,8 +189,7 @@ public class WorldXMLLoader extends DefaultHandler {
 
 	@Override
 	public void error(SAXParseException e) throws SAXException {
-		EngineLogger.error(MessageFormat.format(
-				"{0} in 'world.xml' Line: {1} Column: {2}", e.getMessage(),
+		EngineLogger.error(MessageFormat.format("{0} in 'world.xml' Line: {1} Column: {2}", e.getMessage(),
 				e.getLineNumber(), e.getColumnNumber()));
 	}
 

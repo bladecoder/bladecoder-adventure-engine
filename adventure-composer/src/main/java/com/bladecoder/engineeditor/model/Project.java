@@ -283,7 +283,9 @@ public class Project extends PropertyChange {
 			World.getInstance().loadWorldDesc();
 			world.setModelPath(projectFile.getAbsolutePath() + "/" + MODEL_PATH);
 			world.load();
-			selectedChapter = world.loadChapter(world.getInitChapter());
+			
+			loadChapter(world.getInitChapter());
+			
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 						
 			projectConfig = new Properties();
@@ -349,6 +351,7 @@ public class Project extends PropertyChange {
 		undoStack.clear();
 		
 		selectedChapter = world.loadChapter(selChapter);
+		World.getInstance().loadChapter(selChapter);
 		
 //		if(selectedChapter != null) {
 //			NodeList scenes = selectedChapter.getScenes();
