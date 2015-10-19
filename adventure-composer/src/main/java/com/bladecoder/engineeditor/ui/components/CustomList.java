@@ -52,7 +52,7 @@ public class CustomList<T> extends Widget implements Cullable {
 	public CustomList(Skin skin, CellRenderer<T> r) {
 		this(skin.get(CustomListStyle.class), r);
 	}
-	
+
 	public CustomList(Skin skin) {
 		this(skin.get(CustomListStyle.class), new CellRenderer<T>());
 	}
@@ -65,15 +65,14 @@ public class CustomList<T> extends Widget implements Cullable {
 		selection = new ArraySelection<T>(items);
 		selection.setActor(this);
 		selection.setRequired(true);
-		
+
 		cellRenderer = r;
 
 		setStyle(style);
 		setSize(getPrefWidth(), getPrefHeight());
 
 		addListener(new InputListener() {
-			public boolean touchDown(InputEvent event, float x, float y,
-					int pointer, int button) {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				if (pointer == 0 && button != 0)
 					return false;
 				if (selection.isDisabled())
@@ -85,16 +84,15 @@ public class CustomList<T> extends Widget implements Cullable {
 	}
 
 	public void setCellRenderer(CellRenderer<T> r) {
-		cellRenderer = r;	
+		cellRenderer = r;
 	}
-	
+
 	void touchDown(float y) {
 		if (items.size == 0)
 			return;
 		float height = getHeight();
 		if (style.background != null) {
-			height -= style.background.getTopHeight()
-					+ style.background.getBottomHeight();
+			height -= style.background.getTopHeight() + style.background.getBottomHeight();
 			y -= style.background.getBottomHeight();
 		}
 		int index = (int) ((height - y) / cellRenderer.getItemHeight());
@@ -121,56 +119,55 @@ public class CustomList<T> extends Widget implements Cullable {
 	public void layout() {
 		final BitmapFont font = style.font;
 		final Drawable selectedDrawable = style.selection;
-		
+
 		cellRenderer.layout(style);
-		
-		
+
 		GlyphLayout textLayout = new GlyphLayout();
 
 		prefWidth = 0;
 		for (int i = 0; i < items.size; i++) {
-			
-			textLayout.setText(font, cellRenderer.getCellTitle(items.get(i)));
-			
-			prefWidth = Math.max(textLayout.width, prefWidth);
-			
-			if(cellRenderer.hasSubtitle()) {
-				
-				textLayout.setText(font, cellRenderer.getCellSubTitle(items.get(i)));
 
-				prefWidth = Math.max(textLayout.width, prefWidth);
+			textLayout.setText(font, cellRenderer.getCellTitle(items.get(i)));
+
+			prefWidth = Math.max(textLayout.width, prefWidth);
+
+			if (cellRenderer.hasSubtitle()) {
+				String subtitle = cellRenderer.getCellSubTitle(items.get(i));
+
+				if (subtitle != null) {
+					textLayout.setText(font, subtitle);
+					prefWidth = Math.max(textLayout.width, prefWidth);
+				}
 			}
-			
-			if(cellRenderer.hasImage()) {
+
+			if (cellRenderer.hasImage()) {
 				TextureRegion r = cellRenderer.getCellImage(items.get(i));
-				
+
 				float ih = r.getRegionHeight();
 				float iw = r.getRegionWidth();
-						
-				if(ih > getItemHeight() - 10) {
+
+				if (ih > getItemHeight() - 10) {
 					ih = getItemHeight() - 10;
 					iw *= ih / r.getRegionHeight();
 				}
-				
+
 				prefWidth = Math.max(iw, prefWidth);
 			}
 		}
-		
-		prefWidth += selectedDrawable.getLeftWidth()
-				+ selectedDrawable.getRightWidth();
-		
+
+		prefWidth += selectedDrawable.getLeftWidth() + selectedDrawable.getRightWidth();
+
 		prefHeight = items.size * cellRenderer.getItemHeight();
 
 		Drawable background = style.background;
 		if (background != null) {
 			prefWidth += background.getLeftWidth() + background.getRightWidth();
-			prefHeight += background.getTopHeight()
-					+ background.getBottomHeight();
+			prefHeight += background.getTopHeight() + background.getBottomHeight();
 		}
 	}
 
 	@Override
-	public void draw (Batch batch, float parentAlpha) {
+	public void draw(Batch batch, float parentAlpha) {
 		validate();
 
 		Color color = getColor();
@@ -189,12 +186,14 @@ public class CustomList<T> extends Widget implements Cullable {
 		}
 
 		for (int i = 0; i < items.size; i++) {
-			if (cullingArea == null || (itemY - cellRenderer.getItemHeight() <= cullingArea.y + cullingArea.height && itemY >= cullingArea.y)) {
+			if (cullingArea == null || (itemY - cellRenderer.getItemHeight() <= cullingArea.y + cullingArea.height
+					&& itemY >= cullingArea.y)) {
 				T item = items.get(i);
 				boolean selected = selection.contains(item);
-				
-				cellRenderer.draw(batch, parentAlpha, item, selected, x, y + itemY, width, cellRenderer.getItemHeight());
-				
+
+				cellRenderer.draw(batch, parentAlpha, item, selected, x, y + itemY, width,
+						cellRenderer.getItemHeight());
+
 			} else if (itemY < cullingArea.y) {
 				break;
 			}
@@ -212,8 +211,8 @@ public class CustomList<T> extends Widget implements Cullable {
 	}
 
 	/**
-	 * @return The index of the first selected item. The top item has an index of
-	 *         0. Nothing selected has an index of -1.
+	 * @return The index of the first selected item. The top item has an index
+	 *         of 0. Nothing selected has an index of -1.
 	 */
 	public int getSelectedIndex() {
 		ObjectSet<T> selected = selection.items();
@@ -223,8 +222,7 @@ public class CustomList<T> extends Widget implements Cullable {
 	/** Sets the selection to only the selected index. */
 	public void setSelectedIndex(int index) {
 		if (index < -1 || index >= items.size)
-			throw new IllegalArgumentException("index must be >= -1 and < "
-					+ items.size + ": " + index);
+			throw new IllegalArgumentException("index must be >= -1 and < " + items.size + ": " + index);
 		selection.set(items.get(index));
 	}
 
@@ -291,8 +289,8 @@ public class CustomList<T> extends Widget implements Cullable {
 		public CustomListStyle() {
 		}
 
-		public CustomListStyle(BitmapFont font, Color fontColorSelected,
-				Color fontColorUnselected, Drawable selection) {
+		public CustomListStyle(BitmapFont font, Color fontColorSelected, Color fontColorUnselected,
+				Drawable selection) {
 			this.font = font;
 			this.fontColorSelected.set(fontColorSelected);
 			this.fontColorUnselected.set(fontColorUnselected);

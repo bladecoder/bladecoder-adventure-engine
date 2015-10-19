@@ -136,7 +136,7 @@ public class ProjectToolbar extends Table {
 			}
 		});
 
-		Ctx.project.getWorld().addPropertyChangeListener(new PropertyChangeListener() {
+		Ctx.project.getWorldDocument().addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
 				saveBtn.setDisabled(e.getPropertyName().equals("DOCUMENT_SAVED"));

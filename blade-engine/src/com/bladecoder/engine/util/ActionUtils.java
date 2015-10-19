@@ -89,7 +89,7 @@ public class ActionUtils {
 	public static void setParam(Action action, String param, String value) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		Class<?> clazz = action.getClass();
 		
-		Field field = getParam(clazz, param);
+		Field field = getField(clazz, param);
 		
 		if(field == null)
 			throw new NoSuchFieldException(param);
@@ -143,7 +143,7 @@ public class ActionUtils {
 		field.setAccessible(accessible);
 	}
 	
-	public static Field getParam(Class<?> clazz, String fieldName) {
+	public static Field getField(Class<?> clazz, String fieldName) {
 	    Class<?> current = clazz;
 	    
 	    do {

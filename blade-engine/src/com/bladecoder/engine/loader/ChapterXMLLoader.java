@@ -602,14 +602,16 @@ public class ChapterXMLLoader extends DefaultHandler {
 		String id = atts.getValue(XMLConstants.ID_ATTR);
 		String target = atts.getValue(XMLConstants.TARGET_ATTR);
 		String state = atts.getValue(XMLConstants.STATE_ATTR);
+		
+		currentVerb = new Verb(id);
+		currentVerb.setState(state);
+		currentVerb.setTarget(target);
 
 		if (target != null)
 			id = id + "." + target;
 
 		if (state != null)
 			id = id + "." + state;
-
-		currentVerb = new Verb(id);
 
 		v.addVerb(id, currentVerb);
 	}
@@ -654,7 +656,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 
 		// inject current actor if not setting in params
 		if (action != null && atts.getValue("", XMLConstants.ACTOR_TAG) == null
-				&& ActionUtils.getParam(action.getClass(), XMLConstants.ACTOR_TAG) != null) {
+				&& ActionUtils.getField(action.getClass(), XMLConstants.ACTOR_TAG) != null) {
 			try {
 				ActionUtils.setParam(action, XMLConstants.ACTOR_TAG, actor);
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {

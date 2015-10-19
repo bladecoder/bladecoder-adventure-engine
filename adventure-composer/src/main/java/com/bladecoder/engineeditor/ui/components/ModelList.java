@@ -15,22 +15,11 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
-import java.util.Comparator;
 import java.util.List;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.BaseDocument;
-import com.bladecoder.engineeditor.undo.UndoAddElement;
-import com.bladecoder.engineeditor.undo.UndoDeleteElement;
-import com.bladecoder.engineeditor.undo.UndoOp;
-import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public abstract class ModelList<T> extends EditList<T> {
 	

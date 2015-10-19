@@ -22,10 +22,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engineeditor.model.BaseDocument;
 
 
 public class I18NUtils {
+	
+	public static String translate(String key) {
+		if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+			return key;
+
+		
+		return I18N.getString(key.substring(1));
+	}
 	
 	public static boolean mustTraslateAttr(String attrName) {
 		if (attrName.equals("desc") || attrName.toLowerCase().endsWith("text")) {

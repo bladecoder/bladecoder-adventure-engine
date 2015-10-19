@@ -15,26 +15,27 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import org.w3c.dom.Element;
+import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
-import com.bladecoder.engineeditor.ui.components.ElementList;
+import com.bladecoder.engineeditor.ui.components.ModelList;
 
-public class DialogList extends ElementList {	
+public class DialogList extends ModelList<Dialog> {	
 	
     private DialogOptionList options;
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(Element e) {
-		return new EditDialogDialog(skin, doc, parent, e);
+	protected EditElementDialog getEditElementDialogInstance(Dialog e) {
+//		return new EditDialogDialog(skin, doc, parent, e);
+		
+		return null;
 	}
 	
     public DialogList(Skin skin) {
@@ -49,14 +50,7 @@ public class DialogList extends ElementList {
 			public void changed(ChangeEvent event, Actor actor) {
 				int pos = list.getSelectedIndex();
 				
-				Element v = null;
-				
-				if(pos != -1) {
-					v = list.getItems().get(pos);
-					options.addElements(doc, v, XMLConstants.OPTION_TAG);
-				} else {
-					options.addElements(doc, null, XMLConstants.OPTION_TAG);
-				}
+				addOptions();
 				
 				toolbar.disableEdit(pos == -1);
 			}
@@ -68,26 +62,39 @@ public class DialogList extends ElementList {
 		container.maxHeight(listCellRenderer.getItemHeight() * 5);
     }
     
+    public void addOptions() {
+		int pos = list.getSelectedIndex();
+
+		Dialog d = null;
+
+		if (pos != -1) {
+			d = list.getItems().get(pos);
+			options.addElements(d);
+		} else { 
+			options.addElements((Dialog)null);
+		}    	
+    }
+    
     
 	@Override
-	public void addElements(BaseDocument doc, Element parent, String tag) {
-		options.addElements(doc, null, XMLConstants.OPTION_TAG);
-		super.addElements(doc, parent, tag);
+	public void addElements(List<Dialog> elements) {
+		super.addElements(elements);
+		addOptions();
     }	
 
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
-	private final CellRenderer<Element> listCellRenderer = new CellRenderer<Element>() {
+	private final CellRenderer<Dialog> listCellRenderer = new CellRenderer<Dialog>() {
 
 		@Override
-		protected String getCellTitle(Element e) {
-			return e.getAttribute("id");
+		protected String getCellTitle(Dialog e) {
+			return e.getId();
 		}
 
 		@Override
-		public TextureRegion getCellImage(Element e) {
+		public TextureRegion getCellImage(Dialog e) {
 			return Ctx.assetManager.getIcon("ic_talkto");
 		}
 		

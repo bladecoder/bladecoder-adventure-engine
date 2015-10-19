@@ -27,7 +27,7 @@ public class LayerInputPanel extends EditableOptionsInputPanel<String> {
 	}
 
 	private static String[] getValues(boolean mandatory) {
-		NodeList layers = Ctx.project.getSelectedChapter().getLayers(Ctx.project.getSelectedScene());
+		NodeList layers = Ctx.project.getSelectedChapter().getLayers(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()));
 
 		return OptionsInputPanelUtils.getIdFromNodeList(mandatory, layers);
 	}

@@ -21,6 +21,8 @@ import java.util.ResourceBundle;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class I18N {
+	public static final char PREFIX = '@';
+	
 	private static ResourceBundle i18nWorld;
 	private static ResourceBundle i18nChapter;
 	

@@ -18,25 +18,30 @@ package com.bladecoder.engineeditor.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import org.w3c.dom.Element;
-
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.AnchorActor;
+import com.bladecoder.engine.model.AtlasRenderer;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
+import com.bladecoder.engine.model.ImageRenderer;
+import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.ObstacleActor;
+import com.bladecoder.engine.model.Sprite3DRenderer;
+import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.BaseDocument;
-import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
-import com.bladecoder.engineeditor.ui.components.ElementList;
-import com.bladecoder.engineeditor.undo.UndoOp;
+import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.utils.I18NUtils;
 
-public class ActorList extends ElementList {
+public class ActorList extends ModelList<BaseActor> {
 
 	private ImageButton playerBtn;
 
@@ -55,9 +60,9 @@ public class ActorList extends ElementList {
 				int pos = list.getSelectedIndex();
 
 				if (pos == -1) {
-					Ctx.project.setSelectedActor(null);
+					Ctx.project.setSelectedActor((BaseActor)null);
 				} else {
-					Element a = list.getItems().get(pos);
+					BaseActor a = list.getItems().get(pos);
 					Ctx.project.setSelectedActor(a);
 				}
 
@@ -81,13 +86,13 @@ public class ActorList extends ElementList {
 				int pos = list.getSelectedIndex();
 
 				// Element newActor = (Element) e.getNewValue();
-				Element newActor = Ctx.project.getSelectedActor();
+				BaseActor newActor = Ctx.project.getSelectedActor();
 
 				if (newActor == null)
 					return;
 
 				if (pos != -1) {
-					Element oldActor = list.getItems().get(pos);
+					BaseActor oldActor = list.getItems().get(pos);
 
 					if (oldActor == newActor) {
 						return;
@@ -100,132 +105,132 @@ public class ActorList extends ElementList {
 			}
 		});
 
-		Ctx.project.getWorld().addPropertyChangeListener(new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent e) {
-				if (e.getPropertyName().equals(BaseDocument.NOTIFY_ELEMENT_DELETED)) {
-					if (((Element) e.getNewValue()).getTagName().equals("actor")) {
-						Element el = (Element) e.getNewValue();
-
-						for (Element e2 : list.getItems()) {
-							if (e2 == el) {
-								int pos = list.getItems().indexOf(e2, true);
-
-								list.getItems().removeIndex(pos);
-
-								clipboard = e2;
-								I18NUtils.putTranslationsInElement(doc, clipboard);
-								toolbar.disablePaste(false);
-
-								if (pos > 0)
-									list.setSelectedIndex(pos - 1);
-								else if (pos == 0 && list.getItems().size > 0)
-									list.setSelectedIndex(0);
-							}
-						}
-					}
-				} else if (e.getPropertyName().equals("actor") && e.getSource() instanceof UndoOp) {
-					Element el = (Element) e.getNewValue();
-
-					if (getItems().indexOf(el, true) != -1)
-						return;
-
-					addItem(el);
-
-					int i = getItems().indexOf(el, true);
-					if (i != -1)
-						list.setSelectedIndex(i);
-
-					list.invalidateHierarchy();
-				}
-			}
-		});
+//		Ctx.project.getWorld().addPropertyChangeListener(new PropertyChangeListener() {
+//			@Override
+//			public void propertyChange(PropertyChangeEvent e) {
+//				if (e.getPropertyName().equals(BaseDocument.NOTIFY_ELEMENT_DELETED)) {
+//					if (((Element) e.getNewValue()).getTagName().equals("actor")) {
+//						Element el = (Element) e.getNewValue();
+//
+//						for (BaseActor e2 : list.getItems()) {
+//							if (e2 == el) {
+//								int pos = list.getItems().indexOf(e2, true);
+//
+//								list.getItems().removeIndex(pos);
+//
+//								clipboard = e2;
+//								I18NUtils.putTranslationsInElement(doc, clipboard);
+//								toolbar.disablePaste(false);
+//
+//								if (pos > 0)
+//									list.setSelectedIndex(pos - 1);
+//								else if (pos == 0 && list.getItems().size > 0)
+//									list.setSelectedIndex(0);
+//							}
+//						}
+//					}
+//				} else if (e.getPropertyName().equals("actor") && e.getSource() instanceof UndoOp) {
+//					BaseActor el = (BaseActor) e.getNewValue();
+//
+//					if (getItems().indexOf(el, true) != -1)
+//						return;
+//
+//					addItem(el);
+//
+//					int i = getItems().indexOf(el, true);
+//					if (i != -1)
+//						list.setSelectedIndex(i);
+//
+//					list.invalidateHierarchy();
+//				}
+//			}
+//		});
 	}
 
 	@Override
 	protected void delete() {
-		int pos = list.getSelectedIndex();
-
-		if (pos == -1)
-			return;
-
-		Element e = list.getItems().get(pos);
-
-		// delete player attr if the actor to delete is the player
-		if (((Element) e.getParentNode()).getAttribute("player").equals(e.getAttribute("id"))) {
-			((Element) e.getParentNode()).removeAttribute("player");
-		}
-
-		super.delete();
+//		int pos = list.getSelectedIndex();
+//
+//		if (pos == -1)
+//			return;
+//
+//		Element e = list.getItems().get(pos);
+//
+//		// delete player attr if the actor to delete is the player
+//		if (((Element) e.getParentNode()).getAttribute("player").equals(e.getAttribute("id"))) {
+//			((Element) e.getParentNode()).removeAttribute("player");
+//		}
+//
+//		super.delete();
 	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(Element e) {
-		return new EditActorDialog(skin, doc, parent, e);
+	protected EditElementDialog getEditElementDialogInstance(BaseActor a) {
+		
+		return null;
 	}
 
 	private void setPlayer() {
-		ChapterDocument scn = (ChapterDocument) doc;
 
 		int pos = list.getSelectedIndex();
 
 		if (pos == -1)
 			return;
 
-		Element e = list.getItems().get(pos);
+		BaseActor a = list.getItems().get(pos);
 
-		if (e.getAttribute(XMLConstants.TYPE_ATTR).equals(XMLConstants.CHARACTER_VALUE)) {
-			String id = e.getAttribute(XMLConstants.ID_ATTR);
-
-			scn.setRootAttr(parent, XMLConstants.PLAYER_ATTR, id);
+		if (a instanceof CharacterActor) {
+			a.getScene().setPlayer((CharacterActor)a);
 		}
 	}
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
-	private final CellRenderer<Element> listCellRenderer = new CellRenderer<Element>() {
+	private final CellRenderer<BaseActor> listCellRenderer = new CellRenderer<BaseActor>() {
 
 		@Override
-		protected String getCellTitle(Element e) {
-			return e.getAttribute(XMLConstants.ID_ATTR);
+		protected String getCellTitle(BaseActor e) {
+			return e.getId();
 		}
 
 		@Override
-		protected String getCellSubTitle(Element e) {
-			return doc.getTranslation(e.getAttribute(XMLConstants.DESC_ATTR));
+		protected String getCellSubTitle(BaseActor e) {
+			if(e instanceof InteractiveActor)
+				return I18NUtils.translate(((InteractiveActor) e).getDesc());
+			
+			return "";
 		}
 
 		@Override
-		public TextureRegion getCellImage(Element e) {
-			String type = e.getAttribute(XMLConstants.TYPE_ATTR);
-			String renderer = e.getAttribute(XMLConstants.RENDERER_ATTR);
+		public TextureRegion getCellImage(BaseActor a) {
 
-			boolean isPlayer = ((Element) e.getParentNode()).getAttribute(XMLConstants.PLAYER_ATTR)
-					.equals(e.getAttribute(XMLConstants.ID_ATTR));
-
+			boolean isPlayer = (a.getScene().getPlayer() == a);
 			String u = null;
 
 			if (isPlayer) {
 				u = "ic_player";
-			} else if (type.equals(XMLConstants.BACKGROUND_VALUE)) {
-				u = "ic_base_actor";
-			} else if (type.equals(XMLConstants.SPRITE_VALUE)) {
-				if (renderer.equals(XMLConstants.IMAGE_VALUE)) {
-					u = "ic_sprite_actor";
-				} else if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
-					u = "ic_sprite_actor";
-				} else if (renderer.equals(XMLConstants.SPINE_VALUE)) {
-					u = "ic_spine";
-				} else if (renderer.equals(XMLConstants.S3D_VALUE)) {
-					u = "ic_3d";
-				}
-			} else if (type.equals(XMLConstants.OBSTACLE_VALUE)) {
-				u = "ic_obstacle_actor";
-			} else if (type.equals(XMLConstants.ANCHOR_VALUE)) {
-				u = "ic_anchor";				
-			} else if (type.equals(XMLConstants.CHARACTER_VALUE)) {
+			} else if (a instanceof CharacterActor) {
 				u = "ic_character_actor";
+			} else if (a instanceof SpriteActor) {
+				ActorRenderer r = ((SpriteActor) a).getRenderer();
+				
+				if (r instanceof ImageRenderer) {
+					u = "ic_sprite_actor";
+				} else if (r instanceof AtlasRenderer) {
+					u = "ic_sprite_actor";
+				} else if (r instanceof SpineRenderer) {
+					u = "ic_spine";
+				} else if (r instanceof Sprite3DRenderer) {
+					u = "ic_3d";
+				}				
+			} else if (a instanceof InteractiveActor) {
+				u = "ic_base_actor";
+			} else if (a instanceof ObstacleActor) {
+				u = "ic_obstacle_actor";
+			} else if (a instanceof AnchorActor) {
+				u = "ic_anchor";				
+			
 			}
 
 			return Ctx.assetManager.getIcon(u);

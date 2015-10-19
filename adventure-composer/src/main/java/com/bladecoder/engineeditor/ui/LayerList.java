@@ -15,25 +15,21 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Array;
+import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
-import com.bladecoder.engineeditor.ui.components.ElementList;
+import com.bladecoder.engineeditor.ui.components.ModelList;
 
 // TODO: Visibility button
 
-public class LayerList extends ElementList {
-	
+public class LayerList extends ModelList<SceneLayer> {
+
 	private ImageButton upBtn;
 	private ImageButton downBtn;
 	private ImageButton visibilityBtn;
@@ -42,10 +38,9 @@ public class LayerList extends ElementList {
 		super(skin, false);
 
 		list.setCellRenderer(listCellRenderer);
-		
+
 		visibilityBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(visibilityBtn, "ic_eye", "Toggle Visibility",
-				"Toggle Visibility");
+		toolbar.addToolBarButton(visibilityBtn, "ic_eye", "Toggle Visibility", "Toggle Visibility");
 
 		visibilityBtn.setDisabled(false);
 
@@ -55,8 +50,7 @@ public class LayerList extends ElementList {
 				toggleVisibility();
 			}
 		});
-		
-		
+
 		upBtn = new ImageButton(skin);
 		downBtn = new ImageButton(skin);
 
@@ -77,160 +71,144 @@ public class LayerList extends ElementList {
 		});
 
 		upBtn.addListener(new ChangeListener() {
-			
+
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				up();
 			}
 		});
-		
-		
+
 		downBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				down();
 			}
-		});		
+		});
 	}
-	
+
 	private void toggleVisibility() {
 
-		Element e = list.getSelected();
+		SceneLayer e = list.getSelected();
 
 		if (e == null)
 			return;
 
-		String value = e.getAttribute("visible");
-		
-		if(value.equals("true"))
-			value = "false";
-		else
-			value = "true";
-		
-		e.setAttribute("visible", value);
-		doc.setModified(e);
+		e.setVisible(!e.isVisible());
+
+//		Ctx.project.getSelectedChapter().setModified(e);
 	}
-	
+
 	private void up() {
-		int pos = list.getSelectedIndex();
-
-		if (pos == -1 || pos == 0)
-			return;
-
-		Array<Element> items =  list.getItems();
-		Element e = items.get(pos);
-		Element e2 = items.get(pos - 1);
-
-		Node parent = e.getParentNode();
-		parent.removeChild(e);
-		parent.insertBefore(e, e2);
-
-		items.removeIndex(pos);
-		items.insert( pos - 1, e);
-		list.setSelectedIndex(pos - 1);
-		upBtn.setDisabled(list.getSelectedIndex() == 0);
-		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
-
-		doc.setModified(e);
+//		int pos = list.getSelectedIndex();
+//
+//		if (pos == -1 || pos == 0)
+//			return;
+//
+//		Array<SceneLayer> items = list.getItems();
+//		Element e = items.get(pos);
+//		Element e2 = items.get(pos - 1);
+//
+//		Node parent = e.getParentNode();
+//		parent.removeChild(e);
+//		parent.insertBefore(e, e2);
+//
+//		items.removeIndex(pos);
+//		items.insert(pos - 1, e);
+//		list.setSelectedIndex(pos - 1);
+//		upBtn.setDisabled(list.getSelectedIndex() == 0);
+//		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+//
+//		doc.setModified(e);
 	}
 
 	private void down() {
-		int pos = list.getSelectedIndex();
-		Array<Element> items =  list.getItems();
-
-		if (pos == -1 || pos == items.size - 1)
-			return;
-
-		Element e = items.get(pos);
-		Element e2 = pos + 2 < items.size ? items.get(pos + 2) : null;
-
-		Node parent = e.getParentNode();
-		parent.removeChild(e);
-		parent.insertBefore(e, e2);
-
-		
-		items.removeIndex(pos);
-		items.insert(pos + 1, e);
-		list.setSelectedIndex(pos + 1);
-		upBtn.setDisabled(list.getSelectedIndex() == 0);
-		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
-
-		doc.setModified(e);
-	}	
+//		int pos = list.getSelectedIndex();
+//		Array<Element> items = list.getItems();
+//
+//		if (pos == -1 || pos == items.size - 1)
+//			return;
+//
+//		Element e = items.get(pos);
+//		Element e2 = pos + 2 < items.size ? items.get(pos + 2) : null;
+//
+//		Node parent = e.getParentNode();
+//		parent.removeChild(e);
+//		parent.insertBefore(e, e2);
+//
+//		items.removeIndex(pos);
+//		items.insert(pos + 1, e);
+//		list.setSelectedIndex(pos + 1);
+//		upBtn.setDisabled(list.getSelectedIndex() == 0);
+//		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+//
+//		doc.setModified(e);
+	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(
-			Element e) {
-		return new EditLayerDialog(skin, doc, parent, e);
+	protected EditElementDialog getEditElementDialogInstance(SceneLayer l) {
+//		return new EditLayerDialog(skin, doc, parent, e);
+		
+		return null;
 	}
-	
+
 	@Override
 	protected void delete() {
-
-		int pos = list.getSelectedIndex();
-
-		if (pos == -1)
-			return;
-
-		if (list.getItems().size < 2) {
-			String msg = "The layer will not be deleted, at least one layer must exist";
-			Ctx.msg.show(getStage(), msg, 3);
-
-			return;
-		}
-		
-		// Check for actors inside this layer
-		NodeList actors = parent.getElementsByTagName("actor");
-		
-		for(int i = 0; i < actors.getLength(); i++) {
-			String layer = ((Element)(actors.item(i))).getAttribute("layer");
-			if(layer.equals(list.getItems().get(pos).getAttribute("id"))) {
-				String msg = "The layer will not be deleted, it is used by the actor " + 
-						((Element)(actors.item(i))).getAttribute("id");
-				Ctx.msg.show(getStage(), msg, 3);
-				
-				return;
-			}
-		}
-		
-
-		super.delete();
+//
+//		int pos = list.getSelectedIndex();
+//
+//		if (pos == -1)
+//			return;
+//
+//		if (list.getItems().size < 2) {
+//			String msg = "The layer will not be deleted, at least one layer must exist";
+//			Ctx.msg.show(getStage(), msg, 3);
+//
+//			return;
+//		}
+//
+//		// Check for actors inside this layer
+//		NodeList actors = parent.getElementsByTagName("actor");
+//
+//		for (int i = 0; i < actors.getLength(); i++) {
+//			String layer = ((Element) (actors.item(i))).getAttribute("layer");
+//			if (layer.equals(list.getItems().get(pos).getAttribute("id"))) {
+//				String msg = "The layer will not be deleted, it is used by the actor "
+//						+ ((Element) (actors.item(i))).getAttribute("id");
+//				Ctx.msg.show(getStage(), msg, 3);
+//
+//				return;
+//			}
+//		}
+//
+//		super.delete();
 	}
-	
+
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
-	private static final CellRenderer<Element> listCellRenderer = new CellRenderer<Element>() {
+	private static final CellRenderer<SceneLayer> listCellRenderer = new CellRenderer<SceneLayer>() {
 
 		@Override
-		protected String getCellTitle(Element e) {
-			String id  = e.getAttribute("id");
-
-			return id;
+		protected String getCellTitle(SceneLayer l) {
+			return l.getName();
 		}
 
 		@Override
-		protected String getCellSubTitle(Element e) {
-			String dynamic = e.getAttribute("dynamic");
-			String visible = e.getAttribute("visible");
+		protected String getCellSubTitle(SceneLayer l) {
 
 			StringBuilder sb = new StringBuilder();
 
-			if (!dynamic.isEmpty())
-				sb.append("dynamic: ").append(dynamic);
-			if (!visible.isEmpty())
-				sb.append(" visible: ").append(visible);
-			
+			sb.append("dynamic: ").append(l.isDynamic());
+			sb.append(" visible: ").append(l.isVisible());
+
 			return sb.toString();
 		}
-		
+
 		@Override
-		public TextureRegion getCellImage(Element e) {
-			String visibility = e.getAttribute("visible");
-			
+		public TextureRegion getCellImage(SceneLayer l) {
 			String u = null;
 
-			if(visibility.equals("true")) {
+			if (l.isVisible()) {
 				u = "eye";
 			} else {
 				u = "eye_disabled";
@@ -238,15 +216,15 @@ public class LayerList extends ElementList {
 
 			return Ctx.assetManager.getIcon(u);
 		}
-		
+
 		@Override
 		protected boolean hasSubtitle() {
 			return true;
 		}
-		
+
 		@Override
 		protected boolean hasImage() {
 			return true;
 		}
-	};	
+	};
 }

@@ -17,12 +17,14 @@ package com.bladecoder.engineeditor.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
@@ -44,6 +46,7 @@ import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.spine.SpineRenderer;
 
@@ -57,15 +60,14 @@ public class ChapterDocument extends BaseDocument {
 
 	public static final String ANIMATION_TYPES[] = { XMLConstants.NO_REPEAT_VALUE, XMLConstants.REPEAT_VALUE,
 			XMLConstants.YOYO_VALUE, XMLConstants.REVERSE_VALUE };
+	
+	String id;
 
-	public ChapterDocument(String modelPath) {
+	public ChapterDocument(String modelPath, String id) {
 		super();
 		setModelPath(modelPath);
-	}
-
-	@Override
-	public String getRootTag() {
-		return XMLConstants.CHAPTER_TAG;
+		this.id = id;
+		setFilename(id + XMLConstants.CHAPTER_EXT);
 	}
 
 	public void setFilenameFromId() {
@@ -261,11 +263,11 @@ public class ChapterDocument extends BaseDocument {
 	}
 
 	public String getId() {
-		return doc.getDocumentElement().getAttribute(XMLConstants.ID_ATTR);
+		return id;
 	}
 
 	public void setId(String id) {
-		setRootAttr(doc.getDocumentElement(), XMLConstants.ID_ATTR, id);
+		this.id = id;
 	}
 
 	public String toString() {
@@ -606,5 +608,11 @@ public class ChapterDocument extends BaseDocument {
 		}
 
 		return null;
+	}
+	
+	@Override
+	public void load() throws ParserConfigurationException, SAXException, IOException {
+		super.load();	
+		World.getInstance().loadChapter(id);
 	}
 }

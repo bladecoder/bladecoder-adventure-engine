@@ -17,11 +17,19 @@ package com.bladecoder.engineeditor.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import org.w3c.dom.Element;
+import java.util.Arrays;
+import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.model.AnchorActor;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
+import com.bladecoder.engine.model.Dialog;
+import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.ObstacleActor;
+import com.bladecoder.engine.model.SoundFX;
+import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.model.Project;
@@ -52,7 +60,7 @@ public class ActorPanel extends HeaderPanel {
 				new PropertyChangeListener() {
 					@Override
 					public void propertyChange(PropertyChangeEvent e) {
-						Element a = (Element) e.getNewValue();
+						BaseActor a = (BaseActor) e.getNewValue();
 						ChapterDocument doc = Ctx.project.getSelectedChapter();
 
 						String selTitle = tabPanel.getSelectedIndex() == -1? null: tabPanel.getTitleAt(tabPanel.getSelectedIndex());
@@ -60,24 +68,22 @@ public class ActorPanel extends HeaderPanel {
 
 						if (a != null) {
 
-							String type = doc.getType(a);
-
 							tabPanel.addTab("Verbs", verbList);
 							
-							if (type.equals(XMLConstants.SPRITE_VALUE) || type.equals(XMLConstants.CHARACTER_VALUE))
+							if (a instanceof SpriteActor)
 								tabPanel.addTab("Animations", faList);
 
-							if (!type.equals(XMLConstants.OBSTACLE_VALUE) &&
-									!type.equals(XMLConstants.ANCHOR_VALUE))
+							if (!(a instanceof ObstacleActor) &&
+									!(a instanceof AnchorActor))
 								tabPanel.addTab("Sounds", soundList);
 
-							if (type.equals(XMLConstants.CHARACTER_VALUE)) {
+							if (a instanceof CharacterActor) {
 								tabPanel.addTab("Dialogs", dialogList);
 							}
 							
 							
 							tabPanel.addTab("Actor Props", props);
-							setTile("ACTOR " + doc.getId(a));
+							setTile("ACTOR " + a.getId());
 
 							// select previous selected tab
 							if (selTitle != null) {
@@ -91,11 +97,30 @@ public class ActorPanel extends HeaderPanel {
 							setTile("ACTOR");
 						}
 						
-						faList.addElements(doc, a, "animation");
-						verbList.changeActor(doc, a);
-						dialogList.addElements(doc, a, "dialog");
-						soundList.addElements(doc, a, "sound");
-						props.setActorDocument(doc, a);
+						List<AnimationDesc> anims = null;
+						
+						if(a instanceof SpriteActor) {
+							anims = Arrays.asList(((SpriteActor) a).getRenderer().getAnimations().values().toArray(new AnimationDesc[0]));
+						}
+						faList.addElements(anims);
+						
+						List<SoundFX> sounds = null;
+						if(a instanceof InteractiveActor) {
+							sounds = Arrays.asList(((SpriteActor) a).getSounds().values().toArray(new SoundFX[0]));
+						}
+						soundList.addElements(sounds);
+						
+						verbList.changeActor();
+						
+						List<Dialog> dialogs = null;
+						
+						if(a instanceof CharacterActor) {
+							dialogs =  Arrays.asList(((CharacterActor) a).getDialogs().values().toArray(new Dialog[0]));
+						}
+						
+						dialogList.addElements(dialogs);
+						
+						props.setActorDocument(a);
 						
 					}
 

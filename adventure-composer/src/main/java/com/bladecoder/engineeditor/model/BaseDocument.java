@@ -16,7 +16,6 @@
 package com.bladecoder.engineeditor.model;
 
 import java.beans.PropertyChangeEvent;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -29,15 +28,8 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -68,18 +60,8 @@ public abstract class BaseDocument extends PropertyChange {
 
 	protected boolean modified = false;
 
-	public abstract String getRootTag();
-
 	@SuppressWarnings("serial")
 	public void create() throws ParserConfigurationException {
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-
-		doc = dBuilder.newDocument();
-
-		Element rootElement = doc.createElement(getRootTag());
-
-		doc.appendChild(rootElement);
 
 		// To save in alphabetical order we override the keys method
 		i18n = new Properties() {
@@ -151,10 +133,6 @@ public abstract class BaseDocument extends PropertyChange {
 	}
 
 	public void load() throws ParserConfigurationException, SAXException, IOException {
-		File fXmlFile = new File(getAbsoluteName());
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		doc = dBuilder.parse(fXmlFile);
 
 		loadI18N();
 
@@ -165,13 +143,6 @@ public abstract class BaseDocument extends PropertyChange {
 
 		if (!modified)
 			return;
-
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer = transformerFactory.newTransformer();
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(new FileOutputStream(getAbsoluteName()));
-		transformer.transform(source, result);
 
 		saveI18N();
 

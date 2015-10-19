@@ -27,7 +27,7 @@ public class ActorInputPanel extends EditableOptionsInputPanel<String> {
 	}
 
 	private static String[] getValues(boolean mandatory) {
-		NodeList actors = Ctx.project.getSelectedChapter().getActors(Ctx.project.getSelectedScene());
+		NodeList actors = Ctx.project.getSelectedChapter().getActors(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()));
 
 		return OptionsInputPanelUtils.getIdFromNodeList(mandatory, actors);
 	}

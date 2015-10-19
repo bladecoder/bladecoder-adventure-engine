@@ -172,6 +172,11 @@ public class CharacterActor extends SpriteActor {
 
 		((WalkTween) posTween).start(this, walkingPath, walkingSpeed, cb);
 	}
+	
+
+	public HashMap<String, Dialog> getDialogs() {
+		return dialogs;
+	}
 
 	@Override
 	public String toString() {
@@ -217,5 +222,4 @@ public class CharacterActor extends SpriteActor {
 			talkAnim = json.readValue("talkAnim", String.class, jsonData);
 		}
 	}
-
 }

@@ -16,61 +16,67 @@
 package com.bladecoder.engineeditor.ui;
 
 import java.text.MessageFormat;
-
-import org.w3c.dom.Element;
+import java.util.Arrays;
+import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.Verb;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
-import com.bladecoder.engineeditor.ui.components.ElementList;
+import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.ui.components.ScopePanel;
 
+public class VerbList extends ModelList<Verb> {
 
-public class VerbList extends ElementList {
-	
 	public static final String VERBS[] = { "lookat", "pickup", "talkto", "use", "leave", "enter", "exit", "init",
-		"test", "custom" };
+			"test", "custom" };
 
 	private ActionList actionList;
-	
-	private Element sceneElement;
-	
-	private BaseDocument worldDocument;
-	private BaseDocument chapterDocument;
-	
+
 	private ScopePanel scopePanel;
 
 	public VerbList(Skin skin) {
 		super(skin, true);
-		
+
 		clearChildren();
-		
+
 		scopePanel = new ScopePanel(skin) {
-			
+
 			@Override
 			public void scopeChanged(String scope) {
-				if(WORLD_SCOPE.equals(scope))
-					addElements(worldDocument, worldDocument.getElement(), "verb");
-				else if(SCENE_SCOPE.equals(scope))
-					addElements(chapterDocument, sceneElement == null ? null: (Element)sceneElement.getParentNode(), "verb");
-				else if(ACTOR_SCOPE.equals(scope))
-					addElements(chapterDocument, sceneElement, "verb");
+				if (WORLD_SCOPE.equals(scope)) {
+					addElements(Arrays
+							.asList(World.getInstance().getVerbManager().getVerbs().values().toArray(new Verb[0])));
+				} else if (SCENE_SCOPE.equals(scope)) {
+					addElements(Arrays.asList(
+							Ctx.project.getSelectedScene().getVerbManager().getVerbs().values().toArray(new Verb[0])));
+				} else if (ACTOR_SCOPE.equals(scope)) {
+					BaseActor a = Ctx.project.getSelectedActor();
+					if(a instanceof InteractiveActor) {
+						addElements(Arrays.asList(((InteractiveActor)a).getVerbManager()
+							.getVerbs().values().toArray(new Verb[0])));
+					} else {
+						addElements(null);
+					}
+				}
 			}
 		};
-		
+
 		add(scopePanel).expandX().fillX();
 		row();
 		add(toolbar).expandX().fillX();
 		row().fill();
 		add(container).expandY().fill();
-		
+
 		actionList = new ActionList(skin);
-		
+
 		row();
 		add(actionList).expand().fill();
 
@@ -86,99 +92,100 @@ public class VerbList extends ElementList {
 		container.minHeight(listCellRenderer.getItemHeight() * 5);
 		container.maxHeight(listCellRenderer.getItemHeight() * 5);
 	}
-	
-	public void changeActor(BaseDocument doc, Element parent) {	
-		worldDocument = Ctx.project.getWorld();
-		chapterDocument = doc;
-		sceneElement = parent;
+
+	public void changeActor() {
 		scopePanel.scopeChanged(scopePanel.getScope());
 	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(Element e) {
-		return new EditVerbDialog(skin, doc, parent, e);
+	protected EditElementDialog getEditElementDialogInstance(Verb e) {
+		// return new EditVerbDialog(skin, doc, parent, e);
+		return null;
 	}
 
 	@Override
-	public void addElements(BaseDocument doc, Element parent, String tag) {
-		super.addElements(doc, parent, tag);
+	public void addElements(List<Verb> elements) {
+		super.addElements(elements);
 		addActions();
 	}
-	
+
 	@Override
 	protected void delete() {
 		super.delete();
-		
-		// Clear actions here because change event doesn't call when deleting the last element
-		if(list.getSelectedIndex() == -1)
+
+		// Clear actions here because change event doesn't call when deleting
+		// the last element
+		if (list.getSelectedIndex() == -1)
 			addActions();
 	}
 
 	private void addActions() {
 		int pos = list.getSelectedIndex();
 
-		Element v = null;
+		Verb v = null;
 
 		if (pos != -1) {
 			v = list.getItems().get(pos);
+			actionList.addElements(v.getActions());
+		} else { 
+			actionList.addElements(null);
 		}
-
-		actionList.addElements(doc, v, "action");
 	}
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
-	private final CellRenderer<Element> listCellRenderer = new CellRenderer<Element>() {
+	private final CellRenderer<Verb> listCellRenderer = new CellRenderer<Verb>() {
 
 		@Override
-		protected String getCellTitle(Element e) {
-			return e.getAttribute("id");
+		protected String getCellTitle(Verb e) {
+			return e.getId();
 		}
 
 		@Override
-		protected String getCellSubTitle(Element e) {
-			String state = e.getAttribute("state");
-			String target = e.getAttribute("target");
+		protected String getCellSubTitle(Verb e) {
+			String state = e.getState();
+			String target = e.getTarget();
 
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new StringBuilder(e.getId());
 
-			if (!state.isEmpty())
+			if (state != null)
 				sb.append("when ").append(state);
-			if (!target.isEmpty())
+
+			if (target != null)
 				sb.append(" with target '").append(target).append("'");
 
 			return sb.toString();
 		}
 
 		@Override
-		public TextureRegion getCellImage(Element e) {
+		public TextureRegion getCellImage(Verb e) {
 			boolean custom = true;
-			
-			String verbName = e.getAttribute("id");
-			for(String v:VERBS) {
-				if(v.equals(verbName)) {
+
+			String verbName = e.getId();
+			for (String v : VERBS) {
+				if (v.equals(verbName)) {
 					custom = false;
 					break;
 				}
 			}
-			
-			String iconName = MessageFormat.format("ic_{0}", e.getAttribute("id"));
+
+			String iconName = MessageFormat.format("ic_{0}", e.getId());
 			TextureRegion image = null;
-			
-			if(!custom)
+
+			if (!custom)
 				image = Ctx.assetManager.getIcon(iconName);
 			else
 				image = Ctx.assetManager.getIcon("ic_custom");
 
 			return image;
 		}
-		
+
 		@Override
 		protected boolean hasSubtitle() {
 			return true;
 		}
-		
+
 		@Override
 		protected boolean hasImage() {
 			return true;

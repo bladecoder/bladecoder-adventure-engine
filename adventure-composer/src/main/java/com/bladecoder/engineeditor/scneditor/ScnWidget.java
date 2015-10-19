@@ -132,7 +132,7 @@ public class ScnWidget extends Widget {
 			}
 		});
 
-		Ctx.project.getWorld().addPropertyChangeListener(new PropertyChangeListener() {
+		Ctx.project.getWorldDocument().addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
 				EditorLogger.debug("ScnWidget (World Listener): " + e.getPropertyName());
@@ -143,7 +143,9 @@ public class ScnWidget extends Widget {
 					setSelectedActor(Ctx.project.getSelectedActor());
 				} else if (e.getPropertyName().equals("bbox")) {
 					// Element selActor = (Element) e.getNewValue();
-					Element selActor = Ctx.project.getSelectedActor();
+					Element selActor = Ctx.project.getSelectedChapter().getActor(
+							Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+							Ctx.project.getSelectedActor().getId());
 					String id = doc.getId(selActor);
 					BaseActor a = scn.getActor(id, false);
 
@@ -186,7 +188,7 @@ public class ScnWidget extends Widget {
 					((SpriteActor) selectedActor).getRenderer().setInitAnimation(initFA);
 					setSelectedFA(null);
 				} else if (e.getPropertyName().equals("actor")) {
-					createAndSelectActor((Element) e.getNewValue());
+					createAndSelectActor((BaseActor) e.getNewValue());
 				} else if (e.getPropertyName().equals("layer")) {
 					Element el = (Element) e.getNewValue();
 					String name = el.getAttribute("id");
@@ -273,7 +275,9 @@ public class ScnWidget extends Widget {
 			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
 				p.translate(1, 0);
 
-			Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(),
+			Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedChapter().getActor(
+					Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+					Ctx.project.getSelectedActor().getId()),
 					new Vector2(selActor.getX(), selActor.getY()));
 
 			// undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(),
@@ -488,8 +492,8 @@ public class ScnWidget extends Widget {
 
 			float aspect = getWidth() / getHeight();
 
-			float wWidth = Ctx.project.getWorld().getWidth();
-			float wHeight = Ctx.project.getWorld().getHeight();
+			float wWidth = Ctx.project.getWorldDocument().getWidth();
+			float wHeight = Ctx.project.getWorldDocument().getHeight();
 			float aspectWorld = wWidth / wHeight;
 
 			if (aspectWorld > aspect) {
@@ -502,7 +506,7 @@ public class ScnWidget extends Widget {
 
 			scn.getCamera().setToOrtho(false, wWidth, wHeight);
 			scn.getCamera().zoom = 1f;
-			scn.getCamera().position.set(Ctx.project.getWorld().getWidth() / 2, Ctx.project.getWorld().getHeight() / 2,
+			scn.getCamera().position.set(Ctx.project.getWorldDocument().getWidth() / 2, Ctx.project.getWorldDocument().getHeight() / 2,
 					0);
 			scn.getCamera().update();
 			zoom(+1);
@@ -577,7 +581,7 @@ public class ScnWidget extends Widget {
 		return selectedActor;
 	}
 
-	public void setSelectedScene(Element e) {
+	public void setSelectedScene(Scene s) {
 		if (scn != null) {
 			scn.dispose();
 			faRenderer.dispose();
@@ -590,9 +594,8 @@ public class ScnWidget extends Widget {
 
 		setSelectedActor(null);
 
-		if (e != null) {
-			scn = Ctx.project.getSelectedChapter().getEngineScene(e, Ctx.project.getWorld().getWidth(),
-					Ctx.project.getWorld().getHeight());
+		if (s != null) {
+			scn = s;
 
 			scn.loadAssets();
 			loading = true;
@@ -605,8 +608,8 @@ public class ScnWidget extends Widget {
 
 			float aspect = getWidth() / getHeight();
 
-			float wWidth = Ctx.project.getWorld().getWidth();
-			float wHeight = Ctx.project.getWorld().getHeight();
+			float wWidth = Ctx.project.getWorldDocument().getWidth();
+			float wHeight = Ctx.project.getWorldDocument().getHeight();
 			float aspectWorld = wWidth / wHeight;
 
 			if (aspectWorld > aspect) {
@@ -629,11 +632,11 @@ public class ScnWidget extends Widget {
 		}
 	}
 
-	public void setSelectedActor(Element actor) {
+	public void setSelectedActor(BaseActor actor) {
 		BaseActor a = null;
 
 		if (scn != null && actor != null) {
-			a = scn.getActor(Ctx.project.getSelectedChapter().getId(actor), false);
+			a = actor;
 		}
 
 		selectedActor = a;
@@ -673,10 +676,10 @@ public class ScnWidget extends Widget {
 		}
 	}
 
-	private void createAndSelectActor(Element actor) {
-		removeActor(Ctx.project.getSelectedChapter(), actor);
-		selectedActor = createActor(Ctx.project.getSelectedChapter(), actor);
-		setSelectedActor(actor);
+	private void createAndSelectActor(BaseActor actor) {
+//		removeActor(Ctx.project.getSelectedChapter(), actor);
+//		selectedActor = createActor(Ctx.project.getSelectedChapter(), actor);
+//		setSelectedActor(actor);
 	}
 
 	private BaseActor createActor(ChapterDocument doc, Element e) {

@@ -20,10 +20,10 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
-import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.SerializationException;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionProperty;
 import com.bladecoder.engine.loader.SerializationHelper;
@@ -42,6 +42,8 @@ public class Verb implements VerbRunner, Serializable {
 	public static final String INIT_VERB = "init";
 
 	private String id;
+	private String state;
+	private String target;
 
 	private final ArrayList<Action> actions = new ArrayList<Action>();
 
@@ -60,6 +62,22 @@ public class Verb implements VerbRunner, Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getTarget() {
+		return target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
 	}
 
 	public void add(Action a) {
@@ -135,6 +153,8 @@ public class Verb implements VerbRunner, Serializable {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("id", id);
+			json.writeValue("target", target);
+			json.writeValue("state", state);
 			json.writeArrayStart("actions");
 			for (Action a : actions) {
 				Class<?> clazz = a.getClass();
@@ -189,6 +209,8 @@ public class Verb implements VerbRunner, Serializable {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			id = json.readValue("id", String.class, jsonData);
+			target = json.readValue("target", String.class, jsonData);
+			state = json.readValue("state", String.class, jsonData);
 			actions.clear();
 			JsonValue actionsValue = jsonData.get("actions");
 			for (int i = 0; i < actionsValue.size; i++) {

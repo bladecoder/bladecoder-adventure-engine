@@ -38,7 +38,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	protected String state;
 
 	protected VerbManager verbs = new VerbManager();
-	protected HashMap<String, SoundFX> sounds;
+	private HashMap<String, SoundFX> sounds;
 	private String playingSound;
 
 	/**
@@ -67,6 +67,10 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 	public String getDesc() {
 		return desc;
+	}
+
+	public HashMap<String, SoundFX> getSounds() {
+		return sounds;
 	}
 
 	public void setDesc(String desc) {
@@ -203,7 +207,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 				s.retrieveAssets();
 			}
 
-			if (playingSound != null && sounds.get(playingSound).isLooping() == true) {
+			if (playingSound != null && sounds.get(playingSound).getLoop() == true) {
 				playSound(playingSound);
 			}
 		}

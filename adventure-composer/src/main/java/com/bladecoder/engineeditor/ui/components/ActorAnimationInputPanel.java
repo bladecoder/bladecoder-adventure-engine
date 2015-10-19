@@ -47,7 +47,7 @@ public class ActorAnimationInputPanel extends InputPanel {
 		panel.add(animation);
 
 		NodeList actors = Ctx.project.getSelectedChapter().getActors(
-				Ctx.project.getSelectedScene());
+				Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()));
 
 		ArrayList<String> values = new ArrayList<String>();
 
@@ -83,13 +83,14 @@ public class ActorAnimationInputPanel extends InputPanel {
 
 	private void actorSelected() {
 		String s = actor.getSelected();
-		Element a = Ctx.project.getSelectedActor();
+		Element a = Ctx.project.getSelectedChapter().getActor(
+				Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), Ctx.project.getSelectedActor().getId());
 		
 		ArrayList<String> values = new ArrayList<String>();
 
 		if (s != null && !s.isEmpty()) {
 			a = Ctx.project.getSelectedChapter().getActor(
-					Ctx.project.getSelectedScene(), s);
+					Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), s);
 		}
 
 		if (a != null) {

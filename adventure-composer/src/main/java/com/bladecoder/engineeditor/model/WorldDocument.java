@@ -27,7 +27,9 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
@@ -36,8 +38,7 @@ public class WorldDocument extends  BaseDocument {
 	public static final int DEFAULT_HEIGHT = 1080;
 	
 	public static final String NOTIFY_DOCUMENT_MODIFIED = "DOCUMENT_MODIFIED";
-	
-	private int width = -1, height = -1;
+	private static final String WORLD_FILENAME = "world.json";
 	
     private PropertyChangeListener documentModifiedListener = new PropertyChangeListener() {	
 		@Override
@@ -49,12 +50,7 @@ public class WorldDocument extends  BaseDocument {
 	};
 	
 	public WorldDocument() {
-		setFilename(XMLConstants.WORLD_FILENAME);
-	}
-	
-	@Override
-	public String getRootTag() {
-		return XMLConstants.WORLD_TAG;
+		setFilename(WORLD_FILENAME);
 	}
 
 	@Override
@@ -65,8 +61,8 @@ public class WorldDocument extends  BaseDocument {
 	}
 	
 	public void setDimensions(int width, int height) {
-		doc.getDocumentElement().setAttribute(XMLConstants.WIDTH_ATTR, Integer.toString(width));
-		doc.getDocumentElement().setAttribute(XMLConstants.HEIGHT_ATTR, Integer.toString(height));
+		World.getInstance().setWidth(width);
+		World.getInstance().setHeight(height);
 		modified = true;
 		firePropertyChange();
 	}
@@ -91,30 +87,29 @@ public class WorldDocument extends  BaseDocument {
 	}
 
 	public int getWidth() {
-		return width;
+		return World.getInstance().getWidth();
 	}
 	
 	public int getHeight() {		
-		return height;
+		return World.getInstance().getHeight();
 	}
 
 	public void setWidth(String value) {
-		width = Integer.parseInt(value);
+		World.getInstance().setWidth(Integer.parseInt(value));
 		doc.getDocumentElement().setAttribute(XMLConstants.WIDTH_ATTR, value);
 		modified = true;
 		firePropertyChange();
 	}
 	
 	public void setHeight(String value) {
-		height = Integer.parseInt(value);
+		World.getInstance().setHeight(Integer.parseInt(value));
 		doc.getDocumentElement().setAttribute(XMLConstants.HEIGHT_ATTR, value);
 		modified = true;
 		firePropertyChange();
 	}
 	
 	public ChapterDocument loadChapter(String id) throws ParserConfigurationException, SAXException, IOException {
-			ChapterDocument chapter = new ChapterDocument(modelPath);
-			chapter.setFilename(id + XMLConstants.CHAPTER_EXT);
+			ChapterDocument chapter = new ChapterDocument(modelPath, id);
 			chapter.load();
 			chapter.addPropertyChangeListener(documentModifiedListener);
 			
@@ -140,7 +135,7 @@ public class WorldDocument extends  BaseDocument {
 	}
 	
 	public ChapterDocument createChapter(String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
-		ChapterDocument chapter = new ChapterDocument(modelPath);	
+		ChapterDocument chapter = new ChapterDocument(modelPath, id);	
 		String checkedId = getChapterCheckedId(id);
 		
 		chapter.create(checkedId);
@@ -177,7 +172,7 @@ public class WorldDocument extends  BaseDocument {
 		
 	public void renameChapter(String oldId, String newId) throws TransformerException, ParserConfigurationException, SAXException, IOException {
 		
-		ChapterDocument chapter = new ChapterDocument(modelPath);
+		ChapterDocument chapter = new ChapterDocument(modelPath, newId);
 		chapter.setFilename(oldId + XMLConstants.CHAPTER_EXT);
 		chapter.load();
 		chapter.rename(newId);
@@ -186,7 +181,7 @@ public class WorldDocument extends  BaseDocument {
 	
 	public void removeChapter(String id) throws FileNotFoundException, TransformerException {
 		
-		ChapterDocument chapter = new ChapterDocument(modelPath);
+		ChapterDocument chapter = new ChapterDocument(modelPath, id);
 		chapter.setFilename(id + XMLConstants.CHAPTER_EXT);
 		chapter.deleteFiles();
 		firePropertyChange(XMLConstants.CHAPTER_TAG);
@@ -196,7 +191,8 @@ public class WorldDocument extends  BaseDocument {
 	public void load() throws ParserConfigurationException, SAXException, IOException {
 		super.load();
 		
-		width = Integer.parseInt(doc.getDocumentElement().getAttribute(XMLConstants.WIDTH_ATTR));
-		height = Integer.parseInt(doc.getDocumentElement().getAttribute(XMLConstants.HEIGHT_ATTR));	 
+		EngineAssetManager.getInstance().dispose();
+		EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
+		World.getInstance().loadWorldDesc();
 	}
 }

@@ -97,9 +97,9 @@ public class SceneList extends ModelList<Scene> {
 				if (pos == -1) {
 					Ctx.project.setSelectedScene(null);
 				} else {
-					Scene a = list.getItems().get(pos);
+					Scene s = list.getItems().get(pos);
 					
-					Ctx.project.setSelectedScene(Ctx.project.getSelectedChapter().getSceneById(a.getId()));
+					Ctx.project.setSelectedScene(s);
 				}
 
 				toolbar.disableEdit(pos == -1);
@@ -129,7 +129,7 @@ public class SceneList extends ModelList<Scene> {
 
 		chapters.addListener(chapterListener);
 
-		Ctx.project.getWorld().addPropertyChangeListener(new PropertyChangeListener() {
+		Ctx.project.getWorldDocument().addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				EditorLogger.debug(evt.getPropertyName() + " NEW:" + evt.getNewValue() + " OLD:" + evt.getOldValue());
@@ -179,7 +179,7 @@ public class SceneList extends ModelList<Scene> {
 	};
 
 	public void addChapters() {
-		WorldDocument w = Ctx.project.getWorld();
+		WorldDocument w = Ctx.project.getWorldDocument();
 		String[] nl = w.getChapters();
 		Array<String> array = new Array<String>();
 

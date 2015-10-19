@@ -15,26 +15,26 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import java.util.ArrayList;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Array;
-import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.Dialog;
+import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
-import com.bladecoder.engineeditor.ui.components.ElementList;
+import com.bladecoder.engineeditor.ui.components.ModelList;
 
-public class DialogOptionList extends ElementList {
+public class DialogOptionList extends ModelList<DialogOption> {
 	Skin skin;
 
 	private ImageButton upBtn;
 	private ImageButton downBtn;
+	
+	private Dialog dialog;
 
 	public DialogOptionList(Skin skin) {
 		super(skin, true);
@@ -77,123 +77,133 @@ public class DialogOptionList extends ElementList {
 			}
 		});
 	}
-
-	@Override
-	protected EditElementDialog getEditElementDialogInstance(Element e) {
-		return new EditDialogOptionDialog(skin, doc, parent, e);
+	
+	public void addElements(Dialog dialog) {
+		this.dialog = dialog;
+		ArrayList<DialogOption> options = null;
+		
+		if(dialog != null)
+			options = dialog.getOptions();
+		
+		addElements(options);
 	}
 
 	@Override
-	protected void create() {
-		EditElementDialog dialog = getEditElementDialogInstance(null);
-		dialog.show(getStage());
-		dialog.setListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				int pos = list.getSelectedIndex() + 1;
-
-				Element e2 = null;
-
-				if (pos != 0 && pos < list.getItems().size)
-					e2 = list.getItems().get(pos);
-
-				Element e = ((EditElementDialog) actor).getElement();
-				list.getItems().insert(pos, e);
-
-				Node parent = e.getParentNode();
-				parent.removeChild(e);
-				parent.insertBefore(e, e2);
-
-				list.setSelectedIndex(pos);
-
-				list.invalidateHierarchy();
-			}
-		});
+	protected EditElementDialog getEditElementDialogInstance(DialogOption e) {
+//		return new EditDialogOptionDialog(skin, doc, parent, e);
+		
+		return null;
 	}
+
+//	@Override
+//	protected void create() {
+//		EditElementDialog dialog = getEditElementDialogInstance(null);
+//		dialog.show(getStage());
+//		dialog.setListener(new ChangeListener() {
+//			@Override
+//			public void changed(ChangeEvent event, Actor actor) {
+//				int pos = list.getSelectedIndex() + 1;
+//
+//				Element e2 = null;
+//
+//				if (pos != 0 && pos < list.getItems().size)
+//					e2 = list.getItems().get(pos);
+//
+//				Element e = ((EditElementDialog) actor).getElement();
+//				list.getItems().insert(pos, e);
+//
+//				Node parent = e.getParentNode();
+//				parent.removeChild(e);
+//				parent.insertBefore(e, e2);
+//
+//				list.setSelectedIndex(pos);
+//
+//				list.invalidateHierarchy();
+//			}
+//		});
+//	}
 
 	private void up() {
-		int pos = list.getSelectedIndex();
-
-		if (pos == -1 || pos == 0)
-			return;
-
-		Array<Element> items = list.getItems();
-		Element e = items.get(pos);
-		Element e2 = items.get(pos - 1);
-
-		Node parent = e.getParentNode();
-		parent.removeChild(e);
-		parent.insertBefore(e, e2);
-
-		items.removeIndex(pos);
-		items.insert(pos - 1, e);
-		list.setSelectedIndex(pos - 1);
-		upBtn.setDisabled(list.getSelectedIndex() == 0);
-		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
-
-		doc.setModified(e);
+//		int pos = list.getSelectedIndex();
+//
+//		if (pos == -1 || pos == 0)
+//			return;
+//
+//		Array<Element> items = list.getItems();
+//		Element e = items.get(pos);
+//		Element e2 = items.get(pos - 1);
+//
+//		Node parent = e.getParentNode();
+//		parent.removeChild(e);
+//		parent.insertBefore(e, e2);
+//
+//		items.removeIndex(pos);
+//		items.insert(pos - 1, e);
+//		list.setSelectedIndex(pos - 1);
+//		upBtn.setDisabled(list.getSelectedIndex() == 0);
+//		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+//
+//		doc.setModified(e);
 	}
 
 	private void down() {
-		int pos = list.getSelectedIndex();
-		Array<Element> items = list.getItems();
-
-		if (pos == -1 || pos == items.size - 1)
-			return;
-
-		Element e = items.get(pos);
-		Element e2 = pos + 2 < items.size ? items.get(pos + 2) : null;
-
-		Node parent = e.getParentNode();
-		parent.removeChild(e);
-		parent.insertBefore(e, e2);
-
-		items.removeIndex(pos);
-		items.insert(pos + 1, e);
-		list.setSelectedIndex(pos + 1);
-		upBtn.setDisabled(list.getSelectedIndex() == 0);
-		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
-
-		doc.setModified(e);
+//		int pos = list.getSelectedIndex();
+//		Array<Element> items = list.getItems();
+//
+//		if (pos == -1 || pos == items.size - 1)
+//			return;
+//
+//		Element e = items.get(pos);
+//		Element e2 = pos + 2 < items.size ? items.get(pos + 2) : null;
+//
+//		Node parent = e.getParentNode();
+//		parent.removeChild(e);
+//		parent.insertBefore(e, e2);
+//
+//		items.removeIndex(pos);
+//		items.insert(pos + 1, e);
+//		list.setSelectedIndex(pos + 1);
+//		upBtn.setDisabled(list.getSelectedIndex() == 0);
+//		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+//
+//		doc.setModified(e);
 	}
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
-	private final CellRenderer<Element> listCellRenderer = new CellRenderer<Element>() {
+	private final CellRenderer<DialogOption> listCellRenderer = new CellRenderer<DialogOption>() {
 
 		@Override
-		protected String getCellTitle(Element e) {
-			String text = e.getAttribute(XMLConstants.TEXT_ATTR);
+		protected String getCellTitle(DialogOption e) {
+			String text = e.getText();
 			
-			Element parent = (Element)e.getParentNode();
-			int i = doc.indexOf(parent, e);
-
+			int i = dialog.getVisibleOptions().indexOf(e);
 
 			return i + ". " + Ctx.project.getSelectedChapter().getTranslation(text);
 		}
 
 		@Override
-		protected String getCellSubTitle(Element e) {
+		protected String getCellSubTitle(DialogOption e) {
 
 			StringBuilder sb = new StringBuilder();
-			String response = e.getAttribute(XMLConstants.RESPONSE_TEXT_ATTR);
+			String response = e.getResponseText();
 
 			if (!response.isEmpty())
 				sb.append("R: ").append(Ctx.project.getSelectedChapter().getTranslation(response)).append(' ');
 
-			NamedNodeMap attr = e.getAttributes();
-			
-			for (int i = 0; i < attr.getLength(); i++) {
-				org.w3c.dom.Node n = attr.item(i);
-				String name = n.getNodeName();
-
-				if (name.equals(XMLConstants.TEXT_ATTR) || name.equals(XMLConstants.RESPONSE_TEXT_ATTR))
-					continue;
-
-				String v = n.getNodeValue();
-				sb.append(name).append(':').append(Ctx.project.getSelectedChapter().getTranslation(v)).append(' ');
-			}
+//			NamedNodeMap attr = e.getAttributes();
+//			
+//			for (int i = 0; i < attr.getLength(); i++) {
+//				org.w3c.dom.Node n = attr.item(i);
+//				String name = n.getNodeName();
+//
+//				if (name.equals(XMLConstants.TEXT_ATTR) || name.equals(XMLConstants.RESPONSE_TEXT_ATTR))
+//					continue;
+//
+//				String v = n.getNodeValue();
+//				sb.append(name).append(':').append(Ctx.project.getSelectedChapter().getTranslation(v)).append(' ');
+//			}
 
 			return sb.toString();
 		}

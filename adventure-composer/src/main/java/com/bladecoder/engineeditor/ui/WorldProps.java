@@ -20,6 +20,7 @@ import java.beans.PropertyChangeListener;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
@@ -42,11 +43,11 @@ public class WorldProps extends PropertyTable {
 	@Override
 	protected void updateModel(String property, String value) {
 		if (property.equals(XMLConstants.WIDTH_ATTR)) {
-			Ctx.project.getWorld().setWidth(value);
+			World.getInstance().setWidth(Integer.parseInt(value));
 		} else if (property.equals(Config.TITLE_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.TITLE_PROP, value);
 		} else if (property.equals(XMLConstants.HEIGHT_ATTR)) {
-			Ctx.project.getWorld().setHeight(value);
+			World.getInstance().setHeight(Integer.parseInt(value));
 		} else if (property.equals(Config.INVENTORY_POS_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.INVENTORY_POS_PROP, value);
 		} else if (property.equals(Config.INVENTORY_AUTOSIZE_PROP)) {
@@ -61,13 +62,13 @@ public class WorldProps extends PropertyTable {
 			Ctx.project.getProjectConfig().setProperty(Config.EXTEND_VIEWPORT_PROP, value);					
 		}
 		
-		Ctx.project.getWorld().setModified(); // TODO Add propertychange to Config
+		Ctx.project.getWorldDocument().setModified(); // TODO Add propertychange to Config
 	}
 
 	private void setProject() {
 		clearProps();
-		addProperty(XMLConstants.WIDTH_ATTR, Ctx.project.getWorld().getWidth());
-		addProperty(XMLConstants.HEIGHT_ATTR, Ctx.project.getWorld().getHeight());		
+		addProperty(XMLConstants.WIDTH_ATTR, World.getInstance().getWidth());
+		addProperty(XMLConstants.HEIGHT_ATTR, World.getInstance().getHeight());		
 		addProperty(Config.TITLE_PROP, Ctx.project.getTitle());
 		addProperty(Config.INVENTORY_POS_PROP, Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_POS_PROP, "down"));
 		addProperty(Config.INVENTORY_AUTOSIZE_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_AUTOSIZE_PROP, "true")));

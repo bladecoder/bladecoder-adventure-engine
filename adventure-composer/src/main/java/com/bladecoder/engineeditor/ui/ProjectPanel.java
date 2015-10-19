@@ -58,7 +58,7 @@ public class ProjectPanel extends HeaderPanel  {
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
-				WorldDocument w = Ctx.project.getWorld();
+				WorldDocument w = Ctx.project.getWorldDocument();
 				ChapterDocument selectedChapter = Ctx.project.getSelectedChapter();
 				
 				sceneList.addElements(Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[World.getInstance().getScenes().size()])));

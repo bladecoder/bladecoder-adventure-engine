@@ -30,9 +30,9 @@ public class SoundFX implements AssetConsumer {
 	}
 	
 	public SoundFX(String filename, boolean loop, float volume) {
-		this.filename = filename;
+		this.setFilename(filename);
 		this.loop = loop;
-		this.volume = volume;
+		this.setVolume(volume);
 	}
 	
 	public void play() {
@@ -40,7 +40,7 @@ public class SoundFX implements AssetConsumer {
 			return;
 		
 		if(loop) s.loop();
-		else s.play(volume);
+		else s.play(getVolume());
 	}
 
 	public void stop() {
@@ -50,22 +50,42 @@ public class SoundFX implements AssetConsumer {
 		s.stop();
 	}
 	
-	public boolean isLooping() {
+	public boolean getLoop() {
 		return loop;
 	}
 	
+	public void setLoop(boolean loop) {
+		this.loop = loop;
+	}
+	
+	public float getVolume() {
+		return volume;
+	}
+
+	public void setVolume(float volume) {
+		this.volume = volume;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
 	@Override
 	public void loadAssets() {
-		EngineAssetManager.getInstance().loadSound(filename);
+		EngineAssetManager.getInstance().loadSound(getFilename());
 	}
 	
 	@Override
 	public void retrieveAssets() {
-		s = EngineAssetManager.getInstance().getSound(filename);
+		s = EngineAssetManager.getInstance().getSound(getFilename());
 	}
 	
 	@Override
 	public void dispose() {
-		EngineAssetManager.getInstance().disposeSound(filename);
+		EngineAssetManager.getInstance().disposeSound(getFilename());
 	}
 }

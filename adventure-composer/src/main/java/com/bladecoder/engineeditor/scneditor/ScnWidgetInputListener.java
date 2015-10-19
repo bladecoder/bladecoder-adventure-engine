@@ -19,8 +19,6 @@ import java.io.IOException;
 
 import javax.xml.transform.TransformerException;
 
-import org.w3c.dom.Element;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
@@ -35,9 +33,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.util.PolygonUtils;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.undo.UndoDeleteElement;
 import com.bladecoder.engineeditor.undo.UndoOp;
-import com.bladecoder.engineeditor.undo.UndoSetAttr;
 
 public class ScnWidgetInputListener extends ClickListener {
 	private final ScnWidget scnWidget;
@@ -77,7 +73,7 @@ public class ScnWidgetInputListener extends ClickListener {
 					boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
 					if (deleted) {
-						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedScene(), poly);
+						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
 						return;
 					}
 
@@ -86,7 +82,7 @@ public class ScnWidgetInputListener extends ClickListener {
 					boolean created = PolygonUtils.addClampPointIfTolerance(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
 					if (created) {
-						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedScene(), poly);
+						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
 						return;
 					}
 				}
@@ -106,7 +102,9 @@ public class ScnWidgetInputListener extends ClickListener {
 						boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
 						if (deleted) {
-							Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedActor(), poly);
+							Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedChapter().getActor(
+									Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+									Ctx.project.getSelectedActor().getId()), poly);
 							return;
 						}
 					} else {
@@ -114,7 +112,9 @@ public class ScnWidgetInputListener extends ClickListener {
 								CanvasDrawer.CORNER_DIST);
 
 						if (created) {
-							Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedActor(), poly);
+							Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedChapter().getActor(
+									Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+									Ctx.project.getSelectedActor().getId()), poly);
 							return;
 						}
 					}
@@ -185,7 +185,7 @@ public class ScnWidgetInputListener extends ClickListener {
 			if (a != null && a != selActor) {
 
 				selActor = a;
-				Element da = Ctx.project.getActor(selActor.getId());
+				BaseActor da = Ctx.project.getActor(selActor.getId());
 				Ctx.project.setSelectedActor(da);
 
 				draggingMode = DraggingModes.DRAGGING_ACTOR;
@@ -244,7 +244,9 @@ public class ScnWidgetInputListener extends ClickListener {
 			if (draggingMode == DraggingModes.DRAGGING_ACTOR) {
 				Polygon p = selActor.getBBox();
 				p.translate(d.x, d.y);
-				Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedActor(),
+				Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedChapter().getActor(
+						Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+						Ctx.project.getSelectedActor().getId()),
 						new Vector2(selActor.getX(), selActor.getY()));
 
 			} else if (draggingMode == DraggingModes.DRAGGING_BBOX_POINT) {
@@ -255,7 +257,9 @@ public class ScnWidgetInputListener extends ClickListener {
 				verts[vertIndex + 1] += d.y;
 				poly.dirty();
 
-				Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedActor(), poly);
+				Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedChapter().getActor(
+						Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+						Ctx.project.getSelectedActor().getId()), poly);
 			} else if (draggingMode == DraggingModes.DRAGGING_WALKZONE_POINT) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 
@@ -264,24 +268,24 @@ public class ScnWidgetInputListener extends ClickListener {
 				verts[vertIndex + 1] += d.y;
 				poly.dirty();
 
-				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedScene(), poly);
+				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
 			} else if (draggingMode == DraggingModes.DRAGGING_WALKZONE) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 				poly.translate(d.x, d.y);
-				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedScene(), poly);
+				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
 			} else if (draggingMode == DraggingModes.DRAGGING_MARKER_0) {
 				Vector2 depthVector = scnWidget.getScene().getDepthVector();
 
 				depthVector.x += d.y;
 
-				Ctx.project.getSelectedScene().setAttribute("depth_vector", Param.toStringParam(depthVector));
+				Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()).setAttribute("depth_vector", Param.toStringParam(depthVector));
 				Ctx.project.getSelectedChapter().setModified();
 				updateFakeDepth();
 			} else if (draggingMode == DraggingModes.DRAGGING_MARKER_100) {
 				Vector2 depthVector = scnWidget.getScene().getDepthVector();
 
 				depthVector.y += d.y;
-				Ctx.project.getSelectedScene().setAttribute("depth_vector", Param.toStringParam(depthVector));
+				Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()).setAttribute("depth_vector", Param.toStringParam(depthVector));
 				Ctx.project.getSelectedChapter().setModified();
 				updateFakeDepth();
 			}
@@ -321,9 +325,9 @@ public class ScnWidgetInputListener extends ClickListener {
 //		EditorLogger.debug("Touch Up - X: " + x + " Y: " + y);
 
 		if (draggingMode == DraggingModes.DRAGGING_ACTOR) {
-			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
-					Param.toStringParam(undoOrg));
-			Ctx.project.getUndoStack().add(undoOp);
+//			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
+//					Param.toStringParam(undoOrg));
+//			Ctx.project.getUndoStack().add(undoOp);
 		}
 
 		draggingMode = DraggingModes.NONE;
@@ -338,9 +342,9 @@ public class ScnWidgetInputListener extends ClickListener {
 		case Keys.DOWN:
 		case Keys.LEFT:
 		case Keys.RIGHT:
-			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
-					Param.toStringParam(undoOrg));
-			Ctx.project.getUndoStack().add(undoOp);
+//			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), "pos",
+//					Param.toStringParam(undoOrg));
+//			Ctx.project.getUndoStack().add(undoOp);
 		}
 		
 		return false;
@@ -367,9 +371,9 @@ public class ScnWidgetInputListener extends ClickListener {
 		case Keys.FORWARD_DEL:
 			if(Ctx.project.getSelectedActor() == null)
 				return false;
-			undoOp = new UndoDeleteElement(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor());
-			Ctx.project.getUndoStack().add(undoOp);
-			Ctx.project.getSelectedChapter().deleteElement(Ctx.project.getSelectedActor());
+//			undoOp = new UndoDeleteElement(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor());
+//			Ctx.project.getUndoStack().add(undoOp);
+//			Ctx.project.getSelectedChapter().deleteElement(Ctx.project.getSelectedActor());
 			break;
 			
 		case Keys.S:

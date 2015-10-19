@@ -77,7 +77,7 @@ public class SceneActorInputPanel extends InputPanel {
 		String s = scene.getSelected();
 		
 		if(s == null || s.isEmpty()) {
-			s = Ctx.project.getSelectedScene().getAttribute("id");
+			s = Ctx.project.getSelectedScene().getId();
 		}
 		
 		

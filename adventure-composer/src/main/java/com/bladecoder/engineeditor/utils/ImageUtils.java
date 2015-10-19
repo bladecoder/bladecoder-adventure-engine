@@ -36,7 +36,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
-import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engine.model.World;
 
 public class ImageUtils {
 
@@ -179,7 +179,7 @@ public class ImageUtils {
 		settings.fast = false;
 		settings.debug = false;
 
-		int wWidth = Ctx.project.getWorld().getWidth();
+		int wWidth = World.getInstance().getWidth();
 
 		settings.maxWidth = MathUtils.nextPowerOfTwo((int) (wWidth * scale * 2f));
 		settings.maxHeight = MathUtils.nextPowerOfTwo((int) (wWidth * scale * 2f));

@@ -15,13 +15,12 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import org.w3c.dom.Element;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.ElementList;
+import com.bladecoder.engineeditor.ui.components.ModelList;
 
-public class SoundList extends ElementList {	
+public class SoundList extends ModelList<SoundFX> {	
 	
 	public SoundList(Skin skin) {
 		super(skin, true);
@@ -30,36 +29,32 @@ public class SoundList extends ElementList {
 	}	
 
 	@Override
-	protected EditSoundDialog getEditElementDialogInstance(Element e) {
-		return new EditSoundDialog(skin, doc, parent, e);
+	protected EditSoundDialog getEditElementDialogInstance(SoundFX e) {
+//		return new EditSoundDialog(skin, doc, parent, e);
+		return null;
 	}	
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
-	private static final CellRenderer<Element> listCellRenderer = new CellRenderer<Element>() {
+	private static final CellRenderer<SoundFX> listCellRenderer = new CellRenderer<SoundFX>() {
 
 		@Override
-		protected String getCellTitle(Element e) {
-			String id  = e.getAttribute("id");
-
-			return id;
+		protected String getCellTitle(SoundFX e) {
+			return e.getFilename();
 		}
 
 		@Override
-		protected String getCellSubTitle(Element e) {
-			String filename = e.getAttribute("filename");
-			String loop = e.getAttribute("loop");
-			String volume = e.getAttribute("volume");
+		protected String getCellSubTitle(SoundFX e) {
+			String filename = e.getFilename();
 
 			StringBuilder sb = new StringBuilder();
 
-			if (!filename.isEmpty())
+			if (filename != null && !filename.isEmpty())
 				sb.append("filename: ").append(filename);
-			if (!loop.isEmpty())
-				sb.append(" loop: ").append(loop);
-			if (!volume.isEmpty())
-				sb.append(" volume: ").append(volume);
+
+			sb.append(" loop: ").append(e.getLoop());
+			sb.append(" volume: ").append(e.getVolume());
 			
 			return sb.toString();
 		}

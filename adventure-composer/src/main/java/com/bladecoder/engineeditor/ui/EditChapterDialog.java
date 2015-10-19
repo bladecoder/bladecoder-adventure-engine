@@ -99,8 +99,8 @@ public class EditChapterDialog extends EditDialog {
 				}
 				
 				// sets the init chapter
-				if(previousId.equals(Ctx.project.getWorld().getInitChapter())) {
-					Ctx.project.getWorld().setInitChapter(newId);
+				if(previousId.equals(Ctx.project.getWorldDocument().getInitChapter())) {
+					Ctx.project.getWorldDocument().setInitChapter(newId);
 				}
 				
 				Ctx.project.saveProject();

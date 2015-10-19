@@ -512,13 +512,6 @@ public class World implements Serializable, AssetConsumer {
 
 	public void newGame() {
 		loadChapter(null);
-		// TODO: Delete this comment
-		 try {
-		 saveWorldDesc(EngineAssetManager.getInstance().getUserFile("world.json"));
-		 } catch (IOException e) {
-		 // TODO Auto-generated catch block
-		 e.printStackTrace();
-		 }
 	}
 
 	// ********** SERIALIZATION **********

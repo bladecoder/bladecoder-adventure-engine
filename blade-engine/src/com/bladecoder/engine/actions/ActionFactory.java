@@ -107,6 +107,17 @@ public class ActionFactory {
 	public static String []getActionList() {
 		return  actions.keySet().toArray(new String[actions.size()]);
 	}
+	
+	public static String getName(Action a) {
+		String value = a.getClass().getCanonicalName();
+		
+		for(String key:actions.keySet()) {
+			if(actions.get(key).equals(value))
+				return key;
+		}
+		
+		return null;
+	}
 
 	public static Action create(String name,
 			HashMap<String, String> params) {

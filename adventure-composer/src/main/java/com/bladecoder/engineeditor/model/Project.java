@@ -28,13 +28,13 @@ import java.util.Properties;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import com.bladecoder.engine.assets.EngineAssetManager;
+import com.badlogic.gdx.files.FileHandle;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
-import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.setup.Dependency;
 import com.bladecoder.engineeditor.setup.DependencyBank;
@@ -73,13 +73,13 @@ public class Project extends PropertyChange {
 
 	private File projectFile;
 
-	private final WorldDocument world = new WorldDocument();
 	private final UndoStack undoStack = new UndoStack();
 	private Properties projectConfig;
 
+	private WorldDocument world = new WorldDocument();
 	private ChapterDocument selectedChapter;
-	private Element selectedScene;
-	private Element selectedActor;
+	private Scene selectedScene;
+	private BaseActor selectedActor;
 	private String selectedFA;
 
 	final PropertyChangeListener modelChangeListener = new PropertyChangeListener() {
@@ -97,6 +97,10 @@ public class Project extends PropertyChange {
 	
 	public UndoStack getUndoStack() {
 		return undoStack;
+	}
+	
+	public WorldDocument getWorldDocument() {
+		return world;
 	}
 
 	private void loadConfig() {
@@ -135,8 +139,8 @@ public class Project extends PropertyChange {
 		return projectConfig;
 	}
 
-	public void setSelectedScene(Element scn) {
-		Element old = null;
+	public void setSelectedScene(Scene scn) {
+		Scene old = null;
 
 		old = selectedScene;
 
@@ -147,13 +151,12 @@ public class Project extends PropertyChange {
 		firePropertyChange(NOTIFY_SCENE_SELECTED, old, selectedScene);
 	}
 
-	public void setSelectedActor(Element a) {
-		Element old = null;
+	public void setSelectedActor(BaseActor a) {
+		BaseActor old = null;
 
 		old = selectedActor;
 
 		selectedActor = a;
-
 		selectedFA = null;
 		
 		firePropertyChange(NOTIFY_ACTOR_SELECTED, old, selectedActor);
@@ -163,11 +166,11 @@ public class Project extends PropertyChange {
 		return selectedChapter;
 	}
 
-	public Element getSelectedScene() {
+	public Scene getSelectedScene() {
 		return selectedScene;
 	}
 
-	public Element getSelectedActor() {
+	public BaseActor getSelectedActor() {
 		return selectedActor;
 	}
 
@@ -246,7 +249,7 @@ public class Project extends PropertyChange {
 
 	public void saveProject() throws IOException, TransformerException {
 		if (projectFile != null) {
-			world.save();
+			World.getInstance().saveWorldDesc(new FileHandle(new File(projectFile.getAbsolutePath() + MODEL_PATH + "/world.json")));
 			selectedChapter.save();
 			
 			projectConfig.store(new FileOutputStream(projectFile.getAbsolutePath()+ "/" + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME), null);
@@ -278,13 +281,10 @@ public class Project extends PropertyChange {
 				System.exit(0);
 			}
 			
-			EngineAssetManager.getInstance().dispose();
-			EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
-			World.getInstance().loadWorldDesc();
 			world.setModelPath(projectFile.getAbsolutePath() + "/" + MODEL_PATH);
 			world.load();
 			
-			loadChapter(world.getInitChapter());
+			loadChapter(World.getInstance().getInitChapter());
 			
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 						
@@ -309,12 +309,8 @@ public class Project extends PropertyChange {
 		return true;
 	}
 
-	public WorldDocument getWorld() {
-		return world;
-	}
-
-	public Element getActor(String id) {
-		return selectedChapter.getActor(selectedScene, id);
+	public BaseActor getActor(String id) {
+		return selectedScene.getActor(id, false);
 	}
 
 	public List<String> getResolutions() {
@@ -351,7 +347,6 @@ public class Project extends PropertyChange {
 		undoStack.clear();
 		
 		selectedChapter = world.loadChapter(selChapter);
-		World.getInstance().loadChapter(selChapter);
 		
 //		if(selectedChapter != null) {
 //			NodeList scenes = selectedChapter.getScenes();

@@ -18,17 +18,13 @@ package com.bladecoder.engineeditor.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import org.w3c.dom.Element;
-
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.components.PropertyTable;
-import com.bladecoder.engineeditor.undo.UndoOp;
-import com.bladecoder.engineeditor.undo.UndoSetAttr;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.eclipsesource.json.ParseException;
 
@@ -42,8 +38,7 @@ public class ActorProps extends PropertyTable {
 	public static final String STATE_PROP = XMLConstants.STATE_ATTR;
 	public static final String BBOX_FROM_RENDERER_PROP = "Set BBOX from renderer";
 
-	private ChapterDocument doc;
-	private Element actor;
+	private BaseActor actor;
 
 	// TableModelListener tableModelListener = new TableModelListener() {
 	// @Override
@@ -74,21 +69,17 @@ public class ActorProps extends PropertyTable {
 		if(actor==null)
 			return;
 		
-		String value = doc.getRootAttr(actor, modelProperty);
-		
 		if (modelProperty.equals(XMLConstants.DESC_ATTR)) {
-			setProperty(DESC_PROP, value);
+			setProperty(DESC_PROP, ((InteractiveActor)actor).getDesc());
 		} else if (modelProperty.equals(XMLConstants.POS_ATTR)) {
-			Vector2 pos = doc.getPos(actor);
-			
-			setProperty(POS_X_PROP, Float.toString(pos.x));			
-			setProperty(POS_Y_PROP, Float.toString(pos.y));
+			setProperty(POS_X_PROP, Float.toString(actor.getX()));			
+			setProperty(POS_Y_PROP, Float.toString(actor.getY()));
 		} else if (modelProperty.equals(XMLConstants.VISIBLE_ATTR)) {
-			setProperty(VISIBLE_PROP, value);
+			setProperty(VISIBLE_PROP, Boolean.toString(actor.isVisible()));
 		} else if (modelProperty.equals(XMLConstants.INTERACTION_ATTR)) {
-			setProperty(INTERACTION_PROP, value);
+			setProperty(INTERACTION_PROP, Boolean.toString(((InteractiveActor)actor).hasInteraction()));
 		} else if (modelProperty.equals(XMLConstants.STATE_ATTR)) {
-			setProperty(STATE_PROP, value);
+			setProperty(STATE_PROP, ((InteractiveActor)actor).getState());
 		} else if (modelProperty.equals(XMLConstants.BBOX_ATTR)) {
 			
 			// TODO Conflict with scnwidget
@@ -99,32 +90,29 @@ public class ActorProps extends PropertyTable {
 		}
 	}
 
-	public void setActorDocument(ChapterDocument doc, Element a) {
-		this.doc = doc;
+	public void setActorDocument(BaseActor a) {
 		this.actor = a;
 		clearProps();
 
 		if (a != null) {
+			addProperty(POS_X_PROP,  Float.toString(actor.getX()), Types.FLOAT);
+			addProperty(POS_Y_PROP, Float.toString(actor.getY()), Types.FLOAT);
+			addProperty(VISIBLE_PROP, Boolean.toString(actor.isVisible()), Types.BOOLEAN);
 
-			Vector2 pos = doc.getPos(a);
-			addProperty(POS_X_PROP, Float.toString(pos.x), Types.FLOAT);
-			addProperty(POS_Y_PROP, Float.toString(pos.y), Types.FLOAT);
-			addProperty(VISIBLE_PROP, doc.getRootAttr(a, XMLConstants.VISIBLE_ATTR), Types.BOOLEAN);
+			if (a instanceof InteractiveActor) {
+				addProperty(DESC_PROP, ((InteractiveActor)actor).getDesc());
 
-			if (!a.getAttribute(XMLConstants.TYPE_ATTR).equals(XMLConstants.OBSTACLE_VALUE)) {
-				addProperty(DESC_PROP, doc.getRootAttr(a, XMLConstants.DESC_ATTR));
-
-				addProperty(INTERACTION_PROP, doc.getRootAttr(a, XMLConstants.INTERACTION_ATTR), Types.BOOLEAN);
-				addProperty(STATE_PROP, doc.getRootAttr(a, XMLConstants.STATE_ATTR));
+				addProperty(INTERACTION_PROP, Boolean.toString(((InteractiveActor)actor).hasInteraction()), Types.BOOLEAN);
+				addProperty(STATE_PROP, ((InteractiveActor)actor).getState());
 			}
 			
-			if (a.getAttribute(XMLConstants.TYPE_ATTR).equals(XMLConstants.SPRITE_VALUE)) {
-				boolean v = doc.getRootAttr(a, XMLConstants.BBOX_ATTR).isEmpty();
+			if (a instanceof SpriteActor) {
+				boolean v = ((SpriteActor) a).isBboxFromRenderer();
 				
 				addProperty(BBOX_FROM_RENDERER_PROP, Boolean.toString(v), Types.BOOLEAN);
 			}
 
-			doc.addPropertyChangeListener(propertyChangeListener);
+			Ctx.project.getSelectedChapter().addPropertyChangeListener(propertyChangeListener);
 
 			invalidateHierarchy();
 		}
@@ -133,37 +121,35 @@ public class ActorProps extends PropertyTable {
 	@Override
 	protected void updateModel(String property, String value) {
 		if (property.equals(DESC_PROP)) {
-			doc.setRootAttr(actor, XMLConstants.DESC_ATTR, value);
+			((InteractiveActor)actor).setDesc(value);
 		} else if (property.equals(POS_X_PROP)) {
-			Vector2 pos = doc.getPos(actor);
-			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), XMLConstants.POS_ATTR,
-					Param.toStringParam(pos));
-			Ctx.project.getUndoStack().add(undoOp);
+			
+			// TODO UNDO
+//			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), XMLConstants.POS_ATTR,
+//					Param.toStringParam(pos));
+//			Ctx.project.getUndoStack().add(undoOp);
 
 			try {
-				pos.x = Float.parseFloat(value);
+				actor.setPosition(Float.parseFloat(value), actor.getY());
 			} catch (NumberFormatException e) {
 
 			}
-			doc.setPos(actor, pos);
 		} else if (property.equals(POS_Y_PROP)) {
-			Vector2 pos = doc.getPos(actor);
-			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(),XMLConstants.POS_ATTR,
-					Param.toStringParam(pos));
-			Ctx.project.getUndoStack().add(undoOp);
+//			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(),XMLConstants.POS_ATTR,
+//					Param.toStringParam(pos));
+//			Ctx.project.getUndoStack().add(undoOp);
 			try {
-				pos.y = Float.parseFloat(value);
+				actor.setPosition(actor.getX(), Float.parseFloat(value));
 			} catch (NumberFormatException e) {
 
 			}
 
-			doc.setPos(actor, pos);
 		} else if (property.equals(VISIBLE_PROP)) {
-			doc.setRootAttr(actor, XMLConstants.VISIBLE_ATTR, value);
+			actor.setVisible(Boolean.parseBoolean(value));
 		} else if (property.equals(INTERACTION_PROP)) {
-			doc.setRootAttr(actor, XMLConstants.INTERACTION_ATTR, value);
+			((InteractiveActor)actor).setInteraction(Boolean.parseBoolean(value));
 		} else if (property.equals(STATE_PROP)) {
-			doc.setRootAttr(actor,  XMLConstants.STATE_ATTR, value);
+			((InteractiveActor)actor).setState(value);
 		} else if (property.equals(BBOX_FROM_RENDERER_PROP)) {
 			boolean v = true;
 			
@@ -173,11 +159,7 @@ public class ActorProps extends PropertyTable {
 				
 			}
 			
-			if(!v) {
-				doc.setBbox(actor, null); // TODO get image size
-			} else { 
-				doc.setRootAttr(actor, XMLConstants.BBOX_ATTR, null);
-			}
+			((SpriteActor)actor).setBboxFromRenderer(v);
 		}
 
 	}

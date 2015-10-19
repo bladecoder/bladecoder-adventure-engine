@@ -164,7 +164,7 @@ public class CanvasDrawer {
 
 		drawer.begin(ShapeRenderer.ShapeType.Line);
 		drawer.setColor(Color.MAGENTA);
-		drawer.rect(0, 0, Ctx.project.getWorld().getWidth(), Ctx.project.getWorld().getHeight());
+		drawer.rect(0, 0, Ctx.project.getWorldDocument().getWidth(), Ctx.project.getWorldDocument().getHeight());
 		drawer.end();
 	}
 
