@@ -61,7 +61,7 @@ public class ProjectPanel extends HeaderPanel  {
 				WorldDocument w = Ctx.project.getWorldDocument();
 				ChapterDocument selectedChapter = Ctx.project.getSelectedChapter();
 				
-				sceneList.addElements(Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[World.getInstance().getScenes().size()])));
+				sceneList.addElements(World.getInstance(), Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[World.getInstance().getScenes().size()])));
 //				verbList.addElements(w, w.getElement(), "verb");
 				chapterList.addElements(w);
 				setTile("ADVENTURE - " + (Ctx.project.getTitle() != null? Ctx.project.getTitle():""));

@@ -79,6 +79,18 @@ public class Verb implements VerbRunner, Serializable {
 	public void setTarget(String target) {
 		this.target = target;
 	}
+	
+	public String getHashKey() {
+		String key = id;
+		
+		if (target != null)
+			key = key + "." + target;
+
+		if (state != null)
+			key = key + "." + state;
+		
+		return key;
+	}
 
 	public void add(Action a) {
 		actions.add(a);

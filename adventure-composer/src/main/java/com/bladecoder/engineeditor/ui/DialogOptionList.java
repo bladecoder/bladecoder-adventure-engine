@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -28,13 +26,11 @@ import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 
-public class DialogOptionList extends ModelList<DialogOption> {
+public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 	Skin skin;
 
 	private ImageButton upBtn;
 	private ImageButton downBtn;
-	
-	private Dialog dialog;
 
 	public DialogOptionList(Skin skin) {
 		super(skin, true);
@@ -76,16 +72,6 @@ public class DialogOptionList extends ModelList<DialogOption> {
 				down();
 			}
 		});
-	}
-	
-	public void addElements(Dialog dialog) {
-		this.dialog = dialog;
-		ArrayList<DialogOption> options = null;
-		
-		if(dialog != null)
-			options = dialog.getOptions();
-		
-		addElements(options);
 	}
 
 	@Override
@@ -168,6 +154,22 @@ public class DialogOptionList extends ModelList<DialogOption> {
 //
 //		doc.setModified(e);
 	}
+	
+	@Override
+	protected void delete() {
+			
+		DialogOption option = removeSelected();
+			
+		parent.getOptions().remove(option);
+			
+	// TODO UNDO
+//			UndoOp undoOp = new UndoDeleteElement(doc, e);
+//			Ctx.project.getUndoStack().add(undoOp);
+//			doc.deleteElement(e);
+
+	// TODO TRANSLATIONS
+//			I18NUtils.putTranslationsInElement(doc, clipboard);
+	}
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
@@ -178,7 +180,7 @@ public class DialogOptionList extends ModelList<DialogOption> {
 		protected String getCellTitle(DialogOption e) {
 			String text = e.getText();
 			
-			int i = dialog.getVisibleOptions().indexOf(e);
+			int i = parent.getVisibleOptions().indexOf(e);
 
 			return i + ". " + Ctx.project.getSelectedChapter().getTranslation(text);
 		}

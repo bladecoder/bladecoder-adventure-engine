@@ -23,21 +23,24 @@ import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
-public class EditSoundDialog extends EditElementDialog {
+public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> {
 	
 	private InputPanel[] inputs;
 
 
 	String attrs[] = { "id", "filename", "loop", "volume"};	
 
-	public EditSoundDialog(Skin skin, BaseDocument doc, Element parent, Element e) {
+	public EditSoundDialog(Skin skin,  InteractiveActor parent, SoundFX e) {
 		super(skin);
 		
 		inputs = new InputPanel [4];
@@ -51,8 +54,34 @@ public class EditSoundDialog extends EditElementDialog {
 
 		setInfo("Actors can have a list of sounds that can be associated to Sprites or played with the 'sound' action");
 
-		init(inputs, attrs, doc, parent, "sound", e);
+		init(inputs, attrs, parent, e);
 	}
+	
+	@Override
+	protected void create(){
+		
+	}
+	
+	@Override
+	protected void fill()	{
+//		for (int j = 0; j < a.length; j++) {
+//			InputPanel input = i[j];
+//			
+//			if (!input.getText().isEmpty() && input.isVisible()) {
+//				if(a[j].equals("id")) {
+//					doc.setId(e, input.getText());
+//				} else {
+//					I18NUtils.setI18NAttr(doc, e, a[j], input.getText());
+//				}
+//			} else {
+//				e.removeAttribute(a[j]);
+//			}
+//			
+//			
+//		}
+//	
+//		doc.setModified(e);
+	}	
 	
 	private String[] getSoundList() {
 		String path = Ctx.project.getProjectPath() + Project.SOUND_PATH;

@@ -64,9 +64,9 @@ public class ScenePanel extends HeaderPanel {
 				}
 				
 				
-				actorList.addElements(Arrays.asList(s.getActors().values().toArray(new BaseActor[0])));
+				actorList.addElements(s, Arrays.asList(s.getActors().values().toArray(new BaseActor[0])));
 //				verbList.addElements(doc, scn, "verb");	
-				layerList.addElements(s.getLayers());		
+				layerList.addElements(s, s.getLayers());		
 //				sceneProps.setSceneDocument(doc, scn);
 				
 			}

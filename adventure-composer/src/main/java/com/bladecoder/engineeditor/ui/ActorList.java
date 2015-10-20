@@ -31,6 +31,7 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.ObstacleActor;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.spine.SpineRenderer;
@@ -41,7 +42,7 @@ import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.utils.I18NUtils;
 
-public class ActorList extends ModelList<BaseActor> {
+public class ActorList extends ModelList<Scene, BaseActor> {
 
 	private ImageButton playerBtn;
 

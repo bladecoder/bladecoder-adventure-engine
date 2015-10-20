@@ -607,13 +607,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		currentVerb.setState(state);
 		currentVerb.setTarget(target);
 
-		if (target != null)
-			id = id + "." + target;
-
-		if (state != null)
-			id = id + "." + state;
-
-		v.addVerb(id, currentVerb);
+		v.addVerb(currentVerb.getHashKey(), currentVerb);
 	}
 
 	private final HashMap<String, String> actionParams = new HashMap<String, String>();

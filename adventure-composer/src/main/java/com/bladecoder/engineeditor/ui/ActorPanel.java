@@ -18,7 +18,7 @@ package com.bladecoder.engineeditor.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.anim.AnimationDesc;
@@ -31,7 +31,6 @@ import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.HeaderPanel;
 import com.bladecoder.engineeditor.ui.components.TabPanel;
@@ -61,7 +60,6 @@ public class ActorPanel extends HeaderPanel {
 					@Override
 					public void propertyChange(PropertyChangeEvent e) {
 						BaseActor a = (BaseActor) e.getNewValue();
-						ChapterDocument doc = Ctx.project.getSelectedChapter();
 
 						String selTitle = tabPanel.getSelectedIndex() == -1? null: tabPanel.getTitleAt(tabPanel.getSelectedIndex());
 						tabPanel.clear();
@@ -97,28 +95,38 @@ public class ActorPanel extends HeaderPanel {
 							setTile("ACTOR");
 						}
 						
-						List<AnimationDesc> anims = null;
-						
 						if(a instanceof SpriteActor) {
-							anims = Arrays.asList(((SpriteActor) a).getRenderer().getAnimations().values().toArray(new AnimationDesc[0]));
+							HashMap<String, AnimationDesc> anims = ((SpriteActor) a).getRenderer().getAnimations();
+							if(anims != null)
+								faList.addElements((SpriteActor)a, Arrays.asList(anims.values().toArray(new AnimationDesc[0])));
+							else
+								faList.addElements((SpriteActor)a, null);
+						} else {
+							faList.addElements(null, null);
 						}
-						faList.addElements(anims);
 						
-						List<SoundFX> sounds = null;
 						if(a instanceof InteractiveActor) {
-							sounds = Arrays.asList(((SpriteActor) a).getSounds().values().toArray(new SoundFX[0]));
+							HashMap<String, SoundFX> sounds = ((InteractiveActor) a).getSounds();
+							if(sounds != null)
+								soundList.addElements((InteractiveActor)a, Arrays.asList(sounds.values().toArray(new SoundFX[0])));
+							else
+								soundList.addElements((InteractiveActor)a, null);
+						} else {
+							soundList.addElements(null, null);
 						}
-						soundList.addElements(sounds);
 						
 						verbList.changeActor();
 						
-						List<Dialog> dialogs = null;
-						
 						if(a instanceof CharacterActor) {
-							dialogs =  Arrays.asList(((CharacterActor) a).getDialogs().values().toArray(new Dialog[0]));
+							
+							HashMap<String, Dialog> dialogs = ((CharacterActor) a).getDialogs();
+							if(dialogs != null)
+								dialogList.addElements((CharacterActor)a, Arrays.asList(dialogs.values().toArray(new Dialog[0])));
+							else
+								dialogList.addElements((CharacterActor)a, null);
+						} else {
+							dialogList.addElements(null, null);
 						}
-						
-						dialogList.addElements(dialogs);
 						
 						props.setActorDocument(a);
 						

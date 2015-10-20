@@ -59,7 +59,7 @@ import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
-public class SceneList extends ModelList<Scene> {
+public class SceneList extends ModelList<World, Scene> {
 
 	private ImageButton initBtn;
 	private SelectBox<String> chapters;
@@ -170,7 +170,7 @@ public class SceneList extends ModelList<Scene> {
 
 //					doc = Ctx.project.getSelectedChapter();
 
-					addElements(Arrays.asList((Scene[])World.getInstance().getScenes().values().toArray()));
+					addElements(World.getInstance(), Arrays.asList((Scene[])World.getInstance().getScenes().values().toArray()));
 				} catch (ParserConfigurationException | SAXException | IOException e1) {
 					e1.printStackTrace();
 				}

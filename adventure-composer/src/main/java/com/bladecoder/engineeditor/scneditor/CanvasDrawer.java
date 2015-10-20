@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
@@ -30,7 +31,6 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.Scene;
-import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.pathfinder.NavNode;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
@@ -44,12 +44,12 @@ public class CanvasDrawer {
 	private static final Color MOUSESELECTION_STROKE_COLOR = new Color(0.2f, 0.2f, 0.8f, 1f);
 
 	private final ShapeRenderer drawer = new ShapeRenderer();
-	private SceneCamera camera;
+	private OrthographicCamera camera;
 
 	public CanvasDrawer() {
 	}
 
-	public void setCamera(SceneCamera camera) {
+	public void setCamera(OrthographicCamera camera) {
 		this.camera = camera;
 	}
 

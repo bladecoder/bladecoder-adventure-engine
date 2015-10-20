@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Verb;
+import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
@@ -33,7 +34,7 @@ import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.ui.components.ScopePanel;
 
-public class VerbList extends ModelList<Verb> {
+public class VerbList extends ModelList<VerbManager, Verb> {
 
 	public static final String VERBS[] = { "lookat", "pickup", "talkto", "use", "leave", "enter", "exit", "init",
 			"test", "custom" };
@@ -52,18 +53,18 @@ public class VerbList extends ModelList<Verb> {
 			@Override
 			public void scopeChanged(String scope) {
 				if (WORLD_SCOPE.equals(scope)) {
-					addElements(Arrays
+					addElements(World.getInstance().getVerbManager(), Arrays
 							.asList(World.getInstance().getVerbManager().getVerbs().values().toArray(new Verb[0])));
 				} else if (SCENE_SCOPE.equals(scope)) {
-					addElements(Arrays.asList(
+					addElements(Ctx.project.getSelectedScene().getVerbManager(), Arrays.asList(
 							Ctx.project.getSelectedScene().getVerbManager().getVerbs().values().toArray(new Verb[0])));
 				} else if (ACTOR_SCOPE.equals(scope)) {
 					BaseActor a = Ctx.project.getSelectedActor();
-					if(a instanceof InteractiveActor) {
-						addElements(Arrays.asList(((InteractiveActor)a).getVerbManager()
-							.getVerbs().values().toArray(new Verb[0])));
+					if (a instanceof InteractiveActor) {
+						addElements(((InteractiveActor) a).getVerbManager(), Arrays.asList(
+								((InteractiveActor) a).getVerbManager().getVerbs().values().toArray(new Verb[0])));
 					} else {
-						addElements(null);
+						addElements(null, null);
 					}
 				}
 			}
@@ -104,14 +105,25 @@ public class VerbList extends ModelList<Verb> {
 	}
 
 	@Override
-	public void addElements(List<Verb> elements) {
-		super.addElements(elements);
+	public void addElements(VerbManager vm, List<Verb> elements) {
+		super.addElements(vm, elements);
 		addActions();
 	}
 
 	@Override
 	protected void delete() {
-		super.delete();
+			
+		Verb v = removeSelected();
+			
+		parent.getVerbs().remove(v.getHashKey());
+			
+	// TODO UNDO
+//			UndoOp undoOp = new UndoDeleteElement(doc, e);
+//			Ctx.project.getUndoStack().add(undoOp);
+//			doc.deleteElement(e);
+
+	// TODO TRANSLATIONS
+//			I18NUtils.putTranslationsInElement(doc, clipboard);
 
 		// Clear actions here because change event doesn't call when deleting
 		// the last element
@@ -126,9 +138,9 @@ public class VerbList extends ModelList<Verb> {
 
 		if (pos != -1) {
 			v = list.getItems().get(pos);
-			actionList.addElements(v.getActions());
-		} else { 
-			actionList.addElements(null);
+			actionList.addElements(v, v.getActions());
+		} else {
+			actionList.addElements(null, null);
 		}
 	}
 

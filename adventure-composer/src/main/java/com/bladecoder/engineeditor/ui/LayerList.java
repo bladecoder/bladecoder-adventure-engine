@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
@@ -28,7 +29,7 @@ import com.bladecoder.engineeditor.ui.components.ModelList;
 
 // TODO: Visibility button
 
-public class LayerList extends ModelList<SceneLayer> {
+public class LayerList extends ModelList<Scene, SceneLayer> {
 
 	private ImageButton upBtn;
 	private ImageButton downBtn;

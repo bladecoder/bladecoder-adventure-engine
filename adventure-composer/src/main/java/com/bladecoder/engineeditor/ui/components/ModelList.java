@@ -21,9 +21,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-public abstract class ModelList<T> extends EditList<T> {
+public abstract class ModelList<PARENT,T> extends EditList<T> {
 	
 	protected T clipboard;
+	protected PARENT parent;
 	
 	private boolean sorted;
 
@@ -43,8 +44,9 @@ public abstract class ModelList<T> extends EditList<T> {
 
 	}
 
-	public void addElements(List<T> elements) {
+	public void addElements(PARENT parent, List<T> elements) {
 
+		this.parent = parent;
 		list.getItems().clear();
 		list.getSelection().clear();
 
@@ -69,7 +71,7 @@ public abstract class ModelList<T> extends EditList<T> {
 //			});
 		}
 
-		toolbar.disableCreate(elements == null);
+		toolbar.disableCreate(parent == null);
 //		container.prefHeight(list.getItemHeight() * (list.getItems().size > 3?list.getItems().size:3));
 		list.invalidateHierarchy();
 	}
@@ -115,31 +117,32 @@ public abstract class ModelList<T> extends EditList<T> {
 //		});		
 	}
 
-	protected abstract EditElementDialog getEditElementDialogInstance(T e);
+	protected abstract EditModelDialog<PARENT, T> getEditElementDialogInstance(T e);
+	
+	protected T removeSelected() {
+		int pos = list.getSelectedIndex();
 
-	@Override
-	protected void delete() {
-//		int pos = list.getSelectedIndex();
-//
-//		if (pos == -1)
-//			return;
-//
-//		Element e = list.getItems().removeIndex(pos);
-//
-//		UndoOp undoOp = new UndoDeleteElement(doc, e);
-//		Ctx.project.getUndoStack().add(undoOp);
-//		doc.deleteElement(e);
-//
-//		clipboard = e;
-//		I18NUtils.putTranslationsInElement(doc, clipboard);
-//		toolbar.disablePaste(false);
-//
-//		if (pos > 0)
-//			list.setSelectedIndex(pos - 1);
-//		else if (pos == 0 && list.getItems().size > 0)
-//			list.setSelectedIndex(0);
+		if (pos == -1)
+			return null;
+
+		T e = list.getItems().removeIndex(pos);
+		
+		clipboard = e;
+		
+
+		if (pos > 0)
+			list.setSelectedIndex(pos - 1);
+		else if (pos == 0 && list.getItems().size > 0)
+			list.setSelectedIndex(0);
+		
+		toolbar.disablePaste(false);
+		
+		return e;		
 	}
 
+	@Override
+	protected abstract void delete();
+	
 	@Override
 	protected void copy() {
 //		Element e = list.getSelected();

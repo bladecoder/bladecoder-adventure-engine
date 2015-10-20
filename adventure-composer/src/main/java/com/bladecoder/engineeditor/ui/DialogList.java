@@ -21,13 +21,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 
-public class DialogList extends ModelList<Dialog> {	
+public class DialogList extends ModelList<CharacterActor, Dialog> {	
 	
     private DialogOptionList options;
 
@@ -69,18 +70,39 @@ public class DialogList extends ModelList<Dialog> {
 
 		if (pos != -1) {
 			d = list.getItems().get(pos);
-			options.addElements(d);
+			options.addElements(d, d.getOptions());
 		} else { 
-			options.addElements((Dialog)null);
+			options.addElements(null, null);
 		}    	
     }
     
     
 	@Override
-	public void addElements(List<Dialog> elements) {
-		super.addElements(elements);
+	public void addElements(CharacterActor a, List<Dialog> elements) {
+		super.addElements(a, elements);
 		addOptions();
     }	
+	
+	@Override
+	protected void delete() {
+			
+		Dialog d = removeSelected();
+			
+		parent.getDialogs().remove(d.getId());
+			
+	// TODO UNDO
+//			UndoOp undoOp = new UndoDeleteElement(doc, e);
+//			Ctx.project.getUndoStack().add(undoOp);
+//			doc.deleteElement(e);
+
+	// TODO TRANSLATIONS
+//			I18NUtils.putTranslationsInElement(doc, clipboard);
+
+		// Clear options here because change event doesn't call when deleting
+		// the last element
+		if (list.getSelectedIndex() == -1)
+			addOptions();
+	}
 
 
 	// -------------------------------------------------------------------------

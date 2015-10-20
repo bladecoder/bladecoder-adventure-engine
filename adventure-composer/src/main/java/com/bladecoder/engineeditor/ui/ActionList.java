@@ -30,6 +30,7 @@ import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
@@ -37,7 +38,7 @@ import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.I18NUtils;
 
-public class ActionList extends ModelList<Action> {
+public class ActionList extends ModelList<Verb, Action> {
 	// TODO Action cache for getting names
 	
 	private static final String END_ACTION = "com.bladecoder.engine.actions.EndAction";

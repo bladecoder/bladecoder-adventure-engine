@@ -29,7 +29,7 @@ import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditElementDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 
-public class SpriteList extends ModelList<AnimationDesc> {
+public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 
 	private ImageButton initBtn;
 	private ImageButton flipInitBtn;
@@ -112,23 +112,27 @@ public class SpriteList extends ModelList<AnimationDesc> {
 
 	@Override
 	protected void delete() {
-		int pos = list.getSelectedIndex();
+		AnimationDesc d = removeSelected();
+		
+		ActorRenderer renderer = parent.getRenderer();
+		
+		renderer.getAnimations().remove(d.id);
+			
+	// TODO UNDO
+//			UndoOp undoOp = new UndoDeleteElement(doc, e);
+//			Ctx.project.getUndoStack().add(undoOp);
+//			doc.deleteElement(e);
 
-		if (pos == -1)
-			return;
+	// TODO TRANSLATIONS
+//			I18NUtils.putTranslationsInElement(doc, clipboard);
 
-		AnimationDesc e = list.getItems().get(pos);
 
 		// delete init_animation attr if the animation to delete is the chapter
 		// init_animation
-		ActorRenderer renderer = ((SpriteActor) Ctx.project.getSelectedActor()).getRenderer();
-
-		if (renderer.getInitAnimation().equals(e.id)) {
+		if (renderer.getInitAnimation().equals(d.id)) {
 			// TODO Set next animation as init
 			renderer.setInitAnimation(null);
 		}
-
-		super.delete();
 	}
 
 	@Override

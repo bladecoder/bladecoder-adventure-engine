@@ -16,11 +16,14 @@
 package com.bladecoder.engineeditor.ui;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
+import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.utils.I18NUtils;
 
-public class SoundList extends ModelList<SoundFX> {	
+public class SoundList extends ModelList<InteractiveActor, SoundFX> {	
 	
 	public SoundList(Skin skin) {
 		super(skin, true);
@@ -29,10 +32,25 @@ public class SoundList extends ModelList<SoundFX> {
 	}	
 
 	@Override
-	protected EditSoundDialog getEditElementDialogInstance(SoundFX e) {
-//		return new EditSoundDialog(skin, doc, parent, e);
-		return null;
-	}	
+	protected EditSoundDialog getEditElementDialogInstance(SoundFX s) {
+		return new EditSoundDialog(skin, parent, s);
+	}
+
+	@Override
+	protected void delete() {
+		
+		SoundFX s = removeSelected();
+		
+		parent.getSounds().remove(s.getFilename());
+		
+// TODO UNDO
+//		UndoOp undoOp = new UndoDeleteElement(doc, e);
+//		Ctx.project.getUndoStack().add(undoOp);
+//		doc.deleteElement(e);
+
+// TODO TRANSLATIONS
+//		I18NUtils.putTranslationsInElement(doc, clipboard);
+	}
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
@@ -64,4 +82,5 @@ public class SoundList extends ModelList<SoundFX> {
 			return true;
 		}
 	};
+
 }

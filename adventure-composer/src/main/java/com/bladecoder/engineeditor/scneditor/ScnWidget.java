@@ -25,6 +25,7 @@ import org.w3c.dom.NodeList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -91,6 +92,8 @@ public class ScnWidget extends Widget {
 	private boolean showWalkZone;
 
 	private final GlyphLayout textLayout = new GlyphLayout();
+	
+	private final OrthographicCamera camera = new OrthographicCamera();
 
 	/**
 	 * The NOTIFY_PROJECT_LOADED listener is called from other thread. This flag
@@ -233,6 +236,10 @@ public class ScnWidget extends Widget {
 
 		walkZoneWindow = new WalkZoneWindow(skin, inputListner);
 	}
+	
+	public OrthographicCamera getCamera() {
+		return camera;
+	}
 
 	@Override
 	public void act(float delta) {
@@ -311,7 +318,7 @@ public class ScnWidget extends Widget {
 
 			if (ScissorStack.pushScissors(scissors)) {
 				// WORLD CAMERA
-				sceneBatch.setProjectionMatrix(scn.getCamera().combined);
+				sceneBatch.setProjectionMatrix(camera.combined);
 				sceneBatch.begin();
 				scn.draw(sceneBatch);
 				sceneBatch.end();
@@ -370,7 +377,7 @@ public class ScnWidget extends Widget {
 
 						scn.retrieveAssets();
 
-						drawer.setCamera(scn.getCamera());
+						drawer.setCamera(camera);
 
 						invalidate();
 					}
@@ -504,11 +511,11 @@ public class ScnWidget extends Widget {
 
 			zoomLevel = 100;
 
-			scn.getCamera().setToOrtho(false, wWidth, wHeight);
-			scn.getCamera().zoom = 1f;
-			scn.getCamera().position.set(Ctx.project.getWorldDocument().getWidth() / 2, Ctx.project.getWorldDocument().getHeight() / 2,
+			camera.setToOrtho(false, wWidth, wHeight);
+			camera.zoom = 1f;
+			camera.position.set(Ctx.project.getWorldDocument().getWidth() / 2, Ctx.project.getWorldDocument().getHeight() / 2,
 					0);
-			scn.getCamera().update();
+			camera.update();
 			zoom(+1);
 		}
 	}
@@ -528,16 +535,16 @@ public class ScnWidget extends Widget {
 		}
 
 		if (scn != null) {
-			scn.getCamera().zoom = 100f / zoomLevel;
-			scn.getCamera().update();
+			camera.zoom = 100f / zoomLevel;
+			camera.update();
 		}
 	}
 
 	public void translate(Vector2 delta) {
 		// EditorLogger.debug("TRANSLATING - X: " + delta.x + " Y: " + delta.y);
 		if (scn != null) {
-			scn.getCamera().translate(-delta.x, -delta.y, 0);
-			scn.getCamera().update();
+			camera.translate(-delta.x, -delta.y, 0);
+			camera.update();
 		}
 	}
 
@@ -551,7 +558,7 @@ public class ScnWidget extends Widget {
 		getStage().stageToScreenCoordinates(coords);
 
 		tmpV3.set(coords.x, coords.y, 0);
-		getScene().getCamera().unproject(tmpV3, getX(), getY(), getWidth(), getHeight());
+		camera.unproject(tmpV3, getX(), getY(), getWidth(), getHeight());
 		coords.set(tmpV3.x, tmpV3.y);
 	}
 
@@ -560,7 +567,7 @@ public class ScnWidget extends Widget {
 		localToStageCoordinates(tmpV2);
 		// getStage().stageToScreenCoordinates(tmpV2);
 		tmpV3.set(coords.x, coords.y, 0);
-		getScene().getCamera().unproject(tmpV3, tmpV2.x, tmpV2.y, getWidth(), getHeight());
+		camera.unproject(tmpV3, tmpV2.x, tmpV2.y, getWidth(), getHeight());
 		coords.set(tmpV3.x, tmpV3.y);
 	}
 
@@ -568,7 +575,7 @@ public class ScnWidget extends Widget {
 		tmpV2.set(getX(), getY());
 		localToStageCoordinates(tmpV2);
 		tmpV3.set(coords.x, coords.y, 0);
-		getScene().getCamera().project(tmpV3, tmpV2.x, tmpV2.y, getWidth(), getHeight());
+		camera.project(tmpV3, tmpV2.x, tmpV2.y, getWidth(), getHeight());
 		coords.set(tmpV3.x, tmpV3.y);
 		stageToLocalCoordinates(coords);
 	}
@@ -620,13 +627,13 @@ public class ScnWidget extends Widget {
 
 			zoomLevel = 100;
 
-			scn.getCamera().setToOrtho(false, wWidth, wHeight);
-			scn.getCamera().zoom = 1f;
-			scn.getCamera().update();
+			camera.setToOrtho(false, wWidth, wHeight);
+			camera.zoom = 1f;
+			camera.update();
 
 			// translate(new Vector2((-getWidth() + wWidth ) / 2 *
-			// scn.getCamera().zoom,
-			// (-getHeight() + wHeight) / 2 * scn.getCamera().zoom));
+			// camera.zoom,
+			// (-getHeight() + wHeight) / 2 * camera.zoom));
 
 			translate(new Vector2(0, (-getHeight() + wHeight) / 2));
 		}
@@ -678,14 +685,11 @@ public class ScnWidget extends Widget {
 
 	private void createAndSelectActor(BaseActor actor) {
 //		removeActor(Ctx.project.getSelectedChapter(), actor);
-//		selectedActor = createActor(Ctx.project.getSelectedChapter(), actor);
+//		selectedActor = createActor(actor);
 //		setSelectedActor(actor);
 	}
 
-	private BaseActor createActor(ChapterDocument doc, Element e) {
-		BaseActor a = doc.getEngineActor(e);
-		scn.addActor(a);
-
+	private BaseActor createActor(BaseActor a) {
 		if (a instanceof InteractiveActor) {
 			InteractiveActor iActor = (InteractiveActor) a;
 			SceneLayer l = scn.getLayer(iActor.getLayer());
