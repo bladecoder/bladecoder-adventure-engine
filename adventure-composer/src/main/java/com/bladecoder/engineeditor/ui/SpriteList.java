@@ -26,7 +26,7 @@ import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 
 public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
@@ -136,7 +136,7 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(AnimationDesc e) {
+	protected EditModelDialog<SpriteActor, AnimationDesc> getEditElementDialogInstance(AnimationDesc e) {
 		// return new EditAnimationDialog(skin, doc, parent, e);
 		return null;
 	}

@@ -23,7 +23,7 @@ import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 
 public class DialogOptionList extends ModelList<Dialog, DialogOption> {
@@ -75,7 +75,7 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(DialogOption e) {
+	protected EditModelDialog<Dialog, DialogOption> getEditElementDialogInstance(DialogOption e) {
 //		return new EditDialogOptionDialog(skin, doc, parent, e);
 		
 		return null;

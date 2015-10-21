@@ -24,7 +24,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 
 // TODO: Visibility button
@@ -146,7 +146,7 @@ public class LayerList extends ModelList<Scene, SceneLayer> {
 	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(SceneLayer l) {
+	protected EditModelDialog<Scene, SceneLayer> getEditElementDialogInstance(SceneLayer l) {
 //		return new EditLayerDialog(skin, doc, parent, e);
 		
 		return null;

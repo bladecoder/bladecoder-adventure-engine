@@ -30,7 +30,7 @@ import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.ui.components.ScopePanel;
 
@@ -99,7 +99,7 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(Verb e) {
+	protected EditModelDialog<VerbManager, Verb> getEditElementDialogInstance(Verb e) {
 		// return new EditVerbDialog(skin, doc, parent, e);
 		return null;
 	}

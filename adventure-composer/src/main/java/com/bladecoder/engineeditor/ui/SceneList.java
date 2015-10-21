@@ -55,7 +55,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.model.WorldDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
@@ -223,7 +223,7 @@ public class SceneList extends ModelList<World, Scene> {
 	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(Scene e) {
+	protected EditModelDialog<World, Scene> getEditElementDialogInstance(Scene e) {
 //		return new EditSceneDialog(skin, doc, parent, e);
 		
 		return null;

@@ -38,7 +38,7 @@ import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.utils.I18NUtils;
 
@@ -166,7 +166,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 	}
 
 	@Override
-	protected EditElementDialog getEditElementDialogInstance(BaseActor a) {
+	protected EditModelDialog<Scene, BaseActor> getEditElementDialogInstance(BaseActor a) {
 		
 		return null;
 	}

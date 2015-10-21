@@ -19,9 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.ModelList;
-import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public class SoundList extends ModelList<InteractiveActor, SoundFX> {	
 	
