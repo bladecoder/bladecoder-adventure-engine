@@ -92,7 +92,7 @@ public class ScnWidget extends Widget {
 	private boolean showWalkZone;
 
 	private final GlyphLayout textLayout = new GlyphLayout();
-	
+
 	private final OrthographicCamera camera = new OrthographicCamera();
 
 	/**
@@ -236,7 +236,7 @@ public class ScnWidget extends Widget {
 
 		walkZoneWindow = new WalkZoneWindow(skin, inputListner);
 	}
-	
+
 	public OrthographicCamera getCamera() {
 		return camera;
 	}
@@ -256,10 +256,19 @@ public class ScnWidget extends Widget {
 			setSelectedFA(Ctx.project.getSelectedFA());
 		}
 
-		if (scn != null && animation && !loading && !loadingError) {
+		if (scn != null && !loading && !loadingError) {
 			if (!inScene)
 				faRenderer.update(delta);
-			scn.update(delta);
+			// scn.update(delta);
+
+			for (SceneLayer layer : scn.getLayers())
+				layer.update();
+
+			if (animation) {
+				for (BaseActor a : scn.getActors().values()) {
+					a.update(delta);
+				}
+			}
 
 			handleKeyPositioning();
 		}
@@ -282,9 +291,12 @@ public class ScnWidget extends Widget {
 			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
 				p.translate(1, 0);
 
-			Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedChapter().getActor(
-					Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
-					Ctx.project.getSelectedActor().getId()),
+			Ctx.project
+					.getSelectedChapter().setPos(
+							Ctx.project.getSelectedChapter().getActor(
+									Ctx.project.getSelectedChapter()
+											.getSceneById(Ctx.project.getSelectedScene().getId()),
+									Ctx.project.getSelectedActor().getId()),
 					new Vector2(selActor.getX(), selActor.getY()));
 
 			// undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(),
@@ -513,8 +525,8 @@ public class ScnWidget extends Widget {
 
 			camera.setToOrtho(false, wWidth, wHeight);
 			camera.zoom = 1f;
-			camera.position.set(Ctx.project.getWorldDocument().getWidth() / 2, Ctx.project.getWorldDocument().getHeight() / 2,
-					0);
+			camera.position.set(Ctx.project.getWorldDocument().getWidth() / 2,
+					Ctx.project.getWorldDocument().getHeight() / 2, 0);
 			camera.update();
 			zoom(+1);
 		}
@@ -684,9 +696,9 @@ public class ScnWidget extends Widget {
 	}
 
 	private void createAndSelectActor(BaseActor actor) {
-//		removeActor(Ctx.project.getSelectedChapter(), actor);
-//		selectedActor = createActor(actor);
-//		setSelectedActor(actor);
+		// removeActor(Ctx.project.getSelectedChapter(), actor);
+		// selectedActor = createActor(actor);
+		// setSelectedActor(actor);
 	}
 
 	private BaseActor createActor(BaseActor a) {

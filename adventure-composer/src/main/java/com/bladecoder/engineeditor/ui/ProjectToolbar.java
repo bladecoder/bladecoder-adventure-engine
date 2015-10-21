@@ -52,6 +52,12 @@ public class ProjectToolbar extends Table {
 
 	private Skin skin;
 
+	/**
+	 * Field to pass the loading directory between the javafx and the libgdx
+	 * threads
+	 */
+	private File loadingDirectory = null;
+
 	public ProjectToolbar(Skin skin) {
 		super(skin);
 		this.skin = skin;
@@ -167,13 +173,13 @@ public class ProjectToolbar extends Table {
 		}
 
 		button.setStyle(style);
-//		button.row();
-//		button.add(new Label(text, skin));
+		// button.row();
+		// button.add(new Label(text, skin));
 
 		add(button);
 		button.setDisabled(true);
 		TextTooltip t = new TextTooltip(tooltip, skin);
-		button.addListener(t);		
+		button.addListener(t);
 	}
 
 	private void newProject() {
@@ -186,34 +192,47 @@ public class ProjectToolbar extends Table {
 		// }
 	}
 
+	@Override
+	public void act(float delta) {
+		super.act(delta);
+
+		if (loadingDirectory != null)
+			loadProject();
+	}
+
 	private void loadProject() {
-		
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				final DirectoryChooser chooser = new DirectoryChooser();
-				chooser.setTitle("Select the project to load");
-				chooser.setInitialDirectory(Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir()
-						: new File("."));
+		if (loadingDirectory == null) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					final DirectoryChooser chooser = new DirectoryChooser();
+					chooser.setTitle("Select the project to load");
+					chooser.setInitialDirectory(
+							Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."));
 
-				final File dir = chooser.showDialog(null);
-				if (dir == null) {
-					return;
-				}
+					final File dir = chooser.showDialog(null);
+					if (dir == null) {
+						return;
+					}
 
-				try {
-					Ctx.project.saveProject();
-					Ctx.project.loadProject(dir);
-					playBtn.setDisabled(false);
-					packageBtn.setDisabled(false);
-				} catch (Exception ex) {
-					String msg = "Something went wrong while loading the project.\n\n" + ex.getClass().getSimpleName()
-							+ " - " + ex.getMessage();
-					Ctx.msg.show(getStage(), msg, 2);
-					ex.printStackTrace();
+					loadingDirectory = dir;
 				}
+			});
+		} else {
+			try {
+				Ctx.project.saveProject();
+				Ctx.project.loadProject(loadingDirectory);
+				playBtn.setDisabled(false);
+				packageBtn.setDisabled(false);
+			} catch (Exception ex) {
+				String msg = "Something went wrong while loading the project.\n\n" + ex.getClass().getSimpleName()
+						+ " - " + ex.getMessage();
+				Ctx.msg.show(getStage(), msg, 2);
+				ex.printStackTrace();
 			}
-		});
+
+			loadingDirectory = null;
+		}
 	}
 
 	public void exit() {

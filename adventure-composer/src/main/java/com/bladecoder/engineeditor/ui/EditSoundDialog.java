@@ -51,29 +51,21 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 	}
 
 	@Override
-	protected SoundFX create() {
-		return new SoundFX();
-	}
-
-	@Override
-	protected void inputsToModel() {
-		// for (int j = 0; j < a.length; j++) {
-		// InputPanel input = i[j];
-		//
-		// if (!input.getText().isEmpty() && input.isVisible()) {
-		// if(a[j].equals("id")) {
-		// doc.setId(e, input.getText());
-		// } else {
-		// I18NUtils.setI18NAttr(doc, e, a[j], input.getText());
-		// }
-		// } else {
-		// e.removeAttribute(a[j]);
-		// }
-		//
-		//
-		// }
-		//
-		// doc.setModified(e);
+	protected void inputsToModel(boolean create) {
+		
+		if(create) {
+			e = new SoundFX();
+		}
+		
+		e.setFilename(filename.getText());
+		e.setLoop(Boolean.parseBoolean(loop.getText()));
+		e.setVolume(Float.parseFloat(volume.getText()));
+		
+		if(create) {
+			parent.getSounds().put(e.getFilename(), e);
+		}
+		
+		Ctx.project.getSelectedChapter().setModified(e);
 	}
 
 	@Override

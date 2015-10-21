@@ -335,7 +335,7 @@ public class SceneList extends ModelList<World, Scene> {
 
 			TextureRegion r = null;
 
-			if (!atlas.isEmpty() && !region.isEmpty())
+			if (atlas != null && region != null && !atlas.isEmpty() && !region.isEmpty())
 				r = getBgIcon(atlas, region);
 
 			if (r == null)

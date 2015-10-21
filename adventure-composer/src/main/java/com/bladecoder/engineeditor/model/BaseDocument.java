@@ -233,13 +233,13 @@ public abstract class BaseDocument extends PropertyChange {
 		return cloned;
 	}
 
-	public void setModified(Element e) {
-		setModified(e.getTagName(), e);
+	public void setModified(Object e) {
+		setModified(e, null);
 	}
 	
-	public void setModified(Element e, Object source) {
+	public void setModified(Object e, Object source) {
 		modified = true;
-		PropertyChangeEvent evt = new PropertyChangeEvent(source, e.getTagName(), null, e);
+		PropertyChangeEvent evt = new PropertyChangeEvent(source, e.toString(), null, e);
 		firePropertyChange(evt);
 	}
 

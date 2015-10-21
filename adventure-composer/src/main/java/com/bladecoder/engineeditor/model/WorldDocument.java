@@ -191,7 +191,6 @@ public class WorldDocument extends  BaseDocument {
 	public void load() throws ParserConfigurationException, SAXException, IOException {
 		super.load();
 		
-		EngineAssetManager.getInstance().dispose();
 		EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
 		World.getInstance().loadWorldDesc();
 	}

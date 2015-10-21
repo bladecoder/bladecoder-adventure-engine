@@ -57,13 +57,10 @@ public abstract class EditModelDialog<PARENT, T> extends EditDialog {
 	}
 
 	@Override
-	protected void ok() {
+	protected void ok() {	
+		boolean create = e==null;
 
-		if (e == null) {
-			e = create();
-		}
-
-		inputsToModel();
+		inputsToModel(create);
 
 		if (listener != null)
 			listener.changed(new ChangeEvent(), this);
@@ -73,9 +70,7 @@ public abstract class EditModelDialog<PARENT, T> extends EditDialog {
 		listener = l;
 	}
 
-	protected abstract T create();
-
-	protected abstract void inputsToModel();
+	protected abstract void inputsToModel(boolean create);
 
 	protected abstract void modelToInputs();
 
