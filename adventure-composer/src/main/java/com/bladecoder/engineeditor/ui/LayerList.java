@@ -20,14 +20,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
-
-// TODO: Visibility button
 
 public class LayerList extends ModelList<Scene, SceneLayer> {
 
@@ -96,92 +95,84 @@ public class LayerList extends ModelList<Scene, SceneLayer> {
 
 		e.setVisible(!e.isVisible());
 
-//		Ctx.project.getSelectedChapter().setModified(e);
+		Ctx.project.getSelectedChapter().setModified(e);
 	}
 
 	private void up() {
-//		int pos = list.getSelectedIndex();
-//
-//		if (pos == -1 || pos == 0)
-//			return;
-//
-//		Array<SceneLayer> items = list.getItems();
-//		Element e = items.get(pos);
-//		Element e2 = items.get(pos - 1);
-//
-//		Node parent = e.getParentNode();
-//		parent.removeChild(e);
-//		parent.insertBefore(e, e2);
-//
-//		items.removeIndex(pos);
-//		items.insert(pos - 1, e);
-//		list.setSelectedIndex(pos - 1);
-//		upBtn.setDisabled(list.getSelectedIndex() == 0);
-//		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
-//
-//		doc.setModified(e);
+		int pos = list.getSelectedIndex();
+
+		if (pos == -1 || pos == 0)
+			return;
+
+		Array<SceneLayer> items = list.getItems();
+		SceneLayer e = items.get(pos);
+		SceneLayer e2 = items.get(pos - 1);
+
+		parent.getLayers().set(pos, e2);
+		parent.getLayers().set(pos - 1, e);
+
+		items.removeIndex(pos);
+		items.insert(pos - 1, e);
+		list.setSelectedIndex(pos - 1);
+		upBtn.setDisabled(list.getSelectedIndex() == 0);
+		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+
+		Ctx.project.getSelectedChapter().setModified(e);
 	}
 
 	private void down() {
-//		int pos = list.getSelectedIndex();
-//		Array<Element> items = list.getItems();
-//
-//		if (pos == -1 || pos == items.size - 1)
-//			return;
-//
-//		Element e = items.get(pos);
-//		Element e2 = pos + 2 < items.size ? items.get(pos + 2) : null;
-//
-//		Node parent = e.getParentNode();
-//		parent.removeChild(e);
-//		parent.insertBefore(e, e2);
-//
-//		items.removeIndex(pos);
-//		items.insert(pos + 1, e);
-//		list.setSelectedIndex(pos + 1);
-//		upBtn.setDisabled(list.getSelectedIndex() == 0);
-//		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
-//
-//		doc.setModified(e);
+		int pos = list.getSelectedIndex();
+		Array<SceneLayer> items = list.getItems();
+
+		if (pos == -1 || pos == items.size - 1)
+			return;
+
+		SceneLayer e = items.get(pos);
+		SceneLayer e2 = pos + 1 < items.size ? items.get(pos + 1) : null;
+
+		parent.getLayers().set(pos, e2);
+		parent.getLayers().set(pos + 1, e);
+
+		items.removeIndex(pos);
+		items.insert(pos + 1, e);
+		list.setSelectedIndex(pos + 1);
+		upBtn.setDisabled(list.getSelectedIndex() == 0);
+		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+
+		Ctx.project.getSelectedChapter().setModified(e);
 	}
 
 	@Override
 	protected EditModelDialog<Scene, SceneLayer> getEditElementDialogInstance(SceneLayer l) {
-//		return new EditLayerDialog(skin, doc, parent, e);
-		
-		return null;
+		return new EditLayerDialog(skin, parent, l);
 	}
 
 	@Override
 	protected void delete() {
-//
-//		int pos = list.getSelectedIndex();
-//
-//		if (pos == -1)
-//			return;
-//
-//		if (list.getItems().size < 2) {
-//			String msg = "The layer will not be deleted, at least one layer must exist";
-//			Ctx.msg.show(getStage(), msg, 3);
-//
-//			return;
-//		}
-//
-//		// Check for actors inside this layer
-//		NodeList actors = parent.getElementsByTagName("actor");
-//
-//		for (int i = 0; i < actors.getLength(); i++) {
-//			String layer = ((Element) (actors.item(i))).getAttribute("layer");
-//			if (layer.equals(list.getItems().get(pos).getAttribute("id"))) {
-//				String msg = "The layer will not be deleted, it is used by the actor "
-//						+ ((Element) (actors.item(i))).getAttribute("id");
-//				Ctx.msg.show(getStage(), msg, 3);
-//
-//				return;
-//			}
-//		}
-//
-//		super.delete();
+
+		int pos = list.getSelectedIndex();
+
+		if (pos == -1)
+			return;
+
+		if (list.getItems().size < 2) {
+			String msg = "The layer will not be deleted, at least one layer must exist";
+			Ctx.msg.show(getStage(), msg, 3);
+
+			return;
+		}
+
+		SceneLayer e = list.getSelected();
+
+		if (e.getActors().isEmpty()) {
+			SceneLayer l = removeSelected();
+			parent.getLayers().remove(l);
+			Ctx.project.getSelectedChapter().setModified(e);
+		} else {
+			String msg = "The layer is not empty.";
+			Ctx.msg.show(getStage(), msg, 3);
+		}
+
 	}
 
 	// -------------------------------------------------------------------------

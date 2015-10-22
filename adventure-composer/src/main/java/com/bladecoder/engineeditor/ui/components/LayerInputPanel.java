@@ -15,11 +15,11 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
-import org.w3c.dom.NodeList;
+import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.utils.OptionsInputPanelUtils;
 
 public class LayerInputPanel extends EditableOptionsInputPanel<String> {
 	LayerInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
@@ -27,8 +27,15 @@ public class LayerInputPanel extends EditableOptionsInputPanel<String> {
 	}
 
 	private static String[] getValues(boolean mandatory) {
-		NodeList layers = Ctx.project.getSelectedChapter().getLayers(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()));
+		List<SceneLayer> layers = Ctx.project.getSelectedScene().getLayers();
+		
+		String[] result = new String[layers.size()];
 
-		return OptionsInputPanelUtils.getIdFromNodeList(mandatory, layers);
+		
+		for(int i = 0; i < layers.size(); i++) {
+			result[i] = layers.get(i).getName();
+		}
+		
+		return result;
 	}
 }

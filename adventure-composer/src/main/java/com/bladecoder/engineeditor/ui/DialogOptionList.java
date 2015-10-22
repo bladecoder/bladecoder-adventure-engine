@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engineeditor.Ctx;
@@ -76,83 +77,76 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 
 	@Override
 	protected EditModelDialog<Dialog, DialogOption> getEditElementDialogInstance(DialogOption e) {
-//		return new EditDialogOptionDialog(skin, doc, parent, e);
-		
-		return null;
+		return new EditDialogOptionDialog(skin, parent, e);
 	}
 
-//	@Override
-//	protected void create() {
-//		EditElementDialog dialog = getEditElementDialogInstance(null);
-//		dialog.show(getStage());
-//		dialog.setListener(new ChangeListener() {
-//			@Override
-//			public void changed(ChangeEvent event, Actor actor) {
-//				int pos = list.getSelectedIndex() + 1;
-//
-//				Element e2 = null;
-//
-//				if (pos != 0 && pos < list.getItems().size)
-//					e2 = list.getItems().get(pos);
-//
-//				Element e = ((EditElementDialog) actor).getElement();
-//				list.getItems().insert(pos, e);
-//
-//				Node parent = e.getParentNode();
-//				parent.removeChild(e);
-//				parent.insertBefore(e, e2);
-//
-//				list.setSelectedIndex(pos);
-//
-//				list.invalidateHierarchy();
-//			}
-//		});
-//	}
+	@Override
+	protected void create() {
+		EditDialogOptionDialog dialog = (EditDialogOptionDialog)getEditElementDialogInstance(null);
+		dialog.show(getStage());
+		dialog.setListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				int pos = list.getSelectedIndex() + 1;
+
+				DialogOption e = ((EditDialogOptionDialog) actor).getElement();
+				list.getItems().insert(pos, e);
+				list.setSelectedIndex(pos);
+				list.invalidateHierarchy();
+				
+				// Move model object inserted to the end to the selected position
+				if (pos != 0 && pos < list.getItems().size) {
+					DialogOption e2 = list.getItems().get(pos);
+					parent.getOptions().set(pos, e);
+					parent.getOptions().set(list.getItems().size - 1, e2);
+				}
+			}
+		});
+	}
 
 	private void up() {
-//		int pos = list.getSelectedIndex();
-//
-//		if (pos == -1 || pos == 0)
-//			return;
-//
-//		Array<Element> items = list.getItems();
-//		Element e = items.get(pos);
-//		Element e2 = items.get(pos - 1);
-//
-//		Node parent = e.getParentNode();
-//		parent.removeChild(e);
-//		parent.insertBefore(e, e2);
-//
-//		items.removeIndex(pos);
-//		items.insert(pos - 1, e);
-//		list.setSelectedIndex(pos - 1);
-//		upBtn.setDisabled(list.getSelectedIndex() == 0);
-//		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
-//
-//		doc.setModified(e);
+		int pos = list.getSelectedIndex();
+
+		if (pos == -1 || pos == 0)
+			return;
+
+		Array<DialogOption> items = list.getItems();
+		DialogOption e = items.get(pos);
+		DialogOption e2 = items.get(pos - 1);
+
+		parent.getOptions().set(pos, e2);
+		parent.getOptions().set(pos - 1, e);
+
+		items.removeIndex(pos);
+		items.insert(pos - 1, e);
+		list.setSelectedIndex(pos - 1);
+		upBtn.setDisabled(list.getSelectedIndex() == 0);
+		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+
+		Ctx.project.getSelectedChapter().setModified(e);
 	}
 
 	private void down() {
-//		int pos = list.getSelectedIndex();
-//		Array<Element> items = list.getItems();
-//
-//		if (pos == -1 || pos == items.size - 1)
-//			return;
-//
-//		Element e = items.get(pos);
-//		Element e2 = pos + 2 < items.size ? items.get(pos + 2) : null;
-//
-//		Node parent = e.getParentNode();
-//		parent.removeChild(e);
-//		parent.insertBefore(e, e2);
-//
-//		items.removeIndex(pos);
-//		items.insert(pos + 1, e);
-//		list.setSelectedIndex(pos + 1);
-//		upBtn.setDisabled(list.getSelectedIndex() == 0);
-//		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
-//
-//		doc.setModified(e);
+		
+		int pos = list.getSelectedIndex();
+		Array<DialogOption> items = list.getItems();
+
+		if (pos == -1 || pos == items.size - 1)
+			return;
+
+		DialogOption e = items.get(pos);
+		DialogOption e2 = pos + 1 < items.size ? items.get(pos + 1) : null;
+
+		parent.getOptions().set(pos, e2);
+		parent.getOptions().set(pos + 1, e);
+
+		items.removeIndex(pos);
+		items.insert(pos + 1, e);
+		list.setSelectedIndex(pos + 1);
+		upBtn.setDisabled(list.getSelectedIndex() == 0);
+		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+
+		Ctx.project.getSelectedChapter().setModified(e);
 	}
 	
 	@Override
@@ -169,6 +163,8 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 
 	// TODO TRANSLATIONS
 //			I18NUtils.putTranslationsInElement(doc, clipboard);
+		
+		Ctx.project.getSelectedChapter().setModified(option);
 	}
 
 	// -------------------------------------------------------------------------
@@ -180,7 +176,7 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 		protected String getCellTitle(DialogOption e) {
 			String text = e.getText();
 			
-			int i = parent.getVisibleOptions().indexOf(e);
+			int i = parent.getOptions().indexOf(e);
 
 			return i + ". " + Ctx.project.getSelectedChapter().getTranslation(text);
 		}
@@ -191,7 +187,7 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 			StringBuilder sb = new StringBuilder();
 			String response = e.getResponseText();
 
-			if (!response.isEmpty())
+			if (response != null && !response.isEmpty())
 				sb.append("R: ").append(Ctx.project.getSelectedChapter().getTranslation(response)).append(' ');
 
 //			NamedNodeMap attr = e.getAttributes();

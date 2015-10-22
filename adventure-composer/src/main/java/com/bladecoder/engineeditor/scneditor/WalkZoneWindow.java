@@ -73,14 +73,14 @@ public class WalkZoneWindow extends Container<Table> {
 					scn.setPolygonalNavGraph(pf);
 					createZoneBtn.setText(DELETE_WALK_ZONE_TEXT);
 		
-					Ctx.project.getSelectedChapter().createWalkZone(
-							Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
+//					Ctx.project.getSelectedChapter().createWalkZone(
+//							Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
 				} else {
 					createZoneBtn.setText(CREATE_WALK_ZONE_TEXT);
 			
 					scn.setPolygonalNavGraph(null);
-					Ctx.project.getSelectedChapter().deleteWalkZone(
-							Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()));
+//					Ctx.project.getSelectedChapter().deleteWalkZone(
+//							Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()));
 				}
 
 				event.cancel();

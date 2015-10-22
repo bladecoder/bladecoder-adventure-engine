@@ -101,7 +101,7 @@ public abstract class BaseDocument extends PropertyChange {
 	}
 
 	public String getTranslation(String key) {
-		if (key.isEmpty() || key.charAt(0) != I18NPREFIX || i18n == null)
+		if (key == null || key.isEmpty() || key.charAt(0) != I18NPREFIX || i18n == null)
 			return key;
 
 		return i18n.getProperty(key.substring(1), key);
@@ -234,7 +234,7 @@ public abstract class BaseDocument extends PropertyChange {
 	}
 
 	public void setModified(Object e) {
-		setModified(e, null);
+		setModified(e, e);
 	}
 	
 	public void setModified(Object e, Object source) {

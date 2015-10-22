@@ -18,6 +18,7 @@ package com.bladecoder.engineeditor.ui;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SoundFX;
+import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 
@@ -48,6 +49,8 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 
 // TODO TRANSLATIONS
 //		I18NUtils.putTranslationsInElement(doc, clipboard);
+		
+		Ctx.project.getSelectedChapter().setModified(s);
 	}
 
 	// -------------------------------------------------------------------------
@@ -60,12 +63,13 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 			return e.getFilename();
 		}
 
+		StringBuilder sb = new StringBuilder();
+		
 		@Override
 		protected String getCellSubTitle(SoundFX e) {
+			sb.setLength(0);
+
 			String filename = e.getFilename();
-
-			StringBuilder sb = new StringBuilder();
-
 			if (filename != null && !filename.isEmpty())
 				sb.append("filename: ").append(filename);
 

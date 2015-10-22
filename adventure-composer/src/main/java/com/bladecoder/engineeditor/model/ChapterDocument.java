@@ -29,26 +29,8 @@ import org.xml.sax.SAXException;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.anim.AnimationDesc;
-import com.bladecoder.engine.anim.AtlasAnimationDesc;
-import com.bladecoder.engine.anim.SpineAnimationDesc;
-import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.loader.XMLConstants;
-import com.bladecoder.engine.model.AnchorActor;
-import com.bladecoder.engine.model.AtlasRenderer;
-import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.CharacterActor;
-import com.bladecoder.engine.model.ImageRenderer;
-import com.bladecoder.engine.model.InteractiveActor;
-import com.bladecoder.engine.model.ObstacleActor;
-import com.bladecoder.engine.model.Scene;
-import com.bladecoder.engine.model.SceneLayer;
-import com.bladecoder.engine.model.Sprite3DRenderer;
-import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
-import com.bladecoder.engine.spine.SpineRenderer;
 
 public class ChapterDocument extends BaseDocument {
 
@@ -176,65 +158,6 @@ public class ChapterDocument extends BaseDocument {
 		firePropertyChange(XMLConstants.MUSIC_ATTR, scn);
 	}
 
-	public Scene getEngineScene(Element s, int wWidth, int wHeight) {
-		Scene scn = new Scene();
-
-		scn.setId(getId());
-
-		scn.getCamera().create(wWidth, wHeight);
-
-		String background = s.getAttribute(XMLConstants.BACKGROUND_ATLAS_ATTR);
-		if (background != null && !background.isEmpty()) {
-			scn.setBackground(s.getAttribute(XMLConstants.BACKGROUND_ATLAS_ATTR),
-					s.getAttribute(XMLConstants.BACKGROUND_REGION_ATTR),
-					s.getAttribute(XMLConstants.LIGHTMAP_ATLAS_ATTR),
-					s.getAttribute(XMLConstants.LIGHTMAP_REGION_ATTR));
-		}
-
-		String depthVector = s.getAttribute(XMLConstants.DEPTH_VECTOR_ATTR);
-		if (!depthVector.isEmpty())
-			scn.setDepthVector(Param.parseVector2(depthVector));
-
-		// LAYERS
-		NodeList layers = getLayers(s);
-		for (int i = 0; i < layers.getLength(); i++) {
-			Element l = (Element) layers.item(i);
-			SceneLayer layer = new SceneLayer();
-			layer.setName(l.getAttribute(XMLConstants.ID_ATTR));
-			layer.setVisible(Boolean.parseBoolean(l.getAttribute(XMLConstants.VISIBLE_ATTR)));
-			layer.setDynamic(Boolean.parseBoolean(l.getAttribute(XMLConstants.DYNAMIC_ATTR)));
-			scn.addLayer(layer);
-		}
-
-		// GET ACTORS
-		NodeList actors = getActors(s);
-		for (int i = 0; i < actors.getLength(); i++) {
-			Element a = (Element) actors.item(i);
-			BaseActor actor = getEngineActor(a);
-			scn.addActor(actor);
-
-			if (getId(a).equals(getRootAttr(XMLConstants.PLAYER_ATTR))) {
-				scn.setPlayer((CharacterActor) actor);
-			}
-		}
-
-		// WALK ZONE
-		Element wz = getWalkZone(s);
-
-		if (wz != null) {
-			PolygonalNavGraph polygonalPathFinder = new PolygonalNavGraph();
-			Polygon p = new Polygon();
-			Param.parsePolygon(p, wz.getAttribute(XMLConstants.POLYGON_ATTR), wz.getAttribute(XMLConstants.POS_ATTR));
-			polygonalPathFinder.setWalkZone(p);
-
-			scn.setPolygonalNavGraph(polygonalPathFinder);
-		}
-
-		scn.orderLayersByZIndex();
-
-		return scn;
-	}
-
 	public void create(String id) throws ParserConfigurationException, FileNotFoundException, TransformerException {
 		create();
 		setId(id);
@@ -323,164 +246,6 @@ public class ChapterDocument extends BaseDocument {
 			return;
 
 		Param.parsePolygon(p, e.getAttribute(XMLConstants.BBOX_ATTR));
-	}
-
-	public BaseActor getEngineActor(Element e) {
-		BaseActor a = null;
-
-		String type = getType(e);
-
-		if (type.equals(XMLConstants.OBSTACLE_VALUE)) {
-			a = new ObstacleActor();
-		} else if (type.equals(XMLConstants.ANCHOR_VALUE)) {
-			a = new AnchorActor();			
-		} else if (type.equals(XMLConstants.BACKGROUND_VALUE)) {
-			a = new InteractiveActor();
-		} else if (type.equals(XMLConstants.SPRITE_VALUE)) {
-			a = new SpriteActor();
-		} else if (type.equals(XMLConstants.CHARACTER_VALUE)) {
-			a = new CharacterActor();
-		}
-
-		a.setId(getId(e));
-		getBBox(a.getBBox(), e);
-		Vector2 pos = getPos(e);
-		if (pos != null)
-			a.setPosition(pos.x, pos.y);
-
-		if (a instanceof InteractiveActor) {
-			InteractiveActor iActor = (InteractiveActor) a;
-
-			String layer = e.getAttribute(XMLConstants.LAYER_ATTR);
-			if (!layer.isEmpty()) {
-				iActor.setLayer(layer);
-			}
-			
-			String desc = e.getAttribute(XMLConstants.DESC_ATTR);
-			if (!desc.isEmpty()) {
-				iActor.setDesc(desc);
-			}
-			
-			if (!e.getAttribute(XMLConstants.ZINDEX_ATTR).isEmpty()) {
-				iActor.setZIndex(Float.parseFloat(e.getAttribute(XMLConstants.ZINDEX_ATTR)));
-			}
-		}
-
-		if (a instanceof SpriteActor) {
-			SpriteActor sActor = (SpriteActor) a;
-			
-			String renderer = getRenderer(e);
-
-			if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
-				sActor.setRenderer(new AtlasRenderer());
-			} else if (renderer.equals(XMLConstants.S3D_VALUE)) {
-				Sprite3DRenderer r = new Sprite3DRenderer();
-				sActor.setRenderer(r);
-				r.setSpriteSize(Param.parseVector2(e.getAttribute(XMLConstants.SPRITE_SIZE_ATTR)));
-			} else if (renderer.equals(XMLConstants.SPINE_VALUE)) {
-				SpineRenderer r = new SpineRenderer();
-				r.enableEvents(false);
-				sActor.setRenderer(r);
-			} else if (renderer.equals(XMLConstants.IMAGE_VALUE)) {
-				sActor.setRenderer(new ImageRenderer());
-			}
-
-			if (e.getAttribute(XMLConstants.BBOX_ATTR).isEmpty()) {
-				sActor.setBboxFromRenderer(true);
-			} else {
-				sActor.setBboxFromRenderer(false);
-			}
-
-			NodeList faList = getAnimations(e);
-
-			for (int i = 0; i < faList.getLength(); i++) {
-				Element faElement = (Element) faList.item(i);
-
-				AnimationDesc fa = getEngineAnim(getRenderer(e), faElement);
-				
-				sActor.getRenderer().addAnimation(fa);
-			}
-
-			if (!e.getAttribute(XMLConstants.INIT_ANIMATION_ATTR).isEmpty()) {
-				sActor.getRenderer().setInitAnimation(e.getAttribute(XMLConstants.INIT_ANIMATION_ATTR));
-
-			}
-
-			if (!e.getAttribute(XMLConstants.SCALE_ATTR).isEmpty()) {
-				sActor.setScale(Float.parseFloat(e.getAttribute(XMLConstants.SCALE_ATTR)));
-			}
-
-			// PARSE DEPTH TYPE
-			String depthType = e.getAttribute(XMLConstants.DEPTH_TYPE_ATTR);
-			sActor.setDepthType(DepthType.NONE);
-
-			if (!depthType.isEmpty()) {
-				if (depthType.equals(XMLConstants.VECTOR_ATTR))
-					sActor.setDepthType(DepthType.VECTOR);
-			}
-		}
-
-		return a;
-	}
-
-	public AnimationDesc getEngineAnim(String renderer, Element faElement) {
-		AnimationDesc fa;
-
-		if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
-			fa = new AtlasAnimationDesc();
-		} else if (renderer.equals(XMLConstants.SPINE_VALUE)) {
-			fa = new SpineAnimationDesc();
-
-			if (!faElement.getAttribute(XMLConstants.ATLAS_VALUE).isEmpty()) {
-				((SpineAnimationDesc) fa).atlas = faElement.getAttribute(XMLConstants.ATLAS_VALUE);
-			}
-		} else {
-			fa = new AnimationDesc();
-		}
-
-		fa.id = faElement.getAttribute(XMLConstants.ID_ATTR);
-		fa.source = faElement.getAttribute(XMLConstants.SOURCE_ATTR);
-
-		if (faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).isEmpty() || faElement
-				.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).equalsIgnoreCase(XMLConstants.REPEAT_VALUE)) {
-			fa.animationType = Tween.Type.REPEAT;
-		} else if (faElement.getAttribute(XMLConstants.ANIMATION_TYPE_ATTR).equalsIgnoreCase(XMLConstants.YOYO_VALUE)) {
-			fa.animationType = Tween.Type.YOYO;
-		} else {
-			fa.animationType = Tween.Type.NO_REPEAT;
-		}
-
-		if (!faElement.getAttribute(XMLConstants.SPEED_ATTR).isEmpty())
-			fa.duration = Float.parseFloat(faElement.getAttribute(XMLConstants.SPEED_ATTR));
-
-		if (!faElement.getAttribute(XMLConstants.DELAY_ATTR).isEmpty())
-			fa.delay = Float.parseFloat(faElement.getAttribute(XMLConstants.DELAY_ATTR));
-
-		if (!faElement.getAttribute(XMLConstants.COUNT_ATTR).isEmpty())
-			fa.count = Integer.parseInt(faElement.getAttribute(XMLConstants.COUNT_ATTR));
-		else
-			fa.count = Tween.INFINITY;
-
-		if (!faElement.getAttribute(XMLConstants.SOUND_ATTR).isEmpty())
-			fa.sound = faElement.getAttribute(XMLConstants.SOUND_ATTR);
-
-		if (!faElement.getAttribute(XMLConstants.IND_ATTR).isEmpty()) {
-			fa.inD = Param.parseVector2(faElement.getAttribute(XMLConstants.IND_ATTR));
-		}
-
-		if (!faElement.getAttribute(XMLConstants.OUTD_ATTR).isEmpty()) {
-			fa.outD = Param.parseVector2(faElement.getAttribute(XMLConstants.OUTD_ATTR));
-		}
-
-		if (!faElement.getAttribute(XMLConstants.PRELOAD_ATTR).isEmpty()) {
-			fa.outD = Param.parseVector2(faElement.getAttribute(XMLConstants.PRELOAD_ATTR));
-		}
-
-		if (!faElement.getAttribute(XMLConstants.DISPOSE_WHEN_PLAYED_ATTR).isEmpty()) {
-			fa.outD = Param.parseVector2(faElement.getAttribute(XMLConstants.DISPOSE_WHEN_PLAYED_ATTR));
-		}
-
-		return fa;
 	}
 
 	public Vector2 getPos(Element e) {
@@ -597,18 +362,6 @@ public class ChapterDocument extends BaseDocument {
 		firePropertyChange(XMLConstants.WALK_ZONE_TAG, e);
 	}
 
-	public Element getSceneById(String id) {
-		NodeList scenes = getScenes();
-
-		for (int i = 0; i < scenes.getLength(); i++) {
-			Element e = (Element) scenes.item(i);
-
-			if (e.getAttribute(XMLConstants.ID_ATTR).equals(id))
-				return e;
-		}
-
-		return null;
-	}
 	
 	@Override
 	public void load() throws ParserConfigurationException, SAXException, IOException {

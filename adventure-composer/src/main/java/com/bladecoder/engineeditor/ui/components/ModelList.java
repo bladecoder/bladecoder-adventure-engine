@@ -21,16 +21,16 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-public abstract class ModelList<PARENT,T> extends EditList<T> {
-	
+public abstract class ModelList<PARENT, T> extends EditList<T> {
+
 	protected T clipboard;
 	protected PARENT parent;
-	
+
 	private boolean sorted;
 
 	public ModelList(Skin skin, boolean sorted) {
 		super(skin);
-		
+
 		list.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -39,7 +39,7 @@ public abstract class ModelList<PARENT,T> extends EditList<T> {
 				toolbar.disableEdit(pos == -1);
 			}
 		});
-		
+
 		this.sorted = sorted;
 
 	}
@@ -52,73 +52,69 @@ public abstract class ModelList<PARENT,T> extends EditList<T> {
 
 		if (elements != null) {
 
-			for (T e:elements) {
+			for (T e : elements) {
 				addItem(e);
-			}			
+			}
 		}
-		
+
 		if (getItems().size > 0)
 			list.setSelectedIndex(0);
-		
+
 		toolbar.disableEdit(list.getSelectedIndex() < 0);
-		
-		if(sorted) { // TODO
-//			list.getItems().sort(new Comparator<Element>() {
-//				@Override
-//				public int compare(Element o1, Element o2) {
-//					return o1.getAttribute("id").compareTo(o2.getAttribute("id"));
-//				}
-//			});
+
+		if (sorted) { // TODO
+			// list.getItems().sort(new Comparator<Element>() {
+			// @Override
+			// public int compare(Element o1, Element o2) {
+			// return o1.getAttribute("id").compareTo(o2.getAttribute("id"));
+			// }
+			// });
 		}
 
 		toolbar.disableCreate(parent == null);
-//		container.prefHeight(list.getItemHeight() * (list.getItems().size > 3?list.getItems().size:3));
+		// container.prefHeight(list.getItemHeight() * (list.getItems().size >
+		// 3?list.getItems().size:3));
 		list.invalidateHierarchy();
 	}
 
 	@Override
 	protected void create() {
-//		EditElementDialog dialog = getEditElementDialogInstance(null);
-//		dialog.show(getStage());
-//		dialog.setListener(new ChangeListener() {
-//			@Override
-//			public void changed(ChangeEvent event, Actor actor) {
-//				Element e = ((EditElementDialog)actor).getElement();
-//				addItem(e);
-//				UndoOp undoOp = new UndoAddElement(doc, e);
-//				Ctx.project.getUndoStack().add(undoOp);
-//
-//				int i = getItems().indexOf(e, true);
-//				if(i != -1)
-//					list.setSelectedIndex(i);
-//				
-//				list.invalidateHierarchy();
-//			}			
-//		});
+		EditModelDialog<PARENT, T> dialog = getEditElementDialogInstance(null);
+
+		dialog.show(getStage());
+		dialog.setListener(new ChangeListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				T e = ((EditModelDialog<PARENT, T>) actor).getElement();
+				addItem(e);
+
+				int i = getItems().indexOf(e, true);
+				list.setSelectedIndex(i);
+				list.invalidateHierarchy();
+			}
+		});
 	}
 
 	@Override
 	protected void edit() {
-//
-//		Element e = list.getSelected();
-//
-//		if (e == null)
-//			return;
-//
-//
-//		EditElementDialog dialog = getEditElementDialogInstance(e);
-//		dialog.show(getStage());
-//		dialog.setListener(new ChangeListener() {
-//			@Override
-//			public void changed(ChangeEvent event, Actor actor) {
-//				Element e = ((EditElementDialog)actor).getElement();
-//				doc.setModified(e);
-//			}			
-//		});		
+		T e = list.getSelected();
+
+		if (e == null)
+			return;
+
+		EditModelDialog<PARENT, T> dialog = getEditElementDialogInstance(e);
+		dialog.show(getStage());
+		dialog.setListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				
+			}
+		});
 	}
 
 	protected abstract EditModelDialog<PARENT, T> getEditElementDialogInstance(T e);
-	
+
 	protected T removeSelected() {
 		int pos = list.getSelectedIndex();
 
@@ -126,52 +122,51 @@ public abstract class ModelList<PARENT,T> extends EditList<T> {
 			return null;
 
 		T e = list.getItems().removeIndex(pos);
-		
+
 		clipboard = e;
-		
 
 		if (pos > 0)
 			list.setSelectedIndex(pos - 1);
 		else if (pos == 0 && list.getItems().size > 0)
 			list.setSelectedIndex(0);
-		
+
 		toolbar.disablePaste(false);
-		
-		return e;		
+
+		return e;
 	}
 
 	@Override
 	protected abstract void delete();
-	
+
 	@Override
 	protected void copy() {
-//		Element e = list.getSelected();
-//
-//		if (e == null)
-//			return;
-//
-//		clipboard = (Element) e.cloneNode(true);
-//		I18NUtils.putTranslationsInElement(doc, clipboard);
-//		toolbar.disablePaste(false);
+		// Element e = list.getSelected();
+		//
+		// if (e == null)
+		// return;
+		//
+		// clipboard = (Element) e.cloneNode(true);
+		// I18NUtils.putTranslationsInElement(doc, clipboard);
+		// toolbar.disablePaste(false);
 	}
 
 	@Override
 	protected void paste() {
-//		Element newElement = doc.cloneNode(parent, clipboard);
-//		int pos = list.getSelectedIndex() + 1;
-//		
-//		Element e2 = null;	
-//		
-//		if(pos!=0 && pos < list.getItems().size) 
-//			e2 = list.getItems().get(pos);
-//		
-//		list.getItems().insert(pos, newElement);
-//		
-//		Node parent = newElement.getParentNode();
-//		parent.insertBefore(newElement, e2);
-//		I18NUtils.extractStrings(doc, newElement);
-//		
-//		list.setSelectedIndex(pos);		
-//		list.invalidateHierarchy();
+		// Element newElement = doc.cloneNode(parent, clipboard);
+		// int pos = list.getSelectedIndex() + 1;
+		//
+		// Element e2 = null;
+		//
+		// if(pos!=0 && pos < list.getItems().size)
+		// e2 = list.getItems().get(pos);
+		//
+		// list.getItems().insert(pos, newElement);
+		//
+		// Node parent = newElement.getParentNode();
+		// parent.insertBefore(newElement, e2);
+		// I18NUtils.extractStrings(doc, newElement);
+		//
+		// list.setSelectedIndex(pos);
+		// list.invalidateHierarchy();
 	}
 }

@@ -40,7 +40,6 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
-import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public class ActorList extends ModelList<Scene, BaseActor> {
 
@@ -198,7 +197,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 		@Override
 		protected String getCellSubTitle(BaseActor e) {
 			if(e instanceof InteractiveActor)
-				return I18NUtils.translate(((InteractiveActor) e).getDesc());
+				return Ctx.project.getSelectedChapter().getTranslation(((InteractiveActor) e).getDesc());
 			
 			return "";
 		}

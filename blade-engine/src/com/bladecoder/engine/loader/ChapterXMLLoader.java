@@ -119,7 +119,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 			currentDialog.setId(id);
 			currentDialog.setActor(actor.getId());
 
-			((CharacterActor) actor).addDialog(id, currentDialog);
+			((CharacterActor) actor).addDialog(currentDialog);
 		} else if (localName.equals(XMLConstants.SOUND_TAG)) {
 			parseSound(atts, (InteractiveActor) actor);
 		} else if (localName.equals(XMLConstants.CHAPTER_TAG)) {

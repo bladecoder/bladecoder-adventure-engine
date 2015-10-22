@@ -15,34 +15,59 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import org.w3c.dom.Element;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engineeditor.model.BaseDocument;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.SceneLayer;
+import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
-public class EditLayerDialog extends EditElementDialog {
+public class EditLayerDialog extends EditModelDialog<Scene, SceneLayer> {
 	
-	private InputPanel[] inputs;
-
-
-	String attrs[] = { "id", "visible", "dynamic"};	
-
-	public EditLayerDialog(Skin skin, BaseDocument doc, Element parent, Element e) {
+	private InputPanel name;
+	private InputPanel visible;
+	private InputPanel dynamic;
+	
+	public EditLayerDialog(Skin skin, Scene parent, SceneLayer e) {
 		super(skin);
 		
-		inputs = new InputPanel [3];
-		inputs[0] = InputPanelFactory.createInputPanel(skin, "Layer Name", "The name of the layer");
-		inputs[1] = InputPanelFactory.createInputPanel(skin, "Visible", "Layer Visibility", Param.Type.BOOLEAN, true, "true");
-		inputs[2] = InputPanelFactory.createInputPanel(skin, "Dynamic", "True for actor reordering based in y position", Param.Type.BOOLEAN, false,"false");
-		
-		inputs[0].setMandatory(true);
+		name = InputPanelFactory.createInputPanel(skin, "Layer Name", "The name of the layer", true);
+		visible = InputPanelFactory.createInputPanel(skin, "Visible", "Layer Visibility", Param.Type.BOOLEAN, true, "true");
+		dynamic = InputPanelFactory.createInputPanel(skin, "Dynamic", "True for actor reordering based in y position", Param.Type.BOOLEAN, true,"false");
 
 		setInfo("Scenes can have a list of layers. Actors are added to a specific layer to control the draw order");
 
-		init(inputs, attrs, doc, parent, "layer", e);
+		init(parent, e, new InputPanel[] { name, visible, dynamic });
 	}
+	
+	@Override
+	protected void inputsToModel(boolean create) {
+		
+		if(create) {
+			e = new SceneLayer();
+		}
+		
+		e.setName(name.getText());
+		e.setVisible(Boolean.parseBoolean(visible.getText()));
+		e.setDynamic(Boolean.parseBoolean(dynamic.getText()));
+		
+		if(create) {
+			parent.getLayers().add(e);
+		}
+
+		// TODO UNDO OP
+//		UndoOp undoOp = new UndoAddElement(doc, e);
+//		Ctx.project.getUndoStack().add(undoOp);
+		
+		Ctx.project.getSelectedChapter().setModified(e);
+	}
+
+	@Override
+	protected void modelToInputs() {
+		name.setText(e.getName());
+		visible.setText(Boolean.toString(e.isVisible()));
+		dynamic.setText(Boolean.toString(e.isDynamic()));
+	}	
 }

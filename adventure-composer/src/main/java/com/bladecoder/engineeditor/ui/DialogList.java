@@ -34,9 +34,7 @@ public class DialogList extends ModelList<CharacterActor, Dialog> {
 
 	@Override
 	protected EditModelDialog<CharacterActor, Dialog> getEditElementDialogInstance(Dialog e) {
-//		return new EditDialogDialog(skin, doc, parent, e);
-		
-		return null;
+		return new EditDialogDialog(skin, parent, e);
 	}
 	
     public DialogList(Skin skin) {
@@ -102,6 +100,8 @@ public class DialogList extends ModelList<CharacterActor, Dialog> {
 		// the last element
 		if (list.getSelectedIndex() == -1)
 			addOptions();
+		
+		Ctx.project.getSelectedChapter().setModified(d);
 	}
 
 

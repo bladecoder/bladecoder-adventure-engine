@@ -15,11 +15,12 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
-import org.w3c.dom.NodeList;
+import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.utils.OptionsInputPanelUtils;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.World;
 
 public class SceneInputPanel extends StringOptionsInputPanel {
 	SceneInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
@@ -27,8 +28,16 @@ public class SceneInputPanel extends StringOptionsInputPanel {
 	}
 
 	private static String[] getValues(boolean mandatory) {
-		NodeList scenes = Ctx.project.getSelectedChapter().getScenes();
-
-		return OptionsInputPanelUtils.getIdFromNodeList(mandatory, scenes);
+		HashMap<String, Scene> scenes = World.getInstance().getScenes();
+		
+		String[] result = new String[scenes.size()];
+		
+		BaseActor[] v = scenes.values().toArray(new BaseActor[scenes.size()]);
+		
+		for(int i = 0; i < scenes.size(); i++) {
+			result[i] = v[i].getId();
+		}
+		
+		return result;
 	}
 }

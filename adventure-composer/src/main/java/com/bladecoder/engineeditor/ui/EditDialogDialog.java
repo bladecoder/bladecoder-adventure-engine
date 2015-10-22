@@ -15,31 +15,52 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import org.w3c.dom.Element;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engineeditor.model.BaseDocument;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engine.model.CharacterActor;
+import com.bladecoder.engine.model.Dialog;
+import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
-public class EditDialogDialog extends EditElementDialog {
+public class EditDialogDialog extends EditModelDialog<CharacterActor, Dialog> {
 	public static final String INFO = "Actors can have several dialogs defined. Dialogs have a tree of options to choose";
+
+	private InputPanel id;
 	
-	private InputPanel[] inputs; 
-
-	String attrs[] = { "id"};	
-
-	public EditDialogDialog(Skin skin,  BaseDocument doc, Element parent, Element e) {
+	public EditDialogDialog(Skin skin,  CharacterActor parent, Dialog e) {
 		super(skin);
 		
-		inputs = new InputPanel[1];
-		
-		inputs[0] = InputPanelFactory.createInputPanel(skin, "Dialog ID",
+		id = InputPanelFactory.createInputPanel(skin, "Dialog ID",
 				"Select the dialog id to create.", true);
 
 		setInfo(INFO);
-
-		init(inputs, attrs, doc, parent, "dialog", e);
+		
+		init(parent, e, new InputPanel[] { id });
 	}
+	
+	@Override
+	protected void inputsToModel(boolean create) {
+		
+		if(create) {
+			e = new Dialog();
+		}
+		
+		e.setId(id.getText());
+		
+		if(create) {
+			parent.addDialog(e);
+		}
+
+		// TODO UNDO OP
+//		UndoOp undoOp = new UndoAddElement(doc, e);
+//		Ctx.project.getUndoStack().add(undoOp);
+		
+		Ctx.project.getSelectedChapter().setModified(e);
+	}
+
+	@Override
+	protected void modelToInputs() {
+		id.setText(e.getId());
+	}	
 }

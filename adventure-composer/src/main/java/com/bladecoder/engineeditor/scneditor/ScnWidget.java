@@ -42,7 +42,6 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -145,27 +144,28 @@ public class ScnWidget extends Widget {
 					setSelectedScene(Ctx.project.getSelectedScene());
 					setSelectedActor(Ctx.project.getSelectedActor());
 				} else if (e.getPropertyName().equals("bbox")) {
-					// Element selActor = (Element) e.getNewValue();
-					Element selActor = Ctx.project.getSelectedChapter().getActor(
-							Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
-							Ctx.project.getSelectedActor().getId());
-					String id = doc.getId(selActor);
-					BaseActor a = scn.getActor(id, false);
-
-					if (a == null)
-						return;
-
-					doc.getBBox(a.getBBox(), selActor);
-					Vector2 p = doc.getPos(selActor);
-					a.setPosition(p.x, p.y);
-
-					if (a instanceof SpriteActor) {
-						SpriteActor sa = (SpriteActor) a;
-						if (!selActor.getAttribute(XMLConstants.BBOX_ATTR).isEmpty())
-							sa.setBboxFromRenderer(false);
-						else
-							sa.setBboxFromRenderer(true);
-					}
+					// TODO DELETE
+//					// Element selActor = (Element) e.getNewValue();
+//					Element selActor = Ctx.project.getSelectedChapter().getActor(
+//							Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+//							Ctx.project.getSelectedActor().getId());
+//					String id = doc.getId(selActor);
+//					BaseActor a = scn.getActor(id, false);
+//
+//					if (a == null)
+//						return;
+//
+//					doc.getBBox(a.getBBox(), selActor);
+//					Vector2 p = doc.getPos(selActor);
+//					a.setPosition(p.x, p.y);
+//
+//					if (a instanceof SpriteActor) {
+//						SpriteActor sa = (SpriteActor) a;
+//						if (!selActor.getAttribute(XMLConstants.BBOX_ATTR).isEmpty())
+//							sa.setBboxFromRenderer(false);
+//						else
+//							sa.setBboxFromRenderer(true);
+//					}
 
 				} else if (e.getPropertyName().equals("pos")) {
 					Element selActor = (Element) e.getNewValue();
@@ -291,13 +291,7 @@ public class ScnWidget extends Widget {
 			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
 				p.translate(1, 0);
 
-			Ctx.project
-					.getSelectedChapter().setPos(
-							Ctx.project.getSelectedChapter().getActor(
-									Ctx.project.getSelectedChapter()
-											.getSceneById(Ctx.project.getSelectedScene().getId()),
-									Ctx.project.getSelectedActor().getId()),
-					new Vector2(selActor.getX(), selActor.getY()));
+			Ctx.project.getSelectedChapter().setModified(selActor);
 
 			// undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(),
 			// Ctx.project.getSelectedActor(), "pos",
@@ -701,6 +695,7 @@ public class ScnWidget extends Widget {
 		// setSelectedActor(actor);
 	}
 
+	// TODO Mode to the creation method from actorlist
 	private BaseActor createActor(BaseActor a) {
 		if (a instanceof InteractiveActor) {
 			InteractiveActor iActor = (InteractiveActor) a;

@@ -16,9 +16,7 @@
 package com.bladecoder.engineeditor.ui.components;
 
 import java.util.ArrayList;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -27,7 +25,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.anim.AnimationDesc;
-import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
 
 public class ActorAnimationInputPanel extends InputPanel {
@@ -45,20 +44,16 @@ public class ActorAnimationInputPanel extends InputPanel {
 		panel.add(actor);
 		panel.add(new Label("  Animation ", skin));
 		panel.add(animation);
-
-		NodeList actors = Ctx.project.getSelectedChapter().getActors(
-				Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()));
+		
 
 		ArrayList<String> values = new ArrayList<String>();
 
 		// values.add("");
 
-		for (int i = 0; i < actors.getLength(); i++) {
-			String id = ((Element) actors.item(i)).getAttribute(XMLConstants.ID_ATTR);
-			String type = ((Element) actors.item(i)).getAttribute(XMLConstants.TYPE_ATTR);
+		for (BaseActor a: Ctx.project.getSelectedScene().getActors().values()) {
 
-			if (type.equals(XMLConstants.SPRITE_VALUE) || type.equals(XMLConstants.CHARACTER_VALUE)) {
-				values.add(id);
+			if (a instanceof SpriteActor) {
+				values.add(a.getId());
 			}
 		}
 
@@ -83,30 +78,26 @@ public class ActorAnimationInputPanel extends InputPanel {
 
 	private void actorSelected() {
 		String s = actor.getSelected();
-		Element a = Ctx.project.getSelectedChapter().getActor(
-				Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), Ctx.project.getSelectedActor().getId());
+		SpriteActor a = (SpriteActor) Ctx.project.getSelectedActor();
 		
 		ArrayList<String> values = new ArrayList<String>();
 
 		if (s != null && !s.isEmpty()) {
-			a = Ctx.project.getSelectedChapter().getActor(
-					Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), s);
+			a = (SpriteActor)Ctx.project.getSelectedScene().getActor(s, false);
 		}
 
 		if (a != null) {
 
-			NodeList animations = Ctx.project.getSelectedChapter()
-					.getAnimations(a);
+			 HashMap<String, AnimationDesc> animations = a.getRenderer().getAnimations();
 
 			if (!isMandatory()) {
 				values.add("");
 			}
 
-			for (int i = 0; i < animations.getLength(); i++) {
-				values.add(((Element) animations.item(i)).getAttribute("id"));
+			for (AnimationDesc anim:animations.values()) {
+				values.add(anim.id);
 
-				String flipped = AnimationDesc.getFlipId(((Element) animations
-						.item(i)).getAttribute("id"));
+				String flipped = AnimationDesc.getFlipId(anim.id);
 
 				if (!flipped.isEmpty()) {
 					values.add(flipped);

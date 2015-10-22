@@ -31,7 +31,6 @@ import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
 public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> {
 
-	private InputPanel id;
 	private InputPanel filename;
 	private InputPanel loop;
 	private InputPanel volume;
@@ -39,15 +38,15 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 	public EditSoundDialog(Skin skin, InteractiveActor parent, SoundFX e) {
 		super(skin);
 
-		id = InputPanelFactory.createInputPanel(skin, "Sound ID", "The id of the sound", true);
+//		id = InputPanelFactory.createInputPanel(skin, "Sound ID", "The id of the sound", true);
 		filename = InputPanelFactory.createInputPanel(skin, "Filename", "Filename of the sound", getSoundList(), true);
 		loop = InputPanelFactory.createInputPanel(skin, "Loop", "True if the sound is looping", Param.Type.BOOLEAN,
 				true, "false");
-		volume = InputPanelFactory.createInputPanel(skin, "Volume", "Select the volume", Param.Type.FLOAT, true, "1.0");
+		volume = InputPanelFactory.createInputPanel(skin, "Volume", "Select the volume between 0 and 1", Param.Type.FLOAT, true, "1.0");
 
 		setInfo("Actors can have a list of sounds that can be associated to Sprites or played with the 'sound' action");
 
-		init(parent, e, new InputPanel[] { id, filename, loop, volume });
+		init(parent, e, new InputPanel[] { filename, loop, volume });
 	}
 
 	@Override
@@ -64,6 +63,10 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 		if(create) {
 			parent.getSounds().put(e.getFilename(), e);
 		}
+
+		// TODO UNDO OP
+//		UndoOp undoOp = new UndoAddElement(doc, e);
+//		Ctx.project.getUndoStack().add(undoOp);
 		
 		Ctx.project.getSelectedChapter().setModified(e);
 	}
@@ -72,9 +75,8 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 	protected void modelToInputs() {
 		
 		// TODO SEARCH FOR ID
-//		parent.getSounds().containsValue(arg0)
-		
-		id.setText("");
+//		parent.getSounds().containsValue(arg0)		
+//		id.setText("");
 		filename.setText(e.getFilename());
 		loop.setText(Boolean.toString(e.getLoop()));
 		volume.setText(Float.toString(e.getVolume()));

@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
+import java.util.HashMap;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -25,6 +27,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 
 public class SceneActorInputPanel extends InputPanel {
@@ -80,9 +85,13 @@ public class SceneActorInputPanel extends InputPanel {
 			s = Ctx.project.getSelectedScene().getId();
 		}
 		
+		Scene scn = World.getInstance().getScene(s);
 		
-		NodeList actors = Ctx.project.getSelectedChapter().getActors(Ctx.project.getSelectedChapter().getSceneById(s));
-		int l = actors.getLength();
+		HashMap<String, BaseActor> actors = scn.getActors();
+		BaseActor[] v = actors.values().toArray(new BaseActor[actors.size()]);
+		
+		
+		int l = actors.size();
 		if(!isMandatory()) l++;
 		String values[] = new String[l];
 		
@@ -90,11 +99,11 @@ public class SceneActorInputPanel extends InputPanel {
 			values[0] = "";
 		}
 		
-		for(int i = 0; i < actors.getLength(); i++) {
+		for(int i = 0; i < actors.size(); i++) {
 			if(isMandatory())
-				values[i] = ((Element)actors.item(i)).getAttribute("id");
+				values[i] = v[i].getId();
 			else
-				values[i+1] = ((Element)actors.item(i)).getAttribute("id");
+				values[i+1] = v[i].getId();
 		}
 		
 		actor.setItems(values);	

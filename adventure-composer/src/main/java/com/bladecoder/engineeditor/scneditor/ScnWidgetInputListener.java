@@ -26,7 +26,6 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
@@ -72,19 +71,19 @@ public class ScnWidgetInputListener extends ClickListener {
 					// Delete the point if selected
 					boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
-					if (deleted) {
-						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
-						return;
-					}
+//					if (deleted) {
+//						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
+//						return;
+//					}
 
 				} else {
 
 					boolean created = PolygonUtils.addClampPointIfTolerance(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
-					if (created) {
-						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
-						return;
-					}
+//					if (created) {
+//						Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
+//						return;
+//					}
 				}
 			}
 
@@ -101,22 +100,22 @@ public class ScnWidgetInputListener extends ClickListener {
 						// Delete the point if selected
 						boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
-						if (deleted) {
-							Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedChapter().getActor(
-									Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
-									Ctx.project.getSelectedActor().getId()), poly);
-							return;
-						}
+//						if (deleted) {
+//							Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedChapter().getActor(
+//									Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+//									Ctx.project.getSelectedActor().getId()), poly);
+//							return;
+//						}
 					} else {
 						boolean created = PolygonUtils.addClampPointIfTolerance(poly, p.x, p.y,
 								CanvasDrawer.CORNER_DIST);
 
-						if (created) {
-							Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedChapter().getActor(
-									Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
-									Ctx.project.getSelectedActor().getId()), poly);
-							return;
-						}
+//						if (created) {
+//							Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedChapter().getActor(
+//									Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+//									Ctx.project.getSelectedActor().getId()), poly);
+//							return;
+//						}
 					}
 				}
 			}
@@ -244,10 +243,10 @@ public class ScnWidgetInputListener extends ClickListener {
 			if (draggingMode == DraggingModes.DRAGGING_ACTOR) {
 				Polygon p = selActor.getBBox();
 				p.translate(d.x, d.y);
-				Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedChapter().getActor(
-						Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
-						Ctx.project.getSelectedActor().getId()),
-						new Vector2(selActor.getX(), selActor.getY()));
+//				Ctx.project.getSelectedChapter().setPos(Ctx.project.getSelectedChapter().getActor(
+//						Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+//						Ctx.project.getSelectedActor().getId()),
+//						new Vector2(selActor.getX(), selActor.getY()));
 
 			} else if (draggingMode == DraggingModes.DRAGGING_BBOX_POINT) {
 				Polygon poly = selActor.getBBox();
@@ -257,9 +256,9 @@ public class ScnWidgetInputListener extends ClickListener {
 				verts[vertIndex + 1] += d.y;
 				poly.dirty();
 
-				Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedChapter().getActor(
-						Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
-						Ctx.project.getSelectedActor().getId()), poly);
+//				Ctx.project.getSelectedChapter().setBbox(Ctx.project.getSelectedChapter().getActor(
+//						Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+//						Ctx.project.getSelectedActor().getId()), poly);
 			} else if (draggingMode == DraggingModes.DRAGGING_WALKZONE_POINT) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 
@@ -268,24 +267,24 @@ public class ScnWidgetInputListener extends ClickListener {
 				verts[vertIndex + 1] += d.y;
 				poly.dirty();
 
-				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
+//				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
 			} else if (draggingMode == DraggingModes.DRAGGING_WALKZONE) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 				poly.translate(d.x, d.y);
-				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
+//				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
 			} else if (draggingMode == DraggingModes.DRAGGING_MARKER_0) {
 				Vector2 depthVector = scnWidget.getScene().getDepthVector();
 
 				depthVector.x += d.y;
 
-				Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()).setAttribute("depth_vector", Param.toStringParam(depthVector));
+//				Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()).setAttribute("depth_vector", Param.toStringParam(depthVector));
 				Ctx.project.getSelectedChapter().setModified();
 				updateFakeDepth();
 			} else if (draggingMode == DraggingModes.DRAGGING_MARKER_100) {
 				Vector2 depthVector = scnWidget.getScene().getDepthVector();
 
 				depthVector.y += d.y;
-				Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()).setAttribute("depth_vector", Param.toStringParam(depthVector));
+//				Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()).setAttribute("depth_vector", Param.toStringParam(depthVector));
 				Ctx.project.getSelectedChapter().setModified();
 				updateFakeDepth();
 			}

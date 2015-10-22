@@ -84,11 +84,11 @@ public class CharacterActor extends SpriteActor {
 		return dialogs.get(dialog);
 	}
 
-	public void addDialog(String id, Dialog d) {
+	public void addDialog(Dialog d) {
 		if (dialogs == null)
 			dialogs = new HashMap<String, Dialog>();
 
-		dialogs.put(id, d);
+		dialogs.put(d.getId(), d);
 	}
 
 	public void setWalkingSpeed(float s) {

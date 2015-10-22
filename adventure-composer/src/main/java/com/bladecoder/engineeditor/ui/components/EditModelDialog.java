@@ -58,9 +58,7 @@ public abstract class EditModelDialog<PARENT, T> extends EditDialog {
 
 	@Override
 	protected void ok() {	
-		boolean create = e==null;
-
-		inputsToModel(create);
+		inputsToModel(e==null);
 
 		if (listener != null)
 			listener.changed(new ChangeEvent(), this);

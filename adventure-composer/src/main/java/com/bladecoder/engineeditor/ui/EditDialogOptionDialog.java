@@ -15,55 +15,91 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.loader.XMLConstants;
-import com.bladecoder.engineeditor.model.BaseDocument;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engine.model.CharacterActor;
+import com.bladecoder.engine.model.Dialog;
+import com.bladecoder.engine.model.DialogOption;
+import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
-public class EditDialogOptionDialog extends EditElementDialog {
+public class EditDialogOptionDialog extends EditModelDialog<Dialog, DialogOption> {
+	
+	private InputPanel text;
+	private InputPanel responseText;
+	private InputPanel verb;
+	private InputPanel next;
+	private InputPanel visible;
+	private InputPanel once;
 
-	private InputPanel[] inputs;
-
-	String attrs[] = { "text", "response_text", "verb", "next", "visible", "once" };
-
-	public EditDialogOptionDialog(Skin skin, BaseDocument doc,
-			Element parent, Element e) {
+	public EditDialogOptionDialog(Skin skin, Dialog parent, DialogOption e) {
 		super(skin);
 		
-		inputs = new InputPanel[attrs.length];
-		
-		inputs[0] = InputPanelFactory.createInputPanel(skin, "Text", "The sentence of the dialog to say by the player", Type.SMALL_TEXT, true);
-		inputs[1] = InputPanelFactory.createInputPanel(skin, "Response Text", "The response by the character", Type.TEXT, false);
-		inputs[2] = InputPanelFactory.createInputPanel(skin, "Verb", "The verb to execute when choosing this option");
-		inputs[3] = InputPanelFactory.createInputPanel(skin, "Next Dialog",
-						"The next dialog to show when this option is selected", getActorDialogs((Element)parent.getParentNode()), false);
-		inputs[4] = InputPanelFactory.createInputPanel(skin, "Visible", "The visibility", Param.Type.BOOLEAN, false);
-		inputs[5] = InputPanelFactory.createInputPanel(skin, "Once", "When true, the option is hidden after selection", Param.Type.BOOLEAN, false);
+		text = InputPanelFactory.createInputPanel(skin, "Text", "The sentence of the dialog to say by the player", Type.SMALL_TEXT, true);
+		responseText = InputPanelFactory.createInputPanel(skin, "Response Text", "The response by the character", Type.TEXT, false);
+		verb = InputPanelFactory.createInputPanel(skin, "Verb", "The verb to execute when choosing this option");
+		next = InputPanelFactory.createInputPanel(skin, "Next Dialog",
+						"The next dialog to show when this option is selected", getActorDialogs((CharacterActor)Ctx.project.getSelectedActor()), false);
+		visible = InputPanelFactory.createInputPanel(skin, "Visible", "The visibility", Param.Type.BOOLEAN, false);
+		once = InputPanelFactory.createInputPanel(skin, "Once", "When true, the option is hidden after selection", Param.Type.BOOLEAN, false);
 
 		setInfo("A dialog is composed of an option tree. Each option is a dialog sentence that the user can choose to say");
 
-		inputs[0].getCell(inputs[0].getField()).fillX();
-		inputs[1].getCell(inputs[1].getField()).fillX();
+		text.getCell(text.getField()).fillX();
+		responseText.getCell(responseText.getField()).fillX();
 		
-		init(inputs, attrs, doc, parent, "option", e);
+		init(parent, e, new InputPanel[] { text, responseText, verb, next, visible, once });
 	}
 	
-	String []getActorDialogs(Element actor) {
-		NodeList dialogs = actor.getElementsByTagName(XMLConstants.DIALOG_TAG);
+	@Override
+	protected void inputsToModel(boolean create) {
 		
-		String []result = new String[dialogs.getLength() + 1];
+		if(create) {
+			e = new DialogOption();
+		}
+		
+		e.setText(text.getText());
+		e.setResponseText(responseText.getText());
+		e.setVerbId(verb.getText());
+		e.setNext(next.getText());
+		e.setVisible(Boolean.parseBoolean(visible.getText()));
+		e.setOnce(Boolean.parseBoolean(once.getText()));
+		
+		if(create) {
+			parent.addOption(e);
+		}
+
+		// TODO UNDO OP
+//		UndoOp undoOp = new UndoAddElement(doc, e);
+//		Ctx.project.getUndoStack().add(undoOp);
+		
+		Ctx.project.getSelectedChapter().setModified(e);
+	}
+
+	@Override
+	protected void modelToInputs() {
+		text.setText(e.getText());
+		responseText.setText(e.getResponseText());
+		verb.setText(e.getVerbId());
+		next.setText(e.getNext());
+		
+		visible.setText(Boolean.toString(e.isVisible()));
+		once.setText(Boolean.toString(e.isOnce()));
+	}		
+	
+	
+	
+	private String []getActorDialogs(CharacterActor actor) {
+		Dialog[] array = actor.getDialogs().values().toArray(new Dialog[0]);
+		
+		String []result = new String[array.length + 1];
 		result[0] = "this";
 		
-		for(int i = 0; i < dialogs.getLength(); i++) {
-			Element d = (Element)dialogs.item(i);
-			result[i + 1] = d.getAttribute("id");
+		for(int i = 0; i < array.length; i++) {
+			result[i + 1] = array[i].getId();
 		}
 		
 		return result;
