@@ -26,12 +26,15 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.actions.AbstractControlAction;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
+import com.bladecoder.engine.actions.EndAction;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
+import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
@@ -149,8 +152,7 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	@Override
 	protected EditModelDialog<Verb,Action> getEditElementDialogInstance(Action e) {
-		// return new EditActionDialog(skin, doc, parent, e);
-		return null;
+		return new EditActionDialog(skin, parent, e);
 	}
 
 	@Override
@@ -288,27 +290,40 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	@Override
 	protected void delete() {
-		// int pos = list.getSelectedIndex();
-		//
-		// if (pos == -1)
-		// return;
-		//
-		// Element e = list.getItems().get(pos);
-		//
-		// if (e.getAttribute("class").equals(END_ACTION))
-		// return;
-		//
-		// super.delete();
-		//
-		// deleteControlAction(pos, e);
+		 int pos = list.getSelectedIndex();
+		
+		 if (pos == -1)
+			 return;
+		
+		 Action e = list.getItems().get(pos);
+		
+		 if (e instanceof EndAction)
+			 return;
+		 
+
+		
+		Action action = removeSelected();
+		
+		parent.getActions().remove(action);
+			
+	// TODO UNDO
+//			UndoOp undoOp = new UndoDeleteElement(doc, e);
+//			Ctx.project.getUndoStack().add(undoOp);
+//			doc.deleteElement(e);
+
+	// TODO TRANSLATIONS
+//			I18NUtils.putTranslationsInElement(doc, clipboard);
+		
+		Ctx.project.getSelectedChapter().setModified(action);
+		
+		deleteControlAction(pos, e);
 	}
 
-	private boolean isControlAction(Element e) {
-		final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
-		return CONTROL_ACTIONS.contains(actionName) || e.getAttribute(XMLConstants.CLASS_ATTR).equals(END_ACTION);
+	private boolean isControlAction(Action e) {		
+		return e instanceof AbstractControlAction;
 	}
 
-	private void deleteControlAction(int pos, final Element e) {
+	private void deleteControlAction(int pos, final Action e) {
 		// final String actionName =
 		// e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
 		// if (IF_CONTROL_ACTIONS.contains(actionName)) {

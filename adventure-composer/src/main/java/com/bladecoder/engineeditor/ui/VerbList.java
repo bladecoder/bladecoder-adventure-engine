@@ -100,8 +100,7 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 
 	@Override
 	protected EditModelDialog<VerbManager, Verb> getEditElementDialogInstance(Verb e) {
-		// return new EditVerbDialog(skin, doc, parent, e);
-		return null;
+		return new EditVerbDialog(skin, scopePanel.getScope(), parent, e);
 	}
 
 	@Override
@@ -129,6 +128,11 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 		// the last element
 		if (list.getSelectedIndex() == -1)
 			addActions();
+		
+		if(ScopePanel.WORLD_SCOPE.equals(scopePanel.getScope()))
+			Ctx.project.getWorldDocument().setModified(v);
+		else
+			Ctx.project.getSelectedChapter().setModified(v);
 	}
 
 	private void addActions() {

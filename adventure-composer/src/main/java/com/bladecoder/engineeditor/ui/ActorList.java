@@ -60,7 +60,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 				int pos = list.getSelectedIndex();
 
 				if (pos == -1) {
-					Ctx.project.setSelectedActor((BaseActor)null);
+					Ctx.project.setSelectedActor((BaseActor) null);
 				} else {
 					BaseActor a = list.getItems().get(pos);
 					Ctx.project.setSelectedActor(a);
@@ -105,69 +105,76 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 			}
 		});
 
-//		Ctx.project.getWorld().addPropertyChangeListener(new PropertyChangeListener() {
-//			@Override
-//			public void propertyChange(PropertyChangeEvent e) {
-//				if (e.getPropertyName().equals(BaseDocument.NOTIFY_ELEMENT_DELETED)) {
-//					if (((Element) e.getNewValue()).getTagName().equals("actor")) {
-//						Element el = (Element) e.getNewValue();
-//
-//						for (BaseActor e2 : list.getItems()) {
-//							if (e2 == el) {
-//								int pos = list.getItems().indexOf(e2, true);
-//
-//								list.getItems().removeIndex(pos);
-//
-//								clipboard = e2;
-//								I18NUtils.putTranslationsInElement(doc, clipboard);
-//								toolbar.disablePaste(false);
-//
-//								if (pos > 0)
-//									list.setSelectedIndex(pos - 1);
-//								else if (pos == 0 && list.getItems().size > 0)
-//									list.setSelectedIndex(0);
-//							}
-//						}
-//					}
-//				} else if (e.getPropertyName().equals("actor") && e.getSource() instanceof UndoOp) {
-//					BaseActor el = (BaseActor) e.getNewValue();
-//
-//					if (getItems().indexOf(el, true) != -1)
-//						return;
-//
-//					addItem(el);
-//
-//					int i = getItems().indexOf(el, true);
-//					if (i != -1)
-//						list.setSelectedIndex(i);
-//
-//					list.invalidateHierarchy();
-//				}
-//			}
-//		});
+		// Ctx.project.getWorld().addPropertyChangeListener(new
+		// PropertyChangeListener() {
+		// @Override
+		// public void propertyChange(PropertyChangeEvent e) {
+		// if (e.getPropertyName().equals(BaseDocument.NOTIFY_ELEMENT_DELETED))
+		// {
+		// if (((Element) e.getNewValue()).getTagName().equals("actor")) {
+		// Element el = (Element) e.getNewValue();
+		//
+		// for (BaseActor e2 : list.getItems()) {
+		// if (e2 == el) {
+		// int pos = list.getItems().indexOf(e2, true);
+		//
+		// list.getItems().removeIndex(pos);
+		//
+		// clipboard = e2;
+		// I18NUtils.putTranslationsInElement(doc, clipboard);
+		// toolbar.disablePaste(false);
+		//
+		// if (pos > 0)
+		// list.setSelectedIndex(pos - 1);
+		// else if (pos == 0 && list.getItems().size > 0)
+		// list.setSelectedIndex(0);
+		// }
+		// }
+		// }
+		// } else if (e.getPropertyName().equals("actor") && e.getSource()
+		// instanceof UndoOp) {
+		// BaseActor el = (BaseActor) e.getNewValue();
+		//
+		// if (getItems().indexOf(el, true) != -1)
+		// return;
+		//
+		// addItem(el);
+		//
+		// int i = getItems().indexOf(el, true);
+		// if (i != -1)
+		// list.setSelectedIndex(i);
+		//
+		// list.invalidateHierarchy();
+		// }
+		// }
+		// });
 	}
 
 	@Override
 	protected void delete() {
-//		int pos = list.getSelectedIndex();
-//
-//		if (pos == -1)
-//			return;
-//
-//		Element e = list.getItems().get(pos);
-//
-//		// delete player attr if the actor to delete is the player
-//		if (((Element) e.getParentNode()).getAttribute("player").equals(e.getAttribute("id"))) {
-//			((Element) e.getParentNode()).removeAttribute("player");
-//		}
-//
-//		super.delete();
+		BaseActor a = removeSelected();
+
+		parent.getActors().remove(a.getId());
+
+		// delete player attr if the actor to delete is the player
+		if (parent.getPlayer() == a) {
+			parent.setPlayer(null);
+		}
+
+		// TODO UNDO
+		// UndoOp undoOp = new UndoDeleteElement(doc, e);
+		// Ctx.project.getUndoStack().add(undoOp);
+		// doc.deleteElement(e);
+
+		// TODO TRANSLATIONS
+		// I18NUtils.putTranslationsInElement(doc, clipboard);
+
+		Ctx.project.getSelectedChapter().setModified(a);
 	}
 
 	@Override
 	protected EditModelDialog<Scene, BaseActor> getEditElementDialogInstance(BaseActor a) {
-		
-		return null;
+		return new EditActorDialog(skin, parent, a);
 	}
 
 	private void setPlayer() {
@@ -180,7 +187,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 		BaseActor a = list.getItems().get(pos);
 
 		if (a instanceof CharacterActor) {
-			a.getScene().setPlayer((CharacterActor)a);
+			a.getScene().setPlayer((CharacterActor) a);
 		}
 	}
 
@@ -196,9 +203,9 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 		@Override
 		protected String getCellSubTitle(BaseActor e) {
-			if(e instanceof InteractiveActor)
+			if (e instanceof InteractiveActor)
 				return Ctx.project.getSelectedChapter().getTranslation(((InteractiveActor) e).getDesc());
-			
+
 			return "";
 		}
 
@@ -214,7 +221,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 				u = "ic_character_actor";
 			} else if (a instanceof SpriteActor) {
 				ActorRenderer r = ((SpriteActor) a).getRenderer();
-				
+
 				if (r instanceof ImageRenderer) {
 					u = "ic_sprite_actor";
 				} else if (r instanceof AtlasRenderer) {
@@ -223,14 +230,14 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 					u = "ic_spine";
 				} else if (r instanceof Sprite3DRenderer) {
 					u = "ic_3d";
-				}				
+				}
 			} else if (a instanceof InteractiveActor) {
 				u = "ic_base_actor";
 			} else if (a instanceof ObstacleActor) {
 				u = "ic_obstacle_actor";
 			} else if (a instanceof AnchorActor) {
-				u = "ic_anchor";				
-			
+				u = "ic_anchor";
+
 			}
 
 			return Ctx.assetManager.getIcon(u);

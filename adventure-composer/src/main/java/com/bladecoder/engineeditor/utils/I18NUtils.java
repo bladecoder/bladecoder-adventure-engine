@@ -221,19 +221,20 @@ public class I18NUtils {
 	}
 	
 	public static void deleteUnusedKeys(BaseDocument doc) {
-		ArrayList<String> usedKeys = new ArrayList<String>();
-		getUsedKeys(doc.getRootElement(), usedKeys);
-		
-		Enumeration<Object> keys = doc.getI18N().keys();
-		
-		while(keys.hasMoreElements()) {
-			String key = (String)keys.nextElement();
-			
-			if(!usedKeys.contains(key) && 
-					!key.startsWith("ui.")) { // Doesn't remove ui keys
-				doc.getI18N().remove(key);
-			}
-		}
+		// TODO
+//		ArrayList<String> usedKeys = new ArrayList<String>();
+//		getUsedKeys(doc.getRootElement(), usedKeys);
+//		
+//		Enumeration<Object> keys = doc.getI18N().keys();
+//		
+//		while(keys.hasMoreElements()) {
+//			String key = (String)keys.nextElement();
+//			
+//			if(!usedKeys.contains(key) && 
+//					!key.startsWith("ui.")) { // Doesn't remove ui keys
+//				doc.getI18N().remove(key);
+//			}
+//		}
 	}
 	
 	private static void getUsedKeys(Element e, ArrayList<String> usedKeys) {

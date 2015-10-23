@@ -133,12 +133,13 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 			// TODO Set next animation as init
 			renderer.setInitAnimation(null);
 		}
+		
+		Ctx.project.getSelectedChapter().setModified(d);
 	}
 
 	@Override
 	protected EditModelDialog<SpriteActor, AnimationDesc> getEditElementDialogInstance(AnimationDesc e) {
-		// return new EditAnimationDialog(skin, doc, parent, e);
-		return null;
+		 return new EditAnimationDialog(skin, parent, e);
 	}
 
 	// -------------------------------------------------------------------------

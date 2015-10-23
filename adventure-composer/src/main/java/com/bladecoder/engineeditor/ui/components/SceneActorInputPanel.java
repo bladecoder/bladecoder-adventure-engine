@@ -17,9 +17,6 @@ package com.bladecoder.engineeditor.ui.components;
 
 import java.util.HashMap;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
@@ -47,15 +44,15 @@ public class SceneActorInputPanel extends InputPanel {
 		panel.add(new Label("  Actor ", skin));
 		panel.add(actor);
 
-		NodeList scenes = Ctx.project.getSelectedChapter().getScenes();
-		int l = scenes.getLength() + 1;
+		Scene[] scenes = World.getInstance().getScenes().values().toArray(new Scene[0]);
+		int l = scenes.length + 1;
 		
 		String values[] = new String[l];
 
 		values[0] = "";
 
-		for (int i = 0; i < scenes.getLength(); i++) {
-			values[i + 1] = ((Element) scenes.item(i)).getAttribute("id");
+		for (int i = 0; i < scenes.length; i++) {
+			values[i + 1] = scenes[i].getId();
 		}
 		
 		scene.addListener(new ChangeListener() {

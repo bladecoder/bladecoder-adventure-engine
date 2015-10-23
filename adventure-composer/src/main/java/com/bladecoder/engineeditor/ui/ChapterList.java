@@ -55,14 +55,12 @@ public class ChapterList extends EditList<String> {
 	}
 
 	private void setDefault() {
-		WorldDocument w = (WorldDocument) doc;
-
 		String e = list.getSelected();
 
 		if (e == null)
 			return;
-
-		w.setRootAttr(doc.getElement(), "init_chapter", e);
+		
+		Ctx.project.getWorldDocument().setInitChapter(e);
 	}
 
 	@Override

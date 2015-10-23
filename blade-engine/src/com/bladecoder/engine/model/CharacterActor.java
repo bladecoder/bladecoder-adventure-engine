@@ -94,6 +94,11 @@ public class CharacterActor extends SpriteActor {
 	public void setWalkingSpeed(float s) {
 		walkingSpeed = s;
 	}
+	
+
+	public float getWalkingSpeed() {
+		return walkingSpeed;
+	}
 
 	public void lookat(Vector2 p) {
 		inAnim();
@@ -222,4 +227,5 @@ public class CharacterActor extends SpriteActor {
 			talkAnim = json.readValue("talkAnim", String.class, jsonData);
 		}
 	}
+
 }

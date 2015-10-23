@@ -62,33 +62,33 @@ public class SceneProps extends PropertyTable {
 
 	public void setSceneDocument(ChapterDocument doc, Element scn) {
 
-		this.scn = scn;
-		this.doc = doc;
-		
-		clearProps();
-
-		if (scn != null) {
-			addProperty(MUSIC_PROP, doc.getMusic(scn));
-			addProperty(LOOP_MUSIC_PROP, doc.getRootAttr(scn,XMLConstants.LOOP_MUSIC_ATTR), Types.BOOLEAN);
-			addProperty(INITIAL_MUSIC_DELAY_PROP, doc.getRootAttr(scn, XMLConstants.INITIAL_MUSIC_DELAY_ATTR), Types.FLOAT);
-			addProperty(REPEAT_MUSIC_DELAY_PROP, doc.getRootAttr(scn, XMLConstants.REPEAT_MUSIC_DELAY_ATTR), Types.FLOAT);
-			
-			this.doc.addPropertyChangeListener("scene", propertyChangeListener);
-			
-			invalidateHierarchy();
-		}	
+//		this.scn = scn;
+//		this.doc = doc;
+//		
+//		clearProps();
+//
+//		if (scn != null) {
+//			addProperty(MUSIC_PROP, doc.getMusic(scn));
+//			addProperty(LOOP_MUSIC_PROP, doc.getRootAttr(scn,XMLConstants.LOOP_MUSIC_ATTR), Types.BOOLEAN);
+//			addProperty(INITIAL_MUSIC_DELAY_PROP, doc.getRootAttr(scn, XMLConstants.INITIAL_MUSIC_DELAY_ATTR), Types.FLOAT);
+//			addProperty(REPEAT_MUSIC_DELAY_PROP, doc.getRootAttr(scn, XMLConstants.REPEAT_MUSIC_DELAY_ATTR), Types.FLOAT);
+//			
+//			this.doc.addPropertyChangeListener("scene", propertyChangeListener);
+//			
+//			invalidateHierarchy();
+//		}	
 	}
 
 	@Override
 	protected void updateModel(String property, String value) {
-		if (property.equals(MUSIC_PROP)) {
-			doc.setRootAttr(scn,"music", value);
-		} else if (property.equals(LOOP_MUSIC_PROP)) {
-			doc.setRootAttr(scn, XMLConstants.LOOP_MUSIC_ATTR, value);		
-		} else if (property.equals(INITIAL_MUSIC_DELAY_PROP)) {
-			doc.setRootAttr(scn,XMLConstants.INITIAL_MUSIC_DELAY_ATTR, value);
-		} else if (property.equals(REPEAT_MUSIC_DELAY_PROP)) {
-			doc.setRootAttr(scn,XMLConstants.REPEAT_MUSIC_DELAY_ATTR, value);
-		}
+//		if (property.equals(MUSIC_PROP)) {
+//			doc.setRootAttr(scn,"music", value);
+//		} else if (property.equals(LOOP_MUSIC_PROP)) {
+//			doc.setRootAttr(scn, XMLConstants.LOOP_MUSIC_ATTR, value);		
+//		} else if (property.equals(INITIAL_MUSIC_DELAY_PROP)) {
+//			doc.setRootAttr(scn,XMLConstants.INITIAL_MUSIC_DELAY_ATTR, value);
+//		} else if (property.equals(REPEAT_MUSIC_DELAY_PROP)) {
+//			doc.setRootAttr(scn,XMLConstants.REPEAT_MUSIC_DELAY_ATTR, value);
+//		}
 	}
 }

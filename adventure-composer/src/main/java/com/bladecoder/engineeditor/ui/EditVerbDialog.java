@@ -15,22 +15,23 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import org.w3c.dom.Element;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engineeditor.model.BaseDocument;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engine.model.Verb;
+import com.bladecoder.engine.model.VerbManager;
+import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.EditableSelectBox;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
+import com.bladecoder.engineeditor.ui.components.ScopePanel;
 
-public class EditVerbDialog extends EditElementDialog {
+public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 	private static final String VERBS[] = { "lookat", "pickup", "talkto", "use",
 			"leave", "enter", "exit" };
 
@@ -51,33 +52,34 @@ public class EditVerbDialog extends EditElementDialog {
 	private static final String SCENE_VERBS_INFO[] = {
 			"Called every time\n that the scene is loaded",
 			"Called every time\n that the scene is loaded in test mode.\n'test' verb is called before the 'init' verb"};
+	
+	private InputPanel id;
+	private InputPanel state;
+	private InputPanel target;
+	
+	private String scope;
 
-	private InputPanel[] inputs;
-
-	String attrs[] = { "id", "state", "target" };
-
-	public EditVerbDialog(Skin skin, BaseDocument doc, Element parentElement,
-			Element e) {
+	public EditVerbDialog(Skin skin, String scope, VerbManager parentElement,
+			Verb e) {
 		super(skin);
-
-		inputs = new InputPanel[3];
 		
-		inputs[0] = InputPanelFactory.createInputPanel(skin, "Verb ID",
+		this.scope = scope;
+		
+		id = InputPanelFactory.createInputPanel(skin, "Verb ID",
 				"Select the verb to create.", Type.EDITABLE_OPTION, true,
-				"",	parentElement.getTagName()
-						.equals("scene") ? SCENE_VERBS : VERBS);
-		inputs[1] = InputPanelFactory.createInputPanel(skin, "State",
+				"",	ScopePanel.SCENE_SCOPE.equals(scope) ? SCENE_VERBS : VERBS);
+		state = InputPanelFactory.createInputPanel(skin, "State",
 				"Select the state.");
-		inputs[2] = InputPanelFactory.createInputPanel(skin,
+		target = InputPanelFactory.createInputPanel(skin,
 				"Target BaseActor",
 				"Select the target actor id for the 'use' verb");
 
-		if (parentElement.getTagName().equals("scene"))
+		if (ScopePanel.SCENE_SCOPE.equals(scope))
 			setInfo(SCENE_VERBS_INFO[0]);
 		else
 			setInfo(VERBS_INFO[0]);
 
-		inputs[0].getField()
+		id.getField()
 				.addListener(new ChangeListener() {
 
 					@Override
@@ -87,65 +89,82 @@ public class EditVerbDialog extends EditElementDialog {
 
 				});
 		
-		((EditableSelectBox)inputs[0].getField()).getInput().setTextFieldListener(new TextFieldListener() {
+		((EditableSelectBox<?>)id.getField()).getInput().setTextFieldListener(new TextFieldListener() {
 			@Override
 			public void keyTyped(TextField actor, char c) {
 				updateDesc();
 			}
 		});		
 
-		init(inputs, attrs, doc, parentElement, "verb", e);
+		init(parent, e, new InputPanel[] { id, state, target });
 
-		setVisible(inputs[2], false);
+		setVisible(target, false);
 
 		if (e != null) {
-			String id = e.getAttribute("id");
+			String id = e.getId();
 
 			if (id.equals("use"))
-				setVisible(inputs[2], true);
+				setVisible(target, true);
 		}
 		
 		updateDesc();
 	}
 	
 	private void updateDesc() {
-		String id = (String) inputs[0].getText();
-		int i = ((OptionsInputPanel) inputs[0])
+		String idStr = (String) id.getText();
+		int i = ((OptionsInputPanel) id)
 				.getSelectedIndex();
 
 		if(i == -1) {
-			if(id.isEmpty())
+			if(idStr.isEmpty())
 				setInfo(DEFAULT_DESC);
 			else
 				setInfo(CUSTOM_VERB_DESC);
 		} else {
-			if (parent.getTagName().equals("scene")) {
+			if (ScopePanel.SCENE_SCOPE.equals(scope)) {
 				setInfo(SCENE_VERBS_INFO[i]);
 			} else {
 				setInfo(VERBS_INFO[i]);	
 			}
 		}
 
-		if (id.equals("use"))
-			setVisible(inputs[2], true);
+		if (idStr.equals("use"))
+			setVisible(target, true);
 		else
-			setVisible(inputs[2], false);
+			setVisible(target, false);
 
 		pack();		
 	}	
 
 	@Override
-	protected void fill() {
-		for (int j = 0; j < a.length; j++) {
-			InputPanel input = i[j];
-			
-			if (!input.getText().isEmpty() && input.isVisible()) {
-				e.setAttribute(a[j], input.getText());
-			} else {
-				e.removeAttribute(a[j]);
-			}		
+	protected void inputsToModel(boolean create) {
+		
+		if(create) {
+			e = new Verb();
 		}
-	
-		doc.setModified(e);
+		
+		e.setId(id.getText());
+		e.setState(state.getText());
+		e.setTarget(target.getText());
+		
+		if(create) {
+			parent.addVerb(e.getHashKey(), e);
+		}
+
+		// TODO UNDO OP
+//		UndoOp undoOp = new UndoAddElement(doc, e);
+//		Ctx.project.getUndoStack().add(undoOp);
+		
+		if(ScopePanel.WORLD_SCOPE.equals(scope))
+			Ctx.project.getWorldDocument().setModified(e);
+		else
+			Ctx.project.getSelectedChapter().setModified(e);
+	}
+
+	@Override
+	protected void modelToInputs() {
+		id.setText(e.getId());
+		state.setText(e.getState());
+		target.setText(e.getTarget());
 	}	
 }

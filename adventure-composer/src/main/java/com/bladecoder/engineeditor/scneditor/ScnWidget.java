@@ -168,13 +168,13 @@ public class ScnWidget extends Widget {
 //					}
 
 				} else if (e.getPropertyName().equals("pos")) {
-					Element selActor = (Element) e.getNewValue();
-					String id = doc.getId(selActor);
-					BaseActor a = scn.getActor(id, false);
-					if (a == null)
-						return;
-					Vector2 p = doc.getPos(selActor);
-					a.setPosition(p.x, p.y);
+//					Element selActor = (Element) e.getNewValue();
+//					String id = doc.getId(selActor);
+//					BaseActor a = scn.getActor(id, false);
+//					if (a == null)
+//						return;
+//					Vector2 p = doc.getPos(selActor);
+//					a.setPosition(p.x, p.y);
 				} else if (e.getPropertyName().equals("id")) {
 					String id = (String) e.getOldValue();
 
@@ -713,15 +713,15 @@ public class ScnWidget extends Widget {
 	}
 
 	private void removeActor(ChapterDocument doc, Element e) {
-		BaseActor a = scn.getActor(doc.getId(e), false);
-		if (a != null) {
-			scn.removeActor(a);
-
-			if (a instanceof AssetConsumer)
-				((AssetConsumer) a).dispose();
-
-			setSelectedActor(null);
-		}
+//		BaseActor a = scn.getActor(doc.getId(e), false);
+//		if (a != null) {
+//			scn.removeActor(a);
+//
+//			if (a instanceof AssetConsumer)
+//				((AssetConsumer) a).dispose();
+//
+//			setSelectedActor(null);
+//		}
 	}
 
 	public void dispose() {

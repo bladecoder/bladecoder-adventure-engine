@@ -96,14 +96,12 @@ public class WorldDocument extends  BaseDocument {
 
 	public void setWidth(String value) {
 		World.getInstance().setWidth(Integer.parseInt(value));
-		doc.getDocumentElement().setAttribute(XMLConstants.WIDTH_ATTR, value);
 		modified = true;
 		firePropertyChange();
 	}
 	
 	public void setHeight(String value) {
 		World.getInstance().setHeight(Integer.parseInt(value));
-		doc.getDocumentElement().setAttribute(XMLConstants.HEIGHT_ATTR, value);
 		modified = true;
 		firePropertyChange();
 	}
@@ -117,19 +115,19 @@ public class WorldDocument extends  BaseDocument {
 	}
 	
 	public String getInitChapter() {
-		String init = getRootAttr(XMLConstants.INIT_CHAPTER_ATTR);
+		String init = World.getInstance().getInitChapter();
 		
 		if(init == null || init.isEmpty()) {
 			init = getChapters()[0];
 			
-			setRootAttr(XMLConstants.INIT_CHAPTER_ATTR, init);
+			World.getInstance().setInitChapter(init);
 		}
 		
 		return init;
 	}
 	
 	public void setInitChapter(String value) {
-		doc.getDocumentElement().setAttribute(XMLConstants.INIT_CHAPTER_ATTR, value);
+		World.getInstance().setInitChapter(value);
 		modified = true;
 		firePropertyChange();
 	}

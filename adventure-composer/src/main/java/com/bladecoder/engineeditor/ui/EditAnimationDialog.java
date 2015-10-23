@@ -19,8 +19,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 
-import org.w3c.dom.Element;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -32,120 +30,124 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
+import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.AtlasRenderer;
+import com.bladecoder.engine.model.ImageRenderer;
+import com.bladecoder.engine.model.Sprite3DRenderer;
+import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.scneditor.AnimationWidget;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
-public class EditAnimationDialog extends EditElementDialog {
+public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationDesc> {
 
 	public static final String INFO = "Define sprites and animations";
-	
-	private static final int SOURCE_INPUTPANEL = 0;
-	private static final int ATLAS_INPUTPANEL = 1;
-	private static final int ID_INPUTPANEL = 2;
-	private static final int TYPE_INPUTPANEL = 3;
-	private static final int SPEED_INPUTPANEL = 4;
-	private static final int DELAY_INPUTPANEL = 5;
-	private static final int COUNT_INPUTPANEL = 6;
 	
 	private static final String ATLAS_EXT = ".atlas";
 	private static final String SPINE_EXT = ".skel";
 	private static final String G3DB_EXT = ".g3db";
 
-	InputPanel typePanel;
+	InputPanel source;
+	InputPanel atlas;
+	InputPanel id;
+	InputPanel repeat;
+	InputPanel speed;
+	InputPanel delay;
+	InputPanel count;
+	InputPanel in;
+	InputPanel out;
+	InputPanel sound;
+	InputPanel preload;
+	InputPanel dispose;
 
-	String attrs[] = { XMLConstants.SOURCE_ATTR, XMLConstants.ATLAS_VALUE, XMLConstants.ID_ATTR, XMLConstants.ANIMATION_TYPE_ATTR, XMLConstants.SPEED_ATTR, XMLConstants.DELAY_ATTR,
-			XMLConstants.COUNT_ATTR, XMLConstants.IND_ATTR, XMLConstants.OUTD_ATTR, XMLConstants.SOUND_ATTR, XMLConstants.PRELOAD_ATTR, XMLConstants.DISPOSE_WHEN_PLAYED_ATTR };
-
-	
-	private InputPanel[] inputs = new InputPanel[attrs.length];
+	InputPanel inputs[] = { source, atlas, id, repeat, speed, delay,
+			count, in, out, sound, preload, dispose};
 	
 	AnimationWidget spriteWidget = new AnimationWidget(this);
 
 	@SuppressWarnings("unchecked")
-	public EditAnimationDialog(Skin skin, BaseDocument doc, Element p, Element e) {
+	public EditAnimationDialog(Skin skin, SpriteActor p, AnimationDesc e) {
 		super(skin);
 
 		setInfo(INFO);
 
-		inputs[0] = InputPanelFactory.createInputPanel(skin, "Source",
+		source = InputPanelFactory.createInputPanel(skin, "Source",
 				"Select the source where the sprite or animation is defined",
 				new String[0], true);
-		inputs[1] = InputPanelFactory.createInputPanel(skin, "Atlas",
+		atlas = InputPanelFactory.createInputPanel(skin, "Atlas",
 				"Select the atlas for the selected Spine skeleton",
 				getAtlases(), true);
-		inputs[2] = InputPanelFactory.createInputPanel(skin, "ID",
+		id = InputPanelFactory.createInputPanel(skin, "ID",
 				"Select the id of the animation", new String[0], true);
-		inputs[3] = InputPanelFactory.createInputPanel(skin, "Animation type",
+		repeat = InputPanelFactory.createInputPanel(skin, "Animation type",
 				"Select the type of the animation",
 				ChapterDocument.ANIMATION_TYPES, true);
-		inputs[4] = InputPanelFactory.createInputPanel(skin, "Speed",
+		speed = InputPanelFactory.createInputPanel(skin, "Speed",
 				"Select the speed of the animation in secods",
 				Param.Type.FLOAT, true, "1.0");
-		inputs[5] = InputPanelFactory.createInputPanel(skin, "Delay",
+		delay = InputPanelFactory.createInputPanel(skin, "Delay",
 				"Select the delay between repeats in seconds",
 				Param.Type.FLOAT, false);
-		inputs[6] = InputPanelFactory.createInputPanel(skin, "Count", "Select the repeat times",
+		count = InputPanelFactory.createInputPanel(skin, "Count", "Select the repeat times",
 				Param.Type.INTEGER, false);
-		inputs[7] = InputPanelFactory.createInputPanel(
+		in = InputPanelFactory.createInputPanel(
 				skin,
 				"In Dist",
 				"Select the distance in pixels to add to the actor position when the sprite is displayed",
 				Param.Type.VECTOR2, false);
-		inputs[8] = InputPanelFactory.createInputPanel(
+		out = InputPanelFactory.createInputPanel(
 				skin,
 				"Out Dist",
 				"Select the distance in pixels to add to the actor position when the sprite is changed",
 				Param.Type.VECTOR2, false);
-		inputs[9] = InputPanelFactory.createInputPanel(skin, "Sound",
+		sound = InputPanelFactory.createInputPanel(skin, "Sound",
 				"Select the sound ID that will be play when displayed");
-		inputs[10] = InputPanelFactory.createInputPanel(skin, "Preload",
+		preload = InputPanelFactory.createInputPanel(skin, "Preload",
 				"Preload the animation when the scene is loaded",
 				Param.Type.BOOLEAN, true, "true");
-		inputs[11] = InputPanelFactory.createInputPanel(skin, "Dispose When Played",
+		dispose = InputPanelFactory.createInputPanel(skin, "Dispose When Played",
 				"Dispose de animation when the animation is played",
 				Param.Type.BOOLEAN, true, "false");
 
-		typePanel = inputs[TYPE_INPUTPANEL];
-
-		((SelectBox<String>) typePanel.getField())
+		((SelectBox<String>) repeat.getField())
 				.addListener(new ChangeListener() {
 
 					@Override
 					public void changed(ChangeEvent event, Actor actor) {
-						String type = typePanel.getText();
+						String type = repeat.getText();
 
 						if (type.equals(XMLConstants.REPEAT_VALUE) || type.equals(XMLConstants.YOYO_VALUE)) {
-							setVisible(inputs[DELAY_INPUTPANEL],true);
-							setVisible(inputs[COUNT_INPUTPANEL],true);
+							setVisible(delay,true);
+							setVisible(count,true);
 						} else {
-							setVisible(inputs[DELAY_INPUTPANEL],false);
-							setVisible(inputs[COUNT_INPUTPANEL],false);
+							setVisible(delay,false);
+							setVisible(count,false);
 						}
 					}
 				});
 
-		((SelectBox<String>) inputs[SOURCE_INPUTPANEL].getField())
+		((SelectBox<String>) source.getField())
 				.addListener(new ChangeListener() {
 					@Override
 					public void changed(ChangeEvent event, Actor actor) {
 						EditorLogger.debug("EditAnimationDialog.setSource():"
-								+ inputs[SOURCE_INPUTPANEL].getText());
+								+ source.getText());
 
 						setSource();
 						fillAnimations();
 					}
 				});
 
-		((SelectBox<String>) inputs[ID_INPUTPANEL].getField())
+		((SelectBox<String>) id.getField())
 				.addListener(new ChangeListener() {
 					@Override
 					public void changed(ChangeEvent event, Actor actor) {
@@ -153,7 +155,7 @@ public class EditAnimationDialog extends EditElementDialog {
 					}
 				});
 		
-		((SelectBox<String>) inputs[ATLAS_INPUTPANEL].getField())
+		((SelectBox<String>) atlas.getField())
 		.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -163,7 +165,7 @@ public class EditAnimationDialog extends EditElementDialog {
 		});
 		
 
-		((TextField) inputs[SPEED_INPUTPANEL].getField()).addListener(new ChangeListener() {
+		((TextField) speed.getField()).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				setAnimation();
@@ -171,25 +173,25 @@ public class EditAnimationDialog extends EditElementDialog {
 		});	
 
 		setInfoWidget(spriteWidget);
-		init(inputs, attrs, doc, p, XMLConstants.ANIMATION_TAG, e);
+		init(p, e, inputs);
 		
-		setVisible(inputs[DELAY_INPUTPANEL],false);
-		setVisible(inputs[COUNT_INPUTPANEL],false);
+		setVisible(delay,false);
+		setVisible(count,false);
 		
-		setVisible(inputs[ATLAS_INPUTPANEL],false);
+		setVisible(atlas,false);
 
 		addSources();
 		if(e !=  null) {
-			inputs[SOURCE_INPUTPANEL].setText(e.getAttribute(attrs[SOURCE_INPUTPANEL]));
+			source.setText(e.source);
 		}
 
-		if (inputs[SOURCE_INPUTPANEL].getText() != null && !inputs[SOURCE_INPUTPANEL].getText().isEmpty()) {
+		if (source.getText() != null && !source.getText().isEmpty()) {
 			setSource();
 
 			fillAnimations();
 			
 			if(e !=  null) {		
-				inputs[ID_INPUTPANEL].setText(e.getAttribute(attrs[ID_INPUTPANEL]));
+				id.setText(e.id);
 			}
 		}
 	}
@@ -197,36 +199,44 @@ public class EditAnimationDialog extends EditElementDialog {
 	private void setSource() {
 		AnimationDesc anim = null;
 		
-		String renderer = parent.getAttribute(XMLConstants.RENDERER_ATTR);
-		String source = inputs[SOURCE_INPUTPANEL].getText();
+		ActorRenderer renderer = parent.getRenderer();
+		String sourceStr = source.getText();
 		
-		if (renderer.equals(XMLConstants.SPINE_VALUE)) {
+		if (renderer instanceof SpineRenderer) {
 			anim = new SpineAnimationDesc();
 			
-			if(spineAtlasExists(source)) {
+			if(spineAtlasExists(sourceStr)) {
 				((SpineAnimationDesc)anim).atlas = null;
-				setVisible(inputs[ATLAS_INPUTPANEL],false);
+				setVisible(atlas,false);
 			} else {
-				if(!inputs[ATLAS_INPUTPANEL].isVisible()) {
-					setVisible(inputs[ATLAS_INPUTPANEL],true);
+				if(!atlas.isVisible()) {
+					setVisible(atlas,true);
 				}
 				
-				((SpineAnimationDesc)anim).atlas = inputs[ATLAS_INPUTPANEL].getText();
+				((SpineAnimationDesc)anim).atlas = atlas.getText();
 			}
 			
 			
-		} else if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
+		} else if (renderer instanceof AtlasRenderer) {
 			anim = new AtlasAnimationDesc();
 		} else {
 			anim = new AnimationDesc();
 		}
 		
-		anim.source = source;
+		anim.source = sourceStr;
 		anim.count = Tween.INFINITY;
 		anim.preload = true;
 		anim.disposeWhenPlayed = false;	
 		
-		spriteWidget.setSource(renderer, anim);
+		if (renderer instanceof SpineRenderer) {
+			spriteWidget.setSource(XMLConstants.SPINE_VALUE, anim);
+		} else if (renderer instanceof AtlasRenderer) {
+			spriteWidget.setSource(XMLConstants.ATLAS_VALUE, anim);
+		} else if (renderer instanceof ImageRenderer) {
+			spriteWidget.setSource(XMLConstants.IMAGE_VALUE, anim);
+		} else if (renderer instanceof Sprite3DRenderer) {
+			spriteWidget.setSource(XMLConstants.S3D_VALUE, anim);
+		}
 	}
 	
 	public boolean spineAtlasExists(String source) {
@@ -234,20 +244,20 @@ public class EditAnimationDialog extends EditElementDialog {
 	}
 
 	private void setAnimation() {
-		String id = inputs[ID_INPUTPANEL].getText();
-		String type = typePanel.getText();
-		String speed = inputs[SPEED_INPUTPANEL].getText();
+		String ids = id.getText();
+		String type = repeat.getText();
+		String speedStr = speed.getText();
 
 		@SuppressWarnings("unchecked")
-		SelectBox<String> cb = (SelectBox<String>) inputs[ID_INPUTPANEL].getField();
+		SelectBox<String> cb = (SelectBox<String>) id.getField();
 
 		if (e != null || cb.getSelectedIndex() != 0)
-			spriteWidget.setAnimation(id, speed, type);
+			spriteWidget.setAnimation(ids, speedStr, type);
 	}
 
 	private void fillAnimations() {
 		@SuppressWarnings("unchecked")
-		SelectBox<String> cb = (SelectBox<String>) inputs[ID_INPUTPANEL].getField();
+		SelectBox<String> cb = (SelectBox<String>) id.getField();
 		cb.clearItems();
 
 		// When creating, give option to add all elements
@@ -271,7 +281,7 @@ public class EditAnimationDialog extends EditElementDialog {
 
 	private void addSources() {
 		@SuppressWarnings("unchecked")
-		SelectBox<String> cb = (SelectBox<String>) inputs[SOURCE_INPUTPANEL].getField();
+		SelectBox<String> cb = (SelectBox<String>) source.getField();
 		String[] src = getSources();
 		cb.getItems().clear();
 
@@ -286,19 +296,19 @@ public class EditAnimationDialog extends EditElementDialog {
 
 	private String[] getSources() {
 		String path = null;
-		String renderer = parent.getAttribute(XMLConstants.RENDERER_ATTR);
+		ActorRenderer renderer = parent.getRenderer();
 
-		if (renderer.equals(XMLConstants.ATLAS_VALUE)) {
+		if (renderer instanceof AtlasRenderer) {
 			path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
 					+ Ctx.project.getResDir();
 			ext = ATLAS_EXT;
-		} else if (renderer.equals(XMLConstants.S3D_VALUE)) {
+		} else if (renderer instanceof Sprite3DRenderer) {
 			path = Ctx.project.getProjectPath() + Project.SPRITE3D_PATH;
 			ext = G3DB_EXT;
-		} else if (renderer.equals(XMLConstants.SPINE_VALUE)) {
+		} else if (renderer instanceof SpineRenderer) {
 			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
 			ext = SPINE_EXT;
-		} else if (renderer.equals(XMLConstants.IMAGE_VALUE)) {
+		} else if (renderer instanceof ImageRenderer) {
 			path = Ctx.project.getProjectPath() + Project.IMAGE_PATH + "/"
 					+ Ctx.project.getResDir();
 			ext = "";			
@@ -366,13 +376,12 @@ public class EditAnimationDialog extends EditElementDialog {
 	@Override
 	protected void ok() {
 		@SuppressWarnings("unchecked")
-		SelectBox<String> cb = (SelectBox<String>) inputs[ID_INPUTPANEL].getField();
+		SelectBox<String> cb = (SelectBox<String>) id.getField();
 
 		if (e == null && cb.getSelectedIndex() == 0) {
 			for (int i = 1; i < cb.getItems().size; i++) {
 				cb.setSelectedIndex(i);
-				create();
-				fill();
+				inputsToModel(true);
 //				doc.setId(e, cb.getItems().get(i));
 				
 				if (listener != null)
@@ -383,6 +392,77 @@ public class EditAnimationDialog extends EditElementDialog {
 		} else {
 			super.ok();
 		}
+	}
+	
+	@Override
+	protected void inputsToModel(boolean create) {
+		
+		String sourceStr = source.getText();
+		
+		if(create) {		
+			ActorRenderer renderer = parent.getRenderer();		
+			
+			if (renderer instanceof SpineRenderer) {
+				e = new SpineAnimationDesc();
+				
+				if(spineAtlasExists(sourceStr)) {
+					((SpineAnimationDesc)e).atlas = null;
+					setVisible(atlas,false);
+				} else {
+					if(!atlas.isVisible()) {
+						setVisible(atlas,true);
+					}
+					
+					((SpineAnimationDesc)e).atlas = atlas.getText();
+				}
+								
+			} else if (renderer instanceof AtlasRenderer) {
+				e = new AtlasAnimationDesc();
+			} else {
+				e = new AnimationDesc();
+			}
+		}
+		
+		e.id = id.getText();
+		e.sound = sound.getText();
+		e.source = sourceStr;
+		e.count = Integer.parseInt(count.getText());
+		e.preload = Boolean.parseBoolean(preload.getText());
+		e.disposeWhenPlayed =  Boolean.parseBoolean(dispose.getText());
+		e.animationType = Type.valueOf(repeat.getText());
+		e.inD = Param.parseVector2(in.getText());
+		e.outD = Param.parseVector2(out.getText());
+		e.duration = Float.parseFloat(out.getText());
+		e.delay = Float.parseFloat(out.getText());
+		
+		if(create) {
+			parent.getRenderer().getAnimations().put(e.id, e);
+		}
+
+		// TODO UNDO OP
+//		UndoOp undoOp = new UndoAddElement(doc, e);
+//		Ctx.project.getUndoStack().add(undoOp);
+		
+		Ctx.project.getSelectedChapter().setModified(e);
+	}
+
+	@Override
+	protected void modelToInputs() {			
+		source.setText(e.source);
+		
+		if(atlas.isVisible())
+			atlas.setText(((SpineAnimationDesc)e).atlas);
+		
+		id.setText(e.id);
+		repeat.setText(e.animationType.toString());
+		speed.setText(Float.toString(e.duration));
+		delay.setText(Float.toString(e.delay));
+		count.setText(Integer.toString(e.count));
+		in.setText(Param.toStringParam(e.inD));
+		out.setText(Param.toStringParam(e.outD));
+		sound.setText(e.sound);
+		preload.setText(Boolean.toString(e.preload));
+		dispose.setText(Boolean.toString(e.disposeWhenPlayed));
 	}
 
 }

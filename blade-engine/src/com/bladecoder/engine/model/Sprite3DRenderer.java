@@ -262,6 +262,19 @@ public class Sprite3DRenderer implements ActorRenderer {
 	public void setCelLightName(String name) {
 		this.celLightName = name;
 	}
+	
+
+	public float getCameraFOV() {
+		return cameraFOV;
+	}
+
+	public String getCameraName() {
+		return cameraName;
+	}
+
+	public Vector2 getSpriteSize() {
+		return new Vector2(width, height);
+	}
 
 	private PerspectiveCamera getCamera(ModelInstance modelInstance) {
 		PerspectiveCamera camera3d = new PerspectiveCamera(cameraFOV, width, height);
@@ -844,4 +857,5 @@ public class Sprite3DRenderer implements ActorRenderer {
 			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 		}
 	}
+
 }

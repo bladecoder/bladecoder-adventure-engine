@@ -24,23 +24,15 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Properties;
 import java.util.TreeSet;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.utils.I18NUtils;
 
@@ -52,7 +44,6 @@ public abstract class BaseDocument extends PropertyChange {
 
 	public static final char I18NPREFIX = '@';
 
-	Document doc;
 	private String filename;
 	protected String modelPath;
 
@@ -170,68 +161,30 @@ public abstract class BaseDocument extends PropertyChange {
 		modelPath = p;
 	}
 
-	public String getRootAttr(String attr) {
-		return doc.getDocumentElement().getAttribute(attr);
-	}
-
-	public String getElementAttr(String tag, String attr) {
-		NodeList nl = doc.getDocumentElement().getElementsByTagName(tag);
-
-		if (nl.getLength() == 0)
-			return "";
-		else
-			return ((Element) nl.item(0)).getAttribute(attr);
-	}
-
-	public void setElementAttr(String tag, String attr, String value) {
-		NodeList nl = doc.getDocumentElement().getElementsByTagName(tag);
-
-		Element e = null;
-
-		if (nl.getLength() == 0) {
-			e = doc.createElement(tag);
-
-			doc.getDocumentElement().appendChild(e);
-		} else {
-			e = (Element) nl.item(0);
-		}
-
-		e.setAttribute(attr, value);
-		modified = true;
-	}
-
 	public void setModified() {
 		modified = true;
-		firePropertyChange(DOCUMENT_CHANGED, null, doc.getDocumentElement());
+		firePropertyChange(DOCUMENT_CHANGED, null, null);
 	}
 
-	public Element getRootElement() {
-		return doc.getDocumentElement();
-	}
-
-	public Document getDocument() {
-		return doc;
-	}
-
-	public Element cloneNode(Element parent, Element e) {
-		Element cloned;
-
-		if (e.getOwnerDocument() != doc) {
-			cloned = (Element) doc.importNode(e, true);
-		} else {
-			cloned = (Element) e.cloneNode(true);
-		}
-
-		parent.appendChild(cloned);
-
-		if (cloned.getAttribute("id") != null && !cloned.getAttribute("id").isEmpty()) {
-			cloned.setAttribute("id", getCheckedId(cloned, cloned.getAttribute("id")));
-		}
-
-		setModified(cloned);
-
-		return cloned;
-	}
+//	public Element cloneNode(Element parent, Element e) {
+//		Element cloned;
+//
+//		if (e.getOwnerDocument() != doc) {
+//			cloned = (Element) doc.importNode(e, true);
+//		} else {
+//			cloned = (Element) e.cloneNode(true);
+//		}
+//
+//		parent.appendChild(cloned);
+//
+//		if (cloned.getAttribute("id") != null && !cloned.getAttribute("id").isEmpty()) {
+//			cloned.setAttribute("id", getCheckedId(cloned, cloned.getAttribute("id")));
+//		}
+//
+//		setModified(cloned);
+//
+//		return cloned;
+//	}
 
 	public void setModified(Object e) {
 		setModified(e, e);
@@ -248,119 +201,7 @@ public abstract class BaseDocument extends PropertyChange {
 		firePropertyChange(property, null, e);
 	}
 
-	public String getRootAttr(Element e, String a) {
-		return e.getAttribute(a);
-	}
 
-	public void setRootAttr(Element e, String attr, String value) {
-		String old = e.getAttribute(attr);
-
-		if (value != null && !value.isEmpty())
-			e.setAttribute(attr, value);
-		else
-			e.removeAttribute(attr);
-
-		modified = true;
-		firePropertyChange(attr, old, e);
-	}
-
-	public void setRootAttr(String attr, String value) {
-		String old = getRootAttr(getRootElement(), attr);
-
-		if (value != null && !value.isEmpty())
-			getRootElement().setAttribute(attr, value);
-		else
-			getRootElement().removeAttribute(attr);
-
-		modified = true;
-		firePropertyChange(attr, old, getRootElement());
-	}
-
-	public void deleteElement(Element e) {
-		e.getParentNode().removeChild(e);
-
-		modified = true;
-		firePropertyChange(NOTIFY_ELEMENT_DELETED, e);
-	}
-
-	public Element createVerb(Element e, String id, String state, String target) {
-		Element ev = doc.createElement("verb");
-		ev.setAttribute("id", id);
-		if (state != null && !state.isEmpty())
-			ev.setAttribute("state", state);
-		if (target != null && !target.isEmpty())
-			ev.setAttribute("target", target);
-
-		e.appendChild(ev);
-
-		modified = true;
-		firePropertyChange("verb", null, e);
-
-		return ev;
-	}
-
-	public Element createAction(Element verb, String action, String actor, HashMap<String, String> params) {
-		Element e = doc.createElement(action);
-		if (actor != null && !actor.isEmpty())
-			e.setAttribute("actor", actor);
-
-		if (params != null) {
-			for (String k : params.keySet()) {
-				String v = params.get(k);
-				e.setAttribute(k, v);
-			}
-		}
-
-		verb.appendChild(e);
-
-		modified = true;
-		firePropertyChange("action", null, e);
-
-		return e;
-	}
-
-	public String getType(Element e) {
-		return e.getAttribute(XMLConstants.TYPE_ATTR);
-	}
-	
-	public String getRenderer(Element e) {
-		return e.getAttribute(XMLConstants.RENDERER_ATTR);
-	}
-
-	public NodeList getVerbs(Element e) {
-		// return e.getElementsByTagName("verb");
-
-		XPathFactory xpathFactory = XPathFactory.newInstance();
-		XPath xpath = xpathFactory.newXPath();
-
-		try {
-			return (NodeList) xpath.evaluate("./verb", e, XPathConstants.NODESET);
-		} catch (XPathExpressionException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
-		}
-
-		return null;
-	}
-
-	public NodeList getChildrenByTag(Element e, String tag) {
-
-		XPathFactory xpathFactory = XPathFactory.newInstance();
-		XPath xpath = xpathFactory.newXPath();
-
-		try {
-			return (NodeList) xpath.evaluate("./" + tag, e, XPathConstants.NODESET);
-		} catch (XPathExpressionException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
-		}
-
-		return null;
-	}
-
-	public Element getElement() {
-		return doc.getDocumentElement();
-	}
 
 	/**
 	 * Sets the element id avoiding duplicated ids
@@ -368,65 +209,37 @@ public abstract class BaseDocument extends PropertyChange {
 	 * @param e
 	 * @param id
 	 */
-	public void setId(Element e, String id) {
-		String idChecked = getCheckedId(e, id);
-
-		setRootAttr(e, "id", idChecked);
-	}
-
-	public String getCheckedId(Element e, String id) {
-		String idChecked = id;
-
-		if (e.getParentNode() instanceof Element) {
-
-			NodeList nl = ((Element) e.getParentNode()).getElementsByTagName(e.getTagName());
-			boolean checked = false;
-
-			int i = 1;
-
-			while (!checked) {
-				checked = true;
-
-				for (int j = 0; j < nl.getLength(); j++) {
-					Element e2 = (Element) nl.item(j);
-					if (e2.getAttribute("id").equals(idChecked) && e != e2) {
-						i++;
-						idChecked = id + i;
-						checked = false;
-						break;
-					}
-				}
-			}
-		}
-
-		return idChecked;
-	}
-
-	public String getId(Element e) {
-		return e.getAttribute("id");
-	}
-
-	public Element createElement(Element parent, String type) {
-		Element es = doc.createElement(type);
-		parent.appendChild(es);
-
-		return es;
-	}
-	
-	public int indexOf(Element parent, Element e) {
-		int idx = -1;
-
-		NodeList childNodes = parent.getChildNodes();
-
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			if (childNodes.item(i) instanceof Element)
-				idx++;
-
-			if (e == childNodes.item(i)) {
-				break;
-			}
-		}
-
-		return idx;
-	}
+//	public void setId(Element e, String id) {
+//		String idChecked = getCheckedId(e, id);
+//
+//		setRootAttr(e, "id", idChecked);
+//	}
+//
+//	public String getCheckedId(Element e, String id) {
+//		String idChecked = id;
+//
+//		if (e.getParentNode() instanceof Element) {
+//
+//			NodeList nl = ((Element) e.getParentNode()).getElementsByTagName(e.getTagName());
+//			boolean checked = false;
+//
+//			int i = 1;
+//
+//			while (!checked) {
+//				checked = true;
+//
+//				for (int j = 0; j < nl.getLength(); j++) {
+//					Element e2 = (Element) nl.item(j);
+//					if (e2.getAttribute("id").equals(idChecked) && e != e2) {
+//						i++;
+//						idChecked = id + i;
+//						checked = false;
+//						break;
+//					}
+//				}
+//			}
+//		}
+//
+//		return idChecked;
+//	}
 }

@@ -29,14 +29,18 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.model.Dialog;
+import com.bladecoder.engine.model.DialogOption;
+import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
+import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.BaseDocument;
-import com.bladecoder.engineeditor.ui.components.EditElementDialog;
+import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.I18NUtils;
 
-public class EditActionDialog extends EditElementDialog {
+public class EditActionDialog extends EditModelDialog<Verb, Action> {
 	private static final String CUSTOM_ACTION_STR = "CUSTOM ACTION";
 
 	private static final String CUSTOM_INFO = "Custom action definition";
@@ -47,7 +51,7 @@ public class EditActionDialog extends EditElementDialog {
 	private InputPanel parameters[] = new InputPanel[0];
 
 	@SuppressWarnings("unchecked")
-	public EditActionDialog(Skin skin, BaseDocument doc, Element parent, Element e) {
+	public EditActionDialog(Skin skin, Verb parent, Action e) {
 		super(skin);
 
 		String[] actions = ActionFactory.getActionList();
@@ -77,33 +81,33 @@ public class EditActionDialog extends EditElementDialog {
 			}
 		});
 
-		if (e != null) {
-			classPanel.setText(e.getAttribute("class"));
+//		if (e != null) {
+//			classPanel.setText(e.getAttribute("class"));
+//
+//			if (!e.getAttribute("action_name").isEmpty()) {
+//				actionPanel.setText(e.getAttribute("action_name"));
+//			}
+//
+//			if (!e.getAttribute("class").isEmpty()) {
+//				actionPanel.setText(CUSTOM_ACTION_STR);
+//			}
+//
+//		}
 
-			if (!e.getAttribute("action_name").isEmpty()) {
-				actionPanel.setText(e.getAttribute("action_name"));
-			}
-
-			if (!e.getAttribute("class").isEmpty()) {
-				actionPanel.setText(CUSTOM_ACTION_STR);
-			}
-
-		}
-
-		init(parameters, getAttrs(), doc, parent, "action", e);
+		init(parent, e, parameters);
 
 		setAction();
 
-		if (e != null) {
-			for (int pos = 0; pos < a.length; pos++) {
-				InputPanel input = i[pos];
-				if (I18NUtils.mustTraslateAttr(a[pos])) {
-					input.setText(doc.getTranslation(e.getAttribute(a[pos])));
-				} else {
-					input.setText(e.getAttribute(a[pos]));
-				}
-			}
-		}
+//		if (e != null) {
+//			for (int pos = 0; pos < a.length; pos++) {
+//				InputPanel input = i[pos];
+//				if (I18NUtils.mustTraslateAttr(a[pos])) {
+//					input.setText(doc.getTranslation(e.getAttribute(a[pos])));
+//				} else {
+//					input.setText(e.getAttribute(a[pos]));
+//				}
+//			}
+//		}
 	}
 
 	private String[] getAttrs() {
@@ -157,33 +161,66 @@ public class EditActionDialog extends EditElementDialog {
 				}
 			}
 
-			i = parameters;
-			a = getAttrs();
+//			i = parameters;
+//			a = getAttrs();
 		} else {
 			setInfo(CUSTOM_INFO);
-			i = new InputPanel[0];
-			a = new String[0];
+//			i = new InputPanel[0];
+//			a = new String[0];
 		}
 
 		// ((ScrollPane)(getContentTable().getCells().get(1).getActor())).setWidget(getCenterPanel());
 	}
+	
+	@Override
+	protected void inputsToModel(boolean create) {
+		
+//		if(create) {
+//			e = new DialogOption();
+//		}
+//		
+//		e.setText(text.getText());
+//		e.setResponseText(responseText.getText());
+//		e.setVerbId(verb.getText());
+//		e.setNext(next.getText());
+//		e.setVisible(Boolean.parseBoolean(visible.getText()));
+//		e.setOnce(Boolean.parseBoolean(once.getText()));
+//		
+//		if(create) {
+//			parent.addOption(e);
+//		}
+//
+//		// TODO UNDO OP
+////		UndoOp undoOp = new UndoAddElement(doc, e);
+////		Ctx.project.getUndoStack().add(undoOp);
+//		
+//		Ctx.project.getSelectedChapter().setModified(e);
+//		
+//		
+//		// Remove previous params
+//		while (e.getAttributes().getLength() > 0) {
+//			e.removeAttribute(e.getAttributes().item(0).getNodeName());
+//		}
+//
+//		String id = actionPanel.getText();
+//
+//		if (id.equals(CUSTOM_ACTION_STR)) {
+//			e.setAttribute("class", classPanel.getText());
+//		} else {
+//			e.setAttribute("action_name", id);
+//		}
+//
+//		super.fill();
+	}
 
 	@Override
-	protected void fill() {
-
-		// Remove previous params
-		while (e.getAttributes().getLength() > 0) {
-			e.removeAttribute(e.getAttributes().item(0).getNodeName());
-		}
-
-		String id = actionPanel.getText();
-
-		if (id.equals(CUSTOM_ACTION_STR)) {
-			e.setAttribute("class", classPanel.getText());
-		} else {
-			e.setAttribute("action_name", id);
-		}
-
-		super.fill();
-	}
+	protected void modelToInputs() {
+//		text.setText(e.getText());
+//		responseText.setText(e.getResponseText());
+//		verb.setText(e.getVerbId());
+//		next.setText(e.getNext());
+//		
+//		visible.setText(Boolean.toString(e.isVisible()));
+//		once.setText(Boolean.toString(e.isOnce()));
+	}		
 }
