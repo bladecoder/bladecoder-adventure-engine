@@ -27,12 +27,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.utils.I18NUtils;
 
@@ -52,7 +46,7 @@ public abstract class BaseDocument extends PropertyChange {
 	protected boolean modified = false;
 
 	@SuppressWarnings("serial")
-	public void create() throws ParserConfigurationException {
+	public void create() {
 
 		// To save in alphabetical order we override the keys method
 		i18n = new Properties() {
@@ -123,14 +117,14 @@ public abstract class BaseDocument extends PropertyChange {
 		}
 	}
 
-	public void load() throws ParserConfigurationException, SAXException, IOException {
+	public void load() {
 
 		loadI18N();
 
 		modified = false;
 	}
 
-	public void save() throws TransformerException, FileNotFoundException {
+	public void save() throws FileNotFoundException {
 
 		if (!modified)
 			return;
@@ -196,7 +190,7 @@ public abstract class BaseDocument extends PropertyChange {
 		firePropertyChange(evt);
 	}
 
-	public void setModified(String property, Element e) {
+	public void setModified(String property, Object e) {
 		modified = true;
 		firePropertyChange(property, null, e);
 	}

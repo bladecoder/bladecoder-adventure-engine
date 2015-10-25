@@ -54,7 +54,7 @@ public class WorldDocument extends  BaseDocument {
 	}
 
 	@Override
-	public void create() throws ParserConfigurationException {
+	public void create() {
 		super.create();
 		
 		setDimensions(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -106,7 +106,7 @@ public class WorldDocument extends  BaseDocument {
 		firePropertyChange();
 	}
 	
-	public ChapterDocument loadChapter(String id) throws ParserConfigurationException, SAXException, IOException {
+	public ChapterDocument loadChapter(String id) {
 			ChapterDocument chapter = new ChapterDocument(modelPath, id);
 			chapter.load();
 			chapter.addPropertyChangeListener(documentModifiedListener);
@@ -186,7 +186,7 @@ public class WorldDocument extends  BaseDocument {
 	}
 	
 	@Override
-	public void load() throws ParserConfigurationException, SAXException, IOException {
+	public void load() {
 		super.load();
 		
 		EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);

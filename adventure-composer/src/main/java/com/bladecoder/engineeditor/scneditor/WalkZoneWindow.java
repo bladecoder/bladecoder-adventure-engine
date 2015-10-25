@@ -26,7 +26,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
-import com.bladecoder.engineeditor.Ctx;
 
 public class WalkZoneWindow extends Container<Table> {
 	private static final String DELETE_WALK_ZONE_TEXT = "Delete Walk Zone";

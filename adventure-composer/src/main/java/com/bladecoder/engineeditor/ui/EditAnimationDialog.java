@@ -40,7 +40,6 @@ import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.scneditor.AnimationWidget;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
@@ -49,6 +48,9 @@ import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationDesc> {
+	
+	public static final String ANIMATION_TYPES[] = { XMLConstants.NO_REPEAT_VALUE, XMLConstants.REPEAT_VALUE,
+			XMLConstants.YOYO_VALUE, XMLConstants.REVERSE_VALUE };
 
 	public static final String INFO = "Define sprites and animations";
 	
@@ -89,8 +91,8 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		id = InputPanelFactory.createInputPanel(skin, "ID",
 				"Select the id of the animation", new String[0], true);
 		repeat = InputPanelFactory.createInputPanel(skin, "Animation type",
-				"Select the type of the animation",
-				ChapterDocument.ANIMATION_TYPES, true);
+				"Select the type of the animation", Param.Type.OPTION, true, "NO_REPEAT", Tween.Type.class.getEnumConstants());
+		
 		speed = InputPanelFactory.createInputPanel(skin, "Speed",
 				"Select the speed of the animation in secods",
 				Param.Type.FLOAT, true, "1.0");

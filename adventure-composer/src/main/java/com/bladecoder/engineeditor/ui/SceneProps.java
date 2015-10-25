@@ -22,7 +22,6 @@ import java.beans.PropertyChangeListener;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.components.PropertyTable;
 

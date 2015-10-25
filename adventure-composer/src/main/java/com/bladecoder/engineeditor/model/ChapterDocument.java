@@ -17,28 +17,13 @@ package com.bladecoder.engineeditor.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.xml.sax.SAXException;
 
 import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.World;
 
 public class ChapterDocument extends BaseDocument {
-
-	public static final String ACTOR_TYPES[] = { XMLConstants.BACKGROUND_VALUE, XMLConstants.SPRITE_VALUE,
-			XMLConstants.CHARACTER_VALUE, XMLConstants.OBSTACLE_VALUE, XMLConstants.ANCHOR_VALUE };
-
-	public static final String ACTOR_RENDERERS[] = { XMLConstants.ATLAS_VALUE, XMLConstants.SPINE_VALUE,
-			XMLConstants.S3D_VALUE, XMLConstants.IMAGE_VALUE };
-
-	public static final String ANIMATION_TYPES[] = { XMLConstants.NO_REPEAT_VALUE, XMLConstants.REPEAT_VALUE,
-			XMLConstants.YOYO_VALUE, XMLConstants.REVERSE_VALUE };
 	
-	String id;
+	private String id;
 
 	public ChapterDocument(String modelPath, String id) {
 		super();
@@ -51,14 +36,14 @@ public class ChapterDocument extends BaseDocument {
 		setFilename(getId() + XMLConstants.CHAPTER_EXT);
 	}
 
-	public void create(String id) throws ParserConfigurationException, FileNotFoundException, TransformerException {
+	public void create(String id) throws FileNotFoundException {
 		create();
 		setId(id);
 		setFilenameFromId();
 		save();
 	}
 
-	public void rename(String newId) throws FileNotFoundException, TransformerException {
+	public void rename(String newId) throws FileNotFoundException {
 
 		deleteFiles();
 
@@ -91,7 +76,7 @@ public class ChapterDocument extends BaseDocument {
 	}
 	
 	@Override
-	public void load() throws ParserConfigurationException, SAXException, IOException {
+	public void load() {
 		super.load();	
 		World.getInstance().loadChapter(id);
 	}

@@ -25,11 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.xml.sax.SAXException;
-
 import com.badlogic.gdx.files.FileHandle;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
@@ -208,13 +203,12 @@ public class Project extends PropertyChange {
 		return getTitle().replace(" ", "").replace("'", "");
 	}
 
-	public void createProject(String projectDir, String name, String pkg, String sdkLocation, boolean spinePlugin) throws ParserConfigurationException,
-			TransformerException, IOException, SAXException {
+	public void createProject(String projectDir, String name, String pkg, String sdkLocation, boolean spinePlugin) throws IOException {
 		createLibGdxProject(projectDir, name, pkg, "BladeEngine", sdkLocation, spinePlugin);
 		
 		projectFile = new File(projectDir + "/" + name);
 		
-//		loadProject(projectFile);
+		loadProject(projectFile);
 	}
 	
 	private void createLibGdxProject(String projectDir, String name, String pkg, String mainClass, String sdkLocation, boolean spinePlugin) throws IOException {
@@ -247,7 +241,7 @@ public class Project extends PropertyChange {
 			sdk, null);
 	}
 
-	public void saveProject() throws IOException, TransformerException {
+	public void saveProject() throws IOException {
 		if (projectFile != null) {
 			World.getInstance().saveWorldDesc(new FileHandle(new File(projectFile.getAbsolutePath() + MODEL_PATH + "/world.json")));
 			selectedChapter.save();
@@ -260,8 +254,7 @@ public class Project extends PropertyChange {
 		this.projectFile = null;
 	}
 
-	public void loadProject(File projectFile) throws IOException, ParserConfigurationException,
-			SAXException {
+	public void loadProject(File projectFile) throws IOException {
 		
 		File oldProjectFile = this.projectFile;
 		this.projectFile = projectFile;
@@ -343,17 +336,9 @@ public class Project extends PropertyChange {
 		return "1";
 	}
 
-	public void loadChapter(String selChapter) throws ParserConfigurationException, SAXException, IOException {
+	public void loadChapter(String selChapter) throws IOException {
 		undoStack.clear();
 		
 		selectedChapter = world.loadChapter(selChapter);
-		
-//		if(selectedChapter != null) {
-//			NodeList scenes = selectedChapter.getScenes();
-//			if(scenes.getLength()>0)
-//				setSelectedScene((Element)scenes.item(0));
-//			else
-//				setSelectedScene(null);
-//		}
 	}
 }

@@ -17,8 +17,6 @@ package com.bladecoder.engineeditor.scneditor;
 
 import java.io.IOException;
 
-import javax.xml.transform.TransformerException;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
@@ -379,7 +377,7 @@ public class ScnWidgetInputListener extends ClickListener {
 			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
 				try {
 					Ctx.project.saveProject();
-				} catch (TransformerException | IOException e1) {
+				} catch (IOException e1) {
 					String msg = "Something went wrong while saving the actor.\n\n"
 							+ e1.getClass().getSimpleName()
 							+ " - "

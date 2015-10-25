@@ -141,8 +141,40 @@ public class Scene implements Serializable, AssetConsumer {
 	public void playMusic() {
 		if (music != null && !music.isPlaying()) {
 			music.play();
-			music.setLooping(loopMusic);
+			music.setLooping(isLoopMusic());
 		}
+	}
+
+	public float getRepeatMusicDelay() {
+		return repeatMusicDelay;
+	}
+
+	public boolean isLoopMusic() {
+		return loopMusic;
+	}
+
+	public void setLoopMusic(boolean loopMusic) {
+		this.loopMusic = loopMusic;
+	}
+
+	public float getCurrentMusicDelay() {
+		return currentMusicDelay;
+	}
+
+	public void setCurrentMusicDelay(float currentMusicDelay) {
+		this.currentMusicDelay = currentMusicDelay;
+	}
+
+	public float getInitialMusicDelay() {
+		return initialMusicDelay;
+	}
+
+	public void setInitialMusicDelay(float initialMusicDelay) {
+		this.initialMusicDelay = initialMusicDelay;
+	}
+
+	public void setRepeatMusicDelay(float repeatMusicDelay) {
+		this.repeatMusicDelay = repeatMusicDelay;
 	}
 
 	public void pauseMusic() {
@@ -174,10 +206,10 @@ public class Scene implements Serializable, AssetConsumer {
 	}
 
 	public void setMusic(String filename, boolean loop, float initialDelay, float repeatDelay) {
-		loopMusic = loop;
+		setLoopMusic(loop);
 		musicFilename = filename;
-		initialMusicDelay = initialDelay;
-		repeatMusicDelay = repeatDelay;
+		setInitialMusicDelay(initialDelay);
+		setRepeatMusicDelay(repeatDelay);
 	}
 
 	public VerbManager getVerbManager() {
@@ -202,17 +234,17 @@ public class Scene implements Serializable, AssetConsumer {
 		if (music != null && !music.isPlaying()) {
 			boolean initialTime = false;
 
-			if (currentMusicDelay <= initialMusicDelay)
+			if (getCurrentMusicDelay() <= getInitialMusicDelay())
 				initialTime = true;
 
-			currentMusicDelay += delta;
+			setCurrentMusicDelay(getCurrentMusicDelay() + delta);
 
 			if (initialTime) {
-				if (currentMusicDelay > initialMusicDelay)
+				if (getCurrentMusicDelay() > getInitialMusicDelay())
 					playMusic();
 			} else {
-				if (repeatMusicDelay >= 0 && currentMusicDelay > repeatMusicDelay + initialMusicDelay) {
-					currentMusicDelay = initialMusicDelay;
+				if (getRepeatMusicDelay() >= 0 && getCurrentMusicDelay() > getRepeatMusicDelay() + getInitialMusicDelay()) {
+					setCurrentMusicDelay(getInitialMusicDelay());
 					playMusic();
 				}
 			}

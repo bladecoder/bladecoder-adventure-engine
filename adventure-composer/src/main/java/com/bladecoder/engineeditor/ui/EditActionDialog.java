@@ -17,8 +17,6 @@ package com.bladecoder.engineeditor.ui;
 
 import java.util.Arrays;
 
-import org.w3c.dom.Element;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
@@ -29,16 +27,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.model.Dialog;
-import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
-import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.BaseDocument;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public class EditActionDialog extends EditModelDialog<Verb, Action> {
 	private static final String CUSTOM_ACTION_STR = "CUSTOM ACTION";

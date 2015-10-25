@@ -18,8 +18,6 @@ package com.bladecoder.engineeditor;
 import java.io.File;
 import java.io.IOException;
 
-import javax.xml.transform.TransformerException;
-
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -181,7 +179,7 @@ public class Editor implements ApplicationListener {
 					if (((Boolean) object).booleanValue()) {
 						try {
 							Ctx.project.saveProject();
-						} catch (TransformerException | IOException e1) {
+						} catch (IOException e1) {
 							String msg = "Something went wrong while saving the actor.\n\n"
 									+ e1.getClass().getSimpleName()
 									+ " - "

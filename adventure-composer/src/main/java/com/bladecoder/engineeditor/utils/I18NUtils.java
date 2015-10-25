@@ -16,7 +16,6 @@
 package com.bladecoder.engineeditor.utils;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;

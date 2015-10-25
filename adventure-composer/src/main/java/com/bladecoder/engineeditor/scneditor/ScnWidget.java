@@ -19,9 +19,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
@@ -193,43 +190,43 @@ public class ScnWidget extends Widget {
 				} else if (e.getPropertyName().equals("actor")) {
 					createAndSelectActor((BaseActor) e.getNewValue());
 				} else if (e.getPropertyName().equals("layer")) {
-					Element el = (Element) e.getNewValue();
-					String name = el.getAttribute("id");
-					NodeList layersNodes = ((Element) el.getParentNode()).getElementsByTagName("layer");
-					boolean visible = Boolean.parseBoolean(el.getAttribute("visible"));
-					boolean dynamic = Boolean.parseBoolean(el.getAttribute("dynamic"));
-					// Element previousSibling =
-					// (Element)el.getPreviousSibling();
-
-					SceneLayer layer = scn.getLayer(name);
-
-					if (layer == null && layersNodes.getLength() > scn.getLayers().size()) {
-						// NEW LAYER CREATED
-						layer = new SceneLayer();
-						layer.setName(name);
-						layer.setVisible(visible);
-						layer.setDynamic(dynamic);
-
-						scn.addLayer(layer);
-					} else if (layer.isDynamic() != dynamic) {
-						layer.setDynamic(dynamic);
-					} else if (layer.isVisible() != visible) {
-						layer.setVisible(visible);
-					} else {
-						// TODO Handle order and id change
-						setSelectedScene(Ctx.project.getSelectedScene());
-						setSelectedActor(Ctx.project.getSelectedActor());
-					}
+//					Element el = (Element) e.getNewValue();
+//					String name = el.getAttribute("id");
+//					NodeList layersNodes = ((Element) el.getParentNode()).getElementsByTagName("layer");
+//					boolean visible = Boolean.parseBoolean(el.getAttribute("visible"));
+//					boolean dynamic = Boolean.parseBoolean(el.getAttribute("dynamic"));
+//					// Element previousSibling =
+//					// (Element)el.getPreviousSibling();
+//
+//					SceneLayer layer = scn.getLayer(name);
+//
+//					if (layer == null && layersNodes.getLength() > scn.getLayers().size()) {
+//						// NEW LAYER CREATED
+//						layer = new SceneLayer();
+//						layer.setName(name);
+//						layer.setVisible(visible);
+//						layer.setDynamic(dynamic);
+//
+//						scn.addLayer(layer);
+//					} else if (layer.isDynamic() != dynamic) {
+//						layer.setDynamic(dynamic);
+//					} else if (layer.isVisible() != visible) {
+//						layer.setVisible(visible);
+//					} else {
+//						// TODO Handle order and id change
+//						setSelectedScene(Ctx.project.getSelectedScene());
+//						setSelectedActor(Ctx.project.getSelectedActor());
+//					}
 
 				} else if (e.getPropertyName().equals(BaseDocument.NOTIFY_ELEMENT_DELETED)) {
-					if (((Element) e.getNewValue()).getTagName().equals("actor"))
-						removeActor(doc, (Element) e.getNewValue());
-					else if (((Element) e.getNewValue()).getTagName().equals("animation"))
-						setSelectedFA(null);
-					else if (((Element) e.getNewValue()).getTagName().equals("layer")) {
-						setSelectedScene(Ctx.project.getSelectedScene());
-						setSelectedActor(Ctx.project.getSelectedActor());
-					}
+//					if (((Element) e.getNewValue()).getTagName().equals("actor"))
+//						removeActor(doc, (Element) e.getNewValue());
+//					else if (((Element) e.getNewValue()).getTagName().equals("animation"))
+//						setSelectedFA(null);
+//					else if (((Element) e.getNewValue()).getTagName().equals("layer")) {
+//						setSelectedScene(Ctx.project.getSelectedScene());
+//						setSelectedActor(Ctx.project.getSelectedActor());
+//					}
 				}
 			}
 		});
@@ -712,7 +709,7 @@ public class ScnWidget extends Widget {
 		return a;
 	}
 
-	private void removeActor(ChapterDocument doc, Element e) {
+	private void removeActor(ChapterDocument doc, BaseActor e) {
 //		BaseActor a = scn.getActor(doc.getId(e), false);
 //		if (a != null) {
 //			scn.removeActor(a);

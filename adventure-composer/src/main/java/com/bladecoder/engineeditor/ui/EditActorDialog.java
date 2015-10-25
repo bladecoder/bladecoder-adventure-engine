@@ -35,13 +35,18 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 
 public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
+	
+	public static final String ACTOR_TYPES[] = { XMLConstants.BACKGROUND_VALUE, XMLConstants.SPRITE_VALUE,
+			XMLConstants.CHARACTER_VALUE, XMLConstants.OBSTACLE_VALUE, XMLConstants.ANCHOR_VALUE };
+
+	public static final String ACTOR_RENDERERS[] = { XMLConstants.ATLAS_VALUE, XMLConstants.SPINE_VALUE,
+			XMLConstants.S3D_VALUE, XMLConstants.IMAGE_VALUE };
 
 	public static final String TYPES_INFO[] = {
 			"Background actors don't have sprites or animations. The are used to use objects drawed in the background",
@@ -85,7 +90,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		typePanel = InputPanelFactory.createInputPanel(skin, "Actor Type",
 				"Actors can be from different types",
-				ChapterDocument.ACTOR_TYPES, true);
+				ACTOR_TYPES, true);
 
 		id = InputPanelFactory.createInputPanel(skin, "Actor ID",
 				"IDs can not contain '.' or '_' characters.", true);
@@ -111,7 +116,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		
 		renderer = InputPanelFactory.createInputPanel(skin, "Actor Renderer",
 				"Actors can be renderer from several sources",
-				ChapterDocument.ACTOR_RENDERERS, true);
+				ACTOR_RENDERERS, true);
 
 		depthType = InputPanelFactory.createInputPanel(skin, "Depth Type",
 				"Scene fake depth for scaling", new String[] { "none",
@@ -181,14 +186,14 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		
 		hideAllInputs();
 		
-		if (!ChapterDocument.ACTOR_TYPES[i]
+		if (!ACTOR_TYPES[i]
 				.equals(XMLConstants.ANCHOR_VALUE)) {
 			setVisible(inputs[3], true);
 		}
 		
-		if (!ChapterDocument.ACTOR_TYPES[i]
+		if (!ACTOR_TYPES[i]
 				.equals(XMLConstants.OBSTACLE_VALUE) && 
-				!ChapterDocument.ACTOR_TYPES[i]
+				!ACTOR_TYPES[i]
 						.equals(XMLConstants.ANCHOR_VALUE)
 				) {
 			setVisible(inputs[2], true);			
@@ -198,16 +203,16 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			setVisible(inputs[10],true);
 		}
 
-		if (ChapterDocument.ACTOR_TYPES[i]
+		if (ACTOR_TYPES[i]
 				.equals(XMLConstants.SPRITE_VALUE) || 
-				ChapterDocument.ACTOR_TYPES[i]
+				ACTOR_TYPES[i]
 						.equals(XMLConstants.CHARACTER_VALUE)) {
 			setVisible(inputs[7],true);
 			setVisible(inputs[8],true);
 			setVisible(inputs[9],true);
 		}
 		
-		if (ChapterDocument.ACTOR_TYPES[i]
+		if (ACTOR_TYPES[i]
 						.equals(XMLConstants.CHARACTER_VALUE)) {
 			setVisible(inputs[11],true);
 			setVisible(inputs[15],true);
@@ -226,7 +231,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		setVisible(inputs[14],false);
 
 		if (renderer.isVisible() &&
-				ChapterDocument.ACTOR_RENDERERS[i]
+				ACTOR_RENDERERS[i]
 				.equals(XMLConstants.S3D_VALUE)) {
 			setVisible(inputs[12],true);
 			setVisible(inputs[13],true);

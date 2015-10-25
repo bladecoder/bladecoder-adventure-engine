@@ -21,12 +21,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -137,9 +131,7 @@ public class SceneList extends ModelList<World, Scene> {
 				if (evt.getPropertyName().equals(XMLConstants.CHAPTER_TAG)) {
 					addChapters();
 				} else if (evt.getPropertyName().equals("ELEMENT_DELETED")) {
-					Element e = (Element) evt.getNewValue();
-
-					if (e.getTagName().equals(XMLConstants.CHAPTER_TAG)) {
+					if (evt.getNewValue() instanceof World) {
 						addChapters();
 					}
 				}
@@ -158,7 +150,7 @@ public class SceneList extends ModelList<World, Scene> {
 				// Save the project when changing chapter
 				try {
 					Ctx.project.saveProject();
-				} catch (IOException | TransformerException e1) {
+				} catch (IOException e1) {
 					Ctx.msg.show(getStage(), "Error saving project", 3);
 					EditorLogger.error(e1.getMessage());
 				}
@@ -171,7 +163,7 @@ public class SceneList extends ModelList<World, Scene> {
 //					doc = Ctx.project.getSelectedChapter();
 
 					addElements(World.getInstance(), Arrays.asList((Scene[])World.getInstance().getScenes().values().toArray()));
-				} catch (ParserConfigurationException | SAXException | IOException e1) {
+				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 			}
@@ -205,28 +197,30 @@ public class SceneList extends ModelList<World, Scene> {
 
 	@Override
 	protected void delete() {
-//		int pos = list.getSelectedIndex();
-//
-//		if (pos == -1)
-//			return;
-//
-//		Element e = list.getItems().get(pos);
-//
-//		// delete init_scene attr if the scene to delete is the chapter
-//		// init_scene
-//		if (((Element) e.getParentNode()).getAttribute(XMLConstants.INIT_SCENE_ATTR)
-//				.equals(e.getAttribute(XMLConstants.ID_ATTR))) {
-//			((Element) e.getParentNode()).removeAttribute(XMLConstants.INIT_SCENE_ATTR);
-//		}
-//
-//		super.delete();
+		Scene s = removeSelected();
+		
+		parent.getScenes().remove(s.getId());
+
+		// delete init_scene attr if the scene to delete is the chapter
+		// init_scene
+		if (parent.getInitScene().equals(s.getId())) {
+			parent.setInitScene(null);
+		}
+		
+		// TODO UNDO
+//		UndoOp undoOp = new UndoDeleteElement(doc, e);
+//		Ctx.project.getUndoStack().add(undoOp);
+//		doc.deleteElement(e);
+
+// TODO TRANSLATIONS
+//		I18NUtils.putTranslationsInElement(doc, clipboard);
+		
+		Ctx.project.getSelectedChapter().setModified(s);
 	}
 
 	@Override
 	protected EditModelDialog<World, Scene> getEditElementDialogInstance(Scene e) {
-//		return new EditSceneDialog(skin, doc, parent, e);
-		
-		return null;
+		return new EditSceneDialog(skin, parent, e);
 	}
 
 	public TextureRegion getBgIcon(String atlas, String region) {
