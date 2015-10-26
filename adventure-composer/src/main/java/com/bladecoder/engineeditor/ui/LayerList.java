@@ -95,7 +95,7 @@ public class LayerList extends ModelList<Scene, SceneLayer> {
 
 		e.setVisible(!e.isVisible());
 
-		Ctx.project.getSelectedChapter().setModified(e);
+		Ctx.project.setModified();
 	}
 
 	private void up() {
@@ -117,7 +117,7 @@ public class LayerList extends ModelList<Scene, SceneLayer> {
 		upBtn.setDisabled(list.getSelectedIndex() == 0);
 		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
 
-		Ctx.project.getSelectedChapter().setModified(e);
+		Ctx.project.setModified();
 	}
 
 	private void down() {
@@ -139,7 +139,7 @@ public class LayerList extends ModelList<Scene, SceneLayer> {
 		upBtn.setDisabled(list.getSelectedIndex() == 0);
 		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
 
-		Ctx.project.getSelectedChapter().setModified(e);
+		Ctx.project.setModified();
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class LayerList extends ModelList<Scene, SceneLayer> {
 		if (e.getActors().isEmpty()) {
 			SceneLayer l = removeSelected();
 			parent.getLayers().remove(l);
-			Ctx.project.getSelectedChapter().setModified(e);
+			Ctx.project.setModified();
 		} else {
 			String msg = "The layer is not empty.";
 			Ctx.msg.show(getStage(), msg, 3);

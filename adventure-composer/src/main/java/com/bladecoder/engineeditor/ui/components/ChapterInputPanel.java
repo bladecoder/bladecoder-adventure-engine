@@ -20,6 +20,6 @@ import com.bladecoder.engineeditor.Ctx;
 
 public class ChapterInputPanel extends StringOptionsInputPanel {
 	ChapterInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
-		super(skin, title, desc, mandatory, defaultValue, Ctx.project.getWorldDocument().getChapters());
+		super(skin, title, desc, mandatory, defaultValue, Ctx.project.getChapter().getChapters());
 	}
 }

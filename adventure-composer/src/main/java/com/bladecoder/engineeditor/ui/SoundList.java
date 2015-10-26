@@ -50,7 +50,7 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 // TODO TRANSLATIONS
 //		I18NUtils.putTranslationsInElement(doc, clipboard);
 		
-		Ctx.project.getSelectedChapter().setModified(s);
+		Ctx.project.setModified();
 	}
 
 	// -------------------------------------------------------------------------

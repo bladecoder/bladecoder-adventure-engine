@@ -40,6 +40,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.bladecoder.engine.i18n.I18N;
+
 /**
  * Extract all strings from chapter to the I18N properties file.
  * 
@@ -109,7 +111,7 @@ public class ExtractStrings {
 				String key2 = key + "." + attr;
 				String value = e.getAttribute(attr);
 				
-				if(e.getAttribute(attr).charAt(0) != '@') {
+				if(e.getAttribute(attr).charAt(0) != I18N.PREFIX) {
 					prop.put(key2, value);
 					
 					for(int i = 0; i < locales.length; i++) {

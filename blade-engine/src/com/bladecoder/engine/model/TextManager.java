@@ -55,7 +55,7 @@ public class TextManager implements Serializable {
 	public void addText(String str, float x, float y, boolean quee, Text.Type type,
 			Color color, String font, ActionCallback cb) {
 		
-		if(str.charAt(0) == '@')
+		if(str.charAt(0) == I18N.PREFIX)
 			str = I18N.getString(str.substring(1));
 		
 		String s = str.replace("\\n", "\n");

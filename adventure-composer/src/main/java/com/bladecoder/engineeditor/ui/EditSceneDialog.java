@@ -270,7 +270,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 //		UndoOp undoOp = new UndoAddElement(doc, e);
 //		Ctx.project.getUndoStack().add(undoOp);
 		
-		Ctx.project.getSelectedChapter().setModified(e);
+		Ctx.project.setModified();
 	}
 
 	@Override

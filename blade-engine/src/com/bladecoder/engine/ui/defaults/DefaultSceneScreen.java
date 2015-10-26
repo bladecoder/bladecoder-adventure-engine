@@ -636,7 +636,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			} else {
 				BitmapFont font = getUI().getSkin().getFont("desc");
 				String desc = ia.getDesc();
-				if (desc.charAt(0) == '@')
+				if (desc.charAt(0) == I18N.PREFIX)
 					desc = I18N.getString(desc.substring(1));
 
 				textLayout.setText(font, desc);

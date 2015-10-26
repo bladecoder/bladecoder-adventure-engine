@@ -35,11 +35,11 @@ import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.I18NHandler;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.utils.EditorLogger;
-import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public class ActionList extends ModelList<Verb, Action> {
 	// TODO Action cache for getting names
@@ -314,7 +314,7 @@ public class ActionList extends ModelList<Verb, Action> {
 	// TODO TRANSLATIONS
 //			I18NUtils.putTranslationsInElement(doc, clipboard);
 		
-		Ctx.project.getSelectedChapter().setModified(action);
+		Ctx.project.setModified();
 		
 		deleteControlAction(pos, e);
 	}
@@ -501,7 +501,8 @@ public class ActionList extends ModelList<Verb, Action> {
 					if (o == null) continue;
 					String v = o.toString();
 					
-					sb.append(name).append(": ").append(I18NUtils.translate(v)).append(' ');
+					// TODO Check SCOPE
+					sb.append(name).append(": ").append(Ctx.project.translate(v)).append(' ');
 					f.setAccessible(accessible);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.error(e.getMessage());

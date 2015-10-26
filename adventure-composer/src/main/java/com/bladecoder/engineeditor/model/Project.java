@@ -16,7 +16,6 @@
 package com.bladecoder.engineeditor.model;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,10 +25,12 @@ import java.util.List;
 import java.util.Properties;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
+import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.setup.Dependency;
 import com.bladecoder.engineeditor.setup.DependencyBank;
@@ -47,6 +48,9 @@ public class Project extends PropertyChange {
 	public static final String NOTIFY_ANIM_SELECTED = "ANIM_SELECTED";
 	public static final String NOTIFY_VERB_SELECTED = "VERB_SELECTED";
 	public static final String NOTIFY_PROJECT_LOADED = "PROJECT_LOADED";
+	
+	public static final Object NOTIFY_ELEMENT_DELETED = "ELEMENT_DELETED";
+	public static final Object NOTIFY_ELEMENT_CREATED = "ELEMENT_CREATED";
 
 	public static final String ASSETS_PATH = "/android/assets";
 	public static final String MODEL_PATH = ASSETS_PATH + "/model";
@@ -58,6 +62,10 @@ public class Project extends PropertyChange {
 	public static final String SPRITE3D_PATH = ASSETS_PATH + "/3d";
 	public static final String SPINE_PATH = ASSETS_PATH + "/spine";
 	public static final String UI_PATH = ASSETS_PATH + "/ui";
+	
+	private static final String WORLD_FILENAME = "world.json";
+	public static final int DEFAULT_WIDTH = 1920;
+	public static final int DEFAULT_HEIGHT = 1080;
 
 	private static final String CONFIG_DIR = System.getProperty("user.home") + "/.AdventureComposer";
 	private static final String CONFIG_FILENAME = "config.properties";
@@ -71,31 +79,19 @@ public class Project extends PropertyChange {
 	private final UndoStack undoStack = new UndoStack();
 	private Properties projectConfig;
 
-	private WorldDocument world = new WorldDocument();
-	private ChapterDocument selectedChapter;
+	private I18NHandler i18n;
+	private Chapter chapter;
 	private Scene selectedScene;
 	private BaseActor selectedActor;
 	private String selectedFA;
-
-	final PropertyChangeListener modelChangeListener = new PropertyChangeListener() {
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
-		}
-
-	};
+	private boolean modified = false;
 
 	public Project() {
-		world.addPropertyChangeListener(modelChangeListener);
 		loadConfig();
 	}
 	
 	public UndoStack getUndoStack() {
 		return undoStack;
-	}
-	
-	public WorldDocument getWorldDocument() {
-		return world;
 	}
 
 	private void loadConfig() {
@@ -133,6 +129,21 @@ public class Project extends PropertyChange {
 	public Properties getProjectConfig() {
 		return projectConfig;
 	}
+	
+	
+	public I18NHandler getI18N() {
+		return i18n;
+	}
+	
+	public String translate(String key) {
+		return i18n.getTranslation(key);
+	}
+
+	public void setModified(Object source, String property, Object oldValue, Object newValue) {
+		modified = true;
+		PropertyChangeEvent evt = new PropertyChangeEvent(source, property, oldValue, newValue);
+		firePropertyChange(evt);
+	}
 
 	public void setSelectedScene(Scene scn) {
 		Scene old = null;
@@ -157,8 +168,8 @@ public class Project extends PropertyChange {
 		firePropertyChange(NOTIFY_ACTOR_SELECTED, old, selectedActor);
 	}
 	
-	public ChapterDocument getSelectedChapter() {
-		return selectedChapter;
+	public Chapter getChapter() {
+		return chapter;
 	}
 
 	public Scene getSelectedScene() {
@@ -244,7 +255,7 @@ public class Project extends PropertyChange {
 	public void saveProject() throws IOException {
 		if (projectFile != null) {
 			World.getInstance().saveWorldDesc(new FileHandle(new File(projectFile.getAbsolutePath() + MODEL_PATH + "/world.json")));
-			selectedChapter.save();
+			chapter.save();
 			
 			projectConfig.store(new FileOutputStream(projectFile.getAbsolutePath()+ "/" + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME), null);
 		}
@@ -274,8 +285,8 @@ public class Project extends PropertyChange {
 				System.exit(0);
 			}
 			
-			world.setModelPath(projectFile.getAbsolutePath() + "/" + MODEL_PATH);
-			world.load();
+			EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
+			World.getInstance().loadWorldDesc();
 			
 			loadChapter(World.getInstance().getInitChapter());
 			
@@ -339,6 +350,14 @@ public class Project extends PropertyChange {
 	public void loadChapter(String selChapter) throws IOException {
 		undoStack.clear();
 		
-		selectedChapter = world.loadChapter(selChapter);
+		chapter.load(selChapter);
+	}
+
+	public boolean isModified() {
+		return modified;
+	}
+
+	public void setModified() {
+		modified = true;
 	}
 }

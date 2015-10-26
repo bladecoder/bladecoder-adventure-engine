@@ -169,7 +169,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 		// TODO TRANSLATIONS
 		// I18NUtils.putTranslationsInElement(doc, clipboard);
 
-		Ctx.project.getSelectedChapter().setModified(a);
+		Ctx.project.setModified();
 	}
 
 	@Override
@@ -204,7 +204,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 		@Override
 		protected String getCellSubTitle(BaseActor e) {
 			if (e instanceof InteractiveActor)
-				return Ctx.project.getSelectedChapter().getTranslation(((InteractiveActor) e).getDesc());
+				return Ctx.project.translate(((InteractiveActor) e).getDesc());
 
 			return "";
 		}

@@ -47,7 +47,6 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.model.WorldDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
@@ -123,7 +122,7 @@ public class SceneList extends ModelList<World, Scene> {
 
 		chapters.addListener(chapterListener);
 
-		Ctx.project.getWorldDocument().addPropertyChangeListener(new PropertyChangeListener() {
+		Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				EditorLogger.debug(evt.getPropertyName() + " NEW:" + evt.getNewValue() + " OLD:" + evt.getOldValue());
@@ -145,7 +144,7 @@ public class SceneList extends ModelList<World, Scene> {
 		public void changed(ChangeEvent event, Actor actor) {
 			String selChapter = (String) chapters.getSelected();
 
-			if (selChapter != null && !selChapter.equals(Ctx.project.getSelectedChapter().getId())) {
+			if (selChapter != null && !selChapter.equals(Ctx.project.getChapter().getId())) {
 
 				// Save the project when changing chapter
 				try {
@@ -171,8 +170,7 @@ public class SceneList extends ModelList<World, Scene> {
 	};
 
 	public void addChapters() {
-		WorldDocument w = Ctx.project.getWorldDocument();
-		String[] nl = w.getChapters();
+		String[] nl = Ctx.project.getChapter().getChapters();
 		Array<String> array = new Array<String>();
 
 		for (int i = 0; i < nl.length; i++) {
@@ -180,7 +178,7 @@ public class SceneList extends ModelList<World, Scene> {
 		}
 
 		chapters.setItems(array);
-		chapters.setSelected(Ctx.project.getSelectedChapter().getId());
+		chapters.setSelected(Ctx.project.getChapter().getId());
 		invalidate();
 	}
 
@@ -215,7 +213,7 @@ public class SceneList extends ModelList<World, Scene> {
 // TODO TRANSLATIONS
 //		I18NUtils.putTranslationsInElement(doc, clipboard);
 		
-		Ctx.project.getSelectedChapter().setModified(s);
+		Ctx.project.setModified();
 	}
 
 	@Override

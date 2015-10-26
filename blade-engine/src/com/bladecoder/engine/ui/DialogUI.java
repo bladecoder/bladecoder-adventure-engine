@@ -73,7 +73,7 @@ public class DialogUI extends ScrollPane {
 		for (DialogOption o : options) {
 			String str = o.getText();
 
-			if (str.charAt(0) == '@')
+			if (str.charAt(0) == I18N.PREFIX)
 				str = I18N.getString(str.substring(1));
 
 			TextButton ob = new TextButton(str, style.textButtonStyle);

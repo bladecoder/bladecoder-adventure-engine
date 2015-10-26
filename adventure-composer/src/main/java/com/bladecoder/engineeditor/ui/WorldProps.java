@@ -62,7 +62,7 @@ public class WorldProps extends PropertyTable {
 			Ctx.project.getProjectConfig().setProperty(Config.EXTEND_VIEWPORT_PROP, value);					
 		}
 		
-		Ctx.project.getWorldDocument().setModified(); // TODO Add propertychange to Config
+		Ctx.project.setModified(); // TODO Add propertychange to Config
 	}
 
 	private void setProject() {

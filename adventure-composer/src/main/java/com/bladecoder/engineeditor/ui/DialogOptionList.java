@@ -123,7 +123,7 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 		upBtn.setDisabled(list.getSelectedIndex() == 0);
 		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
 
-		Ctx.project.getSelectedChapter().setModified(e);
+		Ctx.project.setModified();
 	}
 
 	private void down() {
@@ -146,7 +146,7 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 		upBtn.setDisabled(list.getSelectedIndex() == 0);
 		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
 
-		Ctx.project.getSelectedChapter().setModified(e);
+		Ctx.project.setModified();
 	}
 	
 	@Override
@@ -164,7 +164,7 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 	// TODO TRANSLATIONS
 //			I18NUtils.putTranslationsInElement(doc, clipboard);
 		
-		Ctx.project.getSelectedChapter().setModified(option);
+		Ctx.project.setModified();
 	}
 
 	// -------------------------------------------------------------------------
@@ -178,7 +178,7 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 			
 			int i = parent.getOptions().indexOf(e);
 
-			return i + ". " + Ctx.project.getSelectedChapter().getTranslation(text);
+			return i + ". " + Ctx.project.translate(text);
 		}
 
 		@Override
@@ -188,7 +188,7 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 			String response = e.getResponseText();
 
 			if (response != null && !response.isEmpty())
-				sb.append("R: ").append(Ctx.project.getSelectedChapter().getTranslation(response)).append(' ');
+				sb.append("R: ").append(Ctx.project.translate(response)).append(' ');
 
 //			NamedNodeMap attr = e.getAttributes();
 //			

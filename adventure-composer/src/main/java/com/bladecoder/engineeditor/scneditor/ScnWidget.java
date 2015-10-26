@@ -45,10 +45,10 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.BaseDocument;
-import com.bladecoder.engineeditor.model.ChapterDocument;
+import com.bladecoder.engineeditor.model.Chapter;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
@@ -131,11 +131,11 @@ public class ScnWidget extends Widget {
 			}
 		});
 
-		Ctx.project.getWorldDocument().addPropertyChangeListener(new PropertyChangeListener() {
+		Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
 				EditorLogger.debug("ScnWidget (World Listener): " + e.getPropertyName());
-				ChapterDocument doc = Ctx.project.getSelectedChapter();
+				Chapter doc = Ctx.project.getChapter();
 
 				if (e.getPropertyName().equals("scene")) {
 					setSelectedScene(Ctx.project.getSelectedScene());
@@ -218,7 +218,7 @@ public class ScnWidget extends Widget {
 //						setSelectedActor(Ctx.project.getSelectedActor());
 //					}
 
-				} else if (e.getPropertyName().equals(BaseDocument.NOTIFY_ELEMENT_DELETED)) {
+				} else if (e.getPropertyName().equals(Project.NOTIFY_ELEMENT_DELETED)) {
 //					if (((Element) e.getNewValue()).getTagName().equals("actor"))
 //						removeActor(doc, (Element) e.getNewValue());
 //					else if (((Element) e.getNewValue()).getTagName().equals("animation"))
@@ -288,7 +288,7 @@ public class ScnWidget extends Widget {
 			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
 				p.translate(1, 0);
 
-			Ctx.project.getSelectedChapter().setModified(selActor);
+			Ctx.project.setModified(this, null, null, selActor);
 
 			// undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(),
 			// Ctx.project.getSelectedActor(), "pos",
@@ -502,8 +502,8 @@ public class ScnWidget extends Widget {
 
 			float aspect = getWidth() / getHeight();
 
-			float wWidth = Ctx.project.getWorldDocument().getWidth();
-			float wHeight = Ctx.project.getWorldDocument().getHeight();
+			float wWidth = World.getInstance().getWidth();
+			float wHeight = World.getInstance().getHeight();
 			float aspectWorld = wWidth / wHeight;
 
 			if (aspectWorld > aspect) {
@@ -516,8 +516,8 @@ public class ScnWidget extends Widget {
 
 			camera.setToOrtho(false, wWidth, wHeight);
 			camera.zoom = 1f;
-			camera.position.set(Ctx.project.getWorldDocument().getWidth() / 2,
-					Ctx.project.getWorldDocument().getHeight() / 2, 0);
+			camera.position.set(World.getInstance().getWidth() / 2,
+					World.getInstance().getHeight() / 2, 0);
 			camera.update();
 			zoom(+1);
 		}
@@ -618,8 +618,8 @@ public class ScnWidget extends Widget {
 
 			float aspect = getWidth() / getHeight();
 
-			float wWidth = Ctx.project.getWorldDocument().getWidth();
-			float wHeight = Ctx.project.getWorldDocument().getHeight();
+			float wWidth = World.getInstance().getWidth();
+			float wHeight = World.getInstance().getHeight();
 			float aspectWorld = wWidth / wHeight;
 
 			if (aspectWorld > aspect) {
@@ -709,7 +709,7 @@ public class ScnWidget extends Widget {
 		return a;
 	}
 
-	private void removeActor(ChapterDocument doc, BaseActor e) {
+	private void removeActor(Chapter doc, BaseActor e) {
 //		BaseActor a = scn.getActor(doc.getId(e), false);
 //		if (a != null) {
 //			scn.removeActor(a);

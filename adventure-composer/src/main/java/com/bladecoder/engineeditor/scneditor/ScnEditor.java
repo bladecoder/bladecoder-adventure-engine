@@ -122,7 +122,7 @@ public class ScnEditor extends Table {
 				Ctx.msg.show(stage, "Running scene...", 3);
 
 				try {
-					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), Ctx.project.getSelectedChapter()
+					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), Ctx.project.getChapter()
 							.getId(), Ctx.project.getSelectedScene().getId()))
 						Ctx.msg.show(stage, "There was a problem running the scene", 3);
 				} catch (IOException e) {

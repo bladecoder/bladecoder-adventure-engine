@@ -112,7 +112,7 @@ public class ActorProps extends PropertyTable {
 				addProperty(BBOX_FROM_RENDERER_PROP, Boolean.toString(v), Types.BOOLEAN);
 			}
 
-			Ctx.project.getSelectedChapter().addPropertyChangeListener(propertyChangeListener);
+			Ctx.project.addPropertyChangeListener(propertyChangeListener);
 
 			invalidateHierarchy();
 		}
