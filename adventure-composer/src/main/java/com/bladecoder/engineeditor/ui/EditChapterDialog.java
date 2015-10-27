@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.MessageFormat;
 
@@ -72,8 +71,8 @@ public class EditChapterDialog extends EditDialog {
 	private void create() {
 		try {	
 			newId = doc.createChapter(inputId.getText()).getId();
-		} catch (FileNotFoundException | TransformerException
-				| ParserConfigurationException e) {
+		} catch (TransformerException
+				| ParserConfigurationException | IOException e) {
 			String msg = "Something went wrong while creating the chapter.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
 			Ctx.msg.show(getStage(), msg, 2);

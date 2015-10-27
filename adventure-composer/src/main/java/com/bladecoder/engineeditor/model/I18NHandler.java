@@ -31,23 +31,28 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.util.EngineLogger;
 
 
 public class I18NHandler {
+	private String modelPath;
 	private String worldFilename;
 	private String chapterFilename;
 	
 	private Properties i18nWorld;
 	private Properties i18nChapter;
 	
+	public I18NHandler() {
+		this.worldFilename = EngineAssetManager.WORLD_FILENAME_JSON;
+	}
+	
 	private String getI18NFilename(String absoluteModelFilename) {
 		return absoluteModelFilename.substring(0, absoluteModelFilename.lastIndexOf('.')) + ".properties";
 	}
 	
-	public void load(String worldFilename, String chapterFilename) {
-		this.worldFilename = worldFilename;
+	public void load(String chapterId) {
 		this.chapterFilename = chapterFilename;
 		i18nWorld = loadI18N(worldFilename);
 		i18nChapter = loadI18N(chapterFilename);

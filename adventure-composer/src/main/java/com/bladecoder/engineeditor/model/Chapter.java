@@ -34,16 +34,16 @@ public class Chapter {
 	private String filename;
 
 	public Chapter(String modelPath) {
-		this.modelPath = modelPath;
+		this.modelPath = modelPath + "/";
 	}
 
-	public void create(String id) throws FileNotFoundException {
+	public void create(String id) throws IOException {
 		filename = modelPath + id + XMLConstants.CHAPTER_EXT;
 		this.id = id;
 		save();
 	}
 
-	public void rename(String newId) throws FileNotFoundException {
+	public void rename(String newId) throws IOException {
 
 		deleteFiles();
 
@@ -79,9 +79,8 @@ public class Chapter {
 		World.getInstance().loadChapter(id);
 	}
 	
-	public void save() {
-		// TODO
-//		World.getInstance().saveGameState(filename);
+	public void save() throws IOException {
+		World.getInstance().saveModel();
 	}
 	
 	public String[] getChapters() {
@@ -114,7 +113,7 @@ public class Chapter {
 		return init;
 	}
 	
-	public Chapter createChapter(String id) throws FileNotFoundException, TransformerException, ParserConfigurationException {
+	public Chapter createChapter(String id) throws TransformerException, ParserConfigurationException, IOException {
 		Chapter chapter = new Chapter(modelPath);	
 		String checkedId = getChapterCheckedId(id);
 		

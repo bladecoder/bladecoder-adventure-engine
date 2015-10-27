@@ -722,6 +722,36 @@ public class World implements Serializable, AssetConsumer {
 		// Save Screenshot
 		takeScreenshot(filename + ".png", SCREENSHOT_DEFAULT_WIDTH);
 	}
+	
+	public void saveModel() throws IOException {
+		EngineLogger.debug("SAVING GAME MODEL");
+
+		if (disposed)
+			return;
+
+		Json json = new Json();
+		json.setOutputType(OutputType.javascript);
+
+		String s = null;
+
+		SerializationHelper.getInstance().setMode(Mode.MODEL);
+
+		if (EngineLogger.debugMode())
+			s = json.prettyPrint(this);
+		else
+			s = json.toJson(this);
+
+		SerializationHelper.getInstance().clearActors();
+
+		Writer w = EngineAssetManager.getInstance().getModelFile(currentChapter + ".chapter.json").writer(false, "UTF-8");
+
+		try {
+			w.write(s);
+			w.close();
+		} catch (IOException e) {
+			throw new IOException("ERROR SAVING MODEL", e);
+		}		
+	}
 
 	public void takeScreenshot(String filename, int w) {
 
@@ -754,11 +784,9 @@ public class World implements Serializable, AssetConsumer {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
-			// json.writeValue("scenes", scenes, scenes.getClass(),
-			// Scene.class);
-			// json.writeValue("worldVerbs", VerbManager.worldVerbs,
-			// HashMap.class, Verb.class);
-			// json.writeValue("chapter", currentChapter);
+			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
+			verbs.write(json);
+			json.writeValue("chapter", currentChapter);
 
 		} else {
 

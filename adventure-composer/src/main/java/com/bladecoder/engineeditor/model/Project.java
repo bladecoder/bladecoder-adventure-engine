@@ -63,7 +63,6 @@ public class Project extends PropertyChange {
 	public static final String SPINE_PATH = ASSETS_PATH + "/spine";
 	public static final String UI_PATH = ASSETS_PATH + "/ui";
 	
-	private static final String WORLD_FILENAME = "world.json";
 	public static final int DEFAULT_WIDTH = 1920;
 	public static final int DEFAULT_HEIGHT = 1080;
 
@@ -79,7 +78,7 @@ public class Project extends PropertyChange {
 	private final UndoStack undoStack = new UndoStack();
 	private Properties projectConfig;
 
-	private I18NHandler i18n;
+	private I18NHandler i18n = new I18NHandler();
 	private Chapter chapter;
 	private Scene selectedScene;
 	private BaseActor selectedActor;
@@ -288,6 +287,8 @@ public class Project extends PropertyChange {
 			EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
 			World.getInstance().loadWorldDesc();
 			
+			chapter = new Chapter(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
+			
 			loadChapter(World.getInstance().getInitChapter());
 			
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
@@ -351,6 +352,7 @@ public class Project extends PropertyChange {
 		undoStack.clear();
 		
 		chapter.load(selChapter);
+		i18n.load(selChapter);
 	}
 
 	public boolean isModified() {
