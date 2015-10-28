@@ -66,9 +66,6 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 	private InputPanel loopMusic;
 	private InputPanel initialMusicDelay;
 	private InputPanel repeatMusicDelay;
-	
-	InputPanel[] inputs = new InputPanel[] {id, backgroundAtlas, backgroundRegion, lightmapAtlas, lightmapRegion, 
-			depthVector, state, music, loopMusic, initialMusicDelay, repeatMusicDelay};
 
 	@SuppressWarnings("unchecked")
 	public EditSceneDialog(Skin skin, World parent,
@@ -77,7 +74,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 		super(skin);
 		
 		id = InputPanelFactory.createInputPanel(skin, "Scene ID",
-				"The ID is mandatory for scenes. \nIDs can not contain '.' or '_' characters.");
+				"The ID is mandatory for scenes. \nIDs can not contain '.' or '_' characters.", true);
 		backgroundAtlas = InputPanelFactory.createInputPanel(skin, "Background Atlas",
 				"The atlas where the background for the scene is located", atlasList, false);
 		backgroundRegion = InputPanelFactory.createInputPanel(skin, "Background Region Id",
@@ -95,25 +92,22 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 		loopMusic = InputPanelFactory.createInputPanel(skin, "Loop Music",
 				"If the music is playing in looping", Param.Type.BOOLEAN, false);
 		initialMusicDelay = InputPanelFactory.createInputPanel(skin, "Initial music delay",
-				"The time to wait before playing", Param.Type.FLOAT, false);
+				"The time to wait before playing", Param.Type.FLOAT, true, "0");
 		repeatMusicDelay = InputPanelFactory.createInputPanel(skin, "Repeat music delay",
-				"The time to wait before repetitions", Param.Type.FLOAT, false);		
+				"The time to wait before repetitions", Param.Type.FLOAT, true, "0");		
 		
 		bgImage = new Image();
 		bgImage.setScaling(Scaling.fit);
 		infoContainer = new Container<Image>(bgImage);
 		setInfo(INFO);
-		
-		inputs[0].setMandatory(true);
 
 		
-		
-		((SelectBox<String>) inputs[1].getField()).addListener(new ChangeListener() {
+		((SelectBox<String>) backgroundAtlas.getField()).addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				try {
-					fillBGRegions(inputs[1], inputs[2]);
+					fillBGRegions(backgroundAtlas, backgroundRegion);
 				} catch(Exception e) {
 					Ctx.msg.show(getStage(), "Error loading regions from selected atlas", 4);
 				}
@@ -121,20 +115,20 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 		});
 		
 
-		((SelectBox<String>) inputs[2].getField())
+		((SelectBox<String>) backgroundAtlas.getField())
 			.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				showBgImage(inputs[2].getText());
+				showBgImage(backgroundAtlas.getText());
 			}
 		});
 		
-		((SelectBox<String>) inputs[3].getField()).addListener(new ChangeListener() {
+		((SelectBox<String>) lightmapAtlas.getField()).addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				try {
-					fillLightmapRegions(inputs[3], inputs[4]);
+					fillLightmapRegions(lightmapAtlas, lightmapAtlas);
 				} catch(Exception e) {
 					Ctx.msg.show(getStage(), "Error loading regions from selected atlas", 4);
 				}
@@ -142,12 +136,13 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 		});		
 		
 		try {
-			fillBGRegions(inputs[1], inputs[2]);
+			fillBGRegions(backgroundAtlas, backgroundRegion);
 		} catch(Exception e2) {
 			EditorLogger.error("Error loading regions from selected atlas");
 		}
 		
-		init(parent, e, inputs);
+		init(parent, e, new InputPanel[] {id, backgroundAtlas, backgroundRegion, lightmapAtlas, lightmapAtlas, 
+				depthVector, state, music, loopMusic, initialMusicDelay, repeatMusicDelay});
 	}
 	
 	
@@ -157,7 +152,6 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 			return;
 
 		bgImage.setDrawable(new TextureRegionDrawable(atlas.findRegion(r)));
-		
 
 		infoContainer.prefWidth(250);
 		infoContainer.prefHeight(250);
@@ -176,7 +170,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 			atlas = null;
 		}
 		
-		if(inputs[1].getText().isEmpty()) {
+		if(backgroundAtlas.getText().isEmpty()) {
 			setInfoWidget(new Label(INFO, getSkin()));
 			return;
 		}
@@ -257,6 +251,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 		e.setLightMapRegionId(lightmapRegion.getText());
 		e.setDepthVector(Param.parseVector2(depthVector.getText()));
 		e.setState(state.getText());
+		
 		e.setMusic(music.getText(),
 				Boolean.parseBoolean(loopMusic.getText()),
 				Float.parseFloat(initialMusicDelay.getText()),
@@ -264,6 +259,9 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 		
 		if(create) {
 			parent.addScene(e);
+			
+			if(parent.getScenes().size() == 1)
+				parent.setInitScene(e.getId());
 		}
 
 		// TODO UNDO OP

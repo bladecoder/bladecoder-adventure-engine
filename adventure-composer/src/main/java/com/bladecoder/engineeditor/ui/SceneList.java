@@ -125,6 +125,7 @@ public class SceneList extends ModelList<World, Scene> {
 		Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
+				
 				EditorLogger.debug(evt.getPropertyName() + " NEW:" + evt.getNewValue() + " OLD:" + evt.getOldValue());
 
 				if (evt.getPropertyName().equals(XMLConstants.CHAPTER_TAG)) {
@@ -309,7 +310,7 @@ public class SceneList extends ModelList<World, Scene> {
 			// TODO SET INIT SCENE
 			String init = World.getInstance().getInitScene();
 
-			if (init.equals(name))
+			if (name.equals(init))
 				name += " <init>";
 
 			return name;

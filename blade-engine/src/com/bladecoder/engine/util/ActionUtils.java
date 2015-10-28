@@ -48,7 +48,7 @@ public class ActionUtils {
 					type = getType(field);
 				}
 				
-				params.add(new Param(name, propertyDescription.value(), type, property.required(), property.defaultValue(), options));
+				params.add(new Param(name, propertyDescription != null?propertyDescription.value():"", type, property.required(), property.defaultValue(), options));
 			}
 			clazz = clazz.getSuperclass();
 		}
@@ -122,14 +122,9 @@ public class ActionUtils {
 		} else if(field.getType().isAssignableFrom(Vector2.class)) {
 			field.set(action, Param.parseVector2(value));
 		} else if(field.getType().isAssignableFrom(SceneActorRef.class)) {
-			String[] a = Param.parseString2(value);
-			
-			if(a != null)
-				field.set(action, new SceneActorRef(a[0], a[1]));
+			field.set(action, new SceneActorRef(value));
 		} else if(field.getType().isAssignableFrom(ActorAnimationRef.class)) {
-			String[] a = Param.parseString2(value);
-			
-			field.set(action, new ActorAnimationRef(a[0], a[1]));
+			field.set(action, new ActorAnimationRef(value));
 		} else if(field.getType().isAssignableFrom(Color.class)) {
 			Color a = Param.parseColor(value);
 			

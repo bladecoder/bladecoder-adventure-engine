@@ -16,7 +16,6 @@
 package com.bladecoder.engineeditor.model;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
@@ -34,7 +33,10 @@ public class Chapter {
 	private String filename;
 
 	public Chapter(String modelPath) {
-		this.modelPath = modelPath + "/";
+		this.modelPath = modelPath;
+		
+		if(!modelPath.endsWith("/"))
+			this.modelPath = modelPath + "/";
 	}
 
 	public void create(String id) throws IOException {
@@ -74,7 +76,7 @@ public class Chapter {
 		return getId();
 	}
 	
-	public void load(String id) {
+	public void load(String id) throws IOException {
 		setId(id);
 		World.getInstance().loadChapter(id);
 	}

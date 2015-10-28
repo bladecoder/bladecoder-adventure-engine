@@ -39,6 +39,7 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -113,8 +114,10 @@ public class ScnWidget extends Widget {
 
 		Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
-			public void propertyChange(PropertyChangeEvent e) {
-				EditorLogger.debug("ScnWidget (Project Listener): " + e.getPropertyName());
+			public void propertyChange(PropertyChangeEvent e) {				
+				EditorLogger.debug("ScnWidget Listener: " + e.getPropertyName());
+				
+				Chapter doc = Ctx.project.getChapter();
 
 				if (e.getPropertyName().equals(Project.NOTIFY_SCENE_SELECTED)) {
 					if (!projectLoadedFlag)
@@ -127,17 +130,7 @@ public class ScnWidget extends Widget {
 						setSelectedFA(Ctx.project.getSelectedFA());
 				} else if (e.getPropertyName().equals(Project.NOTIFY_PROJECT_LOADED)) {
 					projectLoadedFlag = true;
-				}
-			}
-		});
-
-		Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent e) {
-				EditorLogger.debug("ScnWidget (World Listener): " + e.getPropertyName());
-				Chapter doc = Ctx.project.getChapter();
-
-				if (e.getPropertyName().equals("scene")) {
+				} else if (e.getPropertyName().equals("scene")) {
 					setSelectedScene(Ctx.project.getSelectedScene());
 					setSelectedActor(Ctx.project.getSelectedActor());
 				} else if (e.getPropertyName().equals("bbox")) {
@@ -287,8 +280,8 @@ public class ScnWidget extends Widget {
 				p.translate(-1, 0);
 			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
 				p.translate(1, 0);
-
-			Ctx.project.setModified(this, null, null, selActor);
+			
+			Ctx.project.setModified(this, XMLConstants.POS_ATTR, null, selActor);
 
 			// undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(),
 			// Ctx.project.getSelectedActor(), "pos",

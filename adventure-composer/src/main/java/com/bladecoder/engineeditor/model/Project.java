@@ -30,6 +30,7 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.setup.Dependency;
@@ -48,9 +49,11 @@ public class Project extends PropertyChange {
 	public static final String NOTIFY_ANIM_SELECTED = "ANIM_SELECTED";
 	public static final String NOTIFY_VERB_SELECTED = "VERB_SELECTED";
 	public static final String NOTIFY_PROJECT_LOADED = "PROJECT_LOADED";
+	public static final String NOTIFY_PROJECT_SAVED = "PROJECT_SAVED";
 	
-	public static final Object NOTIFY_ELEMENT_DELETED = "ELEMENT_DELETED";
-	public static final Object NOTIFY_ELEMENT_CREATED = "ELEMENT_CREATED";
+	public static final String NOTIFY_ELEMENT_DELETED = "ELEMENT_DELETED";
+	public static final String NOTIFY_ELEMENT_CREATED = "ELEMENT_CREATED";
+	public static final String NOTIFY_MODEL_MODIFIED = "MODEL_MODIFIED";
 
 	public static final String ASSETS_PATH = "/android/assets";
 	public static final String MODEL_PATH = ASSETS_PATH + "/model";
@@ -78,7 +81,7 @@ public class Project extends PropertyChange {
 	private final UndoStack undoStack = new UndoStack();
 	private Properties projectConfig;
 
-	private I18NHandler i18n = new I18NHandler();
+	private I18NHandler i18n;
 	private Chapter chapter;
 	private Scene selectedScene;
 	private BaseActor selectedActor;
@@ -252,11 +255,24 @@ public class Project extends PropertyChange {
 	}
 
 	public void saveProject() throws IOException {
-		if (projectFile != null) {
+		if (projectFile != null && chapter.getId() != null) {
+			
+			EngineLogger.setDebug();
+			
+			// 1.- SAVE world.json
 			World.getInstance().saveWorldDesc(new FileHandle(new File(projectFile.getAbsolutePath() + MODEL_PATH + "/world.json")));
+			
+			// 2.- SAVE .chapter
 			chapter.save();
 			
+			// 3.- SAVE BladeEngine.properties
 			projectConfig.store(new FileOutputStream(projectFile.getAbsolutePath()+ "/" + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME), null);
+			
+			// 4.- SAVE I18N
+			i18n.save();
+			
+			modified = false;
+			firePropertyChange(NOTIFY_PROJECT_SAVED);
 		}
 	}
 	
@@ -276,9 +292,9 @@ public class Project extends PropertyChange {
 			// That can not be a problem if the package of the custom actions is different
 			// in the loaded project.
 			try {
-				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/bin");
-				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/out");
-				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/desktop/build/classes/main");
+				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/core/bin");
+				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/core/out");
+				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/core/build/classes/main");
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.exit(0);
@@ -287,7 +303,8 @@ public class Project extends PropertyChange {
 			EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
 			World.getInstance().loadWorldDesc();
 			
-			chapter = new Chapter(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
+			chapter = new Chapter(Ctx.project.getProjectDir().getAbsolutePath() + Project.MODEL_PATH);
+			i18n = new I18NHandler(Ctx.project.getProjectDir().getAbsolutePath() + Project.MODEL_PATH);
 			
 			loadChapter(World.getInstance().getInitChapter());
 			
@@ -361,5 +378,6 @@ public class Project extends PropertyChange {
 
 	public void setModified() {
 		modified = true;
+		firePropertyChange(NOTIFY_MODEL_MODIFIED);
 	}
 }

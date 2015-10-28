@@ -23,7 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.actions.ActorAnimationRef;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.SpriteActor;
@@ -113,18 +113,14 @@ public class ActorAnimationInputPanel extends InputPanel {
 	}
 
 	public String getText() {
-		return Param
-				.toStringParam(actor.getSelected(), animation.getSelected());
+		return (new ActorAnimationRef(actor.getSelected(), animation.getSelected())).toString();
 	}
 
 	public void setText(String s) {
-		String out[] = Param.parseString2(s);
-
-		if(out[0] == null)
-			out[0] = "";
+		ActorAnimationRef aa = new ActorAnimationRef(s);
 			
-		actor.setSelected(out[0]);
+		actor.setSelected(aa.getActorId() == null?"":aa.getActorId());
 		actorSelected();
-		animation.setSelected(out[1]);
+		animation.setSelected(aa.getAnimationId());
 	}
 }

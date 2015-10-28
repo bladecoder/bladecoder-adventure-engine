@@ -141,7 +141,11 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			continueGame.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
 					if (world.getCurrentScene() == null)
-						world.load();
+						try {
+							world.load();
+						} catch (Exception e) {
+							Gdx.app.exit();
+						}
 
 					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 				}
@@ -153,7 +157,11 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		TextButton newGame = new TextButton(I18N.getString("ui.new"), skin, style.textButtonStyle);
 		newGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				world.newGame();
+				try {
+					world.newGame();
+				} catch (Exception e) {
+					Gdx.app.exit();
+				}
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});

@@ -23,7 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
@@ -107,20 +107,14 @@ public class SceneActorInputPanel extends InputPanel {
 	}
 	
 	public String getText() {
-		return Param.toStringParam(scene.getSelected(), actor.getSelected());
+		return (new SceneActorRef(scene.getSelected(), actor.getSelected())).toString();
 	}
 
-	public void setText(String s) {
-		String out[] = Param.parseString2(s);
+	public void setText(String s) {	
+		SceneActorRef aa = new SceneActorRef(s);
 		
-		int idx = scene.getItems().indexOf(out[0], false);
-		if(idx != -1)
-			scene.setSelectedIndex(idx);
-		
-//		idx = actor.getItems().indexOf(out[1], false);
-//		if(idx != -1)
-//			actor.setSelectedIndex(idx);
+		scene.setSelected(aa.getSceneId() == null?"":aa.getSceneId());
 		sceneSelected();
-		actor.setSelected(out[1]);
+		actor.setSelected(aa.getActorId());
 	}
 }

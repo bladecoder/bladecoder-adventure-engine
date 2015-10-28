@@ -80,10 +80,6 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel fov;
 	private InputPanel textColor;
 
-	InputPanel inputs[] = { typePanel, id, layer, visible, interaction, desc, state,
-			 renderer, depthType, scale, zIndex, walkingSpeed, spriteSize, cameraName, fov,
-			 textColor};
-
 	@SuppressWarnings("unchecked")
 	public EditActorDialog(Skin skin, Scene parent,	BaseActor e) {
 		super(skin);
@@ -163,7 +159,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			}
 		});
 
-		init(parent, e, inputs);
+		init(parent, e, new InputPanel[] { typePanel, id, layer, visible, interaction, desc, state,
+			 renderer, depthType, scale, zIndex, walkingSpeed, spriteSize, cameraName, fov,
+			 textColor});
 
 		typeChanged();
 
@@ -188,7 +186,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		
 		if (!ACTOR_TYPES[i]
 				.equals(XMLConstants.ANCHOR_VALUE)) {
-			setVisible(inputs[3], true);
+			setVisible(visible, true);
 		}
 		
 		if (!ACTOR_TYPES[i]
@@ -196,26 +194,26 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				!ACTOR_TYPES[i]
 						.equals(XMLConstants.ANCHOR_VALUE)
 				) {
-			setVisible(inputs[2], true);			
-			setVisible(inputs[4],true);
-			setVisible(inputs[5],true);
-			setVisible(inputs[6],true);
-			setVisible(inputs[10],true);
+			setVisible(layer, true);			
+			setVisible(interaction,true);
+			setVisible(desc,true);
+			setVisible(state,true);
+			setVisible(zIndex,true);
 		}
 
 		if (ACTOR_TYPES[i]
 				.equals(XMLConstants.SPRITE_VALUE) || 
 				ACTOR_TYPES[i]
 						.equals(XMLConstants.CHARACTER_VALUE)) {
-			setVisible(inputs[7],true);
-			setVisible(inputs[8],true);
-			setVisible(inputs[9],true);
+			setVisible(renderer,true);
+			setVisible(depthType,true);
+			setVisible(scale,true);
 		}
 		
 		if (ACTOR_TYPES[i]
 						.equals(XMLConstants.CHARACTER_VALUE)) {
-			setVisible(inputs[11],true);
-			setVisible(inputs[15],true);
+			setVisible(walkingSpeed,true);
+			setVisible(textColor,true);
 		}
 		
 		rendererChanged();
@@ -226,25 +224,25 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 //		setInfo(RENDERERS_INFO[i]);
 
-		setVisible(inputs[12],false);
-		setVisible(inputs[13],false);
-		setVisible(inputs[14],false);
+		setVisible(spriteSize,false);
+		setVisible(cameraName,false);
+		setVisible(fov,false);
 
 		if (renderer.isVisible() &&
 				ACTOR_RENDERERS[i]
 				.equals(XMLConstants.S3D_VALUE)) {
-			setVisible(inputs[12],true);
-			setVisible(inputs[13],true);
-			setVisible(inputs[14],true);
+			setVisible(spriteSize,true);
+			setVisible(cameraName,true);
+			setVisible(fov,true);
 		}
 	}
 	
 	private void hideAllInputs() {
 		
-		for(int idx = 2; idx < inputs.length; idx ++) {
-			InputPanel i = inputs[idx];
+		for(int idx = 2; idx < i.length; idx ++) {
+			InputPanel ip = i[idx];
 			
-			setVisible(i, false);
+			setVisible(ip, false);
 		}
 	}
 	

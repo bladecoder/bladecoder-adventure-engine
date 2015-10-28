@@ -513,7 +513,6 @@ public class AtlasRenderer implements ActorRenderer {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
 			fanims = json.readValue("fanims", HashMap.class, AtlasAnimationDesc.class, jsonData);
-
 			initAnimation = json.readValue("initAnimation", String.class, jsonData);
 
 		} else {

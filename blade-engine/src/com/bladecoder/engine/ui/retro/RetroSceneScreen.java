@@ -200,9 +200,6 @@ public class RetroSceneScreen implements SceneScreen {
 					EngineLogger.error(e.getMessage());
 				}
 				break;
-			case 'r':
-				World.getInstance().newGame();
-				break;
 			case 'l':
 				try {
 					World.getInstance().loadGameState();

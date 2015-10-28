@@ -17,6 +17,7 @@ package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Load the specified Chapter. Scene can be empty to load the default scene.")
 public class LoadChapterAction implements Action {
@@ -30,7 +31,11 @@ public class LoadChapterAction implements Action {
 
 	@Override
 	public boolean run(ActionCallback cb) {
-		World.getInstance().loadChapter(chapter, scene);
+		try {
+			World.getInstance().loadChapter(chapter, scene);
+		} catch (Exception e) {
+			EngineLogger.error(e.getMessage());
+		}
 		
 		return false;
 	}

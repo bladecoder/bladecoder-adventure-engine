@@ -18,6 +18,8 @@ package com.bladecoder.engine.model;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -26,6 +28,9 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionProperty;
+import com.bladecoder.engine.actions.ActorAnimationRef;
+import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.loader.SerializationHelper;
 import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.util.ActionUtils;
@@ -189,7 +194,18 @@ public class Verb implements VerbRunner, Serializable {
 							if (o == null)
 								continue;
 
-							json.writeValue(field.getName(), o);
+							if(o instanceof SceneActorRef) {
+								SceneActorRef sceneActor = (SceneActorRef)o;
+								json.writeValue(field.getName(), sceneActor.toString());
+							} else if(o instanceof ActorAnimationRef) {
+								ActorAnimationRef aa = (ActorAnimationRef)o;
+								json.writeValue(field.getName(), aa.toString());
+							} else if(o instanceof Color) {
+							} else if(o instanceof Vector2) {
+								json.writeValue(field.getName(), Param.toStringParam((Vector2) o));
+							} else {
+								json.writeValue(field.getName(), o);
+							}
 						} catch (IllegalArgumentException | IllegalAccessException e) {
 
 						}
@@ -245,6 +261,8 @@ public class Verb implements VerbRunner, Serializable {
 					for(int j = 0; j<aValue.size; j++) {
 						JsonValue v = aValue.get(j);
 						try {
+							if(v.isNull())
+								continue;
 							ActionUtils.setParam(action, v.name, v.asString());
 						} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 							throw new SerializationException(e);
