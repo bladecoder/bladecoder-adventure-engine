@@ -181,14 +181,14 @@ public class ScnWidget extends Widget {
 					scn.removeActor(scn.getActor(id, false));
 					setSelectedActor(null);
 				} else if (e.getPropertyName().equals("animation")) {
-					createAndSelectActor(Ctx.project.getSelectedActor());
-					setSelectedFA(null);
+//					createAndSelectActor(Ctx.project.getSelectedActor());
+//					setSelectedFA(null);
 				} else if (e.getPropertyName().equals("init_animation")) {
 					String initFA = (String) e.getNewValue();
 					((SpriteActor) selectedActor).getRenderer().setInitAnimation(initFA);
 					setSelectedFA(null);
 				} else if (e.getPropertyName().equals("actor")) {
-					createAndSelectActor((BaseActor) e.getNewValue());
+//					createAndSelectActor((BaseActor) e.getNewValue());
 				} else if (e.getPropertyName().equals("layer")) {
 //					Element el = (Element) e.getNewValue();
 //					String name = el.getAttribute("id");
@@ -684,41 +684,6 @@ public class ScnWidget extends Widget {
 		} else {
 			setAnimation(null);
 		}
-	}
-
-	private void createAndSelectActor(BaseActor actor) {
-		// removeActor(Ctx.project.getSelectedChapter(), actor);
-		// selectedActor = createActor(actor);
-		// setSelectedActor(actor);
-	}
-
-	// TODO Mode to the creation method from actorlist
-	private BaseActor createActor(BaseActor a) {
-		if (a instanceof InteractiveActor) {
-			InteractiveActor iActor = (InteractiveActor) a;
-			SceneLayer l = scn.getLayer(iActor.getLayer());
-			l.orderByZIndex();
-		}
-
-		if (a instanceof AssetConsumer) {
-			((AssetConsumer) a).loadAssets();
-			EngineAssetManager.getInstance().finishLoading();
-			((AssetConsumer) a).retrieveAssets();
-		}
-
-		return a;
-	}
-
-	private void removeActor(ChapterDocument doc, BaseActor e) {
-//		BaseActor a = scn.getActor(doc.getId(e), false);
-//		if (a != null) {
-//			scn.removeActor(a);
-//
-//			if (a instanceof AssetConsumer)
-//				((AssetConsumer) a).dispose();
-//
-//			setSelectedActor(null);
-//		}
 	}
 
 	public void dispose() {
