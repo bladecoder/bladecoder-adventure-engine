@@ -54,6 +54,15 @@ public class Project extends PropertyChange {
 	public static final String NOTIFY_ELEMENT_DELETED = "ELEMENT_DELETED";
 	public static final String NOTIFY_ELEMENT_CREATED = "ELEMENT_CREATED";
 	public static final String NOTIFY_MODEL_MODIFIED = "MODEL_MODIFIED";
+	public static final String POSITION_PROPERTY = "pos";
+	public static final String WIDTH_PROPERTY = "width";
+	public static final String HEIGHT_PROPERTY = "height";
+	public static final String CHAPTER_PROPERTY = "chapter";
+	
+	public static final String SPINE_RENDERER_STRING = "spine";
+	public static final String ATLAS_RENDERER_STRING = "atlas";
+	public static final String IMAGE_RENDERER_STRING = "image";
+	public static final String S3D_RENDERER_STRING = "3d";
 
 	public static final String ASSETS_PATH = "/android/assets";
 	public static final String MODEL_PATH = ASSETS_PATH + "/model";
@@ -145,6 +154,10 @@ public class Project extends PropertyChange {
 		modified = true;
 		PropertyChangeEvent evt = new PropertyChangeEvent(source, property, oldValue, newValue);
 		firePropertyChange(evt);
+	}
+	
+	public void notifyPropertyChange(String property) {
+		firePropertyChange(property);
 	}
 
 	public void setSelectedScene(Scene scn) {
@@ -255,7 +268,7 @@ public class Project extends PropertyChange {
 	}
 
 	public void saveProject() throws IOException {
-		if (projectFile != null && chapter.getId() != null) {
+		if (projectFile != null && chapter.getId() != null && modified) {
 			
 			EngineLogger.setDebug();
 			
@@ -306,7 +319,8 @@ public class Project extends PropertyChange {
 			chapter = new Chapter(Ctx.project.getProjectDir().getAbsolutePath() + Project.MODEL_PATH);
 			i18n = new I18NHandler(Ctx.project.getProjectDir().getAbsolutePath() + Project.MODEL_PATH);
 			
-			loadChapter(World.getInstance().getInitChapter());
+			// No need to load the chapter. It's loaded by the chapter combo.
+//			loadChapter(World.getInstance().getInitChapter());
 			
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 						

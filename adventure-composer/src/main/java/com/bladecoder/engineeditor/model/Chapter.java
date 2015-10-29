@@ -18,19 +18,21 @@ package com.bladecoder.engineeditor.model;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.FileUtils;
 import org.xml.sax.SAXException;
 
-import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class Chapter {
 	private String modelPath;
 	private String id;
-	private String filename;
 
 	public Chapter(String modelPath) {
 		this.modelPath = modelPath;
@@ -39,37 +41,12 @@ public class Chapter {
 			this.modelPath = modelPath + "/";
 	}
 
-	public void create(String id) throws IOException {
-		filename = modelPath + id + XMLConstants.CHAPTER_EXT;
-		this.id = id;
-		save();
-	}
-
-	public void rename(String newId) throws IOException {
-
-		deleteFiles();
-
-		filename = modelPath + id + XMLConstants.CHAPTER_EXT;
-		id = newId;
-		save();
-	}
-
-	public void deleteFiles() {
-		File f = new File(filename);
-		f.delete();
-
-		String i18nFilename = modelPath + id + ".properties";
-		f = new File(i18nFilename);
-		f.delete();
-	}
-
 	public String getId() {
 		return id;
 	}
 
 	public void setId(String id) {
 		this.id = id;
-		this.filename = modelPath + id + XMLConstants.CHAPTER_EXT;
 	}
 
 	public String toString() {
@@ -82,7 +59,7 @@ public class Chapter {
 	}
 	
 	public void save() throws IOException {
-		World.getInstance().saveModel();
+		World.getInstance().saveModel(id);
 	}
 	
 	public String[] getChapters() {
@@ -90,7 +67,7 @@ public class Chapter {
 		String[] chapters = new File(modelPath).list(new FilenameFilter() {
 			@Override
 			public boolean accept(File arg0, String arg1) {
-				if (!arg1.endsWith(XMLConstants.CHAPTER_EXT))
+				if (!arg1.endsWith(EngineAssetManager.CHAPTER_EXT))
 					return false;
 
 				return true;
@@ -98,7 +75,7 @@ public class Chapter {
 		});
 		
 		for(int i = 0; i < chapters.length; i++)
-			chapters[i] = chapters[i].substring(0, chapters[i].lastIndexOf('.'));
+			chapters[i] = chapters[i].substring(0, chapters[i].lastIndexOf(EngineAssetManager.CHAPTER_EXT));
 		
 		return chapters;
 	}
@@ -115,52 +92,31 @@ public class Chapter {
 		return init;
 	}
 	
-	public Chapter createChapter(String id) throws TransformerException, ParserConfigurationException, IOException {
-		Chapter chapter = new Chapter(modelPath);	
-		String checkedId = getChapterCheckedId(id);
+	public String createChapter(String id) throws TransformerException, ParserConfigurationException, IOException {
+		String checkedId = ElementUtils.getCheckedId(id, getChapters());
 		
-		chapter.create(checkedId);
+		URL inputUrl = getClass().getResource("/projectTmpl/android/assets/model/00.chapter.json");
+		File dest = new File(modelPath + checkedId + EngineAssetManager.CHAPTER_EXT);
+		FileUtils.copyURLToFile(inputUrl, dest);
 		
-		return chapter;
-	}
-	
-	public String getChapterCheckedId(String id) {
-		boolean checked = false;
-		int i = 1;
-		
-		String idChecked = id;
-		
-		String [] nl = getChapters();
-
-		while (!checked) {
-			checked = true;
-
-			for (int j = 0; j < nl.length; j++) {
-				String id2 = nl[j];
-						
-				if (id2.equals(idChecked)) {
-					i++;
-					idChecked = id + i;
-					checked = false;
-					break;
-				}
-			}
-		}
-		
-		return idChecked;
+		return checkedId;
 	}
 		
-	public void renameChapter(String oldId, String newId) throws TransformerException, ParserConfigurationException, SAXException, IOException {		
-		Chapter chapter = new Chapter(modelPath);
+	public void renameChapter(String oldId, String newId) throws TransformerException, ParserConfigurationException, SAXException, IOException {
+		File f = new File(modelPath + id + EngineAssetManager.CHAPTER_EXT);
+		f.renameTo(new File(modelPath + newId + EngineAssetManager.CHAPTER_EXT));
 		
-		chapter.setId(oldId);
-		chapter.rename(newId);
+		String i18nFilename = modelPath + id + ".properties";
+		f = new File(i18nFilename);
+		f.renameTo(new File(modelPath + newId + ".properties"));
 	}
 	
 	public void deleteChapter(String id) throws TransformerException, ParserConfigurationException, SAXException, IOException {		
-		Chapter chapter = new Chapter(modelPath);
-		
-		chapter.setId(id);
-		chapter.deleteFiles();
+		File f = new File(modelPath + id + EngineAssetManager.CHAPTER_EXT);
+		f.delete();
+
+		String i18nFilename = modelPath + id + ".properties";
+		f = new File(i18nFilename);
+		f.delete();
 	}
 }

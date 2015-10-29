@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditList;
 
@@ -85,7 +86,6 @@ public class ChapterList extends EditList<String> {
 
 		try {
 			Ctx.project.getChapter().deleteChapter(e);
-			Ctx.project.saveProject();
 		} catch (Exception ex) {
 			String msg = "Something went wrong while deleting the chapter.\n\n"
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
@@ -93,6 +93,10 @@ public class ChapterList extends EditList<String> {
 
 			ex.printStackTrace();
 		}
+		
+		list.setSelectedIndex(0);
+		
+		Ctx.project.notifyPropertyChange(Project.CHAPTER_PROPERTY);
 	}
 
 	@Override
@@ -109,6 +113,8 @@ public class ChapterList extends EditList<String> {
 					list.setSelectedIndex(i);
 
 				list.invalidateHierarchy();
+				
+				Ctx.project.notifyPropertyChange(Project.CHAPTER_PROPERTY);
 			}
 		});
 	}
@@ -130,6 +136,7 @@ public class ChapterList extends EditList<String> {
 				list.getItems().removeIndex(list.getSelectedIndex());
 				list.getItems().add(e);
 				list.setSelectedIndex(list.getItems().indexOf(e, true));
+				Ctx.project.notifyPropertyChange(Project.CHAPTER_PROPERTY);
 			}
 		});
 	}

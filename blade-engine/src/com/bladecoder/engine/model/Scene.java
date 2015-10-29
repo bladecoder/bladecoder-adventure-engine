@@ -206,9 +206,9 @@ public class Scene implements Serializable, AssetConsumer {
 	}
 
 	public void setMusic(String filename, boolean loop, float initialDelay, float repeatDelay) {
-		if(filename != null && filename.isEmpty())
+		if (filename != null && filename.isEmpty())
 			filename = null;
-		
+
 		setLoopMusic(loop);
 		musicFilename = filename;
 		setInitialMusicDelay(initialDelay);
@@ -731,26 +731,32 @@ public class Scene implements Serializable, AssetConsumer {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
 			json.writeValue("id", id);
-			json.writeValue("layers", layers);
+			json.writeValue("layers", layers, layers.getClass(), SceneLayer.class);
 
 			json.writeValue("actors", actors);
 
-			json.writeValue("backgroundAtlas", backgroundAtlas);
-			json.writeValue("backgroundRegionId", backgroundRegionId);
+			if (backgroundAtlas != null) {
+				json.writeValue("backgroundAtlas", backgroundAtlas);
+				json.writeValue("backgroundRegionId", backgroundRegionId);
+			}
 
-			json.writeValue("lightMapAtlas", lightMapAtlas);
+			if (lightMapAtlas != null) {
+				json.writeValue("lightMapAtlas", lightMapAtlas);
+				json.writeValue("lightMapRegionId", lightMapRegionId);
+			}
 
-			json.writeValue("lightMapRegionId", lightMapRegionId);
+			if (musicFilename != null) {
+				json.writeValue("musicFilename", musicFilename);
+				json.writeValue("loopMusic", loopMusic);
+				json.writeValue("initialMusicDelay", initialMusicDelay);
+				json.writeValue("repeatMusicDelay", repeatMusicDelay);
+			}
 
-			json.writeValue("musicFilename", musicFilename);
-			json.writeValue("loopMusic", loopMusic);
-			json.writeValue("initialMusicDelay", initialMusicDelay);
-			json.writeValue("repeatMusicDelay", repeatMusicDelay);
-			
-			json.writeValue("depthVector", depthVector);
-			
-			json.writeValue("polygonalNavGraph", polygonalNavGraph,
-					polygonalNavGraph == null ? null : PolygonalNavGraph.class);
+			if (depthVector != null)
+				json.writeValue("depthVector", depthVector);
+
+			if (polygonalNavGraph != null)
+				json.writeValue("polygonalNavGraph", polygonalNavGraph);
 
 		} else {
 			json.writeObjectStart("actors");
@@ -759,24 +765,30 @@ public class Scene implements Serializable, AssetConsumer {
 			}
 			json.writeObjectEnd();
 
-			json.writeValue("isPlaying", music != null && music.isPlaying());
-			json.writeValue("musicPos", music != null && music.isPlaying() ? music.getPosition() : 0f);
+			if (musicFilename != null) {
+				json.writeValue("isPlaying", music != null && music.isPlaying());
+				json.writeValue("musicPos", music != null && music.isPlaying() ? music.getPosition() : 0f);
+			}
 
 			json.writeValue("camera", camera);
-			
-			json.writeValue("followActor", followActor == null ? null : followActor.getId(),
-					followActor == null ? null : String.class);
+
+			if (followActor != null)
+				json.writeValue("followActor", followActor.getId());
 		}
-		
+
 		verbs.write(json);
-		json.writeValue("state", state);
-		json.writeValue("player", player);
+
+		if (state != null)
+			json.writeValue("state", state);
+
+		if (player != null)
+			json.writeValue("player", player);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {			
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
 			id = json.readValue("id", String.class, jsonData);
 			layers = json.readValue("layers", ArrayList.class, SceneLayer.class, jsonData);
@@ -801,11 +813,15 @@ public class Scene implements Serializable, AssetConsumer {
 			lightMapRegionId = json.readValue("lightMapRegionId", String.class, jsonData);
 
 			musicFilename = json.readValue("musicFilename", String.class, jsonData);
-			loopMusic = json.readValue("loopMusic", Boolean.class, jsonData);
-			initialMusicDelay = json.readValue("initialMusicDelay", Float.class, jsonData);
-			repeatMusicDelay = json.readValue("repeatMusicDelay", Float.class, jsonData);
+
+			if (musicFilename != null) {
+				loopMusic = json.readValue("loopMusic", Boolean.class, jsonData);
+				initialMusicDelay = json.readValue("initialMusicDelay", Float.class, jsonData);
+				repeatMusicDelay = json.readValue("repeatMusicDelay", Float.class, jsonData);
+			}
 
 			depthVector = json.readValue("depthVector", Vector2.class, jsonData);
+
 			polygonalNavGraph = json.readValue("polygonalNavGraph", PolygonalNavGraph.class, jsonData);
 
 		} else {
@@ -830,7 +846,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 			setCameraFollowActor((SpriteActor) actors.get(followActorId));
 		}
-		
+
 		verbs.read(json, jsonData);
 		state = json.readValue("state", String.class, jsonData);
 		player = json.readValue("player", String.class, jsonData);

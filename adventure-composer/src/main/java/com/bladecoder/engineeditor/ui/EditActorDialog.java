@@ -20,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.AtlasRenderer;
@@ -35,6 +35,7 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
@@ -42,11 +43,17 @@ import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 
 public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	
-	public static final String ACTOR_TYPES[] = { XMLConstants.BACKGROUND_VALUE, XMLConstants.SPRITE_VALUE,
-			XMLConstants.CHARACTER_VALUE, XMLConstants.OBSTACLE_VALUE, XMLConstants.ANCHOR_VALUE };
+	private final static String BACKGROUND_TYPE_STR = "background";
+	private final static String SPRITE_TYPE_STR = "sprite";
+	private final static String CHARACTER_TYPE_STR = "character";
+	private final static String OBSTACLE_TYPE_STR = "obstacle";
+	private final static String ANCHOR_TYPE_STR = "anchor";
+	
+	public static final String ACTOR_TYPES[] = { BACKGROUND_TYPE_STR, SPRITE_TYPE_STR,
+			CHARACTER_TYPE_STR, OBSTACLE_TYPE_STR, ANCHOR_TYPE_STR };
 
-	public static final String ACTOR_RENDERERS[] = { XMLConstants.ATLAS_VALUE, XMLConstants.SPINE_VALUE,
-			XMLConstants.S3D_VALUE, XMLConstants.IMAGE_VALUE };
+	public static final String ACTOR_RENDERERS[] = { Project.ATLAS_RENDERER_STRING, Project.SPINE_RENDERER_STRING,
+			Project.IMAGE_RENDERER_STRING, Project.S3D_RENDERER_STRING };
 
 	public static final String TYPES_INFO[] = {
 			"Background actors don't have sprites or animations. The are used to use objects drawed in the background",
@@ -185,14 +192,14 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		hideAllInputs();
 		
 		if (!ACTOR_TYPES[i]
-				.equals(XMLConstants.ANCHOR_VALUE)) {
+				.equals(ANCHOR_TYPE_STR)) {
 			setVisible(visible, true);
 		}
 		
 		if (!ACTOR_TYPES[i]
-				.equals(XMLConstants.OBSTACLE_VALUE) && 
+				.equals(OBSTACLE_TYPE_STR) && 
 				!ACTOR_TYPES[i]
-						.equals(XMLConstants.ANCHOR_VALUE)
+						.equals(ANCHOR_TYPE_STR)
 				) {
 			setVisible(layer, true);			
 			setVisible(interaction,true);
@@ -202,16 +209,16 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		}
 
 		if (ACTOR_TYPES[i]
-				.equals(XMLConstants.SPRITE_VALUE) || 
+				.equals(SPRITE_TYPE_STR) || 
 				ACTOR_TYPES[i]
-						.equals(XMLConstants.CHARACTER_VALUE)) {
+						.equals(CHARACTER_TYPE_STR)) {
 			setVisible(renderer,true);
 			setVisible(depthType,true);
 			setVisible(scale,true);
 		}
 		
 		if (ACTOR_TYPES[i]
-						.equals(XMLConstants.CHARACTER_VALUE)) {
+						.equals(CHARACTER_TYPE_STR)) {
 			setVisible(walkingSpeed,true);
 			setVisible(textColor,true);
 		}
@@ -230,7 +237,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		if (renderer.isVisible() &&
 				ACTOR_RENDERERS[i]
-				.equals(XMLConstants.S3D_VALUE)) {
+				.equals(Project.S3D_RENDERER_STRING)) {
 			setVisible(spriteSize,true);
 			setVisible(cameraName,true);
 			setVisible(fov,true);
@@ -252,15 +259,15 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		if(create) {
 			String type = typePanel.getText();
 			
-			if(type.equals(XMLConstants.BACKGROUND_VALUE)) {
+			if(type.equals(BACKGROUND_TYPE_STR)) {
 				e = new InteractiveActor();
-			} else if(type.equals(XMLConstants.SPRITE_VALUE)) {
+			} else if(type.equals(SPRITE_TYPE_STR)) {
 				e = new SpriteActor();
-			} else if(type.equals(XMLConstants.CHARACTER_VALUE)) {
+			} else if(type.equals(CHARACTER_TYPE_STR)) {
 				e = new CharacterActor();
-			} else if(type.equals(XMLConstants.OBSTACLE_VALUE)) {
+			} else if(type.equals(OBSTACLE_TYPE_STR)) {
 				e = new ObstacleActor();
-			} else if(type.equals(XMLConstants.ANCHOR_VALUE)) {
+			} else if(type.equals(ANCHOR_TYPE_STR)) {
 				e = new AnchorActor();
 			}
 		}
@@ -273,7 +280,10 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			
 			ia.setLayer(layer.getText());
 			ia.setInteraction(Boolean.parseBoolean(interaction.getText()));
-			ia.setDesc(desc.getText());
+			
+			String key = I18N.PREFIX + parent.getId() + "." + e.getId() + ".desc";
+			Ctx.project.getI18N().setTranslation(key, desc.getText());
+			ia.setDesc(key);
 			ia.setState(state.getText());
 			
 			if(e instanceof SpriteActor) {
@@ -281,17 +291,17 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				
 				String rendererType = renderer.getText();
 				
-				if(XMLConstants.ATLAS_VALUE.equals(rendererType)) {
+				if(Project.ATLAS_RENDERER_STRING.equals(rendererType)) {
 					sa.setRenderer(new AtlasRenderer());
-				} else if(XMLConstants.IMAGE_VALUE.equals(rendererType)) {
+				} else if(Project.IMAGE_RENDERER_STRING.equals(rendererType)) {
 					sa.setRenderer(new ImageRenderer());
-				} else if(XMLConstants.S3D_VALUE.equals(rendererType)) {
+				} else if(Project.S3D_RENDERER_STRING.equals(rendererType)) {
 					Sprite3DRenderer r = new Sprite3DRenderer();
 					sa.setRenderer(r);
 					r.setCameraFOV(Float.parseFloat(fov.getText()));
 					r.setCameraName(cameraName.getText());
 					r.setSpriteSize(Param.parseVector2(spriteSize.getText()));
-				} else if(XMLConstants.SPINE_VALUE.equals(rendererType)) {
+				} else if(Project.SPINE_RENDERER_STRING.equals(rendererType)) {
 					sa.setRenderer(new SpineRenderer());
 				}
 				
@@ -329,7 +339,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			InteractiveActor ia = (InteractiveActor) e;
 			layer.setText(ia.getLayer());
 			interaction.setText(Boolean.toString(ia.hasInteraction()));
-			desc.setText(ia.getDesc());
+			desc.setText(Ctx.project.translate(ia.getDesc()));
 			state.setText(ia.getState());
 			
 			if(e instanceof SpriteActor) {
@@ -338,18 +348,18 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				ActorRenderer r = sa.getRenderer();
 				
 				if(r instanceof AtlasRenderer) {
-					renderer.setText(XMLConstants.ATLAS_VALUE);
+					renderer.setText(Project.ATLAS_RENDERER_STRING);
 				} else if(r instanceof ImageRenderer) {
-					renderer.setText(XMLConstants.IMAGE_VALUE);
+					renderer.setText(Project.IMAGE_RENDERER_STRING);
 				} else if(r instanceof Sprite3DRenderer) {
-					renderer.setText(XMLConstants.S3D_VALUE);
+					renderer.setText(Project.S3D_RENDERER_STRING);
 					Sprite3DRenderer s3d = (Sprite3DRenderer)r;
 					
 					fov.setText(Float.toString(s3d.getCameraFOV()));
 					cameraName.setText(s3d.getCameraName());
 					spriteSize.setText(Param.toStringParam(s3d.getSpriteSize()));
 				} else if(r instanceof SpineRenderer) {
-					renderer.setText(XMLConstants.SPINE_VALUE);
+					renderer.setText(Project.SPINE_RENDERER_STRING);
 				}
 				
 				depthType.setText(sa.getDepthType().toString());
@@ -364,9 +374,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				}
 			}
 		} else if(e instanceof AnchorActor) {
-			typePanel.setText(XMLConstants.ANCHOR_VALUE);
+			typePanel.setText(ANCHOR_TYPE_STR);
 		} else if(e instanceof ObstacleActor) {
-			typePanel.setText(XMLConstants.OBSTACLE_VALUE);
+			typePanel.setText(OBSTACLE_TYPE_STR);
 		}
 
 	}

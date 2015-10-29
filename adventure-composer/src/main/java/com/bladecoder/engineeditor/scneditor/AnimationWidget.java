@@ -25,13 +25,13 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.util.RectangleRenderer;
+import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.EditAnimationDialog;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
@@ -52,13 +52,13 @@ public class AnimationWidget extends Widget {
 			renderer = null;
 		}
 
-		if (type.equals(XMLConstants.S3D_VALUE)) {
+		if (type.equals(Project.S3D_RENDERER_STRING)) {
 			renderer = new Sprite3DRenderer();
 			((Sprite3DRenderer) renderer).setSpriteSize(new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-		} else if (type.equals(XMLConstants.SPINE_VALUE)) {
+		} else if (type.equals(Project.SPINE_RENDERER_STRING)) {
 			renderer = new SpineRenderer();
 			((SpineRenderer) renderer).enableEvents(false);
-		} else if (type.equals(XMLConstants.IMAGE_VALUE)) {
+		} else if (type.equals(Project.IMAGE_RENDERER_STRING)) {
 			renderer = new ImageRenderer();
 		} else {
 			renderer = new AtlasRenderer();
@@ -99,7 +99,7 @@ public class AnimationWidget extends Widget {
 				}
 			}
 
-			if (typeStr.equals(XMLConstants.YOYO_VALUE))
+			if (typeStr.equals(Tween.Type.YOYO.toString()))
 				type = Tween.Type.YOYO;
 
 			fa.id = id;

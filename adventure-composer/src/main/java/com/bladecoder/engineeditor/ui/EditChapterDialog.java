@@ -70,7 +70,7 @@ public class EditChapterDialog extends EditDialog {
 
 	private void create() {
 		try {	
-			newId = doc.createChapter(inputId.getText()).getId();
+			newId = doc.createChapter(inputId.getText());
 		} catch (TransformerException
 				| ParserConfigurationException | IOException e) {
 			String msg = "Something went wrong while creating the chapter.\n\n"

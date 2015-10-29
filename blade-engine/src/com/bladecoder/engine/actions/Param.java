@@ -59,7 +59,7 @@ public class Param {
 
 	public static Vector2 parseVector2(String s) {
 		
-		if(s==null)
+		if(s==null || s.isEmpty())
 			return null;
 		
 		Vector2 v = null;

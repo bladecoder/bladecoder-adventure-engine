@@ -3,6 +3,8 @@ package com.bladecoder.engineeditor.undo;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import com.bladecoder.engineeditor.utils.EditorLogger;
+
 public class UndoStack {
 	Deque<UndoOp> stack = new ArrayDeque<UndoOp>();
 
@@ -14,6 +16,8 @@ public class UndoStack {
 		if (!stack.isEmpty()) {
 			UndoOp op = stack.pop();
 			op.undo();
+			
+			EditorLogger.debug("UNDO: " + op);
 		}
 	}
 

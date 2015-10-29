@@ -41,7 +41,10 @@ public class StringOptionsInputPanel extends InputPanel implements OptionsInputP
 	
 	@Override
 	public String getText() {
-		return input.getSelected()==null?"":input.getSelected();
+		if(input.getSelected()==null)
+			return null;
+		
+		return input.getSelected().isEmpty()?null:input.getSelected();
 	}
 
 	@Override

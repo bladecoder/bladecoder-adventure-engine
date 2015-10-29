@@ -19,11 +19,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.PropertyTable;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.eclipsesource.json.ParseException;
@@ -33,9 +33,9 @@ public class ActorProps extends PropertyTable {
 	public static final String DESC_PROP = "Description";
 	public static final String POS_X_PROP = "pos X";
 	public static final String POS_Y_PROP = "pos Y";
-	public static final String VISIBLE_PROP = XMLConstants.VISIBLE_ATTR;
-	public static final String INTERACTION_PROP = XMLConstants.INTERACTION_ATTR;
-	public static final String STATE_PROP = XMLConstants.STATE_ATTR;
+	public static final String VISIBLE_PROP = "visible";
+	public static final String INTERACTION_PROP = "interaction";
+	public static final String STATE_PROP = "state";
 	public static final String BBOX_FROM_RENDERER_PROP = "Set BBOX from renderer";
 
 	private BaseActor actor;
@@ -69,18 +69,18 @@ public class ActorProps extends PropertyTable {
 		if(actor==null)
 			return;
 		
-		if (modelProperty.equals(XMLConstants.DESC_ATTR)) {
+		if (modelProperty.equals("desc")) {
 			setProperty(DESC_PROP, ((InteractiveActor)actor).getDesc());
-		} else if (modelProperty.equals(XMLConstants.POS_ATTR)) {
+		} else if (modelProperty.equals(Project.POSITION_PROPERTY)) {
 			setProperty(POS_X_PROP, Float.toString(actor.getX()));			
 			setProperty(POS_Y_PROP, Float.toString(actor.getY()));
-		} else if (modelProperty.equals(XMLConstants.VISIBLE_ATTR)) {
+		} else if (modelProperty.equals("visible")) {
 			setProperty(VISIBLE_PROP, Boolean.toString(actor.isVisible()));
-		} else if (modelProperty.equals(XMLConstants.INTERACTION_ATTR)) {
+		} else if (modelProperty.equals("interaction")) {
 			setProperty(INTERACTION_PROP, Boolean.toString(((InteractiveActor)actor).hasInteraction()));
-		} else if (modelProperty.equals(XMLConstants.STATE_ATTR)) {
+		} else if (modelProperty.equals("state")) {
 			setProperty(STATE_PROP, ((InteractiveActor)actor).getState());
-		} else if (modelProperty.equals(XMLConstants.BBOX_ATTR)) {
+		} else if (modelProperty.equals("bbox")) {
 			
 			// TODO Conflict with scnwidget
 			

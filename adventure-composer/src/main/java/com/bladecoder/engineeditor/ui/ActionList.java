@@ -36,7 +36,6 @@ import com.bladecoder.engine.actions.ActorAnimationRef;
 import com.bladecoder.engine.actions.EndAction;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.SceneActorRef;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
@@ -50,6 +49,7 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	private static final String END_ACTION = "com.bladecoder.engine.actions.EndAction";
 	private static final String ACTION_NAME_VALUE_ELSE = "Else";
+	private static final String CONTROL_ACTION_ID_ATTR = "caID";
 
 	// FIXME: This needs to go, just added here in the interim while we work on
 	// replacing the DOM with Beans
@@ -251,15 +251,17 @@ public class ActionList extends ModelList<Verb, Action> {
 		// e.getAttribute(XMLConstants.ACTION_NAME_ATTR), id);
 	}
 
-	private String getOrCreateControlActionId(Element e) {
-		String id = e.getAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR);
-		if (id.isEmpty()) {
-			// FIXME: While highly, highly, highly unlikely, this might still
-			// cause collisions. Replace it with a count or similar
-			final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
-			id = actionName + MathUtils.random(1, Integer.MAX_VALUE);
-			e.setAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR, id);
-		}
+	private String getOrCreateControlActionId(Action a) {
+		String id = null;
+//		e.getAttribute(CONTROL_ACTION_ID_ATTR);
+//		
+//		if (id.isEmpty()) {
+//			// FIXME: While highly, highly, highly unlikely, this might still
+//			// cause collisions. Replace it with a count or similar
+//			final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
+//			id = actionName + MathUtils.random(1, Integer.MAX_VALUE);
+//			e.setAttribute(CONTROL_ACTION_ID_ATTR, id);
+//		}
 		return id;
 	}
 

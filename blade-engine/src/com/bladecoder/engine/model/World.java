@@ -738,7 +738,7 @@ public class World implements Serializable, AssetConsumer {
 		takeScreenshot(filename + ".png", SCREENSHOT_DEFAULT_WIDTH);
 	}
 
-	public void saveModel() throws IOException {
+	public void saveModel(String chapterId) throws IOException {
 		EngineLogger.debug("SAVING GAME MODEL");
 
 		if (disposed)
@@ -756,7 +756,7 @@ public class World implements Serializable, AssetConsumer {
 		else
 			s = json.toJson(this);
 
-		Writer w = EngineAssetManager.getInstance().getModelFile(currentChapter + EngineAssetManager.CHAPTER_EXT)
+		Writer w = EngineAssetManager.getInstance().getModelFile(chapterId + EngineAssetManager.CHAPTER_EXT)
 				.writer(false, "UTF-8");
 
 		try {
@@ -813,15 +813,13 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("textmanager", textManager);
 			json.writeValue("customProperties", customProperties);
 
-			if (currentDialog == null) {
-				json.writeValue("dialogActor", (String) null, null);
-				json.writeValue("currentDialog", (String) null, null);
-			} else {
+			if (currentDialog != null) {
 				json.writeValue("dialogActor", currentDialog.getActor());
 				json.writeValue("currentDialog", currentDialog.getId());
 			}
 
-			json.writeValue("transition", transition, transition == null ? null : transition.getClass());
+			if(transition != null)
+				json.writeValue("transition", transition);
 
 			json.writeValue("chapter", currentChapter);
 			ActionCallbackQueue.write(json);

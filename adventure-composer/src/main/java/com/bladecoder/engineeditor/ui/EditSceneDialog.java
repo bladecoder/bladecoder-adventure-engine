@@ -41,6 +41,8 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.undo.UndoCreateScene;
+import com.bladecoder.engineeditor.undo.UndoEditScene;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class EditSceneDialog extends EditModelDialog<World, Scene>  {
@@ -115,11 +117,11 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 		});
 		
 
-		((SelectBox<String>) backgroundAtlas.getField())
+		((SelectBox<String>) backgroundRegion.getField())
 			.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				showBgImage(backgroundAtlas.getText());
+				showBgImage(backgroundRegion.getText());
 			}
 		});
 		
@@ -141,14 +143,14 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 			EditorLogger.error("Error loading regions from selected atlas");
 		}
 		
-		init(parent, e, new InputPanel[] {id, backgroundAtlas, backgroundRegion, lightmapAtlas, lightmapAtlas, 
+		init(parent, e, new InputPanel[] {id, backgroundAtlas, backgroundRegion, lightmapAtlas, lightmapRegion, 
 				depthVector, state, music, loopMusic, initialMusicDelay, repeatMusicDelay});
 	}
 	
 	
 
 	private void showBgImage(String r) {
-		if(atlas == null)
+		if(atlas == null || r == null)
 			return;
 
 		bgImage.setDrawable(new TextureRegionDrawable(atlas.findRegion(r)));
@@ -264,11 +266,14 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 				parent.setInitScene(e.getId());
 		}
 
-		// TODO UNDO OP
-//		UndoOp undoOp = new UndoAddElement(doc, e);
-//		Ctx.project.getUndoStack().add(undoOp);
+		// UNDO OP
+		if(create) {
+			Ctx.project.getUndoStack().add(new UndoCreateScene(e));
+		} else {
+			Ctx.project.getUndoStack().add(new UndoEditScene(e));
+		}
 		
-		Ctx.project.setModified();
+		Ctx.project.setModified(this, Project.NOTIFY_ELEMENT_CREATED, null, e);
 	}
 
 	@Override
@@ -279,7 +284,8 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 		backgroundRegion.setText(e.getBackgroundRegionId());
 		lightmapAtlas.setText(e.getLightMapAtlas());
 		lightmapRegion.setText(e.getLightMapRegionId());
-		depthVector.setText(Param.toStringParam(e.getDepthVector()));
+		if(e.getDepthVector() != null)
+			depthVector.setText(Param.toStringParam(e.getDepthVector()));
 		state.setText(e.getState());
 		music.setText(e.getMusicFilename());
 		loopMusic.setText(Boolean.toString(e.isLoopMusic()));
