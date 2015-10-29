@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -302,9 +301,9 @@ public class BladeEngineSetup {
 		new File(outputDir + "/" + assetPath + "/ui/fonts").mkdirs();
 
 		
-		project.files.add(new ProjectFile("android/assets/model/00.chapter", assetPath + "/model/00.chapter", false));
+		project.files.add(new ProjectFile("android/assets/model/00.chapter.json", assetPath + "/model/00.chapter.json", false));
 		project.files.add(new ProjectFile("android/assets/model/world.properties", assetPath + "/model/world.properties", false));
-		project.files.add(new ProjectFile("android/assets/model/world.xml", assetPath + "/model/world.xml", false));
+		project.files.add(new ProjectFile("android/assets/model/world.json", assetPath + "/model/world.json", false));
 		project.files.add(new ProjectFile("android/assets/model/world_es.properties", assetPath + "/model/world_es.properties", false));
 		
 		project.files.add(new ProjectFile("android/assets/ui/credits.txt", assetPath + "/ui/credits.txt", false));
@@ -554,31 +553,6 @@ public class BladeEngineSetup {
 		return txt;
 	}
 
-	private static void printHelp () {
-		System.out
-			.println("Usage: GdxSetup --dir <dir-name> --name <app-name> --package <package> --mainClass <mainClass> --sdkLocation <SDKLocation>");
-		System.out.println("dir ... the directory to write the project files to");
-		System.out.println("name ... the name of the application");
-		System.out.println("package ... the Java package name of the application");
-		System.out.println("mainClass ... the name of your main ApplicationListener");
-		System.out.println("sdkLocation ... the location of your android SDK. Uses ANDROID_HOME if not specified");
-	}
-
-	private static Map<String, String> parseArgs (String[] args) {
-		if (args.length % 2 != 0) {
-			printHelp();
-			System.exit(-1);
-		}
-
-		Map<String, String> params = new HashMap<String, String>();
-		for (int i = 0; i < args.length; i += 2) {
-			String param = args[i].replace("--", "");
-			String value = args[i + 1];
-			params.put(param, value);
-		}
-		return params;
-	}
-
 	private String parseGwtInherits (HashMap<ProjectDependency, String[]> gwtInheritances, ProjectBuilder builder) {
 		String parsed = "";
 		for (ProjectDependency dep : gwtInheritances.keySet()) {
@@ -608,40 +582,5 @@ public class BladeEngineSetup {
 			}
 		}
 		return false;
-	}
-
-	public static void main (String[] args) throws IOException {
-		Map<String, String> params = parseArgs(args);
-		if (!params.containsKey("dir") ||
-			!params.containsKey("name") ||
-			!params.containsKey("package") ||
-			!params.containsKey("mainClass") ||
-			((!params.containsKey("sdkLocation") && System.getenv("ANDROID_HOME") == null))) {
-			printHelp();
-		} else {
-			String sdkLocation = "";
-			if (System.getenv("ANDROID_HOME") != null && !params.containsKey("sdkLocation")) {
-				sdkLocation = System.getenv("ANDROID_HOME");
-			} else {
-				sdkLocation = params.get("sdkLocation");
-			}
-
-			DependencyBank bank = new DependencyBank();
-			ProjectBuilder builder = new ProjectBuilder(bank);
-			List<ProjectType> projects = new ArrayList<ProjectType>();
-			projects.add(ProjectType.CORE);
-			projects.add(ProjectType.DESKTOP);
-			projects.add(ProjectType.ANDROID);
-			projects.add(ProjectType.IOS);
-			projects.add(ProjectType.HTML);
-
-			List<Dependency> dependencies = new ArrayList<Dependency>();
-			dependencies.add(bank.getDependency(ProjectDependency.GDX));
-
-			builder.buildProject(projects, dependencies);
-			builder.build();
-			new BladeEngineSetup().build(builder, params.get("dir"), params.get("name"), params.get("package"), params.get("mainClass"),
-				sdkLocation, null);
-		}
 	}
 }

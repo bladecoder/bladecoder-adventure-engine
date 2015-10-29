@@ -31,6 +31,8 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.loader.SerializationHelper;
+import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SpriteActor;
@@ -671,56 +673,56 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public void write(Json json) {
-
-		json.writeValue("fanims", fanims, HashMap.class, AnimationDesc.class);
-
-		String currentAnimationId = null;
-
-		if (currentAnimation != null)
-			currentAnimationId = currentAnimation.id;
-
-		json.writeValue("currentAnimation", currentAnimationId, currentAnimationId == null ? null : String.class);
-
-		json.writeValue("initAnimation", initAnimation);
-
-		json.writeValue("flipX", flipX);
-
-		if (animationCbSer != null)
-			json.writeValue("cb", animationCbSer);
-		else
-			json.writeValue("cb", ActionCallbackSerialization.find(animationCb), animationCb == null ? null
-					: String.class);
-
-		json.writeValue("currentCount", currentCount);
 		
-		if(currentAnimationId != null)
-			json.writeValue("currentAnimationType", currentAnimationType);
-		
-		json.writeValue("lastAnimationTime", lastAnimationTime);
-		json.writeValue("complete", complete);
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+			json.writeValue("fanims", fanims, HashMap.class, AnimationDesc.class);
+			json.writeValue("initAnimation", initAnimation);
+		} else {
+			String currentAnimationId = null;
+
+			if (currentAnimation != null)
+				currentAnimationId = currentAnimation.id;
+
+			json.writeValue("currentAnimation", currentAnimationId, currentAnimationId == null ? null : String.class);
+
+			json.writeValue("flipX", flipX);
+			
+			if (animationCbSer != null)
+				json.writeValue("cb", animationCbSer);
+			else
+				json.writeValue("cb", ActionCallbackSerialization.find(animationCb), animationCb == null ? null
+						: String.class);
+			json.writeValue("currentCount", currentCount);
+			
+			if(currentAnimationId != null)
+				json.writeValue("currentAnimationType", currentAnimationType);
+			
+			json.writeValue("lastAnimationTime", lastAnimationTime);
+			json.writeValue("complete", complete);	
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void read(Json json, JsonValue jsonData) {
+	public void read(Json json, JsonValue jsonData) {	
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+			fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
+			initAnimation = json.readValue("initAnimation", String.class, jsonData);
+		} else {
+			String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);
 
-		fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
+			if (currentAnimationId != null)
+				currentAnimation = fanims.get(currentAnimationId);
 
-		String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);
-
-		if (currentAnimationId != null)
-			currentAnimation = fanims.get(currentAnimationId);
-
-		initAnimation = json.readValue("initAnimation", String.class, jsonData);
-
-		flipX = json.readValue("flipX", Boolean.class, jsonData);
-		animationCbSer = json.readValue("cb", String.class, jsonData);
-		currentCount = json.readValue("currentCount", Integer.class, jsonData);
-		
-		if(currentAnimationId != null)
-			currentAnimationType = json.readValue("currentAnimationType", Tween.Type.class, jsonData);
-		
-		lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
-		complete = json.readValue("complete", Boolean.class, jsonData);
+			flipX = json.readValue("flipX", Boolean.class, jsonData);
+			animationCbSer = json.readValue("cb", String.class, jsonData);
+			currentCount = json.readValue("currentCount", Integer.class, jsonData);
+			
+			if(currentAnimationId != null)
+				currentAnimationType = json.readValue("currentAnimationType", Tween.Type.class, jsonData);
+			
+			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
+			complete = json.readValue("complete", Boolean.class, jsonData);
+		}
 	}
 }

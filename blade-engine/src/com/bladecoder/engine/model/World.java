@@ -25,7 +25,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -71,7 +70,7 @@ public class World implements Serializable, AssetConsumer {
 	private int height;
 
 	private String initScene;
-	private final HashMap<String, Scene> scenes = new HashMap<String, Scene>();
+	private HashMap<String, Scene> scenes = new HashMap<String, Scene>();
 	private final VerbManager verbs = new VerbManager();
 
 	private Scene currentScene;
@@ -368,7 +367,6 @@ public class World implements Serializable, AssetConsumer {
 			setCurrentScene(s);
 		} else {
 			EngineLogger.error("SetCurrentScene - COULD NOT FIND SCENE: " + id);
-			Gdx.app.exit();
 		}
 	}
 
@@ -510,7 +508,7 @@ public class World implements Serializable, AssetConsumer {
 		}
 	}
 
-	public void newGame() {
+	public void newGame() throws Exception {
 		loadChapter(null);
 	}
 
@@ -519,12 +517,13 @@ public class World implements Serializable, AssetConsumer {
 	/**
 	 * Try to load the save game if exists. In other case, load the game from
 	 * XML.
+	 * @throws Exception 
 	 * 
 	 * @throws IOException
 	 * @throws SAXException
 	 * @throws ParserConfigurationException
 	 */
-	public void load() {
+	public void load() throws Exception {
 		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
 			// SAVEGAME EXISTS
 			try {
@@ -542,8 +541,9 @@ public class World implements Serializable, AssetConsumer {
 	/**
 	 * Load the world description. First try to load 'world.json'. If doesn't
 	 * exists try 'world.xml'.
+	 * @throws IOException 
 	 */
-	public void loadWorldDesc() {
+	public void loadWorldDesc() throws IOException {
 		if (EngineAssetManager.getInstance().getModelFile(EngineAssetManager.WORLD_FILENAME_JSON).exists()) {
 			SerializationHelper.getInstance().setMode(Mode.MODEL);
 
@@ -570,7 +570,7 @@ public class World implements Serializable, AssetConsumer {
 			} catch (Exception e) {
 				EngineLogger.error("ERROR LOADING WORLD XML", e);
 				dispose();
-				Gdx.app.exit();
+				throw new IOException(e);
 			}
 		}
 	}
@@ -605,7 +605,7 @@ public class World implements Serializable, AssetConsumer {
 		w.close();
 	}
 
-	public void loadChapter(String chapterName) {
+	public void loadChapter(String chapterName) throws IOException {
 		if (!disposed)
 			dispose();
 
@@ -617,18 +617,33 @@ public class World implements Serializable, AssetConsumer {
 
 		SerializationHelper.getInstance().setMode(Mode.MODEL);
 
-		try {
-			WorldXMLLoader.loadChapter(chapterName, this);
-		} catch (Exception e) {
-			EngineLogger.error("ERROR LOADING GAME", e);
-			dispose();
-			Gdx.app.exit();
+		if (chapterName == null)
+			chapterName = initChapter;
+
+		if (EngineAssetManager.getInstance().getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).exists()) {
+
+			JsonValue root = new JsonReader().parse(EngineAssetManager.getInstance()
+					.getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).reader("UTF-8"));
+
+			Json json = new Json();
+
+			read(json, root);
+
+			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
+		} else {
+			try {
+				WorldXMLLoader.loadChapter(chapterName, this);
+			} catch (Exception e) {
+				EngineLogger.error("ERROR LOADING GAME", e);
+				dispose();
+				throw new IOException(e);
+			}
 		}
 
 		EngineLogger.debug("XML LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 	}
 
-	public void loadChapter(String chapter, String scene) {
+	public void loadChapter(String chapter, String scene) throws Exception {
 		this.testScene = scene;
 
 		loadChapter(chapter);
@@ -723,6 +738,35 @@ public class World implements Serializable, AssetConsumer {
 		takeScreenshot(filename + ".png", SCREENSHOT_DEFAULT_WIDTH);
 	}
 
+	public void saveModel(String chapterId) throws IOException {
+		EngineLogger.debug("SAVING GAME MODEL");
+
+		if (disposed)
+			return;
+
+		Json json = new Json();
+		json.setOutputType(OutputType.javascript);
+
+		String s = null;
+
+		SerializationHelper.getInstance().setMode(Mode.MODEL);
+
+		if (EngineLogger.debugMode())
+			s = json.prettyPrint(this);
+		else
+			s = json.toJson(this);
+
+		Writer w = EngineAssetManager.getInstance().getModelFile(chapterId + EngineAssetManager.CHAPTER_EXT)
+				.writer(false, "UTF-8");
+
+		try {
+			w.write(s);
+			w.close();
+		} catch (IOException e) {
+			throw new IOException("ERROR SAVING MODEL", e);
+		}
+	}
+
 	public void takeScreenshot(String filename, int w) {
 
 		int h = (int) (w * ((float) height) / (float) width);
@@ -754,11 +798,8 @@ public class World implements Serializable, AssetConsumer {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
-			// json.writeValue("scenes", scenes, scenes.getClass(),
-			// Scene.class);
-			// json.writeValue("worldVerbs", VerbManager.worldVerbs,
-			// HashMap.class, Verb.class);
-			// json.writeValue("chapter", currentChapter);
+			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
+			json.writeValue("initScene", initScene);
 
 		} else {
 
@@ -772,15 +813,13 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("textmanager", textManager);
 			json.writeValue("customProperties", customProperties);
 
-			if (currentDialog == null) {
-				json.writeValue("dialogActor", (String) null, null);
-				json.writeValue("currentDialog", (String) null, null);
-			} else {
+			if (currentDialog != null) {
 				json.writeValue("dialogActor", currentDialog.getActor());
 				json.writeValue("currentDialog", currentDialog.getId());
 			}
 
-			json.writeValue("transition", transition, transition == null ? null : transition.getClass());
+			if(transition != null)
+				json.writeValue("transition", transition);
 
 			json.writeValue("chapter", currentChapter);
 			ActionCallbackQueue.write(json);
@@ -793,13 +832,18 @@ public class World implements Serializable, AssetConsumer {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
-			// instance.scenes = json.readValue("scenes", HashMap.class,
-			// Scene.class, jsonData);
-			// VerbManager.worldVerbs = json.readValue("worldVerbs",
-			// HashMap.class, Verb.class, jsonData);
-			// instance.currentChapter = json.readValue("chapter", String.class,
-			// jsonData);
+			scenes = json.readValue("scenes", HashMap.class, Scene.class, jsonData);
+			initScene = json.readValue("initScene", String.class, jsonData);
 
+			if (initScene == null && scenes.size() > 0) {
+				initScene = scenes.keySet().toArray(new String[0])[0];
+			}
+
+			for (Scene s : scenes.values()) {
+				s.resetCamera(width, height);
+			}
+			
+			setCurrentScene(initScene);
 		} else {
 			currentChapter = json.readValue("chapter", String.class, jsonData);
 

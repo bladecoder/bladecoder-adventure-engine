@@ -21,7 +21,6 @@ import com.bladecoder.engine.model.World;
 public class SetCutmodeAction implements Action {
 	@ActionProperty(required = true, defaultValue = "true")
 	@ActionPropertyDescription("when 'true' sets the scene in 'cutmode'")
-
 	private boolean value = true;
 
 	@Override

@@ -27,7 +27,8 @@ public class StringInputPanel extends InputPanel {
 	}
 
 	public String getText() {
-		return ((TextField)field).getText();
+		String text = ((TextField)field).getText();
+		return text.isEmpty()?null:text;
 	}
 
 	public void setText(String s) {

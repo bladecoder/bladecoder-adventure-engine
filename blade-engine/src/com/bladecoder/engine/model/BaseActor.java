@@ -108,12 +108,14 @@ abstract public class BaseActor implements Serializable {
 			json.writeValue("id", id);
 			json.writeValue("bbox", bbox.getVertices());
 		} else {
-			json.writeValue("visible", visible);
 
-			float worldScale = EngineAssetManager.getInstance().getScale();
-			Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
-			json.writeValue("pos", scaledPos);
 		}
+		
+		json.writeValue("visible", visible);
+
+		float worldScale = EngineAssetManager.getInstance().getScale();
+		Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
+		json.writeValue("pos", scaledPos);
 	}
 
 	@Override
@@ -128,14 +130,16 @@ abstract public class BaseActor implements Serializable {
 
 		} else {
 
-			visible = json.readValue("visible", Boolean.class, jsonData);
 
-			Vector2 pos = json.readValue("pos", Vector2.class, jsonData);
-
-			float worldScale = EngineAssetManager.getInstance().getScale();
-			bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
-			bbox.setScale(worldScale, worldScale);
 		}
+		
+		visible = json.readValue("visible", Boolean.class, jsonData);
+
+		Vector2 pos = json.readValue("pos", Vector2.class, jsonData);
+
+		float worldScale = EngineAssetManager.getInstance().getScale();
+		bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
+		bbox.setScale(worldScale, worldScale);
 	}
 
 }

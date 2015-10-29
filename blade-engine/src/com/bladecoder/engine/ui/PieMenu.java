@@ -140,7 +140,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 
 		if (desc != null) {
 
-			if (desc.charAt(0) == '@')
+			if (desc.charAt(0) == I18N.PREFIX)
 				desc = I18N.getString(desc.substring(1));
 					
 			layout.setText(font, desc);

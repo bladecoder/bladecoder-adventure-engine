@@ -1,6 +1,6 @@
 package com.bladecoder.engine.loader;
 
-public final class XMLConstants {
+final class XMLConstants {
 
 	public static final String WORLD_FILENAME = "world.xml";
 	public static final String CHAPTER_EXT = ".chapter";	

@@ -23,9 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.ChapterDocument;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.model.WorldDocument;
 import com.bladecoder.engineeditor.ui.components.HeaderPanel;
 import com.bladecoder.engineeditor.ui.components.TabPanel;
 
@@ -57,13 +55,10 @@ public class ProjectPanel extends HeaderPanel  {
 
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED, new PropertyChangeListener() {
 			@Override
-			public void propertyChange(PropertyChangeEvent e) {
-				WorldDocument w = Ctx.project.getWorldDocument();
-				ChapterDocument selectedChapter = Ctx.project.getSelectedChapter();
-				
+			public void propertyChange(PropertyChangeEvent e) {	
 				sceneList.addElements(World.getInstance(), Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[World.getInstance().getScenes().size()])));
 //				verbList.addElements(w, w.getElement(), "verb");
-				chapterList.addElements(w);
+				chapterList.addElements();
 				setTile("ADVENTURE - " + (Ctx.project.getTitle() != null? Ctx.project.getTitle():""));
 			}
 		});		

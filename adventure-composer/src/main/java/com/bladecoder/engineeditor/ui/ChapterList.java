@@ -23,13 +23,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.WorldDocument;
+import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditList;
 
 public class ChapterList extends EditList<String> {
-
-	WorldDocument doc;
 
 	private ImageButton initBtn;
 
@@ -60,7 +58,8 @@ public class ChapterList extends EditList<String> {
 		if (e == null)
 			return;
 		
-		Ctx.project.getWorldDocument().setInitChapter(e);
+		World.getInstance().setInitChapter(e);
+		Ctx.project.setModified();
 	}
 
 	@Override
@@ -80,13 +79,13 @@ public class ChapterList extends EditList<String> {
 
 		String e = list.getItems().removeIndex(pos);
 
-		if (e.equals(Ctx.project.getWorldDocument().getInitChapter())) {
-			Ctx.project.getWorldDocument().setInitChapter(list.getItems().get(0));
+		if (e.equals(Ctx.project.getChapter().getInitChapter())) {
+			World.getInstance().setInitChapter(list.getItems().get(0));
+			Ctx.project.setModified();
 		}
 
 		try {
-			((WorldDocument) doc).removeChapter(e);
-			Ctx.project.saveProject();
+			Ctx.project.getChapter().deleteChapter(e);
 		} catch (Exception ex) {
 			String msg = "Something went wrong while deleting the chapter.\n\n"
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
@@ -94,11 +93,15 @@ public class ChapterList extends EditList<String> {
 
 			ex.printStackTrace();
 		}
+		
+		list.setSelectedIndex(0);
+		
+		Ctx.project.notifyPropertyChange(Project.CHAPTER_PROPERTY);
 	}
 
 	@Override
 	protected void create() {
-		EditChapterDialog dialog = new EditChapterDialog(skin, doc, null);
+		EditChapterDialog dialog = new EditChapterDialog(skin, Ctx.project.getChapter(), null);
 		dialog.show(getStage());
 		dialog.setListener(new ChangeListener() {
 			@Override
@@ -110,6 +113,8 @@ public class ChapterList extends EditList<String> {
 					list.setSelectedIndex(i);
 
 				list.invalidateHierarchy();
+				
+				Ctx.project.notifyPropertyChange(Project.CHAPTER_PROPERTY);
 			}
 		});
 	}
@@ -122,7 +127,7 @@ public class ChapterList extends EditList<String> {
 		if (e == null)
 			return;
 
-		EditChapterDialog dialog = new EditChapterDialog(skin, doc, e);
+		EditChapterDialog dialog = new EditChapterDialog(skin, Ctx.project.getChapter(), e);
 		dialog.show(getStage());
 		dialog.setListener(new ChangeListener() {
 			@Override
@@ -131,6 +136,7 @@ public class ChapterList extends EditList<String> {
 				list.getItems().removeIndex(list.getSelectedIndex());
 				list.getItems().add(e);
 				list.setSelectedIndex(list.getItems().indexOf(e, true));
+				Ctx.project.notifyPropertyChange(Project.CHAPTER_PROPERTY);
 			}
 		});
 	}
@@ -144,14 +150,13 @@ public class ChapterList extends EditList<String> {
 	}
 	
 
-	public void addElements(WorldDocument w) {
-		this.doc = w;
+	public void addElements() {
 
 		list.getItems().clear();
 		list.getSelection().clear();
 		toolbar.disableCreate(false);
 
-		String nl[] = w.getChapters();
+		String nl[] = Ctx.project.getChapter().getChapters();
 
 		for (int i = 0; i < nl.length; i++) {
 			addItem(nl[i]);

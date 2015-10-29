@@ -32,7 +32,6 @@ import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
@@ -49,8 +48,8 @@ import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationDesc> {
 	
-	public static final String ANIMATION_TYPES[] = { XMLConstants.NO_REPEAT_VALUE, XMLConstants.REPEAT_VALUE,
-			XMLConstants.YOYO_VALUE, XMLConstants.REVERSE_VALUE };
+	public static final String ANIMATION_TYPES[] = { Tween.Type.NO_REPEAT.toString(), Tween.Type.REPEAT.toString(),
+			Tween.Type.YOYO.toString(), Tween.Type.REVERSE.toString() };
 
 	public static final String INFO = "Define sprites and animations";
 	
@@ -91,7 +90,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		id = InputPanelFactory.createInputPanel(skin, "ID",
 				"Select the id of the animation", new String[0], true);
 		repeat = InputPanelFactory.createInputPanel(skin, "Animation type",
-				"Select the type of the animation", Param.Type.OPTION, true, "NO_REPEAT", Tween.Type.class.getEnumConstants());
+				"Select the type of the animation", Param.Type.OPTION, true, Tween.Type.NO_REPEAT.toString(), Tween.Type.class.getEnumConstants());
 		
 		speed = InputPanelFactory.createInputPanel(skin, "Speed",
 				"Select the speed of the animation in secods",
@@ -127,7 +126,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 					public void changed(ChangeEvent event, Actor actor) {
 						String type = repeat.getText();
 
-						if (type.equals(XMLConstants.REPEAT_VALUE) || type.equals(XMLConstants.YOYO_VALUE)) {
+						if (type.equals(Tween.Type.REPEAT.toString()) || type.equals(Tween.Type.YOYO.toString())) {
 							setVisible(delay,true);
 							setVisible(count,true);
 						} else {
@@ -231,13 +230,13 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		anim.disposeWhenPlayed = false;	
 		
 		if (renderer instanceof SpineRenderer) {
-			spriteWidget.setSource(XMLConstants.SPINE_VALUE, anim);
+			spriteWidget.setSource(Project.SPINE_RENDERER_STRING, anim);
 		} else if (renderer instanceof AtlasRenderer) {
-			spriteWidget.setSource(XMLConstants.ATLAS_VALUE, anim);
+			spriteWidget.setSource(Project.ATLAS_RENDERER_STRING, anim);
 		} else if (renderer instanceof ImageRenderer) {
-			spriteWidget.setSource(XMLConstants.IMAGE_VALUE, anim);
+			spriteWidget.setSource(Project.IMAGE_RENDERER_STRING, anim);
 		} else if (renderer instanceof Sprite3DRenderer) {
-			spriteWidget.setSource(XMLConstants.S3D_VALUE, anim);
+			spriteWidget.setSource(Project.S3D_RENDERER_STRING, anim);
 		}
 	}
 	
@@ -445,7 +444,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 //		UndoOp undoOp = new UndoAddElement(doc, e);
 //		Ctx.project.getUndoStack().add(undoOp);
 		
-		Ctx.project.getSelectedChapter().setModified(e);
+		Ctx.project.setModified();
 	}
 
 	@Override

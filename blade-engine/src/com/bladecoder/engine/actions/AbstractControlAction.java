@@ -4,6 +4,7 @@ import java.util.List;
 
 public abstract class AbstractControlAction implements Action {
 	
+	@ActionProperty(required = true)
 	protected String caID;
 
 	protected int skipControlIdBlock(List<Action> actions, int ip) {

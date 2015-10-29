@@ -23,7 +23,7 @@ public abstract class EditModelDialog<PARENT, T> extends EditDialog {
 
 	protected T e;
 	protected PARENT parent;
-	private InputPanel[] i;
+	protected InputPanel[] i;
 
 	protected ChangeListener listener;
 

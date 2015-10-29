@@ -134,7 +134,7 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 			renderer.setInitAnimation(null);
 		}
 		
-		Ctx.project.getSelectedChapter().setModified(d);
+		Ctx.project.setModified();
 	}
 
 	@Override

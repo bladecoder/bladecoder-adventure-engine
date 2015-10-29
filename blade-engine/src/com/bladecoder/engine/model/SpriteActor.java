@@ -262,35 +262,36 @@ public class SpriteActor extends InteractiveActor {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
 		} else {
-			json.writeValue("scale", scale);
 			json.writeValue("posTween", posTween, null);
-			json.writeValue("depthType", depthType);
-			json.writeValue("bboxFromRenderer", bboxFromRenderer);
 			json.writeValue("scaleTween", scaleTween, null);
 		}
+		
+		json.writeValue("scale", scale);
+		json.writeValue("depthType", depthType);
+		json.writeValue("bboxFromRenderer", bboxFromRenderer);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
-		
-		renderer.read(json, jsonData.get("renderer"));
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
-
+			renderer = json.readValue("renderer", ActorRenderer.class, jsonData);
 		} else {
-
-			scale = json.readValue("scale", Float.class, jsonData);
 			posTween = json.readValue("posTween", SpritePosTween.class, jsonData);
-			depthType = json.readValue("depthType", DepthType.class, jsonData);
-			bboxFromRenderer = json.readValue("bboxFromRenderer", Boolean.class, jsonData);
-
-			if (bboxFromRenderer)
-				renderer.updateBboxFromRenderer(bbox);
-
 			scaleTween = json.readValue("scaleTween", SpriteScaleTween.class, jsonData);
-			setScale(scale);
+			renderer.read(json, jsonData.get("renderer"));
 		}
+		
+		scale = json.readValue("scale", Float.class, jsonData);
+		
+		depthType = json.readValue("depthType", DepthType.class, jsonData);
+		bboxFromRenderer = json.readValue("bboxFromRenderer", Boolean.class, jsonData);
+
+		if (bboxFromRenderer)
+			renderer.updateBboxFromRenderer(bbox);
+
+		setScale(scale);
 	}
 
 }

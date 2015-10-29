@@ -239,14 +239,15 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 			json.writeValue("desc", desc);
 			json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass(), SoundFX.class);
 		} else {
-			verbs.write(json);
-			json.writeValue("interaction", interaction);
-			json.writeValue("state", state);
 			json.writeValue("playingSound", playingSound, playingSound == null ? null : playingSound.getClass());
 			json.writeValue("playerInside", playerInside);
-			json.writeValue("zIndex", zIndex);
-			json.writeValue("layer", layer);
 		}
+		
+		verbs.write(json);
+		json.writeValue("interaction", interaction);
+		json.writeValue("state", state);
+		json.writeValue("zIndex", zIndex);
+		json.writeValue("layer", layer);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -258,14 +259,15 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 			desc = json.readValue("desc", String.class, jsonData);
 			sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);
 		} else {
-			verbs.read(json, jsonData);
-			interaction = json.readValue("interaction", Boolean.class, jsonData);
-			state = json.readValue("state", String.class, jsonData);			
 			playingSound = json.readValue("playingSound", String.class, jsonData);
-			playerInside = json.readValue("playerInside", Boolean.class, jsonData);
-			zIndex = json.readValue("zIndex", Float.class, jsonData);
-			layer = json.readValue("layer", String.class, jsonData);
+			playerInside = json.readValue("playerInside", Boolean.class, jsonData);			
 		}
+		
+		verbs.read(json, jsonData);
+		interaction = json.readValue("interaction", Boolean.class, jsonData);
+		state = json.readValue("state", String.class, jsonData);			
+		zIndex = json.readValue("zIndex", Float.class, jsonData);
+		layer = json.readValue("layer", String.class, jsonData);
 	}
 
 }

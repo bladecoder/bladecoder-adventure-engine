@@ -68,6 +68,8 @@ public class EngineAssetManager extends AssetManager {
 
 	private static final String MODEL3D_EXT = ".g3db";
 	private static final String SPINE_EXT = ".skel";
+	
+	public static final String CHAPTER_EXT = ".chapter.json";
 
 	private static EngineAssetManager instance = null;
 

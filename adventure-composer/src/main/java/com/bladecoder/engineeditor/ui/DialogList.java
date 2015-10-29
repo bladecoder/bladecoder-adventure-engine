@@ -101,7 +101,7 @@ public class DialogList extends ModelList<CharacterActor, Dialog> {
 		if (list.getSelectedIndex() == -1)
 			addOptions();
 		
-		Ctx.project.getSelectedChapter().setModified(d);
+		Ctx.project.setModified();
 	}
 
 

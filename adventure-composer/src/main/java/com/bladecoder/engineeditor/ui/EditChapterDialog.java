@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.MessageFormat;
 
@@ -27,15 +26,16 @@ import org.xml.sax.SAXException;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.WorldDocument;
+import com.bladecoder.engineeditor.model.Chapter;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
 public class EditChapterDialog extends EditDialog {
 
-	private WorldDocument doc;
+	private Chapter doc;
 	private InputPanel inputId;
 
 	private String previousId = null;
@@ -43,7 +43,7 @@ public class EditChapterDialog extends EditDialog {
 	
     private ChangeListener listener;
 
-	public EditChapterDialog(Skin skin, WorldDocument doc, String chapter) {
+	public EditChapterDialog(Skin skin, Chapter doc, String chapter) {
 		super("", skin);
 		
 		this.doc = doc;
@@ -70,9 +70,9 @@ public class EditChapterDialog extends EditDialog {
 
 	private void create() {
 		try {	
-			newId = doc.createChapter(inputId.getText()).getId();
-		} catch (FileNotFoundException | TransformerException
-				| ParserConfigurationException e) {
+			newId = doc.createChapter(inputId.getText());
+		} catch (TransformerException
+				| ParserConfigurationException | IOException e) {
 			String msg = "Something went wrong while creating the chapter.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
 			Ctx.msg.show(getStage(), msg, 2);
@@ -87,20 +87,20 @@ public class EditChapterDialog extends EditDialog {
 
 			try {
 				// save selected chapter if renamed chapter is the selected chapter
-				if(previousId.equals(Ctx.project.getSelectedChapter())) {
-					Ctx.project.getSelectedChapter().save();
+				if(previousId.equals(Ctx.project.getChapter())) {
+					Ctx.project.getChapter().save();
 				}
 				
-				((WorldDocument) doc).renameChapter(previousId, newId);
+				doc.renameChapter(previousId, newId);
 				
 				// Reload chapter if renamed chapter is the selected chapter
-				if(previousId.equals(Ctx.project.getSelectedChapter())) {
+				if(previousId.equals(Ctx.project.getChapter())) {
 					Ctx.project.loadChapter(newId);
 				}
 				
 				// sets the init chapter
-				if(previousId.equals(Ctx.project.getWorldDocument().getInitChapter())) {
-					Ctx.project.getWorldDocument().setInitChapter(newId);
+				if(previousId.equals(doc.getInitChapter())) {
+					World.getInstance().setInitChapter(newId);
 				}
 				
 				Ctx.project.saveProject();

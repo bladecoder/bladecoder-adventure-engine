@@ -134,39 +134,12 @@ public abstract class ModelList<PARENT, T> extends EditList<T> {
 
 		return e;
 	}
-
+	
 	@Override
-	protected abstract void delete();
-
-	@Override
-	protected void copy() {
-		// Element e = list.getSelected();
-		//
-		// if (e == null)
-		// return;
-		//
-		// clipboard = (Element) e.cloneNode(true);
-		// I18NUtils.putTranslationsInElement(doc, clipboard);
-		// toolbar.disablePaste(false);
+	protected void copy() {	
 	}
 
 	@Override
 	protected void paste() {
-		// Element newElement = doc.cloneNode(parent, clipboard);
-		// int pos = list.getSelectedIndex() + 1;
-		//
-		// Element e2 = null;
-		//
-		// if(pos!=0 && pos < list.getItems().size)
-		// e2 = list.getItems().get(pos);
-		//
-		// list.getItems().insert(pos, newElement);
-		//
-		// Node parent = newElement.getParentNode();
-		// parent.insertBefore(newElement, e2);
-		// I18NUtils.extractStrings(doc, newElement);
-		//
-		// list.setSelectedIndex(pos);
-		// list.invalidateHierarchy();
 	}
 }

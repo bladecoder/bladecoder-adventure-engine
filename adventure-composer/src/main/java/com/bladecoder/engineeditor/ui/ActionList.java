@@ -16,6 +16,8 @@
 package com.bladecoder.engineeditor.ui;
 
 import java.lang.reflect.Field;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,11 +29,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.AbstractControlAction;
+import com.bladecoder.engine.actions.AbstractIfAction;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
+import com.bladecoder.engine.actions.ActorAnimationRef;
 import com.bladecoder.engine.actions.EndAction;
 import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.loader.XMLConstants;
+import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
@@ -39,13 +43,13 @@ import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.utils.EditorLogger;
-import com.bladecoder.engineeditor.utils.I18NUtils;
 
 public class ActionList extends ModelList<Verb, Action> {
 	// TODO Action cache for getting names
-	
+
 	private static final String END_ACTION = "com.bladecoder.engine.actions.EndAction";
 	private static final String ACTION_NAME_VALUE_ELSE = "Else";
+	private static final String CONTROL_ACTION_ID_ATTR = "caID";
 
 	// FIXME: This needs to go, just added here in the interim while we work on
 	// replacing the DOM with Beans
@@ -151,7 +155,7 @@ public class ActionList extends ModelList<Verb, Action> {
 	}
 
 	@Override
-	protected EditModelDialog<Verb,Action> getEditElementDialogInstance(Action e) {
+	protected EditModelDialog<Verb, Action> getEditElementDialogInstance(Action e) {
 		return new EditActionDialog(skin, parent, e);
 	}
 
@@ -247,15 +251,17 @@ public class ActionList extends ModelList<Verb, Action> {
 		// e.getAttribute(XMLConstants.ACTION_NAME_ATTR), id);
 	}
 
-	private String getOrCreateControlActionId(Element e) {
-		String id = e.getAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR);
-		if (id.isEmpty()) {
-			// FIXME: While highly, highly, highly unlikely, this might still
-			// cause collisions. Replace it with a count or similar
-			final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
-			id = actionName + MathUtils.random(1, Integer.MAX_VALUE);
-			e.setAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR, id);
-		}
+	private String getOrCreateControlActionId(Action a) {
+		String id = null;
+//		e.getAttribute(CONTROL_ACTION_ID_ATTR);
+//		
+//		if (id.isEmpty()) {
+//			// FIXME: While highly, highly, highly unlikely, this might still
+//			// cause collisions. Replace it with a count or similar
+//			final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
+//			id = actionName + MathUtils.random(1, Integer.MAX_VALUE);
+//			e.setAttribute(CONTROL_ACTION_ID_ATTR, id);
+//		}
 		return id;
 	}
 
@@ -290,36 +296,34 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	@Override
 	protected void delete() {
-		 int pos = list.getSelectedIndex();
-		
-		 if (pos == -1)
-			 return;
-		
-		 Action e = list.getItems().get(pos);
-		
-		 if (e instanceof EndAction)
-			 return;
-		 
+		int pos = list.getSelectedIndex();
 
-		
+		if (pos == -1)
+			return;
+
+		Action e = list.getItems().get(pos);
+
+		if (e instanceof EndAction)
+			return;
+
 		Action action = removeSelected();
-		
-		parent.getActions().remove(action);
-			
-	// TODO UNDO
-//			UndoOp undoOp = new UndoDeleteElement(doc, e);
-//			Ctx.project.getUndoStack().add(undoOp);
-//			doc.deleteElement(e);
 
-	// TODO TRANSLATIONS
-//			I18NUtils.putTranslationsInElement(doc, clipboard);
-		
-		Ctx.project.getSelectedChapter().setModified(action);
-		
+		parent.getActions().remove(action);
+
+		// TODO UNDO
+		// UndoOp undoOp = new UndoDeleteElement(doc, e);
+		// Ctx.project.getUndoStack().add(undoOp);
+		// doc.deleteElement(e);
+
+		// TODO TRANSLATIONS
+		// I18NUtils.putTranslationsInElement(doc, clipboard);
+
+		Ctx.project.setModified();
+
 		deleteControlAction(pos, e);
 	}
 
-	private boolean isControlAction(Action e) {		
+	private boolean isControlAction(Action e) {
 		return e instanceof AbstractControlAction;
 	}
 
@@ -409,72 +413,145 @@ public class ActionList extends ModelList<Verb, Action> {
 		@Override
 		protected String getCellTitle(Action a) {
 			String id = ActionFactory.getName(a);
-			
-			if(id == null)
+
+			if (id == null)
 				id = a.getClass().getCanonicalName();
-//			
-//			
-//			String id = e.getAttribute(XMLConstants.ACTION_NAME_ATTR).isEmpty() ? e.getAttribute("class")
-//					: e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
-//
-//			String actor = e.getAttribute("actor");
-//			boolean animationAction = e.getAttribute(XMLConstants.ACTION_NAME_ATTR).equals("Animation");
-//			boolean controlAction = isControlAction(e);
-//
-//			boolean enabled = e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).isEmpty()
-//					|| e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).equals(XMLConstants.TRUE_VALUE);
-//
-//			if (!enabled && !controlAction) {
-//				if (!actor.isEmpty() && !animationAction) {
-//					String[] s = Param.parseString2(actor);
-//
-//					if (s[0] != null)
-//						id = MessageFormat.format("[GRAY]{0} {1}.{2}[]", s[0], s[1], id);
-//					else
-//						id = MessageFormat.format("[GRAY]{0}.{1}[]", actor, id);
-//				} else if (animationAction) {
-//					String a = e.getAttribute("animation");
-//					String[] s = Param.parseString2(a);
-//
-//					if (s[0] != null)
-//						id = MessageFormat.format("[GRAY]{0}.{1} {2}[]", s[0], id, s[1]);
-//					else
-//						id = MessageFormat.format("[GRAY]{0} {1}[]", id, a);
-//				} else {
-//					id = MessageFormat.format("[GRAY]{0}[]", id);
-//				}
-//
-//			} else if (!actor.isEmpty() && !animationAction && !controlAction) {
-//				String[] s = Param.parseString2(actor);
-//
-//				if (s[0] != null)
-//					id = MessageFormat.format("[GREEN]{0}[] {1}.{2}", s[0], s[1], id);
-//				else
-//					id = MessageFormat.format("{0}.{1}", actor, id);
-//			} else if (animationAction) {
-//				String a = e.getAttribute("animation");
-//				String[] s = Param.parseString2(a);
-//
-//				if (s[0] == null)
-//					s[0] = actor;
-//
-//				if (s[0] != null)
-//					id = MessageFormat.format("{0}.{1} [GREEN]{2}[]", s[0], id, s[1]);
-//				else
-//					id = MessageFormat.format("{0} [GREEN]{1}[]", id, a);
-//			} else if (controlAction) {
-//				if (!actor.isEmpty()) {
-//					String[] s = Param.parseString2(actor);
-//
-//					if (s[0] != null)
-//						id = MessageFormat.format("[GREEN]{0}[] [BLUE]{1}.{2}[]", s[0], s[1], id);
-//					else
-//						id = MessageFormat.format("[BLUE]{0}.{1}[BLUE]", actor, id);
-//				} else
-//					id = MessageFormat.format("[BLUE]{0}[]", id);
-//			}
+
+			Field field = ActionUtils.getField(a.getClass(), "actor");
+			String actor = null;
+
+			if (field != null) {
+				try {
+					field.setAccessible(true);
+					Object v = field.get(a);
+					if(v != null)
+						actor = v.toString();
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					EditorLogger.error(e.getMessage());
+				}
+			}
+			
+			 boolean animationAction = id.equals("Animation");
+			 boolean controlAction = isControlAction(a);
+			
+			 boolean enabled = true;
+			// e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).isEmpty()
+			// ||
+			// e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).equals(XMLConstants.TRUE_VALUE);
+			//
+			if (!enabled && !controlAction) {
+				if (actor != null && !animationAction) {
+					SceneActorRef sa = new SceneActorRef(actor);
+
+					if (sa.getSceneId() != null)
+						id = MessageFormat.format("[GRAY]{0} {1}.{2}[]", sa.getSceneId(), sa.getActorId(), id);
+					else
+						id = MessageFormat.format("[GRAY]{0}.{1}[]", sa.getActorId(), id);
+				} else if (animationAction) {
+					field = ActionUtils.getField(a.getClass(), "animation");
+					String animation = null;
+
+					if (field != null) {
+						try {
+							field.setAccessible(true);
+							animation = field.get(a).toString();
+						} catch (IllegalArgumentException | IllegalAccessException e) {
+							EditorLogger.error(e.getMessage());
+						}
+					}
+					
+					ActorAnimationRef aa = new ActorAnimationRef(animation);
+
+					if (aa.getActorId() != null)
+						id = MessageFormat.format("[GRAY]{0}.{1} {2}[]", aa.getActorId(), id, aa.getAnimationId());
+					else
+						id = MessageFormat.format("[GRAY]{0} {1}[]", id, aa.getAnimationId());
+				} else {
+					id = MessageFormat.format("[GRAY]{0}[]", id);
+				}
+
+			} else if (actor != null && !animationAction && !controlAction) {
+				SceneActorRef sa = new SceneActorRef(actor);
+
+				if (sa.getSceneId() != null)
+					id = MessageFormat.format("[GREEN]{0}[] {1}.{2}",  sa.getSceneId(), sa.getActorId(), id);
+				else
+					id = MessageFormat.format("{0}.{1}", sa.getActorId(), id);
+			} else if (animationAction) {
+				field = ActionUtils.getField(a.getClass(), "animation");
+				String animation = null;
+
+				if (field != null) {
+					try {
+						field.setAccessible(true);
+						animation = field.get(a).toString();
+					} catch (IllegalArgumentException | IllegalAccessException e) {
+						EditorLogger.error(e.getMessage());
+					}
+				}
+				
+				ActorAnimationRef aa = new ActorAnimationRef(animation);
+
+				if (aa.getActorId() != null)
+					id = MessageFormat.format("[GREEN]{0}.{1} {2}[]", aa.getActorId(), id, aa.getAnimationId());
+				else
+					id = MessageFormat.format("[GREEN]{0} {1}[]",  id, aa.getAnimationId());
+			} else if (controlAction) {
+				if(a instanceof EndAction) {
+					Action parentAction = findParentAction((EndAction)a);
+					
+					if(parentAction instanceof AbstractIfAction && isElse((AbstractIfAction)parentAction, (EndAction)a)) {
+						id = "Else";
+					} else {
+						id = "End" + ActionFactory.getName(parentAction);
+					}
+				}
+				
+				if (actor != null) {
+					SceneActorRef sa = new SceneActorRef(actor);
+
+					if (sa.getSceneId() != null)
+						id = MessageFormat.format("[GREEN]{0}[] [BLUE]{1}.{2}[]",  sa.getSceneId(), sa.getActorId(), id);
+					else
+						id = MessageFormat.format("[BLUE]{0}.{1}[BLUE]", sa.getActorId(), id);
+				} else
+					id = MessageFormat.format("[BLUE]{0}[]", id);
+			}
 
 			return id;
+		}
+		
+		private boolean isElse(AbstractIfAction parentAction, EndAction ea) {
+			final String caID = ea.getControlActionID();
+			ArrayList<Action> actions = parent.getActions();
+			
+			int idx = actions.indexOf(parentAction);
+			
+			for(int i = idx + 1; i < actions.size(); i++) {
+				Action aa = actions.get(i);
+				
+				if(isControlAction(aa) && ((AbstractControlAction)aa).getControlActionID().equals(caID)) {
+					if(aa == ea)
+						return true;
+								
+					return false;
+				}
+			}
+
+			return false;	
+		}
+		
+		private Action findParentAction(EndAction a) {
+			final String caID = a.getControlActionID();
+			ArrayList<Action> actions = parent.getActions();
+			
+			for(Action a2:actions) {
+				if(isControlAction(a2) && ((AbstractControlAction)a2).getControlActionID().equals(caID)) {
+					return a2;
+				}
+			}
+
+			return null;	
 		}
 
 		@Override
@@ -482,14 +559,13 @@ public class ActionList extends ModelList<Verb, Action> {
 			StringBuilder sb = new StringBuilder();
 
 			Param[] params = ActionUtils.getParams(a);
+			String actionName = ActionFactory.getName(a);
 
 			for (Param p : params) {
 				String name = p.name;
 
-				if (name.equals("actor") || name.equals(XMLConstants.CLASS_ATTR)
-						|| name.equals(XMLConstants.ACTION_NAME_ATTR) || name.equals(XMLConstants.ACTION_ENABLED_ATTR)
-						|| name.equals(XMLConstants.CONTROL_ACTION_ID_ATTR)
-						|| (ActionFactory.getName(a).equals("Animation") && name.equals("animation")))
+				if (name.equals("actor")
+						|| (actionName != null && actionName.equals("Animation") && name.equals("animation")))
 					continue;
 
 				Field f = ActionUtils.getField(a.getClass(), p.name);
@@ -498,10 +574,12 @@ public class ActionList extends ModelList<Verb, Action> {
 					final boolean accessible = f.isAccessible();
 					f.setAccessible(true);
 					Object o = f.get(a);
-					if (o == null) continue;
+					if (o == null)
+						continue;
 					String v = o.toString();
-					
-					sb.append(name).append(": ").append(I18NUtils.translate(v)).append(' ');
+
+					// TODO Check SCOPE
+					sb.append(name).append(": ").append(Ctx.project.translate(v)).append(' ');
 					f.setAccessible(accessible);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.error(e.getMessage());

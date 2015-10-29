@@ -263,7 +263,7 @@ public class VerbUI extends Table {
 		if (actor != null && actor.getDesc() != null) {
 			desc = actor.getDesc();
 
-			if (desc.charAt(0) == '@')
+			if (desc.charAt(0) == I18N.PREFIX)
 				desc = I18N.getString(desc.substring(1));
 		}
 

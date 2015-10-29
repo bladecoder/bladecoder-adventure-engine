@@ -30,7 +30,7 @@ public class CustomTextureUnpacker {
 		File outputDirFile = new File(outputDir);
 		if (!outputDirFile.exists()) {
 			outputDirFile.mkdirs();
-			System.out.println(String.format("Creating directory: %s", outputDirFile.getPath()));
+			EditorLogger.debug(String.format("Creating directory: %s", outputDirFile.getPath()));
 		}
 
 		for (Page page : atlas.getPages()) {
@@ -42,7 +42,7 @@ public class CustomTextureUnpacker {
 				printExceptionAndExit(e);
 			}
 			for (Region region : atlas.getRegions()) {
-				System.out.println(String.format("Processing image for %s(%s): x[%s] y[%s] w[%s] h[%s], rotate[%s]",
+				EditorLogger.debug(String.format("Processing image for %s(%s): x[%s] y[%s] w[%s] h[%s], rotate[%s]",
 						region.name, region.index, region.left, region.top, region.width, region.height, region.rotate));
 
 				// check if the page this region is in is currently loaded in a

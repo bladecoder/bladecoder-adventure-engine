@@ -792,8 +792,9 @@ public class Sprite3DRenderer implements ActorRenderer {
 	@Override
 	public void write(Json json) {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
-		} else {
 			json.writeValue("fanims", fanims, HashMap.class, AnimationDesc.class);
+			json.writeValue("initAnimation", initAnimation);
+		} else {
 
 			String currentAnimationId = null;
 
@@ -801,8 +802,6 @@ public class Sprite3DRenderer implements ActorRenderer {
 				currentAnimationId = currentAnimation.id;
 
 			json.writeValue("currentAnimation", currentAnimationId);
-
-			json.writeValue("initAnimation", initAnimation);
 
 			json.writeValue("width", width);
 			json.writeValue("height", height);
@@ -832,15 +831,14 @@ public class Sprite3DRenderer implements ActorRenderer {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
-		} else {
 			fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
+			initAnimation = json.readValue("initAnimation", String.class, jsonData);
+		} else {
 
 			String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);
 
 			if (currentAnimationId != null)
 				currentAnimation = (AtlasAnimationDesc) fanims.get(currentAnimationId);
-
-			initAnimation = json.readValue("initAnimation", String.class, jsonData);
 
 			width = json.readValue("width", Integer.class, jsonData);
 			height = json.readValue("height", Integer.class, jsonData);

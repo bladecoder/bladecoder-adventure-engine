@@ -22,7 +22,7 @@ import java.beans.PropertyChangeListener;
 import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engineeditor.model.ChapterDocument;
+import com.bladecoder.engineeditor.model.Chapter;
 import com.bladecoder.engineeditor.ui.components.PropertyTable;
 
 public class SceneProps extends PropertyTable {
@@ -33,7 +33,7 @@ public class SceneProps extends PropertyTable {
 	public static final String INITIAL_MUSIC_DELAY_PROP = "Initial Music Delay";
 	public static final String REPEAT_MUSIC_DELAY_PROP = "Repeat Music Delay";
 	
-	ChapterDocument doc;
+	Chapter doc;
 	Element scn;
 	
 //	TableModelListener tableModelListener = new TableModelListener() {
@@ -59,7 +59,7 @@ public class SceneProps extends PropertyTable {
 		super(skin);
 	}
 
-	public void setSceneDocument(ChapterDocument doc, Element scn) {
+	public void setSceneDocument(Chapter doc, Element scn) {
 
 //		this.scn = scn;
 //		this.doc = doc;

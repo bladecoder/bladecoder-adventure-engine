@@ -68,7 +68,7 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 //		UndoOp undoOp = new UndoAddElement(doc, e);
 //		Ctx.project.getUndoStack().add(undoOp);
 		
-		Ctx.project.getSelectedChapter().setModified(e);
+		Ctx.project.setModified();
 	}
 
 	@Override

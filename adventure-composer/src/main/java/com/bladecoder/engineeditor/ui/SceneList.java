@@ -41,17 +41,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.bladecoder.engine.loader.XMLConstants;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.model.WorldDocument;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.undo.UndoDeleteScene;
+import com.bladecoder.engineeditor.undo.UndoOp;
 import com.bladecoder.engineeditor.utils.EditorLogger;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class SceneList extends ModelList<World, Scene> {
 
@@ -92,7 +93,7 @@ public class SceneList extends ModelList<World, Scene> {
 					Ctx.project.setSelectedScene(null);
 				} else {
 					Scene s = list.getItems().get(pos);
-					
+
 					Ctx.project.setSelectedScene(s);
 				}
 
@@ -111,28 +112,32 @@ public class SceneList extends ModelList<World, Scene> {
 
 		});
 
-		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED, new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent arg0) {
-				toolbar.disableCreate(Ctx.project.getProjectDir() == null);
-
-				disposeBgCache = true;
-				addChapters();
-			}
-		});
-
 		chapters.addListener(chapterListener);
 
-		Ctx.project.getWorldDocument().addPropertyChangeListener(new PropertyChangeListener() {
+		Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
+
 				EditorLogger.debug(evt.getPropertyName() + " NEW:" + evt.getNewValue() + " OLD:" + evt.getOldValue());
 
-				if (evt.getPropertyName().equals(XMLConstants.CHAPTER_TAG)) {
+				if (evt.getPropertyName().equals(Project.CHAPTER_PROPERTY)) {
 					addChapters();
-				} else if (evt.getPropertyName().equals("ELEMENT_DELETED")) {
+				} else if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_DELETED)) {
 					if (evt.getNewValue() instanceof World) {
 						addChapters();
+					} else if (evt.getNewValue() instanceof Scene) {
+						addElements(World.getInstance(),
+								Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[0])));
+					}
+				} else if (evt.getPropertyName().equals(Project.NOTIFY_PROJECT_LOADED)) {
+					toolbar.disableCreate(Ctx.project.getProjectDir() == null);
+
+					disposeBgCache = true;
+					addChapters();
+				} else if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_CREATED)) {
+					if (evt.getNewValue() instanceof Scene) {
+						addElements(World.getInstance(),
+								Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[0])));
 					}
 				}
 			}
@@ -145,7 +150,7 @@ public class SceneList extends ModelList<World, Scene> {
 		public void changed(ChangeEvent event, Actor actor) {
 			String selChapter = (String) chapters.getSelected();
 
-			if (selChapter != null && !selChapter.equals(Ctx.project.getSelectedChapter().getId())) {
+			if (selChapter != null && !selChapter.equals(Ctx.project.getChapter().getId())) {
 
 				// Save the project when changing chapter
 				try {
@@ -160,9 +165,8 @@ public class SceneList extends ModelList<World, Scene> {
 					if (selChapter != null)
 						Ctx.project.loadChapter(selChapter);
 
-//					doc = Ctx.project.getSelectedChapter();
-
-					addElements(World.getInstance(), Arrays.asList((Scene[])World.getInstance().getScenes().values().toArray()));
+					addElements(World.getInstance(),
+							Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[0])));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -171,8 +175,7 @@ public class SceneList extends ModelList<World, Scene> {
 	};
 
 	public void addChapters() {
-		WorldDocument w = Ctx.project.getWorldDocument();
-		String[] nl = w.getChapters();
+		String[] nl = Ctx.project.getChapter().getChapters();
 		Array<String> array = new Array<String>();
 
 		for (int i = 0; i < nl.length; i++) {
@@ -180,7 +183,7 @@ public class SceneList extends ModelList<World, Scene> {
 		}
 
 		chapters.setItems(array);
-		chapters.setSelected(Ctx.project.getSelectedChapter().getId());
+		chapters.setSelected(Ctx.project.getChapter().getId());
 		invalidate();
 	}
 
@@ -198,7 +201,7 @@ public class SceneList extends ModelList<World, Scene> {
 	@Override
 	protected void delete() {
 		Scene s = removeSelected();
-		
+
 		parent.getScenes().remove(s.getId());
 
 		// delete init_scene attr if the scene to delete is the chapter
@@ -206,16 +209,46 @@ public class SceneList extends ModelList<World, Scene> {
 		if (parent.getInitScene().equals(s.getId())) {
 			parent.setInitScene(null);
 		}
-		
-		// TODO UNDO
-//		UndoOp undoOp = new UndoDeleteElement(doc, e);
-//		Ctx.project.getUndoStack().add(undoOp);
-//		doc.deleteElement(e);
 
-// TODO TRANSLATIONS
-//		I18NUtils.putTranslationsInElement(doc, clipboard);
+		// TRANSLATIONS
+		Ctx.project.getI18N().putTranslationsInElement(s);
+
+		// UNDO
+		UndoOp undoOp = new UndoDeleteScene(s);
+		Ctx.project.getUndoStack().add(undoOp);
+
+		Ctx.project.setModified();
+	}
+
+	@Override
+	protected void copy() {
+		Scene e = list.getSelected();
+
+		if (e == null)
+			return;
+
+		clipboard = (Scene)ElementUtils.cloneElement(e);
+		toolbar.disablePaste(false);
+
+		// TRANSLATIONS
+		Ctx.project.getI18N().putTranslationsInElement(clipboard);
+	}
+
+	@Override
+	protected void paste() {
+		Scene newElement = (Scene)ElementUtils.cloneElement(clipboard);
 		
-		Ctx.project.getSelectedChapter().setModified(s);
+		newElement.setId(ElementUtils.getCheckedId(newElement.getId(), World.getInstance().getScenes().keySet().toArray(new String[0])));
+		
+		int pos = list.getSelectedIndex() + 1;
+
+		list.getItems().insert(pos, newElement);
+
+		World.getInstance().addScene(newElement);
+		Ctx.project.getI18N().extractStrings(newElement);
+
+		list.setSelectedIndex(pos);
+		list.invalidateHierarchy();
 	}
 
 	@Override
@@ -311,7 +344,7 @@ public class SceneList extends ModelList<World, Scene> {
 			// TODO SET INIT SCENE
 			String init = World.getInstance().getInitScene();
 
-			if (init.equals(name))
+			if (name.equals(init))
 				name += " <init>";
 
 			return name;

@@ -111,28 +111,25 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 
 	@Override
 	protected void delete() {
-			
-		Verb v = removeSelected();
-			
-		parent.getVerbs().remove(v.getHashKey());
-			
-	// TODO UNDO
-//			UndoOp undoOp = new UndoDeleteElement(doc, e);
-//			Ctx.project.getUndoStack().add(undoOp);
-//			doc.deleteElement(e);
 
-	// TODO TRANSLATIONS
-//			I18NUtils.putTranslationsInElement(doc, clipboard);
+		Verb v = removeSelected();
+
+		parent.getVerbs().remove(v.getHashKey());
+
+		// TODO UNDO
+		// UndoOp undoOp = new UndoDeleteElement(doc, e);
+		// Ctx.project.getUndoStack().add(undoOp);
+		// doc.deleteElement(e);
+
+		// TODO TRANSLATIONS
+		// I18NUtils.putTranslationsInElement(doc, clipboard);
 
 		// Clear actions here because change event doesn't call when deleting
 		// the last element
 		if (list.getSelectedIndex() == -1)
 			addActions();
-		
-		if(ScopePanel.WORLD_SCOPE.equals(scopePanel.getScope()))
-			Ctx.project.getWorldDocument().setModified(v);
-		else
-			Ctx.project.getSelectedChapter().setModified(v);
+
+		Ctx.project.setModified();
 	}
 
 	private void addActions() {

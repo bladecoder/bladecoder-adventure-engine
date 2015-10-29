@@ -59,7 +59,7 @@ public class Param {
 
 	public static Vector2 parseVector2(String s) {
 		
-		if(s==null)
+		if(s==null || s.isEmpty())
 			return null;
 		
 		Vector2 v = null;
@@ -137,25 +137,6 @@ public class Param {
 		
 		return sb.toString();
 	}
-	
-	public static String[] parseString2(String s) {
-		
-		if(s==null)
-			return null;
-		
-		String[] v = new String[2];
-
-		int idx = s.indexOf(STRING_PARAM_SEPARATOR.charAt(0));
-		
-		if (idx != -1) {
-			v[0] = s.substring(0,idx);
-			v[1] = s.substring(idx + 1); 
-		} else {
-			v[1] = s;
-		}
-
-		return v;
-	}
 
 	public static Color parseColor(String color) {
 		if (color == null || color.trim().isEmpty()) {
@@ -178,12 +159,5 @@ public class Param {
 
 	public static String toStringParam(Vector3 v) {
 		return v.x + NUMBER_PARAM_SEPARATOR + v.y + NUMBER_PARAM_SEPARATOR + v.z;
-	}
-	
-	public static String toStringParam(String s1, String s2) {
-		if( s1==null || s1.isEmpty())
-			return s2;
-		
-		return s1 + STRING_PARAM_SEPARATOR + s2;
 	}
 }

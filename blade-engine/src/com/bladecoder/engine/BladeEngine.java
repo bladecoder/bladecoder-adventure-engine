@@ -93,7 +93,13 @@ public class BladeEngine implements ApplicationListener {
 			EngineAssetManager.getInstance().forceResolution(forceRes);
 		}
 
-		World.getInstance().loadWorldDesc();
+		try {
+			World.getInstance().loadWorldDesc();
+		} catch (IOException e) {
+			dispose();
+			EngineLogger.error("EXITING: " + e.getMessage());
+			Gdx.app.exit();
+		}
 
 		ui = new UI();
 
@@ -105,7 +111,14 @@ public class BladeEngine implements ApplicationListener {
 		}
 
 		if (testScene != null || chapter != null) {
-			World.getInstance().loadChapter(chapter, testScene);
+			try {
+				World.getInstance().loadChapter(chapter, testScene);
+			} catch (Exception e) {
+				dispose();
+				EngineLogger.error("EXITING: " + e.getMessage());
+				Gdx.app.exit();
+			}
+			
 			ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 		}
 

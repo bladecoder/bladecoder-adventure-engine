@@ -7,6 +7,24 @@ public class ActorAnimationRef {
 		this(null, null);
 	}
 
+	public ActorAnimationRef(String actorAnimation) {
+		if (actorAnimation == null) {
+			actor = null;
+			animation = null;
+			return;
+		}
+
+		int idx = actorAnimation.indexOf(Param.STRING_PARAM_SEPARATOR.charAt(0));
+
+		if (idx != -1) {
+			actor = actorAnimation.substring(0, idx);
+			animation = actorAnimation.substring(idx + 1);
+		} else {
+			actor = null;
+			animation = actorAnimation;
+		}
+	}
+
 	public ActorAnimationRef(String sceneId, String actorId) {
 		this.actor = sceneId;
 		this.animation = actorId;
@@ -18,5 +36,12 @@ public class ActorAnimationRef {
 
 	public String getAnimationId() {
 		return animation;
+	}
+
+	public String toString() {
+		if (actor == null || actor.isEmpty())
+			return animation;
+
+		return actor + Param.STRING_PARAM_SEPARATOR + animation;
 	}
 }

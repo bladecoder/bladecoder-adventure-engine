@@ -32,6 +32,7 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.pathfinder.NavNode;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import com.bladecoder.engine.util.EngineLogger;
@@ -164,7 +165,7 @@ public class CanvasDrawer {
 
 		drawer.begin(ShapeRenderer.ShapeType.Line);
 		drawer.setColor(Color.MAGENTA);
-		drawer.rect(0, 0, Ctx.project.getWorldDocument().getWidth(), Ctx.project.getWorldDocument().getHeight());
+		drawer.rect(0, 0, World.getInstance().getWidth(), World.getInstance().getHeight());
 		drawer.end();
 	}
 

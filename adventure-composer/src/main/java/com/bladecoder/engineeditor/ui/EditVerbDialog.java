@@ -154,11 +154,8 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 		// TODO UNDO OP
 //		UndoOp undoOp = new UndoAddElement(doc, e);
 //		Ctx.project.getUndoStack().add(undoOp);
-		
-		if(ScopePanel.WORLD_SCOPE.equals(scope))
-			Ctx.project.getWorldDocument().setModified(e);
-		else
-			Ctx.project.getSelectedChapter().setModified(e);
+
+		Ctx.project.setModified();
 	}
 
 	@Override
