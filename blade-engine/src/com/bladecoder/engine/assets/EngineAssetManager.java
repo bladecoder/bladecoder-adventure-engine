@@ -63,11 +63,12 @@ public class EngineAssetManager extends AssetManager {
 	public static final String MUSIC_DIR = "music/";
 	public static final String IMAGE_DIR = "images/";
 	public static final String SOUND_DIR = "sounds/";
-	private static final String MODEL3D_DIR = "3d/";
-	private static final String SPINE_DIR = "spine/";
+	public static final String MODEL3D_DIR = "3d/";
+	public static final String SPINE_DIR = "spine/";
 
-	private static final String MODEL3D_EXT = ".g3db";
-	private static final String SPINE_EXT = ".skel";
+	public static final String MODEL3D_EXT = ".g3db";
+	public static final String SPINE_EXT = ".skel";
+	public static final String ATLAS_EXT = ".atlas";
 	
 	public static final String CHAPTER_EXT = ".chapter.json";
 
@@ -192,16 +193,16 @@ public class EngineAssetManager extends AssetManager {
 	// }
 
 	public void loadAtlas(String name) {
-		load(ATLASES_DIR + name + ".atlas", TextureAtlas.class);
+		load(ATLASES_DIR + name + ATLAS_EXT, TextureAtlas.class);
 	}
 
 	public boolean isAtlasLoaded(String name) {
-		return isLoaded(ATLASES_DIR + name + ".atlas");
+		return isLoaded(ATLASES_DIR + name + ATLAS_EXT);
 	}
 
 	public void disposeAtlas(String name) {
 		if (isAtlasLoaded(name))
-			unload(ATLASES_DIR + name + ".atlas");
+			unload(ATLASES_DIR + name + ATLAS_EXT);
 	}
 
 	public FileHandle getModelFile(String filename) {
@@ -225,7 +226,7 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	public AtlasRegion getRegion(String atlas, String name) {
-		TextureAtlas a = get(ATLASES_DIR + atlas + ".atlas", TextureAtlas.class);
+		TextureAtlas a = get(ATLASES_DIR + atlas + ATLAS_EXT, TextureAtlas.class);
 
 		AtlasRegion region = a.findRegion(name);
 
@@ -237,13 +238,13 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	public TextureAtlas getTextureAtlas(String atlas) {
-		TextureAtlas a = get(ATLASES_DIR + atlas + ".atlas", TextureAtlas.class);
+		TextureAtlas a = get(ATLASES_DIR + atlas + ATLAS_EXT, TextureAtlas.class);
 
 		return a;
 	}
 
 	public Array<AtlasRegion> getRegions(String atlas, String name) {
-		TextureAtlas a = get(ATLASES_DIR + atlas + ".atlas", TextureAtlas.class);
+		TextureAtlas a = get(ATLASES_DIR + atlas + ATLAS_EXT, TextureAtlas.class);
 
 		Array<AtlasRegion> region = a.findRegions(name);
 

@@ -380,6 +380,8 @@ public class AtlasRenderer implements ActorRenderer {
 	@Override
 	public void updateBboxFromRenderer(Polygon bbox) {
 		this.bbox = bbox;
+		
+		computeBbox();
 	}
 
 	private void loadSource(String source) {

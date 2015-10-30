@@ -134,11 +134,11 @@ public class SceneList extends ModelList<World, Scene> {
 
 					disposeBgCache = true;
 					addChapters();
-				} else if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_CREATED)) {
-					if (evt.getNewValue() instanceof Scene) {
-						addElements(World.getInstance(),
-								Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[0])));
-					}
+//				} else if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_CREATED)) {
+//					if (evt.getNewValue() instanceof Scene) {
+//						addElements(World.getInstance(),
+//								Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[0])));
+//					}
 				}
 			}
 		});

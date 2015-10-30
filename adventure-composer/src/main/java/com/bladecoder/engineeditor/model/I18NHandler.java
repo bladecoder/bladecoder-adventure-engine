@@ -109,10 +109,17 @@ public class I18NHandler {
 	}
 
 	public void setTranslation(String key, String value) {
-		if (key.charAt(0) != I18N.PREFIX)
-			i18nChapter.setProperty(key, value);
-		else
-			i18nChapter.setProperty(key.substring(1), value);
+		if (key.charAt(0) != I18N.PREFIX) {
+			if(value == null || value.equals(""))
+				i18nChapter.remove(key);
+			else
+				i18nChapter.setProperty(key, value);
+		} else {
+			if(value == null || value.equals(""))
+				i18nChapter.remove(key.substring(1));
+			else
+				i18nChapter.setProperty(key.substring(1), value);
+		}
 	}
 
 	public void setWorldTranslation(String key, String value) {
@@ -214,11 +221,10 @@ public class I18NHandler {
 	public void extractStrings(String baseString, BaseActor a) {
 		if (a instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor) a;
-			baseString = baseString + "." + a.getId();
 
 			// 1. DESC attribute
 			if (ia.getDesc() != null && ia.getDesc().charAt(0) != I18N.PREFIX) {
-				String key = baseString + ".desc";
+				String key = baseString + "." + a.getId() + ".desc";
 				String value = ia.getDesc();
 				ia.setDesc(key);
 				setTranslation(key, value);
@@ -228,7 +234,7 @@ public class I18NHandler {
 			HashMap<String, Verb> verbs = ia.getVerbManager().getVerbs();
 
 			for (Verb v : verbs.values())
-				extractStrings(baseString + "." + v.getId(), v);
+				extractStrings(baseString + "." + a.getId(), v);
 
 			// 3. DIALOGS
 			if (a instanceof CharacterActor) {
@@ -236,7 +242,7 @@ public class I18NHandler {
 
 				if (dialogs != null)
 					for (Dialog d : dialogs.values())
-						extractStrings(baseString + "." + d.getId(), d);
+						extractStrings(baseString + "." + a.getId(), d);
 			}
 		}
 	}
@@ -255,7 +261,7 @@ public class I18NHandler {
 		for (int i = 0; i < options.size(); i++) {
 			DialogOption o = options.get(i);
 
-			extractStrings(baseString + "." + i, o);
+			extractStrings(baseString + "." + d.getId() + "." + i, o);
 		}
 	}
 

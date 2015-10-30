@@ -28,8 +28,8 @@ import com.bladecoder.engine.util.EngineLogger;
 public class VerbManager implements Serializable {
 	protected HashMap<String, Verb> verbs = new HashMap<String, Verb>();
 
-	public void addVerb(String id, Verb v) {
-		verbs.put(id, v);
+	public void addVerb(Verb v) {
+		verbs.put(v.getHashKey(), v);
 	}
 
 	// Used only in getVerb(). It is a class variable to avoid allocations

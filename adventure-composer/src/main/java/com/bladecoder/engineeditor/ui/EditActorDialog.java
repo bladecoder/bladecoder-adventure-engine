@@ -103,12 +103,12 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				"The layer for drawing order", getLayers(parent), true);
 		
 		visible = InputPanelFactory.createInputPanel(skin, "Visible", "The actor visibility.",
-				Param.Type.BOOLEAN, false);
+				Param.Type.BOOLEAN, true, "true");
 		
 		
 		interaction = InputPanelFactory.createInputPanel(skin, "Interaction",
 				"True when the actor reacts to the user input.",
-				Param.Type.BOOLEAN, false);
+				Param.Type.BOOLEAN, true, "true");
 
 		desc = InputPanelFactory.createInputPanel(skin, "Description",
 				"The text showed when the cursor is over the actor.");
@@ -132,7 +132,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		
 		walkingSpeed = InputPanelFactory.createInputPanel(skin, "Walking Speed",
 				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT,
-				false);
+				true, "700");
 		
 		spriteSize = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions",
 				"The size of the 3d sprite", Param.Type.DIMENSION, true);
@@ -282,7 +282,12 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			
 			String key = I18N.PREFIX + parent.getId() + "." + e.getId() + ".desc";
 			Ctx.project.getI18N().setTranslation(key, desc.getText());
-			ia.setDesc(key);
+			
+			if(desc.getText() != null)
+				ia.setDesc(key);
+			else
+				ia.setDesc(null);
+			
 			ia.setState(state.getText());
 			
 			if(e instanceof SpriteActor) {
@@ -314,6 +319,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 						sa.setRenderer(new SpineRenderer());
 				}
 				
+				sa.setBboxFromRenderer(true);
 				sa.setDepthType(DepthType.valueOf(depthType.getText()));
 				sa.setScale(Float.parseFloat(scale.getText()));
 				sa.setZIndex(Float.parseFloat(zIndex.getText()));

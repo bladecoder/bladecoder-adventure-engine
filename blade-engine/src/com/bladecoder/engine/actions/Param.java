@@ -154,6 +154,9 @@ public class Param {
 	}
 
 	public static String toStringParam(Vector2 v) {
+		if(v == null)
+			return null;
+		
 		return v.x + NUMBER_PARAM_SEPARATOR + v.y;
 	}
 

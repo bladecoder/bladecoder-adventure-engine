@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Verb;
@@ -33,6 +34,8 @@ import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.ui.components.ScopePanel;
+import com.bladecoder.engineeditor.undo.UndoDeleteVerb;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class VerbList extends ModelList<VerbManager, Verb> {
 
@@ -116,13 +119,11 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 
 		parent.getVerbs().remove(v.getHashKey());
 
-		// TODO UNDO
-		// UndoOp undoOp = new UndoDeleteElement(doc, e);
-		// Ctx.project.getUndoStack().add(undoOp);
-		// doc.deleteElement(e);
-
-		// TODO TRANSLATIONS
-		// I18NUtils.putTranslationsInElement(doc, clipboard);
+		// TRANSLATIONS
+		Ctx.project.getI18N().putTranslationsInElement(v);
+			
+		// UNDO
+		Ctx.project.getUndoStack().add(new UndoDeleteVerb(parent, v));
 
 		// Clear actions here because change event doesn't call when deleting
 		// the last element
@@ -132,6 +133,48 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 		Ctx.project.setModified();
 	}
 
+	@Override
+	protected void copy() {
+		Verb e = list.getSelected();
+
+		if (e == null)
+			return;
+
+		clipboard = (Verb)ElementUtils.cloneElement(e);
+		toolbar.disablePaste(false);
+
+		// TRANSLATIONS
+		Ctx.project.getI18N().putTranslationsInElement(clipboard);
+	}
+
+	@Override
+	protected void paste() {
+		Verb newElement = (Verb)ElementUtils.cloneElement(clipboard);
+		
+		// Check for id duplicates		
+		String []keys = new String[parent.getVerbs().size()];
+		Verb[] values = parent.getVerbs().values().toArray(new Verb[0]);
+		
+		for(int i = 0; i < keys.length; i++) {
+			keys[i] = values[i].getId();
+		}
+		
+		newElement.setId(ElementUtils.getCheckedId(newElement.getId(), keys));
+		
+		int pos = list.getSelectedIndex() + 1;
+
+		list.getItems().insert(pos, newElement);
+
+		parent.addVerb(newElement);
+		Ctx.project.getI18N().extractStrings(I18N.PREFIX + Ctx.project.getSelectedScene().getId() + 
+				"." + Ctx.project.getSelectedActor().getId(), newElement);
+
+		list.setSelectedIndex(pos);
+		list.invalidateHierarchy();
+		
+		Ctx.project.setModified();
+	}		
+	
 	private void addActions() {
 		int pos = list.getSelectedIndex();
 

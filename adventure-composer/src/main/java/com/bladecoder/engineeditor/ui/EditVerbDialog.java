@@ -148,7 +148,7 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 		e.setTarget(target.getText());
 		
 		if(create) {
-			parent.addVerb(e.getHashKey(), e);
+			parent.addVerb(e);
 		}
 
 		// TODO UNDO OP

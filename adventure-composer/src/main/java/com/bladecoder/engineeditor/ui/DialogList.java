@@ -21,12 +21,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.undo.UndoDeleteDialog;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class DialogList extends ModelList<CharacterActor, Dialog> {	
 	
@@ -87,14 +90,12 @@ public class DialogList extends ModelList<CharacterActor, Dialog> {
 		Dialog d = removeSelected();
 			
 		parent.getDialogs().remove(d.getId());
+		
+		// TRANSLATIONS
+		Ctx.project.getI18N().putTranslationsInElement(d);
 			
-	// TODO UNDO
-//			UndoOp undoOp = new UndoDeleteElement(doc, e);
-//			Ctx.project.getUndoStack().add(undoOp);
-//			doc.deleteElement(e);
-
-	// TODO TRANSLATIONS
-//			I18NUtils.putTranslationsInElement(doc, clipboard);
+		// UNDO
+		Ctx.project.getUndoStack().add(new UndoDeleteDialog(parent, d));
 
 		// Clear options here because change event doesn't call when deleting
 		// the last element
@@ -103,6 +104,40 @@ public class DialogList extends ModelList<CharacterActor, Dialog> {
 		
 		Ctx.project.setModified();
 	}
+	
+	@Override
+	protected void copy() {
+		Dialog e = list.getSelected();
+
+		if (e == null)
+			return;
+
+		clipboard = (Dialog)ElementUtils.cloneElement(e);
+		toolbar.disablePaste(false);
+
+		// TRANSLATIONS
+		Ctx.project.getI18N().putTranslationsInElement(clipboard);
+	}
+
+	@Override
+	protected void paste() {
+		Dialog newElement = (Dialog)ElementUtils.cloneElement(clipboard);
+		
+		newElement.setId(ElementUtils.getCheckedId(newElement.getId(), parent.getDialogs().keySet().toArray(new String[0])));
+		
+		int pos = list.getSelectedIndex() + 1;
+
+		list.getItems().insert(pos, newElement);
+
+		parent.addDialog(newElement);
+		Ctx.project.getI18N().extractStrings(I18N.PREFIX + Ctx.project.getSelectedScene().getId() + 
+				"." + parent.getId(), newElement);
+
+		list.setSelectedIndex(pos);
+		list.invalidateHierarchy();
+		
+		Ctx.project.setModified();
+	}	
 
 
 	// -------------------------------------------------------------------------

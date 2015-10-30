@@ -134,7 +134,7 @@ public class WorldXMLLoader extends DefaultHandler {
 
 			currentVerb = new Verb(id);
 
-			world.getVerbManager().addVerb(id, currentVerb);
+			world.getVerbManager().addVerb(currentVerb);
 		}
 	}
 

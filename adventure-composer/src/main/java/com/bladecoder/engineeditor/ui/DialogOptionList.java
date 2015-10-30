@@ -20,12 +20,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.undo.UndoDeleteOption;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 	Skin skin;
@@ -153,19 +156,51 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 	protected void delete() {
 			
 		DialogOption option = removeSelected();
+		
+		int idx = parent.getOptions().indexOf(option); 
 			
 		parent.getOptions().remove(option);
 			
-	// TODO UNDO
-//			UndoOp undoOp = new UndoDeleteElement(doc, e);
-//			Ctx.project.getUndoStack().add(undoOp);
-//			doc.deleteElement(e);
+		// TRANSLATIONS
+		Ctx.project.getI18N().putTranslationsInElement(option);
 
-	// TODO TRANSLATIONS
-//			I18NUtils.putTranslationsInElement(doc, clipboard);
+		// UNDO
+		Ctx.project.getUndoStack().add(new UndoDeleteOption(parent, option, idx));
 		
 		Ctx.project.setModified();
 	}
+	
+	@Override
+	protected void copy() {
+		DialogOption e = list.getSelected();
+
+		if (e == null)
+			return;
+
+		clipboard = (DialogOption)ElementUtils.cloneElement(e);
+		toolbar.disablePaste(false);
+
+		// TRANSLATIONS
+		Ctx.project.getI18N().putTranslationsInElement(clipboard);
+	}
+
+	@Override
+	protected void paste() {
+		DialogOption newElement = (DialogOption)ElementUtils.cloneElement(clipboard);
+		
+		int pos = list.getSelectedIndex() + 1;
+
+		list.getItems().insert(pos, newElement);
+
+		parent.addOption(newElement);
+		// FIXME
+		Ctx.project.getI18N().extractStrings(I18N.PREFIX + parent.getId(), newElement);
+
+		list.setSelectedIndex(pos);
+		list.invalidateHierarchy();
+		
+		Ctx.project.setModified();
+	}	
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer

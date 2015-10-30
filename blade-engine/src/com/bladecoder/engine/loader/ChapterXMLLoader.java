@@ -607,7 +607,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		currentVerb.setState(state);
 		currentVerb.setTarget(target);
 
-		v.addVerb(currentVerb.getHashKey(), currentVerb);
+		v.addVerb(currentVerb);
 	}
 
 	private final HashMap<String, String> actionParams = new HashMap<String, String>();

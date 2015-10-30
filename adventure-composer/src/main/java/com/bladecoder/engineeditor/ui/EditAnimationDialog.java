@@ -52,10 +52,6 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			Tween.Type.YOYO.toString(), Tween.Type.REVERSE.toString() };
 
 	public static final String INFO = "Define sprites and animations";
-	
-	private static final String ATLAS_EXT = ".atlas";
-	private static final String SPINE_EXT = ".skel";
-	private static final String G3DB_EXT = ".g3db";
 
 	InputPanel source;
 	InputPanel atlas;
@@ -69,9 +65,6 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 	InputPanel sound;
 	InputPanel preload;
 	InputPanel dispose;
-
-	InputPanel inputs[] = { source, atlas, id, repeat, speed, delay,
-			count, in, out, sound, preload, dispose};
 	
 	AnimationWidget spriteWidget = new AnimationWidget(this);
 
@@ -175,7 +168,8 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 		setInfoWidget(spriteWidget);
 		
-		init(p, e, inputs);
+		init(p, e, new InputPanel [] { source, atlas, id, repeat, speed, delay,
+				count, in, out, sound, preload, dispose});
 		
 		setVisible(delay,false);
 		setVisible(count,false);		
@@ -302,13 +296,13 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		if (renderer instanceof AtlasRenderer) {
 			path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
 					+ Ctx.project.getResDir();
-			ext = ATLAS_EXT;
+			ext = EngineAssetManager.ATLAS_EXT;
 		} else if (renderer instanceof Sprite3DRenderer) {
 			path = Ctx.project.getProjectPath() + Project.SPRITE3D_PATH;
-			ext = G3DB_EXT;
+			ext = EngineAssetManager.MODEL3D_EXT;
 		} else if (renderer instanceof SpineRenderer) {
 			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
-			ext = SPINE_EXT;
+			ext = EngineAssetManager.SPINE_EXT;
 		} else if (renderer instanceof ImageRenderer) {
 			path = Ctx.project.getProjectPath() + Project.IMAGE_PATH + "/"
 					+ Ctx.project.getResDir();
@@ -351,7 +345,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 			@Override
 			public boolean accept(File arg0, String arg1) {
-				if (arg1.endsWith(ATLAS_EXT))
+				if (arg1.endsWith(EngineAssetManager.ATLAS_EXT))
 					return true;
 
 				return false;
@@ -363,7 +357,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 			for (int i = 0; i < atlases.length; i++)
 				atlases[i] = atlases[i].substring(0,
-						atlases[i].length() - ATLAS_EXT.length());
+						atlases[i].length() - EngineAssetManager.ATLAS_EXT.length());
 		} else {
 			atlases = new String[0];
 		}
@@ -433,8 +427,10 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		e.animationType = Type.valueOf(repeat.getText());
 		e.inD = Param.parseVector2(in.getText());
 		e.outD = Param.parseVector2(out.getText());
-		e.duration = Float.parseFloat(out.getText());
-		e.delay = Float.parseFloat(out.getText());
+		e.duration = Float.parseFloat(speed.getText());
+		
+		if(delay.getText() == null || delay.getText().isEmpty())
+			e.delay = Float.parseFloat(delay.getText());
 		
 		if(create) {
 			parent.getRenderer().getAnimations().put(e.id, e);

@@ -36,7 +36,6 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.pathfinder.NavNode;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engineeditor.Ctx;
 
 public class CanvasDrawer {
 	public static final float CORNER_DIST = 20;
@@ -79,7 +78,8 @@ public class CanvasDrawer {
 					continue;
 
 				drawer.setColor(Scene.ACTOR_BBOX_COLOR);
-				drawer.polygon(p.getTransformedVertices());
+				if(p.getTransformedVertices().length > 2)
+					drawer.polygon(p.getTransformedVertices());
 			} else if (a instanceof AnchorActor) {
 				drawer.setColor(Scene.ANCHOR_COLOR);
 				drawer.line(p.getX() - Scene.ANCHOR_RADIUS, p.getY(), p.getX() + Scene.ANCHOR_RADIUS, p.getY());
