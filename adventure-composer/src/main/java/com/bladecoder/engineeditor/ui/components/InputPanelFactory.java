@@ -25,7 +25,7 @@ public class InputPanelFactory extends Table {
     	return createInputPanel(skin, title, desc, Type.OPTION, mandatory, null, options);
     }
 
-	public static InputPanel createInputPanel(Skin skin, String title, String desc, Enum[] options, boolean mandatory) {
+	public static InputPanel createInputPanel(Skin skin, String title, String desc, Enum<?>[] options, boolean mandatory) {
     	return createInputPanel(skin, title, desc, Type.OPTION, mandatory, null, options);
     }
 
@@ -49,7 +49,7 @@ public class InputPanelFactory extends Table {
     	return createInputPanel(skin, title, desc, type, mandatory, defaultValue, (String[])null);
     }
     
-    public static InputPanel createInputPanel(Skin skin, String title, String desc, Param.Type type, boolean mandatory, String defaultValue, Enum[] options) {
+    public static InputPanel createInputPanel(Skin skin, String title, String desc, Param.Type type, boolean mandatory, String defaultValue, Enum<?>[] options) {
 	    return createInputPanel(skin, title, desc, type, mandatory, defaultValue, (Object[])options);
     }
 
@@ -107,6 +107,10 @@ public class InputPanelFactory extends Table {
 			TextInputPanel i2 = new TextInputPanel(skin, title, desc, mandatory, defaultValue);
 			i2.setRows(5);
 			return i2;
+		case NOT_SET:
+			break;
+		default:
+			break;
 		}
 
 		return new StringInputPanel(skin, title, desc, mandatory, defaultValue);

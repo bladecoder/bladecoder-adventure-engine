@@ -28,6 +28,8 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.undo.UndoDeleteAnimation;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 
@@ -118,14 +120,8 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 		
 		renderer.getAnimations().remove(d.id);
 			
-	// TODO UNDO
-//			UndoOp undoOp = new UndoDeleteElement(doc, e);
-//			Ctx.project.getUndoStack().add(undoOp);
-//			doc.deleteElement(e);
-
-	// TODO TRANSLATIONS
-//			I18NUtils.putTranslationsInElement(doc, clipboard);
-
+		//  UNDO
+		Ctx.project.getUndoStack().add(new UndoDeleteAnimation(parent, d));
 
 		// delete init_animation attr if the animation to delete is the chapter
 		// init_animation
@@ -136,6 +132,33 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 		
 		Ctx.project.setModified();
 	}
+	
+	@Override
+	protected void copy() {
+		AnimationDesc e = list.getSelected();
+
+		if (e == null)
+			return;
+
+		clipboard = (AnimationDesc)ElementUtils.cloneElement(e);
+		toolbar.disablePaste(false);
+	}
+
+	@Override
+	protected void paste() {
+		AnimationDesc newElement = (AnimationDesc)ElementUtils.cloneElement(clipboard);
+		
+		int pos = list.getSelectedIndex() + 1;
+
+		list.getItems().insert(pos, newElement);
+
+		parent.getRenderer().addAnimation(newElement);
+
+		list.setSelectedIndex(pos);
+		list.invalidateHierarchy();
+		
+		Ctx.project.setModified();
+	}		
 
 	@Override
 	protected EditModelDialog<SpriteActor, AnimationDesc> getEditElementDialogInstance(AnimationDesc e) {

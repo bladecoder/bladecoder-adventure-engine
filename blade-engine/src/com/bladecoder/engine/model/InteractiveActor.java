@@ -126,6 +126,13 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 		sounds.put(id, new SoundFX(filename, loop, volume));
 	}
+	
+	public void addSound(SoundFX s) {
+		if (sounds == null)
+			sounds = new HashMap<String, SoundFX>();
+
+		sounds.put(s.getFilename(), s);
+	}
 
 	public void playSound(String id) {
 		if (sounds == null)

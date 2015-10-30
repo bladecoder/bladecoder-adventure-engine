@@ -67,15 +67,20 @@ public class Chapter {
 		String[] chapters = new File(modelPath).list(new FilenameFilter() {
 			@Override
 			public boolean accept(File arg0, String arg1) {
-				if (!arg1.endsWith(EngineAssetManager.CHAPTER_EXT))
+				if (!arg1.endsWith(EngineAssetManager.CHAPTER_EXT) &&
+						!arg1.endsWith(".chapter"))
 					return false;
 
 				return true;
 			}
 		});
 		
-		for(int i = 0; i < chapters.length; i++)
-			chapters[i] = chapters[i].substring(0, chapters[i].lastIndexOf(EngineAssetManager.CHAPTER_EXT));
+		for(int i = 0; i < chapters.length; i++) {
+			if(chapters[i].endsWith(EngineAssetManager.CHAPTER_EXT))
+				chapters[i] = chapters[i].substring(0, chapters[i].lastIndexOf(EngineAssetManager.CHAPTER_EXT));
+			else
+				chapters[i] = chapters[i].substring(0, chapters[i].lastIndexOf(".chapter"));
+		}
 		
 		return chapters;
 	}

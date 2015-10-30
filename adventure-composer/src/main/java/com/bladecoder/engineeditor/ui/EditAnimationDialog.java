@@ -174,11 +174,11 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		});	
 
 		setInfoWidget(spriteWidget);
+		
 		init(p, e, inputs);
 		
 		setVisible(delay,false);
-		setVisible(count,false);
-		
+		setVisible(count,false);		
 		setVisible(atlas,false);
 
 		addSources();
@@ -451,7 +451,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 	protected void modelToInputs() {			
 		source.setText(e.source);
 		
-		if(atlas.isVisible())
+		if(atlas.isVisible() && e instanceof SpineAnimationDesc)
 			atlas.setText(((SpineAnimationDesc)e).atlas);
 		
 		id.setText(e.id);

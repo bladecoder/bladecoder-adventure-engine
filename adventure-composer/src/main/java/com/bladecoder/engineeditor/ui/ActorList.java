@@ -154,7 +154,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 	protected void delete() {
 		BaseActor a = removeSelected();
 
-		parent.getActors().remove(a.getId());
+		parent.removeActor(a);
 
 		// delete player attr if the actor to delete is the player
 		if (parent.getPlayer() == a) {
@@ -218,6 +218,8 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();
+		
+		Ctx.project.setModified();
 	}	
 
 	// -------------------------------------------------------------------------

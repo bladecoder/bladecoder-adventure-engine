@@ -28,6 +28,7 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.undo.UndoCreateSound;
 
 public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> {
 
@@ -61,12 +62,13 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 		e.setVolume(Float.parseFloat(volume.getText()));
 		
 		if(create) {
-			parent.getSounds().put(e.getFilename(), e);
+			parent.addSound(e);
+			
+			// UNDO OP
+			Ctx.project.getUndoStack().add(new UndoCreateSound(parent, e));
+		} else {
+			
 		}
-
-		// TODO UNDO OP
-//		UndoOp undoOp = new UndoAddElement(doc, e);
-//		Ctx.project.getUndoStack().add(undoOp);
 		
 		Ctx.project.setModified();
 	}

@@ -27,7 +27,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -37,18 +36,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
-import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.BaseActor;
-import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.Chapter;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
@@ -113,7 +109,7 @@ public class ScnWidget extends Widget {
 
 		Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
-			public void propertyChange(PropertyChangeEvent e) {				
+			public void propertyChange(PropertyChangeEvent e) {
 				EditorLogger.debug("ScnWidget Listener: " + e.getPropertyName());
 
 				if (e.getPropertyName().equals(Project.NOTIFY_SCENE_SELECTED)) {
@@ -132,97 +128,42 @@ public class ScnWidget extends Widget {
 					setSelectedActor(Ctx.project.getSelectedActor());
 				} else if (e.getPropertyName().equals("bbox")) {
 					// TODO DELETE
-//					// Element selActor = (Element) e.getNewValue();
-//					Element selActor = Ctx.project.getSelectedChapter().getActor(
-//							Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
-//							Ctx.project.getSelectedActor().getId());
-//					String id = doc.getId(selActor);
-//					BaseActor a = scn.getActor(id, false);
-//
-//					if (a == null)
-//						return;
-//
-//					doc.getBBox(a.getBBox(), selActor);
-//					Vector2 p = doc.getPos(selActor);
-//					a.setPosition(p.x, p.y);
-//
-//					if (a instanceof SpriteActor) {
-//						SpriteActor sa = (SpriteActor) a;
-//						if (!selActor.getAttribute(XMLConstants.BBOX_ATTR).isEmpty())
-//							sa.setBboxFromRenderer(false);
-//						else
-//							sa.setBboxFromRenderer(true);
-//					}
-
-				} else if (e.getPropertyName().equals("pos")) {
-//					Element selActor = (Element) e.getNewValue();
-//					String id = doc.getId(selActor);
-//					BaseActor a = scn.getActor(id, false);
-//					if (a == null)
-//						return;
-//					Vector2 p = doc.getPos(selActor);
-//					a.setPosition(p.x, p.y);
-				} else if (e.getPropertyName().equals("id")) {
-					String id = (String) e.getOldValue();
-
-					if (selectedActor == null || !selectedActor.getId().equals(id))
-						return;
-
-					scn.removeActor(scn.getActor(id, false));
-					setSelectedActor(null);
+					// // Element selActor = (Element) e.getNewValue();
+					// Element selActor =
+					// Ctx.project.getSelectedChapter().getActor(
+					// Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
+					// Ctx.project.getSelectedActor().getId());
+					// String id = doc.getId(selActor);
+					// BaseActor a = scn.getActor(id, false);
+					//
+					// if (a == null)
+					// return;
+					//
+					// doc.getBBox(a.getBBox(), selActor);
+					// Vector2 p = doc.getPos(selActor);
+					// a.setPosition(p.x, p.y);
+					//
+					// if (a instanceof SpriteActor) {
+					// SpriteActor sa = (SpriteActor) a;
+					// if
+					// (!selActor.getAttribute(XMLConstants.BBOX_ATTR).isEmpty())
+					// sa.setBboxFromRenderer(false);
+					// else
+					// sa.setBboxFromRenderer(true);
+					// }
 				} else if (e.getPropertyName().equals("animation")) {
-//					createAndSelectActor(Ctx.project.getSelectedActor());
-//					setSelectedFA(null);
+					// createAndSelectActor(Ctx.project.getSelectedActor());
+					// setSelectedFA(null);
 				} else if (e.getPropertyName().equals("init_animation")) {
 					String initFA = (String) e.getNewValue();
 					((SpriteActor) selectedActor).getRenderer().setInitAnimation(initFA);
 					setSelectedFA(null);
-				} else if (e.getPropertyName().equals("actor")) {
-//					createAndSelectActor((BaseActor) e.getNewValue());
-				} else if (e.getPropertyName().equals("layer")) {
-//					Element el = (Element) e.getNewValue();
-//					String name = el.getAttribute("id");
-//					NodeList layersNodes = ((Element) el.getParentNode()).getElementsByTagName("layer");
-//					boolean visible = Boolean.parseBoolean(el.getAttribute("visible"));
-//					boolean dynamic = Boolean.parseBoolean(el.getAttribute("dynamic"));
-//					// Element previousSibling =
-//					// (Element)el.getPreviousSibling();
-//
-//					SceneLayer layer = scn.getLayer(name);
-//
-//					if (layer == null && layersNodes.getLength() > scn.getLayers().size()) {
-//						// NEW LAYER CREATED
-//						layer = new SceneLayer();
-//						layer.setName(name);
-//						layer.setVisible(visible);
-//						layer.setDynamic(dynamic);
-//
-//						scn.addLayer(layer);
-//					} else if (layer.isDynamic() != dynamic) {
-//						layer.setDynamic(dynamic);
-//					} else if (layer.isVisible() != visible) {
-//						layer.setVisible(visible);
-//					} else {
-//						// TODO Handle order and id change
-//						setSelectedScene(Ctx.project.getSelectedScene());
-//						setSelectedActor(Ctx.project.getSelectedActor());
-//					}
 
-				} else if (e.getPropertyName().equals(Project.NOTIFY_ELEMENT_DELETED)) {
-//					if (((Element) e.getNewValue()).getTagName().equals("actor"))
-//						removeActor(doc, (Element) e.getNewValue());
-//					else if (((Element) e.getNewValue()).getTagName().equals("animation"))
-//						setSelectedFA(null);
-//					else if (((Element) e.getNewValue()).getTagName().equals("layer")) {
+				} else if (e.getPropertyName().equals(Project.NOTIFY_ELEMENT_CREATED)) {
+//					if (e.getNewValue() instanceof Scene) {
 //						setSelectedScene(Ctx.project.getSelectedScene());
 //						setSelectedActor(Ctx.project.getSelectedActor());
 //					}
-					
-				} else if (e.getPropertyName().equals(Project.NOTIFY_ELEMENT_CREATED)) {
-					if(e.getNewValue() instanceof Scene) {
-						setSelectedScene(Ctx.project.getSelectedScene());
-						setSelectedActor(Ctx.project.getSelectedActor());
-					}
 				}
 			}
 		});
@@ -272,24 +213,19 @@ public class ScnWidget extends Widget {
 				|| Gdx.input.isKeyPressed(Keys.RIGHT)) {
 
 			BaseActor selActor = getSelectedActor();
-			Polygon p = selActor.getBBox();
-			// undoOrg.set(p.getX(), p.getY());
 
 			if (Gdx.input.isKeyPressed(Keys.UP))
-				p.translate(0, 1);
+				// p.translate(0, 1);
+				selActor.setPosition(selActor.getX(), selActor.getY() + 1);
 			else if (Gdx.input.isKeyPressed(Keys.DOWN))
-				p.translate(0, -1);
+				// p.translate(0, -1);
+				selActor.setPosition(selActor.getX(), selActor.getY() - 1);
 			else if (Gdx.input.isKeyPressed(Keys.LEFT))
-				p.translate(-1, 0);
+				// p.translate(-1, 0);
+				selActor.setPosition(selActor.getX() - 1, selActor.getY());
 			else if (Gdx.input.isKeyPressed(Keys.RIGHT))
-				p.translate(1, 0);
-			
-			Ctx.project.setModified(this, Project.POSITION_PROPERTY, null, selActor);
-
-			// undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(),
-			// Ctx.project.getSelectedActor(), "pos",
-			// Param.toStringParam(undoOrg));
-			// Ctx.project.getUndoStack().add(undoOp);
+				// p.translate(1, 0);
+				selActor.setPosition(selActor.getX() + 1, selActor.getY());
 		}
 	}
 
@@ -512,8 +448,7 @@ public class ScnWidget extends Widget {
 
 			camera.setToOrtho(false, wWidth, wHeight);
 			camera.zoom = 1f;
-			camera.position.set(World.getInstance().getWidth() / 2,
-					World.getInstance().getHeight() / 2, 0);
+			camera.position.set(World.getInstance().getWidth() / 2, World.getInstance().getHeight() / 2, 0);
 			camera.update();
 			zoom(+1);
 		}

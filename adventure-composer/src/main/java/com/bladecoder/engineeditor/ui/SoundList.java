@@ -21,6 +21,8 @@ import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.undo.UndoDeleteSound;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class SoundList extends ModelList<InteractiveActor, SoundFX> {	
 	
@@ -41,17 +43,38 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 		SoundFX s = removeSelected();
 		
 		parent.getSounds().remove(s.getFilename());
-		
-// TODO UNDO
-//		UndoOp undoOp = new UndoDeleteElement(doc, e);
-//		Ctx.project.getUndoStack().add(undoOp);
-//		doc.deleteElement(e);
 
-// TODO TRANSLATIONS
-//		I18NUtils.putTranslationsInElement(doc, clipboard);
-		
+		// UNDO
+		Ctx.project.getUndoStack().add(new UndoDeleteSound(parent, s));
 		Ctx.project.setModified();
 	}
+	
+	@Override
+	protected void copy() {
+		SoundFX e = list.getSelected();
+
+		if (e == null)
+			return;
+
+		clipboard = (SoundFX)ElementUtils.cloneElement(e);
+		toolbar.disablePaste(false);
+	}
+
+	@Override
+	protected void paste() {
+		SoundFX newElement = (SoundFX)ElementUtils.cloneElement(clipboard);
+		
+		int pos = list.getSelectedIndex() + 1;
+
+		list.getItems().insert(pos, newElement);
+
+		parent.addSound(newElement);
+
+		list.setSelectedIndex(pos);
+		list.invalidateHierarchy();
+		
+		Ctx.project.setModified();
+	}		
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer

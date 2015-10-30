@@ -249,6 +249,8 @@ public class SceneList extends ModelList<World, Scene> {
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();
+		
+		Ctx.project.setModified();
 	}
 
 	@Override

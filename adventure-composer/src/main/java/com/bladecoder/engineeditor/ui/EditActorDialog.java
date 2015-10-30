@@ -122,11 +122,10 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				ACTOR_RENDERERS, true);
 
 		depthType = InputPanelFactory.createInputPanel(skin, "Depth Type",
-				"Scene fake depth for scaling", new String[] { "none",
-						"vector"}, true);
+				"Scene fake depth for scaling", DepthType.class.getEnumConstants(), true);
 		
 		scale = InputPanelFactory.createInputPanel(skin, "Scale",
-				"The sprite scale", Param.Type.FLOAT, false, "1");
+				"The sprite scale", Param.Type.FLOAT, true, "1");
 		
 		zIndex = InputPanelFactory.createInputPanel(skin, "zIndex",
 				"The order to draw.", Param.Type.FLOAT, false, "0");
@@ -292,17 +291,27 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				String rendererType = renderer.getText();
 				
 				if(Project.ATLAS_RENDERER_STRING.equals(rendererType)) {
-					sa.setRenderer(new AtlasRenderer());
+					if(sa.getRenderer() == null || !(sa.getRenderer() instanceof AtlasRenderer))
+						sa.setRenderer(new AtlasRenderer());
 				} else if(Project.IMAGE_RENDERER_STRING.equals(rendererType)) {
-					sa.setRenderer(new ImageRenderer());
+					if(sa.getRenderer() == null || !(sa.getRenderer() instanceof ImageRenderer))
+						sa.setRenderer(new ImageRenderer());
 				} else if(Project.S3D_RENDERER_STRING.equals(rendererType)) {
-					Sprite3DRenderer r = new Sprite3DRenderer();
-					sa.setRenderer(r);
+					Sprite3DRenderer r;
+									
+					if(sa.getRenderer() == null || !(sa.getRenderer() instanceof Sprite3DRenderer)) {
+						r = new Sprite3DRenderer();
+						sa.setRenderer(r);
+					} else {
+						 r = (Sprite3DRenderer)sa.getRenderer();
+					}
+					
 					r.setCameraFOV(Float.parseFloat(fov.getText()));
 					r.setCameraName(cameraName.getText());
 					r.setSpriteSize(Param.parseVector2(spriteSize.getText()));
 				} else if(Project.SPINE_RENDERER_STRING.equals(rendererType)) {
-					sa.setRenderer(new SpineRenderer());
+					if(sa.getRenderer() == null || !(sa.getRenderer() instanceof SpineRenderer))
+						sa.setRenderer(new SpineRenderer());
 				}
 				
 				sa.setDepthType(DepthType.valueOf(depthType.getText()));
@@ -370,8 +379,13 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					CharacterActor ca = (CharacterActor) e;
 					
 					walkingSpeed.setText(Float.toString(ca.getWalkingSpeed()));
-					textColor.setText(ca.getTextColor().toString());
+					textColor.setText(ca.getTextColor() == null? null : ca.getTextColor().toString());
+					typePanel.setText(CHARACTER_TYPE_STR);
+				} else {
+					typePanel.setText(SPRITE_TYPE_STR);
 				}
+			} else {
+				typePanel.setText(BACKGROUND_TYPE_STR);
 			}
 		} else if(e instanceof AnchorActor) {
 			typePanel.setText(ANCHOR_TYPE_STR);

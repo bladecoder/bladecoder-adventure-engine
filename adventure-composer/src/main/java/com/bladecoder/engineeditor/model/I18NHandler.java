@@ -217,7 +217,7 @@ public class I18NHandler {
 			baseString = baseString + "." + a.getId();
 
 			// 1. DESC attribute
-			if (ia.getDesc().charAt(0) != I18N.PREFIX) {
+			if (ia.getDesc() != null && ia.getDesc().charAt(0) != I18N.PREFIX) {
 				String key = baseString + ".desc";
 				String value = ia.getDesc();
 				ia.setDesc(key);
@@ -234,8 +234,9 @@ public class I18NHandler {
 			if (a instanceof CharacterActor) {
 				HashMap<String, Dialog> dialogs = ((CharacterActor) a).getDialogs();
 
-				for (Dialog d : dialogs.values())
-					extractStrings(baseString + "." + d.getId(), d);
+				if (dialogs != null)
+					for (Dialog d : dialogs.values())
+						extractStrings(baseString + "." + d.getId(), d);
 			}
 		}
 	}
