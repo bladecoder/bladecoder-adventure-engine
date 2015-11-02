@@ -134,12 +134,4 @@ public abstract class ModelList<PARENT, T> extends EditList<T> {
 
 		return e;
 	}
-	
-	@Override
-	protected void copy() {	
-	}
-
-	@Override
-	protected void paste() {
-	}
 }

@@ -117,11 +117,13 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 		DialogOption e = items.get(pos);
 		DialogOption e2 = items.get(pos - 1);
 
-		parent.getOptions().set(pos, e2);
-		parent.getOptions().set(pos - 1, e);
 
-		items.removeIndex(pos);
-		items.insert(pos - 1, e);
+		parent.getOptions().set(pos - 1, e);
+		parent.getOptions().set(pos, e2);
+		
+		parent.getOptions().set(pos - 1, e);
+		parent.getOptions().set(pos, e2);
+
 		list.setSelectedIndex(pos - 1);
 		upBtn.setDisabled(list.getSelectedIndex() == 0);
 		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
@@ -130,7 +132,6 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 	}
 
 	private void down() {
-		
 		int pos = list.getSelectedIndex();
 		Array<DialogOption> items = list.getItems();
 
@@ -138,13 +139,14 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 			return;
 
 		DialogOption e = items.get(pos);
-		DialogOption e2 = pos + 1 < items.size ? items.get(pos + 1) : null;
+		DialogOption e2 =  items.get(pos + 1);
 
-		parent.getOptions().set(pos, e2);
+		
 		parent.getOptions().set(pos + 1, e);
+		parent.getOptions().set(pos, e2);
 
-		items.removeIndex(pos);
-		items.insert(pos + 1, e);
+		items.set(pos + 1, e);
+		items.set(pos, e2);
 		list.setSelectedIndex(pos + 1);
 		upBtn.setDisabled(list.getSelectedIndex() == 0);
 		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);

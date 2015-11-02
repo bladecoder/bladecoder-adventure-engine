@@ -18,16 +18,13 @@ package com.bladecoder.engineeditor.ui;
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.w3c.dom.Element;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.actions.AbstractControlAction;
 import com.bladecoder.engine.actions.AbstractIfAction;
 import com.bladecoder.engine.actions.Action;
@@ -36,43 +33,20 @@ import com.bladecoder.engine.actions.ActorAnimationRef;
 import com.bladecoder.engine.actions.EndAction;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.SceneActorRef;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.undo.UndoDeleteAction;
 import com.bladecoder.engineeditor.utils.EditorLogger;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class ActionList extends ModelList<Verb, Action> {
-	// TODO Action cache for getting names
-
-	private static final String END_ACTION = "com.bladecoder.engine.actions.EndAction";
-	private static final String ACTION_NAME_VALUE_ELSE = "Else";
+	// TODO Action cache for getting names in cellRenderer
 	private static final String CONTROL_ACTION_ID_ATTR = "caID";
-
-	// FIXME: This needs to go, just added here in the interim while we work on
-	// replacing the DOM with Beans
-	@SuppressWarnings("serial")
-	private static final Set<String> CONTROL_ACTIONS = new HashSet<String>() {
-		{
-			add("Choose");
-			add("IfAttr");
-			add("IfProperty");
-			add("IfSceneAttr");
-			add("Repeat");
-			add("RunOnce");
-		}
-	};
-
-	@SuppressWarnings("serial")
-	private static final Set<String> IF_CONTROL_ACTIONS = new HashSet<String>() {
-		{
-			add("IfAttr");
-			add("IfProperty");
-			add("IfSceneAttr");
-		}
-	};
 
 	Skin skin;
 
@@ -161,137 +135,141 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	@Override
 	protected void create() {
-		// EditElementDialog dialog = getEditElementDialogInstance(null);
-		// dialog.show(getStage());
-		// dialog.setListener(new ChangeListener() {
-		// @Override
-		// public void changed(ChangeEvent event, Actor actor) {
-		// int pos = list.getSelectedIndex() + 1;
-		//
-		// Element e2 = null;
-		//
-		// if (pos != 0 && pos < list.getItems().size)
-		// e2 = list.getItems().get(pos);
-		//
-		// Element e = ((EditElementDialog) actor).getElement();
-		// list.getItems().insert(pos, e);
-		//
-		// Node parent = e.getParentNode();
-		// parent.removeChild(e);
-		// parent.insertBefore(e, e2);
-		//
-		// list.setSelectedIndex(pos);
-		//
-		// if (isControlAction(e))
-		// insertEndAction(e);
-		//
-		// list.invalidateHierarchy();
-		// }
-		// });
+		EditModelDialog<Verb, Action> dialog = getEditElementDialogInstance(null);
+		dialog.show(getStage());
+		dialog.setListener(new ChangeListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				int pos = list.getSelectedIndex() + 1;
+
+				Action e = ((EditModelDialog<Verb, Action>) actor).getElement();
+				list.getItems().insert(pos, e);
+				parent.getActions().add(pos, e);
+
+				list.setSelectedIndex(pos);
+
+				if (isControlAction(e))
+					insertEndAction(pos + 1, getOrCreateControlActionId((AbstractControlAction) e));
+
+				list.invalidateHierarchy();
+			}
+		});
 	}
 
-	Element editedElement;
+	private Action editedElement;
 
 	@Override
 	protected void edit() {
-		//
-		// Element e = list.getSelected();
-		//
-		// if (e == null ||
-		// e.getAttribute(XMLConstants.CLASS_ATTR).equals(END_ACTION))
-		// return;
-		//
-		// editedElement = (Element) e.cloneNode(true);
-		//
-		// EditElementDialog dialog = getEditElementDialogInstance(e);
-		// dialog.show(getStage());
-		// dialog.setListener(new ChangeListener() {
-		// @Override
-		// public void changed(ChangeEvent event, Actor actor) {
-		// Element e = ((EditElementDialog) actor).getElement();
-		// doc.setModified(e);
-		//
-		// if (isControlAction(editedElement)) {
-		// if (!editedElement.getAttribute(XMLConstants.ACTION_NAME_ATTR)
-		// .equals(e.getAttribute(XMLConstants.ACTION_NAME_ATTR))) {
-		//
-		// deleteControlAction(list.getSelectedIndex(), editedElement);
-		//
-		// if (isControlAction(e))
-		// insertEndAction(e);
-		// } else {
-		// // insert previous caId
-		// e.setAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR,
-		// editedElement.getAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR));
-		// }
-		// }
-		// }
-		// });
+
+		Action e = list.getSelected();
+
+		if (e == null || e instanceof EndAction)
+			return;
+
+		editedElement = (Action) ElementUtils.cloneElement(e);
+
+		EditModelDialog<Verb, Action> dialog = getEditElementDialogInstance(e);
+		dialog.show(getStage());
+		dialog.setListener(new ChangeListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				Action e = ((EditModelDialog<Verb, Action>) actor).getElement();
+				int pos = list.getSelectedIndex();
+				list.getItems().set(pos, e);
+				parent.getActions().set(pos, e);
+				
+				Ctx.project.setModified();
+
+				if (isControlAction(editedElement)) {
+					if (!editedElement.getClass().getName().equals(e.getClass().getName())) {
+
+						deleteControlAction(list.getSelectedIndex(), (AbstractControlAction)editedElement);
+
+						if (isControlAction(e))
+							insertEndAction(list.getSelectedIndex(), getOrCreateControlActionId((AbstractControlAction)e));
+					} else {
+						// insert previous caId
+						try {
+							ActionUtils.setParam(e, CONTROL_ACTION_ID_ATTR, getOrCreateControlActionId((AbstractControlAction)editedElement));
+						} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
+							EditorLogger.error(e1.getMessage());
+						}
+					}
+				}
+			}
+		});
 	}
 
-	private void insertEndAction(Element e) {
-		// int pos = list.getItems().indexOf(e, true);
-		// pos++;
-		// Element e2 = null;
-		//
-		// if (pos != 0 && pos < list.getItems().size)
-		// e2 = list.getItems().get(pos);
-		//
-		// final String actionName =
-		// e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
-		// if (IF_CONTROL_ACTIONS.contains(actionName)) {
-		// String id = getOrCreateControlActionId(e);
-		// saveEndAction(pos, e2, ACTION_NAME_VALUE_ELSE, id);
-		//
-		// pos++;
-		// }
-		//
-		// String id = getOrCreateControlActionId(e);
-		// saveEndAction(pos, e2, "End" +
-		// e.getAttribute(XMLConstants.ACTION_NAME_ATTR), id);
-	}
+	private String getOrCreateControlActionId(AbstractControlAction a) {
+		String id = a.getControlActionID();
 
-	private String getOrCreateControlActionId(Action a) {
-		String id = null;
-//		e.getAttribute(CONTROL_ACTION_ID_ATTR);
-//		
-//		if (id.isEmpty()) {
-//			// FIXME: While highly, highly, highly unlikely, this might still
-//			// cause collisions. Replace it with a count or similar
-//			final String actionName = e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
-//			id = actionName + MathUtils.random(1, Integer.MAX_VALUE);
-//			e.setAttribute(CONTROL_ACTION_ID_ATTR, id);
-//		}
+		if (id == null || id.isEmpty()) {
+			id = Integer.toString(MathUtils.random(1, Integer.MAX_VALUE));
+			try {
+				ActionUtils.setParam(a, CONTROL_ACTION_ID_ATTR, id);
+			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+				EditorLogger.error(e.getMessage());
+			}
+		}
+
 		return id;
 	}
 
-	private void saveEndAction(int pos, Element e2, String actionName, String id) {
-		// final Element e = doc.createElement(parent, "action");
-		// e.setAttribute(XMLConstants.ACTION_NAME_ATTR, actionName);
-		// e.setAttribute("class", END_ACTION);
-		// e.setAttribute(XMLConstants.CONTROL_ACTION_ID_ATTR, id);
-		//
-		// list.getItems().insert(pos, e);
-		// parent.insertBefore(e, e2);
+	private void insertEndAction(int pos, String id) {
+		final Action e = new EndAction();
+
+		try {
+			ActionUtils.setParam(e, CONTROL_ACTION_ID_ATTR, id);
+		} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
+			EditorLogger.error(e1.getMessage());
+		}
+
+		list.getItems().insert(pos, e);
+		parent.getActions().add(pos, e);
 	}
 
 	@Override
 	protected void copy() {
-		// Element e = list.getSelected();
-		//
-		// if (e.getAttribute("class").equals(END_ACTION))
-		// return;
-		//
-		// super.copy();
+		Action e = list.getSelected();
+
+		if (e == null || e instanceof EndAction)
+			return;
+
+		clipboard = (Action) ElementUtils.cloneElement(e);
+		toolbar.disablePaste(false);
+
+		// TRANSLATIONS
+		Ctx.project.getI18N().putTranslationsInElement(clipboard);
 	}
 
 	@Override
 	protected void paste() {
-		// super.paste();
-		// Element e = list.getSelected();
-		//
-		// if (isControlAction(e))
-		// insertEndAction(e);
+		Action newElement = (Action) ElementUtils.cloneElement(clipboard);
+
+		int pos = list.getSelectedIndex() + 1;
+
+		list.getItems().insert(pos, newElement);
+		parent.getActions().add(pos, newElement);
+
+		// FIXME
+		Ctx.project.getI18N().extractStrings(I18N.PREFIX + parent.getId(), newElement);
+
+		list.setSelectedIndex(pos);
+		list.invalidateHierarchy();
+
+		Ctx.project.setModified();
+
+		if (isControlAction(newElement)) {
+			try {
+				ActionUtils.setParam(newElement, CONTROL_ACTION_ID_ATTR, null);
+			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+				EditorLogger.error(e.getMessage());
+			}
+
+			insertEndAction(pos + 1, getOrCreateControlActionId((AbstractControlAction) newElement));
+		}
 	}
 
 	@Override
@@ -308,101 +286,98 @@ public class ActionList extends ModelList<Verb, Action> {
 
 		Action action = removeSelected();
 
+		int idx = parent.getActions().indexOf(e);
+
 		parent.getActions().remove(action);
 
-		// TODO UNDO
-		// UndoOp undoOp = new UndoDeleteElement(doc, e);
-		// Ctx.project.getUndoStack().add(undoOp);
-		// doc.deleteElement(e);
+		// TRANSLATIONS
+		Ctx.project.getI18N().putTranslationsInElement(e);
 
-		// TODO TRANSLATIONS
-		// I18NUtils.putTranslationsInElement(doc, clipboard);
+		// UNDO
+		Ctx.project.getUndoStack().add(new UndoDeleteAction(parent, e, idx));
+
+		if (isControlAction(e))
+			deleteControlAction(pos, (AbstractControlAction) e);
 
 		Ctx.project.setModified();
-
-		deleteControlAction(pos, e);
 	}
 
 	private boolean isControlAction(Action e) {
 		return e instanceof AbstractControlAction;
 	}
 
-	private void deleteControlAction(int pos, final Action e) {
-		// final String actionName =
-		// e.getAttribute(XMLConstants.ACTION_NAME_ATTR);
-		// if (IF_CONTROL_ACTIONS.contains(actionName)) {
-		// pos = deleteFirstActionNamed(pos, ACTION_NAME_VALUE_ELSE);
-		// }
-		// if (isControlAction(e)) {
-		// deleteFirstActionNamed(pos, "End" + actionName);
-		// }
+	private void deleteControlAction(int pos, final AbstractControlAction e) {
+		final String id = getOrCreateControlActionId(e);
+
+		if (e instanceof AbstractIfAction) {
+			pos = deleteFirstActionNamed(pos, id);
+		}
+
+		deleteFirstActionNamed(pos, id);
 	}
 
-	// private int deleteFirstActionNamed(int pos, String name) {
-	// while
-	// (!list.getItems().get(pos).getAttribute(XMLConstants.ACTION_NAME_ATTR).equals(name))
-	// pos++;
-	//
-	// Element e2 = list.getItems().removeIndex(pos);
-	// doc.deleteElement(e2);
-	// return pos;
-	// }
+	private int deleteFirstActionNamed(int pos, String actionId) {
+		while (!(list.getItems().get(pos) instanceof AbstractControlAction
+				|| getOrCreateControlActionId((AbstractControlAction) list.getItems().get(pos)).equals(actionId)))
+			pos++;
+
+		Action e2 = list.getItems().removeIndex(pos);
+		parent.getActions().remove(e2);
+
+		return pos;
+	}
 
 	private void up() {
-		// int pos = list.getSelectedIndex();
-		//
-		// if (pos == -1 || pos == 0)
-		// return;
-		//
-		// Array<Element> items = list.getItems();
-		// Element e = items.get(pos);
-		// Element e2 = items.get(pos - 1);
-		//
-		// if (isControlAction(e) && isControlAction(e2)) {
-		// return;
-		// }
-		//
-		// Node parent = e.getParentNode();
-		// parent.removeChild(e);
-		// parent.insertBefore(e, e2);
-		//
-		// items.removeIndex(pos);
-		// items.insert(pos - 1, e);
-		// list.setSelectedIndex(pos - 1);
-		// upBtn.setDisabled(list.getSelectedIndex() == 0);
-		// downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size -
-		// 1);
+		int pos = list.getSelectedIndex();
 
-		// doc.setModified(e);
+		if (pos == -1 || pos == 0)
+			return;
+
+		Array<Action> items = list.getItems();
+		Action e = items.get(pos);
+		Action e2 = items.get(pos - 1);
+
+		if (isControlAction(e) && isControlAction(e2)) {
+			return;
+		}
+
+		parent.getActions().set(pos - 1, e);
+		parent.getActions().set(pos, e2);
+
+		parent.getActions().set(pos - 1, e);
+		parent.getActions().set(pos, e2);
+
+		list.setSelectedIndex(pos - 1);
+		upBtn.setDisabled(list.getSelectedIndex() == 0);
+		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+
+		Ctx.project.setModified();
 	}
 
 	private void down() {
-		// int pos = list.getSelectedIndex();
-		// Array<Element> items = list.getItems();
-		//
-		// if (pos == -1 || pos == items.size - 1)
-		// return;
-		//
-		// Element e = items.get(pos);
-		// Element e2 = pos + 2 < items.size ? items.get(pos + 2) : null;
-		// Element e3 = items.get(pos + 1);
-		//
-		// if (isControlAction(e) && isControlAction(e3)) {
-		// return;
-		// }
-		//
-		// Node parent = e.getParentNode();
-		// parent.removeChild(e);
-		// parent.insertBefore(e, e2);
-		//
-		// items.removeIndex(pos);
-		// items.insert(pos + 1, e);
-		// list.setSelectedIndex(pos + 1);
-		// upBtn.setDisabled(list.getSelectedIndex() == 0);
-		// downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size -
-		// 1);
-		//
-		// doc.setModified(e);
+		int pos = list.getSelectedIndex();
+		Array<Action> items = list.getItems();
+
+		if (pos == -1 || pos == items.size - 1)
+			return;
+
+		Action e = items.get(pos);
+		Action e2 = items.get(pos + 1);
+
+		if (isControlAction(e) && isControlAction(e2)) {
+			return;
+		}
+
+		parent.getActions().set(pos + 1, e);
+		parent.getActions().set(pos, e2);
+
+		items.set(pos + 1, e);
+		items.set(pos, e2);
+		list.setSelectedIndex(pos + 1);
+		upBtn.setDisabled(list.getSelectedIndex() == 0);
+		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
+
+		Ctx.project.setModified();
 	}
 
 	// -------------------------------------------------------------------------
@@ -424,17 +399,17 @@ public class ActionList extends ModelList<Verb, Action> {
 				try {
 					field.setAccessible(true);
 					Object v = field.get(a);
-					if(v != null)
+					if (v != null)
 						actor = v.toString();
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.error(e.getMessage());
 				}
 			}
-			
-			 boolean animationAction = id.equals("Animation");
-			 boolean controlAction = isControlAction(a);
-			
-			 boolean enabled = true;
+
+			boolean animationAction = id.equals("Animation");
+			boolean controlAction = isControlAction(a);
+
+			boolean enabled = true;
 			// e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).isEmpty()
 			// ||
 			// e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).equals(XMLConstants.TRUE_VALUE);
@@ -459,7 +434,7 @@ public class ActionList extends ModelList<Verb, Action> {
 							EditorLogger.error(e.getMessage());
 						}
 					}
-					
+
 					ActorAnimationRef aa = new ActorAnimationRef(animation);
 
 					if (aa.getActorId() != null)
@@ -474,7 +449,7 @@ public class ActionList extends ModelList<Verb, Action> {
 				SceneActorRef sa = new SceneActorRef(actor);
 
 				if (sa.getSceneId() != null)
-					id = MessageFormat.format("[GREEN]{0}[] {1}.{2}",  sa.getSceneId(), sa.getActorId(), id);
+					id = MessageFormat.format("[GREEN]{0}[] {1}.{2}", sa.getSceneId(), sa.getActorId(), id);
 				else
 					id = MessageFormat.format("{0}.{1}", sa.getActorId(), id);
 			} else if (animationAction) {
@@ -489,29 +464,30 @@ public class ActionList extends ModelList<Verb, Action> {
 						EditorLogger.error(e.getMessage());
 					}
 				}
-				
+
 				ActorAnimationRef aa = new ActorAnimationRef(animation);
 
 				if (aa.getActorId() != null)
 					id = MessageFormat.format("[GREEN]{0}.{1} {2}[]", aa.getActorId(), id, aa.getAnimationId());
 				else
-					id = MessageFormat.format("[GREEN]{0} {1}[]",  id, aa.getAnimationId());
+					id = MessageFormat.format("[GREEN]{0} {1}[]", id, aa.getAnimationId());
 			} else if (controlAction) {
-				if(a instanceof EndAction) {
-					Action parentAction = findParentAction((EndAction)a);
-					
-					if(parentAction instanceof AbstractIfAction && isElse((AbstractIfAction)parentAction, (EndAction)a)) {
+				if (a instanceof EndAction) {
+					Action parentAction = findParentAction((EndAction) a);
+
+					if (parentAction instanceof AbstractIfAction
+							&& isElse((AbstractIfAction) parentAction, (EndAction) a)) {
 						id = "Else";
 					} else {
 						id = "End" + ActionFactory.getName(parentAction);
 					}
 				}
-				
+
 				if (actor != null) {
 					SceneActorRef sa = new SceneActorRef(actor);
 
 					if (sa.getSceneId() != null)
-						id = MessageFormat.format("[GREEN]{0}[] [BLUE]{1}.{2}[]",  sa.getSceneId(), sa.getActorId(), id);
+						id = MessageFormat.format("[GREEN]{0}[] [BLUE]{1}.{2}[]", sa.getSceneId(), sa.getActorId(), id);
 					else
 						id = MessageFormat.format("[BLUE]{0}.{1}[BLUE]", sa.getActorId(), id);
 				} else
@@ -520,38 +496,38 @@ public class ActionList extends ModelList<Verb, Action> {
 
 			return id;
 		}
-		
+
 		private boolean isElse(AbstractIfAction parentAction, EndAction ea) {
 			final String caID = ea.getControlActionID();
 			ArrayList<Action> actions = parent.getActions();
-			
+
 			int idx = actions.indexOf(parentAction);
-			
-			for(int i = idx + 1; i < actions.size(); i++) {
+
+			for (int i = idx + 1; i < actions.size(); i++) {
 				Action aa = actions.get(i);
-				
-				if(isControlAction(aa) && ((AbstractControlAction)aa).getControlActionID().equals(caID)) {
-					if(aa == ea)
+
+				if (isControlAction(aa) && ((AbstractControlAction) aa).getControlActionID().equals(caID)) {
+					if (aa == ea)
 						return true;
-								
+
 					return false;
 				}
 			}
 
-			return false;	
+			return false;
 		}
-		
+
 		private Action findParentAction(EndAction a) {
 			final String caID = a.getControlActionID();
 			ArrayList<Action> actions = parent.getActions();
-			
-			for(Action a2:actions) {
-				if(isControlAction(a2) && ((AbstractControlAction)a2).getControlActionID().equals(caID)) {
+
+			for (Action a2 : actions) {
+				if (isControlAction(a2) && ((AbstractControlAction) a2).getControlActionID().equals(caID)) {
 					return a2;
 				}
 			}
 
-			return null;	
+			return null;
 		}
 
 		@Override

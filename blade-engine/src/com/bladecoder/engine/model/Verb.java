@@ -15,22 +15,12 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.SerializationException;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
-import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionProperty;
-import com.bladecoder.engine.actions.ActorAnimationRef;
-import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.loader.SerializationHelper;
 import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.util.ActionUtils;
@@ -174,47 +164,7 @@ public class Verb implements VerbRunner, Serializable {
 			json.writeValue("state", state);
 			json.writeArrayStart("actions");
 			for (Action a : actions) {
-				Class<?> clazz = a.getClass();
-				json.writeObjectStart(clazz, null);
-				while (clazz != null && clazz != Object.class) {
-					for (Field field : clazz.getDeclaredFields()) {
-						final ActionProperty property = field.getAnnotation(ActionProperty.class);
-						if (property == null) {
-							continue;
-						}
-
-						// json.writeField(a, field.getName());
-						final boolean accessible = field.isAccessible();
-						field.setAccessible(true);
-
-						try {
-							Object o = field.get(a);
-
-							// doesn't write null fields
-							if (o == null)
-								continue;
-
-							if(o instanceof SceneActorRef) {
-								SceneActorRef sceneActor = (SceneActorRef)o;
-								json.writeValue(field.getName(), sceneActor.toString());
-							} else if(o instanceof ActorAnimationRef) {
-								ActorAnimationRef aa = (ActorAnimationRef)o;
-								json.writeValue(field.getName(), aa.toString());
-							} else if(o instanceof Color) {
-							} else if(o instanceof Vector2) {
-								json.writeValue(field.getName(), Param.toStringParam((Vector2) o));
-							} else {
-								json.writeValue(field.getName(), o);
-							}
-						} catch (IllegalArgumentException | IllegalAccessException e) {
-
-						}
-
-						field.setAccessible(accessible);
-					}
-					clazz = clazz.getSuperclass();
-				}
-				json.writeObjectEnd();
+				ActionUtils.writeJson(a, json);
 			}
 			json.writeArrayEnd();
 		} else {
@@ -244,31 +194,8 @@ public class Verb implements VerbRunner, Serializable {
 			for (int i = 0; i < actionsValue.size; i++) {
 				JsonValue aValue = actionsValue.get(i);
 
-				String className = aValue.getString("class", null);
-				if (className != null) {
-					aValue.remove("class");
-					Class<?> clazz = null;
-					Action action = null;
-					
-					try {
-						clazz = ClassReflection.forName(className);
-						action = (Action)clazz.newInstance();
-						actions.add(action);
-					} catch (ReflectionException|InstantiationException | IllegalAccessException ex) {
-						throw new SerializationException(ex);
-					}
-					
-					for(int j = 0; j<aValue.size; j++) {
-						JsonValue v = aValue.get(j);
-						try {
-							if(v.isNull())
-								continue;
-							ActionUtils.setParam(action, v.name, v.asString());
-						} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-							throw new SerializationException(e);
-						}
-					}
-				}
+				Action a = ActionUtils.readJson(json, aValue);
+				actions.add(a);
 
 			}
 		} else {

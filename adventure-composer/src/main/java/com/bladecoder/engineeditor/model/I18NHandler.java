@@ -38,7 +38,9 @@ import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
+import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class I18NHandler {
 	private String modelPath;
@@ -140,7 +142,7 @@ public class I18NHandler {
 			Writer out = new OutputStreamWriter(os, "ISO-8859-1");
 			p.store(out, filename);
 		} catch (IOException e) {
-			EngineLogger.error("ERROR WRITING BUNDLE: " + i18nFilename);
+			EditorLogger.error("ERROR WRITING BUNDLE: " + i18nFilename);
 		}
 	}
 
@@ -190,7 +192,22 @@ public class I18NHandler {
 		ArrayList<Action> actions = v.getActions();
 
 		for (Action a : actions) {
-			// TODO
+			putTranslationsInElement(a);
+		}
+	}
+	
+	public void putTranslationsInElement(Action a) {
+		String[] names = ActionUtils.getFieldNames(a);
+		
+		for(String name:names) {
+			if(name.toLowerCase().endsWith("text")) {
+				String value = getTranslation(ActionUtils.getStringValue(a, name));
+				try {
+					ActionUtils.setParam(a, name, value);
+				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+					EditorLogger.error(e.getMessage());
+				}
+			}
 		}
 	}
 
@@ -250,8 +267,10 @@ public class I18NHandler {
 	public void extractStrings(String baseString, Verb v) {
 		ArrayList<Action> actions = v.getActions();
 
-		for (Action a : actions) {
-			// TODO
+		for (int i = 0; i < actions.size(); i++) {
+			Action a = actions.get(i);
+
+			extractStrings(baseString + "." + v.getHashKey() + "." + i, a);
 		}
 	}
 
@@ -278,6 +297,24 @@ public class I18NHandler {
 			String value = o.getResponseText();
 			o.setResponseText(key);
 			setTranslation(key, value);
+		}
+	}
+	
+	public void extractStrings(String baseString, Action a) {
+		String[] names = ActionUtils.getFieldNames(a);
+		
+		for(String name:names) {
+			if(name.toLowerCase().endsWith("text")) {
+				String key = baseString + "." + name;
+				String value = ActionUtils.getStringValue(a, name);
+				try {
+					ActionUtils.setParam(a, name, key);
+				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+					EditorLogger.error(e.getMessage());
+				}
+				
+				setTranslation(key, value);
+			}
 		}
 	}
 

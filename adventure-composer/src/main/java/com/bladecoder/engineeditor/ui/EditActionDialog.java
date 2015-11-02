@@ -32,6 +32,7 @@ import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class EditActionDialog extends EditModelDialog<Verb, Action> {
 	private static final String CUSTOM_ACTION_STR = "CUSTOM ACTION";
@@ -53,8 +54,8 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 		System.arraycopy(actions, 0, actions2, 0, actions.length);
 		actions2[actions2.length - 1] = CUSTOM_ACTION_STR;
 
-		actionPanel = InputPanelFactory
-				.createInputPanel(skin, "Action", "Select the action to create.", actions2, true);
+		actionPanel = InputPanelFactory.createInputPanel(skin, "Action", "Select the action to create.", actions2,
+				true);
 
 		classPanel = InputPanelFactory.createInputPanel(skin, "Class", "Select the class for the custom action.", true);
 
@@ -74,44 +75,25 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 			}
 		});
 
-//		if (e != null) {
-//			classPanel.setText(e.getAttribute("class"));
-//
-//			if (!e.getAttribute("action_name").isEmpty()) {
-//				actionPanel.setText(e.getAttribute("action_name"));
-//			}
-//
-//			if (!e.getAttribute("class").isEmpty()) {
-//				actionPanel.setText(CUSTOM_ACTION_STR);
-//			}
-//
-//		}
+		if (e != null) {
+			String id = ActionFactory.getName(e);
+
+			classPanel.setText(e.getClass().getCanonicalName());
+
+			if (id != null) {
+				actionPanel.setText(id);
+			} else {
+				actionPanel.setText(CUSTOM_ACTION_STR);
+			}
+
+		}
 
 		init(parent, e, parameters);
 
 		setAction();
-
-//		if (e != null) {
-//			for (int pos = 0; pos < a.length; pos++) {
-//				InputPanel input = i[pos];
-//				if (I18NUtils.mustTraslateAttr(a[pos])) {
-//					input.setText(doc.getTranslation(e.getAttribute(a[pos])));
-//				} else {
-//					input.setText(e.getAttribute(a[pos]));
-//				}
-//			}
-//		}
-	}
-
-	private String[] getAttrs() {
-		String inputs[] = new String[parameters.length];
-
-		for (int j = 0; j < parameters.length; j++) {
-			InputPanel i = parameters[j];
-			inputs[j] = i.getTitle();
-		}
-
-		return inputs;
+		
+		if(e != null)
+			modelToInputs();
 	}
 
 	private void setAction() {
@@ -120,20 +102,23 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 		getCenterPanel().clear();
 		addInputPanel(actionPanel);
 
-		Action ac = null;
-
+		Action tmp = null;
+		
 		if (id.equals(CUSTOM_ACTION_STR)) {
 			addInputPanel(classPanel);
-			if (!classPanel.getText().trim().isEmpty())
-				ac = ActionFactory.createByClass(classPanel.getText(), null);
+			if (classPanel != null || !classPanel.getText().trim().isEmpty())
+				tmp = ActionFactory.createByClass(classPanel.getText(), null);
+			setInfo(CUSTOM_INFO);
 		} else {
-			ac = ActionFactory.create(id, null);
+			tmp = ActionFactory.create(id, null);
+			setInfo(ActionUtils.getInfo(tmp));
 		}
+		
+		if(e == null || tmp == null || !(e.getClass().getName().equals(tmp.getClass().getName())))
+			e = tmp;
 
-		if (ac != null) {
-			setInfo(ActionUtils.getInfo(ac));
-
-			Param[] params = ActionUtils.getParams(ac);
+		if (e != null) {
+			Param[] params = ActionUtils.getParams(e);
 
 			parameters = new InputPanel[params.length];
 
@@ -148,72 +133,39 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 				addInputPanel(parameters[i]);
 
-				if ((parameters[i].getField() instanceof TextField && params[i].name.toLowerCase().endsWith("text")) ||
-						parameters[i].getField() instanceof ScrollPane) {
+				if ((parameters[i].getField() instanceof TextField && params[i].name.toLowerCase().endsWith("text"))
+						|| parameters[i].getField() instanceof ScrollPane) {
 					parameters[i].getCell(parameters[i].getField()).fillX();
 				}
 			}
-
-//			i = parameters;
-//			a = getAttrs();
-		} else {
-			setInfo(CUSTOM_INFO);
-//			i = new InputPanel[0];
-//			a = new String[0];
 		}
 
 		// ((ScrollPane)(getContentTable().getCells().get(1).getActor())).setWidget(getCenterPanel());
 	}
-	
+
 	@Override
 	protected void inputsToModel(boolean create) {
-		
-//		if(create) {
-//			e = new DialogOption();
-//		}
-//		
-//		e.setText(text.getText());
-//		e.setResponseText(responseText.getText());
-//		e.setVerbId(verb.getText());
-//		e.setNext(next.getText());
-//		e.setVisible(Boolean.parseBoolean(visible.getText()));
-//		e.setOnce(Boolean.parseBoolean(once.getText()));
-//		
-//		if(create) {
-//			parent.addOption(e);
-//		}
-//
-//		// TODO UNDO OP
-////		UndoOp undoOp = new UndoAddElement(doc, e);
-////		Ctx.project.getUndoStack().add(undoOp);
-//		
-//		Ctx.project.getSelectedChapter().setModified(e);
-//		
-//		
-//		// Remove previous params
-//		while (e.getAttributes().getLength() > 0) {
-//			e.removeAttribute(e.getAttributes().item(0).getNodeName());
-//		}
-//
-//		String id = actionPanel.getText();
-//
-//		if (id.equals(CUSTOM_ACTION_STR)) {
-//			e.setAttribute("class", classPanel.getText());
-//		} else {
-//			e.setAttribute("action_name", id);
-//		}
-//
-//		super.fill();
+		for (int j = 0; j < i.length; j++) {
+			String v = i[j].getText();
+
+			try {
+				ActionUtils.setParam(e, i[j].getTitle(), v);
+			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+				EditorLogger.error(e.getMessage());
+			}
+		}
 	}
 
 	@Override
 	protected void modelToInputs() {
-//		text.setText(e.getText());
-//		responseText.setText(e.getResponseText());
-//		verb.setText(e.getVerbId());
-//		next.setText(e.getNext());
-//		
-//		visible.setText(Boolean.toString(e.isVisible()));
-//		once.setText(Boolean.toString(e.isOnce()));
-	}		
+		for (int j = 0; j < i.length; j++) {
+
+			try {
+				String v = ActionUtils.getParam(e, i[j].getTitle());
+				i[j].setText(v);
+			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+				EditorLogger.error(e.getMessage());
+			}
+		}
+	}
 }

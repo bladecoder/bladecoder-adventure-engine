@@ -6,6 +6,11 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.SerializationException;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionDescription;
 import com.bladecoder.engine.actions.ActionProperty;
@@ -53,6 +58,24 @@ public class ActionUtils {
 			clazz = clazz.getSuperclass();
 		}
 		return params.toArray(new Param[params.size()]);
+	}
+	
+	public static String[] getFieldNames(Action a) {
+		List<String> result = new ArrayList<>();
+		Class<?> clazz = a.getClass();
+		while (clazz != null && clazz != Object.class) {
+			for (Field field : clazz.getDeclaredFields()) {
+				final ActionProperty property = field.getAnnotation(ActionProperty.class);
+				if (property == null) {
+					continue;
+				}
+
+				final String name = field.getName();
+				result.add(name);
+			}
+			clazz = clazz.getSuperclass();
+		}
+		return result.toArray(new String[result.size()]);
 	}
 	
 	private static Type getType(Field field) {
@@ -138,6 +161,52 @@ public class ActionUtils {
 		field.setAccessible(accessible);
 	}
 	
+	
+	public static String getParam(Action a, String param) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+		String result = null;
+		
+		Class<?> clazz = a.getClass();
+		
+		Field field = getField(clazz, param);
+		
+		if(field == null)
+			throw new NoSuchFieldException(param);
+		
+		
+		final boolean accessible = field.isAccessible();
+		field.setAccessible(true);
+
+		if(field.getType().isAssignableFrom(String.class)) {
+			result = (String)field.get(a);
+		} else if(field.getType().isAssignableFrom(boolean.class)) {
+			result = Boolean.toString(field.getBoolean(a));
+		} else if(field.getType().isAssignableFrom(Boolean.class)) {
+			result = field.get(a).toString();
+		} else if(field.getType().isAssignableFrom(float.class)) {
+			result = Float.toString(field.getFloat(a));		
+		} else if(field.getType().isAssignableFrom(Float.class)) {
+			result = field.get(a).toString();			
+		} else if(field.getType().isAssignableFrom(int.class)) {
+			result = Integer.toString(field.getInt(a));
+		} else if(field.getType().isAssignableFrom(Vector2.class)) {
+			result = Param.toStringParam((Vector2)field.get(a));
+		} else if(field.getType().isAssignableFrom(SceneActorRef.class)) {
+			result = field.get(a).toString();
+		} else if(field.getType().isAssignableFrom(ActorAnimationRef.class)) {
+			result = field.get(a).toString();
+		} else if(field.getType().isAssignableFrom(Color.class)) {
+			result = field.get(a).toString();		
+		} else if (field.getType().isEnum()) {
+			result = field.get(a).toString();	
+		} else {
+			EngineLogger.error("ACTION FIELD TYPE NOT SUPPORTED -  type: " + field.getType());
+		}
+
+		field.setAccessible(accessible);
+		
+		return result;
+	}
+	
 	public static Field getField(Class<?> clazz, String fieldName) {
 	    Class<?> current = clazz;
 	    
@@ -149,4 +218,93 @@ public class ActionUtils {
 	    
 	    return null;
 	}
+	
+	public static String getStringValue(Action a, String fieldName) {
+		Class<?> clazz = a.getClass();
+	    
+	    Field field = getField(clazz, fieldName);
+	    
+	    try {
+			return (String)field.get(a);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			return null;
+		}
+	}
+	
+	public static void writeJson(Action a, Json json) {
+		Class<?> clazz = a.getClass();
+		json.writeObjectStart(clazz, null);
+		while (clazz != null && clazz != Object.class) {
+			for (Field field : clazz.getDeclaredFields()) {
+				final ActionProperty property = field.getAnnotation(ActionProperty.class);
+				if (property == null) {
+					continue;
+				}
+
+				// json.writeField(a, field.getName());
+				final boolean accessible = field.isAccessible();
+				field.setAccessible(true);
+
+				try {
+					Object o = field.get(a);
+
+					// doesn't write null fields
+					if (o == null)
+						continue;
+
+					if(o instanceof SceneActorRef) {
+						SceneActorRef sceneActor = (SceneActorRef)o;
+						json.writeValue(field.getName(), sceneActor.toString());
+					} else if(o instanceof ActorAnimationRef) {
+						ActorAnimationRef aa = (ActorAnimationRef)o;
+						json.writeValue(field.getName(), aa.toString());
+					} else if(o instanceof Color) {
+					} else if(o instanceof Vector2) {
+						json.writeValue(field.getName(), Param.toStringParam((Vector2) o));
+					} else {
+						json.writeValue(field.getName(), o);
+					}
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+
+				}
+
+				field.setAccessible(accessible);
+			}
+			clazz = clazz.getSuperclass();
+		}
+		json.writeObjectEnd();		
+	}
+	
+	public static Action readJson(Json json, JsonValue jsonData) {
+		String className = jsonData.getString("class", null);
+		Action action = null;
+		if (className != null) {
+			jsonData.remove("class");
+			Class<?> clazz = null;
+
+			
+			try {
+				clazz = ClassReflection.forName(className);
+				action = (Action)clazz.newInstance();
+			} catch (ReflectionException|InstantiationException | IllegalAccessException ex) {
+				throw new SerializationException(ex);
+			}
+			
+			for(int j = 0; j<jsonData.size; j++) {
+				JsonValue v = jsonData.get(j);
+				try {
+					if(v.isNull())
+						ActionUtils.setParam(action, v.name, null);
+					else
+						ActionUtils.setParam(action, v.name, v.asString());
+				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+					throw new SerializationException(e);
+				}
+			}
+		}
+		
+		
+		return action;
+	}
+	
 }

@@ -174,6 +174,16 @@ public class LayerList extends ModelList<Scene, SceneLayer> {
 		}
 
 	}
+	
+	@Override
+	protected void copy() {
+		// TODO
+	}
+	
+	@Override
+	protected void paste() {
+		// TODO
+	}
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer

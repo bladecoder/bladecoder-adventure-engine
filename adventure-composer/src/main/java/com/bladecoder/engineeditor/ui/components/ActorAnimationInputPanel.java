@@ -78,7 +78,10 @@ public class ActorAnimationInputPanel extends InputPanel {
 
 	private void actorSelected() {
 		String s = actor.getSelected();
-		SpriteActor a = (SpriteActor) Ctx.project.getSelectedActor();
+		SpriteActor a = null;
+		
+		if(Ctx.project.getSelectedActor() instanceof SpriteActor)
+			a = (SpriteActor) Ctx.project.getSelectedActor();
 		
 		ArrayList<String> values = new ArrayList<String>();
 

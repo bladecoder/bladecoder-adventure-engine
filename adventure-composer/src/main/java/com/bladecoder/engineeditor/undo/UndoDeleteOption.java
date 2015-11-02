@@ -19,8 +19,7 @@ public class UndoDeleteOption implements UndoOp {
 	
 	@Override
 	public void undo() {
-		d.addOption(o);
-		d.getOptions().set(idx, o);
+		d.getOptions().add(idx, o);
 		Ctx.project.setModified(this, Project.NOTIFY_ELEMENT_CREATED, null, o);
 	}
 }
