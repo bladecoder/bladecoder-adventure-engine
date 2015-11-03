@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.assets.AssetConsumer;
-import com.bladecoder.engine.loader.SerializationHelper;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class Inventory implements AssetConsumer, Serializable  {
@@ -122,12 +122,15 @@ public class Inventory implements AssetConsumer, Serializable  {
 
 	
 	@Override
-	public void write(Json json) {		
+	public void write(Json json) {
+		SceneActorRef actorRef;
+		
 		json.writeValue("visible", visible);
 		
 		json.writeObjectStart("items");
 		for(SpriteActor a:items) {
-			json.writeValue(a.getInitScene() + "." + a.getId(), a);
+			actorRef = new SceneActorRef(a.getInitScene(), a.getId());
+			json.writeValue(actorRef.toString(), a);
 		}
 		json.writeObjectEnd();
 	}
@@ -139,10 +142,13 @@ public class Inventory implements AssetConsumer, Serializable  {
 		items.clear();
 		
 		JsonValue jsonValueActors = jsonData.get("items");
+		SceneActorRef actorRef;
 		
 		for(int i = 0; i < jsonValueActors.size; i++) {
 			JsonValue jsonValueAct = jsonValueActors.get(i);
-			BaseActor actor = SerializationHelper.getInstance().getActor(jsonValueAct.name);
+			actorRef = new SceneActorRef(jsonValueAct.name);
+			Scene sourceScn = World.getInstance().getScene(actorRef.getSceneId());
+			BaseActor actor = sourceScn.getActor(actorRef.getActorId(), false);
 			actor.read(json, jsonValueAct);
 			items.add((SpriteActor)actor);
 		}

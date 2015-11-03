@@ -24,12 +24,10 @@ import com.bladecoder.engine.util.EngineLogger;
 public class SetStateAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The target actor")
-	
 	private SceneActorRef actor;
 
 	@ActionProperty
 	@ActionPropertyDescription("The actor 'state'")
-
 	private String state;
 
 	@Override

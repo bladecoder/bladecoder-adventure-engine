@@ -23,12 +23,11 @@ import com.bladecoder.engine.model.Scene;
 @ActionDescription("Change actor attributes.")
 public class PositionAction implements Action {
 	@ActionProperty( required = true)
-	@ActionPropertyDescription("The target actor")
-	
+	@ActionPropertyDescription("The target actor")	
 	private SceneActorRef actor;
 
 	@ActionProperty
-	@ActionPropertyDescription("Sets the actor position")
+	@ActionPropertyDescription("The position to set")
 	private Vector2 position;
 	
 	@ActionProperty

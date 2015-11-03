@@ -26,14 +26,14 @@ import com.bladecoder.engine.loader.SerializationHelper.Mode;
 public class Dialog implements Serializable {
 
 	public final static String DEFAULT_DIALOG_VERB = "dialog";
-	
+
 	private ArrayList<DialogOption> options = new ArrayList<DialogOption>();
-	
+
 	private int currentOption = -1;
-	
+
 	private String id;
 	private String actor;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -41,7 +41,7 @@ public class Dialog implements Serializable {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public String getActor() {
 		return actor;
 	}
@@ -49,36 +49,37 @@ public class Dialog implements Serializable {
 	public void setActor(String actor) {
 		this.actor = actor;
 	}
-	
+
 	public Dialog selectOption(DialogOption o) {
-		
+
 		currentOption = options.indexOf(o);
-		
+
 		String v = o.getVerbId();
-		
-		if(v == null) v = DEFAULT_DIALOG_VERB;
-		
+
+		if (v == null)
+			v = DEFAULT_DIALOG_VERB;
+
 		// TODO: DELETE REFERENCE TO WORLD FROM DIALOG
-		CharacterActor a = (CharacterActor)World.getInstance().getCurrentScene().getActor(actor, false);
+		CharacterActor a = (CharacterActor) World.getInstance().getCurrentScene().getActor(actor, false);
 		a.runVerb(v);
-		
-		if(o.isOnce())
+
+		if (o.isOnce())
 			o.setVisible(false);
-		
+
 		currentOption = -1;
-		
-		if(o.getNext() != null) {
+
+		if (o.getNext() != null) {
 			String next = o.getNext();
-			
-			if(next.equals("this"))
+
+			if (next.equals("this"))
 				return this;
-			else 
+			else
 				return a.getDialog(next);
 		}
-		
+
 		return null;
 	}
-	
+
 	public void addOption(DialogOption o) {
 		options.add(o);
 	}
@@ -86,57 +87,67 @@ public class Dialog implements Serializable {
 	public ArrayList<DialogOption> getOptions() {
 		return options;
 	}
-	
+
 	public ArrayList<DialogOption> getVisibleOptions() {
 		ArrayList<DialogOption> visible = new ArrayList<DialogOption>();
-		
-		for(DialogOption o: options) {
-			if(o.isVisible()) visible.add(o);
+
+		for (DialogOption o : options) {
+			if (o.isVisible())
+				visible.add(o);
 		}
-		
+
 		return visible;
-	}	
-	
+	}
+
 	public void reset() {
 		currentOption = -1;
 	}
-	
+
 	public int getNumVisibleOptions() {
 		int num = 0;
-		
-		for(DialogOption o:getOptions()) {
-			if(o.isVisible()) num++;
+
+		for (DialogOption o : getOptions()) {
+			if (o.isVisible())
+				num++;
 		}
-		
+
 		return num;
 	}
-	
+
 	public DialogOption getCurrentOption() {
-		return currentOption == -1?null: options.get(currentOption);
+		return currentOption == -1 ? null : options.get(currentOption);
 	}
-	
+
 	@Override
 	public void write(Json json) {
-	
+
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("id", id);
 			json.writeValue("actor", actor);
-			json.writeValue("options", options);
 		} else {
 			json.writeValue("currentOption", currentOption);
 		}
+
+		json.writeValue("options", options);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-				
+
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			id = json.readValue("id", String.class, jsonData);
 			actor = json.readValue("actor", String.class, jsonData);
 			options = json.readValue("options", ArrayList.class, DialogOption.class, jsonData);
 		} else {
-			currentOption = json.readValue("currentOption", Integer.class, jsonData);
+			JsonValue optionsValue = jsonData.get("options");
+
+			int i = 0;
+
+			for (DialogOption o : options) {
+				o.read(json, optionsValue.get(i));
+				i++;
+			}
 		}
-	}	
+	}
 }

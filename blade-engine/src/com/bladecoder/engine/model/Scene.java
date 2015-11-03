@@ -33,6 +33,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.loader.SerializationHelper;
@@ -759,9 +760,12 @@ public class Scene implements Serializable, AssetConsumer {
 				json.writeValue("polygonalNavGraph", polygonalNavGraph);
 
 		} else {
+			SceneActorRef actorRef;
+
 			json.writeObjectStart("actors");
 			for (BaseActor a : actors.values()) {
-				json.writeValue(a.getInitScene() + "." + a.getId(), a);
+				actorRef = new SceneActorRef(a.getInitScene(), a.getId());
+				json.writeValue(actorRef.toString(), a);
 			}
 			json.writeObjectEnd();
 
@@ -796,6 +800,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 			for (BaseActor actor : actors.values()) {
 				actor.setScene(this);
+				actor.setInitScene(id);
 
 				if (actor instanceof InteractiveActor) {
 					InteractiveActor ia = (InteractiveActor) actor;
@@ -825,13 +830,17 @@ public class Scene implements Serializable, AssetConsumer {
 			polygonalNavGraph = json.readValue("polygonalNavGraph", PolygonalNavGraph.class, jsonData);
 
 		} else {
-			actors.clear();
-
 			JsonValue jsonValueActors = jsonData.get("actors");
+			SceneActorRef actorRef;
 
 			for (int i = 0; i < jsonValueActors.size; i++) {
 				JsonValue jsonValueAct = jsonValueActors.get(i);
-				BaseActor actor = SerializationHelper.getInstance().getActor(jsonValueAct.name);
+				actorRef = new SceneActorRef(jsonValueAct.name);
+				Scene sourceScn = World.getInstance().getScene(actorRef.getSceneId());
+
+				BaseActor actor = sourceScn.getActor(actorRef.getActorId(), false);
+
+				sourceScn.removeActor(actor);
 				actor.read(json, jsonValueAct);
 				addActor(actor);
 			}

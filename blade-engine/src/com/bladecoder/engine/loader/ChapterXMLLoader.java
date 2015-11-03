@@ -39,7 +39,6 @@ import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.AtlasRenderer;
@@ -405,12 +404,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		}
 
 		actor.setInitScene(scene.getId());
-
-		if (SerializationHelper.getInstance().getMode() == Mode.STATE) {
-			SerializationHelper.getInstance().addActor(actor);
-		} else {
-			scene.addActor(actor);
-		}
+		scene.addActor(actor);
 	}
 
 	private void parseLayer(Attributes atts) throws SAXException {
@@ -652,6 +646,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		if (action != null && atts.getValue("", XMLConstants.ACTOR_TAG) == null
 				&& ActionUtils.getField(action.getClass(), XMLConstants.ACTOR_TAG) != null) {
 			try {
+				EngineLogger.debug("Inyect actor " + actor + " for: " + actionName);
 				ActionUtils.setParam(action, XMLConstants.ACTOR_TAG, actor);
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 				EngineLogger.error("Error setting action actor: " + action.getClass());

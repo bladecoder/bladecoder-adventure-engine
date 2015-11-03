@@ -36,6 +36,10 @@ public class ActionUtils {
 				}
 				
 				final ActionPropertyDescription propertyDescription = field.getAnnotation(ActionPropertyDescription.class);
+				
+				// properties without description are not editables but will be saved in the model.
+				if(propertyDescription == null)
+					continue;
 
 				final String name = field.getName();
 				Param.Type type = property.type();

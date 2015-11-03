@@ -127,7 +127,6 @@ abstract public class BaseActor implements Serializable {
 
 			if (verts.length > 0)
 				bbox.setVertices(verts);
-
 		} else {
 
 

@@ -25,12 +25,10 @@ import com.bladecoder.engine.model.World;
 public class PickUpAction implements Action {
 	@ActionProperty()
 	@ActionPropertyDescription("The target actor")
-	
 	private SceneActorRef actor;
 
 	@ActionProperty
 	@ActionPropertyDescription("The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'")
-
 	private String animation;
 
 	@Override

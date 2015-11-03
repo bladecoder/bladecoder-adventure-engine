@@ -160,6 +160,10 @@ public class ActionCallbackSerialization {
 	 * @param id
 	 */
 	public static ActionCallback find(String id) {
+		
+		if(id == null)
+			return null;
+		
 		Scene s = World.getInstance().getCurrentScene();
 
 		String[] split = id.split(SEPARATION_SYMBOL);

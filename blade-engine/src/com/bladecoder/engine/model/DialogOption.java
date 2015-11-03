@@ -87,8 +87,10 @@ public class DialogOption implements Serializable {
 			json.writeValue("next", next);
 			json.writeValue("once", once);
 		} else {
-			json.writeValue("visible", visible);
+			
 		}
+		
+		json.writeValue("visible", visible);
 	}
 
 	@Override
@@ -101,7 +103,9 @@ public class DialogOption implements Serializable {
 			next = json.readValue("next", String.class, jsonData);
 			once = json.readValue("once", Boolean.class, jsonData);
 		} else {
-			visible = json.readValue("visible", Boolean.class, jsonData);
+			
 		}
+		
+		visible = json.readValue("visible", Boolean.class, jsonData);
 	}		
 }

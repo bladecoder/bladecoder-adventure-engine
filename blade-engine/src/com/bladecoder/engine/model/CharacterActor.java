@@ -196,19 +196,18 @@ public class CharacterActor extends SpriteActor {
 	@Override
 	public void write(Json json) {
 		super.write(json);
-		json.writeValue("dialogs", dialogs);
+		json.writeValue("dialogs", dialogs, null);
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 		} else {
-
 			// MUTABLE
-
-			json.writeValue("walkingSpeed", walkingSpeed);
-			json.writeValue("textColor", textColor);
 			json.writeValue("standAnim", standAnim);
 			json.writeValue("walkAnim", walkAnim);
 			json.writeValue("talkAnim", talkAnim);
 		}
+		
+		json.writeValue("walkingSpeed", walkingSpeed);
+		json.writeValue("textColor", textColor);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -220,12 +219,13 @@ public class CharacterActor extends SpriteActor {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 		} else {
 			// MUTABLE
-			walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);
-			textColor = json.readValue("textColor", Color.class, jsonData);
 			standAnim = json.readValue("standAnim", String.class, jsonData);
 			walkAnim = json.readValue("walkAnim", String.class, jsonData);
 			talkAnim = json.readValue("talkAnim", String.class, jsonData);
 		}
+		
+		walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);
+		textColor = json.readValue("textColor", Color.class, jsonData);
 	}
 
 }

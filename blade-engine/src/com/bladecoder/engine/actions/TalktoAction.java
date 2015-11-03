@@ -27,7 +27,6 @@ public class TalktoAction implements Action {
 
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The 'dialogId' to show")
-
 	private String dialog;
 
 	@Override

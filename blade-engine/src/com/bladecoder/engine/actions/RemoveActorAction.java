@@ -23,8 +23,7 @@ import com.bladecoder.engine.util.EngineLogger;
 @ActionDescription("Deletes an actor from the game")
 public class RemoveActorAction implements Action {
 	@ActionProperty
-	@ActionPropertyDescription("The actor to remove")
-	
+	@ActionPropertyDescription("The actor to remove")	
 	private SceneActorRef actor;
 
 	@Override

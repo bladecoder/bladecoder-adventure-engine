@@ -619,6 +619,8 @@ public class World implements Serializable, AssetConsumer {
 
 		if (chapterName == null)
 			chapterName = initChapter;
+		
+		currentChapter = initChapter;
 
 		if (EngineAssetManager.getInstance().getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).exists()) {
 
@@ -640,7 +642,7 @@ public class World implements Serializable, AssetConsumer {
 			}
 		}
 
-		EngineLogger.debug("XML LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+		EngineLogger.debug("MODEL LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 	}
 
 	public void loadChapter(String chapter, String scene) throws Exception {
@@ -693,10 +695,7 @@ public class World implements Serializable, AssetConsumer {
 
 			read(new Json(), root);
 
-			SerializationHelper.getInstance().clearActors();
-
 		} else {
-			SerializationHelper.getInstance().clearActors();
 			throw new IOException("LOADGAMESTATE: no saved game exists");
 		}
 	}
@@ -722,8 +721,6 @@ public class World implements Serializable, AssetConsumer {
 			s = json.prettyPrint(this);
 		else
 			s = json.toJson(this);
-
-		SerializationHelper.getInstance().clearActors();
 
 		Writer w = EngineAssetManager.getInstance().getUserFile(filename).writer(false, "UTF-8");
 
@@ -846,13 +843,16 @@ public class World implements Serializable, AssetConsumer {
 			setCurrentScene(initScene);
 		} else {
 			currentChapter = json.readValue("chapter", String.class, jsonData);
-
+			
 			try {
-				WorldXMLLoader.loadChapter(currentChapter, this);
-			} catch (ParserConfigurationException | SAXException | IOException e) {
+				loadChapter(currentChapter);
+			} catch (IOException e1) {
 				EngineLogger.error("Error Loading Chapter");
 				return;
 			}
+			
+			// restore the state after loading the model
+			SerializationHelper.getInstance().setMode(Mode.STATE);
 
 			currentScene = scenes.get(json.readValue("currentScene", String.class, jsonData));
 			assetState = AssetState.LOAD_ASSETS;

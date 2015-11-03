@@ -29,14 +29,14 @@ public class EnumOptionsInputPanel extends InputPanel {
 		}
 	}
 
-	private final SelectBox<Enum> input;
+	private final SelectBox<Enum<?>> input;
 
-	EnumOptionsInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, Enum[] options) {
+	EnumOptionsInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, Enum<?>[] options) {
 		input = new SelectBox<>(skin);
 
 		int l = options.length;
 		if(!mandatory) l++;
-		Enum[] values = new Enum[l];
+		Enum<?>[] values = new Enum[l];
 
 		if(!mandatory) {
 			values[0] = Empty.EMPTY;
@@ -50,7 +50,7 @@ public class EnumOptionsInputPanel extends InputPanel {
 	}
 
 	public String getText() {
-		final Enum selected = input.getSelected();
+		final Enum<?> selected = input.getSelected();
 		return selected == Empty.EMPTY ? "" : selected.name();
 	}
 
@@ -61,8 +61,8 @@ public class EnumOptionsInputPanel extends InputPanel {
 		if ("".equals(s) && !isMandatory()) {
 			input.setSelectedIndex(0);
 		}
-		Array<Enum> items = input.getItems();
-		for (Enum item : items) {
+		Array<Enum<?>> items = input.getItems();
+		for (Enum<?> item : items) {
 			if (item != Empty.EMPTY && item.name().equalsIgnoreCase(s)) {
 				input.setSelected(item);
 			}

@@ -96,7 +96,7 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 			}
 		});		
 
-		init(parent, e, new InputPanel[] { id, state, target });
+		init(parentElement, e, new InputPanel[] { id, state, target });
 
 		setVisible(target, false);
 

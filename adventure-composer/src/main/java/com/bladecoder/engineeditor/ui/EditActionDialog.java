@@ -42,8 +42,6 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 	private InputPanel actionPanel;
 	private InputPanel classPanel;
 
-	private InputPanel parameters[] = new InputPanel[0];
-
 	@SuppressWarnings("unchecked")
 	public EditActionDialog(Skin skin, Verb parent, Action e) {
 		super(skin);
@@ -88,7 +86,7 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 		}
 
-		init(parent, e, parameters);
+		init(parent, e, new InputPanel[0]);
 
 		setAction();
 		
@@ -120,22 +118,22 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 		if (e != null) {
 			Param[] params = ActionUtils.getParams(e);
 
-			parameters = new InputPanel[params.length];
+			i = new InputPanel[params.length];
 
-			for (int i = 0; i < params.length; i++) {
-				if (params[i].options instanceof Enum[]) {
-					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), params[i].name, params[i].desc,
-							params[i].type, params[i].mandatory, params[i].defaultValue, (Enum[]) params[i].options);
+			for (int j = 0; j < params.length; j++) {
+				if (params[j].options instanceof Enum[]) {
+					i[j] = InputPanelFactory.createInputPanel(getSkin(), params[j].name, params[j].desc,
+							params[j].type, params[j].mandatory, params[j].defaultValue, (Enum[]) params[j].options);
 				} else {
-					parameters[i] = InputPanelFactory.createInputPanel(getSkin(), params[i].name, params[i].desc,
-							params[i].type, params[i].mandatory, params[i].defaultValue, (String[]) params[i].options);
+					i[j] = InputPanelFactory.createInputPanel(getSkin(), params[j].name, params[j].desc,
+							params[j].type, params[j].mandatory, params[j].defaultValue, (String[]) params[j].options);
 				}
 
-				addInputPanel(parameters[i]);
+				addInputPanel(i[j]);
 
-				if ((parameters[i].getField() instanceof TextField && params[i].name.toLowerCase().endsWith("text"))
-						|| parameters[i].getField() instanceof ScrollPane) {
-					parameters[i].getCell(parameters[i].getField()).fillX();
+				if ((i[j].getField() instanceof TextField && params[j].name.toLowerCase().endsWith("text"))
+						|| i[j].getField() instanceof ScrollPane) {
+					i[j].getCell(i[j].getField()).fillX();
 				}
 			}
 		}

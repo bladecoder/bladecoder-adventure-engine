@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -42,6 +43,8 @@ import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
 
 public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
+	
+	private final static float DEFAULT_DIM = 200;
 	
 	private final static String BACKGROUND_TYPE_STR = "background";
 	private final static String SPRITE_TYPE_STR = "sprite";
@@ -268,6 +271,24 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				e = new ObstacleActor();
 			} else if(type.equals(ANCHOR_TYPE_STR)) {
 				e = new AnchorActor();
+			}
+			
+			if(!(e instanceof SpriteActor) && !(e instanceof AnchorActor)) {
+				Polygon bbox = e.getBBox();
+				
+				bbox.setVertices(new float[8]);
+
+				float[] verts = bbox.getVertices();
+
+				verts[0] = -DEFAULT_DIM / 2;
+				verts[1] = 0f;
+				verts[2] = -DEFAULT_DIM / 2;
+				verts[3] = DEFAULT_DIM;
+				verts[4] = DEFAULT_DIM / 2;
+				verts[5] = DEFAULT_DIM;
+				verts[6] = DEFAULT_DIM / 2;
+				verts[7] = 0f;
+				bbox.dirty();
 			}
 		}
 	 

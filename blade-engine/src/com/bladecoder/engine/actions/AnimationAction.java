@@ -41,6 +41,7 @@ public class AnimationAction implements Action {
 	@ActionPropertyDescription("The repeat mode")
 	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
 
+	@ActionProperty
 	private String actor;
 
 	@Override

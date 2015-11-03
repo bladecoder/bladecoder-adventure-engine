@@ -37,7 +37,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	/** internal state. Can be used for actions to maintain a state machine */
 	protected String state;
 
-	protected VerbManager verbs = new VerbManager();
+	protected final VerbManager verbs = new VerbManager();
 	private HashMap<String, SoundFX> sounds;
 	private String playingSound;
 
