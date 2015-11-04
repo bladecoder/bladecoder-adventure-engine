@@ -45,7 +45,7 @@ public class ActionCallbackSerialization {
 	public static final String SEPARATION_SYMBOL = "#";
 
 	private static String find(ActionCallback cb, Verb v) {
-		String id = v.getId();
+		String id = v.getHashKey();
 
 		if (cb == v)
 			return id;
