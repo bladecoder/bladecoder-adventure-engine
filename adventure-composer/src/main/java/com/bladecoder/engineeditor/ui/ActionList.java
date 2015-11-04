@@ -40,6 +40,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.ui.components.ScopePanel;
 import com.bladecoder.engineeditor.undo.UndoDeleteAction;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.ElementUtils;
@@ -54,6 +55,8 @@ public class ActionList extends ModelList<Verb, Action> {
 	private ImageButton downBtn;
 
 	private ImageButton disableBtn;
+	
+	private String scope;
 
 	public ActionList(Skin skin) {
 		super(skin, true);
@@ -130,7 +133,13 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	@Override
 	protected EditModelDialog<Verb, Action> getEditElementDialogInstance(Action e) {
-		return new EditActionDialog(skin, parent, e);
+		EditActionDialog editActionDialog = new EditActionDialog(skin, parent, e, scope);
+		
+		return editActionDialog;
+	}
+	
+	public void setScope(String scope) {
+		this.scope = scope;
 	}
 
 	@Override
@@ -554,8 +563,12 @@ public class ActionList extends ModelList<Verb, Action> {
 						continue;
 					String v = o.toString();
 
-					// TODO Check SCOPE
-					sb.append(name).append(": ").append(Ctx.project.translate(v)).append(' ');
+					// Check world Scope for translations
+					if(scope.equals(ScopePanel.WORLD_SCOPE))
+						sb.append(name).append(": ").append(Ctx.project.getI18N().getWorldTranslation(v)).append(' ');
+					else
+						sb.append(name).append(": ").append(Ctx.project.translate(v)).append(' ');
+					
 					f.setAccessible(accessible);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.error(e.getMessage());
@@ -570,5 +583,4 @@ public class ActionList extends ModelList<Verb, Action> {
 			return true;
 		}
 	};
-
 }

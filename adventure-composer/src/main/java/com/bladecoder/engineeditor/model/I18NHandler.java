@@ -38,11 +38,14 @@ import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class I18NHandler {
+	public static final String WORLD_VERBS_PREFIX = "default.";
+
 	private String modelPath;
 	private String worldFilename;
 	private String chapterFilename;
@@ -112,12 +115,12 @@ public class I18NHandler {
 
 	public void setTranslation(String key, String value) {
 		if (key.charAt(0) != I18N.PREFIX) {
-			if(value == null || value.equals(""))
+			if (value == null || value.equals(""))
 				i18nChapter.remove(key);
 			else
 				i18nChapter.setProperty(key, value);
 		} else {
-			if(value == null || value.equals(""))
+			if (value == null || value.equals(""))
 				i18nChapter.remove(key.substring(1));
 			else
 				i18nChapter.setProperty(key.substring(1), value);
@@ -134,8 +137,7 @@ public class I18NHandler {
 	private void save(String filename, Properties p) {
 		String i18nFilename = getI18NFilename(filename);
 
-		// TODO
-		// I18NHandler.deleteUnusedKeys(this);
+		 deleteUnusedKeys();
 
 		try {
 			FileOutputStream os = new FileOutputStream(i18nFilename);
@@ -195,14 +197,15 @@ public class I18NHandler {
 			putTranslationsInElement(a);
 		}
 	}
-	
+
 	public void putTranslationsInElement(Action a) {
 		String[] names = ActionUtils.getFieldNames(a);
-		
-		for(String name:names) {
-			if(name.toLowerCase().endsWith("text")) {
-				String value = getTranslation(ActionUtils.getStringValue(a, name));
+
+		for (String name : names) {
+			if (name.toLowerCase().endsWith("text")) {
+				
 				try {
+					String value = getTranslation(ActionUtils.getStringValue(a, name));
 					ActionUtils.setParam(a, name, value);
 				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.error(e.getMessage());
@@ -299,57 +302,115 @@ public class I18NHandler {
 			setTranslation(key, value);
 		}
 	}
-	
+
 	public void extractStrings(String baseString, Action a) {
 		String[] names = ActionUtils.getFieldNames(a);
-		
-		for(String name:names) {
-			if(name.toLowerCase().endsWith("text")) {
+
+		for (String name : names) {
+			if (name.toLowerCase().endsWith("text")) {
 				String key = baseString + "." + name;
-				String value = ActionUtils.getStringValue(a, name);
+				
 				try {
+					String value = ActionUtils.getStringValue(a, name);
 					ActionUtils.setParam(a, name, key);
+					setTranslation(key, value);
 				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.error(e.getMessage());
 				}
-				
-				setTranslation(key, value);
 			}
 		}
 	}
 
-	// public void deleteUnusedKeys(BaseDocument doc) {
-	// // TODO
-	// ArrayList<String> usedKeys = new ArrayList<String>();
-	// getUsedKeys(doc.getRootElement(), usedKeys);
-	//
-	// Enumeration<Object> keys = doc.getI18N().keys();
-	//
-	// while(keys.hasMoreElements()) {
-	// String key = (String)keys.nextElement();
-	//
-	// if(!usedKeys.contains(key) &&
-	// !key.startsWith("ui.")) { // Doesn't remove ui keys
-	// doc.getI18N().remove(key);
-	// }
-	// }
-	// }
+	private void deleteUnusedKeys() {
+		ArrayList<String> usedKeys = new ArrayList<String>();
+		
+		// SCENES
+		for(Scene s: World.getInstance().getScenes().values())
+			getUsedKeys(s, usedKeys);
+		
+		Enumeration<Object> keys = i18nChapter.keys();
 
-	// private void getUsedKeys(Element e, ArrayList<String> usedKeys) {
-	// NamedNodeMap attrs = e.getAttributes();
-	//
-	// for(int i = 0; i < attrs.getLength(); i++) {
-	// if(attrs.item(i).getNodeValue().length() > 0 &&
-	// attrs.item(i).getNodeValue().charAt(0) == I18N.PREFIX) {
-	// usedKeys.add(attrs.item(i).getNodeValue().substring(1));
-	// }
-	// }
-	//
-	// NodeList childs = e.getChildNodes();
-	//
-	// for(int i = 0; i < childs.getLength(); i++) {
-	// if(childs.item(i) instanceof Element)
-	// getUsedKeys((Element)childs.item(i), usedKeys);
-	// }
-	// }
+		while (keys.hasMoreElements()) {
+			String key = (String) keys.nextElement();
+
+			// Doesn't remove ui keys
+			if (!usedKeys.contains(key) && !key.startsWith("ui.")) { 
+				EditorLogger.debug("Removing translation key: " + key);
+				i18nChapter.remove(key);
+			}
+		}
+		
+		usedKeys.clear();
+		// WORLD VERBS
+		for(Verb v: World.getInstance().getVerbManager().getVerbs().values())
+			getUsedKeys(v, usedKeys);
+		
+		keys = i18nWorld.keys();
+
+		while (keys.hasMoreElements()) {
+			String key = (String) keys.nextElement();
+
+			// Doesn't remove ui keys
+			if (!usedKeys.contains(key) && !key.startsWith("ui.")) {
+				EditorLogger.debug("Removing translation key: " + key);
+				i18nWorld.remove(key);
+			}
+		}
+
+	}
+
+	private void getUsedKeys(Scene s, ArrayList<String> usedKeys) {
+		for(Verb v: s.getVerbManager().getVerbs().values())
+			getUsedKeys(v, usedKeys);
+
+		for(BaseActor a: s.getActors().values()) {
+			if(a instanceof InteractiveActor) {
+				InteractiveActor ia = (InteractiveActor) a;
+				
+				if(ia.getDesc() != null && !ia.getDesc().isEmpty() && ia.getDesc().charAt(0) == I18N.PREFIX)
+					usedKeys.add(ia.getDesc().substring(1));
+				
+				for(Verb v: ia.getVerbManager().getVerbs().values())
+					getUsedKeys(v, usedKeys);
+				
+				if(a instanceof CharacterActor) {
+					CharacterActor ca = (CharacterActor) a;
+					
+					if(ca.getDialogs() != null) {
+						for(Dialog d: ca.getDialogs().values()) {
+							for(DialogOption o: d.getOptions()) {
+								if(o.getText() != null && !o.getText().isEmpty() && o.getText().charAt(0) == I18N.PREFIX)
+									usedKeys.add(o.getText().substring(1));
+								
+								if(o.getResponseText() != null && !o.getResponseText().isEmpty() && o.getResponseText().charAt(0) == I18N.PREFIX)
+									usedKeys.add(o.getResponseText().substring(1));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private void getUsedKeys(Verb v, ArrayList<String> usedKeys) {
+		for(Action a:v.getActions()) {
+			String[] fieldNames = ActionUtils.getFieldNames(a);
+			
+			for(String name: fieldNames) {
+				if(name.toLowerCase().endsWith("text")) {
+					String value = null;
+					
+					try {
+						value = ActionUtils.getStringValue(a, name);
+					} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+						EditorLogger.error(e.getMessage());
+					}
+					
+					if (value != null && !value.isEmpty() && value.charAt(0) == I18N.PREFIX) {
+						usedKeys.add(value.substring(1));
+					}
+				}
+			}
+		}
+	}
 }

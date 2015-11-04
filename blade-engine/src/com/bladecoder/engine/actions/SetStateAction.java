@@ -22,7 +22,7 @@ import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Sets the actor state")
 public class SetStateAction implements Action {
-	@ActionProperty
+	@ActionProperty(required = true)
 	@ActionPropertyDescription("The target actor")
 	private SceneActorRef actor;
 

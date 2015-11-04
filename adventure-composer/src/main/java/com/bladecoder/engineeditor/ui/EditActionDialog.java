@@ -27,11 +27,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
+import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.I18NHandler;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.components.ScopePanel;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class EditActionDialog extends EditModelDialog<Verb, Action> {
@@ -41,11 +45,13 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 	private InputPanel actionPanel;
 	private InputPanel classPanel;
+	private String scope;
 
 	@SuppressWarnings("unchecked")
-	public EditActionDialog(Skin skin, Verb parent, Action e) {
+	public EditActionDialog(Skin skin, Verb parent, Action e, String scope) {
 		super(skin);
 
+		this.scope = scope;
 		String[] actions = ActionFactory.getActionList();
 		Arrays.sort(actions);
 		String[] actions2 = new String[actions.length + 1];
@@ -89,8 +95,8 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 		init(parent, e, new InputPanel[0]);
 
 		setAction();
-		
-		if(e != null)
+
+		if (e != null)
 			modelToInputs();
 	}
 
@@ -101,7 +107,7 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 		addInputPanel(actionPanel);
 
 		Action tmp = null;
-		
+
 		if (id.equals(CUSTOM_ACTION_STR)) {
 			addInputPanel(classPanel);
 			if (classPanel != null || !classPanel.getText().trim().isEmpty())
@@ -111,8 +117,8 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 			tmp = ActionFactory.create(id, null);
 			setInfo(ActionUtils.getInfo(tmp));
 		}
-		
-		if(e == null || tmp == null || !(e.getClass().getName().equals(tmp.getClass().getName())))
+
+		if (e == null || tmp == null || !(e.getClass().getName().equals(tmp.getClass().getName())))
 			e = tmp;
 
 		if (e != null) {
@@ -122,11 +128,11 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 			for (int j = 0; j < params.length; j++) {
 				if (params[j].options instanceof Enum[]) {
-					i[j] = InputPanelFactory.createInputPanel(getSkin(), params[j].name, params[j].desc,
-							params[j].type, params[j].mandatory, params[j].defaultValue, (Enum[]) params[j].options);
+					i[j] = InputPanelFactory.createInputPanel(getSkin(), params[j].name, params[j].desc, params[j].type,
+							params[j].mandatory, params[j].defaultValue, (Enum[]) params[j].options);
 				} else {
-					i[j] = InputPanelFactory.createInputPanel(getSkin(), params[j].name, params[j].desc,
-							params[j].type, params[j].mandatory, params[j].defaultValue, (String[]) params[j].options);
+					i[j] = InputPanelFactory.createInputPanel(getSkin(), params[j].name, params[j].desc, params[j].type,
+							params[j].mandatory, params[j].defaultValue, (String[]) params[j].options);
 				}
 
 				addInputPanel(i[j]);
@@ -146,6 +152,26 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 		for (int j = 0; j < i.length; j++) {
 			String v = i[j].getText();
 
+			if (i[j].getTitle().toLowerCase().endsWith("text")) {
+				
+				String key = null;
+				
+				if (scope.equals(ScopePanel.WORLD_SCOPE)) {
+					key = I18N.PREFIX + I18NHandler.WORLD_VERBS_PREFIX + parent.getHashKey() + "." + parent.getActions().indexOf(e) + "." + i[j].getTitle();
+					Ctx.project.getI18N().setWorldTranslation(key, v);
+				} else if (scope.equals(ScopePanel.SCENE_SCOPE)) {
+					key = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "." + 
+							parent.getHashKey() + "." + parent.getActions().indexOf(e) + "." + i[j].getTitle();
+					Ctx.project.getI18N().setTranslation(key, v);
+				} else {
+					key = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "." + Ctx.project.getSelectedActor().getId()
+					+ "." + parent.getHashKey() + "." + parent.getActions().indexOf(e) + "." + i[j].getTitle();
+					Ctx.project.getI18N().setTranslation(key, v);
+				}
+				
+				v = key;
+			}
+
 			try {
 				ActionUtils.setParam(e, i[j].getTitle(), v);
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
@@ -159,7 +185,13 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 		for (int j = 0; j < i.length; j++) {
 
 			try {
-				String v = ActionUtils.getParam(e, i[j].getTitle());
+				String v = ActionUtils.getStringValue(e, i[j].getTitle());
+
+				if (scope.equals(ScopePanel.WORLD_SCOPE))
+					v = Ctx.project.getI18N().getWorldTranslation(v);
+				else
+					v = Ctx.project.translate(v);
+
 				i[j].setText(v);
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 				EditorLogger.error(e.getMessage());

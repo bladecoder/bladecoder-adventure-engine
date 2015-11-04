@@ -94,7 +94,6 @@ public class CharacterActor extends SpriteActor {
 	public void setWalkingSpeed(float s) {
 		walkingSpeed = s;
 	}
-	
 
 	public float getWalkingSpeed() {
 		return walkingSpeed;
@@ -177,7 +176,6 @@ public class CharacterActor extends SpriteActor {
 
 		((WalkTween) posTween).start(this, walkingPath, walkingSpeed, cb);
 	}
-	
 
 	public HashMap<String, Dialog> getDialogs() {
 		return dialogs;
@@ -196,16 +194,15 @@ public class CharacterActor extends SpriteActor {
 	@Override
 	public void write(Json json) {
 		super.write(json);
-		json.writeValue("dialogs", dialogs, null);
+		json.writeValue("dialogs", dialogs, HashMap.class, Dialog.class);
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 		} else {
-			// MUTABLE
 			json.writeValue("standAnim", standAnim);
 			json.writeValue("walkAnim", walkAnim);
 			json.writeValue("talkAnim", talkAnim);
 		}
-		
+
 		json.writeValue("walkingSpeed", walkingSpeed);
 		json.writeValue("textColor", textColor);
 	}
@@ -214,16 +211,25 @@ public class CharacterActor extends SpriteActor {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
-		dialogs = json.readValue("dialogs", HashMap.class, Dialog.class, jsonData);
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+			dialogs = json.readValue("dialogs", HashMap.class, Dialog.class, jsonData);
 		} else {
-			// MUTABLE
+			if (dialogs != null) {
+				JsonValue dialogsValue = jsonData.get("dialogs");
+
+				for (Dialog d : dialogs.values()) {
+					String id = d.getId();
+					JsonValue dValue = dialogsValue.get(id);
+					d.read(json, dValue);
+				}
+			}
+
 			standAnim = json.readValue("standAnim", String.class, jsonData);
 			walkAnim = json.readValue("walkAnim", String.class, jsonData);
 			talkAnim = json.readValue("talkAnim", String.class, jsonData);
 		}
-		
+
 		walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);
 		textColor = json.readValue("textColor", Color.class, jsonData);
 	}

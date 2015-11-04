@@ -24,6 +24,9 @@ import com.bladecoder.engineeditor.Ctx;
 public class ActorInputPanel extends EditableOptionsInputPanel<String> {
 	ActorInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
 		super(skin, title, desc, mandatory, defaultValue, getValues(mandatory));
+		
+		if(mandatory)
+			setText(Ctx.project.getSelectedActor().getId());
 	}
 
 	private static String[] getValues(boolean mandatory) {

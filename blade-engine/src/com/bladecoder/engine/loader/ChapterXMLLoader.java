@@ -646,7 +646,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 		if (action != null && atts.getValue("", XMLConstants.ACTOR_TAG) == null
 				&& ActionUtils.getField(action.getClass(), XMLConstants.ACTOR_TAG) != null) {
 			try {
-				EngineLogger.debug("Inyect actor " + actor + " for: " + actionName);
+				EngineLogger.debug("Inject actor " + actor + " for: " + actionName);
 				ActionUtils.setParam(action, XMLConstants.ACTOR_TAG, actor);
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 				EngineLogger.error("Error setting action actor: " + action.getClass());

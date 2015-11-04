@@ -166,7 +166,7 @@ public class ActionUtils {
 	}
 	
 	
-	public static String getParam(Action a, String param) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+	public static String getStringValue(Action a, String param) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		String result = null;
 		
 		Class<?> clazz = a.getClass();
@@ -185,23 +185,41 @@ public class ActionUtils {
 		} else if(field.getType().isAssignableFrom(boolean.class)) {
 			result = Boolean.toString(field.getBoolean(a));
 		} else if(field.getType().isAssignableFrom(Boolean.class)) {
-			result = field.get(a).toString();
+			Object o = field.get(a);
+			
+			if(o != null)
+				result = o.toString();
 		} else if(field.getType().isAssignableFrom(float.class)) {
 			result = Float.toString(field.getFloat(a));		
 		} else if(field.getType().isAssignableFrom(Float.class)) {
-			result = field.get(a).toString();			
+			Object o = field.get(a);
+			
+			if(o != null)
+				result = o.toString();			
 		} else if(field.getType().isAssignableFrom(int.class)) {
 			result = Integer.toString(field.getInt(a));
 		} else if(field.getType().isAssignableFrom(Vector2.class)) {
 			result = Param.toStringParam((Vector2)field.get(a));
 		} else if(field.getType().isAssignableFrom(SceneActorRef.class)) {
-			result = field.get(a).toString();
+			Object o = field.get(a);
+			
+			if(o != null)
+				result = o.toString();
 		} else if(field.getType().isAssignableFrom(ActorAnimationRef.class)) {
-			result = field.get(a).toString();
+			Object o = field.get(a);
+			
+			if(o != null)
+				result = o.toString();
 		} else if(field.getType().isAssignableFrom(Color.class)) {
-			result = field.get(a).toString();		
+			Object o = field.get(a);
+			
+			if(o != null)
+				result = o.toString();		
 		} else if (field.getType().isEnum()) {
-			result = field.get(a).toString();	
+			Object o = field.get(a);
+			
+			if(o != null)
+				result = ((Enum<?>)o).name();	
 		} else {
 			EngineLogger.error("ACTION FIELD TYPE NOT SUPPORTED -  type: " + field.getType());
 		}
@@ -221,18 +239,6 @@ public class ActionUtils {
 	    } while((current = current.getSuperclass()) != null);
 	    
 	    return null;
-	}
-	
-	public static String getStringValue(Action a, String fieldName) {
-		Class<?> clazz = a.getClass();
-	    
-	    Field field = getField(clazz, fieldName);
-	    
-	    try {
-			return (String)field.get(a);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			return null;
-		}
 	}
 	
 	public static void writeJson(Action a, Json json) {

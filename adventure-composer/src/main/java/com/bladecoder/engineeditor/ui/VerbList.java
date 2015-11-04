@@ -30,6 +30,7 @@ import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.I18NHandler;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
@@ -166,8 +167,13 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 		list.getItems().insert(pos, newElement);
 
 		parent.addVerb(newElement);
-		Ctx.project.getI18N().extractStrings(I18N.PREFIX + Ctx.project.getSelectedScene().getId() + 
-				"." + Ctx.project.getSelectedActor().getId(), newElement);
+		
+		if (ScopePanel.WORLD_SCOPE.equals(scopePanel.getScope())) {
+			Ctx.project.getI18N().extractStrings(I18N.PREFIX + I18NHandler.WORLD_VERBS_PREFIX, newElement);
+		} else {
+			Ctx.project.getI18N().extractStrings(I18N.PREFIX + Ctx.project.getSelectedScene().getId() + 
+					"." + Ctx.project.getSelectedActor().getId(), newElement);			
+		}
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();
@@ -182,9 +188,11 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 
 		if (pos != -1) {
 			v = list.getItems().get(pos);
+			actionList.setScope(scopePanel.getScope());
 			actionList.addElements(v, v.getActions());
 		} else {
 			actionList.addElements(null, null);
+			actionList.setScope(null);
 		}
 	}
 

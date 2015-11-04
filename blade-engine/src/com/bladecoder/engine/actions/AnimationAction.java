@@ -41,18 +41,12 @@ public class AnimationAction implements Action {
 	@ActionPropertyDescription("The repeat mode")
 	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
 
-	@ActionProperty
-	private String actor;
-
 	@Override
 	public boolean run(ActionCallback cb) {
 		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", animation.getAnimationId()));
 		
 		String actorId = animation.getActorId();
 		
-		if(actorId == null)
-			actorId = actor;
-
 		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
 
 		a.startAnimation(animation.getAnimationId(), repeat, count, wait?cb:null);

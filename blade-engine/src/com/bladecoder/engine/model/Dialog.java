@@ -128,7 +128,7 @@ public class Dialog implements Serializable {
 			json.writeValue("currentOption", currentOption);
 		}
 
-		json.writeValue("options", options);
+		json.writeValue("options", options, DialogOption.class, DialogOption.class);
 	}
 
 	@SuppressWarnings("unchecked")

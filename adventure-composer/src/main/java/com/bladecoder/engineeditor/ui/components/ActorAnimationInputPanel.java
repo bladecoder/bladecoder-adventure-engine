@@ -116,7 +116,10 @@ public class ActorAnimationInputPanel extends InputPanel {
 	}
 
 	public String getText() {
-		return (new ActorAnimationRef(actor.getSelected(), animation.getSelected())).toString();
+		
+		String selectedActor = !actor.getSelected().isEmpty() ? actor.getSelected():Ctx.project.getSelectedActor().getId();
+		
+		return (new ActorAnimationRef(selectedActor, animation.getSelected())).toString();
 	}
 
 	public void setText(String s) {
@@ -125,5 +128,22 @@ public class ActorAnimationInputPanel extends InputPanel {
 		actor.setSelected(aa.getActorId() == null?"":aa.getActorId());
 		actorSelected();
 		animation.setSelected(aa.getAnimationId());
+	}
+	
+	@Override
+	public boolean validateField() {
+		
+		ActorAnimationRef a = new ActorAnimationRef(getText());
+		
+		if(isMandatory()) {
+			if(a.getActorId() == null || a.getActorId().trim().isEmpty() || 
+					a.getAnimationId() == null || a.getAnimationId().trim().isEmpty()) {
+				setError(true);
+				return false;
+			}		
+		}
+		
+		setError(false);	
+		return true;
 	}
 }
