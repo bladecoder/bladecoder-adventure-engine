@@ -225,6 +225,19 @@ public class ScnWidget extends Widget {
 				sceneBatch.setProjectionMatrix(camera.combined);
 				sceneBatch.begin();
 				scn.draw(sceneBatch);
+				
+				// draw not visible sprite actors
+				for(BaseActor a:scn.getActors().values()) {
+					if(a instanceof SpriteActor && !a.isVisible()) {
+						SpriteActor sa = (SpriteActor)a;
+						
+						sa.setVisible(true);
+						sa.draw(sceneBatch);
+						sa.setVisible(false);
+					}
+				}
+				
+				
 				sceneBatch.end();
 				ScissorStack.popScissors();
 			}

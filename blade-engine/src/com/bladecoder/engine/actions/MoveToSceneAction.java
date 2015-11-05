@@ -46,6 +46,7 @@ public class MoveToSceneAction implements Action {
 		InteractiveActor a = (InteractiveActor)s.getActor(actorId, false);
 
 		s.removeActor(a);
+		
 		if(s == World.getInstance().getCurrentScene())
 			a.dispose();
 		
