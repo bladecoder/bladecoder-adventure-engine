@@ -118,8 +118,8 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 		DialogOption e2 = items.get(pos - 1);
 
 
-		parent.getOptions().set(pos - 1, e);
-		parent.getOptions().set(pos, e2);
+		items.set(pos - 1, e);
+		items.set(pos, e2);
 		
 		parent.getOptions().set(pos - 1, e);
 		parent.getOptions().set(pos, e2);

@@ -70,7 +70,7 @@ public class World implements Serializable, AssetConsumer {
 	private int height;
 
 	private String initScene;
-	private HashMap<String, Scene> scenes = new HashMap<String, Scene>();
+	private HashMap<String, Scene> scenes;
 	private final VerbManager verbs = new VerbManager();
 
 	private Scene currentScene;
@@ -125,7 +125,7 @@ public class World implements Serializable, AssetConsumer {
 
 	private void init() {
 		// scenes = new HashMap<String, Scene>();
-		scenes.clear();
+		scenes = new HashMap<String, Scene>();
 		inventory = new Inventory();
 		textManager = new TextManager();
 

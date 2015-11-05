@@ -29,6 +29,7 @@ import java.util.Properties;
 import java.util.TreeSet;
 
 import com.bladecoder.engine.actions.Action;
+import com.bladecoder.engine.actions.DisableActionAction;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
@@ -394,6 +395,10 @@ public class I18NHandler {
 	
 	private void getUsedKeys(Verb v, ArrayList<String> usedKeys) {
 		for(Action a:v.getActions()) {
+			
+			if(a instanceof DisableActionAction)
+				a = ((DisableActionAction) a).getAction();
+			
 			String[] fieldNames = ActionUtils.getFieldNames(a);
 			
 			for(String name: fieldNames) {

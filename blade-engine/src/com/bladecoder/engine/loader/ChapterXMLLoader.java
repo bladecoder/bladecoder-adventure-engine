@@ -33,6 +33,7 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
+import com.bladecoder.engine.actions.DisableActionAction;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
@@ -607,7 +608,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 	private final HashMap<String, String> actionParams = new HashMap<String, String>();
 
 	private void parseAction(Attributes atts, String actor) {
-
+		boolean enabled = true;
 		String actionName = null;
 		Action action = null;
 		String actionClass = null;
@@ -622,7 +623,7 @@ public class ChapterXMLLoader extends DefaultHandler {
 				actionName = atts.getValue(attName);
 			} else if (attName.equals(XMLConstants.ACTION_ENABLED_ATTR)) {
 				if (atts.getValue(attName).equals(XMLConstants.FALSE_VALUE))
-					return;
+					enabled = false;
 			} else {
 				String value = atts.getValue(attName);
 
@@ -653,6 +654,12 @@ public class ChapterXMLLoader extends DefaultHandler {
 			}
 		}
 
+		if(!enabled) {
+			Action dis = action;
+			action = new DisableActionAction();
+			((DisableActionAction)action).setAction(dis);
+		}
+		
 		if (action != null) {
 			currentVerb.add(action);
 		}

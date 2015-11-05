@@ -30,6 +30,7 @@ import com.bladecoder.engine.actions.AbstractIfAction;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.ActorAnimationRef;
+import com.bladecoder.engine.actions.DisableActionAction;
 import com.bladecoder.engine.actions.EndAction;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.SceneActorRef;
@@ -55,7 +56,7 @@ public class ActionList extends ModelList<Verb, Action> {
 	private ImageButton downBtn;
 
 	private ImageButton disableBtn;
-	
+
 	private String scope;
 
 	public ActionList(Skin skin) {
@@ -113,31 +114,39 @@ public class ActionList extends ModelList<Verb, Action> {
 	}
 
 	private void toggleEnabled() {
-		//
-		// Element e = list.getSelected();
-		//
-		// // CONTROL ACTIONS CAN'T BE DISABLED
-		// if (e == null || isControlAction(e))
-		// return;
-		//
-		// String value = e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR);
-		//
-		// if (value.isEmpty() || value.equals(XMLConstants.TRUE_VALUE))
-		// value = XMLConstants.FALSE_VALUE;
-		// else
-		// value = XMLConstants.TRUE_VALUE;
-		//
-		// e.setAttribute(XMLConstants.ACTION_ENABLED_ATTR, value);
-		// doc.setModified(e);
+
+		Action a = list.getSelected();
+
+		// CONTROL ACTIONS CAN'T BE DISABLED
+		if (a == null || isControlAction(a))
+			return;
+
+		int pos = list.getSelectedIndex();
+		Array<Action> items = list.getItems();
+
+		if (a instanceof DisableActionAction) {
+			Action a2 = ((DisableActionAction)a).getAction();
+			parent.getActions().set(pos, a2);
+			items.set(pos, a2);
+		} else {
+			DisableActionAction a2 = new DisableActionAction();			
+			a2.setAction(a);			
+			parent.getActions().set(pos, a2);
+			items.set(pos, a2);
+		}
+		
+		list.setSelectedIndex(pos);
+
+		Ctx.project.setModified();
 	}
 
 	@Override
 	protected EditModelDialog<Verb, Action> getEditElementDialogInstance(Action e) {
 		EditActionDialog editActionDialog = new EditActionDialog(skin, parent, e, scope);
-		
+
 		return editActionDialog;
 	}
-	
+
 	public void setScope(String scope) {
 		this.scope = scope;
 	}
@@ -173,7 +182,7 @@ public class ActionList extends ModelList<Verb, Action> {
 
 		Action e = list.getSelected();
 
-		if (e == null || e instanceof EndAction)
+		if (e == null || e instanceof EndAction || e instanceof DisableActionAction)
 			return;
 
 		editedElement = (Action) ElementUtils.cloneElement(e);
@@ -188,20 +197,22 @@ public class ActionList extends ModelList<Verb, Action> {
 				int pos = list.getSelectedIndex();
 				list.getItems().set(pos, e);
 				parent.getActions().set(pos, e);
-				
+
 				Ctx.project.setModified();
 
 				if (isControlAction(editedElement)) {
 					if (!editedElement.getClass().getName().equals(e.getClass().getName())) {
 
-						deleteControlAction(list.getSelectedIndex(), (AbstractControlAction)editedElement);
+						deleteControlAction(list.getSelectedIndex(), (AbstractControlAction) editedElement);
 
 						if (isControlAction(e))
-							insertEndAction(list.getSelectedIndex(), getOrCreateControlActionId((AbstractControlAction)e));
+							insertEndAction(list.getSelectedIndex(),
+									getOrCreateControlActionId((AbstractControlAction) e));
 					} else {
 						// insert previous caId
 						try {
-							ActionUtils.setParam(e, CONTROL_ACTION_ID_ATTR, getOrCreateControlActionId((AbstractControlAction)editedElement));
+							ActionUtils.setParam(e, CONTROL_ACTION_ID_ATTR,
+									getOrCreateControlActionId((AbstractControlAction) editedElement));
 						} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
 							EditorLogger.error(e1.getMessage());
 						}
@@ -353,8 +364,8 @@ public class ActionList extends ModelList<Verb, Action> {
 		parent.getActions().set(pos - 1, e);
 		parent.getActions().set(pos, e2);
 
-		parent.getActions().set(pos - 1, e);
-		parent.getActions().set(pos, e2);
+		items.set(pos - 1, e);
+		items.set(pos, e2);
 
 		list.setSelectedIndex(pos - 1);
 		upBtn.setDisabled(list.getSelectedIndex() == 0);
@@ -396,6 +407,13 @@ public class ActionList extends ModelList<Verb, Action> {
 
 		@Override
 		protected String getCellTitle(Action a) {
+			boolean enabled = true;
+			
+			if(a instanceof DisableActionAction) {
+				a = ((DisableActionAction) a).getAction();
+				enabled = false;
+			}
+			
 			String id = ActionFactory.getName(a);
 
 			if (id == null)
@@ -418,11 +436,6 @@ public class ActionList extends ModelList<Verb, Action> {
 			boolean animationAction = id.equals("Animation");
 			boolean controlAction = isControlAction(a);
 
-			boolean enabled = true;
-			// e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).isEmpty()
-			// ||
-			// e.getAttribute(XMLConstants.ACTION_ENABLED_ATTR).equals(XMLConstants.TRUE_VALUE);
-			//
 			if (!enabled && !controlAction) {
 				if (actor != null && !animationAction) {
 					SceneActorRef sa = new SceneActorRef(actor);
@@ -541,6 +554,10 @@ public class ActionList extends ModelList<Verb, Action> {
 
 		@Override
 		protected String getCellSubTitle(Action a) {
+			if(a instanceof DisableActionAction)
+				a = ((DisableActionAction) a).getAction();
+			
+			
 			StringBuilder sb = new StringBuilder();
 
 			Param[] params = ActionUtils.getParams(a);
@@ -564,11 +581,11 @@ public class ActionList extends ModelList<Verb, Action> {
 					String v = o.toString();
 
 					// Check world Scope for translations
-					if(scope.equals(ScopePanel.WORLD_SCOPE))
+					if (scope.equals(ScopePanel.WORLD_SCOPE))
 						sb.append(name).append(": ").append(Ctx.project.getI18N().getWorldTranslation(v)).append(' ');
 					else
 						sb.append(name).append(": ").append(Ctx.project.translate(v)).append(' ');
-					
+
 					f.setAccessible(accessible);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.error(e.getMessage());

@@ -40,8 +40,6 @@ public class ElementUtils {
 	public static Object cloneElement(Object e) {
 		Json json = new Json();
 
-		SerializationHelper.getInstance().setMode(Mode.MODEL);
-
 		if (e instanceof Action) {
 			StringWriter buffer = new StringWriter();
 			json.setWriter(buffer);
@@ -51,7 +49,7 @@ public class ElementUtils {
 			JsonValue root = new JsonReader().parse(str);
 			return ActionUtils.readJson(json, root);
 		} else {
-
+			SerializationHelper.getInstance().setMode(Mode.MODEL);
 			String str = json.toJson(e, (Class<?>) null);
 			return json.fromJson(e.getClass(), str);
 		}
