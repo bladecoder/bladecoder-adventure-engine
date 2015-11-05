@@ -16,25 +16,47 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Remove items from the inventory.")
 public class RemoveInventoryItemAction implements Action {
 	@ActionPropertyDescription("The 'actorid' from the inventory item to remove. If empty remove all items.")
 	@ActionProperty(type = Type.ACTOR)
 	private String id;
+	
+	@ActionPropertyDescription("The scene where the inventory items will be drop.")
+	@ActionProperty(type = Type.SCENE, required=true)
+	private String scene;
 
 	@Override
 	public boolean run(ActionCallback cb) {
 		
-		if(id!=null) {
+		Scene s =  World.getInstance().getScene(scene);
+		
+		if(id != null) {
 			SpriteActor a = World.getInstance().getInventory().removeItem(id);
-			if(a!=null)
-				a.dispose();
+			
+			if(a!=null) {
+				if(s != World.getInstance().getCurrentScene())
+					a.dispose();
+				
+				s.addActor(a);
+			} else {
+				EngineLogger.debug("RemoveInventoryAction - Inventory actor not found: " + id);
+			}
 		} else {
+			int n = World.getInstance().getInventory().getNumItems();
+			
+			for(int i = 0; i < n; i++) {
+				SpriteActor a = World.getInstance().getInventory().getItem(i);			
+				s.addActor(a);
+			}
+			
 			World.getInstance().getInventory().removeAllItems();
-		}
+		}	
 		
 		return false;
 	}

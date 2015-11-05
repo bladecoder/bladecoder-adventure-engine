@@ -847,8 +847,10 @@ public class Scene implements Serializable, AssetConsumer {
 
 			orderLayersByZIndex();
 
-			isPlayingSer = json.readValue("isPlaying", Boolean.class, jsonData);
-			musicPosSer = json.readValue("musicPos", Float.class, jsonData);
+			if (musicFilename != null) {
+				isPlayingSer = json.readValue("isPlaying", Boolean.class, jsonData);
+				musicPosSer = json.readValue("musicPos", Float.class, jsonData);
+			}
 
 			camera = json.readValue("camera", SceneCamera.class, jsonData);
 			String followActorId = json.readValue("followActor", String.class, jsonData);

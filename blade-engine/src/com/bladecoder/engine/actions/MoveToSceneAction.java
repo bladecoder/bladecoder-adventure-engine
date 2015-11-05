@@ -24,12 +24,12 @@ import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Move the actor to the selected scene")
 public class MoveToSceneAction implements Action {
-	@ActionProperty
+	@ActionProperty(required=true)
 	@ActionPropertyDescription("The selected actor")	
 	private SceneActorRef actor;
 
 	@ActionPropertyDescription("The target scene")
-	@ActionProperty(type = Type.SCENE)
+	@ActionProperty(type = Type.SCENE, required=true)
 	private String scene;
 
 	@Override
@@ -49,7 +49,7 @@ public class MoveToSceneAction implements Action {
 		if(s == World.getInstance().getCurrentScene())
 			a.dispose();
 		
-		Scene ts =  (scene != null && !scene.isEmpty())? World.getInstance().getScene(scene): World.getInstance().getCurrentScene();
+		Scene ts =  World.getInstance().getScene(scene);
 		
 		if(ts == World.getInstance().getCurrentScene()) {
 			a.loadAssets();

@@ -129,7 +129,6 @@ public class EngineAssetManager extends AssetManager {
 	 * Puts assets scale to "1"
 	 * 
 	 * @param base is the project base folder
-	 * @param worldWidth the width
 	 */
 	public static void createEditInstance(String base) {
 		if (instance != null)

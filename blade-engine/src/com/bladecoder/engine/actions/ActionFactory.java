@@ -79,9 +79,7 @@ public class ActionFactory {
 		actions.put("LoadChapter",
 				"com.bladecoder.engine.actions.LoadChapterAction");
 		actions.put("SceneState",
-				"com.bladecoder.engine.actions.SetSceneStateAction");
-		actions.put("RemoveActor",
-				"com.bladecoder.engine.actions.RemoveActorAction");		
+				"com.bladecoder.engine.actions.SetSceneStateAction");	
 		actions.put("ActorAttr",
 				"com.bladecoder.engine.actions.SetActorAttrAction");
 		actions.put("Repeat",

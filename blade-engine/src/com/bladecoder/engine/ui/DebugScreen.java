@@ -247,10 +247,6 @@ public class DebugScreen implements BladeScreen {
 		});
 
 		runBot.pad(2, 3, 2, 3);
-
-		scenes = new SelectBox<String>(ui.getSkin());
-		scenes.setItems(World.getInstance().getScenes().keySet()
-				.toArray(new String[World.getInstance().getScenes().size()]));
 		
 		testerTimeConf = new TextField(Float.toString(bot.getMaxWaitInverval()), ui.getSkin());
 		inSceneTimeConf = new TextField(Float.toString(bot.getInSceneTime()), ui.getSkin());
@@ -352,6 +348,7 @@ public class DebugScreen implements BladeScreen {
 		
 		pointer = new Pointer(ui.getSkin());
 		stage.addActor(pointer);
+		pointer.setZIndex(1000);
 
 		Gdx.input.setInputProcessor(stage);
 	}

@@ -29,6 +29,9 @@ public class EditableOptionsInputPanel<T> extends InputPanel implements OptionsI
 	}
 
 	public String getText() {
+		if(input.getSelected().isEmpty())
+			return null;
+		
 		return input.getSelected();
 	}
 

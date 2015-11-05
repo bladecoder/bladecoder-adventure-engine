@@ -167,8 +167,12 @@ public class ActionList extends ModelList<Verb, Action> {
 
 				list.setSelectedIndex(pos);
 
-				if (isControlAction(e))
+				if (isControlAction(e)) {
 					insertEndAction(pos + 1, getOrCreateControlActionId((AbstractControlAction) e));
+					
+					if(e instanceof AbstractIfAction)
+						insertEndAction(pos + 2, getOrCreateControlActionId((AbstractControlAction) e));
+				}
 
 				list.invalidateHierarchy();
 			}
@@ -205,9 +209,13 @@ public class ActionList extends ModelList<Verb, Action> {
 
 						deleteControlAction(list.getSelectedIndex(), (AbstractControlAction) editedElement);
 
-						if (isControlAction(e))
-							insertEndAction(list.getSelectedIndex(),
+						if (isControlAction(e)) {
+							insertEndAction(list.getSelectedIndex() + 1,
 									getOrCreateControlActionId((AbstractControlAction) e));
+							
+							if(e instanceof AbstractIfAction)
+								insertEndAction(list.getSelectedIndex() + 2, getOrCreateControlActionId((AbstractControlAction) e));
+						}
 					} else {
 						// insert previous caId
 						try {

@@ -374,7 +374,7 @@ public class AtlasRenderer implements ActorRenderer {
 
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
-		startAnimation(id, repeatType, count, cb, AnimationDesc.getDirectionString(p0, pf));
+		startAnimation(id, repeatType, count, cb, AnimationDesc.getDirectionString(p0, pf, AnimationDesc.getDirs(id, fanims)));
 	}
 
 	@Override

@@ -18,7 +18,6 @@ package com.bladecoder.engineeditor.ui.components;
 import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 
@@ -32,7 +31,7 @@ public class SceneInputPanel extends StringOptionsInputPanel {
 		
 		String[] result = new String[scenes.size()];
 		
-		BaseActor[] v = scenes.values().toArray(new BaseActor[scenes.size()]);
+		Scene[] v = scenes.values().toArray(new Scene[scenes.size()]);
 		
 		for(int i = 0; i < scenes.size(); i++) {
 			result[i] = v[i].getId();

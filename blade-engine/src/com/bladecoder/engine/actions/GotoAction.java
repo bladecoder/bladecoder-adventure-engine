@@ -31,8 +31,8 @@ public class GotoAction implements Action {
 		CENTER, LEFT, RIGHT
 	}
 
-	@ActionPropertyDescription("The target actor")
-	@ActionProperty(type = Type.ACTOR)
+	@ActionPropertyDescription("The walking actor")
+	@ActionProperty(type = Type.ACTOR, required=true)
 	private String actor;
 
 	@ActionProperty
@@ -45,7 +45,7 @@ public class GotoAction implements Action {
 
 	@ActionProperty(defaultValue = "CENTER")
 	@ActionPropertyDescription("When selecting a target actor, an align can be selected")
-	private Align align;
+	private Align align = Align.CENTER;
 
 	@ActionProperty
 	@ActionPropertyDescription("When selecting a target actor, the relative distance to the anchor in each axis")

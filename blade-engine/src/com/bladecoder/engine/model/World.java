@@ -389,7 +389,7 @@ public class World implements Serializable, AssetConsumer {
 		if (currentDialog == null)
 			return;
 
-		currentDialog = currentDialog.selectOption(currentDialog.getVisibleOptions().get(i));
+		setCurrentDialog(currentDialog.selectOption(currentDialog.getVisibleOptions().get(i)));
 	}
 
 	public int getWidth() {

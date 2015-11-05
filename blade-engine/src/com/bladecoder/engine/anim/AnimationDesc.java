@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
+import java.util.HashMap;
+
 import com.badlogic.gdx.math.Vector2;
 
 public class AnimationDesc {
@@ -80,7 +82,11 @@ public class AnimationDesc {
 	
 	private final static float DIRECTION_ASPECT_TOLERANCE = 2.5f;
 
-	public static String getDirectionString(Vector2 p0, Vector2 pf) {
+	public static String getDirectionString(Vector2 p0, Vector2 pf, int numDirs) {
+		
+		if(numDirs == 0 || numDirs == -1)
+			return null;
+		
 		float dx = pf.x - p0.x;
 		float dy = pf.y - p0.y;
 		float ratio = Math.abs(dx / dy);
@@ -92,7 +98,7 @@ public class AnimationDesc {
 		// " dy: "
 		// + dy + " RATIO: " + ratio);
 
-		if (ratio < DIRECTION_ASPECT_TOLERANCE) { // DIAGONAL MOVEMENT
+		if (ratio < DIRECTION_ASPECT_TOLERANCE && numDirs > 4) { // DIAGONAL MOVEMENT
 			if (dy > 0) { // UP. MOVEMENT
 				if (dx > 0) { // TO THE RIGHT
 					return BACKRIGHT;
@@ -108,7 +114,7 @@ public class AnimationDesc {
 				}
 			}
 		} else { // HOR OR VERT MOVEMENT
-			if (Math.abs(dx) > Math.abs(dy) / DIRECTION_ASPECT_TOLERANCE) { // HOR. MOVEMENT
+			if (Math.abs(dx) > Math.abs(dy) / DIRECTION_ASPECT_TOLERANCE || numDirs < 4) { // HOR. MOVEMENT
 				if (dx > 0) { // TO THE RIGHT
 					return RIGHT;
 				} else { // TO THE LEFT
@@ -123,5 +129,36 @@ public class AnimationDesc {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns:
+	 * 
+	 *   8 -> when 8 dir animation mode (RIGHT, LEFT, FRONT, BACK, BACKRIGHT, BACKLEFT, FRONTRIGHT, FRONTLEFT)
+	 *   4 -> when 4 dir animation mode (RIGHT, LEFT, FRONT, BACK)
+	 *   2 -> when 2 dir animation mode (RIGHT, LEFT)
+	 *   0 -> when no dirs availables for the base animation
+	 *   -1 -> when base animation doesn't exists
+	 * 
+	 * @param base Base animation
+	 * @param fanims
+	 * @return -1, 0, 2, 4 or 8
+	 */
+	public static int getDirs(String base, HashMap<String, AnimationDesc> fanims) {
+		String basePoint = base + ".";
+		
+		if(fanims.containsKey( basePoint + FRONTRIGHT) || fanims.containsKey(basePoint + FRONTLEFT))
+			return 8;	
+
+		if(fanims.containsKey( basePoint + BACK))
+			return 4;
+		
+		if(fanims.containsKey( basePoint + LEFT) || fanims.containsKey(basePoint + RIGHT))
+			return 2;
+		
+		if(fanims.containsKey(base))
+			return 0;
+		
+		return -1;
 	}	
 }

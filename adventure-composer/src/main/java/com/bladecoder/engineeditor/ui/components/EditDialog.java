@@ -52,7 +52,9 @@ public abstract class EditDialog extends Dialog {
 		infoCell = getContentTable().add((Widget) infoLbl).prefWidth(200);
 		getContentTable().add(new ScrollPane(centerPanel, skin))
 				.maxHeight(Gdx.graphics.getHeight() * 0.8f)
-				.maxWidth(Gdx.graphics.getWidth() * 0.7f);
+				.maxWidth(Gdx.graphics.getWidth() * 0.7f)
+				.minHeight(Gdx.graphics.getHeight() * 0.5f)
+				.minWidth(Gdx.graphics.getWidth() * 0.5f);
 		
 		centerPanel.addListener(new InputListener() {
 			@Override

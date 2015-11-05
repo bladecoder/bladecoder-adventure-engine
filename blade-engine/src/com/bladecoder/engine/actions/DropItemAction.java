@@ -23,9 +23,9 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
-@ActionDescription("Drops the inventory actor in the scene.")
+@ActionDescription("Drops the inventory actor in the current scene.")
 public class DropItemAction implements Action {
-	@ActionProperty
+	@ActionProperty(required=true)
 	@ActionPropertyDescription("An actor in the inventory.")
 	private String actor;
 

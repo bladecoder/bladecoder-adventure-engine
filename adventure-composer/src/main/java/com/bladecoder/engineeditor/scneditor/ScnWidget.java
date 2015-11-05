@@ -126,31 +126,6 @@ public class ScnWidget extends Widget {
 				} else if (e.getPropertyName().equals("scene")) {
 					setSelectedScene(Ctx.project.getSelectedScene());
 					setSelectedActor(Ctx.project.getSelectedActor());
-				} else if (e.getPropertyName().equals("bbox")) {
-					// TODO DELETE
-					// // Element selActor = (Element) e.getNewValue();
-					// Element selActor =
-					// Ctx.project.getSelectedChapter().getActor(
-					// Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()),
-					// Ctx.project.getSelectedActor().getId());
-					// String id = doc.getId(selActor);
-					// BaseActor a = scn.getActor(id, false);
-					//
-					// if (a == null)
-					// return;
-					//
-					// doc.getBBox(a.getBBox(), selActor);
-					// Vector2 p = doc.getPos(selActor);
-					// a.setPosition(p.x, p.y);
-					//
-					// if (a instanceof SpriteActor) {
-					// SpriteActor sa = (SpriteActor) a;
-					// if
-					// (!selActor.getAttribute(XMLConstants.BBOX_ATTR).isEmpty())
-					// sa.setBboxFromRenderer(false);
-					// else
-					// sa.setBboxFromRenderer(true);
-					// }
 				} else if (e.getPropertyName().equals("animation")) {
 					// createAndSelectActor(Ctx.project.getSelectedActor());
 					// setSelectedFA(null);
@@ -158,12 +133,6 @@ public class ScnWidget extends Widget {
 					String initFA = (String) e.getNewValue();
 					((SpriteActor) selectedActor).getRenderer().setInitAnimation(initFA);
 					setSelectedFA(null);
-
-				} else if (e.getPropertyName().equals(Project.NOTIFY_ELEMENT_CREATED)) {
-//					if (e.getNewValue() instanceof Scene) {
-//						setSelectedScene(Ctx.project.getSelectedScene());
-//						setSelectedActor(Ctx.project.getSelectedActor());
-//					}
 				}
 			}
 		});

@@ -130,7 +130,12 @@ public class ActionUtils {
 		} else if(field.getType().isAssignableFrom(boolean.class)) {
 			field.setBoolean(action, Boolean.parseBoolean(value));
 		} else if(field.getType().isAssignableFrom(Boolean.class)) {
-			field.set(action, Boolean.valueOf(value));
+			Boolean b = null;
+			
+			if(value != null)
+				b = Boolean.valueOf(value);
+			
+			field.set(action, b);
 		} else if(field.getType().isAssignableFrom(float.class)) {
 			try {
 				field.setFloat(action, Float.parseFloat(value));
@@ -138,12 +143,22 @@ public class ActionUtils {
 			}		
 		} else if(field.getType().isAssignableFrom(Float.class)) {
 			try {
-				field.set(action, Float.valueOf(value));
+				Float f = null;
+				
+				if(value != null)
+					f = Float.valueOf(value);
+				
+				field.set(action, f);
 			} catch (NumberFormatException ignored) {
 			}				
 		} else if(field.getType().isAssignableFrom(int.class)) {
 			try {
-				field.setInt(action, Integer.parseInt(value));
+				Integer i = null;
+				
+				if(value != null)
+					i = Integer.parseInt(value);
+				
+				field.setInt(action, i);
 			} catch (NumberFormatException ignored) {
 			}
 		} else if(field.getType().isAssignableFrom(Vector2.class)) {

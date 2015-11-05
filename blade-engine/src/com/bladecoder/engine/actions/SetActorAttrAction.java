@@ -28,18 +28,15 @@ import com.bladecoder.engine.util.EngineLogger;
 @ActionDescription("Change actor attributes.")
 public class SetActorAttrAction implements Action {
 	@ActionProperty(required = true)
-	@ActionPropertyDescription("The target actor")
-	
+	@ActionPropertyDescription("The target actor")	
 	private SceneActorRef actor;
 
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor visibility")
-
 	private Boolean visible;
 
 	@ActionProperty
 	@ActionPropertyDescription("When 'true' the actor responds to the user input")
-
 	private Boolean interaction;
 
 	@ActionPropertyDescription("The actor layer")
@@ -48,35 +45,29 @@ public class SetActorAttrAction implements Action {
 
 	@ActionProperty
 	@ActionPropertyDescription("The order to draw bigger is near")
-
 	private Float zIndex;
 
 	@ActionProperty
 	@ActionPropertyDescription("Enable/Disable the Fake Depth for the actor")
-
 	private Boolean fakeDepth;
 
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor scale")
-
 	private Float scale;
 
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor 'stand' animation. Only supported for character actors.")
-
 	private String standAnimation;
 
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor 'walk' animation. Only supported for character actors.")
-
 	private String walkAnimation;
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor 'talk' animation. Only supported for character actors.")
-
 	private String talkAnimation;
+
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor speed for walking. Only supported for character actors.")
-
 	private Float walkingSpeed;
 
 	@Override
