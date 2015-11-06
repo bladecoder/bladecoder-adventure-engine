@@ -46,12 +46,14 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 	private InputPanel actionPanel;
 	private InputPanel classPanel;
 	private String scope;
+	private int pos;
 
 	@SuppressWarnings("unchecked")
-	public EditActionDialog(Skin skin, Verb parent, Action e, String scope) {
+	public EditActionDialog(Skin skin, Verb parent, Action e, String scope, int pos) {
 		super(skin);
 
 		this.scope = scope;
+		this.pos = e == null ? pos + 1 : pos;
 		String[] actions = ActionFactory.getActionList();
 		Arrays.sort(actions);
 		String[] actions2 = new String[actions.length + 1];
@@ -151,28 +153,34 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 	protected void inputsToModel(boolean create) {
 		for (int j = 0; j < i.length; j++) {
 			String v = i[j].getText();
-
-			if (i[j].getTitle().toLowerCase().endsWith("text")) {
-				
-				String key = null;
-				
-				if (scope.equals(ScopePanel.WORLD_SCOPE)) {
-					key = I18N.PREFIX + I18NHandler.WORLD_VERBS_PREFIX + parent.getHashKey() + "." + parent.getActions().indexOf(e) + "." + i[j].getTitle();
-					Ctx.project.getI18N().setWorldTranslation(key, v);
-				} else if (scope.equals(ScopePanel.SCENE_SCOPE)) {
-					key = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "." + 
-							parent.getHashKey() + "." + parent.getActions().indexOf(e) + "." + i[j].getTitle();
-					Ctx.project.getI18N().setTranslation(key, v);
-				} else {
-					key = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "." + Ctx.project.getSelectedActor().getId()
-					+ "." + parent.getHashKey() + "." + parent.getActions().indexOf(e) + "." + i[j].getTitle();
-					Ctx.project.getI18N().setTranslation(key, v);
-				}
-				
-				v = key;
-			}
-
 			try {
+				if (i[j].getTitle().toLowerCase().endsWith("text")) {
+
+					String key = ActionUtils.getStringValue(e, i[j].getTitle());
+
+					if (scope.equals(ScopePanel.WORLD_SCOPE)) {
+						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+							key = I18N.PREFIX + I18NHandler.WORLD_VERBS_PREFIX + parent.getHashKey() + "." + pos + "."
+									+ i[j].getTitle();
+						Ctx.project.getI18N().setWorldTranslation(key, v);
+					} else if (scope.equals(ScopePanel.SCENE_SCOPE)) {
+						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+							key = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "." + parent.getHashKey() + "."
+									+ pos + "." + i[j].getTitle();
+						Ctx.project.getI18N().setTranslation(key, v);
+					} else {
+						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+							key = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "."
+									+ Ctx.project.getSelectedActor().getId() + "." + parent.getHashKey() + "." + pos
+									+ "." + i[j].getTitle();
+						Ctx.project.getI18N().setTranslation(key, v);
+					}
+					if (v != null && !v.isEmpty())
+						v = key;
+					else
+						v = null;
+				}
+
 				ActionUtils.setParam(e, i[j].getTitle(), v);
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 				EditorLogger.error(e.getMessage());

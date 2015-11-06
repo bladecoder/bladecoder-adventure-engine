@@ -142,7 +142,7 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	@Override
 	protected EditModelDialog<Verb, Action> getEditElementDialogInstance(Action e) {
-		EditActionDialog editActionDialog = new EditActionDialog(skin, parent, e, scope);
+		EditActionDialog editActionDialog = new EditActionDialog(skin, parent, e, scope,  list.getSelectedIndex());
 
 		return editActionDialog;
 	}

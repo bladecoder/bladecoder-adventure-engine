@@ -80,7 +80,7 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 
 	@Override
 	protected EditModelDialog<Dialog, DialogOption> getEditElementDialogInstance(DialogOption e) {
-		return new EditDialogOptionDialog(skin, parent, e);
+		return new EditDialogOptionDialog(skin, parent, e, list.getSelectedIndex());
 	}
 
 	@Override

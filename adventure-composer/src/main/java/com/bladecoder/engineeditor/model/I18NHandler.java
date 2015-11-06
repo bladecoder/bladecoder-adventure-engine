@@ -114,6 +114,7 @@ public class I18NHandler {
 		return i18nChapter.getProperty(key.substring(1), key);
 	}
 
+		
 	public void setTranslation(String key, String value) {
 		if (key.charAt(0) != I18N.PREFIX) {
 			if (value == null || value.equals(""))

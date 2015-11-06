@@ -35,9 +35,13 @@ public class EditDialogOptionDialog extends EditModelDialog<Dialog, DialogOption
 	private InputPanel next;
 	private InputPanel visible;
 	private InputPanel once;
+	private int pos;
+	
 
-	public EditDialogOptionDialog(Skin skin, Dialog parent, DialogOption e) {
+	public EditDialogOptionDialog(Skin skin, Dialog parent, DialogOption e, int pos) {
 		super(skin);
+		
+		this.pos = e == null ? pos + 1 : pos;
 
 		text = InputPanelFactory.createInputPanel(skin, "Text", "The sentence of the dialog to say by the player",
 				Type.SMALL_TEXT, true);
@@ -66,20 +70,25 @@ public class EditDialogOptionDialog extends EditModelDialog<Dialog, DialogOption
 			e = new DialogOption();
 			parent.addOption(e);
 		}
+		
+		String key = e.getText();
 
-		String key = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "." + Ctx.project.getSelectedActor().getId()
-				+ "." + parent.getId() + "." + parent.getOptions().indexOf(e);
+		if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+			key = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "." + Ctx.project.getSelectedActor().getId()
+				+ "." + parent.getId() + "." + pos + ".text";
 
-		String textKey = key + ".text";
-
-		Ctx.project.getI18N().setTranslation(textKey, text.getText());
+		Ctx.project.getI18N().setTranslation(key, text.getText());
 
 		if (text.getText() != null && !text.getText().isEmpty())
-			e.setText(textKey);
+			e.setText(key);
 		else
 			e.setText(null);
 
-		String responseKey = key + ".responseText";
+		String responseKey = e.getResponseText();
+		if (responseKey == null || responseKey.isEmpty() || responseKey.charAt(0) != I18N.PREFIX)
+			responseKey = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "." + Ctx.project.getSelectedActor().getId()
+				+ "." + parent.getId() + "." + pos + ".responseText";
+		
 		Ctx.project.getI18N().setTranslation(responseKey, responseText.getText());
 
 		if (responseText.getText() != null && !responseText.getText().isEmpty())

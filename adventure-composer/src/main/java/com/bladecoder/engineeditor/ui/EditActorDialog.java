@@ -301,7 +301,11 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			ia.setLayer(layer.getText());
 			ia.setInteraction(Boolean.parseBoolean(interaction.getText()));
 			
-			String key = I18N.PREFIX + parent.getId() + "." + e.getId() + ".desc";
+			String key = desc.getText();
+
+			if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+				key = I18N.PREFIX + parent.getId() + "." + e.getId() + ".desc";
+			
 			Ctx.project.getI18N().setTranslation(key, desc.getText());
 			
 			if(desc.getText() != null)
