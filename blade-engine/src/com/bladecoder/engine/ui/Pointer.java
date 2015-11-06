@@ -57,7 +57,16 @@ public class Pointer extends Actor {
 	}
 	
 	@Override
+	public void act (float delta) {
+		super.act(delta);
+		
+		if(getStage().getActors().get(getStage().getActors().size - 1) != this)
+			toFront();
+	}
+	
+	@Override
 	public void draw(Batch batch, float alpha) {
+		
 		getInputUnproject(getStage().getViewport(), mousepos);
 		
 		setPosition(mousepos.x - getWidth() / 2, mousepos.y - getHeight() / 2);

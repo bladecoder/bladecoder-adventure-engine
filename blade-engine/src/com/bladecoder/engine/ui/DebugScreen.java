@@ -348,7 +348,6 @@ public class DebugScreen implements BladeScreen {
 		
 		pointer = new Pointer(ui.getSkin());
 		stage.addActor(pointer);
-		pointer.setZIndex(1000);
 
 		Gdx.input.setInputProcessor(stage);
 	}

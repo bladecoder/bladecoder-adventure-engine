@@ -130,9 +130,8 @@ public class ScnWidget extends Widget {
 					// createAndSelectActor(Ctx.project.getSelectedActor());
 					// setSelectedFA(null);
 				} else if (e.getPropertyName().equals("init_animation")) {
-					String initFA = (String) e.getNewValue();
-					((SpriteActor) selectedActor).getRenderer().setInitAnimation(initFA);
-					setSelectedFA(null);
+					if(!inScene)
+						setSelectedFA(null);
 				}
 			}
 		});
@@ -365,6 +364,9 @@ public class ScnWidget extends Widget {
 
 	public void setInSceneSprites(boolean v) {
 		inScene = v;
+		
+		if(!inScene)
+			setSelectedFA(null);
 	}
 
 	public void setAnimation(boolean v) {

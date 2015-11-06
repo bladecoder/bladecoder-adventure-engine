@@ -55,7 +55,6 @@ public class UI {
 		
 		screens = new BladeScreen[Screens.values().length];
 
-		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setCatchMenuKey(true);
 
 		loadAssets();

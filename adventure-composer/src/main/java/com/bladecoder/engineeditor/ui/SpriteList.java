@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import java.util.HashMap;
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -92,8 +94,11 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 		ActorRenderer renderer = ((SpriteActor) Ctx.project.getSelectedActor()).getRenderer();
 
 		String id = list.getItems().get(pos).id;
-		
+		String oldId = renderer.getInitAnimation();
+				
 		renderer.setInitAnimation(id);
+		
+		Ctx.project.setModified(this, "init_animation", oldId, id);
 	}
 
 	private void flipInit() {
@@ -105,11 +110,12 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 		ActorRenderer renderer = ((SpriteActor) Ctx.project.getSelectedActor()).getRenderer();
 
 		String id = list.getItems().get(pos).id;
-		// String prev = w.getRootAttr("init_scene");
 
-		id = AnimationDesc.getFlipId(id);
+		String newValue = AnimationDesc.getFlipId(id);
 
-		renderer.setInitAnimation(id);
+		renderer.setInitAnimation(newValue);
+		
+		Ctx.project.setModified(this, "init_animation", id, newValue);
 	}
 
 	@Override
@@ -126,8 +132,15 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 		// delete init_animation attr if the animation to delete is the chapter
 		// init_animation
 		if (renderer.getInitAnimation().equals(d.id)) {
-			// TODO Set next animation as init
-			renderer.setInitAnimation(null);
+			HashMap<String, AnimationDesc> animations = renderer.getAnimations();
+			String newValue = null;
+
+			if(animations.size() > 0)
+				newValue = animations.keySet().iterator().next();
+			
+			renderer.setInitAnimation(newValue);
+			
+			Ctx.project.setModified(this, "init_animation", d.id, newValue);
 		}
 		
 		Ctx.project.setModified();
