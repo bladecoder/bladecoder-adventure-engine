@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -34,10 +36,10 @@ import com.bladecoder.engine.actions.DisableActionAction;
 import com.bladecoder.engine.actions.EndAction;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.SceneActorRef;
-import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
@@ -47,7 +49,6 @@ import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class ActionList extends ModelList<Verb, Action> {
-	// TODO Action cache for getting names in cellRenderer
 	private static final String CONTROL_ACTION_ID_ATTR = "caID";
 
 	Skin skin;
@@ -109,6 +110,15 @@ public class ActionList extends ModelList<Verb, Action> {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				down();
+			}
+		});		
+		
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getNewValue() instanceof Action && !(evt.getSource() instanceof EditActionDialog)) {
+					addElements(parent, parent.getActions());
+				}
 			}
 		});
 	}
@@ -269,7 +279,10 @@ public class ActionList extends ModelList<Verb, Action> {
 		toolbar.disablePaste(false);
 
 		// TRANSLATIONS
-		Ctx.project.getI18N().putTranslationsInElement(clipboard);
+		if (scope.equals(ScopePanel.WORLD_SCOPE))
+			Ctx.project.getI18N().putTranslationsInElement(clipboard, true);
+		else
+			Ctx.project.getI18N().putTranslationsInElement(clipboard, false);
 	}
 
 	@Override
@@ -281,8 +294,12 @@ public class ActionList extends ModelList<Verb, Action> {
 		list.getItems().insert(pos, newElement);
 		parent.getActions().add(pos, newElement);
 
-		// FIXME
-		Ctx.project.getI18N().extractStrings(I18N.PREFIX + parent.getId(), newElement);
+		if (scope.equals(ScopePanel.WORLD_SCOPE))
+			Ctx.project.getI18N().extractStrings(null, null, parent.getHashKey(), pos, newElement);
+		else if (scope.equals(ScopePanel.SCENE_SCOPE))
+			Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(), null, parent.getHashKey(), pos,  newElement);
+		else
+			Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(), Ctx.project.getSelectedActor().getId(), parent.getHashKey(), pos, newElement);
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();
@@ -319,7 +336,10 @@ public class ActionList extends ModelList<Verb, Action> {
 		parent.getActions().remove(action);
 
 		// TRANSLATIONS
-		Ctx.project.getI18N().putTranslationsInElement(e);
+		if (scope.equals(ScopePanel.WORLD_SCOPE))
+			Ctx.project.getI18N().putTranslationsInElement(e, true);
+		else
+			Ctx.project.getI18N().putTranslationsInElement(e, false);
 
 		// UNDO
 		Ctx.project.getUndoStack().add(new UndoDeleteAction(parent, e, idx));

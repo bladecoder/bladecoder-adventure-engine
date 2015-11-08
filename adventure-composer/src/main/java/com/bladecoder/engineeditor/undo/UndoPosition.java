@@ -6,11 +6,11 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 
 
-public class UndoPositionAction implements UndoOp {
+public class UndoPosition implements UndoOp {
 	private BaseActor a;
 	private Vector2 pos;
 	
-	public UndoPositionAction(BaseActor a, Vector2 pos) {
+	public UndoPosition(BaseActor a, Vector2 pos) {
 		this.pos = pos;
 		this.a = a;
 	}

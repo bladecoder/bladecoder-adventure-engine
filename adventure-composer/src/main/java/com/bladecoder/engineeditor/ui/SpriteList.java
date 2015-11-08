@@ -15,6 +15,9 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -25,8 +28,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
@@ -81,6 +86,16 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				flipInit();
+			}
+		});
+		
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getNewValue() instanceof Dialog && !(evt.getSource() instanceof EditDialogDialog) && parent instanceof SpriteActor) {
+					HashMap<String, AnimationDesc> animations = parent.getRenderer().getAnimations();
+					addElements(parent, Arrays.asList(animations.values().toArray(new AnimationDesc[0])));
+				}
 			}
 		});
 	}

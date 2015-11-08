@@ -128,7 +128,7 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 			}
 		}
 
-		if (idStr.equals("use"))
+		if (idStr != null && idStr.equals("use"))
 			setVisible(target, true);
 		else
 			setVisible(target, false);

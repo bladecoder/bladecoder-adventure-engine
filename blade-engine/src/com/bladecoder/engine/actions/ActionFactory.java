@@ -25,6 +25,9 @@ import com.bladecoder.engine.util.EngineLogger;
 public class ActionFactory {
 
 	private static final HashMap<String, String> actions = new HashMap<String, String>();
+	
+	// used for fast name retrieval
+	private static final HashMap<String, String> nameCache = new HashMap<String, String>();
 
 	static {
 		
@@ -99,22 +102,22 @@ public class ActionFactory {
 		actions.put("MoveToScene",
 				"com.bladecoder.engine.actions.MoveToSceneAction");
 		actions.put("Text",
-				"com.bladecoder.engine.actions.TextAction");		
+				"com.bladecoder.engine.actions.TextAction");
+		
+		for(String name: actions.keySet()) {
+			String cls = actions.get(name);
+			nameCache.put(cls, name);
+		}
 	}
 	
-	public static String []getActionList() {
+	public static String []getActionNames() {
 		return  actions.keySet().toArray(new String[actions.size()]);
 	}
 	
 	public static String getName(Action a) {
-		String value = a.getClass().getCanonicalName();
+		String cls = a.getClass().getCanonicalName();
 		
-		for(String key:actions.keySet()) {
-			if(actions.get(key).equals(value))
-				return key;
-		}
-		
-		return null;
+		return nameCache.get(cls);
 	}
 
 	public static Action create(String name,

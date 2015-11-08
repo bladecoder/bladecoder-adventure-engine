@@ -15,16 +15,19 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
@@ -62,6 +65,15 @@ public class DialogList extends ModelList<CharacterActor, Dialog> {
 		listCellRenderer.layout(list.getStyle());
 		container.minHeight(listCellRenderer.getItemHeight() * 5);
 		container.maxHeight(listCellRenderer.getItemHeight() * 5);
+		
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getNewValue() instanceof Dialog && !(evt.getSource() instanceof EditDialogDialog) && parent instanceof CharacterActor) {
+					addElements(parent, Arrays.asList(parent.getDialogs().values().toArray(new Dialog[0])));
+				}
+			}
+		});
     }
     
     public void addOptions() {
@@ -130,8 +142,7 @@ public class DialogList extends ModelList<CharacterActor, Dialog> {
 		list.getItems().insert(pos, newElement);
 
 		parent.addDialog(newElement);
-		Ctx.project.getI18N().extractStrings(I18N.PREFIX + Ctx.project.getSelectedScene().getId() + 
-				"." + parent.getId(), newElement);
+		Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(),parent.getId(), newElement);
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();

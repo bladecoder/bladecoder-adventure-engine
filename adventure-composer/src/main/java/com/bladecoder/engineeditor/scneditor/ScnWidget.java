@@ -126,9 +126,6 @@ public class ScnWidget extends Widget {
 				} else if (e.getPropertyName().equals("scene")) {
 					setSelectedScene(Ctx.project.getSelectedScene());
 					setSelectedActor(Ctx.project.getSelectedActor());
-				} else if (e.getPropertyName().equals("animation")) {
-					// createAndSelectActor(Ctx.project.getSelectedActor());
-					// setSelectedFA(null);
 				} else if (e.getPropertyName().equals("init_animation")) {
 					if(!inScene)
 						setSelectedFA(null);

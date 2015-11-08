@@ -17,13 +17,13 @@ package com.bladecoder.engineeditor.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.AtlasRenderer;
@@ -108,46 +108,23 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 			}
 		});
 
-//		Ctx.project.getWorld().addPropertyChangeListener(new PropertyChangeListener() {
-//			@Override
-//			public void propertyChange(PropertyChangeEvent e) {
-//				if (e.getPropertyName().equals(BaseDocument.NOTIFY_ELEMENT_DELETED)) {
-//					if (((Element) e.getNewValue()).getTagName().equals("actor")) {
-//						Element el = (Element) e.getNewValue();
-//
-//						for (BaseActor e2 : list.getItems()) {
-//							if (e2 == el) {
-//								int pos = list.getItems().indexOf(e2, true);
-//
-//								list.getItems().removeIndex(pos);
-//
-//								clipboard = e2;
-//								I18NUtils.putTranslationsInElement(doc, clipboard);
-//								toolbar.disablePaste(false);
-//
-//								if (pos > 0)
-//									list.setSelectedIndex(pos - 1);
-//								else if (pos == 0 && list.getItems().size > 0)
-//									list.setSelectedIndex(0);
-//							}
-//						}
-//					}
-//				} else if (e.getPropertyName().equals("actor") && e.getSource() instanceof UndoOp) {
-//					BaseActor el = (BaseActor) e.getNewValue();
-//
-//					if (getItems().indexOf(el, true) != -1)
-//						return;
-//
-//					addItem(el);
-//
-//					int i = getItems().indexOf(el, true);
-//					if (i != -1)
-//						list.setSelectedIndex(i);
-//
-//					list.invalidateHierarchy();
-//				}
-//			}
-//		});
+		Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+
+				if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_DELETED)) {
+					if (evt.getNewValue() instanceof BaseActor) {
+						addElements(Ctx.project.getSelectedScene(),
+								Arrays.asList(Ctx.project.getSelectedScene().getActors().values().toArray(new BaseActor[0])));
+					}
+				} else if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_CREATED)) {
+					if (evt.getNewValue() instanceof BaseActor && !(evt.getSource() instanceof EditActorDialog)) {
+						addElements(Ctx.project.getSelectedScene(),
+								Arrays.asList(Ctx.project.getSelectedScene().getActors().values().toArray(new BaseActor[0])));
+					}
+				}
+			}
+		});
 	}
 
 	@Override
@@ -188,7 +165,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 			a.getScene().setPlayer((CharacterActor) a);
 		}
 	}
-	
+
 	@Override
 	protected void copy() {
 		BaseActor e = list.getSelected();
@@ -196,7 +173,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 		if (e == null)
 			return;
 
-		clipboard = (BaseActor)ElementUtils.cloneElement(e);
+		clipboard = (BaseActor) ElementUtils.cloneElement(e);
 		toolbar.disablePaste(false);
 
 		// TRANSLATIONS
@@ -205,22 +182,23 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 	@Override
 	protected void paste() {
-		BaseActor newElement = (BaseActor)ElementUtils.cloneElement(clipboard);
-		
-		newElement.setId(ElementUtils.getCheckedId(newElement.getId(), parent.getActors().keySet().toArray(new String[0])));
-		
+		BaseActor newElement = (BaseActor) ElementUtils.cloneElement(clipboard);
+
+		newElement.setId(
+				ElementUtils.getCheckedId(newElement.getId(), parent.getActors().keySet().toArray(new String[0])));
+
 		int pos = list.getSelectedIndex() + 1;
 
 		list.getItems().insert(pos, newElement);
 
 		parent.addActor(newElement);
-		Ctx.project.getI18N().extractStrings(I18N.PREFIX + parent.getId(), newElement);
+		Ctx.project.getI18N().extractStrings(parent.getId(), newElement);
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();
-		
+
 		Ctx.project.setModified();
-	}	
+	}
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer

@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * Copyright 2014 Rafael Garcia Moreno.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +32,6 @@ import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.I18NHandler;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
@@ -54,7 +54,7 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 		this.scope = scope;
 		this.pos = e == null ? pos + 1 : pos;
-		String[] actions = ActionFactory.getActionList();
+		String[] actions = ActionFactory.getActionNames();
 		Arrays.sort(actions);
 		String[] actions2 = new String[actions.length + 1];
 		System.arraycopy(actions, 0, actions2, 0, actions.length);
@@ -160,21 +160,21 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 					if (scope.equals(ScopePanel.WORLD_SCOPE)) {
 						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
-							key = I18N.PREFIX + I18NHandler.WORLD_VERBS_PREFIX + parent.getHashKey() + "." + pos + "."
-									+ i[j].getTitle();
+							key = Ctx.project.getI18N().genKey(null, null, parent.getHashKey(), pos, i[j].getTitle());
+						
 						Ctx.project.getI18N().setWorldTranslation(key, v);
 					} else if (scope.equals(ScopePanel.SCENE_SCOPE)) {
 						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
-							key = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "." + parent.getHashKey() + "."
-									+ pos + "." + i[j].getTitle();
+							key = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(), null, parent.getHashKey(), pos, i[j].getTitle());
+						
 						Ctx.project.getI18N().setTranslation(key, v);
 					} else {
 						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
-							key = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "."
-									+ Ctx.project.getSelectedActor().getId() + "." + parent.getHashKey() + "." + pos
-									+ "." + i[j].getTitle();
+							key = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(), Ctx.project.getSelectedActor().getId(), parent.getHashKey(), pos, i[j].getTitle());
+						
 						Ctx.project.getI18N().setTranslation(key, v);
 					}
+					
 					if (v != null && !v.isEmpty())
 						v = key;
 					else

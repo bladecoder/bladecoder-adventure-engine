@@ -15,15 +15,18 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
-import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
@@ -74,6 +77,15 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				down();
+			}
+		});
+		
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getNewValue() instanceof DialogOption && !(evt.getSource() instanceof EditDialogOptionDialog)) {
+					addElements(parent, parent.getOptions());
+				}
 			}
 		});
 	}
@@ -195,8 +207,8 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 		list.getItems().insert(pos, newElement);
 
 		parent.addOption(newElement);
-		// FIXME
-		Ctx.project.getI18N().extractStrings(I18N.PREFIX + parent.getId(), newElement);
+		
+		Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(), Ctx.project.getSelectedActor().getId(), parent.getId(), pos, newElement);
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();

@@ -74,8 +74,7 @@ public class EditDialogOptionDialog extends EditModelDialog<Dialog, DialogOption
 		String key = e.getText();
 
 		if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
-			key = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "." + Ctx.project.getSelectedActor().getId()
-				+ "." + parent.getId() + "." + pos + ".text";
+			key = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(), Ctx.project.getSelectedActor().getId(), parent.getId(), pos, "text");
 
 		Ctx.project.getI18N().setTranslation(key, text.getText());
 
@@ -85,9 +84,9 @@ public class EditDialogOptionDialog extends EditModelDialog<Dialog, DialogOption
 			e.setText(null);
 
 		String responseKey = e.getResponseText();
+		
 		if (responseKey == null || responseKey.isEmpty() || responseKey.charAt(0) != I18N.PREFIX)
-			responseKey = I18N.PREFIX + Ctx.project.getSelectedScene().getId() + "." + Ctx.project.getSelectedActor().getId()
-				+ "." + parent.getId() + "." + pos + ".responseText";
+			responseKey = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(), Ctx.project.getSelectedActor().getId(), parent.getId(), pos, "responseText");
 		
 		Ctx.project.getI18N().setTranslation(responseKey, responseText.getText());
 

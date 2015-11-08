@@ -32,7 +32,8 @@ import com.bladecoder.engine.util.PolygonUtils;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.undo.UndoDeleteActor;
-import com.bladecoder.engineeditor.undo.UndoPositionAction;
+import com.bladecoder.engineeditor.undo.UndoPosition;
+import com.bladecoder.engineeditor.undo.UndoWalkZonePosition;
 
 public class ScnWidgetInputListener extends ClickListener {
 	private final ScnWidget scnWidget;
@@ -154,6 +155,7 @@ public class ScnWidgetInputListener extends ClickListener {
 				// CHECK FOR WALKZONE DRAGGING
 				if (wzPoly.contains(p.x, p.y)) {
 					draggingMode = DraggingModes.DRAGGING_WALKZONE;
+					undoOrg.set(wzPoly.getX(), wzPoly.getY());
 					return true;
 				}
 
@@ -257,7 +259,6 @@ public class ScnWidgetInputListener extends ClickListener {
 			} else if (draggingMode == DraggingModes.DRAGGING_WALKZONE) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 				poly.translate(d.x, d.y);
-//				Ctx.project.getSelectedChapter().setWalkZonePolygon(Ctx.project.getSelectedChapter().getSceneById(Ctx.project.getSelectedScene().getId()), poly);
 			} else if (draggingMode == DraggingModes.DRAGGING_MARKER_0) {
 				Vector2 depthVector = scnWidget.getScene().getDepthVector();
 
@@ -307,7 +308,9 @@ public class ScnWidgetInputListener extends ClickListener {
 //		EditorLogger.debug("Touch Up - X: " + x + " Y: " + y);
 
 		if (draggingMode == DraggingModes.DRAGGING_ACTOR) {
-			Ctx.project.getUndoStack().add(new UndoPositionAction(selActor, new Vector2(undoOrg)));
+			Ctx.project.getUndoStack().add(new UndoPosition(selActor, new Vector2(undoOrg)));
+		} else if (draggingMode == DraggingModes.DRAGGING_WALKZONE) {
+			Ctx.project.getUndoStack().add(new UndoWalkZonePosition(scnWidget.getScene().getPolygonalNavGraph().getWalkZone(), new Vector2(undoOrg)));
 		}
 
 		draggingMode = DraggingModes.NONE;
@@ -322,7 +325,7 @@ public class ScnWidgetInputListener extends ClickListener {
 		case Keys.DOWN:
 		case Keys.LEFT:
 		case Keys.RIGHT:
-			Ctx.project.getUndoStack().add(new UndoPositionAction(selActor, new Vector2(undoOrg)));
+			Ctx.project.getUndoStack().add(new UndoPosition(selActor, new Vector2(undoOrg)));
 		}
 		
 		return false;

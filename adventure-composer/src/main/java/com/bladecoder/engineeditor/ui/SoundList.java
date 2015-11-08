@@ -15,10 +15,16 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Arrays;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteSound;
@@ -30,6 +36,15 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 		super(skin, true);
 		
 		setCellRenderer(listCellRenderer);
+		
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getNewValue() instanceof Dialog && !(evt.getSource() instanceof EditDialogDialog) && parent instanceof InteractiveActor) {
+					addElements(parent, Arrays.asList(parent.getSounds().values().toArray(new SoundFX[0])));
+				}
+			}
+		});
 	}	
 
 	@Override

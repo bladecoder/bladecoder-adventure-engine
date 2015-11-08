@@ -45,7 +45,7 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class I18NHandler {
-	public static final String WORLD_VERBS_PREFIX = "default.";
+	public static final String WORLD_VERBS_PREFIX = "default";
 
 	private String modelPath;
 	private String worldFilename;
@@ -130,10 +130,17 @@ public class I18NHandler {
 	}
 
 	public void setWorldTranslation(String key, String value) {
-		if (key.charAt(0) != I18N.PREFIX)
-			i18nWorld.setProperty(key, value);
-		else
-			i18nWorld.setProperty(key.substring(1), value);
+		if (key.charAt(0) != I18N.PREFIX) {
+			if (value == null || value.equals(""))
+				i18nWorld.remove(key);
+			else
+				i18nWorld.setProperty(key, value);
+		} else {
+			if (value == null || value.equals(""))
+				i18nWorld.remove(key.substring(1));
+			else
+				i18nWorld.setProperty(key.substring(1), value);
+		}
 	}
 
 	private void save(String filename, Properties p) {
@@ -160,7 +167,7 @@ public class I18NHandler {
 		HashMap<String, Verb> verbs = scn.getVerbManager().getVerbs();
 
 		for (Verb v : verbs.values())
-			putTranslationsInElement(v);
+			putTranslationsInElement(v, false);
 
 		for (BaseActor a : scn.getActors().values()) {
 			putTranslationsInElement(a);
@@ -178,7 +185,7 @@ public class I18NHandler {
 			HashMap<String, Verb> verbs = ia.getVerbManager().getVerbs();
 
 			for (Verb v : verbs.values())
-				putTranslationsInElement(v);
+				putTranslationsInElement(v, false);
 
 			// 3. DIALOGS
 			if (a instanceof CharacterActor) {
@@ -192,22 +199,28 @@ public class I18NHandler {
 		}
 	}
 
-	public void putTranslationsInElement(Verb v) {
+	public void putTranslationsInElement(Verb v, boolean worldScope) {
 		ArrayList<Action> actions = v.getActions();
 
 		for (Action a : actions) {
-			putTranslationsInElement(a);
+			putTranslationsInElement(a, worldScope);
 		}
 	}
 
-	public void putTranslationsInElement(Action a) {
+	public void putTranslationsInElement(Action a, boolean worldScope) {
 		String[] names = ActionUtils.getFieldNames(a);
 
 		for (String name : names) {
 			if (name.toLowerCase().endsWith("text")) {
 				
 				try {
-					String value = getTranslation(ActionUtils.getStringValue(a, name));
+					String value = null;
+							
+					if(worldScope)
+						value = getWorldTranslation(ActionUtils.getStringValue(a, name));
+					else
+						value = getTranslation(ActionUtils.getStringValue(a, name));
+					
 					ActionUtils.setParam(a, name, value);
 				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.error(e.getMessage());
@@ -233,20 +246,20 @@ public class I18NHandler {
 		HashMap<String, Verb> verbs = scn.getVerbManager().getVerbs();
 
 		for (Verb v : verbs.values())
-			extractStrings(I18N.PREFIX + scn.getId(), v);
+			extractStrings(scn.getId(), null, v);
 
 		for (BaseActor a : scn.getActors().values()) {
-			extractStrings(I18N.PREFIX + scn.getId(), a);
+			extractStrings(scn.getId(), a);
 		}
 	}
 
-	public void extractStrings(String baseString, BaseActor a) {
+	public void extractStrings(String sceneid, BaseActor a) {
 		if (a instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor) a;
 
 			// 1. DESC attribute
-			if (ia.getDesc() != null && ia.getDesc().charAt(0) != I18N.PREFIX) {
-				String key = baseString + "." + a.getId() + ".desc";
+			if (ia.getDesc() != null && !ia.getDesc().isEmpty() && ia.getDesc().charAt(0) != I18N.PREFIX) {
+				String key = genKey(sceneid, a.getId(), "desc");
 				String value = ia.getDesc();
 				ia.setDesc(key);
 				setTranslation(key, value);
@@ -256,7 +269,7 @@ public class I18NHandler {
 			HashMap<String, Verb> verbs = ia.getVerbManager().getVerbs();
 
 			for (Verb v : verbs.values())
-				extractStrings(baseString + "." + a.getId(), v);
+				extractStrings(sceneid, a.getId(), v);
 
 			// 3. DIALOGS
 			if (a instanceof CharacterActor) {
@@ -264,64 +277,101 @@ public class I18NHandler {
 
 				if (dialogs != null)
 					for (Dialog d : dialogs.values())
-						extractStrings(baseString + "." + a.getId(), d);
+						extractStrings(sceneid, a.getId(), d);
 			}
 		}
 	}
 
-	public void extractStrings(String baseString, Verb v) {
+	public void extractStrings(String sceneid, String actorid, Verb v) {
 		ArrayList<Action> actions = v.getActions();
 
 		for (int i = 0; i < actions.size(); i++) {
 			Action a = actions.get(i);
 
-			extractStrings(baseString + "." + v.getHashKey() + "." + i, a);
+			extractStrings(sceneid, actorid, v.getHashKey(), i, a);
 		}
 	}
 
-	public void extractStrings(String baseString, Dialog d) {
+	public void extractStrings(String sceneid, String actorid, Dialog d) {
 		ArrayList<DialogOption> options = d.getOptions();
 
 		for (int i = 0; i < options.size(); i++) {
 			DialogOption o = options.get(i);
 
-			extractStrings(baseString + "." + d.getId() + "." + i, o);
+			extractStrings(sceneid, actorid, d.getId(), i, o);
 		}
 	}
 
-	public void extractStrings(String baseString, DialogOption o) {
-		if (o.getText() != null && o.getText().charAt(0) != I18N.PREFIX) {
-			String key = baseString + ".text";
+	public void extractStrings(String sceneid, String actorid, String dialogid, int pos, DialogOption o) {
+		if (o.getText() != null && !o.getText().isEmpty() && o.getText().charAt(0) != I18N.PREFIX) {
+			String key = genKey(sceneid, actorid, dialogid, pos, "text");
 			String value = o.getText();
 			o.setText(key);
-			setTranslation(key, value);
+			setTranslation(key,  value);
 		}
 
-		if (o.getResponseText() != null && o.getResponseText().charAt(0) != I18N.PREFIX) {
-			String key = baseString + ".responseText";
+		if (o.getResponseText() != null && !o.getResponseText().isEmpty()  && o.getResponseText().charAt(0) != I18N.PREFIX) {
+			String key = genKey(sceneid, actorid, dialogid, pos, "responseText");
 			String value = o.getResponseText();
 			o.setResponseText(key);
 			setTranslation(key, value);
 		}
 	}
 
-	public void extractStrings(String baseString, Action a) {
+	public void extractStrings(String sceneid, String actorid, String parent, int pos, Action a) {
 		String[] names = ActionUtils.getFieldNames(a);
 
 		for (String name : names) {
 			if (name.toLowerCase().endsWith("text")) {
-				String key = baseString + "." + name;
 				
 				try {
 					String value = ActionUtils.getStringValue(a, name);
-					ActionUtils.setParam(a, name, key);
-					setTranslation(key, value);
+					
+					if(value != null && !value.isEmpty() && value.charAt(0) != I18N.PREFIX) {
+						String key = genKey(sceneid, actorid, parent, pos, name);
+						ActionUtils.setParam(a, name, key);
+						
+						if(sceneid == null)
+							setWorldTranslation(key, value);
+						else
+							setTranslation(key, value);
+					}
 				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.error(e.getMessage());
 				}
 			}
 		}
 	}
+	
+	public String genKey(String sceneid, String actorid, String property) {
+		String key = I18N.PREFIX + sceneid + "." + actorid + "." + property;
+				
+		return getNotDuplicateKey(key);
+	}
+	
+	public String genKey(String sceneid, String actorid, String parent, int pos, String property) {
+		String key = I18N.PREFIX + (sceneid == null? WORLD_VERBS_PREFIX: sceneid) + (actorid == null?"": "." + actorid) + "." + parent + "." + pos + "." + property;
+				
+		if(sceneid == null)
+			return getNotDuplicateKeyWorld(key);
+		
+		return getNotDuplicateKey(key);
+	}
+	
+	public String getNotDuplicateKey(String key) {
+		while(i18nChapter.containsKey(key.charAt(0) == I18N.PREFIX?key.substring(1):key))
+			key += '_';
+		
+		return key;
+	}
+	
+	public String getNotDuplicateKeyWorld(String key) {
+		while(i18nWorld.containsKey(key.charAt(0) == I18N.PREFIX?key.substring(1):key))
+			key += '_';
+		
+		return key;
+	}
+
 
 	private void deleteUnusedKeys() {
 		ArrayList<String> usedKeys = new ArrayList<String>();

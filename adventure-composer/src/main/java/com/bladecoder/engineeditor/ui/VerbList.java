@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -23,14 +25,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.I18NHandler;
+import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
@@ -96,6 +97,29 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 		listCellRenderer.layout(list.getStyle());
 		container.minHeight(listCellRenderer.getItemHeight() * 5);
 		container.maxHeight(listCellRenderer.getItemHeight() * 5);
+
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getNewValue() instanceof Verb && !(evt.getSource() instanceof EditVerbDialog)) {
+					if (ScopePanel.WORLD_SCOPE.equals(scopePanel.getScope())) {
+						addElements(World.getInstance().getVerbManager(), Arrays
+								.asList(World.getInstance().getVerbManager().getVerbs().values().toArray(new Verb[0])));
+					} else if (ScopePanel.SCENE_SCOPE.equals(scopePanel.getScope())) {
+						addElements(Ctx.project.getSelectedScene().getVerbManager(), Arrays.asList(
+								Ctx.project.getSelectedScene().getVerbManager().getVerbs().values().toArray(new Verb[0])));
+					} else if (ScopePanel.ACTOR_SCOPE.equals(scopePanel.getScope())) {
+						BaseActor a = Ctx.project.getSelectedActor();
+						if (a instanceof InteractiveActor) {
+							addElements(((InteractiveActor) a).getVerbManager(), Arrays.asList(
+									((InteractiveActor) a).getVerbManager().getVerbs().values().toArray(new Verb[0])));
+						} else {
+							addElements(null, null);
+						}
+					}
+				}
+			}
+		});
 	}
 
 	public void changeActor() {
@@ -121,8 +145,11 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 		parent.getVerbs().remove(v.getHashKey());
 
 		// TRANSLATIONS
-		Ctx.project.getI18N().putTranslationsInElement(v);
-			
+		if (scopePanel.getScope().equals(ScopePanel.WORLD_SCOPE))
+			Ctx.project.getI18N().putTranslationsInElement(v, true);
+		else
+			Ctx.project.getI18N().putTranslationsInElement(v, false);
+
 		// UNDO
 		Ctx.project.getUndoStack().add(new UndoDeleteVerb(parent, v));
 
@@ -141,46 +168,50 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 		if (e == null)
 			return;
 
-		clipboard = (Verb)ElementUtils.cloneElement(e);
+		clipboard = (Verb) ElementUtils.cloneElement(e);
 		toolbar.disablePaste(false);
 
 		// TRANSLATIONS
-		Ctx.project.getI18N().putTranslationsInElement(clipboard);
+		if (scopePanel.getScope().equals(ScopePanel.WORLD_SCOPE))
+			Ctx.project.getI18N().putTranslationsInElement(clipboard, true);
+		else
+			Ctx.project.getI18N().putTranslationsInElement(clipboard, false);
 	}
 
 	@Override
 	protected void paste() {
-		Verb newElement = (Verb)ElementUtils.cloneElement(clipboard);
-		
-		// Check for id duplicates		
-		String []keys = new String[parent.getVerbs().size()];
+		Verb newElement = (Verb) ElementUtils.cloneElement(clipboard);
+
+		// Check for id duplicates
+		String[] keys = new String[parent.getVerbs().size()];
 		Verb[] values = parent.getVerbs().values().toArray(new Verb[0]);
-		
-		for(int i = 0; i < keys.length; i++) {
+
+		for (int i = 0; i < keys.length; i++) {
 			keys[i] = values[i].getId();
 		}
-		
+
 		newElement.setId(ElementUtils.getCheckedId(newElement.getId(), keys));
-		
+
 		int pos = list.getSelectedIndex() + 1;
 
 		list.getItems().insert(pos, newElement);
 
 		parent.addVerb(newElement);
-		
-		if (ScopePanel.WORLD_SCOPE.equals(scopePanel.getScope())) {
-			Ctx.project.getI18N().extractStrings(I18N.PREFIX + I18NHandler.WORLD_VERBS_PREFIX, newElement);
-		} else {
-			Ctx.project.getI18N().extractStrings(I18N.PREFIX + Ctx.project.getSelectedScene().getId() + 
-					"." + Ctx.project.getSelectedActor().getId(), newElement);			
-		}
+
+		if (scopePanel.getScope().equals(ScopePanel.WORLD_SCOPE))
+			Ctx.project.getI18N().extractStrings(null, null, newElement);
+		else if (scopePanel.getScope().equals(ScopePanel.SCENE_SCOPE))
+			Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(), null, newElement);
+		else
+			Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(),
+					Ctx.project.getSelectedActor().getId(), newElement);
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();
-		
+
 		Ctx.project.setModified();
-	}		
-	
+	}
+
 	private void addActions() {
 		int pos = list.getSelectedIndex();
 
