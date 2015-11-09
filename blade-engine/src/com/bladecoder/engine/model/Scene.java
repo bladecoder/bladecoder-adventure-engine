@@ -833,16 +833,27 @@ public class Scene implements Serializable, AssetConsumer {
 			JsonValue jsonValueActors = jsonData.get("actors");
 			SceneActorRef actorRef;
 
+			// GET ACTORS FROM HIS INIT SCENE.
 			for (int i = 0; i < jsonValueActors.size; i++) {
 				JsonValue jsonValueAct = jsonValueActors.get(i);
 				actorRef = new SceneActorRef(jsonValueAct.name);
 				Scene sourceScn = World.getInstance().getScene(actorRef.getSceneId());
 
-				BaseActor actor = sourceScn.getActor(actorRef.getActorId(), false);
+				if(sourceScn != this) {
+					BaseActor actor = sourceScn.getActor(actorRef.getActorId(), false);
+					sourceScn.removeActor(actor);
+					addActor(actor);
+				}
+			}
+			
+			// READ ACTOR STATE. 
+			// The state must be retrieved after getting actors from his init scene to restore verb cb properly.
+			for (int i = 0; i < jsonValueActors.size; i++) {
+				JsonValue jsonValueAct = jsonValueActors.get(i);
+				actorRef = new SceneActorRef(jsonValueAct.name);
 
-				sourceScn.removeActor(actor);
+				BaseActor actor = getActor(actorRef.getActorId(), false);
 				actor.read(json, jsonValueAct);
-				addActor(actor);
 			}
 
 			orderLayersByZIndex();

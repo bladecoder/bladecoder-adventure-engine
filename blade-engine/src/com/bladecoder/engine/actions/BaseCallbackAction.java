@@ -50,7 +50,7 @@ public abstract class BaseCallbackAction implements Action, ActionCallback, Seri
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("cb", ActionCallbackSerialization.find(verbCb), verbCb == null ? null : String.class);	
+		json.writeValue("cb", ActionCallbackSerialization.find(verbCb));	
 	}
 
 	@Override
