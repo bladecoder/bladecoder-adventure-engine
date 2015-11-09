@@ -22,6 +22,8 @@ import com.bladecoder.engine.util.EngineLogger;
 
 public class I18N {
 	public static final char PREFIX = '@';
+	public static final String ENCODING = "UTF-8";
+//	public static final String ENCODING = "ISO-8859-1";
 	
 	private static ResourceBundle i18nWorld;
 	private static ResourceBundle i18nChapter;
@@ -31,7 +33,7 @@ public class I18N {
 
 		try {
 			i18nChapter = ResourceBundle.getBundle(i18nChapterFilename, locale,
-					new I18NControl("ISO-8859-1"));
+					new I18NControl(ENCODING));
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nChapter);
 		}
@@ -42,7 +44,7 @@ public class I18N {
 		
 		try {
 			i18nWorld = ResourceBundle.getBundle(i18nWorldFilename, locale,
-					new I18NControl("ISO-8859-1"));
+					new I18NControl(ENCODING));
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nWorld);
 		}
