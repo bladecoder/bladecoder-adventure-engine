@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import java.util.HashMap;
+
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -141,15 +143,17 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 		
 		if(create) {
 			e = new Verb();
+		} else {
+			HashMap<String, Verb> verbs = parent.getVerbs();
+			verbs.remove(e.getHashKey());
 		}
 		
 		e.setId(id.getText());
 		e.setState(state.getText());
 		e.setTarget(target.getText());
 		
-		if(create) {
-			parent.addVerb(e);
-		}
+		parent.addVerb(e);
+
 
 		// TODO UNDO OP
 //		UndoOp undoOp = new UndoAddElement(doc, e);
