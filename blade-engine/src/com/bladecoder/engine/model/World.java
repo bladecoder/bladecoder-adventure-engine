@@ -420,18 +420,21 @@ public class World implements Serializable, AssetConsumer {
 
 			textManager.reset();
 			timers.clear();
-			currentScene.stopMusic();
+
 			currentDialog = null;
 
 			transition.reset();
 
 			// Clear all pending callbacks
 			ActionCallbackQueue.clear();
-
+			
 			// ONLY dispose currentscene because other scenes are already
 			// disposed
-			currentScene.dispose();
-			currentScene = null;
+			if (currentScene != null) {
+				currentScene.stopMusic();
+				currentScene.dispose();
+				currentScene = null;
+			}
 
 			if (cachedScene != null) {
 				cachedScene.dispose();
@@ -514,7 +517,8 @@ public class World implements Serializable, AssetConsumer {
 	/**
 	 * Try to load the save game if exists. In other case, load the game from
 	 * XML.
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 * 
 	 * @throws IOException
 	 * @throws SAXException
@@ -538,7 +542,8 @@ public class World implements Serializable, AssetConsumer {
 	/**
 	 * Load the world description. First try to load 'world.json'. If doesn't
 	 * exists try 'world.xml'.
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	public void loadWorldDesc() throws IOException {
 		if (EngineAssetManager.getInstance().getModelFile(EngineAssetManager.WORLD_FILENAME_JSON).exists()) {
@@ -616,7 +621,7 @@ public class World implements Serializable, AssetConsumer {
 
 		if (chapterName == null)
 			chapterName = initChapter;
-		
+
 		currentChapter = initChapter;
 
 		if (EngineAssetManager.getInstance().getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).exists()) {
@@ -812,7 +817,7 @@ public class World implements Serializable, AssetConsumer {
 				json.writeValue("currentDialog", currentDialog.getId());
 			}
 
-			if(transition != null)
+			if (transition != null)
 				json.writeValue("transition", transition);
 
 			json.writeValue("chapter", currentChapter);
@@ -836,18 +841,18 @@ public class World implements Serializable, AssetConsumer {
 			for (Scene s : scenes.values()) {
 				s.resetCamera(width, height);
 			}
-			
+
 			setCurrentScene(initScene);
 		} else {
 			currentChapter = json.readValue("chapter", String.class, jsonData);
-			
+
 			try {
 				loadChapter(currentChapter);
 			} catch (IOException e1) {
 				EngineLogger.error("Error Loading Chapter");
 				return;
 			}
-			
+
 			// restore the state after loading the model
 			SerializationHelper.getInstance().setMode(Mode.STATE);
 
