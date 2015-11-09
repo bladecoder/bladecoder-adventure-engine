@@ -114,7 +114,6 @@ public class Sprite3DRenderer implements ActorRenderer {
 	String celLightName = "Light";
 
 	private ActionCallback animationCb = null;
-	private String animationCbSer = null;
 
 	private ModelCacheEntry currentSource;
 	private HashMap<String, ModelCacheEntry> sourceCache = new HashMap<String, ModelCacheEntry>();
@@ -334,12 +333,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 		@Override
 		public void onEnd(com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc animation) {
-			if (animationCb != null || animationCbSer != null) {
-				if (animationCb == null) {
-					animationCb = ActionCallbackSerialization.find(animationCbSer);
-					animationCbSer = null;
-				}
-
+			if (animationCb != null) {
 				ActionCallbackQueue.add(animationCb);
 			}
 		}
@@ -803,28 +797,25 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 			json.writeValue("currentAnimation", currentAnimationId);
 
-			json.writeValue("width", width);
-			json.writeValue("height", height);
-			json.writeValue("cameraPos", cameraPos, cameraPos == null ? null : Vector3.class);
-			json.writeValue("cameraRot", cameraRot, cameraRot == null ? null : Vector3.class);
-			json.writeValue("cameraName", cameraName, cameraName == null ? null : String.class);
-			json.writeValue("cameraFOV", cameraFOV);
-			json.writeValue("modelRotation", modelRotation);
-
-			if (animationCbSer != null)
-				json.writeValue("cb", animationCbSer);
-			else
-				json.writeValue("animationCb", ActionCallbackSerialization.find(animationCb),
-						animationCb == null ? null : String.class);
+			json.writeValue("animationCb", ActionCallbackSerialization.find(animationCb));
 
 			json.writeValue("currentCount", currentCount);
 			json.writeValue("currentAnimationType", currentAnimationType);
-			json.writeValue("renderShadow", renderShadow);
 			json.writeValue("lastAnimationTime", lastAnimationTime);
 
 			// TODO: SAVE AND RESTORE CURRENT DIRECTION
 			// TODO: shadowlight, cel light
 		}
+		
+		float worldScale = EngineAssetManager.getInstance().getScale();
+		json.writeValue("width", width / worldScale);
+		json.writeValue("height", height / worldScale);
+		json.writeValue("cameraPos", cameraPos, cameraPos == null ? null : Vector3.class);
+		json.writeValue("cameraRot", cameraRot, cameraRot == null ? null : Vector3.class);
+		json.writeValue("cameraName", cameraName, cameraName == null ? null : String.class);
+		json.writeValue("cameraFOV", cameraFOV);
+		json.writeValue("modelRotation", modelRotation);
+		json.writeValue("renderShadow", renderShadow);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -840,20 +831,22 @@ public class Sprite3DRenderer implements ActorRenderer {
 			if (currentAnimationId != null)
 				currentAnimation = (AtlasAnimationDesc) fanims.get(currentAnimationId);
 
-			width = json.readValue("width", Integer.class, jsonData);
-			height = json.readValue("height", Integer.class, jsonData);
-			cameraPos = json.readValue("cameraPos", Vector3.class, jsonData);
-			cameraRot = json.readValue("cameraRot", Vector3.class, jsonData);
-			cameraName = json.readValue("cameraName", String.class, jsonData);
-			cameraFOV = json.readValue("cameraFOV", Float.class, jsonData);
-			modelRotation = json.readValue("modelRotation", Float.class, jsonData);
-			animationCbSer = json.readValue("animationCb", String.class, jsonData);
+			animationCb = ActionCallbackSerialization.find(json.readValue("animationCb", String.class, jsonData));
 
 			currentCount = json.readValue("currentCount", Integer.class, jsonData);
 			currentAnimationType = json.readValue("currentAnimationType", Tween.Type.class, jsonData);
-			renderShadow = json.readValue("renderShadow", Boolean.class, jsonData);
 			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 		}
+		
+		float worldScale = EngineAssetManager.getInstance().getScale();		
+		width = (int)(json.readValue("width", Integer.class, jsonData) * worldScale);
+		height = (int)(json.readValue("height", Integer.class, jsonData) * worldScale);
+		cameraPos = json.readValue("cameraPos", Vector3.class, jsonData);
+		cameraRot = json.readValue("cameraRot", Vector3.class, jsonData);
+		cameraName = json.readValue("cameraName", String.class, jsonData);
+		cameraFOV = json.readValue("cameraFOV", Float.class, jsonData);
+		modelRotation = json.readValue("modelRotation", Float.class, jsonData);
+		renderShadow = json.readValue("renderShadow", Boolean.class, jsonData);
 	}
 
 }
