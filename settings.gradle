@@ -1,1 +1,1 @@
-include 'blade-engine', 'adventure-composer', 'blade-engine-spine-plugin'
+include 'blade-engine', 'adventure-editor', 'blade-engine-spine-plugin'

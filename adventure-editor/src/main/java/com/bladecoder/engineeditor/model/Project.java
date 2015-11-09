@@ -78,7 +78,7 @@ public class Project extends PropertyChange {
 	public static final int DEFAULT_WIDTH = 1920;
 	public static final int DEFAULT_HEIGHT = 1080;
 
-	private static final String CONFIG_DIR = System.getProperty("user.home") + "/.AdventureComposer";
+	private static final String CONFIG_DIR = System.getProperty("user.home") + "/.AdventureEditor";
 	private static final String CONFIG_FILENAME = "config.properties";
 	
 	public static final String LAST_PROJECT_PROP = "last_project";

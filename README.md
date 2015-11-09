@@ -9,15 +9,15 @@ By creating the **Bladecoder Adventure Engine**, I want to create a platform to 
 
 The **Bladecoder Adventure Engine** is composed of the following subprojects:
 
-* **adventure-composer**: the graphical editor for creating point and click games.
-* **blade-engine**: the engine to run the games created with `adventure-composer`.
+* **adventure-editor**: the graphical editor for creating point and click games.
+* **blade-engine**: the engine to run the games created with `adventure-editor`.
 
 The **Bladecoder Adventure Engine** has been developed using the [LibGDX](http://libgdx.badlogicgames.com/) framework and the project generates a layout similar to any LibGDX project. This lowers the learning curve and eases development and deploy on several platforms.
 
-### Adventure Composer
-The **Adventure Composer** is a graphical editor to create full point and click games with minimal programming.
+### Adventure Editor
+The **Adventure Editor** is a graphical editor to create full point and click games with minimal programming.
 
-![adventure composer 2014-09-26](https://cloud.githubusercontent.com/assets/6229260/4420346/1d3a1b8a-4578-11e4-8eec-415f5e27c005.png)
+![adventure editor 2014-09-26](https://cloud.githubusercontent.com/assets/6229260/4420346/1d3a1b8a-4578-11e4-8eec-415f5e27c005.png)
 
 ### Blade Engine
 The Engine has the following features:
@@ -31,7 +31,7 @@ The Engine has the following features:
 
 The **Bladecoder Adventure Engine** is currently under continuous development and it's almost ready for production. **The Goddess Robbery** is a test game created to show the features of the Engine.
 
-The source of **The Goddess Robbery** can be downloaded  [here](https://github.com/bladecoder/bladecoder-adventure-tests/tree/master/venus) and it's useful to learn how to use the **Adventure Composer**.
+The source of **The Goddess Robbery** can be downloaded  [here](https://github.com/bladecoder/bladecoder-adventure-tests/tree/master/venus) and it's useful to learn how to use the **Adventure Editor**.
 
 **The Goddess Robbery** is also available for Android devices at the Google Play Store.
 
@@ -44,15 +44,15 @@ Build:
 
     $ ./gradlew build
 
-Run the Adventure Composer:
+Run the Adventure Editor:
 
     $ ./gradlew run
 
-Create a distribution package for the Adventure Composer:
+Create a distribution package for the Adventure Editor:
 
     $ ./gradlew distZip
 
-A zip package ready for distribution is created in the folder 'bladecoder-adventure-engine/adventure-composer/build/distributions'
+A zip package ready for distribution is created in the folder 'bladecoder-adventure-engine/adventure-editor/build/distributions'
 
 ### License
 The **Bladecoder Adventure Engine** is licensed under the [Apache 2 License](http://www.apache.org/licenses/LICENSE-2.0.html), meaning you

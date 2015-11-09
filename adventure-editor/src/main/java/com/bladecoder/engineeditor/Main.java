@@ -20,6 +20,7 @@ import java.io.File;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.bladecoder.engineeditor.utils.Versions;
 
 import javafx.embed.swing.JFXPanel;
 
@@ -31,7 +32,7 @@ public class Main extends LwjglApplication {
 
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 
-		cfg.title = "Adventure Composer";
+		cfg.title = "Adventure Editor v" + Versions.getVersion();
 		cfg.width = 1920 / 2;
 		cfg.height = 1080 / 2;
 

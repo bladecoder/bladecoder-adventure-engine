@@ -16,7 +16,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.8.9]
 
 ### Added
-- Editor: Added input panels for text input.
+- EDITOR: Added input panels for text input.
 - Better aspect ratio support. Correct support for 4:3, 16:9 and 16:10.
 - Pause the game when an exception/error is thrown and debug mode is
 activated.
@@ -38,7 +38,7 @@ activated.
 - Compute BBox in renderer Refactor to allow recompute bbox when animation complete.
 - Fix animationTime when reverse animation in SpineRenderer
 - Fix save/game screen slot size
-- Composer: fix when generating world keys for i18n + doesn't remove ui.* keys.
+- EDITOR: fix when generating world keys for i18n + doesn't remove ui.* keys.
 
 ## [0.8.7]
 
@@ -88,11 +88,11 @@ activated.
 	- Added configurable align (top, down, left, right, center)
 	- Added configurable autosize behaviour
 - Added arrow icon for exits when showing hotspots
-- Composer: Added several config properties in the Game Properties tab
+- EDITOR: Added several config properties in the Game Properties tab
 
 ### Fixed
 
--composer: fix world width and height was not recalculated when loading
+-EDITOR: fix world width and height was not recalculated when loading
 
 ## [0.8.1]
 
@@ -107,13 +107,13 @@ activated.
 - Spine atlas in animations
 
 ### Fixed
-- COMPOSER: Dialog editing fix
+- EDITOR: Dialog editing fix
 
 ## [0.7.2]
 ### Added
 - libgdx v1.5.6 update
 - update to the latest spine libgdx runtime
-- Composer: Enable/disable actions
+- EDITOR: Enable/disable actions
 - Backround images must be inside atlas now
 - Added control actions
 - Added ActorAttrAction
@@ -123,18 +123,18 @@ activated.
 - PositionAction now works with BaseActors (no animation)
 
 ### Fixed
-- Composer: fixes to inputpanels
+- EDITOR: fixes to inputpanels
 - fix OptionInputPanel when mandatory
 - Reset testScene when changing current scene
 - ActorProps: Show pos for BaseActors
-- Composer: change some edit defaults
+- EDITOR: change some edit defaults
 - walkzone fix when dinamic obstacles
 - fill animation/actor list when setText()
 
 ## [0.7.1]
 - Action refactor
-- Composer: Undo support
-- Composer: Fake depth vector can be setting dragging ui markers
+- EDITOR: Undo support
+- EDITOR: Fake depth vector can be setting dragging ui markers
 - Actor ZIndex
 - RunVerb now allows iterating over a list of verbs
 - Scene cache
@@ -153,7 +153,7 @@ activated.
 ## [0.6.8]
 
 ### Fixed
-- Composer only release: Fix bug when saving project
+- Editor only release: Fix bug when saving project
 
 ## [0.6.7]
 
@@ -191,9 +191,9 @@ activated.
 - Transition moved to World
 
 ## [0.6.2]
-- i18n workflow in composer working
+- i18n workflow in Editor working
 - Added event handling in Spine plugin
-- composer dialog tree: edit and delete fixes
+- Editor dialog tree: edit and delete fixes
 - fix CameraAction when no selecting any target
 - fix enter/leave verb conflicts name. Rename to enter/exit
 - fix xml action loading
@@ -207,8 +207,8 @@ activated.
 ## [0.6.0]
 - Created Spine plugin and set as optional when creating a project.
 - Refactor: FrameAnimation -> AnimationDesc, SpriteRenderer -> ActorRenderer
-- COMPOSER: fix several IOS related bugs. IOS Ipad/Iphone testing and working fine.
-- COMPOSER: fix create resolution. Now atlas upacking/packing is supported
+- EDITOR: fix several IOS related bugs. IOS Ipad/Iphone testing and working fine.
+- EDITOR: fix create resolution. Now atlas upacking/packing is supported
 
 ## [0.5.0]
 - Updated to libgdx 1.4.1
@@ -219,10 +219,10 @@ activated.
 - ENGINE: Custom game UI Screen support
 
 ## [0.3.2]
-- COMPOSER: Fixed bug when running project without console
+- EDITOR: Fixed bug when running project without console
 
 ## [0.3.1]
-- COMPOSER: Fixed accessing opengl context issue when creating project in the new thread.
+- EDITOR: Fixed accessing opengl context issue when creating project in the new thread.
 
 ## [0.3.0]
 - ENGINE: Action refactoring. WARNING: Names have changed. All previous games are not compatible.
@@ -231,9 +231,9 @@ activated.
 - ENGINE: The blade-engine.jar are now in Maven Central. When creating a new game, the Maven dependency is added instead of adding the engine jar in libs folder.
 
 ## [0.2.0]
-- COMPOSER: Fixed NullPointer error when creating project
-- COMPOSER: Threads for long tasks to show UI message status
-- COMPOSER: FIXED packaging with embedded JRE.
+- EDITOR: Fixed NullPointer error when creating project
+- EDITOR: Threads for long tasks to show UI message status
+- EDITOR: FIXED packaging with embedded JRE.
 - ENGINE: CreditsScreen fonts now obtained from Skin
 
 ## [0.1.0]
