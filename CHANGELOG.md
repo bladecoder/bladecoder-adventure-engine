@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.0]
+- Game model and saved games are now in JSON format. 
+  * XML is deprecated. Backward compatibility broken.
+  * Saved games are patch friendly.
+- EDITOR: Big refactor. Editor uses engine model objects now.
+- Change I18N file encoding from ISO-889-1 to UTF-8
+
 ## [0.8.10]
 
 ### Added
