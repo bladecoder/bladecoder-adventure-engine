@@ -39,7 +39,7 @@ public class SayDialogAction extends BaseCallbackAction {
 	public boolean run(ActionCallback cb) {
 		setVerbCb(cb);
 		World w = World.getInstance();
-		DialogOption o = World.getInstance().getCurrentDialog().getCurrentOption();
+		DialogOption o = w.getCurrentDialog().getCurrentOption();
 		String playerText = o.getText();
 		
 		responseText = o.getResponseText();
@@ -55,12 +55,12 @@ public class SayDialogAction extends BaseCallbackAction {
 			restoreStandPose((CharacterActor)w.getCurrentScene().getActor(characterName, false));
 
 		if (playerText != null) {
-			CharacterActor player = World.getInstance().getCurrentScene().getPlayer();
+			CharacterActor player = w.getCurrentScene().getPlayer();
 
 //			WorldCamera c = World.getInstance().getCamera();
 //			Vector3 p = c.scene2screen(pos.x, pos.y + player.getHeight());
 
-			World.getInstance().getTextManager()
+			w.getTextManager()
 					.addText(playerText, player.getX(), player.getY() + player.getHeight(), false, Text.Type.TALK, player.getTextColor(), null, this);
  
 			startTalkAnim(player);

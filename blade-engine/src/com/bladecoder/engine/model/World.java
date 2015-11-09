@@ -379,9 +379,6 @@ public class World implements Serializable, AssetConsumer {
 
 			if (visibleOptions == 0)
 				currentDialog = null;
-			else if (visibleOptions == 1) {
-				selectVisibleDialogOption(0);
-			}
 		}
 	}
 
