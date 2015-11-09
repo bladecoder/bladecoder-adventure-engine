@@ -36,7 +36,7 @@ import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class DialogList extends ModelList<CharacterActor, Dialog> {	
 	
-    private DialogOptionList options;
+    private OptionList options;
 
 	@Override
 	protected EditModelDialog<CharacterActor, Dialog> getEditElementDialogInstance(Dialog e) {
@@ -46,7 +46,7 @@ public class DialogList extends ModelList<CharacterActor, Dialog> {
     public DialogList(Skin skin) {
     	super(skin, true);
     	
-    	options = new DialogOptionList(skin);
+    	options = new OptionList(skin);
     	row();
     	add(options).expand().fill();
 

@@ -22,7 +22,7 @@ jar {
 }
 
     javadoc {
-	title = "Adventure Composer"
+	title = "Adventure Editor"
 	options {
 		memberLevel = JavadocMemberLevel.PUBLIC
 		author true

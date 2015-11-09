@@ -33,13 +33,13 @@ import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteOption;
 import com.bladecoder.engineeditor.utils.ElementUtils;
 
-public class DialogOptionList extends ModelList<Dialog, DialogOption> {
+public class OptionList extends ModelList<Dialog, DialogOption> {
 	Skin skin;
 
 	private ImageButton upBtn;
 	private ImageButton downBtn;
 
-	public DialogOptionList(Skin skin) {
+	public OptionList(Skin skin) {
 		super(skin, true);
 		this.skin = skin;
 
@@ -83,7 +83,7 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				if (evt.getNewValue() instanceof DialogOption && !(evt.getSource() instanceof EditDialogOptionDialog)) {
+				if (evt.getNewValue() instanceof DialogOption && !(evt.getSource() instanceof EditOptionDialog)) {
 					addElements(parent, parent.getOptions());
 				}
 			}
@@ -92,19 +92,19 @@ public class DialogOptionList extends ModelList<Dialog, DialogOption> {
 
 	@Override
 	protected EditModelDialog<Dialog, DialogOption> getEditElementDialogInstance(DialogOption e) {
-		return new EditDialogOptionDialog(skin, parent, e, list.getSelectedIndex());
+		return new EditOptionDialog(skin, parent, e, list.getSelectedIndex());
 	}
 
 	@Override
 	protected void create() {
-		EditDialogOptionDialog dialog = (EditDialogOptionDialog)getEditElementDialogInstance(null);
+		EditOptionDialog dialog = (EditOptionDialog)getEditElementDialogInstance(null);
 		dialog.show(getStage());
 		dialog.setListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				int pos = list.getSelectedIndex() + 1;
 
-				DialogOption e = ((EditDialogOptionDialog) actor).getElement();
+				DialogOption e = ((EditOptionDialog) actor).getElement();
 				list.getItems().insert(pos, e);
 				list.setSelectedIndex(pos);
 				list.invalidateHierarchy();

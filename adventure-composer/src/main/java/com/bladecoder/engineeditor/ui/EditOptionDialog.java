@@ -27,7 +27,7 @@ import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
-public class EditDialogOptionDialog extends EditModelDialog<Dialog, DialogOption> {
+public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 
 	private InputPanel text;
 	private InputPanel responseText;
@@ -38,7 +38,7 @@ public class EditDialogOptionDialog extends EditModelDialog<Dialog, DialogOption
 	private int pos;
 	
 
-	public EditDialogOptionDialog(Skin skin, Dialog parent, DialogOption e, int pos) {
+	public EditOptionDialog(Skin skin, Dialog parent, DialogOption e, int pos) {
 		super(skin);
 		
 		this.pos = e == null ? pos + 1 : pos;
