@@ -67,7 +67,7 @@ public class FileInputPanel extends InputPanel {
 							case OPEN_FILE:
 							case SAVE_FILE: {
 								FileChooser chooser = new FileChooser();
-								chooser.setInitialDirectory(cd);
+//								chooser.setInitialDirectory(cd);
 								chooser.setTitle(FILE_TEXT);
 								result = dialogType == DialogType.OPEN_FILE
 										? chooser.showOpenDialog(null)
