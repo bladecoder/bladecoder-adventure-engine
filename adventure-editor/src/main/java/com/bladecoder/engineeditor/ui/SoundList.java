@@ -20,7 +20,6 @@ import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engineeditor.Ctx;
@@ -40,7 +39,7 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				if (evt.getNewValue() instanceof Dialog && !(evt.getSource() instanceof EditDialogDialog) && parent instanceof InteractiveActor) {
+				if (evt.getNewValue() instanceof SoundFX && !(evt.getSource() instanceof EditSoundDialog) && parent instanceof InteractiveActor) {
 					addElements(parent, Arrays.asList(parent.getSounds().values().toArray(new SoundFX[0])));
 				}
 			}

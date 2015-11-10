@@ -22,6 +22,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class EditDialogDialog extends EditModelDialog<CharacterActor, Dialog> {
 	public static final String INFO = "Actors can have several dialogs defined. Dialogs have a tree of options to choose";
@@ -44,13 +45,13 @@ public class EditDialogDialog extends EditModelDialog<CharacterActor, Dialog> {
 		
 		if(create) {
 			e = new Dialog();
+		} else {
+			parent.getDialogs().remove(e.getId());
 		}
 		
-		e.setId(id.getText());
+		e.setId(ElementUtils.getCheckedId(id.getText(), parent.getDialogs().keySet().toArray(new String[0])));
 		
-		if(create) {
-			parent.addDialog(e);
-		}
+		parent.addDialog(e);
 
 		// TODO UNDO OP
 //		UndoOp undoOp = new UndoAddElement(doc, e);
