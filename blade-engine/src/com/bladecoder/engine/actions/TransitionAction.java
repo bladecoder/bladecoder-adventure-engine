@@ -18,6 +18,7 @@ package com.bladecoder.engine.actions;
 import com.badlogic.gdx.graphics.Color;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Transition;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Sets a transition effect (FADEIN/FADEOUT)")
@@ -39,7 +40,7 @@ public class TransitionAction implements Action {
 	private boolean wait = true;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		Transition t = World.getInstance().getTransition();
 		t.create(time, color, type, wait?cb:null);
 		

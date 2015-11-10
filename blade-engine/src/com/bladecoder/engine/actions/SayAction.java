@@ -24,12 +24,13 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Says a text")
 public class SayAction extends BaseCallbackAction {
 	@ActionPropertyDescription("The target actor")
-	@ActionProperty(type = Type.ACTOR)
+	@ActionProperty(type = Type.ACTOR, required=true)
 	private String actor;
 
 	@ActionPropertyDescription("The 'text' to show")
@@ -51,7 +52,7 @@ public class SayAction extends BaseCallbackAction {
 	private String previousAnim = null;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		float x, y;
 		Color color = null;
 

@@ -17,6 +17,7 @@ package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -31,7 +32,7 @@ public class SetStateAction implements Action {
 	private String state;
 
 	@Override
-	public boolean run(ActionCallback cb) {			
+	public boolean run(VerbRunner cb) {			
 		final Scene s = actor.getScene();
 
 		String actorId = actor.getActorId();

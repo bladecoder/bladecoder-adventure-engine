@@ -16,6 +16,7 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Change the current scene.")
@@ -25,7 +26,7 @@ public class LeaveAction implements Action {
 	private String scene;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		World.getInstance().setCurrentScene(scene);
 		
 		return false;

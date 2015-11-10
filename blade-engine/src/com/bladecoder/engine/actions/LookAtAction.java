@@ -23,6 +23,7 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -71,7 +72,7 @@ public class LookAtAction implements Action {
 	private boolean wait = true;	
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 
 		EngineLogger.debug("LOOKAT ACTION");
 		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, true);

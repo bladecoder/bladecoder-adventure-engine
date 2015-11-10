@@ -18,6 +18,7 @@ package com.bladecoder.engine.actions;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -32,7 +33,7 @@ public class RemoveInventoryItemAction implements Action {
 	private String scene;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		
 		Scene s =  World.getInstance().getScene(scene);
 		

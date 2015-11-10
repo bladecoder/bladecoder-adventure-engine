@@ -23,7 +23,7 @@ import com.bladecoder.engine.model.VerbRunner;
 public class EndAction extends AbstractControlAction {
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		// FIXME: This is now more generic than before, but also less optimized (we always get our "parent")
 		final VerbRunner v = (VerbRunner) cb;
 		final List<Action> actions = v.getActions();

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Pause the action")
@@ -25,7 +26,7 @@ public class WaitAction implements Action {
 	private float time;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		World.getInstance().addTimer(time, cb);
 		return true;
 	}

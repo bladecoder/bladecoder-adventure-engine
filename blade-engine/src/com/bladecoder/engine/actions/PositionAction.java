@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.VerbRunner;
 
 @ActionDescription("Change actor attributes.")
 public class PositionAction implements Action {
@@ -35,7 +36,7 @@ public class PositionAction implements Action {
 	private SceneActorRef anchor;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		Scene s = actor.getScene();
 
 		BaseActor a = s.getActor(actor.getActorId(), true);

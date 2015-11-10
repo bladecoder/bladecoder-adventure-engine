@@ -30,7 +30,7 @@ public class RepeatAction extends AbstractControlAction implements Serializable 
 	private int currentRepeat = 0;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		VerbRunner v = (VerbRunner)cb;
 		
 		currentRepeat++;

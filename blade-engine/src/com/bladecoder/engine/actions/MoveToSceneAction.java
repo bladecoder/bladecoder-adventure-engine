@@ -19,6 +19,7 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -33,7 +34,7 @@ public class MoveToSceneAction implements Action {
 	private String scene;
 
 	@Override
-	public boolean run(ActionCallback cb) {			
+	public boolean run(VerbRunner cb) {			
 		Scene s = actor.getScene();
 
 		final String actorId = actor.getActorId();

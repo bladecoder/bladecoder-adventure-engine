@@ -40,7 +40,7 @@ public class ChooseAction extends AbstractControlAction implements Serializable 
 	int chooseCount = -1;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		VerbRunner v = (VerbRunner) cb;
 
 		int startIp = v.getIP();

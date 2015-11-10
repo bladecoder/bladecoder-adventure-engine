@@ -22,6 +22,7 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Says the selected option from the current dialog. This action does the next steps:\n" +
@@ -36,7 +37,7 @@ public class SayDialogAction extends BaseCallbackAction {
 	private String previousAnim;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		setVerbCb(cb);
 		World w = World.getInstance();
 		DialogOption o = w.getCurrentDialog().getCurrentOption();

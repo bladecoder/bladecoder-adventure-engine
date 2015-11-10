@@ -90,9 +90,9 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 				Param.Type.FLOAT, true, "1.0");
 		delay = InputPanelFactory.createInputPanel(skin, "Delay",
 				"Select the delay between repeats in seconds",
-				Param.Type.FLOAT, false);
-		count = InputPanelFactory.createInputPanel(skin, "Count", "Select the repeat times",
-				Param.Type.INTEGER, false);
+				Param.Type.FLOAT, true, "0");
+		count = InputPanelFactory.createInputPanel(skin, "Count", "Select the repeat times. -1 for infinity",
+				Param.Type.INTEGER, true, "-1");
 		in = InputPanelFactory.createInputPanel(
 				skin,
 				"In Dist",
@@ -117,15 +117,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 					@Override
 					public void changed(ChangeEvent event, Actor actor) {
-						String type = repeat.getText();
-
-						if (type.equals(Tween.Type.REPEAT.toString()) || type.equals(Tween.Type.YOYO.toString())) {
-							setVisible(delay,true);
-							setVisible(count,true);
-						} else {
-							setVisible(delay,false);
-							setVisible(count,false);
-						}
+						showHideFieldsDelayCountFields();
 					}
 				});
 
@@ -188,6 +180,18 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			if(e !=  null) {		
 				id.setText(e.id);
 			}
+		}
+	}
+	
+	private void showHideFieldsDelayCountFields() {
+		String type = repeat.getText();
+
+		if (type.equals(Tween.Type.REPEAT.toString()) || type.equals(Tween.Type.YOYO.toString())) {
+			setVisible(delay,true);
+			setVisible(count,true);
+		} else {
+			setVisible(delay,false);
+			setVisible(count,false);
 		}
 	}
 	
@@ -433,7 +437,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			e.delay = Float.parseFloat(delay.getText());
 		
 		if(create) {
-			parent.getRenderer().getAnimations().put(e.id, e);
+			parent.getRenderer().addAnimation(e);
 		}
 
 		// TODO UNDO OP
@@ -460,6 +464,8 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		sound.setText(e.sound);
 		preload.setText(Boolean.toString(e.preload));
 		dispose.setText(Boolean.toString(e.disposeWhenPlayed));
+		
+		showHideFieldsDelayCountFields();
 	}
 
 }

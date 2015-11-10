@@ -48,7 +48,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	private int ip = -1;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		setVerbCb(cb);
 		
 		run();

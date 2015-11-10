@@ -17,6 +17,7 @@ package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Sets the scene state")
@@ -31,7 +32,7 @@ public class SetSceneStateAction implements Action {
 	private String state;
 
 	@Override
-	public boolean run(ActionCallback cb) {			
+	public boolean run(VerbRunner cb) {			
 		Scene s = (scene != null && !scene.isEmpty())? World.getInstance().getScene(scene): World.getInstance().getCurrentScene();
 		
 		s.setState(state);

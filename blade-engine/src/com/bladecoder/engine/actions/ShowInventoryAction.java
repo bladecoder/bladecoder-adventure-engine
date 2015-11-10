@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Shows/Hide the inventory")
@@ -25,7 +26,7 @@ public class ShowInventoryAction implements Action {
 	private boolean value = true;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		World.getInstance().showInventory(value);
 		
 		return false;

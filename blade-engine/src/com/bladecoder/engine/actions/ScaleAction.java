@@ -18,6 +18,7 @@ package com.bladecoder.engine.actions;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationMode;
 
@@ -58,7 +59,7 @@ public class ScaleAction implements Action {
 	private InterpolationMode interpolation;
 
 	@Override
-	public boolean run(ActionCallback cb) {				
+	public boolean run(VerbRunner cb) {				
 		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, false);
 
 		a.startScaleAnimation(repeat, count, speed, scale, interpolation, wait?cb:null);

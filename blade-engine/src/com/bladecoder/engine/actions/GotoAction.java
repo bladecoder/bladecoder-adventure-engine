@@ -23,6 +23,7 @@ import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Walks to the selected position")
@@ -56,7 +57,7 @@ public class GotoAction implements Action {
 	private boolean wait = true;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 
 		float scale = EngineAssetManager.getInstance().getScale();
 

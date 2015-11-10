@@ -19,6 +19,7 @@ import java.text.MessageFormat;
 
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -42,7 +43,7 @@ public class AnimationAction implements Action {
 	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", animation.getAnimationId()));
 		
 		String actorId = animation.getActorId();

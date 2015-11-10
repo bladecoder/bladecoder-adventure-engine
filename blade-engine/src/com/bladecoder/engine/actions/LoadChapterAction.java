@@ -16,6 +16,7 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -30,7 +31,7 @@ public class LoadChapterAction implements Action {
 	private String scene;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		try {
 			World.getInstance().loadChapter(chapter, scene);
 		} catch (Exception e) {

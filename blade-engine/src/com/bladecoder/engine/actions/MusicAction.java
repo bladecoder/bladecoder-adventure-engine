@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Play/Stop the music of the current scene")
@@ -25,7 +26,7 @@ public class MusicAction implements Action {
 	String play;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 
 		boolean p = Boolean.parseBoolean(play);
 

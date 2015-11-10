@@ -31,7 +31,7 @@ public class IfPropertyAction extends AbstractIfAction {
 	private String value;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		String valDest = World.getInstance().getCustomProperty(name); 
 		
 		if ( (value == null && valDest != null) ||

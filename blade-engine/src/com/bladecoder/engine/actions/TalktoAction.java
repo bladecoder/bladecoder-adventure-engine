@@ -17,6 +17,7 @@ package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.CharacterActor;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Sets the dialog mode")
@@ -30,7 +31,7 @@ public class TalktoAction implements Action {
 	private String dialog;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		
 		CharacterActor a = (CharacterActor)World.getInstance().getCurrentScene().getActor(actor, false);
 		

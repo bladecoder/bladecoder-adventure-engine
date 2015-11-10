@@ -42,7 +42,7 @@ public class IfAttrAction extends AbstractIfAction {
 	private String value;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		Scene s = actor.getScene();
 
 		final String actorId = actor.getActorId();

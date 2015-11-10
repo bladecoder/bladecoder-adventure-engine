@@ -346,6 +346,10 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		if (!world.isDisposed()) {
 			world.update(delta * speed);
+			
+			// if the game ends returns
+			if(world.isDisposed())
+				return;
 		}
 
 		AssetState assetState = world.getAssetState();

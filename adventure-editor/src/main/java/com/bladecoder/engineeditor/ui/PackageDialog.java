@@ -191,7 +191,7 @@ public class PackageDialog extends EditDialog {
 			
 			msg = genDesktopJar(projectName, versionParam, jar);
 
-			if (type.getText().equals(TYPES[0])) { // RUNNABLE JAR
+			if (type.getText().equals(TYPES[0])) { // BUNDLE JRE
 				if (os.getText().equals("linux64")) {					
 					packr(Platform.linux64, linux64JRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
 				} else if (os.getText().equals("linux32")) {

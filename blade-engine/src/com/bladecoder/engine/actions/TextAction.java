@@ -20,6 +20,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Draw a text in the screen")
@@ -57,7 +58,7 @@ public class TextAction implements Action {
 	private boolean wait = true;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 
 		if (text != null) {
 			float x =  TextManager.POS_CENTER, y =  TextManager.POS_CENTER;

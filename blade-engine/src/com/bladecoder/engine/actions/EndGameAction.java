@@ -15,36 +15,24 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.BladeEngine;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.ui.UI;
 
-@ActionDescription("Play/Stop a sound")
-public class SoundAction implements Action {
-	@ActionPropertyDescription("The target actor")
-	@ActionProperty(type = Type.ACTOR)
-	private String actor;
-
-	@ActionPropertyDescription("The 'soundId' to play")
-	@ActionProperty(type = Type.SOUND)
-	private String play;
-
-	@ActionPropertyDescription("The 'soundId' to stop")
-	@ActionProperty(type = Type.SOUND)
-	private String stop;
+@ActionDescription("Ends the game and show the credits.")
+public class EndGameAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
+
+		UI ui = BladeEngine.getAppUI();
+		ui.setCurrentScreen(UI.Screens.CREDIT_SCREEN);
+
+		World.getInstance().endGame();
 		
-		InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, true);
-		
-		if(play!= null)	a.playSound(play);
-		
-		if(stop!= null)	a.stopSound(stop);
-		
+		cb.cancel();
+
 		return false;
 	}
-
-
 }

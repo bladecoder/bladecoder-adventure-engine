@@ -42,7 +42,7 @@ public class CancelVerbAction implements Action {
 	private String target;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 
 		VerbRunner v = null;
 		

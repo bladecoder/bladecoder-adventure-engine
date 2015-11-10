@@ -103,6 +103,8 @@ public class ActionFactory {
 				"com.bladecoder.engine.actions.MoveToSceneAction");
 		actions.put("Text",
 				"com.bladecoder.engine.actions.TextAction");
+		actions.put("EndGame",
+				"com.bladecoder.engine.actions.EndGameAction");
 		
 		for(String name: actions.keySet()) {
 			String cls = actions.get(name);

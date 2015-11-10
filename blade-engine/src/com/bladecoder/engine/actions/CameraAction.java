@@ -20,6 +20,7 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
@@ -45,7 +46,7 @@ public class CameraAction implements Action {
 	private boolean wait = true;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 
 		float scale = EngineAssetManager.getInstance().getScale();
 

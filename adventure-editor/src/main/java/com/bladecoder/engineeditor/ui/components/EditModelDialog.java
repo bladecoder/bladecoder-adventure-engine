@@ -18,6 +18,7 @@ package com.bladecoder.engineeditor.ui.components;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
+import com.bladecoder.engineeditor.Ctx;
 
 public abstract class EditModelDialog<PARENT, T> extends EditDialog {
 
@@ -47,7 +48,11 @@ public abstract class EditModelDialog<PARENT, T> extends EditDialog {
 		} else {		
 			setTitle("EDITING " + e.getClass().getSimpleName());
 			
-			modelToInputs();
+			try{
+				modelToInputs();
+			} catch (Exception e1) {
+				Ctx.msg.show(getStage(), "Error setting fields " + e1.getMessage(), 4);
+			}			
 		}
 
 		// TODO Set focus to the 1st element
@@ -57,8 +62,12 @@ public abstract class EditModelDialog<PARENT, T> extends EditDialog {
 	}
 
 	@Override
-	protected void ok() {	
-		inputsToModel(e==null);
+	protected void ok() {
+		try{
+			inputsToModel(e==null);
+		} catch (Exception e1) {
+			Ctx.msg.show(getStage(), "Error getting fields " + e1.getMessage(), 4);
+		}
 
 		if (listener != null)
 			listener.changed(new ChangeEvent(), this);

@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.util.ActionUtils;
 
 /**
@@ -35,7 +36,7 @@ public class DisableActionAction implements Action {
 	private Action action;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		return false;
 	}
 

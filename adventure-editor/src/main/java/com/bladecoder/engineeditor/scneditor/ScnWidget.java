@@ -18,6 +18,7 @@ package com.bladecoder.engineeditor.scneditor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -39,6 +40,7 @@ import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
@@ -119,7 +121,7 @@ public class ScnWidget extends Widget {
 					if (!projectLoadedFlag)
 						setSelectedActor(Ctx.project.getSelectedActor());
 				} else if (e.getPropertyName().equals(Project.NOTIFY_ANIM_SELECTED)) {
-					if (!projectLoadedFlag)
+					if (!projectLoadedFlag && Ctx.project.getSelectedFA() != null)
 						setSelectedFA(Ctx.project.getSelectedFA());
 				} else if (e.getPropertyName().equals(Project.NOTIFY_PROJECT_LOADED)) {
 					projectLoadedFlag = true;
@@ -165,7 +167,10 @@ public class ScnWidget extends Widget {
 
 			if (animation) {
 				for (BaseActor a : scn.getActors().values()) {
+					boolean v = a.isVisible();
+					a.setVisible(true);
 					a.update(delta);
+					a.setVisible(v);
 				}
 			}
 
@@ -223,13 +228,18 @@ public class ScnWidget extends Widget {
 				scn.draw(sceneBatch);
 				
 				// draw not visible sprite actors
-				for(BaseActor a:scn.getActors().values()) {
-					if(a instanceof SpriteActor && !a.isVisible()) {
-						SpriteActor sa = (SpriteActor)a;
-						
-						sa.setVisible(true);
-						sa.draw(sceneBatch);
-						sa.setVisible(false);
+				List<SceneLayer> layers = scn.getLayers();
+				for (int i = layers.size() - 1; i >= 0; i--) {
+					SceneLayer layer = layers.get(i);
+					
+					List<InteractiveActor> actors = layer.getActors();
+					
+					for (BaseActor a : actors) {
+						if(a instanceof SpriteActor  && !a.isVisible()) {
+							a.setVisible(true);
+							((SpriteActor)a).draw(sceneBatch);
+							a.setVisible(false);
+						}
 					}
 				}
 				
@@ -370,8 +380,9 @@ public class ScnWidget extends Widget {
 		animation = v;
 	}
 
-	public void setAnimation(AnimationDesc fa) {
+	public void setAnimationRenderer(BaseActor a, AnimationDesc fa) {
 		try {
+			faRenderer.setActor(a);		
 			faRenderer.setAnimation(fa);
 		} catch (Exception e) {
 			Ctx.msg.show(getStage(), "Could not retrieve assets for sprite: " + fa.id, 4);
@@ -562,8 +573,8 @@ public class ScnWidget extends Widget {
 		}
 
 		selectedActor = a;
-		faRenderer.setActor(a);
-		setAnimation(null);
+//		faRenderer.setActor(a);
+		setAnimationRenderer(null, null);
 	}
 
 	public void setSelectedFA(String selFA) {
@@ -578,7 +589,7 @@ public class ScnWidget extends Widget {
 			if (selFA != null && (s.getAnimations().get(selFA) != null
 					|| s.getAnimations().get(AnimationDesc.getFlipId(selFA)) != null)) {
 
-				setAnimation(s.getAnimations().get(selFA));
+				setAnimationRenderer(selectedActor, s.getAnimations().get(selFA));
 
 				if (inScene || s.getCurrentAnimation() == null
 						|| ((SpriteActor) selectedActor).getRenderer().getInitAnimation().equals(selFA)) {
@@ -586,15 +597,15 @@ public class ScnWidget extends Widget {
 
 						((SpriteActor) selectedActor).startAnimation(selFA, Tween.Type.REPEAT, Tween.INFINITY, null);
 					} catch (Exception e) {
-						setAnimation(null);
+						setAnimationRenderer(selectedActor, null);
 						((SpriteActor) selectedActor).getRenderer().getAnimations().remove(selFA);
 					}
 				}
 			} else {
-				setAnimation(null);
+				setAnimationRenderer(selectedActor, null);
 			}
 		} else {
-			setAnimation(null);
+			setAnimationRenderer(selectedActor, null);
 		}
 	}
 

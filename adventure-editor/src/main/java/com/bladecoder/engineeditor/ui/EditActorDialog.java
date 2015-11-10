@@ -31,6 +31,7 @@ import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
@@ -358,9 +359,19 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			}
 		}
 		
-		if(create) {
-			parent.addActor(e);
+		if(!create) {
+			parent.removeActor(e);
 		}
+		
+		parent.addActor(e);
+		
+		if(e instanceof InteractiveActor) {
+			SceneLayer l = parent.getLayer(((InteractiveActor) e).getLayer());
+			l.orderByZIndex();
+		}
+		
+		if(e instanceof SpriteActor)
+			((SpriteActor) e).retrieveAssets();
 
 		// TODO UNDO OP
 //		UndoOp undoOp = new UndoAddElement(doc, e);

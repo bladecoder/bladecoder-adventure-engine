@@ -20,6 +20,7 @@ import java.text.MessageFormat;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -34,7 +35,7 @@ public class DropItemAction implements Action {
 	private Vector2 pos;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		float scale =  EngineAssetManager.getInstance().getScale();
 		
 		BaseActor actor = World.getInstance().getInventory().getItem(this.actor);

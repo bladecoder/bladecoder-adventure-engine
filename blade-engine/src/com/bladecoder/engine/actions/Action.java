@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.bladecoder.engine.model.VerbRunner;
+
 public interface Action {
 	/**
 	 * Execute the action
@@ -23,5 +25,5 @@ public interface Action {
 	 * @return If 'true', the verb must stops the execution and wait
 	 * for the action to call the cb.resume()
 	 */
-	public boolean run(ActionCallback cb);
+	public boolean run(VerbRunner cb);
 }

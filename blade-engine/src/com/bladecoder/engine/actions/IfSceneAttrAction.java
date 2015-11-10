@@ -40,7 +40,7 @@ public class IfSceneAttrAction extends AbstractIfAction {
 	private String value;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		Scene s = (scene != null && !scene.isEmpty()) ? World.getInstance().getScene(scene) : World.getInstance()
 				.getCurrentScene();
 

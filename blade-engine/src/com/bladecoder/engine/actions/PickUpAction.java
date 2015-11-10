@@ -19,6 +19,7 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Puts the selected actor in the inventory.")
@@ -32,7 +33,7 @@ public class PickUpAction implements Action {
 	private String animation;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		Scene scn = this.actor.getScene();
 		InteractiveActor actor = (InteractiveActor)scn.getActor(this.actor.getActorId(), false);
 		scn.removeActor(actor);

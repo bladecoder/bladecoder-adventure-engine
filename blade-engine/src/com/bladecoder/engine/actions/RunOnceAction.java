@@ -25,7 +25,7 @@ public class RunOnceAction extends AbstractControlAction implements Serializable
 	boolean executed = false;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		VerbRunner v = (VerbRunner)cb;
 		
 		if (executed) {

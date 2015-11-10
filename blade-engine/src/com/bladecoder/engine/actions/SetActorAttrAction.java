@@ -23,6 +23,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Change actor attributes.")
@@ -71,7 +72,7 @@ public class SetActorAttrAction implements Action {
 	private Float walkingSpeed;
 
 	@Override
-	public boolean run(ActionCallback cb) {
+	public boolean run(VerbRunner cb) {
 		Scene s = actor.getScene();
 
 		BaseActor a = s.getActor(actor.getActorId(), true);

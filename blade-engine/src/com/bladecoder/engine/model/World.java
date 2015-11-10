@@ -446,11 +446,14 @@ public class World implements Serializable, AssetConsumer {
 			spriteBatch.dispose();
 
 			Sprite3DRenderer.disposeBatchs();
+			
+			assetState = null;
 
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage());
 		}
 
+		paused = true;
 		disposed = true;
 	}
 
@@ -510,6 +513,15 @@ public class World implements Serializable, AssetConsumer {
 
 	public void newGame() throws Exception {
 		loadChapter(null);
+	}
+	
+	public void endGame() {
+		dispose();
+		
+		// DELETE SAVEGAME
+		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
+			EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).delete();
+		}
 	}
 
 	// ********** SERIALIZATION **********
