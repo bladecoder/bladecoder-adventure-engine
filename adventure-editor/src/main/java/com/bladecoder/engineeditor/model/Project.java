@@ -161,15 +161,11 @@ public class Project extends PropertyChange {
 	}
 
 	public void setSelectedScene(Scene scn) {
-		Scene old = null;
-
-		old = selectedScene;
-
 		selectedScene = scn;
 		selectedActor = null;
 		selectedFA = null;
 		
-		firePropertyChange(NOTIFY_SCENE_SELECTED, old, selectedScene);
+		firePropertyChange(NOTIFY_SCENE_SELECTED, null, selectedScene);
 	}
 
 	public void setSelectedActor(BaseActor a) {

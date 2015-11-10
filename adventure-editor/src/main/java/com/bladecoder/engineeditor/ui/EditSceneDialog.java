@@ -44,19 +44,20 @@ import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.undo.UndoCreateScene;
 import com.bladecoder.engineeditor.undo.UndoEditScene;
 import com.bladecoder.engineeditor.utils.EditorLogger;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
-public class EditSceneDialog extends EditModelDialog<World, Scene>  {
+public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
-	public static final String INFO = "An adventure is composed of many scenes (screens).\n" +
-			"Inside a scene there are actors and a 'player'.\nThe player/user can interact with the actors throught 'verbs'.";
-	
+	public static final String INFO = "An adventure is composed of many scenes (screens).\n"
+			+ "Inside a scene there are actors and a 'player'.\nThe player/user can interact with the actors throught 'verbs'.";
+
 	private String atlasList[] = getAtlasList();
 	private String musicList[] = getMusicList();
-	
+
 	private Image bgImage;
 	private Container<Image> infoContainer;
 	private TextureAtlas atlas;
-	
+
 	private InputPanel id;
 	private InputPanel backgroundAtlas;
 	private InputPanel backgroundRegion;
@@ -70,11 +71,10 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 	private InputPanel repeatMusicDelay;
 
 	@SuppressWarnings("unchecked")
-	public EditSceneDialog(Skin skin, World parent,
-				Scene e) {
-		
+	public EditSceneDialog(Skin skin, World parent, Scene e) {
+
 		super(skin);
-		
+
 		id = InputPanelFactory.createInputPanel(skin, "Scene ID",
 				"The ID is mandatory for scenes. \nIDs can not contain '.' or '_' characters.", true);
 		backgroundAtlas = InputPanelFactory.createInputPanel(skin, "Background Atlas",
@@ -82,75 +82,69 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 		backgroundRegion = InputPanelFactory.createInputPanel(skin, "Background Region Id",
 				"The region id for the background.", new String[0], false);
 		lightmapAtlas = InputPanelFactory.createInputPanel(skin, "Lightmap Atlas",
-						"The atlas where the lightmap for the scene is located", atlasList, false);	
+				"The atlas where the lightmap for the scene is located", atlasList, false);
 		lightmapRegion = InputPanelFactory.createInputPanel(skin, "Lightmap Region Id",
 				"The region id for the lightmap", new String[0], false);
 		depthVector = InputPanelFactory.createInputPanel(skin, "Depth Vector",
-						"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.", Param.Type.VECTOR2, false);
-		state = InputPanelFactory.createInputPanel(skin, "State",
-				"The initial state for the scene.", false);
-		music = InputPanelFactory.createInputPanel(skin, "Music Filename",
-				"The music for the scene", musicList, false);
-		loopMusic = InputPanelFactory.createInputPanel(skin, "Loop Music",
-				"If the music is playing in looping", Param.Type.BOOLEAN, false);
+				"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.",
+				Param.Type.VECTOR2, false);
+		state = InputPanelFactory.createInputPanel(skin, "State", "The initial state for the scene.", false);
+		music = InputPanelFactory.createInputPanel(skin, "Music Filename", "The music for the scene", musicList, false);
+		loopMusic = InputPanelFactory.createInputPanel(skin, "Loop Music", "If the music is playing in looping",
+				Param.Type.BOOLEAN, false);
 		initialMusicDelay = InputPanelFactory.createInputPanel(skin, "Initial music delay",
 				"The time to wait before playing", Param.Type.FLOAT, true, "0");
 		repeatMusicDelay = InputPanelFactory.createInputPanel(skin, "Repeat music delay",
-				"The time to wait before repetitions", Param.Type.FLOAT, true, "0");		
-		
+				"The time to wait before repetitions", Param.Type.FLOAT, true, "0");
+
 		bgImage = new Image();
 		bgImage.setScaling(Scaling.fit);
 		infoContainer = new Container<Image>(bgImage);
 		setInfo(INFO);
 
-		
 		((SelectBox<String>) backgroundAtlas.getField()).addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				try {
 					fillBGRegions(backgroundAtlas, backgroundRegion);
-				} catch(Exception e) {
+				} catch (Exception e) {
 					Ctx.msg.show(getStage(), "Error loading regions from selected atlas", 4);
 				}
 			}
 		});
-		
 
-		((SelectBox<String>) backgroundRegion.getField())
-			.addListener(new ChangeListener() {
+		((SelectBox<String>) backgroundRegion.getField()).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				showBgImage(backgroundRegion.getText());
 			}
 		});
-		
+
 		((SelectBox<String>) lightmapAtlas.getField()).addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				try {
 					fillLightmapRegions(lightmapAtlas, lightmapAtlas);
-				} catch(Exception e) {
+				} catch (Exception e) {
 					Ctx.msg.show(getStage(), "Error loading regions from selected atlas", 4);
 				}
 			}
-		});		
-		
+		});
+
 		try {
 			fillBGRegions(backgroundAtlas, backgroundRegion);
-		} catch(Exception e2) {
+		} catch (Exception e2) {
 			EditorLogger.error("Error loading regions from selected atlas");
 		}
-		
-		init(parent, e, new InputPanel[] {id, backgroundAtlas, backgroundRegion, lightmapAtlas, lightmapRegion, 
-				depthVector, state, music, loopMusic, initialMusicDelay, repeatMusicDelay});
+
+		init(parent, e, new InputPanel[] { id, backgroundAtlas, backgroundRegion, lightmapAtlas, lightmapRegion,
+				depthVector, state, music, loopMusic, initialMusicDelay, repeatMusicDelay });
 	}
-	
-	
 
 	private void showBgImage(String r) {
-		if(atlas == null || r == null)
+		if (atlas == null || r == null)
 			return;
 
 		bgImage.setDrawable(new TextureRegionDrawable(atlas.findRegion(r)));
@@ -163,27 +157,27 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 	private void fillBGRegions(InputPanel atlasInput, InputPanel regionInput) {
 		@SuppressWarnings("unchecked")
 		SelectBox<String> cb = (SelectBox<String>) regionInput.getField();
-		
-//		cb.clearItems();
+
+		// cb.clearItems();
 		cb.getItems().clear();
-		
-		if(atlas != null) {
+
+		if (atlas != null) {
 			atlas.dispose();
 			atlas = null;
 		}
-		
-		if(backgroundAtlas.getText().isEmpty()) {
+
+		if (backgroundAtlas.getText().isEmpty()) {
 			setInfoWidget(new Label(INFO, getSkin()));
 			return;
 		}
-		
+
 		atlas = new TextureAtlas(Gdx.files.absolute(Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
 				+ Ctx.project.getResDir() + "/" + atlasInput.getText() + ".atlas"));
 
 		Array<AtlasRegion> regions = atlas.getRegions();
-		
+
 		for (AtlasRegion r : regions)
-			if(cb.getItems().indexOf(r.name, false) == -1)
+			if (cb.getItems().indexOf(r.name, false) == -1)
 				cb.getItems().add(r.name);
 
 		cb.getList().setItems(cb.getItems());
@@ -194,21 +188,21 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 
 		showBgImage(regionInput.getText());
 	}
-	
+
 	private void fillLightmapRegions(InputPanel atlasInput, InputPanel regionInput) {
 		@SuppressWarnings("unchecked")
 		SelectBox<String> cb = (SelectBox<String>) regionInput.getField();
-		
-//		cb.clearItems();
+
+		// cb.clearItems();
 		cb.getItems().clear();
-		
-		TextureAtlas atlas = new TextureAtlas(Gdx.files.absolute(Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
-				+ Ctx.project.getResDir() + "/" + atlasInput.getText() + ".atlas"));
+
+		TextureAtlas atlas = new TextureAtlas(Gdx.files.absolute(Ctx.project.getProjectPath() + Project.ATLASES_PATH
+				+ "/" + Ctx.project.getResDir() + "/" + atlasInput.getText() + ".atlas"));
 
 		Array<AtlasRegion> regions = atlas.getRegions();
-		
+
 		for (AtlasRegion r : regions)
-			if(cb.getItems().indexOf(r.name, false) == -1)
+			if (cb.getItems().indexOf(r.name, false) == -1)
 				cb.getItems().add(r.name);
 
 		cb.getList().setItems(cb.getItems());
@@ -218,73 +212,72 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 		cb.invalidateHierarchy();
 
 		atlas.dispose();
-	}		
-	
+	}
+
 	@Override
 	protected void inputsToModel(boolean create) {
-		
-		if(create) {
+
+		if (create) {
 			e = new Scene();
-			
+
 			// CREATE DEFAULT LAYERS: BG, DYNAMIC, FG
 			SceneLayer l = new SceneLayer();
 			l.setName("foreground");
 			l.setVisible(true);
 			l.setDynamic(false);
 			e.addLayer(l);
-			
+
 			l = new SceneLayer();
 			l.setName("dynamic");
 			l.setVisible(true);
 			l.setDynamic(true);
 			e.addLayer(l);
-			
+
 			l = new SceneLayer();
 			l.setName("background");
 			l.setVisible(true);
 			l.setDynamic(false);
 			e.addLayer(l);
+		} else {
+			parent.getScenes().remove(e.getId());
 		}
+
+		e.setId(ElementUtils.getCheckedId(id.getText(), World.getInstance().getScenes().keySet().toArray(new String[0])));
 		
-		e.setId(id.getText());
 		e.setBackgroundAtlas(backgroundAtlas.getText());
 		e.setBackgroundRegionId(backgroundRegion.getText());
 		e.setLightMapAtlas(lightmapAtlas.getText());
 		e.setLightMapRegionId(lightmapRegion.getText());
 		e.setDepthVector(Param.parseVector2(depthVector.getText()));
 		e.setState(state.getText());
-		
-		e.setMusic(music.getText(),
-				Boolean.parseBoolean(loopMusic.getText()),
-				Float.parseFloat(initialMusicDelay.getText()),
-				Float.parseFloat(repeatMusicDelay.getText()));
-		
-		if(create) {
-			parent.addScene(e);
-			
-			if(parent.getScenes().size() == 1)
-				parent.setInitScene(e.getId());
-		}
+
+		e.setMusic(music.getText(), Boolean.parseBoolean(loopMusic.getText()),
+				Float.parseFloat(initialMusicDelay.getText()), Float.parseFloat(repeatMusicDelay.getText()));
+
+		parent.addScene(e);
+
+		if (parent.getScenes().size() == 1)
+			parent.setInitScene(e.getId());
 
 		// UNDO OP
-		if(create) {
+		if (create) {
 			Ctx.project.getUndoStack().add(new UndoCreateScene(e));
 		} else {
 			Ctx.project.getUndoStack().add(new UndoEditScene(e));
 		}
-		
+
 		Ctx.project.setModified(this, Project.NOTIFY_ELEMENT_CREATED, null, e);
 	}
 
 	@Override
 	protected void modelToInputs() {
-		
+
 		id.setText(e.getId());
 		backgroundAtlas.setText(e.getBackgroundAtlas());
 		backgroundRegion.setText(e.getBackgroundRegionId());
 		lightmapAtlas.setText(e.getLightMapAtlas());
 		lightmapRegion.setText(e.getLightMapRegionId());
-		if(e.getDepthVector() != null)
+		if (e.getDepthVector() != null)
 			depthVector.setText(Param.toStringParam(e.getDepthVector()));
 		state.setText(e.getState());
 		music.setText(e.getMusicFilename());
@@ -293,12 +286,8 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 		repeatMusicDelay.setText(Float.toString(e.getRepeatMusicDelay()));
 	}
 
-	
-	
-
 	private String[] getAtlasList() {
-		String bgPath = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
-				+ Ctx.project.getResDir();
+		String bgPath = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/" + Ctx.project.getResDir();
 
 		File f = new File(bgPath);
 
@@ -315,15 +304,15 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 
 		Arrays.sort(bgs);
 
-		for(int i = 0; i < bgs.length; i++) {
+		for (int i = 0; i < bgs.length; i++) {
 			int idx = bgs[i].lastIndexOf('.');
-			if(idx != -1)
+			if (idx != -1)
 				bgs[i] = bgs[i].substring(0, idx);
 		}
-		
+
 		return bgs;
 	}
-	
+
 	private String[] getMusicList() {
 		String path = Ctx.project.getProjectPath() + Project.MUSIC_PATH;
 
@@ -339,27 +328,27 @@ public class EditSceneDialog extends EditModelDialog<World, Scene>  {
 				return false;
 			}
 		});
-		
-		if(musicFiles == null)
+
+		if (musicFiles == null)
 			return new String[0];
 
 		Arrays.sort(musicFiles);
-		
+
 		String musicFiles2[] = new String[musicFiles.length + 1];
 		musicFiles2[0] = "";
-		
-		for(int i=0; i < musicFiles.length; i++)
+
+		for (int i = 0; i < musicFiles.length; i++)
 			musicFiles2[i + 1] = musicFiles[i];
 
 		return musicFiles2;
 	}
-	
+
 	@Override
 	protected void result(Object object) {
-		if(atlas != null) {
+		if (atlas != null) {
 			atlas.dispose();
 		}
-		
+
 		super.result(object);
 	}
 }

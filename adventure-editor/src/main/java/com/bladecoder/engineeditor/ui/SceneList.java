@@ -227,7 +227,7 @@ public class SceneList extends ModelList<World, Scene> {
 		if (e == null)
 			return;
 
-		clipboard = (Scene)ElementUtils.cloneElement(e);
+		clipboard = (Scene) ElementUtils.cloneElement(e);
 		toolbar.disablePaste(false);
 
 		// TRANSLATIONS
@@ -236,10 +236,11 @@ public class SceneList extends ModelList<World, Scene> {
 
 	@Override
 	protected void paste() {
-		Scene newElement = (Scene)ElementUtils.cloneElement(clipboard);
-		
-		newElement.setId(ElementUtils.getCheckedId(newElement.getId(), World.getInstance().getScenes().keySet().toArray(new String[0])));
-		
+		Scene newElement = (Scene) ElementUtils.cloneElement(clipboard);
+
+		newElement.setId(ElementUtils.getCheckedId(newElement.getId(),
+				World.getInstance().getScenes().keySet().toArray(new String[0])));
+
 		int pos = list.getSelectedIndex() + 1;
 
 		list.getItems().insert(pos, newElement);
@@ -249,13 +250,25 @@ public class SceneList extends ModelList<World, Scene> {
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();
-		
+
 		Ctx.project.setModified();
 	}
 
 	@Override
 	protected EditModelDialog<World, Scene> getEditElementDialogInstance(Scene e) {
-		return new EditSceneDialog(skin, parent, e);
+
+		EditSceneDialog dialog = new EditSceneDialog(skin, parent, e);
+
+		if (e != null) {
+			dialog.setListener(new ChangeListener() {
+				@Override
+				public void changed(ChangeEvent event, Actor actor) {
+					Ctx.project.setSelectedScene(list.getSelected());
+				}
+			});
+		}
+
+		return dialog;
 	}
 
 	public TextureRegion getBgIcon(String atlas, String region) {

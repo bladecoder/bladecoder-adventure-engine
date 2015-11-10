@@ -105,12 +105,6 @@ public abstract class ModelList<PARENT, T> extends EditList<T> {
 
 		EditModelDialog<PARENT, T> dialog = getEditElementDialogInstance(e);
 		dialog.show(getStage());
-		dialog.setListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				
-			}
-		});
 	}
 
 	protected abstract EditModelDialog<PARENT, T> getEditElementDialogInstance(T e);

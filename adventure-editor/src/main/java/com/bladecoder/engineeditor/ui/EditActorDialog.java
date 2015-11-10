@@ -42,6 +42,7 @@ import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	
@@ -291,9 +292,12 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				verts[7] = 0f;
 				bbox.dirty();
 			}
+		} else {
+			// remove to allow id, zindex and layer change
+			parent.removeActor(e);
 		}
 	 
-		e.setId(id.getText());
+		e.setId(ElementUtils.getCheckedId(id.getText(), parent.getActors().keySet().toArray(new String[0])));
 		e.setVisible(Boolean.parseBoolean(visible.getText()));
 		
 		if(e instanceof InteractiveActor) {
@@ -357,10 +361,6 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					ca.setTextColor(Param.parseColor(textColor.getText()));
 				}
 			}
-		}
-		
-		if(!create) {
-			parent.removeActor(e);
 		}
 		
 		parent.addActor(e);

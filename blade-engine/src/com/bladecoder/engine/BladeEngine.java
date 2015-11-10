@@ -195,7 +195,7 @@ public class BladeEngine implements ApplicationListener {
 		boolean bot = ui.getTesterBot().isEnabled();
 		boolean r = ui.getRecorder().isPlaying();
 
-		if (!bot && !r) {
+		if (!bot && !r && !World.getInstance().isDisposed()) {
 			EngineLogger.debug("GAME PAUSE");
 			ui.pause();
 			try {
