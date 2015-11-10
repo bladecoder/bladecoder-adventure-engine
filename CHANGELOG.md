@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.1]
+
+- Fixes several bugs in the editor related to the big refactor.
+- Created EndGameAction
+- Action refactor. VerbRunner parameter instead of ActionCallback.
+
 ## [0.9.0]
 - Game model and saved games are now in JSON format. 
   * XML is deprecated. Backward compatibility broken.
