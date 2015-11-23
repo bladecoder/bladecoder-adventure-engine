@@ -82,7 +82,7 @@ public class AnimationWidget extends Widget {
 
 	}
 
-	public void setAnimation(String id, String speedStr, String typeStr) {
+	public void setAnimation(String id, String speedStr, Tween.Type t) {
 		if (fa != null && id != null &&  !id.isEmpty()) {
 			
 			if(fa instanceof AtlasAnimationDesc)
@@ -91,7 +91,7 @@ public class AnimationWidget extends Widget {
 			Tween.Type type = Tween.Type.REPEAT;
 			float speed = 2.0f;
 
-			if (!speedStr.isEmpty()) {
+			if (speedStr != null && !speedStr.isEmpty()) {
 				try {
 					speed = Float.parseFloat(speedStr);
 				} catch(NumberFormatException e) {
@@ -99,12 +99,15 @@ public class AnimationWidget extends Widget {
 				}
 			}
 
-			if (typeStr.equals(Tween.Type.YOYO.toString()))
+			if (t == Tween.Type.YOYO)
 				type = Tween.Type.YOYO;
+			else if(t == Tween.Type.REVERSE)
+				type = Tween.Type.REVERSE_REPEAT;
 
 			fa.id = id;
 			fa.duration = speed;
 			fa.animationType = type;
+			fa.count = -1;
 			
 			renderer.getAnimations().clear();
 

@@ -251,7 +251,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		SelectBox<String> cb = (SelectBox<String>) id.getField();
 
 		if (e != null || cb.getSelectedIndex() != 0)
-			spriteWidget.setAnimation(ids, speedStr, type);
+			spriteWidget.setAnimation(ids, speedStr, Tween.Type.valueOf(type));
 	}
 
 	private void fillAnimations() {
