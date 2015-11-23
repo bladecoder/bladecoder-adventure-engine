@@ -114,7 +114,7 @@ public class SpineRenderer implements ActorRenderer {
 			if (complete)
 				return;
 
-			if (currentAnimationType == Tween.Type.REPEAT && (currentCount == Tween.INFINITY || currentCount > loopCount)) {
+			if ((currentAnimationType == Tween.Type.REPEAT || currentAnimationType == Tween.Type.REVERSE_REPEAT) && (currentCount == Tween.INFINITY || currentCount > loopCount)) {
 				return;
 			}
 
@@ -362,7 +362,9 @@ public class SpineRenderer implements ActorRenderer {
 
 			for (Animation a : animations) {
 				if (a.getName().equals(currentAnimation.id)) {
-					lastAnimationTime = a.getDuration() - 0.01f;
+					lastAnimationTime = a.getDuration() / currentAnimation.duration - 0.01f;
+					
+					System.out.println("LAST ANIM TIME: " + lastAnimationTime + " ID: " + currentAnimation.id);
 					break;
 				}
 			}
