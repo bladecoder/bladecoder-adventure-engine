@@ -37,7 +37,6 @@ public class PositionAnimAction implements Action {
 
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The target position")
-
 	private Vector2 pos;
 
 	@ActionPropertyDescription("Sets the actor position as target")
@@ -48,13 +47,13 @@ public class PositionAnimAction implements Action {
 	@ActionPropertyDescription("Duration or speed in pixels/sec. mode")
 	private float speed;
 
-	@ActionProperty
+	@ActionProperty(required = true)
 	@ActionPropertyDescription("Duration or speed of the animation")
 	private Mode mode;
 
-	@ActionProperty
-	@ActionPropertyDescription("The times to repeat")
-	private int count = 1;
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The times to repeat. -1 for infinity")
+	private int count = -1;
 
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
