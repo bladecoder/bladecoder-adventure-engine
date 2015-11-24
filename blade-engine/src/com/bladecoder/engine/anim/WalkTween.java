@@ -17,6 +17,7 @@ package com.bladecoder.engine.anim;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
@@ -37,7 +38,6 @@ public class WalkTween extends SpritePosTween implements Serializable {
 	private float speed = 0;
 	
 	private ActionCallback walkCb;
-	private String walkCbSer;
 
 	public WalkTween() {
 	}
@@ -61,19 +61,30 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		Vector2 pf = walkingPath.get(currentStep + 1);
 
 		target.startWalkAnim(p0, pf);
-
-		float segmentDuration = p0.dst(pf)
-				/ (EngineAssetManager.getInstance().getScale() * speed);
 		
-		if(currentStep == walkingPath.size() - 2 && (walkCb != null || walkCbSer != null)) {
-			if(walkCbSer != null) {
-				walkCb = ActionCallbackSerialization.find(walkCbSer);
-				walkCbSer = null;
-			}
-			
-			start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, null, walkCb);
+		float s0 = target.getScene().getFakeDepthScale(p0.y);
+		float sf = target.getScene().getFakeDepthScale(pf.y);
+
+//		float segmentDuration = p0.dst(pf)
+//				/ (EngineAssetManager.getInstance().getScale() * speed);
+		
+		// t = dst/((vf+v0)/2)
+		float segmentDuration = p0.dst(pf)
+				/ (EngineAssetManager.getInstance().getScale() * speed * (s0+sf) / 2);
+				
+		segmentDuration *=  (s0 > sf ?s0 / sf:sf/s0);
+		
+		Interpolation i = Interpolation.linear;
+		
+		if(Math.abs(s0-sf) > .25) 
+			i = s0 > sf?Interpolation.pow2Out:Interpolation.pow2In;
+		
+		if(currentStep == walkingPath.size() - 2 && walkCb != null) {			
+			start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, 
+					Interpolation.linear, i, walkCb);
 		} else {
-			start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, null, null);
+			start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, 
+					Interpolation.linear, i, null);
 		}
 	}
 
@@ -105,10 +116,7 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		json.writeValue("currentStep", currentStep);
 		json.writeValue("speed", speed);
 		
-		if(walkCbSer != null)
-			json.writeValue("walkCb", walkCbSer);
-		else
-			json.writeValue("walkCb", ActionCallbackSerialization.find(walkCb),
+		json.writeValue("walkCb", ActionCallbackSerialization.find(walkCb),
 					walkCb == null ? null : String.class);
 	}
 
@@ -121,6 +129,7 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		currentStep = json.readValue("currentStep", Integer.class, jsonData);
 		speed = json.readValue("speed", Float.class, jsonData);
 		
-		walkCbSer = json.readValue("walkCb", String.class, jsonData);
+		String walkCbSer = json.readValue("walkCb", String.class, jsonData);
+		walkCb = ActionCallbackSerialization.find(walkCbSer);
 	}
 }

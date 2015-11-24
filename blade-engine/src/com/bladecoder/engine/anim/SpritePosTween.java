@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
@@ -30,11 +31,18 @@ public class SpritePosTween extends Tween {
 	
 	private float startX, startY;
 	private float targetX, targetY;
+	private Interpolation interpolationX;
+	private Interpolation interpolationY;
 	
 	public SpritePosTween() {
 	}
 
 	public void start(SpriteActor target, Tween.Type repeatType, int count, float tx, float ty, float duration, InterpolationMode interpolation, ActionCallback cb) {
+		start(target, repeatType, count, tx, ty, duration, interpolation.getInterpolation(), interpolation.getInterpolation(), cb);
+	}
+	
+	public void start(SpriteActor target, Tween.Type repeatType, int count, float tx, float ty, float duration, 
+			Interpolation interpolationX, Interpolation interpolationY, ActionCallback cb) {
 		
 		startX = target.getX();
 		startY = target.getY();
@@ -44,22 +52,25 @@ public class SpritePosTween extends Tween {
 		setDuration(duration);
 		setType(repeatType);
 		setCount(count);
-		setInterpolation(interpolation);
+		
+		this.interpolationX = interpolationX;
+		this.interpolationY = interpolationY;
 
 		if (cb != null) {
 			setCb(cb);
 		}
 		
 		restart();
-	}
+	}	
 	
 	public void update(SpriteActor a, float delta) {
 		update(delta);
 		
-		float percent = getPercent();
+		float percentX = getPercent(interpolationX);
+		float percentY = getPercent(interpolationY);
 		
-		a.setPosition(startX + percent * (targetX - startX),
-				startY + percent * (targetY - startY));
+		a.setPosition(startX + percentX * (targetX - startX),
+				startY + percentY * (targetY - startY));
 	}
 	
 	@Override
@@ -70,6 +81,8 @@ public class SpritePosTween extends Tween {
 		json.writeValue("startY", startY);
 		json.writeValue("targetX", targetX);
 		json.writeValue("targetY", targetY);
+		json.writeValue("interpolationX", interpolationX);
+		json.writeValue("interpolationY", interpolationY);
 	}
 
 	@Override
@@ -80,6 +93,8 @@ public class SpritePosTween extends Tween {
 		startY = json.readValue("startY", Float.class, jsonData);
 		targetX = json.readValue("targetX", Float.class, jsonData);
 		targetY = json.readValue("targetY", Float.class, jsonData);
+		interpolationX = json.readValue("interpolationX", Interpolation.class, jsonData);
+		interpolationY = json.readValue("interpolationY", Interpolation.class, jsonData);
 
 	}
 }

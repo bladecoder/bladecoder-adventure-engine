@@ -68,7 +68,6 @@ public class PositionAnimAction implements Action {
 
 	@ActionProperty
 	@ActionPropertyDescription("The target actor")
-
 	private InterpolationMode interpolation;
 
 	@Override

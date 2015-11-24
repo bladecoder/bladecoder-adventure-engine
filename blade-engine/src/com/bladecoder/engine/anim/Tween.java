@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -25,19 +26,18 @@ import com.bladecoder.engine.util.InterpolationMode;
 
 public class Tween implements Serializable {
 	public enum Type {
-		NO_REPEAT, REPEAT,YOYO,REVERSE, REVERSE_REPEAT,	SPRITE_DEFINED;
+		NO_REPEAT, REPEAT, YOYO, REVERSE, REVERSE_REPEAT, SPRITE_DEFINED;
 	}
 
 	public final static int INFINITY = -1;
 
 	private float duration, time;
-	private InterpolationMode interpolation;
+	private Interpolation interpolation;
 	private boolean reverse, began, complete;
 	private Type type;
 	private int count;
 
 	private ActionCallback cb;
-	private String cbSer = null;
 
 	public Tween() {
 	}
@@ -69,26 +69,25 @@ public class Tween implements Serializable {
 			callCb();
 		}
 	}
-	
+
 	private void callCb() {
-		if(cb != null || cbSer != null) {
-			if(cbSer != null) {
-				cb = ActionCallbackSerialization.find(cbSer);
-				cbSer = null;
-			}
-			
+		if (cb != null) {
 			ActionCallbackQueue.add(cb);
 		}
 	}
 
 	public float getPercent() {
+		return getPercent(interpolation);
+	}
+
+	public float getPercent(Interpolation i) {
 		float percent;
 		if (complete) {
 			percent = 1;
 		} else {
 			percent = time / duration;
-			if (interpolation != null)
-				percent = interpolation.getInterpolation().apply(percent);
+			if (i != null)
+				percent = i.apply(percent);
 		}
 
 		return (reverse ? 1 - percent : percent);
@@ -129,12 +128,16 @@ public class Tween implements Serializable {
 		this.duration = duration;
 	}
 
-	public InterpolationMode getInterpolation() {
+	public Interpolation getInterpolation() {
 		return interpolation;
 	}
 
-	public void setInterpolation(InterpolationMode interpolation) {
+	public void setInterpolation(Interpolation interpolation) {
 		this.interpolation = interpolation;
+	}
+	
+	public void setInterpolation(InterpolationMode interpolation) {
+		this.interpolation = interpolation.getInterpolation();
 	}
 
 	public boolean isReverse() {
@@ -182,36 +185,25 @@ public class Tween implements Serializable {
 		json.writeValue("complete", complete);
 		json.writeValue("type", type);
 		json.writeValue("count", count);
-		
-		String i = null;
-		
-		if(interpolation != null)
-			i = interpolation.name();
-		
-		json.writeValue("interpolation", i);
-		
-		if(cbSer != null)
-			json.writeValue("cb", cbSer);
-		else
-			json.writeValue("cb", ActionCallbackSerialization.find(cb),
-				cb == null ? null : String.class);
+
+		json.writeValue("interpolation", interpolation);
+		json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null : String.class);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		duration = json.readValue("duration", Float.class, jsonData);
-		time = json.readValue("time", Float.class, jsonData);;
+		time = json.readValue("time", Float.class, jsonData);
+		;
 		reverse = json.readValue("reverse", Boolean.class, jsonData);
 		began = json.readValue("began", Boolean.class, jsonData);
 		complete = json.readValue("complete", Boolean.class, jsonData);
-		type =json.readValue("type", Type.class, jsonData);
+		type = json.readValue("type", Type.class, jsonData);
 		count = json.readValue("count", Integer.class, jsonData);
-		
-		String i = json.readValue("interpolation", String.class, jsonData);
-		
-		if(i != null)
-			interpolation = InterpolationMode.valueOf(i.trim().toUpperCase());
 
-		cbSer = json.readValue("cb", String.class, jsonData);
+		interpolation = json.readValue("interpolation", Interpolation.class, jsonData);
+
+		String cbSer = json.readValue("cb", String.class, jsonData);
+		cb = ActionCallbackSerialization.find(cbSer);
 	}
 }
