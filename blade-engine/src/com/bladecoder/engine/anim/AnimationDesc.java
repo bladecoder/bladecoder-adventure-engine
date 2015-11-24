@@ -81,6 +81,7 @@ public class AnimationDesc {
 	}
 	
 	private final static float DIRECTION_ASPECT_TOLERANCE = 2.5f;
+	private final static float DIRECTION_ASPECT_TOLERANCE_2 = 3f;
 
 	public static String getDirectionString(Vector2 p0, Vector2 pf, int numDirs) {
 		
@@ -90,15 +91,16 @@ public class AnimationDesc {
 		float dx = pf.x - p0.x;
 		float dy = pf.y - p0.y;
 		float ratio = Math.abs(dx / dy);
+		float ratio2 = ratio;
 
-		if (ratio < 1.0)
-			ratio = 1.0f / ratio;
+		if (ratio2 < 1.0)
+			ratio2 = 1.0f / ratio;
 
 		// EngineLogger.debug("P0: " + p0 + " PF: " + pf + " dx: " + dx +
 		// " dy: "
 		// + dy + " RATIO: " + ratio);
 
-		if (ratio < DIRECTION_ASPECT_TOLERANCE && numDirs > 4) { // DIAGONAL MOVEMENT
+		if (ratio2 < DIRECTION_ASPECT_TOLERANCE && numDirs > 4) { // DIAGONAL MOVEMENT
 			if (dy > 0) { // UP. MOVEMENT
 				if (dx > 0) { // TO THE RIGHT
 					return BACKRIGHT;
@@ -114,7 +116,7 @@ public class AnimationDesc {
 				}
 			}
 		} else { // HOR OR VERT MOVEMENT
-			if (Math.abs(dx) > Math.abs(dy) / DIRECTION_ASPECT_TOLERANCE || numDirs < 4) { // HOR. MOVEMENT
+			if (ratio > DIRECTION_ASPECT_TOLERANCE_2 || numDirs < 4) { // HOR. MOVEMENT
 				if (dx > 0) { // TO THE RIGHT
 					return RIGHT;
 				} else { // TO THE LEFT
@@ -130,6 +132,7 @@ public class AnimationDesc {
 			}
 		}
 	}
+
 
 	/**
 	 * Returns:
