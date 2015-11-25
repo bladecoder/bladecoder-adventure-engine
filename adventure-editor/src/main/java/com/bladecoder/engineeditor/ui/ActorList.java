@@ -162,7 +162,8 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 		BaseActor a = list.getItems().get(pos);
 
 		if (a instanceof CharacterActor) {
-			a.getScene().setPlayer((CharacterActor) a);
+			Ctx.project.getSelectedScene().setPlayer((CharacterActor) a);
+			Ctx.project.setModified();
 		}
 	}
 
