@@ -4,6 +4,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.2]
+
+- Issue #22 fixed. Something went wrong while creating project.
+- Set document modified when changing player
+- Walking speed depends on scale
+- Better direction calculation
+- fixes: Null checks in animation dialogs/widget
+- Fix calculating position when speed!=1 in reversing animation.
+- Some ajustements in Action annotations: Better description and required field
+
+
 ## [0.9.1]
 
 - Fixes several bugs in the editor related to the big refactor.
