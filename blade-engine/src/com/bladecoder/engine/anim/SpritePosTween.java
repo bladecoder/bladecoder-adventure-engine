@@ -38,7 +38,8 @@ public class SpritePosTween extends Tween {
 	}
 
 	public void start(SpriteActor target, Tween.Type repeatType, int count, float tx, float ty, float duration, InterpolationMode interpolation, ActionCallback cb) {
-		start(target, repeatType, count, tx, ty, duration, interpolation.getInterpolation(), interpolation.getInterpolation(), cb);
+		Interpolation i = interpolation == null? null: interpolation.getInterpolation();
+		start(target, repeatType, count, tx, ty, duration, i, i, cb);
 	}
 	
 	public void start(SpriteActor target, Tween.Type repeatType, int count, float tx, float ty, float duration, 
