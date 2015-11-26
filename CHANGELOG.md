@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.3]
+
+- Fix error when interpolation=null
+
 ## [0.9.2]
 
 - Issue #22 fixed. Something went wrong while creating project.
@@ -13,7 +17,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - fixes: Null checks in animation dialogs/widget
 - Fix calculating position when speed!=1 in reversing animation.
 - Some ajustements in Action annotations: Better description and required field
-
 
 ## [0.9.1]
 
