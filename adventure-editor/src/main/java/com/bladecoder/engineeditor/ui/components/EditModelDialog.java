@@ -52,6 +52,7 @@ public abstract class EditModelDialog<PARENT, T> extends EditDialog {
 				modelToInputs();
 			} catch (Exception e1) {
 				Ctx.msg.show(getStage(), "Error setting fields " + e1.getMessage(), 4);
+				e1.printStackTrace();
 			}			
 		}
 
@@ -67,6 +68,7 @@ public abstract class EditModelDialog<PARENT, T> extends EditDialog {
 			inputsToModel(e==null);
 		} catch (Exception e1) {
 			Ctx.msg.show(getStage(), "Error getting fields " + e1.getMessage(), 4);
+			e1.printStackTrace();
 		}
 
 		if (listener != null)

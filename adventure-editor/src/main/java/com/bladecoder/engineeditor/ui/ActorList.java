@@ -151,6 +151,33 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 	protected EditModelDialog<Scene, BaseActor> getEditElementDialogInstance(BaseActor a) {
 		return new EditActorDialog(skin, parent, a);
 	}
+	
+	@Override
+	protected void edit() {
+		BaseActor e = list.getSelected();
+
+		if (e == null)
+			return;
+
+		EditModelDialog<Scene, BaseActor> dialog = getEditElementDialogInstance(e);
+		dialog.show(getStage());
+		
+		dialog.setListener(new ChangeListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				BaseActor e = ((EditModelDialog<Scene, BaseActor>) actor).getElement();
+				
+				// When the type is changed, a new element is created and it is needed to replace the previous element.
+				if(e != list.getSelected()) {
+					int i = list.getSelectedIndex();
+					getItems().set(i, e);
+					list.setSelectedIndex(i);
+					list.invalidateHierarchy();				
+				}			
+			}
+		});
+	}
 
 	private void setPlayer() {
 
