@@ -19,6 +19,8 @@ import java.io.File;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
@@ -30,7 +32,7 @@ import com.bladecoder.engineeditor.utils.EditorLogger;
 public class CreateProjectDialog extends EditDialog {
 
 	public static final String INFO = "A project folder with the proper structure will be created in the selected location.";
-	
+
 	private static final String ANDROID_SDK_PROP = "package.SDK";
 
 	private InputPanel projectName;
@@ -44,34 +46,36 @@ public class CreateProjectDialog extends EditDialog {
 
 		setInfo(INFO);
 
-		projectName = InputPanelFactory.createInputPanel(skin, "Project Name",
-				"Set the name of the project", true);
-		
-		pkg = InputPanelFactory.createInputPanel(skin, "Package",
-				"The package will be used as package ID in Android and IOS. The launchers will be in this package too.", Param.Type.STRING, true, "com.myadv.game");
-		
-		spinePlugin = InputPanelFactory.createInputPanel(skin, "Spine animation support",
-				"The game can use Spine animations, require Spine License to distribute the game. See http://www.esotericsoftware.com for more info.", Param.Type.BOOLEAN, true, "false");
+		projectName = InputPanelFactory.createInputPanel(skin, "Project Name", "Set the name of the project", true);
 
-		location = new FileInputPanel(skin, "Location",
-				"Select the folder location for the project", FileInputPanel.DialogType.DIRECTORY);
-		
+		pkg = InputPanelFactory.createInputPanel(skin, "Package",
+				"The package will be used as package ID in Android and IOS. The launchers will be in this package too.",
+				Param.Type.STRING, true, "com.myadv.game");
+
+		spinePlugin = InputPanelFactory.createInputPanel(skin, "Spine animation support",
+				"The game can use Spine animations, require Spine License to distribute the game. See http://www.esotericsoftware.com for more info.",
+				Param.Type.BOOLEAN, true, "false");
+
+		location = new FileInputPanel(skin, "Location", "Select the folder location for the project",
+				FileInputPanel.DialogType.DIRECTORY);
+
 		androidSdk = new FileInputPanel(skin, "Android SDK",
-				"Select the Android SDK folder. If empty, the ANDROID_HOME variable will be used", FileInputPanel.DialogType.DIRECTORY);
+				"Select the Android SDK folder. If empty, the ANDROID_HOME variable will be used",
+				FileInputPanel.DialogType.DIRECTORY);
 
 		addInputPanel(projectName);
 		addInputPanel(pkg);
 		addInputPanel(location);
 		addInputPanel(spinePlugin);
 		addInputPanel(androidSdk);
-		
+
 		String sdkprop = Ctx.project.getEditorConfig().getProperty(ANDROID_SDK_PROP);
-		
-		if(sdkprop != null && new File(sdkprop).exists()) {
+
+		if (sdkprop != null && new File(sdkprop).exists()) {
 			androidSdk.setText(sdkprop);
 		}
-		
-//		getStage().setKeyboardFocus(projectName.getField());
+
+		// getStage().setKeyboardFocus(projectName.getField());
 	}
 
 	@Override
@@ -80,39 +84,32 @@ public class CreateProjectDialog extends EditDialog {
 			Ctx.project.getEditorConfig().setProperty(ANDROID_SDK_PROP, androidSdk.getText());
 			Ctx.project.saveProject();
 		} catch (Exception ex) {
-			String msg = "Something went wrong while saving the current project.\n\n"
-					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
+			String msg = "Something went wrong while saving the current project.\n\n" + ex.getClass().getSimpleName()
+					+ " - " + ex.getMessage();
 			Ctx.msg.show(getStage(), msg, 2);
 		}
-
-//		new Thread(new Runnable() {
-//			Stage stage = getStage();
-//			
-//			@Override
-//			public void run() {
-//				createProject(stage);	
-//			}
-//		}).start();
 		
-		createProject(getStage());
+		final Stage stage = getStage();
+
+		Ctx.msg.show(getStage(), "Creating project...", true);
+		Timer.schedule(new Task() {
+			@Override
+			public void run() {
+				createProject(stage);
+			}
+		},1);
 	}
 
 	private void createProject(Stage stage) {
-		Ctx.msg.show(stage, "Creating project...", true);
 
 		try {
-			Ctx.project.createProject(
-					location.getText(), 
-					projectName.getText(), pkg.getText(),
-					androidSdk.getText(), Boolean.parseBoolean(spinePlugin.getText()));
-			
-			Ctx.project.loadProject(new File(location.getText() + "/"
-					+ projectName.getText()));
-			
+			Ctx.project.createProject(location.getText(), projectName.getText(), pkg.getText(), androidSdk.getText(),
+					Boolean.parseBoolean(spinePlugin.getText()));
+
 			Ctx.msg.show(stage, "Project successfully created", 3);
 		} catch (Exception e) {
-			String msg = "Something went wrong while creating project.\n\n"
-					+ e.getClass().getSimpleName() + " - " + e.getMessage();
+			String msg = "Something went wrong while creating project.\n\n" + e.getClass().getSimpleName() + " - "
+					+ e.getMessage();
 			Ctx.msg.show(stage, msg, 3);
 			EditorLogger.error(msg);
 			e.printStackTrace();
@@ -123,11 +120,11 @@ public class CreateProjectDialog extends EditDialog {
 	@Override
 	protected boolean validateFields() {
 		boolean isOk = true;
-		
+
 		if (!projectName.validateField()) {
 			isOk = false;
 		}
-		
+
 		if (!pkg.validateField()) {
 			isOk = false;
 		}
@@ -138,12 +135,12 @@ public class CreateProjectDialog extends EditDialog {
 			location.setError(true);
 			isOk = false;
 		}
-		
+
 		if (System.getenv("ANDROID_HOME") == null && androidSdk.getFile() == null) {
 			androidSdk.setError(true);
 			isOk = false;
 		} else {
-			androidSdk.setError(false);			
+			androidSdk.setError(false);
 		}
 
 		return isOk;

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.SerializationException;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
@@ -41,6 +42,7 @@ import com.bladecoder.engineeditor.setup.ProjectBuilder;
 import com.bladecoder.engineeditor.undo.UndoStack;
 import com.bladecoder.engineeditor.utils.DinamicClassPath;
 import com.bladecoder.engineeditor.utils.EditorLogger;
+import com.bladecoder.engineeditor.utils.RunProccess;
 
 public class Project extends PropertyChange {
 	public static final String PROP_PROJECTFILE = "projectFile";
@@ -50,7 +52,7 @@ public class Project extends PropertyChange {
 	public static final String NOTIFY_VERB_SELECTED = "VERB_SELECTED";
 	public static final String NOTIFY_PROJECT_LOADED = "PROJECT_LOADED";
 	public static final String NOTIFY_PROJECT_SAVED = "PROJECT_SAVED";
-	
+
 	public static final String NOTIFY_ELEMENT_DELETED = "ELEMENT_DELETED";
 	public static final String NOTIFY_ELEMENT_CREATED = "ELEMENT_CREATED";
 	public static final String NOTIFY_MODEL_MODIFIED = "MODEL_MODIFIED";
@@ -58,7 +60,7 @@ public class Project extends PropertyChange {
 	public static final String WIDTH_PROPERTY = "width";
 	public static final String HEIGHT_PROPERTY = "height";
 	public static final String CHAPTER_PROPERTY = "chapter";
-	
+
 	public static final String SPINE_RENDERER_STRING = "spine";
 	public static final String ATLAS_RENDERER_STRING = "atlas";
 	public static final String IMAGE_RENDERER_STRING = "image";
@@ -74,13 +76,13 @@ public class Project extends PropertyChange {
 	public static final String SPRITE3D_PATH = ASSETS_PATH + "/3d";
 	public static final String SPINE_PATH = ASSETS_PATH + "/spine";
 	public static final String UI_PATH = ASSETS_PATH + "/ui";
-	
+
 	public static final int DEFAULT_WIDTH = 1920;
 	public static final int DEFAULT_HEIGHT = 1080;
 
 	private static final String CONFIG_DIR = System.getProperty("user.home") + "/.AdventureEditor";
 	private static final String CONFIG_FILENAME = "config.properties";
-	
+
 	public static final String LAST_PROJECT_PROP = "last_project";
 
 	private final Properties editorConfig = new Properties();
@@ -100,7 +102,7 @@ public class Project extends PropertyChange {
 	public Project() {
 		loadConfig();
 	}
-	
+
 	public UndoStack getUndoStack() {
 		return undoStack;
 	}
@@ -122,30 +124,29 @@ public class Project extends PropertyChange {
 			EditorLogger.error(e.getMessage());
 		}
 	}
-	
+
 	public void saveConfig() {
 		File f = new File(CONFIG_DIR + "/" + CONFIG_FILENAME);
-		
+
 		try {
 			editorConfig.store(new FileOutputStream(f), null);
 		} catch (IOException e) {
 			EditorLogger.error(e.getMessage());
 		}
 	}
-	
+
 	public Properties getEditorConfig() {
 		return editorConfig;
 	}
-	
+
 	public Properties getProjectConfig() {
 		return projectConfig;
 	}
-	
-	
+
 	public I18NHandler getI18N() {
 		return i18n;
 	}
-	
+
 	public String translate(String key) {
 		return i18n.getTranslation(key);
 	}
@@ -155,7 +156,7 @@ public class Project extends PropertyChange {
 		PropertyChangeEvent evt = new PropertyChangeEvent(source, property, oldValue, newValue);
 		firePropertyChange(evt);
 	}
-	
+
 	public void notifyPropertyChange(String property) {
 		firePropertyChange(property);
 	}
@@ -164,7 +165,7 @@ public class Project extends PropertyChange {
 		selectedScene = scn;
 		selectedActor = null;
 		selectedFA = null;
-		
+
 		firePropertyChange(NOTIFY_SCENE_SELECTED, null, selectedScene);
 	}
 
@@ -175,10 +176,10 @@ public class Project extends PropertyChange {
 
 		selectedActor = a;
 		selectedFA = null;
-		
+
 		firePropertyChange(NOTIFY_ACTOR_SELECTED, old, selectedActor);
 	}
-	
+
 	public Chapter getChapter() {
 		return chapter;
 	}
@@ -214,26 +215,29 @@ public class Project extends PropertyChange {
 	public File getProjectDir() {
 		return projectFile;
 	}
-	
+
 	public String getTitle() {
-		if(projectConfig == null) return null;
-		
+		if (projectConfig == null)
+			return null;
+
 		return projectConfig.getProperty(Config.TITLE_PROP, getProjectDir().getName());
 	}
-	
+
 	public String getPackageTitle() {
 		return getTitle().replace(" ", "").replace("'", "");
 	}
 
-	public void createProject(String projectDir, String name, String pkg, String sdkLocation, boolean spinePlugin) throws IOException {
+	public void createProject(String projectDir, String name, String pkg, String sdkLocation, boolean spinePlugin)
+			throws IOException {
 		createLibGdxProject(projectDir, name, pkg, "BladeEngine", sdkLocation, spinePlugin);
-		
+
 		projectFile = new File(projectDir + "/" + name);
-		
+
 		loadProject(projectFile);
 	}
-	
-	private void createLibGdxProject(String projectDir, String name, String pkg, String mainClass, String sdkLocation, boolean spinePlugin) throws IOException {
+
+	private void createLibGdxProject(String projectDir, String name, String pkg, String mainClass, String sdkLocation,
+			boolean spinePlugin) throws IOException {
 		String sdk = "";
 		if (System.getenv("ANDROID_HOME") != null && sdkLocation == null) {
 			sdk = System.getenv("ANDROID_HOME");
@@ -253,52 +257,58 @@ public class Project extends PropertyChange {
 		List<Dependency> dependencies = new ArrayList<Dependency>();
 		dependencies.add(bank.getDependency(ProjectDependency.GDX));
 		dependencies.add(bank.getDependency(ProjectDependency.FREETYPE));
-		
-		if(spinePlugin)
+
+		if (spinePlugin)
 			dependencies.add(bank.getDependency(ProjectDependency.SPINE));
 
 		builder.buildProject(projects, dependencies);
 		builder.build();
-		new BladeEngineSetup().build(builder, projectDir + "/" + name, name, pkg,mainClass,
-			sdk, null);
+		new BladeEngineSetup().build(builder, projectDir + "/" + name, name, pkg, mainClass, sdk, null);
 	}
 
 	public void saveProject() throws IOException {
 		if (projectFile != null && chapter.getId() != null && modified) {
-			
+
 			EngineLogger.setDebug();
-			
+
 			// 1.- SAVE world.json
-			World.getInstance().saveWorldDesc(new FileHandle(new File(projectFile.getAbsolutePath() + MODEL_PATH + "/world.json")));
-			
+			World.getInstance().saveWorldDesc(
+					new FileHandle(new File(projectFile.getAbsolutePath() + MODEL_PATH + "/world.json")));
+
 			// 2.- SAVE .chapter
 			chapter.save();
-			
+
 			// 3.- SAVE BladeEngine.properties
-			projectConfig.store(new FileOutputStream(projectFile.getAbsolutePath()+ "/" + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME), null);
-			
+			projectConfig.store(
+					new FileOutputStream(
+							projectFile.getAbsolutePath() + "/" + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME),
+					null);
+
 			// 4.- SAVE I18N
 			i18n.save();
-			
+
 			modified = false;
 			firePropertyChange(NOTIFY_PROJECT_SAVED);
 		}
 	}
-	
+
 	public void closeProject() {
 		this.projectFile = null;
 	}
 
 	public void loadProject(File projectFile) throws IOException {
-		
+
 		File oldProjectFile = this.projectFile;
 		this.projectFile = projectFile;
 
 		if (checkProjectStructure()) {
-			
-			// Add 'bin' dir from project directory to classpath so we can get custom actions desc and params
-			// WARNING: Previous 'bin' folders are not deleted from the classpath
-			// That can not be a problem if the package of the custom actions is different
+
+			// Add 'bin' dir from project directory to classpath so we can get
+			// custom actions desc and params
+			// WARNING: Previous 'bin' folders are not deleted from the
+			// classpath
+			// That can not be a problem if the package of the custom actions is
+			// different
 			// in the loaded project.
 			try {
 				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/core/bin");
@@ -308,25 +318,42 @@ public class Project extends PropertyChange {
 				e.printStackTrace();
 				System.exit(0);
 			}
-			
+
 			EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
-			World.getInstance().loadWorldDesc();
-			
+
+			try {
+				World.getInstance().loadWorldDesc();
+			} catch (SerializationException ex) {
+				// check for not compiled custom actions
+				if (ex.getCause() != null && ex.getCause().getCause() != null
+						&& ex.getCause().getCause() instanceof ClassNotFoundException) {
+					EditorLogger.debug("Custom action class not found. Trying to compile...");
+					if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
+						loadProject(projectFile);
+					} else {
+						throw new IOException("Failed to run Gradle.");
+					}
+				} else {
+					throw ex;
+				}
+			}
+
 			chapter = new Chapter(Ctx.project.getProjectDir().getAbsolutePath() + Project.MODEL_PATH);
 			i18n = new I18NHandler(Ctx.project.getProjectDir().getAbsolutePath() + Project.MODEL_PATH);
-			
+
 			// No need to load the chapter. It's loaded by the chapter combo.
-//			loadChapter(World.getInstance().getInitChapter());
-			
+			// loadChapter(World.getInstance().getInitChapter());
+
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
-						
+
 			projectConfig = new Properties();
-			projectConfig.load(new FileInputStream(projectFile.getAbsolutePath()+ ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME));
+			projectConfig.load(new FileInputStream(
+					projectFile.getAbsolutePath() + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME));
 			firePropertyChange(NOTIFY_PROJECT_LOADED);
 		} else {
 			this.projectFile = oldProjectFile;
 			throw new IOException("Project not found.");
-		}	
+		}
 	}
 
 	public boolean checkProjectStructure() {
@@ -350,8 +377,8 @@ public class Project extends PropertyChange {
 		ArrayList<String> l = new ArrayList<String>();
 
 		File[] list = atlasesPath.listFiles();
-		
-		if(list == null)
+
+		if (list == null)
 			return l;
 
 		for (int i = 0; i < list.length; i++) {
@@ -360,10 +387,10 @@ public class Project extends PropertyChange {
 			if (list[i].isDirectory()) {
 				try {
 					Float.parseFloat(name);
-				
+
 					l.add(name);
 				} catch (Exception e) {
-					
+
 				}
 			}
 		}
@@ -376,9 +403,25 @@ public class Project extends PropertyChange {
 	}
 
 	public void loadChapter(String selChapter) throws IOException {
-		undoStack.clear();
+		undoStack.clear();	
 		
-		chapter.load(selChapter);
+		try {
+			chapter.load(selChapter);
+		} catch (SerializationException ex) {
+			// check for not compiled custom actions
+			if (ex.getCause() != null && ex.getCause().getCause() != null
+					&& ex.getCause().getCause() instanceof ClassNotFoundException) {
+				EditorLogger.debug("Custom action class not found. Trying to compile...");
+				if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
+					loadProject(projectFile);
+				} else {
+					throw new IOException("Failed to run Gradle.");
+				}
+			} else {
+				throw ex;
+			}
+		}
+		
 		i18n.load(selChapter);
 	}
 

@@ -33,6 +33,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.utils.RunProccess;
@@ -51,12 +53,6 @@ public class ProjectToolbar extends Table {
 	private ImageButton atlasBtn;
 
 	private Skin skin;
-
-	/**
-	 * Field to pass the loading directory between the javafx and the libgdx
-	 * threads
-	 */
-	private File loadingDirectory = null;
 
 	public ProjectToolbar(Skin skin) {
 		super(skin);
@@ -185,54 +181,77 @@ public class ProjectToolbar extends Table {
 	private void newProject() {
 		CreateProjectDialog dialog = new CreateProjectDialog(skin);
 		dialog.show(getStage());
-		// TODO
-		// if (!dialog.isCancel()) {
-		// playBtn.setDisabled(false);
-		// packageBtn.setDisabled(false);
-		// }
 	}
 
 	@Override
 	public void act(float delta) {
 		super.act(delta);
-
-		if (loadingDirectory != null)
-			loadProject();
 	}
 
 	private void loadProject() {
-		if (loadingDirectory == null) {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					final DirectoryChooser chooser = new DirectoryChooser();
-					chooser.setTitle("Select the project to load");
-					chooser.setInitialDirectory(
-							Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."));
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				final DirectoryChooser chooser = new DirectoryChooser();
+				chooser.setTitle("Select the project to load");
+				chooser.setInitialDirectory(
+						Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."));
 
-					final File dir = chooser.showDialog(null);
-					if (dir == null) {
-						return;
-					}
-
-					loadingDirectory = dir;
+				final File dir = chooser.showDialog(null);
+				if (dir == null) {
+					return;
 				}
-			});
-		} else {
-			try {
-				Ctx.project.saveProject();
-				Ctx.project.loadProject(loadingDirectory);
-				playBtn.setDisabled(false);
-				packageBtn.setDisabled(false);
-			} catch (Exception ex) {
-				String msg = "Something went wrong while loading the project.\n\n" + ex.getClass().getSimpleName()
-						+ " - " + ex.getMessage();
-				Ctx.msg.show(getStage(), msg, 2);
-				ex.printStackTrace();
-			}
 
-			loadingDirectory = null;
-		}
+				Ctx.msg.show(getStage(), "Loading project...", true);
+
+				Timer.post(new Task() {
+					@Override
+					public void run() {
+						try {
+							Ctx.project.saveProject();
+							Ctx.project.loadProject(dir);
+							playBtn.setDisabled(false);
+							packageBtn.setDisabled(false);
+							Ctx.msg.show(getStage(), null);
+
+						} catch (Exception ex) {
+							if (ex.getCause() != null && ex.getCause().getCause() != null
+									&& ex.getCause().getCause() instanceof ClassNotFoundException) {
+								String msg = "The game have custom actions that can not be loaded. Probably the game needs to be compiled. Trying 'gradlew compile'...";
+								Ctx.msg.show(getStage(), msg, true);
+								Timer.post(new Task() {
+									@Override
+									public void run() {
+										if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
+											try {
+												Ctx.project.loadProject(dir);
+												playBtn.setDisabled(false);
+												packageBtn.setDisabled(false);
+												Ctx.msg.show(getStage(), "Project loaded Successfully", 3);
+											} catch (IOException e) {
+												String msg = "Something went wrong while loading the project.\n\n"
+														+ e.getClass().getSimpleName() + " - " + e.getMessage();
+												Ctx.msg.show(getStage(), msg, 4);
+											}
+										} else {
+											Ctx.msg.show(getStage(), "Could not load project: error running gradle", 4);
+										}
+									}
+								});
+							} else {
+
+								String msg = "Something went wrong while loading the project.\n\n"
+										+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
+								Ctx.msg.show(getStage(), msg, 4);
+							}
+
+							ex.printStackTrace();
+						}
+					}
+				});
+			}
+		});
+
 	}
 
 	public void exit() {
@@ -244,7 +263,7 @@ public class ProjectToolbar extends Table {
 
 		if (file == null) {
 			String msg = "Please create a new project first.";
-			Ctx.msg.show(getStage(), msg, 2);
+			Ctx.msg.show(getStage(), msg, 3);
 			return;
 		}
 
@@ -253,7 +272,7 @@ public class ProjectToolbar extends Table {
 		} catch (Exception ex) {
 			String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
 					+ ex.getMessage();
-			Ctx.msg.show(getStage(), msg, 2);
+			Ctx.msg.show(getStage(), msg, 4);
 		}
 	}
 
@@ -277,7 +296,7 @@ public class ProjectToolbar extends Table {
 					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), null, null))
 						Ctx.msg.show(getStage(), "There was a problem running the project", 3);
 				} catch (IOException e) {
-					Ctx.msg.show(stage, "There was a problem running the project: " + e.getMessage(), 3);
+					Ctx.msg.show(stage, "There was a problem running the project: " + e.getMessage(), 4);
 				}
 
 			}

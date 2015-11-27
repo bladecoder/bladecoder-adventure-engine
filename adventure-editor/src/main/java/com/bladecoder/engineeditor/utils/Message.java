@@ -70,7 +70,8 @@ public class Message extends Label {
 		
 		setSize(textLayout.width + textLayout.height, textLayout.height  + textLayout.height * 2);
 
-		stage.addActor(this);
+		if(!stage.getActors().contains(this, true))
+			stage.addActor(this);
 		setPosition(Math.round((stage.getWidth() - getWidth()) / 2), Math.round((stage.getHeight() - getHeight()) / 2));
 		invalidate();		
 	}
