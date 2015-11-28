@@ -47,6 +47,7 @@ import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.loader.SerializationHelper;
 import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.loader.WorldXMLLoader;
+import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class World implements Serializable, AssetConsumer {
@@ -808,12 +809,12 @@ public class World implements Serializable, AssetConsumer {
 	public void write(Json json) {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
-
+			json.writeValue("version", Config.getProperty(Config.VERSION_PROP, null));
 			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
 			json.writeValue("initScene", initScene);
 
 		} else {
-
+			json.writeValue("version", Config.getProperty(Config.VERSION_PROP, null));
 			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
 			json.writeValue("currentScene", currentScene.getId());
 			json.writeValue("inventory", inventory);
@@ -842,7 +843,11 @@ public class World implements Serializable, AssetConsumer {
 	public void read(Json json, JsonValue jsonData) {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
-
+			String version = json.readValue("version", String.class, jsonData);
+			if(version != null && !version.equals(Config.getProperty(Config.VERSION_PROP, ""))) {
+				EngineLogger.debug("Game Version v" + version + " differs from Engine Version v" + Config.getProperty(Config.VERSION_PROP, ""));
+			}
+			
 			scenes = json.readValue("scenes", HashMap.class, Scene.class, jsonData);
 			initScene = json.readValue("initScene", String.class, jsonData);
 
@@ -856,6 +861,11 @@ public class World implements Serializable, AssetConsumer {
 
 			setCurrentScene(initScene);
 		} else {
+			String version = json.readValue("version", String.class, jsonData);
+			if(version != null && !version.equals(Config.getProperty(Config.VERSION_PROP, ""))) {
+				EngineLogger.debug("Saved Game Version v" + version + " differs from Engine Version v" + Config.getProperty(Config.VERSION_PROP, ""));
+			}
+			
 			currentChapter = json.readValue("chapter", String.class, jsonData);
 
 			try {

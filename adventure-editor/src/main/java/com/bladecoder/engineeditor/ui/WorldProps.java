@@ -25,18 +25,16 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.PropertyTable;
 
-
 public class WorldProps extends PropertyTable {
 	public WorldProps(Skin skin) {
 		super(skin);
 
-		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED,
-				new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent arg0) {
-						setProject();
-					}
-				});
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent arg0) {
+				setProject();
+			}
+		});
 	}
 
 	@Override
@@ -56,26 +54,34 @@ public class WorldProps extends PropertyTable {
 		} else if (property.equals(Config.DEBUG_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.DEBUG_PROP, value);
 		} else if (property.equals(Config.SHOW_DESC_PROP)) {
-			Ctx.project.getProjectConfig().setProperty(Config.SHOW_DESC_PROP, value);	
+			Ctx.project.getProjectConfig().setProperty(Config.SHOW_DESC_PROP, value);
 		} else if (property.equals(Config.EXTEND_VIEWPORT_PROP)) {
-			Ctx.project.getProjectConfig().setProperty(Config.EXTEND_VIEWPORT_PROP, value);					
+			Ctx.project.getProjectConfig().setProperty(Config.EXTEND_VIEWPORT_PROP, value);
 		}
-		
+
 		Ctx.project.setModified(); // TODO Add propertychange to Config
 	}
 
 	private void setProject() {
 		clearProps();
-		addProperty(Project.WIDTH_PROPERTY, World.getInstance().getWidth());
-		addProperty(Project.HEIGHT_PROPERTY, World.getInstance().getHeight());		
-		addProperty(Config.TITLE_PROP, Ctx.project.getTitle());
-		addProperty(Config.INVENTORY_POS_PROP, Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_POS_PROP, "down"));
-		addProperty(Config.INVENTORY_AUTOSIZE_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_AUTOSIZE_PROP, "true")));
-		addProperty(Config.UI_MODE, Ctx.project.getProjectConfig().getProperty(Config.UI_MODE, "TWO_BUTTONS"));
-		addProperty(Config.DEBUG_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.DEBUG_PROP, "false")));
-		addProperty(Config.SHOW_DESC_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.SHOW_DESC_PROP, "true")));
-		addProperty(Config.EXTEND_VIEWPORT_PROP, Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.EXTEND_VIEWPORT_PROP, "true")));
-		
+
+		if (Ctx.project.getProjectDir() != null) {
+			addProperty(Project.WIDTH_PROPERTY, World.getInstance().getWidth());
+			addProperty(Project.HEIGHT_PROPERTY, World.getInstance().getHeight());
+			addProperty(Config.TITLE_PROP, Ctx.project.getTitle());
+			addProperty(Config.INVENTORY_POS_PROP,
+					Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_POS_PROP, "down"));
+			addProperty(Config.INVENTORY_AUTOSIZE_PROP, Boolean
+					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_AUTOSIZE_PROP, "true")));
+			addProperty(Config.UI_MODE, Ctx.project.getProjectConfig().getProperty(Config.UI_MODE, "TWO_BUTTONS"));
+			addProperty(Config.DEBUG_PROP,
+					Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.DEBUG_PROP, "false")));
+			addProperty(Config.SHOW_DESC_PROP,
+					Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.SHOW_DESC_PROP, "true")));
+			addProperty(Config.EXTEND_VIEWPORT_PROP, Boolean
+					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.EXTEND_VIEWPORT_PROP, "true")));
+		}
+
 		invalidateHierarchy();
 	}
 }
