@@ -249,7 +249,7 @@ public class BladeEngineSetup {
 
 	public void build (ProjectBuilder builder, String outputDir, String appName, String packageName, String mainClass,
 		String sdkLocation, List<String> gradleArgs) throws IOException {
-		Project project = new Project();
+		ProjectSetup project = new ProjectSetup();
 
 		String packageDir = packageName.replace('.', '/');
 		String sdkPath = sdkLocation.replace('\\', '/');
@@ -425,7 +425,7 @@ public class BladeEngineSetup {
 //		}
 	}
 
-	private void copyAndReplace (String outputDir, Project project, Map<String, String> values) throws IOException {
+	private void copyAndReplace (String outputDir, ProjectSetup project, Map<String, String> values) throws IOException {
 		File out = new File(outputDir);
 		if (!out.exists() && !out.mkdirs()) {
 			throw new RuntimeException("Couldn't create output directory '" + out.getAbsolutePath() + "'");

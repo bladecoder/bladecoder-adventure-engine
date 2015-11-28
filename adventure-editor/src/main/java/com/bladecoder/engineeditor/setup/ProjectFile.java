@@ -17,7 +17,7 @@
 package com.bladecoder.engineeditor.setup;
 
 /**
- * A file in a {@link Project}, the resourceName specifies the location
+ * A file in a {@link ProjectSetup}, the resourceName specifies the location
  * of the template file, the outputName specifies the final name of the
  * file relative to its project, the isTemplate field specifies if 
  * values need to be replaced in this file or not.

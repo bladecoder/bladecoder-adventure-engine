@@ -1,6 +1,5 @@
 package com.bladecoder.engineeditor.setup;
 
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
@@ -14,23 +13,25 @@ public class BuildScriptHelper {
 
 	public static void addBuildScript(List<ProjectType> projects, BufferedWriter wr) throws IOException {
 		write(wr, "buildscript {");
-		//repos
+		// repos
 		write(wr, "repositories {");
 		write(wr, DependencyBank.mavenCentral);
 		if (projects.contains(ProjectType.HTML)) {
 			write(wr, DependencyBank.jCenter);
 		}
 		write(wr, "}");
-		//dependencies
+		// dependencies
 		write(wr, "dependencies {");
 		if (projects.contains(ProjectType.HTML)) {
 			write(wr, "classpath '" + DependencyBank.gwtPluginImport + Versions.getGwtGradlePluginVersion() + "'");
 		}
 		if (projects.contains(ProjectType.ANDROID)) {
-			write(wr, "classpath '" + DependencyBank.androidPluginImport + Versions.getAndroidGradlePluginVersion() + "'");
+			write(wr, "classpath '" + DependencyBank.androidPluginImport + Versions.getAndroidGradlePluginVersion()
+					+ "'");
 		}
 		if (projects.contains(ProjectType.IOS)) {
-			write(wr, "classpath '" + DependencyBank.roboVMPluginImport + Versions.getROBOVMGradlePluginVersion() + "'");
+			write(wr,
+					"classpath '" + DependencyBank.roboVMPluginImport + Versions.getROBOVMGradlePluginVersion() + "'");
 		}
 		write(wr, "}");
 		write(wr, "}");
@@ -42,17 +43,17 @@ public class BuildScriptHelper {
 		write(wr, "apply plugin: \"eclipse\"");
 		write(wr, "apply plugin: \"idea\"");
 		space(wr);
-		write(wr, "version = '1.0'");
-		
-	    write(wr, "if(project.hasProperty('passed_version'))\n        version = passed_version");
-		
-		write(wr, "ext {");
-		write(wr, "appName = '%APP_NAME%'");
-		write(wr, "bladeEngineVersion = '" + Versions.getVersion() + "'");
-		write(wr, "gdxVersion = '" + Versions.getLibgdxVersion() + "'");
-		write(wr, "roboVMVersion = '" + Versions.getRoboVMVersion() + "'");
-		write(wr, "}");
-		space(wr);
+		// write(wr, "version = '1.0'");
+		// write(wr, "if(project.hasProperty('passed_version'))\n version =
+		// passed_version");
+
+		// write(wr, "ext {");
+		// // write(wr, "appName = '%APP_NAME%'");
+		// write(wr, "bladeEngineVersion = '" + Versions.getVersion() + "'");
+		// write(wr, "gdxVersion = '" + Versions.getLibgdxVersion() + "'");
+		// write(wr, "roboVMVersion = '" + Versions.getRoboVMVersion() + "'");
+		// write(wr, "}");
+		// space(wr);
 		write(wr, "repositories {");
 		write(wr, DependencyBank.mavenCentral);
 		write(wr, "maven { url \"" + DependencyBank.libGDXSnapshotsUrl + "\" }");
@@ -61,7 +62,8 @@ public class BuildScriptHelper {
 		write(wr, "}");
 	}
 
-	public static void addProject(ProjectType project, List<Dependency> dependencies, BufferedWriter wr) throws IOException {
+	public static void addProject(ProjectType project, List<Dependency> dependencies, BufferedWriter wr)
+			throws IOException {
 		space(wr);
 		write(wr, "project(\":" + project.getName() + "\") {");
 		for (String plugin : project.getPlugins()) {
@@ -71,22 +73,51 @@ public class BuildScriptHelper {
 		addConfigurations(project, wr);
 		space(wr);
 		addDependencies(project, dependencies, wr);
+		space(wr);
+		if (project.equals(ProjectType.CORE)) {
+			write(wr, "		task setVersion << {");
+			write(wr, "	    	println \"Set version $project.version in BladeEngine.properties\"");
+			space(wr);
+			write(wr, "	    	def props = new Properties()");
+			write(wr, "			def propFile = new File(\"android/assets/BladeEngine.properties\");");
+			write(wr, "			props.load(new FileReader(propFile))");
+			write(wr, "			props.\"version\" = version");
+			write(wr, "			props.\"bladeEngineVersion\" = bladeEngineVersion");
+			write(wr, "			props.\"gdxVersion\" = gdxVersion");
+			write(wr, "			props.\"roboVMVersion\" = roboVMVersion");
+			space(wr);
+			write(wr, "			def writer = new FileWriter(propFile)");
+			write(wr, "	   		try {");
+			write(wr, "	      		props.store(writer, null)");
+			write(wr, "	      		writer.flush()");
+			write(wr, "	   		} finally {");
+			write(wr, "	      		writer.close()");
+			write(wr, "	   		}");
+			write(wr, "		}");
+			space(wr);
+			write(wr, "		processResources.finalizedBy(setVersion)");
+			space(wr);
+		}
+
 		write(wr, "}");
 	}
 
-	private static void addDependencies(ProjectType project, List<Dependency> dependencyList, BufferedWriter wr) throws IOException {
+	private static void addDependencies(ProjectType project, List<Dependency> dependencyList, BufferedWriter wr)
+			throws IOException {
 		write(wr, "dependencies {");
 		if (!project.equals(ProjectType.CORE)) {
 			write(wr, "compile project(\":" + ProjectType.CORE.getName() + "\")");
 		}
 		for (Dependency dep : dependencyList) {
-			if (dep.getDependencies(project) == null) continue;
+			if (dep.getDependencies(project) == null)
+				continue;
 			for (String moduleDependency : dep.getDependencies(project)) {
-				if (moduleDependency == null) continue;
+				if (moduleDependency == null)
+					continue;
 				if ((project.equals(ProjectType.ANDROID)) && moduleDependency.contains("native")) {
 					write(wr, "natives \"" + moduleDependency + "\"");
 				} else {
-					if(moduleDependency.startsWith("fileTree("))
+					if (moduleDependency.startsWith("fileTree("))
 						write(wr, "compile " + moduleDependency);
 					else
 						write(wr, "compile \"" + moduleDependency + "\"");

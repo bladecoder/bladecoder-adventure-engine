@@ -19,7 +19,7 @@ package com.bladecoder.engineeditor.setup;
 import java.io.File;
 
 /**
- * A temporary file that wraps {@link ProjectFile} for use in a {@link Project}
+ * A temporary file that wraps {@link ProjectFile} for use in a {@link ProjectSetup}
  * @author Tomski
  *
  */

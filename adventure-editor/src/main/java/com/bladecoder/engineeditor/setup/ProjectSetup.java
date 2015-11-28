@@ -27,7 +27,7 @@ import java.util.List;
  * @author badlogic
  *
  */
-public class Project {
+public class ProjectSetup {
 	/** list of files, relative to project directory **/
 	public List<ProjectFile> files = new ArrayList<ProjectFile>();
 }

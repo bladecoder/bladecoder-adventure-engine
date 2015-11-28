@@ -183,7 +183,7 @@ public class PackageDialog extends EditDialog {
 		String msg = "Package generated SUCCESSFULLY";
 		
 		String projectName = Ctx.project.getProjectDir().getName();
-		String versionParam = "-Ppassed_version=" + version.getText() + " ";
+		String versionParam = "-Pversion=" + version.getText() + " ";
 		
 		if (arch.getText().equals("desktop")) {			
 			String jar = Ctx.project.getProjectDir().getAbsolutePath() +
@@ -357,7 +357,7 @@ public class PackageDialog extends EditDialog {
 		if(RunProccess.runGradle(Ctx.project.getProjectDir(), versionParam + "desktop:dist")) {
 			File f = new File(jar);
 			FileUtils.copyFileToDirectory(f, new File(dir.getText()));					
-			new File(dir.getText() + "/" + projectName + "-desktop-" + version.getText() + ".jar").setExecutable(true);
+			new File(jar).setExecutable(true);
 		} else {
 			msg = "Error Generating package" ;
 		}
