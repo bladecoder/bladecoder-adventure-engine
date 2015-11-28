@@ -39,6 +39,7 @@ public class Config {
 	public static final String LOAD_SCREEN_CLASS_PROP = "load_screen";
 	public static final String SAVE_SCREEN_CLASS_PROP = "save_screen";
 	public static final String EXTEND_VIEWPORT_PROP = "extend_viewport";
+	public static final String VERSION_PROP = "version";
 	public static final String UI_MODE = "ui_mode";
 
 	public static final String PROPERTIES_FILENAME = "BladeEngine.properties";
@@ -79,5 +80,9 @@ public class Config {
 		}
 		
 		return result;
+	}
+	
+	public static Properties getProperties() {
+		return config;
 	}
 }
