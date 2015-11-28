@@ -81,8 +81,4 @@ public class Config {
 		
 		return result;
 	}
-	
-	public static Properties getProperties() {
-		return config;
-	}
 }

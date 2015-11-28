@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -36,6 +37,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 
 public class DebugScreen implements BladeScreen {
@@ -345,6 +347,25 @@ public class DebugScreen implements BladeScreen {
 		table.pack();
 
 		stage.addActor(table);
+		
+		// ------------- VERSION LABEL NOT IN TABLE
+		String versionString = 
+				Config.getProperty(Config.TITLE_PROP, "title unspecified") + " v" + Config.getProperty(Config.VERSION_PROP, "unspecified") + "\n" +
+				"Blade Engine: v" + Config.getProperty("bladeEngineVersion", "unspecified") + "\n" +
+				"libGdx: v" + Config.getProperty("gdxVersion", "unspecified") + "\n" +
+				"RoboVM: v" + Config.getProperty("roboVMVersion", "unspecified") + "\n" +
+				"Gdx.app.getVersion: " + Gdx.app.getVersion();
+		
+		Label version = new Label(versionString, ui.getSkin());
+		version.setColor(Color.LIGHT_GRAY);
+		Table versionStack = new Table();
+		versionStack.defaults().pad(DPIUtils.getSpacing());
+		versionStack.pad(0);
+		versionStack.add(version);
+		versionStack.bottom().left();
+		versionStack.setFillParent(true);
+		versionStack.pack();
+		stage.addActor(versionStack);
 		
 		pointer = new Pointer(ui.getSkin());
 		stage.addActor(pointer);
