@@ -387,6 +387,11 @@ public class BladeEngineSetup {
 		values.put("%BUILD_TOOLS_VERSION%", Versions.getBuildToolsVersion());
 		values.put("%API_LEVEL%", Versions.getAndroidAPILevel());
 		values.put("%GWT_VERSION%", Versions.getGwtVersion());
+		
+		values.put("%BLADE_ENGINE_VERSION%", Versions.getVersion());
+		values.put("%LIBGDX_VERSION%", Versions.getLibgdxVersion());
+		values.put("%ROBOVM_VERSION%", Versions.getRoboVMVersion());
+		
 		if (builder.modules.contains(ProjectType.HTML)) {
 			values.put("%GWT_INHERITS%", parseGwtInherits(builder.bank.gwtInheritances, builder));
 		}
