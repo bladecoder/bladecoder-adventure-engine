@@ -16,8 +16,10 @@
 package com.bladecoder.engineeditor.ui;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 
@@ -182,29 +184,33 @@ public class PackageDialog extends EditDialog {
 	private String packageAdv() throws IOException {
 		String msg = "Package generated SUCCESSFULLY";
 		
-		String projectName = Ctx.project.getProjectDir().getName();
+		String projectName = getAppName();
+		if(projectName == null) 
+			Ctx.project.getProjectDir().getName();
+		
 		String versionParam = "-Pversion=" + version.getText() + " ";
 		
 		if (arch.getText().equals("desktop")) {			
-			String jar = Ctx.project.getProjectDir().getAbsolutePath() +
-					"/desktop/build/libs/" + projectName + "-desktop-" + version.getText() + ".jar";
+			String jarDir = Ctx.project.getProjectDir().getAbsolutePath() +
+					"/desktop/build/libs/";
+			String jarName = projectName + "-desktop-" + version.getText() + ".jar";
 			
-			msg = genDesktopJar(projectName, versionParam, jar);
+			msg = genDesktopJar(projectName, versionParam, jarDir, jarName);
 
 			if (type.getText().equals(TYPES[0])) { // BUNDLE JRE
 				if (os.getText().equals("linux64")) {					
-					packr(Platform.linux64, linux64JRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.linux64, linux64JRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
 				} else if (os.getText().equals("linux32")) {
-					packr(Platform.linux32, linux32JRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.linux32, linux32JRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
 				} else if (os.getText().equals("windows")) {
-					packr(Platform.windows, winJRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.windows, winJRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
 				} else if (os.getText().equals("macOSX")) {
-					packr(Platform.mac, osxJRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.mac, osxJRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
 				} else if (os.getText().equals("all")) {
-					packr(Platform.linux64, linux64JRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
-					packr(Platform.linux32, linux32JRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
-					packr(Platform.windows, winJRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
-					packr(Platform.mac, osxJRE.getText(), projectName, jar, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.linux64, linux64JRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.linux32, linux32JRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.windows, winJRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.mac, osxJRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
 				}
 			}
 		} else if (arch.getText().equals("android")) {			
@@ -351,13 +357,15 @@ public class PackageDialog extends EditDialog {
 		return ok;
 	}
 	
-	private String genDesktopJar(String projectName, String versionParam, String jar) throws IOException {
+	private String genDesktopJar(String projectName, String versionParam, String jarDir, String jarName) throws IOException {
 		String msg = null;
 		
 		if(RunProccess.runGradle(Ctx.project.getProjectDir(), versionParam + "desktop:dist")) {
-			File f = new File(jar);
-			FileUtils.copyFileToDirectory(f, new File(dir.getText()));					
-			new File(jar).setExecutable(true);
+			File f = new File(jarDir + jarName);
+			FileUtils.copyFileToDirectory(f, new File(dir.getText()));
+			
+			new File(jarDir, jarName).setExecutable(true);
+			new File(dir.getText(), jarName).setExecutable(true);
 		} else {
 			msg = "Error Generating package" ;
 		}
@@ -395,5 +403,21 @@ public class PackageDialog extends EditDialog {
 		config.outDir = outDir + "/" + exe + "-" + suffix;
 
 		new Packr().pack(config);
+	}
+	
+	/**
+	 * @return The appName from the file gradle.properties from the game
+	 */
+	private String getAppName() {
+		Properties prop = new Properties();
+		
+		try {
+			prop.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties"));
+			return prop.getProperty("appName");
+		} catch (IOException e) {
+			Ctx.msg.show(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
+		}
+		
+		return null;
 	}
 }
