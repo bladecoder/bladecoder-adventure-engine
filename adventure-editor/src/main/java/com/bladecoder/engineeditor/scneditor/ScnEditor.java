@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.utils.Message;
 import com.bladecoder.engineeditor.utils.RunProccess;
 
 public class ScnEditor extends Table {
@@ -102,7 +103,7 @@ public class ScnEditor extends Table {
 
 		if (Ctx.project.getSelectedScene() == null) {
 			String msg = "There are no scenes in this chapter.";
-			Ctx.msg.show(getStage(), msg, 3);
+			Message.showMsg(getStage(), msg, 3);
 			return;
 		}
 
@@ -111,7 +112,7 @@ public class ScnEditor extends Table {
 		} catch (Exception ex) {
 			String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
 					+ ex.getMessage();
-			Ctx.msg.show(getStage(), msg, 2);
+			Message.showMsgDialog(getStage(), "Error", msg);
 		}
 
 		new Thread(new Runnable() {
@@ -119,14 +120,14 @@ public class ScnEditor extends Table {
 
 			@Override
 			public void run() {
-				Ctx.msg.show(stage, "Running scene...", 3);
+				Message.showMsg(stage, "Running scene...", 5);
 
 				try {
 					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), Ctx.project.getChapter()
 							.getId(), Ctx.project.getSelectedScene().getId()))
-						Ctx.msg.show(stage, "There was a problem running the scene", 3);
+						Message.showMsg(stage, "There was a problem running the scene", 4);
 				} catch (IOException e) {
-					Ctx.msg.show(stage, "There was a problem running the scene: " + e.getMessage(), 3);
+					Message.showMsgDialog(stage, "Error", "There was a problem running the scene: " + e.getMessage());
 				}
 
 			}

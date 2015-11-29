@@ -35,6 +35,7 @@ import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.FileInputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.utils.Message;
 import com.bladecoder.engineeditor.utils.RunProccess;
 
 public class PackageDialog extends EditDialog {
@@ -156,7 +157,7 @@ public class PackageDialog extends EditDialog {
 			
 			@Override
 			public void run() {
-				Ctx.msg.show(stage, "Generating package...",true);
+				Message.showMsg(stage, "Generating package...",true);
 				String msg;
 				
 				try {
@@ -172,10 +173,10 @@ public class PackageDialog extends EditDialog {
 					Ctx.project.getEditorConfig().setProperty("package." + i.getTitle(), i.getText());
 				}
 				
-				Ctx.msg.hide();
+				Message.hideMsg();
 				
 				if(msg != null)
-					Ctx.msg.show(stage, msg, 3);
+					Message.showMsgDialog(stage, "Result", msg);
 			}
 		}).start();			
 
@@ -415,7 +416,7 @@ public class PackageDialog extends EditDialog {
 			prop.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties"));
 			return prop.getProperty("appName");
 		} catch (IOException e) {
-			Ctx.msg.show(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
+			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
 		}
 		
 		return null;

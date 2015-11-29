@@ -18,10 +18,11 @@ package com.bladecoder.engineeditor.ui;
 import java.io.File;
 import java.io.IOException;
 
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
@@ -29,6 +30,7 @@ import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.ImageUtils;
+import com.bladecoder.engineeditor.utils.Message;
 
 public class CreateResolutionDialog extends EditDialog {
 
@@ -55,13 +57,12 @@ public class CreateResolutionDialog extends EditDialog {
 
 	@Override
 	protected void ok() {
-		new Thread(new Runnable() {	
-			Stage stage = getStage();
-			
+		
+		Message.showMsg(getStage(), "Creating resolution...", true);
+		
+		Timer.post(new Task() {
 			@Override
-			public void run() {
-				Ctx.msg.show(stage, "Creating resolution...", true);
-				
+			public void run() {			
 				createResolution();
 
 				String msg = scaleImages();				
@@ -69,12 +70,12 @@ public class CreateResolutionDialog extends EditDialog {
 				if(listener != null)
 					listener.changed(new ChangeEvent(), CreateResolutionDialog.this);
 				
-				Ctx.msg.hide();
+				Message.hideMsg();
 				
 				if(msg != null)
-					Ctx.msg.show(stage, msg, 2);
+					Message.showMsgDialog(getStage(), "Error creating resolution", msg);
 			}
-		}).start();		
+		});
 	}
 	
 	private void createResolution() {

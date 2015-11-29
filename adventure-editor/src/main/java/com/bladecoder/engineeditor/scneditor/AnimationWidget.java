@@ -74,7 +74,7 @@ public class AnimationWidget extends Widget {
 		try {
 			return renderer.getInternalAnimations(fa);
 		} catch (Exception e) {
-			// Ctx.msg.show(getStage(),
+			// Message.show(getStage(),
 			// "Error loading animations from selected source", 4);
 			EditorLogger.error("Error loading animations from selected source:" + fa.source + ": " + e.getMessage());
 			return new String[0];

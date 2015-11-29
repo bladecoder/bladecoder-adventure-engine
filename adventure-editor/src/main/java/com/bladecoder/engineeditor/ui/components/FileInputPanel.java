@@ -31,7 +31,7 @@ public class FileInputPanel extends InputPanel {
 	public enum DialogType {
 		OPEN_FILE, SAVE_FILE, DIRECTORY
 	}
-
+	
 	private File cd;
 	private File selected;
 

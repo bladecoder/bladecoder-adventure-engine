@@ -49,6 +49,7 @@ import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.utils.EditorLogger;
+import com.bladecoder.engineeditor.utils.Message;
 
 public class ScnWidget extends Widget {
 	private static final Color BLACK_TRANSPARENT = new Color(0f, 0f, 0f, 0.5f);
@@ -305,7 +306,7 @@ public class ScnWidget extends Widget {
 						invalidate();
 					}
 				} catch (Exception e) {
-					Ctx.msg.show(getStage(), "Could not load assets for scene", 4);
+					Message.showMsg(getStage(), "Could not load assets for scene", 4);
 					e.printStackTrace();
 					loadingError = true;
 					loading = false;
@@ -385,7 +386,7 @@ public class ScnWidget extends Widget {
 			faRenderer.setActor(a);		
 			faRenderer.setAnimation(fa);
 		} catch (Exception e) {
-			Ctx.msg.show(getStage(), "Could not retrieve assets for sprite: " + fa.id, 4);
+			Message.showMsg(getStage(), "Could not retrieve assets for sprite: " + fa.id, 4);
 			e.printStackTrace();
 
 			faRenderer.setAnimation(null);

@@ -29,6 +29,7 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditList;
 import com.bladecoder.engineeditor.utils.DesktopUtils;
+import com.bladecoder.engineeditor.utils.Message;
 
 public class ResolutionList extends EditList<String> {
 
@@ -104,7 +105,7 @@ public class ResolutionList extends EditList<String> {
 		String r = list.getItems().get(index);
 		
 		if(r.equals("1")) {
-			Ctx.msg.show(getStage(),"Initial resolution cannot be deleted", 3);
+			Message.showMsg(getStage(),"Initial resolution cannot be deleted", 3);
 			
 			return;
 		}
@@ -125,7 +126,7 @@ public class ResolutionList extends EditList<String> {
 		} catch (IOException e) {
 			String msg = "Something went wrong while deleting the resolution.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(),msg, 2);
+			Message.showMsg(getStage(),msg, 2);
 			e.printStackTrace();
 		}
 	}

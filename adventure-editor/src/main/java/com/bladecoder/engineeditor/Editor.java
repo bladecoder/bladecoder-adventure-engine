@@ -57,7 +57,7 @@ public class Editor implements ApplicationListener {
 		EditorLogger.setDebug();
 		EditorLogger.debug("CREATE");
 		Ctx.project = new Project();
-		Ctx.msg = new Message(skin);
+		Message.init(skin);
 		Ctx.assetManager = new EditorAssetManager();
 
 		scnEditor = new ScnEditor(skin);
@@ -174,7 +174,7 @@ public class Editor implements ApplicationListener {
 									+ e1.getClass().getSimpleName()
 									+ " - "
 									+ e1.getMessage();
-							Ctx.msg.show(getStage(), msg, 4);
+							Message.showMsgDialog(getStage(), "Error", msg);
 
 							e1.printStackTrace();
 						}
@@ -185,6 +185,7 @@ public class Editor implements ApplicationListener {
 			}.text("Save changes to project?").button("Yes", true)
 					.button("No", false).key(Keys.ENTER, true)
 					.key(Keys.ESCAPE, false).show(stage);
+			
 		} else {
 			((Main)Gdx.app).exitSaved();	
 		}

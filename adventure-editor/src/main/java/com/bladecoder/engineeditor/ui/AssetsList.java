@@ -38,6 +38,7 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CustomList;
 import com.bladecoder.engineeditor.ui.components.EditToolbar;
 import com.bladecoder.engineeditor.utils.ImageUtils;
+import com.bladecoder.engineeditor.utils.Message;
 
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
@@ -264,7 +265,7 @@ public class AssetsList extends Table {
 								+ ex.getClass().getSimpleName()
 								+ " - "
 								+ ex.getMessage();
-						Ctx.msg.show(getStage(), msg, 4);
+						Message.showMsgDialog(getStage(), "Error", msg);
 						ex.printStackTrace();
 					}
 				}
@@ -283,7 +284,7 @@ public class AssetsList extends Table {
 						+ e1.getClass().getSimpleName()
 						+ " - "
 						+ e1.getMessage();
-				Ctx.msg.show(getStage(), msg, 4);
+				Message.showMsgDialog(getStage(), "Error",  msg);
 			}
 		}
 	}
@@ -340,7 +341,7 @@ public class AssetsList extends Table {
 		} catch (Exception ex) {
 			String msg = "Something went wrong while deleting the asset.\n\n"
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
-			Ctx.msg.show(getStage(), msg, 4);
+			Message.showMsgDialog(getStage(), "Error", msg);
 			ex.printStackTrace();
 		}
 	}

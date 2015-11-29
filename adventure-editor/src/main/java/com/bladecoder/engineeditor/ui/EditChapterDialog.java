@@ -32,6 +32,7 @@ import com.bladecoder.engineeditor.model.Chapter;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.utils.Message;
 
 public class EditChapterDialog extends EditDialog {
 
@@ -75,7 +76,7 @@ public class EditChapterDialog extends EditDialog {
 				| ParserConfigurationException | IOException e) {
 			String msg = "Something went wrong while creating the chapter.\n\n"
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
-			Ctx.msg.show(getStage(), msg, 2);
+			Message.showMsg(getStage(), msg, 2);
 
 			e.printStackTrace();
 		}
@@ -110,7 +111,7 @@ public class EditChapterDialog extends EditDialog {
 						+ e1.getClass().getSimpleName()
 						+ " - "
 						+ e1.getMessage();
-				Ctx.msg.show(getStage(), msg, 3);
+				Message.showMsg(getStage(), msg, 3);
 
 				e1.printStackTrace();
 			}

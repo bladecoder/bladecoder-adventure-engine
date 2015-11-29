@@ -37,6 +37,7 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
+import com.bladecoder.engineeditor.utils.Message;
 import com.bladecoder.engineeditor.utils.RunProccess;
 
 import javafx.application.Platform;
@@ -202,7 +203,7 @@ public class ProjectToolbar extends Table {
 					return;
 				}
 
-				Ctx.msg.show(getStage(), "Loading project...", true);
+				Message.showMsg(getStage(), "Loading project...", true);
 
 				Timer.post(new Task() {
 					@Override
@@ -212,13 +213,13 @@ public class ProjectToolbar extends Table {
 							Ctx.project.loadProject(dir);
 							playBtn.setDisabled(false);
 							packageBtn.setDisabled(false);
-							Ctx.msg.show(getStage(), null);
+							Message.showMsg(getStage(), null);
 
 						} catch (Exception ex) {
 							if (ex.getCause() != null && ex.getCause().getCause() != null
 									&& ex.getCause().getCause() instanceof ClassNotFoundException) {
 								String msg = "The game have custom actions that can not be loaded. Probably the game needs to be compiled. Trying 'gradlew compile'...";
-								Ctx.msg.show(getStage(), msg, true);
+								Message.showMsg(getStage(), msg, true);
 								Timer.post(new Task() {
 									@Override
 									public void run() {
@@ -227,22 +228,23 @@ public class ProjectToolbar extends Table {
 												Ctx.project.loadProject(dir);
 												playBtn.setDisabled(false);
 												packageBtn.setDisabled(false);
-												Ctx.msg.show(getStage(), "Project loaded Successfully", 3);
+												Message.showMsg(getStage(), "Project loaded Successfully", 3);
 											} catch (IOException e) {
-												String msg = "Something went wrong while loading the project.\n\n"
-														+ e.getClass().getSimpleName() + " - " + e.getMessage();
-												Ctx.msg.show(getStage(), msg, 4);
+												String msg = e.getClass().getSimpleName() + " - " + e.getMessage();
+												Message.hideMsg();
+												Message.showMsgDialog(getStage(), "Error loading project", msg);
 											}
 										} else {
-											Ctx.msg.show(getStage(), "Could not load project: error running gradle", 4);
+											Message.hideMsg();
+											Message.showMsgDialog(getStage(),  "Error loading project", "error running 'gradlew desktop:compileJava'");
 										}
 									}
 								});
 							} else {
 
-								String msg = "Something went wrong while loading the project.\n\n"
-										+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
-								Ctx.msg.show(getStage(), msg, 4);
+								String msg = ex.getClass().getSimpleName() + " - " + ex.getMessage();
+								Message.hideMsg();
+								Message.showMsgDialog(getStage(), "Error loading project", msg);
 							}
 
 							ex.printStackTrace();
@@ -263,7 +265,7 @@ public class ProjectToolbar extends Table {
 
 		if (file == null) {
 			String msg = "Please create a new project first.";
-			Ctx.msg.show(getStage(), msg, 3);
+			Message.showMsg(getStage(), msg, 3);
 			return;
 		}
 
@@ -272,7 +274,7 @@ public class ProjectToolbar extends Table {
 		} catch (Exception ex) {
 			String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
 					+ ex.getMessage();
-			Ctx.msg.show(getStage(), msg, 4);
+			Message.showMsgDialog(getStage(), "Error saving project", msg);
 		}
 	}
 
@@ -290,13 +292,13 @@ public class ProjectToolbar extends Table {
 
 			@Override
 			public void run() {
-				Ctx.msg.show(stage, "Running scene...", 3);
+				Message.showMsg(stage, "Running scene...", 3);
 
 				try {
 					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), null, null))
-						Ctx.msg.show(getStage(), "There was a problem running the project", 3);
+						Message.showMsg(getStage(), "There was a problem running the project", 3);
 				} catch (IOException e) {
-					Ctx.msg.show(stage, "There was a problem running the project: " + e.getMessage(), 4);
+					Message.showMsgDialog(stage, "Error", "There was a problem running the project: " + e.getMessage());
 				}
 
 			}
@@ -312,7 +314,7 @@ public class ProjectToolbar extends Table {
 			} catch (IOException e1) {
 				String msg = "Something went wrong while opening assets folder.\n\n" + e1.getClass().getSimpleName()
 						+ " - " + e1.getMessage();
-				Ctx.msg.show(getStage(), msg, 2);
+				Message.showMsgDialog(getStage(), "Error", msg);
 			}
 		}
 	}

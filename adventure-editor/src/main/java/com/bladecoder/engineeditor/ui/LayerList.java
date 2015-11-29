@@ -27,6 +27,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.utils.Message;
 
 public class LayerList extends ModelList<Scene, SceneLayer> {
 
@@ -157,7 +158,7 @@ public class LayerList extends ModelList<Scene, SceneLayer> {
 
 		if (list.getItems().size < 2) {
 			String msg = "The layer will not be deleted, at least one layer must exist";
-			Ctx.msg.show(getStage(), msg, 3);
+			Message.showMsg(getStage(), msg, 3);
 
 			return;
 		}
@@ -170,7 +171,7 @@ public class LayerList extends ModelList<Scene, SceneLayer> {
 			Ctx.project.setModified();
 		} else {
 			String msg = "The layer is not empty.";
-			Ctx.msg.show(getStage(), msg, 3);
+			Message.showMsg(getStage(), msg, 3);
 		}
 
 	}

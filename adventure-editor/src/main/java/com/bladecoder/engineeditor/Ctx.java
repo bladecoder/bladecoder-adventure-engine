@@ -16,10 +16,8 @@
 package com.bladecoder.engineeditor;
 
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.utils.Message;
 
 public class Ctx {
 	public static Project project;
-	public static Message msg;
 	public static EditorAssetManager assetManager;
 }

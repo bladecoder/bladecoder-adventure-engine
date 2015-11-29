@@ -45,6 +45,7 @@ import com.bladecoder.engineeditor.undo.UndoCreateScene;
 import com.bladecoder.engineeditor.undo.UndoEditScene;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.ElementUtils;
+import com.bladecoder.engineeditor.utils.Message;
 
 public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
@@ -109,7 +110,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 				try {
 					fillBGRegions(backgroundAtlas, backgroundRegion);
 				} catch (Exception e) {
-					Ctx.msg.show(getStage(), "Error loading regions from selected atlas", 4);
+					Message.showMsg(getStage(), "Error loading regions from selected atlas", 4);
 				}
 			}
 		});
@@ -128,7 +129,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 				try {
 					fillLightmapRegions(lightmapAtlas, lightmapAtlas);
 				} catch (Exception e) {
-					Ctx.msg.show(getStage(), "Error loading regions from selected atlas", 4);
+					Message.showMsg(getStage(), "Error loading regions from selected atlas", 4);
 				}
 			}
 		});

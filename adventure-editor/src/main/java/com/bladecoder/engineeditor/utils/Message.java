@@ -18,97 +18,109 @@ package com.bladecoder.engineeditor.utils;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
 
-public class Message extends Label {
-	static public float fadeDuration = 0.4f;
-	boolean isModal = false;
+public class Message {
+	private static final float FADE_DURATION = 0.4f;
+	private static Label msg;
+	private static Skin skin;
+	private static boolean isModal;
 
-	public Message(Skin skin) {
-		super("", skin, "message");
+	public static void init(Skin skin) {
+		msg = new Label("", skin, "message") {
+			
+			@Override
+			public Actor hit(float x, float y, boolean touchable) {
+				if(isModal)
+					return this;
+				
+				return null;
+			}
+		};
 		
-		setWrap(true);
-		setAlignment(Align.center, Align.center);
+		
+		Message.skin = skin;
+		msg.setWrap(true);
+		msg.setAlignment(Align.center, Align.center);
 	}
 	
-	public void show (Stage stage, String text) {
-		show(stage, text, false);
+	public static void showMsg (Stage stage, String text) {
+		showMsg(stage, text, false);
 	}
 	
-	public void show (Stage stage, String text, boolean modal) {
+	public static void showMsg (Stage stage, String text, boolean modal) {
 		isModal = modal;
 		
 		if(text == null) {
-			hide();
+			hideMsg();
 			return;
 		}
 
 		add(stage, text);
 		
-		if (fadeDuration > 0) {
-			getColor().a = 0;
-			addAction(Actions.fadeIn(fadeDuration, Interpolation.fade));
+		if (FADE_DURATION > 0) {
+			msg.getColor().a = 0;
+			msg.addAction(Actions.fadeIn(FADE_DURATION, Interpolation.fade));
 		}
 	}
 	
-	private void add(Stage stage, String text) {
-		clearActions();
+	private static void add(Stage stage, String text) {
+		msg.clearActions();
 		
-		setText(text);
+		msg.setText(text);
 		
 		GlyphLayout textLayout = new GlyphLayout();
 		
-		textLayout.setText(getStyle().font, text, Color.BLACK, stage.getWidth() * .8f, Align.center, true);
+		textLayout.setText(msg.getStyle().font, text, Color.BLACK, stage.getWidth() * .8f, Align.center, true);
 		
-		setSize(textLayout.width + textLayout.height, textLayout.height  + textLayout.height * 2);
+		msg.setSize(textLayout.width + textLayout.height, textLayout.height  + textLayout.height * 2);
 
-		if(!stage.getActors().contains(this, true))
-			stage.addActor(this);
-		setPosition(Math.round((stage.getWidth() - getWidth()) / 2), Math.round((stage.getHeight() - getHeight()) / 2));
-		invalidate();		
-	}
-	
-	@Override
-	public Actor hit(float x, float y, boolean touchable) {
-		if(isModal)
-			return this;
+		if(!stage.getActors().contains(msg, true))
+			stage.addActor(msg);
 		
-		return null;
+		msg.setPosition(Math.round((stage.getWidth() - msg.getWidth()) / 2), Math.round((stage.getHeight() - msg.getHeight()) / 2));
+		msg.invalidate();		
 	}
 	
-	public void show (Stage stage, String text, float duration) {
+	public static void showMsg (Stage stage, String text, float duration) {
 		isModal = false;
 		
 		if(text == null) {
-			hide();
+			hideMsg();
 			return;
 		}
 		
 		add(stage, text);
 		
-		if (fadeDuration > 0) {
-			getColor().a = 0;
-			addAction(sequence(Actions.fadeIn(fadeDuration, Interpolation.fade), 
-					Actions.delay(duration, sequence(fadeOut(fadeDuration, Interpolation.fade), Actions.removeActor()))));
+		if (FADE_DURATION > 0) {
+			msg.getColor().a = 0;
+			msg.addAction(sequence(Actions.fadeIn(FADE_DURATION, Interpolation.fade), 
+					Actions.delay(duration, sequence(fadeOut(FADE_DURATION, Interpolation.fade), Actions.removeActor()))));
 		}
 	}
 
-	public void hide () {
+	public static void hideMsg () {
 		isModal = false;
-		setText("");
+		msg.setText("");
 		
-		if (fadeDuration > 0) {
-			addAction(sequence(fadeOut(fadeDuration, Interpolation.fade), Actions.removeActor()));
-		} else
-			remove();
+		if (FADE_DURATION > 0) {
+			msg.addAction(sequence(fadeOut(FADE_DURATION, Interpolation.fade), Actions.removeActor()));
+		}
 	}	
 
+	public static void showMsgDialog(Stage stage, String title, String msg) {
+		new Dialog(title, skin).text(msg).button("Close", true)
+				.key(Keys.ENTER, true)
+				.key(Keys.ESCAPE, false).show(stage);		
+	}
 }

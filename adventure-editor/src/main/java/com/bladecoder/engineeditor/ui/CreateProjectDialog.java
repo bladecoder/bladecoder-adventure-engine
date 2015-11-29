@@ -28,6 +28,7 @@ import com.bladecoder.engineeditor.ui.components.FileInputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.EditorLogger;
+import com.bladecoder.engineeditor.utils.Message;
 
 public class CreateProjectDialog extends EditDialog {
 
@@ -84,14 +85,14 @@ public class CreateProjectDialog extends EditDialog {
 			Ctx.project.getEditorConfig().setProperty(ANDROID_SDK_PROP, androidSdk.getText());
 			Ctx.project.saveProject();
 		} catch (Exception ex) {
-			String msg = "Something went wrong while saving the current project.\n\n" + ex.getClass().getSimpleName()
+			String msg = ex.getClass().getSimpleName()
 					+ " - " + ex.getMessage();
-			Ctx.msg.show(getStage(), msg, 2);
+			Message.showMsgDialog(getStage(), "Error saving project", msg);
 		}
 		
 		final Stage stage = getStage();
 
-		Ctx.msg.show(getStage(), "Creating project...", true);
+		Message.showMsg(getStage(), "Creating project...", true);
 		Timer.schedule(new Task() {
 			@Override
 			public void run() {
@@ -106,11 +107,11 @@ public class CreateProjectDialog extends EditDialog {
 			Ctx.project.createProject(location.getText(), projectName.getText(), pkg.getText(), androidSdk.getText(),
 					Boolean.parseBoolean(spinePlugin.getText()));
 
-			Ctx.msg.show(stage, "Project successfully created", 3);
+			Message.showMsg(stage, "Project successfully created", 3);
 		} catch (Exception e) {
-			String msg = "Something went wrong while creating project.\n\n" + e.getClass().getSimpleName() + " - "
+			String msg = e.getClass().getSimpleName() + " - "
 					+ e.getMessage();
-			Ctx.msg.show(stage, msg, 3);
+			Message.showMsgDialog(stage, "Error creating project", msg);
 			EditorLogger.error(msg);
 			e.printStackTrace();
 			return;

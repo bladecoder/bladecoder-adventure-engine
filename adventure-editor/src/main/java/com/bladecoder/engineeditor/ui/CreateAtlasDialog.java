@@ -19,8 +19,9 @@ import java.io.IOException;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
@@ -29,6 +30,7 @@ import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.ImageUtils;
+import com.bladecoder.engineeditor.utils.Message;
 
 public class CreateAtlasDialog extends EditDialog {
 
@@ -71,21 +73,14 @@ public class CreateAtlasDialog extends EditDialog {
 
 	@Override
 	protected void ok() {
-		new Thread(new Runnable() {
-			Stage stage = getStage();
-			
+		Message.showMsg(getStage(), "Generating atlas...", true);
+		
+		Timer.post(new Task() {
 			@Override
-			public void run() {
-				Ctx.msg.show(stage, "Generating atlas...", true);
-
-				String msg = genAtlas();
-				
-				Ctx.msg.hide();
-				
-				if(msg != null)
-					Ctx.msg.show(stage, msg, 3);
+			public void run() {			
+				genAtlas();				
 			}
-		}).start();
+		});
 	}
 
 	@Override
@@ -101,7 +96,7 @@ public class CreateAtlasDialog extends EditDialog {
 		return ok;
 	}
 
-	private String genAtlas() {
+	private void genAtlas() {
 		String outdir = Ctx.project.getProjectPath() + Project.ATLASES_PATH;
 		List<String> res = Ctx.project.getResolutions();
 		String name = this.name.getText();
@@ -148,9 +143,11 @@ public class CreateAtlasDialog extends EditDialog {
 				ImageUtils.createAtlas(dir.getText(), outdir + "/" + r, name + ".atlas", scale, filterMin, filterMag);
 			} catch (IOException e) {
 				EditorLogger.error(e.getMessage());
+				Message.showMsgDialog(getStage(), "Error creating atlas", e.getMessage());
+				return;
 			}
+			
+			Message.hideMsg();
 		}
-
-		return null;
 	}
 }

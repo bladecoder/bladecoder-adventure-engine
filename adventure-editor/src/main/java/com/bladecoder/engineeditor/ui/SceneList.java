@@ -53,6 +53,7 @@ import com.bladecoder.engineeditor.undo.UndoDeleteScene;
 import com.bladecoder.engineeditor.undo.UndoOp;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.ElementUtils;
+import com.bladecoder.engineeditor.utils.Message;
 
 public class SceneList extends ModelList<World, Scene> {
 
@@ -156,7 +157,7 @@ public class SceneList extends ModelList<World, Scene> {
 				try {
 					Ctx.project.saveProject();
 				} catch (IOException e1) {
-					Ctx.msg.show(getStage(), "Error saving project", 3);
+					Message.showMsgDialog(getStage(), "Error saving project", e1.getMessage());
 					EditorLogger.error(e1.getMessage());
 				}
 

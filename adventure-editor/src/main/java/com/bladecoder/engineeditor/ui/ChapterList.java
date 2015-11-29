@@ -26,6 +26,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditList;
+import com.bladecoder.engineeditor.utils.Message;
 
 public class ChapterList extends EditList<String> {
 
@@ -72,7 +73,7 @@ public class ChapterList extends EditList<String> {
 
 		if (list.getItems().size < 2) {
 			String msg = "The chapter will not be deleted, at least one chapter must exists";
-			Ctx.msg.show(getStage(), msg, 3);
+			Message.showMsg(getStage(), msg, 4);
 
 			return;
 		}
@@ -87,9 +88,9 @@ public class ChapterList extends EditList<String> {
 		try {
 			Ctx.project.getChapter().deleteChapter(e);
 		} catch (Exception ex) {
-			String msg = "Something went wrong while deleting the chapter.\n\n"
+			String msg = "Something went wrong.\n\n"
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
-			Ctx.msg.show(getStage(), msg, 3);
+			Message.showMsgDialog(getStage(), "Error deleting chapter", msg);
 
 			ex.printStackTrace();
 		}

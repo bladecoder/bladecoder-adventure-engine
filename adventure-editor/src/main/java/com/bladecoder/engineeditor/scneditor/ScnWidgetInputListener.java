@@ -34,6 +34,7 @@ import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.undo.UndoDeleteActor;
 import com.bladecoder.engineeditor.undo.UndoPosition;
 import com.bladecoder.engineeditor.undo.UndoWalkZonePosition;
+import com.bladecoder.engineeditor.utils.Message;
 
 public class ScnWidgetInputListener extends ClickListener {
 	private final ScnWidget scnWidget;
@@ -366,7 +367,7 @@ public class ScnWidgetInputListener extends ClickListener {
 							+ e1.getClass().getSimpleName()
 							+ " - "
 							+ e1.getMessage();
-					Ctx.msg.show(scnWidget.getStage(), msg, 4);
+					Message.showMsgDialog(scnWidget.getStage(), "Error", msg);
 
 					e1.printStackTrace();
 				}
