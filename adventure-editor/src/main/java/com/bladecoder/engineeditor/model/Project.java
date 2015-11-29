@@ -329,7 +329,7 @@ public class Project extends PropertyChange {
 						&& ex.getCause().getCause() instanceof ClassNotFoundException) {
 					EditorLogger.debug("Custom action class not found. Trying to compile...");
 					if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
-						loadProject(projectFile);
+						World.getInstance().loadWorldDesc();
 					} else {
 						throw new IOException("Failed to run Gradle.");
 					}
@@ -413,7 +413,7 @@ public class Project extends PropertyChange {
 					&& ex.getCause().getCause() instanceof ClassNotFoundException) {
 				EditorLogger.debug("Custom action class not found. Trying to compile...");
 				if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
-					loadProject(projectFile);
+					chapter.load(selChapter);
 				} else {
 					throw new IOException("Failed to run Gradle.");
 				}
