@@ -27,7 +27,7 @@ public class Text implements Serializable {
 	private static final float DEFAULT_TIME = 1f;
 	
 	public enum Type {
-		PLAIN, RECTANGLE, TALK
+		PLAIN, SUBTITLE, TALK
 	};
 	
 	public String str;

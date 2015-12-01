@@ -42,7 +42,7 @@ public class TextAction implements Action {
 
 	private Vector2 pos;
 
-	@ActionProperty(required = true, defaultValue = "RECTANGLE")
+	@ActionProperty(required = true, defaultValue = "SUBTITLE")
 	@ActionPropertyDescription("The type of the text.")
 
 	private Text.Type type = Text.Type.PLAIN;
@@ -68,7 +68,7 @@ public class TextAction implements Action {
 				y = pos.y;
 			} else {
 
-				if (type == Text.Type.RECTANGLE) {
+				if (type == Text.Type.SUBTITLE) {
 					x = y = TextManager.POS_SUBTITLE;
 				}
 			}

@@ -41,9 +41,9 @@ public class SayAction extends BaseCallbackAction {
 	@ActionProperty(type = Type.SOUND)
 	private String soundId;
 
-	@ActionProperty(required = true, defaultValue = "RECTANGLE")
+	@ActionProperty(required = true, defaultValue = "SUBTITLE")
 	@ActionPropertyDescription("The type of the text.")
-	private Text.Type type = Text.Type.RECTANGLE;
+	private Text.Type type = Text.Type.SUBTITLE;
 
 	@ActionProperty(defaultValue = "false")
 	@ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")

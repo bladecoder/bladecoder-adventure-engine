@@ -95,7 +95,7 @@ public class LookAtAction implements Action {
 
 		if(text !=null)
 			World.getInstance().getTextManager().addText(text, TextManager.POS_SUBTITLE,
-					TextManager.POS_SUBTITLE, false, Text.Type.RECTANGLE, null, null,  wait?cb:null);
+					TextManager.POS_SUBTITLE, false, Text.Type.SUBTITLE, null, null,  wait?cb:null);
 		
 		return false;
 	}

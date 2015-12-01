@@ -169,7 +169,7 @@ public class TextManagerUI extends Actor {
 				style.talkBackground.draw(batch, getX(), getY(), getWidth(), getHeight());
 			}
 
-		} else if (subtitle.type == Text.Type.RECTANGLE) {
+		} else if (subtitle.type == Text.Type.SUBTITLE) {
 			if (style.rectBackground != null) {
 				style.rectBackground.draw(batch, getX(), getY(), getWidth(), getHeight());
 			}

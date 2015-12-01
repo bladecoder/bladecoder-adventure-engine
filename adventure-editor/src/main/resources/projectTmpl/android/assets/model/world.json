@@ -30,7 +30,7 @@ verbs: {
 			{
 				class: "com.bladecoder.engine.actions.SayAction",
 				text: "@default.use.0.text",
-				type: "RECTANGLE",
+				type: "SUBTITLE",
 				queue: false,
 				wait: false
 			}

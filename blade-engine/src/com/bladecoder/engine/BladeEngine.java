@@ -95,7 +95,7 @@ public class BladeEngine implements ApplicationListener {
 
 		try {
 			World.getInstance().loadWorldDesc();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			dispose();
 			EngineLogger.error("EXITING: " + e.getMessage());
 			Gdx.app.exit();
