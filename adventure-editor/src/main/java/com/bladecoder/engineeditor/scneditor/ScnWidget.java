@@ -33,6 +33,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.bladecoder.engine.anim.AnimationDesc;
@@ -78,6 +79,7 @@ public class ScnWidget extends Widget {
 	private BitmapFont bigFont;
 	private BitmapFont defaultFont;
 	private TiledDrawable tile;
+	private Drawable background;
 
 	private boolean loading = false;
 	private boolean loadingError = false;
@@ -103,6 +105,7 @@ public class ScnWidget extends Widget {
 		setSize(150, 150);
 
 		tile = new TiledDrawable(Ctx.assetManager.getIcon("transparent-light"));
+		background = skin.getDrawable("background");
 
 		faRenderer.setViewport(getWidth(), getHeight());
 
@@ -207,12 +210,12 @@ public class ScnWidget extends Widget {
 		Color tmp = batch.getColor();
 		batch.setColor(Color.WHITE);
 
-		// BACKGROUND
-		batch.disableBlending();
-		tile.draw(batch, getX(), getY(), getWidth(), getHeight());
-		batch.enableBlending();
-
 		if (scn != null && !loading && !loadingError) {
+			// BACKGROUND
+			batch.disableBlending();
+			tile.draw(batch, getX(), getY(), getWidth(), getHeight());
+			batch.enableBlending();
+			
 			Vector3 v = new Vector3(getX(), getY(), 0);
 			v = v.prj(batch.getTransformMatrix());
 
@@ -288,7 +291,7 @@ public class ScnWidget extends Widget {
 			batch.setColor(tmp);
 
 		} else {
-			RectangleRenderer.draw((SpriteBatch) batch, getX(), getY(), getWidth(), getHeight(), Color.BLACK);
+			background.draw(batch, getX(), getY(), getWidth(), getHeight());
 
 			String s;
 

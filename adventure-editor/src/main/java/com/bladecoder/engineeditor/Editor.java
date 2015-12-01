@@ -61,6 +61,7 @@ public class Editor implements ApplicationListener {
 		Ctx.assetManager = new EditorAssetManager();
 
 		scnEditor = new ScnEditor(skin);
+		scnEditor.setBackground("background");
 		skin.getFont("default-font").getData().markupEnabled = true;
 
 		/*** STAGE SETUP ***/
@@ -71,9 +72,10 @@ public class Editor implements ApplicationListener {
 		ScenePanel scenePanel = new ScenePanel(skin);
 		ActorPanel actorPanel = new ActorPanel(skin);
 
-		Table rightPanel = new Table();
+		Table rightPanel = new Table(skin);
 		rightPanel.top().left();
 		rightPanel.add(actorPanel).expand().fill();
+		rightPanel.setBackground("background");
 
 		SplitPane splitPaneRight = new SplitPane(scnEditor, rightPanel,
 				false, skin);
@@ -86,15 +88,16 @@ public class Editor implements ApplicationListener {
 		img.setScaling(Scaling.none);
 		img.setAlign(Align.left);
 
-		Table leftPanel = new Table();
+		Table leftPanel = new Table(skin);
 		leftPanel.top().left().padLeft(10);
-		leftPanel.add(img).expand().fill().padBottom(20).padTop(20).padLeft(0);
+		leftPanel.add(img).expand().fill().padBottom(20).padTop(20).padLeft(0).left();
 		leftPanel.row();
-		leftPanel.add(new ProjectToolbar(skin)).expandX().fill();
+		leftPanel.add(new ProjectToolbar(skin)).expandX().fill().left();
 		leftPanel.row();
-		leftPanel.add(projectPanel).expand().fill();
+		leftPanel.add(projectPanel).expand().fill().left();
 		leftPanel.row();
-		leftPanel.add(scenePanel).expand().fill();
+		leftPanel.add(scenePanel).expand().fill().left();
+		leftPanel.setBackground("background");
 
 		SplitPane splitPaneLeft = new SplitPane(leftPanel, splitPaneRight,
 				false, skin);

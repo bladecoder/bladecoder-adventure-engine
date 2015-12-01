@@ -38,7 +38,6 @@ public class ScnEditor extends Table {
 		super(skin);
 
 		scnWidget = new ScnWidget(skin);
-
 		inSceneCb = new CheckBox("In Scene Anims", skin);
 		inSceneCb.setChecked(false);
 		animCb = new CheckBox("Animation", skin);

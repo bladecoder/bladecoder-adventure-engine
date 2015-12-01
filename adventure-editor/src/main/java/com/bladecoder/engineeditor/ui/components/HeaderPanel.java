@@ -57,13 +57,13 @@ public class HeaderPanel extends Table {
 		add(north).expandX().fillX();
 		row();
 		Image image = new Image(skin.getDrawable("white_pixel"));
-		image.setColor(skin.getColor("holo-blue"));
+		image.setColor(skin.getColor("separator-color"));
 		add(image).height(2).padBottom(4f).expandX().fill();
 		row().top().left();
 		contentCell = add().expand().fill();
 		
 
-		if (collapsable)
+		if (collapsable) {
 			titleLbl.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
@@ -71,6 +71,15 @@ public class HeaderPanel extends Table {
 					invalidateHierarchy();
 				}
 			});
+			
+			collapseImg.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					toggleCollapse();
+					invalidateHierarchy();
+				}
+			});
+		}
 		
 //		setDebug(true);
 	}
