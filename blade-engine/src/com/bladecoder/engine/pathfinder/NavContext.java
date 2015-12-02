@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 Rafael Garcia Moreno.
+ * Copyright 2011 See AUTHORS file.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ package com.bladecoder.engine.pathfinder;
  * Original implementation by Kevin Glass from Slick2D.
  * </p>
  * @author hneuer */
-public interface NavContext<N extends NavNode> {
+public interface NavContext<N extends NavNode<N>> {
 	/** Get the object being moved along the path if any */
 	public Object getMover ();
 

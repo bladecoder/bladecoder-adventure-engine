@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 Rafael Garcia Moreno.
+ * Copyright 2011 See AUTHORS file.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.bladecoder.engine.pathfinder;
 
 /** A navigation path.
  * @author hneuer */
-public interface NavPath<N extends NavNode> {
+public interface NavPath<N extends NavNode<N>> {
 	/** Fills the navigation path between the start and target node.
 	 * <p>
 	 * Note that current implementations have to follow the path backward from the targetNode to the startNode (following the

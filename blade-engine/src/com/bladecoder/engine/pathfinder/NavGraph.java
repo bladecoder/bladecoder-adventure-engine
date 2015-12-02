@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 Rafael Garcia Moreno.
+ * Copyright 2011 See AUTHORS file.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ package com.bladecoder.engine.pathfinder;
  * Original implementation by Kevin Glass from Slick2D.
  * </p>
  * @author hneuer */
-public interface NavGraph<N extends NavNode> {
+public interface NavGraph<N extends NavNode<N>> {
 	/** Check if the given location is blocked, i.e. blocks movement of the supplied mover. */
 	public boolean blocked (NavContext<N> context, N targetNode);
 

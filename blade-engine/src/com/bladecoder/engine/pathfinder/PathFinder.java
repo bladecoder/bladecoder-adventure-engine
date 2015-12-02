@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 Rafael Garcia Moreno.
+ * Copyright 2011 See AUTHORS file.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ package com.bladecoder.engine.pathfinder;
  * Original implementation by Kevin Glass from Slick2D.
  * </p>
  * @author hneuer */
-public interface PathFinder {
+public interface PathFinder<N extends NavNode<N>> {
 	/** Find a path from the start node to the target node avoiding blockages and attempting to honor costs provided by the graph.
 	 * 
 	 * @param mover The entity that will be moving along the path. This provides a place to pass context information about the game
@@ -32,5 +32,5 @@ public interface PathFinder {
 	 * @param targetNode the target node
 	 * @param out out-parameter for the navigation path. Will only be filled if a path is found, otherwise it won't get touched.
 	 * @return True if a path was found. */
-	public boolean findPath (Object mover, NavNode startNode, NavNode targetNode, NavPath out);
+	public boolean findPath (Object mover, N startNode, N targetNode, NavPath<N> out);
 }

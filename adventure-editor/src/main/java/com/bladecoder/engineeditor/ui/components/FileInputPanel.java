@@ -32,7 +32,7 @@ public class FileInputPanel extends InputPanel {
 		OPEN_FILE, SAVE_FILE, DIRECTORY
 	}
 	
-	private File cd;
+//	private File cd;
 	private File selected;
 
 	private final static String FILE_TEXT = "Select file";
@@ -45,7 +45,7 @@ public class FileInputPanel extends InputPanel {
 	public FileInputPanel(Skin skin, String title, String desc, File current, final DialogType dialogType) {
 		init(skin, title, desc, new TextButton(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT, skin), true, null);
 		
-		this.cd = current;
+//		this.cd = current;
 
 //		((TextField) getField()).setEditable(false);
 
@@ -80,7 +80,8 @@ public class FileInputPanel extends InputPanel {
 
 						if (result != null) {
 							((TextButton) getField()).setText(result.getAbsolutePath());
-							selected = cd = result;
+							selected = result;
+//							cd = result;
 						}
 					}
 				});
@@ -103,7 +104,8 @@ public class FileInputPanel extends InputPanel {
 	@Override
 	public void setText(String text) {
 		((TextButton)field).setText(text);
-		selected=cd= new File(text);
+		selected = new File(text);
+//		cd= new File(text);
 	}
 	
 }

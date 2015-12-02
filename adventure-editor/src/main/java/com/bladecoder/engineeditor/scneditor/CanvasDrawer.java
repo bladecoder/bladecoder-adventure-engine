@@ -33,7 +33,6 @@ import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.pathfinder.NavNode;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -107,8 +106,8 @@ public class CanvasDrawer {
 				drawer.setColor(Color.WHITE);
 				ArrayList<NavNodePolygonal> nodes = scn.getPolygonalNavGraph().getGraphNodes();
 				for (NavNodePolygonal n : nodes) {
-					for (NavNode n2 : n.neighbors) {
-						drawer.line(n.x, n.y, ((NavNodePolygonal) n2).x, ((NavNodePolygonal) n2).y);
+					for (NavNodePolygonal n2 : n.neighbors) {
+						drawer.line(n.x, n.y, n2.x, n2.y);
 					}
 				}
 			}

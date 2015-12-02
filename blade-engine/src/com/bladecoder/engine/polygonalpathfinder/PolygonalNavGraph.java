@@ -48,7 +48,7 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 	private Polygon walkZone;
 	private ArrayList<Polygon> obstacles = new ArrayList<Polygon>();
 
-	final private PathFinder pathfinder = new AStarPathFinder(this, MAX_PATHFINDER_SEARCH_DISTANCE,
+	final private PathFinder<NavNodePolygonal> pathfinder = new AStarPathFinder<NavNodePolygonal>(this, MAX_PATHFINDER_SEARCH_DISTANCE,
 			new ManhattanDistance());
 	final private NavPathPolygonal resultPath = new NavPathPolygonal();
 	final private NavNodePolygonal startNode = new NavNodePolygonal();

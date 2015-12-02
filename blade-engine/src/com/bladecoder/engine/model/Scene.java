@@ -38,7 +38,6 @@ import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.loader.SerializationHelper;
 import com.bladecoder.engine.loader.SerializationHelper.Mode;
-import com.bladecoder.engine.pathfinder.NavNode;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.util.EngineLogger;
@@ -338,8 +337,8 @@ public class Scene implements Serializable, AssetConsumer {
 			renderer.setColor(Color.WHITE);
 			ArrayList<NavNodePolygonal> nodes = polygonalNavGraph.getGraphNodes();
 			for (NavNodePolygonal n : nodes) {
-				for (NavNode n2 : n.neighbors) {
-					renderer.line(n.x, n.y, ((NavNodePolygonal) n2).x, ((NavNodePolygonal) n2).y);
+				for (NavNodePolygonal n2 : n.neighbors) {
+					renderer.line(n.x, n.y, n2.x, n2.y);
 				}
 			}
 		}

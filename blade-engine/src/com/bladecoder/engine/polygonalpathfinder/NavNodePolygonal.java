@@ -23,7 +23,7 @@ import com.bladecoder.engine.pathfinder.NavNode;
  * 
  * @author rgarcia 
  */
-public class NavNodePolygonal extends NavNode {
+public class NavNodePolygonal extends NavNode<NavNodePolygonal> {
 	public float x;
 	public float y;
 	
