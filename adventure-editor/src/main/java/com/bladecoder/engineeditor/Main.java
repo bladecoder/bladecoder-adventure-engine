@@ -22,6 +22,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.bladecoder.engineeditor.utils.Versions;
 
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -31,30 +32,34 @@ public class Main extends LwjglApplication {
 	public static void main(final String[] args) {
 		// This dummy instantiation will initialize JavaFX for us
 		new JFXPanel();
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
+				
+				cfg.title = "Adventure Editor v" + Versions.getVersion();
+				Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+				cfg.width = (int) (bounds.getWidth() - bounds.getWidth() * 0.1);
+				cfg.height = (int) (bounds.getHeight() - bounds.getHeight() * 0.1);
 
-		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
+				cfg.resizable = true;
+				// cfg.samples = 2;
+				// cfg.useGL30 = true;
 
-		cfg.title = "Adventure Editor v" + Versions.getVersion();
-		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-		cfg.width = (int) (bounds.getWidth() - bounds.getWidth() * 0.1);
-		cfg.height = (int) (bounds.getHeight() - bounds.getHeight() * 0.1);
+				if (Main.class.getResource("/images/ic_app64.png") != null)
+					cfg.addIcon("images/ic_app64.png", FileType.Internal);
 
-		cfg.resizable = true;
-		// cfg.samples = 2;
-		// cfg.useGL30 = true;
+				if (Main.class.getResource("/images/ic_app32.png") != null)
+					cfg.addIcon("images/ic_app32.png", FileType.Internal);
 
-		if (Main.class.getResource("/images/ic_app64.png") != null)
-			cfg.addIcon("images/ic_app64.png", FileType.Internal);
+				if (Main.class.getResource("/images/ic_app16.png") != null)
+					cfg.addIcon("images/ic_app16.png", FileType.Internal);
 
-		if (Main.class.getResource("/images/ic_app32.png") != null)
-			cfg.addIcon("images/ic_app32.png", FileType.Internal);
+				parseArgs(args);
 
-		if (Main.class.getResource("/images/ic_app16.png") != null)
-			cfg.addIcon("images/ic_app16.png", FileType.Internal);
-
-		parseArgs(args);
-
-		new Main(new Editor(), cfg);
+				new Main(new Editor(), cfg);
+			}
+		});
 	}
 
 	private static void parseArgs(String[] args) {
