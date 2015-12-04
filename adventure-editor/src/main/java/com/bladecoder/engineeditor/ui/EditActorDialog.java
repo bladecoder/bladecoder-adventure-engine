@@ -65,10 +65,10 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			Project.IMAGE_RENDERER_STRING, Project.S3D_RENDERER_STRING };
 
 	public static final String TYPES_INFO[] = {
-			"Background actors don't have sprites or animations. The are used to use objects drawed in the background",
+			"Background actors don't have sprites or animations. They are used to interact with objects drawn in the background",
 			"Sprite actors have one or several sprites or animations",
 			"Character actors have dialogs and stand, walk and talk animations",
-			"Obstacle actors forbids zones for walking actors", "Anchor actors are used por positioning other actors" };
+			"Obstacle actors forbids zones for walking actors", "Anchor actors are used as reference for positioning other actors" };
 
 	public static final String RENDERERS_INFO[] = { "Atlas actor allows 2d image and animations",
 			"Spine actors allow Spine 2d skeletal animations", "3d actors allow 3d models and animations",
