@@ -4,6 +4,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.4]
+
+- Compile custom classes when not found in loading project.
+- Fix issue #23: Edit an existing actor 
+- Sets editor window size to 0.9 * screen size
+- Better version control: 
+  - Extract version strings from build.gradle to gradle.properties in games.
+  - Put versions in BladeEngine.properties when compiling games.
+  - Show versions in DebugScreen 
+  - Added version to game model and saved games for further checks.
+  - Put version variables in game gradle.properties
+- Bug fix adding assets because of bad filter strings.
+- Get appName from gradle.properties
+- fix little bug when loading project and the custom actions are not compiled
+- Editor: Better msg handling: Message Dialog
+- Change RECTANGLE to SUBTITLE type of Text
+- Editor: adjust colors in skin for a more pleasant feel.
+- update pathfinder classes for no warnings.
+- Use Gdx library instead JavaFX to set the window size.
+- Use enum toString() as key to retrieve custom screens implementation.
+
 ## [0.9.3]
 
 - Fix error when interpolation=null
