@@ -106,7 +106,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 	@Override
 	public void show() {
-		loadScreenMode = ui.getScreen(Screens.LOAD_GAME) == this;
+		loadScreenMode = ui.getScreen(Screens.LOAD_GAME_SCREEN) == this;
 
 		stage = new Stage(new ScreenViewport());
 

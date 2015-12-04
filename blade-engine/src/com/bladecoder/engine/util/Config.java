@@ -30,14 +30,6 @@ public class Config {
 	public static final String DEBUG_PROP = "debug";
 	public static final String CHAPTER_PROP = "chapter";
 	public static final String SHOW_DESC_PROP = "show_desc";
-	public static final String MENU_SCREEN_CLASS_PROP = "menu_screen";
-	public static final String HELP_SCREEN_CLASS_PROP = "help_screen";
-	public static final String CREDIT_SCREEN_CLASS_PROP = "credit_screen";
-	public static final String INIT_SCREEN_CLASS_PROP = "init_screen";
-	public static final String SCENE_SCREEN_CLASS_PROP = "scene_screen";
-	public static final String LOADING_SCREEN_CLASS_PROP = "loading_screen";
-	public static final String LOAD_SCREEN_CLASS_PROP = "load_screen";
-	public static final String SAVE_SCREEN_CLASS_PROP = "save_screen";
 	public static final String EXTEND_VIEWPORT_PROP = "extend_viewport";
 	public static final String VERSION_PROP = "version";
 	public static final String UI_MODE = "ui_mode";

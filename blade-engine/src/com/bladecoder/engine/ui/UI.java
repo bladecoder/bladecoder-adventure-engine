@@ -45,7 +45,7 @@ public class UI {
 	private Skin skin;
 
 	public enum Screens {
-		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN, LOAD_GAME, SAVE_GAME
+		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN, LOAD_GAME_SCREEN, SAVE_GAME_SCREEN
 	}
 
 	private final BladeScreen screens[];
@@ -59,14 +59,14 @@ public class UI {
 
 		loadAssets();
 
-		screens[Screens.INIT_SCREEN.ordinal()] = getCustomScreenInstance(Config.INIT_SCREEN_CLASS_PROP, InitScreen.class);
-		screens[Screens.SCENE_SCREEN.ordinal()] = getCustomScreenInstance(Config.SCENE_SCREEN_CLASS_PROP, DefaultSceneScreen.class);
-		screens[Screens.LOADING_SCREEN.ordinal()] = getCustomScreenInstance(Config.LOADING_SCREEN_CLASS_PROP, LoadingScreen.class);
-		screens[Screens.MENU_SCREEN.ordinal()] = getCustomScreenInstance(Config.MENU_SCREEN_CLASS_PROP, MenuScreen.class);
-		screens[Screens.HELP_SCREEN.ordinal()] = getCustomScreenInstance(Config.HELP_SCREEN_CLASS_PROP, HelpScreen.class);
-		screens[Screens.CREDIT_SCREEN.ordinal()] =  getCustomScreenInstance(Config.CREDIT_SCREEN_CLASS_PROP, CreditsScreen.class);
-		screens[Screens.LOAD_GAME.ordinal()] = getCustomScreenInstance(Config.LOAD_SCREEN_CLASS_PROP, LoadSaveScreen.class);
-		screens[Screens.SAVE_GAME.ordinal()] = getCustomScreenInstance(Config.SAVE_SCREEN_CLASS_PROP, LoadSaveScreen.class);
+		screens[Screens.INIT_SCREEN.ordinal()] = getCustomScreenInstance(Screens.INIT_SCREEN.toString(), InitScreen.class);
+		screens[Screens.SCENE_SCREEN.ordinal()] = getCustomScreenInstance(Screens.SCENE_SCREEN.toString(), DefaultSceneScreen.class);
+		screens[Screens.LOADING_SCREEN.ordinal()] = getCustomScreenInstance(Screens.LOADING_SCREEN.toString(), LoadingScreen.class);
+		screens[Screens.MENU_SCREEN.ordinal()] = getCustomScreenInstance(Screens.MENU_SCREEN.toString(), MenuScreen.class);
+		screens[Screens.HELP_SCREEN.ordinal()] = getCustomScreenInstance(Screens.HELP_SCREEN.toString(), HelpScreen.class);
+		screens[Screens.CREDIT_SCREEN.ordinal()] =  getCustomScreenInstance(Screens.CREDIT_SCREEN.toString(), CreditsScreen.class);
+		screens[Screens.LOAD_GAME_SCREEN.ordinal()] = getCustomScreenInstance(Screens.LOAD_GAME_SCREEN.toString(), LoadSaveScreen.class);
+		screens[Screens.SAVE_GAME_SCREEN.ordinal()] = getCustomScreenInstance(Screens.SAVE_GAME_SCREEN.toString(), LoadSaveScreen.class);
 
 		for (BladeScreen s:screens)
 			s.setUI(this);
