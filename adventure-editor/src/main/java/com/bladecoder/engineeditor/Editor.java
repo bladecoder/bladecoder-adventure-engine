@@ -74,7 +74,7 @@ public class Editor implements ApplicationListener {
 
 		Table rightPanel = new Table(skin);
 		rightPanel.top().left();
-		rightPanel.add(actorPanel).expand().fill();
+		rightPanel.add(actorPanel).expand().fill().left();
 		rightPanel.setBackground("background");
 
 		SplitPane splitPaneRight = new SplitPane(scnEditor, rightPanel,
