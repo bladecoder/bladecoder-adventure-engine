@@ -52,8 +52,12 @@ public class Text implements Serializable {
 		this.style = style;
 		this.cb = cb;
 
-		if (this.time <= 0) {
+		// 0s -> Auto duration
+		// <0 -> Infinity
+		if (this.time == 0) {
 			this.time = DEFAULT_TIME + DEFAULT_TIME * str.length() / 20f;
+		} else if(this.time < 0) {
+			this.time = Float.MAX_VALUE;
 		}
 	}
 	
