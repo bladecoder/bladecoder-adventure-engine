@@ -33,28 +33,24 @@ public class TextAction implements Action {
 	@ActionProperty(type = Type.TEXT_STYLE, required = true, defaultValue = "default")
 	private String style;
 
-	@ActionPropertyDescription("The color to use for the font ('white', 'black' or RRGGBBAA). If not set, the default color defined in the style is used.")
+	@ActionPropertyDescription("The color to use for the font (RRGGBBAA). If not set, the default color defined in the style is used.")
 	@ActionProperty(type = Type.COLOR)
 	private Color color;
 
 	@ActionProperty
 	@ActionPropertyDescription("The position of the text. -1 for center")
-
 	private Vector2 pos;
 
 	@ActionProperty(required = true, defaultValue = "SUBTITLE")
 	@ActionPropertyDescription("The type of the text.")
-
 	private Text.Type type = Text.Type.PLAIN;
 
 	@ActionProperty(defaultValue = "false")
 	@ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")
-
 	private boolean queue = false;
 	
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-
 	private boolean wait = true;
 
 	@Override
