@@ -245,7 +245,7 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 			StringBuilder sb = new StringBuilder(e.getId());
 
 			if (state != null)
-				sb.append("when ").append(state);
+				sb.append(" when ").append(state);
 
 			if (target != null)
 				sb.append(" with target '").append(target).append("'");
