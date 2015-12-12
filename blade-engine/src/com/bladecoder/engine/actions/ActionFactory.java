@@ -105,6 +105,8 @@ public class ActionFactory {
 				"com.bladecoder.engine.actions.TextAction");
 		actions.put("EndGame",
 				"com.bladecoder.engine.actions.EndGameAction");
+		actions.put("ScreenPosition",
+				"com.bladecoder.engine.actions.ScreenPositionAction");
 		
 		for(String name: actions.keySet()) {
 			String cls = actions.get(name);

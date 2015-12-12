@@ -29,8 +29,8 @@ public class MoveToSceneAction implements Action {
 	@ActionPropertyDescription("The selected actor")	
 	private SceneActorRef actor;
 
-	@ActionPropertyDescription("The target scene")
-	@ActionProperty(type = Type.SCENE, required=true)
+	@ActionPropertyDescription("The target scene. The current scene if empty.")
+	@ActionProperty(type = Type.SCENE)
 	private String scene;
 
 	@Override
@@ -51,7 +51,12 @@ public class MoveToSceneAction implements Action {
 		if(s == World.getInstance().getCurrentScene())
 			a.dispose();
 		
-		Scene ts =  World.getInstance().getScene(scene);
+		Scene ts =  null;
+		
+		if(scene == null)
+			ts = World.getInstance().getCurrentScene();
+		else
+			ts = World.getInstance().getScene(scene);
 		
 		if(ts == World.getInstance().getCurrentScene()) {
 			a.loadAssets();

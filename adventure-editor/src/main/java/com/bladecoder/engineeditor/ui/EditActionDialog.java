@@ -182,6 +182,7 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 				}
 
 				ActionUtils.setParam(e, i[j].getTitle(), v);
+				Ctx.project.setModified();
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 				EditorLogger.error(e.getMessage());
 			}

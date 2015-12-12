@@ -21,7 +21,7 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 
-@ActionDescription("Change actor attributes.")
+@ActionDescription("Sets actor position.")
 public class PositionAction implements Action {
 	@ActionProperty( required = true)
 	@ActionPropertyDescription("The target actor")	
