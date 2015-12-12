@@ -128,7 +128,7 @@ public class ProjectToolbar extends Table {
 		assetsBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				openProjectFolder();
+				openAssetFolder();
 			}
 		});
 
@@ -306,7 +306,7 @@ public class ProjectToolbar extends Table {
 
 	}
 
-	private void openProjectFolder() {
+	private void openAssetFolder() {
 		if (Desktop.isDesktopSupported()) {
 			try {
 				Desktop.getDesktop()

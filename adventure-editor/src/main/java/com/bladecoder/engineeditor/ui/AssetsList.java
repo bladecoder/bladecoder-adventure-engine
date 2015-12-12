@@ -273,18 +273,21 @@ public class AssetsList extends Table {
 		}
 	}
 
-	private void edit() {
+	private void edit() {		
 		if (Desktop.isDesktopSupported()) {
+			String type = assetTypes.getSelected();
+			String dir = getAssetDir(type);
+
+			if (type.equals("images") || type.equals("atlases"))
+				dir += "/1";
+						
 			try {
-				Desktop.getDesktop().open(
-						new File(Ctx.project.getProjectDir().getAbsoluteFile()
-								+ "/assets"));
+				Desktop.getDesktop()
+						.open(new File(dir));
 			} catch (IOException e1) {
-				String msg = "Something went wrong while opening assets folder.\n\n"
-						+ e1.getClass().getSimpleName()
-						+ " - "
-						+ e1.getMessage();
-				Message.showMsgDialog(getStage(), "Error",  msg);
+				String msg = "Something went wrong while opening assets folder.\n\n" + e1.getClass().getSimpleName()
+						+ " - " + e1.getMessage();
+				Message.showMsgDialog(getStage(), "Error", msg);
 			}
 		}
 	}
