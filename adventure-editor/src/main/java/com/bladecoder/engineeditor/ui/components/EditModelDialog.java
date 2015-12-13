@@ -18,6 +18,7 @@ package com.bladecoder.engineeditor.ui.components;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
+import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.Message;
 
 public abstract class EditModelDialog<PARENT, T> extends EditDialog {
@@ -51,7 +52,7 @@ public abstract class EditModelDialog<PARENT, T> extends EditDialog {
 			try{
 				modelToInputs();
 			} catch (Exception e1) {
-				Message.showMsg(getStage(), "Error setting fields " + e1.getMessage(), 4);
+				EditorLogger.error(e1.getMessage());
 				e1.printStackTrace();
 			}			
 		}

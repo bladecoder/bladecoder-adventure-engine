@@ -100,6 +100,7 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 		if (e != null)
 			modelToInputs();
+
 	}
 
 	private void setAction() {

@@ -118,6 +118,7 @@ public class CustomList<T> extends Widget implements Cullable {
 
 	public void layout() {
 		final BitmapFont font = style.font;
+		final BitmapFont subfont = style.subtitleFont;
 		final Drawable selectedDrawable = style.selection;
 
 		cellRenderer.layout(style);
@@ -130,16 +131,7 @@ public class CustomList<T> extends Widget implements Cullable {
 			textLayout.setText(font, cellRenderer.getCellTitle(items.get(i)));
 
 			prefWidth = Math.max(textLayout.width, prefWidth);
-
-			if (cellRenderer.hasSubtitle()) {
-				String subtitle = cellRenderer.getCellSubTitle(items.get(i));
-
-				if (subtitle != null) {
-					textLayout.setText(font, subtitle);
-					prefWidth = Math.max(textLayout.width, prefWidth);
-				}
-			}
-
+			
 			if (cellRenderer.hasImage()) {
 				TextureRegion r = cellRenderer.getCellImage(items.get(i));
 
@@ -151,7 +143,16 @@ public class CustomList<T> extends Widget implements Cullable {
 					iw *= ih / r.getRegionHeight();
 				}
 
-				prefWidth = Math.max(iw, prefWidth);
+				prefWidth = Math.max(iw + textLayout.width, prefWidth);
+			}
+
+			if (cellRenderer.hasSubtitle()) {
+				String subtitle = cellRenderer.getCellSubTitle(items.get(i));
+
+				if (subtitle != null) {
+					textLayout.setText(subfont, subtitle);
+					prefWidth = Math.max(textLayout.width, prefWidth);
+				}
 			}
 		}
 

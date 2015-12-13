@@ -40,13 +40,13 @@ import com.bladecoder.engine.util.PolygonUtils;
  * @author rgarcia
  */
 public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializable{
-	private static final int MAX_PATHFINDER_SEARCH_DISTANCE = 30;
+	private static final int MAX_PATHFINDER_SEARCH_DISTANCE = 50;
 	
 	private static final Vector2 tmp = new Vector2();
 	private static final Vector2 tmp2 = new Vector2();
 
 	private Polygon walkZone;
-	private ArrayList<Polygon> obstacles = new ArrayList<Polygon>();
+	private final ArrayList<Polygon> obstacles = new ArrayList<Polygon>();
 
 	final private PathFinder<NavNodePolygonal> pathfinder = new AStarPathFinder<NavNodePolygonal>(this, MAX_PATHFINDER_SEARCH_DISTANCE,
 			new ManhattanDistance());

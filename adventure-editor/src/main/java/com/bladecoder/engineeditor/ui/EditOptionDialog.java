@@ -110,7 +110,10 @@ public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 	@Override
 	protected void modelToInputs() {
 		text.setText(Ctx.project.translate(e.getText()));
+		
+		
 		responseText.setText(Ctx.project.translate(e.getResponseText()));
+		
 		verb.setText(e.getVerbId());
 		next.setText(e.getNext());
 

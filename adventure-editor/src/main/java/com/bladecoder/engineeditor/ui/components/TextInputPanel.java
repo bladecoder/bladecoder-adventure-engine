@@ -35,7 +35,8 @@ public class TextInputPanel extends InputPanel {
 		return input.getText().replaceAll("\n", "\\\\n");
 	}
 
-	public void setText(String s) {	
+	public void setText(String s) {
+		if (s == null) s = "";
 		input.setText(s.replaceAll("\\\\n", "\n"));
 	}
 	
