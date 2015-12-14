@@ -41,7 +41,6 @@ public abstract class ModelList<PARENT, T> extends EditList<T> {
 		});
 
 		this.sorted = sorted;
-
 	}
 
 	public void addElements(PARENT parent, List<T> elements) {
@@ -123,7 +122,9 @@ public abstract class ModelList<PARENT, T> extends EditList<T> {
 			list.setSelectedIndex(pos - 1);
 		else if (pos == 0 && list.getItems().size > 0)
 			list.setSelectedIndex(0);
-
+		else
+			list.getSelection().clear();
+		
 		toolbar.disablePaste(false);
 
 		return e;

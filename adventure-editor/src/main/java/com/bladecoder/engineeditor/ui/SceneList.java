@@ -207,8 +207,11 @@ public class SceneList extends ModelList<World, Scene> {
 
 		// delete init_scene attr if the scene to delete is the chapter
 		// init_scene
-		if (parent.getInitScene().equals(s.getId())) {
-			parent.setInitScene(null);
+		if (parent.getInitScene() != null && parent.getInitScene().equals(s.getId())) {
+			if(parent.getScenes().size() > 0)
+				parent.setInitScene(parent.getScenes().values().iterator().next().getId());
+			else
+				parent.setInitScene(null);
 		}
 
 		// TRANSLATIONS
@@ -248,6 +251,10 @@ public class SceneList extends ModelList<World, Scene> {
 
 		World.getInstance().addScene(newElement);
 		Ctx.project.getI18N().extractStrings(newElement);
+		
+		if (parent.getInitScene() == null) {
+			parent.setInitScene(newElement.getId());
+		}
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();

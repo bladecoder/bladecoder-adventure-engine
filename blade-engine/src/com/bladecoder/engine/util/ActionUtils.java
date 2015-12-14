@@ -323,7 +323,7 @@ public class ActionUtils {
 					else
 						ActionUtils.setParam(action, v.name, v.asString());
 				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-					throw new SerializationException(e);
+					throw new SerializationException("Action: " + action.getClass().getCanonicalName() + "Param: " + v.name, e);
 				}
 			}
 		}
