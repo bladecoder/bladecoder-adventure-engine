@@ -32,6 +32,7 @@ public class Config {
 	public static final String SHOW_DESC_PROP = "show_desc";
 	public static final String EXTEND_VIEWPORT_PROP = "extend_viewport";
 	public static final String VERSION_PROP = "version";
+	public static final String BLADE_ENGINE_VERSION_PROP = "bladeEngineVersion";
 	public static final String UI_MODE = "ui_mode";
 
 	public static final String PROPERTIES_FILENAME = "BladeEngine.properties";
