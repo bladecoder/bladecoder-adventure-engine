@@ -28,10 +28,8 @@ verbs: {
 		state: null,
 		actions: [
 			{
-				class: "com.bladecoder.engine.actions.SayAction",
+				class: "com.bladecoder.engine.actions.LookAtAction",
 				text: "@default.use.0.text",
-				type: "SUBTITLE",
-				queue: false,
 				wait: false
 			}
 		]

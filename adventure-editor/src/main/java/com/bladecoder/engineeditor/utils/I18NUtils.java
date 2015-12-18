@@ -30,7 +30,10 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Properties;
+import java.util.TreeSet;
 
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engineeditor.model.Project;
@@ -91,7 +94,12 @@ public class I18NUtils {
 			writer.write((String) key);
 
 			for (Properties p : props) {
-				writer.write(SEPARATOR + p.getProperty((String) key, ""));
+				if(p.getProperty((String) key) == null) {
+					writer.write(SEPARATOR + "**" + props[0].getProperty((String) key));
+					System.out.println("KEY NOT FOUND: " + key);
+				} else {
+					writer.write(SEPARATOR + p.getProperty((String) key));
+				}
 			}
 
 			writer.write("\n");
@@ -100,6 +108,7 @@ public class I18NUtils {
 		writer.close();
 	}
 
+	@SuppressWarnings("serial")
 	public static final void importTSV(String projectPath, String chapterId, String defaultLocale)
 			throws FileNotFoundException, IOException {
 		String modelPath = projectPath + Project.MODEL_PATH;
@@ -114,7 +123,12 @@ public class I18NUtils {
 				Properties props[] = new Properties[langs.length - 1];
 
 				for (int i = 0; i < props.length; i++) {
-					props[i] = new Properties();
+					props[i] = new Properties() {
+						@Override
+						public synchronized Enumeration<Object> keys() {
+							return Collections.enumeration(new TreeSet<Object>(keySet()));
+						}
+					};
 				}
 
 				// get keys and texts
@@ -135,36 +149,47 @@ public class I18NUtils {
 					if (i == 0) {
 						i18nFilename = modelPath + "/" + chapterId + PROPERTIES_EXT;
 					} else {
-						i18nFilename = modelPath + "/" + chapterId + langs[i + 1] + PROPERTIES_EXT;
+						i18nFilename = modelPath + "/" + chapterId + "_" + langs[i + 1] + PROPERTIES_EXT;
 					}
 
 					FileOutputStream os = new FileOutputStream(i18nFilename);
 					Writer out = new OutputStreamWriter(os, I18N.ENCODING);
-					props[i].store(out, chapterId);
+					props[i].store(out, i18nFilename);
 				}
 			}
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public static final void newLocale(String projectPath, final String chapterId, String defaultLocale,
 			String newLocale) throws FileNotFoundException, IOException {
 		String modelPath = projectPath + Project.MODEL_PATH;
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 		File newChapter = new File(modelPath, chapterId + "_" + newLocale + PROPERTIES_EXT);
 
-		Properties defaultProp = new Properties();
-		Properties newProp = new Properties();
+		Properties defaultProp = new Properties() {
+			@Override
+			public synchronized Enumeration<Object> keys() {
+				return Collections.enumeration(new TreeSet<Object>(keySet()));
+			}
+		};
+		Properties newProp = new Properties() {
+			@Override
+			public synchronized Enumeration<Object> keys() {
+				return Collections.enumeration(new TreeSet<Object>(keySet()));
+			}
+		};
 
 		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 
 		for (Object key : defaultProp.keySet()) {
-			newProp.setProperty((String) key, translatePhrase((String) defaultProp.get(key), defaultLocale, newLocale));
+			newProp.setProperty((String) key, "**" + (String) defaultProp.get(key));
 		}
 
 		// save new .properties
 		FileOutputStream os = new FileOutputStream(newChapter);
 		Writer out = new OutputStreamWriter(os, I18N.ENCODING);
-		newProp.store(out, chapterId);
+		newProp.store(out, newChapter.getName());
 	}
 
 	public static final String translatePhrase(String phrase, String sourceLangCode, String destLangCode) throws UnsupportedEncodingException {
