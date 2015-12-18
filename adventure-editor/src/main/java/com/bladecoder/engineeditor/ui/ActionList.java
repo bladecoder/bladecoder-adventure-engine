@@ -312,8 +312,11 @@ public class ActionList extends ModelList<Verb, Action> {
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 				EditorLogger.error(e.getMessage());
 			}
-
+			
 			insertEndAction(pos + 1, getOrCreateControlActionId((AbstractControlAction) newElement));
+			
+			if(newElement instanceof AbstractIfAction)
+				insertEndAction(pos + 2, getOrCreateControlActionId((AbstractControlAction) newElement));
 		}
 	}
 
