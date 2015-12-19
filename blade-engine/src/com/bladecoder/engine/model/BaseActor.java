@@ -21,8 +21,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.loader.SerializationHelper;
-import com.bladecoder.engine.loader.SerializationHelper.Mode;
+import com.bladecoder.engine.util.SerializationHelper;
+import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 /**
  * A BaseActor is the foundation for all actors in Scenes

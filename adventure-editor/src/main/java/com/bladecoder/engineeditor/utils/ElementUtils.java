@@ -6,9 +6,9 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.loader.SerializationHelper;
-import com.bladecoder.engine.loader.SerializationHelper.Mode;
 import com.bladecoder.engine.util.ActionUtils;
+import com.bladecoder.engine.util.SerializationHelper;
+import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class ElementUtils {
 	public static String getCheckedId(String id, String[] values) {

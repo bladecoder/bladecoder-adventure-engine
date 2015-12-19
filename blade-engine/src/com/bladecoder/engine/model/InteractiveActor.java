@@ -20,8 +20,8 @@ import java.util.HashMap;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.AssetConsumer;
-import com.bladecoder.engine.loader.SerializationHelper;
-import com.bladecoder.engine.loader.SerializationHelper.Mode;
+import com.bladecoder.engine.util.SerializationHelper;
+import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 /**
  * An InteractiveActor is any object in a scene or in the inventory that has

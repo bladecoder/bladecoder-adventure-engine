@@ -44,11 +44,10 @@ import com.bladecoder.engine.anim.Timers;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engine.loader.SerializationHelper;
-import com.bladecoder.engine.loader.SerializationHelper.Mode;
-import com.bladecoder.engine.loader.WorldXMLLoader;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.SerializationHelper;
+import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class World implements Serializable, AssetConsumer {
 
@@ -428,7 +427,7 @@ public class World implements Serializable, AssetConsumer {
 
 			// Clear all pending callbacks
 			ActionCallbackQueue.clear();
-			
+
 			// ONLY dispose currentscene because other scenes are already
 			// disposed
 			if (currentScene != null) {
@@ -447,7 +446,7 @@ public class World implements Serializable, AssetConsumer {
 			spriteBatch.dispose();
 
 			Sprite3DRenderer.disposeBatchs();
-			
+
 			assetState = null;
 
 		} catch (Exception e) {
@@ -515,10 +514,10 @@ public class World implements Serializable, AssetConsumer {
 	public void newGame() throws Exception {
 		loadChapter(null);
 	}
-	
+
 	public void endGame() {
 		dispose();
-		
+
 		// DELETE SAVEGAME
 		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
 			EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).delete();
@@ -580,13 +579,9 @@ public class World implements Serializable, AssetConsumer {
 			verbs.read(json, root);
 			I18N.loadWorld(EngineAssetManager.MODEL_DIR + "world");
 		} else {
-			try {
-				WorldXMLLoader.loadWorld(this);
-			} catch (Exception e) {
-				EngineLogger.error("ERROR LOADING WORLD XML", e);
-				dispose();
-				throw new IOException(e);
-			}
+			EngineLogger.error("ERROR LOADING WORLD: world.json doesn't exists.");
+			dispose();
+			throw new IOException("ERROR LOADING WORLD: world.json doesn't exists.");
 		}
 	}
 
@@ -648,13 +643,9 @@ public class World implements Serializable, AssetConsumer {
 
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
 		} else {
-			try {
-				WorldXMLLoader.loadChapter(chapterName, this);
-			} catch (Exception e) {
-				EngineLogger.error("ERROR LOADING GAME", e);
-				dispose();
-				throw new IOException(e);
-			}
+			EngineLogger.error("ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
+			dispose();
+			throw new IOException("ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
 		}
 
 		EngineLogger.debug("MODEL LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
@@ -809,12 +800,14 @@ public class World implements Serializable, AssetConsumer {
 	public void write(Json json) {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
-			json.writeValue(Config.BLADE_ENGINE_VERSION_PROP, Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
+			json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
+					Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
 			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
 			json.writeValue("initScene", initScene);
 
 		} else {
-			json.writeValue(Config.BLADE_ENGINE_VERSION_PROP, Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
+			json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
+					Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
 			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
 			json.writeValue("currentScene", currentScene.getId());
 			json.writeValue("inventory", inventory);
@@ -844,10 +837,11 @@ public class World implements Serializable, AssetConsumer {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			String version = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
-			if(version != null && !version.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
-				EngineLogger.debug("Game Engine Version v" + version + " differs from Current Engine Version v" + Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
+			if (version != null && !version.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
+				EngineLogger.debug("Game Engine Version v" + version + " differs from Current Engine Version v"
+						+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
-			
+
 			scenes = json.readValue("scenes", HashMap.class, Scene.class, jsonData);
 			initScene = json.readValue("initScene", String.class, jsonData);
 
@@ -862,10 +856,11 @@ public class World implements Serializable, AssetConsumer {
 			setCurrentScene(initScene);
 		} else {
 			String version = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
-			if(version != null && !version.equals(Config.getProperty(Config.VERSION_PROP, ""))) {
-				EngineLogger.debug("Saved Game Engien Version v" + version + " differs from Current Engine Version v" + Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
+			if (version != null && !version.equals(Config.getProperty(Config.VERSION_PROP, ""))) {
+				EngineLogger.debug("Saved Game Engien Version v" + version + " differs from Current Engine Version v"
+						+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
-			
+
 			currentChapter = json.readValue("chapter", String.class, jsonData);
 
 			try {
