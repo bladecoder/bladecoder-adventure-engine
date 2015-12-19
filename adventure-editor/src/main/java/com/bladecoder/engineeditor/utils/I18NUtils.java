@@ -191,6 +191,88 @@ public class I18NUtils {
 		Writer out = new OutputStreamWriter(os, I18N.ENCODING);
 		newProp.store(out, newChapter.getName());
 	}
+	
+	@SuppressWarnings("serial")
+	public static final void compare(String projectPath, final String chapterId, String defaultLocale,
+			String destLocale) throws FileNotFoundException, IOException {
+		String modelPath = projectPath + Project.MODEL_PATH;
+		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
+		File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
+
+		Properties defaultProp = new Properties() {
+			@Override
+			public synchronized Enumeration<Object> keys() {
+				return Collections.enumeration(new TreeSet<Object>(keySet()));
+			}
+		};
+		Properties destProp = new Properties() {
+			@Override
+			public synchronized Enumeration<Object> keys() {
+				return Collections.enumeration(new TreeSet<Object>(keySet()));
+			}
+		};
+
+		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
+		destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
+
+		// SEARCH FOR NOT EXISTING DEST KEYS
+		for (Object key : defaultProp.keySet()) {
+			if(destProp.get(key) == null) {
+				System.out.println("Key not found in '" + destLocale + "' locale: " + key);
+			}
+		}
+		
+		// SEARCH FOR NOT EXISTING DEFAULT CHAPTER KEYS
+		for (Object key : destProp.keySet()) {
+			if(defaultProp.get(key) == null) {
+				System.out.println("Key not found in default locale: " + key);
+			}
+		}
+	}
+	
+	@SuppressWarnings("serial")
+	public static final void sync(String projectPath, final String chapterId, String defaultLocale,
+			String destLocale) throws FileNotFoundException, IOException {
+		String modelPath = projectPath + Project.MODEL_PATH;
+		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
+		File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
+
+		Properties defaultProp = new Properties() {
+			@Override
+			public synchronized Enumeration<Object> keys() {
+				return Collections.enumeration(new TreeSet<Object>(keySet()));
+			}
+		};
+		Properties destProp = new Properties() {
+			@Override
+			public synchronized Enumeration<Object> keys() {
+				return Collections.enumeration(new TreeSet<Object>(keySet()));
+			}
+		};
+
+		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
+		destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
+
+		// SEARCH FOR NOT EXISTING DEST KEYS
+		for (String key : defaultProp.stringPropertyNames()) {
+			if(destProp.get(key) == null) {
+				System.out.println("ADDING Key not found in '" + destLocale + "' locale: " + key + "=" + defaultProp.getProperty(key));
+				destProp.setProperty(key, "**" + defaultProp.getProperty(key));
+			}
+		}
+		
+		// SEARCH FOR NOT EXISTING DEFAULT CHAPTER KEYS
+		for (String key : destProp.stringPropertyNames()) {
+			if(defaultProp.get(key) == null) {
+				System.out.println("DELETE MANUALLY Key not found in default locale: " + key);
+			}
+		}
+		
+		// save dest .properties
+		FileOutputStream os = new FileOutputStream(destChapter);
+		Writer out = new OutputStreamWriter(os, I18N.ENCODING);
+		destProp.store(out, destChapter.getName());
+	}
 
 	public static final String translatePhrase(String phrase, String sourceLangCode, String destLangCode) throws UnsupportedEncodingException {
 		// String query = MessageFormat.format(GOOGLE_TRANSLATE_URL, phrase,
@@ -214,9 +296,12 @@ public class I18NUtils {
 	}
 
 	public static void usage() {
-		System.out.println("Usage:\n" + "\tI18NUtils tsv2properties project_path chapter_id default_locale"
-				+ "\tI18NUtils properties2tsv project_path chapter_id default_locale"
-				+ "\tI18NUtils newlocale project_path chapter_id default_locale new_locale");
+		System.out.println("Usage:"
+				+ "\n\tI18NUtils tsv2properties project_path chapter_id default_locale"
+				+ "\n\tI18NUtils properties2tsv project_path chapter_id default_locale"
+				+ "\n\tI18NUtils newlocale project_path chapter_id default_locale new_locale"
+				+ "\n\tI18NUtils sync project_path chapter_id dest_locale"
+				+ "\n\tI18NUtils compare project_path chapter_id dest_locale");
 	}
 
 	public static final void main(String[] args) throws FileNotFoundException, IOException {
@@ -245,6 +330,22 @@ public class I18NUtils {
 
 			newLocale(args[1], args[2], args[3], args[4]);
 			System.out.println(args[2] + "_" + args[4] + PROPERTIES_EXT + " generated sucessfully.");
+		} else if (args[0].equals("compare")) {
+			if (args.length != 4) {
+				usage();
+				System.exit(-1);
+			}
+
+			compare(args[1], args[2], null, args[3]);
+			System.out.println("Compare ENDED.");	
+		} else if (args[0].equals("sync")) {
+			if (args.length != 4) {
+				usage();
+				System.exit(-1);
+			}
+
+			sync(args[1], args[2], null, args[3]);
+			System.out.println("Sync ENDED.");				
 		}
 	}
 }

@@ -353,8 +353,8 @@ public class DebugScreen implements BladeScreen {
 				Config.getProperty(Config.TITLE_PROP, "title unspecified") + " v" + Config.getProperty(Config.VERSION_PROP, "unspecified") + "\n" +
 				"Blade Engine: v" + Config.getProperty("bladeEngineVersion", "unspecified") + "\n" +
 				"libGdx: v" + Config.getProperty("gdxVersion", "unspecified") + "\n" +
-				"RoboVM: v" + Config.getProperty("roboVMVersion", "unspecified") + "\n" +
-				"Gdx.app.getVersion: " + Gdx.app.getVersion();
+				"RoboVM: v" + Config.getProperty("roboVMVersion", "unspecified") + "\n";
+//				 + "Gdx.app.getVersion: " + Gdx.app.getVersion();
 		
 		Label version = new Label(versionString, ui.getSkin());
 		version.setColor(Color.LIGHT_GRAY);

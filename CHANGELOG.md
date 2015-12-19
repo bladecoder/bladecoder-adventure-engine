@@ -4,6 +4,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.5]
+
+- ENGINE: Added infinity text duration when duration < 0.
+- ENGINE: fix: ImageRenderer check if currentAnimation==null in toString()
+- EDITOR: align left actor panel to left. To always show the '+' button.
+- ENGINE: fix sceneextendviewport world size calc.
+- ENGINE: NEW ScreenPositionAction
+- EDITOR: fixed bug when editing assets
+- EDITOR: Fixed bug in TextInputPanel when text=null 
+- EDITOR: Fixed Issue #25. Error deleting elements from lists.
+- EDITOR: fix: change world.json SayAction changed for LookatAction
+- EDITOR: fix bug when paste IfAttr actions.
+- EDITOR: Fix generated build.gradle BladeEngine.properties path reference when updating versions.
+
+
 ## [0.9.4]
 
 - Compile custom classes when not found in loading project.
