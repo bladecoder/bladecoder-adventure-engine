@@ -79,7 +79,7 @@ public class BuildScriptHelper {
 			write(wr, "	    	println \"Set version $project.version in BladeEngine.properties\"");
 			space(wr);
 			write(wr, "	    	def props = new Properties()");
-			write(wr, "			def propFile = new File(\"android/assets/BladeEngine.properties\");");
+			write(wr, "			def propFile = project.file(\"../android/assets/BladeEngine.properties\");");
 			write(wr, "			props.load(new FileReader(propFile))");
 			write(wr, "			props.\"version\" = version");
 			write(wr, "			props.\"bladeEngineVersion\" = bladeEngineVersion");
