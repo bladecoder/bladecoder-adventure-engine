@@ -261,7 +261,6 @@ public class Sprite3DRenderer implements ActorRenderer {
 	public void setCelLightName(String name) {
 		this.celLightName = name;
 	}
-	
 
 	public float getCameraFOV() {
 		return cameraFOV;
@@ -480,12 +479,15 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 		sb.append("\n  Anims:");
 
-		for (Animation a : currentSource.modelInstance.animations) {
-			sb.append(" ").append(a.id);
-		}
+		if (currentSource != null) {
 
-		if (currentSource.controller.current != null)
-			sb.append("\n  Current Anim: ").append(currentSource.controller.current.animation.id);
+			for (Animation a : currentSource.modelInstance.animations) {
+				sb.append(" ").append(a.id);
+			}
+
+			if (currentSource.controller.current != null)
+				sb.append("\n  Current Anim: ").append(currentSource.controller.current.animation.id);
+		}
 
 		sb.append("\n");
 
@@ -806,7 +808,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 			// TODO: SAVE AND RESTORE CURRENT DIRECTION
 			// TODO: shadowlight, cel light
 		}
-		
+
 		float worldScale = EngineAssetManager.getInstance().getScale();
 		json.writeValue("width", width / worldScale);
 		json.writeValue("height", height / worldScale);
@@ -837,10 +839,10 @@ public class Sprite3DRenderer implements ActorRenderer {
 			currentAnimationType = json.readValue("currentAnimationType", Tween.Type.class, jsonData);
 			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 		}
-		
-		float worldScale = EngineAssetManager.getInstance().getScale();		
-		width = (int)(json.readValue("width", Integer.class, jsonData) * worldScale);
-		height = (int)(json.readValue("height", Integer.class, jsonData) * worldScale);
+
+		float worldScale = EngineAssetManager.getInstance().getScale();
+		width = (int) (json.readValue("width", Integer.class, jsonData) * worldScale);
+		height = (int) (json.readValue("height", Integer.class, jsonData) * worldScale);
 		cameraPos = json.readValue("cameraPos", Vector3.class, jsonData);
 		cameraRot = json.readValue("cameraRot", Vector3.class, jsonData);
 		cameraName = json.readValue("cameraName", String.class, jsonData);
