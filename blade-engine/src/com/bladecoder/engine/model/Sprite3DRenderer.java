@@ -429,19 +429,21 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
-		if (direction != null)
-			lookat(direction);
-
 		startAnimation(id, repeatType, count, null);
+
+		if (direction != null && currentAnimation != null)
+			lookat(direction);
 	}
 
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
-		Vector2 tmp = new Vector2(pf);
-		float angle = tmp.sub(p0).angle() + 90;
-		lookat(angle);
-
 		startAnimation(id, repeatType, count, null);
+
+		if (currentAnimation != null) {
+			Vector2 tmp = new Vector2(pf);
+			float angle = tmp.sub(p0).angle() + 90;
+			lookat(angle);
+		}
 	}
 
 	private void lookat(String dir) {
