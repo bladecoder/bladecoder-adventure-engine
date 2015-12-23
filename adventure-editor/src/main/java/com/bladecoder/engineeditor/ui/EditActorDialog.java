@@ -125,7 +125,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		zIndex = InputPanelFactory.createInputPanel(skin, "zIndex", "The order to draw.", Param.Type.FLOAT, false, "0");
 
 		walkingSpeed = InputPanelFactory.createInputPanel(skin, "Walking Speed",
-				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT, true, "700");
+				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT, true, Float.toString(CharacterActor.DEFAULT_WALKING_SPEED));
 
 		spriteSize = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions", "The size of the 3d sprite",
 				Param.Type.DIMENSION, true);
@@ -236,10 +236,10 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		String type = typePanel.getText();
 		boolean typeChanged = false;
 		BaseActor oldElement = e;
+		
+		boolean isPlayer = false; 
 
 		if (!create) {
-			// remove to allow id, zindex and layer change
-			parent.removeActor(e);
 
 			typeChanged = (type.equals(CHARACTER_TYPE_STR) && !(e instanceof CharacterActor))
 					|| (type.equals(SPRITE_TYPE_STR) && (!(e instanceof SpriteActor) || e instanceof CharacterActor))
@@ -247,6 +247,11 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 							&& (!(e instanceof InteractiveActor) || e instanceof SpriteActor))
 					|| (type.equals(OBSTACLE_TYPE_STR) && !(e instanceof ObstacleActor))
 					|| (type.equals(ANCHOR_TYPE_STR) && !(e instanceof AnchorActor));
+			
+			isPlayer = parent.getPlayer() == e;
+			
+			// remove to allow id, zindex and layer change
+			parent.removeActor(e);
 		}
 
 		if (create || typeChanged) {
@@ -374,6 +379,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		}
 
 		parent.addActor(e);
+		
+		if(isPlayer && !typeChanged)
+			parent.setPlayer((CharacterActor)e);
 
 		if (e instanceof InteractiveActor) {
 			SceneLayer l = parent.getLayer(((InteractiveActor) e).getLayer());
