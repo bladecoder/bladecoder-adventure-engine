@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.assets;
 
+import java.io.File;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
@@ -27,7 +29,7 @@ public class BasePathResolver implements FileHandleResolver {
 		
 		String fullName;
 
-		if (fileName.startsWith("/")) {
+		if (new File(fileName).isAbsolute()) {
 			fullName = fileName;
 		} else {
 			StringBuilder sb = new StringBuilder();
