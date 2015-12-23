@@ -270,6 +270,8 @@ public class PackageDialog extends EditDialog {
 			setVisible(androidKeyAlias, true);
 			setVisible(androidKeyStorePassword, true);
 			setVisible(androidKeyAliasPassword, true);
+		} else if (a.equals("html")) {
+			Message.showMsgDialog(getStage(), "Not Supported", "HTML export is not supported yet.");
 		}
 	}
 
