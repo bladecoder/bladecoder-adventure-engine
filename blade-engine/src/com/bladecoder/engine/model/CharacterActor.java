@@ -32,7 +32,7 @@ import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class CharacterActor extends SpriteActor {
-	private final static float DEFAULT_WALKING_SPEED = 700f; // Speed units:
+	public final static float DEFAULT_WALKING_SPEED = 1000f; // Speed units:
 																// pix/sec.
 
 	public final static String DEFAULT_STAND_ANIM = "stand";
