@@ -70,10 +70,10 @@ public class WorldProps extends PropertyTable {
 			addProperty(Project.HEIGHT_PROPERTY, World.getInstance().getHeight());
 			addProperty(Config.TITLE_PROP, Ctx.project.getTitle());
 			addProperty(Config.INVENTORY_POS_PROP,
-					Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_POS_PROP, "down"));
+					Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(),  new String[] {"TOP", "DOWN", "LEFT", "RIGHT", "CENTER"});
 			addProperty(Config.INVENTORY_AUTOSIZE_PROP, Boolean
 					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_AUTOSIZE_PROP, "true")));
-			addProperty(Config.UI_MODE, Ctx.project.getProjectConfig().getProperty(Config.UI_MODE, "TWO_BUTTONS"));
+			addProperty(Config.UI_MODE, Ctx.project.getProjectConfig().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(), new String[] {"TWO_BUTTONS", "PIE", "SINGLE_CLICK"});
 			addProperty(Config.DEBUG_PROP,
 					Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.DEBUG_PROP, "false")));
 			addProperty(Config.SHOW_DESC_PROP,
