@@ -152,19 +152,19 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 		rowSpace = DPIUtils.getSpacing();
 
-		int w = (int) (width * .8f / tileSize) * tileSize;
+		int w = (int) (width * .7f / tileSize) * tileSize;
 		int h = (int) (height * .7f / tileSize) * tileSize;
 
 		if (autosize) {
 			if (inventoryPos == InventoryPos.LEFT || inventoryPos == InventoryPos.RIGHT) {
-				int w2 = tileSize * (inventory.getNumItems() / (h / tileSize) + 1);
+				int w2 = tileSize * ((inventory.getNumItems() - 1) / (h / tileSize) + 1);
 
 				if (w2 < w)
 					w = w2;
 			} else {
 
-				int h2 = tileSize * (inventory.getNumItems() / (w / tileSize) + 1);
-
+				int h2 = tileSize * ((inventory.getNumItems() - 1) / (w / tileSize) + 1);
+				
 				if (h2 < h)
 					h = h2;
 			}
