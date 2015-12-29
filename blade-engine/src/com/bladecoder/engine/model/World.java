@@ -875,12 +875,12 @@ public class World implements Serializable, AssetConsumer {
 
 			currentScene = scenes.get(json.readValue("currentScene", String.class, jsonData));
 			assetState = AssetState.LOAD_ASSETS;
+			
+			inventory = json.readValue("inventory", Inventory.class, jsonData);
 
 			for (Scene s : scenes.values()) {
 				s.read(json, jsonData.get("scenes").get(s.getId()));
 			}
-
-			inventory = json.readValue("inventory", Inventory.class, jsonData);
 
 			timeOfGame = json.readValue("timeOfGame", Float.class, jsonData);
 			cutMode = json.readValue("cutmode", Boolean.class, jsonData);

@@ -24,7 +24,7 @@ import com.bladecoder.engine.model.World;
 
 @ActionDescription("Puts the selected actor in the inventory.")
 public class PickUpAction implements Action {
-	@ActionProperty()
+	@ActionProperty(required = true)
 	@ActionPropertyDescription("The target actor")
 	private SceneActorRef actor;
 

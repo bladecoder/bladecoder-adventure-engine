@@ -125,10 +125,10 @@ public class Inventory implements AssetConsumer, Serializable  {
 	public void write(Json json) {
 		SceneActorRef actorRef;
 		
-		json.writeValue("visible", visible);
-		
+		json.writeValue("visible", visible);;
+
 		json.writeObjectStart("items");
-		for(SpriteActor a:items) {
+		for (SpriteActor a : items) {
 			actorRef = new SceneActorRef(a.getInitScene(), a.getId());
 			json.writeValue(actorRef.toString(), a);
 		}
@@ -143,14 +143,26 @@ public class Inventory implements AssetConsumer, Serializable  {
 		
 		JsonValue jsonValueActors = jsonData.get("items");
 		SceneActorRef actorRef;
-		
-		for(int i = 0; i < jsonValueActors.size; i++) {
+
+		// GET ACTORS FROM HIS INIT SCENE.
+		for (int i = 0; i < jsonValueActors.size; i++) {
 			JsonValue jsonValueAct = jsonValueActors.get(i);
 			actorRef = new SceneActorRef(jsonValueAct.name);
 			Scene sourceScn = World.getInstance().getScene(actorRef.getSceneId());
+
 			BaseActor actor = sourceScn.getActor(actorRef.getActorId(), false);
+			sourceScn.removeActor(actor);
+			addItem((SpriteActor)actor);
+		}
+		
+		// READ ACTOR STATE. 
+		// The state must be retrieved after getting actors from his init scene to restore verb cb properly.
+		for (int i = 0; i < jsonValueActors.size; i++) {
+			JsonValue jsonValueAct = jsonValueActors.get(i);
+			actorRef = new SceneActorRef(jsonValueAct.name);
+
+			SpriteActor actor = items.get(i);
 			actor.read(json, jsonValueAct);
-			items.add((SpriteActor)actor);
 		}
 	}
 }

@@ -28,7 +28,6 @@ public class SetSceneStateAction implements Action {
 
 	@ActionProperty
 	@ActionPropertyDescription("The scene 'state'")
-
 	private String state;
 
 	@Override
