@@ -62,8 +62,6 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 	private InputPanel id;
 	private InputPanel backgroundAtlas;
 	private InputPanel backgroundRegion;
-	private InputPanel lightmapAtlas;
-	private InputPanel lightmapRegion;
 	private InputPanel depthVector;
 	private InputPanel state;
 	private InputPanel music;
@@ -82,10 +80,6 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 				"The atlas where the background for the scene is located", atlasList, false);
 		backgroundRegion = InputPanelFactory.createInputPanel(skin, "Background Region Id",
 				"The region id for the background.", new String[0], false);
-		lightmapAtlas = InputPanelFactory.createInputPanel(skin, "Lightmap Atlas",
-				"The atlas where the lightmap for the scene is located", atlasList, false);
-		lightmapRegion = InputPanelFactory.createInputPanel(skin, "Lightmap Region Id",
-				"The region id for the lightmap", new String[0], false);
 		depthVector = InputPanelFactory.createInputPanel(skin, "Depth Vector",
 				"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.",
 				Param.Type.VECTOR2, false);
@@ -122,25 +116,13 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 			}
 		});
 
-		((SelectBox<String>) lightmapAtlas.getField()).addListener(new ChangeListener() {
-
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				try {
-					fillLightmapRegions(lightmapAtlas, lightmapAtlas);
-				} catch (Exception e) {
-					Message.showMsg(getStage(), "Error loading regions from selected atlas", 4);
-				}
-			}
-		});
-
 		try {
 			fillBGRegions(backgroundAtlas, backgroundRegion);
 		} catch (Exception e2) {
 			EditorLogger.error("Error loading regions from selected atlas");
 		}
 
-		init(parent, e, new InputPanel[] { id, backgroundAtlas, backgroundRegion, lightmapAtlas, lightmapRegion,
+		init(parent, e, new InputPanel[] { id, backgroundAtlas, backgroundRegion,
 				depthVector, state, music, loopMusic, initialMusicDelay, repeatMusicDelay });
 	}
 
@@ -190,31 +172,6 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		showBgImage(regionInput.getText());
 	}
 
-	private void fillLightmapRegions(InputPanel atlasInput, InputPanel regionInput) {
-		@SuppressWarnings("unchecked")
-		SelectBox<String> cb = (SelectBox<String>) regionInput.getField();
-
-		// cb.clearItems();
-		cb.getItems().clear();
-
-		TextureAtlas atlas = new TextureAtlas(Gdx.files.absolute(Ctx.project.getProjectPath() + Project.ATLASES_PATH
-				+ "/" + Ctx.project.getResDir() + "/" + atlasInput.getText() + ".atlas"));
-
-		Array<AtlasRegion> regions = atlas.getRegions();
-
-		for (AtlasRegion r : regions)
-			if (cb.getItems().indexOf(r.name, false) == -1)
-				cb.getItems().add(r.name);
-
-		cb.getList().setItems(cb.getItems());
-		if (cb.getItems().size > 0)
-			cb.setSelectedIndex(0);
-
-		cb.invalidateHierarchy();
-
-		atlas.dispose();
-	}
-
 	@Override
 	protected void inputsToModel(boolean create) {
 
@@ -247,8 +204,6 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		
 		e.setBackgroundAtlas(backgroundAtlas.getText());
 		e.setBackgroundRegionId(backgroundRegion.getText());
-		e.setLightMapAtlas(lightmapAtlas.getText());
-		e.setLightMapRegionId(lightmapRegion.getText());
 		e.setDepthVector(Param.parseVector2(depthVector.getText()));
 		e.setState(state.getText());
 
@@ -276,8 +231,6 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		id.setText(e.getId());
 		backgroundAtlas.setText(e.getBackgroundAtlas());
 		backgroundRegion.setText(e.getBackgroundRegionId());
-		lightmapAtlas.setText(e.getLightMapAtlas());
-		lightmapRegion.setText(e.getLightMapRegionId());
 		if (e.getDepthVector() != null)
 			depthVector.setText(Param.toStringParam(e.getDepthVector()));
 		state.setText(e.getState());

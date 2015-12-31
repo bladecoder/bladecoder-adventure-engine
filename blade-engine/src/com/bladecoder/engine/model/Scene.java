@@ -21,7 +21,6 @@ import java.util.List;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -63,11 +62,8 @@ public class Scene implements Serializable, AssetConsumer {
 	private SceneCamera camera = new SceneCamera();
 
 	private Array<AtlasRegion> background;
-	private Array<AtlasRegion> lightMap;
 	private String backgroundAtlas;
 	private String backgroundRegionId;
-	private String lightMapAtlas;
-	private String lightMapRegionId;
 
 	/** For polygonal PathFinding */
 	private PolygonalNavGraph polygonalNavGraph;
@@ -292,24 +288,6 @@ public class Scene implements Serializable, AssetConsumer {
 			layer.draw(batch);
 			batch.end();
 		}
-
-		// Draw the light map
-		if (lightMap != null) {
-			// Multiplicative blending for light maps
-			batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
-			batch.setProjectionMatrix(camera.calculateParallaxMatrix(1, 1));
-			batch.begin();
-
-			float x = 0;
-
-			for (AtlasRegion tile : lightMap) {
-				batch.draw(tile, x, 0f);
-				x += tile.getRegionWidth();
-			}
-
-			batch.end();
-			batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		}
 	}
 
 	public void drawBBoxLines(ShapeRenderer renderer) {
@@ -392,8 +370,6 @@ public class Scene implements Serializable, AssetConsumer {
 	public void setBackground(String bgAtlas, String bgId, String lightMapAtlas, String lightMapId) {
 		this.backgroundAtlas = bgAtlas;
 		this.backgroundRegionId = bgId;
-		this.lightMapAtlas = lightMapAtlas;
-		this.lightMapRegionId = lightMapId;
 	}
 
 	/**
@@ -547,22 +523,6 @@ public class Scene implements Serializable, AssetConsumer {
 		this.backgroundRegionId = backgroundRegionId;
 	}
 
-	public String getLightMapAtlas() {
-		return lightMapAtlas;
-	}
-
-	public void setLightMapAtlas(String lightMapAtlas) {
-		this.lightMapAtlas = lightMapAtlas;
-	}
-
-	public String getLightMapRegionId() {
-		return lightMapRegionId;
-	}
-
-	public void setLightMapRegionId(String lightMapRegionId) {
-		this.lightMapRegionId = lightMapRegionId;
-	}
-
 	public String getMusicFilename() {
 		return musicFilename;
 	}
@@ -630,11 +590,6 @@ public class Scene implements Serializable, AssetConsumer {
 			EngineAssetManager.getInstance().loadAtlas(backgroundAtlas);
 		}
 
-		// LOAD LIGHT MAP
-		if (lightMapAtlas != null && !lightMapAtlas.isEmpty()) {
-			EngineAssetManager.getInstance().loadAtlas(lightMapAtlas);
-		}
-
 		if (musicFilename != null)
 			EngineAssetManager.getInstance().loadMusic(musicFilename);
 
@@ -672,11 +627,6 @@ public class Scene implements Serializable, AssetConsumer {
 			// camera.updatePos(followActor);
 		}
 
-		// RETRIEVE LIGHT MAP
-		if (lightMapAtlas != null && !lightMapAtlas.isEmpty()) {
-			lightMap = EngineAssetManager.getInstance().getRegions(lightMapAtlas, lightMapRegionId);
-		}
-
 		// RETRIEVE ACTORS
 		for (BaseActor a : actors.values()) {
 			if (a instanceof AssetConsumer)
@@ -702,11 +652,6 @@ public class Scene implements Serializable, AssetConsumer {
 
 		if (backgroundAtlas != null && !backgroundAtlas.isEmpty()) {
 			EngineAssetManager.getInstance().disposeAtlas(backgroundAtlas);
-		}
-
-		// LOAD LIGHT MAP
-		if (lightMapAtlas != null && !lightMapAtlas.isEmpty()) {
-			EngineAssetManager.getInstance().disposeAtlas(lightMapAtlas);
 		}
 
 		// orderedActors.clear();
@@ -748,11 +693,6 @@ public class Scene implements Serializable, AssetConsumer {
 			if (backgroundAtlas != null) {
 				json.writeValue("backgroundAtlas", backgroundAtlas);
 				json.writeValue("backgroundRegionId", backgroundRegionId);
-			}
-
-			if (lightMapAtlas != null) {
-				json.writeValue("lightMapAtlas", lightMapAtlas);
-				json.writeValue("lightMapRegionId", lightMapRegionId);
 			}
 
 			if (musicFilename != null) {
@@ -823,8 +763,6 @@ public class Scene implements Serializable, AssetConsumer {
 
 			backgroundAtlas = json.readValue("backgroundAtlas", String.class, jsonData);
 			backgroundRegionId = json.readValue("backgroundRegionId", String.class, jsonData);
-			lightMapAtlas = json.readValue("lightMapAtlas", String.class, jsonData);
-			lightMapRegionId = json.readValue("lightMapRegionId", String.class, jsonData);
 
 			musicFilename = json.readValue("musicFilename", String.class, jsonData);
 
