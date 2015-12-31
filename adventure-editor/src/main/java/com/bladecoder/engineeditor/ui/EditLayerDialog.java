@@ -29,6 +29,7 @@ public class EditLayerDialog extends EditModelDialog<Scene, SceneLayer> {
 	private InputPanel name;
 	private InputPanel visible;
 	private InputPanel dynamic;
+	private InputPanel parallax;
 	
 	public EditLayerDialog(Skin skin, Scene parent, SceneLayer e) {
 		super(skin);
@@ -36,10 +37,11 @@ public class EditLayerDialog extends EditModelDialog<Scene, SceneLayer> {
 		name = InputPanelFactory.createInputPanel(skin, "Layer Name", "The name of the layer", true);
 		visible = InputPanelFactory.createInputPanel(skin, "Visible", "Layer Visibility", Param.Type.BOOLEAN, true, "true");
 		dynamic = InputPanelFactory.createInputPanel(skin, "Dynamic", "True for actor reordering based in y position", Param.Type.BOOLEAN, true,"false");
+		parallax = InputPanelFactory.createInputPanel(skin, "Parallax Factor", "The multiplier factor for parallax effect", Param.Type.FLOAT, true,"1.0");
 
 		setInfo("Scenes can have a list of layers. Actors are added to a specific layer to control the draw order");
 
-		init(parent, e, new InputPanel[] { name, visible, dynamic });
+		init(parent, e, new InputPanel[] { name, visible, dynamic, parallax });
 	}
 	
 	@Override
@@ -49,9 +51,11 @@ public class EditLayerDialog extends EditModelDialog<Scene, SceneLayer> {
 			e = new SceneLayer();
 		}
 		
+		// TODO if the name is changed. Change all actor layer name.
 		e.setName(name.getText());
 		e.setVisible(Boolean.parseBoolean(visible.getText()));
 		e.setDynamic(Boolean.parseBoolean(dynamic.getText()));
+		e.setParallaxMultiplier(Float.parseFloat(parallax.getText()));
 		
 		if(create) {
 			parent.getLayers().add(e);
@@ -69,5 +73,6 @@ public class EditLayerDialog extends EditModelDialog<Scene, SceneLayer> {
 		name.setText(e.getName());
 		visible.setText(Boolean.toString(e.isVisible()));
 		dynamic.setText(Boolean.toString(e.isDynamic()));
+		parallax.setText(Float.toString(e.getParallaxMultiplier()));
 	}	
 }

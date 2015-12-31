@@ -203,6 +203,7 @@ public class LayerList extends ModelList<Scene, SceneLayer> {
 
 			sb.append("dynamic: ").append(l.isDynamic());
 			sb.append(" visible: ").append(l.isVisible());
+			sb.append(" parallax: ").append(l.getParallaxMultiplier());
 
 			return sb.toString();
 		}

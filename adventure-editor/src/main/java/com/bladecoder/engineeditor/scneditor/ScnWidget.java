@@ -28,6 +28,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -36,6 +37,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -133,7 +135,7 @@ public class ScnWidget extends Widget {
 					setSelectedScene(Ctx.project.getSelectedScene());
 					setSelectedActor(Ctx.project.getSelectedActor());
 				} else if (e.getPropertyName().equals("init_animation")) {
-					if(!inScene)
+					if (!inScene)
 						setSelectedFA(null);
 				}
 			}
@@ -215,7 +217,7 @@ public class ScnWidget extends Widget {
 			batch.disableBlending();
 			tile.draw(batch, getX(), getY(), getWidth(), getHeight());
 			batch.enableBlending();
-			
+
 			Vector3 v = new Vector3(getX(), getY(), 0);
 			v = v.prj(batch.getTransformMatrix());
 
@@ -229,25 +231,42 @@ public class ScnWidget extends Widget {
 				// WORLD CAMERA
 				sceneBatch.setProjectionMatrix(camera.combined);
 				sceneBatch.begin();
-				scn.draw(sceneBatch);
 				
-				// draw not visible sprite actors
+				Array<AtlasRegion> scnBackground = scn.getBackground();
+
+				if (scnBackground != null) {
+					sceneBatch.disableBlending();
+
+					float x = 0;
+
+					for (AtlasRegion tile : scnBackground) {
+						sceneBatch.draw(tile, x, 0f);
+						x += tile.getRegionWidth();
+					}
+
+					sceneBatch.enableBlending();
+				}
+
+				// draw layers from bottom to top
 				List<SceneLayer> layers = scn.getLayers();
 				for (int i = layers.size() - 1; i >= 0; i--) {
 					SceneLayer layer = layers.get(i);
-					
+
+					if (!layer.isVisible())
+						continue;
+
 					List<InteractiveActor> actors = layer.getActors();
-					
-					for (BaseActor a : actors) {
-						if(a instanceof SpriteActor  && !a.isVisible()) {
+
+					for (InteractiveActor a : actors) {
+						if (a instanceof SpriteActor) {
+							boolean visibility = a.isVisible();
 							a.setVisible(true);
-							((SpriteActor)a).draw(sceneBatch);
-							a.setVisible(false);
+							((SpriteActor) a).draw(sceneBatch);
+							a.setVisible(visibility);
 						}
 					}
 				}
-				
-				
+
 				sceneBatch.end();
 				ScissorStack.popScissors();
 			}
@@ -375,8 +394,8 @@ public class ScnWidget extends Widget {
 
 	public void setInSceneSprites(boolean v) {
 		inScene = v;
-		
-		if(!inScene)
+
+		if (!inScene)
 			setSelectedFA(null);
 	}
 
@@ -386,7 +405,7 @@ public class ScnWidget extends Widget {
 
 	public void setAnimationRenderer(BaseActor a, AnimationDesc fa) {
 		try {
-			faRenderer.setActor(a);		
+			faRenderer.setActor(a);
 			faRenderer.setAnimation(fa);
 		} catch (Exception e) {
 			Message.showMsg(getStage(), "Could not retrieve assets for sprite: " + fa.id, 4);
@@ -577,7 +596,7 @@ public class ScnWidget extends Widget {
 		}
 
 		selectedActor = a;
-//		faRenderer.setActor(a);
+		// faRenderer.setActor(a);
 		setAnimationRenderer(null, null);
 	}
 

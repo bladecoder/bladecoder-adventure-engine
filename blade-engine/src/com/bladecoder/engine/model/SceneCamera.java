@@ -18,6 +18,7 @@ package com.bladecoder.engine.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
@@ -44,6 +45,11 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 	
 	private CameraTween cameraTween;
 	
+	private Matrix4 parallaxView = new Matrix4();
+	private Matrix4 parallaxCombined = new Matrix4();
+	private Vector3 tmp = new Vector3();
+	private Vector3 tmp2 = new Vector3();
+	
 	public SceneCamera() {
 	}
 	
@@ -56,9 +62,7 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		setToOrtho(false, worldWidth, worldHeight);
 		update();
 		
-		startScrollDistanceX = worldWidth * START_SCROLLX; // When the followed actor reach 1/4 of
-		  // the world scrolling starts
-
+		startScrollDistanceX = worldWidth * START_SCROLLX; 
 		startScrollDistanceY = worldHeight * START_SCROLLY;
 	}
 	
@@ -79,8 +83,8 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 	}
 
 	public void setScrollingDimensions(float w, float h) {
-		scrollingWidth = w;
-		scrollingHeight =  h;
+		scrollingWidth = Math.max(w, viewportWidth);
+		scrollingHeight =  Math.max(h, viewportHeight);
 	}
 	
 	public void update(float delta) {
@@ -173,6 +177,20 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 
 	public void scene2screen(Viewport viewport, Vector3 out) {
 		project(out, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
+	}
+	
+	public Matrix4 calculateParallaxMatrix (float parallaxX, float parallaxY) {
+		update();
+		tmp.set(position);
+//		tmp.x *= parallaxX;
+		tmp.y *= parallaxY;
+		
+		tmp.x = (tmp.x - scrollingWidth / 2) * parallaxX + scrollingWidth / 2; 
+
+		parallaxView.setToLookAt(tmp, tmp2.set(tmp).add(direction), up);
+		parallaxCombined.set(projection);
+		Matrix4.mul(parallaxCombined.val, parallaxView.val);
+		return parallaxCombined;
 	}
 	
 	@Override

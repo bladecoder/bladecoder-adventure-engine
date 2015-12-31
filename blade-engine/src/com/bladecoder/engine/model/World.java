@@ -167,11 +167,7 @@ public class World implements Serializable, AssetConsumer {
 
 	public void draw() {
 		if (assetState == AssetState.LOADED) {
-
-			spriteBatch.setProjectionMatrix(currentScene.getCamera().combined);
-			spriteBatch.begin();
 			getCurrentScene().draw(spriteBatch);
-			spriteBatch.end();
 		}
 	}
 

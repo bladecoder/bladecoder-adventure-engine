@@ -265,40 +265,50 @@ public class Scene implements Serializable, AssetConsumer {
 		}
 	}
 
-	public void draw(SpriteBatch spriteBatch) {
+	public void draw(SpriteBatch batch) {
 
 		if (background != null) {
-			spriteBatch.disableBlending();
+			batch.disableBlending();
+			batch.setProjectionMatrix(camera.calculateParallaxMatrix(1, 1));
+			batch.begin();
 
 			float x = 0;
 
 			for (AtlasRegion tile : background) {
-				spriteBatch.draw(tile, x, 0f);
+				batch.draw(tile, x, 0f);
 				x += tile.getRegionWidth();
 			}
-
-			spriteBatch.enableBlending();
+			
+			batch.end();
+			batch.enableBlending();
 		}
 
 		// draw layers from bottom to top
 		for (int i = layers.size() - 1; i >= 0; i--) {
 			SceneLayer layer = layers.get(i);
-			layer.draw(spriteBatch);
+			
+			batch.setProjectionMatrix(camera.calculateParallaxMatrix(layer.getParallaxMultiplier(), 1));
+			batch.begin();
+			layer.draw(batch);
+			batch.end();
 		}
 
 		// Draw the light map
 		if (lightMap != null) {
 			// Multiplicative blending for light maps
-			spriteBatch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
+			batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
+			batch.setProjectionMatrix(camera.calculateParallaxMatrix(1, 1));
+			batch.begin();
 
 			float x = 0;
 
 			for (AtlasRegion tile : lightMap) {
-				spriteBatch.draw(tile, x, 0f);
+				batch.draw(tile, x, 0f);
 				x += tile.getRegionWidth();
 			}
 
-			spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+			batch.end();
+			batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		}
 	}
 

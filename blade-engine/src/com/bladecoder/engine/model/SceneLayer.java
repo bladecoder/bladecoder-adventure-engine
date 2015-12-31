@@ -11,6 +11,7 @@ public class SceneLayer {
 	private String name;
 	private boolean visible = true;
 	private boolean dynamic;
+	private float parallax = 1.0f;
 	
 	transient private final List<InteractiveActor> actors = new ArrayList<InteractiveActor>();
 	
@@ -73,5 +74,13 @@ public class SceneLayer {
 
 	public void remove(BaseActor actor) {
 		actors.remove(actor);
+	}
+
+	public float getParallaxMultiplier() {
+		return parallax;
+	}
+
+	public void setParallaxMultiplier(float parallaxMultiplier) {
+		this.parallax = parallaxMultiplier;
 	}
 }
