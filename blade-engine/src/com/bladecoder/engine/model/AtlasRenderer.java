@@ -121,13 +121,13 @@ public class AtlasRenderer implements ActorRenderer {
 		}
 
 		x = x + tex.offsetX - tex.originalWidth / 2;
-		y = y + tex.offsetY + tex.originalHeight * (scale - 1) / 2;
+		y = y + tex.offsetY - tex.originalHeight * (1 - scale) / 2;
 
 		if (!flipX) {
-			batch.draw(tex, x, y, tex.packedWidth / 2, tex.packedHeight / 2, tex.packedWidth, tex.packedHeight, scale,
+			batch.draw(tex, x, y, tex.originalWidth / 2 - tex.offsetX, tex.originalHeight / 2  - tex.offsetY, tex.packedWidth, tex.packedHeight, scale,
 					scale, 0);
 		} else {
-			batch.draw(tex, x + tex.packedWidth * scale, y, tex.packedWidth / 2, tex.packedHeight / 2, -tex.packedWidth,
+			batch.draw(tex, x + tex.packedWidth * scale, y, tex.originalWidth / 2 - tex.offsetX, tex.originalHeight / 2  - tex.offsetY, -tex.packedWidth,
 					tex.packedHeight, scale, scale, 0);
 		}
 	}

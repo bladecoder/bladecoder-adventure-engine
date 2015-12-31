@@ -170,7 +170,8 @@ public class PackageDialog extends EditDialog {
 				Ctx.project.getEditorConfig().setProperty(DIR_PROP, dir.getText());
 
 				for (InputPanel i : options) {
-					Ctx.project.getEditorConfig().setProperty("package." + i.getTitle(), i.getText());
+					if(i.getText() != null)
+						Ctx.project.getEditorConfig().setProperty("package." + i.getTitle(), i.getText());
 				}
 				
 				Message.hideMsg();
