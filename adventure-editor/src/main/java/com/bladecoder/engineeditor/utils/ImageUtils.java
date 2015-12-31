@@ -163,8 +163,8 @@ public class ImageUtils {
 		settings.rotation = false;
 		settings.minWidth = 16;
 		settings.minWidth = 16;
-		settings.stripWhitespaceX = false;
-		settings.stripWhitespaceY = false;
+		settings.stripWhitespaceX = true;
+		settings.stripWhitespaceY = true;
 		settings.alphaThreshold = 0;
 
 		settings.filterMin = filterMin;

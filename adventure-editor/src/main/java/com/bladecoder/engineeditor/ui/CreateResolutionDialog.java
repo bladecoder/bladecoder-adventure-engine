@@ -34,7 +34,7 @@ import com.bladecoder.engineeditor.utils.Message;
 
 public class CreateResolutionDialog extends EditDialog {
 
-	private static final String INFO = "Create a new resolution. Scale backgrounds and overlays from the world resolution.";
+	private static final String INFO = "Create a new resolution. Scale all atlases and images of the game.";
 
 	private InputPanel scale;
 	
