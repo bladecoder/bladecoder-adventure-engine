@@ -75,12 +75,12 @@ public class CreateAtlasDialog extends EditDialog {
 	protected void ok() {
 		Message.showMsg(getStage(), "Generating atlas...", true);
 		
-		Timer.post(new Task() {
+		Timer.schedule(new Task() {
 			@Override
 			public void run() {			
 				genAtlas();				
 			}
-		});
+		},1);
 	}
 
 	@Override

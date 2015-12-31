@@ -60,7 +60,7 @@ public class CreateResolutionDialog extends EditDialog {
 		
 		Message.showMsg(getStage(), "Creating resolution...", true);
 		
-		Timer.post(new Task() {
+		Timer.schedule(new Task() {
 			@Override
 			public void run() {			
 				createResolution();
@@ -75,7 +75,7 @@ public class CreateResolutionDialog extends EditDialog {
 				if(msg != null)
 					Message.showMsgDialog(getStage(), "Error creating resolution", msg);
 			}
-		});
+		},1);
 	}
 	
 	private void createResolution() {

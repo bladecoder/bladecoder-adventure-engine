@@ -119,6 +119,12 @@ public class CustomTextureUnpacker {
 			g2.drawImage(splitImage, padding, padding, null);
 			g2.dispose();
 			return paddedImage;
+		} else if (region.originalWidth != region.width || region.originalHeight != region.height) {
+				BufferedImage paddedImage = new BufferedImage(region.originalWidth, region.originalHeight, page.getType());
+				Graphics2D g2 = paddedImage.createGraphics();
+				g2.drawImage(splitImage, (int)region.offsetX, region.originalHeight - region.height, null);
+				g2.dispose();
+				return paddedImage;
 		} else {
 			return splitImage;
 		}
