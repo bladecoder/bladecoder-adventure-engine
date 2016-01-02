@@ -68,6 +68,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 	private InputPanel loopMusic;
 	private InputPanel initialMusicDelay;
 	private InputPanel repeatMusicDelay;
+	private InputPanel sceneSize;
 
 	@SuppressWarnings("unchecked")
 	public EditSceneDialog(Skin skin, World parent, Scene e) {
@@ -91,6 +92,9 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 				"The time to wait before playing", Param.Type.FLOAT, true, "0");
 		repeatMusicDelay = InputPanelFactory.createInputPanel(skin, "Repeat music delay",
 				"The time to wait before repetitions", Param.Type.FLOAT, true, "0");
+		
+		sceneSize = InputPanelFactory.createInputPanel(skin, "Scene Dimension",
+				"Sets the size of the scene. If empty, the background image size is used as the scene dimension.", Param.Type.DIMENSION, false);
 
 		bgImage = new Image();
 		bgImage.setScaling(Scaling.fit);
@@ -123,7 +127,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		}
 
 		init(parent, e, new InputPanel[] { id, backgroundAtlas, backgroundRegion,
-				depthVector, state, music, loopMusic, initialMusicDelay, repeatMusicDelay });
+				depthVector, state, sceneSize, music, loopMusic, initialMusicDelay, repeatMusicDelay });
 	}
 
 	private void showBgImage(String r) {
@@ -209,6 +213,8 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
 		e.setMusic(music.getText(), Boolean.parseBoolean(loopMusic.getText()),
 				Float.parseFloat(initialMusicDelay.getText()), Float.parseFloat(repeatMusicDelay.getText()));
+		
+		e.setSceneSize(Param.parseVector2(sceneSize.getText()));
 
 		parent.addScene(e);
 
@@ -238,6 +244,9 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		loopMusic.setText(Boolean.toString(e.isLoopMusic()));
 		initialMusicDelay.setText(Float.toString(e.getInitialMusicDelay()));
 		repeatMusicDelay.setText(Float.toString(e.getRepeatMusicDelay()));
+		
+		if (e.getSceneSize() != null)
+			sceneSize.setText(Param.toStringParam(e.getSceneSize()));
 	}
 
 	private String[] getAtlasList() {

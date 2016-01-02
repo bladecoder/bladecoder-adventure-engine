@@ -127,8 +127,8 @@ public class AtlasRenderer implements ActorRenderer {
 			batch.draw(tex, x, y, tex.originalWidth / 2 - tex.offsetX, tex.originalHeight / 2  - tex.offsetY, tex.packedWidth, tex.packedHeight, scale,
 					scale, 0);
 		} else {
-			batch.draw(tex, x + tex.packedWidth * scale, y, tex.originalWidth / 2 - tex.offsetX, tex.originalHeight / 2  - tex.offsetY, -tex.packedWidth,
-					tex.packedHeight, scale, scale, 0);
+			batch.draw(tex, x, y, tex.originalWidth / 2 - tex.offsetX, tex.originalHeight / 2  - tex.offsetY, tex.packedWidth, tex.packedHeight, -scale,
+					scale, 0);
 		}
 	}
 

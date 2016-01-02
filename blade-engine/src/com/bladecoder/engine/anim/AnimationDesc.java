@@ -18,7 +18,6 @@ package com.bladecoder.engine.anim;
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.Vector2;
-import com.bladecoder.engine.util.EngineLogger;
 
 public class AnimationDesc {
 	public final static String BACK = "back";
@@ -96,7 +95,7 @@ public class AnimationDesc {
 		if (ratio2 < 1.0)
 			ratio2 = 1.0f / ratio;
 
-		EngineLogger.debug("P0: " + p0 + " PF: " + pf + " dx: " + dx + " dy: " + dy + " RATIO: " + ratio);
+//		EngineLogger.debug("P0: " + p0 + " PF: " + pf + " dx: " + dx + " dy: " + dy + " RATIO: " + ratio);
 
 		if (ratio2 < DIRECTION_ASPECT_TOLERANCE && numDirs > 4) { // DIAGONAL
 																	// MOVEMENT

@@ -155,7 +155,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			}
 		});
 
-		init(parent, e, new InputPanel[] { typePanel, id, layer, visible, interaction, desc, state, renderer, depthType,
+		init(parent, e, new InputPanel[] { typePanel, id, renderer, layer, visible, interaction, desc, state, depthType,
 				scale, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
 
 		typeChanged();

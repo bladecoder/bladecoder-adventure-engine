@@ -88,6 +88,7 @@ public class Scene implements Serializable, AssetConsumer {
 	private String musicFilename;
 	private boolean isPlayingSer = false;
 	private float musicPosSer = 0;
+	private Vector2 sceneSize;
 
 	transient private boolean isMusicPaused = false;
 
@@ -620,12 +621,16 @@ public class Scene implements Serializable, AssetConsumer {
 			int height = background.get(0).getRegionHeight();
 
 			// Sets the scrolling dimensions. It must be done here because
-			// the background must be loaded to calculate the bbox
-			camera.setScrollingDimensions(width, height);
+			// the background must be loaded to calculate the bbox	
+			if(sceneSize == null)
+				camera.setScrollingDimensions(width, height);
 
 			// if(followActor != null)
 			// camera.updatePos(followActor);
 		}
+		
+		if(sceneSize != null)
+			camera.setScrollingDimensions(sceneSize.x, sceneSize.y);
 
 		// RETRIEVE ACTORS
 		for (BaseActor a : actors.values()) {
@@ -665,6 +670,14 @@ public class Scene implements Serializable, AssetConsumer {
 			EngineAssetManager.getInstance().disposeMusic(musicFilename);
 			music = null;
 		}
+	}
+
+	public Vector2 getSceneSize() {
+		return sceneSize;
+	}
+
+	public void setSceneSize(Vector2 sceneSize) {
+		this.sceneSize = sceneSize;
 	}
 
 	public void orderLayersByZIndex() {
@@ -707,6 +720,9 @@ public class Scene implements Serializable, AssetConsumer {
 
 			if (polygonalNavGraph != null)
 				json.writeValue("polygonalNavGraph", polygonalNavGraph);
+			
+			if (sceneSize != null)
+				json.writeValue("sceneSize", sceneSize);
 
 		} else {
 			SceneActorRef actorRef;
@@ -775,6 +791,8 @@ public class Scene implements Serializable, AssetConsumer {
 			depthVector = json.readValue("depthVector", Vector2.class, jsonData);
 
 			polygonalNavGraph = json.readValue("polygonalNavGraph", PolygonalNavGraph.class, jsonData);
+			
+			sceneSize = json.readValue("sceneSize", Vector2.class, jsonData);
 
 		} else {
 			JsonValue jsonValueActors = jsonData.get("actors");
