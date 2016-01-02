@@ -4,6 +4,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.6]
+
+- Layer parallax feature
+- Several fixes in atlasrenderer related with drawing atlases with striped whitespaces
+- Drop lightmap support
+- Fix inventory loading bug
+- Fix inventory auto width calc
+- Change default character actor speed
+- Editor: add combo values in world props
+- EDITOR: Fix losing player attr when editing actor.
+- EDITOR: HTML not supported message
+- Fix checking if a path is absolute in windows.
+- Avoid nullpointer when lookat if animation doesn't exists in 3d sprite
+- EDITOR: fixed NullPointer error when creating 3d sprite actor.
+- Drop XML Loader
+
+
 ## [0.9.5]
 
 - ENGINE: Added infinity text duration when duration < 0.
