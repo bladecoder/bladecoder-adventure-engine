@@ -136,7 +136,7 @@ public class DesktopLauncher extends BladeEngine {
 	public void create() {
 		// Gdx.input.setCursorCatched(false);
 		if (fullscreen)
-			Gdx.graphics.setDisplayMode(Gdx.graphics.getDesktopDisplayMode());
+			Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		
 		hideCursor();
 		

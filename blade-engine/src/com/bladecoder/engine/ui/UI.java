@@ -168,11 +168,11 @@ public class UI {
 
 	public void toggleFullScreen() {
 		if (!fullscreen) {
-			Gdx.graphics.setDisplayMode(Gdx.graphics.getDesktopDisplayMode());
+			Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 			fullscreen = true;
 		} else {
-			Gdx.graphics.setDisplayMode(World.getInstance().getWidth(), World
-					.getInstance().getHeight(), false);
+			Gdx.graphics.setWindowedMode(World.getInstance().getWidth(), World
+					.getInstance().getHeight());
 			fullscreen = false;
 		}
 	}

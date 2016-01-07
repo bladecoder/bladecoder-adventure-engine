@@ -1,4 +1,4 @@
-package %PACKAGE%.android;
+package %PACKAGE%;
 
 import com.bladecoder.engine.BladeEngine;
 

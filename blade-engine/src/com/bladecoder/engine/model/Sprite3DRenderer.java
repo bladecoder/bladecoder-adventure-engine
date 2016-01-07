@@ -50,14 +50,13 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.AnimationDesc;
-import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.Utils3D;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
+import com.bladecoder.engine.util.Utils3D;
 
 @SuppressWarnings("deprecation")
 public class Sprite3DRenderer implements ActorRenderer {
@@ -833,7 +832,7 @@ public class Sprite3DRenderer implements ActorRenderer {
 			String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);
 
 			if (currentAnimationId != null)
-				currentAnimation = (AtlasAnimationDesc) fanims.get(currentAnimationId);
+				currentAnimation = fanims.get(currentAnimationId);
 
 			animationCb = ActionCallbackSerialization.find(json.readValue("animationCb", String.class, jsonData));
 

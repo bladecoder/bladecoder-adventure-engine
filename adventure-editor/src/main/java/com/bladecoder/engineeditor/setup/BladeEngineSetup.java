@@ -334,7 +334,7 @@ public class BladeEngineSetup {
 			project.files.add(new ProjectFile("android/res/drawable-mdpi/ic_launcher.png", false));
 			project.files.add(new ProjectFile("android/res/drawable-xhdpi/ic_launcher.png", false));
 			project.files.add(new ProjectFile("android/res/drawable-xxhdpi/ic_launcher.png", false));
-			project.files.add(new ProjectFile("android/src/AndroidLauncher", "android/src/" + packageDir + "/android/AndroidLauncher.java", true));
+			project.files.add(new ProjectFile("android/src/AndroidLauncher", "android/src/" + packageDir + "/AndroidLauncher.java", true));
 			project.files.add(new ProjectFile("android/AndroidManifest.xml"));
 			project.files.add(new ProjectFile("android/build.gradle", true));
 			project.files.add(new ProjectFile("android/ic_launcher-web.png", false));
@@ -359,7 +359,7 @@ public class BladeEngineSetup {
 
 		// ios robovm
 		if (builder.modules.contains(ProjectType.IOS)) {
-			project.files.add(new ProjectFile("ios/src/IOSLauncher", "ios/src/" + packageDir + "/ios/IOSLauncher.java", true));
+			project.files.add(new ProjectFile("ios/src/IOSLauncher", "ios/src/" + packageDir + "/IOSLauncher.java", true));
 			project.files.add(new ProjectFile("ios/data/Default.png", false));
 			project.files.add(new ProjectFile("ios/data/Default@2x.png", false));
 			project.files.add(new ProjectFile("ios/data/Default@2x~ipad.png", false));
@@ -379,6 +379,7 @@ public class BladeEngineSetup {
 
 		Map<String, String> values = new HashMap<String, String>();
 		values.put("%APP_NAME%", appName);
+		values.put("%APP_NAME_ESCAPED%", appName.replace("'", "\\'"));
 		values.put("%PACKAGE%", packageName);
 		values.put("%PACKAGE_DIR%", packageDir);
 		values.put("%MAIN_CLASS%", mainClass);
