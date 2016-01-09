@@ -356,16 +356,18 @@ public class EngineAssetManager extends AssetManager {
 	private Resolution[] getResolutions(FileHandleResolver resolver, int worldWidth, int worldHeight) {
 		ArrayList<Resolution> rl = new ArrayList<Resolution>();
 
-		String list[] = listAssetFiles("/atlases");
+		String list[] = listAssetFiles("/ui");
 
 		for (String name : list) {
 			try {
 				float scale = Float.parseFloat(name);
+				
+				EngineLogger.debug("RES FOUND: " + scale);
 
 				Resolution r = new Resolution((int) (worldWidth * scale), (int) (worldHeight * scale), name);
 
 				rl.add(r);
-			} catch (Exception e) {
+			} catch (NumberFormatException e) {
 
 			}
 		}

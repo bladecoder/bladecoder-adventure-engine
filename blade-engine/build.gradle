@@ -55,7 +55,8 @@ if(hasProperty("release")) {
     sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 } else if (hasProperty("ci")) {
     isCiBuild = true
-    version += "-SNAPSHOT"
+    if(!version.endsWith("-SNAPSHOT"))
+    	version += "-SNAPSHOT"
     sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
 } else {
     isDevBuild = true
