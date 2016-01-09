@@ -58,7 +58,7 @@ public class ScreenPositionAction implements Action {
 			
 			Viewport viewport = ((SceneScreen)BladeEngine.getAppUI().getScreen(Screens.SCENE_SCREEN)).getViewport();
 			
-			Vector3 v = new Vector3(position.x, position.y, 0);
+			Vector3 v = new Vector3(position.x * scale, position.y * scale, 0);
 			
 			if(anchor == Anchor.CENTER) {
 				v.x += viewport.getWorldWidth() / 2;
@@ -87,7 +87,7 @@ public class ScreenPositionAction implements Action {
 				unproject(v, 0, 0, 
 					viewport.getScreenWidth(), viewport.getScreenHeight());	
 
-			a.setPosition(v.x * scale, v.y * scale);
+			a.setPosition(v.x, v.y);
 		}
 
 		return false;
