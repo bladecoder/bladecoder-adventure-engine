@@ -181,15 +181,6 @@ public class World implements Serializable, AssetConsumer {
 				assetState = AssetState.LOADING_AND_INIT_SCENE;
 
 			// initLoadingTime = System.currentTimeMillis();
-
-			// Try to load scene for 100ms before. If not loaded in this time,
-			// show the loading screen
-			float t0 = System.currentTimeMillis();
-			float t = 0f;
-			while (EngineAssetManager.getInstance().isLoading() && t - t0 < 100f) {
-				t = System.currentTimeMillis();
-			}
-
 		}
 
 		if ((assetState == AssetState.LOADING || assetState == AssetState.LOADING_AND_INIT_SCENE)

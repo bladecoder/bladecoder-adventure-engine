@@ -354,7 +354,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		AssetState assetState = world.getAssetState();
 
-		if (assetState != AssetState.LOADED) {
+		if (assetState != AssetState.LOADED) {				
 			ui.setCurrentScreen(Screens.LOADING_SCREEN);
 			return;
 		}
