@@ -39,11 +39,15 @@ public class FileInputPanel extends InputPanel {
 	private final static String DIR_TEXT = "Select folder";
 	
 	public FileInputPanel(Skin skin, String title, String desc, DialogType dialogType) {
-		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."), dialogType);
+		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."), dialogType, true);
+	}
+	
+	public FileInputPanel(Skin skin, String title, String desc, DialogType dialogType, boolean mandatory) {
+		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."), dialogType, mandatory);
 	}
 
-	public FileInputPanel(Skin skin, String title, String desc, File current, final DialogType dialogType) {
-		init(skin, title, desc, new TextButton(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT, skin), true, null);
+	public FileInputPanel(Skin skin, String title, String desc, File current, final DialogType dialogType, boolean mandatory) {
+		init(skin, title, desc, new TextButton(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT, skin), mandatory, null);
 		
 //		this.cd = current;
 

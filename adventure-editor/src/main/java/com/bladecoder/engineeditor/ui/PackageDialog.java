@@ -16,6 +16,7 @@
 package com.bladecoder.engineeditor.ui;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -79,13 +80,13 @@ public class PackageDialog extends EditDialog {
 		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
 		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
 		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
-		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the version of the package");
+		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the version of the package", true);
 		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", FileInputPanel.DialogType.OPEN_FILE);
-		androidSDK = new FileInputPanel(skin, "SDK", "Select the Android SDK Location", FileInputPanel.DialogType.DIRECTORY);
+		androidSDK = new FileInputPanel(skin, "SDK", "Select the Android SDK Location. If empty, the ANDROID_HOME variable will be used.", FileInputPanel.DialogType.DIRECTORY, false);
 		androidKeyStore = new FileInputPanel(skin, "KeyStore", "Select the Key Store Location", FileInputPanel.DialogType.OPEN_FILE);
-		androidKeyAlias = InputPanelFactory.createInputPanel(skin, "KeyAlias", "Select the Key Alias Location");
-		androidKeyStorePassword = InputPanelFactory.createInputPanel(skin, "KeyStorePasswd", "Key Store Password", false);
-		androidKeyAliasPassword = InputPanelFactory.createInputPanel(skin, "KeyAliasPasswd", "Key Alias Password", false);
+		androidKeyAlias = InputPanelFactory.createInputPanel(skin, "KeyAlias", "Select the Key Alias Location", true);
+		androidKeyStorePassword = InputPanelFactory.createInputPanel(skin, "KeyStorePasswd", "Key Store Password", true);
+		androidKeyAliasPassword = InputPanelFactory.createInputPanel(skin, "KeyAliasPasswd", "Key Alias Password", true);
 
 		options[0] = type;
 		options[1] = os;
@@ -104,7 +105,6 @@ public class PackageDialog extends EditDialog {
 
 		for (InputPanel i : options) {
 			addInputPanel(i);
-			i.setMandatory(true);
 		}
 
 		addInputPanel(androidKeyStorePassword);
@@ -221,6 +221,15 @@ public class PackageDialog extends EditDialog {
 					"-PstorePassword=" + androidKeyStorePassword.getText() + " " +
 					"-Palias=" + androidKeyAlias.getText() + " " +
 					"-PkeyPassword=" + androidKeyAliasPassword.getText() + " ";
+			
+			// UPDATE 'local.properties' with the android SDK location.
+			if(androidSDK.getText() != null && !androidSDK.getText().trim().isEmpty()) {
+				String sdk = androidSDK.getText();
+
+				Properties p = new Properties();
+				p.setProperty("sdk.dir", sdk);
+				p.store(new FileOutputStream(new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties")), null);
+			}
 			
 			if(RunProccess.runGradle(Ctx.project.getProjectDir(), params + "android:assembleRelease")) {
 				String apk = Ctx.project.getProjectDir().getAbsolutePath() +

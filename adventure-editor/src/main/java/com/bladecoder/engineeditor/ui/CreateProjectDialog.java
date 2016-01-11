@@ -61,8 +61,8 @@ public class CreateProjectDialog extends EditDialog {
 				FileInputPanel.DialogType.DIRECTORY);
 
 		androidSdk = new FileInputPanel(skin, "Android SDK",
-				"Select the Android SDK folder. If empty, the ANDROID_HOME variable will be used",
-				FileInputPanel.DialogType.DIRECTORY);
+				"Select the Android SDK folder to create the Android package. If empty, the ANDROID_HOME variable will be used.",
+				FileInputPanel.DialogType.DIRECTORY, false);
 
 		addInputPanel(projectName);
 		addInputPanel(pkg);
@@ -137,12 +137,12 @@ public class CreateProjectDialog extends EditDialog {
 			isOk = false;
 		}
 
-		if (System.getenv("ANDROID_HOME") == null && androidSdk.getFile() == null) {
-			androidSdk.setError(true);
-			isOk = false;
-		} else {
-			androidSdk.setError(false);
-		}
+//		if (System.getenv("ANDROID_HOME") == null && androidSdk.getFile() == null) {
+//			androidSdk.setError(true);
+//			isOk = false;
+//		} else {
+//			androidSdk.setError(false);
+//		}
 
 		return isOk;
 	}

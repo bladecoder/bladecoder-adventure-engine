@@ -252,7 +252,11 @@ public class BladeEngineSetup {
 		ProjectSetup project = new ProjectSetup();
 
 		String packageDir = packageName.replace('.', '/');
-		String sdkPath = sdkLocation.replace('\\', '/');
+		String sdkPath = null;
+		
+		
+		if(sdkLocation != null && !sdkLocation.isEmpty())
+			sdkPath = sdkLocation.replace('\\', '/');
 
 		if (!isSdkLocationValid(sdkLocation)) {
 			System.out.println("Android SDK location '" + sdkLocation + "' doesn't contain an SDK");
@@ -340,7 +344,9 @@ public class BladeEngineSetup {
 			project.files.add(new ProjectFile("android/ic_launcher-web.png", false));
 			project.files.add(new ProjectFile("android/proguard-project.txt", false));
 			project.files.add(new ProjectFile("android/project.properties", false));
-			project.files.add(new ProjectFile("local.properties", true));
+			
+			if(sdkLocation != null)
+				project.files.add(new ProjectFile("local.properties", true));
 		}
 
 		// html project
@@ -383,7 +389,10 @@ public class BladeEngineSetup {
 		values.put("%PACKAGE%", packageName);
 		values.put("%PACKAGE_DIR%", packageDir);
 		values.put("%MAIN_CLASS%", mainClass);
-		values.put("%ANDROID_SDK%", sdkPath);
+		
+		if(sdkPath != null)
+			values.put("%ANDROID_SDK%", sdkPath);
+		
 		values.put("%ASSET_PATH%", assetPath);
 		values.put("%BUILD_TOOLS_VERSION%", Versions.getBuildToolsVersion());
 		values.put("%API_LEVEL%", Versions.getAndroidAPILevel());
@@ -405,7 +414,9 @@ public class BladeEngineSetup {
 		// HACK executable flag isn't preserved for whatever reason...
 		new File(outputDir, "gradlew").setExecutable(true);
 
-		RunProccess.runGradle(new File(outputDir), "clean" + parseGradleArgs(builder.modules, gradleArgs));
+		// RunProccess.runGradle(new File(outputDir), "clean" + parseGradleArgs(builder.modules, gradleArgs));
+		
+		RunProccess.runGradle(new File(outputDir), "desktop:clean" + parseGradleArgs(builder.modules, gradleArgs));
 	}
 	
 	/** 

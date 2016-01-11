@@ -238,11 +238,13 @@ public class Project extends PropertyChange {
 
 	private void createLibGdxProject(String projectDir, String name, String pkg, String mainClass, String sdkLocation,
 			boolean spinePlugin) throws IOException {
-		String sdk = "";
-		if (System.getenv("ANDROID_HOME") != null && sdkLocation == null) {
-			sdk = System.getenv("ANDROID_HOME");
-		} else {
+		String sdk = null;
+		
+		
+		if(sdkLocation != null && !sdkLocation.isEmpty()) {
 			sdk = sdkLocation;
+		} else if (System.getenv("ANDROID_HOME") != null) {
+			sdk = System.getenv("ANDROID_HOME");
 		}
 
 		DependencyBank bank = new DependencyBank();
