@@ -29,6 +29,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -223,7 +224,7 @@ public class ScnWidget extends Widget {
 
 			batch.end();
 
-			Gdx.gl.glViewport((int) v.x, (int) v.y, (int) getWidth(), (int) (getHeight()));
+			HdpiUtils.glViewport((int) v.x, (int) v.y, (int) getWidth(), (int) (getHeight()));
 
 			getStage().calculateScissors(bounds, scissors);
 

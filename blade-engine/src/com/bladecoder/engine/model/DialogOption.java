@@ -17,9 +17,9 @@ package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
+import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
-import com.badlogic.gdx.utils.JsonValue;
 
 public class DialogOption implements Serializable {
 	private String text;

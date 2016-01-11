@@ -15,8 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -52,7 +52,7 @@ public class SceneFitViewport extends Viewport {
 	
 	@Override
 	public void apply (boolean centerCamera) {
-		Gdx.gl.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
+		HdpiUtils.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
 		getCamera().viewportWidth = getScreenWidth();
 		getCamera().viewportHeight = getScreenHeight();
 		if (centerCamera)

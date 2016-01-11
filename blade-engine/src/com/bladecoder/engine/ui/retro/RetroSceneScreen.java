@@ -27,6 +27,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Polygon;
@@ -252,7 +253,7 @@ public class RetroSceneScreen implements SceneScreen {
 			// camera is the same that the screenViewport;
 			@Override
 			public void apply(boolean centerCamera) {
-				Gdx.gl.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
+				HdpiUtils.glViewport(getScreenX(), getScreenY(), getScreenWidth(), getScreenHeight());
 				getCamera().viewportWidth = getScreenWidth();
 				getCamera().viewportHeight = getScreenHeight();
 				if (centerCamera)
