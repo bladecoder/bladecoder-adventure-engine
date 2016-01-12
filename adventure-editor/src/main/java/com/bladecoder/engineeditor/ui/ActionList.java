@@ -369,7 +369,7 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	private int deleteFirstActionNamed(int pos, String actionId) {
 		while (!(list.getItems().get(pos) instanceof AbstractControlAction
-				|| getOrCreateControlActionId((AbstractControlAction) list.getItems().get(pos)).equals(actionId)))
+				&& getOrCreateControlActionId((AbstractControlAction) list.getItems().get(pos)).equals(actionId)))
 			pos++;
 
 		Action e2 = list.getItems().removeIndex(pos);
