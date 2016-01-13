@@ -144,7 +144,11 @@ public class VerbManager implements Serializable {
 				Verb verb = verbs.get(v);
 							
 				JsonValue jsonValue = jsonData.get("verbs").get(v);
-				verb.read(json, jsonValue);
+				
+				if(jsonValue != null)
+					verb.read(json, jsonValue);
+				else
+					EngineLogger.debug("LOAD WARNING: Verb not found in saved game: " + jsonData.name + "." + v);
 			}
 		}
 	}
