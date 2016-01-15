@@ -31,9 +31,10 @@
 
 package com.esotericsoftware.spine.attachments;
 
+import com.esotericsoftware.spine.Slot;
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import com.esotericsoftware.spine.Slot;
 
 /** Attachment that displays various texture regions over time. */
 public class RegionSequenceAttachment extends RegionAttachment {
@@ -45,7 +46,7 @@ public class RegionSequenceAttachment extends RegionAttachment {
 		super(name);
 	}
 
-	public void updateWorldVertices (Slot slot, boolean premultipliedAlpha) {
+	public float[] updateWorldVertices (Slot slot, boolean premultipliedAlpha) {
 		if (regions == null) throw new IllegalStateException("Regions have not been set: " + this);
 
 		int frameIndex = (int)(slot.getAttachmentTime() / frameTime);
@@ -73,7 +74,7 @@ public class RegionSequenceAttachment extends RegionAttachment {
 		}
 		setRegion(regions[frameIndex]);
 
-		super.updateWorldVertices(slot, premultipliedAlpha);
+		return super.updateWorldVertices(slot, premultipliedAlpha);
 	}
 
 	public TextureRegion[] getRegions () {

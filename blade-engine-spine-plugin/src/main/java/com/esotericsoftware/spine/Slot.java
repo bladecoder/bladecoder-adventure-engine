@@ -31,9 +31,10 @@
 
 package com.esotericsoftware.spine;
 
+import com.esotericsoftware.spine.attachments.Attachment;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.FloatArray;
-import com.esotericsoftware.spine.attachments.Attachment;
 
 public class Slot {
 	final SlotData data;
@@ -90,7 +91,7 @@ public class Slot {
 		return attachment;
 	}
 
-	/** Sets the attachment, resets {@link #getAttachmentTime()}, and clears {@link #getAttachmentVertices()}.
+	/** Sets the attachment and if it changed, resets {@link #getAttachmentTime()} and clears {@link #getAttachmentVertices()}.
 	 * @param attachment May be null. */
 	public void setAttachment (Attachment attachment) {
 		if (this.attachment == attachment) return;
@@ -118,7 +119,12 @@ public class Slot {
 
 	void setToSetupPose (int slotIndex) {
 		color.set(data.color);
-		setAttachment(data.attachmentName == null ? null : bone.skeleton.getAttachment(slotIndex, data.attachmentName));
+		if (data.attachmentName == null)
+			setAttachment(null);
+		else {
+			attachment = null;
+			setAttachment(bone.skeleton.getAttachment(slotIndex, data.attachmentName));
+		}
 	}
 
 	public void setToSetupPose () {

@@ -31,14 +31,12 @@
 
 package com.esotericsoftware.spine;
 
-import static com.badlogic.gdx.graphics.g2d.Batch.X1;
-import static com.badlogic.gdx.graphics.g2d.Batch.X2;
-import static com.badlogic.gdx.graphics.g2d.Batch.X3;
-import static com.badlogic.gdx.graphics.g2d.Batch.X4;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y1;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y2;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y3;
-import static com.badlogic.gdx.graphics.g2d.Batch.Y4;
+import com.esotericsoftware.spine.attachments.Attachment;
+import com.esotericsoftware.spine.attachments.MeshAttachment;
+import com.esotericsoftware.spine.attachments.RegionAttachment;
+import com.esotericsoftware.spine.attachments.SkinnedMeshAttachment;
+
+import static com.badlogic.gdx.graphics.g2d.Batch.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -47,10 +45,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
-import com.esotericsoftware.spine.attachments.Attachment;
-import com.esotericsoftware.spine.attachments.MeshAttachment;
-import com.esotericsoftware.spine.attachments.RegionAttachment;
-import com.esotericsoftware.spine.attachments.SkinnedMeshAttachment;
 
 public class SkeletonRendererDebug {
 	static private final Color boneLineColor = Color.RED;
@@ -93,8 +87,8 @@ public class SkeletonRendererDebug {
 			for (int i = 0, n = bones.size; i < n; i++) {
 				Bone bone = bones.get(i);
 				if (bone.parent == null) continue;
-				float x = skeletonX + bone.data.length * bone.m00 + bone.worldX;
-				float y = skeletonY + bone.data.length * bone.m10 + bone.worldY;
+				float x = skeletonX + bone.data.length * bone.a + bone.worldX;
+				float y = skeletonY + bone.data.length * bone.c + bone.worldY;
 				shapes.rectLine(skeletonX + bone.worldX, skeletonY + bone.worldY, x, y, boneWidth * scale);
 			}
 			shapes.end();
@@ -111,8 +105,7 @@ public class SkeletonRendererDebug {
 				Attachment attachment = slot.attachment;
 				if (attachment instanceof RegionAttachment) {
 					RegionAttachment regionAttachment = (RegionAttachment)attachment;
-					regionAttachment.updateWorldVertices(slot, false);
-					float[] vertices = regionAttachment.getWorldVertices();
+					float[] vertices = regionAttachment.updateWorldVertices(slot, false);
 					shapes.line(vertices[X1], vertices[Y1], vertices[X2], vertices[Y2]);
 					shapes.line(vertices[X2], vertices[Y2], vertices[X3], vertices[Y3]);
 					shapes.line(vertices[X3], vertices[Y3], vertices[X4], vertices[Y4]);

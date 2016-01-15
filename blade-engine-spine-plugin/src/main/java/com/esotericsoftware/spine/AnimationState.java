@@ -37,7 +37,7 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 
 /** Stores state for an animation and automatically mixes between animations. */
 public class AnimationState {
-	private final AnimationStateData data;
+	private AnimationStateData data;
 	private Array<TrackEntry> tracks = new Array();
 	private final Array<Event> events = new Array();
 	private final Array<AnimationStateListener> listeners = new Array();
@@ -48,6 +48,10 @@ public class AnimationState {
 			return new TrackEntry();
 		}
 	};
+
+	/** Creates an uninitialized AnimationState. The animation state data must be set. */
+	public AnimationState () {
+	}
 
 	public AnimationState (AnimationStateData data) {
 		if (data == null) throw new IllegalArgumentException("data cannot be null.");
@@ -60,20 +64,28 @@ public class AnimationState {
 			TrackEntry current = tracks.get(i);
 			if (current == null) continue;
 
+			TrackEntry next = current.next;
+			if (next != null) {
+				float nextTime = current.lastTime - next.delay;
+				if (nextTime >= 0) {
+					float nextDelta = delta * next.timeScale;
+					next.time = nextTime + nextDelta; // For start event to see correct time.
+					current.time += delta * current.timeScale; // For end event to see correct time.
+					setCurrent(i, next);
+					next.time -= nextDelta; // Prevent increasing time twice, below.
+					current = next;
+				}
+			} else if (!current.loop && current.lastTime >= current.endTime) {
+				// End non-looping animation when it reaches its end time and there is no next entry.
+				clearTrack(i);
+				continue;
+			}
+
 			current.time += delta * current.timeScale;
 			if (current.previous != null) {
 				float previousDelta = delta * current.previous.timeScale;
 				current.previous.time += previousDelta;
 				current.mixTime += previousDelta;
-			}
-
-			TrackEntry next = current.next;
-			if (next != null) {
-				next.time = current.lastTime - next.delay;
-				if (next.time >= 0) setCurrent(i, next);
-			} else {
-				// End non-looping animation when it reaches its end time and there is no next entry.
-				if (!current.loop && current.lastTime >= current.endTime) clearTrack(i);
 			}
 		}
 	}
@@ -269,6 +281,10 @@ public class AnimationState {
 		listeners.removeValue(listener, true);
 	}
 
+	public void clearListeners () {
+		listeners.clear();
+	}
+
 	public float getTimeScale () {
 		return timeScale;
 	}
@@ -279,6 +295,10 @@ public class AnimationState {
 
 	public AnimationStateData getData () {
 		return data;
+	}
+
+	public void setData (AnimationStateData data) {
+		this.data = data;
 	}
 
 	/** Returns the list of tracks that have animations, which may contain nulls. */
