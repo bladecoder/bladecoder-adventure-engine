@@ -79,7 +79,7 @@ public class SpineRenderer implements ActorRenderer {
 
 	private SkeletonCacheEntry currentSource;
 
-	private SkeletonRenderer renderer;
+	private SkeletonRenderer<SpriteBatch> renderer;
 	private SkeletonBounds bounds;
 	private float width = DEFAULT_DIM, height = DEFAULT_DIM;
 
@@ -239,9 +239,10 @@ public class SpineRenderer implements ActorRenderer {
 				}
 			}
 
-			updateAnimation(d);
-
 			lastAnimationTime += d;
+			
+			if (lastAnimationTime >= 0)
+				updateAnimation(d);
 		}
 	}
 
@@ -639,7 +640,7 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public void retrieveAssets() {
-		renderer = new SkeletonRenderer();
+		renderer = new SkeletonRenderer<SpriteBatch>();
 		renderer.setPremultipliedAlpha(false);
 		bounds = new SkeletonBounds();
 
