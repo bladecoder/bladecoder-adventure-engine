@@ -265,16 +265,23 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			desc = json.readValue("desc", String.class, jsonData);
 			sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);
+			layer = json.readValue("layer", String.class, jsonData);
 		} else {
 			playingSound = json.readValue("playingSound", String.class, jsonData);
-			playerInside = json.readValue("playerInside", Boolean.class, jsonData);			
+			playerInside = json.readValue("playerInside", Boolean.class, jsonData);
+			String newLayer = json.readValue("layer", String.class, jsonData);
+			
+			if(!newLayer.equals(layer)) {
+				scene.getLayer(layer).remove(this);
+				scene.getLayer(newLayer).add(this);
+				layer = newLayer;
+			}
 		}
 		
 		verbs.read(json, jsonData);
 		interaction = json.readValue("interaction", Boolean.class, jsonData);
 		state = json.readValue("state", String.class, jsonData);			
 		zIndex = json.readValue("zIndex", Float.class, jsonData);
-		layer = json.readValue("layer", String.class, jsonData);
 	}
 
 }
