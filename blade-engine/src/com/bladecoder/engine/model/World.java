@@ -654,7 +654,8 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public boolean savedGameExists(String filename) {
-		return EngineAssetManager.getInstance().getUserFile(filename).exists();
+		return EngineAssetManager.getInstance().getUserFile(filename).exists() ||
+				EngineAssetManager.getInstance().assetExists("tests/" + filename);
 	}
 
 	public void loadGameState() throws IOException {
@@ -664,7 +665,12 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void loadGameState(String filename) throws IOException {
-		FileHandle savedFile = EngineAssetManager.getInstance().getUserFile(filename);
+		FileHandle savedFile = null;
+		
+		if(EngineAssetManager.getInstance().getUserFile(filename).exists())
+			savedFile = EngineAssetManager.getInstance().getUserFile(filename);
+		else
+			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
 
 		loadGameState(savedFile);
 	}

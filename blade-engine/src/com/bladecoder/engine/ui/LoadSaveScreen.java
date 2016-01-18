@@ -292,13 +292,31 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 					al.add(name);
 			}
 
+		// Add savedgames in '/tests' folder
+		if (loadScreenMode) {
+			String[] list2 = EngineAssetManager.getInstance().listAssetFiles("/tests");
+
+			for (String file : list2)
+				if (file.endsWith(World.GAMESTATE_EXT)) {
+					String name = file.substring(0, file.indexOf(World.GAMESTATE_EXT));
+					al.add(name);
+				}
+		}
+
 		return al;
 	}
 
 	private Image getScreenshot(String slot) {
 		String filename = slot + World.GAMESTATE_EXT + ".png";
+		
+		FileHandle savedFile = null;
+		
+		if(EngineAssetManager.getInstance().getUserFile(filename).exists())
+			savedFile = EngineAssetManager.getInstance().getUserFile(filename);
+		else
+			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
 
-		Texture t = new Texture(EngineAssetManager.getInstance().getUserFile(filename));
+		Texture t = new Texture(savedFile);
 
 		// add to the list for proper dispose when hide the screen
 		textureList.add(t);
