@@ -60,8 +60,7 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 
 				toolbar.disableEdit(pos == -1);
 				upBtn.setDisabled(pos == -1 || pos == 0);
-				downBtn.setDisabled(pos == -1
-						|| pos == list.getItems().size - 1);
+				downBtn.setDisabled(pos == -1 || pos == list.getItems().size - 1);
 			}
 		});
 
@@ -79,7 +78,7 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 				down();
 			}
 		});
-		
+
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
@@ -97,7 +96,7 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 
 	@Override
 	protected void create() {
-		EditOptionDialog dialog = (EditOptionDialog)getEditElementDialogInstance(null);
+		EditOptionDialog dialog = (EditOptionDialog) getEditElementDialogInstance(null);
 		dialog.show(getStage());
 		dialog.setListener(new ChangeListener() {
 			@Override
@@ -108,8 +107,9 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 				list.getItems().insert(pos, e);
 				list.setSelectedIndex(pos);
 				list.invalidateHierarchy();
-				
-				// Move model object inserted to the end to the selected position
+
+				// Move model object inserted to the end to the selected
+				// position
 				if (pos != 0 && pos < list.getItems().size) {
 					DialogOption e2 = list.getItems().get(pos);
 					parent.getOptions().set(pos, e);
@@ -129,10 +129,9 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 		DialogOption e = items.get(pos);
 		DialogOption e2 = items.get(pos - 1);
 
-
 		items.set(pos - 1, e);
 		items.set(pos, e2);
-		
+
 		parent.getOptions().set(pos - 1, e);
 		parent.getOptions().set(pos, e2);
 
@@ -151,9 +150,8 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 			return;
 
 		DialogOption e = items.get(pos);
-		DialogOption e2 =  items.get(pos + 1);
+		DialogOption e2 = items.get(pos + 1);
 
-		
 		parent.getOptions().set(pos + 1, e);
 		parent.getOptions().set(pos, e2);
 
@@ -165,25 +163,25 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 
 		Ctx.project.setModified();
 	}
-	
+
 	@Override
 	protected void delete() {
-			
+
 		DialogOption option = removeSelected();
-		
-		int idx = parent.getOptions().indexOf(option); 
-			
+
+		int idx = parent.getOptions().indexOf(option);
+
 		parent.getOptions().remove(option);
-			
+
 		// TRANSLATIONS
 		Ctx.project.getI18N().putTranslationsInElement(option);
 
 		// UNDO
 		Ctx.project.getUndoStack().add(new UndoDeleteOption(parent, option, idx));
-		
+
 		Ctx.project.setModified();
 	}
-	
+
 	@Override
 	protected void copy() {
 		DialogOption e = list.getSelected();
@@ -191,7 +189,7 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 		if (e == null)
 			return;
 
-		clipboard = (DialogOption)ElementUtils.cloneElement(e);
+		clipboard = (DialogOption) ElementUtils.cloneElement(e);
 		toolbar.disablePaste(false);
 
 		// TRANSLATIONS
@@ -200,21 +198,22 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 
 	@Override
 	protected void paste() {
-		DialogOption newElement = (DialogOption)ElementUtils.cloneElement(clipboard);
-		
+		DialogOption newElement = (DialogOption) ElementUtils.cloneElement(clipboard);
+
 		int pos = list.getSelectedIndex() + 1;
 
 		list.getItems().insert(pos, newElement);
 
 		parent.addOption(newElement);
-		
-		Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(), Ctx.project.getSelectedActor().getId(), parent.getId(), pos, newElement);
+
+		Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(),
+				Ctx.project.getSelectedActor().getId(), parent.getId(), pos, newElement);
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();
-		
+
 		Ctx.project.setModified();
-	}	
+	}
 
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
@@ -224,10 +223,18 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 		@Override
 		protected String getCellTitle(DialogOption e) {
 			String text = e.getText();
-			
+
 			int i = parent.getOptions().indexOf(e);
 
-			return i + ". " + Ctx.project.translate(text);
+			String str = i + ". " + Ctx.project.translate(text);
+			
+			if(e.isOnce())
+				str = "[[ONCE]" + str;
+			
+			if(!e.isVisible())
+				str = "[GRAY]" + str + "[]";
+			
+			return str;
 		}
 
 		@Override
@@ -239,18 +246,11 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 			if (response != null && !response.isEmpty())
 				sb.append("R: ").append(Ctx.project.translate(response)).append(' ');
 
-//			NamedNodeMap attr = e.getAttributes();
-//			
-//			for (int i = 0; i < attr.getLength(); i++) {
-//				org.w3c.dom.Node n = attr.item(i);
-//				String name = n.getNodeName();
-//
-//				if (name.equals(XMLConstants.TEXT_ATTR) || name.equals(XMLConstants.RESPONSE_TEXT_ATTR))
-//					continue;
-//
-//				String v = n.getNodeValue();
-//				sb.append(name).append(':').append(Ctx.project.getSelectedChapter().getTranslation(v)).append(' ');
-//			}
+			if (e.getVerbId() != null)
+				sb.append(" verb: ").append(e.getVerbId());
+
+			if (e.getNext() != null)
+				sb.append(" next: ").append(e.getNext());
 
 			return sb.toString();
 		}
