@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
@@ -69,7 +70,7 @@ public class ScnWidgetInputListener extends ClickListener {
 			if (scn.getPolygonalNavGraph() != null && scnWidget.getShowWalkZone()) {
 				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
 
-				if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+				if (UIUtils.ctrl()) {
 					// Delete the point if selected
 					boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
@@ -97,7 +98,7 @@ public class ScnWidgetInputListener extends ClickListener {
 						|| !((SpriteActor) scnWidget.getSelectedActor()).isBboxFromRenderer()) &&
 						!(scnWidget.getSelectedActor() instanceof AnchorActor)
 						) {
-					if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+					if (UIUtils.ctrl()) {
 
 						// Delete the point if selected
 						boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
@@ -336,6 +337,8 @@ public class ScnWidgetInputListener extends ClickListener {
 	public boolean keyDown(InputEvent event, int keycode) {
 		super.keyDown(event, keycode);
 		Polygon p = null;
+		
+		if (scnWidget.getStage() == null || scnWidget.getStage().getKeyboardFocus() != scnWidget) return false;
 
 		switch (keycode) {
 
@@ -344,7 +347,7 @@ public class ScnWidgetInputListener extends ClickListener {
 		case Keys.BACKSPACE:
 			break;
 		case Keys.Z:
-			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+			if (UIUtils.ctrl()) {
 				Ctx.project.getUndoStack().undo();
 			}
 			break;
@@ -359,7 +362,7 @@ public class ScnWidgetInputListener extends ClickListener {
 			break;
 			
 		case Keys.S:
-			if (Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
+			if (UIUtils.ctrl()) {
 				try {
 					Ctx.project.saveProject();
 				} catch (IOException e1) {

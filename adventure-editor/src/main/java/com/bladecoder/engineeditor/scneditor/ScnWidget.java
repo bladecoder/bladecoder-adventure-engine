@@ -186,6 +186,9 @@ public class ScnWidget extends Widget {
 	}
 
 	private void handleKeyPositioning() {
+		
+		if (getStage() == null || getStage().getKeyboardFocus() != this) return;
+		
 		if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isKeyPressed(Keys.DOWN) || Gdx.input.isKeyPressed(Keys.LEFT)
 				|| Gdx.input.isKeyPressed(Keys.RIGHT)) {
 
