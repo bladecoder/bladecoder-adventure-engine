@@ -221,7 +221,9 @@ public class CharacterActor extends SpriteActor {
 				for (Dialog d : dialogs.values()) {
 					String id = d.getId();
 					JsonValue dValue = dialogsValue.get(id);
-					d.read(json, dValue);
+					
+					if(dValue != null)
+						d.read(json, dValue);
 				}
 			}
 

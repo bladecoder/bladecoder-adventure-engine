@@ -539,8 +539,7 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	/**
-	 * Load the world description. First try to load 'world.json'. If doesn't
-	 * exists try 'world.xml'.
+	 * Load the world description in 'world.json'.
 	 * 
 	 * @throws IOException
 	 */
@@ -552,6 +551,7 @@ public class World implements Serializable, AssetConsumer {
 					.getModelFile(EngineAssetManager.WORLD_FILENAME_JSON).reader("UTF-8"));
 
 			Json json = new Json();
+			json.setIgnoreUnknownFields(true);
 
 			int width = json.readValue("width", Integer.class, root);
 			int height = json.readValue("height", Integer.class, root);
@@ -625,6 +625,7 @@ public class World implements Serializable, AssetConsumer {
 					.getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).reader("UTF-8"));
 
 			Json json = new Json();
+			json.setIgnoreUnknownFields(true);
 
 			read(json, root);
 
@@ -691,8 +692,11 @@ public class World implements Serializable, AssetConsumer {
 			SerializationHelper.getInstance().setMode(Mode.STATE);
 
 			JsonValue root = new JsonReader().parse(savedFile.reader("UTF-8"));
+			
+			Json json = new Json();
+			json.setIgnoreUnknownFields(true);
 
-			read(new Json(), root);
+			read(json, root);
 
 		} else {
 			throw new IOException("LOADGAMESTATE: no saved game exists");
