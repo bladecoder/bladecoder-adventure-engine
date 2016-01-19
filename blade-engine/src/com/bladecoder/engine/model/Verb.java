@@ -39,6 +39,7 @@ public class Verb implements VerbRunner, Serializable {
 	private String id;
 	private String state;
 	private String target;
+	private String icon;
 
 	private final ArrayList<Action> actions = new ArrayList<Action>();
 
@@ -65,6 +66,14 @@ public class Verb implements VerbRunner, Serializable {
 
 	public void setState(String state) {
 		this.state = state;
+	}
+	
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 
 	public String getTarget() {
@@ -162,6 +171,7 @@ public class Verb implements VerbRunner, Serializable {
 			json.writeValue("id", id);
 			json.writeValue("target", target);
 			json.writeValue("state", state);
+			json.writeValue("icon", icon);
 			json.writeArrayStart("actions");
 			for (Action a : actions) {
 				ActionUtils.writeJson(a, json);
@@ -189,6 +199,7 @@ public class Verb implements VerbRunner, Serializable {
 			id = json.readValue("id", String.class, jsonData);
 			target = json.readValue("target", String.class, jsonData);
 			state = json.readValue("state", String.class, jsonData);
+			icon = json.readValue("icon", String.class, jsonData);
 			actions.clear();
 			JsonValue actionsValue = jsonData.get("actions");
 			for (int i = 0; i < actionsValue.size; i++) {

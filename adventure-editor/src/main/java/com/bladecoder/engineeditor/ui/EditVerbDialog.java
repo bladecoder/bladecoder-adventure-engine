@@ -58,6 +58,7 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 	private InputPanel id;
 	private InputPanel state;
 	private InputPanel target;
+	private InputPanel icon;
 	
 	private String scope;
 
@@ -74,7 +75,11 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 				"Select the state.");
 		target = InputPanelFactory.createInputPanel(skin,
 				"Target BaseActor",
-				"Select the target actor id for the 'use' verb");
+				"Select the target actor id for the 'use' verb.");
+		
+		icon = InputPanelFactory.createInputPanel(skin,
+				"UI Icon",
+				"The icon that will be showed in the ui for selecting the verb.");
 
 		if (ScopePanel.SCENE_SCOPE.equals(scope))
 			setInfo(SCENE_VERBS_INFO[0]);
@@ -98,7 +103,7 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 			}
 		});		
 
-		init(parentElement, e, new InputPanel[] { id, state, target });
+		init(parentElement, e, new InputPanel[] { id, state, target, icon });
 
 		setVisible(target, false);
 
@@ -151,6 +156,7 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 		e.setId(id.getText());
 		e.setState(state.getText());
 		e.setTarget(target.getText());
+		e.setIcon(icon.getText());
 		
 		parent.addVerb(e);
 
@@ -167,5 +173,6 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 		id.setText(e.getId());
 		state.setText(e.getState());
 		target.setText(e.getTarget());
+		icon.setText(e.getIcon());
 	}	
 }
