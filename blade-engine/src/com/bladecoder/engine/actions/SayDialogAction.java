@@ -141,7 +141,7 @@ public class SayDialogAction extends BaseCallbackAction {
 	public void read (Json json, JsonValue jsonData) {
 		previousAnim = json.readValue("previousFA", String.class, jsonData);
 		responseText = json.readValue("responseText", String.class, jsonData);
-		characterTurn = json.readValue("characterTurn", Boolean.class, jsonData);
+		characterTurn = json.readValue("characterTurn", boolean.class, false, jsonData);
 		characterName = json.readValue("characterName", String.class, jsonData);
 		super.read(json, jsonData);
 	}

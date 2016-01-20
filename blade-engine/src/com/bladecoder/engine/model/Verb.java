@@ -219,6 +219,9 @@ public class Verb implements VerbRunner, Serializable {
 
 			for (Action a : actions) {
 				if (a instanceof Serializable && i < actionsValue.size) {
+					if(actionsValue.get(i) == null)
+						break;
+					
 					((Serializable) a).read(json, actionsValue.get(i));
 					i++;
 				}

@@ -87,6 +87,6 @@ public class ChooseAction extends AbstractControlAction implements Serializable 
 
 	@Override
 	public void read (Json json, JsonValue jsonData) {
-		chooseCount = json.readValue("chooseCount", Integer.class, jsonData);
+		chooseCount = json.readValue("chooseCount", int.class, 0, jsonData);
 	}
 }

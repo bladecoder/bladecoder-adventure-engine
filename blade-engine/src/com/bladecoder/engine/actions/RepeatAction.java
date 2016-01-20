@@ -24,7 +24,6 @@ import com.bladecoder.engine.model.VerbRunner;
 public class RepeatAction extends AbstractControlAction implements Serializable {
 	@ActionProperty(required = true, defaultValue = "1")
 	@ActionPropertyDescription("Repeat the actions the specified times. -1 to infinity")
-
 	private int repeat = 1;
 
 	private int currentRepeat = 0;
@@ -53,6 +52,6 @@ public class RepeatAction extends AbstractControlAction implements Serializable 
 
 	@Override
 	public void read (Json json, JsonValue jsonData) {
-		currentRepeat = json.readValue("currentRepeat", Integer.class, jsonData);
+		currentRepeat = json.readValue("currentRepeat", int.class, 0, jsonData);
 	}
 }

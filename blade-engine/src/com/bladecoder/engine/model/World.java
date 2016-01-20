@@ -884,8 +884,8 @@ public class World implements Serializable, AssetConsumer {
 					EngineLogger.debug("LOAD WARNING: Scene not found in saved game: " + s.getId());
 			}
 
-			timeOfGame = json.readValue("timeOfGame", Float.class, jsonData);
-			cutMode = json.readValue("cutmode", Boolean.class, jsonData);
+			timeOfGame = json.readValue("timeOfGame", float.class, 0.0f, jsonData);
+			cutMode = json.readValue("cutmode", boolean.class, false, jsonData);
 
 			verbs.read(json, jsonData);
 

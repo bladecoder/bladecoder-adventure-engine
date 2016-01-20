@@ -47,6 +47,6 @@ public class RunOnceAction extends AbstractControlAction implements Serializable
 
 	@Override
 	public void read (Json json, JsonValue jsonData) {
-		executed = json.readValue("executed", Boolean.class, jsonData);
+		executed = json.readValue("executed", boolean.class, false, jsonData);
 	}
 }
