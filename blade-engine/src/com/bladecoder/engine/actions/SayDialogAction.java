@@ -24,6 +24,7 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Says the selected option from the current dialog. This action does the next steps:\n" +
 "\n- Sets the player 'talk' animation and say the player text" +
@@ -38,8 +39,15 @@ public class SayDialogAction extends BaseCallbackAction {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		setVerbCb(cb);
 		World w = World.getInstance();
+		
+		if(w.getCurrentDialog() == null || w.getCurrentDialog().getCurrentOption() == null) {
+			EngineLogger.debug("SayDialogAction WARNING: Current dialog doesn't found.");
+			
+			return false;
+		}
+		
+		setVerbCb(cb);
 		DialogOption o = w.getCurrentDialog().getCurrentOption();
 		String playerText = o.getText();
 		

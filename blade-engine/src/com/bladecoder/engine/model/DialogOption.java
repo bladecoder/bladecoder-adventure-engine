@@ -106,6 +106,6 @@ public class DialogOption implements Serializable {
 			
 		}
 		
-		visible = json.readValue("visible", Boolean.class, jsonData);
+		visible = json.readValue("visible", boolean.class, false, jsonData);
 	}		
 }

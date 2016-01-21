@@ -145,7 +145,12 @@ public class Dialog implements Serializable {
 			int i = 0;
 
 			for (DialogOption o : options) {
-				o.read(json, optionsValue.get(i));
+				JsonValue jsonValue = optionsValue.get(i);
+				
+				if(jsonValue == null)
+					break;
+				
+				o.read(json, jsonValue);
 				i++;
 			}
 		}

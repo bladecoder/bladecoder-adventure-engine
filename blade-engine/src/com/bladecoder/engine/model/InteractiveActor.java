@@ -268,10 +268,10 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 			layer = json.readValue("layer", String.class, jsonData);
 		} else {
 			playingSound = json.readValue("playingSound", String.class, jsonData);
-			playerInside = json.readValue("playerInside", Boolean.class, jsonData);
+			playerInside = json.readValue("playerInside", boolean.class, false, jsonData);
 			String newLayer = json.readValue("layer", String.class, jsonData);
 			
-			if(!newLayer.equals(layer)) {
+			if(newLayer != null && !newLayer.equals(layer)) {
 				scene.getLayer(layer).remove(this);
 				scene.getLayer(newLayer).add(this);
 				layer = newLayer;
@@ -279,9 +279,9 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		}
 		
 		verbs.read(json, jsonData);
-		interaction = json.readValue("interaction", Boolean.class, jsonData);
+		interaction = json.readValue("interaction", boolean.class, false, jsonData);
 		state = json.readValue("state", String.class, jsonData);			
-		zIndex = json.readValue("zIndex", Float.class, jsonData);
+		zIndex = json.readValue("zIndex", float.class, 0f, jsonData);
 	}
 
 }
