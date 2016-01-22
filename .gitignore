@@ -20,4 +20,6 @@ build/
 gradle.properties
 !**/projectTmpl/gradle.properties
 
+*.log
+
 

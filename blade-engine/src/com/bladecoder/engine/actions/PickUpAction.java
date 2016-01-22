@@ -21,6 +21,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Puts the selected actor in the inventory.")
 public class PickUpAction implements Action {
@@ -36,6 +37,13 @@ public class PickUpAction implements Action {
 	public boolean run(VerbRunner cb) {
 		Scene scn = this.actor.getScene();
 		InteractiveActor actor = (InteractiveActor)scn.getActor(this.actor.getActorId(), false);
+		
+		if(actor == null) {
+			EngineLogger.error("PickUpAction - Actor not found:" + this.actor.getActorId());
+			
+			return false;
+		}
+		
 		scn.removeActor(actor);
 
 		if (scn !=  World.getInstance().getCurrentScene()) {

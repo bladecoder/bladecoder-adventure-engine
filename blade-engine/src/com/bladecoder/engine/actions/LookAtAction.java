@@ -30,15 +30,9 @@ import com.bladecoder.engine.util.EngineLogger;
 @ActionDescription("Shows the text and sets the player to lookat in the selected actor direction")
 public class LookAtAction implements Action {
 	public enum Direction {
-		EMPTY(""),
-		FRONT(AnimationDesc.FRONT),
-		BACK(AnimationDesc.BACK),
-		LEFT(AnimationDesc.LEFT),
-		RIGHT(AnimationDesc.RIGHT),
-		FRONTLEFT(AnimationDesc.FRONTLEFT),
-		FRONTRIGHT(AnimationDesc.FRONTRIGHT),
-		BACKLEFT(AnimationDesc.BACKLEFT),
-		BACKRIGHT(AnimationDesc.BACKRIGHT);
+		EMPTY(""), FRONT(AnimationDesc.FRONT), BACK(AnimationDesc.BACK), LEFT(AnimationDesc.LEFT), RIGHT(
+				AnimationDesc.RIGHT), FRONTLEFT(AnimationDesc.FRONTLEFT), FRONTRIGHT(
+						AnimationDesc.FRONTRIGHT), BACKLEFT(AnimationDesc.BACKLEFT), BACKRIGHT(AnimationDesc.BACKRIGHT);
 
 		private final String direction;
 
@@ -66,10 +60,10 @@ public class LookAtAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The direction to lookat. If empty, the player lookat to the actor")
 	private Direction direction;
-	
+
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
-	private boolean wait = true;	
+	private boolean wait = true;
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -77,12 +71,15 @@ public class LookAtAction implements Action {
 		EngineLogger.debug("LOOKAT ACTION");
 		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, true);
 
-		CharacterActor player = World.getInstance().getCurrentScene().getPlayer();
-		
-		if(direction!=null) player.lookat(direction.getDirection());
-		else if(a!=null && player != null) {
-			Rectangle bbox = a.getBBox().getBoundingRectangle();
-			player.lookat(new Vector2(bbox.x, bbox.y));
+		if (World.getInstance().getInventory().getItem(actor) == null) {
+			CharacterActor player = World.getInstance().getCurrentScene().getPlayer();
+
+			if (direction != null)
+				player.lookat(direction.getDirection());
+			else if (a != null && player != null) {
+				Rectangle bbox = a.getBBox().getBoundingRectangle();
+				player.lookat(new Vector2(bbox.x, bbox.y));
+			}
 		}
 
 		if (soundId != null) {
@@ -93,12 +90,11 @@ public class LookAtAction implements Action {
 			}
 		}
 
-		if(text !=null)
-			World.getInstance().getTextManager().addText(text, TextManager.POS_SUBTITLE,
-					TextManager.POS_SUBTITLE, false, Text.Type.SUBTITLE, null, null,  wait?cb:null);
-		
+		if (text != null)
+			World.getInstance().getTextManager().addText(text, TextManager.POS_SUBTITLE, TextManager.POS_SUBTITLE,
+					false, Text.Type.SUBTITLE, null, null, wait ? cb : null);
+
 		return false;
 	}
-
 
 }
