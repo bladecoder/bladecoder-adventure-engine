@@ -61,13 +61,8 @@ public abstract class ModelList<PARENT, T> extends EditList<T> {
 
 		toolbar.disableEdit(list.getSelectedIndex() < 0);
 
-		if (sorted) { // TODO
-			// list.getItems().sort(new Comparator<Element>() {
-			// @Override
-			// public int compare(Element o1, Element o2) {
-			// return o1.getAttribute("id").compareTo(o2.getAttribute("id"));
-			// }
-			// });
+		if (sorted) {
+			list.sortByTitle();
 		}
 
 		toolbar.disableCreate(parent == null);
@@ -87,6 +82,10 @@ public abstract class ModelList<PARENT, T> extends EditList<T> {
 			public void changed(ChangeEvent event, Actor actor) {
 				T e = ((EditModelDialog<PARENT, T>) actor).getElement();
 				addItem(e);
+				
+				if (sorted) {
+					list.sortByTitle();
+				}
 
 				int i = getItems().indexOf(e, true);
 				list.setSelectedIndex(i);
@@ -124,7 +123,7 @@ public abstract class ModelList<PARENT, T> extends EditList<T> {
 			list.setSelectedIndex(0);
 		else
 			list.getSelection().clear();
-		
+
 		toolbar.disablePaste(false);
 
 		return e;

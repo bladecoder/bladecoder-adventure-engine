@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
+import java.util.Comparator;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -200,6 +202,17 @@ public class CustomList<T> extends Widget implements Cullable {
 			}
 			itemY -= cellRenderer.getItemHeight();
 		}
+	}
+	
+	public void sortByTitle() {
+		getItems().sort(new Comparator<T>() {
+			@Override
+			public int compare(T o1, T o2) {
+				String s1 = cellRenderer.getCellTitle(o1);
+				String s2 = cellRenderer.getCellTitle(o2);
+				return s1.compareTo(s2);
+			}
+		});
 	}
 
 	public ArraySelection<T> getSelection() {
