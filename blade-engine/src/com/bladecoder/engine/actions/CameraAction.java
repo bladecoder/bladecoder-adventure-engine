@@ -64,9 +64,10 @@ public class CameraAction implements Action {
 		if (followActor != null) {
 			if (followActor.equals("none"))
 				World.getInstance().getCurrentScene().setCameraFollowActor(null);
-			else
-				camera.updatePos((SpriteActor) World.getInstance().getCurrentScene()
+			else {
+				World.getInstance().getCurrentScene().setCameraFollowActor((SpriteActor) World.getInstance().getCurrentScene()
 						.getActor(followActor, false));
+			}
 		}
 
 		if (duration == 0) {
