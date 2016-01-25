@@ -287,6 +287,10 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	@Override
 	protected void paste() {
+		
+		if(parent == null || clipboard == null)
+			return;
+		
 		Action newElement = (Action) ElementUtils.cloneElement(clipboard);
 
 		int pos = list.getSelectedIndex() + 1;
