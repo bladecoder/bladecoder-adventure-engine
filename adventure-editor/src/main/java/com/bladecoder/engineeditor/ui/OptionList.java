@@ -40,7 +40,7 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 	private ImageButton downBtn;
 
 	public OptionList(Skin skin) {
-		super(skin, true);
+		super(skin, false);
 		this.skin = skin;
 
 		setCellRenderer(listCellRenderer);

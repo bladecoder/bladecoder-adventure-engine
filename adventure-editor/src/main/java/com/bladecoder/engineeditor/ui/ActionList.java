@@ -61,7 +61,7 @@ public class ActionList extends ModelList<Verb, Action> {
 	private String scope;
 
 	public ActionList(Skin skin) {
-		super(skin, true);
+		super(skin, false);
 		this.skin = skin;
 
 		setCellRenderer(listCellRenderer);
