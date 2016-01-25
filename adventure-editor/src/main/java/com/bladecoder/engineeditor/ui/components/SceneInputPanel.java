@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -36,6 +37,8 @@ public class SceneInputPanel extends StringOptionsInputPanel {
 		for(int i = 0; i < scenes.size(); i++) {
 			result[i] = v[i].getId();
 		}
+		
+		Arrays.sort(result);
 		
 		return result;
 	}

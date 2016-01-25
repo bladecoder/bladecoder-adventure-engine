@@ -16,6 +16,7 @@
 package com.bladecoder.engineeditor.ui.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -65,7 +66,9 @@ public class ActorAnimationInputPanel extends InputPanel {
 		});
 
 		init(skin, title, desc, panel, mandatory, defaultValue);
-		actor.setItems(values.toArray(new String[values.size()]));
+		String[] array = values.toArray(new String[values.size()]);
+		Arrays.sort(array);
+		actor.setItems(array);
 
 		if (values.size() > 0) {
 			if (defaultValue != null)
@@ -108,7 +111,9 @@ public class ActorAnimationInputPanel extends InputPanel {
 			}
 		}
 		
-		animation.setItems(values.toArray(new String[values.size()]));
+		String[] array = values.toArray(new String[values.size()]);
+		Arrays.sort(array);
+		animation.setItems(array);
 
 		if (values.size() > 0)
 			animation.setSelected("");

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -45,6 +46,7 @@ public class SceneActorInputPanel extends InputPanel {
 		panel.add(actor);
 
 		Scene[] scenes = World.getInstance().getScenes().values().toArray(new Scene[0]);
+		
 		int l = scenes.length + 1;
 		
 		String values[] = new String[l];
@@ -55,6 +57,8 @@ public class SceneActorInputPanel extends InputPanel {
 			values[i + 1] = scenes[i].getId();
 		}
 		
+		Arrays.sort(values);
+		
 		scene.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -63,6 +67,7 @@ public class SceneActorInputPanel extends InputPanel {
 		});		
 
 		init(skin, title, desc, panel, mandatory, defaultValue);
+		
 		scene.setItems(values);
 
 		if (values.length > 0) {
@@ -103,6 +108,7 @@ public class SceneActorInputPanel extends InputPanel {
 				values[i+1] = v[i].getId();
 		}
 		
+		Arrays.sort(values);
 		actor.setItems(values);	
 	}
 	
