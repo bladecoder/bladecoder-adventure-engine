@@ -123,7 +123,7 @@ public class Dialog implements Serializable {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("id", id);
-			json.writeValue("actor", actor);
+//			json.writeValue("actor", actor);
 		} else {
 			json.writeValue("currentOption", currentOption);
 		}
@@ -137,7 +137,7 @@ public class Dialog implements Serializable {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			id = json.readValue("id", String.class, jsonData);
-			actor = json.readValue("actor", String.class, jsonData);
+//			actor = json.readValue("actor", String.class, jsonData);
 			options = json.readValue("options", ArrayList.class, DialogOption.class, jsonData);
 		} else {
 			JsonValue optionsValue = jsonData.get("options");
