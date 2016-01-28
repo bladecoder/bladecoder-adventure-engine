@@ -5,7 +5,7 @@ allprojects {
     version = '0.9.7-SNAPSHOT'
 
     ext {
-        gdxVersion = '1.8.0'
+        gdxVersion = '1.9.1'
     }
 
     repositories {

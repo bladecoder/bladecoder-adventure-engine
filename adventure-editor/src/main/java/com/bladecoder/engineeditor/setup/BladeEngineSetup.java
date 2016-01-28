@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.bladecoder.engineeditor.setup.DependencyBank.ProjectDependency;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
 import com.bladecoder.engineeditor.utils.EditorLogger;
 import com.bladecoder.engineeditor.utils.RunProccess;
@@ -73,14 +73,8 @@ public class BladeEngineSetup {
 		int[] localToolVersion = convertTools(newestLocalTool);
 		int[] targetToolVersion = convertTools(Versions.getBuildToolsVersion());
 		if (compareVersions(targetToolVersion, localToolVersion)) {
-//			int value = JOptionPane.showConfirmDialog(null,
-//				"You have a more recent version of android build tools than the recommended.\nDo you want to use this version?",
-//				"Warning!", JOptionPane.YES_NO_OPTION);
-			
-			int value = 0; // ALWAYS USE THE CURRENT BUILD TOOLS
-			if(value == 0) {
-				Versions.setBuildToolsVersion(newestLocalTool);
-			}
+			// ALWAYS USE THE CURRENT BUILD TOOLS
+			Versions.setBuildToolsVersion(newestLocalTool);
 			
 			EditorLogger.error("Using build tools: " + Versions.getBuildToolsVersion());
 		} else {
@@ -93,15 +87,9 @@ public class BladeEngineSetup {
 
 		int newestLocalApi = getLatestApi(apis);
 		if (newestLocalApi > Integer.valueOf(Versions.getAndroidAPILevel())) {
-//			int value = JOptionPane.showConfirmDialog(null,
-//			"You have a more recent version of android build tools than the recommended.\nDo you want to use this version?",
-//			"Warning!", JOptionPane.YES_NO_OPTION);
 		
-			int value = 0; // ALWAYS USE THE CURRENT API
-			
-			if(value == 0) {
-				Versions.setAndroidAPILevel(Integer.toString(newestLocalApi));
-			}
+			// ALWAYS USE THE CURRENT API
+			Versions.setAndroidAPILevel(Integer.toString(newestLocalApi));
 			
 			EditorLogger.error("Using API level: " + Versions.getAndroidAPILevel());
 		} else {
@@ -259,7 +247,9 @@ public class BladeEngineSetup {
 			sdkPath = sdkLocation.replace('\\', '/');
 
 		if (!isSdkLocationValid(sdkLocation)) {
-			System.out.println("Android SDK location '" + sdkLocation + "' doesn't contain an SDK");
+			EngineLogger.error("Android SDK location '" + sdkLocation + "' doesn't contain an SDK");
+		} else if (!isSdkUpToDate(sdkLocation)) {
+			// SHOW THE ANDROID SDK MANAGER??
 		}
 
 		// root dir/gradle files
@@ -403,7 +393,7 @@ public class BladeEngineSetup {
 		values.put("%ROBOVM_VERSION%", Versions.getRoboVMVersion());
 		
 		if (builder.modules.contains(ProjectType.HTML)) {
-			values.put("%GWT_INHERITS%", parseGwtInherits(builder.bank.gwtInheritances, builder));
+			values.put("%GWT_INHERITS%", parseGwtInherits(builder));
 		}
 
 		copyAndReplace(outputDir, project, values);
@@ -570,15 +560,17 @@ public class BladeEngineSetup {
 		return txt;
 	}
 
-	private String parseGwtInherits (HashMap<ProjectDependency, String[]> gwtInheritances, ProjectBuilder builder) {
+	private String parseGwtInherits (ProjectBuilder builder) {
 		String parsed = "";
-		for (ProjectDependency dep : gwtInheritances.keySet()) {
-			if (containsDependency(builder.dependencies, dep)) {
-				for (String inherit : gwtInheritances.get(dep)) {
+		
+		for (Dependency dep : builder.dependencies) {
+			if (dep.getGwtInherits() != null) {
+				for (String inherit : dep.getGwtInherits()) {
 					parsed += "\t<inherits name='" + inherit + "' />\n";
 				}
 			}
 		}
+		
 		return parsed;
 	}
 
@@ -590,14 +582,5 @@ public class BladeEngineSetup {
 			argString += " " + argument;
 		}
 		return argString;
-	}
-
-	private boolean containsDependency (List<Dependency> dependencyList, ProjectDependency projectDependency) {
-		for (Dependency dep : dependencyList) {
-			if (dep.getName().equals(projectDependency.name())) {
-				return true;
-			}
-		}
-		return false;
 	}
 }
