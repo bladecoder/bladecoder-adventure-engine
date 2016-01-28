@@ -214,6 +214,12 @@ public class CharacterActor extends SpriteActor {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			dialogs = json.readValue("dialogs", HashMap.class, Dialog.class, jsonData);
+
+			if (dialogs != null) {
+				for (Dialog d : dialogs.values())
+					d.setActor(id);
+			}
+
 		} else {
 			if (dialogs != null) {
 				JsonValue dialogsValue = jsonData.get("dialogs");
@@ -221,8 +227,8 @@ public class CharacterActor extends SpriteActor {
 				for (Dialog d : dialogs.values()) {
 					String id = d.getId();
 					JsonValue dValue = dialogsValue.get(id);
-					
-					if(dValue != null)
+
+					if (dValue != null)
 						d.read(json, dValue);
 				}
 			}

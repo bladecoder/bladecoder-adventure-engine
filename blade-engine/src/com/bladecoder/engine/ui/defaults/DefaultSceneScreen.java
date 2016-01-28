@@ -584,10 +584,10 @@ public class DefaultSceneScreen implements SceneScreen {
 			sbTmp.append(" UI STATE: ");
 			sbTmp.append(state.toString());
 
-			if (w.getCurrentScene().getPlayer() != null) {
-				sbTmp.append(" Depth Scl: ");
-				sbTmp.append(w.getCurrentScene().getFakeDepthScale(unprojectTmp.y));
-			}
+//			if (w.getCurrentScene().getPlayer() != null) {
+//				sbTmp.append(" Depth Scl: ");
+//				sbTmp.append(w.getCurrentScene().getFakeDepthScale(unprojectTmp.y));
+//			}
 
 			color = Color.WHITE;
 		}

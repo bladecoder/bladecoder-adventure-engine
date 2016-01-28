@@ -27,6 +27,7 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI;
 import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class BladeEngine implements ApplicationListener {
@@ -159,6 +160,7 @@ public class BladeEngine implements ApplicationListener {
 
 			EngineLogger.debug("Max. texture Size: " + maxSize);
 			EngineLogger.debug("Density: " + Gdx.graphics.getDensity());
+			EngineLogger.debug("Size Multiplier: " + DPIUtils.getSizeMultiplier());
 		}
 	}
 
