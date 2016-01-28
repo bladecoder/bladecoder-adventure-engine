@@ -88,7 +88,7 @@ public class DebugScreen implements BladeScreen {
 
 		Table table = new Table(ui.getSkin());
 		table.setFillParent(true);
-		table.center();
+		table.center().top();
 
 		table.addListener(new InputListener() {
 			@Override
@@ -124,7 +124,7 @@ public class DebugScreen implements BladeScreen {
 		sGroup.addActor(speedButton);
 		
 		table.row().pad(5).align(Align.left);
-		table.add("Game Speed: ");
+		table.add(new Label("Game Speed: ", ui.getSkin(), "debug"));
 		table.add(sGroup);
 
 		// ------------- RECORDING
@@ -195,12 +195,12 @@ public class DebugScreen implements BladeScreen {
 		rGroup.space(10);
 		rGroup.addActor(recordings);
 		rGroup.addActor(play);
-		rGroup.addActor(new Label("Rec. Filename", ui.getSkin()));
+		rGroup.addActor(new Label("Rec. Filename", ui.getSkin(), "debug"));
 		rGroup.addActor(recFilename);
 		rGroup.addActor(rec);
 
 		table.row().pad(5).align(Align.left);
-		table.add("Game Recording: ");
+		table.add(new Label("Game Recording: ", ui.getSkin(), "debug"));
 		table.add(rGroup);
 
 		// ------------- SCENES
@@ -227,7 +227,7 @@ public class DebugScreen implements BladeScreen {
 		scGroup.addActor(go);
 
 		table.row().pad(5).align(Align.left);
-		table.add("Go to Scene: ");
+		table.add(new Label("Go to Scene: ", ui.getSkin(), "debug"));
 		table.add(scGroup);
 
 		// ------------- TESTERBOT
@@ -313,16 +313,16 @@ public class DebugScreen implements BladeScreen {
 		HorizontalGroup botGroup2 = new HorizontalGroup();
 		botGroup2.space(10);
 		
-		botGroup2.addActor(new Label("Excl. List: ", ui.getSkin()));
+		botGroup2.addActor(new Label("Excl. List: ", ui.getSkin(), "debug"));
 		botGroup2.addActor(testerExcludeList);
-		botGroup2.addActor(new Label("Interval: ", ui.getSkin()));
+		botGroup2.addActor(new Label("Interval: ", ui.getSkin(), "debug"));
 		botGroup2.addActor(testerTimeConf);
-		botGroup2.addActor(new Label("Scn Time: ", ui.getSkin()));
+		botGroup2.addActor(new Label("Scn Time: ", ui.getSkin(), "debug"));
 		botGroup2.addActor(inSceneTimeConf);
 		botGroup2.addActor(runBot);
 
 		table.row().pad(5).align(Align.left);
-		table.add("Tester Bot: ");
+		table.add(new Label("Tester Bot: ", ui.getSkin(), "debug"));
 		table.add(botGroup);
 		table.row().pad(5).align(Align.left);
 		table.add();
@@ -356,7 +356,7 @@ public class DebugScreen implements BladeScreen {
 				"RoboVM: v" + Config.getProperty("roboVMVersion", "unspecified") + "\n";
 //				 + "Gdx.app.getVersion: " + Gdx.app.getVersion();
 		
-		Label version = new Label(versionString, ui.getSkin());
+		Label version = new Label(versionString, ui.getSkin(), "debug");
 		version.setColor(Color.LIGHT_GRAY);
 		Table versionStack = new Table();
 		versionStack.defaults().pad(DPIUtils.getSpacing());
