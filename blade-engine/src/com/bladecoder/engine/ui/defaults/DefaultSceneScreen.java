@@ -784,8 +784,9 @@ public class DefaultSceneScreen implements SceneScreen {
 	 * @param target
 	 */
 	public void runVerb(InteractiveActor a, String verb, String target) {
-		if (inventoryUI.isVisible())
-			inventoryUI.hide();
+		// COMMENTED BECAUSE INVENTORY ONLY HIDE WHEN CUTMODE
+		//		if (inventoryUI.isVisible())
+		//		inventoryUI.hide();
 
 		if (recorder.isRecording()) {
 			recorder.add(a.getId(), verb, target);
