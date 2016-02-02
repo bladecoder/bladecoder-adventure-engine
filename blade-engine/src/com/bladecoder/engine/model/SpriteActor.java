@@ -86,6 +86,8 @@ public class SpriteActor extends InteractiveActor {
 
 		if (v)
 			renderer.updateBboxFromRenderer(bbox);
+		else
+			renderer.updateBboxFromRenderer(null);
 	}
 
 	public float getWidth() {
