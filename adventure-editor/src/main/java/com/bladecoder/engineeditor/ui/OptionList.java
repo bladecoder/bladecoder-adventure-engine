@@ -107,14 +107,6 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 				list.getItems().insert(pos, e);
 				list.setSelectedIndex(pos);
 				list.invalidateHierarchy();
-
-				// Move model object inserted to the end to the selected
-				// position
-				if (pos != 0 && pos < list.getItems().size) {
-					DialogOption e2 = list.getItems().get(pos);
-					parent.getOptions().set(pos, e);
-					parent.getOptions().set(list.getItems().size - 1, e2);
-				}
 			}
 		});
 	}

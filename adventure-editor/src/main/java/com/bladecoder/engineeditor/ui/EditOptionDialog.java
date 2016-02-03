@@ -68,7 +68,9 @@ public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 
 		if (create) {
 			e = new DialogOption();
-			parent.addOption(e);
+//			parent.addOption(e);
+			
+			parent.getOptions().add(pos, e);
 		}
 		
 		String key = e.getText();
