@@ -70,7 +70,6 @@ public class SpineRenderer implements ActorRenderer {
 	private AnimationDesc currentAnimation;
 
 	private ActionCallback animationCb = null;
-	private String animationCbSer = null;
 
 	private int currentCount;
 	private Tween.Type currentAnimationType;
@@ -121,13 +120,7 @@ public class SpineRenderer implements ActorRenderer {
 			complete = true;
 			computeBbox();
 
-			if (animationCb != null || animationCbSer != null) {
-
-				if (animationCb == null) {
-					animationCb = ActionCallbackSerialization.find(animationCbSer);
-					animationCbSer = null;
-				}
-
+			if (animationCb != null) {
 				ActionCallbackQueue.add(animationCb);
 				animationCb = null;
 			}
@@ -690,11 +683,7 @@ public class SpineRenderer implements ActorRenderer {
 
 			json.writeValue("flipX", flipX);
 			
-			if (animationCbSer != null)
-				json.writeValue("cb", animationCbSer);
-			else
-				json.writeValue("cb", ActionCallbackSerialization.find(animationCb), animationCb == null ? null
-						: String.class);
+			json.writeValue("cb", ActionCallbackSerialization.find(animationCb));
 			json.writeValue("currentCount", currentCount);
 			
 			if(currentAnimationId != null)
@@ -718,7 +707,9 @@ public class SpineRenderer implements ActorRenderer {
 				currentAnimation = fanims.get(currentAnimationId);
 
 			flipX = json.readValue("flipX", Boolean.class, jsonData);
-			animationCbSer = json.readValue("cb", String.class, jsonData);
+			String animationCbSer = json.readValue("cb", String.class, jsonData);
+			animationCb = ActionCallbackSerialization.find(animationCbSer);
+			
 			currentCount = json.readValue("currentCount", Integer.class, jsonData);
 			
 			if(currentAnimationId != null)
