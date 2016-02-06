@@ -16,10 +16,7 @@
 package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
@@ -49,8 +46,6 @@ public class SayAction extends BaseCallbackAction {
 	@ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")
 	private boolean queue = false;
 
-	private String previousAnim = null;
-
 	@Override
 	public boolean run(VerbRunner cb) {
 		float x, y;
@@ -58,6 +53,8 @@ public class SayAction extends BaseCallbackAction {
 
 		setVerbCb(cb);
 		InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, false);
+		
+		boolean textWait = getWait();
 
 		if (soundId != null)
 			a.playSound(soundId);
@@ -69,14 +66,18 @@ public class SayAction extends BaseCallbackAction {
 				x = a.getX();
 				y = a.getY() + a.getBBox().getBoundingRectangle().getHeight();
 				
-				color = ((CharacterActor)a).getTextColor();
+				CharacterActor ca = (CharacterActor)a;
 				
-				restoreStandPose((CharacterActor)a);
-				startTalkAnim((CharacterActor)a);
+				color = ca.getTextColor();
+				
+				ca.talk();
+				
+				// always wait to restore the 'stand' animation when TALK.
+				textWait = true;
 			}
 
 			World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null,
-					getWait()?this:null);
+					textWait?this:null);
 		}
 
 		return getWait();
@@ -86,41 +87,11 @@ public class SayAction extends BaseCallbackAction {
 	public void resume() {
 		if (type == Text.Type.TALK) {
 			CharacterActor a = (CharacterActor) World.getInstance().getCurrentScene().getActor(actor, false);
-			a.startAnimation(previousAnim, Tween.Type.SPRITE_DEFINED, 0, null);
-		}
-
-		super.resume();
-	}
-
-	private void restoreStandPose(CharacterActor a) {
-		if (a == null)
-			return;
-
-		String fa = a.getRenderer().getCurrentAnimationId();
-
-		// If the actor was already talking we restore the actor to the 'stand'
-		// pose
-		if (fa.startsWith(a.getTalkAnim())) {
 			a.stand();
 		}
+
+		// after restore the 'stand' pose, only continue if the verb is waiting.
+		if(getWait())
+			super.resume();
 	}
-
-	private void startTalkAnim(CharacterActor a) {
-		previousAnim = a.getRenderer().getCurrentAnimationId();
-
-		a.talk();
-	}
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("previousAnim", previousAnim);
-		super.write(json);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		previousAnim = json.readValue("previousAnim", String.class, jsonData);
-		super.read(json, jsonData);
-	}
-
 }
