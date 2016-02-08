@@ -127,8 +127,8 @@ public class TextManagerUI extends Actor {
 					
 					// check if the text exits the screen
 					if (getX() < 0 && getX() > -getWidth()) {
-						setX(0);
-						fontX = getX() + PADDING;
+						setX(0 + PADDING);
+						fontX = getX() + PADDING + (layout.width - maxWidth) / 2;
 					} else if (getX() + getWidth() > getStage().getViewport().getScreenWidth() && 
 							getX() + getWidth() < getStage().getViewport().getScreenWidth() + getWidth()) {
 						setX(getStage().getViewport().getScreenWidth() - getWidth());
@@ -151,17 +151,18 @@ public class TextManagerUI extends Actor {
 		final TextManagerUIStyle style = getStyle(subtitle);
 
 		if (subtitle.type == Text.Type.TALK) {
+			if(getX() < 0 || getX() > getStage().getViewport().getScreenWidth())
+				return;
+			
 			if (style.talkBubble != null) {
 				float scale = DPIUtils.getTouchMinSize() / 4 / style.talkBubble.getMinHeight();
-//				float bubbleX = getX() + (getWidth()  - style.talkBubble.getMinWidth() * scale)/ 2;
-				unprojectTmp.set(subtitle.x, subtitle.y, 0);
-				World.getInstance().getSceneCamera().scene2screen(getStage().getViewport(), unprojectTmp);
 				
 				float bubbleX = unprojectTmp.x  - style.talkBubble.getMinWidth() * scale / 2;
+				bubbleX = Math.max(bubbleX, getX() + PADDING);
+				bubbleX = Math.min(bubbleX, getStage().getViewport().getScreenWidth() - PADDING);
 				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + 2;
 				
-				if(bubbleX + style.talkBubble.getMinWidth() * scale < getX() + getWidth() && bubbleX > getX())
-					style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
+				style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
 						style.talkBubble.getMinHeight() * scale);
 			}
 
