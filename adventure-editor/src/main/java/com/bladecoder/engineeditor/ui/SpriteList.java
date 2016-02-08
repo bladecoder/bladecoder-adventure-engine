@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.Dialog;
@@ -211,6 +212,9 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 				else
 					init = "";
 			}
+			
+			if (e instanceof SpineAnimationDesc && ((SpineAnimationDesc)e).track != 0)
+				name += " ("+ ((SpineAnimationDesc)e).track + ")";
 
 			if (init.equals(name) || AnimationDesc.getFlipId(init).equals(name))
 				name += " <init>";

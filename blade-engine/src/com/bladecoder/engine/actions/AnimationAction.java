@@ -30,7 +30,7 @@ public class AnimationAction implements Action {
 	@ActionPropertyDescription("The Animation to set")
 	private ActorAnimationRef animation;
 
-	@ActionProperty
+	@ActionProperty(required = true, defaultValue = "-1")
 	@ActionPropertyDescription("The times to repeat. -1 to infinity repeat")
 	private int count = 1;
 

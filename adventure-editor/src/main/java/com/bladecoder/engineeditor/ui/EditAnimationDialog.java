@@ -56,6 +56,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 	InputPanel source;
 	InputPanel atlas;
 	InputPanel id;
+	InputPanel track;
 	InputPanel repeat;
 	InputPanel speed;
 	InputPanel delay;
@@ -82,6 +83,8 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 				getAtlases(), true);
 		id = InputPanelFactory.createInputPanel(skin, "ID",
 				"Select the id of the animation", new String[0], true);
+		track = InputPanelFactory.createInputPanel(skin, "Track",
+				"Plays the animation in the selected tracks. Tracks 0,1,2 are available. If track is different from 0, the animation is played in parallel with the current animation.", Param.Type.INTEGER, true, "0");
 		repeat = InputPanelFactory.createInputPanel(skin, "Animation type",
 				"Select the type of the animation", Param.Type.OPTION, true, Tween.Type.NO_REPEAT.toString(), Tween.Type.class.getEnumConstants());
 		
@@ -161,11 +164,14 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		setInfoWidget(spriteWidget);
 		
 		init(p, e, new InputPanel [] { source, atlas, id, repeat, speed, delay,
-				count, in, out, sound, preload, dispose});
+				count, track, in, out, sound, preload, dispose});
 		
 		setVisible(delay,false);
 		setVisible(count,false);		
 		setVisible(atlas,false);
+		
+		if(!(parent.getRenderer() instanceof SpineRenderer))
+			setVisible(track,false);
 
 		addSources();
 		if(e !=  null) {
@@ -402,24 +408,28 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			ActorRenderer renderer = parent.getRenderer();		
 			
 			if (renderer instanceof SpineRenderer) {
-				e = new SpineAnimationDesc();
-				
-				if(spineAtlasExists(sourceStr)) {
-					((SpineAnimationDesc)e).atlas = null;
-					setVisible(atlas,false);
-				} else {
-					if(!atlas.isVisible()) {
-						setVisible(atlas,true);
-					}
-					
-					((SpineAnimationDesc)e).atlas = atlas.getText();
-				}
-								
+				e = new SpineAnimationDesc();							
 			} else if (renderer instanceof AtlasRenderer) {
 				e = new AtlasAnimationDesc();
 			} else {
 				e = new AnimationDesc();
 			}
+		}
+		
+		if (e instanceof SpineAnimationDesc) {
+			if(spineAtlasExists(sourceStr)) {
+				((SpineAnimationDesc)e).atlas = null;
+				setVisible(atlas,false);
+			} else {
+				if(!atlas.isVisible()) {
+					setVisible(atlas,true);
+				}
+				
+				((SpineAnimationDesc)e).atlas = atlas.getText();
+			}
+			
+			
+			((SpineAnimationDesc)e).track = Integer.parseInt(track.getText());	
 		}
 		
 		e.id = id.getText();
@@ -453,6 +463,9 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		
 		if(atlas.isVisible() && e instanceof SpineAnimationDesc)
 			atlas.setText(((SpineAnimationDesc)e).atlas);
+		
+		if(e instanceof SpineAnimationDesc)
+			track.setText(Integer.toString(((SpineAnimationDesc)e).track));
 		
 		id.setText(e.id);
 		repeat.setText(e.animationType.toString());

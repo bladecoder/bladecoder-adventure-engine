@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.spine;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.badlogic.gdx.graphics.Color;
@@ -67,10 +68,14 @@ public class SpineRenderer implements ActorRenderer {
 
 	/** Starts this anim the first time that the scene is loaded */
 	private String initAnimation;
-	private AnimationDesc currentAnimation;
 
 	private ActionCallback animationCb = null;
-	private String animationCbSer = null;
+
+	/**
+	 * 3 animations can be played at the same time in tracks [0-2]. Track 0
+	 * resets the current pose.
+	 */
+	private final SpineAnimationDesc[] currentAnimations = new SpineAnimationDesc[3];
 
 	private int currentCount;
 	private Tween.Type currentAnimationType;
@@ -111,23 +116,19 @@ public class SpineRenderer implements ActorRenderer {
 	private AnimationStateListener animationListener = new AnimationStateListener() {
 		@Override
 		public void complete(int trackIndex, int loopCount) {
-			if (complete)
+
+			if (complete || trackIndex != 0)
 				return;
 
-			if ((currentAnimationType == Tween.Type.REPEAT || currentAnimationType == Tween.Type.REVERSE_REPEAT) && (currentCount == Tween.INFINITY || currentCount > loopCount)) {
+			if ((currentAnimationType == Tween.Type.REPEAT || currentAnimationType == Tween.Type.REVERSE_REPEAT)
+					&& (currentCount == Tween.INFINITY || currentCount > loopCount)) {
 				return;
 			}
 
 			complete = true;
 			computeBbox();
 
-			if (animationCb != null || animationCbSer != null) {
-
-				if (animationCb == null) {
-					animationCb = ActionCallbackSerialization.find(animationCbSer);
-					animationCbSer = null;
-				}
-
+			if (animationCb != null) {
 				ActionCallbackQueue.add(animationCb);
 				animationCb = null;
 			}
@@ -143,7 +144,7 @@ public class SpineRenderer implements ActorRenderer {
 				return;
 
 			String actorId = event.getData().getName();
-			InteractiveActor actor = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true);
+			InteractiveActor actor = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actorId, true);
 
 			switch (event.getInt()) {
 			case PLAY_ANIMATION_EVENT:
@@ -183,10 +184,10 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public String getCurrentAnimationId() {
-		if (currentAnimation == null)
+		if (currentAnimations[0] == null)
 			return null;
 
-		String id = currentAnimation.id;
+		String id = currentAnimations[0].id;
 
 		if (flipX) {
 			id = AnimationDesc.getFlipId(id);
@@ -240,7 +241,7 @@ public class SpineRenderer implements ActorRenderer {
 			}
 
 			lastAnimationTime += d;
-			
+
 			if (lastAnimationTime >= 0)
 				updateAnimation(d);
 		}
@@ -280,42 +281,61 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public AnimationDesc getCurrentAnimation() {
-		return currentAnimation;
+		return currentAnimations[0];
 	}
-	
+
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
-		StringBuilder sb = new StringBuilder(id);
-		
-		// if dir==null gets the current animation direction
-		if(direction == null) {
-			int idx = getCurrentAnimationId().indexOf('.');
+		SpineAnimationDesc fa = (SpineAnimationDesc) fanims.get(id);
 
-			if (idx != -1) {
-				String dir = getCurrentAnimationId().substring(idx);
-				sb.append(dir);
-			}
+		if (fa != null && fa.track != 0) {
+			startAnimation(id, repeatType, count, null);
 		} else {
-			sb.append('.');
-			sb.append(direction);
-		}
-		
-		String anim = sb.toString();
-				
-		if(getAnimation(anim) == null) {
-			anim = id;
-		}
 
-		startAnimation(anim, repeatType, count, null);
+			StringBuilder sb = new StringBuilder(id);
+
+			// if dir==null gets the current animation direction
+			if (direction == null) {
+				int idx = getCurrentAnimationId().indexOf('.');
+
+				if (idx != -1) {
+					String dir = getCurrentAnimationId().substring(idx);
+					sb.append(dir);
+				}
+			} else {
+				sb.append('.');
+				sb.append(direction);
+			}
+
+			String anim = sb.toString();
+
+			if (getAnimation(anim) == null) {
+				anim = id;
+			}
+
+			startAnimation(anim, repeatType, count, null);
+		}
 	}
 
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
-		startAnimation(id, repeatType, count, cb, AnimationDesc.getDirectionString(p0, pf, AnimationDesc.getDirs(id, fanims)));
+		startAnimation(id, repeatType, count, cb,
+				AnimationDesc.getDirectionString(p0, pf, AnimationDesc.getDirs(id, fanims)));
 	}
 
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
+		SpineAnimationDesc ad = (SpineAnimationDesc) fanims.get(id);
+		
+		System.out.println("ANIMATION: " +  (currentAnimations[0]==null?"XX":currentAnimations[0].source) + "." + id);
+
+		if (ad != null && ad.track != 0 && currentAnimations[0] != null) {
+			animationCb = cb;
+			currentAnimations[ad.track] = ad;
+			currentSource.animation.setAnimation(ad.track, ad.id, ad.animationType == Tween.Type.REPEAT);
+			return;
+		}
+
 		SpineAnimationDesc fa = (SpineAnimationDesc) getAnimation(id);
 
 		if (fa == null) {
@@ -324,13 +344,16 @@ public class SpineRenderer implements ActorRenderer {
 			return;
 		}
 
-		if (currentAnimation != null && currentAnimation.disposeWhenPlayed)
-			disposeSource(currentAnimation.source);
-
-		currentAnimation = fa;
-		currentSource = sourceCache.get(fa.source);
-
 		animationCb = cb;
+		
+		if (currentAnimations[0] != null && currentAnimations[0].disposeWhenPlayed)
+			disposeSource(currentAnimations[0].source);
+
+		// reset animations
+		Arrays.fill(currentAnimations, null);
+
+		currentAnimations[0] = fa;
+		currentSource = sourceCache.get(fa.source);
 
 		// If the source is not loaded. Load it.
 		if (currentSource == null || currentSource.refCounter < 1) {
@@ -343,15 +366,15 @@ public class SpineRenderer implements ActorRenderer {
 
 			if (currentSource == null) {
 				EngineLogger.error("Could not load AnimationDesc: " + id);
-				currentAnimation = null;
+				currentAnimations[0] = null;
 
 				return;
 			}
 		}
 
 		if (repeatType == Tween.Type.SPRITE_DEFINED) {
-			currentAnimationType = currentAnimation.animationType;
-			currentCount = currentAnimation.count;
+			currentAnimationType = currentAnimations[0].animationType;
+			currentCount = currentAnimations[0].count;
 		} else {
 			currentCount = count;
 			currentAnimationType = repeatType;
@@ -362,10 +385,8 @@ public class SpineRenderer implements ActorRenderer {
 			Array<Animation> animations = currentSource.skeleton.getData().getAnimations();
 
 			for (Animation a : animations) {
-				if (a.getName().equals(currentAnimation.id)) {
-					lastAnimationTime = a.getDuration() / currentAnimation.duration - 0.01f;
-					
-					System.out.println("LAST ANIM TIME: " + lastAnimationTime + " ID: " + currentAnimation.id);
+				if (a.getName().equals(currentAnimations[0].id)) {
+					lastAnimationTime = a.getDuration() / currentAnimations[0].duration - 0.01f;
 					break;
 				}
 			}
@@ -379,11 +400,10 @@ public class SpineRenderer implements ActorRenderer {
 
 	private void setCurrentAnimation() {
 		try {
-			// TODO Make setup pose parametrizable in the AnimationDesc
 			currentSource.skeleton.setToSetupPose();
 			currentSource.skeleton.setFlipX(flipX);
-			currentSource.animation.setTimeScale(currentAnimation.duration);
-			currentSource.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.Type.REPEAT);
+			currentSource.animation.setTimeScale(currentAnimations[0].duration);
+			currentSource.animation.setAnimation(0, currentAnimations[0].id, currentAnimationType == Tween.Type.REPEAT);
 
 			updateAnimation(lastAnimationTime);
 			computeBbox();
@@ -464,7 +484,7 @@ public class SpineRenderer implements ActorRenderer {
 
 			if (width <= minX || height <= minY) {
 				width = height = DEFAULT_DIM;
-				float dim2 = DEFAULT_DIM/2;
+				float dim2 = DEFAULT_DIM / 2;
 				minX = -dim2;
 				minY = -dim2;
 				maxX = dim2;
@@ -482,7 +502,7 @@ public class SpineRenderer implements ActorRenderer {
 			verts[5] = maxY;
 			verts[6] = maxX;
 			verts[7] = minY;
-			
+
 			bbox.dirty();
 		}
 	}
@@ -628,9 +648,9 @@ public class SpineRenderer implements ActorRenderer {
 				loadSource(fa.source, ((SpineAnimationDesc) fa).atlas);
 		}
 
-		if (currentAnimation != null && !currentAnimation.preload) {
-			loadSource(currentAnimation.source, ((SpineAnimationDesc) currentAnimation).atlas);
-		} else if (currentAnimation == null && initAnimation != null) {
+		if (currentAnimations[0] != null && !currentAnimations[0].preload) {
+			loadSource(currentAnimations[0].source, ((SpineAnimationDesc) currentAnimations[0]).atlas);
+		} else if (currentAnimations[0] == null && initAnimation != null) {
 			AnimationDesc fa = fanims.get(initAnimation);
 
 			if (fa != null && !fa.preload)
@@ -649,11 +669,16 @@ public class SpineRenderer implements ActorRenderer {
 				retrieveSource(key, sourceCache.get(key).atlas);
 		}
 
-		if (currentAnimation != null) {
-			SkeletonCacheEntry entry = sourceCache.get(currentAnimation.source);
+		if (currentAnimations[0] != null) {
+			SkeletonCacheEntry entry = sourceCache.get(currentAnimations[0].source);
 			currentSource = entry;
 
 			setCurrentAnimation();
+
+			for (int i = 1; i < currentAnimations.length; i++)
+				if(currentAnimations[i] !=  null)
+					currentSource.animation.setAnimation(currentAnimations[i].track, currentAnimations[i].id,
+						currentAnimations[i].animationType == Tween.Type.REPEAT);
 
 		} else if (initAnimation != null) {
 			startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
@@ -676,54 +701,55 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public void write(Json json) {
-		
+
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("fanims", fanims, HashMap.class, AnimationDesc.class);
 			json.writeValue("initAnimation", initAnimation);
 		} else {
-			String currentAnimationId = null;
+			String[] ids = new String[currentAnimations.length];
 
-			if (currentAnimation != null)
-				currentAnimationId = currentAnimation.id;
+			for (int i = 0; i < currentAnimations.length; i++)
+				if (currentAnimations[i] != null)
+					ids[i] = currentAnimations[i].id;
 
-			json.writeValue("currentAnimation", currentAnimationId, currentAnimationId == null ? null : String.class);
+			json.writeValue("currentAnimations", ids);
+			
+			if (currentAnimations[0] != null) {
+				json.writeValue("currentCount", currentCount);
+				json.writeValue("currentAnimationType", currentAnimationType);
+			}
 
 			json.writeValue("flipX", flipX);
-			
-			if (animationCbSer != null)
-				json.writeValue("cb", animationCbSer);
-			else
-				json.writeValue("cb", ActionCallbackSerialization.find(animationCb), animationCb == null ? null
-						: String.class);
-			json.writeValue("currentCount", currentCount);
-			
-			if(currentAnimationId != null)
-				json.writeValue("currentAnimationType", currentAnimationType);
-			
+
+			json.writeValue("cb", ActionCallbackSerialization.find(animationCb));
+
 			json.writeValue("lastAnimationTime", lastAnimationTime);
-			json.writeValue("complete", complete);	
+			json.writeValue("complete", complete);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void read(Json json, JsonValue jsonData) {	
+	public void read(Json json, JsonValue jsonData) {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
 			initAnimation = json.readValue("initAnimation", String.class, jsonData);
 		} else {
-			String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);
+			String ids[] = json.readValue("currentAnimations", String[].class, jsonData);
 
-			if (currentAnimationId != null)
-				currentAnimation = fanims.get(currentAnimationId);
+			for (int i = 0; i < currentAnimations.length; i++)
+				if (ids[i] != null)
+					currentAnimations[i] = (SpineAnimationDesc)fanims.get(ids[i]);
+
+			if (currentAnimations[0] != null) {
+				currentCount = json.readValue("currentCount", Integer.class, jsonData);
+				currentAnimationType = json.readValue("currentAnimationType", Tween.Type.class, jsonData);
+			}
 
 			flipX = json.readValue("flipX", Boolean.class, jsonData);
-			animationCbSer = json.readValue("cb", String.class, jsonData);
-			currentCount = json.readValue("currentCount", Integer.class, jsonData);
-			
-			if(currentAnimationId != null)
-				currentAnimationType = json.readValue("currentAnimationType", Tween.Type.class, jsonData);
-			
+			String animationCbSer = json.readValue("cb", String.class, jsonData);
+			animationCb = ActionCallbackSerialization.find(animationCbSer);
+
 			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 			complete = json.readValue("complete", Boolean.class, jsonData);
 		}

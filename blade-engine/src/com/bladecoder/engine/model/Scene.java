@@ -812,7 +812,7 @@ public class Scene implements Serializable, AssetConsumer {
 			}
 			
 			// READ ACTOR STATE. 
-			// The state must be retrieved after getting actors from his init scene to restore verb cb properly.
+			// The state must be retrieved after moving actors from his init scene to restore verb cb properly.
 			for (int i = 0; i < jsonValueActors.size; i++) {
 				JsonValue jsonValueAct = jsonValueActors.get(i);
 				actorRef = new SceneActorRef(jsonValueAct.name);
