@@ -67,7 +67,7 @@ public class SayAction extends BaseCallbackAction {
 				
 				Rectangle boundingRectangle = a.getBBox().getBoundingRectangle();
 				
-				x = a.getX();
+				x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
 				y = boundingRectangle.getY() + boundingRectangle.getHeight();
 				
 				CharacterActor ca = (CharacterActor)a;

@@ -58,9 +58,10 @@ public class SayDialogAction extends BaseCallbackAction {
 			CharacterActor player = w.getCurrentScene().getPlayer();
 			
 			Rectangle boundingRectangle = player.getBBox().getBoundingRectangle();
+			float x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
 			float y = boundingRectangle.getY() + boundingRectangle.getHeight();
 
-			w.getTextManager().addText(playerText, player.getX(), y, false,
+			w.getTextManager().addText(playerText, x, y, false,
 					Text.Type.TALK, player.getTextColor(), null, this);
 
 			player.talk();
@@ -86,9 +87,10 @@ public class SayDialogAction extends BaseCallbackAction {
 
 			if (responseText != null) {
 				Rectangle boundingRectangle = actor.getBBox().getBoundingRectangle();
+				float x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
 				float y = boundingRectangle.getY() + boundingRectangle.getHeight();
 				
-				World.getInstance().getTextManager().addText(responseText, actor.getX(),
+				World.getInstance().getTextManager().addText(responseText, x,
 						y, false, Text.Type.TALK,
 						((CharacterActor) actor).getTextColor(), null, this);
 
