@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.BaseActor;
@@ -55,8 +56,11 @@ public class SayDialogAction extends BaseCallbackAction {
 
 		if (playerText != null) {
 			CharacterActor player = w.getCurrentScene().getPlayer();
+			
+			Rectangle boundingRectangle = player.getBBox().getBoundingRectangle();
+			float y = boundingRectangle.getY() + boundingRectangle.getHeight();
 
-			w.getTextManager().addText(playerText, player.getX(), player.getY() + player.getHeight(), false,
+			w.getTextManager().addText(playerText, player.getX(), y, false,
 					Text.Type.TALK, player.getTextColor(), null, this);
 
 			player.talk();
@@ -81,8 +85,11 @@ public class SayDialogAction extends BaseCallbackAction {
 			player.stand();
 
 			if (responseText != null) {
+				Rectangle boundingRectangle = actor.getBBox().getBoundingRectangle();
+				float y = boundingRectangle.getY() + boundingRectangle.getHeight();
+				
 				World.getInstance().getTextManager().addText(responseText, actor.getX(),
-						actor.getY() + actor.getBBox().getBoundingRectangle().getHeight(), false, Text.Type.TALK,
+						y, false, Text.Type.TALK,
 						((CharacterActor) actor).getTextColor(), null, this);
 
 				if (actor instanceof CharacterActor) {

@@ -16,6 +16,7 @@
 package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Rectangle;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -63,8 +64,11 @@ public class SayAction extends BaseCallbackAction {
 			if (type != Text.Type.TALK) {
 				x = y = TextManager.POS_SUBTITLE;
 			} else {
+				
+				Rectangle boundingRectangle = a.getBBox().getBoundingRectangle();
+				
 				x = a.getX();
-				y = a.getY() + a.getBBox().getBoundingRectangle().getHeight();
+				y = boundingRectangle.getY() + boundingRectangle.getHeight();
 				
 				CharacterActor ca = (CharacterActor)a;
 				
