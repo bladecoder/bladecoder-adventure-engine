@@ -23,8 +23,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -53,10 +51,6 @@ public class LoadingScreen extends ScreenAdapter implements BladeScreen {
 
 	@Override
 	public void render(float delta) {
-		final World world = World.getInstance();
-		if (!world.isDisposed()) {
-			world.update(delta);
-		}
 
 		// Try to load scene for WAIT_TIME_MS before continue. If not loaded in
 		// this time,
@@ -69,9 +63,7 @@ public class LoadingScreen extends ScreenAdapter implements BladeScreen {
 			}
 		}
 
-		final AssetState assetState = world.getAssetState();
-
-		if (assetState == AssetState.LOADED) {
+		if (!EngineAssetManager.getInstance().isLoading()) {
 			ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			return;
 		}

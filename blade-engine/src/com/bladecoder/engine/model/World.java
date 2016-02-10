@@ -488,9 +488,9 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void resume() {
-		if (assetState == AssetState.LOADED) {
-			paused = false;
+		paused = false;
 
+		if (assetState == AssetState.LOADED) {
 			if (currentScene != null)
 				currentScene.resumeMusic();
 
@@ -871,7 +871,6 @@ public class World implements Serializable, AssetConsumer {
 			SerializationHelper.getInstance().setMode(Mode.STATE);
 
 			currentScene = scenes.get(json.readValue("currentScene", String.class, jsonData));
-			assetState = AssetState.LOAD_ASSETS;
 			
 			inventory = json.readValue("inventory", Inventory.class, jsonData);
 
