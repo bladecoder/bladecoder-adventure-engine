@@ -136,7 +136,7 @@ public class TextManagerUI extends Actor {
 					}
 
 					if (getY() + getHeight() > getStage().getViewport().getScreenHeight()) {
-						setY(getStage().getViewport().getScreenHeight() - getHeight());
+						setY(getStage().getViewport().getScreenHeight() - getHeight() - PADDING);
 					}
 				}
 			}
