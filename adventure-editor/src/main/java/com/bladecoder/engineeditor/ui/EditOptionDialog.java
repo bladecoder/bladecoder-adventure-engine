@@ -51,7 +51,7 @@ public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 		next = InputPanelFactory.createInputPanel(skin, "Next Dialog",
 				"The next dialog to show when this option is selected",
 				getActorDialogs((CharacterActor) Ctx.project.getSelectedActor()), false);
-		visible = InputPanelFactory.createInputPanel(skin, "Visible", "The visibility", Param.Type.BOOLEAN, false);
+		visible = InputPanelFactory.createInputPanel(skin, "Visible", "The visibility", Param.Type.BOOLEAN, true, "true");
 		once = InputPanelFactory.createInputPanel(skin, "Once", "When true, the option is hidden after selection",
 				Param.Type.BOOLEAN, false);
 

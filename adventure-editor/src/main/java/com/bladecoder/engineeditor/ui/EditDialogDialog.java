@@ -49,7 +49,10 @@ public class EditDialogDialog extends EditModelDialog<CharacterActor, Dialog> {
 			parent.getDialogs().remove(e.getId());
 		}
 		
-		e.setId(ElementUtils.getCheckedId(id.getText(), parent.getDialogs().keySet().toArray(new String[0])));
+		if(parent.getDialogs() != null)
+			e.setId(ElementUtils.getCheckedId(id.getText(), parent.getDialogs().keySet().toArray(new String[0])));
+		else
+			e.setId(id.getText());
 		
 		parent.addDialog(e);
 
