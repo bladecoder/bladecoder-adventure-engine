@@ -27,7 +27,7 @@ jar {
 	]
 }
 
-    javadoc {
+javadoc {
 	title = "Bladecoder Adventure Engine"
 	options {
 		memberLevel = JavadocMemberLevel.PUBLIC
@@ -35,31 +35,12 @@ jar {
 		setUse true
     		encoding "UTF-8"
 	}
-    }
+}
 
 dependencies {
   compile "com.badlogicgames.gdx:gdx:$gdxVersion"
   compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
   compile fileTree(dir: 'libs', include: '*.jar')
-}
-
-def isDevBuild
-def isCiBuild
-def isReleaseBuild
-
-def sonatypeRepositoryUrl
-
-//set build variables based on build type (release, continuous integration, development)
-if(hasProperty("release")) {
-    isReleaseBuild = true
-    sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-} else if (hasProperty("ci")) {
-    isCiBuild = true
-    if(!version.endsWith("-SNAPSHOT"))
-    	version += "-SNAPSHOT"
-    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-} else {
-    isDevBuild = true
 }
 
 
@@ -80,45 +61,9 @@ artifacts {
     archives sourcesJar
 }
 
-def ask(title){
-	def console = System.console()
-	def string
-	
-    if (console) {
-        string = console.readLine(title)
-    } else {
-        logger.error "Cannot get console."
-    }
-    
-    return new String(string)
-}
-
-def askPasswd(title){
-	def console = System.console()
-	def string
-	
-    if (console) {
-        string = console.readPassword(title)
-    } else {
-        logger.error "Cannot get console."
-    }
-    
-    return new String(string)
-}
-
 //********* artifact signing *********
-if(isReleaseBuild) {
-    signing {
-    	if(!project.hasProperty("signing.keyId"))
-    		allprojects {ext."signing.keyId" = ask('\nKey Id: ')}
-    	
-    	if(!project.hasProperty("signing.secretKeyRingFile"))
-    		allprojects { ext."signing.secretKeyRingFile" = ask('\nSecret Keyring file: ') }
-    	
-    	if(!project.hasProperty("signing.password"))
-    	  	allprojects { ext."signing.password" = askPasswd('\nKey Password: ') }
-
-    
+if(project.hasProperty("release")) {
+    signing {   
         sign configurations.archives
     }
 } else {
@@ -129,19 +74,19 @@ if(isReleaseBuild) {
 
 uploadArchives {
     repositories {
-        if (isDevBuild) {
+        if (!project.hasProperty("ci") && !project.hasProperty("release")) {
             mavenLocal()
         }
         else {
             mavenDeployer {
-                if(isReleaseBuild) {
+                if(project.hasProperty("release")) {
                     beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
                 }
 
                 repository(url: sonatypeRepositoryUrl) {                 
                   authentication(
-                    userName: project.hasProperty("sonatypeUsername")?sonatypeUsername:ask('\nSonatype Username: '), 
-                  	password: project.hasProperty("sonatypePassword")?sonatypePassword:askPasswd('\nSonatype Password: ')
+                    userName: sonatypeUsername, 
+                  	password: sonatypePassword
                   )
                 }
 
