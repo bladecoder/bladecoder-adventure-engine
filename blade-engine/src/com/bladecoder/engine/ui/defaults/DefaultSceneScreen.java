@@ -583,6 +583,16 @@ public class DefaultSceneScreen implements SceneScreen {
 			// sbTmp.append(DPIUtils.getSizeMultiplier());
 			sbTmp.append(" UI STATE: ");
 			sbTmp.append(state.toString());
+			sbTmp.append(' ');
+			
+			long millis = w.getTimeOfGame();
+			long second = (millis / 1000) % 60;
+			long minute = (millis / (1000 * 60)) % 60;
+			long hour = (millis / (1000 * 60 * 60));
+
+			String time = String.format("%02d:%02d:%02d", hour, minute, second);
+			
+			sbTmp.append(time);
 
 //			if (w.getCurrentScene().getPlayer() != null) {
 //				sbTmp.append(" Depth Scl: ");

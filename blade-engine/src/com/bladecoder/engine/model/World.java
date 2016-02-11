@@ -82,8 +82,8 @@ public class World implements Serializable, AssetConsumer {
 	private boolean paused;
 	private boolean cutMode;
 
-	/** keep track of the time of game */
-	private float timeOfGame;
+	/** keep track of the time of game in ms.*/
+	private long timeOfGame;
 
 	/** for debug purposes, keep track of loading time */
 	private long initLoadingTime;
@@ -205,7 +205,7 @@ public class World implements Serializable, AssetConsumer {
 		if (paused || assetState != AssetState.LOADED)
 			return;
 
-		timeOfGame += delta;
+		timeOfGame += delta * 1000f;
 
 		getCurrentScene().update(delta);
 		textManager.update(delta);
@@ -251,7 +251,7 @@ public class World implements Serializable, AssetConsumer {
 		return transition;
 	}
 
-	public float getTimeOfGame() {
+	public long getTimeOfGame() {
 		return timeOfGame;
 	}
 
@@ -883,7 +883,7 @@ public class World implements Serializable, AssetConsumer {
 					EngineLogger.debug("LOAD WARNING: Scene not found in saved game: " + s.getId());
 			}
 
-			timeOfGame = json.readValue("timeOfGame", float.class, 0.0f, jsonData);
+			timeOfGame = json.readValue("timeOfGame", long.class, 0L, jsonData);
 			cutMode = json.readValue("cutmode", boolean.class, false, jsonData);
 
 			verbs.read(json, jsonData);
