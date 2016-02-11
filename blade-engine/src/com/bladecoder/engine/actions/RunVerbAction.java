@@ -173,7 +173,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		ip = json.readValue("ip", Integer.class, jsonData);
+		ip = json.readValue("ip", int.class, 0, jsonData);
 		state = json.readValue("state", String.class, jsonData);
 		super.read(json, jsonData);
 	}
