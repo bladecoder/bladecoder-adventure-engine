@@ -769,7 +769,7 @@ public class World implements Serializable, AssetConsumer {
 
 	public void takeScreenshot(String filename, int w) {
 
-		int h = (int) (w * ((float) height) / (float) width);
+		int h = (int) (w * getSceneCamera().viewportHeight / getSceneCamera().viewportWidth);
 
 		FrameBuffer fbo = new FrameBuffer(Format.RGB565, w, h, false);
 

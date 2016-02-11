@@ -115,7 +115,8 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		final float pad = DPIUtils.getMarginSize();
 
 		slotWidth = (int) (stage.getViewport().getWorldWidth() / (ROW_SLOTS + 1) - 2 * pad);
-		slotHeight = (int) (slotWidth * ((float) world.getHeight() / (float) world.getWidth()));
+//		slotHeight = (int) (slotWidth * ((float) world.getHeight() / (float) world.getWidth()));
+		slotHeight = (int) (slotWidth * stage.getViewport().getScreenHeight() / stage.getViewport().getScreenWidth());
 
 		LoadSaveScreenStyle style = skin.get(LoadSaveScreenStyle.class);
 		// BitmapFont f = ui.getSkin().get(style.textButtonStyle,
