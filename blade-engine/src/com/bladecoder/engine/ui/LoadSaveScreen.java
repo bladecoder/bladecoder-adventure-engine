@@ -35,7 +35,9 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -170,39 +172,43 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		scroll.setPageSpacing(25);
 
 		Table slots = new Table().pad(pad);
-		slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2);
+		slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2).top();
+		int c = 0;
+		
+		// Add "new slot" slot for save screen
+		if (!loadScreenMode) {
+			slots.add(getSlotButton(Long.toString(new Date().getTime()))).fill().expand();
+			c++;
+		}
 
 		final List<String> sl = getSlots();
 
 		Collections.sort(sl);
 
-		int c = 0;
-		for (String s : sl) {
+		for (int j = sl.size() - 1; j >= 0; j--) {
+			
+			String s = sl.get(j);
+			
 			if (c % ROW_SLOTS == 0 && c % (ROW_SLOTS * COL_SLOTS) != 0)
 				slots.row();
 
 			if (c != 0 && c % (ROW_SLOTS * COL_SLOTS) == 0) {
 				scroll.addPage(slots);
 				slots = new Table().pad(pad);
-				slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2);
+				slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2).top();
 			}
-
-			slots.add(getSlotButton(s)).fill().expand();
+		
+			ImageButton removeButton = new ImageButton(skin, "inventory");
+			removeButton.setName(s);
+			removeButton.addListener(removeClickListener);
+			
+			Container<ImageButton> container = new Container<ImageButton>(removeButton);
+			container.size(40);
+			container.align(Align.topRight);
+			
+			slots.stack(getSlotButton(s), container).fill().expand();
+			
 			c++;
-		}
-
-		// Add "new slot" slot for save screen
-		if (!loadScreenMode) {
-			if (c % ROW_SLOTS == 0 && c % (ROW_SLOTS * COL_SLOTS) != 0)
-				slots.row();
-
-			if (c != 0 && c % (ROW_SLOTS * COL_SLOTS) == 0) {
-				scroll.addPage(slots);
-				slots = new Table().pad(pad);
-				slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2);
-			}
-
-			slots.add(getSlotButton(Long.toString(new Date().getTime()))).fill().expand();
 		}
 
 		// Add last page
@@ -254,7 +260,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		button.setSize(slotWidth, slotHeight);
 
 		if (slotExists(slot)) {
-			button.add(getScreenshot(slot)).maxSize(slotWidth * .9f, slotHeight * .9f);
+			button.add(getScreenshot(slot)).maxSize(slotWidth * .95f, slotHeight * .95f);
 
 			try {
 				long l = Long.parseLong(slot);
@@ -264,9 +270,13 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			} catch (Exception e) {
 				textLabel = slot;
 			}
+			
+			button.addListener(loadClickListener);
 		} else {
 			Image fg = new Image(skin.getDrawable("plus"));
 			button.add(fg).maxSize(slotHeight / 2, slotHeight / 2);
+			
+			button.addListener(saveClickListener);
 		}
 
 		button.row();
@@ -277,7 +287,6 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		button.add(label).fillX();
 
 		button.setName(slot);
-		button.addListener(levelClickListener);
 		return button;
 	}
 
@@ -325,21 +334,51 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		return new Image(t);
 	}
 
-	/**
-	 * Handle the click - in real life, we'd go to the level
-	 */
-	private ClickListener levelClickListener = new ClickListener() {
+	private ClickListener loadClickListener = new ClickListener() {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
 			final World world = World.getInstance();
 			final String filename = event.getListenerActor().getName() + World.GAMESTATE_EXT;
 
 			try {
-				if (loadScreenMode) {
+//				if (loadScreenMode) {
 					world.loadGameState(filename);
-				} else {
-					world.saveGameState(filename);
-				}
+
+				ui.setCurrentScreen(Screens.SCENE_SCREEN);
+
+			} catch (IOException e) {
+				EngineLogger.error(e.getMessage());
+			}
+		}
+	};
+	
+	private ClickListener removeClickListener = new ClickListener() {
+		@Override
+		public void clicked(InputEvent event, float x, float y) {
+			final World world = World.getInstance();
+			final String filename = event.getListenerActor().getName() + World.GAMESTATE_EXT;
+
+			try {
+				world.removeGameState(filename);
+				
+				event.getListenerActor().getParent().getParent().getParent().removeActor(event.getListenerActor().getParent().getParent());
+
+//				ui.setCurrentScreen(Screens.SCENE_SCREEN);
+
+			} catch (IOException e) {
+				EngineLogger.error(e.getMessage());
+			}
+		}
+	};
+	
+	private ClickListener saveClickListener = new ClickListener() {
+		@Override
+		public void clicked(InputEvent event, float x, float y) {
+			final World world = World.getInstance();
+			final String filename = event.getListenerActor().getName() + World.GAMESTATE_EXT;
+
+			try {
+				world.saveGameState(filename);
 
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 

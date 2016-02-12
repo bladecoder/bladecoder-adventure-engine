@@ -706,6 +706,11 @@ public class World implements Serializable, AssetConsumer {
 	public void saveGameState() throws IOException {
 		saveGameState(GAMESTATE_FILENAME);
 	}
+	
+	public void removeGameState(String filename) throws IOException {
+		EngineAssetManager.getInstance().getUserFile(filename).delete();
+		EngineAssetManager.getInstance().getUserFile(filename + ".png").delete();
+	}
 
 	public void saveGameState(String filename) throws IOException {
 		EngineLogger.debug("SAVING GAME STATE");
