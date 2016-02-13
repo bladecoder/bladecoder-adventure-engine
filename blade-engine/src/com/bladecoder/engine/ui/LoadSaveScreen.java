@@ -198,7 +198,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 				slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2).top();
 			}
 		
-			ImageButton removeButton = new ImageButton(skin, "inventory");
+			ImageButton removeButton = new ImageButton(skin, "delete_game");
 			removeButton.setName(s);
 			removeButton.addListener(removeClickListener);
 			
