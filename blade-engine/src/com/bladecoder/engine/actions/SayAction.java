@@ -80,7 +80,7 @@ public class SayAction extends BaseCallbackAction {
 			}
 
 			World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null,
-					getWait()?this:null);
+					this);
 		}
 
 		return getWait();
@@ -93,7 +93,8 @@ public class SayAction extends BaseCallbackAction {
 			a.startAnimation(previousAnim, Tween.Type.SPRITE_DEFINED, 0, null);
 		}
 
-		super.resume();
+		if(getWait())
+			super.resume();
 	}
 
 	private void restoreStandPose(CharacterActor a) {

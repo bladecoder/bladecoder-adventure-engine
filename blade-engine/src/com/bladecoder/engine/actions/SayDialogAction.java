@@ -73,9 +73,6 @@ public class SayDialogAction extends BaseCallbackAction {
 
 			w.getTextManager().addText(playerText, x, y, false,
 					Text.Type.TALK, player.getTextColor(), null, this);
-
-			w.getTextManager()
-					.addText(playerText, player.getX(), player.getY() + player.getHeight(), false, Text.Type.TALK, player.getTextColor(), null, this);
  
 			startTalkAnim(player);
 
@@ -114,10 +111,11 @@ public class SayDialogAction extends BaseCallbackAction {
 					startTalkAnim((CharacterActor)actor);
 				}
 			} else {
+				previousAnim = null;
 				super.resume();
 			}
 		} else {
-			if(actor instanceof SpriteActor) {
+			if(actor instanceof SpriteActor && previousAnim != null) {
 				((SpriteActor)actor).startAnimation(previousAnim, null);
 			}
 			super.resume();			

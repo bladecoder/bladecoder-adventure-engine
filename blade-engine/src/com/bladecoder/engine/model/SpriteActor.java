@@ -26,6 +26,7 @@ import com.bladecoder.engine.anim.SpriteScaleTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.InterpolationMode;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
@@ -150,6 +151,7 @@ public class SpriteActor extends InteractiveActor {
 		if (posTween != null && posTween instanceof WalkTween)
 			posTween = null;
 
+		EngineLogger.debug("ANIMATION: " + this.id + "." + id);
 		renderer.startAnimation(id, repeatType, count, cb);
 
 		outAnim();

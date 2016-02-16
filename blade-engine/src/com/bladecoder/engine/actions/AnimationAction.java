@@ -15,13 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.text.MessageFormat;
-
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Sets the animation for an actor")
 public class AnimationAction implements Action {
@@ -44,7 +41,7 @@ public class AnimationAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}", animation.getAnimationId()));
+//		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}.{1}", animation.getActorId(), animation.getAnimationId()));
 		
 		String actorId = animation.getActorId();
 		
