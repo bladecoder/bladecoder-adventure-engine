@@ -37,7 +37,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -198,11 +197,11 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 				slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2).top();
 			}
 		
-			ImageButton removeButton = new ImageButton(skin, "delete_game");
+			Button removeButton = new Button(skin, "delete_game");
 			removeButton.setName(s);
 			removeButton.addListener(removeClickListener);
 			
-			Container<ImageButton> container = new Container<ImageButton>(removeButton);
+			Container<Button> container = new Container<Button>(removeButton);
 			container.size(40);
 			container.align(Align.topRight);
 			
