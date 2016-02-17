@@ -23,6 +23,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -54,7 +55,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	private InventoryUIStyle style;
 
-	private CustomImageButton menuButton;
+	private Button menuButton;
 
 	private final Vector2 orgPos = new Vector2();
 	private final Vector2 targetPos = new Vector2();
@@ -116,7 +117,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		});
 
 		if (style.menuButtonStyle != null) {
-			menuButton = new CustomImageButton(style.menuButtonStyle);
+			menuButton = new Button(style.menuButtonStyle);
 
 			addActor(menuButton);
 			menuButton.addListener(new ChangeListener() {
@@ -125,6 +126,10 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 					sceneScreen.getUI().setCurrentScreen(UI.Screens.MENU_SCREEN);
 				}
 			});
+			
+			float iconSize = DPIUtils.getPrefButtonSize();
+
+			menuButton.setSize(iconSize, iconSize);
 		}
 	}
 
@@ -200,8 +205,12 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		setX(orgPos.x);
 		setY(orgPos.y);
 
-		if(menuButton != null)
+		if(menuButton != null) {
 			menuButton.setPosition(getWidth() - menuButton.getWidth() / 2, (getHeight() - menuButton.getHeight()) / 2);
+			float iconSize = DPIUtils.getPrefButtonSize();
+
+			menuButton.setSize(iconSize, iconSize);
+		}
 	}
 
 	public void retrieveAssets(TextureAtlas atlas) {

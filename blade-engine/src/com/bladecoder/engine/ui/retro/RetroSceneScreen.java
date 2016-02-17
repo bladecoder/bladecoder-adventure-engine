@@ -34,7 +34,10 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -47,7 +50,6 @@ import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.ui.DialogUI;
-import com.bladecoder.engine.ui.MenuButton;
 import com.bladecoder.engine.ui.Pointer;
 import com.bladecoder.engine.ui.Recorder;
 import com.bladecoder.engine.ui.SceneFitViewport;
@@ -80,7 +82,7 @@ public class RetroSceneScreen implements SceneScreen {
 	private TextManagerUI textManagerUI;
 	private ShapeRenderer renderer;
 
-	private MenuButton menuButton;
+	private Button menuButton;
 
 	private Recorder recorder;
 	private TesterBot testerBot;
@@ -599,10 +601,20 @@ public class RetroSceneScreen implements SceneScreen {
 		}
 
 		textManagerUI.resize();
-		menuButton.resize();
 		pointer.resize();
 
 		verbUI.setSize(screenViewport.getScreenWidth(), screenViewport.getScreenHeight() * UI_SCREEN_PERCENT);
+		
+		float size = DPIUtils.getPrefButtonSize();
+		float margin = DPIUtils.getMarginSize();
+		
+		menuButton.setSize(size, size);
+		menuButton.setPosition(
+				stage.getViewport().getScreenWidth() - menuButton.getWidth()
+						- margin, stage.getViewport()
+						.getScreenHeight()
+						- menuButton.getHeight()
+						- margin);
 	}
 
 	public void dispose() {
@@ -674,6 +686,12 @@ public class RetroSceneScreen implements SceneScreen {
 		stage.addActor(menuButton);
 		stage.addActor(verbUI);
 		stage.addActor(pointer);
+		
+		menuButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				ui.setCurrentScreen(Screens.MENU_SCREEN);
+			}
+		});
 
 		worldViewportStage = new Stage(worldViewport);
 		worldViewportStage.addActor(textManagerUI);
@@ -730,7 +748,7 @@ public class RetroSceneScreen implements SceneScreen {
 		testerBot = ui.getTesterBot();
 
 		textManagerUI = new TextManagerUI(ui.getSkin());
-		menuButton = new MenuButton(ui);
+		menuButton = new Button(ui.getSkin(), "menu");
 		dialogUI = new DialogUI(ui);
 
 		verbUI = new VerbUI(this);

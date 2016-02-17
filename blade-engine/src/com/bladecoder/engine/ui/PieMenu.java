@@ -21,7 +21,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -32,9 +32,9 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	private BitmapFont font;
 
-	private ImageButton lookatButton;
-	private ImageButton talktoButton;
-	private ImageButton pickupButton;
+	private Button lookatButton;
+	private Button talktoButton;
+	private Button pickupButton;
 
 	private float x = 0, y = 0;
 
@@ -52,7 +52,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		sceneScreen = scr;
 		font = scr.getUI().getSkin().getFont("desc");
 				
-		lookatButton = new CustomImageButton(scr.getUI().getSkin(), "pie_lookat");
+		lookatButton = new Button(scr.getUI().getSkin(), "pie_lookat");
 		addActor(lookatButton);
 		lookatButton.addListener(new ChangeListener() {			
 			@Override
@@ -65,7 +65,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 		});
 		
-		talktoButton = new CustomImageButton(scr.getUI().getSkin(), "pie_talkto");
+		talktoButton = new Button(scr.getUI().getSkin(), "pie_talkto");
 		addActor(talktoButton);
 		talktoButton.addListener(new ChangeListener() {			
 			@Override
@@ -78,7 +78,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 		});
 		
-		pickupButton = new CustomImageButton(scr.getUI().getSkin(), "pie_pickup");
+		pickupButton = new Button(scr.getUI().getSkin(), "pie_pickup");
 		addActor(pickupButton);
 		pickupButton.addListener(new ChangeListener() {			
 			@Override
@@ -90,15 +90,6 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 				hide();
 			}
 		});
-		
-//		addListener(new InputListener() {
-//			@Override
-//			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//				hide();
-//				
-//				return false;
-//			}
-//		});
 	}
 
 	@Override
@@ -189,5 +180,10 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		viewportHeight = height;
 		
 		setBounds(0, 0, width, height);
+		
+		float size = DPIUtils.getPrefButtonSize();	
+		lookatButton.setSize(size, size);
+		talktoButton.setSize(size, size);
+		pickupButton.setSize(size, size);
 	}
 }

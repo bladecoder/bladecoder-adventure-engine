@@ -17,6 +17,7 @@ package com.bladecoder.engine.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -26,7 +27,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -51,7 +53,10 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 	private Stage stage;
 	private Texture bgTexFile = null;
-	Pointer pointer;
+	private Pointer pointer;
+	private Button credits;
+	private Button help;
+	private Button debug;
 
 	public MenuScreen() {
 	}
@@ -69,6 +74,11 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
 		pointer.resize();
+		
+		float size = DPIUtils.getPrefButtonSize();	
+		credits.setSize(size, size);
+		help.setSize(size, size);
+		debug.setSize(size, size);
 	}
 
 	@Override
@@ -157,12 +167,30 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		TextButton newGame = new TextButton(I18N.getString("ui.new"), skin, style.textButtonStyle);
 		newGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				try {
-					world.newGame();
-				} catch (Exception e) {
-					Gdx.app.exit();
+				if (world.savedGameExists()) {
+					new Dialog("", skin) {
+						protected void result(Object object) {
+							if (((Boolean) object).booleanValue()) {
+								try {
+									world.newGame();
+								} catch (Exception e) {
+									Gdx.app.exit();
+								}
+								ui.setCurrentScreen(Screens.SCENE_SCREEN);
+							}
+						}
+					}.text("The current game progress will be lost. Are you sure you want to start a new game?")
+							.button("Yes", true).button("No", false).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
+							.show(stage);
+				} else {
+
+					try {
+						world.newGame();
+					} catch (Exception e) {
+						Gdx.app.exit();
+					}
+					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 				}
-				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
 
@@ -191,40 +219,6 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			table.add(saveGame);
 		}
 
-//		TextButton help = new TextButton(I18N.getString("ui.help"), ui.getSkin(), style.textButtonStyle);
-//		help.addListener(new ClickListener() {
-//			public void clicked(InputEvent event, float x, float y) {
-//				ui.setCurrentScreen(Screens.HELP_SCREEN);
-//			}
-//		});
-//
-//		table.row();
-//		table.add(help);
-
-//		TextButton credits = new TextButton(I18N.getString("ui.credits"), ui.getSkin(), style.textButtonStyle);
-//		credits.addListener(new ClickListener() {
-//			public void clicked(InputEvent event, float x, float y) {
-//				ui.setCurrentScreen(Screens.CREDIT_SCREEN);
-//			}
-//		});
-//
-//		table.row();
-//		table.add(credits);
-
-//		if (EngineLogger.debugMode() && World.getInstance().getCurrentScene() != null) {
-//			TextButton debug = new TextButton("[RED]Debug[]", ui.getSkin(), style.textButtonStyle);
-//			debug.addListener(new ClickListener() {
-//				public void clicked(InputEvent event, float x, float y) {
-//					DebugScreen debugScr = new DebugScreen();
-//					debugScr.setUI(ui);
-//					ui.setCurrentScreen(debugScr);
-//				}
-//			});
-//
-//			table.row();
-//			table.add(debug);
-//		}
-
 		TextButton quit = new TextButton(I18N.getString("ui.quit"), skin, style.textButtonStyle);
 		quit.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
@@ -240,21 +234,21 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		stage.addActor(table);
 
 		// BOTTOM-RIGHT BUTTON STACK
-		ImageButton credits = new CustomImageButton(skin, "credits");
+		credits = new Button(skin, "credits");
 		credits.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.CREDIT_SCREEN);
 			}
 		});
 
-		ImageButton help = new CustomImageButton(skin, "help");
+		help = new Button(skin, "help");
 		help.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.HELP_SCREEN);
 			}
 		});
 
-		ImageButton debug = new CustomImageButton(skin, "debug");
+		debug = new Button(skin, "debug");
 		debug.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				DebugScreen debugScr = new DebugScreen();
@@ -264,7 +258,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		});
 
 		Table buttonStack = new Table();
-		buttonStack.defaults().pad(DPIUtils.getSpacing()).size(DPIUtils.getPrefButtonSize(), DPIUtils.getPrefButtonSize());
+		buttonStack.defaults().pad(DPIUtils.getSpacing()).size(DPIUtils.getPrefButtonSize(),
+				DPIUtils.getPrefButtonSize());
 		buttonStack.pad(DPIUtils.getMarginSize() * 2);
 
 		if (EngineLogger.debugMode() && world.getCurrentScene() != null) {
@@ -279,7 +274,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		buttonStack.setFillParent(true);
 		buttonStack.pack();
 		stage.addActor(buttonStack);
-		
+
 		pointer = new Pointer(skin);
 		stage.addActor(pointer);
 

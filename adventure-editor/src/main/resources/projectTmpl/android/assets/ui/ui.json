@@ -1,112 +1,206 @@
 {
+
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
-		default: {file: fonts/Roboto-Regular.ttf, size: 17},
-		debug: {file: fonts/Roboto-Regular.ttf, size: 15}, 
-		big-font: {file: fonts/PaytoneOne.ttf, size: 33},
-		dialog-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 20},
-		text-manager-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 17},
-		desc: {file: fonts/Ubuntu-M.ttf, size: 16},
-		credits-title: {file: fonts/Ubuntu-M.ttf, size: 20},
-		credits: {file: fonts/Ubuntu-M.ttf, size: 30}
-	},
+	default: {file: fonts/Roboto-Regular.ttf, size: 17},
+	debug: {file: fonts/Roboto-Regular.ttf, size: 14}, 
+	big-font: {file: fonts/PaytoneOne.ttf, size: 35},
+	dialog-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 19},
+	text-manager-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 17},
+	desc: {file: fonts/Ubuntu-M.ttf, size: 16},
+	credits-title: {file: fonts/Ubuntu-M.ttf, size: 20},
+	credits: {file: fonts/Ubuntu-M.ttf, size: 30}
+},
+
+
 com.badlogic.gdx.graphics.Color: {
-	green: { a: 1, b: 0, g: 1, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },
-	red: { a: 1, b: 0, g: 0, r: 1 },
 	black: { a: 1, b: 0, g: 0, r: 0 },
 	dark-grey: { a: 1, b: 0.25, g: 0.25, r: 0.25 },
 	light-grey: { a: 1, b: 0.75, g: 0.75, r: 0.75 },
 	grey: { a: 1, b: 0.5, g: 0.5, r: 0.5 },
 	text-dark: { a: 1, b: 1, g: 1, r: 1 },
-	indigo: { r: 0.24, g: 0.31, b: 0.70, a: 1 },
-	indigo-light:  { r: 0.50, g: 0.55, b: 0.82, a: 1 },
-	red500: { r: 0.90, g: 0.11, b: 0.13, a: 1 },
-	red-dark: { r: 0.71, g: 0.04, b: 0.06, a: 1 },
-	red-light:  { r: 0.99, g: 0.45, b: 0.47, a: 1 },
-	black-trans:  { r: 0.1, g: 0.1, b: 0.1, a: 0.7 },
-	white-trans:  {  r: 0.4, g: 0.4, b: 0.4, a: 0.7 },
+	black-trans:  { r: 0.6, g: 0.6, b: 0.6, a: 1 },
+	white-trans:  {  r: 1, g: 1, b: 1, a: 0.8 },
 	yellow:  { r: 1, g: 1, b: 0.13, a: 1 }
 },
+
+
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	black: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 1.0 } },
 	black08: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.8 } },
 	white: { name: white_pixel, color: white },
 	grey: { name: white_pixel, color: grey},
 	dark-grey: { name: white_pixel, color: dark-grey},
-	red: { name: white_pixel, color: { r: 0.5, g: 0, b: 0, a: 1 }},
-	circle: { name: circle_button, color: red-dark},
-	circle-grey: { name: circle_button, color: grey},
-	circle-light: { name: circle_button, color: red500},
-	circle-border: { name: circle_border, color: black-trans},
-	circle-border-light: { name: circle_border, color: light-grey},	
-	circle-border-over: { name: circle_border, color: white-trans},	
-	border-rect-grey: { name: border_rect4, color: light-grey},
-	border-rect-dark-grey: { name: border_rect2, color: { a: 1, b: 0.6, g: 0.6, r: 0.6 }},
-	border-rect-trans: { name: border_rect4, color: { a: 0.2, b: 0.6, g: 0.6, r: 0.6 }},
-	border-rect-trans-down: { name: border_rect4, color: { a: 0.5, b: 0.6, g: 0.6, r: 0.6 }},
 
 	menu-up: { name: menu, color: white-trans},
+
+	border-rect-over: { name: border_rect, color: white-trans},
+	border-rect-down: { name: border_rect, color: black-trans},
+
+	lookat-down: {name:lookat, color: black-trans},
+	lookat-over: {name:lookat, color: white-trans},
+	pickup-down: {name:pickup, color: black-trans},
+	pickup-over: {name:pickup, color: white-trans},
+	talkto-down: {name:talkto, color: black-trans},
+	talkto-over: {name:talkto, color: white-trans},
+
+	help-down: {name:help, color: black},
+	help-over: {name:help, color: white-trans},
+	credits-down: {name:credits, color: black},
+	credits-over: {name:credits, color: white-trans},
+	debug-down: {name:debug, color: black},
+	debug-over: {name:debug, color: white-trans},
 },
-com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
-	pie_lookat: {up:circle-border, down: circle-border-light, over: circle-border-over, imageUp: lookat},
-	pie_pickup: {up:circle-border, down: circle-border-light, over: circle-border-over, imageUp: pickup},
-	pie_talkto: {up:circle-border, down: circle-border-light, over: circle-border-over, imageUp: talkto},
+
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	inventory: {up:inventory},
+	delete_game: {up:delete},
 	menu: {up:menu-up, over: menu, down: menu},
 
-	help: {up:circle, over: circle-light, down: circle-grey, imageUp:help},
-	credits: {up:circle, over: circle-light, down: circle-grey,imageUp:credits},
-	debug: {up:circle, over: circle-light, down: circle-grey,imageUp:debug},
+	pie_lookat: {up: lookat, down: lookat-down, over: lookat-over},
+	pie_pickup: {up: pickup, down: pickup-down, over: pickup-over},
+	pie_talkto: {up: talkto, down: talkto-down, over: talkto-over},
+	
+	help: {up:help, down: help-down, over: help-over},
+	credits: {up:credits, down: credits-down, over: credits-over},
+	debug: {up:debug, down: debug-down, over: debug-over},
 },
 
+
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
-		default: { font: default, up: grey, fontColor: white , downFontColor: grey, overFontColor: light-grey, disabledFontColor: dark-grey},
-		menu: { up: border-rect-trans, down: border-rect-trans-down, font: big-font, fontColor: white , downFontColor: grey, overFontColor: yellow, disabledFontColor: dark-grey},
-		toggle: { up: border-rect-trans, down: border-rect-trans-down, checked: border-rect-trans-down, font: default, fontColor: white , downFontColor: grey, overFontColor: yellow, disabledFontColor: dark-grey}			
+	default: { 
+		font: debug, 
+		up: grey, 
+		fontColor: white, 
+		overFontColor: yellow,
+		downFontColor: grey,
+		disabledFontColor: dark-grey
+	},
+
+	menu: { 
+		up: border_rect, 
+		down: border-rect-down,
+		over: border-rect-over,
+		font: big-font,
+		fontColor: white, 
+		downFontColor: black-trans, 
+		overFontColor: white-trans, 
+		disabledFontColor: dark-grey
+	},	
+
+	toggle: {
+		down: border-rect-down,
+		checked: border_rect,
+		font: debug,
+		fontColor: white,
+		overFontColor: yellow,
+		downFontColor: black-trans,
+		disabledFontColor: dark-grey
+	}
 },
-com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
-		default: {}		
-},
+
+
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		default: { font: default, fontColor: white},
+		debug: { font: debug, fontColor: white},
 		title: { font: big-font, fontColor: white},
 },
+
 
 com.bladecoder.engine.ui.MenuScreen$MenuScreenStyle: {
 	default: {textButtonStyle: menu, showTitle: true, titleStyle: title}
 },
+
+
 com.bladecoder.engine.ui.LoadSaveScreen$LoadSaveScreenStyle: {
-	default: { textButtonStyle: menu}
+	default: {textButtonStyle: menu}
 },
+
+
 com.bladecoder.engine.ui.CreditsScreen$CreditScreenStyle: {
-	default: {titleFont: credits-title, font: credits}
+	default: {
+		titleFont: credits-title, font: credits
+	}
 },
 
 com.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
 	default: {background: black08, itemBackground: dark-grey}
 },
+
 com.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
 	default: {background: black08, textButtonStyle: {font: dialog-font, fontColor: white, overFontColor: light-grey}}
 },
 
 com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle: {
-	default: {rectBackground: border_black_rect4, talkBackground: white, font: text-manager-font, talkBubble: bubblepointer, defaultColor: black}
+	default: {
+		rectBackground: rect, 
+		talkBackground: white, 
+		font: text-manager-font, 
+		talkBubble: bubblepointer,
+		defaultColor: black
+	}
 },
 
 
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
-		default: { selection: grey, background: dark-grey, focusedBackground: dark-grey, disabledBackground: grey, font: default, fontColor: white, focusedFontColor: text-dark, disabledFontColor: text-dark, cursor: white, messageFont: default, messageFontColor: text-dark }
+	default: { 
+		selection: grey, 
+		background: dark-grey, 
+		focusedBackground: dark-grey, 
+		disabledBackground: grey, 
+		font: debug, 
+		fontColor: white, 
+		focusedFontColor: text-dark, 
+		disabledFontColor: text-dark, 
+		cursor: white, messageFont: debug, 
+		messageFontColor: text-dark 
+	}
 },
+
+
 com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
-		default: {vScroll: dark-grey, hScrollKnob: dark-grey, background: grey, hScroll: dark-grey, vScrollKnob: dark-grey, corner: grey},
-		opaque: { vScroll: dark-grey, hScrollKnob: dark-grey, background: grey, hScroll: dark-grey, vScrollKnob: dark-grey, corner: grey}
+	default: {
+		vScroll: dark-grey, hScrollKnob: dark-grey, background: grey, hScroll: dark-grey, vScrollKnob: dark-grey, corner: grey
 	},
+	
+	opaque: { 
+		vScroll: dark-grey, 
+		hScrollKnob: dark-grey, 
+		background: grey, hScroll: dark-grey, vScrollKnob: dark-grey, corner: grey
+	}
+},
+
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
-		default: { fontColorUnselected: text-dark, selection: grey, fontColorSelected: text-dark, font: default },
-		opaque: { fontColorUnselected: text-dark, selection: grey, fontColorSelected: text-dark, font: default }
+	default: { 
+		fontColorUnselected: text-dark, 
+		selection: dark-grey, 
+		fontColorSelected: text-dark, 
+		font: debug 
 	},
+		
+	opaque: { 
+		fontColorUnselected: text-dark, 
+		selection: grey, 
+		fontColorSelected: text-dark, 
+		font: debug 
+	}
+},
+
 
 com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
-	default: { background: dark-grey, backgroundOver: dark-grey, backgroundOpen: dark-grey, listStyle: default, scrollStyle: opaque, font: default, fontColor: white },
-}	
+	default: { 
+		background: dark-grey, 
+		backgroundOver: grey, 
+		backgroundOpen: dark-grey, 
+		listStyle: default, 
+		scrollStyle: opaque, 
+		font: debug, 
+		fontColor: white 
+	},
+},
+
+com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+		default: { titleFont: big-font, background: black08, titleFontColor: white },
+	},
+	
 }

@@ -21,7 +21,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.i18n.I18N;
@@ -35,7 +35,7 @@ public class PieMenu2 extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	private BitmapFont font;
 
-	private ImageButton[] buttons;
+	private Button[] buttons;
 	private Vector2[] endPositions;
 
 	private float x = 0, y = 0;
@@ -56,11 +56,11 @@ public class PieMenu2 extends com.badlogic.gdx.scenes.scene2d.Group {
 	public PieMenu2(SceneScreen scr) {
 		sceneScreen = scr;
 		font = scr.getUI().getSkin().getFont("desc");
-		buttons = new CustomImageButton[NUM_VERBS];
+		buttons = new Button[NUM_VERBS];
 		endPositions = new Vector2[NUM_VERBS];
 		
 		for(int i = 0; i < NUM_VERBS; i++) {
-			buttons[i] =  new CustomImageButton(scr.getUI().getSkin(), "pie_lookat");
+			buttons[i] =  new Button(scr.getUI().getSkin(), "pie_lookat");
 			endPositions[i] = new Vector2();
 			addActor(buttons[i]);
 			

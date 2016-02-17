@@ -33,7 +33,10 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -51,7 +54,6 @@ import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.InventoryButton;
 import com.bladecoder.engine.ui.InventoryUI;
 import com.bladecoder.engine.ui.InventoryUI.InventoryPos;
-import com.bladecoder.engine.ui.MenuButton;
 import com.bladecoder.engine.ui.PieMenu;
 import com.bladecoder.engine.ui.Recorder;
 import com.bladecoder.engine.ui.SceneExtendViewport;
@@ -78,7 +80,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	private ShapeRenderer renderer;
 
 	private InventoryButton inventoryButton;
-	private MenuButton menuButton;
+	private Button menuButton;
 
 	public static enum UIModes {
 		TWO_BUTTONS, PIE, SINGLE_CLICK
@@ -705,8 +707,18 @@ public class DefaultSceneScreen implements SceneScreen {
 		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 		textManagerUI.resize();
 		inventoryButton.resize();
-		menuButton.resize();
 		pointer.resize(width, height);
+		
+		float size = DPIUtils.getPrefButtonSize();
+		float margin = DPIUtils.getMarginSize();
+		
+		menuButton.setSize(size, size);
+		menuButton.setPosition(
+				stage.getViewport().getScreenWidth() - menuButton.getWidth()
+						- margin, stage.getViewport()
+						.getScreenHeight()
+						- menuButton.getHeight()
+						- margin);
 	}
 
 	public void dispose() {
@@ -834,6 +846,12 @@ public class DefaultSceneScreen implements SceneScreen {
 		stage.addActor(menuButton);
 		stage.addActor(inventoryUI);
 		stage.addActor(pie);
+		
+		menuButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				ui.setCurrentScreen(Screens.MENU_SCREEN);
+			}
+		});
 
 		final InputMultiplexer multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(stage);
@@ -888,7 +906,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		pie = new PieMenu(this);
 		textManagerUI = new TextManagerUI(ui.getSkin());
-		menuButton = new MenuButton(ui);
+		menuButton = new Button(ui.getSkin(), "menu");
 		dialogUI = new DialogUI(ui);
 		pointer = new ScenePointer(ui.getSkin());
 		inventoryUI = new InventoryUI(this, pointer);

@@ -263,7 +263,8 @@ public class Recorder {
 
 		Json json = new Json();
 
-		String s = json.prettyPrint(list);
+//		String s = json.prettyPrint(list);
+		String s = json.toJson(list, ArrayList.class, TimeVerb.class);
 
 		Writer w = EngineAssetManager.getInstance().getUserFile(fileName + RECORD_EXT).writer(false, "UTF-8");
 
