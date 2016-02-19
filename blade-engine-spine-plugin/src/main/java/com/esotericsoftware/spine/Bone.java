@@ -31,7 +31,6 @@
 
 package com.esotericsoftware.spine;
 
-import static com.badlogic.gdx.math.MathUtils.*;
 import static com.badlogic.gdx.math.Matrix3.*;
 
 import com.badlogic.gdx.math.MathUtils;
@@ -79,6 +78,11 @@ public class Bone implements Updatable {
 		scaleY = bone.scaleY;
 	}
 
+	/** Same as {@link #updateWorldTransform()}. This method exists for Bone to implement {@link Updatable}. */
+	public void update () {
+		updateWorldTransform(x, y, rotation, scaleX, scaleY);
+	}
+
 	/** Computes the world SRT using the parent bone and this bone's local SRT. */
 	public void updateWorldTransform () {
 		updateWorldTransform(x, y, rotation, scaleX, scaleY);
@@ -96,16 +100,14 @@ public class Bone implements Updatable {
 		if (parent == null) { // Root bone.
 			Skeleton skeleton = this.skeleton;
 			if (skeleton.flipX) {
-				la = -la;
-				lc = -lc;
-				scaleX = -scaleX;
 				x = -x;
+				la = -la;
+				lb = -lb;
 			}
 			if (skeleton.flipY) {
-				lb = -lb;
-				ld = -ld;
-				scaleY = -scaleY;
 				y = -y;
+				lc = -lc;
+				ld = -ld;
 			}
 			a = la;
 			b = lb;
@@ -130,39 +132,43 @@ public class Bone implements Updatable {
 			c = pc * la + pd * lc;
 			d = pc * lb + pd * ld;
 		} else if (data.inheritRotation) { // No scale inheritance.
-			Bone p = parent;
 			pa = 1;
 			pb = 0;
 			pc = 0;
 			pd = 1;
-			while (p != null) {
-				cos = MathUtils.cosDeg(p.appliedRotation);
-				sin = MathUtils.sinDeg(p.appliedRotation);
-				float a = pa * cos + pb * sin;
-				float b = pa * -sin + pb * cos;
-				float c = pc * cos + pd * sin;
-				float d = pc * -sin + pd * cos;
-				pa = a;
-				pb = b;
-				pc = c;
-				pd = d;
-				p = p.parent;
-			}
+			do {
+				cos = MathUtils.cosDeg(parent.appliedRotation);
+				sin = MathUtils.sinDeg(parent.appliedRotation);
+				float temp = pa * cos + pb * sin;
+				pb = pa * -sin + pb * cos;
+				pa = temp;
+				temp = pc * cos + pd * sin;
+				pd = pc * -sin + pd * cos;
+				pc = temp;
+				parent = parent.parent;
+			} while (parent != null);
 			a = pa * la + pb * lc;
 			b = pa * lb + pb * ld;
 			c = pc * la + pd * lc;
 			d = pc * lb + pd * ld;
+			if (skeleton.flipX) {
+				a = -a;
+				b = -b;
+			}
+			if (skeleton.flipY) {
+				c = -c;
+				d = -d;
+			}
 		} else if (data.inheritScale) { // No rotation inheritance.
-			Bone p = parent;
 			pa = 1;
 			pb = 0;
 			pc = 0;
 			pd = 1;
-			while (p != null) {
-				float r = p.rotation;
+			do {
+				float r = parent.rotation;
 				cos = MathUtils.cosDeg(r);
 				sin = MathUtils.sinDeg(r);
-				float psx = p.appliedScaleX, psy = p.appliedScaleY;
+				float psx = parent.appliedScaleX, psy = parent.appliedScaleY;
 				float za = cos * psx, zb = -sin * psy, zc = sin * psx, zd = cos * psy;
 				float temp = pa * za + pb * zc;
 				pb = pa * zb + pb * zd;
@@ -171,7 +177,7 @@ public class Bone implements Updatable {
 				pd = pc * zb + pd * zd;
 				pc = temp;
 
-				if (psx < 0) r = PI - r;
+				if (psx < 0) r = -r;
 				cos = MathUtils.cosDeg(-r);
 				sin = MathUtils.sinDeg(-r);
 				temp = pa * cos + pb * sin;
@@ -181,23 +187,26 @@ public class Bone implements Updatable {
 				pd = pc * -sin + pd * cos;
 				pc = temp;
 
-				p = p.parent;
-			}
+				parent = parent.parent;
+			} while (parent != null);
 			a = pa * la + pb * lc;
 			b = pa * lb + pb * ld;
 			c = pc * la + pd * lc;
 			d = pc * lb + pd * ld;
+			if (skeleton.flipX) {
+				a = -a;
+				b = -b;
+			}
+			if (skeleton.flipY) {
+				c = -c;
+				d = -d;
+			}
 		} else {
 			a = la;
 			b = lb;
 			c = lc;
 			d = ld;
 		}
-	}
-
-	/** Same as {@link #updateWorldTransform()}. This method exists for Bone to implement {@link Updatable}. */
-	public void update () {
-		updateWorldTransform(x, y, rotation, scaleX, scaleY);
 	}
 
 	public void setToSetupPose () {
@@ -301,12 +310,20 @@ public class Bone implements Updatable {
 		return worldY;
 	}
 
+	public float getWorldSignX () {
+		return worldSignX;
+	}
+
+	public float getWorldSignY () {
+		return worldSignY;
+	}
+
 	public float getWorldRotationX () {
-		return (float)Math.atan2(c, a) * MathUtils.radDeg;
+		return MathUtils.atan2(c, a) * MathUtils.radDeg;
 	}
 
 	public float getWorldRotationY () {
-		return (float)Math.atan2(d, b) * MathUtils.radDeg;
+		return MathUtils.atan2(d, b) * MathUtils.radDeg;
 	}
 
 	public float getWorldScaleX () {
@@ -315,14 +332,6 @@ public class Bone implements Updatable {
 
 	public float getWorldScaleY () {
 		return (float)Math.sqrt(c * c + d * d) * worldSignY;
-	}
-
-	public float getWorldSignX () {
-		return worldSignX;
-	}
-
-	public float getWorldSignY () {
-		return worldSignY;
 	}
 
 	public Matrix3 getWorldTransform (Matrix3 worldTransform) {

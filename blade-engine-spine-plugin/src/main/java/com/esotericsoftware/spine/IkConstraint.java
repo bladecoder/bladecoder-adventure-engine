@@ -116,7 +116,7 @@ public class IkConstraint implements Updatable {
 	}
 
 	public String toString () {
-		return data.name + " CONSTRAINT";
+		return data.name;
 	}
 
 	/** Adjusts the bone rotation so the tip is as close to the target position as possible. The target is specified in the world
@@ -125,6 +125,7 @@ public class IkConstraint implements Updatable {
 		float parentRotation = bone.parent == null ? 0 : bone.parent.getWorldRotationX();
 		float rotation = bone.rotation;
 		float rotationIK = atan2(targetY - bone.worldY, targetX - bone.worldX) * radDeg - parentRotation;
+		if (bone.worldSignX != bone.worldSignY) rotationIK = 360 - rotationIK;
 		if (rotationIK > 180)
 			rotationIK -= 360;
 		else if (rotationIK < -180) rotationIK += 360;
@@ -133,7 +134,7 @@ public class IkConstraint implements Updatable {
 
 	/** Adjusts the parent and child bone rotations so the tip of the child is as close to the target position as possible. The
 	 * target is specified in the world coordinate system.
-	 * @param child Any descendant bone of the parent. */
+	 * @param child A direct descendant of the parent bone. */
 	static public void apply (Bone parent, Bone child, float targetX, float targetY, int bendDir, float alpha) {
 		if (alpha == 0) return;
 		float px = parent.x, py = parent.y, psx = parent.scaleX, psy = parent.scaleY, csx = child.scaleX, cy = child.y;

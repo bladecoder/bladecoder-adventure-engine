@@ -59,7 +59,7 @@ import com.esotericsoftware.spine.attachments.AttachmentType;
 import com.esotericsoftware.spine.attachments.BoundingBoxAttachment;
 import com.esotericsoftware.spine.attachments.MeshAttachment;
 import com.esotericsoftware.spine.attachments.RegionAttachment;
-import com.esotericsoftware.spine.attachments.SkinnedMeshAttachment;
+import com.esotericsoftware.spine.attachments.WeightedMeshAttachment;
 
 public class SkeletonBinary {
 	static public final int TIMELINE_SCALE = 0;
@@ -146,6 +146,17 @@ public class SkeletonBinary {
 				ikConstraintData.mix = input.readFloat();
 				ikConstraintData.bendDirection = input.readByte();
 				skeletonData.ikConstraints.add(ikConstraintData);
+			}
+
+			// Transform constraints.
+			for (int i = 0, n = input.readInt(true); i < n; i++) {
+				TransformConstraintData transformConstraintData = new TransformConstraintData(input.readString());
+				transformConstraintData.bone = skeletonData.bones.get(input.readInt(true));
+				transformConstraintData.target = skeletonData.bones.get(input.readInt(true));
+				transformConstraintData.translateMix = input.readFloat();
+				transformConstraintData.x = input.readFloat();
+				transformConstraintData.y = input.readFloat();
+				skeletonData.transformConstraints.add(transformConstraintData);
 			}
 
 			// Slots.
@@ -269,10 +280,10 @@ public class SkeletonBinary {
 			}
 			return mesh;
 		}
-		case skinnedmesh: {
+		case weightedmesh: {
 			String path = input.readString();
 			if (path == null) path = name;
-			SkinnedMeshAttachment mesh = attachmentLoader.newSkinnedMeshAttachment(skin, name, path);
+			WeightedMeshAttachment mesh = attachmentLoader.newWeightedMeshAttachment(skin, name, path);
 			if (mesh == null) return null;
 			mesh.setPath(path);
 			float[] uvs = readFloatArray(input, 1);
@@ -451,7 +462,7 @@ public class SkeletonBinary {
 							if (attachment instanceof MeshAttachment)
 								vertexCount = ((MeshAttachment)attachment).getVertices().length;
 							else
-								vertexCount = ((SkinnedMeshAttachment)attachment).getWeights().length / 3 * 2;
+								vertexCount = ((WeightedMeshAttachment)attachment).getWeights().length / 3 * 2;
 
 							int end = input.readInt(true);
 							if (end == 0) {

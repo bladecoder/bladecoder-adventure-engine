@@ -58,7 +58,7 @@ import com.esotericsoftware.spine.attachments.AttachmentType;
 import com.esotericsoftware.spine.attachments.BoundingBoxAttachment;
 import com.esotericsoftware.spine.attachments.MeshAttachment;
 import com.esotericsoftware.spine.attachments.RegionAttachment;
-import com.esotericsoftware.spine.attachments.SkinnedMeshAttachment;
+import com.esotericsoftware.spine.attachments.WeightedMeshAttachment;
 
 public class SkeletonJson {
 	private final AttachmentLoader attachmentLoader;
@@ -146,6 +146,25 @@ public class SkeletonJson {
 			skeletonData.ikConstraints.add(ikConstraintData);
 		}
 
+		// Transform constraints.
+		for (JsonValue transformMap = root.getChild("transform"); transformMap != null; transformMap = transformMap.next) {
+			TransformConstraintData transformConstraintData = new TransformConstraintData(transformMap.getString("name"));
+
+			String boneName = transformMap.getString("bone");
+			transformConstraintData.bone = skeletonData.findBone(boneName);
+			if (transformConstraintData.bone == null) throw new SerializationException("Bone not found: " + boneName);
+
+			String targetName = transformMap.getString("target");
+			transformConstraintData.target = skeletonData.findBone(targetName);
+			if (transformConstraintData.target == null) throw new SerializationException("Target bone not found: " + targetName);
+
+			transformConstraintData.translateMix = transformMap.getFloat("translateMix", 1);
+			transformConstraintData.x = transformMap.getFloat("x", 0) * scale;
+			transformConstraintData.y = transformMap.getFloat("y", 0) * scale;
+
+			skeletonData.transformConstraints.add(transformConstraintData);
+		}
+
 		// Slots.
 		for (JsonValue slotMap = root.getChild("slots"); slotMap != null; slotMap = slotMap.next) {
 			String slotName = slotMap.getString("name");
@@ -204,7 +223,9 @@ public class SkeletonJson {
 		name = map.getString("name", name);
 		String path = map.getString("path", name);
 
-		switch (AttachmentType.valueOf(map.getString("type", AttachmentType.region.name()))) {
+		String type = map.getString("type", AttachmentType.region.name());
+		if (type.equals("skinnedmesh")) type = "weightedmesh";
+		switch (AttachmentType.valueOf(type)) {
 		case region: {
 			RegionAttachment region = attachmentLoader.newRegionAttachment(skin, name, path);
 			if (region == null) return null;
@@ -257,8 +278,8 @@ public class SkeletonJson {
 			mesh.setHeight(map.getFloat("height", 0) * scale);
 			return mesh;
 		}
-		case skinnedmesh: {
-			SkinnedMeshAttachment mesh = attachmentLoader.newSkinnedMeshAttachment(skin, name, path);
+		case weightedmesh: {
+			WeightedMeshAttachment mesh = attachmentLoader.newWeightedMeshAttachment(skin, name, path);
 			if (mesh == null) return null;
 			mesh.setPath(path);
 			float[] uvs = map.require("uvs").asFloatArray();
@@ -424,7 +445,7 @@ public class SkeletonJson {
 					if (attachment instanceof MeshAttachment)
 						vertexCount = ((MeshAttachment)attachment).getVertices().length;
 					else
-						vertexCount = ((SkinnedMeshAttachment)attachment).getWeights().length / 3 * 2;
+						vertexCount = ((WeightedMeshAttachment)attachment).getWeights().length / 3 * 2;
 
 					int frameIndex = 0;
 					for (JsonValue valueMap = meshMap.child; valueMap != null; valueMap = valueMap.next) {
