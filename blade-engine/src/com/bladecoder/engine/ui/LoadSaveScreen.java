@@ -40,7 +40,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -107,24 +106,21 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 	@Override
 	public void show() {
-		loadScreenMode = ui.getScreen(Screens.LOAD_GAME_SCREEN) == this;
+		float size = DPIUtils.getPrefButtonSize();
+		float pad = DPIUtils.getMarginSize();
+		final Skin skin = ui.getSkin();
+		final World world = World.getInstance();
+		
+//		loadScreenMode = ui.getScreen(Screens.LOAD_GAME_SCREEN) == this;
+		loadScreenMode = world.getCurrentScene() == null;
 
 		stage = new Stage(new ScreenViewport());
 
-		final Skin skin = ui.getSkin();
-		final World world = World.getInstance();
-		final float pad = DPIUtils.getMarginSize();
-
 		slotWidth = (int) (stage.getViewport().getWorldWidth() / (ROW_SLOTS + 1) - 2 * pad);
-//		slotHeight = (int) (slotWidth * ((float) world.getHeight() / (float) world.getWidth()));
 		slotHeight = (int) (slotWidth * stage.getViewport().getScreenHeight() / stage.getViewport().getScreenWidth());
 
 		LoadSaveScreenStyle style = skin.get(LoadSaveScreenStyle.class);
-		// BitmapFont f = ui.getSkin().get(style.textButtonStyle,
-		// TextButtonStyle.class).font;
-		// float buttonWidth = f.getCapHeight() * 15f;
 
-		// Image background = new Image(style.background);
 		Drawable bg = style.background;
 
 		if (bg == null && style.bgFile != null) {
@@ -140,17 +136,22 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		table.pad(pad);
 
 		Label title = new Label(loadScreenMode ? I18N.getString("ui.load") : I18N.getString("ui.save"), skin, "title");
-
-		TextButton back = new TextButton(I18N.getString("ui.back"), skin, "menu");
-		back.getLabelCell().padLeft(DPIUtils.MARGIN_SIZE);
-		back.getLabelCell().padRight(DPIUtils.MARGIN_SIZE);
+		
+		Button back = new Button(skin, "back");
+		
 		back.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
 			}
 		});
-
-		back.pad(4);
+		
+		Table header = new Table();
+//		header.padBottom(pad);
+		Container<Button> cont = new Container<Button>(back);
+		cont.size(size);
+		header.add(cont);
+		header.add(title).fillX().expandX().left();
+		table.add(header).fillX().expandX().left();
 
 		if (bg != null)
 			table.setBackground(bg);
@@ -202,7 +203,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			removeButton.addListener(removeClickListener);
 			
 			Container<Button> container = new Container<Button>(removeButton);
-			container.size(40);
+			container.size(slotHeight/5);
 			container.align(Align.topRight);
 			
 			slots.stack(getSlotButton(s), container).fill().expand();
@@ -213,8 +214,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		// Add last page
 		if (slots.getCells().size > 0)
 			scroll.addPage(slots);
-
-		table.add(title);
+		
 		table.row();
 
 		if (loadScreenMode && sl.size() == 0) {
@@ -225,8 +225,6 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			table.add(scroll).expand().fill();
 		}
 
-		table.row();
-		table.add(back);
 		table.pack();
 
 		stage.setKeyboardFocus(table);

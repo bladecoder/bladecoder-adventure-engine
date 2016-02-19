@@ -25,8 +25,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -73,6 +76,7 @@ public class DebugScreen implements BladeScreen {
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
 		pointer.resize();
+		table.invalidate();
 	}
 
 	@Override
@@ -80,15 +84,20 @@ public class DebugScreen implements BladeScreen {
 		stage.dispose();
 		stage = null;
 	}
+	
+	Table table;
 
 	@Override
 	public void show() {
+		float size = DPIUtils.getPrefButtonSize();
+		float margin = DPIUtils.getMarginSize();
 
 		stage = new Stage(new ScreenViewport());
 
-		Table table = new Table(ui.getSkin());
+		table = new Table(ui.getSkin());
 		table.setFillParent(true);
-		table.center().top();
+		table.left().top();
+		table.pad(margin);
 
 		table.addListener(new InputListener() {
 			@Override
@@ -100,10 +109,24 @@ public class DebugScreen implements BladeScreen {
 		});
 
 		stage.setKeyboardFocus(table);
+		
+		Button back = new Button(ui.getSkin(), "back");
+		
+		back.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				ui.setCurrentScreen(Screens.SCENE_SCREEN);
+			}
+		});
 
 		Label title = new Label("DEBUG SCREEN", ui.getSkin(), "title");
 
-		table.add(title).padBottom(DPIUtils.getMarginSize() * 2).colspan(3).center();
+		Table header = new Table();
+		header.padBottom(margin);
+		Container<Button> cont = new Container<Button>(back);
+		cont.size(size);
+		header.add(cont);
+		header.add(title).fillX().expandX().left();
+		table.add(header).colspan(3).fillX().expandX().left();
 
 		// ------------- SPEED
 		speedText = new TextField(Float.toString(((SceneScreen) ui.getScreen(Screens.SCENE_SCREEN)).getSpeed()),
@@ -327,26 +350,6 @@ public class DebugScreen implements BladeScreen {
 		table.row().pad(5).align(Align.left);
 		table.add();
 		table.add(botGroup2);
-
-		// ------------- BACK BUTTON
-
-		TextButton back = new TextButton("Back", ui.getSkin(), "menu");
-		back.getLabelCell().padLeft(DPIUtils.MARGIN_SIZE);
-		back.getLabelCell().padRight(DPIUtils.MARGIN_SIZE);
-		back.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				ui.setCurrentScreen(Screens.SCENE_SCREEN);
-			}
-		});
-
-		back.pad(4, 4, 4, 4);
-
-		table.row().pad(5);
-		table.add(back).colspan(3).center();
-
-		table.pack();
-
-		stage.addActor(table);
 		
 		// ------------- VERSION LABEL NOT IN TABLE
 		String versionString = 
@@ -365,7 +368,14 @@ public class DebugScreen implements BladeScreen {
 		versionStack.bottom().left();
 		versionStack.setFillParent(true);
 		versionStack.pack();
-		stage.addActor(versionStack);
+		table.row();
+		table.add(versionStack).colspan(3).left();
+		
+		table.pack();
+
+		ScrollPane scrollPane = new ScrollPane(table);
+		scrollPane.setFillParent(true);
+		stage.addActor(scrollPane);
 		
 		pointer = new Pointer(ui.getSkin());
 		stage.addActor(pointer);
