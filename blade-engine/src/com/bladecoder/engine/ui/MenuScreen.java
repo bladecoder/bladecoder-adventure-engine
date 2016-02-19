@@ -37,6 +37,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
@@ -168,7 +169,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		newGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				if (world.savedGameExists()) {
-					new Dialog("", skin) {
+					Dialog d = new Dialog("", skin) {
 						protected void result(Object object) {
 							if (((Boolean) object).booleanValue()) {
 								try {
@@ -179,9 +180,23 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 								ui.setCurrentScreen(Screens.SCENE_SCREEN);
 							}
 						}
-					}.text("The current game progress will be lost. Are you sure you want to start a new game?")
-							.button("Yes", true).button("No", false).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
-							.show(stage);
+					};
+					
+					d.pad(DPIUtils.getMarginSize());
+					d.getButtonTable().padTop(DPIUtils.getMarginSize());
+					d.getButtonTable().defaults().padLeft(DPIUtils.getMarginSize()).padRight(DPIUtils.getMarginSize());
+					
+					Label l = new Label( I18N.getString("ui.override"), ui.getSkin(), "ui-dialog");
+				    l.setWrap(true);
+				    l.setAlignment(Align.center);
+
+				    d.getContentTable().add( l ).prefWidth( Gdx.graphics.getWidth() * .7f);
+					
+					d.button(I18N.getString("ui.yes"), true, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+					d.button(I18N.getString("ui.no"), false, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+					d.key(Keys.ENTER, true).key(Keys.ESCAPE, false);
+					
+					d.show(stage);
 				} else {
 
 					try {
