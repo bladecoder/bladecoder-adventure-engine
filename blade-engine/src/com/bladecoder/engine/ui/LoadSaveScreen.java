@@ -25,17 +25,21 @@ import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -110,8 +114,8 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		float pad = DPIUtils.getMarginSize();
 		final Skin skin = ui.getSkin();
 		final World world = World.getInstance();
-		
-//		loadScreenMode = ui.getScreen(Screens.LOAD_GAME_SCREEN) == this;
+
+		// loadScreenMode = ui.getScreen(Screens.LOAD_GAME_SCREEN) == this;
 		loadScreenMode = world.getCurrentScene() == null;
 
 		stage = new Stage(new ScreenViewport());
@@ -136,17 +140,17 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		table.pad(pad);
 
 		Label title = new Label(loadScreenMode ? I18N.getString("ui.load") : I18N.getString("ui.save"), skin, "title");
-		
+
 		Button back = new Button(skin, "back");
-		
+
 		back.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
 			}
 		});
-		
+
 		Table header = new Table();
-//		header.padBottom(pad);
+		// header.padBottom(pad);
 		Container<Button> cont = new Container<Button>(back);
 		cont.size(size);
 		header.add(cont);
@@ -174,7 +178,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		Table slots = new Table().pad(pad);
 		slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2).top();
 		int c = 0;
-		
+
 		// Add "new slot" slot for save screen
 		if (!loadScreenMode) {
 			slots.add(getSlotButton(Long.toString(new Date().getTime()))).fill().expand();
@@ -186,9 +190,9 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		Collections.sort(sl);
 
 		for (int j = sl.size() - 1; j >= 0; j--) {
-			
+
 			String s = sl.get(j);
-			
+
 			if (c % ROW_SLOTS == 0 && c % (ROW_SLOTS * COL_SLOTS) != 0)
 				slots.row();
 
@@ -197,24 +201,24 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 				slots = new Table().pad(pad);
 				slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2).top();
 			}
-		
+
 			Button removeButton = new Button(skin, "delete_game");
 			removeButton.setName(s);
 			removeButton.addListener(removeClickListener);
-			
+
 			Container<Button> container = new Container<Button>(removeButton);
-			container.size(slotHeight/5);
+			container.size(slotHeight / 5);
 			container.align(Align.topRight);
-			
+
 			slots.stack(getSlotButton(s), container).fill().expand();
-			
+
 			c++;
 		}
 
 		// Add last page
 		if (slots.getCells().size > 0)
 			scroll.addPage(slots);
-		
+
 		table.row();
 
 		if (loadScreenMode && sl.size() == 0) {
@@ -267,12 +271,12 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			} catch (Exception e) {
 				textLabel = slot;
 			}
-			
+
 			button.addListener(loadClickListener);
 		} else {
 			Image fg = new Image(skin.getDrawable("plus"));
 			button.add(fg).maxSize(slotHeight / 2, slotHeight / 2);
-			
+
 			button.addListener(saveClickListener);
 		}
 
@@ -315,10 +319,10 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 	private Image getScreenshot(String slot) {
 		String filename = slot + World.GAMESTATE_EXT + ".png";
-		
+
 		FileHandle savedFile = null;
-		
-		if(EngineAssetManager.getInstance().getUserFile(filename).exists())
+
+		if (EngineAssetManager.getInstance().getUserFile(filename).exists())
 			savedFile = EngineAssetManager.getInstance().getUserFile(filename);
 		else
 			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
@@ -337,37 +341,95 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			final World world = World.getInstance();
 			final String filename = event.getListenerActor().getName() + World.GAMESTATE_EXT;
 
-			try {
-//				if (loadScreenMode) {
+			if (world.savedGameExists()) {
+				Dialog d = new Dialog("", ui.getSkin()) {
+					protected void result(Object object) {
+						if (((Boolean) object).booleanValue()) {
+							try {
+								// if (loadScreenMode) {
+								world.loadGameState(filename);
+
+								ui.setCurrentScreen(Screens.SCENE_SCREEN);
+
+							} catch (IOException e) {
+								EngineLogger.error(e.getMessage());
+							}
+						}
+					}
+				};
+
+				d.pad(DPIUtils.getMarginSize());
+				d.getButtonTable().padTop(DPIUtils.getMarginSize());
+				d.getButtonTable().defaults().padLeft(DPIUtils.getMarginSize()).padRight(DPIUtils.getMarginSize());
+
+				Label l = new Label(I18N.getString("ui.override_load"), ui.getSkin(), "ui-dialog");
+				l.setWrap(true);
+				l.setAlignment(Align.center);
+
+				d.getContentTable().add(l).prefWidth(Gdx.graphics.getWidth() * .7f);
+
+				d.button(I18N.getString("ui.yes"), true, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+				d.button(I18N.getString("ui.no"), false, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+				d.key(Keys.ENTER, true).key(Keys.ESCAPE, false);
+
+				d.show(stage);
+			} else {
+
+				try {
+					// if (loadScreenMode) {
 					world.loadGameState(filename);
 
-				ui.setCurrentScreen(Screens.SCENE_SCREEN);
+					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 
-			} catch (IOException e) {
-				EngineLogger.error(e.getMessage());
+				} catch (IOException e) {
+					EngineLogger.error(e.getMessage());
+				}
 			}
 		}
 	};
-	
+
 	private ClickListener removeClickListener = new ClickListener() {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
-			final World world = World.getInstance();
-			final String filename = event.getListenerActor().getName() + World.GAMESTATE_EXT;
+			final Actor listenerActor = event.getListenerActor();
+			
+			Dialog d = new Dialog("", ui.getSkin()) {
+				protected void result(Object object) {
+					if (((Boolean) object).booleanValue()) {
+						final World world = World.getInstance();
+						final String filename = listenerActor.getName() + World.GAMESTATE_EXT;
+						
+						try {
+							world.removeGameState(filename);
 
-			try {
-				world.removeGameState(filename);
-				
-				event.getListenerActor().getParent().getParent().getParent().removeActor(event.getListenerActor().getParent().getParent());
+							listenerActor.getParent().getParent().getParent()
+									.removeActor(listenerActor.getParent().getParent());
 
-//				ui.setCurrentScreen(Screens.SCENE_SCREEN);
+						} catch (IOException e) {
+							EngineLogger.error(e.getMessage());
+						}
+					}
+				}
+			};
 
-			} catch (IOException e) {
-				EngineLogger.error(e.getMessage());
-			}
+			d.pad(DPIUtils.getMarginSize());
+			d.getButtonTable().padTop(DPIUtils.getMarginSize());
+			d.getButtonTable().defaults().padLeft(DPIUtils.getMarginSize()).padRight(DPIUtils.getMarginSize());
+
+			Label l = new Label(I18N.getString("ui.remove"), ui.getSkin(), "ui-dialog");
+			l.setWrap(true);
+			l.setAlignment(Align.center);
+
+			d.getContentTable().add(l).prefWidth(Gdx.graphics.getWidth() * .7f);
+
+			d.button(I18N.getString("ui.yes"), true, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+			d.button(I18N.getString("ui.no"), false, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+			d.key(Keys.ENTER, true).key(Keys.ESCAPE, false);
+
+			d.show(stage);
 		}
 	};
-	
+
 	private ClickListener saveClickListener = new ClickListener() {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
