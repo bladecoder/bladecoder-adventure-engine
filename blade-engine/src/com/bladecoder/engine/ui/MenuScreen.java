@@ -207,17 +207,17 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		table.row();
 		table.add(loadGame);
 
-		if (world.getCurrentScene() != null) {
-			TextButton saveGame = new TextButton(I18N.getString("ui.save"), skin, style.textButtonStyle);
-			saveGame.addListener(new ClickListener() {
-				public void clicked(InputEvent event, float x, float y) {
-					ui.setCurrentScreen(Screens.SAVE_GAME_SCREEN);
-				}
-			});
-
-			table.row();
-			table.add(saveGame);
-		}
+//		if (world.getCurrentScene() != null) {
+//			TextButton saveGame = new TextButton(I18N.getString("ui.save"), skin, style.textButtonStyle);
+//			saveGame.addListener(new ClickListener() {
+//				public void clicked(InputEvent event, float x, float y) {
+//					ui.setCurrentScreen(Screens.SAVE_GAME_SCREEN);
+//				}
+//			});
+//
+//			table.row();
+//			table.add(saveGame);
+//		}
 
 		TextButton quit = new TextButton(I18N.getString("ui.quit"), skin, style.textButtonStyle);
 		quit.addListener(new ClickListener() {

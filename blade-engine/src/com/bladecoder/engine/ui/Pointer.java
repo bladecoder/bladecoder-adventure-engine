@@ -17,6 +17,7 @@ package com.bladecoder.engine.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Peripheral;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -41,12 +42,6 @@ public class Pointer extends Actor {
 		
 		resize();
 		show();
-		
-		if(!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)) {
-			setVisible(true);
-		} else {
-			setVisible(false);
-		}
 	}
 
 	
@@ -71,6 +66,8 @@ public class Pointer extends Actor {
 		
 		setPosition(mousepos.x - getWidth() / 2, mousepos.y - getHeight() / 2);
 		
+		batch.setColor(Color.WHITE);
+		
 		batch.draw(pointerIcon, getX(), getY(), getWidth(), getHeight());
 	}
 	
@@ -82,6 +79,8 @@ public class Pointer extends Actor {
 	public void show() {	
 		if(!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)) {
 			setVisible(true);
+		} else {
+			setVisible(false);
 		}
 	}
 	
