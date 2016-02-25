@@ -238,7 +238,7 @@ public class CharacterActor extends SpriteActor {
 			talkAnim = json.readValue("talkAnim", String.class, jsonData);
 		}
 
-		walkingSpeed = json.readValue("walkingSpeed", Float.class, jsonData);
+		walkingSpeed = json.readValue("walkingSpeed", float.class, walkingSpeed, jsonData);
 		textColor = json.readValue("textColor", Color.class, jsonData);
 	}
 

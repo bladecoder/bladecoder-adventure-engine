@@ -138,7 +138,7 @@ abstract public class BaseActor implements Serializable {
 			bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
 			bbox.setScale(worldScale, worldScale);
 			
-			visible = json.readValue("visible", boolean.class, false, jsonData);
+			visible = json.readValue("visible", boolean.class, visible, jsonData);
 		}
 	}
 }

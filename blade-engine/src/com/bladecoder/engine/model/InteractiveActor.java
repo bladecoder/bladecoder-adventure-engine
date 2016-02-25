@@ -279,9 +279,9 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		}
 		
 		verbs.read(json, jsonData);
-		interaction = json.readValue("interaction", boolean.class, false, jsonData);
+		interaction = json.readValue("interaction", boolean.class, interaction, jsonData);
 		state = json.readValue("state", String.class, jsonData);			
-		zIndex = json.readValue("zIndex", float.class, 0f, jsonData);
+		zIndex = json.readValue("zIndex", float.class, zIndex, jsonData);
 	}
 
 }

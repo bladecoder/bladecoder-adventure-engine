@@ -287,10 +287,10 @@ public class SpriteActor extends InteractiveActor {
 			renderer.read(json, jsonData.get("renderer"));
 		}
 		
-		scale = json.readValue("scale", Float.class, jsonData);
+		scale = json.readValue("scale", float.class, scale, jsonData);
 		
-		depthType = json.readValue("depthType", DepthType.class, jsonData);
-		bboxFromRenderer = json.readValue("bboxFromRenderer", Boolean.class, jsonData);
+		depthType = json.readValue("depthType", DepthType.class, depthType, jsonData);
+		bboxFromRenderer = json.readValue("bboxFromRenderer", boolean.class, bboxFromRenderer, jsonData);
 
 		if (bboxFromRenderer)
 			renderer.updateBboxFromRenderer(bbox);
