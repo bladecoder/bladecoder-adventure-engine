@@ -141,6 +141,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 			Label title = new Label(Config.getProperty(Config.TITLE_PROP, "Adventure Blade Engine"), skin,
 					style.titleStyle);
+			
+			title.setAlignment(Align.center);
 
 			table.add(title).padBottom(DPIUtils.getMarginSize() * 2);
 			table.row();

@@ -713,6 +713,12 @@ public class Sprite3DRenderer implements ActorRenderer {
 
 	@Override
 	public void retrieveAssets() {
+		// create STATIC BATCHS if not created yet
+		if (modelBatch == null)
+			createBatchs();
+		
+		createEnvirontment();
+		
 		for (String key : sourceCache.keySet()) {
 			if (sourceCache.get(key).refCounter > 0)
 				retrieveSource(key);
@@ -737,12 +743,6 @@ public class Sprite3DRenderer implements ActorRenderer {
 			if (currentAnimation != null)
 				lookat(modelRotation);
 		}
-
-		// create STATIC BATCHS if not created yet
-		if (modelBatch == null)
-			createBatchs();
-
-		createEnvirontment();
 
 		if (currentSource != null && renderShadow)
 			genShadowMap();

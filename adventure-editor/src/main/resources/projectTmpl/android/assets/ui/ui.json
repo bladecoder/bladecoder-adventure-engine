@@ -4,6 +4,7 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 	default: {file: fonts/Roboto-Regular.ttf, size: 17},
 	debug: {file: fonts/Roboto-Regular.ttf, size: 14}, 
 	big-font: {file: fonts/PaytoneOne.ttf, size: 35},
+	message-font: {file: fonts/PaytoneOne.ttf, size: 17},
 	dialog-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 19},
 	text-manager-font: {file: fonts/ArchitectsDaughter_fix.ttf, size: 17},
 	desc: {file: fonts/Ubuntu-M.ttf, size: 16},
@@ -35,7 +36,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	menu-up: { name: menu, color: white-trans},
 
 	border-rect-over: { name: border_rect, color: white-trans},
-	border-rect-down: { name: border_rect, color: black-trans},
+	border-rect-down: { name: border_rect, color: black},
 
 	lookat-down: {name:lookat, color: black-trans},
 	lookat-over: {name:lookat, color: white-trans},
@@ -50,11 +51,16 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	credits-over: {name:credits, color: white-trans},
 	debug-down: {name:debug, color: black},
 	debug-over: {name:debug, color: white-trans},
+
+	back-down: {name:back, color: black},
+	back-over: {name:back, color: white-trans},
+
+	delete-over: {name:delete, color: white-trans},
 },
 
 com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	inventory: {up:inventory},
-	delete_game: {up:delete},
+	delete_game: {up:delete, over: delete-over},
 	menu: {up:menu-up, over: menu, down: menu},
 
 	pie_lookat: {up: lookat, down: lookat-down, over: lookat-over},
@@ -64,6 +70,8 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	help: {up:help, down: help-down, over: help-over},
 	credits: {up:credits, down: credits-down, over: credits-over},
 	debug: {up:debug, down: debug-down, over: debug-over},
+
+	back: {up:back, down: back-down, over: back-over},
 },
 
 
@@ -83,7 +91,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		over: border-rect-over,
 		font: big-font,
 		fontColor: white, 
-		downFontColor: black-trans, 
+		downFontColor: black, 
 		overFontColor: white-trans, 
 		disabledFontColor: dark-grey
 	},	
@@ -97,13 +105,21 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		downFontColor: black-trans,
 		disabledFontColor: dark-grey
 	}
+
+	ui-dialog: {
+		font: message-font,
+		fontColor: white,
+		overFontColor: yellow,
+		downFontColor: grey,
+	}
 },
 
 
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
-		default: { font: default, fontColor: white},
-		debug: { font: debug, fontColor: white},
-		title: { font: big-font, fontColor: white},
+	default: { font: default, fontColor: white},
+	debug: { font: debug, fontColor: white},
+	title: { font: big-font, fontColor: white},
+	ui-dialog: { font: message-font, fontColor: white},
 },
 
 
@@ -201,6 +217,6 @@ com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 
 com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 		default: { titleFont: big-font, background: black08, titleFontColor: white },
-	},
+},
 	
 }
