@@ -608,8 +608,6 @@ public class World implements Serializable, AssetConsumer {
 
 		init();
 
-		assetState = AssetState.LOAD_ASSETS;
-
 		long initTime = System.currentTimeMillis();
 
 		SerializationHelper.getInstance().setMode(Mode.MODEL);
@@ -685,10 +683,6 @@ public class World implements Serializable, AssetConsumer {
 		init();
 
 		if (savedFile.exists()) {
-			assetState = AssetState.LOAD_ASSETS;
-
-			// new Json().fromJson(World.class, savedFile.reader("UTF-8"));
-
 			SerializationHelper.getInstance().setMode(Mode.STATE);
 
 			JsonValue root = new JsonReader().parse(savedFile.reader("UTF-8"));
@@ -697,6 +691,8 @@ public class World implements Serializable, AssetConsumer {
 			json.setIgnoreUnknownFields(true);
 
 			read(json, root);
+			
+			assetState = AssetState.LOAD_ASSETS;
 
 		} else {
 			throw new IOException("LOADGAMESTATE: no saved game exists");
