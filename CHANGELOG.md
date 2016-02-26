@@ -4,6 +4,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.7]
+
+- Better Load/Save game screen.
+- Confirmation dialog when overwrite current game in new game or load game.
+- Updated spine plugin to Spine v3
+- Show time in debug. Time is now long to avoid float overflow.
+- Updated to libgdx 1.9.1
+- Android SDK not mandatory when creating a project.
+- More fault tolerant when loading saved games. Good for patches.
+- Saved games can be stored in 'tests' folder inside game. These games are distributed with the game and in debug mode these saved games can be loaded. Good for testing.
+- When creating a verb an icon can be specified. This icon will be showed in the UI.
+- Add movement to the inventory button when picking an object.
+- Doesn't hide inventory when running a verb.
+- And tons of bug fixing.
+
 ## [0.9.6]
 
 - Layer parallax feature
