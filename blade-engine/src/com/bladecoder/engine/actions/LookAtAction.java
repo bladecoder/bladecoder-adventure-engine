@@ -90,11 +90,14 @@ public class LookAtAction implements Action {
 			}
 		}
 
-		if (text != null)
+		if (text != null) {
 			World.getInstance().getTextManager().addText(text, TextManager.POS_SUBTITLE, TextManager.POS_SUBTITLE,
 					false, Text.Type.SUBTITLE, null, null, wait ? cb : null);
+			
+			return wait;
+		}
 
-		return wait;
+		return false;
 	}
 
 }
