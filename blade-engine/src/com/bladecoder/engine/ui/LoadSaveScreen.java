@@ -207,7 +207,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			removeButton.addListener(removeClickListener);
 
 			Container<Button> container = new Container<Button>(removeButton);
-			container.size(slotHeight / 5);
+			container.size(DPIUtils.getPrefButtonSize() * .75f);
 			container.align(Align.topRight);
 
 			slots.stack(getSlotButton(s), container).fill().expand();

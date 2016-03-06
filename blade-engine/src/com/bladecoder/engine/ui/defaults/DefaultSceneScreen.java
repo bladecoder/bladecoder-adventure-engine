@@ -668,7 +668,7 @@ public class DefaultSceneScreen implements SceneScreen {
 					drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size / 2, size / 2, size,
 							size, 1.0f, 1.0f, calcLeaveArrowRotation(ia));
 				} else {
-					Drawable drawable = ((TextureRegionDrawable) getUI().getSkin().getDrawable("circle"))
+					Drawable drawable = ((TextureRegionDrawable) getUI().getSkin().getDrawable("hotspot"))
 							.tint(Color.RED);
 
 					drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size, size);
