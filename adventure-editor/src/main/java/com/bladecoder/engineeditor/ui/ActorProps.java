@@ -77,7 +77,7 @@ public class ActorProps extends PropertyTable {
 		} else if (modelProperty.equals("visible")) {
 			setProperty(VISIBLE_PROP, Boolean.toString(actor.isVisible()));
 		} else if (modelProperty.equals("interaction")) {
-			setProperty(INTERACTION_PROP, Boolean.toString(((InteractiveActor)actor).hasInteraction()));
+			setProperty(INTERACTION_PROP, Boolean.toString(((InteractiveActor)actor).getInteraction()));
 		} else if (modelProperty.equals("state")) {
 			setProperty(STATE_PROP, ((InteractiveActor)actor).getState());
 		} else if (modelProperty.equals("bbox")) {
@@ -102,7 +102,7 @@ public class ActorProps extends PropertyTable {
 			if (a instanceof InteractiveActor) {
 				addProperty(DESC_PROP, ((InteractiveActor)actor).getDesc());
 
-				addProperty(INTERACTION_PROP, Boolean.toString(((InteractiveActor)actor).hasInteraction()), Types.BOOLEAN);
+				addProperty(INTERACTION_PROP, Boolean.toString(((InteractiveActor)actor).getInteraction()), Types.BOOLEAN);
 				addProperty(STATE_PROP, ((InteractiveActor)actor).getState());
 			}
 			

@@ -108,7 +108,7 @@ public class TesterBot {
 						InteractiveActor scnActor = (InteractiveActor)a;
 
 						if (excludeList.contains(scnActor.getId()) || !scnActor.isVisible() || 
-								!scnActor.hasInteraction())
+								!scnActor.canInteract())
 							return;
 						
 						String verb;
@@ -178,7 +178,7 @@ public class TesterBot {
 								
 								targetActor = (InteractiveActor) (s.getActors().values().toArray()[pos2]);
 
-								if (!excludeList.contains(targetActor.getId()) && targetActor.isVisible() && targetActor.hasInteraction()) {
+								if (!excludeList.contains(targetActor.getId()) && targetActor.isVisible() && targetActor.canInteract()) {
 									EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.USE_VERB + "::" + targetActor.getId());
 									
 									if(invActor.getVerb(Verb.USE_VERB, targetActor.getId()) != null)

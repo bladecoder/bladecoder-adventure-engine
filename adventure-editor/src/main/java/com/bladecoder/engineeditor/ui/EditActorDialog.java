@@ -407,7 +407,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		if (e instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor) e;
 			layer.setText(ia.getLayer());
-			interaction.setText(Boolean.toString(ia.hasInteraction()));
+			interaction.setText(Boolean.toString(ia.getInteraction()));
 			desc.setText(Ctx.project.translate(ia.getDesc()));
 			state.setText(ia.getState());
 

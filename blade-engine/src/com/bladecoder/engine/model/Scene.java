@@ -388,7 +388,7 @@ public class Scene implements Serializable, AssetConsumer {
 			for (int i = layer.getActors().size() - 1; i >= 0; i--) {
 				BaseActor a = layer.getActors().get(i);
 
-				if (a instanceof InteractiveActor && ((InteractiveActor) a).hasInteraction() && a.hit(x, y)) {
+				if (a instanceof InteractiveActor && ((InteractiveActor) a).canInteract() && a.hit(x, y)) {
 					return (InteractiveActor) a;
 				}
 			}
@@ -428,7 +428,7 @@ public class Scene implements Serializable, AssetConsumer {
 			for (int l = layer.getActors().size() - 1; l >= 0; l--) {
 				BaseActor a = layer.getActors().get(l);
 
-				if (a instanceof InteractiveActor && ((InteractiveActor) a).hasInteraction()) {
+				if (a instanceof InteractiveActor && ((InteractiveActor) a).canInteract()) {
 
 					if (a.hit(x, y) || a.hit(tmpToleranceRect.x, tmpToleranceRect.y)
 							|| a.hit(tmpToleranceRect.x + tmpToleranceRect.width, tmpToleranceRect.y)

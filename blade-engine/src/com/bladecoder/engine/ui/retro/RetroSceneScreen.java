@@ -543,7 +543,7 @@ public class RetroSceneScreen implements SceneScreen {
 
 			InteractiveActor ia = (InteractiveActor) a;
 
-			if (!ia.hasInteraction())
+			if (!ia.canInteract())
 				continue;
 
 			Polygon p = a.getBBox();

@@ -57,8 +57,15 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		return layer;
 	}
 
-	public boolean hasInteraction() {
+	/**
+	 * @return Is visible and has interaction
+	 */
+	public boolean canInteract() {
 		return interaction && visible;
+	}
+	
+	public boolean getInteraction() {
+		return interaction;
 	}
 
 	public void setInteraction(boolean interaction) {
