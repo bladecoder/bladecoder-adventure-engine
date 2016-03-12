@@ -334,6 +334,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				ia.setDesc(null);
 
 			ia.setState(state.getText());
+			ia.setZIndex(Float.parseFloat(zIndex.getText()));
 
 			if (e instanceof SpriteActor) {
 				SpriteActor sa = (SpriteActor) e;
@@ -367,7 +368,6 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				sa.setBboxFromRenderer(true);
 				sa.setDepthType(DepthType.valueOf(depthType.getText()));
 				sa.setScale(Float.parseFloat(scale.getText()));
-				sa.setZIndex(Float.parseFloat(zIndex.getText()));
 
 				if (e instanceof CharacterActor) {
 					CharacterActor ca = (CharacterActor) e;
@@ -410,6 +410,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			interaction.setText(Boolean.toString(ia.getInteraction()));
 			desc.setText(Ctx.project.translate(ia.getDesc()));
 			state.setText(ia.getState());
+			zIndex.setText(Float.toString(ia.getZIndex()));
 
 			if (e instanceof SpriteActor) {
 				SpriteActor sa = (SpriteActor) e;
@@ -433,7 +434,6 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 				depthType.setText(sa.getDepthType().toString());
 				scale.setText(Float.toString(sa.getScale()));
-				zIndex.setText(Float.toString(sa.getZIndex()));
 
 				if (e instanceof CharacterActor) {
 					CharacterActor ca = (CharacterActor) e;
