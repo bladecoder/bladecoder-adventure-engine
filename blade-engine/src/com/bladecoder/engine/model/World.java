@@ -211,9 +211,7 @@ public class World implements Serializable, AssetConsumer {
 		textManager.update(delta);
 		timers.update(delta);
 
-		if (!transition.isFinish()) {
-			transition.update(delta);
-		}
+		transition.update(delta);
 
 		ActionCallbackQueue.run();
 	}
