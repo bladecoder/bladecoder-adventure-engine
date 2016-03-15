@@ -291,6 +291,18 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		buttonStack.setFillParent(true);
 		buttonStack.pack();
 		stage.addActor(buttonStack);
+		
+		Label version = new Label("v"+ Config.getProperty(Config.VERSION_PROP, " unspecified"), skin);
+		version.setPosition(DPIUtils.getMarginSize(), DPIUtils.getMarginSize());
+		stage.addActor(version);
+		
+		debug.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				DebugScreen debugScr = new DebugScreen();
+				debugScr.setUI(ui);
+				ui.setCurrentScreen(debugScr);
+			}
+		});
 
 		pointer = new Pointer(skin);
 		stage.addActor(pointer);
