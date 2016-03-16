@@ -14,7 +14,7 @@ jar {
 			'license': 'Apache-2.0, Spine Runtimes Software License',
 			'group': project.group,
 			'version': project.version,
-			'libgdx': gdxVersion,
+			'libgdx': libgdxVersion,
 			'java': targetCompatibility,
 			'timestamp': System.currentTimeMillis()
 	]
@@ -31,8 +31,8 @@ jar {
     }
 
 dependencies {
-  compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-  compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+  compile "com.badlogicgames.gdx:gdx:$libgdxVersion"
+  compile "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
   compile fileTree(dir: 'libs', include: '*.jar')
   
   compile project(":blade-engine")

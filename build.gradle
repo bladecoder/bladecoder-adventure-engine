@@ -1,12 +1,6 @@
 allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
-    
-    version = '0.9.8-SNAPSHOT'
-
-    ext {
-        gdxVersion = '1.9.1'
-    }
 
     repositories {
         mavenCentral()
