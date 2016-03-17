@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
@@ -31,19 +30,18 @@ public class SpritePosTween extends Tween {
 	
 	private float startX, startY;
 	private float targetX, targetY;
-	private Interpolation interpolationX;
-	private Interpolation interpolationY;
+	private InterpolationMode interpolationX;
+	private InterpolationMode interpolationY;
 	
 	public SpritePosTween() {
 	}
 
 	public void start(SpriteActor target, Tween.Type repeatType, int count, float tx, float ty, float duration, InterpolationMode interpolation, ActionCallback cb) {
-		Interpolation i = interpolation == null? null: interpolation.getInterpolation();
-		start(target, repeatType, count, tx, ty, duration, i, i, cb);
+		start(target, repeatType, count, tx, ty, duration, interpolation, interpolation, cb);
 	}
 	
 	public void start(SpriteActor target, Tween.Type repeatType, int count, float tx, float ty, float duration, 
-			Interpolation interpolationX, Interpolation interpolationY, ActionCallback cb) {
+			InterpolationMode interpolationX, InterpolationMode interpolationY, ActionCallback cb) {
 		
 		startX = target.getX();
 		startY = target.getY();
@@ -94,8 +92,8 @@ public class SpritePosTween extends Tween {
 		startY = json.readValue("startY", Float.class, jsonData);
 		targetX = json.readValue("targetX", Float.class, jsonData);
 		targetY = json.readValue("targetY", Float.class, jsonData);
-		interpolationX = json.readValue("interpolationX", Interpolation.class, jsonData);
-		interpolationY = json.readValue("interpolationY", Interpolation.class, jsonData);
+		interpolationX = json.readValue("interpolationX", InterpolationMode.class, jsonData);
+		interpolationY = json.readValue("interpolationY", InterpolationMode.class, jsonData);
 
 	}
 }

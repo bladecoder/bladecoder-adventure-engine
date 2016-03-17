@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -32,7 +31,7 @@ public class Tween implements Serializable {
 	public final static int INFINITY = -1;
 
 	private float duration, time;
-	private Interpolation interpolation;
+	private InterpolationMode interpolation;
 	private boolean reverse, began, complete;
 	private Type type;
 	private int count;
@@ -80,14 +79,14 @@ public class Tween implements Serializable {
 		return getPercent(interpolation);
 	}
 
-	public float getPercent(Interpolation i) {
+	public float getPercent(InterpolationMode i) {
 		float percent;
 		if (complete) {
 			percent = 1;
 		} else {
 			percent = time / duration;
 			if (i != null)
-				percent = i.apply(percent);
+				percent = i.getInterpolation().apply(percent);
 		}
 
 		return (reverse ? 1 - percent : percent);
@@ -127,17 +126,9 @@ public class Tween implements Serializable {
 	public void setDuration(float duration) {
 		this.duration = duration;
 	}
-
-	public Interpolation getInterpolation() {
-		return interpolation;
-	}
-
-	public void setInterpolation(Interpolation interpolation) {
-		this.interpolation = interpolation;
-	}
 	
-	public void setInterpolation(InterpolationMode interpolation) {
-		this.interpolation = interpolation.getInterpolation();
+	public void setInterpolation(InterpolationMode i) {
+		interpolation = i;
 	}
 
 	public boolean isReverse() {
@@ -194,14 +185,14 @@ public class Tween implements Serializable {
 	public void read(Json json, JsonValue jsonData) {
 		duration = json.readValue("duration", Float.class, jsonData);
 		time = json.readValue("time", Float.class, jsonData);
-		;
+		
 		reverse = json.readValue("reverse", Boolean.class, jsonData);
 		began = json.readValue("began", Boolean.class, jsonData);
 		complete = json.readValue("complete", Boolean.class, jsonData);
 		type = json.readValue("type", Type.class, jsonData);
 		count = json.readValue("count", Integer.class, jsonData);
 
-		interpolation = json.readValue("interpolation", Interpolation.class, jsonData);
+		interpolation = json.readValue("interpolation", InterpolationMode.class, jsonData);
 
 		String cbSer = json.readValue("cb", String.class, jsonData);
 		cb = ActionCallbackSerialization.find(cbSer);

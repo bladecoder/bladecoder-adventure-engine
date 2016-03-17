@@ -48,7 +48,7 @@ public class SpriteScaleTween extends Tween {
 		
 		restart();
 	}
-	
+
 	public void update(SpriteActor a, float delta) {
 		update(delta);
 		

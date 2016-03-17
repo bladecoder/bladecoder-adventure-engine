@@ -871,8 +871,6 @@ public class World implements Serializable, AssetConsumer {
 
 			currentScene = scenes.get(json.readValue("currentScene", String.class, jsonData));
 			
-			inventory = json.readValue("inventory", Inventory.class, jsonData);
-
 			for (Scene s : scenes.values()) {
 				JsonValue jsonValue = jsonData.get("scenes").get(s.getId());
 				
@@ -881,6 +879,8 @@ public class World implements Serializable, AssetConsumer {
 				else
 					EngineLogger.debug("LOAD WARNING: Scene not found in saved game: " + s.getId());
 			}
+			
+			inventory = json.readValue("inventory", Inventory.class, jsonData);
 
 			timeOfGame = json.readValue("timeOfGame", long.class, 0L, jsonData);
 			cutMode = json.readValue("cutmode", boolean.class, false, jsonData);
