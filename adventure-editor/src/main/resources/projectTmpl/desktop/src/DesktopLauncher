@@ -26,13 +26,14 @@ public class DesktopLauncher extends BladeEngine {
 		Properties p = new Properties();
 		
 		try {
-			InputStream s = DesktopLauncher.class.getResourceAsStream(Config.PROPERTIES_FILENAME);
+			InputStream s = DesktopLauncher.class.getResourceAsStream("/" + Config.PROPERTIES_FILENAME);
 			if(s!=null)
 				p.load(s);
 		} catch (IOException e) {
+			System.out.println("Could not load properties file.");
 		}
 		
-		cfg.title = p.getProperty(Config.TITLE_PROP, "Blade Engine Adventure");
+		cfg.title = p.getProperty(Config.TITLE_PROP, "Blade Engine Adventure") + " " + p.getProperty(Config.VERSION_PROP, "");
 //		cfg.useGL30 = true;
 
 		// cfg.width = World.getInstance().getWidth();
