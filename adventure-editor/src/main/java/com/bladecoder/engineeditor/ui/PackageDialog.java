@@ -31,6 +31,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogicgames.packr.Packr;
 import com.badlogicgames.packr.Packr.Platform;
+import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.FileInputPanel;
@@ -38,6 +40,7 @@ import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.utils.Message;
 import com.bladecoder.engineeditor.utils.RunProccess;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 public class PackageDialog extends EditDialog {
 	private static final String ARCH_PROP = "package.arch";
@@ -60,13 +63,14 @@ public class PackageDialog extends EditDialog {
 	private InputPanel osxJRE;
 	private InputPanel version;
 	private InputPanel icon;
+	private InputPanel androidVersionCode;
 	private InputPanel androidSDK;
 	private InputPanel androidKeyStore;
 	private InputPanel androidKeyAlias;
 	private InputPanel androidKeyStorePassword;
 	private InputPanel androidKeyAliasPassword;
 
-	private InputPanel[] options = new InputPanel[11];
+	private InputPanel[] options = new InputPanel[12];
 
 	@SuppressWarnings("unchecked")
 	public PackageDialog(Skin skin) {
@@ -74,14 +78,15 @@ public class PackageDialog extends EditDialog {
 
 		arch = InputPanelFactory.createInputPanel(skin, "Architecture", "Select the target Architecture for the game", ARCHS, true);
 		dir = new FileInputPanel(skin, "Output Directory", "Select the output directory to put the package", FileInputPanel.DialogType.DIRECTORY);
-		type = InputPanelFactory.createInputPanel(skin, "Type", "Select the type of the package", TYPES, true);
+		type = InputPanelFactory.createInputPanel(skin, "Type", "Select the package type", TYPES, true);
 		os = InputPanelFactory.createInputPanel(skin, "OS", "Select the OS of the package", OSS, true);
 		linux64JRE = new FileInputPanel(skin, "JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
 		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
 		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
 		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
-		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the version of the package", true);
+		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the package version", true);
 		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", FileInputPanel.DialogType.OPEN_FILE);
+		androidVersionCode = InputPanelFactory.createInputPanel(skin, "Version Code", "An integer that identify the version.", Type.INTEGER, true);
 		androidSDK = new FileInputPanel(skin, "SDK", "Select the Android SDK Location. If empty, the ANDROID_HOME variable will be used.", FileInputPanel.DialogType.DIRECTORY, false);
 		androidKeyStore = new FileInputPanel(skin, "KeyStore", "Select the Key Store Location", FileInputPanel.DialogType.OPEN_FILE);
 		androidKeyAlias = InputPanelFactory.createInputPanel(skin, "KeyAlias", "Select the Key Alias Location", true);
@@ -96,9 +101,10 @@ public class PackageDialog extends EditDialog {
 		options[5] = osxJRE;
 		options[6] = version;
 		options[7] = icon;
-		options[8] = androidSDK;
-		options[9] = androidKeyStore;
-		options[10] = androidKeyAlias;
+		options[8] = androidVersionCode;
+		options[9] = androidSDK;
+		options[10] = androidKeyStore;
+		options[11] = androidKeyAlias;
 
 		addInputPanel(arch);
 		addInputPanel(dir);
@@ -109,6 +115,11 @@ public class PackageDialog extends EditDialog {
 
 		addInputPanel(androidKeyStorePassword);
 		addInputPanel(androidKeyAliasPassword);
+		
+		((TextField)androidKeyStorePassword.getField()).setPasswordMode(true);
+		((TextField)androidKeyStorePassword.getField()).setPasswordCharacter('*');
+		((TextField)androidKeyAliasPassword.getField()).setPasswordMode(true);
+		((TextField)androidKeyAliasPassword.getField()).setPasswordCharacter('*');
 
 		dir.setMandatory(true);
 
@@ -121,6 +132,11 @@ public class PackageDialog extends EditDialog {
 			if (prop != null && !prop.isEmpty())
 				i.setText(prop);
 		}
+		
+		version.setText(Ctx.project.getProjectConfig().getProperty(Config.VERSION_PROP, version.getText()));
+		
+		// TODO Set version code based in version
+//		androidVersionCode.setText(genVersionCode(version.getText()));
 
 
 		setInfo(INFO);
@@ -191,7 +207,8 @@ public class PackageDialog extends EditDialog {
 			Ctx.project.getProjectDir().getName();
 		
 		String versionParam = "-Pversion=" + version.getText() + " ";
-		
+		Ctx.project.getProjectConfig().setProperty(Config.VERSION_PROP, version.getText());
+				
 		if (arch.getText().equals("desktop")) {			
 			String jarDir = Ctx.project.getProjectDir().getAbsolutePath() +
 					"/desktop/build/libs/";
@@ -217,6 +234,7 @@ public class PackageDialog extends EditDialog {
 			}
 		} else if (arch.getText().equals("android")) {			
 			String params = versionParam + 
+					"-PversionCode=" +  androidVersionCode.getText() + " " +
 					"-Pkeystore=" +  androidKeyStore.getText() + " " +
 					"-PstorePassword=" + androidKeyStorePassword.getText() + " " +
 					"-Palias=" + androidKeyAlias.getText() + " " +
@@ -275,6 +293,7 @@ public class PackageDialog extends EditDialog {
 			setVisible(type, true);
 			typeChanged();
 		} else if (a.equals("android")) {
+			setVisible(androidVersionCode, true);
 			setVisible(androidSDK, true);
 			setVisible(androidKeyStore, true);
 			setVisible(androidKeyAlias, true);

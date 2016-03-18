@@ -17,7 +17,6 @@ package com.bladecoder.engine.anim;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
@@ -27,6 +26,7 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
+import com.bladecoder.engine.util.InterpolationMode;
 
 /**
  * Tween for frame animation
@@ -74,17 +74,17 @@ public class WalkTween extends SpritePosTween implements Serializable {
 				
 		segmentDuration *=  (s0 > sf ?s0 / sf:sf/s0);
 		
-		Interpolation i = Interpolation.linear;
+		InterpolationMode i =InterpolationMode.LINEAR;
 		
 		if(Math.abs(s0-sf) > .25) 
-			i = s0 > sf?Interpolation.pow2Out:Interpolation.pow2In;
+			i = s0 > sf?InterpolationMode.POW2OUT:InterpolationMode.POW2IN;
 		
 		if(currentStep == walkingPath.size() - 2 && walkCb != null) {			
 			start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, 
-					Interpolation.linear, i, walkCb);
+					InterpolationMode.LINEAR, i, walkCb);
 		} else {
 			start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, 
-					Interpolation.linear, i, null);
+					InterpolationMode.LINEAR, i, null);
 		}
 	}
 

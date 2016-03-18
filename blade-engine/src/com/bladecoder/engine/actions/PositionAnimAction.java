@@ -61,7 +61,6 @@ public class PositionAnimAction implements Action {
 
 	@ActionProperty(required = true, defaultValue = "NO_REPEAT")
 	@ActionPropertyDescription("The repeat mode")
-
 	private Tween.Type repeat = Tween.Type.NO_REPEAT; // FIXME: This adds more
 														// types not present
 														// here before

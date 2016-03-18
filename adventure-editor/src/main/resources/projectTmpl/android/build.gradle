@@ -19,7 +19,11 @@ android {
     defaultConfig {
         applicationId "%PACKAGE%"
         minSdkVersion 8
-        targetSdkVersion %API_LEVEL%
+        targetSdkVersion %API_LEVEL%        
+        versionName version
+        
+        if(project.hasProperty('versionCode'))
+        	versionCode project.versionCode.toInteger()
     }
 
 	if(project.hasProperty('keystore')) {   

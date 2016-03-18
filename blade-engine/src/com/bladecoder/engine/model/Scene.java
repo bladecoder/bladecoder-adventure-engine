@@ -798,7 +798,7 @@ public class Scene implements Serializable, AssetConsumer {
 			JsonValue jsonValueActors = jsonData.get("actors");
 			SceneActorRef actorRef;
 
-			// GET ACTORS FROM HIS INIT SCENE.
+			// GET ACTORS FROM HIS INIT SCENE AND MOVE IT TO THE LOADING SCENE.
 			for (int i = 0; i < jsonValueActors.size; i++) {
 				JsonValue jsonValueAct = jsonValueActors.get(i);
 				actorRef = new SceneActorRef(jsonValueAct.name);
@@ -818,7 +818,11 @@ public class Scene implements Serializable, AssetConsumer {
 				actorRef = new SceneActorRef(jsonValueAct.name);
 
 				BaseActor actor = getActor(actorRef.getActorId(), false);
-				actor.read(json, jsonValueAct);
+				
+				if(actor != null)
+					actor.read(json, jsonValueAct);
+				else
+					EngineLogger.debug("Actor not found: " + actorRef);
 			}
 
 			orderLayersByZIndex();

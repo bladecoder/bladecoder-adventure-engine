@@ -17,9 +17,6 @@ bin/
 build/
 .gradle/
 
-gradle.properties
-!**/projectTmpl/gradle.properties
-
 *.log
 
 

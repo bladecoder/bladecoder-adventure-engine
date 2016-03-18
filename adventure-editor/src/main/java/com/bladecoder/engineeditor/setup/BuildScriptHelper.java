@@ -43,22 +43,32 @@ public class BuildScriptHelper {
 		write(wr, "apply plugin: \"eclipse\"");
 		write(wr, "apply plugin: \"idea\"");
 		space(wr);
-		// write(wr, "version = '1.0'");
-		// write(wr, "if(project.hasProperty('passed_version'))\n version =
-		// passed_version");
-
-		// write(wr, "ext {");
-		// // write(wr, "appName = '%APP_NAME%'");
-		// write(wr, "bladeEngineVersion = '" + Versions.getVersion() + "'");
-		// write(wr, "gdxVersion = '" + Versions.getLibgdxVersion() + "'");
-		// write(wr, "roboVMVersion = '" + Versions.getRoboVMVersion() + "'");
-		// write(wr, "}");
-		// space(wr);
 		write(wr, "repositories {");
 		write(wr, DependencyBank.mavenCentral);
 		write(wr, "maven { url \"" + DependencyBank.libGDXSnapshotsUrl + "\" }");
 		write(wr, "maven { url \"" + DependencyBank.libGDXReleaseUrl + "\" }");
 		write(wr, "}");
+		space(wr);
+		write(wr, "		task setVersion << {");
+		write(wr, "	    	println \"Set version $project.version in BladeEngine.properties\"");
+		space(wr);
+		write(wr, "	    	def props = new Properties()");
+		write(wr, "			def propFile = project.file(\"../android/assets/BladeEngine.properties\");");
+		write(wr, "			props.load(new FileReader(propFile))");
+		write(wr, "			props.\"version\" = version");
+		write(wr, "			props.\"bladeEngineVersion\" = bladeEngineVersion");
+		write(wr, "			props.\"gdxVersion\" = gdxVersion");
+		write(wr, "			props.\"roboVMVersion\" = roboVMVersion");
+		space(wr);
+		write(wr, "			def writer = new FileWriter(propFile)");
+		write(wr, "	   		try {");
+		write(wr, "	      		props.store(writer, null)");
+		write(wr, "	      		writer.flush()");
+		write(wr, "	   		} finally {");
+		write(wr, "	      		writer.close()");
+		write(wr, "	   		}");
+		write(wr, "		}");
+		space(wr);
 		write(wr, "}");
 	}
 
@@ -75,27 +85,10 @@ public class BuildScriptHelper {
 		addDependencies(project, dependencies, wr);
 		space(wr);
 		if (project.equals(ProjectType.CORE)) {
-			write(wr, "		task setVersion << {");
-			write(wr, "	    	println \"Set version $project.version in BladeEngine.properties\"");
-			space(wr);
-			write(wr, "	    	def props = new Properties()");
-			write(wr, "			def propFile = project.file(\"../android/assets/BladeEngine.properties\");");
-			write(wr, "			props.load(new FileReader(propFile))");
-			write(wr, "			props.\"version\" = version");
-			write(wr, "			props.\"bladeEngineVersion\" = bladeEngineVersion");
-			write(wr, "			props.\"gdxVersion\" = gdxVersion");
-			write(wr, "			props.\"roboVMVersion\" = roboVMVersion");
-			space(wr);
-			write(wr, "			def writer = new FileWriter(propFile)");
-			write(wr, "	   		try {");
-			write(wr, "	      		props.store(writer, null)");
-			write(wr, "	      		writer.flush()");
-			write(wr, "	   		} finally {");
-			write(wr, "	      		writer.close()");
-			write(wr, "	   		}");
-			write(wr, "		}");
-			space(wr);
 			write(wr, "		processResources.finalizedBy(setVersion)");
+			space(wr);
+		} else if (project.equals(ProjectType.ANDROID)) {
+			write(wr, "		preBuild.finalizedBy(setVersion)");
 			space(wr);
 		}
 

@@ -59,7 +59,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	private final Vector2 orgPos = new Vector2();
 	private final Vector2 targetPos = new Vector2();
-	
+
 	private final ScenePointer pointer;
 
 	public InventoryUI(SceneScreen scr, ScenePointer pointer) {
@@ -126,7 +126,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 					sceneScreen.getUI().setCurrentScreen(UI.Screens.MENU_SCREEN);
 				}
 			});
-			
+
 			float iconSize = DPIUtils.getPrefButtonSize();
 
 			menuButton.setSize(iconSize, iconSize);
@@ -157,33 +157,45 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 		rowSpace = DPIUtils.getSpacing();
 
-		int w = (int) (width * .7f / tileSize) * tileSize;
-		int h = (int) (height * .7f / tileSize) * tileSize;
+		int capacity = 0;
 
-		if (autosize) {
-			if (inventoryPos == InventoryPos.LEFT || inventoryPos == InventoryPos.RIGHT) {
-				int w2 = tileSize * ((inventory.getNumItems() - 1) / (h / tileSize) + 1);
+		do {
 
-				if (w2 < w)
-					w = w2;
-			} else {
+			int w = (int) (width * .7f / tileSize) * tileSize;
+			int h = (int) (height * .7f / tileSize) * tileSize;
 
-				int h2 = tileSize * ((inventory.getNumItems() - 1) / (w / tileSize) + 1);
-				
-				if (h2 < h)
-					h = h2;
+			if (autosize) {
+				if (inventoryPos == InventoryPos.LEFT || inventoryPos == InventoryPos.RIGHT) {
+					int w2 = tileSize * ((inventory.getNumItems() - 1) / (h / tileSize) + 1);
+
+					if (w2 < w)
+						w = w2;
+				} else {
+
+					int h2 = tileSize * ((inventory.getNumItems() - 1) / (w / tileSize) + 1);
+
+					if (h2 < h)
+						h = h2;
+				}
 			}
-		}
 
-		cols = w / tileSize;
-		rows = h / tileSize;
+			cols = w / tileSize;
+			rows = h / tileSize;
 
+			setSize(w + (cols - 1) * rowSpace + margin * 2, h + (rows - 1) * rowSpace + margin * 2);
+
+			capacity = cols * rows;
+			
+			if(inventory.getNumItems() > capacity) {
+				tileSize *= .8;
+			}
+			
+		} while (inventory.getNumItems() > capacity);
+
+		 if (inventory.getNumItems() > capacity)
+			 EngineLogger.error("Items in inventory excees the UI capacity");
+		
 		setVisible(false);
-		setSize(w + (cols - 1) * rowSpace + margin * 2, h + (rows - 1) * rowSpace + margin * 2);
-
-		int capacity = cols * rows;
-		if (inventory.getNumItems() > capacity)
-			EngineLogger.error("Items in inventory excees the UI capacity");
 
 		if (inventoryPos == InventoryPos.TOP) {
 			orgPos.set((width - getWidth()) / 2, height + getHeight());
@@ -205,7 +217,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		setX(orgPos.x);
 		setY(orgPos.y);
 
-		if(menuButton != null) {
+		if (menuButton != null) {
 			menuButton.setPosition(getWidth() - menuButton.getWidth() / 2, (getHeight() - menuButton.getHeight()) / 2);
 			float iconSize = DPIUtils.getPrefButtonSize();
 
