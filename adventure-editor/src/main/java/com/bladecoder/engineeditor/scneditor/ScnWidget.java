@@ -87,8 +87,6 @@ public class ScnWidget extends Widget {
 	private boolean loading = false;
 	private boolean loadingError = false;
 
-	private WalkZoneWindow walkZoneWindow;
-
 	private boolean showWalkZone;
 
 	private final GlyphLayout textLayout = new GlyphLayout();
@@ -141,8 +139,6 @@ public class ScnWidget extends Widget {
 				}
 			}
 		});
-
-		walkZoneWindow = new WalkZoneWindow(skin, inputListner);
 	}
 
 	public OrthographicCamera getCamera() {
@@ -419,18 +415,12 @@ public class ScnWidget extends Widget {
 		}
 	}
 
-	public void showEditWalkZoneWindow() {
-		getParent().addActor(walkZoneWindow);
-		showWalkZone = true;
-	}
-
-	public void hideEditWalkZoneWindow() {
-		getParent().removeActor(walkZoneWindow);
-		showWalkZone = false;
-	}
-
 	public boolean getShowWalkZone() {
 		return showWalkZone;
+	}
+	
+	public void setShowWalkZone(boolean v) {
+		showWalkZone = v;
 	}
 
 	@Override
@@ -444,9 +434,6 @@ public class ScnWidget extends Widget {
 
 		faRenderer.setViewport(getWidth(), getHeight());
 		bounds.set(getX(), getY(), getWidth(), getHeight());
-
-		walkZoneWindow.setPosition(getX() + 5, getY() + 5);
-		walkZoneWindow.invalidate();
 
 		// SETS WORLD CAMERA
 		if (scn != null) {
@@ -560,8 +547,6 @@ public class ScnWidget extends Widget {
 			scn.loadAssets();
 			loading = true;
 		}
-
-		walkZoneWindow.setScene(scn);
 
 		// SETS WORLD CAMERA
 		if (scn != null) {
