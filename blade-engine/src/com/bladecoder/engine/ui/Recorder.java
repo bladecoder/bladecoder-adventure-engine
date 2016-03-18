@@ -75,7 +75,8 @@ public class Recorder {
 			stringBuilder.append("RECORDER - ");
 
 			// while (playing && v.time < time) {
-			if (playing && v.time < time) {
+			if (playing && v.time < time && !World.getInstance().inCutMode()) {
+				
 				if (v.verb == null) {
 					if (v.pos == null) { // DIALOG OPTION
 						World.getInstance().selectVisibleDialogOption(v.dialogOption);
