@@ -18,7 +18,9 @@ package com.bladecoder.engine.actions;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
@@ -26,7 +28,7 @@ public class IfAttrAction extends AbstractIfAction {
 	public static final String ENDTYPE_VALUE = "else";
 
 	public enum ActorAttribute {
-		STATE, VISIBLE
+		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY
 	}
 
 	@ActionProperty
@@ -60,9 +62,32 @@ public class IfAttrAction extends AbstractIfAction {
 				gotoElse((VerbRunner) cb);
 			}
 		}
+		
 		if (attr.equals(ActorAttribute.VISIBLE)) {
 			boolean val = Boolean.parseBoolean(value);
 			if (val != a.isVisible()) {
+				gotoElse((VerbRunner) cb);
+			}
+		}
+		
+		if (attr.equals(ActorAttribute.INTERACTIVE)) {
+			boolean val = Boolean.parseBoolean(value);
+			
+			if(a instanceof InteractiveActor) {
+				if (val != ((InteractiveActor)a).getInteraction()) {
+					gotoElse((VerbRunner) cb);
+				}	
+			} else if(val == true) {
+				gotoElse((VerbRunner) cb);
+			}
+		}
+		
+		if (attr.equals(ActorAttribute.IN_INVENTORY)) {
+			boolean val = Boolean.parseBoolean(value);
+			
+			SpriteActor item = World.getInstance().getInventory().getItem(a.getId());
+			
+			if ((val && item == null) || (!val && item != null)) {
 				gotoElse((VerbRunner) cb);
 			}
 		}
