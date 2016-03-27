@@ -176,6 +176,24 @@ public class PackageDialog extends EditDialog {
 				Message.showMsg(stage, "Generating package...",true);
 				String msg;
 				
+				if (Ctx.project.getSelectedScene() == null) {
+					msg = "There are no scenes in this chapter.";
+					Message.showMsg(getStage(), msg, 3);
+					return;
+				}
+				
+				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);			
+				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+
+				try {
+					Ctx.project.saveProject();
+				} catch (Exception ex) {
+					msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
+							+ ex.getMessage();
+					Message.showMsgDialog(getStage(), "Error", msg);
+					return;
+				}
+				
 				try {
 					msg = packageAdv();
 				} catch (Exception e) {

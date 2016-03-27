@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
+import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.utils.EditorLogger;
@@ -193,6 +194,9 @@ public class ScnEditor extends Table {
 			Message.showMsg(getStage(), msg, 3);
 			return;
 		}
+		
+		Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);			
+		Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
 
 		try {
 			Ctx.project.saveProject();
@@ -200,6 +204,7 @@ public class ScnEditor extends Table {
 			String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
 					+ ex.getMessage();
 			Message.showMsgDialog(getStage(), "Error", msg);
+			return;
 		}
 
 		new Thread(new Runnable() {
@@ -209,7 +214,7 @@ public class ScnEditor extends Table {
 			public void run() {
 				Message.showMsg(stage, "Running scene...", 5);
 
-				try {
+				try {					
 					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), Ctx.project.getChapter().getId(),
 							Ctx.project.getSelectedScene().getId()))
 						Message.showMsg(stage, "There was a problem running the scene", 4);

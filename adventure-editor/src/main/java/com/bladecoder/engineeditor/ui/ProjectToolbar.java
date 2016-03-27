@@ -35,6 +35,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
+import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.utils.Message;
@@ -292,6 +293,25 @@ public class ProjectToolbar extends Table {
 
 			@Override
 			public void run() {
+				
+				if (Ctx.project.getSelectedScene() == null) {
+					String msg = "There are no scenes in this chapter.";
+					Message.showMsg(getStage(), msg, 3);
+					return;
+				}
+				
+				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);			
+				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				
+				try {
+					Ctx.project.saveProject();
+				} catch (Exception ex) {
+					String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName()
+							+ " - " + ex.getMessage();
+					Message.showMsgDialog(getStage(), "Error", msg);
+					return;
+				}
+				
 				Message.showMsg(stage, "Running scene...", 3);
 
 				try {
