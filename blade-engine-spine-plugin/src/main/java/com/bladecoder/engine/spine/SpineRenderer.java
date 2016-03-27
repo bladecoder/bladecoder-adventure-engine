@@ -132,7 +132,7 @@ public class SpineRenderer implements ActorRenderer {
 
 		@Override
 		public void event(int trackIndex, Event event) {
-			if (!eventsEnabled)
+			if (!eventsEnabled || currentAnimationType == Tween.Type.REVERSE)
 				return;
 
 			String actorId = event.getData().getName();
