@@ -28,7 +28,7 @@ import com.bladecoder.engine.util.RectangleRenderer;
 
 public class LoadingScreen extends ScreenAdapter implements BladeScreen {
 	private final static float INIT_TIME_SEG = 1f;
-	private final static float WAIT_TIME_MS = 100f;
+
 
 	private int pos = 0;
 	private int numSquares = 3;
@@ -39,7 +39,7 @@ public class LoadingScreen extends ScreenAdapter implements BladeScreen {
 	private float squareHeight = 30f;
 	private float margin = 10f;
 
-	private float initTime = 100;
+	private long initTime = 100;
 
 	private float delta = 0;
 
@@ -47,21 +47,8 @@ public class LoadingScreen extends ScreenAdapter implements BladeScreen {
 
 	private final Viewport viewport = new ScreenViewport();
 
-	private boolean wait = true;
-
 	@Override
 	public void render(float delta) {
-
-		// Try to load scene for WAIT_TIME_MS before continue. If not loaded in
-		// this time,
-		// show the loading screen
-		if (wait) {
-			float t0 = System.currentTimeMillis();
-			float t = 0f;
-			while (EngineAssetManager.getInstance().isLoading() && t - t0 < WAIT_TIME_MS) {
-				t = System.currentTimeMillis();
-			}
-		}
 
 		if (!EngineAssetManager.getInstance().isLoading()) {
 			ui.setCurrentScreen(Screens.SCENE_SCREEN);
@@ -113,7 +100,6 @@ public class LoadingScreen extends ScreenAdapter implements BladeScreen {
 		Gdx.input.setInputProcessor(null);
 		initTime = 0;
 		delta = 0;
-		wait = true;
 	}
 
 	@Override

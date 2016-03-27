@@ -97,60 +97,62 @@ public class BladeEngine implements ApplicationListener {
 		try {
 			World.getInstance().loadWorldDesc();
 		} catch (Exception e) {
-//			dispose();
+			// dispose();
 			EngineLogger.error("EXITING: " + e.getMessage());
 			Gdx.app.exit();
 		}
 
 		ui = new UI();
 
-		if (chapter == null)
-			chapter = Config.getProperty(Config.CHAPTER_PROP, chapter);
+		if (EngineLogger.debugMode()) {
+			if (chapter == null)
+				chapter = Config.getProperty(Config.CHAPTER_PROP, chapter);
 
-		if (testScene == null) {
-			testScene = Config.getProperty(Config.TEST_SCENE_PROP, testScene);
-		}
-
-		if (testScene != null || chapter != null) {
-			try {
-				World.getInstance().loadChapter(chapter, testScene);
-			} catch (Exception e) {
-				dispose();
-				EngineLogger.error("EXITING: " + e.getMessage());
-				Gdx.app.exit();
+			if (testScene == null) {
+				testScene = Config.getProperty(Config.TEST_SCENE_PROP, testScene);
 			}
-			
-			ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
-		}
 
-		if (gameState == null)
-			gameState = Config.getProperty(Config.LOAD_GAMESTATE_PROP, gameState);
+			if (testScene != null || chapter != null) {
+				try {
+					World.getInstance().loadChapter(chapter, testScene);
+				} catch (Exception e) {
+					dispose();
+					EngineLogger.error("EXITING: " + e.getMessage());
+					Gdx.app.exit();
+				}
 
-		if (gameState != null) {
-			try {
-				World.getInstance().loadGameState(gameState);
-			} catch (IOException e) {
-				EngineLogger.error(e.getMessage());
+				ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 			}
-		}
 
-		if (restart) {
-			try {
-				World.getInstance().loadChapter(null);
-			} catch (Exception e) {
-				EngineLogger.error("ERROR LOADING GAME", e);
-				dispose();
-				Gdx.app.exit();
+			if (gameState == null)
+				gameState = Config.getProperty(Config.LOAD_GAMESTATE_PROP, gameState);
+
+			if (gameState != null) {
+				try {
+					World.getInstance().loadGameState(gameState);
+				} catch (IOException e) {
+					EngineLogger.error(e.getMessage());
+				}
 			}
-		}
 
-		if (recordName == null)
-			recordName = Config.getProperty(Config.PLAY_RECORD_PROP, recordName);
+			if (restart) {
+				try {
+					World.getInstance().loadChapter(null);
+				} catch (Exception e) {
+					EngineLogger.error("ERROR LOADING GAME", e);
+					dispose();
+					Gdx.app.exit();
+				}
+			}
 
-		if (recordName != null) {
-			ui.getRecorder().setFilename(recordName);
-			ui.getRecorder().load();
-			ui.getRecorder().setPlaying(true);
+			if (recordName == null)
+				recordName = Config.getProperty(Config.PLAY_RECORD_PROP, recordName);
+
+			if (recordName != null) {
+				ui.getRecorder().setFilename(recordName);
+				ui.getRecorder().load();
+				ui.getRecorder().setPlaying(true);
+			}
 		}
 
 		if (EngineLogger.debugMode()) {

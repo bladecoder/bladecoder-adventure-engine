@@ -122,7 +122,8 @@ public class UI {
 		return screen;
 	}
 
-	public void setCurrentScreen(Screens s) {				
+	public void setCurrentScreen(Screens s) {
+		EngineLogger.debug("Setting SCREEN: " + s.name());
 		setCurrentScreen(screens[s.ordinal()]);
 	}
 	

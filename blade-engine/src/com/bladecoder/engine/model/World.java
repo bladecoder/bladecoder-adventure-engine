@@ -187,6 +187,8 @@ public class World implements Serializable, AssetConsumer {
 				&& !EngineAssetManager.getInstance().isLoading()) {
 
 			retrieveAssets();
+			
+			paused = false;
 
 			boolean initScene = (assetState == AssetState.LOADING_AND_INIT_SCENE);
 

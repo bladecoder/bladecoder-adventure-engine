@@ -20,6 +20,7 @@ import java.util.HashMap;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.AssetConsumer;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
 
@@ -155,6 +156,8 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 			s.play();
 			playingSound = id;
+		} else {
+			EngineLogger.debug("Sound Not Found: " + s);
 		}
 	}
 

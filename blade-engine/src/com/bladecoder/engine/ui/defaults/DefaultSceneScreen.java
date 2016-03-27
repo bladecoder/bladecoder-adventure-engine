@@ -41,6 +41,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
@@ -69,6 +70,8 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class DefaultSceneScreen implements SceneScreen {
+	private final static float LOADING_WAIT_TIME_MS = 500f;
+	
 	private UI ui;
 
 	private Stage stage;
@@ -362,10 +365,29 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		AssetState assetState = world.getAssetState();
 
-		if (assetState != AssetState.LOADED) {
-			ui.setCurrentScreen(Screens.LOADING_SCREEN);
+		if (assetState == AssetState.LOAD_ASSETS || assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
+			// one update() to set LOADING STATE
+			world.update(0);
+			
+			// TRY TO LOAD THE ASSETS FOR LOADING_WAIT_TIME_MS TO AVOID BLACK/LOADING SCREEN
+			long t0 = System.currentTimeMillis();
+			long t = t0;
+			while (EngineAssetManager.getInstance().isLoading() && t - t0 < LOADING_WAIT_TIME_MS) {
+				t = System.currentTimeMillis();
+			}
+			
+			if(t - t0 >= LOADING_WAIT_TIME_MS) {
+				ui.setCurrentScreen(Screens.LOADING_SCREEN); // Set LOADING_SCREEN IF SCENE NOT LOADED YET
+			} else {
+				world.update(0);
+				resize((int) stage.getCamera().viewportWidth, (int) stage.getCamera().viewportHeight);
+			}
+			
 			return;
-		}
+		} 
+		
+		if(assetState != AssetState.LOADED)
+			return;
 
 		// CHECK FOR STATE CHANGES
 		switch (state) {
@@ -508,11 +530,20 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		update(delta);
 
-		// Gdx.gl.glClearColor(0, 0, 0, 1);
-		// Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		if (world.getAssetState() != AssetState.LOADED)
+		if (world.getAssetState() != AssetState.LOADED) {
+			
+			// DOESN'T SWAP BUFFER WHEN ASSETS NOT LOADED
+//			Gdx.graphics.setContinuousRendering(false);
+//
+//			Timer.post(new Task() {
+//				@Override
+//				public void run() {
+//					Gdx.graphics.setContinuousRendering(true);
+//				}
+//			});
+			
 			return;
+		}
 
 		SpriteBatch batch = ui.getBatch();
 

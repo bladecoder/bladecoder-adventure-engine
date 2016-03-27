@@ -22,13 +22,13 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Change the current scene.")
 public class LeaveAction implements Action {
 	@ActionPropertyDescription("The target scene")
-	@ActionProperty(type= Type.SCENE, required = true)
+	@ActionProperty(type = Type.SCENE, required = true)
 	private String scene;
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		World.getInstance().setCurrentScene(scene);
-		
+
 		return false;
 	}
 }
