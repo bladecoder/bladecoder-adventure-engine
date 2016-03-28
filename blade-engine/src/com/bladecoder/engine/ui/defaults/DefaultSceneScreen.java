@@ -71,7 +71,7 @@ import com.bladecoder.engine.util.RectangleRenderer;
 
 public class DefaultSceneScreen implements SceneScreen {
 	private final static float LOADING_WAIT_TIME_MS = 500f;
-	
+
 	private UI ui;
 
 	private Stage stage;
@@ -273,8 +273,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		public boolean scrolled(int amount) {
 			if (state == UIStates.SCENE_MODE || state == UIStates.INVENTORY_MODE) {
 
-				boolean fromDown = (inventoryUI.getInventoryPos() == InventoryPos.CENTER
-						|| inventoryUI.getInventoryPos() == InventoryPos.DOWN);
+				boolean fromDown = (inventoryUI.getInventoryPos() == InventoryPos.CENTER || inventoryUI
+						.getInventoryPos() == InventoryPos.DOWN);
 
 				if ((amount > 0 && fromDown || amount < 0 && !fromDown) && inventoryUI.isVisible())
 					inventoryUI.hide();
@@ -365,29 +365,33 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		AssetState assetState = world.getAssetState();
 
-		if (assetState == AssetState.LOAD_ASSETS || assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
-			// one update() to set LOADING STATE
-			world.update(0);
+		if (world.getAssetState() != AssetState.LOADED) {
 			
-			// TRY TO LOAD THE ASSETS FOR LOADING_WAIT_TIME_MS TO AVOID BLACK/LOADING SCREEN
+			if (assetState == AssetState.LOAD_ASSETS || assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
+				// update() to set LOADING state
+				world.update(0);
+			}
+
+			// TRY TO LOAD THE ASSETS FOR LOADING_WAIT_TIME_MS TO AVOID
+			// BLACK/LOADING SCREEN
 			long t0 = System.currentTimeMillis();
 			long t = t0;
 			while (EngineAssetManager.getInstance().isLoading() && t - t0 < LOADING_WAIT_TIME_MS) {
 				t = System.currentTimeMillis();
 			}
-			
-			if(t - t0 >= LOADING_WAIT_TIME_MS) {
-				ui.setCurrentScreen(Screens.LOADING_SCREEN); // Set LOADING_SCREEN IF SCENE NOT LOADED YET
+
+			if (t - t0 >= LOADING_WAIT_TIME_MS) {
+				// Sets loading screen if resources are not loaded yet
+				ui.setCurrentScreen(Screens.LOADING_SCREEN); 
 			} else {
+				world.resize(viewport.getWorldWidth(), viewport.getWorldHeight());
+				
+				// update() to retrieve assets and exec init verb
 				world.update(0);
-				resize((int) stage.getCamera().viewportWidth, (int) stage.getCamera().viewportHeight);
 			}
-			
+
 			return;
-		} 
-		
-		if(assetState != AssetState.LOADED)
-			return;
+		}
 
 		// CHECK FOR STATE CHANGES
 		switch (state) {
@@ -507,7 +511,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			return 90; // UP
 		} else {
 			String dir = verb.getIcon();
-			
+
 			if (dir.equals("left")) {
 				return 180; // LEFT
 			}
@@ -531,17 +535,6 @@ public class DefaultSceneScreen implements SceneScreen {
 		update(delta);
 
 		if (world.getAssetState() != AssetState.LOADED) {
-			
-			// DOESN'T SWAP BUFFER WHEN ASSETS NOT LOADED
-//			Gdx.graphics.setContinuousRendering(false);
-//
-//			Timer.post(new Task() {
-//				@Override
-//				public void run() {
-//					Gdx.graphics.setContinuousRendering(true);
-//				}
-//			});
-			
 			return;
 		}
 
@@ -617,20 +610,20 @@ public class DefaultSceneScreen implements SceneScreen {
 			sbTmp.append(" UI STATE: ");
 			sbTmp.append(state.toString());
 			sbTmp.append(' ');
-			
+
 			long millis = w.getTimeOfGame();
 			long second = (millis / 1000) % 60;
 			long minute = (millis / (1000 * 60)) % 60;
 			long hour = (millis / (1000 * 60 * 60));
 
 			String time = String.format("%02d:%02d:%02d", hour, minute, second);
-			
+
 			sbTmp.append(time);
 
-//			if (w.getCurrentScene().getPlayer() != null) {
-//				sbTmp.append(" Depth Scl: ");
-//				sbTmp.append(w.getCurrentScene().getFakeDepthScale(unprojectTmp.y));
-//			}
+			// if (w.getCurrentScene().getPlayer() != null) {
+			// sbTmp.append(" Depth Scl: ");
+			// sbTmp.append(w.getCurrentScene().getFakeDepthScale(unprojectTmp.y));
+			// }
 
 			color = Color.WHITE;
 		}
@@ -696,8 +689,8 @@ public class DefaultSceneScreen implements SceneScreen {
 					// drawable.draw(batch, unprojectTmp.x - size / 2,
 					// unprojectTmp.y - size / 2, size, size);
 
-					drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size / 2, size / 2, size,
-							size, 1.0f, 1.0f, calcLeaveArrowRotation(ia));
+					drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size / 2, size / 2,
+							size, size, 1.0f, 1.0f, calcLeaveArrowRotation(ia));
 				} else {
 					Drawable drawable = ((TextureRegionDrawable) getUI().getSkin().getDrawable("hotspot"))
 							.tint(Color.RED);
@@ -739,17 +732,13 @@ public class DefaultSceneScreen implements SceneScreen {
 		textManagerUI.resize();
 		inventoryButton.resize();
 		pointer.resize(width, height);
-		
+
 		float size = DPIUtils.getPrefButtonSize();
 		float margin = DPIUtils.getMarginSize();
-		
+
 		menuButton.setSize(size, size);
-		menuButton.setPosition(
-				stage.getViewport().getScreenWidth() - menuButton.getWidth()
-						- margin, stage.getViewport()
-						.getScreenHeight()
-						- menuButton.getHeight()
-						- margin);
+		menuButton.setPosition(stage.getViewport().getScreenWidth() - menuButton.getWidth() - margin, stage
+				.getViewport().getScreenHeight() - menuButton.getHeight() - margin);
 	}
 
 	public void dispose() {
@@ -838,8 +827,8 @@ public class DefaultSceneScreen implements SceneScreen {
 	 */
 	public void runVerb(InteractiveActor a, String verb, String target) {
 		// COMMENTED BECAUSE INVENTORY ONLY HIDE WHEN CUTMODE
-		//		if (inventoryUI.isVisible())
-		//		inventoryUI.hide();
+		// if (inventoryUI.isVisible())
+		// inventoryUI.hide();
 
 		if (recorder.isRecording()) {
 			recorder.add(a.getId(), verb, target);
@@ -877,7 +866,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		stage.addActor(menuButton);
 		stage.addActor(inventoryUI);
 		stage.addActor(pie);
-		
+
 		menuButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
