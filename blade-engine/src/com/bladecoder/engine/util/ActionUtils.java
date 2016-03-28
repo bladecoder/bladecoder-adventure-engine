@@ -322,7 +322,9 @@ public class ActionUtils {
 						ActionUtils.setParam(action, v.name, null);
 					else
 						ActionUtils.setParam(action, v.name, v.asString());
-				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+				} catch (NoSuchFieldException e) {
+					EngineLogger.debug("Action field not found - class: " + className + " field: " + v.name);
+				} catch (IllegalArgumentException | IllegalAccessException e) {
 					throw new SerializationException("Action: " + action.getClass().getCanonicalName() + "Param: " + v.name, e);
 				}
 			}
