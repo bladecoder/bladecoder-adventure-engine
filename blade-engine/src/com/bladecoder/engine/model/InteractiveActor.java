@@ -161,11 +161,11 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		}
 	}
 
-	public void stopSound(String id) {
-		if (sounds == null)
+	public void stopCurrentSound() {
+		if (playingSound == null || sounds == null)
 			return;
 
-		SoundFX s = sounds.get(id);
+		SoundFX s = sounds.get(playingSound);
 
 		if (s != null) {
 			s.stop();

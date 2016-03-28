@@ -41,7 +41,7 @@ public class SoundAction implements Action {
 		
 		if(play!= null)	a.playSound(play);
 		
-		if(stop!= null)	a.stopSound(stop);
+		if(stop!= null)	a.stopCurrentSound();
 		
 		return false;
 	}
