@@ -207,7 +207,6 @@ public class Verb implements VerbRunner, Serializable {
 
 				Action a = ActionUtils.readJson(json, aValue);
 				actions.add(a);
-
 			}
 		} else {
 			// MUTABLE

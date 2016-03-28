@@ -232,7 +232,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 	@Override
 	public void dispose() {
-		if (sounds != null) {
+		if (sounds != null) {		
 			for (SoundFX s : sounds.values()) {
 				s.dispose();
 			}

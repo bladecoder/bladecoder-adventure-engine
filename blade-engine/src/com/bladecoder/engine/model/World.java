@@ -60,7 +60,7 @@ public class World implements Serializable, AssetConsumer {
 		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
 	};
 
-	private static final boolean CACHE_ENABLED = true;
+	private static final boolean CACHE_ENABLED = false;
 
 	private static final World instance = new World();
 
@@ -283,7 +283,7 @@ public class World implements Serializable, AssetConsumer {
 		ActionCallbackQueue.clear();
 
 		if (cachedScene == scene) {
-			assetState = AssetState.LOADING_AND_INIT_SCENE;
+			assetState = AssetState.LOADING_AND_INIT_SCENE;		
 		} else {
 			if (cachedScene != null) {
 				cachedScene.dispose();
@@ -300,7 +300,10 @@ public class World implements Serializable, AssetConsumer {
 			currentScene.stopMusic();
 			currentDialog = null;
 
-			// TODO Stop sounds
+			for(BaseActor a:currentScene.getActors().values()) {
+				if(a instanceof InteractiveActor)
+					((InteractiveActor) a).stopCurrentSound();
+			}
 
 			if (CACHE_ENABLED)
 				cachedScene = currentScene; // CACHE ENABLED

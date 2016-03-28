@@ -243,16 +243,19 @@ public class SpriteActor extends InteractiveActor {
 
 	@Override
 	public void retrieveAssets() {
+		super.retrieveAssets();
+		
 		renderer.retrieveAssets();
 
 		// Call setPosition to recalc fake depth and camera follow
 		setPosition(bbox.getX(), bbox.getY());
-
-		super.retrieveAssets();
 	}
 
 	@Override
 	public void dispose() {
+//		EngineLogger.debug("DISPOSE: " + id);
+		
+		super.dispose();
 		renderer.dispose();
 	}
 

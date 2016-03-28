@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.EngineLogger;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
@@ -157,15 +158,26 @@ public class ToolsWindow extends Container<Table> {
 					public void run() {
 						Message.showMsg(stage, "Running scene on Android device...", 5);
 
-						if (!RunProccess.runGradle(Ctx.project.getProjectDir(), "android:installDebug android:run"))
+						if (!RunProccess.runGradle(Ctx.project.getProjectDir(), "android:installDebug android:run")) {
 							Message.showMsg(stage, "There was a problem running the project", 4);
+						}
+						
+						Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);			
+						Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+						Ctx.project.setModified();
+						
+						try {
+							Ctx.project.saveProject();
+						} catch (Exception ex) {
+							String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName()
+									+ " - " + ex.getMessage();
+							EngineLogger.error(msg);
+							return;
+						}
 
 					}
 				}).start();
 				
-				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);			
-				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
-				Ctx.project.setModified();
 				event.cancel();
 			}
 

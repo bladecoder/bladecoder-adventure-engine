@@ -571,12 +571,12 @@ public class SpineRenderer implements ActorRenderer {
 
 		if (entry == null) {
 			entry = new SkeletonCacheEntry();
-			entry.atlas = atlas;
+			entry.atlas = atlas == null ? source : atlas;
 			sourceCache.put(source, entry);
 		}
 
 		if (entry.refCounter == 0)
-			EngineAssetManager.getInstance().loadAtlas(atlas == null ? source : atlas);
+			EngineAssetManager.getInstance().loadAtlas(entry.atlas);
 
 		entry.refCounter++;
 	}
@@ -670,8 +670,8 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public void dispose() {
-		for (String key : sourceCache.keySet()) {
-			EngineAssetManager.getInstance().disposeAtlas(key);
+		for (SkeletonCacheEntry entry : sourceCache.values()) {
+			EngineAssetManager.getInstance().disposeAtlas(entry.atlas);
 		}
 
 		sourceCache.clear();
