@@ -49,6 +49,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
@@ -322,6 +323,14 @@ public class ScnWidget extends Widget {
 						loading = false;
 
 						scn.retrieveAssets();
+						
+						// disable Spine events
+						for(BaseActor a: scn.getActors().values()) {
+							if(a instanceof SpriteActor && 
+									((SpriteActor) a).getRenderer() instanceof SpineRenderer) {
+								((SpineRenderer) ((SpriteActor) a).getRenderer()).enableEvents(false);
+							}
+						}
 
 						drawer.setCamera(camera);
 

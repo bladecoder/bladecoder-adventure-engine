@@ -136,9 +136,15 @@ public class SpineRenderer implements ActorRenderer {
 				return;
 
 			String actorId = event.getData().getName();
-			InteractiveActor actor = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true);
 			
 			EngineLogger.debug("Spine event " + event.getInt() + ":" +  actorId + "." + event.getString());
+			
+			InteractiveActor actor = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actorId, true);
+			
+			if(actor == null) {
+				EngineLogger.debug("Actor in Spine event not found in scene: " + actorId);
+				return;
+			}
 
 			switch (event.getInt()) {
 			case PLAY_ANIMATION_EVENT:
@@ -649,9 +655,11 @@ public class SpineRenderer implements ActorRenderer {
 			currentSource = entry;
 			
 			// Stop events to avoid event trigger
+			boolean prevEnableEvents = eventsEnabled;
+			
 			eventsEnabled = false;
 			setCurrentAnimation();
-			eventsEnabled = true;
+			eventsEnabled = prevEnableEvents;
 
 		} else if (initAnimation != null) {
 			startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
