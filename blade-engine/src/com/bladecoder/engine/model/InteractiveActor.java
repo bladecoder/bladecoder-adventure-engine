@@ -236,10 +236,6 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 			for (SoundFX s : sounds.values()) {
 				s.dispose();
 			}
-
-			sounds.clear();
-			sounds = null;
-			playingSound = null;
 		}
 	}
 
@@ -256,7 +252,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 			json.writeValue("desc", desc);
 			json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass(), SoundFX.class);
 		} else {
-			json.writeValue("playingSound", playingSound, playingSound == null ? null : playingSound.getClass());
+			json.writeValue("playingSound", playingSound);
 			json.writeValue("playerInside", playerInside);
 		}
 		
