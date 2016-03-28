@@ -26,13 +26,9 @@ public class SoundAction implements Action {
 	@ActionProperty(type = Type.ACTOR)
 	private String actor;
 
-	@ActionPropertyDescription("The 'soundId' to play")
+	@ActionPropertyDescription("The actor 'soundId' to play. If empty the current sound will be stopped.")
 	@ActionProperty(type = Type.SOUND)
 	private String play;
-
-	@ActionPropertyDescription("The 'soundId' to stop")
-	@ActionProperty(type = Type.SOUND)
-	private String stop;
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -40,8 +36,8 @@ public class SoundAction implements Action {
 		InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, true);
 		
 		if(play!= null)	a.playSound(play);
-		
-		if(stop!= null)	a.stopCurrentSound();
+		else
+			a.stopCurrentSound();
 		
 		return false;
 	}
