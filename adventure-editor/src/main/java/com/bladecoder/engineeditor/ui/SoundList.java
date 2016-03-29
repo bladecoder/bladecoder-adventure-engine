@@ -56,7 +56,7 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 		
 		SoundFX s = removeSelected();
 		
-		parent.getSounds().remove(s.getFilename());
+		parent.getSounds().remove(s.getId());
 
 		// UNDO
 		Ctx.project.getUndoStack().add(new UndoDeleteSound(parent, s));
@@ -82,6 +82,8 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 
 		list.getItems().insert(pos, newElement);
 
+		newElement.setId(ElementUtils.getCheckedId(newElement.getId(), parent.getSounds().keySet().toArray(new String[parent.getSounds().size()])));
+		
 		parent.addSound(newElement);
 
 		list.setSelectedIndex(pos);
@@ -97,7 +99,7 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 
 		@Override
 		protected String getCellTitle(SoundFX e) {
-			return e.getFilename();
+			return e.getId();
 		}
 
 		StringBuilder sb = new StringBuilder();

@@ -21,18 +21,22 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 
 public class SoundFX implements AssetConsumer {
 	transient private Sound s;
+	private String id;
 	private boolean loop;
 	private String filename;
 	private float volume = 1f;
+	private float pan = 0f;
 	
 	public SoundFX() {
 		
 	}
 	
-	public SoundFX(String filename, boolean loop, float volume) {
-		this.setFilename(filename);
+	public SoundFX(String id, String filename, boolean loop, float volume, float pan) {
+		this.id = id;
+		this.filename = filename;
 		this.loop = loop;
-		this.setVolume(volume);
+		this.volume = volume;
+		this.pan = pan;
 	}
 	
 	public void play() {
@@ -40,7 +44,7 @@ public class SoundFX implements AssetConsumer {
 			return;
 		
 		if(loop) s.loop();
-		else s.play(getVolume());
+		else s.play(volume, 1, pan);
 	}
 
 	public void stop() {
@@ -68,6 +72,22 @@ public class SoundFX implements AssetConsumer {
 		return loop;
 	}
 	
+	public String getId() {
+		return id != null? id: filename;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public float getPan() {
+		return pan;
+	}
+
+	public void setPan(float pan) {
+		this.pan = pan;
+	}
+
 	public void setLoop(boolean loop) {
 		this.loop = loop;
 	}

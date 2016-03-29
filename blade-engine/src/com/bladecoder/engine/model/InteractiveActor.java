@@ -128,18 +128,18 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		verbs.runVerb(id, state, target);
 	}
 
-	public void addSound(String id, String filename, boolean loop, float volume) {
+	public void addSound(String id, String filename, boolean loop, float volume, float pan) {
 		if (sounds == null)
 			sounds = new HashMap<String, SoundFX>();
 
-		sounds.put(id, new SoundFX(filename, loop, volume));
+		sounds.put(id, new SoundFX(id, filename, loop, volume, pan));
 	}
 	
 	public void addSound(SoundFX s) {
 		if (sounds == null)
 			sounds = new HashMap<String, SoundFX>();
 
-		sounds.put(s.getFilename(), s);
+		sounds.put(s.getId(), s);
 	}
 
 	public void playSound(String id) {
@@ -157,7 +157,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 			s.play();
 			playingSound = id;
 		} else {
-			EngineLogger.debug("Sound Not Found: " + s);
+			EngineLogger.debug("Sound Not Found: " + id);
 		}
 	}
 

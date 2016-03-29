@@ -18,6 +18,7 @@ package com.bladecoder.engineeditor.ui;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.actions.Param;
@@ -29,25 +30,29 @@ import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.undo.UndoCreateSound;
+import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> {
 
+	private InputPanel id;
 	private InputPanel filename;
 	private InputPanel loop;
 	private InputPanel volume;
+	private InputPanel pan;
 
 	public EditSoundDialog(Skin skin, InteractiveActor parent, SoundFX e) {
 		super(skin);
 
-//		id = InputPanelFactory.createInputPanel(skin, "Sound ID", "The id of the sound", true);
+		id = InputPanelFactory.createInputPanel(skin, "Sound ID", "The id of the sound", true);
 		filename = InputPanelFactory.createInputPanel(skin, "Filename", "Filename of the sound", getSoundList(), true);
 		loop = InputPanelFactory.createInputPanel(skin, "Loop", "True if the sound is looping", Param.Type.BOOLEAN,
 				true, "false");
 		volume = InputPanelFactory.createInputPanel(skin, "Volume", "Select the volume between 0 and 1", Param.Type.FLOAT, true, "1.0");
+		pan = InputPanelFactory.createInputPanel(skin, "Pan", "panning in the range -1 (full left) to 1 (full right). 0 is center position", Param.Type.FLOAT, true, "0.0");
 
 		setInfo("Actors can have a list of sounds that can be associated to Sprites or played with the 'sound' action");
 
-		init(parent, e, new InputPanel[] { filename, loop, volume });
+		init(parent, e, new InputPanel[] { id, filename, loop, volume, pan });
 	}
 
 	@Override
@@ -55,33 +60,34 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 		
 		if(create) {
 			e = new SoundFX();
-		}
-		
-		e.setFilename(filename.getText());
-		e.setLoop(Boolean.parseBoolean(loop.getText()));
-		e.setVolume(Float.parseFloat(volume.getText()));
-		
-		if(create) {
-			parent.addSound(e);
 			
 			// UNDO OP
 			Ctx.project.getUndoStack().add(new UndoCreateSound(parent, e));
 		} else {
-			
+			HashMap<String, SoundFX> sounds = parent.getSounds();
+			sounds.remove(e.getId());
 		}
+		
+		String checkedId = parent.getSounds() == null? id.getText():ElementUtils.getCheckedId(id.getText(), parent.getSounds().keySet().toArray(new String[parent.getSounds().size()])); 
+		
+		e.setId(checkedId);
+		e.setFilename(filename.getText());
+		e.setLoop(Boolean.parseBoolean(loop.getText()));
+		e.setVolume(Float.parseFloat(volume.getText()));
+		e.setPan(Float.parseFloat(pan.getText()));
+		
+		parent.addSound(e);
 		
 		Ctx.project.setModified();
 	}
 
 	@Override
 	protected void modelToInputs() {
-		
-		// TODO SEARCH FOR ID
-//		parent.getSounds().containsValue(arg0)		
-//		id.setText("");
+		id.setText(e.getId());
 		filename.setText(e.getFilename());
 		loop.setText(Boolean.toString(e.getLoop()));
 		volume.setText(Float.toString(e.getVolume()));
+		pan.setText(Float.toString(e.getPan()));
 	}
 
 	private String[] getSoundList() {
