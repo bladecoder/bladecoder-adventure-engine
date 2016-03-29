@@ -597,17 +597,17 @@ public class DefaultSceneScreen implements SceneScreen {
 			color = Color.RED;
 		} else {
 
-			sbTmp.append("( ");
-			sbTmp.append((int) unprojectTmp.x);
-			sbTmp.append(", ");
-			sbTmp.append((int) unprojectTmp.y);
-			sbTmp.append(") FPS:");
-			sbTmp.append(Gdx.graphics.getFramesPerSecond());
+//			sbTmp.append("( ");
+//			sbTmp.append((int) unprojectTmp.x);
+//			sbTmp.append(", ");
+//			sbTmp.append((int) unprojectTmp.y);
+//			sbTmp.append(") FPS:");
+//			sbTmp.append(Gdx.graphics.getFramesPerSecond());
 			// sbTmp.append(" Density:");
 			// sbTmp.append(Gdx.graphics.getDensity());
 			// sbTmp.append(" UI Multiplier:");
 			// sbTmp.append(DPIUtils.getSizeMultiplier());
-			sbTmp.append(" UI STATE: ");
+			sbTmp.append(" ");
 			sbTmp.append(state.toString());
 			sbTmp.append(' ');
 
