@@ -60,7 +60,7 @@ public class World implements Serializable, AssetConsumer {
 		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
 	};
 
-	private static final boolean CACHE_ENABLED = false;
+	private static final boolean CACHE_ENABLED = true;
 
 	private static final World instance = new World();
 
@@ -114,6 +114,8 @@ public class World implements Serializable, AssetConsumer {
 	// We not dispose the last loaded scene.
 	// Instead we cache it to improve performance when returning
 	transient private Scene cachedScene;
+	
+	private String previousScene = null;
 
 	public static World getInstance() {
 		return instance;
@@ -144,6 +146,8 @@ public class World implements Serializable, AssetConsumer {
 		paused = false;
 
 		disposed = false;
+		
+		previousScene = null;
 	}
 
 	public void addTimer(float time, ActionCallback cb) {
@@ -159,6 +163,10 @@ public class World implements Serializable, AssetConsumer {
 			customProperties.remove(name);
 		else
 			customProperties.put(name, value);
+	}
+	
+	public String getPreviousScene() {
+		return previousScene;
 	}
 
 	public VerbManager getVerbManager() {
@@ -300,10 +308,13 @@ public class World implements Serializable, AssetConsumer {
 			currentScene.stopMusic();
 			currentDialog = null;
 
+			// Stop Sounds
 			for(BaseActor a:currentScene.getActors().values()) {
 				if(a instanceof InteractiveActor)
 					((InteractiveActor) a).stopCurrentSound();
 			}
+			
+			previousScene = currentScene.getId();
 
 			if (CACHE_ENABLED)
 				cachedScene = currentScene; // CACHE ENABLED
@@ -818,6 +829,7 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("timers", timers);
 			json.writeValue("textmanager", textManager);
 			json.writeValue("customProperties", customProperties);
+			json.writeValue("previousScene", previousScene);
 
 			if (currentDialog != null) {
 				json.writeValue("dialogActor", currentDialog.getActor());
@@ -896,6 +908,7 @@ public class World implements Serializable, AssetConsumer {
 
 			textManager = json.readValue("textmanager", TextManager.class, jsonData);
 			customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
+			previousScene = json.readValue("previousScene", String.class, jsonData);			
 
 			String actorId = json.readValue("dialogActor", String.class, jsonData);
 			String dialogId = json.readValue("currentDialog", String.class, jsonData);

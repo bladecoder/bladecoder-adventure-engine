@@ -121,7 +121,11 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 		ip = actions.size();
 	}
-	
+
+	@Override
+	public String getTarget() {
+		return target;
+	}
 
 	@Override
 	public ArrayList<Action> getActions() {

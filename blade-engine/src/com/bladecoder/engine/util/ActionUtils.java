@@ -334,4 +334,11 @@ public class ActionUtils {
 		return action;
 	}
 	
+	/**
+	 * Utility method to compare two Strings allowing null values.
+	 */
+	public static boolean compareNullStr(String str1, String str2) {
+	    return (str1 == null ? str2 == null : str1.equals(str2));
+	}
+	
 }

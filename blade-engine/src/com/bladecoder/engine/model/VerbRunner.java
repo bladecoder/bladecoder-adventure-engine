@@ -55,4 +55,11 @@ public interface VerbRunner extends ActionCallback {
 	 * Sets the IP to the end of the queue finishing the verb execution
 	 */
 	public void cancel();
+	
+	
+	/**
+	 * The target actor in 'use' verb.
+	 * @return The target actor 'id'
+	 */
+	public String getTarget();
 }

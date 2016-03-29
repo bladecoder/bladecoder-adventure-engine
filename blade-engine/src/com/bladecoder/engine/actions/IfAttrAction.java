@@ -21,6 +21,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
@@ -28,7 +29,7 @@ public class IfAttrAction extends AbstractIfAction {
 	public static final String ENDTYPE_VALUE = "else";
 
 	public enum ActorAttribute {
-		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY
+		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY, TARGET
 	}
 
 	@ActionProperty
@@ -58,19 +59,15 @@ public class IfAttrAction extends AbstractIfAction {
 
 		if (attr.equals(ActorAttribute.STATE) && a instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor)a;
-			if (!((ia.getState() == null && value == null) || (ia.getState() != null && ia.getState().equals(value)))) {
+			if (!ActionUtils.compareNullStr(value, ia.getState())) {
 				gotoElse((VerbRunner) cb);
 			}
-		}
-		
-		if (attr.equals(ActorAttribute.VISIBLE)) {
+		} else if (attr.equals(ActorAttribute.VISIBLE)) {
 			boolean val = Boolean.parseBoolean(value);
 			if (val != a.isVisible()) {
 				gotoElse((VerbRunner) cb);
 			}
-		}
-		
-		if (attr.equals(ActorAttribute.INTERACTIVE)) {
+		} else 	if (attr.equals(ActorAttribute.INTERACTIVE)) {
 			boolean val = Boolean.parseBoolean(value);
 			
 			if(a instanceof InteractiveActor) {
@@ -80,9 +77,7 @@ public class IfAttrAction extends AbstractIfAction {
 			} else if(val == true) {
 				gotoElse((VerbRunner) cb);
 			}
-		}
-		
-		if (attr.equals(ActorAttribute.IN_INVENTORY)) {
+		} else	if (attr.equals(ActorAttribute.IN_INVENTORY)) {
 			boolean val = Boolean.parseBoolean(value);
 			
 			SpriteActor item = World.getInstance().getInventory().getItem(a.getId());
@@ -90,6 +85,11 @@ public class IfAttrAction extends AbstractIfAction {
 			if ((val && item == null) || (!val && item != null)) {
 				gotoElse((VerbRunner) cb);
 			}
+		} else	if (attr.equals(ActorAttribute.TARGET)) {
+						
+			if (!ActionUtils.compareNullStr(value, cb.getTarget())) {
+				gotoElse((VerbRunner) cb);
+			}			
 		}
 
 		return false;

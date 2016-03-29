@@ -19,12 +19,13 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.ActionUtils;
 
-@ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
+@ActionDescription("Execute actions inside the If/EndIf if the scene attribute has the specified value.")
 public class IfSceneAttrAction extends AbstractIfAction {
 
 	public enum SceneAttr {
-		STATE
+		STATE, CURRENT_SCENE, PREVIOUS_SCENE
 	}
 
 	@ActionPropertyDescription("The scene to check its attribute")
@@ -45,9 +46,21 @@ public class IfSceneAttrAction extends AbstractIfAction {
 				.getCurrentScene();
 
 		if (attr == SceneAttr.STATE) {
-			if (!((s.getState() == null && value == null) || (s.getState() != null && s.getState().equals(value)))) {
+			if (!ActionUtils.compareNullStr(value, s.getState())) {
 				gotoElse((VerbRunner) cb);
 			}
+		} else if (attr == SceneAttr.CURRENT_SCENE) {
+			String scn = World.getInstance().getCurrentScene().getId();
+			
+			if (!ActionUtils.compareNullStr(value, scn)) {
+				gotoElse((VerbRunner) cb);
+			}
+		} else if (attr == SceneAttr.PREVIOUS_SCENE) {
+			String prev = World.getInstance().getPreviousScene();
+			
+			if (!ActionUtils.compareNullStr(value, prev)) {
+				gotoElse((VerbRunner) cb);
+			}			
 		}
 
 		return false;
