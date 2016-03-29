@@ -33,7 +33,7 @@ public class GotoAction implements Action {
 	}
 
 	@ActionPropertyDescription("The walking actor")
-	@ActionProperty(type = Type.ACTOR, required=true)
+	@ActionProperty(type = Type.CHARACTER_ACTOR, required=true)
 	private String actor;
 
 	@ActionProperty

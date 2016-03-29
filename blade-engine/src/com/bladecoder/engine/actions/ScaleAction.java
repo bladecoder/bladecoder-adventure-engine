@@ -25,7 +25,7 @@ import com.bladecoder.engine.util.InterpolationMode;
 @ActionDescription("Sets an actor Scale animation")
 public class ScaleAction implements Action {
 	@ActionPropertyDescription("The target actor")
-	@ActionProperty(type = Type.ACTOR)
+	@ActionProperty(type = Type.SPRITE_ACTOR)
 	private String actor;
 
 	@ActionProperty(required = true)

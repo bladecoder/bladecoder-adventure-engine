@@ -23,7 +23,7 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Play/Stop a sound")
 public class SoundAction implements Action {
 	@ActionPropertyDescription("The target actor")
-	@ActionProperty(type = Type.ACTOR)
+	@ActionProperty(type = Type.INTERACTIVE_ACTOR, required = true)
 	private String actor;
 
 	@ActionPropertyDescription("The actor 'soundId' to play. If empty the current sound will be stopped.")

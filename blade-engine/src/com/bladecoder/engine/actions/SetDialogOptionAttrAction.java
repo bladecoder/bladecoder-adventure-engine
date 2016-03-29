@@ -24,9 +24,8 @@ import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Change the selected dialog option properties")
 public class SetDialogOptionAttrAction implements Action {
-	@ActionProperty
+	@ActionProperty(required = true)
 	@ActionPropertyDescription("The target actor")
-	
 	private SceneActorRef actor;
 
 	@ActionProperty(required = true)

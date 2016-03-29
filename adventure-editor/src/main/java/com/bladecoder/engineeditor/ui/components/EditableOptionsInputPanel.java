@@ -18,7 +18,7 @@ package com.bladecoder.engineeditor.ui.components;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class EditableOptionsInputPanel<T> extends InputPanel implements OptionsInputPanel {
-	private final EditableSelectBox<T> input;
+	protected final EditableSelectBox<T> input;
 
 	EditableOptionsInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, T[] options) {
 		input = new EditableSelectBox<>(skin);

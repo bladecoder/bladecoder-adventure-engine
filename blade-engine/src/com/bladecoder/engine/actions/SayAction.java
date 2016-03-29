@@ -31,7 +31,7 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Says a text")
 public class SayAction extends BaseCallbackAction {
 	@ActionPropertyDescription("The target actor")
-	@ActionProperty(type = Type.ACTOR, required=true)
+	@ActionProperty(type = Type.CHARACTER_ACTOR, required=true)
 	private String actor;
 
 	@ActionPropertyDescription("The 'text' to show")

@@ -23,7 +23,7 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Sets the dialog mode")
 public class TalktoAction implements Action {
 	@ActionPropertyDescription("The target actor")
-	@ActionProperty(type = Type.ACTOR)
+	@ActionProperty(type = Type.CHARACTER_ACTOR, required = true)
 	private String actor;
 
 	@ActionProperty(required = true)

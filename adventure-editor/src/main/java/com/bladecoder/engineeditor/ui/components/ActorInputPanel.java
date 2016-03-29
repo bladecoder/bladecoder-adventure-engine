@@ -15,30 +15,54 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
+import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
 
 public class ActorInputPanel extends EditableOptionsInputPanel<String> {
-	ActorInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
-		super(skin, title, desc, mandatory, defaultValue, getValues(mandatory));
+	
+	ActorInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, Param.Type type) {
+		super(skin, title, desc, mandatory, defaultValue, getValues(mandatory, type));
 		
 		if(mandatory)
-			setText(Ctx.project.getSelectedActor().getId());
+			if(type == Param.Type.ACTOR)
+				setText(Ctx.project.getSelectedActor().getId());
+			else
+				input.setSelectedIndex(0);
 	}
 
-	private static String[] getValues(boolean mandatory) {
+	private static String[] getValues(boolean mandatory, Param.Type type) {
 		HashMap<String, BaseActor> actors = Ctx.project.getSelectedScene().getActors();
 		
-		String[] result = new String[actors.size()];
+		ArrayList<BaseActor> filteredActors = new ArrayList<BaseActor>();
 		
-		BaseActor[] v = actors.values().toArray(new BaseActor[actors.size()]);
+		for(BaseActor a: actors.values()) {
+			if(type == Param.Type.CHARACTER_ACTOR) {
+				if(a instanceof CharacterActor)
+					filteredActors.add(a);
+			} else if(type == Param.Type.INTERACTIVE_ACTOR) {
+				if(a instanceof InteractiveActor)
+					filteredActors.add(a);
+			} else if(type == Param.Type.SPRITE_ACTOR) {
+				if(a instanceof SpriteActor)
+					filteredActors.add(a);				
+			} else {
+				filteredActors.add(a);
+			}
+		}
 		
-		for(int i = 0; i < actors.size(); i++) {
-			result[i] = v[i].getId();
+		String[] result = new String[filteredActors.size()];
+		
+		for(int i = 0; i < filteredActors.size(); i++) {
+			result[i] = filteredActors.get(i).getId();
 		}
 		
 		Arrays.sort(result);

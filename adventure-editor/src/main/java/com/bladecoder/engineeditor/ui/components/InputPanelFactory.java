@@ -60,7 +60,10 @@ public class InputPanelFactory extends Table {
     private static InputPanel createInputPanel(Skin skin, String title, String desc, Param.Type type, boolean mandatory, String defaultValue, Object[] options) {
     	switch (type) {
 		case ACTOR:
-			return new ActorInputPanel(skin, title, desc, mandatory, defaultValue);
+		case CHARACTER_ACTOR:
+		case INTERACTIVE_ACTOR:
+		case SPRITE_ACTOR:
+			return new ActorInputPanel(skin, title, desc, mandatory, defaultValue, type);
 		case LAYER:
 			return new LayerInputPanel(skin, title, desc, mandatory, defaultValue);			
 		case BOOLEAN:

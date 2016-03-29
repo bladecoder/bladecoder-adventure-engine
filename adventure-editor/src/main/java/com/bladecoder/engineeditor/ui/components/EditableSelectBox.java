@@ -104,6 +104,10 @@ public class EditableSelectBox<T> extends Table {
 		return selectList.list.getSelectedIndex();
 	}
 	
+	public void setSelectedIndex(int idx) {
+		input.setText(selectList.list.getItems().get(idx).toString());
+	}
+	
 	public TextField getInput() {
 		return input;
 	}
