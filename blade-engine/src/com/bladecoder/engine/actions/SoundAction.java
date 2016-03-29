@@ -27,7 +27,7 @@ public class SoundAction implements Action {
 	private String actor;
 
 	@ActionPropertyDescription("The actor 'soundId' to play. If empty the current sound will be stopped.")
-	@ActionProperty(type = Type.SOUND)
+	@ActionProperty(type = Type.STRING)
 	private String play;
 
 	@Override

@@ -50,6 +50,20 @@ public class SoundFX implements AssetConsumer {
 		s.stop();
 	}
 	
+	public void pause() {
+		if(s==null)
+			return;
+		
+		s.pause();
+	}
+	
+	public void resume() {
+		if(s==null)
+			return;
+		
+		s.resume();
+	}
+	
 	public boolean getLoop() {
 		return loop;
 	}
@@ -86,6 +100,7 @@ public class SoundFX implements AssetConsumer {
 	
 	@Override
 	public void dispose() {
+		stop();
 		EngineAssetManager.getInstance().disposeSound(getFilename());
 	}
 }

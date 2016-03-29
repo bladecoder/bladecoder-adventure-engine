@@ -162,7 +162,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	}
 
 	public void stopCurrentSound() {
-		if (playingSound == null || sounds == null)
+		if (playingSound == null)
 			return;
 
 		SoundFX s = sounds.get(playingSound);
@@ -172,6 +172,10 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		}
 
 		playingSound = null;
+	}
+	
+	public String getPlayingSound() {
+		return playingSound;
 	}
 
 	@Override
@@ -226,6 +230,8 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 			if (playingSound != null && sounds.get(playingSound).getLoop() == true) {
 				playSound(playingSound);
+			} else {
+				playingSound = null;
 			}
 		}
 	}

@@ -838,6 +838,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	}
 
 	private void showMenu() {
+		pause();
 		ui.setCurrentScreen(Screens.MENU_SCREEN);
 	}
 

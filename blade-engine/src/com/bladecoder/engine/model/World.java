@@ -82,7 +82,7 @@ public class World implements Serializable, AssetConsumer {
 	private boolean paused;
 	private boolean cutMode;
 
-	/** keep track of the time of game in ms.*/
+	/** keep track of the time of game in ms. */
 	private long timeOfGame;
 
 	/** for debug purposes, keep track of loading time */
@@ -114,7 +114,7 @@ public class World implements Serializable, AssetConsumer {
 	// We not dispose the last loaded scene.
 	// Instead we cache it to improve performance when returning
 	transient private Scene cachedScene;
-	
+
 	private String previousScene = null;
 
 	public static World getInstance() {
@@ -146,7 +146,7 @@ public class World implements Serializable, AssetConsumer {
 		paused = false;
 
 		disposed = false;
-		
+
 		previousScene = null;
 	}
 
@@ -164,7 +164,7 @@ public class World implements Serializable, AssetConsumer {
 		else
 			customProperties.put(name, value);
 	}
-	
+
 	public String getPreviousScene() {
 		return previousScene;
 	}
@@ -195,7 +195,7 @@ public class World implements Serializable, AssetConsumer {
 				&& !EngineAssetManager.getInstance().isLoading()) {
 
 			retrieveAssets();
-			
+
 			paused = false;
 
 			boolean initScene = (assetState == AssetState.LOADING_AND_INIT_SCENE);
@@ -291,7 +291,7 @@ public class World implements Serializable, AssetConsumer {
 		ActionCallbackQueue.clear();
 
 		if (cachedScene == scene) {
-			assetState = AssetState.LOADING_AND_INIT_SCENE;		
+			assetState = AssetState.LOADING_AND_INIT_SCENE;
 		} else {
 			if (cachedScene != null) {
 				cachedScene.dispose();
@@ -309,11 +309,15 @@ public class World implements Serializable, AssetConsumer {
 			currentDialog = null;
 
 			// Stop Sounds
-			for(BaseActor a:currentScene.getActors().values()) {
-				if(a instanceof InteractiveActor)
-					((InteractiveActor) a).stopCurrentSound();
+			for (BaseActor a : currentScene.getActors().values()) {
+				if (a instanceof InteractiveActor) {
+					String playingSound = ((InteractiveActor) a).getPlayingSound();
+
+					if (playingSound != null)
+						((InteractiveActor) a).getSounds().get(playingSound).stop();
+				}
 			}
-			
+
 			previousScene = currentScene.getId();
 
 			if (CACHE_ENABLED)
@@ -495,20 +499,38 @@ public class World implements Serializable, AssetConsumer {
 	public void pause() {
 		paused = true;
 
-		if (currentScene != null)
+		if (currentScene != null) {
 			currentScene.pauseMusic();
 
-		// TODO Pause all sounds
+			// Pause all sounds
+			for (BaseActor a : currentScene.getActors().values()) {
+				if (a instanceof InteractiveActor) {
+					String playingSound = ((InteractiveActor) a).getPlayingSound();
+
+					if (playingSound != null)
+						((InteractiveActor) a).getSounds().get(playingSound).pause();
+				}
+			}
+		}
 	}
 
 	public void resume() {
 		paused = false;
 
 		if (assetState == AssetState.LOADED) {
-			if (currentScene != null)
+			if (currentScene != null) {
 				currentScene.resumeMusic();
 
-			// TODO Resume all sounds
+				// Resume all sounds
+				for (BaseActor a : currentScene.getActors().values()) {
+					if (a instanceof InteractiveActor) {
+						String playingSound = ((InteractiveActor) a).getPlayingSound();
+
+						if (playingSound != null)
+							((InteractiveActor) a).getSounds().get(playingSound).resume();
+					}
+				}
+			}
 		}
 	}
 
@@ -643,9 +665,11 @@ public class World implements Serializable, AssetConsumer {
 
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
 		} else {
-			EngineLogger.error("ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
+			EngineLogger.error("ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT
+					+ " doesn't exists.");
 			dispose();
-			throw new IOException("ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
+			throw new IOException("ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT
+					+ " doesn't exists.");
 		}
 
 		EngineLogger.debug("MODEL LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
@@ -667,8 +691,8 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public boolean savedGameExists(String filename) {
-		return EngineAssetManager.getInstance().getUserFile(filename).exists() ||
-				EngineAssetManager.getInstance().assetExists("tests/" + filename);
+		return EngineAssetManager.getInstance().getUserFile(filename).exists()
+				|| EngineAssetManager.getInstance().assetExists("tests/" + filename);
 	}
 
 	public void loadGameState() throws IOException {
@@ -679,8 +703,8 @@ public class World implements Serializable, AssetConsumer {
 
 	public void loadGameState(String filename) throws IOException {
 		FileHandle savedFile = null;
-		
-		if(EngineAssetManager.getInstance().getUserFile(filename).exists())
+
+		if (EngineAssetManager.getInstance().getUserFile(filename).exists())
 			savedFile = EngineAssetManager.getInstance().getUserFile(filename);
 		else
 			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
@@ -700,12 +724,12 @@ public class World implements Serializable, AssetConsumer {
 			SerializationHelper.getInstance().setMode(Mode.STATE);
 
 			JsonValue root = new JsonReader().parse(savedFile.reader("UTF-8"));
-			
+
 			Json json = new Json();
 			json.setIgnoreUnknownFields(true);
 
 			read(json, root);
-			
+
 			assetState = AssetState.LOAD_ASSETS;
 
 		} else {
@@ -716,7 +740,7 @@ public class World implements Serializable, AssetConsumer {
 	public void saveGameState() throws IOException {
 		saveGameState(GAMESTATE_FILENAME);
 	}
-	
+
 	public void removeGameState(String filename) throws IOException {
 		EngineAssetManager.getInstance().getUserFile(filename).delete();
 		EngineAssetManager.getInstance().getUserFile(filename + ".png").delete();
@@ -887,16 +911,16 @@ public class World implements Serializable, AssetConsumer {
 			SerializationHelper.getInstance().setMode(Mode.STATE);
 
 			currentScene = scenes.get(json.readValue("currentScene", String.class, jsonData));
-			
+
 			for (Scene s : scenes.values()) {
 				JsonValue jsonValue = jsonData.get("scenes").get(s.getId());
-				
-				if(jsonValue != null)
+
+				if (jsonValue != null)
 					s.read(json, jsonValue);
 				else
 					EngineLogger.debug("LOAD WARNING: Scene not found in saved game: " + s.getId());
 			}
-			
+
 			inventory = json.readValue("inventory", Inventory.class, jsonData);
 
 			timeOfGame = json.readValue("timeOfGame", long.class, 0L, jsonData);
@@ -908,7 +932,7 @@ public class World implements Serializable, AssetConsumer {
 
 			textManager = json.readValue("textmanager", TextManager.class, jsonData);
 			customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
-			previousScene = json.readValue("previousScene", String.class, jsonData);			
+			previousScene = json.readValue("previousScene", String.class, jsonData);
 
 			String actorId = json.readValue("dialogActor", String.class, jsonData);
 			String dialogId = json.readValue("currentDialog", String.class, jsonData);
