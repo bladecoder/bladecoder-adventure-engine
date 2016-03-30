@@ -4,6 +4,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.8]
+
+- Show only ui state and time in screen debug text
+- Add 'id' attribute to SoundFX.
+- FIX: Pausing sounds when show menu.
+- Support new properties in 'if' actions: in_inventory, interactive, current scene, previous scene and target actor in 'use' verbs
+- FIX: It was cleaning sound list when disposing sounds.
+- FIX: bug when disposing Spine and sound assets.
+- SoundAction: Delete stop parameter. Now the current sound stops if the play parameter is empty.
+- EDITOR: Disable Spine event handling in editor.
+- FIX: Flickering due to swapBuffer.
+- More fault tolerant when loading actions: Action field not found.
+- Change stopSound from actor for stopCurrentSound
+- Doesn't play spine events in reverse mode. Spine doesn't works well in that case, maybe a spine bug?
+- EDITOR: New View and Tools menu. 'Run on Android device' button.
+- FIX: Inventory capacity error. Inventory now change its item size dynamically to increase his capacity.
+- FIX: Bug obtaining the window title from properties in desktop launcher.
+- FIX: bug saving interpolation
+- Automatic generation of versions.properties
+- Better version handling when packaging for android.
+- Show game version in menu screen.
+- Update UI ATLAS
+- FIX: EDITOR bug in zindex not setting for interactive actor when editing.
+- FIX: EDITOR bug setting interaction property in editor. Better interaction property handling.
+- Prevent event trigger when retrieving assets
+- FIX: added hotspot image
+- 'Remove Savegame' button size depends on dpi
+
+
 ## [0.9.7]
 
 - Better Load/Save game screen.
@@ -44,7 +73,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - ENGINE: fix sceneextendviewport world size calc.
 - ENGINE: NEW ScreenPositionAction
 - EDITOR: fixed bug when editing assets
-- EDITOR: Fixed bug in TextInputPanel when text=null 
+- EDITOR: Fixed bug in TextInputPanel when text=null
 - EDITOR: Fixed Issue #25. Error deleting elements from lists.
 - EDITOR: fix: change world.json SayAction changed for LookatAction
 - EDITOR: fix bug when paste IfAttr actions.
@@ -54,12 +83,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.9.4]
 
 - Compile custom classes when not found in loading project.
-- Fix issue #23: Edit an existing actor 
+- Fix issue #23: Edit an existing actor
 - Sets editor window size to 0.9 * screen size
-- Better version control: 
+- Better version control:
   - Extract version strings from build.gradle to gradle.properties in games.
   - Put versions in BladeEngine.properties when compiling games.
-  - Show versions in DebugScreen 
+  - Show versions in DebugScreen
   - Added version to game model and saved games for further checks.
   - Put version variables in game gradle.properties
 - Bug fix adding assets because of bad filter strings.
@@ -93,7 +122,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Action refactor. VerbRunner parameter instead of ActionCallback.
 
 ## [0.9.0]
-- Game model and saved games are now in JSON format. 
+- Game model and saved games are now in JSON format.
   * XML is deprecated. Backward compatibility broken.
   * Saved games are patch friendly.
 - EDITOR: Big refactor. Editor uses engine model objects now.
