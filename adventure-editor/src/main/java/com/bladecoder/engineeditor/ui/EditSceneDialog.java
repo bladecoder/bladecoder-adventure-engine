@@ -33,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.model.MusicDesc;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.World;
@@ -68,6 +69,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 	private InputPanel loopMusic;
 	private InputPanel initialMusicDelay;
 	private InputPanel repeatMusicDelay;
+	private InputPanel stopWhenLeaving;
 	private InputPanel sceneSize;
 
 	@SuppressWarnings("unchecked")
@@ -87,14 +89,17 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		state = InputPanelFactory.createInputPanel(skin, "State", "The initial state for the scene.", false);
 		music = InputPanelFactory.createInputPanel(skin, "Music Filename", "The music for the scene", musicList, false);
 		loopMusic = InputPanelFactory.createInputPanel(skin, "Loop Music", "If the music is playing in looping",
-				Param.Type.BOOLEAN, false);
+				Param.Type.BOOLEAN, true, "true");
 		initialMusicDelay = InputPanelFactory.createInputPanel(skin, "Initial music delay",
 				"The time to wait before playing", Param.Type.FLOAT, true, "0");
 		repeatMusicDelay = InputPanelFactory.createInputPanel(skin, "Repeat music delay",
-				"The time to wait before repetitions", Param.Type.FLOAT, true, "0");
-		
+				"The time to wait before repetitions", Param.Type.FLOAT, true, "-1");
+		stopWhenLeaving = InputPanelFactory.createInputPanel(skin, "Stop music when leaving",
+				"Stops the music when leaving the current scene.", Param.Type.BOOLEAN, true, "true");
+
 		sceneSize = InputPanelFactory.createInputPanel(skin, "Scene Dimension",
-				"Sets the size of the scene. If empty, the background image size is used as the scene dimension.", Param.Type.DIMENSION, false);
+				"Sets the size of the scene. If empty, the background image size is used as the scene dimension.",
+				Param.Type.DIMENSION, false);
 
 		bgImage = new Image();
 		bgImage.setScaling(Scaling.fit);
@@ -126,8 +131,8 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 			EditorLogger.error("Error loading regions from selected atlas");
 		}
 
-		init(parent, e, new InputPanel[] { id, backgroundAtlas, backgroundRegion,
-				depthVector, state, sceneSize, music, loopMusic, initialMusicDelay, repeatMusicDelay });
+		init(parent, e, new InputPanel[] { id, backgroundAtlas, backgroundRegion, depthVector, state, sceneSize, music,
+				loopMusic, initialMusicDelay, repeatMusicDelay, stopWhenLeaving });
 	}
 
 	private void showBgImage(String r) {
@@ -205,15 +210,26 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		}
 
 		e.setId(ElementUtils.getCheckedId(id.getText(), World.getInstance().getScenes().keySet().toArray(new String[0])));
-		
+
 		e.setBackgroundAtlas(backgroundAtlas.getText());
 		e.setBackgroundRegionId(backgroundRegion.getText());
 		e.setDepthVector(Param.parseVector2(depthVector.getText()));
 		e.setState(state.getText());
 
-		e.setMusic(music.getText(), Boolean.parseBoolean(loopMusic.getText()),
-				Float.parseFloat(initialMusicDelay.getText()), Float.parseFloat(repeatMusicDelay.getText()));
-		
+		MusicDesc md = null;
+
+		if (music.getText() != null) {
+			md = new MusicDesc();
+
+			md.setFilename(music.getText());
+			md.setLoop(Boolean.parseBoolean(loopMusic.getText()));
+			md.setInitialDelay(Float.parseFloat(initialMusicDelay.getText()));
+			md.setRepeatDelay(Float.parseFloat(repeatMusicDelay.getText()));
+			md.setStopWhenLeaving(Boolean.parseBoolean(stopWhenLeaving.getText()));
+		}
+
+		e.setMusicDesc(md);
+
 		e.setSceneSize(Param.parseVector2(sceneSize.getText()));
 
 		parent.addScene(e);
@@ -240,11 +256,17 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		if (e.getDepthVector() != null)
 			depthVector.setText(Param.toStringParam(e.getDepthVector()));
 		state.setText(e.getState());
-		music.setText(e.getMusicFilename());
-		loopMusic.setText(Boolean.toString(e.isLoopMusic()));
-		initialMusicDelay.setText(Float.toString(e.getInitialMusicDelay()));
-		repeatMusicDelay.setText(Float.toString(e.getRepeatMusicDelay()));
-		
+
+		MusicDesc md = e.getMusicDesc();
+
+		if (md != null) {
+			music.setText(md.getFilename());
+			loopMusic.setText(Boolean.toString(md.isLoop()));
+			initialMusicDelay.setText(Float.toString(md.getInitialDelay()));
+			repeatMusicDelay.setText(Float.toString(md.getRepeatDelay()));
+			stopWhenLeaving.setText(Boolean.toString(md.isStopWhenLeaving()));
+		}
+
 		if (e.getSceneSize() != null)
 			sceneSize.setText(Param.toStringParam(e.getSceneSize()));
 	}

@@ -116,6 +116,8 @@ public class World implements Serializable, AssetConsumer {
 	transient private Scene cachedScene;
 
 	private String previousScene = null;
+	
+	private MusicEngine musicEngine;
 
 	public static World getInstance() {
 		return instance;
@@ -143,6 +145,9 @@ public class World implements Serializable, AssetConsumer {
 		spriteBatch = new SpriteBatch();
 
 		transition = new Transition();
+		
+		musicEngine = new MusicEngine();
+		
 		paused = false;
 
 		disposed = false;
@@ -171,6 +176,10 @@ public class World implements Serializable, AssetConsumer {
 
 	public VerbManager getVerbManager() {
 		return verbs;
+	}
+	
+	public MusicEngine getMusicEngine() {
+		return musicEngine;
 	}
 
 	public void draw() {
@@ -222,6 +231,8 @@ public class World implements Serializable, AssetConsumer {
 		timers.update(delta);
 
 		transition.update(delta);
+		
+		musicEngine.update(delta);
 
 		ActionCallbackQueue.run();
 	}
@@ -232,6 +243,8 @@ public class World implements Serializable, AssetConsumer {
 
 		if (inventory.isDisposed())
 			inventory.loadAssets();
+		
+		musicEngine.loadAssets();
 	}
 
 	@Override
@@ -253,6 +266,8 @@ public class World implements Serializable, AssetConsumer {
 				EngineLogger.debug("\t" + n);
 			}
 		}
+		
+		musicEngine.retrieveAssets();
 	}
 
 	public Transition getTransition() {
@@ -305,7 +320,6 @@ public class World implements Serializable, AssetConsumer {
 			testScene = null;
 			textManager.reset();
 			timers.clear();
-			currentScene.stopMusic();
 			currentDialog = null;
 
 			// Stop Sounds
@@ -327,8 +341,10 @@ public class World implements Serializable, AssetConsumer {
 
 			transition.reset();
 		}
-
+		
 		currentScene = scene;
+		
+		musicEngine.leaveScene(currentScene.getMusicDesc());
 	}
 
 	public void initCurrentScene() {
@@ -436,7 +452,7 @@ public class World implements Serializable, AssetConsumer {
 			// ONLY dispose currentscene because other scenes are already
 			// disposed
 			if (currentScene != null) {
-				currentScene.stopMusic();
+				musicEngine.stopMusic();
 				currentScene.dispose();
 				currentScene = null;
 			}
@@ -453,6 +469,8 @@ public class World implements Serializable, AssetConsumer {
 			Sprite3DRenderer.disposeBatchs();
 
 			assetState = null;
+			
+			musicEngine.dispose();
 
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage());
@@ -500,7 +518,7 @@ public class World implements Serializable, AssetConsumer {
 		paused = true;
 
 		if (currentScene != null) {
-			currentScene.pauseMusic();
+			musicEngine.pauseMusic();
 
 			// Pause all sounds
 			for (BaseActor a : currentScene.getActors().values()) {
@@ -519,7 +537,7 @@ public class World implements Serializable, AssetConsumer {
 
 		if (assetState == AssetState.LOADED) {
 			if (currentScene != null) {
-				currentScene.resumeMusic();
+				musicEngine.resumeMusic();
 
 				// Resume all sounds
 				for (BaseActor a : currentScene.getActors().values()) {
@@ -864,6 +882,8 @@ public class World implements Serializable, AssetConsumer {
 				json.writeValue("transition", transition);
 
 			json.writeValue("chapter", currentChapter);
+			json.writeValue("musicEngine", musicEngine);
+			
 			ActionCallbackQueue.write(json);
 		}
 	}
@@ -943,6 +963,7 @@ public class World implements Serializable, AssetConsumer {
 			}
 
 			transition = json.readValue("transition", Transition.class, jsonData);
+			musicEngine = json.readValue("musicEngine", MusicEngine.class, jsonData);
 
 			ActionCallbackQueue.read(json, jsonData);
 

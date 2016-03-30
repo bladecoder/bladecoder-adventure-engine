@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -78,19 +77,13 @@ public class Scene implements Serializable, AssetConsumer {
 
 	/** The actor the camera will follow */
 	private SpriteActor followActor;
-
-	private Music music = null;
-	private boolean loopMusic = false;
-	private float repeatMusicDelay = 0;
-	private float initialMusicDelay = 0;
-	private float currentMusicDelay = 0;
-
-	private String musicFilename;
-	private boolean isPlayingSer = false;
-	private float musicPosSer = 0;
+	
+	/**
+	 * Music for the scene.
+	 */
+	private MusicDesc musicDesc;
+	
 	private Vector2 sceneSize;
-
-	transient private boolean isMusicPaused = false;
 
 	private String id;
 
@@ -135,62 +128,12 @@ public class Scene implements Serializable, AssetConsumer {
 		layers.add(layer);
 	}
 
-	public void playMusic() {
-		if (music != null && !music.isPlaying()) {
-			music.play();
-			music.setLooping(isLoopMusic());
-		}
+	public MusicDesc getMusicDesc() {
+		return musicDesc;
 	}
 
-	public float getRepeatMusicDelay() {
-		return repeatMusicDelay;
-	}
-
-	public boolean isLoopMusic() {
-		return loopMusic;
-	}
-
-	public void setLoopMusic(boolean loopMusic) {
-		this.loopMusic = loopMusic;
-	}
-
-	public float getCurrentMusicDelay() {
-		return currentMusicDelay;
-	}
-
-	public void setCurrentMusicDelay(float currentMusicDelay) {
-		this.currentMusicDelay = currentMusicDelay;
-	}
-
-	public float getInitialMusicDelay() {
-		return initialMusicDelay;
-	}
-
-	public void setInitialMusicDelay(float initialMusicDelay) {
-		this.initialMusicDelay = initialMusicDelay;
-	}
-
-	public void setRepeatMusicDelay(float repeatMusicDelay) {
-		this.repeatMusicDelay = repeatMusicDelay;
-	}
-
-	public void pauseMusic() {
-		if (music != null && music.isPlaying()) {
-			music.pause();
-			isMusicPaused = true;
-		}
-	}
-
-	public void resumeMusic() {
-		if (music != null && isMusicPaused) {
-			music.play();
-			isMusicPaused = false;
-		}
-	}
-
-	public void stopMusic() {
-		if (music != null)
-			music.stop();
+	public void setMusicDesc(MusicDesc musicDesc) {
+		this.musicDesc = musicDesc;
 	}
 
 	public float getFakeDepthScale(float y) {
@@ -200,16 +143,6 @@ public class Scene implements Serializable, AssetConsumer {
 		float worldScale = EngineAssetManager.getInstance().getScale();
 
 		return Math.max(0, (y - depthVector.x * worldScale) / ((depthVector.y - depthVector.x) * worldScale));
-	}
-
-	public void setMusic(String filename, boolean loop, float initialDelay, float repeatDelay) {
-		if (filename != null && filename.isEmpty())
-			filename = null;
-
-		setLoopMusic(loop);
-		musicFilename = filename;
-		setInitialMusicDelay(initialDelay);
-		setRepeatMusicDelay(repeatDelay);
 	}
 
 	public VerbManager getVerbManager() {
@@ -229,27 +162,6 @@ public class Scene implements Serializable, AssetConsumer {
 		// so we need to order the array list
 		for (SceneLayer layer : layers)
 			layer.update();
-
-		// music delay update
-		if (music != null && !music.isPlaying()) {
-			boolean initialTime = false;
-
-			if (getCurrentMusicDelay() <= getInitialMusicDelay())
-				initialTime = true;
-
-			setCurrentMusicDelay(getCurrentMusicDelay() + delta);
-
-			if (initialTime) {
-				if (getCurrentMusicDelay() > getInitialMusicDelay())
-					playMusic();
-			} else {
-				if (getRepeatMusicDelay() >= 0
-						&& getCurrentMusicDelay() > getRepeatMusicDelay() + getInitialMusicDelay()) {
-					setCurrentMusicDelay(getInitialMusicDelay());
-					playMusic();
-				}
-			}
-		}
 
 		for (BaseActor a : actors.values()) {
 			a.update(delta);
@@ -524,14 +436,6 @@ public class Scene implements Serializable, AssetConsumer {
 		this.backgroundRegionId = backgroundRegionId;
 	}
 
-	public String getMusicFilename() {
-		return musicFilename;
-	}
-
-	public void setMusicFilename(String musicFilename) {
-		this.musicFilename = musicFilename;
-	}
-
 	public void removeActor(BaseActor a) {
 
 		if (player != null && a.getId().equals(player)) {
@@ -591,9 +495,6 @@ public class Scene implements Serializable, AssetConsumer {
 			EngineAssetManager.getInstance().loadAtlas(backgroundAtlas);
 		}
 
-		if (musicFilename != null)
-			EngineAssetManager.getInstance().loadMusic(musicFilename);
-
 		for (BaseActor a : actors.values()) {
 			if (a instanceof AssetConsumer)
 				((AssetConsumer) a).loadAssets();
@@ -637,19 +538,6 @@ public class Scene implements Serializable, AssetConsumer {
 			if (a instanceof AssetConsumer)
 				((AssetConsumer) a).retrieveAssets();
 		}
-
-		if (musicFilename != null) {
-			music = EngineAssetManager.getInstance().getMusic(musicFilename);
-			if (isPlayingSer) { // TODO must be in World???
-				if (music != null) {
-					music.setPosition(musicPosSer);
-					musicPosSer = 0f;
-				}
-
-				playMusic();
-				isPlayingSer = false;
-			}
-		}
 	}
 
 	@Override
@@ -664,11 +552,6 @@ public class Scene implements Serializable, AssetConsumer {
 		for (BaseActor a : actors.values()) {
 			if (a instanceof AssetConsumer)
 				((AssetConsumer) a).dispose();
-		}
-
-		if (musicFilename != null && music != null) {
-			EngineAssetManager.getInstance().disposeMusic(musicFilename);
-			music = null;
 		}
 	}
 
@@ -708,12 +591,7 @@ public class Scene implements Serializable, AssetConsumer {
 				json.writeValue("backgroundRegionId", backgroundRegionId);
 			}
 
-			if (musicFilename != null) {
-				json.writeValue("musicFilename", musicFilename);
-				json.writeValue("loopMusic", loopMusic);
-				json.writeValue("initialMusicDelay", initialMusicDelay);
-				json.writeValue("repeatMusicDelay", repeatMusicDelay);
-			}
+			json.writeValue("musicDesc", musicDesc);
 
 			if (depthVector != null)
 				json.writeValue("depthVector", depthVector);
@@ -733,11 +611,6 @@ public class Scene implements Serializable, AssetConsumer {
 				json.writeValue(actorRef.toString(), a);
 			}
 			json.writeObjectEnd();
-
-			if (musicFilename != null) {
-				json.writeValue("isPlaying", music != null && music.isPlaying());
-				json.writeValue("musicPos", music != null && music.isPlaying() ? music.getPosition() : 0f);
-			}
 
 			json.writeValue("camera", camera);
 
@@ -780,13 +653,7 @@ public class Scene implements Serializable, AssetConsumer {
 			backgroundAtlas = json.readValue("backgroundAtlas", String.class, jsonData);
 			backgroundRegionId = json.readValue("backgroundRegionId", String.class, jsonData);
 
-			musicFilename = json.readValue("musicFilename", String.class, jsonData);
-
-			if (musicFilename != null) {
-				loopMusic = json.readValue("loopMusic", Boolean.class, jsonData);
-				initialMusicDelay = json.readValue("initialMusicDelay", Float.class, jsonData);
-				repeatMusicDelay = json.readValue("repeatMusicDelay", Float.class, jsonData);
-			}
+			musicDesc = json.readValue("musicDesc", MusicDesc.class, jsonData);
 
 			depthVector = json.readValue("depthVector", Vector2.class, jsonData);
 
@@ -826,11 +693,6 @@ public class Scene implements Serializable, AssetConsumer {
 			}
 
 			orderLayersByZIndex();
-
-			if (musicFilename != null) {
-				isPlayingSer = json.readValue("isPlaying", Boolean.class, jsonData);
-				musicPosSer = json.readValue("musicPos", Float.class, jsonData);
-			}
 
 			camera = json.readValue("camera", SceneCamera.class, jsonData);
 			String followActorId = json.readValue("followActor", String.class, jsonData);
