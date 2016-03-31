@@ -118,6 +118,7 @@ public abstract class EditDialog extends Dialog {
 		return cancelled;
 	}
 
+	@Override
 	protected void result(Object object) {
 		if (((boolean) object) == true) {
 			if (validateFields()) {

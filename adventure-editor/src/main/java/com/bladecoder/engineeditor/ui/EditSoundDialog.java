@@ -20,7 +20,14 @@ import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SoundFX;
@@ -39,6 +46,8 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 	private InputPanel loop;
 	private InputPanel volume;
 	private InputPanel pan;
+	
+	private Sound s = null;
 
 	public EditSoundDialog(Skin skin, InteractiveActor parent, SoundFX e) {
 		super(skin);
@@ -47,37 +56,61 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 		filename = InputPanelFactory.createInputPanel(skin, "Filename", "Filename of the sound", getSoundList(), true);
 		loop = InputPanelFactory.createInputPanel(skin, "Loop", "True if the sound is looping", Param.Type.BOOLEAN,
 				true, "false");
-		volume = InputPanelFactory.createInputPanel(skin, "Volume", "Select the volume between 0 and 1", Param.Type.FLOAT, true, "1.0");
-		pan = InputPanelFactory.createInputPanel(skin, "Pan", "panning in the range -1 (full left) to 1 (full right). 0 is center position", Param.Type.FLOAT, true, "0.0");
+		volume = InputPanelFactory.createInputPanel(skin, "Volume", "Select the volume between 0 and 1",
+				Param.Type.FLOAT, true, "1.0");
+		pan = InputPanelFactory.createInputPanel(skin, "Pan",
+				"panning in the range -1 (full left) to 1 (full right). 0 is center position", Param.Type.FLOAT, true,
+				"0.0");
 
 		setInfo("Actors can have a list of sounds that can be associated to Sprites or played with the 'sound' action");
 
 		init(parent, e, new InputPanel[] { id, filename, loop, volume, pan });
+
+		TextButton playButton = new TextButton("Play", skin, "no-toggled");
+
+		playButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				if(s != null) {
+					s.dispose();
+					s = null;
+				}
+				
+				s = Gdx.audio.newSound(new FileHandle(Ctx.project.getProjectPath() + "/" + Project.SOUND_PATH + "/" + filename.getText()));
+				
+				s.play(Float.parseFloat(volume.getText()), 1, Float.parseFloat(pan.getText()));
+
+			}
+		});
+
+		Table bt = getButtonTable();
+		bt.add(playButton);
 	}
 
 	@Override
 	protected void inputsToModel(boolean create) {
-		
-		if(create) {
+
+		if (create) {
 			e = new SoundFX();
-			
+
 			// UNDO OP
 			Ctx.project.getUndoStack().add(new UndoCreateSound(parent, e));
 		} else {
 			HashMap<String, SoundFX> sounds = parent.getSounds();
 			sounds.remove(e.getId());
 		}
-		
-		String checkedId = parent.getSounds() == null? id.getText():ElementUtils.getCheckedId(id.getText(), parent.getSounds().keySet().toArray(new String[parent.getSounds().size()])); 
-		
+
+		String checkedId = parent.getSounds() == null ? id.getText() : ElementUtils.getCheckedId(id.getText(), parent
+				.getSounds().keySet().toArray(new String[parent.getSounds().size()]));
+
 		e.setId(checkedId);
 		e.setFilename(filename.getText());
 		e.setLoop(Boolean.parseBoolean(loop.getText()));
 		e.setVolume(Float.parseFloat(volume.getText()));
 		e.setPan(Float.parseFloat(pan.getText()));
-		
+
 		parent.addSound(e);
-		
+
 		Ctx.project.setModified();
 	}
 
@@ -88,6 +121,16 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 		loop.setText(Boolean.toString(e.getLoop()));
 		volume.setText(Float.toString(e.getVolume()));
 		pan.setText(Float.toString(e.getPan()));
+	}
+	
+	@Override
+	protected void result(Object object) {
+		if(s != null) {
+			s.dispose();
+			s = null;
+		}
+		
+		super.result(object);
 	}
 
 	private String[] getSoundList() {

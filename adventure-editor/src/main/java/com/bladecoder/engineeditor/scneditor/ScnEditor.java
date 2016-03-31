@@ -58,14 +58,14 @@ public class ScnEditor extends Table {
 		super(skin);
 
 		scnWidget = new ScnWidget(skin);
-		testButton = new TextButton("Test", skin);
+		testButton = new TextButton("Test", skin, "no-toggled");
 
 		buttonGroup = new ButtonGroup<Button>();
 		buttonGroup.setMaxCheckCount(1);
 		buttonGroup.setMinCheckCount(0);
 		buttonGroup.setUncheckLast(true);
 
-		walkZoneButton = new TextButton(CREATE_WALK_ZONE_TEXT, skin);
+		walkZoneButton = new TextButton(CREATE_WALK_ZONE_TEXT, skin, "no-toggled");
 		toolsButton = new TextButton("Tools", skin);
 		viewButton = new TextButton("View", skin);
 
@@ -125,7 +125,6 @@ public class ScnEditor extends Table {
 							.key(Keys.ESCAPE, false).show(getStage());
 				}
 
-				event.cancel();
 			}
 		});
 
@@ -160,7 +159,6 @@ public class ScnEditor extends Table {
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
 				test();
-				event.cancel();
 			}
 		});
 

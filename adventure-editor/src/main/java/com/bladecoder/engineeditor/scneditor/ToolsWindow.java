@@ -53,8 +53,8 @@ public class ToolsWindow extends Container<Table> {
 		scnWidget = sw;
 
 		Table table = new Table(skin);
-		TextButton button1 = new TextButton("Add Intelligent Cutmode", skin);
-		TextButton button2 = new TextButton("Test in Android device", skin);
+		TextButton button1 = new TextButton("Add Intelligent Cutmode", skin, "no-toggled");
+		TextButton button2 = new TextButton("Test in Android device", skin, "no-toggled");
 
 		table.top();
 		table.add(new Label("Tools", skin, "big")).center();
@@ -122,7 +122,6 @@ public class ToolsWindow extends Container<Table> {
 				Ctx.project.setModified();
 				Message.showMsg(getStage(), "VERBS PROCESSED SUSCESSFULLY", 4);
 
-				event.cancel();
 			}
 
 		});
@@ -177,8 +176,7 @@ public class ToolsWindow extends Container<Table> {
 
 					}
 				}).start();
-				
-				event.cancel();
+
 			}
 
 		});
