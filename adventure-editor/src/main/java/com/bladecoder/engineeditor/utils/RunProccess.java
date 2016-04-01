@@ -51,6 +51,7 @@ public class RunProccess {
 
 		if (chapter != null) {
 			args += ",'-chapter','" + chapter + "'";
+			args += ",'-d'";
 		}
 
 		if (scene != null) {
