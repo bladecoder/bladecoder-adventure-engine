@@ -139,8 +139,13 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 
 		list.getItems().insert(pos, newElement);
 
-		newElement.setId(ElementUtils.getCheckedId(newElement.getId(),
-				parent.getSounds().keySet().toArray(new String[parent.getSounds().size()])));
+		String id = newElement.getId();
+		
+		if(parent.getSounds() != null)
+			id = ElementUtils.getCheckedId(newElement.getId(),
+					parent.getSounds().keySet().toArray(new String[parent.getSounds().size()]));
+		
+		newElement.setId(id);
 
 		parent.addSound(newElement);
 
