@@ -110,6 +110,7 @@ public class SoundFX implements AssetConsumer {
 
 	@Override
 	public void loadAssets() {
+//		EngineLogger.debug("LOADING SOUND: " + id + " - " + filename);
 		EngineAssetManager.getInstance().loadSound(getFilename());
 	}
 	
@@ -120,6 +121,7 @@ public class SoundFX implements AssetConsumer {
 	
 	@Override
 	public void dispose() {
+//		EngineLogger.debug("DISPOSING SOUND: " + id + " - " + filename);
 		stop();
 		EngineAssetManager.getInstance().disposeSound(getFilename());
 	}

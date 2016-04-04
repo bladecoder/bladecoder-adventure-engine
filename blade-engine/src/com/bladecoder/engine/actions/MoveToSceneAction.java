@@ -35,9 +35,12 @@ public class MoveToSceneAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {			
-		Scene s = actor.getScene();
+		final Scene s = actor.getScene();
 
 		final String actorId = actor.getActorId();
+		final World w = World.getInstance();
+		
+		
 		if (actorId == null) {
 			// if called in a scene verb and no actor is specified, we do nothing
 			EngineLogger.error(getClass() + ": No actor specified");
@@ -48,17 +51,20 @@ public class MoveToSceneAction implements Action {
 
 		s.removeActor(a);
 		
-		if(s == World.getInstance().getCurrentScene())
+		if(s == w.getCurrentScene())
 			a.dispose();
 		
 		Scene ts =  null;
 		
 		if(scene == null)
-			ts = World.getInstance().getCurrentScene();
+			ts = w.getCurrentScene();
 		else
-			ts = World.getInstance().getScene(scene);
+			ts = w.getScene(scene);
 		
-		if(ts == World.getInstance().getCurrentScene()) {
+		// We must load assets when the target scene is the current scene or when
+		// the scene is cached.
+		if(ts == w.getCurrentScene() || 
+				(w.getCachedScene(ts.getId()) != null)) {
 			a.loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 			a.retrieveAssets();

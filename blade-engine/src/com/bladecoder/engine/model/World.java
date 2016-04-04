@@ -154,6 +154,19 @@ public class World implements Serializable, AssetConsumer {
 
 		previousScene = null;
 	}
+	
+	/**
+	 * Returns a scene from the cache. null if the scene is not cached.
+	 * 
+	 * Note that by now, the cache has only one Scene. In the future, the cache will be a Hastable.
+	 */
+	public Scene getCachedScene(String id) {
+		
+		if(cachedScene != null && cachedScene.getId().equals(id))
+			return cachedScene;
+		
+		return null;
+	}
 
 	public void addTimer(float time, ActionCallback cb) {
 		timers.addTimer(time, cb);
