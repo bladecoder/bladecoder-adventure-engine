@@ -49,10 +49,6 @@ public class LookAtAction implements Action {
 	@ActionProperty(type = Type.ACTOR)
 	private String actor;
 
-	@ActionPropertyDescription("The 'soundId' to play if selected")
-	@ActionProperty(type = Type.SOUND)
-	private String soundId;
-
 	@ActionPropertyDescription("The 'text' to show")
 	@ActionProperty(type = Type.SMALL_TEXT)
 	private String text;
@@ -79,14 +75,6 @@ public class LookAtAction implements Action {
 			else if (a != null && player != null) {
 				Rectangle bbox = a.getBBox().getBoundingRectangle();
 				player.lookat(new Vector2(bbox.x, bbox.y));
-			}
-		}
-
-		if (soundId != null) {
-			if (a == null) {
-				EngineLogger.debug("Tried to play a sound (" + soundId + "), but there is no actor defined");
-			} else {
-				a.playSound(soundId);
 			}
 		}
 
