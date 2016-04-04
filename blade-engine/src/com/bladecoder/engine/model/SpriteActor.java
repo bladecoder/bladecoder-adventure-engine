@@ -187,7 +187,7 @@ public class SpriteActor extends InteractiveActor {
 
 		if (fa != null) {
 
-			if (fa.sound != null) {
+			if (fa.sound != null && fa.animationType != Tween.Type.REVERSE) {
 				playSound(fa.sound);
 			}
 
