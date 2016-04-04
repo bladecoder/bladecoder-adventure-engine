@@ -560,11 +560,6 @@ public class DefaultSceneScreen implements SceneScreen {
 		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();
 
-		// DRAW DEBUG STRING
-		if (EngineLogger.debugMode()) {
-			drawDebugText(batch);
-		}
-
 		if (!world.inCutMode() && !recorder.isPlaying() && !testerBot.isEnabled()) {
 			pointer.draw(batch, viewport);
 		}
@@ -578,6 +573,11 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		if (drawHotspots)
 			drawHotspots(batch);
+		
+		// DRAW DEBUG STRING
+		if (EngineLogger.debugMode()) {
+			drawDebugText(batch);
+		}
 
 		batch.end();
 	}
