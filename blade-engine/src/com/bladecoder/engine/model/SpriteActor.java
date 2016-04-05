@@ -24,6 +24,7 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.SpritePosTween;
 import com.bladecoder.engine.anim.SpriteScaleTween;
 import com.bladecoder.engine.anim.Tween;
+import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
@@ -154,7 +155,7 @@ public class SpriteActor extends InteractiveActor {
 		EngineLogger.debug("ANIMATION: " + this.id + "." + id);
 		renderer.startAnimation(id, repeatType, count, cb);
 
-		outAnim();
+		outAnim(repeatType);
 	}
 
 	/**
@@ -181,13 +182,14 @@ public class SpriteActor extends InteractiveActor {
 	/**
 	 * Actions to do when setting an animation: - play animation sound - add
 	 * 'in' distance
+	 * @param repeatType 
 	 */
-	protected void outAnim() {
+	protected void outAnim(Type repeatType) {
 		AnimationDesc fa = renderer.getCurrentAnimation();
 
 		if (fa != null) {
 
-			if (fa.sound != null && fa.animationType != Tween.Type.REVERSE) {
+			if (fa.sound != null && repeatType != Tween.Type.REVERSE) {
 				playSound(fa.sound);
 			}
 
