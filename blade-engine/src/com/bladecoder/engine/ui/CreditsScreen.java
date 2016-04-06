@@ -189,6 +189,7 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 
 		music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset("music/" + s));
 		music.play();
+		stringHead++;
 	}
 
 	private float processCreditDefault(SpriteBatch batch, int width, int height, float y, int i, String s) {
