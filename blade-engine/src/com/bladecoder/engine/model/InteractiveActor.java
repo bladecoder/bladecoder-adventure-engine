@@ -280,6 +280,13 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 			layer = json.readValue("layer", String.class, jsonData);
 		} else {
 			playingSound = json.readValue("playingSound", String.class, jsonData);
+			
+			if(playingSound != null && (sounds == null || sounds.get(playingSound) == null)) {
+				EngineLogger.debug("Playing sound not found: " + playingSound);
+				playingSound = null;
+			}
+			
+			
 			playerInside = json.readValue("playerInside", boolean.class, false, jsonData);
 			String newLayer = json.readValue("layer", String.class, jsonData);
 			

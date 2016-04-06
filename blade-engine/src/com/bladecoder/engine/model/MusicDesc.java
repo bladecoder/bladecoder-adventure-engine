@@ -27,6 +27,8 @@ public class MusicDesc {
 	 */
 	private boolean stopWhenLeaving = true;
 	
+	private float volume = 1.0f;
+	
 	public MusicDesc() {
 		
 	}
@@ -37,6 +39,7 @@ public class MusicDesc {
 		initialDelay = md.getInitialDelay();
 		repeatDelay = md.getRepeatDelay();
 		stopWhenLeaving = md.isStopWhenLeaving();
+		volume = md.getVolume();
 	}
 
 	public String getFilename() {
@@ -77,5 +80,13 @@ public class MusicDesc {
 
 	public void setStopWhenLeaving(boolean stopWhenLeaving) {
 		this.stopWhenLeaving = stopWhenLeaving;
+	}
+
+	public float getVolume() {
+		return volume;
+	}
+
+	public void setVolume(float volume) {
+		this.volume = volume;
 	}
 }

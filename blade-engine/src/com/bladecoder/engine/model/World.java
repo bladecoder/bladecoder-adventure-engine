@@ -977,6 +977,9 @@ public class World implements Serializable, AssetConsumer {
 
 			transition = json.readValue("transition", Transition.class, jsonData);
 			musicEngine = json.readValue("musicEngine", MusicEngine.class, jsonData);
+			
+			if(musicEngine == null)
+				musicEngine = new MusicEngine();
 
 			ActionCallbackQueue.read(json, jsonData);
 

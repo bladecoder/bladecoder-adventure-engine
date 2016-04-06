@@ -55,36 +55,35 @@ public class MusicEngine implements Serializable, AssetConsumer {
 	public void setMusic(MusicDesc d) {
 		stopMusic();
 		currentMusicDelay = 0;
-		
+
 		if (d != null) {
-			if(!d.getFilename().equals(desc.getFilename())) {
+			if (desc != null)
 				dispose();
-				
-				desc = new MusicDesc(d);
-								
-				loadAssets();
-				EngineAssetManager.getInstance().finishLoading();
-				music = EngineAssetManager.getInstance().getMusic(desc.getFilename());
-			} else {
-				// Don't dispose if is the same music file.
-				desc = new MusicDesc(d);
-			}
+
+			desc = new MusicDesc(d);
+
+			retrieveAssets();
 		} else {
 			dispose();
 			desc = null;
 		}
 	}
-	
+
 	public void leaveScene(MusicDesc newMusicDesc) {
-		if(newMusicDesc != null) {
+
+		if (desc != null && !desc.isStopWhenLeaving() && 
+				(newMusicDesc == null || newMusicDesc.getFilename().equals(desc.getFilename())))
+			return;
+
+		if (desc != null) {
 			currentMusicDelay = 0;
 			stopMusic();
 			dispose();
+		}
+
+		if (newMusicDesc != null) {
 			desc = new MusicDesc(newMusicDesc);
-		} else if(music != null && desc.isStopWhenLeaving()) {
-			currentMusicDelay = 0;
-			stopMusic();
-			dispose();
+		} else {
 			desc = null;
 		}
 	}
@@ -113,7 +112,7 @@ public class MusicEngine implements Serializable, AssetConsumer {
 
 	@Override
 	public void dispose() {
-		if ( music != null) {
+		if (music != null) {
 			EngineLogger.debug("DISPOSING MUSIC: " + desc.getFilename());
 			EngineAssetManager.getInstance().disposeMusic(desc.getFilename());
 			music = null;
@@ -132,8 +131,17 @@ public class MusicEngine implements Serializable, AssetConsumer {
 	@Override
 	public void retrieveAssets() {
 		if (music == null && desc != null) {
+			
+			if(!EngineAssetManager.getInstance().isLoaded(desc.getFilename())) {
+				loadAssets();
+				EngineAssetManager.getInstance().finishLoading();
+			}
+			
 			EngineLogger.debug("RETRIEVING MUSIC: " + desc.getFilename());
+			
 			music = EngineAssetManager.getInstance().getMusic(desc.getFilename());
+			music.setVolume(desc.getVolume());
+
 			if (isPlayingSer) {
 				if (music != null) {
 					music.setPosition(musicPosSer);
