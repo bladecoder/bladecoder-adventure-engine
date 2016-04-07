@@ -15,11 +15,14 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.scneditor;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.bladecoder.engine.util.Config;
-import com.bladecoder.engine.util.EngineLogger;
+import javafx.application.Platform;
+import javafx.stage.FileChooser;
+
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
@@ -39,7 +42,10 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
+import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.utils.I18NUtils;
 import com.bladecoder.engineeditor.utils.Message;
 import com.bladecoder.engineeditor.utils.RunProccess;
 
@@ -53,8 +59,10 @@ public class ToolsWindow extends Container<Table> {
 		scnWidget = sw;
 
 		Table table = new Table(skin);
-		TextButton button1 = new TextButton("Add Intelligent Cutmode", skin, "no-toggled");
-		TextButton button2 = new TextButton("Test in Android device", skin, "no-toggled");
+		TextButton setCutModeButton = new TextButton("Add Intelligent Cutmode", skin, "no-toggled");
+		TextButton testInAndroidButton = new TextButton("Test in Android device", skin, "no-toggled");
+		TextButton exportTSVButton = new TextButton("I18N - Export texts as .tsv", skin, "no-toggled");
+		TextButton importTSVButton = new TextButton("I18N - Import.tsv file", skin, "no-toggled");
 
 		table.top();
 		table.add(new Label("Tools", skin, "big")).center();
@@ -64,13 +72,19 @@ public class ToolsWindow extends Container<Table> {
 		setBackground(drawable);
 
 		table.row();
-		table.add(button2).expandX().fill();
-		
-//		table.row();
-//		table.add(button1).expandX().fill();
+		table.add(testInAndroidButton).expandX().fill();
+
+		table.row();
+		table.add(exportTSVButton).expandX().fill();
+
+		table.row();
+		table.add(importTSVButton).expandX().fill();
+
+		// table.row();
+		// table.add(button1).expandX().fill();
 
 		// ADD CUTMODE FOR VERBS THAT HAVE ONLY A LOOKAT OR SAY ACTION
-		button1.addListener(new ChangeListener() {
+		setCutModeButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 
@@ -127,61 +141,134 @@ public class ToolsWindow extends Container<Table> {
 		});
 
 		// TEST IN ANDROID DEVICE
-		button2.addListener(new ChangeListener() {
+		testInAndroidButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
+				testInAndroid();
+			}
 
-				if (Ctx.project.getSelectedScene() == null) {
-					String msg = "There are no scenes in this chapter.";
-					Message.showMsg(getStage(), msg, 3);
-					return;
+		});
+
+		exportTSVButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				exportTSV();
+			}
+		});
+
+		importTSVButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				importTSV();
+			}
+		});
+
+		prefSize(200, 200);
+		setSize(200, 200);
+	}
+
+	private void exportTSV() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+
+				try {
+					final FileChooser chooser = new FileChooser();
+					chooser.setTitle("Select the file to export the project texts");
+					final File outFile = chooser.showSaveDialog(null);
+
+					if (outFile == null) {
+						return;
+					}
+
+					I18NUtils.exportTSV(Ctx.project.getProjectDir().getAbsolutePath(), outFile.getAbsolutePath(),
+							Ctx.project.getChapter().getId(), "default");
+
+					Message.showMsg(getStage(), outFile.getName() + " exported sucessfully.", 4);
+
+					I18NUtils.compare(Ctx.project.getProjectDir().getAbsolutePath(), Ctx.project.getChapter().getId(),
+							null, "en");
+				} catch (IOException e) {
+					Message.showMsg(getStage(), "There was a problem generating the .tsv file.", 4);
 				}
-				
-				Ctx.project.getProjectConfig().setProperty(Config.CHAPTER_PROP, Ctx.project.getChapter().getId());			
-				Ctx.project.getProjectConfig().setProperty(Config.TEST_SCENE_PROP, Ctx.project.getSelectedScene().getId());
+			}
+		});
+	}
+
+	private void importTSV() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					final FileChooser chooser = new FileChooser();
+					chooser.setTitle("Select the .tsv file to import");
+					final File inFile = chooser.showOpenDialog(null);
+					if (inFile == null) {
+						return;
+					}
+
+					I18NUtils.importTSV(Ctx.project.getProjectDir().getAbsolutePath(), inFile.getAbsolutePath(),
+							Ctx.project.getChapter().getId(), "default");
+
+					// Reload texts
+					Ctx.project.getI18N().load(Ctx.project.getChapter().getId());
+
+					Message.showMsg(getStage(), inFile.getName() + " imported sucessfully.", 4);
+
+				} catch (IOException e) {
+					Message.showMsg(getStage(), "There was a problem importing the .tsv file.", 4);
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	private void testInAndroid() {
+		if (Ctx.project.getSelectedScene() == null) {
+			String msg = "There are no scenes in this chapter.";
+			Message.showMsg(getStage(), msg, 3);
+			return;
+		}
+
+		Ctx.project.getProjectConfig().setProperty(Config.CHAPTER_PROP, Ctx.project.getChapter().getId());
+		Ctx.project.getProjectConfig().setProperty(Config.TEST_SCENE_PROP, Ctx.project.getSelectedScene().getId());
+		Ctx.project.setModified();
+
+		try {
+			Ctx.project.saveProject();
+		} catch (Exception ex) {
+			String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
+					+ ex.getMessage();
+			Message.showMsgDialog(getStage(), "Error", msg);
+			return;
+		}
+
+		new Thread(new Runnable() {
+			Stage stage = getStage();
+
+			@Override
+			public void run() {
+				Message.showMsg(stage, "Running scene on Android device...", 5);
+
+				if (!RunProccess.runGradle(Ctx.project.getProjectDir(), "android:installDebug android:run")) {
+					Message.showMsg(stage, "There was a problem running the project", 4);
+				}
+
+				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
+				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
 				Ctx.project.setModified();
-				
+
 				try {
 					Ctx.project.saveProject();
 				} catch (Exception ex) {
 					String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName()
 							+ " - " + ex.getMessage();
-					Message.showMsgDialog(getStage(), "Error", msg);
+					EngineLogger.error(msg);
 					return;
 				}
 
-				new Thread(new Runnable() {
-					Stage stage = getStage();
-
-					@Override
-					public void run() {
-						Message.showMsg(stage, "Running scene on Android device...", 5);
-
-						if (!RunProccess.runGradle(Ctx.project.getProjectDir(), "android:installDebug android:run")) {
-							Message.showMsg(stage, "There was a problem running the project", 4);
-						}
-						
-						Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);			
-						Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
-						Ctx.project.setModified();
-						
-						try {
-							Ctx.project.saveProject();
-						} catch (Exception ex) {
-							String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName()
-									+ " - " + ex.getMessage();
-							EngineLogger.error(msg);
-							return;
-						}
-
-					}
-				}).start();
-
 			}
+		}).start();
 
-		});
-
-		prefSize(200, 200);
-		setSize(200, 200);
 	}
 }

@@ -30,9 +30,11 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeSet;
 
 import com.bladecoder.engine.i18n.I18N;
@@ -43,11 +45,17 @@ public class I18NUtils {
 	private static final String TSV_EXT = ".tsv";
 	private static final String PROPERTIES_EXT = ".properties";
 
-	public static final void exportTSV(String projectPath, final String chapterId, String defaultLocale)
+	public static final void exportTSV(String projectPath, String outFile, final String chapterId, String defaultLocale)
 			throws FileNotFoundException, IOException {
 		String modelPath = projectPath + Project.MODEL_PATH;
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
-		File outputFile = new File(modelPath, chapterId + TSV_EXT);
+		
+		File outputFile;
+		
+		if(outFile == null)
+			outputFile = new File(modelPath, chapterId + TSV_EXT);
+		else
+			outputFile = new File(outFile);
 
 		// 1. Find all chapter properties
 		File[] files = new File(modelPath).listFiles(new FilenameFilter() {
@@ -89,9 +97,18 @@ public class I18NUtils {
 		}
 
 		writer.write("\n");
+		
+		Set<Object> keySet = props[0].keySet();
+		ArrayList<String> keys = new ArrayList<>();
+		
+		for (Object key : keySet) {
+			keys.add((String)key);
+		}
+		
+		Collections.sort(keys);
 
-		for (Object key : props[0].keySet()) {
-			writer.write((String) key);
+		for (String key : keys) {
+			writer.write(key);
 
 			for (Properties p : props) {
 				if(p.getProperty((String) key) == null) {
@@ -109,10 +126,10 @@ public class I18NUtils {
 	}
 
 	@SuppressWarnings("serial")
-	public static final void importTSV(String projectPath, String chapterId, String defaultLocale)
+	public static final void importTSV(String projectPath, String tsvFile, String chapterId, String defaultLocale)
 			throws FileNotFoundException, IOException {
 		String modelPath = projectPath + Project.MODEL_PATH;
-		File inputFile = new File(modelPath, chapterId + TSV_EXT);
+		File inputFile = new File(tsvFile);
 
 		try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
 			// get header
@@ -297,8 +314,8 @@ public class I18NUtils {
 
 	public static void usage() {
 		System.out.println("Usage:"
-				+ "\n\tI18NUtils tsv2properties project_path chapter_id default_locale"
-				+ "\n\tI18NUtils properties2tsv project_path chapter_id default_locale"
+				+ "\n\tI18NUtils import_tsv project_path input_tsv_file chapter_id default_locale"
+				+ "\n\tI18NUtils export_tsv project_path ouput_tsv_file chapter_id default_locale"
 				+ "\n\tI18NUtils newlocale project_path chapter_id default_locale new_locale"
 				+ "\n\tI18NUtils sync project_path chapter_id dest_locale"
 				+ "\n\tI18NUtils compare project_path chapter_id dest_locale");
@@ -306,21 +323,21 @@ public class I18NUtils {
 
 	public static final void main(String[] args) throws FileNotFoundException, IOException {
 
-		if (args[0].equals("tsv2properties")) {
-			if (args.length != 4) {
+		if (args[0].equals("import_tsv")) {
+			if (args.length != 5) {
 				usage();
 				System.exit(-1);
 			}
 
-			importTSV(args[1], args[2], args[3]);
+			importTSV(args[1], args[2], args[3], args[4]);
 			System.out.println("Properties generated sucessfully.");
-		} else if (args[0].equals("properties2tsv")) {
-			if (args.length != 4) {
+		} else if (args[0].equals("export_tsv")) {
+			if (args.length != 5) {
 				usage();
 				System.exit(-1);
 			}
 
-			exportTSV(args[1], args[2], args[3]);
+			exportTSV(args[1], args[2], args[3], args[4]);
 			System.out.println(".tsv file generated sucessfully.");
 		} else if (args[0].equals("newlocale")) {
 			if (args.length != 5) {
