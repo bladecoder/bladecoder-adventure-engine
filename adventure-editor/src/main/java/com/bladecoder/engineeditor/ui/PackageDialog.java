@@ -45,8 +45,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 public class PackageDialog extends EditDialog {
 	private static final String ARCH_PROP = "package.arch";
 	private static final String DIR_PROP = "package.dir";
-	
-	private static final String DESKTOP_LAUNCHER = "org/bladecoder/engine/desktop/DesktopLauncher";
+
+	private static final String DESKTOP_LAUNCHER = "DesktopLauncher.java";
 
 	private static final String INFO = "Package the Adventure for distribution";
 	private static final String[] ARCHS = { "desktop", "android", "ios", "html" };
@@ -76,22 +76,37 @@ public class PackageDialog extends EditDialog {
 	public PackageDialog(Skin skin) {
 		super("PACKAGE ADVENTURE", skin);
 
-		arch = InputPanelFactory.createInputPanel(skin, "Architecture", "Select the target Architecture for the game", ARCHS, true);
-		dir = new FileInputPanel(skin, "Output Directory", "Select the output directory to put the package", FileInputPanel.DialogType.DIRECTORY);
+		arch = InputPanelFactory.createInputPanel(skin, "Architecture", "Select the target Architecture for the game",
+				ARCHS, true);
+		dir = new FileInputPanel(skin, "Output Directory", "Select the output directory to put the package",
+				FileInputPanel.DialogType.DIRECTORY);
 		type = InputPanelFactory.createInputPanel(skin, "Type", "Select the package type", TYPES, true);
 		os = InputPanelFactory.createInputPanel(skin, "OS", "Select the OS of the package", OSS, true);
-		linux64JRE = new FileInputPanel(skin, "JRE.Linux64", "Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
-		linux32JRE = new FileInputPanel(skin, "JRE.Linux32", "Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
-		winJRE = new FileInputPanel(skin, "JRE.Windows", "Select the Windows JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
-		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
+		linux64JRE = new FileInputPanel(skin, "JRE.Linux64",
+				"Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file",
+				FileInputPanel.DialogType.OPEN_FILE);
+		linux32JRE = new FileInputPanel(skin, "JRE.Linux32",
+				"Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file",
+				FileInputPanel.DialogType.OPEN_FILE);
+		winJRE = new FileInputPanel(skin, "JRE.Windows",
+				"Select the Windows JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
+		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle. Must be a ZIP file",
+				FileInputPanel.DialogType.OPEN_FILE);
 		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the package version", true);
-		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", FileInputPanel.DialogType.OPEN_FILE);
-		androidVersionCode = InputPanelFactory.createInputPanel(skin, "Version Code", "An integer that identify the version.", Type.INTEGER, true);
-		androidSDK = new FileInputPanel(skin, "SDK", "Select the Android SDK Location. If empty, the ANDROID_HOME variable will be used.", FileInputPanel.DialogType.DIRECTORY, false);
-		androidKeyStore = new FileInputPanel(skin, "KeyStore", "Select the Key Store Location", FileInputPanel.DialogType.OPEN_FILE);
+		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", FileInputPanel.DialogType.OPEN_FILE,
+				false);
+		androidVersionCode = InputPanelFactory.createInputPanel(skin, "Version Code",
+				"An integer that identify the version.", Type.INTEGER, true);
+		androidSDK = new FileInputPanel(skin, "SDK",
+				"Select the Android SDK Location. If empty, the ANDROID_HOME variable will be used.",
+				FileInputPanel.DialogType.DIRECTORY, false);
+		androidKeyStore = new FileInputPanel(skin, "KeyStore", "Select the Key Store Location",
+				FileInputPanel.DialogType.OPEN_FILE);
 		androidKeyAlias = InputPanelFactory.createInputPanel(skin, "KeyAlias", "Select the Key Alias Location", true);
-		androidKeyStorePassword = InputPanelFactory.createInputPanel(skin, "KeyStorePasswd", "Key Store Password", true);
-		androidKeyAliasPassword = InputPanelFactory.createInputPanel(skin, "KeyAliasPasswd", "Key Alias Password", true);
+		androidKeyStorePassword = InputPanelFactory
+				.createInputPanel(skin, "KeyStorePasswd", "Key Store Password", true);
+		androidKeyAliasPassword = InputPanelFactory
+				.createInputPanel(skin, "KeyAliasPasswd", "Key Alias Password", true);
 
 		options[0] = type;
 		options[1] = os;
@@ -115,11 +130,11 @@ public class PackageDialog extends EditDialog {
 
 		addInputPanel(androidKeyStorePassword);
 		addInputPanel(androidKeyAliasPassword);
-		
-		((TextField)androidKeyStorePassword.getField()).setPasswordMode(true);
-		((TextField)androidKeyStorePassword.getField()).setPasswordCharacter('*');
-		((TextField)androidKeyAliasPassword.getField()).setPasswordMode(true);
-		((TextField)androidKeyAliasPassword.getField()).setPasswordCharacter('*');
+
+		((TextField) androidKeyStorePassword.getField()).setPasswordMode(true);
+		((TextField) androidKeyStorePassword.getField()).setPasswordCharacter('*');
+		((TextField) androidKeyAliasPassword.getField()).setPasswordMode(true);
+		((TextField) androidKeyAliasPassword.getField()).setPasswordCharacter('*');
 
 		dir.setMandatory(true);
 
@@ -132,12 +147,11 @@ public class PackageDialog extends EditDialog {
 			if (prop != null && !prop.isEmpty())
 				i.setText(prop);
 		}
-		
-		version.setText(Ctx.project.getProjectConfig().getProperty(Config.VERSION_PROP, version.getText()));
-		
-		// TODO Set version code based in version
-//		androidVersionCode.setText(genVersionCode(version.getText()));
 
+		version.setText(Ctx.project.getProjectConfig().getProperty(Config.VERSION_PROP, version.getText()));
+
+		// TODO Set version code based in version
+		// androidVersionCode.setText(genVersionCode(version.getText()));
 
 		setInfo(INFO);
 
@@ -167,22 +181,22 @@ public class PackageDialog extends EditDialog {
 
 	@Override
 	protected void ok() {
-		
+
 		new Thread(new Runnable() {
 			Stage stage = getStage();
-			
+
 			@Override
 			public void run() {
-				Message.showMsg(stage, "Generating package...",true);
+				Message.showMsg(stage, "Generating package...", true);
 				String msg;
-				
+
 				if (Ctx.project.getSelectedScene() == null) {
 					msg = "There are no scenes in this chapter.";
 					Message.showMsg(getStage(), msg, 3);
 					return;
 				}
-				
-				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);			
+
+				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
 				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
 
 				try {
@@ -193,7 +207,7 @@ public class PackageDialog extends EditDialog {
 					Message.showMsgDialog(getStage(), "Error", msg);
 					return;
 				}
-				
+
 				try {
 					msg = packageAdv();
 				} catch (Exception e) {
@@ -204,94 +218,96 @@ public class PackageDialog extends EditDialog {
 				Ctx.project.getEditorConfig().setProperty(DIR_PROP, dir.getText());
 
 				for (InputPanel i : options) {
-					if(i.getText() != null)
+					if (i.getText() != null)
 						Ctx.project.getEditorConfig().setProperty("package." + i.getTitle(), i.getText());
 				}
-				
+
 				Message.hideMsg();
-				
-				if(msg != null)
+
+				if (msg != null)
 					Message.showMsgDialog(stage, "Result", msg);
 			}
-		}).start();			
+		}).start();
 
 	}
 
 	private String packageAdv() throws IOException {
 		String msg = "Package generated SUCCESSFULLY";
-		
+
 		String projectName = getAppName();
-		if(projectName == null) 
+		if (projectName == null)
 			Ctx.project.getProjectDir().getName();
-		
+
 		String versionParam = "-Pversion=" + version.getText() + " ";
 		Ctx.project.getProjectConfig().setProperty(Config.VERSION_PROP, version.getText());
-				
-		if (arch.getText().equals("desktop")) {			
-			String jarDir = Ctx.project.getProjectDir().getAbsolutePath() +
-					"/desktop/build/libs/";
+
+		if (arch.getText().equals("desktop")) {
+			String jarDir = Ctx.project.getProjectDir().getAbsolutePath() + "/desktop/build/libs/";
 			String jarName = projectName + "-desktop-" + version.getText() + ".jar";
-			
+
 			msg = genDesktopJar(projectName, versionParam, jarDir, jarName);
 
 			if (type.getText().equals(TYPES[0])) { // BUNDLE JRE
-				if (os.getText().equals("linux64")) {					
-					packr(Platform.linux64, linux64JRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
+				String launcher = getDesktopMainClass();
+
+				if (os.getText().equals("linux64")) {
+					packr(Platform.linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher,
+							dir.getText());
 				} else if (os.getText().equals("linux32")) {
-					packr(Platform.linux32, linux32JRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher,
+							dir.getText());
 				} else if (os.getText().equals("windows")) {
-					packr(Platform.windows, winJRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.windows, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				} else if (os.getText().equals("macOSX")) {
-					packr(Platform.mac, osxJRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.mac, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				} else if (os.getText().equals("all")) {
-					packr(Platform.linux64, linux64JRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
-					packr(Platform.linux32, linux32JRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
-					packr(Platform.windows, winJRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
-					packr(Platform.mac, osxJRE.getText(), projectName, jarDir + jarName, DESKTOP_LAUNCHER, dir.getText());
+					packr(Platform.linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher,
+							dir.getText());
+					packr(Platform.linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher,
+							dir.getText());
+					packr(Platform.windows, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+					packr(Platform.mac, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				}
 			}
-		} else if (arch.getText().equals("android")) {			
-			String params = versionParam + 
-					"-PversionCode=" +  androidVersionCode.getText() + " " +
-					"-Pkeystore=" +  androidKeyStore.getText() + " " +
-					"-PstorePassword=" + androidKeyStorePassword.getText() + " " +
-					"-Palias=" + androidKeyAlias.getText() + " " +
-					"-PkeyPassword=" + androidKeyAliasPassword.getText() + " ";
-			
+		} else if (arch.getText().equals("android")) {
+			String params = versionParam + "-PversionCode=" + androidVersionCode.getText() + " " + "-Pkeystore="
+					+ androidKeyStore.getText() + " " + "-PstorePassword=" + androidKeyStorePassword.getText() + " "
+					+ "-Palias=" + androidKeyAlias.getText() + " " + "-PkeyPassword="
+					+ androidKeyAliasPassword.getText() + " ";
+
 			// UPDATE 'local.properties' with the android SDK location.
-			if(androidSDK.getText() != null && !androidSDK.getText().trim().isEmpty()) {
+			if (androidSDK.getText() != null && !androidSDK.getText().trim().isEmpty()) {
 				String sdk = androidSDK.getText();
 
 				Properties p = new Properties();
 				p.setProperty("sdk.dir", sdk);
-				p.store(new FileOutputStream(new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties")), null);
+				p.store(new FileOutputStream(
+						new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties")), null);
 			}
-			
-			if(RunProccess.runGradle(Ctx.project.getProjectDir(), params + "android:assembleRelease")) {
-				String apk = Ctx.project.getProjectDir().getAbsolutePath() +
-						"/android/build/outputs/apk/android-release.apk";
+
+			if (RunProccess.runGradle(Ctx.project.getProjectDir(), params + "android:assembleRelease")) {
+				String apk = Ctx.project.getProjectDir().getAbsolutePath()
+						+ "/android/build/outputs/apk/android-release.apk";
 				File f = new File(apk);
-//				FileUtils.copyFileToDirectory(f, new File(dir.getText()));
-				FileUtils.copyFile(f, new File(dir.getText(),projectName + "-" + version.getText() + ".apk"));
+				// FileUtils.copyFileToDirectory(f, new File(dir.getText()));
+				FileUtils.copyFile(f, new File(dir.getText(), projectName + "-" + version.getText() + ".apk"));
 			} else {
-				msg = "Error Generating package" ;
+				msg = "Error Generating package";
 			}
 		} else if (arch.getText().equals("ios")) {
-			if(RunProccess.runGradle(Ctx.project.getProjectDir(), "ios:createIPA")) {
-				FileUtils.copyDirectory(new File(Ctx.project.getProjectDir().getAbsolutePath() +
-							"/ios/build/robovm/")
-							, new File(dir.getText()));
+			if (RunProccess.runGradle(Ctx.project.getProjectDir(), "ios:createIPA")) {
+				FileUtils.copyDirectory(new File(Ctx.project.getProjectDir().getAbsolutePath() + "/ios/build/robovm/"),
+						new File(dir.getText()));
 			} else {
-				msg = "Error Generating package" ;
-			}			
+				msg = "Error Generating package";
+			}
 		} else if (arch.getText().equals("html")) {
-			if(RunProccess.runGradle(Ctx.project.getProjectDir(), "html:dist")) {
-				FileUtils.copyDirectory(new File(Ctx.project.getProjectDir().getAbsolutePath() +
-							"/html/build/dist")
-							, new File(dir.getText()));
+			if (RunProccess.runGradle(Ctx.project.getProjectDir(), "html:dist")) {
+				FileUtils.copyDirectory(new File(Ctx.project.getProjectDir().getAbsolutePath() + "/html/build/dist"),
+						new File(dir.getText()));
 			} else {
-				msg = "Error Generating package" ;
-			}			
+				msg = "Error Generating package";
+			}
 		}
 
 		return msg;
@@ -353,7 +369,7 @@ public class PackageDialog extends EditDialog {
 		} else {
 			setVisible(linux64JRE, false);
 		}
-		
+
 		if (os.isVisible() && (os.getText().equals("macOSX") || os.getText().equals("all"))) {
 			setVisible(osxJRE, true);
 		} else {
@@ -379,54 +395,61 @@ public class PackageDialog extends EditDialog {
 		if (androidKeyAliasPassword.isVisible() && !androidKeyAliasPassword.validateField())
 			ok = false;
 
-//		if (icon.isVisible() && !icon.getText().endsWith(".ico")) {
-//			icon.setError(true);
-//			ok = false;
-//		}
+		// if (icon.isVisible() && !icon.getText().endsWith(".ico")) {
+		// icon.setError(true);
+		// ok = false;
+		// }
 
-		if (linux32JRE.isVisible() && (!new File(linux32JRE.getText()).exists() || !linux32JRE.getText().toLowerCase().endsWith(".zip"))) {
+		if (linux32JRE.isVisible()
+				&& (!new File(linux32JRE.getText()).exists() || !linux32JRE.getText().toLowerCase().endsWith(".zip"))) {
 			linux32JRE.setError(true);
 			ok = false;
 		}
 
-		if (linux64JRE.isVisible() && (!new File(linux64JRE.getText()).exists() || !linux64JRE.getText().toLowerCase().endsWith(".zip"))){
+		if (linux64JRE.isVisible()
+				&& (!new File(linux64JRE.getText()).exists() || !linux64JRE.getText().toLowerCase().endsWith(".zip"))) {
 			linux64JRE.setError(true);
 			ok = false;
 		}
 
-		if (winJRE.isVisible() && (!new File(winJRE.getText()).exists() || !winJRE.getText().toLowerCase().endsWith(".zip"))){
+		if (winJRE.isVisible()
+				&& (!new File(winJRE.getText()).exists() || !winJRE.getText().toLowerCase().endsWith(".zip"))) {
 			winJRE.setError(true);
 			ok = false;
 		}
-		
-		if (osxJRE.isVisible() && (!new File(osxJRE.getText()).exists() || !osxJRE.getText().toLowerCase().endsWith(".zip"))){
+
+		if (osxJRE.isVisible()
+				&& (!new File(osxJRE.getText()).exists() || !osxJRE.getText().toLowerCase().endsWith(".zip"))) {
 			osxJRE.setError(true);
 			ok = false;
 		}
 
 		return ok;
 	}
-	
-	private String genDesktopJar(String projectName, String versionParam, String jarDir, String jarName) throws IOException {
+
+	private String genDesktopJar(String projectName, String versionParam, String jarDir, String jarName)
+			throws IOException {
 		String msg = null;
-		
-		if(RunProccess.runGradle(Ctx.project.getProjectDir(), versionParam + "desktop:dist")) {
+
+		if (RunProccess.runGradle(Ctx.project.getProjectDir(), versionParam + "desktop:dist")) {
 			File f = new File(jarDir + jarName);
 			FileUtils.copyFileToDirectory(f, new File(dir.getText()));
-			
+
 			new File(jarDir, jarName).setExecutable(true);
 			new File(dir.getText(), jarName).setExecutable(true);
 		} else {
-			msg = "Error Generating package" ;
+			msg = "Error Generating package";
 		}
-		
+
 		return msg;
 	}
-	
-	private void packr(Platform platform, String jdk, String exe, String jar, String mainClass, String outDir) throws IOException {
-		String suffix = null;;
-		
-		switch(platform) {
+
+	private void packr(Platform platform, String jdk, String exe, String jar, String mainClass, String outDir)
+			throws IOException {
+		String suffix = null;
+		;
+
+		switch (platform) {
 		case linux32:
 			suffix = "lin32";
 			break;
@@ -439,9 +462,9 @@ public class PackageDialog extends EditDialog {
 		case windows:
 			suffix = "win";
 			break;
-		
+
 		}
-		
+
 		Packr.Config config = new Packr.Config();
 		config.platform = platform;
 		config.jdk = jdk;
@@ -449,25 +472,73 @@ public class PackageDialog extends EditDialog {
 		config.jar = jar;
 		config.mainClass = mainClass;
 		config.vmArgs = Arrays.asList("-Xmx1G");
-		config.minimizeJre = new String[] { "jre/lib/rt/com/sun/corba", "jre/lib/rt/com/sun/jndi" };
+		config.minimizeJre = new String[] { 
+				"jre/lib/rt/com/sun/corba", 
+				"jre/lib/rt/com/sun/jndi",
+				"jre/lib/rt/com/sun/jmx",
+				"jre/lib/rt/com/sun/media",
+				"jre/lib/rt/com/sun/naming",
+				"jre/lib/rt/com/sun/org",
+				"jre/lib/rt/com/sun/rowset",
+				"jre/lib/rt/com/sun/script",
+				"jre/lib/rt/com/sun/xml",
+				"jre/lib/rt/sun/applet",
+				"jre/lib/rt/sun/corba",
+				"jre/lib/rt/sun/management",
+				};
+		
 		config.outDir = outDir + "/" + exe + "-" + suffix;
 
 		new Packr().pack(config);
 	}
-	
+
 	/**
 	 * @return The appName from the file gradle.properties from the game
 	 */
 	private String getAppName() {
 		Properties prop = new Properties();
-		
+
 		try {
 			prop.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties"));
 			return prop.getProperty("appName");
 		} catch (IOException e) {
 			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
 		}
-		
+
 		return null;
+	}
+
+	/**
+	 * @return Search the desktop main class in the desktop folder
+	 */
+	private String getDesktopMainClass() {
+		File result = search(new File(Ctx.project.getProjectDir().getAbsolutePath() + "/desktop"));
+
+		int cutIdx = result.getAbsolutePath().indexOf("src/") + 4;
+
+		return result.getAbsolutePath().substring(cutIdx, result.getAbsolutePath().length() - 5);
+	}
+
+	private File search(File file) {
+		File result = null;
+
+		// do you have permission to read this directory?
+		if (file.canRead()) {
+			for (File temp : file.listFiles()) {
+				if (temp.isDirectory()) {
+					result = search(temp);
+					
+					if(result != null)
+						return result;
+				} else {
+					if (temp.getName().equals(DESKTOP_LAUNCHER)) {
+						return temp;
+					}
+				}
+			}
+
+		}
+
+		return result;
 	}
 }
