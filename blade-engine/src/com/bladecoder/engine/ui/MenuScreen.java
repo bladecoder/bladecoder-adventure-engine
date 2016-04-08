@@ -58,6 +58,9 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 	private Button credits;
 	private Button help;
 	private Button debug;
+	
+	private final Table menuButtonTable = new Table();
+	private final Table iconStackTable = new Table();
 
 	public MenuScreen() {
 	}
@@ -101,7 +104,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		final Skin skin = ui.getSkin();
 		final World world = World.getInstance();
 
-		final MenuScreenStyle style = skin.get(MenuScreenStyle.class);
+		final MenuScreenStyle style = getStyle();
 		final BitmapFont f = skin.get(style.textButtonStyle, TextButtonStyle.class).font;
 		float buttonWidth = f.getCapHeight() * 15f;
 
@@ -115,14 +118,11 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			bg = new TextureRegionDrawable(new TextureRegion(bgTexFile));
 		}
 
-		final Table table = new Table();
-		table.setFillParent(true);
-		table.center();
-
+		menuButtonTable.clear();
 		if (bg != null)
-			table.setBackground(bg);
+			menuButtonTable.setBackground(bg);
 
-		table.addListener(new InputListener() {
+		menuButtonTable.addListener(new InputListener() {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
 				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
@@ -133,9 +133,9 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		table.defaults().pad(BUTTON_PADDING).width(buttonWidth);
+		menuButtonTable.defaults().pad(BUTTON_PADDING).width(buttonWidth);
 
-		stage.setKeyboardFocus(table);
+		stage.setKeyboardFocus(menuButtonTable);
 
 		if (style.showTitle) {
 
@@ -144,8 +144,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			
 			title.setAlignment(Align.center);
 
-			table.add(title).padBottom(DPIUtils.getMarginSize() * 2);
-			table.row();
+			menuButtonTable.add(title).padBottom(DPIUtils.getMarginSize() * 2);
+			menuButtonTable.row();
 		}
 
 		if (world.savedGameExists() || world.getCurrentScene() != null) {
@@ -164,7 +164,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 				}
 			});
 
-			table.add(continueGame);
+			menuButtonTable.add(continueGame);
 		}
 
 		TextButton newGame = new TextButton(I18N.getString("ui.new"), skin, style.textButtonStyle);
@@ -211,8 +211,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		table.row();
-		table.add(newGame);
+		menuButtonTable.row();
+		menuButtonTable.add(newGame);
 
 		TextButton loadGame = new TextButton(I18N.getString("ui.load"), skin, style.textButtonStyle);
 		loadGame.addListener(new ClickListener() {
@@ -221,20 +221,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		table.row();
-		table.add(loadGame);
-
-//		if (world.getCurrentScene() != null) {
-//			TextButton saveGame = new TextButton(I18N.getString("ui.save"), skin, style.textButtonStyle);
-//			saveGame.addListener(new ClickListener() {
-//				public void clicked(InputEvent event, float x, float y) {
-//					ui.setCurrentScreen(Screens.SAVE_GAME_SCREEN);
-//				}
-//			});
-//
-//			table.row();
-//			table.add(saveGame);
-//		}
+		menuButtonTable.row();
+		menuButtonTable.add(loadGame);
 
 		TextButton quit = new TextButton(I18N.getString("ui.quit"), skin, style.textButtonStyle);
 		quit.addListener(new ClickListener() {
@@ -243,12 +231,12 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		table.row();
-		table.add(quit);
+		menuButtonTable.row();
+		menuButtonTable.add(quit);
 
-		table.pack();
+		menuButtonTable.pack();
 
-		stage.addActor(table);
+		stage.addActor(menuButtonTable);
 
 		// BOTTOM-RIGHT BUTTON STACK
 		credits = new Button(skin, "credits");
@@ -274,23 +262,23 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		Table buttonStack = new Table();
-		buttonStack.defaults().pad(DPIUtils.getSpacing()).size(DPIUtils.getPrefButtonSize(),
+		iconStackTable.clear();
+		iconStackTable.defaults().pad(DPIUtils.getSpacing()).size(DPIUtils.getPrefButtonSize(),
 				DPIUtils.getPrefButtonSize());
-		buttonStack.pad(DPIUtils.getMarginSize() * 2);
+		iconStackTable.pad(DPIUtils.getMarginSize() * 2);
 
 		if (EngineLogger.debugMode() && world.getCurrentScene() != null) {
-			buttonStack.add(debug);
-			buttonStack.row();
+			iconStackTable.add(debug);
+			iconStackTable.row();
 		}
 
-		buttonStack.add(help);
-		buttonStack.row();
-		buttonStack.add(credits);
-		buttonStack.bottom().right();
-		buttonStack.setFillParent(true);
-		buttonStack.pack();
-		stage.addActor(buttonStack);
+		iconStackTable.add(help);
+		iconStackTable.row();
+		iconStackTable.add(credits);
+		iconStackTable.bottom().right();
+		iconStackTable.setFillParent(true);
+		iconStackTable.pack();
+		stage.addActor(iconStackTable);
 		
 		Label version = new Label("v"+ Config.getProperty(Config.VERSION_PROP, " unspecified"), skin);
 		version.setPosition(DPIUtils.getMarginSize(), DPIUtils.getMarginSize());
@@ -309,6 +297,22 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 		Gdx.input.setInputProcessor(stage);
 	}
+	
+	protected Table getMenuButtonTable() {
+		return menuButtonTable;
+	}
+	
+	protected Table getIconStackTable() {
+		return iconStackTable;
+	}
+	
+	protected UI getUI() {
+		return ui;
+	}
+	
+	protected MenuScreenStyle getStyle() {
+		return ui.getSkin().get(MenuScreenStyle.class);
+	}
 
 	@Override
 	public void hide() {
@@ -318,6 +322,9 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 	@Override
 	public void setUI(UI ui) {
 		this.ui = ui;
+		
+		menuButtonTable.setFillParent(true);
+		menuButtonTable.center();
 	}
 
 	/** The style for the MenuScreen */
