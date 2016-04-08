@@ -30,9 +30,7 @@ public class EndGameAction implements Action {
 		ui.setCurrentScreen(UI.Screens.CREDIT_SCREEN);
 
 		World.getInstance().endGame();
-		
-		cb.cancel();
 
-		return false;
+		return true;
 	}
 }
