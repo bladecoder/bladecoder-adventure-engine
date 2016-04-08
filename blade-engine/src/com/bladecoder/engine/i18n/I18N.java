@@ -23,33 +23,41 @@ import com.bladecoder.engine.util.EngineLogger;
 public class I18N {
 	public static final char PREFIX = '@';
 	public static final String ENCODING = "UTF-8";
-//	public static final String ENCODING = "ISO-8859-1";
-	
+	// public static final String ENCODING = "ISO-8859-1";
+
 	private static ResourceBundle i18nWorld;
 	private static ResourceBundle i18nChapter;
-	
-	public static void loadChapter(String i18nChapterFilename) {
-		Locale locale = Locale.getDefault();
+	private static Locale locale = Locale.getDefault();
 
+	public static void loadChapter(String i18nChapterFilename) {
 		try {
-			i18nChapter = ResourceBundle.getBundle(i18nChapterFilename, locale,
-					new I18NControl(ENCODING));
+			i18nChapter = ResourceBundle.getBundle(i18nChapterFilename, locale, new I18NControl(ENCODING));
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nChapter);
 		}
 	}
-	
+
 	public static void loadWorld(String i18nWorldFilename) {
-		Locale locale = Locale.getDefault();
-		
 		try {
-			i18nWorld = ResourceBundle.getBundle(i18nWorldFilename, locale,
-					new I18NControl(ENCODING));
+			i18nWorld = ResourceBundle.getBundle(i18nWorldFilename, locale, new I18NControl(ENCODING));
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nWorld);
 		}
 	}
-	
+
+	public static void setLocale(Locale l) {
+		locale = l;
+
+		// RELOAD TRANSLATIONS
+		if (i18nWorld != null) {
+			loadWorld(i18nWorld.getBaseBundleName());
+		}
+
+		if (i18nChapter != null) {
+			loadChapter(i18nChapter.getBaseBundleName());
+		}
+	}
+
 	public static String getString(String key) {
 		try {
 			return i18nChapter.getString(key);
@@ -61,5 +69,9 @@ public class I18N {
 				return key;
 			}
 		}
+	}
+	
+	public static Locale getCurrentLocale() {
+		return locale;
 	}
 }
