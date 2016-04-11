@@ -4,6 +4,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.9]
+
+- New music engine.
+- I18N: language change support in runtime.
+- EDITOR: Added I18N tools for importing and exporting texts in .tsv format for translation.
+- EDITOR: Added button to play sounds in EditSoundDialog and SoundList.
+- Added methods to MenuScreen to ease extension.
+- FIX: Get desktop launcher properly when packaging.
+- FIX: EndGameAction now returns true to stop the verb execution.
+- FIX: bug playing music in credit screen.
+- Doesn't play animation sounds when animation is in reverse mode.
+- FIX: Pass debug flag when testing scene.
+- FIX: In EditableSelectBox, check empty list before setting default value.
+
+
 ## [0.9.8]
 
 - Show only ui state and time in screen debug text
