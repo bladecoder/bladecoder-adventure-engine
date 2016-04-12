@@ -28,10 +28,14 @@ public class I18N {
 	private static ResourceBundle i18nWorld;
 	private static ResourceBundle i18nChapter;
 	private static Locale locale = Locale.getDefault();
+	
+	private static String i18nChapterFilename = null;
+	private static String i18nWorldFilename = null;
 
 	public static void loadChapter(String i18nChapterFilename) {
 		try {
 			i18nChapter = ResourceBundle.getBundle(i18nChapterFilename, locale, new I18NControl(ENCODING));
+			I18N.i18nChapterFilename = i18nChapterFilename;
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nChapter);
 		}
@@ -40,6 +44,7 @@ public class I18N {
 	public static void loadWorld(String i18nWorldFilename) {
 		try {
 			i18nWorld = ResourceBundle.getBundle(i18nWorldFilename, locale, new I18NControl(ENCODING));
+			I18N.i18nWorldFilename = i18nWorldFilename;
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nWorld);
 		}
@@ -50,11 +55,13 @@ public class I18N {
 
 		// RELOAD TRANSLATIONS
 		if (i18nWorld != null) {
-			loadWorld(i18nWorld.getBaseBundleName());
+//			loadWorld(i18nWorld.getBaseBundleName());
+			loadWorld(i18nWorldFilename);
 		}
 
 		if (i18nChapter != null) {
-			loadChapter(i18nChapter.getBaseBundleName());
+//			loadChapter(i18nChapter.getBaseBundleName());
+			loadChapter(i18nChapterFilename);
 		}
 	}
 
