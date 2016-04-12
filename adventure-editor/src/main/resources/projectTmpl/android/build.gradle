@@ -18,7 +18,7 @@ android {
     
     defaultConfig {
         applicationId "%PACKAGE%"
-        minSdkVersion 8
+        minSdkVersion 15
         targetSdkVersion %API_LEVEL%        
         versionName version
         
