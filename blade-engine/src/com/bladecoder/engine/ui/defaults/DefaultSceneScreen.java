@@ -39,6 +39,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -205,7 +206,8 @@ public class DefaultSceneScreen implements SceneScreen {
 			switch (character) {
 
 			case 'd':
-				EngineLogger.toggle();
+				if (UIUtils.ctrl())
+					EngineLogger.toggle();
 				break;
 			case '1':
 				EngineLogger.setDebugLevel(EngineLogger.DEBUG0);
@@ -366,7 +368,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		AssetState assetState = world.getAssetState();
 
 		if (world.getAssetState() != AssetState.LOADED) {
-			
+
 			if (assetState == AssetState.LOAD_ASSETS || assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
 				// update() to set LOADING state
 				world.update(0);
@@ -382,10 +384,10 @@ public class DefaultSceneScreen implements SceneScreen {
 
 			if (t - t0 >= LOADING_WAIT_TIME_MS) {
 				// Sets loading screen if resources are not loaded yet
-				ui.setCurrentScreen(Screens.LOADING_SCREEN); 
+				ui.setCurrentScreen(Screens.LOADING_SCREEN);
 			} else {
 				world.resize(viewport.getWorldWidth(), viewport.getWorldHeight());
-				
+
 				// update() to retrieve assets and exec init verb
 				world.update(0);
 			}
@@ -573,7 +575,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		if (drawHotspots)
 			drawHotspots(batch);
-		
+
 		// DRAW DEBUG STRING
 		if (EngineLogger.debugMode()) {
 			drawDebugText(batch);
@@ -597,12 +599,12 @@ public class DefaultSceneScreen implements SceneScreen {
 			color = Color.RED;
 		} else {
 
-//			sbTmp.append("( ");
-//			sbTmp.append((int) unprojectTmp.x);
-//			sbTmp.append(", ");
-//			sbTmp.append((int) unprojectTmp.y);
-//			sbTmp.append(") FPS:");
-//			sbTmp.append(Gdx.graphics.getFramesPerSecond());
+			// sbTmp.append("( ");
+			// sbTmp.append((int) unprojectTmp.x);
+			// sbTmp.append(", ");
+			// sbTmp.append((int) unprojectTmp.y);
+			// sbTmp.append(") FPS:");
+			// sbTmp.append(Gdx.graphics.getFramesPerSecond());
 			// sbTmp.append(" Density:");
 			// sbTmp.append(Gdx.graphics.getDensity());
 			// sbTmp.append(" UI Multiplier:");
