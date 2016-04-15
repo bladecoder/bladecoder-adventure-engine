@@ -165,6 +165,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			});
 
 			menuButtonTable.add(continueGame);
+			menuButtonTable.row();
 		}
 
 		TextButton newGame = new TextButton(I18N.getString("ui.new"), skin, style.textButtonStyle);
@@ -211,8 +212,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		menuButtonTable.row();
 		menuButtonTable.add(newGame);
+		menuButtonTable.row();
 
 		TextButton loadGame = new TextButton(I18N.getString("ui.load"), skin, style.textButtonStyle);
 		loadGame.addListener(new ClickListener() {
@@ -221,8 +222,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		menuButtonTable.row();
 		menuButtonTable.add(loadGame);
+		menuButtonTable.row();
 
 		TextButton quit = new TextButton(I18N.getString("ui.quit"), skin, style.textButtonStyle);
 		quit.addListener(new ClickListener() {
@@ -231,8 +232,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		menuButtonTable.row();
 		menuButtonTable.add(quit);
+		menuButtonTable.row();
 
 		menuButtonTable.pack();
 
