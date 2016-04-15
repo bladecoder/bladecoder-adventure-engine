@@ -31,6 +31,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen.UIModes;
 import com.bladecoder.engine.util.Config;
@@ -93,22 +94,8 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 
 	@Override
 	public void show() {
-		tex = new Texture(EngineAssetManager.getInstance().getResAsset(localeFilename));
-		tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
-		Gdx.input.setInputProcessor(inputProcessor);
-	}
-
-	@Override
-	public void hide() {
-		dispose();
-	}
-
-	@Override
-	public void setUI(UI ui) {
-		this.ui = ui;
-
-		final Locale locale = Locale.getDefault();
+		final Locale locale = I18N.getCurrentLocale();
 		String filename = null;
 		
 		UIModes uiMode = UIModes.valueOf(Config.getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase());
@@ -133,6 +120,21 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 		localeFilename = MessageFormat.format("{0}_{1}.png", filename, locale.getLanguage());
 
 		if (!EngineAssetManager.getInstance().assetExists(localeFilename))
-			localeFilename = MessageFormat.format("{0}.png", filename);
+			localeFilename = MessageFormat.format("{0}.png", filename);		
+		
+		tex = new Texture(EngineAssetManager.getInstance().getResAsset(localeFilename));
+		tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+		Gdx.input.setInputProcessor(inputProcessor);
+	}
+
+	@Override
+	public void hide() {
+		dispose();
+	}
+
+	@Override
+	public void setUI(UI ui) {
+		this.ui = ui;
 	}
 }
