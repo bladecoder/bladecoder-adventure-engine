@@ -29,6 +29,6 @@ public class LeaveAction implements Action {
 	public boolean run(VerbRunner cb) {
 		World.getInstance().setCurrentScene(scene);
 
-		return false;
+		return true;
 	}
 }
