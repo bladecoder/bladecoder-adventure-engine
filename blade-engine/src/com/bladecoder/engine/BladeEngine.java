@@ -164,6 +164,8 @@ public class BladeEngine implements ApplicationListener {
 			EngineLogger.debug("Density: " + Gdx.graphics.getDensity());
 			EngineLogger.debug("Size Multiplier: " + DPIUtils.getSizeMultiplier());
 		}
+		
+		Gdx.input.setCatchBackKey(true);
 	}
 
 	@Override
