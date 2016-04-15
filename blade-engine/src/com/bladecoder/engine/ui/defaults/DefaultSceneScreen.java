@@ -192,6 +192,10 @@ public class DefaultSceneScreen implements SceneScreen {
 			case Input.Keys.MENU:
 				showMenu();
 				break;
+			case Input.Keys.D:
+				if (UIUtils.ctrl())
+					EngineLogger.toggle();
+				break;
 			case Input.Keys.SPACE:
 				if (drawHotspots)
 					drawHotspots = false;
@@ -204,11 +208,6 @@ public class DefaultSceneScreen implements SceneScreen {
 		@Override
 		public boolean keyTyped(char character) {
 			switch (character) {
-
-			case 'd':
-				if (UIUtils.ctrl())
-					EngineLogger.toggle();
-				break;
 			case '1':
 				EngineLogger.setDebugLevel(EngineLogger.DEBUG0);
 				break;
