@@ -101,7 +101,7 @@ public class DialogUI extends ScrollPane {
 		
 		panel.pack();
 		setWidth(getStage().getViewport().getScreenWidth());
-		setHeight(Math.min(panel.getHeight(), getStage().getHeight()/2));
+		setHeight(Math.min(panel.getHeight(), getStage().getViewport().getScreenHeight()/2));
 	}
 
 	public void hide() {
