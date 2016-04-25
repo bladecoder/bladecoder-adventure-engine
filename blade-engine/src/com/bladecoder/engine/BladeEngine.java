@@ -164,6 +164,8 @@ public class BladeEngine implements ApplicationListener {
 			EngineLogger.debug("Density: " + Gdx.graphics.getDensity());
 			EngineLogger.debug("Size Multiplier: " + DPIUtils.getSizeMultiplier());
 		}
+		
+		Gdx.input.setCatchBackKey(true);
 	}
 
 	@Override
@@ -191,7 +193,9 @@ public class BladeEngine implements ApplicationListener {
 	@Override
 	public void resize(int width, int height) {
 		EngineLogger.debug(MessageFormat.format("GAME RESIZE {0}x{1}", width, height));
-		ui.resize(width, height);
+		
+		if(ui != null)
+			ui.resize(width, height);
 	}
 
 	@Override
