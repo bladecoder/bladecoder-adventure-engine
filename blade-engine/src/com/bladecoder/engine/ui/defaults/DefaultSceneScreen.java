@@ -459,9 +459,9 @@ public class DefaultSceneScreen implements SceneScreen {
 
 			final float tolerance;
 			if (inventoryUI.isDragging())
-				tolerance = DPIUtils.getTouchMinSize() * 2f;
-			else if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
 				tolerance = DPIUtils.getTouchMinSize();
+			else if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
+				tolerance = DPIUtils.getTouchMinSize() / 2;
 			else
 				tolerance = 0;
 
