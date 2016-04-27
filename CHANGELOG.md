@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.10]
+
+- FIX: Bad width calculation in DialogUI.
+- Change help screen language in runtime.
+- Sets Ctrl+d to toggle debug mode.
+- Catch 'BACK' key in android.
+
 ## [0.9.9]
 
 - New music engine.
