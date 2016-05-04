@@ -457,15 +457,21 @@ public class DefaultSceneScreen implements SceneScreen {
 
 			final Scene currentScene = world.getCurrentScene();
 
-			final float tolerance;
-			if (inventoryUI.isDragging())
-				tolerance = DPIUtils.getTouchMinSize();
-			else if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
-				tolerance = DPIUtils.getTouchMinSize() / 2;
-			else
-				tolerance = 0;
+			currentActor = currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y);
 
-			currentActor = currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
+			// search with tolerance
+			if (currentActor == null) {
+
+				final float tolerance;
+				if (inventoryUI.isDragging())
+					tolerance = DPIUtils.getTouchMinSize();
+				else if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
+					tolerance = DPIUtils.getTouchMinSize();
+				else
+					tolerance = 0;
+
+				currentActor = currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
+			}
 
 			inventoryButton.setVisible(world.getInventory().isVisible());
 			break;
