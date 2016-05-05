@@ -787,6 +787,18 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		if (a.getVerb(Verb.LEAVE_VERB) != null) {
 			runVerb(a, Verb.LEAVE_VERB, null);
+		} else if (uiMode == UIModes.SINGLE_CLICK) {
+			// SINGLE CLICK UI
+			// Preference TALK_TO, PICKUP, LOOK_AT
+			String verb = Verb.TALKTO_VERB;
+
+			if (a.getVerb(verb) == null)
+				verb = Verb.ACTION_VERB;
+
+			if (a.getVerb(verb) == null)
+				verb = Verb.LOOKAT_VERB;
+
+			runVerb(a, verb, null);			
 		} else if (uiMode == UIModes.TWO_BUTTONS) {
 			String verb = Verb.LOOKAT_VERB;
 
@@ -799,18 +811,6 @@ public class DefaultSceneScreen implements SceneScreen {
 			getInputUnProject(unprojectTmp);
 			pie.show(a, unprojectTmp.x, unprojectTmp.y);
 			pointer.reset();
-		} else {
-			// SINGLE CLICK UI
-			// Preference TALK_TO, PICKUP, LOOK_AT
-			String verb = Verb.TALKTO_VERB;
-
-			if (a.getVerb(verb) == null)
-				verb = Verb.ACTION_VERB;
-
-			if (a.getVerb(verb) == null)
-				verb = Verb.LOOKAT_VERB;
-
-			runVerb(a, verb, null);
 		}
 	}
 

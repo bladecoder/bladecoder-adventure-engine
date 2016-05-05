@@ -51,6 +51,8 @@ public class WorldProps extends PropertyTable {
 			Ctx.project.getProjectConfig().setProperty(Config.INVENTORY_AUTOSIZE_PROP, value);
 		} else if (property.equals(Config.UI_MODE)) {
 			Ctx.project.getProjectConfig().setProperty(Config.UI_MODE, value);
+		} else if (property.equals(Config.SINGLE_ACTION_INVENTORY)) {
+			Ctx.project.getProjectConfig().setProperty(Config.SINGLE_ACTION_INVENTORY, value);			
 		} else if (property.equals(Config.DEBUG_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.DEBUG_PROP, value);
 		} else if (property.equals(Config.SHOW_DESC_PROP)) {
@@ -74,6 +76,8 @@ public class WorldProps extends PropertyTable {
 			addProperty(Config.INVENTORY_AUTOSIZE_PROP, Boolean
 					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_AUTOSIZE_PROP, "true")));
 			addProperty(Config.UI_MODE, Ctx.project.getProjectConfig().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(), new String[] {"TWO_BUTTONS", "PIE", "SINGLE_CLICK"});
+			addProperty(Config.SINGLE_ACTION_INVENTORY, Boolean
+					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.SINGLE_ACTION_INVENTORY, "false")));
 			addProperty(Config.DEBUG_PROP,
 					Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.DEBUG_PROP, "false")));
 			addProperty(Config.SHOW_DESC_PROP,

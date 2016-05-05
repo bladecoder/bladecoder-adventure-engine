@@ -61,6 +61,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	private final Vector2 targetPos = new Vector2();
 
 	private final ScenePointer pointer;
+	
+	private boolean singleAction = Config.getProperty(Config.SINGLE_ACTION_INVENTORY, false);
 
 	public InventoryUI(SceneScreen scr, ScenePointer pointer) {
 		style = scr.getUI().getSkin().get(InventoryUIStyle.class);
@@ -81,7 +83,10 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 					InteractiveActor actor = getItemAt(x, y);
 
 					if (actor != null) {
-						sceneScreen.actorClick(actor, button);
+						if(singleAction)
+							sceneScreen.runVerb(actor, "lookat", null);
+						else
+							sceneScreen.actorClick(actor, button);
 					} else {
 						hide();
 					}
@@ -291,6 +296,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		if (targetActor != null) {
 			if (targetActor != draggedActor)
 				use(targetActor, draggedActor);
+			else if(singleAction)
+				sceneScreen.runVerb(targetActor, "lookat", null);
 			else
 				sceneScreen.actorClick(targetActor, button);
 		}
