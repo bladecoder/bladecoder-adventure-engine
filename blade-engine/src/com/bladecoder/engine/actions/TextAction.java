@@ -18,6 +18,7 @@ package com.bladecoder.engine.actions;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.VerbRunner;
@@ -60,8 +61,10 @@ public class TextAction implements Action {
 			float x =  TextManager.POS_CENTER, y =  TextManager.POS_CENTER;
 
 			if (pos != null) {
-				x = pos.x;
-				y = pos.y;
+				float scale = EngineAssetManager.getInstance().getScale();
+				
+				x = pos.x * scale;
+				y = pos.y * scale;
 			} else {
 
 				if (type == Text.Type.SUBTITLE) {
