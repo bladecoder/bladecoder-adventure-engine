@@ -409,6 +409,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		case INVENTORY_MODE:
 			if (!inventoryUI.isVisible())
 				setUIState(UIStates.SCENE_MODE);
+			else if (world.inCutMode())
+				setUIState(UIStates.CUT_MODE);
 			break;
 		case PAUSE_MODE:
 			if (!world.isPaused())
@@ -828,7 +830,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	 * @param target
 	 */
 	public void runVerb(InteractiveActor a, String verb, String target) {
-		// COMMENTED BECAUSE INVENTORY ONLY HIDE WHEN CUTMODE
+		// COMMENTED BECAUSE THE INVENTORY ONLY HIDES WHEN CUTMODE
 		// if (inventoryUI.isVisible())
 		// inventoryUI.hide();
 
