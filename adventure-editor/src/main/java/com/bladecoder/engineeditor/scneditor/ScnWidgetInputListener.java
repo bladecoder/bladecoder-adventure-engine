@@ -185,6 +185,8 @@ public class ScnWidgetInputListener extends ClickListener {
 				selActor = a;
 				BaseActor da = Ctx.project.getActor(selActor.getId());
 				Ctx.project.setSelectedActor(da);
+				
+				return true;
 			}
 
 			if (a != null) {
