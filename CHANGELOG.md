@@ -4,12 +4,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.11]
+
+  - Unicode character support. Previously only ISO-8859-1 character set was supported.
+  - Shadow and outline font support.
+  - Editor fonts are now .ttf
+  - Added "Single Action" support to inventory.
+  - FIX: Hide inventory in cutmode
+  - EDITOR: Avoid dragging object by mistake when clicked to select it.
+  - FIX: Multiply position by scale for multiresolution support in TextAction.
+  - Better tolerance handling when dragging inventory objects.
+  - FIX: Use screen height instead of world height for size calculation in InventoryUI.
+
 ## [0.9.10]
 
-- FIX: Bad width calculation in DialogUI.
-- Change help screen language in runtime.
-- Sets Ctrl+d to toggle debug mode.
-- Catch 'BACK' key in android.
+  - FIX: Bad width calculation in DialogUI.
+  - Change help screen language in runtime.
+  - Sets Ctrl+d to toggle debug mode.
+  - Catch 'BACK' key in android.
 
 ## [0.9.9]
 
