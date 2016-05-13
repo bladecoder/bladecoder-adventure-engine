@@ -2,6 +2,7 @@ package com.bladecoder.engine.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -21,6 +22,10 @@ import com.bladecoder.engine.util.FileUtils;
  * @author rgarcia
  */
 public class BladeSkin extends Skin {
+
+	public BladeSkin(FileHandle skinFile) {
+		super(skinFile);
+	}
 
 	public BladeSkin(FileHandle skinFile, TextureAtlas atlas) {
 		super(skinFile, atlas);
@@ -47,22 +52,32 @@ public class BladeSkin extends Skin {
 				FileHandle fontFile = skinFile.parent().child(path);
 				if (!FileUtils.exists(fontFile))
 					fontFile = Gdx.files.internal(path);
-				
+
 				if (!FileUtils.exists(fontFile))
 					throw new SerializationException("Font file not found: " + fontFile);
-				
+
 				BitmapFont font;
 
 				if (fontFile.extension().equalsIgnoreCase("ttf")) {
-					
-					if (size == -1) 
-						throw new SerializationException("'size' parameter mandatory for .ttf fonts");
-					
+
+					if (size == -1)
+						throw new SerializationException("'size' mandatory parameter for .ttf fonts");
+
 					FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
 					FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 					parameter.size = (int) (DPIUtils.dpToPixels(size) * DPIUtils.getSizeMultiplier());
-					font = generator.generateFont(parameter); 
-					generator.dispose(); 
+					parameter.incremental = json.readValue("incremental", boolean.class, true, jsonData);
+					parameter.borderWidth = json.readValue("borderWidth", int.class, 0, jsonData);
+					parameter.borderColor = json.readValue("borderColor", Color.class, Color.BLACK, jsonData);
+					parameter.borderStraight = json.readValue("borderStraight", boolean.class, false, jsonData);
+					parameter.shadowOffsetX = json.readValue("shadowOffsetX", int.class, 0, jsonData);
+					parameter.shadowOffsetY = json.readValue("shadowOffsetY", int.class, 0, jsonData);
+					parameter.shadowColor = json.readValue("shadowColor", Color.class, Color.BLACK, jsonData);
+
+					font = generator.generateFont(parameter);
+					
+					// TODO Dispose all generators.
+
 				} else {
 
 					// Use a region with the same name as the font, else use a
@@ -83,15 +98,17 @@ public class BladeSkin extends Skin {
 						// font to.
 						if (scaledSize != -1)
 							font.getData().setScale(scaledSize / font.getCapHeight());
-						else if(size != -1) // TODO set size in points (dpi independent)
-							font.getData().setScale((DPIUtils.dpToPixels(size) * DPIUtils.getSizeMultiplier()) / font.getCapHeight());
+						else if (size != -1) // TODO set size in points (dpi
+												// independent)
+							font.getData().setScale(
+									(DPIUtils.dpToPixels(size) * DPIUtils.getSizeMultiplier()) / font.getCapHeight());
 					} catch (RuntimeException ex) {
 						throw new SerializationException("Error loading bitmap font: " + fontFile, ex);
 					}
 				}
-				
+
 				font.getData().markupEnabled = true;
-				
+
 				return font;
 			}
 		});

@@ -32,6 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TooltipManager;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.bladecoder.engine.ui.BladeSkin;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.scneditor.ScnEditor;
 import com.bladecoder.engineeditor.ui.ActorPanel;
@@ -52,7 +53,7 @@ public class Editor implements ApplicationListener {
 
 	@Override
 	public void create() {
-		skin = new Skin(Gdx.files.internal(SKIN));
+		skin = new BladeSkin(Gdx.files.internal(SKIN));
 
 		EditorLogger.setDebug();
 		EditorLogger.debug("CREATE");

@@ -119,6 +119,8 @@ public class TextManagerUI extends Actor {
 				if (currentSubtitle.type == Text.Type.TALK) {
 					if (style.talkBubble != null) {
 						setY(getY() + DPIUtils.getTouchMinSize() / 3 + PADDING);
+					} else {
+						setY(getY() + PADDING);
 					}
 					
 					setX(getX() - layout.width / 2);
@@ -183,8 +185,12 @@ public class TextManagerUI extends Actor {
 		final Text currentSubtitle = subtitle != null ? subtitle : World.getInstance().getTextManager().getCurrentText();
 		final TextManagerUIStyle style = getStyle(currentSubtitle);
 
-		maxRectangleWidth = Math.min(getStage().getViewport().getScreenWidth() - DPIUtils.getMarginSize() * 2, style.font.getSpaceWidth() * 80);
-		maxTalkWidth = Math.min(getStage().getViewport().getScreenWidth() - DPIUtils.getMarginSize() * 2, style.font.getSpaceWidth() * 35);
+		maxRectangleWidth = Math.min(getStage().getViewport().getScreenWidth() - DPIUtils.getMarginSize() * 2,
+				style.font.getXHeight() * 80);
+//				style.font.getSpaceWidth() * 80);
+		maxTalkWidth = Math.min(getStage().getViewport().getScreenWidth() - DPIUtils.getMarginSize() * 2, 
+				style.font.getXHeight() * 35);
+//				style.font.getSpaceWidth() * 35);
 	}
 
 	private TextManagerUIStyle getStyle(Text text) {

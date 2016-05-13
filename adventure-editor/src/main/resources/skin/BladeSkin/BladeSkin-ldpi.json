@@ -1,8 +1,8 @@
 {
 	com.badlogic.gdx.graphics.g2d.BitmapFont: { 
-		default-font: {file: ubuntu-medium-14.fnt},
-		thin-font: {file: ubuntu-light-12.fnt}, 
-		big-font: {file: paytone-one-18.fnt}
+		default-font: {file: Ubuntu-M.ttf, size: 12},
+		thin-font: {file: Ubuntu-L.ttf, size: 10}, 
+		big-font:  {file: PaytoneOne.ttf, size: 14}
 	},
 
 
