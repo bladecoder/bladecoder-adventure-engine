@@ -49,7 +49,9 @@ import com.esotericsoftware.spine.Animation.FfdTimeline;
 import com.esotericsoftware.spine.Animation.IkConstraintTimeline;
 import com.esotericsoftware.spine.Animation.RotateTimeline;
 import com.esotericsoftware.spine.Animation.ScaleTimeline;
+import com.esotericsoftware.spine.Animation.ShearTimeline;
 import com.esotericsoftware.spine.Animation.Timeline;
+import com.esotericsoftware.spine.Animation.TransformConstraintTimeline;
 import com.esotericsoftware.spine.Animation.TranslateTimeline;
 import com.esotericsoftware.spine.attachments.AtlasAttachmentLoader;
 import com.esotericsoftware.spine.attachments.Attachment;
@@ -63,6 +65,7 @@ import com.esotericsoftware.spine.attachments.WeightedMeshAttachment;
 public class SkeletonJson {
 	private final AttachmentLoader attachmentLoader;
 	private float scale = 1;
+	private Array<LinkedMesh> linkedMeshes = new Array();
 
 	public SkeletonJson (TextureAtlas atlas) {
 		attachmentLoader = new AtlasAttachmentLoader(atlas);
@@ -116,6 +119,8 @@ public class SkeletonJson {
 			boneData.rotation = boneMap.getFloat("rotation", 0);
 			boneData.scaleX = boneMap.getFloat("scaleX", 1);
 			boneData.scaleY = boneMap.getFloat("scaleY", 1);
+			boneData.shearX = boneMap.getFloat("shearX", 0);
+			boneData.shearY = boneMap.getFloat("shearY", 0);
 			boneData.inheritScale = boneMap.getBoolean("inheritScale", true);
 			boneData.inheritRotation = boneMap.getBoolean("inheritRotation", true);
 
@@ -158,9 +163,17 @@ public class SkeletonJson {
 			transformConstraintData.target = skeletonData.findBone(targetName);
 			if (transformConstraintData.target == null) throw new SerializationException("Target bone not found: " + targetName);
 
+			transformConstraintData.offsetRotation = transformMap.getFloat("rotation", 0);
+			transformConstraintData.offsetX = transformMap.getFloat("x", 0) * scale;
+			transformConstraintData.offsetY = transformMap.getFloat("y", 0) * scale;
+			transformConstraintData.offsetScaleX = transformMap.getFloat("scaleX", 0) * scale;
+			transformConstraintData.offsetScaleY = transformMap.getFloat("scaleY", 0) * scale;
+			transformConstraintData.offsetShearY = transformMap.getFloat("shearY", 0) * scale;
+
+			transformConstraintData.rotateMix = transformMap.getFloat("rotateMix", 1);
 			transformConstraintData.translateMix = transformMap.getFloat("translateMix", 1);
-			transformConstraintData.x = transformMap.getFloat("x", 0) * scale;
-			transformConstraintData.y = transformMap.getFloat("y", 0) * scale;
+			transformConstraintData.scaleMix = transformMap.getFloat("scaleMix", 1);
+			transformConstraintData.shearMix = transformMap.getFloat("shearMix", 1);
 
 			skeletonData.transformConstraints.add(transformConstraintData);
 		}
@@ -188,13 +201,32 @@ public class SkeletonJson {
 				int slotIndex = skeletonData.findSlotIndex(slotEntry.name);
 				if (slotIndex == -1) throw new SerializationException("Slot not found: " + slotEntry.name);
 				for (JsonValue entry = slotEntry.child; entry != null; entry = entry.next) {
-					Attachment attachment = readAttachment(skin, entry.name, entry);
+					Attachment attachment = readAttachment(skin, slotIndex, entry.name, entry);
 					if (attachment != null) skin.addAttachment(slotIndex, entry.name, attachment);
 				}
 			}
 			skeletonData.skins.add(skin);
 			if (skin.name.equals("default")) skeletonData.defaultSkin = skin;
 		}
+
+		// Linked meshes.
+		for (int i = 0, n = linkedMeshes.size; i < n; i++) {
+			LinkedMesh linkedMesh = linkedMeshes.get(i);
+			Skin skin = linkedMesh.skin == null ? skeletonData.getDefaultSkin() : skeletonData.findSkin(linkedMesh.skin);
+			if (skin == null) throw new SerializationException("Skin not found: " + linkedMesh.skin);
+			Attachment parent = skin.getAttachment(linkedMesh.slotIndex, linkedMesh.parent);
+			if (parent == null) throw new SerializationException("Parent mesh not found: " + linkedMesh.parent);
+			if (linkedMesh.mesh instanceof MeshAttachment) {
+				MeshAttachment mesh = (MeshAttachment)linkedMesh.mesh;
+				mesh.setParentMesh((MeshAttachment)parent);
+				mesh.updateUVs();
+			} else {
+				WeightedMeshAttachment mesh = (WeightedMeshAttachment)linkedMesh.mesh;
+				mesh.setParentMesh((WeightedMeshAttachment)parent);
+				mesh.updateUVs();
+			}
+		}
+		linkedMeshes.clear();
 
 		// Events.
 		for (JsonValue eventMap = root.getChild("events"); eventMap != null; eventMap = eventMap.next) {
@@ -218,7 +250,7 @@ public class SkeletonJson {
 		return skeletonData;
 	}
 
-	private Attachment readAttachment (Skin skin, String name, JsonValue map) {
+	private Attachment readAttachment (Skin skin, int slotIndex, String name, JsonValue map) {
 		float scale = this.scale;
 		name = map.getString("name", name);
 		String path = map.getString("path", name);
@@ -255,61 +287,78 @@ public class SkeletonJson {
 			box.setVertices(vertices);
 			return box;
 		}
-		case mesh: {
+		case mesh:
+		case linkedmesh: {
 			MeshAttachment mesh = attachmentLoader.newMeshAttachment(skin, name, path);
 			if (mesh == null) return null;
 			mesh.setPath(path);
-			float[] vertices = map.require("vertices").asFloatArray();
-			if (scale != 1) {
-				for (int i = 0, n = vertices.length; i < n; i++)
-					vertices[i] *= scale;
-			}
-			mesh.setVertices(vertices);
-			mesh.setTriangles(map.require("triangles").asShortArray());
-			mesh.setRegionUVs(map.require("uvs").asFloatArray());
-			mesh.updateUVs();
 
 			String color = map.getString("color", null);
 			if (color != null) mesh.getColor().set(Color.valueOf(color));
 
-			if (map.has("hull")) mesh.setHullLength(map.require("hull").asInt() * 2);
-			if (map.has("edges")) mesh.setEdges(map.require("edges").asIntArray());
 			mesh.setWidth(map.getFloat("width", 0) * scale);
 			mesh.setHeight(map.getFloat("height", 0) * scale);
+
+			String parent = map.getString("parent", null);
+			if (parent == null) {
+				float[] vertices = map.require("vertices").asFloatArray();
+				if (scale != 1) {
+					for (int i = 0, n = vertices.length; i < n; i++)
+						vertices[i] *= scale;
+				}
+				mesh.setVertices(vertices);
+				mesh.setTriangles(map.require("triangles").asShortArray());
+				mesh.setRegionUVs(map.require("uvs").asFloatArray());
+				mesh.updateUVs();
+
+				if (map.has("hull")) mesh.setHullLength(map.require("hull").asInt() * 2);
+				if (map.has("edges")) mesh.setEdges(map.require("edges").asShortArray());
+			} else {
+				mesh.setInheritFFD(map.getBoolean("ffd", true));
+				linkedMeshes.add(new LinkedMesh(mesh, map.getString("skin", null), slotIndex, parent));
+			}
 			return mesh;
 		}
-		case weightedmesh: {
+		case weightedmesh:
+		case weightedlinkedmesh: {
 			WeightedMeshAttachment mesh = attachmentLoader.newWeightedMeshAttachment(skin, name, path);
 			if (mesh == null) return null;
 			mesh.setPath(path);
-			float[] uvs = map.require("uvs").asFloatArray();
-			float[] vertices = map.require("vertices").asFloatArray();
-			FloatArray weights = new FloatArray(uvs.length * 3 * 3);
-			IntArray bones = new IntArray(uvs.length * 3);
-			for (int i = 0, n = vertices.length; i < n;) {
-				int boneCount = (int)vertices[i++];
-				bones.add(boneCount);
-				for (int nn = i + boneCount * 4; i < nn;) {
-					bones.add((int)vertices[i]);
-					weights.add(vertices[i + 1] * scale);
-					weights.add(vertices[i + 2] * scale);
-					weights.add(vertices[i + 3]);
-					i += 4;
-				}
-			}
-			mesh.setBones(bones.toArray());
-			mesh.setWeights(weights.toArray());
-			mesh.setTriangles(map.require("triangles").asShortArray());
-			mesh.setRegionUVs(uvs);
-			mesh.updateUVs();
 
 			String color = map.getString("color", null);
 			if (color != null) mesh.getColor().set(Color.valueOf(color));
 
-			if (map.has("hull")) mesh.setHullLength(map.require("hull").asInt() * 2);
-			if (map.has("edges")) mesh.setEdges(map.require("edges").asIntArray());
 			mesh.setWidth(map.getFloat("width", 0) * scale);
 			mesh.setHeight(map.getFloat("height", 0) * scale);
+
+			String parent = map.getString("parent", null);
+			if (parent == null) {
+				float[] uvs = map.require("uvs").asFloatArray();
+				float[] vertices = map.require("vertices").asFloatArray();
+				FloatArray weights = new FloatArray(uvs.length * 3 * 3);
+				IntArray bones = new IntArray(uvs.length * 3);
+				for (int i = 0, n = vertices.length; i < n;) {
+					int boneCount = (int)vertices[i++];
+					bones.add(boneCount);
+					for (int nn = i + boneCount * 4; i < nn; i += 4) {
+						bones.add((int)vertices[i]);
+						weights.add(vertices[i + 1] * scale);
+						weights.add(vertices[i + 2] * scale);
+						weights.add(vertices[i + 3]);
+					}
+				}
+				mesh.setBones(bones.toArray());
+				mesh.setWeights(weights.toArray());
+				mesh.setTriangles(map.require("triangles").asShortArray());
+				mesh.setRegionUVs(uvs);
+				mesh.updateUVs();
+
+				if (map.has("hull")) mesh.setHullLength(map.require("hull").asInt() * 2);
+				if (map.has("edges")) mesh.setEdges(map.require("edges").asShortArray());
+			} else {
+				mesh.setInheritFFD(map.getBoolean("ffd", true));
+				linkedMeshes.add(new LinkedMesh(mesh, map.getString("skin", null), slotIndex, parent));
+			}
 			return mesh;
 		}
 		}
@@ -385,11 +434,13 @@ public class SkeletonJson {
 					timelines.add(timeline);
 					duration = Math.max(duration, timeline.getFrames()[timeline.getFrameCount() * 2 - 2]);
 
-				} else if (timelineName.equals("translate") || timelineName.equals("scale")) {
+				} else if (timelineName.equals("translate") || timelineName.equals("scale") || timelineName.equals("shear")) {
 					TranslateTimeline timeline;
 					float timelineScale = 1;
 					if (timelineName.equals("scale"))
 						timeline = new ScaleTimeline(timelineMap.size);
+					else if (timelineName.equals("shear"))
+						timeline = new ShearTimeline(timelineMap.size);
 					else {
 						timeline = new TranslateTimeline(timelineMap.size);
 						timelineScale = scale;
@@ -411,20 +462,36 @@ public class SkeletonJson {
 			}
 		}
 
-		// IK timelines.
-		for (JsonValue ikMap = map.getChild("ik"); ikMap != null; ikMap = ikMap.next) {
-			IkConstraintData ikConstraint = skeletonData.findIkConstraint(ikMap.name);
-			IkConstraintTimeline timeline = new IkConstraintTimeline(ikMap.size);
-			timeline.ikConstraintIndex = skeletonData.getIkConstraints().indexOf(ikConstraint, true);
+		// IK constraint timelines.
+		for (JsonValue constraintMap = map.getChild("ik"); constraintMap != null; constraintMap = constraintMap.next) {
+			IkConstraintData constraint = skeletonData.findIkConstraint(constraintMap.name);
+			IkConstraintTimeline timeline = new IkConstraintTimeline(constraintMap.size);
+			timeline.ikConstraintIndex = skeletonData.getIkConstraints().indexOf(constraint, true);
 			int frameIndex = 0;
-			for (JsonValue valueMap = ikMap.child; valueMap != null; valueMap = valueMap.next) {
-				timeline.setFrame(frameIndex, valueMap.getFloat("time"), valueMap.getFloat("mix"),
+			for (JsonValue valueMap = constraintMap.child; valueMap != null; valueMap = valueMap.next) {
+				timeline.setFrame(frameIndex, valueMap.getFloat("time"), valueMap.getFloat("mix", 1),
 					valueMap.getBoolean("bendPositive") ? 1 : -1);
 				readCurve(timeline, frameIndex, valueMap);
 				frameIndex++;
 			}
 			timelines.add(timeline);
 			duration = Math.max(duration, timeline.getFrames()[timeline.getFrameCount() * 3 - 3]);
+		}
+
+		// Transform constraint timelines.
+		for (JsonValue constraintMap = map.getChild("transform"); constraintMap != null; constraintMap = constraintMap.next) {
+			TransformConstraintData constraint = skeletonData.findTransformConstraint(constraintMap.name);
+			TransformConstraintTimeline timeline = new TransformConstraintTimeline(constraintMap.size);
+			timeline.transformConstraintIndex = skeletonData.getTransformConstraints().indexOf(constraint, true);
+			int frameIndex = 0;
+			for (JsonValue valueMap = constraintMap.child; valueMap != null; valueMap = valueMap.next) {
+				timeline.setFrame(frameIndex, valueMap.getFloat("time"), valueMap.getFloat("rotateMix", 1),
+					valueMap.getFloat("translateMix", 1), valueMap.getFloat("scaleMix", 1), valueMap.getFloat("shearMix", 1));
+				readCurve(timeline, frameIndex, valueMap);
+				frameIndex++;
+			}
+			timelines.add(timeline);
+			duration = Math.max(duration, timeline.getFrames()[timeline.getFrameCount() * 5 - 5]);
 		}
 
 		// FFD timelines.
@@ -548,6 +615,19 @@ public class SkeletonJson {
 			timeline.setStepped(frameIndex);
 		else if (curve.isArray()) {
 			timeline.setCurve(frameIndex, curve.getFloat(0), curve.getFloat(1), curve.getFloat(2), curve.getFloat(3));
+		}
+	}
+
+	static class LinkedMesh {
+		String parent, skin;
+		int slotIndex;
+		Attachment mesh;
+
+		public LinkedMesh (Attachment mesh, String skin, int slotIndex, String parent) {
+			this.mesh = mesh;
+			this.skin = skin;
+			this.slotIndex = slotIndex;
+			this.parent = parent;
 		}
 	}
 }
