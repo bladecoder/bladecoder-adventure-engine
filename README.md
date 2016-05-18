@@ -37,6 +37,11 @@ The source of **The Goddess Robbery** can be downloaded  [here](https://github.c
 
 [![The Goddess Robbery on Google Play](http://i.imgur.com/yn6RYuX.png)](https://play.google.com/store/apps/details?id=org.bladecoder.engine)
 
+
+### Download latest release
+
+Check the [release page](https://github.com/bladecoder/bladecoder-adventure-engine/releases) to download the latest version.
+
 ### Building and running
 In order to compile, build and run the engine, the Java platform is necessary. The project uses Gradle to build and package.
 
