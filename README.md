@@ -37,6 +37,9 @@ The source of **The Goddess Robbery** can be downloaded  [here](https://github.c
 
 [![The Goddess Robbery on Google Play](http://i.imgur.com/yn6RYuX.png)](https://play.google.com/store/apps/details?id=org.bladecoder.engine)
 
+### Documentation
+
+All available documentation is in the [wiki page](https://github.com/bladecoder/bladecoder-adventure-engine/wiki). The documentation is not good and needs to improve, we are working on it. Meanwhile you can download and look into the [test projects](https://github.com/bladecoder/bladecoder-adventure-tests/).
 
 ### Download latest release
 
