@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Bladecoder Adventure Engine by bladecoder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Bladecoder Adventure Engine</h1>
+      <h2 class="project-tagline">Classic point and click adventure game engine and editor</h2>
+      <a href="https://github.com/bladecoder/bladecoder-adventure-engine" class="btn">View on GitHub</a>
+      <a href="https://github.com/bladecoder/bladecoder-adventure-engine/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/bladecoder/bladecoder-adventure-engine/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="bladecoder-adventure-engine" class="anchor" href="#bladecoder-adventure-engine" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Bladecoder Adventure Engine</h1>
+
+<p>The <strong>Bladecoder Adventure Engine</strong> is a set of tools to create interactive graphic adventures (classical point and click games).</p>
+
+<p>I think that this type of games are a great medium to tell stories and mobile devices provide a big opportunity to rebirth and evolve them.</p>
+
+<p>By creating the <strong>Bladecoder Adventure Engine</strong>, I want to create a platform to tell stories. Interactive stories with modern graphics, animations and music.</p>
+
+<p>The <strong>Bladecoder Adventure Engine</strong> is composed of the following subprojects:</p>
+
+<ul>
+<li>
+<strong>adventure-editor</strong>: the graphical editor for creating point and click games.</li>
+<li>
+<strong>blade-engine</strong>: the engine to run the games created with <code>adventure-editor</code>.</li>
+</ul>
+
+<p>The <strong>Bladecoder Adventure Engine</strong> has been developed using the <a href="http://libgdx.badlogicgames.com/">LibGDX</a> framework and the project generates a layout similar to any LibGDX project. This lowers the learning curve and eases development and deploy on several platforms.</p>
+
+<h3>
+<a id="adventure-editor" class="anchor" href="#adventure-editor" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Adventure Editor</h3>
+
+<p>The <strong>Adventure Editor</strong> is a graphical editor to create full point and click games with minimal programming.</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/6229260/4420346/1d3a1b8a-4578-11e4-8eec-415f5e27c005.png" alt="adventure editor 2014-09-26"></p>
+
+<h3>
+<a id="blade-engine" class="anchor" href="#blade-engine" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Blade Engine</h3>
+
+<p>The Engine has the following features:</p>
+
+<ul>
+<li>Multi platform support: Android, IOS, Desktop (Windows, OSX, Linux) and HTML</li>
+<li>Several animation techniques: sprite/atlas animation, Spine (cutout) animation and 3d model animation</li>
+<li>3d character support</li>
+<li>Multiresolution to deal with different densities and screen sizes</li>
+<li>Multilanguage support</li>
+</ul>
+
+<h3>
+<a id="the-goddess-robbery" class="anchor" href="#the-goddess-robbery" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The Goddess Robbery</h3>
+
+<p>The <strong>Bladecoder Adventure Engine</strong> is currently under continuous development and it's almost ready for production. <strong>The Goddess Robbery</strong> is a test game created to show the features of the Engine.</p>
+
+<p>The source of <strong>The Goddess Robbery</strong> can be downloaded  <a href="https://github.com/bladecoder/bladecoder-adventure-tests/tree/master/venus">here</a> and it's useful to learn how to use the <strong>Adventure Editor</strong>.</p>
+
+<p><strong>The Goddess Robbery</strong> is also available for Android devices at the Google Play Store.</p>
+
+<p><a href="https://play.google.com/store/apps/details?id=org.bladecoder.engine"><img src="http://i.imgur.com/yn6RYuX.png" alt="The Goddess Robbery on Google Play"></a></p>
+
+<h3>
+<a id="download-latest-release" class="anchor" href="#download-latest-release" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download latest release</h3>
+
+<p>Check the <a href="https://github.com/bladecoder/bladecoder-adventure-engine/releases">release page</a> to download the latest version.</p>
+
+<h3>
+<a id="building-and-running" class="anchor" href="#building-and-running" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Building and running</h3>
+
+<p>In order to compile, build and run the engine, the Java platform is necessary. The project uses Gradle to build and package.</p>
+
+<p>Build:</p>
+
+<pre><code>$ ./gradlew build
+</code></pre>
+
+<p>Run the Adventure Editor:</p>
+
+<pre><code>$ ./gradlew run
+</code></pre>
+
+<p>Create a distribution package for the Adventure Editor:</p>
+
+<pre><code>$ ./gradlew distZip
+</code></pre>
+
+<p>A zip package ready for distribution is created in the folder 'bladecoder-adventure-engine/adventure-editor/build/distributions'</p>
+
+<h3>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h3>
+
+<p>The <strong>Bladecoder Adventure Engine</strong> is licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2 License</a>, meaning you
+can use it free of charge, without strings attached in commercial and non-commercial projects.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/bladecoder/bladecoder-adventure-engine">Bladecoder Adventure Engine</a> is maintained by <a href="https://github.com/bladecoder">bladecoder</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
