@@ -7,10 +7,12 @@ body {
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  color: #606c71; }
+  color: #c3c3c3;
+  background-color: #333333;
+}
 
 a {
-  color: #1e6bb8;
+  color: #e9a046;
   text-decoration: none; }
   a:hover {
     text-decoration: underline; }
@@ -56,8 +58,8 @@ a {
 .page-header {
   color: #fff;
   text-align: center;
-  background-color: #159957;
-  background-image: linear-gradient(120deg, #155799, #159957); }
+  background-color: #161616;
+}
 
 @media screen and (min-width: 64em) {
   .page-header {
@@ -112,7 +114,7 @@ a {
   margin-top: 2rem;
   margin-bottom: 1rem;
   font-weight: normal;
-  color: #159957; }
+  color: #e9a046; }
 .main-content p {
   margin-bottom: 1em; }
 .main-content code {
@@ -221,9 +223,11 @@ a {
     font-size: 1rem; } }
 
 .site-footer {
-  padding-top: 2rem;
-  margin-top: 2rem;
-  border-top: solid 1px #eff0f1; }
+  padding: 2rem 1rem;
+  color: #fff;
+  text-align: center;
+  background-color: #161616;
+}
 
 .site-footer-owner {
   display: block;
