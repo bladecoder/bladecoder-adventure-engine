@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.util.PolygonUtils;
@@ -41,7 +42,7 @@ public class ScnWidgetInputListener extends ClickListener {
 	private final ScnWidget scnWidget;
 
 	private static enum DraggingModes {
-		NONE, DRAGGING_ACTOR, DRAGGING_BBOX_POINT, DRAGGING_WALKZONE, DRAGGING_WALKZONE_POINT, DRAGGING_MARKER_0, DRAGGING_MARKER_100
+		NONE, DRAGGING_ACTOR, DRAGGING_BBOX_POINT, DRAGGING_WALKZONE, DRAGGING_WALKZONE_POINT, DRAGGING_MARKER_0, DRAGGING_MARKER_100, DRAGGING_ORIGIN
 	};
 
 	private DraggingModes draggingMode = DraggingModes.NONE;
@@ -162,6 +163,21 @@ public class ScnWidgetInputListener extends ClickListener {
 				}
 
 			}
+			
+			// SELACTOR ORIGIN DRAGGING
+			if (selActor != null && selActor instanceof InteractiveActor) {
+				Vector2 refPoint = ((InteractiveActor) selActor).getRefPoint();
+				
+				float orgX = selActor.getX() + refPoint.x;
+				float orgY = selActor.getY() + refPoint.y;
+				
+				float dst = Vector2.dst(p.x, p.y, orgX, orgY);
+				
+				if (dst < Scene.ANCHOR_RADIUS) {
+					draggingMode = DraggingModes.DRAGGING_ORIGIN;
+					return true;
+				}
+			}
 
 			// SELACTOR VERTEXs DRAGGING
 			if (selActor != null
@@ -237,11 +253,13 @@ public class ScnWidgetInputListener extends ClickListener {
 			d.sub(org);
 			org.add(d);
 
-			if (draggingMode == DraggingModes.DRAGGING_ACTOR) {
-				
+			if (draggingMode == DraggingModes.DRAGGING_ACTOR) {			
 				selActor.setPosition(selActor.getX()+ d.x, selActor.getY() + d.y);
 				Ctx.project.setModified(this, Project.POSITION_PROPERTY, null, selActor);
-
+			} else if (draggingMode == DraggingModes.DRAGGING_ORIGIN) {
+				Vector2 refPoint = ((InteractiveActor)selActor).getRefPoint();
+				refPoint.add(d.x, d.y);
+				Ctx.project.setModified();
 			} else if (draggingMode == DraggingModes.DRAGGING_BBOX_POINT) {
 				Polygon poly = selActor.getBBox();
 

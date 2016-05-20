@@ -176,6 +176,20 @@ public class CharacterActor extends SpriteActor {
 
 		((WalkTween) posTween).start(this, walkingPath, walkingSpeed, cb);
 	}
+	
+	/**
+	 * If the character is walking, the character position is set to the final position and the walk is finish.
+	 * 
+	 * This is used to fast walk between scenes. Used when double clicking.
+	 */
+	public void fastWalk() {
+		if(posTween != null && posTween instanceof WalkTween) {
+			WalkTween wt = (WalkTween)posTween;
+			
+			wt.completeNow(this);
+			wt = null;
+		}
+	}
 
 	public HashMap<String, Dialog> getDialogs() {
 		return dialogs;

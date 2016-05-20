@@ -361,6 +361,8 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void initCurrentScene() {
+		cutMode = false;
+		
 		// If in test mode run 'test' verb
 		if (testScene != null && testScene.equals(currentScene.getId()) && currentScene.getVerb("test") != null)
 			currentScene.runVerb("test");

@@ -17,9 +17,11 @@ package com.bladecoder.engine.model;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.AssetConsumer;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
@@ -49,6 +51,11 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	private boolean playerInside = false;
 
 	protected String layer;
+	
+	/**
+	 * Characters use this point to walk to the actor.
+	 */
+	private final Vector2 refPoint = new Vector2();
 
 	public void setLayer(String layer) {
 		this.layer = layer;
@@ -83,6 +90,14 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 	public void setDesc(String desc) {
 		this.desc = desc;
+	}
+
+	public Vector2 getRefPoint() {
+		return refPoint;
+	}
+	
+	public void setRefPoint(float x, float y) {
+		refPoint.set(x,y);
 	}
 
 	public VerbManager getVerbManager() {
@@ -257,6 +272,9 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("desc", desc);
 			json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass(), SoundFX.class);
+			
+			float worldScale = EngineAssetManager.getInstance().getScale();
+			json.writeValue("refPoint", new Vector2(getRefPoint().x / worldScale, getRefPoint().y / worldScale));
 		} else {
 			json.writeValue("playingSound", playingSound);
 			json.writeValue("playerInside", playerInside);
@@ -278,6 +296,13 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 			desc = json.readValue("desc", String.class, jsonData);
 			sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);
 			layer = json.readValue("layer", String.class, jsonData);
+			
+			Vector2 r = json.readValue("refPoint", Vector2.class, jsonData);
+			
+			if (r != null) {
+				float worldScale = EngineAssetManager.getInstance().getScale();
+				getRefPoint().set(r.x * worldScale, r.y * worldScale);
+			}
 		} else {
 			playingSound = json.readValue("playingSound", String.class, jsonData);
 			

@@ -46,6 +46,7 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Transition;
@@ -107,6 +108,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 	private boolean drawHotspots = false;
 	private final boolean showDesc;
+	private final boolean fastLeave;
 
 	private float speed = 1.0f;
 
@@ -128,7 +130,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		@Override
 		public boolean tap(float x, float y, int count, int button) {
-			EngineLogger.debug("Event TAP button: " + button);
+			EngineLogger.debug("Event TAP button: " + button + " count: " + count);
 
 			World w = World.getInstance();
 
@@ -153,7 +155,7 @@ public class DefaultSceneScreen implements SceneScreen {
 						if (!inventoryUI.isVisible())
 							inventoryUI.show();
 					} else {
-						sceneClick(button);
+						sceneClick(button, count);
 					}
 				}
 			}
@@ -291,6 +293,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		viewport = Config.getProperty(Config.EXTEND_VIEWPORT_PROP, true) ? new SceneExtendViewport()
 				: new SceneFitViewport();
 		showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
+		fastLeave = Config.getProperty(Config.FAST_LEAVE, false);
 	}
 
 	public UI getUI() {
@@ -755,21 +758,31 @@ public class DefaultSceneScreen implements SceneScreen {
 		inventoryUI.retrieveAssets(atlas);
 	}
 
-	private void sceneClick(int button) {
+	private void sceneClick(int button, int count) {
 		World w = World.getInstance();
 
 		w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
 
 		Scene s = w.getCurrentScene();
+		CharacterActor player = s.getPlayer();
 
 		if (currentActor != null) {
 
 			if (EngineLogger.debugMode()) {
 				EngineLogger.debug(currentActor.toString());
 			}
+			
+			// DOUBLE CLICK: Fastwalk when leaving scene.
+			if(count > 1 && fastLeave && !recorder.isRecording() && 
+					player != null && 
+					currentActor.getVerb(Verb.LEAVE_VERB) != null) {
+				
+				player.fastWalk();
+				return;
+			}
 
 			actorClick(currentActor, button);
-		} else if (s.getPlayer() != null) {
+		} else if (player != null) {
 			if (s.getPlayer().getVerb("goto") != null) {
 				runVerb(s.getPlayer(), "goto", null);
 			} else {
@@ -779,7 +792,7 @@ public class DefaultSceneScreen implements SceneScreen {
 					recorder.add(pos);
 				}
 
-				s.getPlayer().goTo(pos, null);
+				player.goTo(pos, null);
 			}
 		}
 	}

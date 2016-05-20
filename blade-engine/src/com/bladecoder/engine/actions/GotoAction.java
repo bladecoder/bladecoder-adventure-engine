@@ -19,10 +19,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
-import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
@@ -40,17 +39,9 @@ public class GotoAction implements Action {
 	@ActionPropertyDescription("The position to walk to")
 	private Vector2 pos;
 
-	@ActionPropertyDescription("Walks to the target actor position")
+	@ActionPropertyDescription("Walks to this actor")
 	@ActionProperty(type = Type.ACTOR)
 	private String target;
-
-	@ActionProperty(defaultValue = "CENTER")
-	@ActionPropertyDescription("When selecting a target actor, an align can be selected")
-	private Align align = Align.CENTER;
-
-	@ActionProperty
-	@ActionPropertyDescription("When selecting a target actor, the relative distance to the anchor in each axis")
-	private Vector2 distance;
 
 	@ActionProperty(required = true, defaultValue = "true")
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
@@ -59,42 +50,34 @@ public class GotoAction implements Action {
 	@Override
 	public boolean run(VerbRunner cb) {
 
-		float scale = EngineAssetManager.getInstance().getScale();
-
 		CharacterActor actor = (CharacterActor) World.getInstance().getCurrentScene().getActor(this.actor, false);
+		
+		float x = actor.getX();
+		float y = actor.getY();
 
 		if (target != null) {
 			BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
-			float x = target.getX();
-			float y = target.getY();
-			float targetBBoxWidth2 = 0;
-			final float actorBBoxWidth2 = actor.getBBox().getBoundingRectangle().width / 2;
-
-			if (!(target instanceof AnchorActor)) {
-				targetBBoxWidth2 = target.getBBox().getBoundingRectangle().width / 2;
+			
+			x = target.getX();
+			y = target.getY();
+			
+			if(target instanceof InteractiveActor) {
+				Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
+				x+= refPoint.x;
+				y+= refPoint.y;
 			}
-
-			switch (align) {
-			case LEFT:
-				x = x - targetBBoxWidth2 - actorBBoxWidth2;
-				break;
-			case RIGHT:
-				x = x + targetBBoxWidth2 + actorBBoxWidth2;
-				break;
-			case CENTER:
-				if (!(target instanceof SpriteActor))
-					x = x + targetBBoxWidth2;
-				break;
-			}
-
-			if (distance != null) {
-				x += distance.x;
-				y += distance.y;
-			}
-
-			actor.goTo(new Vector2(x, y), wait ? cb : null);
-		} else
-			actor.goTo(new Vector2(pos.x * scale, pos.y * scale), wait ? cb : null);
+		} else if(pos != null){
+			float scale = EngineAssetManager.getInstance().getScale();
+			
+			x = pos.x * scale;
+			y = pos.y * scale;
+		}
+		
+		// returns if the actor is already in the target position.
+		if(actor.getX() == x && actor.getY() == y)
+			return false;
+			
+		actor.goTo(new Vector2(x, y), wait ? cb : null);
 
 		return wait;
 	}

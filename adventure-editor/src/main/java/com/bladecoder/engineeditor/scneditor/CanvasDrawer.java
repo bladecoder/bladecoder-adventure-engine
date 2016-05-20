@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -77,8 +78,9 @@ public class CanvasDrawer {
 					continue;
 
 				drawer.setColor(Scene.ACTOR_BBOX_COLOR);
-				if(p.getTransformedVertices().length > 2)
+				if (p.getTransformedVertices().length > 2)
 					drawer.polygon(p.getTransformedVertices());
+
 			} else if (a instanceof AnchorActor) {
 				drawer.setColor(Scene.ANCHOR_COLOR);
 				drawer.line(p.getX() - Scene.ANCHOR_RADIUS, p.getY(), p.getX() + Scene.ANCHOR_RADIUS, p.getY());
@@ -119,19 +121,21 @@ public class CanvasDrawer {
 		// Gdx.gl20.glLineWidth(3);
 		Gdx.gl20.glEnable(GL20.GL_BLEND);
 		// Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		
+
 		drawer.setProjectionMatrix(camera.combined);
-//		drawer.setTransformMatrix(new Matrix4());
-		
+		// drawer.setTransformMatrix(new Matrix4());
+
 		if (selectedActor instanceof AnchorActor) {
 			drawer.begin(ShapeRenderer.ShapeType.Line);
 			drawer.setColor(MOUSESELECTION_STROKE_COLOR);
-			drawer.rect(selectedActor.getX() - Scene.ANCHOR_RADIUS, selectedActor.getY() - Scene.ANCHOR_RADIUS, 
+			drawer.rect(selectedActor.getX() - Scene.ANCHOR_RADIUS, selectedActor.getY() - Scene.ANCHOR_RADIUS,
 					Scene.ANCHOR_RADIUS * 2, Scene.ANCHOR_RADIUS * 2);
 			drawer.end();
 		} else {
 
-			Rectangle rect = selectedActor.getBBox().getBoundingRectangle();
+			Polygon p = selectedActor.getBBox();
+
+			Rectangle rect = p.getBoundingRectangle();
 
 			drawer.begin(ShapeRenderer.ShapeType.Filled);
 			drawer.setColor(MOUSESELECTION_FILL_COLOR);
@@ -149,7 +153,16 @@ public class CanvasDrawer {
 				for (int i = 0; i < verts.length; i += 2)
 					drawer.rect(verts[i] - CORNER_DIST / 2, verts[i + 1] - CORNER_DIST / 2, CORNER_DIST, CORNER_DIST);
 			}
-			
+
+			// DRAW REFPOINT
+			if (selectedActor instanceof InteractiveActor) {
+				Vector2 refPoint = ((InteractiveActor) selectedActor).getRefPoint();
+				float orgX = selectedActor.getX() + refPoint.x;
+				float orgY = selectedActor.getY() + refPoint.y;
+				drawer.line(orgX - Scene.ANCHOR_RADIUS, orgY, orgX + Scene.ANCHOR_RADIUS, orgY);
+				drawer.line(orgX, orgY - Scene.ANCHOR_RADIUS, orgX, orgY + Scene.ANCHOR_RADIUS);
+			}
+
 			drawer.end();
 		}
 

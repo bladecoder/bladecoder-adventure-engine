@@ -18,13 +18,14 @@ package com.bladecoder.engine.actions;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 
 @ActionDescription("Sets actor position.")
 public class PositionAction implements Action {
 	@ActionProperty( required = true)
-	@ActionPropertyDescription("The target actor")	
+	@ActionPropertyDescription("The actor to change his position")	
 	private SceneActorRef actor;
 
 	@ActionProperty
@@ -32,24 +33,37 @@ public class PositionAction implements Action {
 	private Vector2 position;
 	
 	@ActionProperty
-	@ActionPropertyDescription("Sets the position of this actor")	
-	private SceneActorRef anchor;
+	@ActionPropertyDescription("Sets the position from this actor")	
+	private SceneActorRef target;
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		Scene s = actor.getScene();
 
 		BaseActor a = s.getActor(actor.getActorId(), true);
+		
+		float x = a.getX();
+		float y = a.getY();
 
 		if (position != null) {
 			float scale = EngineAssetManager.getInstance().getScale();
+			x = position.x * scale; 
+			y = position.y * scale;
 
-			a.setPosition(position.x * scale, position.y * scale);
-		} else if(anchor != null) {
-			BaseActor anchorActor = s.getActor(anchor.getActorId(), true);
+		} else if(target != null) {
+			BaseActor anchorActor = s.getActor(target.getActorId(), true);
 			
-			a.setPosition(anchorActor.getX(), anchorActor.getY());
+			x = anchorActor.getX();
+			y = anchorActor.getY();
+			
+			if(anchorActor instanceof InteractiveActor) {
+				Vector2 refPoint = ((InteractiveActor) anchorActor).getRefPoint();
+				x+= refPoint.x;
+				y+= refPoint.y;
+			}
 		}
+		
+		a.setPosition(x, y);
 
 		return false;
 	}

@@ -20,6 +20,7 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -31,15 +32,15 @@ public class PositionAnimAction implements Action {
 		DURATION, SPEED
 	}
 
-	@ActionPropertyDescription("The actor to move")
-	@ActionProperty(type = Type.ACTOR)
+	@ActionPropertyDescription("The moving actor")
+	@ActionProperty(type = Type.ACTOR, required=true)
 	private String actor;
 
-	@ActionProperty(required = true)
+	@ActionProperty
 	@ActionPropertyDescription("The target position")
 	private Vector2 pos;
 
-	@ActionPropertyDescription("Sets the actor position as target")
+	@ActionPropertyDescription("Sets the position from this actor")
 	@ActionProperty(type = Type.ACTOR)
 	private String target;
 
@@ -76,15 +77,23 @@ public class PositionAnimAction implements Action {
 
 		BaseActor a = World.getInstance().getCurrentScene().getActor(actor, false);
 		
-		float x,y;
+		float x = a.getX();
+		float y = a.getY();
 		
-		if (target == null) {
+		if (pos != null) {
 			x = pos.x * scale; 
 			y = pos.y * scale;
-		} else {
+		} else if(target != null){
 			BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
+					
 			x = target.getX();
 			y = target.getY();
+			
+			if(target instanceof InteractiveActor) {
+				Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
+				x+= refPoint.x;
+				y+= refPoint.y;
+			}
 		}
 
 		if (speed == 0 || !(a instanceof SpriteActor)) {
