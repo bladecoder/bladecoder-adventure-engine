@@ -150,7 +150,11 @@ public class DefaultSceneScreen implements SceneScreen {
 				} else if (state == UIStates.INVENTORY_MODE) {
 					inventoryUI.hide();
 				} else if (state == UIStates.SCENE_MODE) {
-					if (button == 2) { // Show inventory with the middle
+					if (button == 2) { // Show
+										// inventory
+										// with
+										// the
+										// middle
 						// button
 						if (!inventoryUI.isVisible())
 							inventoryUI.show();
@@ -186,6 +190,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			return true;
 		}
 	}) {
+
 		@Override
 		public boolean keyUp(int keycode) {
 			switch (keycode) {
@@ -276,8 +281,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		public boolean scrolled(int amount) {
 			if (state == UIStates.SCENE_MODE || state == UIStates.INVENTORY_MODE) {
 
-				boolean fromDown = (inventoryUI.getInventoryPos() == InventoryPos.CENTER || inventoryUI
-						.getInventoryPos() == InventoryPos.DOWN);
+				boolean fromDown = (inventoryUI.getInventoryPos() == InventoryPos.CENTER
+						|| inventoryUI.getInventoryPos() == InventoryPos.DOWN);
 
 				if ((amount > 0 && fromDown || amount < 0 && !fromDown) && inventoryUI.isVisible())
 					inventoryUI.hide();
@@ -287,6 +292,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 			return true;
 		}
+
 	};
 
 	public DefaultSceneScreen() {
@@ -463,7 +469,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			final Scene currentScene = world.getCurrentScene();
 
 			final float tolerance;
-			
+
 			if (inventoryUI.isDragging())
 				tolerance = DPIUtils.getTouchMinSize();
 			else if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
@@ -696,8 +702,8 @@ public class DefaultSceneScreen implements SceneScreen {
 					// drawable.draw(batch, unprojectTmp.x - size / 2,
 					// unprojectTmp.y - size / 2, size, size);
 
-					drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size / 2, size / 2,
-							size, size, 1.0f, 1.0f, calcLeaveArrowRotation(ia));
+					drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size / 2, size / 2, size,
+							size, 1.0f, 1.0f, calcLeaveArrowRotation(ia));
 				} else {
 					Drawable drawable = ((TextureRegionDrawable) getUI().getSkin().getDrawable("hotspot"))
 							.tint(Color.RED);
@@ -744,8 +750,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		float margin = DPIUtils.getMarginSize();
 
 		menuButton.setSize(size, size);
-		menuButton.setPosition(stage.getViewport().getScreenWidth() - menuButton.getWidth() - margin, stage
-				.getViewport().getScreenHeight() - menuButton.getHeight() - margin);
+		menuButton.setPosition(stage.getViewport().getScreenWidth() - menuButton.getWidth() - margin,
+				stage.getViewport().getScreenHeight() - menuButton.getHeight() - margin);
 	}
 
 	public void dispose() {
@@ -771,18 +777,23 @@ public class DefaultSceneScreen implements SceneScreen {
 			if (EngineLogger.debugMode()) {
 				EngineLogger.debug(currentActor.toString());
 			}
-			
+
 			// DOUBLE CLICK: Fastwalk when leaving scene.
-			if(count > 1 && fastLeave && !recorder.isRecording() && 
-					player != null && 
-					currentActor.getVerb(Verb.LEAVE_VERB) != null) {
+			if (count > 1) {
+				if (count == 2 && fastLeave && !recorder.isRecording() &&
+						player != null && currentActor.getVerb(Verb.LEAVE_VERB) != null) {
+
+					player.fastWalk();
+				}
 				
-				player.fastWalk();
 				return;
 			}
 
 			actorClick(currentActor, button);
 		} else if (player != null) {
+			if (count > 1)
+				return;
+			
 			if (s.getPlayer().getVerb("goto") != null) {
 				runVerb(s.getPlayer(), "goto", null);
 			} else {
@@ -813,7 +824,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			if (a.getVerb(verb) == null)
 				verb = Verb.LOOKAT_VERB;
 
-			runVerb(a, verb, null);			
+			runVerb(a, verb, null);
 		} else if (uiMode == UIModes.TWO_BUTTONS) {
 			String verb = Verb.LOOKAT_VERB;
 
