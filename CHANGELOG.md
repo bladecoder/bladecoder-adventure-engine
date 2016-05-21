@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+
+## [0.9.12]
+
+- Added Refpoint to interactive actors.
+- Support for fast leave scene when double click.
+- Updated Spine Runtime library to latest Spine release.
+- Updated to libgdx v1.9.3
 
 ## [0.9.11]
 
