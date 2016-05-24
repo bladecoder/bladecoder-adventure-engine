@@ -58,7 +58,6 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 	InputPanel id;
 	InputPanel repeat;
 	InputPanel speed;
-	InputPanel delay;
 	InputPanel count;
 	InputPanel in;
 	InputPanel out;
@@ -88,9 +87,6 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		speed = InputPanelFactory.createInputPanel(skin, "Speed",
 				"Select the speed of the animation in secods",
 				Param.Type.FLOAT, true, "1.0");
-		delay = InputPanelFactory.createInputPanel(skin, "Delay",
-				"Select the delay between repeats in seconds",
-				Param.Type.FLOAT, true, "0");
 		count = InputPanelFactory.createInputPanel(skin, "Count", "Select the repeat times. -1 for infinity",
 				Param.Type.INTEGER, true, "-1");
 		in = InputPanelFactory.createInputPanel(
@@ -160,10 +156,9 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 		setInfoWidget(spriteWidget);
 		
-		init(p, e, new InputPanel [] { source, atlas, id, repeat, speed, delay,
+		init(p, e, new InputPanel [] { source, atlas, id, repeat, speed, 
 				count, in, out, sound, preload, dispose});
 		
-		setVisible(delay,false);
 		setVisible(count,false);		
 		setVisible(atlas,false);
 
@@ -187,10 +182,8 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		String type = repeat.getText();
 
 		if (type.equals(Tween.Type.REPEAT.toString()) || type.equals(Tween.Type.YOYO.toString())) {
-			setVisible(delay,true);
 			setVisible(count,true);
 		} else {
-			setVisible(delay,false);
 			setVisible(count,false);
 		}
 	}
@@ -433,9 +426,6 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		e.outD = Param.parseVector2(out.getText());
 		e.duration = Float.parseFloat(speed.getText());
 		
-		if(delay.getText() == null || delay.getText().isEmpty())
-			e.delay = Float.parseFloat(delay.getText());
-		
 		if(create) {
 			parent.getRenderer().addAnimation(e);
 		}
@@ -457,7 +447,6 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		id.setText(e.id);
 		repeat.setText(e.animationType.toString());
 		speed.setText(Float.toString(e.duration));
-		delay.setText(Float.toString(e.delay));
 		count.setText(Integer.toString(e.count));
 		in.setText(Param.toStringParam(e.inD));
 		out.setText(Param.toStringParam(e.outD));

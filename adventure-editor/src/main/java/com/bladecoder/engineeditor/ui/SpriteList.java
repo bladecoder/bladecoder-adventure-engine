@@ -226,7 +226,6 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 				sb.append("source: ").append(e.source);
 
 			sb.append(" speed: ").append(e.duration);
-			sb.append(" delay: ").append(e.delay);
 			sb.append(" count: ").append(e.count);
 
 			return sb.toString();

@@ -32,7 +32,6 @@ public class AnimationDesc {
 	public String id;
 	public String source;
 	public float duration;
-	public float delay;
 	public Vector2 inD;
 	public Vector2 outD;
 	public Tween.Type animationType;
@@ -47,11 +46,10 @@ public class AnimationDesc {
 
 	}
 
-	public void set(String id, String source, float duration, float delay, int count, Tween.Type animationType,
+	public void set(String id, String source, float duration, int count, Tween.Type animationType,
 			String sound, Vector2 inD, Vector2 outD, boolean preload, boolean disposeWhenPlayed) {
 		this.id = id;
 		this.duration = duration;
-		this.delay = delay;
 		this.animationType = animationType;
 		this.count = count;
 
