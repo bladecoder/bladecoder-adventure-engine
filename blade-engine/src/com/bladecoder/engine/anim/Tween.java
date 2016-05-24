@@ -57,7 +57,7 @@ public class Tween implements Serializable {
 			} else if (count != 1) {
 				complete = false;
 				count--;
-				time = 0;
+				time = 0.00001f;
 
 				if (type == Type.YOYO)
 					reverse = !reverse;
