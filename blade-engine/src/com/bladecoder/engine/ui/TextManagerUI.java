@@ -102,7 +102,7 @@ public class TextManagerUI extends Actor {
 					fontX = (getStage().getViewport().getScreenWidth() - maxWidth)/2;
 				} else {
 					posx = unprojectTmp.x;
-					fontX = unprojectTmp.x;
+					fontX = posx + (layout.width - maxWidth) / 2;
 				}
 
 				if (posy == TextManager.POS_CENTER) {
@@ -115,6 +115,7 @@ public class TextManagerUI extends Actor {
 
 				setPosition(posx - PADDING, posy - PADDING);
 				setSize(layout.width + PADDING * 2, layout.height + PADDING * 2);
+
 
 				if (currentSubtitle.type == Text.Type.TALK) {
 					if (style.talkBubble != null) {
