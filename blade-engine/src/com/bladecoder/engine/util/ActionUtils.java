@@ -284,6 +284,7 @@ public class ActionUtils {
 						ActorAnimationRef aa = (ActorAnimationRef)o;
 						json.writeValue(field.getName(), aa.toString());
 					} else if(o instanceof Color) {
+						json.writeValue(field.getName(), ((Color)o).toString());
 					} else if(o instanceof Vector2) {
 						json.writeValue(field.getName(), Param.toStringParam((Vector2) o));
 					} else {

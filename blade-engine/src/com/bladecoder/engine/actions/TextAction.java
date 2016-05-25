@@ -63,8 +63,11 @@ public class TextAction implements Action {
 			if (pos != null) {
 				float scale = EngineAssetManager.getInstance().getScale();
 				
-				x = pos.x * scale;
-				y = pos.y * scale;
+				if(pos.x != TextManager.POS_CENTER)
+					x = pos.x * scale;
+				
+				if(pos.y != TextManager.POS_CENTER)
+					y = pos.y * scale;
 			} else {
 
 				if (type == Text.Type.SUBTITLE) {
