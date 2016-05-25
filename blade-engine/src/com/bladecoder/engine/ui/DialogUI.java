@@ -40,7 +40,10 @@ public class DialogUI extends ScrollPane {
 	private Table panel;
 
 	public DialogUI(UI ui) {
-		super(new Table(ui.getSkin()));
+		super(new Table(ui.getSkin()), ui.getSkin());
+		
+		setFadeScrollBars(false);
+		
 		panel = (Table) getWidget();
 		style = ui.getSkin().get(DialogUIStyle.class);
 		this.recorder = ui.getRecorder();
