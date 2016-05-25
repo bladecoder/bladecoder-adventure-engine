@@ -302,7 +302,7 @@ public class BladeEngineSetup {
 		
 		project.files.add(new ProjectFile("android/assets/ui/credits.txt", assetPath + "/ui/credits.txt", false));
 		project.files.add(new ProjectFile("android/assets/ui/fonts/PaytoneOne.ttf", assetPath + "/ui/fonts/PaytoneOne.ttf", false));
-		project.files.add(new ProjectFile("android/assets/ui/fonts/ArchitectsDaughter_fix.ttf", assetPath + "/ui/fonts/ArchitectsDaughter_fix.ttf", false));
+		project.files.add(new ProjectFile("android/assets/ui/fonts/ArchitectsDaughter.ttf", assetPath + "/ui/fonts/ArchitectsDaughter.ttf", false));
 		project.files.add(new ProjectFile("android/assets/ui/fonts/Roboto-Black.ttf", assetPath + "/ui/fonts/Roboto-Black.ttf", false));
 		project.files.add(new ProjectFile("android/assets/ui/fonts/Roboto-Regular.ttf", assetPath + "/ui/fonts/Roboto-Regular.ttf", false));
 		project.files.add(new ProjectFile("android/assets/ui/fonts/Roboto-Thin.ttf", assetPath + "/ui/fonts/Roboto-Thin.ttf", false));
