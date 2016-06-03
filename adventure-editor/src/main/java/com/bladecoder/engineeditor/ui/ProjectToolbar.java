@@ -205,7 +205,7 @@ public class ProjectToolbar extends Table {
 				}
 
 				Message.showMsg(getStage(), "Loading project...", true);
-
+		
 				Timer.post(new Task() {
 					@Override
 					public void run() {

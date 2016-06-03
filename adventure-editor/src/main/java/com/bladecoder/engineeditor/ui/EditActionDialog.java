@@ -113,7 +113,7 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 		if (id.equals(CUSTOM_ACTION_STR)) {
 			addInputPanel(classPanel);
-			if (classPanel != null || !classPanel.getText().trim().isEmpty())
+			if (classPanel != null && !classPanel.getText().trim().isEmpty())
 				tmp = ActionFactory.createByClass(classPanel.getText(), null);
 			setInfo(CUSTOM_INFO);
 		} else {

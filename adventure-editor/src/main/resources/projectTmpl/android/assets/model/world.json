@@ -46,6 +46,20 @@ verbs: {
 			}
 		]
 	},
+	initNewGame: {
+		id: "initNewGame",
+		target: null,
+		state: null,
+		icon: null,
+		actions: []
+	},
+	initSavedGame: {
+		id: "initSavedGame",
+		target: null,
+		state: null,
+		icon: null,
+		actions: []
+	},
 	pickup: {
 		id: "pickup",
 		target: null,

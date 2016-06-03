@@ -25,7 +25,7 @@ import com.bladecoder.engine.util.ActionUtils;
 public class IfSceneAttrAction extends AbstractIfAction {
 
 	public enum SceneAttr {
-		STATE, CURRENT_SCENE, PREVIOUS_SCENE
+		STATE, CURRENT_SCENE
 	}
 
 	@ActionPropertyDescription("The scene to check its attribute")
@@ -54,13 +54,7 @@ public class IfSceneAttrAction extends AbstractIfAction {
 			
 			if (!ActionUtils.compareNullStr(value, scn)) {
 				gotoElse((VerbRunner) cb);
-			}
-		} else if (attr == SceneAttr.PREVIOUS_SCENE) {
-			String prev = World.getInstance().getPreviousScene();
-			
-			if (!ActionUtils.compareNullStr(value, prev)) {
-				gotoElse((VerbRunner) cb);
-			}			
+			}		
 		}
 
 		return false;
