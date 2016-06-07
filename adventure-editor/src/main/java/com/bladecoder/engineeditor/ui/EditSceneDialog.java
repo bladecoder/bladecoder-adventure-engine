@@ -22,6 +22,7 @@ import java.util.Arrays;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -83,9 +84,13 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 				"The atlas where the background for the scene is located", atlasList, false);
 		backgroundRegion = InputPanelFactory.createInputPanel(skin, "Background Region Id",
 				"The region id for the background.", new String[0], false);
-		depthVector = InputPanelFactory.createInputPanel(skin, "Depth Vector",
-				"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.",
-				Param.Type.VECTOR2, false);
+//		depthVector = InputPanelFactory.createInputPanel(skin, "Depth Vector",
+//				"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.",
+//				Param.Type.VECTOR2, false);
+		
+		depthVector = InputPanelFactory.createInputPanel(skin, "Fake depth", "Activate actor scaling based in the 'y' axis position.", Param.Type.BOOLEAN, true,
+				"false");
+		
 		state = InputPanelFactory.createInputPanel(skin, "State", "The initial state for the scene.", false);
 		music = InputPanelFactory.createInputPanel(skin, "Music Filename", "The music for the scene", musicList, false);
 		loopMusic = InputPanelFactory.createInputPanel(skin, "Loop Music", "If the music is playing in looping",
@@ -213,7 +218,15 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
 		e.setBackgroundAtlas(backgroundAtlas.getText());
 		e.setBackgroundRegionId(backgroundRegion.getText());
-		e.setDepthVector(Param.parseVector2(depthVector.getText()));
+		
+		boolean dv = Boolean.parseBoolean(depthVector.getText());
+		
+		if(dv == true && e.getDepthVector() == null) { // create depth vector
+			e.setDepthVector(new Vector2(World.getInstance().getHeight(), 0));
+		} else if(dv == false && e.getDepthVector() != null) { // Remove depth vector
+			e.setDepthVector(null);
+		}
+		
 		e.setState(state.getText());
 
 		MusicDesc md = null;
@@ -253,8 +266,12 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		id.setText(e.getId());
 		backgroundAtlas.setText(e.getBackgroundAtlas());
 		backgroundRegion.setText(e.getBackgroundRegionId());
+		
 		if (e.getDepthVector() != null)
-			depthVector.setText(Param.toStringParam(e.getDepthVector()));
+			depthVector.setText("true");
+		else
+			depthVector.setText("false");
+		
 		state.setText(e.getState());
 
 		MusicDesc md = e.getMusicDesc();
