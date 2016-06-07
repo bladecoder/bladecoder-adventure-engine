@@ -35,14 +35,14 @@ public class PositionAnimAction implements Action {
 	@ActionPropertyDescription("The moving actor")
 	@ActionProperty(type = Type.ACTOR, required=true)
 	private String actor;
-
-	@ActionProperty
-	@ActionPropertyDescription("The target position")
-	private Vector2 pos;
-
+	
 	@ActionPropertyDescription("Sets the position from this actor")
 	@ActionProperty(type = Type.ACTOR)
 	private String target;
+
+	@ActionProperty
+	@ActionPropertyDescription("The absolute world position if no target is selected")
+	private Vector2 pos;
 
 	@ActionProperty(required = true, defaultValue = "1.0")
 	@ActionPropertyDescription("Duration or speed in pixels/sec. mode")
@@ -80,10 +80,7 @@ public class PositionAnimAction implements Action {
 		float x = a.getX();
 		float y = a.getY();
 		
-		if (pos != null) {
-			x = pos.x * scale; 
-			y = pos.y * scale;
-		} else if(target != null){
+		if(target != null){
 			BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
 					
 			x = target.getX();
@@ -94,6 +91,9 @@ public class PositionAnimAction implements Action {
 				x+= refPoint.x;
 				y+= refPoint.y;
 			}
+		} else if (pos != null) {
+			x = pos.x * scale; 
+			y = pos.y * scale;
 		}
 
 		if (speed == 0 || !(a instanceof SpriteActor)) {

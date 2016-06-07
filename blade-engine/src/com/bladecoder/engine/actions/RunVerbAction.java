@@ -31,7 +31,7 @@ import com.bladecoder.engine.util.EngineLogger;
 @ActionDescription("Runs an actor verb")
 public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	@ActionPropertyDescription("The actor with the verb. If empty, the verb is searched in the scene and in the world.")
-	@ActionProperty(type = Type.ACTOR)
+	@ActionProperty(type = Type.INTERACTIVE_ACTOR)
 	private String actor;
 
 	@ActionProperty(required = true)

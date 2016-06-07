@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -24,9 +25,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 
@@ -34,8 +39,14 @@ public class SceneActorInputPanel extends InputPanel {
 	SelectBox<String> scene;
 	EditableSelectBox<String> actor;
 	Table panel;
+	
+	private final Param.Type type; 
+	
 
-	SceneActorInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
+	SceneActorInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, Param.Type type) {
+		
+		this.type = type;
+		
 		panel = new Table(skin);
 		scene = new SelectBox<>(skin);
 		actor = new EditableSelectBox<>(skin);
@@ -89,27 +100,7 @@ public class SceneActorInputPanel extends InputPanel {
 		
 		Scene scn = World.getInstance().getScene(s);
 		
-		HashMap<String, BaseActor> actors = scn.getActors();
-		BaseActor[] v = actors.values().toArray(new BaseActor[actors.size()]);
-		
-		
-		int l = actors.size();
-		if(!isMandatory()) l++;
-		String values[] = new String[l];
-		
-		if(!isMandatory()) {
-			values[0] = "";
-		}
-		
-		for(int i = 0; i < actors.size(); i++) {
-			if(isMandatory())
-				values[i] = v[i].getId();
-			else
-				values[i+1] = v[i].getId();
-		}
-		
-		Arrays.sort(values);
-		actor.setItems(values);	
+		actor.setItems(getActorValues(scn));	
 	}
 	
 	public String getText() {
@@ -122,5 +113,38 @@ public class SceneActorInputPanel extends InputPanel {
 		scene.setSelected(aa.getSceneId() == null?"":aa.getSceneId());
 		sceneSelected();
 		actor.setSelected(aa.getActorId());
+	}
+	
+	private String[] getActorValues(Scene scn) {
+		HashMap<String, BaseActor> actors = scn.getActors();
+		
+		ArrayList<BaseActor> filteredActors = new ArrayList<BaseActor>();
+		
+		for(BaseActor a: actors.values()) {
+			if(type == Param.Type.SCENE_CHARACTER_ACTOR) {
+				if(a instanceof CharacterActor)
+					filteredActors.add(a);
+			} else if(type == Param.Type.SCENE_INTERACTIVE_ACTOR) {
+				if(a instanceof InteractiveActor)
+					filteredActors.add(a);
+			} else if(type == Param.Type.SCENE_SPRITE_ACTOR) {
+				if(a instanceof SpriteActor)
+					filteredActors.add(a);				
+			} else {
+				filteredActors.add(a);
+			}
+		}
+		
+		String[] result = new String[isMandatory()?filteredActors.size():filteredActors.size() + 1];
+		
+		if(!isMandatory())
+			result[0] = "";
+		
+		for(int i = isMandatory()?0:1; i < filteredActors.size(); i++) {
+			result[i] = filteredActors.get(i).getId();
+		}
+		
+		Arrays.sort(result);
+		return result;
 	}
 }

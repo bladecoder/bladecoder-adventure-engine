@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
@@ -24,23 +25,20 @@ import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Change the selected dialog option properties")
 public class SetDialogOptionAttrAction implements Action {
-	@ActionProperty(required = true)
+	@ActionProperty(type = Type.SCENE_CHARACTER_ACTOR, required = true)
 	@ActionPropertyDescription("The target actor")
 	private SceneActorRef actor;
 
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The dialog")
-
 	private String dialog;
 
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The option")
-
 	private int option;
 
 	@ActionProperty
 	@ActionPropertyDescription("Show/Hide the dialog option")
-
 	private Boolean visible;
 
 	@Override

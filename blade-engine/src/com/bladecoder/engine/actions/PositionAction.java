@@ -24,45 +24,45 @@ import com.bladecoder.engine.model.VerbRunner;
 
 @ActionDescription("Sets actor position.")
 public class PositionAction implements Action {
-	@ActionProperty( required = true)
-	@ActionPropertyDescription("The actor to change his position")	
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The actor to change his position")
 	private SceneActorRef actor;
 
 	@ActionProperty
-	@ActionPropertyDescription("The position to set")
-	private Vector2 position;
-	
-	@ActionProperty
-	@ActionPropertyDescription("Sets the position from this actor")	
+	@ActionPropertyDescription("Obtain the target position from this actor.")
 	private SceneActorRef target;
+
+	@ActionProperty
+	@ActionPropertyDescription("The absolute position to set if no target is selected.")
+	private Vector2 position;
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		Scene s = actor.getScene();
 
 		BaseActor a = s.getActor(actor.getActorId(), true);
-		
+
 		float x = a.getX();
 		float y = a.getY();
 
-		if (position != null) {
-			float scale = EngineAssetManager.getInstance().getScale();
-			x = position.x * scale; 
-			y = position.y * scale;
-
-		} else if(target != null) {
+		if (target != null) {
 			BaseActor anchorActor = s.getActor(target.getActorId(), true);
-			
+
 			x = anchorActor.getX();
 			y = anchorActor.getY();
-			
-			if(anchorActor instanceof InteractiveActor) {
+
+			if (anchorActor instanceof InteractiveActor) {
 				Vector2 refPoint = ((InteractiveActor) anchorActor).getRefPoint();
-				x+= refPoint.x;
-				y+= refPoint.y;
+				x += refPoint.x;
+				y += refPoint.y;
 			}
+		} else if (position != null) {
+			float scale = EngineAssetManager.getInstance().getScale();
+			x = position.x * scale;
+			y = position.y * scale;
+
 		}
-		
+
 		a.setPosition(x, y);
 
 		return false;

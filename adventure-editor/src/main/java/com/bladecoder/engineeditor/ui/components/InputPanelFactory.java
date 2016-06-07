@@ -93,7 +93,10 @@ public class InputPanelFactory extends Table {
 		case EDITABLE_OPTION:
 			return new EditableOptionsInputPanel<>(skin, title, desc, mandatory, defaultValue, options);
 		case SCENE_ACTOR:
-			return new SceneActorInputPanel(skin, title, desc, mandatory, defaultValue);
+		case SCENE_CHARACTER_ACTOR:
+		case SCENE_INTERACTIVE_ACTOR:
+		case SCENE_SPRITE_ACTOR:
+			return new SceneActorInputPanel(skin, title, desc, mandatory, defaultValue, type);
 		case ACTOR_ANIMATION:
 			return new ActorAnimationInputPanel(skin, title, desc, mandatory, defaultValue);
 		case VECTOR3:

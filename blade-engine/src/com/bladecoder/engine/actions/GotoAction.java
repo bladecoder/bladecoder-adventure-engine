@@ -35,13 +35,13 @@ public class GotoAction implements Action {
 	@ActionProperty(type = Type.CHARACTER_ACTOR, required=true)
 	private String actor;
 
-	@ActionProperty
-	@ActionPropertyDescription("The position to walk to")
-	private Vector2 pos;
-
 	@ActionPropertyDescription("Walks to this actor")
 	@ActionProperty(type = Type.ACTOR)
 	private String target;
+	
+	@ActionProperty
+	@ActionPropertyDescription("The absolute position to walk to if no target actor is selected")
+	private Vector2 pos;
 
 	@ActionProperty(required = true, defaultValue = "true")
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
