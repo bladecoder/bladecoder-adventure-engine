@@ -254,7 +254,7 @@ public class Project extends PropertyChange {
 		projects.add(ProjectType.DESKTOP);
 		projects.add(ProjectType.ANDROID);
 		projects.add(ProjectType.IOS);
-		projects.add(ProjectType.HTML);
+//		projects.add(ProjectType.HTML);
 
 		List<Dependency> dependencies = new ArrayList<Dependency>();
 		dependencies.add(bank.getDependency(ProjectDependency.GDX));

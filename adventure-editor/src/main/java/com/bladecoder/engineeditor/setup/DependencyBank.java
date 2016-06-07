@@ -14,7 +14,7 @@ public class DependencyBank {
 	//Project plugins
 	static String gwtPluginImport = "de.richsource.gradle.plugins:gwt-gradle-plugin:";
 	static String androidPluginImport = "com.android.tools.build:gradle:";
-	static String roboVMPluginImport = "org.robovm:robovm-gradle-plugin:";
+	static String roboVMPluginImport = "com.mobidevelop.robovm:robovm-gradle-plugin:";
 
 	HashMap<ProjectDependency, Dependency> gdxDependencies = new HashMap<ProjectDependency, Dependency>();
 	LinkedHashMap<ProjectDependency, String[]> gwtInheritances = new LinkedHashMap<ProjectDependency, String[]>();
@@ -52,7 +52,7 @@ public class DependencyBank {
 			new String[]{"com.badlogicgames.gdx:gdx:$gdxVersion", "fileTree(dir: '../libs', include: '*.jar')", "com.bladecoder.engine:blade-engine:$bladeEngineVersion"},
 			new String[]{"com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"},
 			new String[]{"com.badlogicgames.gdx:gdx-backend-android:$gdxVersion", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"},			
-			new String[]{"org.robovm:robovm-rt:$roboVMVersion", "org.robovm:robovm-cocoatouch:$roboVMVersion", "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"},
+			new String[]{"com.mobidevelop.robovm:robovm-rt:$roboVMVersion", "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion", "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"},
 			new String[]{"com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion", "com.badlogicgames.gdx:gdx:$gdxVersion:sources", "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources", "com.bladecoder.engine:blade-engine:$bladeEngineVersion:sources"},
 			new String[]{"com.badlogic.gdx.backends.gdx_backends_gwt"},
 			

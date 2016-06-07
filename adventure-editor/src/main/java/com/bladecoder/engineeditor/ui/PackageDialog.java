@@ -49,7 +49,8 @@ public class PackageDialog extends EditDialog {
 	private static final String DESKTOP_LAUNCHER = "DesktopLauncher.java";
 
 	private static final String INFO = "Package the Adventure for distribution";
-	private static final String[] ARCHS = { "desktop", "android", "ios", "html" };
+//	private static final String[] ARCHS = { "desktop", "android", "ios", "html" };
+	private static final String[] ARCHS = { "desktop", "android", "ios" };
 	private static final String[] TYPES = { "Bundle JRE", "Runnable jar" };
 	private static final String[] OSS = { "all", "windows", "linux64", "linux32", "macOSX" };
 

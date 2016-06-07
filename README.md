@@ -21,7 +21,7 @@ The **Adventure Editor** is a graphical editor to create full point and click ga
 
 ### Blade Engine
 The Engine has the following features:
-* Multi platform support: Android, IOS, Desktop (Windows, OSX, Linux) and HTML
+* Multi platform support: Android, IOS and Desktop (Windows, OSX and Linux)
 * Several animation techniques: sprite/atlas animation, Spine (cutout) animation and 3d model animation
 * 3d character support
 * Multiresolution to deal with different densities and screen sizes
