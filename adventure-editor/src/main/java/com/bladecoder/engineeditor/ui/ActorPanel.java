@@ -42,7 +42,7 @@ public class ActorPanel extends HeaderPanel {
 	private DialogList dialogList;
 	private SpriteList faList;
 	private SoundList soundList;
-	private ActorProps props;
+//	private ActorProps props;
 
 	public ActorPanel(Skin skin) {
 		super(skin, "ACTOR");
@@ -50,7 +50,7 @@ public class ActorPanel extends HeaderPanel {
 		verbList = new VerbList(skin);
 		dialogList = new DialogList(skin);
 		faList = new SpriteList(skin);
-		props = new ActorProps(skin);
+//		props = new ActorProps(skin);
 		soundList = new SoundList(skin);
 		
 		setContent(tabPanel);
@@ -80,7 +80,7 @@ public class ActorPanel extends HeaderPanel {
 							}
 							
 							
-							tabPanel.addTab("Actor Props", props);
+//							tabPanel.addTab("Actor Props", props);
 							setTile("ACTOR " + a.getId());
 
 							// select previous selected tab
@@ -128,7 +128,7 @@ public class ActorPanel extends HeaderPanel {
 							dialogList.addElements(null, null);
 						}
 						
-						props.setActorDocument(a);
+//						props.setActorDocument(a);
 						
 					}
 

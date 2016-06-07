@@ -84,6 +84,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel renderer;
 	private InputPanel depthType;
 	private InputPanel scale;
+	private InputPanel bboxFromRenderer;
 	private InputPanel zIndex;
 	private InputPanel walkingSpeed;
 	private InputPanel spriteSize;
@@ -112,7 +113,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		desc = InputPanelFactory.createInputPanel(skin, "Description",
 				"The text showed when the cursor is over the actor.");
 		state = InputPanelFactory.createInputPanel(skin, "State",
-				"Initial state of the actor. Actors can be in differentes states during the game.");
+				"Initial state of the actor. Actors can be in several states along the game.");
 
 		renderer = InputPanelFactory.createInputPanel(skin, "Actor Renderer",
 				"Actors can be renderer from several sources", ACTOR_RENDERERS, true);
@@ -121,6 +122,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				DepthType.class.getEnumConstants(), true);
 
 		scale = InputPanelFactory.createInputPanel(skin, "Scale", "The sprite scale", Param.Type.FLOAT, true, "1");
+		
+		bboxFromRenderer = InputPanelFactory.createInputPanel(skin, "BBox From Renderer",
+				"Sets the actor bounding box automatically from the sprite dimensions.", Param.Type.BOOLEAN, true, "true");
 
 		zIndex = InputPanelFactory.createInputPanel(skin, "zIndex", "The order to draw.", Param.Type.FLOAT, false, "0");
 
@@ -156,7 +160,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		});
 
 		init(parent, e, new InputPanel[] { typePanel, id, renderer, layer, visible, interaction, desc, state, depthType,
-				scale, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
+				scale, bboxFromRenderer, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
 
 		typeChanged();
 
@@ -195,6 +199,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			setVisible(renderer, true);
 			setVisible(depthType, true);
 			setVisible(scale, true);
+			setVisible(bboxFromRenderer, true);
 		}
 
 		if (ACTOR_TYPES[i].equals(CHARACTER_TYPE_STR)) {
@@ -368,6 +373,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				sa.setBboxFromRenderer(true);
 				sa.setDepthType(DepthType.valueOf(depthType.getText()));
 				sa.setScale(Float.parseFloat(scale.getText()));
+				
+				sa.setBboxFromRenderer(Boolean.parseBoolean(bboxFromRenderer.getText()));
 
 				if (e instanceof CharacterActor) {
 					CharacterActor ca = (CharacterActor) e;
@@ -434,6 +441,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 				depthType.setText(sa.getDepthType().toString());
 				scale.setText(Float.toString(sa.getScale()));
+				bboxFromRenderer.setText(Boolean.toString(sa.isBboxFromRenderer()));
 
 				if (e instanceof CharacterActor) {
 					CharacterActor ca = (CharacterActor) e;
