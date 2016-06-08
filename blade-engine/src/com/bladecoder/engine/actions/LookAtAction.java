@@ -70,7 +70,7 @@ public class LookAtAction implements Action {
 		if (World.getInstance().getInventory().getItem(actor) == null) {
 			CharacterActor player = World.getInstance().getCurrentScene().getPlayer();
 
-			if (direction != null)
+			if (direction != null && player != null)
 				player.lookat(direction.getDirection());
 			else if (a != null && player != null) {
 				Rectangle bbox = a.getBBox().getBoundingRectangle();

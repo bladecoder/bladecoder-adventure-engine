@@ -46,7 +46,8 @@ public class PositionAction implements Action {
 		float y = a.getY();
 
 		if (target != null) {
-			BaseActor anchorActor = s.getActor(target.getActorId(), true);
+			Scene ts = target.getScene();
+			BaseActor anchorActor = ts.getActor(target.getActorId(), true);
 
 			x = anchorActor.getX();
 			y = anchorActor.getY();

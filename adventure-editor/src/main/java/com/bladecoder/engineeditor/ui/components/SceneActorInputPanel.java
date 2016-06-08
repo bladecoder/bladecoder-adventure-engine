@@ -135,16 +135,20 @@ public class SceneActorInputPanel extends InputPanel {
 			}
 		}
 		
-		String[] result = new String[isMandatory()?filteredActors.size():filteredActors.size() + 1];
+		String[] result = new String[isMandatory()?filteredActors.size() + 1:filteredActors.size() + 2];
+		
+		// Add player variable to the list
+		result[0] = Scene.VAR_PLAYER;
 		
 		if(!isMandatory())
-			result[0] = "";
+			result[filteredActors.size() + 1] = "";
 		
-		for(int i = isMandatory()?0:1; i < filteredActors.size(); i++) {
-			result[i] = filteredActors.get(i).getId();
+		for(int i = 0; i < filteredActors.size(); i++) {
+			result[i+1] = filteredActors.get(i).getId();
 		}
 		
 		Arrays.sort(result);
+		
 		return result;
 	}
 }

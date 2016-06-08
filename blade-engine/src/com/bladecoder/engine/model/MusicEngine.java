@@ -140,7 +140,9 @@ public class MusicEngine implements Serializable, AssetConsumer {
 			EngineLogger.debug("RETRIEVING MUSIC: " + desc.getFilename());
 			
 			music = EngineAssetManager.getInstance().getMusic(desc.getFilename());
-			music.setVolume(desc.getVolume());
+			
+			if(music != null)
+				music.setVolume(desc.getVolume());
 
 			if (isPlayingSer) {
 				if (music != null) {

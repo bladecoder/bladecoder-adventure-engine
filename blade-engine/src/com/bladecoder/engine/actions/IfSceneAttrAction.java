@@ -16,6 +16,7 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -25,7 +26,7 @@ import com.bladecoder.engine.util.ActionUtils;
 public class IfSceneAttrAction extends AbstractIfAction {
 
 	public enum SceneAttr {
-		STATE, CURRENT_SCENE
+		STATE, CURRENT_SCENE, PLAYER
 	}
 
 	@ActionPropertyDescription("The scene to check its attribute")
@@ -54,7 +55,15 @@ public class IfSceneAttrAction extends AbstractIfAction {
 			
 			if (!ActionUtils.compareNullStr(value, scn)) {
 				gotoElse((VerbRunner) cb);
-			}		
+			}
+		} else if (attr == SceneAttr.PLAYER) {
+			CharacterActor player = s.getPlayer();
+			
+			String id = player!=null?player.getId():null;
+			
+			if (!ActionUtils.compareNullStr(value, id)) {
+				gotoElse((VerbRunner) cb);
+			}			
 		}
 
 		return false;

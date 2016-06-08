@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.ActorAnimationRef;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
 
@@ -57,6 +58,8 @@ public class ActorAnimationInputPanel extends InputPanel {
 				values.add(a.getId());
 			}
 		}
+		
+		values.add(Scene.VAR_PLAYER);
 
 		actor.addListener(new ChangeListener() {
 			@Override

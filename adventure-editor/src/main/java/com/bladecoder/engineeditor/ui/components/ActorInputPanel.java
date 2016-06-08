@@ -24,6 +24,7 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
 
@@ -58,11 +59,14 @@ public class ActorInputPanel extends EditableOptionsInputPanel<String> {
 				filteredActors.add(a);
 			}
 		}
+			
+		String[] result = new String[filteredActors.size() + 1];
 		
-		String[] result = new String[filteredActors.size()];
+		// Add player variable to the list
+		result[0] = Scene.VAR_PLAYER;
 		
 		for(int i = 0; i < filteredActors.size(); i++) {
-			result[i] = filteredActors.get(i).getId();
+			result[i+1] = filteredActors.get(i).getId();
 		}
 		
 		Arrays.sort(result);

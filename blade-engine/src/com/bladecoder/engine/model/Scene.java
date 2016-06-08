@@ -47,6 +47,8 @@ public class Scene implements Serializable, AssetConsumer {
 	public static final Color OBSTACLE_COLOR = Color.RED;
 	public static final Color ANCHOR_COLOR = Color.RED;
 	public static final float ANCHOR_RADIUS = 14f;
+	
+	public static final String VAR_PLAYER = "$PLAYER";
 
 	/**
 	 * All actors in the scene
@@ -248,6 +250,11 @@ public class Scene implements Serializable, AssetConsumer {
 	}
 
 	public BaseActor getActor(String id, boolean searchInventory) {
+		
+		if(VAR_PLAYER.equals(id))
+			return actors.get(player);
+		
+		
 		BaseActor a = actors.get(id);
 
 		if (a == null && searchInventory) {
