@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.badlogic.gdx.graphics.Color;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
@@ -55,6 +56,10 @@ public class SetActorAttrAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor scale")
 	private Float scale;
+	
+	@ActionPropertyDescription("The tint to draw the actor (RRGGBBAA).")
+	@ActionProperty(type = Type.COLOR)
+	private Color tint;
 
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor 'stand' animation. Only supported for character actors.")
@@ -84,7 +89,7 @@ public class SetActorAttrAction implements Action {
 			if (a instanceof InteractiveActor)
 				((InteractiveActor) a).setInteraction(interaction);
 			else
-				EngineLogger.error("Interaction property not supported for actor:" + a.getId());
+				EngineLogger.error("'Interaction' property not supported for actor:" + a.getId());
 		}
 
 		if (layer != null) {
@@ -103,7 +108,7 @@ public class SetActorAttrAction implements Action {
 				if (!l.isDynamic())
 					l.orderByZIndex();
 			} else
-				EngineLogger.error("layer property not supported for actor:" + a.getId());
+				EngineLogger.error("'layer' property not supported for actor:" + a.getId());
 		}
 
 		if (zIndex != null) {
@@ -116,14 +121,21 @@ public class SetActorAttrAction implements Action {
 				if (!l.isDynamic())
 					l.orderByZIndex();
 			} else
-				EngineLogger.error("zIndex property not supported for actor:" + a.getId());
+				EngineLogger.error("'zIndex' property not supported for actor:" + a.getId());
 		}
 
 		if (scale != null) {
 			if (a instanceof SpriteActor)
 				((SpriteActor) a).setScale(scale);
 			else
-				EngineLogger.error("scale property not supported for actor:" + a.getId());
+				EngineLogger.error("'scale' property not supported for actor:" + a.getId());
+		}
+		
+		if (tint != null) {
+			if (a instanceof SpriteActor)
+				((SpriteActor) a).setTint(tint);
+			else
+				EngineLogger.error("'tint' property not supported for actor:" + a.getId());
 		}
 
 		if (fakeDepth != null) {

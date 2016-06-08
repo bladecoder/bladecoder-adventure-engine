@@ -254,13 +254,17 @@ public class SpineRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale) {
+	public void draw(SpriteBatch batch, float x, float y, float scale, Color tint) {
 
 		if (currentSource != null && currentSource.skeleton != null) {
 			currentSource.skeleton.setX(x / scale);
 			currentSource.skeleton.setY(y / scale);
 
 			batch.setTransformMatrix(batch.getTransformMatrix().scale(scale, scale, 1.0f));
+			
+			if(tint != null)
+				currentSource.skeleton.setColor(tint);
+			
 			renderer.draw(batch, currentSource.skeleton);
 			batch.setTransformMatrix(batch.getTransformMatrix().scale(1 / scale, 1 / scale, 1.0f));
 		} else {

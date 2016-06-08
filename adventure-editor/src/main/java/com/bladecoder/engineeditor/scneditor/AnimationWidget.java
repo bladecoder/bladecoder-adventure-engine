@@ -132,7 +132,7 @@ public class AnimationWidget extends Widget {
 		float scalew = getWidth() / renderer.getWidth();
 		float scaleh = getHeight() / renderer.getHeight();
 		float scale = scalew > scaleh ? scaleh : scalew;
-		renderer.draw((SpriteBatch) batch, getX() + renderer.getWidth() * scale / 2, getY(), scale);
+		renderer.draw((SpriteBatch) batch, getX() + renderer.getWidth() * scale / 2, getY(), scale, null);
 		batch.setColor(tmp);
 	}
 

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
@@ -42,6 +43,8 @@ public class SpriteActor extends InteractiveActor {
 	protected SpritePosTween posTween;
 	private SpriteScaleTween scaleTween;
 	private float scale = 1.0f;
+	
+	private Color tint;
 
 	/** Scale sprite acording to the scene depth map */
 	private DepthType depthType = DepthType.NONE;
@@ -104,6 +107,14 @@ public class SpriteActor extends InteractiveActor {
 		return scale;
 	}
 
+	public Color getTint() {
+		return tint;
+	}
+
+	public void setTint(Color tint) {
+		this.tint = tint;
+	}
+
 	public void setScale(float scale) {
 		this.scale = scale;
 		bbox.setScale(scale, scale);
@@ -135,8 +146,9 @@ public class SpriteActor extends InteractiveActor {
 
 	public void draw(SpriteBatch batch) {
 		if (isVisible()) {
-			if (scale != 0)
-				renderer.draw(batch, getX(), getY(), scale);
+			if (scale != 0) {			
+				renderer.draw(batch, getX(), getY(), scale, tint);
+			}
 		}
 	}
 
@@ -274,6 +286,7 @@ public class SpriteActor extends InteractiveActor {
 		}
 		
 		json.writeValue("scale", scale);
+		json.writeValue("tint", tint);
 		json.writeValue("depthType", depthType);
 		json.writeValue("bboxFromRenderer", bboxFromRenderer);
 	}
@@ -291,6 +304,7 @@ public class SpriteActor extends InteractiveActor {
 		}
 		
 		scale = json.readValue("scale", float.class, scale, jsonData);
+		tint = json.readValue("tint", Color.class, tint, jsonData);
 		
 		depthType = json.readValue("depthType", DepthType.class, depthType, jsonData);
 		bboxFromRenderer = json.readValue("bboxFromRenderer", boolean.class, bboxFromRenderer, jsonData);

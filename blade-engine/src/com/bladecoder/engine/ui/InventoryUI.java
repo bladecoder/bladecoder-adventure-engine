@@ -265,7 +265,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 
 			r.draw((SpriteBatch) batch, getX() + x * tileSize + x * rowSpace + tileSize / 2 + margin,
-					getY() + (tileSize - r.getHeight() * size) / 2 + y * tileSize + y * rowSpace + margin, size);
+					getY() + (tileSize - r.getHeight() * size) / 2 + y * tileSize + y * rowSpace + margin, size, null);
 		}
 
 		super.draw(batch, alpha);

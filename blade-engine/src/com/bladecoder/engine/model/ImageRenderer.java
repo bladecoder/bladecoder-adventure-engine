@@ -106,7 +106,7 @@ public class ImageRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale) {
+	public void draw(SpriteBatch batch, float x, float y, float scale, Color tint) {
 
 		x = x - getWidth() / 2 * scale; // SET THE X ORIGIN TO THE CENTER OF THE
 										// SPRITE
@@ -115,6 +115,9 @@ public class ImageRenderer implements ActorRenderer {
 			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
 			return;
 		}
+		
+		if(tint != null)
+			batch.setColor(tint);
 
 		if (!flipX) {
 			batch.draw(currentSource.tex, x, y, currentSource.tex.getWidth() * scale,
@@ -123,6 +126,9 @@ public class ImageRenderer implements ActorRenderer {
 			batch.draw(currentSource.tex, x, y, -currentSource.tex.getWidth() * scale,
 					currentSource.tex.getHeight() * scale);
 		}
+		
+		if(tint != null)
+			batch.setColor(Color.WHITE);
 	}
 
 	@Override

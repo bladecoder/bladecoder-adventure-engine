@@ -19,6 +19,7 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -554,12 +555,18 @@ public class Sprite3DRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale) {
+	public void draw(SpriteBatch batch, float x, float y, float scale, Color tint) {
 
 		x = x - getWidth() / 2 * scale;
 
 		if (USE_FBO) {
+			if(tint != null)
+				batch.setColor(tint);
+			
 			batch.draw(tex, x, y, 0, 0, width, height, scale, scale, 0);
+			
+			if(tint != null)
+				batch.setColor(Color.WHITE);
 		} else {
 			float p0x, p0y, pfx, pfy;
 

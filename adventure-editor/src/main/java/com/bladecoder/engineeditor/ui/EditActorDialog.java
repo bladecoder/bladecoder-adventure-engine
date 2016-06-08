@@ -84,6 +84,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel renderer;
 	private InputPanel depthType;
 	private InputPanel scale;
+	private InputPanel tint;
 	private InputPanel bboxFromRenderer;
 	private InputPanel zIndex;
 	private InputPanel walkingSpeed;
@@ -121,7 +122,10 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		depthType = InputPanelFactory.createInputPanel(skin, "Depth Type", "Scene fake depth for scaling",
 				DepthType.class.getEnumConstants(), true);
 
-		scale = InputPanelFactory.createInputPanel(skin, "Scale", "The sprite scale", Param.Type.FLOAT, true, "1");
+		scale = InputPanelFactory.createInputPanel(skin, "Scale", "The sprite scale.", Param.Type.FLOAT, true, "1");
+		
+		tint = InputPanelFactory.createInputPanel(skin, "Tint", "Draw the actor with the specified color (RRGGBBAA).",
+				Param.Type.COLOR, false);
 		
 		bboxFromRenderer = InputPanelFactory.createInputPanel(skin, "BBox From Renderer",
 				"Sets the actor bounding box automatically from the sprite dimensions.", Param.Type.BOOLEAN, true, "true");
@@ -131,14 +135,14 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		walkingSpeed = InputPanelFactory.createInputPanel(skin, "Walking Speed",
 				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT, true, Float.toString(CharacterActor.DEFAULT_WALKING_SPEED));
 
-		spriteSize = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions", "The size of the 3d sprite",
+		spriteSize = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions", "The size of the 3d sprite.",
 				Param.Type.DIMENSION, true);
-		cameraName = InputPanelFactory.createInputPanel(skin, "Camera Name", "The name of the camera in the model",
+		cameraName = InputPanelFactory.createInputPanel(skin, "Camera Name", "The name of the camera in the model.",
 				Param.Type.STRING, true, "Camera");
-		fov = InputPanelFactory.createInputPanel(skin, "Camera FOV", "The camera field of view", Param.Type.FLOAT, true,
+		fov = InputPanelFactory.createInputPanel(skin, "Camera FOV", "The camera field of view.", Param.Type.FLOAT, true,
 				"49.3");
 
-		textColor = InputPanelFactory.createInputPanel(skin, "Text Color", "The text color when the actor talks",
+		textColor = InputPanelFactory.createInputPanel(skin, "Text Color", "The text color (RRGGBBAA) when the actor talks.",
 				Param.Type.COLOR, false);
 
 		setInfo(TYPES_INFO[0]);
@@ -160,7 +164,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		});
 
 		init(parent, e, new InputPanel[] { typePanel, id, renderer, layer, visible, interaction, desc, state, depthType,
-				scale, bboxFromRenderer, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
+				scale, tint, bboxFromRenderer, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
 
 		typeChanged();
 
@@ -199,6 +203,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			setVisible(renderer, true);
 			setVisible(depthType, true);
 			setVisible(scale, true);
+			setVisible(tint, true);
 			setVisible(bboxFromRenderer, true);
 		}
 
@@ -373,7 +378,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				sa.setBboxFromRenderer(true);
 				sa.setDepthType(DepthType.valueOf(depthType.getText()));
 				sa.setScale(Float.parseFloat(scale.getText()));
-				
+				sa.setTint(Param.parseColor(tint.getText()));
 				sa.setBboxFromRenderer(Boolean.parseBoolean(bboxFromRenderer.getText()));
 
 				if (e instanceof CharacterActor) {
@@ -441,6 +446,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 				depthType.setText(sa.getDepthType().toString());
 				scale.setText(Float.toString(sa.getScale()));
+				tint.setText(sa.getTint() == null ? null : sa.getTint().toString());
 				bboxFromRenderer.setText(Boolean.toString(sa.isBboxFromRenderer()));
 
 				if (e instanceof CharacterActor) {

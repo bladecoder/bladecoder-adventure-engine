@@ -154,7 +154,7 @@ public class ScenePointer {
 	        }
 	     	
 	        draggingRenderer.draw(batch, mousepos.x,
-	        		mousepos.y - draggingRenderer.getHeight() * size / 2, size);
+	        		mousepos.y - draggingRenderer.getHeight() * size / 2, size, null);
 	        
 	        if(currentIcon != hotspotIcon) {
 	        	batch.setColor(Color.WHITE);

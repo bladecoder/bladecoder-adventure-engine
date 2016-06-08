@@ -17,6 +17,7 @@ package com.bladecoder.engine.model;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
@@ -29,7 +30,7 @@ import com.bladecoder.engine.assets.AssetConsumer;
 public interface ActorRenderer extends Serializable, AssetConsumer {
 
 	public void update(float delta);
-	public void draw(SpriteBatch batch, float x, float y, float scale);
+	public void draw(SpriteBatch batch, float x, float y, float scale, Color tint);
 	
 	public float getWidth();
 	public float getHeight();
