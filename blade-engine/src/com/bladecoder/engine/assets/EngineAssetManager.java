@@ -278,7 +278,7 @@ public class EngineAssetManager extends AssetManager {
 
 	public void loadMusic(String filename) {
 		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.error("OGG files not supported in IOS");
+			EngineLogger.debug("OGG files not supported in IOS");
 			return;
 		}
 		
@@ -287,7 +287,7 @@ public class EngineAssetManager extends AssetManager {
 
 	public void disposeMusic(String filename) {
 		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.error("OGG files not supported in IOS");
+			EngineLogger.debug("OGG files not supported in IOS");
 			return;
 		}		
 		
@@ -297,7 +297,7 @@ public class EngineAssetManager extends AssetManager {
 
 	public Music getMusic(String filename) {
 		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.error("OGG files not supported in IOS");
+			EngineLogger.debug("OGG files not supported in IOS");
 			return null;
 		}		
 		
@@ -306,7 +306,7 @@ public class EngineAssetManager extends AssetManager {
 
 	public void loadSound(String filename) {
 		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.error("OGG files not supported in IOS");
+			EngineLogger.debug("OGG files not supported in IOS");
 			return;
 		}
 		
@@ -315,7 +315,7 @@ public class EngineAssetManager extends AssetManager {
 
 	public Sound getSound(String filename) {
 		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.error("OGG files not supported in IOS");
+			EngineLogger.debug("OGG files not supported in IOS");
 			return null;
 		}		
 		
@@ -324,7 +324,7 @@ public class EngineAssetManager extends AssetManager {
 
 	public void disposeSound(String filename) {
 		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.error("OGG files not supported in IOS");
+			EngineLogger.debug("OGG files not supported in IOS");
 			return;
 		}		
 		
