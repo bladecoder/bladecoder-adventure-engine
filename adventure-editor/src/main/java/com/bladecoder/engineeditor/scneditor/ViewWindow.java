@@ -55,8 +55,6 @@ public class ViewWindow extends Container<Table> {
 		walkZone.setChecked(false);
 		table.add(walkZone);		
 		
-		setActor(table);
-		
 		inSceneCb.addListener(new ChangeListener() {
 
 			@Override
@@ -82,8 +80,11 @@ public class ViewWindow extends Container<Table> {
 		});		
 
 
-		prefSize(200, 200);
-		setSize(200, 200);
+		table.pack();
+		setActor(table);
+
+		prefSize(table.getWidth(), Math.max(200, table.getHeight()));
+		setSize(table.getWidth(), Math.max(200, table.getHeight()));
 	}
 	
 	public void showWalkZone() {

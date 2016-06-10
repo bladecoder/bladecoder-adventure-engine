@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javafx.application.Platform;
-import javafx.stage.FileChooser;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
@@ -43,11 +40,15 @@ import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.utils.I18NUtils;
 import com.bladecoder.engineeditor.utils.Message;
 import com.bladecoder.engineeditor.utils.RunProccess;
+
+import javafx.application.Platform;
+import javafx.stage.FileChooser;
 
 public class ToolsWindow extends Container<Table> {
 
@@ -60,19 +61,41 @@ public class ToolsWindow extends Container<Table> {
 
 		Table table = new Table(skin);
 		TextButton setCutModeButton = new TextButton("Add Intelligent Cutmode", skin, "no-toggled");
-		TextButton testInAndroidButton = new TextButton("Test in Android device", skin, "no-toggled");
+		TextButton testOnAndroidButton = new TextButton("Test on Android device", skin, "no-toggled");
+		TextButton testOnIphoneEmulatorButton = new TextButton("Test on Iphone emulator", skin, "no-toggled");
+		TextButton testOnIpadEmulatorButton = new TextButton("Test on Ipad emulator", skin, "no-toggled");
+		TextButton testOnIOSDeviceButton = new TextButton("Test on IOS device", skin, "no-toggled");
 		TextButton exportTSVButton = new TextButton("I18N - Export texts as .tsv", skin, "no-toggled");
 		TextButton importTSVButton = new TextButton("I18N - Import.tsv file", skin, "no-toggled");
 
-		table.top();
+		table.defaults().left().expandX();
+		table.top().pad(DPIUtils.getSpacing());
 		table.add(new Label("Tools", skin, "big")).center();
-		setActor(table);
 
 		Drawable drawable = skin.getDrawable("trans");
 		setBackground(drawable);
 
 		table.row();
-		table.add(testInAndroidButton).expandX().fill();
+		table.add(testOnAndroidButton).expandX().fill();
+
+		// show only on mac
+		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+			table.row();
+			table.add(testOnIphoneEmulatorButton).expandX().fill();
+
+			table.row();
+			table.add(testOnIpadEmulatorButton).expandX().fill();
+
+			table.row();
+			table.add(testOnIOSDeviceButton).expandX().fill();
+			
+//			TextTooltip t1 = new TextTooltip("XCode must be installed", skin);
+//			testOnIphoneEmulatorButton.addListener(t1);		
+//			testOnIpadEmulatorButton.addListener(t1);
+//			
+//			TextTooltip t3 = new TextTooltip("The device has to be provisioned", skin);
+//			testOnIOSDeviceButton.addListener(t3);
+		}
 
 		table.row();
 		table.add(exportTSVButton).expandX().fill();
@@ -140,11 +163,35 @@ public class ToolsWindow extends Container<Table> {
 
 		});
 
-		// TEST IN ANDROID DEVICE
-		testInAndroidButton.addListener(new ChangeListener() {
+		// TEST ON ANDROID DEVICE
+		testOnAndroidButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				testInAndroid();
+				testOnAndroid();
+			}
+
+		});
+
+		testOnIphoneEmulatorButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				testOnIphoneEmulator();
+			}
+
+		});
+
+		testOnIpadEmulatorButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				testOnIpadEmulator();
+			}
+
+		});
+
+		testOnIOSDeviceButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				testOnIOSDevice();
 			}
 
 		});
@@ -162,9 +209,11 @@ public class ToolsWindow extends Container<Table> {
 				importTSV();
 			}
 		});
-
-		prefSize(200, 200);
-		setSize(200, 200);
+		
+		table.pack();
+		setActor(table);
+		prefSize(table.getWidth(), Math.max(200, table.getHeight()));
+		setSize(table.getWidth(), Math.max(200, table.getHeight()));
 	}
 
 	private void exportTSV() {
@@ -223,7 +272,7 @@ public class ToolsWindow extends Container<Table> {
 		});
 	}
 
-	private void testInAndroid() {
+	private void testOnAndroid() {
 		if (Ctx.project.getSelectedScene() == null) {
 			String msg = "There are no scenes in this chapter.";
 			Message.showMsg(getStage(), msg, 3);
@@ -251,6 +300,153 @@ public class ToolsWindow extends Container<Table> {
 				Message.showMsg(stage, "Running scene on Android device...", 5);
 
 				if (!RunProccess.runGradle(Ctx.project.getProjectDir(), "android:installDebug android:run")) {
+					Message.showMsg(stage, "There was a problem running the project", 4);
+				}
+
+				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
+				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				Ctx.project.setModified();
+
+				try {
+					Ctx.project.saveProject();
+				} catch (Exception ex) {
+					String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName()
+							+ " - " + ex.getMessage();
+					EngineLogger.error(msg);
+					return;
+				}
+
+			}
+		}).start();
+
+	}
+
+	private void testOnIphoneEmulator() {
+		if (Ctx.project.getSelectedScene() == null) {
+			String msg = "There are no scenes in this chapter.";
+			Message.showMsg(getStage(), msg, 3);
+			return;
+		}
+
+		Ctx.project.getProjectConfig().setProperty(Config.CHAPTER_PROP, Ctx.project.getChapter().getId());
+		Ctx.project.getProjectConfig().setProperty(Config.TEST_SCENE_PROP, Ctx.project.getSelectedScene().getId());
+		Ctx.project.setModified();
+
+		try {
+			Ctx.project.saveProject();
+		} catch (Exception ex) {
+			String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
+					+ ex.getMessage();
+			Message.showMsgDialog(getStage(), "Error", msg);
+			return;
+		}
+
+		new Thread(new Runnable() {
+			Stage stage = getStage();
+
+			@Override
+			public void run() {
+				Message.showMsg(stage, "Running scene on Iphone emulator...", 5);
+
+				if (!RunProccess.runGradle(Ctx.project.getProjectDir(), "ios:launchIPhoneSimulator")) {
+					Message.showMsg(stage, "There was a problem running the project", 4);
+				}
+
+				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
+				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				Ctx.project.setModified();
+
+				try {
+					Ctx.project.saveProject();
+				} catch (Exception ex) {
+					String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName()
+							+ " - " + ex.getMessage();
+					EngineLogger.error(msg);
+					return;
+				}
+
+			}
+		}).start();
+
+	}
+
+	private void testOnIpadEmulator() {
+		if (Ctx.project.getSelectedScene() == null) {
+			String msg = "There are no scenes in this chapter.";
+			Message.showMsg(getStage(), msg, 3);
+			return;
+		}
+
+		Ctx.project.getProjectConfig().setProperty(Config.CHAPTER_PROP, Ctx.project.getChapter().getId());
+		Ctx.project.getProjectConfig().setProperty(Config.TEST_SCENE_PROP, Ctx.project.getSelectedScene().getId());
+		Ctx.project.setModified();
+
+		try {
+			Ctx.project.saveProject();
+		} catch (Exception ex) {
+			String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
+					+ ex.getMessage();
+			Message.showMsgDialog(getStage(), "Error", msg);
+			return;
+		}
+
+		new Thread(new Runnable() {
+			Stage stage = getStage();
+
+			@Override
+			public void run() {
+				Message.showMsg(stage, "Running scene on Ipad simulator...", 5);
+
+				if (!RunProccess.runGradle(Ctx.project.getProjectDir(), "ios:launchIPadSimulator")) {
+					Message.showMsg(stage, "There was a problem running the project", 4);
+				}
+
+				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
+				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				Ctx.project.setModified();
+
+				try {
+					Ctx.project.saveProject();
+				} catch (Exception ex) {
+					String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName()
+							+ " - " + ex.getMessage();
+					EngineLogger.error(msg);
+					return;
+				}
+
+			}
+		}).start();
+
+	}
+
+	private void testOnIOSDevice() {
+		if (Ctx.project.getSelectedScene() == null) {
+			String msg = "There are no scenes in this chapter.";
+			Message.showMsg(getStage(), msg, 3);
+			return;
+		}
+
+		Ctx.project.getProjectConfig().setProperty(Config.CHAPTER_PROP, Ctx.project.getChapter().getId());
+		Ctx.project.getProjectConfig().setProperty(Config.TEST_SCENE_PROP, Ctx.project.getSelectedScene().getId());
+		Ctx.project.setModified();
+
+		try {
+			Ctx.project.saveProject();
+		} catch (Exception ex) {
+			String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
+					+ ex.getMessage();
+			Message.showMsgDialog(getStage(), "Error", msg);
+			return;
+		}
+
+		new Thread(new Runnable() {
+			Stage stage = getStage();
+
+			@Override
+			public void run() {
+				Message.showMsg(stage, "Running scene on IOS device...", 5);
+
+				if (!RunProccess.runGradle(Ctx.project.getProjectDir(), "ios:launchIOSDevice")) {
 					Message.showMsg(stage, "There was a problem running the project", 4);
 				}
 
