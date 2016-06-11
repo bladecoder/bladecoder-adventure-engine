@@ -69,7 +69,7 @@ public class ToolsWindow extends Container<Table> {
 		TextButton importTSVButton = new TextButton("I18N - Import.tsv file", skin, "no-toggled");
 
 		table.defaults().left().expandX();
-		table.top().pad(DPIUtils.getSpacing());
+		table.top().pad(DPIUtils.getSpacing()/2);
 		table.add(new Label("Tools", skin, "big")).center();
 
 		Drawable drawable = skin.getDrawable("trans");

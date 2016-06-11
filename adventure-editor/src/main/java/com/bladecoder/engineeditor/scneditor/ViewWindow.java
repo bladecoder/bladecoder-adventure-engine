@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.bladecoder.engine.util.DPIUtils;
 
 public class ViewWindow extends Container<Table> {
 	ScnWidget scnWidget;
@@ -34,6 +35,7 @@ public class ViewWindow extends Container<Table> {
 
 		Table table = new Table(skin);
 		table.defaults().left().expandX();
+		table.top().pad(DPIUtils.getSpacing()/2);
 		table.top();
 		table.add(new Label("View", skin, "big")).center();
 

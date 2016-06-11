@@ -30,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
@@ -79,6 +80,10 @@ public class ScnEditor extends Table {
 		row();
 
 		Table bottomTable = new Table(skin);
+		
+		Drawable drawable = skin.getDrawable("background");
+		bottomTable.setBackground(drawable);
+		
 		bottomTable.left();
 		add(bottomTable).fill();
 
