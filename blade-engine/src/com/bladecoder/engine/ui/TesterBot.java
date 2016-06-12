@@ -28,6 +28,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 
 /**
@@ -54,8 +55,11 @@ public class TesterBot {
 	private boolean waitWhenWalking = true;
 	
 	private final ArrayList<String> excludeList = new ArrayList<String>();
+	
+	private final boolean inventoryAction;
 
 	public TesterBot() {
+		inventoryAction = !Config.getProperty(Config.SINGLE_ACTION_INVENTORY, false);
 	}
 
 	public void update(float d) {
@@ -145,7 +149,7 @@ public class TesterBot {
 						if (choosedVerb == 0) {
 							EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.LOOKAT_VERB);
 							invActor.runVerb(Verb.LOOKAT_VERB);
-						} else if (choosedVerb == 1) {
+						} else if (choosedVerb == 1 && inventoryAction) {
 							EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.ACTION_VERB);
 							invActor.runVerb(Verb.ACTION_VERB);
 						} else { // 2 and 3
