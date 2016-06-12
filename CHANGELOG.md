@@ -2,6 +2,23 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.13]
+
+- Added new buttons in the Tools menu to test the scene in Iphone/Ipad emulator and device.
+
+- Support for changing players in runtime: Added $PLAYER variable.
+- Added actor Tint attribute to allow lighting effects.
+- EDITOR: Disable not working HTML platform.
+- Update RoboVM to Mobidevelop 2.1.0 release.
+- Added 'initNewGame' and 'initSavedGame' verbs to allow calling actions when a game is started or loaded.
+- Fix error in text position when drawing SUBTITLE texts.
+- Fix action color serialize.
+- DialogUI gets scrollbar style.
+- Update fonts for better language support.
+- Fix bug when loading project and scene scope is selected.
+- Delete unused 'delay' field in AnimationDesc.
+- Fix: bug in yoyo animatinons.
+
 
 ## [0.9.12]
 
