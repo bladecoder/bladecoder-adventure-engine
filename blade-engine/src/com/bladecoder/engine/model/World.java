@@ -234,14 +234,14 @@ public class World implements Serializable, AssetConsumer {
 				initGame = false;
 				
 				// Call world init verbs. Check for SAVED_GAME_VERSION property to know if new or loaded game.
-				if(customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) == null && verbs.getVerb("initNewGame", null, null) != null)
-					verbs.runVerb("initNewGame", null, null);
-				else if(customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) != null && verbs.getVerb("initSavedGame", null, null) != null)
-					verbs.runVerb("initSavedGame", null, null);
+				if(customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) == null && verbs.getVerb(Verb.INIT_NEW_GAME_VERB, null, null) != null)
+					verbs.runVerb(Verb.INIT_NEW_GAME_VERB, null, null);
+				else if(customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) != null && verbs.getVerb(Verb.INIT_SAVED_GAME_VERB, null, null) != null)
+					verbs.runVerb(Verb.INIT_SAVED_GAME_VERB, null, null);
 				
 				// If in test mode run 'test' verb
-				if (testScene != null && testScene.equals(currentScene.getId()) && currentScene.getVerb("test") != null)
-					currentScene.runVerb("test");
+				if (testScene != null && testScene.equals(currentScene.getId()) && currentScene.getVerb(Verb.TEST_VERB) != null)
+					currentScene.runVerb(Verb.TEST_VERB);
 			}
 
 			// call 'init' verb only when arrives from setCurrentScene and not

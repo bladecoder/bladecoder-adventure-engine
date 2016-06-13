@@ -23,8 +23,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
@@ -73,12 +73,19 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 			}
 		});
 
-		((TextField) classPanel.getField()).addListener(new FocusListener() {
-			@Override
-			public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
-				if (!event.isFocused())
-					setAction();
-			}
+//		((TextField) classPanel.getField()).addListener(new FocusListener() {
+//			@Override
+//			public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
+//				if (!event.isFocused())
+//					setAction();
+//			}
+//		});
+		
+		((TextField) classPanel.getField()).setTextFieldListener(new TextFieldListener() {
+		    @Override
+		    public void keyTyped(TextField textField, char key) {
+		    	setAction();
+		    }
 		});
 
 		if (e != null) {
@@ -113,8 +120,17 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 		if (id.equals(CUSTOM_ACTION_STR)) {
 			addInputPanel(classPanel);
-			if (classPanel != null && !classPanel.getText().trim().isEmpty())
+			if (classPanel != null && classPanel.getText() != null && !classPanel.getText().trim().isEmpty())
 				tmp = ActionFactory.createByClass(classPanel.getText(), null);
+			
+			if(tmp == null) {
+				classPanel.setError(true);
+			} else {
+				classPanel.setError(false);
+			}
+			
+			getStage().setKeyboardFocus(classPanel.getField());
+			
 			setInfo(CUSTOM_INFO);
 		} else {
 			tmp = ActionFactory.create(id, null);
@@ -145,6 +161,8 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 					i[j].getCell(i[j].getField()).fillX();
 				}
 			}
+		} else {
+			i = new InputPanel[0];
 		}
 
 		// ((ScrollPane)(getContentTable().getCells().get(1).getActor())).setWidget(getCenterPanel());
@@ -183,11 +201,13 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 				}
 
 				ActionUtils.setParam(e, i[j].getTitle(), v);
-				Ctx.project.setModified();
+				
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 				EditorLogger.error(e.getMessage());
 			}
 		}
+		
+		Ctx.project.setModified();
 	}
 
 	@Override
@@ -207,5 +227,18 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 				EditorLogger.error(e.getMessage());
 			}
 		}
+	}
+	
+	@Override
+	protected boolean validateFields() {
+		
+		String id = actionPanel.getText();
+
+		if (id.equals(CUSTOM_ACTION_STR) && e == null) {
+			if(ActionFactory.createByClass(classPanel.getText(), null) == null)
+				return false;
+		}
+		
+		return super.validateFields();
 	}
 }

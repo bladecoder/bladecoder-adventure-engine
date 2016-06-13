@@ -35,6 +35,8 @@ public class Verb implements VerbRunner, Serializable {
 	public static final String GOTO_VERB = "goto";
 	public static final String TEST_VERB = "test";
 	public static final String INIT_VERB = "init";
+	public static final String INIT_NEW_GAME_VERB = "initNewGame";
+	public static final String INIT_SAVED_GAME_VERB = "initSavedGame";
 
 	private String id;
 	private String state;
