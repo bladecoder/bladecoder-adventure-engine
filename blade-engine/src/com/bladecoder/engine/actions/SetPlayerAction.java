@@ -16,10 +16,12 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 
 @ActionDescription("Sets the scene player")
 public class SetPlayerAction implements Action {
@@ -27,6 +29,10 @@ public class SetPlayerAction implements Action {
 	@ActionProperty(type = Type.SCENE_CHARACTER_ACTOR, required = true)
 	@ActionPropertyDescription("The scene player")	
 	private SceneActorRef actor;
+	
+	@ActionProperty
+	@ActionPropertyDescription("The inventory 'id' for the player. If empty, the inventory will not change.")	
+	private String inventory;
 
 	@Override
 	public boolean run(VerbRunner cb) {		
@@ -35,6 +41,15 @@ public class SetPlayerAction implements Action {
 		BaseActor a = s.getActor(actor.getActorId(), true);
 		
 		s.setPlayer((CharacterActor)a);
+		
+		if(inventory != null) {
+			World w = World.getInstance();
+			w.getInventory().dispose();
+			w.setInventory(inventory);
+			w.getInventory().loadAssets();
+			EngineAssetManager.getInstance().finishLoading();
+			w.getInventory().retrieveAssets();
+		}
 
 		return false;
 	}

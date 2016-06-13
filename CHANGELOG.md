@@ -2,10 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.14]
+
+- Multiinventory support.
+- EDITOR: Fix when adding custom actions.
+
 ## [0.9.13]
 
 - Added new buttons in the Tools menu to test the scene in Iphone/Ipad emulator and device.
-
 - Support for changing players in runtime: Added $PLAYER variable.
 - Added actor Tint attribute to allow lighting effects.
 - EDITOR: Disable not working HTML platform.

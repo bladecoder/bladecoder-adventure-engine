@@ -53,6 +53,8 @@ public class World implements Serializable, AssetConsumer {
 
 	public static final String GAMESTATE_EXT = ".gamestate.v11";
 	private static final String GAMESTATE_FILENAME = "default" + GAMESTATE_EXT;
+	
+	private static final String DEFAULT_INVENTORY="DEFAULT";
 
 	private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
 
@@ -79,8 +81,10 @@ public class World implements Serializable, AssetConsumer {
 
 	private Scene currentScene;
 	private Dialog currentDialog;
-
-	private Inventory inventory;
+	
+	private HashMap<String, Inventory> inventories;
+	private String currentInventory;
+	
 	private TextManager textManager;
 
 	private boolean paused;
@@ -138,7 +142,9 @@ public class World implements Serializable, AssetConsumer {
 	private void init() {
 		// scenes = new HashMap<String, Scene>();
 		scenes = new HashMap<String, Scene>();
-		inventory = new Inventory();
+		inventories = new HashMap<String, Inventory>();
+		inventories.put(DEFAULT_INVENTORY, new Inventory());
+		currentInventory = DEFAULT_INVENTORY;
 		textManager = new TextManager();
 
 		timers = new Timers();
@@ -272,16 +278,16 @@ public class World implements Serializable, AssetConsumer {
 	public void loadAssets() {
 		currentScene.loadAssets();
 
-		if (inventory.isDisposed())
-			inventory.loadAssets();
+		if (getInventory().isDisposed())
+			getInventory().loadAssets();
 		
 		musicEngine.loadAssets();
 	}
 
 	@Override
 	public void retrieveAssets() {
-		if (inventory.isDisposed())
-			inventory.retrieveAssets();
+		if (getInventory().isDisposed())
+			getInventory().retrieveAssets();
 
 		getCurrentScene().retrieveAssets();
 
@@ -386,7 +392,7 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public Inventory getInventory() {
-		return inventory;
+		return inventories.get(currentInventory);
 	}
 
 	public TextManager getTextManager() {
@@ -430,6 +436,17 @@ public class World implements Serializable, AssetConsumer {
 				currentDialog = null;
 		}
 	}
+	
+	public void setInventory(String inventory) {
+		Inventory i = inventories.get(inventory);
+		
+		if(i == null) {
+			i = new Inventory();
+			inventories.put(inventory, i);
+		}
+		
+		currentInventory = inventory;
+	}
 
 	public void selectVisibleDialogOption(int i) {
 		if (currentDialog == null)
@@ -455,7 +472,7 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void showInventory(boolean b) {
-		inventory.setVisible(b);
+		getInventory().setVisible(b);
 	}
 
 	public boolean isDisposed() {
@@ -490,7 +507,7 @@ public class World implements Serializable, AssetConsumer {
 				cachedScene = null;
 			}
 
-			inventory.dispose();
+			getInventory().dispose();
 
 			spriteBatch.dispose();
 
@@ -894,7 +911,8 @@ public class World implements Serializable, AssetConsumer {
 					Config.getProperty(Config.VERSION_PROP, null));
 			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
 			json.writeValue("currentScene", currentScene.getId());
-			json.writeValue("inventory", inventory);
+			json.writeValue("inventories", inventories);
+			json.writeValue("currentInventory", currentInventory);
 			json.writeValue("timeOfGame", timeOfGame);
 			json.writeValue("cutmode", cutMode);
 			verbs.write(json);
@@ -975,7 +993,8 @@ public class World implements Serializable, AssetConsumer {
 					EngineLogger.debug("LOAD WARNING: Scene not found in saved game: " + s.getId());
 			}
 
-			inventory = json.readValue("inventory", Inventory.class, jsonData);
+			inventories = json.readValue("inventories", HashMap.class, Inventory.class, jsonData);
+			currentInventory = json.readValue("currentInventory", String.class, jsonData);
 
 			timeOfGame = json.readValue("timeOfGame", long.class, 0L, jsonData);
 			cutMode = json.readValue("cutmode", boolean.class, false, jsonData);

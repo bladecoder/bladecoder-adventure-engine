@@ -21,8 +21,7 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Shows/Hide the inventory")
 public class ShowInventoryAction implements Action {
 	@ActionProperty(required = true, defaultValue = "true")
-	@ActionPropertyDescription("When 'true' sets the scene in 'cutmode'")
-
+	@ActionPropertyDescription("When 'true' shows the inventory button to show the inventory.")
 	private boolean value = true;
 
 	@Override
