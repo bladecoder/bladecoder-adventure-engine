@@ -179,7 +179,8 @@ public class SpriteActor extends InteractiveActor {
 
 		if (fa != null) {
 
-			stopCurrentSound();
+			if(fa.sound != null)
+				stopCurrentSound();
 
 			Vector2 outD = fa.outD;
 
