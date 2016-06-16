@@ -125,7 +125,7 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 		loop.setText(Boolean.toString(e.getLoop()));
 		volume.setText(Float.toString(e.getVolume()));
 		pan.setText(Float.toString(e.getPan()));
-		loop.setText(Boolean.toString(e.isPreload()));
+		preload.setText(Boolean.toString(e.isPreload()));
 	}
 	
 	@Override
