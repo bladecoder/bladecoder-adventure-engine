@@ -26,12 +26,13 @@ public class SoundFX implements AssetConsumer {
 	private String filename;
 	private float volume = 1f;
 	private float pan = 0f;
+	private boolean preload;
 	
 	public SoundFX() {
 		
 	}
 	
-	public SoundFX(String id, String filename, boolean loop, float volume, float pan) {
+	public SoundFX(String id, String filename, boolean loop, float volume, float pan, boolean preload) {
 		this.id = id;
 		this.filename = filename;
 		this.loop = loop;
@@ -40,8 +41,18 @@ public class SoundFX implements AssetConsumer {
 	}
 	
 	public void play() {
-		if(s==null)
-			return;
+		if(s==null) {
+			if(!preload) {
+				loadAssets();
+				EngineAssetManager.getInstance().finishLoading();
+				retrieveAssets();
+				
+				if(s == null)
+					return;
+			} else {
+				return;
+			}
+		}
 		
 		if(loop) s.loop();
 		else s.play(volume, 1, pan);
@@ -106,6 +117,14 @@ public class SoundFX implements AssetConsumer {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
+	}
+
+	public boolean isPreload() {
+		return preload;
+	}
+
+	public void setPreload(boolean preload) {
+		this.preload = preload;
 	}
 
 	@Override

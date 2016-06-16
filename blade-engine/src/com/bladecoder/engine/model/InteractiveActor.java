@@ -142,13 +142,6 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	public void runVerb(String id, String target) {
 		verbs.runVerb(id, state, target);
 	}
-
-	public void addSound(String id, String filename, boolean loop, float volume, float pan) {
-		if (sounds == null)
-			sounds = new HashMap<String, SoundFX>();
-
-		sounds.put(id, new SoundFX(id, filename, loop, volume, pan));
-	}
 	
 	public void addSound(SoundFX s) {
 		if (sounds == null)

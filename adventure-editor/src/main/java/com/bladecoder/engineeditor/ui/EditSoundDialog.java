@@ -46,6 +46,7 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 	private InputPanel loop;
 	private InputPanel volume;
 	private InputPanel pan;
+	private InputPanel preload;
 	
 	private Sound s = null;
 
@@ -61,10 +62,12 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 		pan = InputPanelFactory.createInputPanel(skin, "Pan",
 				"panning in the range -1 (full left) to 1 (full right). 0 is center position", Param.Type.FLOAT, true,
 				"0.0");
+		preload = InputPanelFactory.createInputPanel(skin, "Preload", "True if the sound has to be loaded when the scene is loaded.", Param.Type.BOOLEAN,
+				true, "true");
 
 		setInfo("Actors can have a list of sounds that can be associated to Sprites or played with the 'sound' action");
 
-		init(parent, e, new InputPanel[] { id, filename, loop, volume, pan });
+		init(parent, e, new InputPanel[] { id, filename, loop, volume, pan, preload });
 
 		TextButton playButton = new TextButton("Play", skin, "no-toggled");
 
@@ -108,6 +111,7 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 		e.setLoop(Boolean.parseBoolean(loop.getText()));
 		e.setVolume(Float.parseFloat(volume.getText()));
 		e.setPan(Float.parseFloat(pan.getText()));
+		e.setPreload(Boolean.parseBoolean(preload.getText()));
 
 		parent.addSound(e);
 
@@ -121,6 +125,7 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 		loop.setText(Boolean.toString(e.getLoop()));
 		volume.setText(Float.toString(e.getVolume()));
 		pan.setText(Float.toString(e.getPan()));
+		loop.setText(Boolean.toString(e.isPreload()));
 	}
 	
 	@Override
