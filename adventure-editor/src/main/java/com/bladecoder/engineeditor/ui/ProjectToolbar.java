@@ -21,11 +21,16 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
+import javafx.application.Platform;
+import javafx.stage.DirectoryChooser;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -40,9 +45,6 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.utils.Message;
 import com.bladecoder.engineeditor.utils.RunProccess;
-
-import javafx.application.Platform;
-import javafx.stage.DirectoryChooser;
 
 public class ProjectToolbar extends Table {
 	private ImageButton newBtn;
@@ -87,21 +89,37 @@ public class ProjectToolbar extends Table {
 		newBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				newProject();
+				saveProjectAndExecute(new Runnable() {
+
+					@Override
+					public void run() {
+						newProject();
+					}
+				});
 			}
 		});
 
 		loadBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				loadProject();
+				saveProjectAndExecute(new Runnable() {
+					@Override
+					public void run() {
+						loadProject();
+					}
+				});
 			}
 		});
 
 		exitBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				exit();
+				saveProjectAndExecute(new Runnable() {
+					@Override
+					public void run() {
+						exit();
+					}
+				});
 			}
 		});
 
@@ -196,8 +214,8 @@ public class ProjectToolbar extends Table {
 			public void run() {
 				final DirectoryChooser chooser = new DirectoryChooser();
 				chooser.setTitle("Select the project to load");
-				chooser.setInitialDirectory(
-						Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."));
+				chooser.setInitialDirectory(Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir()
+						: new File("."));
 
 				final File dir = chooser.showDialog(null);
 				if (dir == null) {
@@ -205,12 +223,11 @@ public class ProjectToolbar extends Table {
 				}
 
 				Message.showMsg(getStage(), "Loading project...", true);
-		
+
 				Timer.post(new Task() {
 					@Override
 					public void run() {
 						try {
-							Ctx.project.saveProject();
 							Ctx.project.loadProject(dir);
 							playBtn.setDisabled(false);
 							packageBtn.setDisabled(false);
@@ -237,7 +254,8 @@ public class ProjectToolbar extends Table {
 											}
 										} else {
 											Message.hideMsg();
-											Message.showMsgDialog(getStage(),  "Error loading project", "error running 'gradlew desktop:compileJava'");
+											Message.showMsgDialog(getStage(), "Error loading project",
+													"error running 'gradlew desktop:compileJava'");
 										}
 									}
 								});
@@ -293,16 +311,16 @@ public class ProjectToolbar extends Table {
 
 			@Override
 			public void run() {
-				
+
 				if (Ctx.project.getSelectedScene() == null) {
 					String msg = "There are no scenes in this chapter.";
 					Message.showMsg(getStage(), msg, 3);
 					return;
 				}
-				
-				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);			
+
+				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
 				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
-				
+
 				try {
 					Ctx.project.saveProject();
 				} catch (Exception ex) {
@@ -311,7 +329,7 @@ public class ProjectToolbar extends Table {
 					Message.showMsgDialog(getStage(), "Error", msg);
 					return;
 				}
-				
+
 				Message.showMsg(stage, "Running scene...", 3);
 
 				try {
@@ -341,6 +359,31 @@ public class ProjectToolbar extends Table {
 
 	private void createAtlas() {
 		new CreateAtlasDialog(skin).show(getStage());
+	}
+
+	private void saveProjectAndExecute(final Runnable task) {
+		if (Ctx.project.getProjectDir() != null && Ctx.project.isModified()) {
+			new Dialog("Save Project", skin) {
+				protected void result(Object object) {
+					if (((Boolean) object).booleanValue()) {
+						try {
+							Ctx.project.saveProject();
+						} catch (IOException e1) {
+							String msg = "Something went wrong while saving the actor.\n\n"
+									+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
+							Message.showMsgDialog(getStage(), "Error", msg);
+
+							e1.printStackTrace();
+						}
+					}
+
+					task.run();
+				}
+			}.text("Save current project changes?").button("Yes", true).button("No", false).key(Keys.ENTER, true)
+					.key(Keys.ESCAPE, false).show(getStage());
+		} else {
+			task.run();
+		}
 	}
 
 }

@@ -351,6 +351,7 @@ public class Project extends PropertyChange {
 			projectConfig = new Properties();
 			projectConfig.load(new FileInputStream(
 					projectFile.getAbsolutePath() + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME));
+			modified = false;
 			firePropertyChange(NOTIFY_PROJECT_LOADED);
 		} else {
 			this.projectFile = oldProjectFile;
