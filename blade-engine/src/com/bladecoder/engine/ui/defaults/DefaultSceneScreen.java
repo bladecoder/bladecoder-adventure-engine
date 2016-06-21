@@ -743,7 +743,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		pie.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 		textManagerUI.resize();
-		inventoryButton.resize();
+		inventoryButton.resize(width, height);
 		pointer.resize(width, height);
 
 		float size = DPIUtils.getPrefButtonSize();

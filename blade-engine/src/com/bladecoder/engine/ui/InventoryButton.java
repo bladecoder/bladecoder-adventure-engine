@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.ui.InventoryUI.InventoryPos;
 import com.bladecoder.engine.util.DPIUtils;
 
 public class InventoryButton extends Button {
@@ -43,11 +44,30 @@ public class InventoryButton extends Button {
 		numItems = World.getInstance().getInventory().getNumItems();
 	}
 	
-	public void resize() {
+	public void resize(int width, int height) {
 		float size = DPIUtils.getPrefButtonSize();
 		float margin = DPIUtils.getMarginSize();
 		
-		setSize(size, size);		
-		setPosition(margin, margin);
+		setSize(size, size);
+		
+		InventoryPos inventoryPos = inventory.getInventoryPos();
+		
+		switch (inventoryPos) {
+		case TOP:
+			setPosition(margin, height - margin - getHeight());	
+			break;
+		case LEFT:
+			setPosition(margin, margin);	
+			break;
+		case RIGHT:
+			setPosition(width - margin - getWidth(), margin);	
+			break;
+		case DOWN:
+		case CENTER:
+			setPosition(margin, margin);	
+			break;
+		default:
+			break;
+		}
 	}
 }
