@@ -129,7 +129,8 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 				classPanel.setError(false);
 			}
 			
-			getStage().setKeyboardFocus(classPanel.getField());
+			if(getStage() != null)
+				getStage().setKeyboardFocus(classPanel.getField());
 			
 			setInfo(CUSTOM_INFO);
 		} else {
