@@ -25,7 +25,7 @@ import java.util.ResourceBundle.Control;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.util.FileUtils;
+import com.bladecoder.engine.common.FileUtils;
 
 public class I18NControl extends Control {
 

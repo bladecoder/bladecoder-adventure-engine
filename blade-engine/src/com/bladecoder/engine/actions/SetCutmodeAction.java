@@ -18,7 +18,7 @@ package com.bladecoder.engine.actions;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
-@ActionDescription("Set/Unset the cutmode.")
+@ActionDescription(name = "Cutmode", value="Set/Unset the cutmode.")
 public class SetCutmodeAction implements Action {
 	@ActionProperty(required = true, defaultValue = "true")
 	@ActionPropertyDescription("when 'true' sets the scene in 'cutmode'")

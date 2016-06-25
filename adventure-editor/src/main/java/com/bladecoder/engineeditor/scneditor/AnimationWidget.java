@@ -25,15 +25,15 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.common.RectangleRenderer;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.spine.SpineRenderer;
-import com.bladecoder.engine.util.RectangleRenderer;
+import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.EditAnimationDialog;
-import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class AnimationWidget extends Widget {
 	private AnimationDesc fa;

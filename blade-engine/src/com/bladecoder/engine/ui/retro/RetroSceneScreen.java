@@ -42,6 +42,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.bladecoder.engine.common.DPIUtils;
+import com.bladecoder.engine.common.EngineLogger;
+import com.bladecoder.engine.common.RectangleRenderer;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -58,9 +61,6 @@ import com.bladecoder.engine.ui.TesterBot;
 import com.bladecoder.engine.ui.TextManagerUI;
 import com.bladecoder.engine.ui.UI;
 import com.bladecoder.engine.ui.UI.Screens;
-import com.bladecoder.engine.util.DPIUtils;
-import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.RectangleRenderer;
 
 public class RetroSceneScreen implements SceneScreen {
 	private static final float UI_SCREEN_PERCENT = 1 - 144.0f / 200.0f; // % of

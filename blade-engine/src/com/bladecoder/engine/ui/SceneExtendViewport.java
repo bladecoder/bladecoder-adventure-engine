@@ -22,7 +22,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.common.EngineLogger;
 
 /**
  * This is a Custom ExtendViewport:

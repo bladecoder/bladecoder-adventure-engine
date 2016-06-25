@@ -15,13 +15,13 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
 
-@ActionDescription("Sets the actor state")
+@ActionDescription(name="State", value="Sets the actor state")
 public class SetStateAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The target actor")

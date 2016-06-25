@@ -20,8 +20,8 @@ import java.io.StringWriter;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.common.ActionUtils;
 import com.bladecoder.engine.model.VerbRunner;
-import com.bladecoder.engine.util.ActionUtils;
 
 /**
  * This action wraps an action that has been disabled.

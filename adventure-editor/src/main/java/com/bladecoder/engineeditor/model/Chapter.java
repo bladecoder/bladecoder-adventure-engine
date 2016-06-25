@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
 
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engineeditor.utils.ElementUtils;
+import com.bladecoder.engineeditor.common.ElementUtils;
 
 public class Chapter {
 	private String modelPath;

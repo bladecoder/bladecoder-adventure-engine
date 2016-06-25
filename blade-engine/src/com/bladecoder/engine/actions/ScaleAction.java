@@ -17,12 +17,12 @@ package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
+import com.bladecoder.engine.common.InterpolationMode;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.InterpolationMode;
 
-@ActionDescription("Sets an actor Scale animation")
+@ActionDescription(name = "ScaleAnim", value= "Sets an actor Scale animation")
 public class ScaleAction implements Action {
 	@ActionPropertyDescription("The target actor")
 	@ActionProperty(type = Type.SPRITE_ACTOR)

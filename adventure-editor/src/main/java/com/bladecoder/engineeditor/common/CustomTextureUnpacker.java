@@ -1,4 +1,4 @@
-package com.bladecoder.engineeditor.utils;
+package com.bladecoder.engineeditor.common;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

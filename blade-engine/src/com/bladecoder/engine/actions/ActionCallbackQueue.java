@@ -20,9 +20,9 @@ import java.util.List;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.common.ActionCallbackSerialization;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
 
 /**
  * This is a queue to group all cb that must be triggered in the next iteration.

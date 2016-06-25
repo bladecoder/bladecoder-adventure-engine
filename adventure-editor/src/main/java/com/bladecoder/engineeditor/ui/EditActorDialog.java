@@ -41,12 +41,12 @@ import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
-import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 

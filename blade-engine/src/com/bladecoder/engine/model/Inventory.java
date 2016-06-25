@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.assets.AssetConsumer;
-import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.common.EngineLogger;
 
 public class Inventory implements AssetConsumer, Serializable  {
 	private ArrayList<SpriteActor> items;

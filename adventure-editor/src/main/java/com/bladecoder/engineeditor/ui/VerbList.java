@@ -31,13 +31,13 @@ import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.ui.components.ScopePanel;
 import com.bladecoder.engineeditor.undo.UndoDeleteVerb;
-import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class VerbList extends ModelList<VerbManager, Verb> {
 

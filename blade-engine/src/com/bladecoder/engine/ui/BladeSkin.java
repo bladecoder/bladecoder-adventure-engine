@@ -11,10 +11,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.ReadOnlySerializer;
+import com.bladecoder.engine.common.DPIUtils;
+import com.bladecoder.engine.common.FileUtils;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.SerializationException;
-import com.bladecoder.engine.util.DPIUtils;
-import com.bladecoder.engine.util.FileUtils;
 
 /**
  * Custom Skin class to add TTF font support

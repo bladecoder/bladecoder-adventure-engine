@@ -19,7 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import com.bladecoder.engineeditor.utils.EditorLogger;
+import com.bladecoder.engineeditor.common.EditorLogger;
 
 
 public class PropertyChange {

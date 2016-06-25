@@ -43,6 +43,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.common.Config;
+import com.bladecoder.engine.common.DPIUtils;
+import com.bladecoder.engine.common.EngineLogger;
+import com.bladecoder.engine.common.RectangleRenderer;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
@@ -66,10 +70,6 @@ import com.bladecoder.engine.ui.TesterBot;
 import com.bladecoder.engine.ui.TextManagerUI;
 import com.bladecoder.engine.ui.UI;
 import com.bladecoder.engine.ui.UI.Screens;
-import com.bladecoder.engine.util.Config;
-import com.bladecoder.engine.util.DPIUtils;
-import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.RectangleRenderer;
 
 public class DefaultSceneScreen implements SceneScreen {
 	private final static float LOADING_WAIT_TIME_MS = 500f;

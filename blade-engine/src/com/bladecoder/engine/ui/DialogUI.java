@@ -25,10 +25,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.bladecoder.engine.common.DPIUtils;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.DPIUtils;
 
 public class DialogUI extends ScrollPane {
 	public static final String DIALOG_END_COMMAND = "dialog_end";

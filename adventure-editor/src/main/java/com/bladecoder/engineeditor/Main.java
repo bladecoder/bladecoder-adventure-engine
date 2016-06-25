@@ -21,7 +21,7 @@ import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.bladecoder.engineeditor.utils.Versions;
+import com.bladecoder.engineeditor.common.Versions;
 
 import javafx.embed.swing.JFXPanel;
 

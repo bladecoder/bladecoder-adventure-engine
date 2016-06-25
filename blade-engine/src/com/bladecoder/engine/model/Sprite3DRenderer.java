@@ -53,11 +53,11 @@ import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
-import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
-import com.bladecoder.engine.util.Utils3D;
+import com.bladecoder.engine.common.ActionCallbackSerialization;
+import com.bladecoder.engine.common.EngineLogger;
+import com.bladecoder.engine.common.SerializationHelper;
+import com.bladecoder.engine.common.Utils3D;
+import com.bladecoder.engine.common.SerializationHelper.Mode;
 
 @SuppressWarnings("deprecation")
 public class Sprite3DRenderer implements ActorRenderer {

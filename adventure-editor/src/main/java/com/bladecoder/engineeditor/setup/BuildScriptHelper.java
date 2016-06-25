@@ -4,8 +4,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
 
+import com.bladecoder.engineeditor.common.Versions;
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
-import com.bladecoder.engineeditor.utils.Versions;
 
 public class BuildScriptHelper {
 

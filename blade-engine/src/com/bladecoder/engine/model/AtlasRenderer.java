@@ -34,10 +34,10 @@ import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.FATween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.RectangleRenderer;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
+import com.bladecoder.engine.common.EngineLogger;
+import com.bladecoder.engine.common.RectangleRenderer;
+import com.bladecoder.engine.common.SerializationHelper;
+import com.bladecoder.engine.common.SerializationHelper.Mode;
 
 public class AtlasRenderer implements ActorRenderer {
 	private final static float DEFAULT_DIM = 200;

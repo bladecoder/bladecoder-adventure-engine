@@ -48,8 +48,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Array;
-import com.bladecoder.engine.util.Config;
-import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.common.Config;
+import com.bladecoder.engine.common.EngineLogger;
 
 public class EngineAssetManager extends AssetManager {
 	

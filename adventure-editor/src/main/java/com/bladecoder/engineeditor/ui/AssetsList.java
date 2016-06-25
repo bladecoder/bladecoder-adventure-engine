@@ -34,11 +34,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.ImageUtils;
+import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CustomList;
 import com.bladecoder.engineeditor.ui.components.EditToolbar;
-import com.bladecoder.engineeditor.utils.ImageUtils;
-import com.bladecoder.engineeditor.utils.Message;
 
 import javafx.application.Platform;
 import javafx.stage.FileChooser;

@@ -1,4 +1,4 @@
-package com.bladecoder.engine.util;
+package com.bladecoder.engine.common;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;

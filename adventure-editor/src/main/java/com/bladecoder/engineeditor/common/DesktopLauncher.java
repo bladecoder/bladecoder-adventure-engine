@@ -1,4 +1,4 @@
-package com.bladecoder.engineeditor.utils;
+package com.bladecoder.engineeditor.common;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.bladecoder.engine.BladeEngine;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.common.Config;
 
 public class DesktopLauncher extends BladeEngine {
 

@@ -26,7 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.utils.SnapshotArray;
-import com.bladecoder.engineeditor.utils.EditorLogger;
+import com.bladecoder.engineeditor.common.EditorLogger;
 
 public class PropertyTable extends Container<Table> {
 	private static final String[] BOOLEAN_VALUES = { "", "true", "false" };

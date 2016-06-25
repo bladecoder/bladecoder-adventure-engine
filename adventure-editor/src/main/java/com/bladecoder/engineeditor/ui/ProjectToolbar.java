@@ -40,11 +40,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
-import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.common.Config;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.Message;
+import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.utils.Message;
-import com.bladecoder.engineeditor.utils.RunProccess;
 
 public class ProjectToolbar extends Table {
 	private ImageButton newBtn;

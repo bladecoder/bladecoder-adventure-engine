@@ -41,9 +41,9 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.common.DPIUtils;
+import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.ui.UI.Screens;
-import com.bladecoder.engine.util.DPIUtils;
-import com.bladecoder.engine.util.EngineLogger;
 
 public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 	private static final String CREDITS_FILENAME = "ui/credits";
