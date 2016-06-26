@@ -392,6 +392,9 @@ public class BladeEngineSetup {
 		values.put("%LIBGDX_VERSION%", Versions.getLibgdxVersion());
 		values.put("%ROBOVM_VERSION%", Versions.getRoboVMVersion());
 		
+		values.put("%ANDROID_GRADLE_PLUGIN_VERSION%", Versions.getAndroidGradlePluginVersion());
+		values.put("%ROBOVM_GRADLE_PLUGIN_VERSION%", Versions.getROBOVMGradlePluginVersion());
+		
 		if (builder.modules.contains(ProjectType.HTML)) {
 			values.put("%GWT_INHERITS%", parseGwtInherits(builder));
 		}
