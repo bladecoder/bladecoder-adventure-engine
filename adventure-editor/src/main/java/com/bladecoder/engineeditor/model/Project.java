@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.lwjgl.opengl.Display;
+
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.SerializationException;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -36,6 +38,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.DinamicClassPath;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.RunProccess;
+import com.bladecoder.engineeditor.common.Versions;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.setup.Dependency;
 import com.bladecoder.engineeditor.setup.DependencyBank;
@@ -352,6 +355,9 @@ public class Project extends PropertyChange {
 			projectConfig.load(new FileInputStream(
 					projectFile.getAbsolutePath() + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME));
 			modified = false;
+			
+			Display.setTitle( "Adventure Editor v" + Versions.getVersion() + " - " + projectFile.getAbsolutePath() );
+			
 			firePropertyChange(NOTIFY_PROJECT_LOADED);
 		} else {
 			this.projectFile = oldProjectFile;
