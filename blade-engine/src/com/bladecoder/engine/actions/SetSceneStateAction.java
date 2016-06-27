@@ -20,7 +20,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
-@ActionDescription("Sets the scene state")
+@ActionDescription(name="SceneState", value="Sets the scene state")
 public class SetSceneStateAction implements Action {
 	@ActionPropertyDescription("The scene")
 	@ActionProperty(type = Type.SCENE)

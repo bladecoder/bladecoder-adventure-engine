@@ -1,4 +1,4 @@
-package com.bladecoder.engine.util;
+package com.bladecoder.engine.common;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -21,8 +21,22 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.actions.SceneActorRef;
 
 public class ActionUtils {
-	public static String getInfo(Action action) {
-		return action.getClass().getAnnotation(ActionDescription.class).value();
+	public static String getInfo(Class<?> clazz) {
+		return clazz.getAnnotation(ActionDescription.class).value();
+	}
+	
+	public static String getName(Class<?>  clazz) {
+		String name = clazz.getAnnotation(ActionDescription.class).name();
+		
+		if("".equals(name)) {
+			name = clazz.getSimpleName();
+			
+			if(name.endsWith("Action")) {
+				name = name.substring(0, name.length() - 6);
+			}
+		}
+		
+		return name; 
 	}
 
 	public static Param[] getParams(Action action) {

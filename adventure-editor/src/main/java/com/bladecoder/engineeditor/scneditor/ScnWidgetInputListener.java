@@ -25,18 +25,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
+import com.bladecoder.engine.common.PolygonUtils;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.util.PolygonUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.undo.UndoDeleteActor;
 import com.bladecoder.engineeditor.undo.UndoPosition;
 import com.bladecoder.engineeditor.undo.UndoWalkZonePosition;
-import com.bladecoder.engineeditor.utils.Message;
 
 public class ScnWidgetInputListener extends ClickListener {
 	private final ScnWidget scnWidget;

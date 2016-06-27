@@ -19,8 +19,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.common.Config;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.PropertyTable;

@@ -15,9 +15,9 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.bladecoder.engine.common.ActionUtils;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.ActionUtils;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the game propert has the specified value.")
 public class IfPropertyAction extends AbstractIfAction {

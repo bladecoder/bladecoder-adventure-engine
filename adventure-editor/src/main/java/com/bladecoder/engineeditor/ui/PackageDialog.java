@@ -32,14 +32,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogicgames.packr.Packr;
 import com.badlogicgames.packr.Packr.Platform;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.common.Config;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.Message;
+import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.FileInputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-import com.bladecoder.engineeditor.utils.Message;
-import com.bladecoder.engineeditor.utils.RunProccess;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 public class PackageDialog extends EditDialog {

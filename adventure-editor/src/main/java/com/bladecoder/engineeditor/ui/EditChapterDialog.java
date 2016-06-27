@@ -28,11 +28,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Chapter;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-import com.bladecoder.engineeditor.utils.Message;
 
 public class EditChapterDialog extends EditDialog {
 

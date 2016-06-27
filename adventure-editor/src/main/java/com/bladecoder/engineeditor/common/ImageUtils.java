@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.bladecoder.engineeditor.utils;
+package com.bladecoder.engineeditor.common;
 
 import java.awt.Graphics2D;
 import java.awt.Image;

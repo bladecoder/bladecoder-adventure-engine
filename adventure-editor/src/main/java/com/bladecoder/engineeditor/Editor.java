@@ -33,14 +33,14 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.ui.BladeSkin;
+import com.bladecoder.engineeditor.common.EditorLogger;
+import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.scneditor.ScnEditor;
 import com.bladecoder.engineeditor.ui.ActorPanel;
 import com.bladecoder.engineeditor.ui.ProjectPanel;
 import com.bladecoder.engineeditor.ui.ProjectToolbar;
 import com.bladecoder.engineeditor.ui.ScenePanel;
-import com.bladecoder.engineeditor.utils.EditorLogger;
-import com.bladecoder.engineeditor.utils.Message;
 
 //TODO: Set TITLE in window bar. Set '*' in the title when modified
 

@@ -20,8 +20,8 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
-import com.bladecoder.engine.util.InterpolationMode;
+import com.bladecoder.engine.common.ActionCallbackSerialization;
+import com.bladecoder.engine.common.InterpolationMode;
 
 public class Tween implements Serializable {
 	public enum Type {

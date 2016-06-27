@@ -25,12 +25,12 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.ImageUtils;
+import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-import com.bladecoder.engineeditor.utils.ImageUtils;
-import com.bladecoder.engineeditor.utils.Message;
 
 public class CreateResolutionDialog extends EditDialog {
 

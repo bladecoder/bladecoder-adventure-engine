@@ -17,8 +17,8 @@ package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
+import com.bladecoder.engine.common.ActionCallbackSerialization;
 import com.badlogic.gdx.utils.JsonValue;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
 
 public abstract class BaseCallbackAction implements Action, ActionCallback, Serializable {	
 	private ActionCallback verbCb;

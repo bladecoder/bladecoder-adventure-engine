@@ -41,19 +41,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorLogger;
+import com.bladecoder.engineeditor.common.ElementUtils;
+import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteScene;
 import com.bladecoder.engineeditor.undo.UndoOp;
-import com.bladecoder.engineeditor.utils.EditorLogger;
-import com.bladecoder.engineeditor.utils.ElementUtils;
-import com.bladecoder.engineeditor.utils.Message;
 
 public class SceneList extends ModelList<World, Scene> {
 

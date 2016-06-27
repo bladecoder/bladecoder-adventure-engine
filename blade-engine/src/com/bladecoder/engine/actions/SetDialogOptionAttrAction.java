@@ -16,12 +16,12 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
-import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Change the selected dialog option properties")
 public class SetDialogOptionAttrAction implements Action {

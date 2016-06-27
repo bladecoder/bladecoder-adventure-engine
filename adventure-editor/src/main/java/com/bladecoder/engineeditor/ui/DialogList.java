@@ -27,12 +27,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteDialog;
-import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class DialogList extends ModelList<CharacterActor, Dialog> {	
 	

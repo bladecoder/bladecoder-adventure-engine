@@ -27,6 +27,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -35,7 +36,6 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
-import com.bladecoder.engine.util.EngineLogger;
 
 public class CanvasDrawer {
 	public static final float CORNER_DIST = 20;

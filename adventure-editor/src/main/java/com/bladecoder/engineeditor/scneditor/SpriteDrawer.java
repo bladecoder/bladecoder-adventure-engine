@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
+import com.bladecoder.engine.common.RectangleRenderer;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.BaseActor;
@@ -27,7 +28,6 @@ import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.spine.SpineRenderer;
-import com.bladecoder.engine.util.RectangleRenderer;
 
 /**
  * Frame Animation renderer.

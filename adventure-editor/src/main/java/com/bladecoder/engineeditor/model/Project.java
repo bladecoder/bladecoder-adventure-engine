@@ -27,12 +27,15 @@ import java.util.Properties;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.SerializationException;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.common.Config;
+import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.Config;
-import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.DinamicClassPath;
+import com.bladecoder.engineeditor.common.EditorLogger;
+import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.setup.Dependency;
 import com.bladecoder.engineeditor.setup.DependencyBank;
@@ -40,9 +43,6 @@ import com.bladecoder.engineeditor.setup.DependencyBank.ProjectDependency;
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
 import com.bladecoder.engineeditor.setup.ProjectBuilder;
 import com.bladecoder.engineeditor.undo.UndoStack;
-import com.bladecoder.engineeditor.utils.DinamicClassPath;
-import com.bladecoder.engineeditor.utils.EditorLogger;
-import com.bladecoder.engineeditor.utils.RunProccess;
 
 public class Project extends PropertyChange {
 	public static final String PROP_PROJECTFILE = "projectFile";

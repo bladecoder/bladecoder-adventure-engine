@@ -31,10 +31,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.common.Config;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen.UIModes;
-import com.bladecoder.engine.util.Config;
 
 public class HelpScreen extends ScreenAdapter implements BladeScreen {
 	private final static String PIE_FILENAME = "ui/helpPie";

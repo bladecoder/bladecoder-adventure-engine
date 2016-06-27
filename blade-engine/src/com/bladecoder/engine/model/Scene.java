@@ -34,11 +34,11 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.common.EngineLogger;
+import com.bladecoder.engine.common.SerializationHelper;
+import com.bladecoder.engine.common.SerializationHelper.Mode;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
-import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class Scene implements Serializable, AssetConsumer {
 

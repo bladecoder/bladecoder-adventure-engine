@@ -19,10 +19,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class EditDialogDialog extends EditModelDialog<CharacterActor, Dialog> {
 	public static final String INFO = "Actors can have several dialogs defined. Dialogs have a tree of options to choose";

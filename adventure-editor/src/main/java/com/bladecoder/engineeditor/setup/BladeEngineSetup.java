@@ -32,11 +32,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.common.EngineLogger;
+import com.bladecoder.engineeditor.common.EditorLogger;
+import com.bladecoder.engineeditor.common.RunProccess;
+import com.bladecoder.engineeditor.common.Versions;
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
-import com.bladecoder.engineeditor.utils.EditorLogger;
-import com.bladecoder.engineeditor.utils.RunProccess;
-import com.bladecoder.engineeditor.utils.Versions;
 
 /** Command line tool to generate libgdx projects
  * @author badlogic
@@ -391,6 +391,9 @@ public class BladeEngineSetup {
 		values.put("%BLADE_ENGINE_VERSION%", Versions.getVersion());
 		values.put("%LIBGDX_VERSION%", Versions.getLibgdxVersion());
 		values.put("%ROBOVM_VERSION%", Versions.getRoboVMVersion());
+		
+		values.put("%ANDROID_GRADLE_PLUGIN_VERSION%", Versions.getAndroidGradlePluginVersion());
+		values.put("%ROBOVM_GRADLE_PLUGIN_VERSION%", Versions.getROBOVMGradlePluginVersion());
 		
 		if (builder.modules.contains(ProjectType.HTML)) {
 			values.put("%GWT_INHERITS%", parseGwtInherits(builder));

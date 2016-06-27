@@ -30,23 +30,22 @@ import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.actions.AbstractControlAction;
 import com.bladecoder.engine.actions.AbstractIfAction;
 import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.ActorAnimationRef;
 import com.bladecoder.engine.actions.DisableActionAction;
 import com.bladecoder.engine.actions.EndAction;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.SceneActorRef;
+import com.bladecoder.engine.common.ActionUtils;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorLogger;
+import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.ModelList;
 import com.bladecoder.engineeditor.ui.components.ScopePanel;
 import com.bladecoder.engineeditor.undo.UndoDeleteAction;
-import com.bladecoder.engineeditor.utils.EditorLogger;
-import com.bladecoder.engineeditor.utils.ElementUtils;
 
 public class ActionList extends ModelList<Verb, Action> {
 	private static final String CONTROL_ACTION_ID_ATTR = "caID";
@@ -449,7 +448,7 @@ public class ActionList extends ModelList<Verb, Action> {
 				enabled = false;
 			}
 			
-			String id = ActionFactory.getName(a);
+			String id = ActionUtils.getName(a.getClass());
 
 			if (id == null)
 				id = a.getClass().getCanonicalName();
@@ -536,7 +535,7 @@ public class ActionList extends ModelList<Verb, Action> {
 							&& isElse((AbstractIfAction) parentAction, (EndAction) a)) {
 						id = "Else";
 					} else {
-						id = "End" + ActionFactory.getName(parentAction);
+						id = "End" + ActionUtils.getName(parentAction.getClass());
 					}
 				}
 
@@ -596,7 +595,7 @@ public class ActionList extends ModelList<Verb, Action> {
 			StringBuilder sb = new StringBuilder();
 
 			Param[] params = ActionUtils.getParams(a);
-			String actionName = ActionFactory.getName(a);
+			String actionName = ActionUtils.getName(a.getClass());
 
 			for (Param p : params) {
 				String name = p.name;

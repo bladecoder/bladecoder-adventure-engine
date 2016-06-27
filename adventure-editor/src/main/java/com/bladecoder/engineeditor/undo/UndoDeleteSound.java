@@ -3,8 +3,8 @@ package com.bladecoder.engineeditor.undo;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.utils.ElementUtils;
 
 
 public class UndoDeleteSound implements UndoOp {

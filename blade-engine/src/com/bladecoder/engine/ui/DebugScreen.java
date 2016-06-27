@@ -38,10 +38,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.common.Config;
+import com.bladecoder.engine.common.DPIUtils;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
-import com.bladecoder.engine.util.Config;
-import com.bladecoder.engine.util.DPIUtils;
 
 public class DebugScreen implements BladeScreen {
 	private UI ui;

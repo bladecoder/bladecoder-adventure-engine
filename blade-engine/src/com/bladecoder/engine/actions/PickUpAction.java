@@ -17,12 +17,12 @@ package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Puts the selected actor in the inventory.")
 public class PickUpAction implements Action {

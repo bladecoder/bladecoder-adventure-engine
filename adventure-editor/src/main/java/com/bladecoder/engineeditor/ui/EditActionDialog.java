@@ -28,15 +28,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.common.ActionUtils;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.ActionDetector;
+import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.ui.components.EditModelDialog;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.ui.components.ScopePanel;
-import com.bladecoder.engineeditor.utils.EditorLogger;
 
 public class EditActionDialog extends EditModelDialog<Verb, Action> {
 	private static final String CUSTOM_ACTION_STR = "CUSTOM ACTION";
@@ -54,7 +55,8 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 		this.scope = scope;
 		this.pos = e == null ? pos + 1 : pos;
-		String[] actions = ActionFactory.getActionNames();
+		
+		String[] actions = ActionDetector.getActionNames();
 		Arrays.sort(actions);
 		String[] actions2 = new String[actions.length + 1];
 		System.arraycopy(actions, 0, actions2, 0, actions.length);
@@ -89,7 +91,7 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 		});
 
 		if (e != null) {
-			String id = ActionFactory.getName(e);
+			String id = ActionUtils.getName(e.getClass());
 
 			classPanel.setText(e.getClass().getCanonicalName());
 
@@ -134,8 +136,8 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 			
 			setInfo(CUSTOM_INFO);
 		} else {
-			tmp = ActionFactory.create(id, null);
-			setInfo(ActionUtils.getInfo(tmp));
+			tmp = ActionDetector.create(id, null);
+			setInfo(ActionUtils.getInfo(tmp.getClass()));
 		}
 
 		if (e == null || tmp == null || !(e.getClass().getName().equals(tmp.getClass().getName())))

@@ -50,11 +50,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.common.DPIUtils;
+import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
-import com.bladecoder.engine.util.DPIUtils;
-import com.bladecoder.engine.util.EngineLogger;
 
 public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 	private static final int ROW_SLOTS = 3;

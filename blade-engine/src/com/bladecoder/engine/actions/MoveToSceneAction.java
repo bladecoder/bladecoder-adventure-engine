@@ -17,11 +17,11 @@ package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Move the actor to the selected scene")
 public class MoveToSceneAction implements Action {
