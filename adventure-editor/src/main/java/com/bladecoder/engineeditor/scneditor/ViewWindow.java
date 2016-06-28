@@ -44,17 +44,17 @@ public class ViewWindow extends Container<Table> {
 		table.row();
 		
 		final CheckBox inSceneCb = new CheckBox("Animations in scene", skin);
-		inSceneCb.setChecked(false);
+		inSceneCb.setChecked(scnWidget.getInSceneSprites());
 		table.add(inSceneCb);		
 		
 		table.row();		
 		final CheckBox animCb = new CheckBox("Show Animations", skin);
-		animCb.setChecked(true);
+		animCb.setChecked(scnWidget.getAnimation());
 		table.add(animCb);
 		
 		table.row();		
 		walkZone = new CheckBox("Show Walkzone", skin);
-		walkZone.setChecked(false);
+		walkZone.setChecked(scnWidget.getShowWalkZone());
 		table.add(walkZone);		
 		
 		inSceneCb.addListener(new ChangeListener() {

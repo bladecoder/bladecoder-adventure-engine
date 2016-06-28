@@ -140,6 +140,10 @@ public class ScnWidget extends Widget {
 				}
 			}
 		});
+		
+		showWalkZone = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.showWalkZone", "false"));
+		inScene = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.inScene", "false"));
+		animation = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.animation", "true"));
 	}
 
 	public OrthographicCamera getCamera() {
@@ -403,13 +407,23 @@ public class ScnWidget extends Widget {
 
 	public void setInSceneSprites(boolean v) {
 		inScene = v;
+		Ctx.project.getEditorConfig().setProperty("view.inScene", Boolean.toString(inScene));
 
 		if (!inScene)
 			setSelectedFA(null);
 	}
+	
+	public boolean getInSceneSprites() {
+		return inScene;
+	}
 
 	public void setAnimation(boolean v) {
 		animation = v;
+		Ctx.project.getEditorConfig().setProperty("view.animation", Boolean.toString(animation));
+	}
+	
+	public boolean getAnimation() {
+		return animation;
 	}
 
 	public void setAnimationRenderer(BaseActor a, AnimationDesc fa) {
@@ -430,6 +444,7 @@ public class ScnWidget extends Widget {
 	
 	public void setShowWalkZone(boolean v) {
 		showWalkZone = v;
+		Ctx.project.getEditorConfig().setProperty("view.showWalkZone", Boolean.toString(showWalkZone));
 	}
 
 	@Override
