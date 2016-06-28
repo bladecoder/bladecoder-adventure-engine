@@ -942,7 +942,7 @@ public class World implements Serializable, AssetConsumer {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			String version = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
 			if (version != null && !version.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
-				EngineLogger.debug("Game Engine Version v" + version + " differs from Current Engine Version v"
+				EngineLogger.debug("Model Engine Version v" + version + " differs from Current Engine Version v"
 						+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
 
