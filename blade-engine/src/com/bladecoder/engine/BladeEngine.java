@@ -24,11 +24,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.Config;
-import com.bladecoder.engine.common.DPIUtils;
-import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI;
+import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class BladeEngine implements ApplicationListener {
 

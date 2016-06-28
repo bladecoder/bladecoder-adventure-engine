@@ -25,7 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.bladecoder.engine.common.DPIUtils;
+import com.bladecoder.engine.util.DPIUtils;
 
 public class Pointer extends Actor {
 	private static final String POINTER_ICON = "pointer";

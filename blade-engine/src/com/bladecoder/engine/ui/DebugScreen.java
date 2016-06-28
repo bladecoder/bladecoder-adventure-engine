@@ -38,10 +38,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.Config;
-import com.bladecoder.engine.common.DPIUtils;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.DPIUtils;
 
 public class DebugScreen implements BladeScreen {
 	private UI ui;
@@ -354,7 +354,7 @@ public class DebugScreen implements BladeScreen {
 		// ------------- VERSION LABEL NOT IN TABLE
 		String versionString = 
 				Config.getProperty(Config.TITLE_PROP, "title unspecified") + " v" + Config.getProperty(Config.VERSION_PROP, "unspecified") + "\n" +
-				"Blade Engine: v" + Config.getProperty("bladeEngineVersion", "unspecified") + "\n" +
+				"Blade Engine: v" + Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, "unspecified") + "\n" +
 				"libGdx: v" + Config.getProperty("gdxVersion", "unspecified") + "\n" +
 				"RoboVM: v" + Config.getProperty("roboVMVersion", "unspecified") + "\n";
 //				 + "Gdx.app.getVersion: " + Gdx.app.getVersion();

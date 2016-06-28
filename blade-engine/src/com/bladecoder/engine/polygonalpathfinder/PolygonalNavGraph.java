@@ -24,14 +24,14 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.EngineLogger;
-import com.bladecoder.engine.common.PolygonUtils;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.pathfinder.AStarPathFinder;
 import com.bladecoder.engine.pathfinder.NavContext;
 import com.bladecoder.engine.pathfinder.NavGraph;
 import com.bladecoder.engine.pathfinder.PathFinder;
+import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.PolygonUtils;
 
 /**
  * Finds the shortest path between 2 points in a world defined by a walkzone and

@@ -17,7 +17,6 @@ package com.bladecoder.engineeditor.ui;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
@@ -28,11 +27,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogicgames.packr.Packr;
 import com.badlogicgames.packr.Packr.Platform;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.common.Config;
+import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.RunProccess;
@@ -40,7 +40,6 @@ import com.bladecoder.engineeditor.ui.components.EditDialog;
 import com.bladecoder.engineeditor.ui.components.FileInputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 public class PackageDialog extends EditDialog {
 	private static final String ARCH_PROP = "package.arch";
@@ -497,10 +496,9 @@ public class PackageDialog extends EditDialog {
 	 * @return The appName from the file gradle.properties from the game
 	 */
 	private String getAppName() {
-		Properties prop = new Properties();
 
 		try {
-			prop.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties"));
+			Properties prop = Ctx.project.getGradleProperties();
 			return prop.getProperty("appName");
 		} catch (IOException e) {
 			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);

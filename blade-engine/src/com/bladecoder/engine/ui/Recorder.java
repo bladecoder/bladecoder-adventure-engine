@@ -26,12 +26,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.EngineLogger;
-import com.bladecoder.engine.common.RectangleRenderer;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.RectangleRenderer;
 
 /**
  * Singleton class for recording verbs calls. This class can record and play a

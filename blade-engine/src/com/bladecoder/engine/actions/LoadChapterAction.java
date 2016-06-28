@@ -16,9 +16,9 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Load the specified Chapter. Scene can be empty to load the default scene.")
 public class LoadChapterAction implements Action {

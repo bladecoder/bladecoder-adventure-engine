@@ -17,7 +17,6 @@ package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.graphics.Color;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -26,6 +25,7 @@ import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Change actor attributes.")
 public class SetActorAttrAction implements Action {

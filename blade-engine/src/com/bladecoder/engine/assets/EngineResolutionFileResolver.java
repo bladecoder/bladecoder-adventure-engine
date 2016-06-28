@@ -19,8 +19,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resolution;
 import com.badlogic.gdx.files.FileHandle;
-import com.bladecoder.engine.common.EngineLogger;
-import com.bladecoder.engine.common.FileUtils;
+import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.FileUtils;
 
 public class EngineResolutionFileResolver implements FileHandleResolver {
 

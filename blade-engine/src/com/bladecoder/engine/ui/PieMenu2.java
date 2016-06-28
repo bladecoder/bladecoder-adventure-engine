@@ -24,10 +24,10 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bladecoder.engine.common.DPIUtils;
-import com.bladecoder.engine.common.RectangleRenderer;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.RectangleRenderer;
 
 public class PieMenu2 extends com.badlogic.gdx.scenes.scene2d.Group {
 	

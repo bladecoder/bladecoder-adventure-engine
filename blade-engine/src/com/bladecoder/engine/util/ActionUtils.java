@@ -1,4 +1,4 @@
-package com.bladecoder.engine.common;
+package com.bladecoder.engine.util;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -9,10 +9,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.SerializationException;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionDescription;
+import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.ActionProperty;
 import com.bladecoder.engine.actions.ActionPropertyDescription;
 import com.bladecoder.engine.actions.ActorAnimationRef;
@@ -320,14 +320,11 @@ public class ActionUtils {
 		Action action = null;
 		if (className != null) {
 			jsonData.remove("class");
-			Class<?> clazz = null;
-
 			
 			try {
-				clazz = ClassReflection.forName(className);
-				action = (Action)clazz.newInstance();
-			} catch (ReflectionException|InstantiationException | IllegalAccessException ex) {
-				throw new SerializationException(ex);
+				action = ActionFactory.createByClass(className, null);
+			} catch (ClassNotFoundException | ReflectionException e1) {
+				throw new SerializationException(e1);
 			}
 			
 			for(int j = 0; j<jsonData.size; j++) {

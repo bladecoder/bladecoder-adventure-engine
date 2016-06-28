@@ -22,9 +22,9 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.EngineLogger;
-import com.bladecoder.engine.common.SerializationHelper;
-import com.bladecoder.engine.common.SerializationHelper.Mode;
+import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.SerializationHelper;
+import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 /**
  * An InteractiveActor is any object in a scene or in the inventory that has

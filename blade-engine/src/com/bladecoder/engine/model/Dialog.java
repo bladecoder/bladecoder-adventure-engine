@@ -19,8 +19,8 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
-import com.bladecoder.engine.common.SerializationHelper;
-import com.bladecoder.engine.common.SerializationHelper.Mode;
+import com.bladecoder.engine.util.SerializationHelper;
+import com.bladecoder.engine.util.SerializationHelper.Mode;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class Dialog implements Serializable {

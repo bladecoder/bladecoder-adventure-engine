@@ -19,10 +19,10 @@ import java.text.MessageFormat;
 
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Drops the inventory actor in the current scene.")
 public class DropItemAction implements Action {

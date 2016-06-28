@@ -27,15 +27,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.bladecoder.engine.common.Config;
-import com.bladecoder.engine.common.DPIUtils;
-import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.defaults.ScenePointer;
+import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	public enum InventoryPos {

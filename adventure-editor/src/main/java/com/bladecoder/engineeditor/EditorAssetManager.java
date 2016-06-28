@@ -18,7 +18,7 @@ package com.bladecoder.engineeditor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.bladecoder.engine.common.EngineLogger;
+import com.bladecoder.engine.util.EngineLogger;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class EditorAssetManager extends AssetManager {

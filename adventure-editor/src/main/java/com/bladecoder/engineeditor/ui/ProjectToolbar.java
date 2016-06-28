@@ -40,10 +40,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
-import com.bladecoder.engine.common.Config;
+import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.RunProccess;
+import com.bladecoder.engineeditor.Main;
 import com.bladecoder.engineeditor.model.Project;
 
 public class ProjectToolbar extends Table {
@@ -232,6 +233,28 @@ public class ProjectToolbar extends Table {
 							playBtn.setDisabled(false);
 							packageBtn.setDisabled(false);
 							Message.showMsg(getStage(), null);
+
+							if (!Ctx.project.checkVersion()) {
+								new Dialog("Update Engine", skin) {
+									protected void result(Object object) {
+										if (((Boolean) object).booleanValue()) {
+											try {
+												Ctx.project.updateEngineVersion();
+											} catch (IOException e1) {
+												String msg = "Something went wrong while updating the engine.\n\n"
+														+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
+												Message.showMsgDialog(getStage(), "Error", msg);
+
+												e1.printStackTrace();
+											}
+										}
+
+										((Main) Gdx.app).exitSaved();
+									}
+								}.text("Your game uses an old Engine version. Do you want to update the engine?")
+										.button("Yes", true).button("No", false).key(Keys.ENTER, true)
+										.key(Keys.ESCAPE, false).show(getStage());
+							}
 
 						} catch (Exception ex) {
 							if (ex.getCause() != null && ex.getCause().getCause() != null

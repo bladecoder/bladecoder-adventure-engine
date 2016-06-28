@@ -19,36 +19,41 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
-import com.bladecoder.engine.common.ActionUtils;
-import com.bladecoder.engine.common.EngineLogger;
+import com.bladecoder.engine.util.ActionUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class ActionFactory {
+
+	private static ClassLoader loader = ActionFactory.class.getClassLoader();
+
+	public static void setActionClassLoader(ClassLoader loader) {
+		ActionFactory.loader = loader;
+	}
 	
-	public static Action createByClass(String className,
-			HashMap<String, String> params) {
+	public static ClassLoader getActionClassLoader() {
+		return loader;
+	}
+
+	public static Action createByClass(String className, HashMap<String, String> params) throws ClassNotFoundException, ReflectionException {
 
 		Action a = null;
 
-		try {
-			Class<?> c = ClassReflection.forName(className);
-			a = (Action) ClassReflection.newInstance(c);
-			
-			if(params != null) {
-//				a.setParams(params);
-				
-				for(String key:params.keySet()) {
-					String value = params.get(key);
-					
-					try {
-						ActionUtils.setParam(a, key, value);
-					} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-						EngineLogger.error("Error Setting Action Param - Action:" + className + 
-								" Param: " + key + " Value: " + value + " Msg: NOT FOUND " + e.getMessage());
-					}
+		Class<?> c = Class.forName(className, true, loader);
+		a = (Action) ClassReflection.newInstance(c);
+
+		if (params != null) {
+			// a.setParams(params);
+
+			for (String key : params.keySet()) {
+				String value = params.get(key);
+
+				try {
+					ActionUtils.setParam(a, key, value);
+				} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+					EngineLogger.error("Error Setting Action Param - Action:" + className + " Param: " + key
+							+ " Value: " + value + " Msg: NOT FOUND " + e.getMessage());
 				}
 			}
-		} catch (ReflectionException e) {
-			EngineLogger.error(e.getMessage());
 		}
 
 		return a;

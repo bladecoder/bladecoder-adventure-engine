@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.bladecoder.engine.common.Config;
-import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.DialogOption;
@@ -30,6 +28,8 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.EngineLogger;
 
 /**
  * Bot for testing a game. The bot will execute random actions in the scene.

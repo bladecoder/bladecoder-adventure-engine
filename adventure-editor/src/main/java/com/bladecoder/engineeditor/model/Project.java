@@ -18,7 +18,9 @@ package com.bladecoder.engineeditor.model;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +30,16 @@ import org.lwjgl.opengl.Display;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.SerializationException;
+import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.Config;
-import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.common.DinamicClassPath;
 import com.bladecoder.engineeditor.common.EditorLogger;
+import com.bladecoder.engineeditor.common.FolderClassLoader;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.common.Versions;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
@@ -242,9 +245,8 @@ public class Project extends PropertyChange {
 	private void createLibGdxProject(String projectDir, String name, String pkg, String mainClass, String sdkLocation,
 			boolean spinePlugin) throws IOException {
 		String sdk = null;
-		
-		
-		if(sdkLocation != null && !sdkLocation.isEmpty()) {
+
+		if (sdkLocation != null && !sdkLocation.isEmpty()) {
 			sdk = sdkLocation;
 		} else if (System.getenv("ANDROID_HOME") != null) {
 			sdk = System.getenv("ANDROID_HOME");
@@ -257,7 +259,7 @@ public class Project extends PropertyChange {
 		projects.add(ProjectType.DESKTOP);
 		projects.add(ProjectType.ANDROID);
 		projects.add(ProjectType.IOS);
-//		projects.add(ProjectType.HTML);
+		// projects.add(ProjectType.HTML);
 
 		List<Dependency> dependencies = new ArrayList<Dependency>();
 		dependencies.add(bank.getDependency(ProjectDependency.GDX));
@@ -284,10 +286,8 @@ public class Project extends PropertyChange {
 			chapter.save();
 
 			// 3.- SAVE BladeEngine.properties
-			projectConfig.store(
-					new FileOutputStream(
-							projectFile.getAbsolutePath() + "/" + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME),
-					null);
+			projectConfig.store(new FileOutputStream(projectFile.getAbsolutePath() + "/" + ASSETS_PATH + "/"
+					+ Config.PROPERTIES_FILENAME), null);
 
 			// 4.- SAVE I18N
 			i18n.save();
@@ -308,37 +308,28 @@ public class Project extends PropertyChange {
 
 		if (checkProjectStructure()) {
 
-			// Add 'bin' dir from project directory to classpath so we can get
-			// custom actions desc and params
-			// WARNING: Previous 'bin' folders are not deleted from the
-			// classpath
-			// That can not be a problem if the package of the custom actions is
-			// different
-			// in the loaded project.
-			try {
-				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/core/bin");
-				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/core/out");
-				DinamicClassPath.addFile(projectFile.getAbsolutePath() + "/core/build/classes/main");
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.exit(0);
-			}
-
+			// Use FolderClassLoader for loading CUSTOM actions.
+			// TODO Add 'core/bin' and '/core/out' folders???
+			FolderClassLoader folderClassLoader = new FolderClassLoader(projectFile.getAbsolutePath()
+					+ "/core/build/classes/main");
+			ActionFactory.setActionClassLoader(folderClassLoader);
 			EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
 
 			try {
 				World.getInstance().loadWorldDesc();
 			} catch (SerializationException ex) {
 				// check for not compiled custom actions
-				if (ex.getCause() != null && ex.getCause().getCause() != null
-						&& ex.getCause().getCause() instanceof ClassNotFoundException) {
+				if (ex.getCause() != null && ex.getCause() instanceof ClassNotFoundException) {
 					EditorLogger.debug("Custom action class not found. Trying to compile...");
 					if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
+						folderClassLoader.reload();
 						World.getInstance().loadWorldDesc();
 					} else {
+						this.projectFile = null;
 						throw new IOException("Failed to run Gradle.");
 					}
 				} else {
+					this.projectFile = null;
 					throw ex;
 				}
 			}
@@ -352,8 +343,8 @@ public class Project extends PropertyChange {
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 
 			projectConfig = new Properties();
-			projectConfig.load(new FileInputStream(
-					projectFile.getAbsolutePath() + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME));
+			projectConfig.load(new FileInputStream(projectFile.getAbsolutePath() + ASSETS_PATH + "/"
+					+ Config.PROPERTIES_FILENAME));
 			modified = false;
 			
 			Display.setTitle( "Adventure Editor v" + Versions.getVersion() + " - " + projectFile.getAbsolutePath() );
@@ -363,6 +354,58 @@ public class Project extends PropertyChange {
 			this.projectFile = oldProjectFile;
 			throw new IOException("Project not found.");
 		}
+	}
+
+	public boolean checkVersion() throws FileNotFoundException, IOException {
+		String editorVersion = getEditorBladeEngineVersion();
+		String projectVersion = getProjectBladeEngineVersion();
+
+		if (editorVersion.equals(projectVersion) || editorVersion.endsWith("SNAPSHOT")
+				|| editorVersion.indexOf('.') == -1)
+			return true;
+
+		if (parseVersion(editorVersion) <= parseVersion(projectVersion))
+			return true;
+
+		return false;
+	}
+
+	private int parseVersion(String v) {
+		int number = 0;
+		String[] split = v.split("\\.");
+
+		try {
+			for (int i = 0; i < split.length; i++) {
+				number += Math.pow(10, (split.length - i) * 2) * Integer.parseInt(split[i]);
+			}
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+
+		return number;
+	}
+
+	public String getProjectBladeEngineVersion() throws FileNotFoundException, IOException {
+		Properties properties = getGradleProperties();
+
+		return properties.getProperty(Config.BLADE_ENGINE_VERSION_PROP, "default");
+	}
+
+	public String getEditorBladeEngineVersion() {
+		return Versions.getVersion();
+	}
+
+	public void updateEngineVersion() throws FileNotFoundException, IOException {
+		Properties prop = getGradleProperties();
+
+		prop.setProperty(Config.BLADE_ENGINE_VERSION_PROP, Versions.getVersion());
+		prop.setProperty("gdxVersion", Versions.getLibgdxVersion());
+		prop.setProperty("roboVMVersion", Versions.getRoboVMVersion());
+
+		prop.setProperty("roboVMGradlePluginVersion", Versions.getROBOVMGradlePluginVersion());
+		prop.setProperty("androidGradlePluginVersion", Versions.getAndroidGradlePluginVersion());
+
+		saveGradleProperties(prop);
 	}
 
 	public boolean checkProjectStructure() {
@@ -412,8 +455,8 @@ public class Project extends PropertyChange {
 	}
 
 	public void loadChapter(String selChapter) throws IOException {
-		undoStack.clear();	
-		
+		undoStack.clear();
+
 		try {
 			chapter.load(selChapter);
 		} catch (SerializationException ex) {
@@ -430,7 +473,7 @@ public class Project extends PropertyChange {
 				throw ex;
 			}
 		}
-		
+
 		i18n.load(selChapter);
 	}
 
@@ -441,5 +484,19 @@ public class Project extends PropertyChange {
 	public void setModified() {
 		modified = true;
 		firePropertyChange(NOTIFY_MODEL_MODIFIED);
+	}
+
+	public Properties getGradleProperties() throws FileNotFoundException, IOException {
+		Properties prop = new Properties();
+
+		prop.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties"));
+
+		return prop;
+	}
+
+	public void saveGradleProperties(Properties prop) throws IOException {
+		FileOutputStream os = new FileOutputStream(Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties");
+
+		prop.store(os, null);
 	}
 }
