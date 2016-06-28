@@ -239,6 +239,7 @@ public class ProjectToolbar extends Table {
 										if (((Boolean) object).booleanValue()) {
 											try {
 												Ctx.project.updateEngineVersion();
+												Message.showMsg(getStage(), "Project successfully updated.", 3);
 											} catch (IOException e1) {
 												String msg = "Something went wrong while updating the engine.\n\n"
 														+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
@@ -248,9 +249,9 @@ public class ProjectToolbar extends Table {
 											}
 										}
 									}
-								}.text("Your game uses an old Engine version. Do you want to update the engine?")
-										.button("Yes", true).button("No", false).key(Keys.ENTER, true)
-										.key(Keys.ESCAPE, false).show(getStage());
+								}.text("Your game uses an old (" + Ctx.project.getProjectBladeEngineVersion() + ") Engine version. Do you want to update the engine?")
+										.button("Yes", true).button("No", false).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
+										.show(getStage());
 							}
 
 						} catch (Exception ex) {

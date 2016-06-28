@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.15]
+
+- Ask for updating the engine version of the game if the editor detects that is old.
+- Custom actions now are autodetected by the editor and handled as engine actions.
+- Save view menu state.
+- Show project path in window title.
+- Select 'init' scene when loading a project.
+- Ask for saving current project when loading or creating new project.
+- Added preload parameter to sounds to avoid loading all scene sounds in init.
+- FIX: Music was not restored from savedgames.
+- FIX: Error in REVERSE_REPEAT animations.
+
 ## [0.9.14]
 
 - Multiinventory support.
