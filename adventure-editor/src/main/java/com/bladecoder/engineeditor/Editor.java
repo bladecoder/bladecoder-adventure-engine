@@ -126,8 +126,6 @@ public class Editor implements ApplicationListener {
 									e1.printStackTrace();
 								}
 							}
-
-							((Main) Gdx.app).exitSaved();
 						}
 					}.text("Your game uses an old Engine version. Do you want to update the engine?")
 							.button("Yes", true).button("No", false).key(Keys.ENTER, true).key(Keys.ESCAPE, false)

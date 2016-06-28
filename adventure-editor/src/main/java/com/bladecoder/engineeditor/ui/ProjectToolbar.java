@@ -44,7 +44,6 @@ import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.RunProccess;
-import com.bladecoder.engineeditor.Main;
 import com.bladecoder.engineeditor.model.Project;
 
 public class ProjectToolbar extends Table {
@@ -248,8 +247,6 @@ public class ProjectToolbar extends Table {
 												e1.printStackTrace();
 											}
 										}
-
-										((Main) Gdx.app).exitSaved();
 									}
 								}.text("Your game uses an old Engine version. Do you want to update the engine?")
 										.button("Yes", true).button("No", false).key(Keys.ENTER, true)
