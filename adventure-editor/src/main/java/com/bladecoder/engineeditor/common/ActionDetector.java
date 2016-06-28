@@ -17,6 +17,7 @@ package com.bladecoder.engineeditor.common;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -79,18 +80,21 @@ public class ActionDetector {
 		if (actions == null) {
 			detect();
 		}
+		
+		ArrayList<String> names = new ArrayList<String>();
+		names.addAll(actions.keySet());
 
-		addCustomActions();
+		addCustomActions(names);
 
-		return actions.keySet().toArray(new String[actions.size()]);
+		return names.toArray(new String[names.size()]);
 	}
 
 	public static Action create(String name, HashMap<String, String> params) {
 		Class<?> c = actions.get(name);
 		
 		if(c == null) {
-			addCustomActions();
-			 c = actions.get(name);
+			// Search in custom actions
+			c = getCustomActionByName(name);
 		}
 
 		if (c == null) {
@@ -108,15 +112,29 @@ public class ActionDetector {
 		}
 	}
 
-	private static void addCustomActions() {
+	private static void addCustomActions(ArrayList<String> names) {
 		Hashtable<String, Class<?>> coreClasses = ((FolderClassLoader) ActionFactory.getActionClassLoader())
 				.getClasses();
 
 		for (Class<?> c : coreClasses.values()) {
 			if (c.getAnnotation(ActionDescription.class) != null) {
-				actions.put(ActionUtils.getName(c), c);
+				names.add(ActionUtils.getName(c));
 			}
 		}
+	}
+	
+	private static Class<?> getCustomActionByName(String name) {
+		Hashtable<String, Class<?>> coreClasses = ((FolderClassLoader) ActionFactory.getActionClassLoader())
+				.getClasses();
+
+		for (Class<?> c : coreClasses.values()) {
+			if (c.getAnnotation(ActionDescription.class) != null) {
+				if(name.equals(ActionUtils.getName(c)))
+						return c;
+			}
+		}
+		
+		return null;
 	}
 
 }
