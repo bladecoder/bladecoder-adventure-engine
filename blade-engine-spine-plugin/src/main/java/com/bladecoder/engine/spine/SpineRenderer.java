@@ -114,6 +114,17 @@ public class SpineRenderer implements ActorRenderer {
 				return;
 
 			if ((currentAnimationType == Tween.Type.REPEAT || currentAnimationType == Tween.Type.REVERSE_REPEAT) && (currentCount == Tween.INFINITY || currentCount > loopCount)) {
+				
+				// FIX for latest spine rt not setting setup pose when looping. 
+				currentSource.skeleton.setToSetupPose();
+				currentSource.skeleton.setFlipX(flipX);
+				complete = true;
+				currentSource.animation.update(0);
+				currentSource.animation.apply(currentSource.skeleton);
+				currentSource.skeleton.updateWorldTransform();
+				complete = false;
+				// END FIX
+				
 				return;
 			}
 
@@ -224,8 +235,9 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public void update(float delta) {
-		if (complete)
+		if (complete) {
 			return;
+		}
 
 		if (currentSource != null && currentSource.skeleton != null) {
 			float d = delta;
