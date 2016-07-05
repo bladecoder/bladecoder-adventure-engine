@@ -33,7 +33,7 @@ public class PositionAction implements Action {
 	private SceneActorRef target;
 
 	@ActionProperty
-	@ActionPropertyDescription("The absolute position to set if no target is selected.")
+	@ActionPropertyDescription("The absolute position to set if no target is selected. Relative if target is selected.")
 	private Vector2 position;
 
 	@Override
@@ -56,6 +56,13 @@ public class PositionAction implements Action {
 				Vector2 refPoint = ((InteractiveActor) anchorActor).getRefPoint();
 				x += refPoint.x;
 				y += refPoint.y;
+			}
+			
+			if(position != null){
+				float scale = EngineAssetManager.getInstance().getScale();
+				
+				x += position.x * scale;
+				y += position.y * scale;
 			}
 		} else if (position != null) {
 			float scale = EngineAssetManager.getInstance().getScale();

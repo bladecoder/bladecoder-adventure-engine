@@ -41,7 +41,7 @@ public class PositionAnimAction implements Action {
 	private String target;
 
 	@ActionProperty
-	@ActionPropertyDescription("The absolute world position if no target is selected")
+	@ActionPropertyDescription("The absolute world position if no target is selected. Relative to target if selected.")
 	private Vector2 pos;
 
 	@ActionProperty(required = true, defaultValue = "1.0")
@@ -90,6 +90,11 @@ public class PositionAnimAction implements Action {
 				Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
 				x+= refPoint.x;
 				y+= refPoint.y;
+			}
+			
+			if(pos != null){			
+				x += pos.x * scale;
+				y += pos.y * scale;
 			}
 		} else if (pos != null) {
 			x = pos.x * scale; 
