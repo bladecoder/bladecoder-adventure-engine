@@ -30,21 +30,25 @@ import com.bladecoder.engine.model.World;
 
 @ActionDescription("Says a text")
 public class SayAction extends BaseCallbackAction {
-	@ActionPropertyDescription("The target actor")
+	@ActionPropertyDescription("The target actor.")
 	@ActionProperty(type = Type.CHARACTER_ACTOR, required=true)
 	private String actor;
 
-	@ActionPropertyDescription("The 'text' to show")
+	@ActionPropertyDescription("The 'text' to show.")
 	@ActionProperty(type = Type.SMALL_TEXT)
 	private String text;
 
-	@ActionPropertyDescription("The 'soundId' to play if selected")
+	@ActionPropertyDescription("The 'soundId' to play if selected.")
 	@ActionProperty(type = Type.SOUND)
 	private String soundId;
 
 	@ActionProperty(required = true, defaultValue = "SUBTITLE")
 	@ActionPropertyDescription("The type of the text.")
 	private Text.Type type = Text.Type.SUBTITLE;
+	
+	@ActionPropertyDescription("The animation to set when talking.")
+	@ActionProperty(required = false)
+	private String animation;
 
 	@ActionProperty(defaultValue = "false")
 	@ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")
@@ -105,15 +109,20 @@ public class SayAction extends BaseCallbackAction {
 
 		// If the actor was already talking we restore the actor to the 'stand'
 		// pose
-		if (fa.startsWith(a.getTalkAnim())) {
+		String talkAnim = animation != null?animation:a.getTalkAnim();
+		
+		if (fa.startsWith(talkAnim)) {
 			a.stand();
 		}
 	}
 
 	private void startTalkAnim(CharacterActor a) {
 		previousAnim = a.getRenderer().getCurrentAnimationId();
-
-		a.talk();
+		
+		if(animation != null)
+			a.startAnimation(animation, null);
+		else
+			a.talk();
 	}
 
 	@Override
