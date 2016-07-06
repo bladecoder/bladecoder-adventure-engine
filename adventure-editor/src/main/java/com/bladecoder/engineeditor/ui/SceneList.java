@@ -96,6 +96,8 @@ public class SceneList extends ModelList<World, Scene> {
 					Scene s = list.getItems().get(pos);
 
 					Ctx.project.setSelectedScene(s);
+					
+					Ctx.project.getEditorConfig().setProperty("project.selectedScene", s.getId());
 				}
 
 				toolbar.disableEdit(pos == -1);
@@ -165,11 +167,12 @@ public class SceneList extends ModelList<World, Scene> {
 
 					if (selChapter != null)
 						Ctx.project.loadChapter(selChapter);
+					
+					String init = Ctx.project.getEditorConfig().getProperty("project.selectedScene", 
+							World.getInstance().getInitScene());
 
 					addElements(World.getInstance(),
 							Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[0])));
-
-					String init = World.getInstance().getInitScene();
 
 					if (init != null) {
 						Scene s = World.getInstance().getScenes().get(init);
