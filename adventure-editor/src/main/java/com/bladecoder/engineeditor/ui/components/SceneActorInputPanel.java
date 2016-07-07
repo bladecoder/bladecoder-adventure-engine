@@ -104,6 +104,9 @@ public class SceneActorInputPanel extends InputPanel {
 	}
 	
 	public String getText() {
+		if(actor.getSelected().isEmpty())
+			return null;
+		
 		return (new SceneActorRef(scene.getSelected(), actor.getSelected())).toString();
 	}
 
