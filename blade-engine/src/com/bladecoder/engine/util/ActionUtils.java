@@ -178,9 +178,15 @@ public class ActionUtils {
 		} else if(field.getType().isAssignableFrom(Vector2.class)) {
 			field.set(action, Param.parseVector2(value));
 		} else if(field.getType().isAssignableFrom(SceneActorRef.class)) {
-			field.set(action, new SceneActorRef(value));
+			if(value == null)
+				field.set(action, null);
+			else
+				field.set(action, new SceneActorRef(value));
 		} else if(field.getType().isAssignableFrom(ActorAnimationRef.class)) {
-			field.set(action, new ActorAnimationRef(value));
+			if(value == null)
+				field.set(action, null);
+			else
+				field.set(action, new ActorAnimationRef(value));
 		} else if(field.getType().isAssignableFrom(Color.class)) {
 			Color a = Param.parseColor(value);
 			
