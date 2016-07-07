@@ -52,7 +52,7 @@ public class PositionAnimAction implements Action {
 	@ActionPropertyDescription("Duration or speed of the animation")
 	private Mode mode;
 
-	@ActionProperty(required = true, defaultValue = "-1.0")
+	@ActionProperty(required = true, defaultValue = "-1")
 	@ActionPropertyDescription("The times to repeat. -1 for infinity")
 	private int count = -1;
 
