@@ -76,7 +76,8 @@ abstract public class BaseActor implements Serializable {
 
 		sb.append("\nObject: ").append(id);
 		sb.append("\n  Visible: ").append(visible);
-		sb.append("\n  BBox: ").append(getBBox().toString());
+		sb.append("\n  Pos: ").append(getBBox().getX() + " , " + getBBox().getY());
+		sb.append("\n  Scale: ").append(getBBox().getScaleX());
 		sb.append("\n");
 
 		return sb.toString();
