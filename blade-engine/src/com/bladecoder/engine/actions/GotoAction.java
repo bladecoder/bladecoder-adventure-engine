@@ -40,7 +40,7 @@ public class GotoAction implements Action {
 	private String target;
 	
 	@ActionProperty
-	@ActionPropertyDescription("The absolute position to walk to if no target actor is selected")
+	@ActionPropertyDescription("The absolute position to walk to if no target actor is selected. Relative to target if selected.")
 	private Vector2 pos;
 
 	@ActionProperty(required = true, defaultValue = "true")
@@ -65,6 +65,13 @@ public class GotoAction implements Action {
 				Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
 				x+= refPoint.x;
 				y+= refPoint.y;
+			}
+			
+			if(pos != null){
+				float scale = EngineAssetManager.getInstance().getScale();
+				
+				x += pos.x * scale;
+				y += pos.y * scale;
 			}
 		} else if(pos != null){
 			float scale = EngineAssetManager.getInstance().getScale();

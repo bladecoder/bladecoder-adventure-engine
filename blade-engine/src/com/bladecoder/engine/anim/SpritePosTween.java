@@ -18,8 +18,8 @@ package com.bladecoder.engine.anim;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.common.InterpolationMode;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.util.InterpolationMode;
 
 /**
  * Tween for spriteactor position animation

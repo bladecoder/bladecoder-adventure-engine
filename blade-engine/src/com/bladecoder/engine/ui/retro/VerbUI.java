@@ -16,12 +16,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
-import com.bladecoder.engine.common.DPIUtils;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.SceneScreen;
+import com.bladecoder.engine.util.DPIUtils;
 
 public class VerbUI extends Table {
 	private final static float MARGIN = 1;

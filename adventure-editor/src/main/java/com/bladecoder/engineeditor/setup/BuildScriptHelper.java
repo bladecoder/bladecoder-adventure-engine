@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
 
-import com.bladecoder.engineeditor.common.Versions;
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
 
 public class BuildScriptHelper {
@@ -23,15 +22,14 @@ public class BuildScriptHelper {
 		// dependencies
 		write(wr, "dependencies {");
 		if (projects.contains(ProjectType.HTML)) {
-			write(wr, "classpath '" + DependencyBank.gwtPluginImport + Versions.getGwtGradlePluginVersion() + "'");
+			write(wr, "classpath \"" + DependencyBank.gwtPluginImport + "\"");
 		}
 		if (projects.contains(ProjectType.ANDROID)) {
-			write(wr, "classpath '" + DependencyBank.androidPluginImport + Versions.getAndroidGradlePluginVersion()
-					+ "'");
+			write(wr, "classpath \"" + DependencyBank.androidPluginImport + "\"");
 		}
 		if (projects.contains(ProjectType.IOS)) {
 			write(wr,
-					"classpath '" + DependencyBank.roboVMPluginImport + Versions.getROBOVMGradlePluginVersion() + "'");
+					"classpath \"" + DependencyBank.roboVMPluginImport + "\"");
 		}
 		write(wr, "}");
 		write(wr, "}");

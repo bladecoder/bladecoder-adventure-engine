@@ -78,9 +78,8 @@ public class Editor implements ApplicationListener {
 		rightPanel.add(actorPanel).expand().fill().left();
 		rightPanel.setBackground("background");
 
-		SplitPane splitPaneRight = new SplitPane(scnEditor, rightPanel,
-				false, skin);
-		
+		SplitPane splitPaneRight = new SplitPane(scnEditor, rightPanel, false, skin);
+
 		splitPaneRight.setSplitAmount(0.75f);
 
 		// LEFT PANEL
@@ -100,31 +99,49 @@ public class Editor implements ApplicationListener {
 		leftPanel.add(scenePanel).expand().fill().left();
 		leftPanel.setBackground("background");
 
-		SplitPane splitPaneLeft = new SplitPane(leftPanel, splitPaneRight,
-				false, skin);
+		SplitPane splitPaneLeft = new SplitPane(leftPanel, splitPaneRight, false, skin);
 		splitPaneLeft.setFillParent(true);
 		splitPaneLeft.setSplitAmount(0.25f);
 		stage.addActor(splitPaneLeft);
 
 		// LOAD LAST OPEN PROJECT
-		String lastProject = Ctx.project.getEditorConfig().getProperty(
-				Project.LAST_PROJECT_PROP, "");
+		String lastProject = Ctx.project.getEditorConfig().getProperty(Project.LAST_PROJECT_PROP, "");
 
 		if (!lastProject.isEmpty() && new File(lastProject).exists()) {
 			try {
 				EditorLogger.debug("Loading last project: " + lastProject);
 				Ctx.project.loadProject(new File(lastProject));
+
+				if (!Ctx.project.checkVersion()) {
+					new Dialog("Update Engine", skin) {
+						protected void result(Object object) {
+							if (((Boolean) object).booleanValue()) {
+								try {
+									Ctx.project.updateEngineVersion();
+									Message.showMsg(getStage(), "Project successfully updated.", 3);
+								} catch (IOException e1) {
+									String msg = "Something went wrong while updating the engine.\n\n"
+											+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
+									Message.showMsgDialog(getStage(), "Error", msg);
+
+									e1.printStackTrace();
+								}
+							}
+						}
+					}.text("Your game uses an old (" + Ctx.project.getProjectBladeEngineVersion() + ") Engine version. Do you want to update the engine?")
+							.button("Yes", true).button("No", false).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
+							.show(stage);
+				}
 			} catch (Exception e) {
-				EditorLogger.debug("Error loading last project: "
-						+ e.getMessage());
+				EditorLogger.debug("Error loading last project: " + e.getMessage());
 				Ctx.project.closeProject();
 				e.printStackTrace();
 			}
 		}
-		
+
 		stage.setScrollFocus(scnEditor.getScnWidget());
 		stage.setKeyboardFocus(scnEditor.getScnWidget());
-		
+
 		TooltipManager.getInstance().instant();
 	}
 
@@ -156,14 +173,14 @@ public class Editor implements ApplicationListener {
 	public void dispose() {
 		scnEditor.dispose();
 		stage.dispose();
-		
+
 		Ctx.project.saveConfig();
-		
-//		try {
-//			Ctx.project.saveProject();
-//		} catch (Exception ex) {
-//			ex.printStackTrace();
-//		}
+
+		// try {
+		// Ctx.project.saveProject();
+		// } catch (Exception ex) {
+		// ex.printStackTrace();
+		// }
 	}
 
 	public void exit() {
@@ -175,24 +192,21 @@ public class Editor implements ApplicationListener {
 							Ctx.project.saveProject();
 						} catch (IOException e1) {
 							String msg = "Something went wrong while saving the actor.\n\n"
-									+ e1.getClass().getSimpleName()
-									+ " - "
-									+ e1.getMessage();
+									+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
 							Message.showMsgDialog(getStage(), "Error", msg);
 
 							e1.printStackTrace();
 						}
 					}
 
-					((Main)Gdx.app).exitSaved();	
+					((Main) Gdx.app).exitSaved();
 				}
-			}.text("Save changes to project?").button("Yes", true)
-					.button("No", false).key(Keys.ENTER, true)
+			}.text("Save changes to project?").button("Yes", true).button("No", false).key(Keys.ENTER, true)
 					.key(Keys.ESCAPE, false).show(stage);
-			
+
 		} else {
-			((Main)Gdx.app).exitSaved();	
+			((Main) Gdx.app).exitSaved();
 		}
-	
+
 	}
 }

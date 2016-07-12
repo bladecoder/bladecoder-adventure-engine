@@ -43,11 +43,11 @@ import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.Timers;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.Config;
-import com.bladecoder.engine.common.EngineLogger;
-import com.bladecoder.engine.common.SerializationHelper;
-import com.bladecoder.engine.common.SerializationHelper.Mode;
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.SerializationHelper;
+import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class World implements Serializable, AssetConsumer {
 
@@ -942,7 +942,7 @@ public class World implements Serializable, AssetConsumer {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			String version = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
 			if (version != null && !version.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
-				EngineLogger.debug("Game Engine Version v" + version + " differs from Current Engine Version v"
+				EngineLogger.debug("Model Engine Version v" + version + " differs from Current Engine Version v"
 						+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
 

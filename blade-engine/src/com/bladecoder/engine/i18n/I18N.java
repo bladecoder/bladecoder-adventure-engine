@@ -18,7 +18,7 @@ package com.bladecoder.engine.i18n;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import com.bladecoder.engine.common.EngineLogger;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class I18N {
 	public static final char PREFIX = '@';

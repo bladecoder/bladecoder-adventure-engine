@@ -43,7 +43,7 @@ public class FATween extends Tween {
 	public void update(AtlasRenderer a, float delta) {
 		update(delta);
 		
-		if(!isComplete())
+		if(!isComplete() && getPercent() < 1.0f)
 			a.setFrame((int)(getPercent() * a.getNumFrames()));
 	}
 	

@@ -31,15 +31,15 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.ActionCallbackSerialization;
-import com.bladecoder.engine.common.EngineLogger;
-import com.bladecoder.engine.common.RectangleRenderer;
-import com.bladecoder.engine.common.SerializationHelper;
-import com.bladecoder.engine.common.SerializationHelper.Mode;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.ActionCallbackSerialization;
+import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.RectangleRenderer;
+import com.bladecoder.engine.util.SerializationHelper;
+import com.bladecoder.engine.util.SerializationHelper.Mode;
 import com.esotericsoftware.spine.Animation;
 import com.esotericsoftware.spine.AnimationState;
 import com.esotericsoftware.spine.AnimationState.AnimationStateListener;
@@ -114,6 +114,17 @@ public class SpineRenderer implements ActorRenderer {
 				return;
 
 			if ((currentAnimationType == Tween.Type.REPEAT || currentAnimationType == Tween.Type.REVERSE_REPEAT) && (currentCount == Tween.INFINITY || currentCount > loopCount)) {
+				
+				// FIX for latest spine rt not setting setup pose when looping. 
+				currentSource.skeleton.setToSetupPose();
+				currentSource.skeleton.setFlipX(flipX);
+				complete = true;
+				currentSource.animation.update(0);
+				currentSource.animation.apply(currentSource.skeleton);
+				currentSource.skeleton.updateWorldTransform();
+				complete = false;
+				// END FIX
+				
 				return;
 			}
 
@@ -224,8 +235,9 @@ public class SpineRenderer implements ActorRenderer {
 
 	@Override
 	public void update(float delta) {
-		if (complete)
+		if (complete) {
 			return;
+		}
 
 		if (currentSource != null && currentSource.skeleton != null) {
 			float d = delta;

@@ -17,82 +17,124 @@ package com.bladecoder.engineeditor.common;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionDescription;
 import com.bladecoder.engine.actions.ActionFactory;
-import com.bladecoder.engine.common.ActionUtils;
-import com.bladecoder.engine.common.EngineLogger;
+import com.bladecoder.engine.util.ActionUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 import eu.infomas.annotation.AnnotationDetector;
 import eu.infomas.annotation.AnnotationDetector.TypeReporter;
 
 public class ActionDetector {
-	
-	private static final HashMap<String, String> actions = new HashMap<String, String>();
-	
+
+	private static HashMap<String, Class<?>> actions = null;
+
 	public static void detect() {
-		actions.clear();
-		
+
+		actions = new HashMap<String, Class<?>>();
+
 		final TypeReporter reporter = new TypeReporter() {
 
-		    @SuppressWarnings("unchecked")
-		    @Override
-		    public Class<? extends Annotation>[] annotations() {
-		        return new Class[]{ActionDescription.class};
-		    }
+			@SuppressWarnings("unchecked")
+			@Override
+			public Class<? extends Annotation>[] annotations() {
+				return new Class[] { ActionDescription.class };
+			}
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public void reportTypeAnnotation(Class<? extends Annotation> annotation, String className) {
 				Class<Action> c = null;
-				
+
 				try {
 					c = ClassReflection.forName(className);
 				} catch (ReflectionException e) {
 					e.printStackTrace();
 				}
-				
+
 				String name = ActionUtils.getName(c);
-				
-				if(!name.equals("End"))
-					actions.put(name, className);
+
+				if (!name.equals("End"))
+					actions.put(name, c);
 			}
 
-
 		};
-		
+
 		final AnnotationDetector cf = new AnnotationDetector(reporter);
-		
+
 		try {
 			cf.detect();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public static String []getActionNames() {
-		detect();
-		
-		return  actions.keySet().toArray(new String[actions.size()]);
-	}
-	
-	public static Action create(String name,
-			HashMap<String, String> params) {
-		String className = actions.get(name);
 
-		if (className == null) {
-			EngineLogger.error( "Action with name '" + name
-					+ "' not found.");
+	public static String[] getActionNames() {
+		if (actions == null) {
+			detect();
+		}
+		
+		ArrayList<String> names = new ArrayList<String>();
+		names.addAll(actions.keySet());
+
+		addCustomActions(names);
+
+		return names.toArray(new String[names.size()]);
+	}
+
+	public static Action create(String name, HashMap<String, String> params) {
+		Class<?> c = actions.get(name);
+		
+		if(c == null) {
+			// Search in custom actions
+			c = getCustomActionByName(name);
+		}
+
+		if (c == null) {
+			EngineLogger.error("Action with name '" + name + "' not found.");
 
 			return null;
 		}
 
-		return ActionFactory.createByClass(className, params);
+		try {
+			return ActionFactory.createByClass(c.getName(), params);
+		} catch (ClassNotFoundException | ReflectionException e) {
+			EngineLogger.error("Action with name '" + name + "' not found.");
+
+			return null;
+		}
+	}
+
+	private static void addCustomActions(ArrayList<String> names) {
+		Hashtable<String, Class<?>> coreClasses = ((FolderClassLoader) ActionFactory.getActionClassLoader())
+				.getClasses();
+
+		for (Class<?> c : coreClasses.values()) {
+			if (c.getAnnotation(ActionDescription.class) != null) {
+				names.add(ActionUtils.getName(c));
+			}
+		}
 	}
 	
+	private static Class<?> getCustomActionByName(String name) {
+		Hashtable<String, Class<?>> coreClasses = ((FolderClassLoader) ActionFactory.getActionClassLoader())
+				.getClasses();
+
+		for (Class<?> c : coreClasses.values()) {
+			if (c.getAnnotation(ActionDescription.class) != null) {
+				if(name.equals(ActionUtils.getName(c)))
+						return c;
+			}
+		}
+		
+		return null;
+	}
 
 }

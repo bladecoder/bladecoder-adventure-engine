@@ -16,7 +16,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.bladecoder.engine.BladeEngine;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.Config;
+import com.bladecoder.engine.util.Config;
 
 public class DesktopLauncher extends BladeEngine {
 

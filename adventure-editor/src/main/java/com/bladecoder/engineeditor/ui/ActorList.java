@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.AtlasRenderer;
@@ -221,6 +222,13 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 		parent.addActor(newElement);
 		Ctx.project.getI18N().extractStrings(parent.getId(), newElement);
+		
+		if(newElement instanceof InteractiveActor) {
+			InteractiveActor ia = (InteractiveActor) newElement;
+			ia.loadAssets();
+			EngineAssetManager.getInstance().finishLoading();
+			ia.retrieveAssets();
+		}
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();

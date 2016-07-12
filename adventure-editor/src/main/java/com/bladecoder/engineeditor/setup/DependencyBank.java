@@ -12,9 +12,9 @@ public class DependencyBank {
 	static String libGDXReleaseUrl = "https://oss.sonatype.org/content/repositories/releases/";
 
 	//Project plugins
-	static String gwtPluginImport = "de.richsource.gradle.plugins:gwt-gradle-plugin:";
-	static String androidPluginImport = "com.android.tools.build:gradle:";
-	static String roboVMPluginImport = "com.mobidevelop.robovm:robovm-gradle-plugin:";
+	static String gwtPluginImport = "de.richsource.gradle.plugins:gwt-gradle-plugin:$gwtGradlePluginVersion";
+	static String androidPluginImport = "com.android.tools.build:gradle:$androidGradlePluginVersion";
+	static String roboVMPluginImport = "com.mobidevelop.robovm:robovm-gradle-plugin:$roboVMGradlePluginVersion";
 
 	HashMap<ProjectDependency, Dependency> gdxDependencies = new HashMap<ProjectDependency, Dependency>();
 	LinkedHashMap<ProjectDependency, String[]> gwtInheritances = new LinkedHashMap<ProjectDependency, String[]>();

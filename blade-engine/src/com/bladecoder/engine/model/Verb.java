@@ -21,10 +21,10 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.common.ActionUtils;
-import com.bladecoder.engine.common.EngineLogger;
-import com.bladecoder.engine.common.SerializationHelper;
-import com.bladecoder.engine.common.SerializationHelper.Mode;
+import com.bladecoder.engine.util.ActionUtils;
+import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.SerializationHelper;
+import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class Verb implements VerbRunner, Serializable {
 	public static final String LOOKAT_VERB = "lookat";

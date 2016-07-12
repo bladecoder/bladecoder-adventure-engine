@@ -23,14 +23,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.common.ActionUtils;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Verb;
+import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ActionDetector;
 import com.bladecoder.engineeditor.common.EditorLogger;
@@ -40,12 +38,7 @@ import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 import com.bladecoder.engineeditor.ui.components.ScopePanel;
 
 public class EditActionDialog extends EditModelDialog<Verb, Action> {
-	private static final String CUSTOM_ACTION_STR = "CUSTOM ACTION";
-
-	private static final String CUSTOM_INFO = "Custom action definition";
-
 	private InputPanel actionPanel;
-	private InputPanel classPanel;
 	private String scope;
 	private int pos;
 
@@ -58,14 +51,9 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 		
 		String[] actions = ActionDetector.getActionNames();
 		Arrays.sort(actions);
-		String[] actions2 = new String[actions.length + 1];
-		System.arraycopy(actions, 0, actions2, 0, actions.length);
-		actions2[actions2.length - 1] = CUSTOM_ACTION_STR;
 
-		actionPanel = InputPanelFactory.createInputPanel(skin, "Action", "Select the action to create.", actions2,
+		actionPanel = InputPanelFactory.createInputPanel(skin, "Action", "Select the action to create.", actions,
 				true);
-
-		classPanel = InputPanelFactory.createInputPanel(skin, "Class", "Select the class for the custom action.", true);
 
 		((SelectBox<String>) actionPanel.getField()).addListener(new ChangeListener() {
 
@@ -74,31 +62,12 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 				setAction();
 			}
 		});
-
-//		((TextField) classPanel.getField()).addListener(new FocusListener() {
-//			@Override
-//			public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
-//				if (!event.isFocused())
-//					setAction();
-//			}
-//		});
 		
-		((TextField) classPanel.getField()).setTextFieldListener(new TextFieldListener() {
-		    @Override
-		    public void keyTyped(TextField textField, char key) {
-		    	setAction();
-		    }
-		});
-
 		if (e != null) {
 			String id = ActionUtils.getName(e.getClass());
 
-			classPanel.setText(e.getClass().getCanonicalName());
-
 			if (id != null) {
 				actionPanel.setText(id);
-			} else {
-				actionPanel.setText(CUSTOM_ACTION_STR);
 			}
 
 		}
@@ -120,25 +89,8 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 		Action tmp = null;
 
-		if (id.equals(CUSTOM_ACTION_STR)) {
-			addInputPanel(classPanel);
-			if (classPanel != null && classPanel.getText() != null && !classPanel.getText().trim().isEmpty())
-				tmp = ActionFactory.createByClass(classPanel.getText(), null);
-			
-			if(tmp == null) {
-				classPanel.setError(true);
-			} else {
-				classPanel.setError(false);
-			}
-			
-			if(getStage() != null)
-				getStage().setKeyboardFocus(classPanel.getField());
-			
-			setInfo(CUSTOM_INFO);
-		} else {
 			tmp = ActionDetector.create(id, null);
 			setInfo(ActionUtils.getInfo(tmp.getClass()));
-		}
 
 		if (e == null || tmp == null || !(e.getClass().getName().equals(tmp.getClass().getName())))
 			e = tmp;
@@ -167,8 +119,6 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 		} else {
 			i = new InputPanel[0];
 		}
-
-		// ((ScrollPane)(getContentTable().getCells().get(1).getActor())).setWidget(getCenterPanel());
 	}
 
 	@Override
@@ -230,18 +180,5 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 				EditorLogger.error(e.getMessage());
 			}
 		}
-	}
-	
-	@Override
-	protected boolean validateFields() {
-		
-		String id = actionPanel.getText();
-
-		if (id.equals(CUSTOM_ACTION_STR) && e == null) {
-			if(ActionFactory.createByClass(classPanel.getText(), null) == null)
-				return false;
-		}
-		
-		return super.validateFields();
 	}
 }

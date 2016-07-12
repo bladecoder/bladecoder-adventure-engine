@@ -32,8 +32,6 @@ import java.util.TreeSet;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.DisableActionAction;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.ActionUtils;
-import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
@@ -43,6 +41,8 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.ActionUtils;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.common.EditorLogger;
 
 public class I18NHandler {

@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.EngineLogger;
+import com.bladecoder.engine.util.EngineLogger;
 
 /**
  * Simple music engine.
@@ -132,7 +132,7 @@ public class MusicEngine implements Serializable, AssetConsumer {
 	public void retrieveAssets() {
 		if (music == null && desc != null) {
 			
-			if(!EngineAssetManager.getInstance().isLoaded(desc.getFilename())) {
+			if(!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.MUSIC_DIR + desc.getFilename())) {
 				loadAssets();
 				EngineAssetManager.getInstance().finishLoading();
 			}
@@ -145,12 +145,13 @@ public class MusicEngine implements Serializable, AssetConsumer {
 				music.setVolume(desc.getVolume());
 
 			if (isPlayingSer) {
+				playMusic();
+				
 				if (music != null) {
 					music.setPosition(musicPosSer);
 					musicPosSer = 0f;
 				}
 
-				playMusic();
 				isPlayingSer = false;
 			}
 		}
@@ -160,8 +161,8 @@ public class MusicEngine implements Serializable, AssetConsumer {
 	public void write(Json json) {
 		json.writeValue("desc", desc);
 		json.writeValue("currentMusicDelay", currentMusicDelay);
-		json.writeValue("isPlaying", music != null && music.isPlaying());
-		json.writeValue("musicPos", music != null && music.isPlaying() ? music.getPosition() : 0f);
+		json.writeValue("isPlaying", music != null && (music.isPlaying()|| isPaused));
+		json.writeValue("musicPos", music != null && (music.isPlaying()|| isPaused) ? music.getPosition() : 0f);
 	}
 
 	@Override

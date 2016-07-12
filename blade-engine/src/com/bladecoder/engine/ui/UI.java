@@ -23,12 +23,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.Config;
-import com.bladecoder.engine.common.EngineLogger;
-import com.bladecoder.engine.common.RectangleRenderer;
-import com.bladecoder.engine.common.Utils3D;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen;
+import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.RectangleRenderer;
+import com.bladecoder.engine.util.Utils3D;
 
 public class UI {
 

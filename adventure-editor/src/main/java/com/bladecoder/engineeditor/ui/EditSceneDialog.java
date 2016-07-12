@@ -68,6 +68,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 	private InputPanel state;
 	private InputPanel music;
 	private InputPanel loopMusic;
+	private InputPanel volumeMusic;
 	private InputPanel initialMusicDelay;
 	private InputPanel repeatMusicDelay;
 	private InputPanel stopWhenLeaving;
@@ -95,6 +96,8 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		music = InputPanelFactory.createInputPanel(skin, "Music Filename", "The music for the scene", musicList, false);
 		loopMusic = InputPanelFactory.createInputPanel(skin, "Loop Music", "If the music is playing in looping",
 				Param.Type.BOOLEAN, true, "true");
+		volumeMusic = InputPanelFactory.createInputPanel(skin, "Music Volume", "The volume of the music. Value is between 0 and 1.",
+				Param.Type.FLOAT, true, "1");
 		initialMusicDelay = InputPanelFactory.createInputPanel(skin, "Initial music delay",
 				"The time to wait before playing", Param.Type.FLOAT, true, "0");
 		repeatMusicDelay = InputPanelFactory.createInputPanel(skin, "Repeat music delay",
@@ -137,7 +140,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		}
 
 		init(parent, e, new InputPanel[] { id, backgroundAtlas, backgroundRegion, depthVector, state, sceneSize, music,
-				loopMusic, initialMusicDelay, repeatMusicDelay, stopWhenLeaving });
+				loopMusic, volumeMusic, initialMusicDelay, repeatMusicDelay, stopWhenLeaving });
 	}
 
 	private void showBgImage(String r) {
@@ -236,6 +239,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
 			md.setFilename(music.getText());
 			md.setLoop(Boolean.parseBoolean(loopMusic.getText()));
+			md.setVolume(Float.parseFloat(volumeMusic.getText()));
 			md.setInitialDelay(Float.parseFloat(initialMusicDelay.getText()));
 			md.setRepeatDelay(Float.parseFloat(repeatMusicDelay.getText()));
 			md.setStopWhenLeaving(Boolean.parseBoolean(stopWhenLeaving.getText()));
@@ -279,6 +283,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		if (md != null) {
 			music.setText(md.getFilename());
 			loopMusic.setText(Boolean.toString(md.isLoop()));
+			volumeMusic.setText(Float.toString(md.getVolume()));
 			initialMusicDelay.setText(Float.toString(md.getInitialDelay()));
 			repeatMusicDelay.setText(Float.toString(md.getRepeatDelay()));
 			stopWhenLeaving.setText(Boolean.toString(md.isStopWhenLeaving()));

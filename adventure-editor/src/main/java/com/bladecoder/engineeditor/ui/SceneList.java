@@ -41,9 +41,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.bladecoder.engine.common.EngineLogger;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ElementUtils;
@@ -96,6 +96,8 @@ public class SceneList extends ModelList<World, Scene> {
 					Scene s = list.getItems().get(pos);
 
 					Ctx.project.setSelectedScene(s);
+					
+					Ctx.project.getEditorConfig().setProperty("project.selectedScene", s.getId());
 				}
 
 				toolbar.disableEdit(pos == -1);
@@ -165,9 +167,21 @@ public class SceneList extends ModelList<World, Scene> {
 
 					if (selChapter != null)
 						Ctx.project.loadChapter(selChapter);
+					
+					String init = Ctx.project.getEditorConfig().getProperty("project.selectedScene", 
+							World.getInstance().getInitScene());
 
 					addElements(World.getInstance(),
 							Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[0])));
+
+					if (init != null) {
+						Scene s = World.getInstance().getScenes().get(init);
+
+						if (s != null) {
+							int indexOf = list.getItems().indexOf(s, true);
+							list.setSelectedIndex(indexOf);
+						}
+					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -208,7 +222,7 @@ public class SceneList extends ModelList<World, Scene> {
 		// delete init_scene attr if the scene to delete is the chapter
 		// init_scene
 		if (parent.getInitScene() != null && parent.getInitScene().equals(s.getId())) {
-			if(parent.getScenes().size() > 0)
+			if (parent.getScenes().size() > 0)
 				parent.setInitScene(parent.getScenes().values().iterator().next().getId());
 			else
 				parent.setInitScene(null);
@@ -242,8 +256,8 @@ public class SceneList extends ModelList<World, Scene> {
 	protected void paste() {
 		Scene newElement = (Scene) ElementUtils.cloneElement(clipboard);
 
-		newElement.setId(ElementUtils.getCheckedId(newElement.getId(),
-				World.getInstance().getScenes().keySet().toArray(new String[0])));
+		newElement.setId(ElementUtils.getCheckedId(newElement.getId(), World.getInstance().getScenes().keySet()
+				.toArray(new String[0])));
 
 		int pos = list.getSelectedIndex() + 1;
 
@@ -251,7 +265,7 @@ public class SceneList extends ModelList<World, Scene> {
 
 		World.getInstance().addScene(newElement);
 		Ctx.project.getI18N().extractStrings(newElement);
-		
+
 		if (parent.getInitScene() == null) {
 			parent.setInitScene(newElement.getId());
 		}
@@ -318,8 +332,8 @@ public class SceneList extends ModelList<World, Scene> {
 	}
 
 	private TextureRegion createBgIcon(String atlas, String region) {
-		TextureAtlas a = new TextureAtlas(Gdx.files
-				.absolute(Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH + "/1/" + atlas + ".atlas"));
+		TextureAtlas a = new TextureAtlas(Gdx.files.absolute(Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH
+				+ "/1/" + atlas + ".atlas"));
 		AtlasRegion r = a.findRegion(region);
 
 		if (r == null) {
@@ -327,8 +341,8 @@ public class SceneList extends ModelList<World, Scene> {
 			return null;
 		}
 
-		FrameBuffer fbo = new FrameBuffer(Format.RGBA8888, 200, (int) (r.getRegionHeight() * 200f / r.getRegionWidth()),
-				false);
+		FrameBuffer fbo = new FrameBuffer(Format.RGBA8888, 200,
+				(int) (r.getRegionHeight() * 200f / r.getRegionWidth()), false);
 
 		SpriteBatch fboBatch = new SpriteBatch();
 		fboBatch.setColor(Color.WHITE);

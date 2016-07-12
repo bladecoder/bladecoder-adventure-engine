@@ -56,14 +56,14 @@ public abstract class ModelList<PARENT, T> extends EditList<T> {
 			}
 		}
 
-		if (getItems().size > 0)
-			list.setSelectedIndex(0);
-
 		toolbar.disableEdit(list.getSelectedIndex() < 0);
 
 		if (sorted) {
 			list.sortByTitle();
 		}
+		
+		if (getItems().size > 0)
+			list.setSelectedIndex(0);
 
 		toolbar.disableCreate(parent == null);
 		// container.prefHeight(list.getItemHeight() * (list.getItems().size >

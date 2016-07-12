@@ -16,11 +16,11 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.common.ActionUtils;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.ActionUtils;
 
 @ActionDescription("Execute actions inside the If/EndIf if the scene attribute has the specified value.")
 public class IfSceneAttrAction extends AbstractIfAction {

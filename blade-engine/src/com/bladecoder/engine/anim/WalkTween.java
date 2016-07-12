@@ -24,10 +24,10 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.ActionCallbackSerialization;
-import com.bladecoder.engine.common.InterpolationMode;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.util.ActionCallbackSerialization;
+import com.bladecoder.engine.util.InterpolationMode;
 
 /**
  * Tween for frame animation

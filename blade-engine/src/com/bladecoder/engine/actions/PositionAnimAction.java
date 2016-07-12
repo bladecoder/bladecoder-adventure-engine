@@ -19,12 +19,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.common.InterpolationMode;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.InterpolationMode;
 
 @ActionDescription("Sets an actor Position animation")
 public class PositionAnimAction implements Action {
@@ -41,7 +41,7 @@ public class PositionAnimAction implements Action {
 	private String target;
 
 	@ActionProperty
-	@ActionPropertyDescription("The absolute world position if no target is selected")
+	@ActionPropertyDescription("The absolute world position if no target is selected. Relative to target if selected.")
 	private Vector2 pos;
 
 	@ActionProperty(required = true, defaultValue = "1.0")
@@ -52,7 +52,7 @@ public class PositionAnimAction implements Action {
 	@ActionPropertyDescription("Duration or speed of the animation")
 	private Mode mode;
 
-	@ActionProperty(required = true)
+	@ActionProperty(required = true, defaultValue = "-1")
 	@ActionPropertyDescription("The times to repeat. -1 for infinity")
 	private int count = -1;
 
@@ -90,6 +90,11 @@ public class PositionAnimAction implements Action {
 				Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
 				x+= refPoint.x;
 				y+= refPoint.y;
+			}
+			
+			if(pos != null){			
+				x += pos.x * scale;
+				y += pos.y * scale;
 			}
 		} else if (pos != null) {
 			x = pos.x * scale; 

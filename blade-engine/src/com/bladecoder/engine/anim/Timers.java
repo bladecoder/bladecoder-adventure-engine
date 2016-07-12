@@ -24,7 +24,7 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
-import com.bladecoder.engine.common.ActionCallbackSerialization;
+import com.bladecoder.engine.util.ActionCallbackSerialization;
 
 public class Timers {
 	private List<Timer> timers = new ArrayList<>();
