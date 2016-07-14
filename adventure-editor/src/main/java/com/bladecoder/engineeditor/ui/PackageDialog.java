@@ -198,6 +198,7 @@ public class PackageDialog extends EditDialog {
 
 				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
 				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				Ctx.project.getProjectConfig().setProperty(Config.VERSION_PROP, version.getText());
 
 				try {
 					Ctx.project.saveProject();
