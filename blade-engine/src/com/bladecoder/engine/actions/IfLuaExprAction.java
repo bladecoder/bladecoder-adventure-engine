@@ -19,18 +19,22 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.lua.ScriptManager;
 import com.bladecoder.engine.model.VerbRunner;
 
-@ActionDescription(name = "Lua Script", value="Execs the Lua script.")
-public class LuaAction implements Action {
-	@ActionProperty(required = true, type = Type.TEXT)
-	@ActionPropertyDescription("The Lua script to execute.")
-	private String script = null;
+@ActionDescription(name = "IfExpr",value="Execute the actions inside the If/EndIf evaluating the Lua expresion.")
+public class IfLuaExprAction extends AbstractIfAction {
+	@ActionProperty(required = true, type = Type.SMALL_TEXT)
+	@ActionPropertyDescription("The Lua expresion.")
+	private String expr = null;
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		if(script != null) {
-			ScriptManager.getInstance().eval(script.replace("\\n\\n", "\n"));
+		if(expr != null) {
+			boolean ret = ScriptManager.getInstance().evalIf(expr.replace("\\n\\n", "\n"));
+			
+			if (!ret) {
+				gotoElse((VerbRunner) cb);
+			}
 		}
-		
+
 		return false;
 	}
 
