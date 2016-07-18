@@ -148,7 +148,7 @@ public class PackageDialog extends EditDialog {
 				i.setText(prop);
 		}
 
-		version.setText(Ctx.project.getProjectConfig().getProperty(Config.VERSION_PROP, version.getText()));
+		version.setText(getCurrentVersion());
 
 		// TODO Set version code based in version
 		// androidVersionCode.setText(genVersionCode(version.getText()));
@@ -198,6 +198,8 @@ public class PackageDialog extends EditDialog {
 
 				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
 				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				setCurrentVersion(version.getText());
+				
 
 				try {
 					Ctx.project.saveProject();
@@ -506,6 +508,39 @@ public class PackageDialog extends EditDialog {
 
 		return null;
 	}
+	
+	/**
+	 * @return The version from the file gradle.properties from the game
+	 */
+	private String getCurrentVersion() {
+
+		try {
+			Properties prop = Ctx.project.getGradleProperties();
+			return prop.getProperty("version");
+		} catch (IOException e) {
+			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
+		}
+
+		return null;
+	}	
+	
+	
+	
+	
+	/**
+	 * Saves the selected version
+	 */
+	private void setCurrentVersion(String version) {
+
+		try {
+			Properties prop = Ctx.project.getGradleProperties();
+			prop.setProperty("version", version);
+			Ctx.project.saveGradleProperties(prop);
+		} catch (IOException e) {
+			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
+		}
+	}
+	
 
 	/**
 	 * @return Search the desktop main class in the desktop folder

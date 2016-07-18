@@ -376,6 +376,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		AssetState assetState = world.getAssetState();
 
 		if (world.getAssetState() != AssetState.LOADED) {
+			
+			resetUI();
 
 			if (assetState == AssetState.LOAD_ASSETS || assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
 				// update() to set LOADING state
@@ -739,6 +741,8 @@ public class DefaultSceneScreen implements SceneScreen {
 			viewport.setWorldSize(width, height);
 			viewport.update(width, height, true);
 		}
+		
+		resetUI();
 
 		pie.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
@@ -876,6 +880,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 
 		pointer.reset();
+		inventoryUI.cancelDragging();	
 
 		currentActor = null;
 	}
