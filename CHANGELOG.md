@@ -2,6 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.16-SNAPSHOT]
+
+- Added relative position to target in position and goto actions.
+- Added animation param to SayAction.
+- Added -aspect parameter to desktop launcher.
+- Update spine plugin to latest spine runtime version.
+- EDITOR: Save/Restore version in package dialog.
+- EDITOR: Save/Restore selected scene.
+
+- FIX: Reset UI when changing scene.
+- FIX: CameraAction animation params not mandatory.
+- FIX: Android Test: Uninstall android debug version before install.
+- FIX: Count default value in AnimationAction.
+- FIX: SceneActorInputPanel getText() when no actor is selected.
+- FIX: bug pasting spine actors.
+
 ## [0.9.15]
 
 - Ask for updating the engine version of the game if the editor detects that is old.
