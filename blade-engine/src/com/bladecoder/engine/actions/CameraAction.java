@@ -30,12 +30,12 @@ public class CameraAction implements Action {
 	private Vector2 pos;
 
 	@ActionProperty
-	@ActionPropertyDescription("The target 'zoom'")
-	private float zoom = -1;
+	@ActionPropertyDescription("The target 'zoom'. If not set, the current zoom is used.")
+	private Float zoom;
 
 	@ActionProperty
 	@ActionPropertyDescription("Duration of the animation in seconds. If not '0' and animation is triggered")
-	private float duration = 0;
+	private Float duration;
 
 	@ActionPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
 	@ActionProperty(type = Type.ACTOR)
@@ -52,7 +52,7 @@ public class CameraAction implements Action {
 
 		SceneCamera camera = World.getInstance().getSceneCamera();
 		
-		if(zoom == -1)
+		if(zoom == null || zoom < 0)
 			zoom = camera.getZoom();
 		
 		if(pos == null) {
@@ -70,7 +70,7 @@ public class CameraAction implements Action {
 			}
 		}
 
-		if (duration == 0) {
+		if (duration == null || duration == 0) {
 			camera.setZoom(zoom);
 			camera.setPosition(pos.x * scale, pos.y * scale);
 			return false;
