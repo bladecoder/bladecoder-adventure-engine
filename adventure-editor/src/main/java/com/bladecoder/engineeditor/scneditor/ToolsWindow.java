@@ -15,7 +15,9 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.scneditor;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +36,9 @@ import com.bladecoder.engine.actions.LookAtAction;
 import com.bladecoder.engine.actions.SayAction;
 import com.bladecoder.engine.actions.SetCutmodeAction;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.CharacterActor;
+import com.bladecoder.engine.model.Dialog;
+import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
@@ -60,7 +65,7 @@ public class ToolsWindow extends Container<Table> {
 		scnWidget = sw;
 
 		Table table = new Table(skin);
-		TextButton setCutModeButton = new TextButton("Add Intelligent Cutmode", skin, "no-toggled");
+		TextButton tmpButton = new TextButton("Temporal tool", skin, "no-toggled");
 		TextButton testOnAndroidButton = new TextButton("Test on Android device", skin, "no-toggled");
 		TextButton testOnIphoneEmulatorButton = new TextButton("Test on Iphone emulator", skin, "no-toggled");
 		TextButton testOnIpadEmulatorButton = new TextButton("Test on Ipad emulator", skin, "no-toggled");
@@ -69,7 +74,7 @@ public class ToolsWindow extends Container<Table> {
 		TextButton importTSVButton = new TextButton("I18N - Import.tsv file", skin, "no-toggled");
 
 		table.defaults().left().expandX();
-		table.top().pad(DPIUtils.getSpacing()/2);
+		table.top().pad(DPIUtils.getSpacing() / 2);
 		table.add(new Label("Tools", skin, "big")).center();
 
 		Drawable drawable = skin.getDrawable("trans");
@@ -88,13 +93,15 @@ public class ToolsWindow extends Container<Table> {
 
 			table.row();
 			table.add(testOnIOSDeviceButton).expandX().fill();
-			
-//			TextTooltip t1 = new TextTooltip("XCode must be installed", skin);
-//			testOnIphoneEmulatorButton.addListener(t1);		
-//			testOnIpadEmulatorButton.addListener(t1);
-//			
-//			TextTooltip t3 = new TextTooltip("The device has to be provisioned", skin);
-//			testOnIOSDeviceButton.addListener(t3);
+
+			// TextTooltip t1 = new TextTooltip("XCode must be installed",
+			// skin);
+			// testOnIphoneEmulatorButton.addListener(t1);
+			// testOnIpadEmulatorButton.addListener(t1);
+			//
+			// TextTooltip t3 = new TextTooltip("The device has to be
+			// provisioned", skin);
+			// testOnIOSDeviceButton.addListener(t3);
 		}
 
 		table.row();
@@ -103,62 +110,14 @@ public class ToolsWindow extends Container<Table> {
 		table.row();
 		table.add(importTSVButton).expandX().fill();
 
-		// table.row();
-		// table.add(button1).expandX().fill();
+//		table.row();
+//		table.add(tmpButton).expandX().fill();
 
-		// ADD CUTMODE FOR VERBS THAT HAVE ONLY A LOOKAT OR SAY ACTION
-		setCutModeButton.addListener(new ChangeListener() {
+		// ADD CUTMODE FOR VERBS THAT ONLY HAVE A LOOKAT OR SAY ACTION
+		tmpButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-
-				HashMap<String, Scene> scenes = World.getInstance().getScenes();
-
-				for (Scene scn : scenes.values()) {
-					HashMap<String, BaseActor> actors = scn.getActors();
-
-					for (BaseActor a : actors.values()) {
-						if (a instanceof InteractiveActor) {
-							InteractiveActor ia = (InteractiveActor) a;
-
-							HashMap<String, Verb> verbs = ia.getVerbManager().getVerbs();
-
-							for (Verb v : verbs.values()) {
-								ArrayList<Action> actions = v.getActions();
-
-								// Don't process verbs for inventory
-								if (v.getState() != null && v.getState().equalsIgnoreCase("INVENTORY"))
-									continue;
-
-								if (actions.size() == 1) {
-									Action act = actions.get(0);
-
-									if (act instanceof LookAtAction || act instanceof SayAction) {
-										actions.clear();
-
-										SetCutmodeAction cma1 = new SetCutmodeAction();
-										SetCutmodeAction cma2 = new SetCutmodeAction();
-										try {
-											ActionUtils.setParam(cma1, "value", "true");
-											ActionUtils.setParam(cma2, "value", "false");
-
-										} catch (NoSuchFieldException | IllegalArgumentException
-												| IllegalAccessException e) {
-											e.printStackTrace();
-										}
-
-										actions.add(cma1);
-										actions.add(act);
-										actions.add(cma2);
-									}
-								}
-							}
-						}
-					}
-				}
-
-				Ctx.project.setModified();
-				Message.showMsg(getStage(), "VERBS PROCESSED SUSCESSFULLY", 4);
-
+				extractDialogs();
 			}
 
 		});
@@ -209,11 +168,149 @@ public class ToolsWindow extends Container<Table> {
 				importTSV();
 			}
 		});
-		
+
 		table.pack();
 		setActor(table);
 		prefSize(table.getWidth(), Math.max(200, table.getHeight()));
 		setSize(table.getWidth(), Math.max(200, table.getHeight()));
+	}
+
+	@SuppressWarnings("unused")
+	private void addCutMode() {
+		HashMap<String, Scene> scenes = World.getInstance().getScenes();
+
+		for (Scene scn : scenes.values()) {
+			HashMap<String, BaseActor> actors = scn.getActors();
+
+			for (BaseActor a : actors.values()) {
+				if (a instanceof InteractiveActor) {
+					InteractiveActor ia = (InteractiveActor) a;
+
+					HashMap<String, Verb> verbs = ia.getVerbManager().getVerbs();
+
+					for (Verb v : verbs.values()) {
+						ArrayList<Action> actions = v.getActions();
+
+						// Don't process verbs for inventory
+						if (v.getState() != null && v.getState().equalsIgnoreCase("INVENTORY"))
+							continue;
+
+						if (actions.size() == 1) {
+							Action act = actions.get(0);
+
+							if (act instanceof LookAtAction || act instanceof SayAction) {
+								actions.clear();
+
+								SetCutmodeAction cma1 = new SetCutmodeAction();
+								SetCutmodeAction cma2 = new SetCutmodeAction();
+								try {
+									ActionUtils.setParam(cma1, "value", "true");
+									ActionUtils.setParam(cma2, "value", "false");
+
+								} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+									e.printStackTrace();
+								}
+
+								actions.add(cma1);
+								actions.add(act);
+								actions.add(cma2);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		Ctx.project.setModified();
+		Message.showMsg(getStage(), "VERBS PROCESSED SUSCESSFULLY", 4);
+	}
+
+	@SuppressWarnings("unused")
+	private void extractDialogs() {
+		HashMap<String, Scene> scenes = World.getInstance().getScenes();
+
+		BufferedWriter writer = null;
+		try {
+			// create a temporary file
+			File dFile = new File("BONASERA-DIALOGS.md");
+
+			writer = new BufferedWriter(new FileWriter(dFile));
+
+			writer.write("# DIALOGS - " + "JOHNNY BONASERA\n\n");
+
+			for (Scene scn : scenes.values()) {
+				HashMap<String, BaseActor> actors = scn.getActors();
+
+				writer.write("\n## " + scn.getId() + "\n\n");
+
+				for (BaseActor a : actors.values()) {
+					if (a instanceof InteractiveActor) {
+						InteractiveActor ia = (InteractiveActor) a;
+
+						HashMap<String, Verb> verbs = ia.getVerbManager().getVerbs();
+
+						// Process SayAction of TALK type
+						for (Verb v : verbs.values()) {
+							ArrayList<Action> actions = v.getActions();
+
+							for (Action act : actions) {
+
+								if (act instanceof SayAction) {
+									String type = ActionUtils.getStringValue(act, "type");
+
+									if ("TALK".equals(type)) {
+										String actor = ActionUtils.getStringValue(act, "actor").toUpperCase();
+										String rawText = ActionUtils.getStringValue(act, "text");
+										String text = Ctx.project.translate(rawText).replace("\\n\\n", "\n").replace("\\n", "\n");
+
+										writer.write(actor + ": " + text + "\n");
+									}
+								}
+							}
+						}
+					}
+
+					if (a instanceof CharacterActor) {
+						CharacterActor ca = (CharacterActor) a;
+
+						HashMap<String, Dialog> dialogs = ca.getDialogs();
+						
+						if(dialogs == null)
+							continue;
+						
+
+						// Process SayAction of TALK type
+						for (Dialog d : dialogs.values()) {
+							ArrayList<DialogOption> options = d.getOptions();
+							
+							if(options.size() > 0)
+								writer.write("\n**" + ca.getId().toUpperCase() + " - " + d.getId() + "**\n\n");
+
+							for (DialogOption o : options) {
+								String text = o.getText();
+								String response = o.getResponseText();
+								
+								writer.write(scn.getPlayer().getId().toUpperCase() + ": " + Ctx.project.translate(text).replace("\\n\\n", "\n").replace("\\n", "\n") + "\n");
+								
+								if(response != null)
+									writer.write(ca.getId().toUpperCase() + ": " + Ctx.project.translate(response).replace("\\n\\n", "\n").replace("\\n", "\n") + "\n\n");
+							}
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				// Close the writer regardless of what happens...
+				writer.close();
+			} catch (Exception e) {
+			}
+		}
+
+		Message.showMsg(getStage(), "DIALOGS EXTRACTED", 4);
 	}
 
 	private void exportTSV() {
@@ -299,7 +396,8 @@ public class ToolsWindow extends Container<Table> {
 			public void run() {
 				Message.showMsg(stage, "Running scene on Android device...", 5);
 
-				if (!RunProccess.runGradle(Ctx.project.getProjectDir(), "android:uninstallDebug android:installDebug android:run")) {
+				if (!RunProccess.runGradle(Ctx.project.getProjectDir(),
+						"android:uninstallDebug android:installDebug android:run")) {
 					Message.showMsg(stage, "There was a problem running the project", 4);
 				}
 
