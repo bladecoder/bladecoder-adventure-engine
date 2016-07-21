@@ -138,6 +138,8 @@ public class BladeEngine implements ApplicationListener {
 			if (restart) {
 				try {
 					World.getInstance().loadChapter(null);
+					
+					ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 				} catch (Exception e) {
 					EngineLogger.error("ERROR LOADING GAME", e);
 					dispose();
@@ -152,6 +154,8 @@ public class BladeEngine implements ApplicationListener {
 				ui.getRecorder().setFilename(recordName);
 				ui.getRecorder().load();
 				ui.getRecorder().setPlaying(true);
+				
+				ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 			}
 		}
 

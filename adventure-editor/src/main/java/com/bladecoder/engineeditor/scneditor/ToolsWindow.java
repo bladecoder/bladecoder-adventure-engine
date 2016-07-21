@@ -236,18 +236,40 @@ public class ToolsWindow extends Container<Table> {
 
 			writer = new BufferedWriter(new FileWriter(dFile));
 
-			writer.write("# DIALOGS - " + "JOHNNY BONASERA\n\n");
+			writer.write("# DIALOGS - " + (Ctx.project.getTitle() != null? Ctx.project.getTitle().toUpperCase() : "") + "\n\n");
 
 			for (Scene scn : scenes.values()) {
 				HashMap<String, BaseActor> actors = scn.getActors();
 
-				writer.write("\n## " + scn.getId() + "\n\n");
+				writer.write("\n## SCENE: " + scn.getId() + "\n\n");
+				
+				HashMap<String, Verb> verbs = scn.getVerbManager().getVerbs();
+
+				// Process SayAction of TALK type
+				for (Verb v : verbs.values()) {
+					ArrayList<Action> actions = v.getActions();
+
+					for (Action act : actions) {
+
+						if (act instanceof SayAction) {
+							String type = ActionUtils.getStringValue(act, "type");
+
+							if ("TALK".equals(type)) {
+								String actor = ActionUtils.getStringValue(act, "actor").toUpperCase();
+								String rawText = ActionUtils.getStringValue(act, "text");
+								String text = Ctx.project.translate(rawText).replace("\\n\\n", "\n").replace("\\n", "\n");
+
+								writer.write(actor + ": " + text + "\n");
+							}
+						}
+					}
+				}
 
 				for (BaseActor a : actors.values()) {
 					if (a instanceof InteractiveActor) {
 						InteractiveActor ia = (InteractiveActor) a;
 
-						HashMap<String, Verb> verbs = ia.getVerbManager().getVerbs();
+						verbs = ia.getVerbManager().getVerbs();
 
 						// Process SayAction of TALK type
 						for (Verb v : verbs.values()) {
