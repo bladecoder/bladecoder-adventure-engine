@@ -218,5 +218,8 @@ com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 		default: { titleFont: big-font, background: black08, titleFontColor: white },
 },
-	
+
+com.bladecoder.engine.ui.retro.VerbUI$VerbUIStyle: {
+	default: { verbButtonStyle: {font:message-font, fontColor: yellow, up: dark-grey, overFontColor: white}, inventoryButtonStyle: {up: dark-grey, over: grey}, infoLineLabelStyle: {font: default}, upArrow: inv_up, downArrow: inv_down},
+}
 }
