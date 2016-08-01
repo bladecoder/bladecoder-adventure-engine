@@ -63,11 +63,11 @@ public class ActorPanel extends HeaderPanel {
 
 						String selTitle = tabPanel.getSelectedIndex() == -1? null: tabPanel.getTitleAt(tabPanel.getSelectedIndex());
 						tabPanel.clear();
+						
+						tabPanel.addTab("Verbs", verbList);
 
 						if (a != null) {
-
-							tabPanel.addTab("Verbs", verbList);
-							
+						
 							if (a instanceof SpriteActor)
 								tabPanel.addTab("Animations", faList);
 
