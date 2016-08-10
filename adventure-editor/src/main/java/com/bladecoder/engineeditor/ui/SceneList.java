@@ -96,7 +96,7 @@ public class SceneList extends ModelList<World, Scene> {
 					Scene s = list.getItems().get(pos);
 
 					Ctx.project.setSelectedScene(s);
-					
+
 					Ctx.project.getEditorConfig().setProperty("project.selectedScene", s.getId());
 				}
 
@@ -167,8 +167,8 @@ public class SceneList extends ModelList<World, Scene> {
 
 					if (selChapter != null)
 						Ctx.project.loadChapter(selChapter);
-					
-					String init = Ctx.project.getEditorConfig().getProperty("project.selectedScene", 
+
+					String init = Ctx.project.getEditorConfig().getProperty("project.selectedScene",
 							World.getInstance().getInitScene());
 
 					addElements(World.getInstance(),
@@ -256,8 +256,8 @@ public class SceneList extends ModelList<World, Scene> {
 	protected void paste() {
 		Scene newElement = (Scene) ElementUtils.cloneElement(clipboard);
 
-		newElement.setId(ElementUtils.getCheckedId(newElement.getId(), World.getInstance().getScenes().keySet()
-				.toArray(new String[0])));
+		newElement.setId(ElementUtils.getCheckedId(newElement.getId(),
+				World.getInstance().getScenes().keySet().toArray(new String[0])));
 
 		int pos = list.getSelectedIndex() + 1;
 
@@ -309,7 +309,11 @@ public class SceneList extends ModelList<World, Scene> {
 			Batch batch = getStage().getBatch();
 			batch.end();
 
-			icon = createBgIcon(atlas, region);
+			try {
+				icon = createBgIcon(atlas, region);
+			} catch(Exception e) {
+				
+			}
 
 			if (icon != null) {
 				bgIconCache.put(s, icon);
@@ -332,8 +336,8 @@ public class SceneList extends ModelList<World, Scene> {
 	}
 
 	private TextureRegion createBgIcon(String atlas, String region) {
-		TextureAtlas a = new TextureAtlas(Gdx.files.absolute(Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH
-				+ "/1/" + atlas + ".atlas"));
+		TextureAtlas a = new TextureAtlas(Gdx.files
+				.absolute(Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH + "/1/" + atlas + ".atlas"));
 		AtlasRegion r = a.findRegion(region);
 
 		if (r == null) {
@@ -341,8 +345,8 @@ public class SceneList extends ModelList<World, Scene> {
 			return null;
 		}
 
-		FrameBuffer fbo = new FrameBuffer(Format.RGBA8888, 200,
-				(int) (r.getRegionHeight() * 200f / r.getRegionWidth()), false);
+		FrameBuffer fbo = new FrameBuffer(Format.RGBA8888, 200, (int) (r.getRegionHeight() * 200f / r.getRegionWidth()),
+				false);
 
 		SpriteBatch fboBatch = new SpriteBatch();
 		fboBatch.setColor(Color.WHITE);
@@ -399,8 +403,9 @@ public class SceneList extends ModelList<World, Scene> {
 
 			TextureRegion r = null;
 
-			if (atlas != null && region != null && !atlas.isEmpty() && !region.isEmpty())
+			if (atlas != null && region != null && !atlas.isEmpty() && !region.isEmpty()) {
 				r = getBgIcon(atlas, region);
+			}
 
 			if (r == null)
 				r = Ctx.assetManager.getIcon("ic_no_scene");
