@@ -40,6 +40,7 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.FolderClassLoader;
+import com.bladecoder.engineeditor.common.OrderedProperties;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.common.Versions;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
@@ -342,7 +343,7 @@ public class Project extends PropertyChange {
 
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 
-			projectConfig = new Properties();
+			projectConfig = new OrderedProperties();
 			projectConfig.load(new FileInputStream(projectFile.getAbsolutePath() + ASSETS_PATH + "/"
 					+ Config.PROPERTIES_FILENAME));
 			modified = false;

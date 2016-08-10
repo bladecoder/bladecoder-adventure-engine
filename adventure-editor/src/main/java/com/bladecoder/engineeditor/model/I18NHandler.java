@@ -23,11 +23,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.TreeSet;
 
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.DisableActionAction;
@@ -44,6 +42,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.common.EditorLogger;
+import com.bladecoder.engineeditor.common.OrderedProperties;
 
 public class I18NHandler {
 	public static final String WORLD_VERBS_PREFIX = "default";
@@ -74,17 +73,11 @@ public class I18NHandler {
 		i18nChapter = loadI18N(chapterFilename);
 	}
 
-	@SuppressWarnings("serial")
 	private Properties loadI18N(String modelFilename) {
 		String i18nFilename = getI18NFilename(modelFilename);
 
-		// To save in alphabetical order we override the keys method
-		Properties i18n = new Properties() {
-			@Override
-			public synchronized Enumeration<Object> keys() {
-				return Collections.enumeration(new TreeSet<Object>(keySet()));
-			}
-		};
+		// To save in alphabetical order we use the OrderedProperties
+		Properties i18n = new OrderedProperties();
 
 		try {
 			i18n.load(new InputStreamReader(new FileInputStream(i18nFilename), I18N.ENCODING));
