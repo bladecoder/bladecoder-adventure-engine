@@ -225,7 +225,6 @@ public class ToolsWindow extends Container<Table> {
 		Message.showMsg(getStage(), "VERBS PROCESSED SUSCESSFULLY", 4);
 	}
 
-	@SuppressWarnings("unused")
 	private void extractDialogs() {
 		HashMap<String, Scene> scenes = World.getInstance().getScenes();
 
@@ -335,6 +334,7 @@ public class ToolsWindow extends Container<Table> {
 		Message.showMsg(getStage(), "DIALOGS EXTRACTED", 4);
 	}
 
+	@SuppressWarnings("restriction")
 	private void exportTSV() {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -353,16 +353,15 @@ public class ToolsWindow extends Container<Table> {
 							Ctx.project.getChapter().getId(), "default");
 
 					Message.showMsg(getStage(), outFile.getName() + " exported sucessfully.", 4);
-
-					I18NUtils.compare(Ctx.project.getProjectDir().getAbsolutePath(), Ctx.project.getChapter().getId(),
-							null, "en");
 				} catch (IOException e) {
 					Message.showMsg(getStage(), "There was a problem generating the .tsv file.", 4);
+					e.printStackTrace();
 				}
 			}
 		});
 	}
 
+	@SuppressWarnings("restriction")
 	private void importTSV() {
 		Platform.runLater(new Runnable() {
 			@Override

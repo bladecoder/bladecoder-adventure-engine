@@ -236,7 +236,7 @@ public class OptionList extends ModelList<Dialog, DialogOption> {
 			String response = e.getResponseText();
 
 			if (response != null && !response.isEmpty())
-				sb.append("R: ").append(Ctx.project.translate(response)).append(' ');
+				sb.append("R: ").append(Ctx.project.translate(response).replace("\n", "|")).append(' ');
 
 			if (e.getVerbId() != null)
 				sb.append(" verb: ").append(e.getVerbId());

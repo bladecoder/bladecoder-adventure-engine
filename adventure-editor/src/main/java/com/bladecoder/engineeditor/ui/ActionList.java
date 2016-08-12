@@ -616,9 +616,9 @@ public class ActionList extends ModelList<Verb, Action> {
 
 					// Check world Scope for translations
 					if (scope.equals(ScopePanel.WORLD_SCOPE))
-						sb.append(name).append(": ").append(Ctx.project.getI18N().getWorldTranslation(v)).append(' ');
+						sb.append(name).append(": ").append(Ctx.project.getI18N().getWorldTranslation(v).replace("\n", "|")).append(' ');
 					else
-						sb.append(name).append(": ").append(Ctx.project.translate(v)).append(' ');
+						sb.append(name).append(": ").append(Ctx.project.translate(v).replace("\n", "|")).append(' ');
 
 					f.setAccessible(accessible);
 				} catch (IllegalArgumentException | IllegalAccessException e) {

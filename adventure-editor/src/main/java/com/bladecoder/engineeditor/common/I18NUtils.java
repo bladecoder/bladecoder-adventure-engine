@@ -112,10 +112,10 @@ public class I18NUtils {
 
 			for (Properties p : props) {
 				if(p.getProperty((String) key) == null) {
-					writer.write(SEPARATOR + "**" + props[0].getProperty((String) key));
+					writer.write(SEPARATOR + "**" + props[0].getProperty((String) key).replace("\n", "\\n"));
 					System.out.println("KEY NOT FOUND: " + key);
 				} else {
-					writer.write(SEPARATOR + p.getProperty((String) key));
+					writer.write(SEPARATOR + p.getProperty((String) key).replace("\n", "\\n"));
 				}
 			}
 

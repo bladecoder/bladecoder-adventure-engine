@@ -32,12 +32,13 @@ public class TextInputPanel extends InputPanel {
 	}
 
 	public String getText() {
-		return input.getText().replaceAll("\n", "\\\\n");
+//		return input.getText().replace("\n", "\\\\n");
+		return input.getText();
 	}
 
 	public void setText(String s) {
 		if (s == null) s = "";
-		input.setText(s.replaceAll("\\\\n", "\n"));
+		input.setText(s.replace("\\n", "\n"));
 	}
 	
 	public void setRows(float rows) {
