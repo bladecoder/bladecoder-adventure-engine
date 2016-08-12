@@ -68,6 +68,13 @@ public class MusicEngine implements Serializable, AssetConsumer {
 			desc = null;
 		}
 	}
+	
+
+	public void setVolume(float volume) {
+		desc.setVolume(volume);
+		music.setVolume(volume);
+	}
+
 
 	public void leaveScene(MusicDesc newMusicDesc) {
 
@@ -172,5 +179,4 @@ public class MusicEngine implements Serializable, AssetConsumer {
 		isPlayingSer = json.readValue("isPlaying", boolean.class, jsonData);
 		musicPosSer = json.readValue("musicPos", float.class, jsonData);
 	}
-
 }
