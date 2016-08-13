@@ -160,6 +160,11 @@ public class UI {
 		TextureAtlas atlas = new TextureAtlas(EngineAssetManager.getInstance().getResAsset(
 				SKIN_FILENAME.substring(0,SKIN_FILENAME.lastIndexOf('.')) + ".atlas"));
 		skin = new BladeSkin(skinFile, atlas);
+		
+		if(!Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")) {
+			EngineAssetManager.getInstance().loadAtlas(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null));
+			EngineAssetManager.getInstance().finishLoading();
+		}
 	}
 
 	public void resize(int width, int height) {
@@ -185,6 +190,10 @@ public class UI {
 		
 		RectangleRenderer.dispose();
 		Utils3D.dispose();
+				
+		if(!Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals(""))
+			EngineAssetManager.getInstance().disposeAtlas(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null));
+		
 		EngineAssetManager.getInstance().dispose();
 	}
 	

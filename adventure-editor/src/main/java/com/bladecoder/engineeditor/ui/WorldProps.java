@@ -57,6 +57,8 @@ public class WorldProps extends PropertyTable {
 			Ctx.project.getProjectConfig().setProperty(Config.FAST_LEAVE, value);			
 		} else if (property.equals(Config.DEBUG_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.DEBUG_PROP, value);
+		} else if (property.equals(Config.CHARACTER_ICON_ATLAS)) {
+			Ctx.project.getProjectConfig().setProperty(Config.CHARACTER_ICON_ATLAS, value);
 		} else if (property.equals(Config.SHOW_DESC_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.SHOW_DESC_PROP, value);
 		} else if (property.equals(Config.EXTEND_VIEWPORT_PROP)) {
@@ -86,6 +88,8 @@ public class WorldProps extends PropertyTable {
 					Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.DEBUG_PROP, "false")));
 			addProperty(Config.SHOW_DESC_PROP,
 					Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.SHOW_DESC_PROP, "true")));
+			addProperty(Config.CHARACTER_ICON_ATLAS,
+					Ctx.project.getProjectConfig().getProperty(Config.CHARACTER_ICON_ATLAS, ""));
 			addProperty(Config.EXTEND_VIEWPORT_PROP, Boolean
 					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.EXTEND_VIEWPORT_PROP, "true")));
 		}

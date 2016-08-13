@@ -53,7 +53,7 @@ public class TextManager implements Serializable {
 	}
 
 	public void addText(String str, float x, float y, boolean quee, Text.Type type,
-			Color color, String font, ActionCallback cb) {
+			Color color, String font, String actorId, ActionCallback cb) {
 		
 		if(str.charAt(0) == I18N.PREFIX)
 			str = I18N.getString(str.substring(1));
@@ -81,9 +81,9 @@ public class TextManager implements Serializable {
 			Text sub;
 
 			if (i != text.length - 1) {
-				sub = new Text(finalStr, x, y, duration, type, color, font, null);
+				sub = new Text(finalStr, x, y, duration, type, color, font, actorId, null);
 			} else {
-				sub = new Text(finalStr, x, y, duration, type, color, font, cb);
+				sub = new Text(finalStr, x, y, duration, type, color, font, actorId, cb);
 			}
 
 			fifo.add(sub);

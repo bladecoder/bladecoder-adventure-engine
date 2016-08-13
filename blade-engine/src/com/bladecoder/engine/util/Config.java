@@ -34,6 +34,7 @@ public class Config {
 	public static final String EXTEND_VIEWPORT_PROP = "extend_viewport";
 	public static final String VERSION_PROP = "version";
 	public static final String BLADE_ENGINE_VERSION_PROP = "bladeEngineVersion";
+	public static final String CHARACTER_ICON_ATLAS = "character_icon_atlas";
 	public static final String UI_MODE = "ui_mode";
 	public static final String FAST_LEAVE = "fast_leave";
 

@@ -25,7 +25,6 @@ import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Shows the text and sets the player to lookat in the selected actor direction")
 public class LookAtAction implements Action {
@@ -64,7 +63,7 @@ public class LookAtAction implements Action {
 	@Override
 	public boolean run(VerbRunner cb) {
 
-		EngineLogger.debug("LOOKAT ACTION");
+//		EngineLogger.debug("LOOKAT ACTION");
 		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, true);
 
 		if (World.getInstance().getInventory().getItem(actor) == null) {
@@ -79,8 +78,10 @@ public class LookAtAction implements Action {
 		}
 
 		if (text != null) {
+			String actorId = World.getInstance().getCurrentScene().getPlayer() != null? World.getInstance().getCurrentScene().getPlayer().getId():null;
+			
 			World.getInstance().getTextManager().addText(text, TextManager.POS_SUBTITLE, TextManager.POS_SUBTITLE,
-					false, Text.Type.SUBTITLE, null, null, wait ? cb : null);
+					false, Text.Type.SUBTITLE, null, null, actorId, wait ? cb : null);
 			
 			return wait;
 		}

@@ -84,7 +84,7 @@ public class SayAction extends BaseCallbackAction {
 			}
 
 			World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null,
-					this);
+					a.getId(), this);
 		}
 
 		return getWait();

@@ -230,7 +230,7 @@ public class EngineAssetManager extends AssetManager {
 		AtlasRegion region = a.findRegion(name);
 
 		if (region == null) {
-			EngineLogger.error("Region " + name + " not found in atlas " + atlas);
+			EngineLogger.debug("Region " + name + " not found in atlas " + atlas);
 		}
 
 		return region;

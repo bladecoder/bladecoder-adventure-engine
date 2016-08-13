@@ -14,6 +14,11 @@ public class BuildScriptHelper {
 		write(wr, "buildscript {");
 		// repos
 		write(wr, "repositories {");
+		
+		// TODO: Delete when release v2.2 of roboVM plugin
+		write(wr, "maven { url \"https://oss.sonatype.org/content/repositories/snapshots/\" }");
+		
+		
 		write(wr, DependencyBank.mavenCentral);
 		if (projects.contains(ProjectType.HTML)) {
 			write(wr, DependencyBank.jCenter);

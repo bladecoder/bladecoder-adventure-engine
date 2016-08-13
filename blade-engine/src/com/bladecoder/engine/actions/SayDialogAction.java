@@ -72,7 +72,7 @@ public class SayDialogAction extends BaseCallbackAction {
 			float y = boundingRectangle.getY() + boundingRectangle.getHeight();
 
 			w.getTextManager().addText(playerText, x, y, false,
-					Text.Type.TALK, player.getTextColor(), null, this);
+					Text.Type.TALK, player.getTextColor(), null, player.getId(), this);
  
 			startTalkAnim(player);
 
@@ -104,7 +104,7 @@ public class SayDialogAction extends BaseCallbackAction {
 				
 				World.getInstance().getTextManager().addText(responseText, x,
 						y, false, Text.Type.TALK,
-						((CharacterActor) actor).getTextColor(), null, this);
+						((CharacterActor) actor).getTextColor(), null, actor.getId(), this);
 
 
 				if(actor instanceof CharacterActor) {
