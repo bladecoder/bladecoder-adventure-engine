@@ -2,14 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.9.16-SNAPSHOT]
+## [0.9.16]
 
+- NEW FEAUTRE: The text manager can now show a character image/icon in texts.
+- Added MusicVolumeAction
+- Play recorded game directly if passed as parameter in command line.
 - Added relative position to target in position and goto actions.
 - Added animation param to SayAction.
 - Added -aspect parameter to desktop launcher.
 - Update spine plugin to latest spine runtime version.
 - EDITOR: Save/Restore version in package dialog.
 - EDITOR: Save/Restore selected scene.
+- EDITOR: Show verb panel when no actor is selected to allow adding scene and
+world verbs.
 
 - FIX: Reset UI when changing scene.
 - FIX: CameraAction animation params not mandatory.
