@@ -114,8 +114,13 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		if (bg == null && style.bgFile != null) {
 			bgTexFile = new Texture(EngineAssetManager.getInstance().getResAsset(style.bgFile));
 			bgTexFile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+			
+			float scale = (float)bgTexFile.getHeight() / (float) stage.getViewport().getScreenHeight();
+			
+			int width = (int)(stage.getViewport().getScreenWidth() * scale);
+			int x0 = (int)((bgTexFile.getWidth() - width) / 2);
 
-			bg = new TextureRegionDrawable(new TextureRegion(bgTexFile));
+			bg = new TextureRegionDrawable(new TextureRegion(bgTexFile, x0, 0, width, bgTexFile.getHeight()));
 		}
 
 		menuButtonTable.clear();
