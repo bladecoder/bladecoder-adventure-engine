@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.17]
+
+- Updated libgdx library to v1.9.4.
+- Added null sanity check for actor parameter in SayAction.
+
 ## [0.9.16]
 
 - NEW FEAUTRE: The text manager can now show a character image/icon in texts.
