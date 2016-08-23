@@ -43,7 +43,7 @@ public class SpriteActor extends InteractiveActor {
 	protected SpritePosTween posTween;
 	private SpriteScaleTween scaleTween;
 	private float scale = 1.0f;
-	
+
 	private Color tint;
 
 	/** Scale sprite acording to the scene depth map */
@@ -146,7 +146,7 @@ public class SpriteActor extends InteractiveActor {
 
 	public void draw(SpriteBatch batch) {
 		if (isVisible()) {
-			if (scale != 0) {			
+			if (scale != 0) {
 				renderer.draw(batch, getX(), getY(), scale, tint);
 			}
 		}
@@ -179,7 +179,7 @@ public class SpriteActor extends InteractiveActor {
 
 		if (fa != null) {
 
-			if(fa.sound != null)
+			if (fa.sound != null)
 				stopCurrentSound();
 
 			Vector2 outD = fa.outD;
@@ -195,7 +195,8 @@ public class SpriteActor extends InteractiveActor {
 	/**
 	 * Actions to do when setting an animation: - play animation sound - add
 	 * 'in' distance
-	 * @param repeatType 
+	 * 
+	 * @param repeatType
 	 */
 	protected void outAnim(Type repeatType) {
 		AnimationDesc fa = renderer.getCurrentAnimation();
@@ -259,7 +260,7 @@ public class SpriteActor extends InteractiveActor {
 	@Override
 	public void retrieveAssets() {
 		super.retrieveAssets();
-		
+
 		renderer.retrieveAssets();
 
 		// Call setPosition to recalc fake depth and camera follow
@@ -268,15 +269,27 @@ public class SpriteActor extends InteractiveActor {
 
 	@Override
 	public void dispose() {
-//		EngineLogger.debug("DISPOSE: " + id);
-		
+		// EngineLogger.debug("DISPOSE: " + id);
+
 		super.dispose();
 		renderer.dispose();
 	}
 
 	@Override
 	public void write(Json json) {
-		super.write(json);
+
+		// Reset vertices if bboxFromRenderer to save always with 0.0 value
+		if (bboxFromRenderer && SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+			float[] verts = bbox.getVertices();
+			bbox.setVertices(new float[8]);
+			
+			super.write(json);
+			
+			bbox.setVertices(verts);
+		} else {
+			super.write(json);
+		}
+
 		json.writeValue("renderer", renderer, null);
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
@@ -285,7 +298,7 @@ public class SpriteActor extends InteractiveActor {
 			json.writeValue("posTween", posTween, null);
 			json.writeValue("scaleTween", scaleTween, null);
 		}
-		
+
 		json.writeValue("scale", scale);
 		json.writeValue("tint", tint);
 		json.writeValue("depthType", depthType);
@@ -303,10 +316,10 @@ public class SpriteActor extends InteractiveActor {
 			scaleTween = json.readValue("scaleTween", SpriteScaleTween.class, jsonData);
 			renderer.read(json, jsonData.get("renderer"));
 		}
-		
+
 		scale = json.readValue("scale", float.class, scale, jsonData);
 		tint = json.readValue("tint", Color.class, tint, jsonData);
-		
+
 		depthType = json.readValue("depthType", DepthType.class, depthType, jsonData);
 		bboxFromRenderer = json.readValue("bboxFromRenderer", boolean.class, bboxFromRenderer, jsonData);
 
