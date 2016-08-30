@@ -80,7 +80,10 @@ public class IfAttrAction extends AbstractIfAction {
 		} else	if (attr.equals(ActorAttribute.IN_INVENTORY)) {
 			boolean val = Boolean.parseBoolean(value);
 			
-			SpriteActor item = World.getInstance().getInventory().getItem(a.getId());
+			SpriteActor item = null;
+			
+			if(a != null)
+				item = World.getInstance().getInventory().getItem(a.getId());
 			
 			if ((val && item == null) || (!val && item != null)) {
 				gotoElse((VerbRunner) cb);
