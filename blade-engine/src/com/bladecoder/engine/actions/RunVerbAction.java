@@ -96,6 +96,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 					ip++;
 			} catch (Exception e) {
 				EngineLogger.error("EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName(), e);
+				ip++;
 			}
 		}
 
