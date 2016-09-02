@@ -130,25 +130,21 @@ public class TextManager implements Serializable {
 		}
 	}
 
-	public void clear() {
-		//fifo.clear();
-		
+	private void clear() {		
 		// CLEAR FIFO
 		while(currentText != null)
 			next();
 		
 		inScreenTime = 0;
-
-//		if (currentSubtitle != null) {
-//			currentSubtitle = null;
-//		}
 	}
 
 	/**
 	 * Put manager in the init state. Use it when changing current scene
 	 */
-	public void reset() {
-		clear();
+	public void reset() {	
+		inScreenTime = 0;
+		fifo.clear();
+		currentText = null;
 	}
 
 	@Override

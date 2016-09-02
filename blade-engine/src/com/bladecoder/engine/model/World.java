@@ -481,6 +481,9 @@ public class World implements Serializable, AssetConsumer {
 
 	@Override
 	public void dispose() {
+		
+		if(disposed)
+			return;
 
 		try {
 
