@@ -78,14 +78,15 @@ public class ImageUtils {
 
 		if (orgImg != null) {
 			Object interpolation;
-			
-			if(orgImg.getWidth() < 20) {
+
+			if (orgImg.getWidth() < 20) {
 				interpolation = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
 			} else {
 				interpolation = RenderingHints.VALUE_INTERPOLATION_BICUBIC;
 			}
-			
-			destImg = scaleImage(Math.max(1,(int) (orgImg.getWidth() * scale)), Math.max(1,(int) (orgImg.getHeight() * scale)), orgImg, interpolation);
+
+			destImg = scaleImage(Math.max(1, (int) (orgImg.getWidth() * scale)),
+					Math.max(1, (int) (orgImg.getHeight() * scale)), orgImg, interpolation);
 			ImageIO.write(destImg, org.getName().substring(org.getName().lastIndexOf('.') + 1), dest);
 		}
 	}
@@ -112,11 +113,13 @@ public class ImageUtils {
 			}
 		});
 
-		for (File f : files) {
-			if(f.getName().endsWith(".9.png")) { // 9 patches doesn't scale
-				Files.copy(f.toPath(), new File(destDir, f.getName()).toPath());
-			} else {
-				ImageUtils.scaleImageFile(f, new File(destDir, f.getName()), scale);
+		if (files != null) {
+			for (File f : files) {
+				if (f.getName().endsWith(".9.png")) { // 9 patches doesn't scale
+					Files.copy(f.toPath(), new File(destDir, f.getName()).toPath());
+				} else {
+					ImageUtils.scaleImageFile(f, new File(destDir, f.getName()), scale);
+				}
 			}
 		}
 	}
@@ -130,8 +133,9 @@ public class ImageUtils {
 		TextureAtlasData atlas = new TextureAtlasData(new FileHandle(orgAtlas), new FileHandle(atlasParentPath), false);
 		unpacker.splitAtlas(atlas, outputDir.getAbsolutePath());
 
-		createAtlas(outputDir.getAbsolutePath(), destDir.getAbsolutePath(), orgAtlas.getName(), scale, TextureFilter.Linear, TextureFilter.Linear);
-		
+		createAtlas(outputDir.getAbsolutePath(), destDir.getAbsolutePath(), orgAtlas.getName(), scale,
+				TextureFilter.Linear, TextureFilter.Linear);
+
 		DesktopUtils.removeDir(outputDir.getAbsolutePath());
 	}
 
@@ -152,7 +156,8 @@ public class ImageUtils {
 		}
 	}
 
-	public static void createAtlas(String inDir, String outdir, String name, float scale, TextureFilter filterMin, TextureFilter filterMag) throws IOException {
+	public static void createAtlas(String inDir, String outdir, String name, float scale, TextureFilter filterMin,
+			TextureFilter filterMag) throws IOException {
 		Settings settings = new Settings();
 
 		settings.pot = false;
@@ -195,7 +200,8 @@ public class ImageUtils {
 			ImageUtils.scaleDirFiles(new File(inDir), inTmpDir, scale);
 		}
 
-		TexturePacker.process(settings, inTmpDir.getAbsolutePath(), outdir, name.endsWith(".atlas")?name: name + ".atlas");
+		TexturePacker.process(settings, inTmpDir.getAbsolutePath(), outdir,
+				name.endsWith(".atlas") ? name : name + ".atlas");
 
 		if (scale != 1.0f) {
 			DesktopUtils.removeDir(inTmpDir.getAbsolutePath());
