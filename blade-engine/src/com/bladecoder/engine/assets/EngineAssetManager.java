@@ -50,11 +50,12 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.FileUtils;
 
 public class EngineAssetManager extends AssetManager {
-	
+
 	public static final String WORLD_FILENAME_JSON = "world.json";
-	
+
 	public static final String DESKTOP_PREFS_DIR = "BladeEngine";
 	public static final String NOT_DESKTOP_PREFS_DIR = "data/";
 
@@ -69,8 +70,11 @@ public class EngineAssetManager extends AssetManager {
 	public static final String MODEL3D_EXT = ".g3db";
 	public static final String SPINE_EXT = ".skel";
 	public static final String ATLAS_EXT = ".atlas";
-	
+
 	public static final String CHAPTER_EXT = ".chapter.json";
+
+	private static final String OGG_EXT = ".ogg";
+	private static final String AAC_EXT = ".m4a";
 
 	private static EngineAssetManager instance = null;
 
@@ -80,7 +84,7 @@ public class EngineAssetManager extends AssetManager {
 
 	protected EngineAssetManager() {
 		this(new InternalFileHandleResolver());
-//		getLogger().setLevel(Application.LOG_DEBUG);
+		// getLogger().setLevel(Application.LOG_DEBUG);
 	}
 
 	protected EngineAssetManager(FileHandleResolver resolver) {
@@ -128,7 +132,8 @@ public class EngineAssetManager extends AssetManager {
 	 * - Puts a PathResolver to locate the assets through an absolute path -
 	 * Puts assets scale to "1"
 	 * 
-	 * @param base is the project base folder
+	 * @param base
+	 *            is the project base folder
 	 */
 	public static void createEditInstance(String base) {
 		if (instance != null)
@@ -276,60 +281,77 @@ public class EngineAssetManager extends AssetManager {
 		instance = null;
 	}
 
-	public void loadMusic(String filename) {
-		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.debug("OGG files not supported in IOS");
-			return;
-		}
+	private String checkIOSSoundName(String filename) {
 		
-		load(MUSIC_DIR + filename, Music.class);
+		if (Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(OGG_EXT)) {
+			String aac = filename.substring(0, filename.length() - OGG_EXT.length()) + AAC_EXT;
+
+			if (FileUtils.exists(EngineAssetManager.getInstance().getAsset(aac)))
+				return aac;
+
+			EngineLogger.debug("OGG files not supported in IOS: " + filename);
+
+			return null;
+		}
+
+		return filename;
+	}
+
+	public void loadMusic(String filename) {
+
+		String n = checkIOSSoundName(MUSIC_DIR + filename);
+
+		if (n == null)
+			return;
+
+		load(n, Music.class);
 	}
 
 	public void disposeMusic(String filename) {
-		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.debug("OGG files not supported in IOS");
+		String n = checkIOSSoundName(MUSIC_DIR + filename);
+
+		if (n == null)
 			return;
-		}		
-		
-		if (isLoaded(MUSIC_DIR + filename))
-			unload(MUSIC_DIR + filename);
+
+		if (isLoaded(n))
+			unload(n);
 	}
 
 	public Music getMusic(String filename) {
-		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.debug("OGG files not supported in IOS");
+		String n = checkIOSSoundName(MUSIC_DIR + filename);
+
+		if (n == null)
 			return null;
-		}		
-		
-		return get(MUSIC_DIR + filename, Music.class);
+
+		return get(n, Music.class);
 	}
 
 	public void loadSound(String filename) {
-		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.debug("OGG files not supported in IOS");
+		String n = checkIOSSoundName(SOUND_DIR + filename);
+
+		if (n == null)
 			return;
-		}
-		
-		load(SOUND_DIR + filename, Sound.class);
+
+		load(n, Sound.class);
 	}
 
 	public Sound getSound(String filename) {
-		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.debug("OGG files not supported in IOS");
+		String n = checkIOSSoundName(SOUND_DIR + filename);
+
+		if (n == null)
 			return null;
-		}		
-		
-		return get(SOUND_DIR + filename, Sound.class);
+
+		return get(n, Sound.class);
 	}
 
 	public void disposeSound(String filename) {
-		if(Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(".ogg")) {
-			EngineLogger.debug("OGG files not supported in IOS");
+		String n = checkIOSSoundName(SOUND_DIR + filename);
+
+		if (n == null)
 			return;
-		}		
-		
-		if (isLoaded(SOUND_DIR + filename))
-			unload(SOUND_DIR + filename);
+
+		if (isLoaded(n))
+			unload(n);
 	}
 
 	public FileHandle getSpine(String name) {
@@ -361,7 +383,7 @@ public class EngineAssetManager extends AssetManager {
 		for (String name : list) {
 			try {
 				float scale = Float.parseFloat(name);
-				
+
 				EngineLogger.debug("RES FOUND: " + scale);
 
 				Resolution r = new Resolution((int) (worldWidth * scale), (int) (worldHeight * scale), name);
@@ -427,7 +449,7 @@ public class EngineAssetManager extends AssetManager {
 
 		if (dirURL.getProtocol().equals("jar")) {
 			/* A JAR path */
-			String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); 
+			String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!"));
 			JarFile jar;
 
 			try {
@@ -482,7 +504,7 @@ public class EngineAssetManager extends AssetManager {
 
 		return file;
 	}
-	
+
 	public FileHandle getUserFolder() {
 		FileHandle file = null;
 

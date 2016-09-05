@@ -46,6 +46,7 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.FileUtils;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
 
@@ -758,7 +759,7 @@ public class World implements Serializable, AssetConsumer {
 
 	public boolean savedGameExists(String filename) {
 		return EngineAssetManager.getInstance().getUserFile(filename).exists()
-				|| EngineAssetManager.getInstance().assetExists("tests/" + filename);
+				|| FileUtils.exists(EngineAssetManager.getInstance().getAsset("tests/" + filename));
 	}
 
 	public void loadGameState() throws IOException {
