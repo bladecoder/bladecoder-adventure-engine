@@ -298,8 +298,12 @@ public class PackageDialog extends EditDialog {
 			}
 		} else if (arch.getText().equals("ios")) {
 			if (RunProccess.runGradle(Ctx.project.getProjectDir(), "ios:createIPA")) {
-				FileUtils.copyDirectory(new File(Ctx.project.getProjectDir().getAbsolutePath() + "/ios/build/robovm/"),
-						new File(dir.getText()));
+				
+				String apk = Ctx.project.getProjectDir().getAbsolutePath()
+						+ "/ios/build/robovm/IOSLauncher.ipa";
+				
+				File f = new File(apk);
+				FileUtils.copyFile(f, new File(dir.getText(), projectName + "-" + version.getText() + ".ipa"));
 			} else {
 				msg = "Error Generating package";
 			}
