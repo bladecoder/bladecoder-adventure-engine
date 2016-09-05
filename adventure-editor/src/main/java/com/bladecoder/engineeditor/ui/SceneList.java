@@ -318,7 +318,7 @@ public class SceneList extends ModelList<World, Scene> {
 			if (icon != null) {
 				bgIconCache.put(s, icon);
 			} else {
-				EngineLogger.error("Error creating Background icon");
+				EngineLogger.error("Error creating Background icon: " + atlas + "." + region);
 			}
 
 			batch.begin();
