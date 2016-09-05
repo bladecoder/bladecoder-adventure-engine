@@ -16,10 +16,9 @@ public class BuildScriptHelper {
 		write(wr, "repositories {");
 		
 		write(wr, DependencyBank.mavenCentral);
-		if (projects.contains(ProjectType.HTML)) {
-			write(wr, DependencyBank.jCenter);
-		}
+		write(wr, DependencyBank.jCenter);
 		write(wr, "}");
+		
 		// dependencies
 		write(wr, "dependencies {");
 		if (projects.contains(ProjectType.HTML)) {
