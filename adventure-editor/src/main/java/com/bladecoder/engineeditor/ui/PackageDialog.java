@@ -17,6 +17,7 @@ package com.bladecoder.engineeditor.ui;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
@@ -63,7 +64,7 @@ public class PackageDialog extends EditDialog {
 	private InputPanel osxJRE;
 	private InputPanel version;
 	private InputPanel icon;
-	private InputPanel androidVersionCode;
+	private InputPanel versionCode;
 	private InputPanel androidSDK;
 	private InputPanel androidKeyStore;
 	private InputPanel androidKeyAlias;
@@ -95,7 +96,7 @@ public class PackageDialog extends EditDialog {
 		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the package version", true);
 		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", FileInputPanel.DialogType.OPEN_FILE,
 				false);
-		androidVersionCode = InputPanelFactory.createInputPanel(skin, "Version Code",
+		versionCode = InputPanelFactory.createInputPanel(skin, "Version Code",
 				"An integer that identify the version.", Type.INTEGER, true);
 		androidSDK = new FileInputPanel(skin, "SDK",
 				"Select the Android SDK Location. If empty, the ANDROID_HOME variable will be used.",
@@ -116,7 +117,7 @@ public class PackageDialog extends EditDialog {
 		options[5] = osxJRE;
 		options[6] = version;
 		options[7] = icon;
-		options[8] = androidVersionCode;
+		options[8] = versionCode;
 		options[9] = androidSDK;
 		options[10] = androidKeyStore;
 		options[11] = androidKeyAlias;
@@ -272,7 +273,7 @@ public class PackageDialog extends EditDialog {
 				}
 			}
 		} else if (arch.getText().equals("android")) {
-			String params = versionParam + "-PversionCode=" + androidVersionCode.getText() + " " + "-Pkeystore="
+			String params = versionParam + "-PversionCode=" + versionCode.getText() + " " + "-Pkeystore="
 					+ androidKeyStore.getText() + " " + "-PstorePassword=" + androidKeyStorePassword.getText() + " "
 					+ "-Palias=" + androidKeyAlias.getText() + " " + "-PkeyPassword="
 					+ androidKeyAliasPassword.getText() + " ";
@@ -297,6 +298,17 @@ public class PackageDialog extends EditDialog {
 				msg = "Error Generating package";
 			}
 		} else if (arch.getText().equals("ios")) {
+			// UPDATE 'robovm.properties'
+			Properties p = new Properties();
+			p.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/ios/robovm.properties"));
+			p.setProperty("app.version", version.getText());
+			p.setProperty("app.build", versionCode.getText());
+			p.setProperty("app.name", projectName);
+			p.store(new FileOutputStream(
+					new File(Ctx.project.getProjectDir().getAbsolutePath(), "/ios/robovm.properties")), null);
+			
+			
+			
 			if (RunProccess.runGradle(Ctx.project.getProjectDir(), "ios:createIPA")) {
 				
 				String apk = Ctx.project.getProjectDir().getAbsolutePath()
@@ -333,12 +345,14 @@ public class PackageDialog extends EditDialog {
 			setVisible(type, true);
 			typeChanged();
 		} else if (a.equals("android")) {
-			setVisible(androidVersionCode, true);
+			setVisible(versionCode, true);
 			setVisible(androidSDK, true);
 			setVisible(androidKeyStore, true);
 			setVisible(androidKeyAlias, true);
 			setVisible(androidKeyStorePassword, true);
 			setVisible(androidKeyAliasPassword, true);
+		} else if (a.equals("ios")) {
+			setVisible(versionCode, true);
 		} else if (a.equals("html")) {
 			Message.showMsgDialog(getStage(), "Not Supported", "HTML export is not supported yet.");
 		}
