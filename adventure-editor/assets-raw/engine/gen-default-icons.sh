@@ -29,4 +29,5 @@ inkscape -w 320 -h 480 --export-area-page --export-png=../../src/main/resources/
 inkscape -w 640 -h 960 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Default@2x.png ios-default-images.svg;
 inkscape -w 1536 -h 2008 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Default@2x~ipad.png  ios-default-images.svg;
 inkscape -w 768 -h 1004 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Default~ipad.png ios-default-images.svg;
+inkscape -w 2048 -h 2732 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Default-1024w-1366h@2x~ipad.png ios-default-images.svg;
 
