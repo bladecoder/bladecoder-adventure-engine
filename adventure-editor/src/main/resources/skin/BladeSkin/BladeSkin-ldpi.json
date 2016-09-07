@@ -16,6 +16,7 @@
 		text-light-dark: { a: 1, b: 0, g: 0, r: 0 },
 		holo-blue: { a: 1, b: 0.89, g: 0.7, r: 0.2 },
 		separator-color: { a: 1, b: 0.33, g: 0.33, r: 0.33 }
+		grey: { a: 1, b: 0.5, g: 0.5, r: 0.5 },
 	},
 
 
@@ -55,8 +56,8 @@
 
 
 	com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
-		default: { up: btn_default_normal, down: btn_default_pressed, over: btn_default_focused, disabled: btn_default_disabled, font: default-font, fontColor: text-dark , downFontColor: text-dark, overFontColor: text-dark, disabledFontColor: text-dark, checked: btn_default_pressed},
-	no-toggled: { up: btn_default_normal, down: btn_default_pressed, over: btn_default_focused, disabled: btn_default_disabled, font: default-font, fontColor: text-dark , downFontColor: text-dark, overFontColor: text-dark, disabledFontColor: text-dark},
+		default: { up: btn_default_normal, down: btn_default_pressed, over: btn_default_focused, disabled: btn_default_disabled, font: default-font, fontColor: text-dark , downFontColor: text-dark, overFontColor: text-dark, disabledFontColor: grey, checked: btn_default_pressed},
+	no-toggled: { up: btn_default_normal, down: btn_default_pressed, over: btn_default_focused, disabled: btn_default_disabled, font: default-font, fontColor: text-dark , downFontColor: text-dark, overFontColor: text-dark, disabledFontColor: grey},
 		toggle: { up: btn_toggle_off_normal, down: btn_toggle_on_pressed, over: btn_toggle_off_focused, checked: btn_toggle_on_normal, checkedOver: btn_toggle_on_focused, disabled: btn_toggle_off_disabled, font: default-font, fontColor: text-dark , downFontColor: text-dark, overFontColor: text-dark, checkedFontColor: text-dark, checkedOverFontColor: text-dark, disabledFontColor: text-dark },
 		default-thin: { up: btn_default_normal, down: btn_default_pressed, over: btn_default_focused, disabled: btn_default_disabled, font: thin-font, fontColor: text-dark , downFontColor: text-dark, overFontColor: text-dark, disabledFontColor: text-dark},
 		toggle-thin: { up: btn_toggle_off_normal, down: btn_toggle_on_pressed, over: btn_toggle_off_focused, checked: btn_toggle_on_normal, checkedOver: btn_toggle_on_focused, disabled: btn_toggle_off_disabled, font: thin-font, fontColor: text-dark , downFontColor: text-dark, overFontColor: text-dark, checkedFontColor: text-dark, checkedOverFontColor: text-dark, disabledFontColor: text-dark }

@@ -67,25 +67,20 @@ public class ToolsWindow extends Container<Table> {
 		table.row();
 		table.add(testOnAndroidButton).expandX().fill();
 
-		// show only on mac
-		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-			table.row();
-			table.add(testOnIphoneEmulatorButton).expandX().fill();
+		table.row();
+		table.add(testOnIphoneEmulatorButton).expandX().fill();
 
-			table.row();
-			table.add(testOnIpadEmulatorButton).expandX().fill();
+		table.row();
+		table.add(testOnIpadEmulatorButton).expandX().fill();
 
-			table.row();
-			table.add(testOnIOSDeviceButton).expandX().fill();
+		table.row();
+		table.add(testOnIOSDeviceButton).expandX().fill();
 
-			// TextTooltip t1 = new TextTooltip("XCode must be installed",
-			// skin);
-			// testOnIphoneEmulatorButton.addListener(t1);
-			// testOnIpadEmulatorButton.addListener(t1);
-			//
-			// TextTooltip t3 = new TextTooltip("The device has to be
-			// provisioned", skin);
-			// testOnIOSDeviceButton.addListener(t3);
+		// disable if not mac
+		if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
+			testOnIphoneEmulatorButton.setDisabled(true);
+			testOnIpadEmulatorButton.setDisabled(true);
+			testOnIOSDeviceButton.setDisabled(true);
 		}
 
 		table.row();
@@ -94,15 +89,15 @@ public class ToolsWindow extends Container<Table> {
 		table.row();
 		table.add(importTSVButton).expandX().fill();
 
-//		table.row();
-//		table.add(tmpButton).expandX().fill();
+		// table.row();
+		// table.add(tmpButton).expandX().fill();
 
 		// ADD CUTMODE FOR VERBS THAT ONLY HAVE A LOOKAT OR SAY ACTION
 		tmpButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				ModelTools.fixSaySubtitleActor();
-				
+
 				Message.showMsg(getStage(), "TOOL PROCESSED", 4);
 			}
 
@@ -160,8 +155,6 @@ public class ToolsWindow extends Container<Table> {
 		prefSize(table.getWidth(), Math.max(200, table.getHeight()));
 		setSize(table.getWidth(), Math.max(200, table.getHeight()));
 	}
-
-
 
 	@SuppressWarnings("restriction")
 	private void exportTSV() {

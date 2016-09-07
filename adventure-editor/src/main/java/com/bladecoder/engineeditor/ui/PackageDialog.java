@@ -72,7 +72,10 @@ public class PackageDialog extends EditDialog {
 	private InputPanel androidKeyStorePassword;
 	private InputPanel androidKeyAliasPassword;
 
-	private InputPanel[] options = new InputPanel[12];
+	private InputPanel iosSignIdentity;
+	private InputPanel iosProvisioningProfile;
+	
+	private InputPanel[] options = new InputPanel[14];
 
 	@SuppressWarnings("unchecked")
 	public PackageDialog(Skin skin) {
@@ -109,6 +112,12 @@ public class PackageDialog extends EditDialog {
 				.createInputPanel(skin, "KeyStorePasswd", "Key Store Password", true);
 		androidKeyAliasPassword = InputPanelFactory
 				.createInputPanel(skin, "KeyAliasPasswd", "Key Alias Password", true);
+		
+		iosSignIdentity = InputPanelFactory
+				.createInputPanel(skin, "Sign Identity", "Empty for auto select.\nThis field matches against the start of the certificate name. Alternatively you can use a certificate fingerprint.\nIf the value is enclosed in / a regexp search will be done against the certificate name instead.\nRun the command 'security find-identity -v -p codesigning' or use theKeyChain Access OS X app to view your installed certificates.", false);
+		
+		iosProvisioningProfile = InputPanelFactory
+				.createInputPanel(skin, "Provisioning Profile", "Empty for auto select.", false);
 
 		options[0] = type;
 		options[1] = os;
@@ -122,6 +131,8 @@ public class PackageDialog extends EditDialog {
 		options[9] = androidSDK;
 		options[10] = androidKeyStore;
 		options[11] = androidKeyAlias;
+		options[12] = iosSignIdentity;
+		options[13] = iosProvisioningProfile;
 
 		addInputPanel(arch);
 		addInputPanel(dir);
@@ -299,6 +310,11 @@ public class PackageDialog extends EditDialog {
 				msg = "Error Generating package";
 			}
 		} else if (arch.getText().equals("ios")) {
+			
+			if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
+				return "You need a MacOSX computer with XCode installed to generate the IOS package.";
+			}
+			
 			// UPDATE 'robovm.properties'
 			Properties p = new Properties();
 			p.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/ios/robovm.properties"));
@@ -308,9 +324,15 @@ public class PackageDialog extends EditDialog {
 			p.store(new FileOutputStream(
 					new File(Ctx.project.getProjectDir().getAbsolutePath(), "/ios/robovm.properties")), null);
 			
+			String params = "";
 			
+			if(iosSignIdentity.getText() != null)
+				params += "-Probovm.iosSignIdentity=" + iosSignIdentity.getText() + " ";
 			
-			if (RunProccess.runGradle(Ctx.project.getProjectDir(), "ios:createIPA")) {
+			if(iosProvisioningProfile.getText() != null)
+				params += "-Probovm.iosProvisioningProfile=" + iosProvisioningProfile.getText() + " ";
+			
+			if (RunProccess.runGradle(Ctx.project.getProjectDir(), params + "ios:createIPA")) {
 				
 				String apk = Ctx.project.getProjectDir().getAbsolutePath()
 						+ "/ios/build/robovm/IOSLauncher.ipa";
@@ -354,6 +376,8 @@ public class PackageDialog extends EditDialog {
 			setVisible(androidKeyAliasPassword, true);
 		} else if (a.equals("ios")) {
 			setVisible(versionCode, true);
+			setVisible(iosSignIdentity, true);
+			setVisible(iosProvisioningProfile, true);
 		} else if (a.equals("html")) {
 			Message.showMsgDialog(getStage(), "Not Supported", "HTML export is not supported yet.");
 		}
