@@ -31,7 +31,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogicgames.packr.Packr;
-import com.badlogicgames.packr.Packr.Platform;
+import com.badlogicgames.packr.PackrConfig;
+import com.badlogicgames.packr.PackrConfig.Platform;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
@@ -89,8 +90,8 @@ public class PackageDialog extends EditDialog {
 		linux32JRE = new FileInputPanel(skin, "JRE.Linux32",
 				"Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file",
 				FileInputPanel.DialogType.OPEN_FILE);
-		winJRE = new FileInputPanel(skin, "JRE.Windows",
-				"Select the Windows JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
+		winJRE = new FileInputPanel(skin, "JRE.Windows64",
+				"Select the Windows 64 bits JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
 		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle. Must be a ZIP file",
 				FileInputPanel.DialogType.OPEN_FILE);
 		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the package version", true);
@@ -254,22 +255,22 @@ public class PackageDialog extends EditDialog {
 				String launcher = getDesktopMainClass();
 
 				if (os.getText().equals("linux64")) {
-					packr(Platform.linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher,
+					packr(Platform.Linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher,
 							dir.getText());
 				} else if (os.getText().equals("linux32")) {
-					packr(Platform.linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher,
+					packr(Platform.Linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher,
 							dir.getText());
 				} else if (os.getText().equals("windows")) {
-					packr(Platform.windows, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+					packr(Platform.Windows64, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				} else if (os.getText().equals("macOSX")) {
-					packr(Platform.mac, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+					packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				} else if (os.getText().equals("all")) {
-					packr(Platform.linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher,
+					packr(Platform.Linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher,
 							dir.getText());
-					packr(Platform.linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher,
+					packr(Platform.Linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher,
 							dir.getText());
-					packr(Platform.windows, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-					packr(Platform.mac, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+					packr(Platform.Windows64, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+					packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				}
 			}
 		} else if (arch.getText().equals("android")) {
@@ -467,47 +468,34 @@ public class PackageDialog extends EditDialog {
 	private void packr(Platform platform, String jdk, String exe, String jar, String mainClass, String outDir)
 			throws IOException {
 		String suffix = null;
-		;
 
 		switch (platform) {
-		case linux32:
+		case Linux32:
 			suffix = "lin32";
 			break;
-		case linux64:
+		case Linux64:
 			suffix = "lin64";
 			break;
-		case mac:
+		case MacOS:
 			suffix = "mac";
 			break;
-		case windows:
+		case Windows64:
+		case Windows32:
 			suffix = "win";
 			break;
 
 		}
 
-		Packr.Config config = new Packr.Config();
+		PackrConfig config = new PackrConfig();
 		config.platform = platform;
 		config.jdk = jdk;
 		config.executable = exe;
-		config.jar = jar;
-		config.mainClass = mainClass;
+		config.classpath = Arrays.asList(jar);
+		config.mainClass = mainClass.replace('/', '.');
 		config.vmArgs = Arrays.asList("-Xmx1G");
-		config.minimizeJre = new String[] { 
-				"jre/lib/rt/com/sun/corba", 
-				"jre/lib/rt/com/sun/jndi",
-				"jre/lib/rt/com/sun/jmx",
-				"jre/lib/rt/com/sun/media",
-				"jre/lib/rt/com/sun/naming",
-				"jre/lib/rt/com/sun/org",
-				"jre/lib/rt/com/sun/rowset",
-				"jre/lib/rt/com/sun/script",
-				"jre/lib/rt/com/sun/xml",
-				"jre/lib/rt/sun/applet",
-				"jre/lib/rt/sun/corba",
-				"jre/lib/rt/sun/management",
-				};
+		config.minimizeJre = "hard";
 		
-		config.outDir = outDir + "/" + exe + "-" + suffix;
+		config.outDir = new File(outDir + "/" + exe + "-" + suffix);
 
 		new Packr().pack(config);
 	}
