@@ -167,6 +167,43 @@ public class RunProccess {
 
 		return processBuilder.start();
 	}
+	
+	public static boolean runGradle(File workingDir, List<String> parameters)  {
+		String exec = workingDir.getAbsolutePath()
+				+ "/"
+				+ (System.getProperty("os.name").contains("Windows") ? "gradlew.bat"
+						: "gradlew");
+
+		List<String> argumentsList = new ArrayList<String>();
+		argumentsList.add(exec);
+		argumentsList.addAll(parameters);
+
+		EditorLogger.debug("Executing 'gradlew " + parameters + "'");
+
+		try {
+			final ProcessBuilder pb = new ProcessBuilder(argumentsList).directory(
+					workingDir).redirectErrorStream(true);
+
+			// TODO: READ OUTPUT FROM pb AND print in output stream
+			// if (System.console() != null)
+			// pb.inheritIO();
+
+			final Process process = pb.start();
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					process.getInputStream()));
+			String line;
+			while ((line = in.readLine()) != null) {
+				EditorLogger.debug(line);
+			}
+
+			process.waitFor();
+			return process.exitValue() == 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
 	public static boolean runGradle(File workingDir, String parameters) {
 		String exec = workingDir.getAbsolutePath()
@@ -174,6 +211,7 @@ public class RunProccess {
 				+ (System.getProperty("os.name").contains("Windows") ? "gradlew.bat"
 						: "gradlew");
 		String command = "gradlew" + " " + parameters;
+		
 		String[] split = command.split(" ");
 		split[0] = exec;
 
