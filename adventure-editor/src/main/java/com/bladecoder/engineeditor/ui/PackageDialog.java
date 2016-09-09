@@ -19,7 +19,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -324,15 +326,17 @@ public class PackageDialog extends EditDialog {
 			p.store(new FileOutputStream(
 					new File(Ctx.project.getProjectDir().getAbsolutePath(), "/ios/robovm.properties")), null);
 			
-			String params = "";
+			List<String> params = new ArrayList<String>();
 			
 			if(iosSignIdentity.getText() != null)
-				params += "-Probovm.iosSignIdentity=" + iosSignIdentity.getText() + " ";
+				params.add("-Probovm.iosSignIdentity=" + iosSignIdentity.getText());
 			
 			if(iosProvisioningProfile.getText() != null)
-				params += "-Probovm.iosProvisioningProfile=" + iosProvisioningProfile.getText() + " ";
+				params.add("-Probovm.iosProvisioningProfile=" + iosProvisioningProfile.getText() );
 			
-			if (RunProccess.runGradle(Ctx.project.getProjectDir(), params + "ios:createIPA")) {
+			params.add("ios:createIPA");
+			
+			if (RunProccess.runGradle(Ctx.project.getProjectDir(), params)) {
 				
 				String apk = Ctx.project.getProjectDir().getAbsolutePath()
 						+ "/ios/build/robovm/IOSLauncher.ipa";
