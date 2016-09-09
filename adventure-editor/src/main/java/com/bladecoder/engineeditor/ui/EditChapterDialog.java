@@ -28,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Chapter;
 import com.bladecoder.engineeditor.ui.components.EditDialog;
@@ -78,7 +79,7 @@ public class EditChapterDialog extends EditDialog {
 					+ e.getClass().getSimpleName() + " - " + e.getMessage();
 			Message.showMsg(getStage(), msg, 2);
 
-			e.printStackTrace();
+			EditorLogger.printStackTrace(e);
 		}
 	}
 
@@ -113,7 +114,7 @@ public class EditChapterDialog extends EditDialog {
 						+ e1.getMessage();
 				Message.showMsg(getStage(), msg, 3);
 
-				e1.printStackTrace();
+				EditorLogger.printStackTrace(e1);
 			}
 		}
 	}

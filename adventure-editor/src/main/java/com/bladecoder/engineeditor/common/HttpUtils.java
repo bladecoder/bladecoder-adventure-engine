@@ -170,7 +170,7 @@ public class HttpUtils {
 			rd.close();
 			return response.toString();
 		} catch (Exception e) {
-			e.printStackTrace();
+			EditorLogger.printStackTrace(e);
 			return null;
 		} finally {
 			if (connection != null) {
@@ -198,7 +198,7 @@ public class HttpUtils {
 				response.append(inputLine);
 			}
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			EditorLogger.printStackTrace(e);
 			return null;
 		} finally {
 			if(in != null)

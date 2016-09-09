@@ -87,7 +87,7 @@ public class FolderClassLoader extends ClassLoader {
 
 						classByte = byteStream.toByteArray();
 						String className = classPackage + "." + f.getName().substring(0, f.getName().length() - 6);
-						System.out.println(">>>>>>>>>> LOADING CLASS: " + className);
+						EditorLogger.debug(">>>>>>>>>> LOADING CLASS: " + className);
 
 						if (classes.get(className) == null) {
 

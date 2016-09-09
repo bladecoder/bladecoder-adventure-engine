@@ -41,6 +41,7 @@ import com.bladecoder.engineeditor.ui.ActorPanel;
 import com.bladecoder.engineeditor.ui.ProjectPanel;
 import com.bladecoder.engineeditor.ui.ProjectToolbar;
 import com.bladecoder.engineeditor.ui.ScenePanel;
+import com.strongjoshua.console.GUIConsole;
 
 //TODO: Set TITLE in window bar. Set '*' in the title when modified
 
@@ -56,18 +57,18 @@ public class Editor implements ApplicationListener {
 		skin = new BladeSkin(Gdx.files.internal(SKIN));
 
 		EditorLogger.setDebug();
-		EditorLogger.debug("CREATE");
-		Ctx.project = new Project();
+		
+		/*** STAGE SETUP ***/
+		stage = new Stage(new ScreenViewport());
+		Gdx.input.setInputProcessor(stage);
+		
+		setCtx();
+		
 		Message.init(skin);
-		Ctx.assetManager = new EditorAssetManager();
 
 		scnEditor = new ScnEditor(skin);
 		scnEditor.setBackground("background");
 		skin.getFont("default-font").getData().markupEnabled = true;
-
-		/*** STAGE SETUP ***/
-		stage = new Stage(new ScreenViewport());
-		Gdx.input.setInputProcessor(stage);
 
 		// RIGHT PANEL
 		ScenePanel scenePanel = new ScenePanel(skin);
@@ -124,7 +125,7 @@ public class Editor implements ApplicationListener {
 											+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
 									Message.showMsgDialog(getStage(), "Error", msg);
 
-									e1.printStackTrace();
+									EditorLogger.error(msg, e1);
 								}
 							}
 						}
@@ -133,9 +134,8 @@ public class Editor implements ApplicationListener {
 							.show(stage);
 				}
 			} catch (Exception e) {
-				EditorLogger.debug("Error loading last project: " + e.getMessage());
+				EditorLogger.error("Error loading last project.", e);
 				Ctx.project.closeProject();
-				e.printStackTrace();
 			}
 		}
 
@@ -143,6 +143,13 @@ public class Editor implements ApplicationListener {
 		stage.setKeyboardFocus(scnEditor.getScnWidget());
 
 		TooltipManager.getInstance().instant();
+	}
+	
+	private void setCtx() {
+		Ctx.project = new Project();
+		Ctx.assetManager = new EditorAssetManager();
+
+		EditorLogger.setConsole(new GUIConsole());
 	}
 
 	@Override
@@ -152,11 +159,14 @@ public class Editor implements ApplicationListener {
 
 		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		stage.draw();
+		
+		EditorLogger.drawConsole();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
+		EditorLogger.console.refresh();
 	}
 
 	@Override
@@ -173,14 +183,9 @@ public class Editor implements ApplicationListener {
 	public void dispose() {
 		scnEditor.dispose();
 		stage.dispose();
+		EditorLogger.console.dispose();
 
 		Ctx.project.saveConfig();
-
-		// try {
-		// Ctx.project.saveProject();
-		// } catch (Exception ex) {
-		// ex.printStackTrace();
-		// }
 	}
 
 	public void exit() {
@@ -195,7 +200,7 @@ public class Editor implements ApplicationListener {
 									+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
 							Message.showMsgDialog(getStage(), "Error", msg);
 
-							e1.printStackTrace();
+							EditorLogger.printStackTrace(e1);
 						}
 					}
 

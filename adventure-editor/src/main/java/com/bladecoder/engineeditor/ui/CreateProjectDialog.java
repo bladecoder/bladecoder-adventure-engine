@@ -112,8 +112,7 @@ public class CreateProjectDialog extends EditDialog {
 			String msg = e.getClass().getSimpleName() + " - "
 					+ e.getMessage();
 			Message.showMsgDialog(stage, "Error creating project", msg);
-			EditorLogger.error(msg);
-			e.printStackTrace();
+			EditorLogger.error(msg, e);
 			return;
 		}
 	}

@@ -32,6 +32,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.util.PolygonUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.undo.UndoDeleteActor;
@@ -392,7 +393,7 @@ public class ScnWidgetInputListener extends ClickListener {
 							+ e1.getMessage();
 					Message.showMsgDialog(scnWidget.getStage(), "Error", msg);
 
-					e1.printStackTrace();
+					EditorLogger.printStackTrace(e1);
 				}
 			}
 			break;

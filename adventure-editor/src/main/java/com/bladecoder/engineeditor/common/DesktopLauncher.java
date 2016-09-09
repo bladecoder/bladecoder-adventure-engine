@@ -154,7 +154,7 @@ public class DesktopLauncher extends BladeEngine {
 
 			Mouse.setNativeCursor(emptyCursor);
 		} catch (LWJGLException e) {
-			e.printStackTrace();
+			EditorLogger.printStackTrace(e);
 		}
 
 	}

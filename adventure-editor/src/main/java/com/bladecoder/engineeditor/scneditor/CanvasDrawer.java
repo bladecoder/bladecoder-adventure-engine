@@ -35,7 +35,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
-import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engineeditor.common.EditorLogger;
 
 public class CanvasDrawer {
 	public static final float CORNER_DIST = 20;
@@ -63,7 +63,7 @@ public class CanvasDrawer {
 			Polygon p = a.getBBox();
 
 			if (p == null) {
-				EngineLogger.error("ERROR DRAWING BBOX FOR: " + a.getId());
+				EditorLogger.error("ERROR DRAWING BBOX FOR: " + a.getId());
 			}
 
 			// Rectangle r = a.getBBox().getBoundingRectangle();

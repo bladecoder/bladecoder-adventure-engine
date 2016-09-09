@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
 
 public class ProjectBuilder {
@@ -79,7 +80,7 @@ public class ProjectBuilder {
 			buildWriter.close();
 			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			EditorLogger.printStackTrace(e);
 			return false;
 		}
 	}

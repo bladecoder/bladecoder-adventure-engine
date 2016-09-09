@@ -21,6 +21,7 @@ import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Versions;
 
 import javafx.embed.swing.JFXPanel;
@@ -64,7 +65,7 @@ public class Main extends LwjglApplication {
 					File file = new File(args[i]).getCanonicalFile();
 					Ctx.project.loadProject(file);
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					EditorLogger.printStackTrace(ex);
 				}
 			}
 		}

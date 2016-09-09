@@ -55,7 +55,7 @@ public class PropertyChange {
 	
 	protected void firePropertyChange(PropertyChangeEvent evt) {
 		
-		//EngineLogger.debug(propertyName + "-> NEW: "+ newValue + " OLD:" + oldValue);
+		//EditorLogger.debug(propertyName + "-> NEW: "+ newValue + " OLD:" + oldValue);
 		propertyChangeSupport.firePropertyChange(evt);
 	}
 	

@@ -21,7 +21,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -32,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.common.Versions;
@@ -162,13 +160,10 @@ public class BladeEngineSetup {
 					return apiLevel;
 				}
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
+		} catch (IOException| NumberFormatException e) {
+			EditorLogger.printStackTrace(e);
 		}
+		
 		return 0;
 	}
 
@@ -197,10 +192,8 @@ public class BladeEngineSetup {
 					return versionString;
 				}
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			EditorLogger.printStackTrace(e);
 		}
 		return "0.0.0";
 	}
@@ -247,7 +240,7 @@ public class BladeEngineSetup {
 			sdkPath = sdkLocation.replace('\\', '/');
 
 		if (!isSdkLocationValid(sdkLocation)) {
-			EngineLogger.error("Android SDK location '" + sdkLocation + "' doesn't contain an SDK");
+			EditorLogger.error("Android SDK location '" + sdkLocation + "' doesn't contain an SDK");
 		} else if (!isSdkUpToDate(sdkLocation)) {
 			// SHOW THE ANDROID SDK MANAGER??
 		}

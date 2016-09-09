@@ -15,23 +15,46 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.common;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import com.badlogic.gdx.Input.Keys;
+import com.strongjoshua.console.CommandExecutor;
+import com.strongjoshua.console.Console;
+import com.strongjoshua.console.LogLevel;
+
 public class EditorLogger {
-	private static String TAG = "EDITOR";
 	public static enum Levels {DEBUG, ERROR};
 	
 	public static Levels level = Levels.ERROR;
+	
+	public static Console console;
 
-	public static void debug(String message) {
-		if(level == Levels.DEBUG)
-			System.out.println(TAG + ": " + message);
+	public static synchronized void debug(String message) {
+		if(level == Levels.DEBUG) {
+			console.log(message, LogLevel.DEFAULT);
+		}
+	}
+	
+	public static synchronized void drawConsole() {
+		console.draw();
 	}
 
 	public static void error(String message) {
-		System.err.println(TAG + ": " + message);
+		console.log(message, LogLevel.ERROR);
 	}
 
 	public static void error(String message, Exception e) {
-		System.out.println(TAG + ": " + message + " Exception: " + e.getMessage());
+		console.log(message + " Exception: " + e.getMessage(), LogLevel.ERROR);
+		
+		printStackTrace(e);
+	}
+	
+	public static void printStackTrace(Exception e) {		
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		e.printStackTrace(pw);
+		console.log(sw.toString(), LogLevel.ERROR);
 	}
 
 	public static void toggle() {
@@ -58,5 +81,24 @@ public class EditorLogger {
 	
 	public static void setDebug() {
 		level = Levels.DEBUG;
+	}
+
+	public static void setConsole(Console console) {	
+		EditorLogger.console = console;
+		EditorLogger.console.setKeyID(Keys.F1);
+		
+		console.setCommandExecutor(new CommandExecutor() {
+			
+			@SuppressWarnings("unused")
+			public void exit() {
+				super.exitApp();
+			}
+			
+			@SuppressWarnings("unused")
+			public void saveLog(String path) {
+				super.printLog(path);
+			}
+			
+		});
 	}
 }

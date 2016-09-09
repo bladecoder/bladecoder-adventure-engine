@@ -21,9 +21,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
-import javafx.application.Platform;
-import javafx.stage.DirectoryChooser;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -42,9 +39,13 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.model.Project;
+
+import javafx.application.Platform;
+import javafx.stage.DirectoryChooser;
 
 public class ProjectToolbar extends Table {
 	private ImageButton newBtn;
@@ -245,7 +246,7 @@ public class ProjectToolbar extends Table {
 														+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
 												Message.showMsgDialog(getStage(), "Error", msg);
 
-												e1.printStackTrace();
+												EditorLogger.printStackTrace(e1);
 											}
 										}
 									}
@@ -287,7 +288,7 @@ public class ProjectToolbar extends Table {
 								Message.showMsgDialog(getStage(), "Error loading project", msg);
 							}
 
-							ex.printStackTrace();
+							EditorLogger.printStackTrace(ex);
 						}
 					}
 				});
@@ -394,7 +395,7 @@ public class ProjectToolbar extends Table {
 									+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
 							Message.showMsgDialog(getStage(), "Error", msg);
 
-							e1.printStackTrace();
+							EditorLogger.printStackTrace(e1);
 						}
 					}
 

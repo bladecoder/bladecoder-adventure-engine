@@ -40,7 +40,6 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
-import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.OrderedProperties;
 
@@ -82,7 +81,7 @@ public class I18NHandler {
 		try {
 			i18n.load(new InputStreamReader(new FileInputStream(i18nFilename), I18N.ENCODING));
 		} catch (IOException e) {
-			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nFilename);
+			EditorLogger.error("ERROR LOADING BUNDLE: " + i18nFilename);
 		}
 
 		return i18n;

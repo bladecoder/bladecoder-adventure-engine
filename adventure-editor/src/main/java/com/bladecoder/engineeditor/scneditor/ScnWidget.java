@@ -342,7 +342,7 @@ public class ScnWidget extends Widget {
 					}
 				} catch (Exception e) {
 					Message.showMsg(getStage(), "Could not load assets for scene", 4);
-					e.printStackTrace();
+					EditorLogger.printStackTrace(e);
 					loadingError = true;
 					loading = false;
 				}
@@ -432,7 +432,7 @@ public class ScnWidget extends Widget {
 			faRenderer.setAnimation(fa);
 		} catch (Exception e) {
 			Message.showMsg(getStage(), "Could not retrieve assets for sprite: " + fa.id, 4);
-			e.printStackTrace();
+			EditorLogger.printStackTrace(e);
 
 			faRenderer.setAnimation(null);
 		}

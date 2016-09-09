@@ -34,6 +34,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ImageUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
@@ -266,7 +267,7 @@ public class AssetsList extends Table {
 								+ " - "
 								+ ex.getMessage();
 						Message.showMsgDialog(getStage(), "Error", msg);
-						ex.printStackTrace();
+						EditorLogger.printStackTrace(ex);
 					}
 				}
 			});
@@ -345,7 +346,7 @@ public class AssetsList extends Table {
 			String msg = "Something went wrong while deleting the asset.\n\n"
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
 			Message.showMsgDialog(getStage(), "Error", msg);
-			ex.printStackTrace();
+			EditorLogger.printStackTrace(ex);
 		}
 	}
 }

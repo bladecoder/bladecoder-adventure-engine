@@ -29,8 +29,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
-import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.I18NUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.ModelTools;
@@ -177,7 +177,7 @@ public class ToolsWindow extends Container<Table> {
 					Message.showMsg(getStage(), outFile.getName() + " exported sucessfully.", 4);
 				} catch (IOException e) {
 					Message.showMsg(getStage(), "There was a problem generating the .tsv file.", 4);
-					e.printStackTrace();
+					EditorLogger.printStackTrace(e);
 				}
 			}
 		});
@@ -206,7 +206,7 @@ public class ToolsWindow extends Container<Table> {
 
 				} catch (IOException e) {
 					Message.showMsg(getStage(), "There was a problem importing the .tsv file.", 4);
-					e.printStackTrace();
+					EditorLogger.printStackTrace(e);
 				}
 			}
 		});
@@ -253,7 +253,7 @@ public class ToolsWindow extends Container<Table> {
 				} catch (Exception ex) {
 					String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName()
 							+ " - " + ex.getMessage();
-					EngineLogger.error(msg);
+					EditorLogger.error(msg);
 					return;
 				}
 
@@ -302,7 +302,7 @@ public class ToolsWindow extends Container<Table> {
 				} catch (Exception ex) {
 					String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName()
 							+ " - " + ex.getMessage();
-					EngineLogger.error(msg);
+					EditorLogger.error(msg);
 					return;
 				}
 
@@ -351,7 +351,7 @@ public class ToolsWindow extends Container<Table> {
 				} catch (Exception ex) {
 					String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName()
 							+ " - " + ex.getMessage();
-					EngineLogger.error(msg);
+					EditorLogger.error(msg);
 					return;
 				}
 
@@ -400,7 +400,7 @@ public class ToolsWindow extends Container<Table> {
 				} catch (Exception ex) {
 					String msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName()
 							+ " - " + ex.getMessage();
-					EngineLogger.error(msg);
+					EditorLogger.error(msg);
 					return;
 				}
 

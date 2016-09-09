@@ -139,7 +139,7 @@ public class ModelTools {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			EditorLogger.printStackTrace(e);
 		} finally {
 			try {
 				// Close the writer regardless of what happens...
@@ -181,7 +181,7 @@ public class ModelTools {
 									ActionUtils.setParam(cma2, "value", "false");
 
 								} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-									e.printStackTrace();
+									EditorLogger.printStackTrace(e);
 								}
 
 								actions.add(cma1);
@@ -218,7 +218,7 @@ public class ModelTools {
 							if (stringValue.equals("SUBTITLE"))
 								ActionUtils.setParam(act, "actor", "$PLAYER");
 						} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-							e.printStackTrace();
+							EditorLogger.printStackTrace(e);
 							return;
 						}
 					}
@@ -244,7 +244,7 @@ public class ModelTools {
 									if (stringValue.equals("SUBTITLE"))
 										ActionUtils.setParam(act, "actor", "$PLAYER");
 								} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-									e.printStackTrace();
+									EditorLogger.printStackTrace(e);
 									return;
 								}
 							}

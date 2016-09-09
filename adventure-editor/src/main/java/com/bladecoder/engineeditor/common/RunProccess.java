@@ -136,7 +136,7 @@ public class RunProccess {
 				throw new IOException("ERROR IN ANT PROCCESS");
 			}
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			EditorLogger.printStackTrace(e);
 		}
 	}
 
@@ -199,7 +199,7 @@ public class RunProccess {
 			process.waitFor();
 			return process.exitValue() == 0;
 		} catch (Exception e) {
-			e.printStackTrace();
+			EditorLogger.printStackTrace(e);
 			return false;
 		}
 	}

@@ -43,7 +43,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ElementUtils;
@@ -183,7 +182,7 @@ public class SceneList extends ModelList<World, Scene> {
 						}
 					}
 				} catch (IOException e1) {
-					e1.printStackTrace();
+					EditorLogger.printStackTrace(e1);
 				}
 			}
 		}
@@ -318,7 +317,7 @@ public class SceneList extends ModelList<World, Scene> {
 			if (icon != null) {
 				bgIconCache.put(s, icon);
 			} else {
-				EngineLogger.error("Error creating Background icon: " + atlas + "." + region);
+				EditorLogger.error("Error creating Background icon: " + atlas + "." + region);
 			}
 
 			batch.begin();

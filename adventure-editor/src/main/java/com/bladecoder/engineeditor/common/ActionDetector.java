@@ -27,7 +27,6 @@ import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionDescription;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.util.ActionUtils;
-import com.bladecoder.engine.util.EngineLogger;
 
 import eu.infomas.annotation.AnnotationDetector;
 import eu.infomas.annotation.AnnotationDetector.TypeReporter;
@@ -56,7 +55,7 @@ public class ActionDetector {
 				try {
 					c = ClassReflection.forName(className);
 				} catch (ReflectionException e) {
-					e.printStackTrace();
+					EditorLogger.printStackTrace(e);
 				}
 
 				String name = ActionUtils.getName(c);
@@ -72,7 +71,7 @@ public class ActionDetector {
 		try {
 			cf.detect();
 		} catch (IOException e) {
-			e.printStackTrace();
+			EditorLogger.printStackTrace(e);
 		}
 	}
 
@@ -98,7 +97,7 @@ public class ActionDetector {
 		}
 
 		if (c == null) {
-			EngineLogger.error("Action with name '" + name + "' not found.");
+			EditorLogger.error("Action with name '" + name + "' not found.");
 
 			return null;
 		}
@@ -106,7 +105,7 @@ public class ActionDetector {
 		try {
 			return ActionFactory.createByClass(c.getName(), params);
 		} catch (ClassNotFoundException | ReflectionException e) {
-			EngineLogger.error("Action with name '" + name + "' not found.");
+			EditorLogger.error("Action with name '" + name + "' not found.");
 
 			return null;
 		}

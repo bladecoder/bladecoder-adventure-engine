@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CellRenderer;
@@ -92,7 +93,7 @@ public class ChapterList extends EditList<String> {
 					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
 			Message.showMsgDialog(getStage(), "Error deleting chapter", msg);
 
-			ex.printStackTrace();
+			EditorLogger.printStackTrace(ex);
 		}
 		
 		list.setSelectedIndex(0);
