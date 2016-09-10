@@ -25,6 +25,7 @@ import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.LookAtAction;
 import com.bladecoder.engine.actions.SayAction;
 import com.bladecoder.engine.actions.SetCutmodeAction;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
@@ -202,9 +203,9 @@ public class ModelTools {
 
 		for (Scene scn : scenes.values()) {
 			HashMap<String, BaseActor> actors = scn.getActors();
-			
+
 			HashMap<String, Verb> verbs = scn.getVerbManager().getVerbs();
-			
+
 			for (Verb v : verbs.values()) {
 				ArrayList<Action> actions = v.getActions();
 
@@ -234,7 +235,7 @@ public class ModelTools {
 					for (Verb v : verbs.values()) {
 						ArrayList<Action> actions = v.getActions();
 
-						for(Action act: actions) {
+						for (Action act : actions) {
 
 							if (act instanceof SayAction) {
 								try {
@@ -255,6 +256,111 @@ public class ModelTools {
 		}
 
 		Ctx.project.setModified();
+	}
+
+	public static final void checkI18NMissingKeys()
+			throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+		HashMap<String, Scene> scenes = World.getInstance().getScenes();
+
+		for (Scene scn : scenes.values()) {
+			HashMap<String, BaseActor> actors = scn.getActors();
+
+			// SCENE VERBS
+			HashMap<String, Verb> verbs = scn.getVerbManager().getVerbs();
+
+			for (Verb v : verbs.values()) {
+				ArrayList<Action> actions = v.getActions();
+
+				for (Action act : actions) {
+
+					String[] params = ActionUtils.getFieldNames(act);
+
+					for (String p : params) {
+						String val = ActionUtils.getStringValue(act, p);
+
+						if (val != null && !val.isEmpty() && val.charAt(0) == I18N.PREFIX) {
+							String trans = Ctx.project.translate(val);
+
+							if (trans == val) {
+								EditorLogger.error("Key not found: " + val);
+							}
+						}
+					}
+				}
+			}
+
+			for (BaseActor a : actors.values()) {
+				if (a instanceof InteractiveActor) {
+					InteractiveActor ia = (InteractiveActor) a;
+
+					// DESC
+					if (ia.getDesc() != null && !ia.getDesc().isEmpty() && ia.getDesc().charAt(0) == I18N.PREFIX) {
+						String trans = Ctx.project.translate(ia.getDesc());
+
+						if (trans == ia.getDesc()) {
+							EditorLogger.error("Key not found: " + ia.getDesc());
+						}
+					}
+
+					// ACTOR VERBS
+					verbs = ia.getVerbManager().getVerbs();
+
+					for (Verb v : verbs.values()) {
+						ArrayList<Action> actions = v.getActions();
+
+						for (Action act : actions) {
+
+							String[] params = ActionUtils.getFieldNames(act);
+
+							for (String p : params) {
+								String val = ActionUtils.getStringValue(act, p);
+
+								if (val != null && !val.isEmpty() && val.charAt(0) == I18N.PREFIX) {
+									String trans = Ctx.project.translate(val);
+
+									if (trans == val) {
+										EditorLogger.error("Key not found: " + val);
+									}
+								}
+							}
+						}
+					}
+				}
+
+				// DIALOGS
+				if (a instanceof CharacterActor) {
+					HashMap<String, Dialog> dialogs = ((CharacterActor) a).getDialogs();
+
+					if (dialogs != null) {
+						for (Dialog d : dialogs.values()) {
+							ArrayList<DialogOption> options = d.getOptions();
+
+							for (DialogOption o : options) {
+
+								if (o.getText() != null && !o.getText().isEmpty()
+										&& o.getText().charAt(0) == I18N.PREFIX) {
+									String trans = Ctx.project.translate(o.getText());
+
+									if (trans == o.getText()) {
+										EditorLogger.error("Key not found: " + o.getText());
+									}
+								}
+								
+								if (o.getResponseText() != null && !o.getResponseText().isEmpty()
+										&& o.getResponseText().charAt(0) == I18N.PREFIX) {
+									String trans = Ctx.project.translate(o.getResponseText());
+
+									if (trans == o.getResponseText()) {
+										EditorLogger.error("Key not found: " + o.getResponseText());
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 	}
 
 }

@@ -103,6 +103,16 @@ public class EditorLogger {
 				super.printLog(path);
 			}
 			
+			@SuppressWarnings("unused")
+			public void checkI18NMissingKeys() {
+				try {
+					ModelTools.checkI18NMissingKeys();
+					EditorLogger.msg("FINISHED PROCCESS: checkI18NMissingKeys.");
+				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+					EditorLogger.printStackTrace(e);
+				}
+			}
+			
 		});
 	}
 }

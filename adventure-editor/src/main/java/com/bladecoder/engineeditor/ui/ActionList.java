@@ -33,7 +33,6 @@ import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActorAnimationRef;
 import com.bladecoder.engine.actions.DisableActionAction;
 import com.bladecoder.engine.actions.EndAction;
-import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
@@ -594,17 +593,16 @@ public class ActionList extends ModelList<Verb, Action> {
 			
 			StringBuilder sb = new StringBuilder();
 
-			Param[] params = ActionUtils.getParams(a);
+			String[] params = ActionUtils.getFieldNames(a);
 			String actionName = ActionUtils.getName(a.getClass());
 
-			for (Param p : params) {
-				String name = p.name;
+			for (String p : params) {
 
-				if (name.equals("actor")
-						|| (actionName != null && actionName.equals("Animation") && name.equals("animation")))
+				if (p.equals("actor")
+						|| (actionName != null && actionName.equals("Animation") && p.equals("animation")))
 					continue;
 
-				Field f = ActionUtils.getField(a.getClass(), p.name);
+				Field f = ActionUtils.getField(a.getClass(), p);
 
 				try {
 					final boolean accessible = f.isAccessible();
@@ -616,9 +614,9 @@ public class ActionList extends ModelList<Verb, Action> {
 
 					// Check world Scope for translations
 					if (scope.equals(ScopePanel.WORLD_SCOPE))
-						sb.append(name).append(": ").append(Ctx.project.getI18N().getWorldTranslation(v).replace("\n", "|")).append(' ');
+						sb.append(p).append(": ").append(Ctx.project.getI18N().getWorldTranslation(v).replace("\n", "|")).append(' ');
 					else
-						sb.append(name).append(": ").append(Ctx.project.translate(v).replace("\n", "|")).append(' ');
+						sb.append(p).append(": ").append(Ctx.project.translate(v).replace("\n", "|")).append(' ');
 
 					f.setAccessible(accessible);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
