@@ -36,21 +36,25 @@ public class EditorLogger {
 		}
 	}
 	
+	public static synchronized void msg(String message) {
+		console.log(message, LogLevel.SUCCESS);
+	}
+	
 	public static synchronized void drawConsole() {
 		console.draw();
 	}
 
-	public static void error(String message) {
+	public static synchronized void error(String message) {
 		console.log(message, LogLevel.ERROR);
 	}
 
-	public static void error(String message, Exception e) {
+	public static synchronized void error(String message, Exception e) {
 		console.log(message + " Exception: " + e.getMessage(), LogLevel.ERROR);
 		
 		printStackTrace(e);
 	}
 	
-	public static void printStackTrace(Exception e) {		
+	public static synchronized void printStackTrace(Exception e) {		
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);

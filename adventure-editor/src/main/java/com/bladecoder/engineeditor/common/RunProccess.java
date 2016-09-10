@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -178,7 +179,7 @@ public class RunProccess {
 		argumentsList.add(exec);
 		argumentsList.addAll(parameters);
 
-		EditorLogger.debug("Executing 'gradlew " + parameters + "'");
+		EditorLogger.msg("Executing 'gradlew " + parameters + "'");
 
 		try {
 			final ProcessBuilder pb = new ProcessBuilder(argumentsList).directory(
@@ -194,7 +195,7 @@ public class RunProccess {
 					process.getInputStream()));
 			String line;
 			while ((line = in.readLine()) != null) {
-				EditorLogger.debug(line);
+				EditorLogger.msg(line);
 			}
 
 			process.waitFor();
@@ -206,39 +207,9 @@ public class RunProccess {
 	}
 
 	public static boolean runGradle(File workingDir, String parameters) {
-		String exec = workingDir.getAbsolutePath()
-				+ "/"
-				+ (System.getProperty("os.name").contains("Windows") ? "gradlew.bat"
-						: "gradlew");
-		String command = "gradlew" + " " + parameters;
 		
-		String[] split = command.split(" ");
-		split[0] = exec;
+		String[] split = parameters.split(" ");
 
-		EditorLogger.debug("Executing '" + command + "'");
-
-		try {
-			final ProcessBuilder pb = new ProcessBuilder(split).directory(
-					workingDir).redirectErrorStream(true);
-
-			// TODO: READ OUTPUT FROM pb AND print in output stream
-			// if (System.console() != null)
-			// pb.inheritIO();
-
-			final Process process = pb.start();
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					process.getInputStream()));
-			String line;
-			while ((line = in.readLine()) != null) {
-				EditorLogger.debug(line);
-			}
-
-			process.waitFor();
-			return process.exitValue() == 0;
-		} catch (Exception e) {
-			EditorLogger.printStackTrace(e);
-			return false;
-		}
+		return runGradle(workingDir, Arrays.asList(split));
 	}
 }
