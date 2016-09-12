@@ -33,6 +33,7 @@ import com.bladecoder.engine.actions.AbstractControlAction;
 import com.bladecoder.engine.actions.AbstractIfAction;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActorAnimationRef;
+import com.bladecoder.engine.actions.CommentAction;
 import com.bladecoder.engine.actions.DisableActionAction;
 import com.bladecoder.engine.actions.EndAction;
 import com.bladecoder.engine.actions.SceneActorRef;
@@ -533,6 +534,21 @@ public class ActionList extends ModelList<Verb, Action> {
 		protected String getCellTitle(Action a) {
 			boolean enabled = true;
 
+			if (a instanceof CommentAction) {
+				String comment = null;
+				
+				try {
+					comment = ActionUtils.getStringValue(a, "comment");
+				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+					EditorLogger.error(e.getMessage());
+				}
+				
+				if(comment == null)
+					comment = "COMMENT";
+				
+				return "[YELLOW]" + comment + "[]";
+			}
+			
 			if (a instanceof DisableActionAction) {
 				a = ((DisableActionAction) a).getAction();
 				enabled = false;
@@ -678,6 +694,9 @@ public class ActionList extends ModelList<Verb, Action> {
 
 		@Override
 		protected String getCellSubTitle(Action a) {
+			if (a instanceof CommentAction)
+				return "";
+			
 			if (a instanceof DisableActionAction)
 				a = ((DisableActionAction) a).getAction();
 
