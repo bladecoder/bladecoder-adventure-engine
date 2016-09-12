@@ -39,6 +39,8 @@ abstract public class ScopePanel extends Table {
 		this.skin = skin;
 		buttonGroup = new ButtonGroup<TextButton>();
 		hPanel = new HorizontalGroup();
+		hPanel.wrap(true);
+		hPanel.rowLeft();
 		
 		buttonGroup.setMaxCheckCount(1);
 		buttonGroup.setMinCheckCount(1);

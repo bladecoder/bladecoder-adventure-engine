@@ -48,6 +48,8 @@ public abstract class EditList<T> extends Table {
 		container.fill();
 		container.prefHeight(1000);
 		
+		scrollPane.setFadeScrollBars(false);
+		
 		toolbar = new EditToolbar(skin);
 //		debug();
 		add(toolbar).expandX().fillX();

@@ -59,6 +59,9 @@ public class TabPanel extends Table {
 		buttonGroup.setMinCheckCount(1);
 		buttonGroup.setUncheckLast(true);
 		
+		header.wrap(true);
+		header.rowLeft();
+		
 		add(header).expandX().fillX().left();
 		row();
 		add(body).expand().fill();

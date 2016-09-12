@@ -157,7 +157,7 @@ public class CustomList<T> extends Widget implements Cullable {
 				}
 			}
 		}
-
+		
 		prefWidth += selectedDrawable.getLeftWidth() + selectedDrawable.getRightWidth();
 
 		prefHeight = items.size * cellRenderer.getItemHeight();

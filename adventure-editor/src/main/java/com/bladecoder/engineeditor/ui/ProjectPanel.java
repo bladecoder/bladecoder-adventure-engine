@@ -54,7 +54,7 @@ public class ProjectPanel extends HeaderPanel  {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {	
 				chapterList.addElements();
-				setTile("ADVENTURE - " + (Ctx.project.getTitle() != null? Ctx.project.getTitle():""));
+				setTile("ADV - " + (Ctx.project.getTitle() != null? Ctx.project.getTitle():""));
 			}
 		});		
 	}
