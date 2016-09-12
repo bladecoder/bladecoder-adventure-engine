@@ -21,6 +21,11 @@ inkscape -w 114 -h 114 --export-area-page --export-png=../../src/main/resources/
 inkscape -w 72 -h 72 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Icon-72.png  engine-default-icon.svg;
 inkscape -w 144 -h 144 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Icon-72@2x.png  engine-default-icon.svg;
 
+#IOS 7.0
+inkscape -w 76 -h 76 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Icon-76.png  engine-default-icon.svg;
+inkscape -w 152 -h 152 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Icon-76@2x.png  engine-default-icon.svg;
+inkscape -w 120 -h 120 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Icon-120.png  engine-default-icon.svg;
+
 inkscape -w 750 -h 1334 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Default-375w-667h@2x.png ios-default-images.svg;
 inkscape -w 1242 -h 2208 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Default-414w-736h@3x.png ios-default-images.svg;
 inkscape -w 640 -h 1136 --export-area-page --export-png=../../src/main/resources/projectTmpl/ios/data/Default-568h@2x.png ios-default-images.svg;
