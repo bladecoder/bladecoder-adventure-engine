@@ -20,6 +20,8 @@ import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -57,6 +59,8 @@ public class ActionList extends ModelList<Verb, Action> {
 	private ImageButton disableBtn;
 
 	private String scope;
+
+	private final List<Action> multiClipboard = new ArrayList<Action>();
 
 	public ActionList(Skin skin) {
 		super(skin, false);
@@ -96,6 +100,8 @@ public class ActionList extends ModelList<Verb, Action> {
 			}
 		});
 
+		list.getSelection().setMultiple(true);
+
 		upBtn.addListener(new ChangeListener() {
 
 			@Override
@@ -109,8 +115,8 @@ public class ActionList extends ModelList<Verb, Action> {
 			public void changed(ChangeEvent event, Actor actor) {
 				down();
 			}
-		});		
-		
+		});
+
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
@@ -123,34 +129,42 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	private void toggleEnabled() {
 
-		Action a = list.getSelected();
-
-		// CONTROL ACTIONS CAN'T BE DISABLED
-		if (a == null || isControlAction(a))
+		if (list.getSelection().size() <= 0)
 			return;
 
-		int pos = list.getSelectedIndex();
-		Array<Action> items = list.getItems();
+		Array<Action> sel = new Array<Action>();
 
-		if (a instanceof DisableActionAction) {
-			Action a2 = ((DisableActionAction)a).getAction();
-			parent.getActions().set(pos, a2);
-			items.set(pos, a2);
-		} else {
-			DisableActionAction a2 = new DisableActionAction();			
-			a2.setAction(a);			
-			parent.getActions().set(pos, a2);
-			items.set(pos, a2);
+		for (Action a : list.getSelection().toArray()) {
+
+			// CONTROL ACTIONS CAN'T BE DISABLED
+			if (a == null || isControlAction(a))
+				continue;
+
+			Array<Action> items = list.getItems();
+			int pos = items.indexOf(a, true);
+
+			if (a instanceof DisableActionAction) {
+				Action a2 = ((DisableActionAction) a).getAction();
+				parent.getActions().set(pos, a2);
+				items.set(pos, a2);
+				sel.add(a2);
+			} else {
+				DisableActionAction a2 = new DisableActionAction();
+				a2.setAction(a);
+				parent.getActions().set(pos, a2);
+				items.set(pos, a2);
+				sel.add(a2);
+			}
 		}
-		
-		list.setSelectedIndex(pos);
 
 		Ctx.project.setModified();
+		list.getSelection().clear();
+		list.getSelection().addAll(sel);
 	}
 
 	@Override
 	protected EditModelDialog<Verb, Action> getEditElementDialogInstance(Action e) {
-		EditActionDialog editActionDialog = new EditActionDialog(skin, parent, e, scope,  list.getSelectedIndex());
+		EditActionDialog editActionDialog = new EditActionDialog(skin, parent, e, scope, list.getSelectedIndex());
 
 		return editActionDialog;
 	}
@@ -173,12 +187,12 @@ public class ActionList extends ModelList<Verb, Action> {
 				list.getItems().insert(pos, e);
 				parent.getActions().add(pos, e);
 
-				list.setSelectedIndex(pos);
+				list.getSelection().choose(list.getItems().get(pos));
 
 				if (isControlAction(e)) {
 					insertEndAction(pos + 1, getOrCreateControlActionId((AbstractControlAction) e));
-					
-					if(e instanceof AbstractIfAction)
+
+					if (e instanceof AbstractIfAction)
 						insertEndAction(pos + 2, getOrCreateControlActionId((AbstractControlAction) e));
 				}
 
@@ -220,9 +234,10 @@ public class ActionList extends ModelList<Verb, Action> {
 						if (isControlAction(e)) {
 							insertEndAction(list.getSelectedIndex() + 1,
 									getOrCreateControlActionId((AbstractControlAction) e));
-							
-							if(e instanceof AbstractIfAction)
-								insertEndAction(list.getSelectedIndex() + 2, getOrCreateControlActionId((AbstractControlAction) e));
+
+							if (e instanceof AbstractIfAction)
+								insertEndAction(list.getSelectedIndex() + 2,
+										getOrCreateControlActionId((AbstractControlAction) e));
 						}
 					} else {
 						// insert previous caId
@@ -268,91 +283,141 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	@Override
 	protected void copy() {
-		Action e = list.getSelected();
-
-		if (e == null || e instanceof EndAction)
+		if (parent == null || list.getSelection().size() == 0)
 			return;
 
-		clipboard = (Action) ElementUtils.cloneElement(e);
-		toolbar.disablePaste(false);
+		multiClipboard.clear();
 
-		// TRANSLATIONS
-		if (scope.equals(ScopePanel.WORLD_SCOPE))
-			Ctx.project.getI18N().putTranslationsInElement(clipboard, true);
-		else
-			Ctx.project.getI18N().putTranslationsInElement(clipboard, false);
-	}
+		for (Action e : getSortedSelection()) {
 
-	@Override
-	protected void paste() {
-		
-		if(parent == null || clipboard == null)
-			return;
-		
-		Action newElement = (Action) ElementUtils.cloneElement(clipboard);
+			if (e == null || e instanceof EndAction)
+				return;
 
-		int pos = list.getSelectedIndex() + 1;
+			Action cloned = (Action) ElementUtils.cloneElement(e);
+			multiClipboard.add(cloned);
+			toolbar.disablePaste(false);
 
-		list.getItems().insert(pos, newElement);
-		parent.getActions().add(pos, newElement);
-
-		if (scope.equals(ScopePanel.WORLD_SCOPE))
-			Ctx.project.getI18N().extractStrings(null, null, parent.getHashKey(), pos, newElement);
-		else if (scope.equals(ScopePanel.SCENE_SCOPE))
-			Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(), null, parent.getHashKey(), pos,  newElement);
-		else
-			Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(), Ctx.project.getSelectedActor().getId(), parent.getHashKey(), pos, newElement);
-
-		list.setSelectedIndex(pos);
-		list.invalidateHierarchy();
-
-		Ctx.project.setModified();
-
-		if (isControlAction(newElement)) {
-			try {
-				ActionUtils.setParam(newElement, CONTROL_ACTION_ID_ATTR, null);
-			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-				EditorLogger.error(e.getMessage());
-			}
-			
-			insertEndAction(pos + 1, getOrCreateControlActionId((AbstractControlAction) newElement));
-			
-			if(newElement instanceof AbstractIfAction)
-				insertEndAction(pos + 2, getOrCreateControlActionId((AbstractControlAction) newElement));
+			// TRANSLATIONS
+			if (scope.equals(ScopePanel.WORLD_SCOPE))
+				Ctx.project.getI18N().putTranslationsInElement(cloned, true);
+			else
+				Ctx.project.getI18N().putTranslationsInElement(cloned, false);
 		}
 	}
 
 	@Override
+	protected void paste() {
+
+		if (parent == null || multiClipboard.size() == 0)
+			return;
+
+		Array<Action> sel = new Array<Action>();
+
+		for (int i = multiClipboard.size() - 1; i >= 0; i--) {
+			Action newElement = (Action) ElementUtils.cloneElement(multiClipboard.get(i));
+
+			int pos = list.getSelectedIndex() + 1;
+
+			list.getItems().insert(pos, newElement);
+			parent.getActions().add(pos, newElement);
+
+			if (scope.equals(ScopePanel.WORLD_SCOPE))
+				Ctx.project.getI18N().extractStrings(null, null, parent.getHashKey(), pos, newElement);
+			else if (scope.equals(ScopePanel.SCENE_SCOPE))
+				Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(), null, parent.getHashKey(),
+						pos, newElement);
+			else
+				Ctx.project.getI18N().extractStrings(Ctx.project.getSelectedScene().getId(),
+						Ctx.project.getSelectedActor().getId(), parent.getHashKey(), pos, newElement);
+
+			list.invalidateHierarchy();
+
+			if (isControlAction(newElement)) {
+				try {
+					ActionUtils.setParam(newElement, CONTROL_ACTION_ID_ATTR, null);
+				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+					EditorLogger.error(e.getMessage());
+				}
+
+				insertEndAction(pos + 1, getOrCreateControlActionId((AbstractControlAction) newElement));
+
+				if (newElement instanceof AbstractIfAction)
+					insertEndAction(pos + 2, getOrCreateControlActionId((AbstractControlAction) newElement));
+			}
+
+			sel.add(newElement);
+		}
+
+		list.getSelection().clear();
+		list.getSelection().addAll(sel);
+		Ctx.project.setModified();
+	}
+
+	@Override
 	protected void delete() {
+		if (list.getSelection().size() == 0)
+			return;
+
+		multiClipboard.clear();
+
 		int pos = list.getSelectedIndex();
 
-		if (pos == -1)
-			return;
+		for (Action e : getSortedSelection()) {
 
-		Action e = list.getItems().get(pos);
+			if (e instanceof EndAction)
+				continue;
 
-		if (e instanceof EndAction)
-			return;
+			list.getItems().removeValue(e, true);
 
-		Action action = removeSelected();
+			int idx = parent.getActions().indexOf(e);
 
-		int idx = parent.getActions().indexOf(e);
+			parent.getActions().remove(e);
 
-		parent.getActions().remove(action);
+			multiClipboard.add(e);
 
-		// TRANSLATIONS
-		if (scope.equals(ScopePanel.WORLD_SCOPE))
-			Ctx.project.getI18N().putTranslationsInElement(e, true);
-		else
-			Ctx.project.getI18N().putTranslationsInElement(e, false);
+			// TRANSLATIONS
+			if (scope.equals(ScopePanel.WORLD_SCOPE))
+				Ctx.project.getI18N().putTranslationsInElement(e, true);
+			else
+				Ctx.project.getI18N().putTranslationsInElement(e, false);
 
-		// UNDO
-		Ctx.project.getUndoStack().add(new UndoDeleteAction(parent, e, idx));
+			// UNDO
+			Ctx.project.getUndoStack().add(new UndoDeleteAction(parent, e, idx));
 
-		if (isControlAction(e))
-			deleteControlAction(pos, (AbstractControlAction) e);
+			if (isControlAction(e))
+				deleteControlAction(list.getItems().indexOf(e, true), (AbstractControlAction) e);
+
+		}
+
+		if (list.getItems().size == 0) {
+			list.getSelection().clear();
+		} else if (pos >= list.getItems().size) {
+			list.getSelection().choose(list.getItems().get(list.getItems().size - 1));
+		} else {
+			list.getSelection().choose(list.getItems().get(pos));
+		}
+
+		toolbar.disablePaste(false);
 
 		Ctx.project.setModified();
+	}
+
+	private Array<Action> getSortedSelection() {
+		Array<Action> array = list.getSelection().toArray();
+
+		array.sort(new Comparator<Action>() {
+
+			@Override
+			public int compare(Action arg0, Action arg1) {
+				Integer i0 = list.getItems().indexOf(arg0, true);
+				Integer i1 = list.getItems().indexOf(arg1, true);
+
+				return i0.compareTo(i1);
+			}
+
+		});
+		
+		return array;
 	}
 
 	private boolean isControlAction(Action e) {
@@ -381,26 +446,37 @@ public class ActionList extends ModelList<Verb, Action> {
 	}
 
 	private void up() {
-		int pos = list.getSelectedIndex();
-
-		if (pos == -1 || pos == 0)
+		if (parent == null || list.getSelection().size() == 0)
 			return;
 
-		Array<Action> items = list.getItems();
-		Action e = items.get(pos);
-		Action e2 = items.get(pos - 1);
+		Array<Action> sel = new Array<Action>();
 
-		if (isControlAction(e) && isControlAction(e2)) {
-			return;
+		for (Action a : getSortedSelection()) {
+			
+			int pos = list.getItems().indexOf(a, true);
+
+			if (pos == -1 || pos == 0)
+				return;
+
+			Array<Action> items = list.getItems();
+			Action e = items.get(pos);
+			Action e2 = items.get(pos - 1);
+
+			sel.add(e);
+
+			if (isControlAction(e) && isControlAction(e2)) {
+				continue;
+			}
+
+			parent.getActions().set(pos - 1, e);
+			parent.getActions().set(pos, e2);
+
+			items.set(pos - 1, e);
+			items.set(pos, e2);
 		}
 
-		parent.getActions().set(pos - 1, e);
-		parent.getActions().set(pos, e2);
-
-		items.set(pos - 1, e);
-		items.set(pos, e2);
-
-		list.setSelectedIndex(pos - 1);
+		list.getSelection().clear();
+		list.getSelection().addAll(sel);
 		upBtn.setDisabled(list.getSelectedIndex() == 0);
 		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
 
@@ -408,25 +484,40 @@ public class ActionList extends ModelList<Verb, Action> {
 	}
 
 	private void down() {
-		int pos = list.getSelectedIndex();
-		Array<Action> items = list.getItems();
-
-		if (pos == -1 || pos == items.size - 1)
+		if (parent == null || list.getSelection().size() == 0)
 			return;
 
-		Action e = items.get(pos);
-		Action e2 = items.get(pos + 1);
+		Array<Action> sel = new Array<Action>();
 
-		if (isControlAction(e) && isControlAction(e2)) {
-			return;
+		Array<Action> sortedSelection = getSortedSelection();
+
+		for (int i = sortedSelection.size - 1; i >= 0; i--) {
+
+			int pos = list.getItems().indexOf(sortedSelection.get(i), true);
+
+			Array<Action> items = list.getItems();
+
+			if (pos == -1 || pos == items.size - 1)
+				return;
+
+			Action e = items.get(pos);
+			Action e2 = items.get(pos + 1);
+
+			sel.add(e);
+
+			if (isControlAction(e) && isControlAction(e2)) {
+				continue;
+			}
+
+			parent.getActions().set(pos + 1, e);
+			parent.getActions().set(pos, e2);
+
+			items.set(pos + 1, e);
+			items.set(pos, e2);
 		}
 
-		parent.getActions().set(pos + 1, e);
-		parent.getActions().set(pos, e2);
-
-		items.set(pos + 1, e);
-		items.set(pos, e2);
-		list.setSelectedIndex(pos + 1);
+		list.getSelection().clear();
+		list.getSelection().addAll(sel);
 		upBtn.setDisabled(list.getSelectedIndex() == 0);
 		downBtn.setDisabled(list.getSelectedIndex() == list.getItems().size - 1);
 
@@ -441,12 +532,12 @@ public class ActionList extends ModelList<Verb, Action> {
 		@Override
 		protected String getCellTitle(Action a) {
 			boolean enabled = true;
-			
-			if(a instanceof DisableActionAction) {
+
+			if (a instanceof DisableActionAction) {
 				a = ((DisableActionAction) a).getAction();
 				enabled = false;
 			}
-			
+
 			String id = ActionUtils.getName(a.getClass());
 
 			if (id == null)
@@ -587,10 +678,9 @@ public class ActionList extends ModelList<Verb, Action> {
 
 		@Override
 		protected String getCellSubTitle(Action a) {
-			if(a instanceof DisableActionAction)
+			if (a instanceof DisableActionAction)
 				a = ((DisableActionAction) a).getAction();
-			
-			
+
 			StringBuilder sb = new StringBuilder();
 
 			String[] params = ActionUtils.getFieldNames(a);
@@ -614,7 +704,8 @@ public class ActionList extends ModelList<Verb, Action> {
 
 					// Check world Scope for translations
 					if (scope.equals(ScopePanel.WORLD_SCOPE))
-						sb.append(p).append(": ").append(Ctx.project.getI18N().getWorldTranslation(v).replace("\n", "|")).append(' ');
+						sb.append(p).append(": ")
+								.append(Ctx.project.getI18N().getWorldTranslation(v).replace("\n", "|")).append(' ');
 					else
 						sb.append(p).append(": ").append(Ctx.project.translate(v).replace("\n", "|")).append(' ');
 
