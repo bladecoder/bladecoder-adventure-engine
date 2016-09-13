@@ -101,7 +101,7 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 	public void show() {
 		final Locale locale = I18N.getCurrentLocale();
 		String filename = null;
-		UIModes uiMode = UIModes.valueOf(Config.getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase());
+		UIModes uiMode = UIModes.valueOf(Config.getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
 
 		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen) && uiMode == UIModes.TWO_BUTTONS) {
 			uiMode = UIModes.PIE;

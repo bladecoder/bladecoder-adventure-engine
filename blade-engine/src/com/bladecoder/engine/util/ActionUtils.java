@@ -3,6 +3,7 @@ package com.bladecoder.engine.util;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -192,7 +193,7 @@ public class ActionUtils {
 			
 			field.set(action, a);			
 		} else if (field.getType().isEnum()) {
-			field.set(action, Enum.valueOf(field.getType().asSubclass(Enum.class), value.toUpperCase()));
+			field.set(action, Enum.valueOf(field.getType().asSubclass(Enum.class), value.toUpperCase(Locale.ENGLISH)));
 		} else {
 			EngineLogger.error("ACTION FIELD TYPE NOT SUPPORTED -  type: " + field.getType());
 		}

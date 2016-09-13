@@ -16,6 +16,7 @@
 package com.bladecoder.engine.ui.defaults;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -966,7 +967,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		inventoryUI = new InventoryUI(this, pointer);
 		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
 
-		uiMode = UIModes.valueOf(Config.getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase());
+		uiMode = UIModes.valueOf(Config.getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
 
 		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen) && uiMode == UIModes.TWO_BUTTONS) {
 			uiMode = UIModes.PIE;

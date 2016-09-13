@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
+import java.util.Locale;
+
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -69,7 +71,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		sceneScreen = scr;
 		this.pointer = pointer;
 
-		inventoryPos = InventoryPos.valueOf(Config.getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase());
+		inventoryPos = InventoryPos.valueOf(Config.getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH));
 
 		autosize = Config.getProperty(Config.INVENTORY_AUTOSIZE_PROP, true);
 

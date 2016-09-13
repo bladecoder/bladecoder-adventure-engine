@@ -17,6 +17,7 @@ package com.bladecoder.engineeditor.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Locale;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.model.World;
@@ -76,10 +77,10 @@ public class WorldProps extends PropertyTable {
 			addProperty(Project.HEIGHT_PROPERTY, World.getInstance().getHeight());
 			addProperty(Config.TITLE_PROP, Ctx.project.getTitle());
 			addProperty(Config.INVENTORY_POS_PROP,
-					Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(),  new String[] {"TOP", "DOWN", "LEFT", "RIGHT", "CENTER"});
+					Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH),  new String[] {"TOP", "DOWN", "LEFT", "RIGHT", "CENTER"});
 			addProperty(Config.INVENTORY_AUTOSIZE_PROP, Boolean
 					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_AUTOSIZE_PROP, "true")));
-			addProperty(Config.UI_MODE, Ctx.project.getProjectConfig().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(), new String[] {"TWO_BUTTONS", "PIE", "SINGLE_CLICK"});
+			addProperty(Config.UI_MODE, Ctx.project.getProjectConfig().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH), new String[] {"TWO_BUTTONS", "PIE", "SINGLE_CLICK"});
 			addProperty(Config.SINGLE_ACTION_INVENTORY, Boolean
 					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.SINGLE_ACTION_INVENTORY, "false")));
 			addProperty(Config.FAST_LEAVE, Boolean
