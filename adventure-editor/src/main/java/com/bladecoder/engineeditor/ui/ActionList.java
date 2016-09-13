@@ -230,14 +230,14 @@ public class ActionList extends ModelList<Verb, Action> {
 				if (isControlAction(editedElement)) {
 					if (!editedElement.getClass().getName().equals(e.getClass().getName())) {
 
-						deleteControlAction(list.getSelectedIndex(), (AbstractControlAction) editedElement);
+						deleteControlAction(pos, (AbstractControlAction) editedElement);
 
 						if (isControlAction(e)) {
-							insertEndAction(list.getSelectedIndex() + 1,
+							insertEndAction(pos + 1,
 									getOrCreateControlActionId((AbstractControlAction) e));
 
 							if (e instanceof AbstractIfAction)
-								insertEndAction(list.getSelectedIndex() + 2,
+								insertEndAction(pos + 2,
 										getOrCreateControlActionId((AbstractControlAction) e));
 						}
 					} else {
@@ -368,6 +368,7 @@ public class ActionList extends ModelList<Verb, Action> {
 			if (e instanceof EndAction)
 				continue;
 
+			int pos2 = list.getItems().indexOf(e, true);
 			list.getItems().removeValue(e, true);
 
 			int idx = parent.getActions().indexOf(e);
@@ -386,7 +387,7 @@ public class ActionList extends ModelList<Verb, Action> {
 			Ctx.project.getUndoStack().add(new UndoDeleteAction(parent, e, idx));
 
 			if (isControlAction(e))
-				deleteControlAction(list.getItems().indexOf(e, true), (AbstractControlAction) e);
+				deleteControlAction(pos2, (AbstractControlAction) e);
 
 		}
 
