@@ -74,8 +74,8 @@ public class Main extends LwjglApplication {
 	public Main(Editor editor, LwjglApplicationConfiguration cfg) {
 		super(editor,cfg);
 		
-		 Gdx.graphics.setWindowedMode((int) (Gdx.graphics.getDisplayMode().width * 0.9), 
-				 (int) (Gdx.graphics.getDisplayMode().height * 0.9));
+		 Gdx.graphics.setWindowedMode(Math.max((int) (Gdx.graphics.getDisplayMode().width * 0.9), 1920/2), 
+				 Math.max((int) (Gdx.graphics.getDisplayMode().height * 0.9), 1080/2));
 	}
 	
 	@Override
