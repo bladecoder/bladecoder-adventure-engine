@@ -41,15 +41,18 @@ public class EditorLogger {
 	}
 	
 	public static synchronized void drawConsole() {
-		console.draw();
+		if(!console.isHidden())
+			console.draw();
 	}
 
 	public static synchronized void error(String message) {
 		console.log(message, LogLevel.ERROR);
 	}
 
-	public static synchronized void error(String message, Exception e) {
-		console.log(message + " Exception: " + e.getMessage(), LogLevel.ERROR);
+	public static void error(String message, Exception e) {
+		synchronized(EditorLogger.class) {
+			console.log(message + " Exception: " + e.getMessage(), LogLevel.ERROR);
+		}
 		
 		printStackTrace(e);
 	}
