@@ -62,10 +62,13 @@ public class EditorLogger {
 	}
 
 	public static void toggle() {
-		if (level == Levels.DEBUG)
+		if (level == Levels.DEBUG) {
 			level = Levels.ERROR;
-		else
+			console.setLoggingToSystem(false);
+		} else {
 			level = Levels.DEBUG;
+			console.setLoggingToSystem(true);
+		}
 	}
 
 	public static boolean debugMode() {
@@ -85,6 +88,7 @@ public class EditorLogger {
 	
 	public static void setDebug() {
 		level = Levels.DEBUG;
+		console.setLoggingToSystem(true);
 	}
 
 	public static void setConsole(Console console) {	
@@ -112,6 +116,17 @@ public class EditorLogger {
 				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.printStackTrace(e);
 				}
+			}
+			
+			@SuppressWarnings("unused")
+			public void debug(boolean value) {
+				if (!value) {
+					level = Levels.ERROR;
+					console.setLoggingToSystem(false);
+				} else {
+					level = Levels.DEBUG;
+					console.setLoggingToSystem(true);
+				}					
 			}
 			
 		});

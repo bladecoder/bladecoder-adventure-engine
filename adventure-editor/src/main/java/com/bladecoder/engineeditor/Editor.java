@@ -59,8 +59,6 @@ public class Editor implements ApplicationListener {
 				 Math.max((int) (Gdx.graphics.getDisplayMode().height * 0.9), 1080/2));
 		
 		skin = new BladeSkin(Gdx.files.internal(SKIN));
-
-		EditorLogger.setDebug();
 		
 		/*** STAGE SETUP ***/
 		stage = new Stage(new ScreenViewport());
