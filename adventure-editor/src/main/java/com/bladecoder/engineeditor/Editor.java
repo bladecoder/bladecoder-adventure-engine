@@ -54,18 +54,18 @@ public class Editor implements ApplicationListener {
 
 	@Override
 	public void create() {
-		
-		 Gdx.graphics.setWindowedMode(Math.max((int) (Gdx.graphics.getDisplayMode().width * 0.9), 1920/2), 
-				 Math.max((int) (Gdx.graphics.getDisplayMode().height * 0.9), 1080/2));
-		
+
+		Gdx.graphics.setWindowedMode(Math.max((int) (Gdx.graphics.getDisplayMode().width * 0.9), 1920 / 2),
+				Math.max((int) (Gdx.graphics.getDisplayMode().height * 0.9), 1080 / 2));
+
 		skin = new BladeSkin(Gdx.files.internal(SKIN));
-		
+
 		/*** STAGE SETUP ***/
 		stage = new Stage(new ScreenViewport());
 		Gdx.input.setInputProcessor(stage);
-		
+
 		setCtx();
-		
+
 		Message.init(skin);
 
 		scnEditor = new ScnEditor(skin);
@@ -131,9 +131,9 @@ public class Editor implements ApplicationListener {
 								}
 							}
 						}
-					}.text("Your game uses an old (" + Ctx.project.getProjectBladeEngineVersion() + ") Engine version. Do you want to update the engine?")
-							.button("Yes", true).button("No", false).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
-							.show(stage);
+					}.text("Your game uses an old (" + Ctx.project.getProjectBladeEngineVersion()
+							+ ") Engine version. Do you want to update the engine?").button("Yes", true)
+							.button("No", false).key(Keys.ENTER, true).key(Keys.ESCAPE, false).show(stage);
 				}
 			} catch (Exception e) {
 				EditorLogger.error("Error loading last project.", e);
@@ -146,7 +146,7 @@ public class Editor implements ApplicationListener {
 
 		TooltipManager.getInstance().instant();
 	}
-	
+
 	private void setCtx() {
 		Ctx.project = new Project();
 		Ctx.assetManager = new EditorAssetManager();
@@ -160,8 +160,9 @@ public class Editor implements ApplicationListener {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+
 		stage.draw();
-		
+
 		EditorLogger.drawConsole();
 	}
 

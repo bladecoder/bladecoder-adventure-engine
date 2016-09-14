@@ -17,6 +17,8 @@ package com.bladecoder.engineeditor.common;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.Input.Keys;
 import com.strongjoshua.console.CommandExecutor;
@@ -24,40 +26,50 @@ import com.strongjoshua.console.Console;
 import com.strongjoshua.console.LogLevel;
 
 public class EditorLogger {
-	public static enum Levels {DEBUG, ERROR};
-	
+	public static enum Levels {
+		DEBUG, ERROR
+	};
+
 	public static Levels level = Levels.ERROR;
-	
+
 	public static Console console;
 
-	public static synchronized void debug(String message) {
-		if(level == Levels.DEBUG) {
+	private final static List<String> threadedMessages = new ArrayList<String>();
+
+	public static void debug(String message) {
+		if (level == Levels.DEBUG) {
 			console.log(message, LogLevel.DEFAULT);
 		}
 	}
-	
-	public static synchronized void msg(String message) {
+
+	public static void msg(String message) {
 		console.log(message, LogLevel.SUCCESS);
 	}
-	
-	public static synchronized void drawConsole() {
-		if(!console.isHidden())
-			console.draw();
+
+	public static synchronized void msgThreaded(String message) {
+		threadedMessages.add(message);
 	}
 
-	public static synchronized void error(String message) {
+	public static synchronized void drawConsole() {
+		for (String msg : threadedMessages)
+			msg(msg);
+
+		threadedMessages.clear();
+
+		console.draw();
+	}
+
+	public static void error(String message) {
 		console.log(message, LogLevel.ERROR);
 	}
 
 	public static void error(String message, Exception e) {
-		synchronized(EditorLogger.class) {
-			console.log(message + " Exception: " + e.getMessage(), LogLevel.ERROR);
-		}
-		
+		console.log(message + " Exception: " + e.getMessage(), LogLevel.ERROR);
+
 		printStackTrace(e);
 	}
-	
-	public static synchronized void printStackTrace(Exception e) {		
+
+	public static void printStackTrace(Exception e) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
@@ -88,29 +100,29 @@ public class EditorLogger {
 	public static void setDebugLevel(Levels l) {
 		level = l;
 	}
-	
+
 	public static void setDebug() {
 		level = Levels.DEBUG;
 		console.setLoggingToSystem(true);
 	}
 
-	public static void setConsole(Console console) {	
+	public static void setConsole(Console console) {
 		EditorLogger.console = console;
 		EditorLogger.console.setKeyID(Keys.F1);
 		console.setMaxEntries(1000);
-		
+
 		console.setCommandExecutor(new CommandExecutor() {
-			
+
 			@SuppressWarnings("unused")
 			public void exit() {
 				super.exitApp();
 			}
-			
+
 			@SuppressWarnings("unused")
 			public void saveLog(String path) {
 				super.printLog(path);
 			}
-			
+
 			@SuppressWarnings("unused")
 			public void checkI18NMissingKeys() {
 				try {
@@ -120,7 +132,7 @@ public class EditorLogger {
 					EditorLogger.printStackTrace(e);
 				}
 			}
-			
+
 			@SuppressWarnings("unused")
 			public void debug(boolean value) {
 				if (!value) {
@@ -129,9 +141,9 @@ public class EditorLogger {
 				} else {
 					level = Levels.DEBUG;
 					console.setLoggingToSystem(true);
-				}					
+				}
 			}
-			
+
 		});
 	}
 }

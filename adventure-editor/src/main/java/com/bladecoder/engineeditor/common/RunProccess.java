@@ -179,7 +179,7 @@ public class RunProccess {
 		argumentsList.add(exec);
 		argumentsList.addAll(parameters);
 
-		EditorLogger.msg("Executing 'gradlew " + parameters + "'");
+		EditorLogger.msgThreaded("Executing 'gradlew " + parameters + "'");
 
 		try {
 			final ProcessBuilder pb = new ProcessBuilder(argumentsList).directory(
@@ -195,13 +195,13 @@ public class RunProccess {
 					process.getInputStream()));
 			String line;
 			while ((line = in.readLine()) != null) {
-				EditorLogger.msg(line);
+				EditorLogger.msgThreaded(line);
 			}
 
 			process.waitFor();
 			return process.exitValue() == 0;
 		} catch (Exception e) {
-			e.printStackTrace();
+			EditorLogger.msgThreaded("ERROR: " + e.getMessage());
 			return false;
 		}
 	}
