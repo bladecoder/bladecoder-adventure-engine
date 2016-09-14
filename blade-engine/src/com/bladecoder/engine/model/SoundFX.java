@@ -54,7 +54,7 @@ public class SoundFX implements AssetConsumer {
 			}
 		}
 		
-		if(loop) s.loop();
+		if(loop) s.loop(volume, 1, pan);
 		else s.play(volume, 1, pan);
 	}
 
