@@ -711,6 +711,9 @@ public class ActionList extends ModelList<Verb, Action> {
 				if (p.equals("actor")
 						|| (actionName != null && actionName.equals("Animation") && p.equals("animation")))
 					continue;
+				
+				if(p.equals("caID"))
+					continue;
 
 				Field f = ActionUtils.getField(a.getClass(), p);
 
