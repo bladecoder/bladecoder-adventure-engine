@@ -39,17 +39,17 @@ import com.bladecoder.engine.util.PolygonUtils;
  * 
  * @author rgarcia
  */
-public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializable{
+public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializable {
 	private static final int MAX_PATHFINDER_SEARCH_DISTANCE = 50;
-	
+
 	private static final Vector2 tmp = new Vector2();
 	private static final Vector2 tmp2 = new Vector2();
 
 	private Polygon walkZone;
 	private final ArrayList<Polygon> obstacles = new ArrayList<Polygon>();
 
-	final private PathFinder<NavNodePolygonal> pathfinder = new AStarPathFinder<NavNodePolygonal>(this, MAX_PATHFINDER_SEARCH_DISTANCE,
-			new ManhattanDistance());
+	final private PathFinder<NavNodePolygonal> pathfinder = new AStarPathFinder<NavNodePolygonal>(this,
+			MAX_PATHFINDER_SEARCH_DISTANCE, new ManhattanDistance());
 	final private NavPathPolygonal resultPath = new NavPathPolygonal();
 	final private NavNodePolygonal startNode = new NavNodePolygonal();
 	final private NavNodePolygonal targetNode = new NavNodePolygonal();
@@ -66,27 +66,37 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		// back inside.
 		if (!PolygonUtils.isPointInside(walkZone, sx, sy, true)) {
 			EngineLogger.debug("PolygonalPathFinder: Source not in polygon!");
-			return resultPath.getPath();
+
+			PolygonUtils.getClampedPoint(walkZone, sx, sy, source);
+
+			if (!PolygonUtils.isPointInside(walkZone, source.x, source.y, true)) {
+				EngineLogger.debug("PolygonalPathFinder: CLAMPED FAILED!!");
+
+				return resultPath.getPath();
+			}
+
 		}
 
 		if (!PolygonUtils.isPointInside(walkZone, tx, ty, true)) {
 			PolygonUtils.getClampedPoint(walkZone, tx, ty, target);
 
-//			if (!PolygonUtils.isPointInside(walkZone, target.x, target.y, true)) {
-//				EngineLogger.debug("PolygonalPathFinder: CLAMPED FAILED!!");
-//				return resultPath.getPath();
-//			}
+			if (!PolygonUtils.isPointInside(walkZone, target.x, target.y, true)) {
+				EngineLogger.debug("PolygonalPathFinder: CLAMPED FAILED!!");
+
+				return resultPath.getPath();
+			}
 		}
-		
+
 		for (Polygon o : obstacles) {
 			if (PolygonUtils.isPointInside(o, target.x, target.y, false)) {
 				PolygonUtils.getClampedPoint(o, target.x, target.y, target);
-				
-				// If the clamped point is not in the walkzone 
+
+				// If the clamped point is not in the walkzone
 				// we search for the first vertex inside
 				if (!PolygonUtils.isPointInside(walkZone, target.x, target.y, true)) {
 					getFirstVertexInsideWalkzone(o, target);
-					// We exit after processing the first polygon with the point inside. 
+					// We exit after processing the first polygon with the point
+					// inside.
 					// Overlaped obstacles are not supported
 					break;
 				}
@@ -115,24 +125,26 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 
 		return resultPath.getPath();
 	}
-	
+
 	/**
 	 * Search the first polygon vertex inside the walkzone.
 	 * 
-	 * @param p the polygon 
-	 * @param target the vertex found
+	 * @param p
+	 *            the polygon
+	 * @param target
+	 *            the vertex found
 	 */
 	private void getFirstVertexInsideWalkzone(Polygon p, Vector2 target) {
 		float verts[] = p.getTransformedVertices();
-		
+
 		for (int i = 0; i < verts.length; i += 2) {
-			if(PolygonUtils.isPointInside(walkZone, verts[i], verts[i + 1], true)) {
+			if (PolygonUtils.isPointInside(walkZone, verts[i], verts[i + 1], true)) {
 				target.x = verts[i];
 				target.y = verts[i + 1];
-				
+
 				return;
 			}
-		}		
+		}
 	}
 
 	public void createInitialGraph(Collection<BaseActor> actors) {
@@ -149,22 +161,19 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 
 		// 2.- Add obstacles concave nodes
 		obstacles.clear();
-		
-		for(BaseActor a:actors) {
-			if(a instanceof ObstacleActor && a.isVisible())
+
+		for (BaseActor a : actors) {
+			if (a instanceof ObstacleActor && a.isVisible())
 				obstacles.add(a.getBBox());
 		}
-		
-		
+
 		for (Polygon o : obstacles) {
 			verts = o.getTransformedVertices();
 
 			for (int i = 0; i < verts.length; i += 2) {
 				if (PolygonUtils.isVertexConcave(o, i)
-						&& PolygonUtils.isPointInside(walkZone, verts[i],
-								verts[i + 1], false)) {
-					graphNodes
-							.add(new NavNodePolygonal(verts[i], verts[i + 1]));
+						&& PolygonUtils.isPointInside(walkZone, verts[i], verts[i + 1], false)) {
+					graphNodes.add(new NavNodePolygonal(verts[i], verts[i + 1]));
 				}
 			}
 		}
@@ -192,7 +201,7 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		if (!PolygonUtils.inLineOfSight(tmp, tmp2, walkZone, false)) {
 			return false;
 		}
-		
+
 		for (Polygon o : obstacles) {
 			if (!PolygonUtils.inLineOfSight(tmp, tmp2, o, true)) {
 				return false;
@@ -232,31 +241,28 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 	public void setWalkZone(Polygon walkZone) {
 		this.walkZone = walkZone;
 	}
-	
+
 	public ArrayList<NavNodePolygonal> getGraphNodes() {
 		return graphNodes;
 	}
 
 	@Override
-	public boolean blocked(NavContext<NavNodePolygonal> context,
-			NavNodePolygonal targetNode) {
+	public boolean blocked(NavContext<NavNodePolygonal> context, NavNodePolygonal targetNode) {
 		return false;
 	}
 
 	@Override
-	public float getCost(NavContext<NavNodePolygonal> context,
-			NavNodePolygonal targetNode) {
+	public float getCost(NavContext<NavNodePolygonal> context, NavNodePolygonal targetNode) {
 		return 1;
 	}
-	
+
 	private void addObstacleToGrapth(Polygon poly) {
 		float verts[] = poly.getTransformedVertices();
 		for (int i = 0; i < verts.length; i += 2) {
 			if (PolygonUtils.isVertexConcave(poly, i)
-					&& PolygonUtils.isPointInside(walkZone, verts[i],
-							verts[i + 1], false)) {
+					&& PolygonUtils.isPointInside(walkZone, verts[i], verts[i + 1], false)) {
 				NavNodePolygonal n1 = new NavNodePolygonal(verts[i], verts[i + 1]);
-				
+
 				for (int j = 0; j < graphNodes.size(); j++) {
 					NavNodePolygonal n2 = graphNodes.get(j);
 
@@ -265,68 +271,66 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 						n2.neighbors.add(n1);
 					}
 				}
-				
+
 				graphNodes.add(n1);
 			}
-		}		
+		}
 	}
 
 	public void addDinamicObstacle(Polygon poly) {
-		
+
 		int idx = obstacles.indexOf(poly);
-		
+
 		// CHECK TO AVOID ADDING THE ACTOR SEVERAL TIMES
-		if(idx == -1) {
+		if (idx == -1) {
 			obstacles.add(poly);
 			addObstacleToGrapth(poly);
 		}
 	}
-	
+
 	public boolean removeDinamicObstacle(Polygon poly) {
 		boolean exists = obstacles.remove(poly);
-		
-		if(!exists)
+
+		if (!exists)
 			return false;
-		
+
 		float verts[] = poly.getTransformedVertices();
 
 		for (int i = 0; i < verts.length; i += 2) {
 			if (PolygonUtils.isVertexConcave(poly, i)
-					&& PolygonUtils.isPointInside(walkZone, verts[i],
-							verts[i + 1], false)) {
+					&& PolygonUtils.isPointInside(walkZone, verts[i], verts[i + 1], false)) {
 				for (int j = 0; j < graphNodes.size(); j++) {
 					NavNodePolygonal n = graphNodes.get(j);
 
-					if (n.x == verts[i] && n.y == verts[i+1]) {
+					if (n.x == verts[i] && n.y == verts[i + 1]) {
 						graphNodes.remove(n);
 						j--;
-						
-						for(NavNodePolygonal n2:graphNodes) {
+
+						for (NavNodePolygonal n2 : graphNodes) {
 							n2.neighbors.removeValue(n, true);
 						}
-						
+
 					}
 				}
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	@Override
 	public void write(Json json) {
 		Polygon p = new Polygon(walkZone.getVertices());
-		p.setPosition(walkZone.getX()/walkZone.getScaleX(), walkZone.getY()/walkZone.getScaleY());
+		p.setPosition(walkZone.getX() / walkZone.getScaleX(), walkZone.getY() / walkZone.getScaleY());
 		json.writeValue("walkZone", p);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		float worldScale = EngineAssetManager.getInstance().getScale();
-		
+
 		walkZone = json.readValue("walkZone", Polygon.class, jsonData);
 		walkZone.setScale(worldScale, worldScale);
-		walkZone.setPosition(walkZone.getX() * worldScale , 
-				walkZone.getY() * worldScale);
+		walkZone.setPosition(walkZone.getX() * worldScale, walkZone.getY() * worldScale);
 	}
 }

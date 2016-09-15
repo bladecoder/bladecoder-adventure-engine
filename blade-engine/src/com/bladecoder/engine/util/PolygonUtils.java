@@ -123,6 +123,29 @@ public class PolygonUtils {
 				dest.set(tmp);
 			}
 		}
+		
+		// ERROR CONTROL:
+		// If the clamped point is not in the walkzone 
+		// we search for the nearest walkzone vertex
+		if (!PolygonUtils.isPointInside(poly, dest.x, dest.y, true)) {
+			EngineLogger.debug("> PolygonalPathFinder: CLAMPED FAILED!!");
+			
+			tmp.set(verts[0], verts[1]);
+			d = Vector2.dst(x, y, tmp.x, tmp.y);
+			nearest = 0;
+			dest.set(tmp);
+			
+			for (int i = 2; i < verts.length; i += 2) {
+				tmp.set(verts[i], verts[i + 1]);
+				dTmp = Vector2.dst(x, y, tmp.x, tmp.y);
+
+				if (dTmp < d) {
+					d = dTmp;
+					nearest = i;
+					dest.set(tmp);
+				}
+			}
+		}
 
 		return nearest;
 	}

@@ -139,8 +139,8 @@ public class Verb implements VerbRunner, Serializable {
 			EngineLogger.debug(">>> Verb FINISHED: " + id);
 	}
 
-	private boolean isFinished() {
-		return ip >= actions.size();
+	public boolean isFinished() {
+		return ip >= actions.size() || ip < 0;
 	}
 
 	@Override
