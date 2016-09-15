@@ -143,6 +143,11 @@ public class EditorLogger {
 					console.setLoggingToSystem(true);
 				}
 			}
+			
+			@SuppressWarnings("unused")
+			public void extractDialogs() {
+				ModelTools.extractDialogs();
+			}
 
 		});
 	}
