@@ -279,7 +279,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 
 		@Override
-		public boolean scrolled(int amount) {
+		public boolean scrolled(int amount) {		
 			if (state == UIStates.SCENE_MODE || state == UIStates.INVENTORY_MODE) {
 
 				boolean fromDown = (inventoryUI.getInventoryPos() == InventoryPos.CENTER
@@ -413,10 +413,15 @@ public class DefaultSceneScreen implements SceneScreen {
 				setUIState(UIStates.SCENE_MODE);
 			break;
 		case DIALOG_MODE:
+			stage.setScrollFocus(null);
+			
 			if (world.getCurrentDialog() == null)
 				setUIState(UIStates.SCENE_MODE);
 			else if (world.inCutMode())
 				setUIState(UIStates.CUT_MODE);
+			else
+				stage.setScrollFocus(dialogUI);
+			
 			break;
 		case INVENTORY_MODE:
 			if (!inventoryUI.isVisible())
