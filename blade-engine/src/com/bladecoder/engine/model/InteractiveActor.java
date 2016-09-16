@@ -110,20 +110,18 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		if (visible && player != null) {
 			boolean hit = hit(player.getX(), player.getY());
 			if (!hit && playerInside) {
-				System.out.println(">>>EXIT: " + id);
 				// the player leaves
 				playerInside = false;
 
 				Verb v = getVerb("exit");
-				if (v != null && v.isFinished())
+				if (v != null)
 					v.run();
 			} else if (hit && !playerInside) {
-				System.out.println(">>>ENTER: " + id);
 				// the player enters
 				playerInside = true;
 
 				Verb v = getVerb("enter");
-				if (v != null && v.isFinished())
+				if (v != null)
 					v.run();
 			}
 		}
