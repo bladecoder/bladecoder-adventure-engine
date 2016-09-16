@@ -718,7 +718,7 @@ public class World implements Serializable, AssetConsumer {
 		if (chapterName == null)
 			chapterName = initChapter;
 
-		currentChapter = initChapter;
+		currentChapter = chapterName;
 
 		if (EngineAssetManager.getInstance().getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).exists()) {
 
