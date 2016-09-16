@@ -2,6 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.18]
+
+- EDITOR: The Action list now supports multiple selection to copy, paste, show... use Shift and Ctrl keys to multiselect.
+- EDITOR: Added console log. Use F1 key to show/hide.
+- EDITOR: Better scrollbars. Always showing now.
+- Now the editor generates IOS packages ready to submit to the Apple Store. Fixed several config parameters related to this problem.
+- Added "Comment" action.
+- Updated packr to v2.0. Better desktop packages are generated now.
+- Dialog option UI now shows buttons to scroll add and down when necessary. New styles added to ui.json.
+- Added parameter in TextManagerUI style inside ui.json to set the subtitle Y position.
+- Improvement to the pathfinder. Now the clap algorithm always returns a point inside the polygon.
+- In IOS platform, sounds and music in ACC (.m4a) format are used if exists. As .ogg is not supported in IOS. 
+- FIX: The name of the loaded chapter was not set correctly, causing saved games not loading the current chapter.
+- FIX: Weird bug. Use toUpperCase with Locale.English to read enum values.
+- FIX: Bad IOS splash screen orientation.
+
 ## [0.9.17]
 
 - Updated libgdx library to v1.9.4.
