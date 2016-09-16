@@ -44,7 +44,7 @@ public class ModelTools {
 		BufferedWriter writer = null;
 		try {
 			// create a temporary file
-			File dFile = new File("BONASERA-DIALOGS.md");
+			File dFile = new File(Ctx.project.getProjectPath() + "/" + "DIALOGS.md");
 
 			writer = new BufferedWriter(new FileWriter(dFile));
 
