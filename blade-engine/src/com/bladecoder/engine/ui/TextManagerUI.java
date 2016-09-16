@@ -113,7 +113,11 @@ public class TextManagerUI extends Actor {
 				if (posy == TextManager.POS_CENTER) {
 					posy = (getStage().getViewport().getScreenHeight() - layout.height) / 2;
 				} else if (posy == TextManager.POS_SUBTITLE) {
-					posy = getStage().getViewport().getScreenHeight() - layout.height - DPIUtils.getMarginSize() * 4;
+					posy = getStage().getViewport().getScreenHeight() * style.subtitlePosPercent - layout.height;
+					
+					if (posy < 0) {
+						posy = PADDING;
+					}
 				} else {
 					posy = unprojectTmp.y;
 				}
@@ -239,6 +243,7 @@ public class TextManagerUI extends Actor {
 		public Drawable talkBubble;
 		public BitmapFont font;
 		public Color defaultColor;
+		public float subtitlePosPercent = 0.90f;
 
 		public TextManagerUIStyle() {
 		}
@@ -249,6 +254,7 @@ public class TextManagerUI extends Actor {
 			talkBubble = style.talkBubble;
 			font = style.font;
 			defaultColor = style.defaultColor;
+			subtitlePosPercent = style.subtitlePosPercent;
 		}
 	}
 }
