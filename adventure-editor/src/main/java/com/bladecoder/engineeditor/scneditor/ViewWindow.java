@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engineeditor.common.EditorLogger;
 
 public class ViewWindow extends Container<Table> {
 	ScnWidget scnWidget;
@@ -55,7 +56,12 @@ public class ViewWindow extends Container<Table> {
 		table.row();		
 		walkZone = new CheckBox("Show Walkzone", skin);
 		walkZone.setChecked(scnWidget.getShowWalkZone());
-		table.add(walkZone);		
+		table.add(walkZone);
+		
+		table.row();		
+		final CheckBox console = new CheckBox("Show Debug Console", skin);
+		console.setChecked(!EditorLogger.console.isHidden());
+//		table.add(console);
 		
 		inSceneCb.addListener(new ChangeListener() {
 
@@ -80,6 +86,14 @@ public class ViewWindow extends Container<Table> {
 				scnWidget.setShowWalkZone(walkZone.isChecked());
 			}
 		});		
+		
+		console.addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+//				EditorLogger.console.setHidden(!console.isChecked());
+			}
+		});	
 
 
 		table.pack();
