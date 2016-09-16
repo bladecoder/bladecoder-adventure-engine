@@ -17,11 +17,16 @@ package com.bladecoder.engine.ui;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
@@ -39,11 +44,18 @@ public class DialogUI extends ScrollPane {
 
 	private Table panel;
 
+	private Button up;
+	private Button down;
+
 	public DialogUI(UI ui) {
 		super(new Table(ui.getSkin()), ui.getSkin());
-		
-		setFadeScrollBars(false);
-		
+
+		setFadeScrollBars(true);
+		setOverscroll(false, true);
+
+		up = new Button(ui.getSkin(), "dialog-up");
+		down = new Button(ui.getSkin(), "dialog-down");
+
 		panel = (Table) getWidget();
 		style = ui.getSkin().get(DialogUIStyle.class);
 		this.recorder = ui.getRecorder();
@@ -56,6 +68,39 @@ public class DialogUI extends ScrollPane {
 
 		setVisible(false);
 		panel.defaults().expandX().fillX().top().left().padBottom(DPIUtils.getSpacing());
+
+		addListener(new EventListener() {
+
+			@Override
+			public boolean handle(Event event) {
+				if (getScrollPercentY() > 0f && up.isVisible() == false) {
+					up.setVisible(true);
+				} else if (getScrollPercentY() == 0f && up.isVisible() == true) {
+					up.setVisible(false);
+				}
+
+				if (getScrollPercentY() < 1f && down.isVisible() == false)
+					down.setVisible(true);
+				else if (getScrollPercentY() == 1f && down.isVisible() == true)
+					down.setVisible(false);
+
+				return false;
+			}
+		});
+		
+		up.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				setScrollPercentY(getScrollPercentY() - .3f);
+			}
+		});
+		
+		down.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				setScrollPercentY(getScrollPercentY() + .3f);
+			}
+		});
 	}
 
 	public void show() {
@@ -101,14 +146,30 @@ public class DialogUI extends ScrollPane {
 				}
 			});
 		}
-		
+
 		panel.pack();
 		setWidth(getStage().getViewport().getScreenWidth());
-		setHeight(Math.min(panel.getHeight(), getStage().getViewport().getScreenHeight()/2));
+		setHeight(Math.min(panel.getHeight(), getStage().getViewport().getScreenHeight() / 2));
+		
+		float size = DPIUtils.getPrefButtonSize() * .8f;
+		float margin = DPIUtils.getSpacing();
+		
+		getStage().addActor(up);
+		up.setSize(size, size);
+		up.setPosition(getX() + getWidth() - size - margin, getY() + getHeight() - margin - size);
+		up.setVisible(false);
+		
+		
+		getStage().addActor(down);
+		down.setSize(size, size);
+		down.setPosition(getX() + getWidth() - size - margin, getY() + margin);
+		down.setVisible(false);
 	}
 
 	public void hide() {
 		setVisible(false);
+		getStage().getActors().removeValue(up, true);
+		getStage().getActors().removeValue(down, true);
 	}
 
 	private void select(int i) {
@@ -118,7 +179,7 @@ public class DialogUI extends ScrollPane {
 		}
 
 		World.getInstance().selectVisibleDialogOption(i);
-		
+
 		hide();
 	}
 
