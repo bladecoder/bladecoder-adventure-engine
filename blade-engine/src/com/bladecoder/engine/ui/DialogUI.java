@@ -52,6 +52,7 @@ public class DialogUI extends ScrollPane {
 
 		setFadeScrollBars(true);
 		setOverscroll(false, true);
+		setOverscroll(false, false);
 
 		up = new Button(ui.getSkin(), "dialog-up");
 		down = new Button(ui.getSkin(), "dialog-down");
@@ -73,32 +74,36 @@ public class DialogUI extends ScrollPane {
 
 			@Override
 			public boolean handle(Event event) {
-				if (getScrollPercentY() > 0f && up.isVisible() == false) {
-					up.setVisible(true);
-				} else if (getScrollPercentY() == 0f && up.isVisible() == true) {
-					up.setVisible(false);
-				}
+				if (isScrollY()) {
 
-				if (getScrollPercentY() < 1f && down.isVisible() == false)
-					down.setVisible(true);
-				else if (getScrollPercentY() == 1f && down.isVisible() == true)
-					down.setVisible(false);
+					if (getScrollPercentY() > 0f && up.isVisible() == false) {
+						up.setVisible(true);
+					} else if (getScrollPercentY() == 0f && up.isVisible() == true) {
+						up.setVisible(false);
+					}
+
+					if (getScrollPercentY() < 1f && down.isVisible() == false) {
+						down.setVisible(true);
+					} else if (getScrollPercentY() == 1f && down.isVisible() == true) {
+						down.setVisible(false);
+					}
+				}
 
 				return false;
 			}
 		});
-		
+
 		up.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				setScrollPercentY(getScrollPercentY() - .3f);
+				setScrollY(getScrollY() - DPIUtils.getPrefButtonSize());
 			}
 		});
-		
+
 		down.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				setScrollPercentY(getScrollPercentY() + .3f);
+				setScrollY(getScrollY() + DPIUtils.getPrefButtonSize());
 			}
 		});
 	}
@@ -150,16 +155,15 @@ public class DialogUI extends ScrollPane {
 		panel.pack();
 		setWidth(getStage().getViewport().getScreenWidth());
 		setHeight(Math.min(panel.getHeight(), getStage().getViewport().getScreenHeight() / 2));
-		
+
 		float size = DPIUtils.getPrefButtonSize() * .8f;
 		float margin = DPIUtils.getSpacing();
-		
+
 		getStage().addActor(up);
 		up.setSize(size, size);
 		up.setPosition(getX() + getWidth() - size - margin, getY() + getHeight() - margin - size);
 		up.setVisible(false);
-		
-		
+
 		getStage().addActor(down);
 		down.setSize(size, size);
 		down.setPosition(getX() + getWidth() - size - margin, getY() + margin);
