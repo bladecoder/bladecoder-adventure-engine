@@ -18,7 +18,9 @@ package com.bladecoder.engineeditor.common;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.bladecoder.engine.actions.Action;
@@ -32,10 +34,12 @@ import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.Project;
 
 public class ModelTools {
 	public static final void extractDialogs() {
@@ -361,6 +365,52 @@ public class ModelTools {
 			}
 		}
 
+	}
+
+	public static void printUnusedSounds() {
+		HashMap<String, Scene> scenes = World.getInstance().getScenes();
+		ArrayList<String> unusedSounds = new ArrayList<String>(Arrays.asList(getSoundList()));
+
+		for (Scene scn : scenes.values()) {
+			HashMap<String, BaseActor> actors = scn.getActors();
+
+			for (BaseActor a : actors.values()) {
+				if (a instanceof InteractiveActor) {
+					HashMap<String, SoundFX> sounds = ((InteractiveActor) a).getSounds();
+					
+					if(sounds != null) {
+						for(SoundFX s:sounds.values()) {
+							unusedSounds.remove(s.getFilename());
+						}
+					}
+					
+				}
+			}
+		}
+		
+		for(String s:unusedSounds)
+			EditorLogger.error(s);
+	}
+	
+	public static String[] getSoundList() {
+		String path = Ctx.project.getProjectPath() + Project.SOUND_PATH;
+
+		File f = new File(path);
+
+		String soundFiles[] = f.list(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File arg0, String arg1) {
+				if (arg1.endsWith(".ogg") || arg1.endsWith(".wav") || arg1.endsWith(".mp3"))
+					return true;
+
+				return false;
+			}
+		});
+
+		Arrays.sort(soundFiles);
+
+		return soundFiles;
 	}
 
 }

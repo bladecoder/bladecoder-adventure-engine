@@ -127,7 +127,7 @@ public class EditorLogger {
 			public void checkI18NMissingKeys() {
 				try {
 					ModelTools.checkI18NMissingKeys();
-					EditorLogger.msg("FINISHED PROCCESS: checkI18NMissingKeys.");
+					EditorLogger.msg("PROCCESS FINISHED: checkI18NMissingKeys.");
 				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.printStackTrace(e);
 				}
@@ -147,6 +147,13 @@ public class EditorLogger {
 			@SuppressWarnings("unused")
 			public void extractDialogs() {
 				ModelTools.extractDialogs();
+				EditorLogger.msg("PROCCESS FINISHED.");
+			}
+			
+			@SuppressWarnings("unused")
+			public void printUnusedSounds() {
+				ModelTools.printUnusedSounds();
+				EditorLogger.msg("PROCCESS FINISHED.");
 			}
 
 		});

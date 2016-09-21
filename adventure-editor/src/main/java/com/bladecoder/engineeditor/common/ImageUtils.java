@@ -131,6 +131,7 @@ public class ImageUtils {
 		String atlasParentPath = orgAtlas.getParentFile().getAbsolutePath();
 
 		TextureAtlasData atlas = new TextureAtlasData(new FileHandle(orgAtlas), new FileHandle(atlasParentPath), false);
+		EditorLogger.debug("SCALING: " + orgAtlas.getName());
 		unpacker.splitAtlas(atlas, outputDir.getAbsolutePath());
 
 		createAtlas(outputDir.getAbsolutePath(), destDir.getAbsolutePath(), orgAtlas.getName(), scale,
