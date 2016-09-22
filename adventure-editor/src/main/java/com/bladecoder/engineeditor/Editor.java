@@ -41,6 +41,8 @@ import com.bladecoder.engineeditor.ui.ActorPanel;
 import com.bladecoder.engineeditor.ui.ProjectPanel;
 import com.bladecoder.engineeditor.ui.ProjectToolbar;
 import com.bladecoder.engineeditor.ui.ScenePanel;
+import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.strongjoshua.console.GUIConsole;
 
 //TODO: Set TITLE in window bar. Set '*' in the title when modified
@@ -59,6 +61,8 @@ public class Editor implements ApplicationListener {
 				Math.max((int) (Gdx.graphics.getDisplayMode().height * 0.9), 1080 / 2));
 
 		skin = new BladeSkin(Gdx.files.internal(SKIN));
+		VisUI.load();
+		FileChooser.setDefaultPrefsName("com.bladecoder.engineeditor.filechooser");
 
 		/*** STAGE SETUP ***/
 		stage = new Stage(new ScreenViewport());
@@ -187,6 +191,7 @@ public class Editor implements ApplicationListener {
 		scnEditor.dispose();
 		stage.dispose();
 		EditorLogger.console.dispose();
+		VisUI.dispose();
 
 		Ctx.project.saveConfig();
 	}

@@ -15,9 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.scneditor;
 
-import java.io.File;
 import java.io.IOException;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engineeditor.Ctx;
@@ -35,9 +37,11 @@ import com.bladecoder.engineeditor.common.I18NUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.ModelTools;
 import com.bladecoder.engineeditor.common.RunProccess;
-
-import javafx.application.Platform;
-import javafx.stage.FileChooser;
+import com.kotcrab.vis.ui.widget.file.FileChooser;
+import com.kotcrab.vis.ui.widget.file.FileChooser.Mode;
+import com.kotcrab.vis.ui.widget.file.FileChooser.SelectionMode;
+import com.kotcrab.vis.ui.widget.file.FileChooser.ViewMode;
+import com.kotcrab.vis.ui.widget.file.FileChooserListener;
 
 public class ToolsWindow extends Container<Table> {
 
@@ -156,58 +160,72 @@ public class ToolsWindow extends Container<Table> {
 		setSize(table.getWidth(), Math.max(200, table.getHeight()));
 	}
 
-	@SuppressWarnings("restriction")
 	private void exportTSV() {
-		Platform.runLater(new Runnable() {
+		
+		FileChooser fileChooser = new FileChooser(Mode.SAVE);
+		fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+		fileChooser.setViewMode(ViewMode.LIST);
+		
+		fileChooser.setSelectionMode(SelectionMode.FILES);
+		getStage().addActor(fileChooser);
+
+		fileChooser.setListener(new FileChooserListener() {
+
 			@Override
-			public void run() {
-
+			public void selected(Array<FileHandle> files) {
 				try {
-					final FileChooser chooser = new FileChooser();
-					chooser.setTitle("Select the file to export the project texts");
-					final File outFile = chooser.showSaveDialog(null);
+//					fileChooser.setTitle("Select the file to export the project texts");
 
-					if (outFile == null) {
-						return;
-					}
-
-					I18NUtils.exportTSV(Ctx.project.getProjectDir().getAbsolutePath(), outFile.getAbsolutePath(),
+					I18NUtils.exportTSV(Ctx.project.getProjectDir().getAbsolutePath(), files.get(0).file().getAbsolutePath(),
 							Ctx.project.getChapter().getId(), "default");
 
-					Message.showMsg(getStage(), outFile.getName() + " exported sucessfully.", 4);
+					Message.showMsg(getStage(), files.get(0).file().getName() + " exported sucessfully.", 4);
 				} catch (IOException e) {
 					Message.showMsg(getStage(), "There was a problem generating the .tsv file.", 4);
 					EditorLogger.printStackTrace(e);
-				}
+				}				
+			}
+
+			@Override
+			public void canceled() {
+				
 			}
 		});
 	}
 
-	@SuppressWarnings("restriction")
 	private void importTSV() {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					final FileChooser chooser = new FileChooser();
-					chooser.setTitle("Select the .tsv file to import");
-					final File inFile = chooser.showOpenDialog(null);
-					if (inFile == null) {
-						return;
-					}
+		
+		FileChooser fileChooser = new FileChooser(Mode.OPEN);
+		fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+		fileChooser.setViewMode(ViewMode.LIST);
+		
+		fileChooser.setSelectionMode(SelectionMode.FILES);
+		getStage().addActor(fileChooser);
 
-					I18NUtils.importTSV(Ctx.project.getProjectDir().getAbsolutePath(), inFile.getAbsolutePath(),
+		fileChooser.setListener(new FileChooserListener() {
+
+			@Override
+			public void selected(Array<FileHandle> files) {
+				try {
+//					chooser.setTitle("Select the .tsv file to import");
+
+					I18NUtils.importTSV(Ctx.project.getProjectDir().getAbsolutePath(), files.get(0).file().getAbsolutePath(),
 							Ctx.project.getChapter().getId(), "default");
 
 					// Reload texts
 					Ctx.project.getI18N().load(Ctx.project.getChapter().getId());
 
-					Message.showMsg(getStage(), inFile.getName() + " imported sucessfully.", 4);
+					Message.showMsg(getStage(), files.get(0).file().getName() + " imported sucessfully.", 4);
 
 				} catch (IOException e) {
 					Message.showMsg(getStage(), "There was a problem importing the .tsv file.", 4);
 					EditorLogger.printStackTrace(e);
-				}
+				}		
+			}
+
+			@Override
+			public void canceled() {
+				
 			}
 		});
 	}

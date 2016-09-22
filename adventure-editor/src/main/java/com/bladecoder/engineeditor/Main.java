@@ -24,14 +24,9 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Versions;
 
-import javafx.embed.swing.JFXPanel;
-
 public class Main extends LwjglApplication {
 
 	public static void main(final String[] args) {
-		// This dummy instantiation will initialize JavaFX for us
-		new JFXPanel();
-
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 
 		cfg.title = "Adventure Editor v" + Versions.getVersion();

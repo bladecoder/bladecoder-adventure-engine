@@ -25,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -40,48 +42,50 @@ import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.components.CustomList;
 import com.bladecoder.engineeditor.ui.components.EditToolbar;
-
-import javafx.application.Platform;
-import javafx.stage.FileChooser;
+import com.kotcrab.vis.ui.widget.file.FileChooser;
+import com.kotcrab.vis.ui.widget.file.FileChooser.Mode;
+import com.kotcrab.vis.ui.widget.file.FileChooser.SelectionMode;
+import com.kotcrab.vis.ui.widget.file.FileChooser.ViewMode;
+import com.kotcrab.vis.ui.widget.file.FileChooserListener;
+import com.kotcrab.vis.ui.widget.file.FileTypeFilter;
 
 public class AssetsList extends Table {
-	private static final String[] ASSET_TYPES = { "3d models", 
-			"atlases", "music", "sounds", "images", "spine" };
+	private static final String[] ASSET_TYPES = { "3d models", "atlases", "music", "sounds", "images", "spine" };
 
 	private SelectBox<String> assetTypes;
 	protected EditToolbar toolbar;
-    protected CustomList<String> list;
-    protected Skin skin;
-    protected Container<ScrollPane> container;
+	protected CustomList<String> list;
+	protected Skin skin;
+	protected Container<ScrollPane> container;
 
 	private File lastDir;
 
 	public AssetsList(Skin skin) {
 		super(skin);
-		
+
 		assetTypes = new SelectBox<String>(skin);
 		assetTypes.setItems(ASSET_TYPES);
-		
-		this.skin = skin;	
-		
+
+		this.skin = skin;
+
 		list = new CustomList<String>(skin);
-		
+
 		Array<String> items = new Array<String>();
 		list.setItems(items);
-			
+
 		ScrollPane scrollPane = new ScrollPane(list, skin);
 		container = new Container<ScrollPane>(scrollPane);
 		container.fill();
 		container.prefHeight(1000);
-		
+
 		toolbar = new EditToolbar(skin);
-//		debug();
+		// debug();
 		add(assetTypes).expandX().fillX();
 		row();
 		add(toolbar).expandX().fillX();
 		row();
 		add(container).expand().fill();
-		
+
 		toolbar.addCreateListener(new ChangeListener() {
 
 			@Override
@@ -89,7 +93,7 @@ public class AssetsList extends Table {
 				create();
 			}
 		});
-		
+
 		toolbar.addEditListener(new ChangeListener() {
 
 			@Override
@@ -97,7 +101,7 @@ public class AssetsList extends Table {
 				edit();
 			}
 		});
-		
+
 		toolbar.addDeleteListener(new ChangeListener() {
 
 			@Override
@@ -105,7 +109,6 @@ public class AssetsList extends Table {
 				delete();
 			}
 		});
-				
 
 		list.addListener(new ChangeListener() {
 			@Override
@@ -114,15 +117,13 @@ public class AssetsList extends Table {
 			}
 		});
 
-
-		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED,
-				new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent arg0) {
-						toolbar.disableCreate(Ctx.project.getProjectDir() == null);
-						addAssets();
-					}
-				});
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent arg0) {
+				toolbar.disableCreate(Ctx.project.getProjectDir() == null);
+				addAssets();
+			}
+		});
 
 		assetTypes.addListener(new ChangeListener() {
 
@@ -182,7 +183,7 @@ public class AssetsList extends Table {
 		} else if (type.equals("3d models")) {
 			dir = Ctx.project.getProjectPath() + "/" + Project.SPRITE3D_PATH;
 		} else if (type.equals("spine")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.SPINE_PATH;			
+			dir = Ctx.project.getProjectPath() + "/" + Project.SPINE_PATH;
 		} else {
 			dir = Ctx.project.getProjectPath() + Project.ASSETS_PATH;
 		}
@@ -194,68 +195,75 @@ public class AssetsList extends Table {
 		final String type = assetTypes.getSelected();
 
 		if (type.equals("atlases")) {
-			new CreateAtlasDialog(skin).setVisible(true);
+			new CreateAtlasDialog(skin).show(getStage());
 
-			addAssets();
+//			addAssets();
 		} else {
-			final FileChooser.ExtensionFilter filter;
+
+			FileChooser fileChooser = new FileChooser(Mode.OPEN);
+
+			fileChooser.setSelectionMode(SelectionMode.FILES);
+			fileChooser.setMultiSelectionEnabled(true);
+			
+			fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+			fileChooser.setViewMode(ViewMode.LIST);
+			
+			getStage().addActor(fileChooser);
+			if(lastDir != null)
+				fileChooser.setDirectory(lastDir);
+//			chooser.setTitle("Select the '" + type + "' asset files");
+			
+
+			FileTypeFilter typeFilter = new FileTypeFilter(true); //allow "All Types" mode where all files are shown
 
 			switch (type) {
-				case "images":
-					filter = new FileChooser.ExtensionFilter("Images", "*.jpg", "*.png", "*.etc1");
-					break;
-				case "music":
-				case "sounds":
-					filter = new FileChooser.ExtensionFilter("Music", "*.wav", "*.mp3", "*.ogg");
-					break;
-				case "3d models":
-					filter = new FileChooser.ExtensionFilter("3D Models", "*.g3db", "*.png");
-					break;
-				case "spine":
-					filter = new FileChooser.ExtensionFilter("Spine", "*.skel", "*.json");
-					break;
-				default:
-					filter = null;
-					break;
-			}
+			case "images":
+				typeFilter.addRule("Images (*.png, *.jpg, *.etc1)", "jpg", "png", "etc1");
+				break;
+			case "music":
+			case "sounds":
+				typeFilter.addRule("Sound (*.mp3, *.wav, *.ogg)", "wav", "mp3", "ogg");
+				break;
+			case "3d models":
+				typeFilter.addRule("3D Models (*.g3db, *.png)", "g3db", "png");
+				break;
+			case "spine":
+				typeFilter.addRule("Spine (*.skel, *.json)", "skel", "json");
+				break;
+			default:
 
-			Platform.runLater(new Runnable() {
+				break;
+			}
+			
+			fileChooser.setFileTypeFilter(typeFilter);
+
+			fileChooser.setListener(new FileChooserListener() {
+
 				@Override
-				public void run() {
-					final FileChooser chooser = new FileChooser();
-					chooser.setInitialDirectory(lastDir);
-					chooser.setTitle("Select the '" + type + "' asset files");
-					if (filter != null) {
-						chooser.getExtensionFilters().addAll(filter);
-					}
-					final List<File> files = chooser.showOpenMultipleDialog(null);
-					if (files == null) {
-						return;
-					}
+				public void selected(Array<FileHandle> files) {
+						
 					try {
 						String dir = getAssetDir(type);
-						lastDir = files.get(0);
+						lastDir = files.get(0).parent().file();
 
-						for (File f : files) {
+						for (FileHandle f : files) {
 							if (type.equals("images")) {
 								List<String> res = Ctx.project.getResolutions();
 
 								for (String r : res) {
-									File destFile = new File(dir + "/" + r
-											+ "/" + f.getName());
+									File destFile = new File(dir + "/" + r + "/" + f.file().getName());
 									float scale = Float.parseFloat(r);
 
 									if (scale != 1.0f) {
 
-										ImageUtils.scaleImageFile(f, destFile,
-												scale);
+										ImageUtils.scaleImageFile(f.file(), destFile, scale);
 									} else {
-										Files.copy(f.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+										Files.copy(f.file().toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 									}
 								}
 							} else {
-								File destFile = new File(dir + "/" + f.getName());
-								Files.copy(f.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+								File destFile = new File(dir + "/" + f.file().getName());
+								Files.copy(f.file().toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 							}
 
 						}
@@ -263,28 +271,30 @@ public class AssetsList extends Table {
 						addAssets();
 					} catch (Exception ex) {
 						String msg = "Something went wrong while getting the assets.\n\n"
-								+ ex.getClass().getSimpleName()
-								+ " - "
-								+ ex.getMessage();
+								+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
 						Message.showMsgDialog(getStage(), "Error", msg);
 						EditorLogger.printStackTrace(ex);
 					}
+				}
+
+				@Override
+				public void canceled() {
+
 				}
 			});
 		}
 	}
 
-	private void edit() {		
+	private void edit() {
 		if (Desktop.isDesktopSupported()) {
 			String type = assetTypes.getSelected();
 			String dir = getAssetDir(type);
 
 			if (type.equals("images") || type.equals("atlases"))
 				dir += "/1";
-						
+
 			try {
-				Desktop.getDesktop()
-						.open(new File(dir));
+				Desktop.getDesktop().open(new File(dir));
 			} catch (IOException e1) {
 				String msg = "Something went wrong while opening assets folder.\n\n" + e1.getClass().getSimpleName()
 						+ " - " + e1.getMessage();
@@ -294,13 +304,12 @@ public class AssetsList extends Table {
 	}
 
 	private void delete() {
-		String type =  assetTypes.getSelected();
+		String type = assetTypes.getSelected();
 		String dir = getAssetDir(type);
 
 		String name = list.getSelected();
 		try {
-			if (type.equals("images")
-					|| type.equals("atlases")) {
+			if (type.equals("images") || type.equals("atlases")) {
 				List<String> res = Ctx.project.getResolutions();
 
 				for (String r : res) {
@@ -317,21 +326,18 @@ public class AssetsList extends Table {
 						if (files != null)
 							for (File f : files) {
 								String destName = f.getName();
-								String nameWithoutExt = name.substring(0,
-										name.lastIndexOf('.'));
-								String destNameWithoutExt = destName.substring(0,
-										destName.lastIndexOf('.'));
-								
-								if(destNameWithoutExt.length() < nameWithoutExt.length())
-									continue;
-								
-								String suffix = destNameWithoutExt.substring( nameWithoutExt.length());
-								
-								if(!suffix.isEmpty() && !suffix.matches("[0-9]+"))
+								String nameWithoutExt = name.substring(0, name.lastIndexOf('.'));
+								String destNameWithoutExt = destName.substring(0, destName.lastIndexOf('.'));
+
+								if (destNameWithoutExt.length() < nameWithoutExt.length())
 									continue;
 
-								if (destName.startsWith(nameWithoutExt)
-										&& destName.toLowerCase().endsWith(".png"))
+								String suffix = destNameWithoutExt.substring(nameWithoutExt.length());
+
+								if (!suffix.isEmpty() && !suffix.matches("[0-9]+"))
+									continue;
+
+								if (destName.startsWith(nameWithoutExt) && destName.toLowerCase().endsWith(".png"))
 									Files.delete(f.toPath());
 							}
 					}
@@ -343,8 +349,8 @@ public class AssetsList extends Table {
 
 			addAssets();
 		} catch (Exception ex) {
-			String msg = "Something went wrong while deleting the asset.\n\n"
-					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
+			String msg = "Something went wrong while deleting the asset.\n\n" + ex.getClass().getSimpleName() + " - "
+					+ ex.getMessage();
 			Message.showMsgDialog(getStage(), "Error", msg);
 			EditorLogger.printStackTrace(ex);
 		}

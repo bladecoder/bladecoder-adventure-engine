@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -35,6 +36,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.util.Config;
@@ -43,9 +45,11 @@ import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.model.Project;
-
-import javafx.application.Platform;
-import javafx.stage.DirectoryChooser;
+import com.kotcrab.vis.ui.widget.file.FileChooser;
+import com.kotcrab.vis.ui.widget.file.FileChooser.Mode;
+import com.kotcrab.vis.ui.widget.file.FileChooser.SelectionMode;
+import com.kotcrab.vis.ui.widget.file.FileChooser.ViewMode;
+import com.kotcrab.vis.ui.widget.file.FileChooserListener;
 
 public class ProjectToolbar extends Table {
 	private ImageButton newBtn;
@@ -58,6 +62,8 @@ public class ProjectToolbar extends Table {
 	private ImageButton atlasBtn;
 
 	private Skin skin;
+	
+	private FileChooser fileChooser;
 
 	public ProjectToolbar(Skin skin) {
 		super(skin);
@@ -71,6 +77,10 @@ public class ProjectToolbar extends Table {
 		playBtn = new ImageButton(skin);
 		assetsBtn = new ImageButton(skin);
 		atlasBtn = new ImageButton(skin);
+		
+		fileChooser = new FileChooser(Mode.OPEN);
+		fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+		fileChooser.setViewMode(ViewMode.LIST);
 
 		addToolBarButton(skin, newBtn, "ic_new", "New", "Create a new project");
 		addToolBarButton(skin, loadBtn, "ic_load", "Load", "Load an existing project");
@@ -210,26 +220,22 @@ public class ProjectToolbar extends Table {
 	}
 
 	private void loadProject() {
-		Platform.runLater(new Runnable() {
+		fileChooser.setSelectionMode(SelectionMode.DIRECTORIES);
+		getStage().addActor(fileChooser);
+
+		fileChooser.setListener(new FileChooserListener() {
+
 			@Override
-			public void run() {
-				final DirectoryChooser chooser = new DirectoryChooser();
-				chooser.setTitle("Select the project to load");
-				chooser.setInitialDirectory(Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir()
-						: new File("."));
-
-				final File dir = chooser.showDialog(null);
-				if (dir == null) {
-					return;
-				}
-
+			public void selected(Array<FileHandle> files) {
 				Message.showMsg(getStage(), "Loading project...", true);
+				
+				final File f = files.get(0).file();
 
 				Timer.post(new Task() {
 					@Override
 					public void run() {
 						try {
-							Ctx.project.loadProject(dir);
+							Ctx.project.loadProject(f);
 							playBtn.setDisabled(false);
 							packageBtn.setDisabled(false);
 							Message.showMsg(getStage(), null);
@@ -250,8 +256,9 @@ public class ProjectToolbar extends Table {
 											}
 										}
 									}
-								}.text("Your game uses an old (" + Ctx.project.getProjectBladeEngineVersion() + ") Engine version. Do you want to update the engine?")
-										.button("Yes", true).button("No", false).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
+								}.text("Your game uses an old (" + Ctx.project.getProjectBladeEngineVersion()
+										+ ") Engine version. Do you want to update the engine?").button("Yes", true)
+										.button("No", false).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
 										.show(getStage());
 							}
 
@@ -265,7 +272,7 @@ public class ProjectToolbar extends Table {
 									public void run() {
 										if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
 											try {
-												Ctx.project.loadProject(dir);
+												Ctx.project.loadProject(f);
 												playBtn.setDisabled(false);
 												packageBtn.setDisabled(false);
 												Message.showMsg(getStage(), "Project loaded Successfully", 3);
@@ -292,9 +299,13 @@ public class ProjectToolbar extends Table {
 						}
 					}
 				});
+
+			}
+
+			@Override
+			public void canceled() {
 			}
 		});
-
 	}
 
 	public void exit() {

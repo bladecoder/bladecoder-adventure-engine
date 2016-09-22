@@ -17,99 +17,108 @@ package com.bladecoder.engineeditor.ui.components;
 
 import java.io.File;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engineeditor.Ctx;
-
-import javafx.application.Platform;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
+import com.kotcrab.vis.ui.widget.file.FileChooser;
+import com.kotcrab.vis.ui.widget.file.FileChooser.Mode;
+import com.kotcrab.vis.ui.widget.file.FileChooser.SelectionMode;
+import com.kotcrab.vis.ui.widget.file.FileChooser.ViewMode;
+import com.kotcrab.vis.ui.widget.file.FileChooserListener;
 
 public class FileInputPanel extends InputPanel {
 	public enum DialogType {
 		OPEN_FILE, SAVE_FILE, DIRECTORY
 	}
-	
-//	private File cd;
+
+	private File cd;
 	private File selected;
 
 	private final static String FILE_TEXT = "Select file";
 	private final static String DIR_TEXT = "Select folder";
-	
+	private FileChooser fileChooser;
+
 	public FileInputPanel(Skin skin, String title, String desc, DialogType dialogType) {
-		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."), dialogType, true);
+		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."),
+				dialogType, true);
 	}
-	
+
 	public FileInputPanel(Skin skin, String title, String desc, DialogType dialogType, boolean mandatory) {
-		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."), dialogType, mandatory);
+		this(skin, title, desc, Ctx.project.getProjectDir() != null ? Ctx.project.getProjectDir() : new File("."),
+				dialogType, mandatory);
 	}
 
-	public FileInputPanel(Skin skin, String title, String desc, File current, final DialogType dialogType, boolean mandatory) {
-		init(skin, title, desc, new TextButton(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT, skin), mandatory, null);
-		
-//		this.cd = current;
+	public FileInputPanel(Skin skin, String title, String desc, File current, final DialogType dialogType,
+			boolean mandatory) {
+		init(skin, title, desc, new TextButton(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT, skin),
+				mandatory, null);
 
-//		((TextField) getField()).setEditable(false);
+		switch (dialogType) {
+		case DIRECTORY: 
+			fileChooser = new FileChooser(Mode.OPEN);
+			fileChooser.setSelectionMode(SelectionMode.DIRECTORIES);
+			break;
+		case OPEN_FILE:
+			fileChooser = new FileChooser(Mode.OPEN);
+			fileChooser.setSelectionMode(SelectionMode.FILES);
+			break;
+		case SAVE_FILE:
+			fileChooser = new FileChooser(Mode.SAVE);
+			fileChooser.setSelectionMode(SelectionMode.FILES);
+			break;
+		default:
+			break;
+		}
+		
+		fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+		fileChooser.setViewMode(ViewMode.LIST);
 
 		((TextButton) getField()).addListener(new ClickListener() {
-			public void clicked (InputEvent event, float x, float y) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						final File result;
-						switch (dialogType) {
-							case DIRECTORY: {
-								DirectoryChooser chooser = new DirectoryChooser();
-//								if(cd != null)
-//									chooser.setInitialDirectory(cd);
-								chooser.setTitle(DIR_TEXT);
-								result = chooser.showDialog(null);
-								break;
-							}
-							case OPEN_FILE:
-							case SAVE_FILE: {
-								FileChooser chooser = new FileChooser();
-//								chooser.setInitialDirectory(cd);
-								chooser.setTitle(FILE_TEXT);
-								result = dialogType == DialogType.OPEN_FILE
-										? chooser.showOpenDialog(null)
-										: chooser.showSaveDialog(null);
-								break;
-							}
-							default:
-								throw new RuntimeException("Unknown dialog type");
-						}
+			public void clicked(InputEvent event, float x, float y) {
+				if(cd != null)
+					fileChooser.setDirectory(cd);
+					
+				getStage().addActor(fileChooser);
 
-						if (result != null) {
-							((TextButton) getField()).setText(result.getAbsolutePath());
-							selected = result;
-//							cd = result;
-						}
+				fileChooser.setListener(new FileChooserListener() {
+
+					@Override
+					public void selected(Array<FileHandle> files) {
+						selected = files.get(0).file();
+
+						((TextButton) getField()).setText(selected.getAbsolutePath());
+					}
+
+					@Override
+					public void canceled() {
 					}
 				});
 			}
 		});
 	}
-	
+
 	public File getFile() {
 		return selected;
 	}
-	
+
 	@Override
 	public String getText() {
-		if(selected != null)
+		if (selected != null)
 			return selected.getAbsolutePath();
-		else 
+		else
 			return "";
 	}
-	
+
 	@Override
 	public void setText(String text) {
-		((TextButton)field).setText(text);
+		((TextButton) field).setText(text);
 		selected = new File(text);
-//		cd= new File(text);
+		cd = new File(text);
 	}
-	
+
 }
