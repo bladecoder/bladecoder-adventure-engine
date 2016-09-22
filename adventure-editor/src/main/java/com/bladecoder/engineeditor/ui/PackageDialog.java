@@ -335,7 +335,7 @@ public class PackageDialog extends EditDialog {
 				params.add("-Probovm.iosProvisioningProfile=" + iosProvisioningProfile.getText() );
 			
 			// Add clean target in IOS because the app. is not signing well if not cleaning.
-			params.add("clean");
+			params.add("ios:clean");
 			
 			params.add("ios:createIPA");
 			
