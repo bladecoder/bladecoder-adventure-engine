@@ -21,6 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.strongjoshua.console.CommandExecutor;
 import com.strongjoshua.console.Console;
 import com.strongjoshua.console.LogLevel;
@@ -51,12 +55,16 @@ public class EditorLogger {
 	}
 
 	public static synchronized void drawConsole() {
-		for (String msg : threadedMessages)
-			msg(msg);
 
-		threadedMessages.clear();
+		if (threadedMessages.size() > 0) {
+			for (String msg : threadedMessages)
+				msg(msg);
+
+			threadedMessages.clear();
+		}
 
 		console.draw();
+
 	}
 
 	public static void error(String message) {
@@ -111,6 +119,18 @@ public class EditorLogger {
 		EditorLogger.console.setKeyID(Keys.F1);
 		console.setMaxEntries(1000);
 
+		final Stage s = (Stage) console.getInputProcessor();
+		final Actor actor = s.getActors().items[0];
+		actor.addListener(new InputListener() {
+			@Override
+			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+				
+				if (toActor == null) {
+					s.setScrollFocus(null);
+				}
+			}
+		});
+
 		console.setCommandExecutor(new CommandExecutor() {
 
 			@SuppressWarnings("unused")
@@ -143,13 +163,13 @@ public class EditorLogger {
 					console.setLoggingToSystem(true);
 				}
 			}
-			
+
 			@SuppressWarnings("unused")
 			public void extractDialogs() {
 				ModelTools.extractDialogs();
 				EditorLogger.msg("PROCCESS FINISHED.");
 			}
-			
+
 			@SuppressWarnings("unused")
 			public void printUnusedSounds() {
 				ModelTools.printUnusedSounds();
