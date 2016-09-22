@@ -26,6 +26,8 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionDescription;
 import com.bladecoder.engine.actions.ActionFactory;
+import com.bladecoder.engine.actions.DisableActionAction;
+import com.bladecoder.engine.actions.EndAction;
 import com.bladecoder.engine.util.ActionUtils;
 
 import eu.infomas.annotation.AnnotationDetector;
@@ -60,7 +62,8 @@ public class ActionDetector {
 
 				String name = ActionUtils.getName(c);
 
-				if (!name.equals("End"))
+				if ( !c.isAssignableFrom(EndAction.class) && 
+						!c.isAssignableFrom(DisableActionAction.class ))
 					actions.put(name, c);
 			}
 
