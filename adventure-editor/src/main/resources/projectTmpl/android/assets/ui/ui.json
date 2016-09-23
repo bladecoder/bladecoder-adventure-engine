@@ -1,6 +1,6 @@
 {
 
-com.badlogic.gdx.graphics.g2d.BitmapFont: {
+BitmapFont: {
 	default: {file: fonts/Roboto-Regular.ttf, size: 17},
 	debug: {file: fonts/Roboto-Regular.ttf, size: 14}, 
 	big-font: {file: fonts/PaytoneOne.ttf, size: 35},
@@ -13,7 +13,7 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 },
 
 
-com.badlogic.gdx.graphics.Color: {
+Color: {
 	white: { a: 1, b: 1, g: 1, r: 1 },
 	black: { a: 1, b: 0, g: 0, r: 0 },
 	dark-grey: { a: 1, b: 0.25, g: 0.25, r: 0.25 },
@@ -25,7 +25,7 @@ com.badlogic.gdx.graphics.Color: {
 	yellow:  { r: 1, g: 1, b: 0.13, a: 1 }
 },
 
-com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
+TintedDrawable: {
 	black: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 1.0 } },
 	black08: { name: white_pixel, color: { r: 0, g: 0, b: 0, a: 0.8 } },
 	white: { name: white_pixel, color: white },
@@ -62,7 +62,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	dialog-down-over: {name:dialog_down, color: white-trans},
 },
 
-com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+ButtonStyle: {
 	inventory: {up:inventory},
 	delete_game: {up:delete, over: delete-over},
 	menu: {up:menu-up, over: menu, down: menu},
@@ -82,7 +82,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 },
 
 
-com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+TextButtonStyle: {
 	default: { 
 		font: debug, 
 		up: grey, 
@@ -122,7 +122,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 },
 
 
-com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+LabelStyle: {
 	default: { font: default, fontColor: white},
 	debug: { font: debug, fontColor: white},
 	title: { font: big-font, fontColor: white},
@@ -130,31 +130,31 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 },
 
 
-com.bladecoder.engine.ui.MenuScreen$MenuScreenStyle: {
+MenuScreenStyle: {
 	default: {textButtonStyle: menu, showTitle: true, titleStyle: title}
 },
 
 
-com.bladecoder.engine.ui.LoadSaveScreen$LoadSaveScreenStyle: {
+LoadSaveScreenStyle: {
 	default: {textButtonStyle: menu}
 },
 
 
-com.bladecoder.engine.ui.CreditsScreen$CreditScreenStyle: {
+CreditScreenStyle: {
 	default: {
 		titleFont: credits-title, font: credits
 	}
 },
 
-com.bladecoder.engine.ui.InventoryUI$InventoryUIStyle: {
+InventoryUIStyle: {
 	default: {background: black08, itemBackground: dark-grey}
 },
 
-com.bladecoder.engine.ui.DialogUI$DialogUIStyle: {
+DialogUIStyle: {
 	default: {background: black08, textButtonStyle: {font: dialog-font, fontColor: white, overFontColor: light-grey}}
 },
 
-com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle: {
+TextManagerUIStyle: {
 	default: {
 		rectBackground: rect, 
 		talkBackground: white, 
@@ -166,7 +166,7 @@ com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle: {
 },
 
 
-com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
+TextFieldStyle: {
 	default: { 
 		selection: grey, 
 		background: dark-grey, 
@@ -182,7 +182,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 },
 
 
-com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
+ScrollPaneStyle: {
 	default: {
 		vScroll: dark-grey, vScrollKnob: grey, hScrollKnob: dark-grey,  hScroll: dark-grey, corner: white
 	},
@@ -194,7 +194,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
 	}
 },
 
-com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
+ListStyle: {
 	default: { 
 		fontColorUnselected: text-dark, 
 		selection: dark-grey, 
@@ -211,7 +211,7 @@ com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
 },
 
 
-com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
+SelectBoxStyle: {
 	default: { 
 		background: dark-grey, 
 		backgroundOver: grey, 
@@ -223,11 +223,11 @@ com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 	},
 },
 
-com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+WindowStyle: {
 		default: { titleFont: big-font, background: black08, titleFontColor: white },
 },
 
-com.bladecoder.engine.ui.retro.VerbUI$VerbUIStyle: {
+VerbUIStyle: {
 	default: { verbButtonStyle: {font:message-font, fontColor: yellow, up: dark-grey, overFontColor: white}, inventoryButtonStyle: {up: dark-grey, over: grey}, infoLineLabelStyle: {font: default}, upArrow: inv_up, downArrow: inv_down},
 }
 }

@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen;
+import com.bladecoder.engine.ui.retro.VerbUI;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
@@ -156,6 +157,14 @@ public class UI {
 	}
 
 	private void loadAssets() {
+		BladeSkin.addStyleTag(VerbUI.VerbUIStyle.class);
+		BladeSkin.addStyleTag(TextManagerUI.TextManagerUIStyle.class);
+		BladeSkin.addStyleTag(DialogUI.DialogUIStyle.class);
+		BladeSkin.addStyleTag(InventoryUI.InventoryUIStyle.class);
+		BladeSkin.addStyleTag(CreditsScreen.CreditScreenStyle.class);
+		BladeSkin.addStyleTag(LoadSaveScreen.LoadSaveScreenStyle.class);
+		BladeSkin.addStyleTag(MenuScreen.MenuScreenStyle.class);
+		
 		FileHandle skinFile = EngineAssetManager.getInstance().getAsset(SKIN_FILENAME);
 		TextureAtlas atlas = new TextureAtlas(EngineAssetManager.getInstance().getResAsset(
 				SKIN_FILENAME.substring(0,SKIN_FILENAME.lastIndexOf('.')) + ".atlas"));

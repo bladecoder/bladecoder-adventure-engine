@@ -1,5 +1,8 @@
 package com.bladecoder.engine.ui;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -8,13 +11,37 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.ui.Tree;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.ReadOnlySerializer;
-import com.bladecoder.engine.util.DPIUtils;
-import com.bladecoder.engine.util.FileUtils;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.SerializationException;
+import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.ReflectionException;
+import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.FileUtils;
 
 /**
  * Custom Skin class to add TTF font support
@@ -41,6 +68,37 @@ public class BladeSkin extends Skin {
 		Json json = super.getJsonLoader(skinFile);
 
 		final Skin skin = this;
+		
+		json.setSerializer(Skin.class, new ReadOnlySerializer<Skin>() {
+			public Skin read (Json json, JsonValue typeToValueMap, @SuppressWarnings("rawtypes") Class ignored) {
+				for (JsonValue valueMap = typeToValueMap.child; valueMap != null; valueMap = valueMap.next) {
+					try {
+						Class<?> type = json.getClass(valueMap.name());
+						if (type == null) type = ClassReflection.forName(valueMap.name());
+						 	readNamedObjects(json, type, valueMap);
+					} catch (ReflectionException ex) {
+						throw new SerializationException(ex);
+					}
+				}
+				return skin;
+			}
+
+			private void readNamedObjects (Json json, Class<?> type, JsonValue valueMap) {
+				Class<?> addType = type == TintedDrawable.class ? Drawable.class : type;
+				for (JsonValue valueEntry = valueMap.child; valueEntry != null; valueEntry = valueEntry.next) {
+					Object object = json.readValue(type, valueEntry);
+					if (object == null) continue;
+					try {
+						add(valueEntry.name, object, addType);
+						if (addType != Drawable.class && ClassReflection.isAssignableFrom(Drawable.class, addType))
+							add(valueEntry.name, object, Drawable.class);
+					} catch (Exception ex) {
+						throw new SerializationException(
+							"Error reading " + ClassReflection.getSimpleName(type) + ": " + valueEntry.name, ex);
+					}
+				}
+			}
+		});
 
 		json.setSerializer(BitmapFont.class, new ReadOnlySerializer<BitmapFont>() {
 			public BitmapFont read(Json json, JsonValue jsonData, @SuppressWarnings("rawtypes") Class type) {
@@ -112,7 +170,28 @@ public class BladeSkin extends Skin {
 				return font;
 			}
 		});
+		
+		for (Class<?> cls : TAGGED_STYLES){
+			json.addClassTag(cls.getSimpleName(), cls);
+		}
 
 		return json;
+	}
+	
+	private static final Class<?>[] AUTO_TAGGED_STYLES = {
+			BitmapFont.class, Color.class, TintedDrawable.class,
+			NinePatchDrawable.class, SpriteDrawable.class, TextureRegionDrawable.class, TiledDrawable.class,
+			Button.ButtonStyle.class, CheckBox.CheckBoxStyle.class, ImageButton.ImageButtonStyle.class, 
+			ImageTextButton.ImageTextButtonStyle.class, Label.LabelStyle.class, List.ListStyle.class, 
+			ProgressBar.ProgressBarStyle.class, ScrollPane.ScrollPaneStyle.class, SelectBox.SelectBoxStyle.class,
+			Slider.SliderStyle.class, SplitPane.SplitPaneStyle.class, TextButton.TextButtonStyle.class, 
+			TextField.TextFieldStyle.class, TextTooltip.TextTooltipStyle.class, Touchpad.TouchpadStyle.class,
+			Tree.TreeStyle.class, Window.WindowStyle.class
+		};
+	
+	private final static ArrayList<Class<?>> TAGGED_STYLES = new ArrayList<Class<?>>(Arrays.asList(AUTO_TAGGED_STYLES));
+	
+	public static final void addStyleTag(Class<?> tag) {
+		TAGGED_STYLES.add(tag);
 	}
 }
