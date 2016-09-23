@@ -462,10 +462,12 @@ public class Project extends PropertyChange {
 			chapter.load(selChapter);
 		} catch (SerializationException ex) {
 			// check for not compiled custom actions
-			if (ex.getCause() != null && ex.getCause().getCause() != null
-					&& ex.getCause().getCause() instanceof ClassNotFoundException) {
+			if (ex.getCause() != null  && ex.getCause() instanceof ClassNotFoundException) {
 				EditorLogger.debug("Custom action class not found. Trying to compile...");
 				if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
+					FolderClassLoader folderClassLoader = new FolderClassLoader(projectFile.getAbsolutePath()
+							+ "/core/build/classes/main");
+					ActionFactory.setActionClassLoader(folderClassLoader);
 					chapter.load(selChapter);
 				} else {
 					throw new IOException("Failed to run Gradle.");
