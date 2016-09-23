@@ -2,6 +2,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.19]
+
+- EDITOR: Use libgdx FileChooser and get rid of JavaFX to avoid freezing when loading projects.
+- EDITOR: Added UI Atlas import/export buttons in Tools menu.
+- EDITOR: Added scroll bars to Text Boxes.
+- EDITOR: Add "clean" target in IOS because the app is not signing well if not cleaning first.
+
+- Added tags to Skin styles to increase the ui.json readability.
+- Better scroll amount calculation in dialog ui scroll buttons.
+
+- FIX: error when loading project with custom actions. Not detecting no compiled project properly.
+- FIX: DisableAction must not be visible in the action combo.
+- FIX: The editor was losing the scroll focus when the log console was shown.
+
+
 ## [0.9.18]
 
 - EDITOR: The Action list now supports multiple selection to copy, paste, show... use Shift and Ctrl keys to multiselect.
