@@ -15,33 +15,84 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class TextInputPanel extends InputPanel {
-	TextArea input;
+	private TextArea input;
+	private float prefRows = 10;
+	
+	private int oldRows;
+	
+	private ScrollPane scroll;
 	
 	TextInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
-		input = new TextArea("", skin);
-		input.setPrefRows(10);
+		input = new TextArea("", skin) {
+			@Override
+			public float getPrefHeight () {
+				
+				float prefHeight =  Math.max(prefRows, getLines() + 1) * textHeight;
+				
+				if (getStyle().background != null) {
+					prefHeight = Math.max(prefHeight + getStyle().background.getBottomHeight() + getStyle().background.getTopHeight(),
+							getStyle().background.getMinHeight());
+				}
+				return prefHeight;
+			}
+			
+			@Override
+			public void moveCursorLine (int line) {
+				super.moveCursorLine(line);
+				
+				scroll.setScrollPercentY((line + 1)/(float)input.getLines());
+			}
+        };
+        
+        
+		input.setPrefRows(prefRows);
 		
-		ScrollPane scroll = new ScrollPane(input, skin);
+		scroll = new ScrollPane(input, skin);
+		
+		scroll.setFadeScrollBars(false);
 		
 		init(skin, title, desc, scroll, mandatory, defaultValue);
+		
+		input.addListener(new ChangeListener() {
+			
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {						
+				if(input.getLines() != oldRows) {
+					scroll.layout();
+					oldRows = input.getLines();
+					
+					int cursorLine = input.getCursorLine();
+					
+					scroll.setScrollPercentY((cursorLine + 1)/(float)input.getLines());
+				}
+				
+
+			}
+		});
 	}
 
 	public String getText() {
-//		return input.getText().replace("\n", "\\\\n");
 		return input.getText();
 	}
 
 	public void setText(String s) {
 		if (s == null) s = "";
 		input.setText(s.replace("\\n", "\n"));
+		
+		oldRows = input.getLines();
+		
+		scroll.layout();
 	}
 	
 	public void setRows(float rows) {
+		prefRows = rows;
 		input.setPrefRows(rows);
 	}
 }
