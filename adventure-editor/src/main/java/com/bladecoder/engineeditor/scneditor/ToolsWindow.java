@@ -15,10 +15,12 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.scneditor;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
@@ -34,9 +36,11 @@ import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.I18NUtils;
+import com.bladecoder.engineeditor.common.ImageUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.ModelTools;
 import com.bladecoder.engineeditor.common.RunProccess;
+import com.bladecoder.engineeditor.model.Project;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooser.Mode;
 import com.kotcrab.vis.ui.widget.file.FileChooser.SelectionMode;
@@ -60,6 +64,9 @@ public class ToolsWindow extends Container<Table> {
 		TextButton testOnIOSDeviceButton = new TextButton("Test on IOS device", skin, "no-toggled");
 		TextButton exportTSVButton = new TextButton("I18N - Export texts as .tsv", skin, "no-toggled");
 		TextButton importTSVButton = new TextButton("I18N - Import.tsv file", skin, "no-toggled");
+		
+		TextButton exportUIImages = new TextButton("Export UI Images", skin, "no-toggled");
+		TextButton createUIAtlas = new TextButton("Create UI Atlas", skin, "no-toggled");
 
 		table.defaults().left().expandX();
 		table.top().pad(DPIUtils.getSpacing() / 2);
@@ -92,6 +99,12 @@ public class ToolsWindow extends Container<Table> {
 
 		table.row();
 		table.add(importTSVButton).expandX().fill();
+		
+		table.row();
+		table.add(exportUIImages).expandX().fill();
+		
+		table.row();
+		table.add(createUIAtlas).expandX().fill();
 
 		// table.row();
 		// table.add(tmpButton).expandX().fill();
@@ -153,11 +166,92 @@ public class ToolsWindow extends Container<Table> {
 				importTSV();
 			}
 		});
+		
+		exportUIImages.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				exportUIImages();
+			}
+		});
+		
+		createUIAtlas.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				createUIAtlas();
+			}
+		});
 
 		table.pack();
 		setActor(table);
 		prefSize(table.getWidth(), Math.max(200, table.getHeight()));
 		setSize(table.getWidth(), Math.max(200, table.getHeight()));
+	}
+
+	protected void createUIAtlas() {
+		FileChooser fileChooser = new FileChooser(Mode.OPEN);
+		fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+		fileChooser.setViewMode(ViewMode.LIST);
+		
+		fileChooser.setSelectionMode(SelectionMode.DIRECTORIES);
+		getStage().addActor(fileChooser);
+
+		fileChooser.setListener(new FileChooserListener() {
+
+			@Override
+			public void selected(Array<FileHandle> files) {
+				try {
+//					fileChooser.setTitle("Select the file to export the project texts");
+				
+					ImageUtils.createAtlas(files.get(0).file().getAbsolutePath(), 
+							Ctx.project.getProjectPath() + "/" + Project.UI_PATH + "/1/", "ui", 1, TextureFilter.Linear, 
+								TextureFilter.Nearest);
+
+					Message.showMsg(getStage(), "UI Atlas created sucessfully.", 4);
+				} catch (IOException e) {
+					Message.showMsg(getStage(), "There was a problem creating the UI Atlas.", 4);
+					EditorLogger.printStackTrace(e);
+				}				
+			}
+
+			@Override
+			public void canceled() {
+				
+			}
+		});
+		
+	}
+
+	protected void exportUIImages() {
+		FileChooser fileChooser = new FileChooser(Mode.OPEN);
+		fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+		fileChooser.setViewMode(ViewMode.LIST);
+		
+		fileChooser.setSelectionMode(SelectionMode.DIRECTORIES);
+		getStage().addActor(fileChooser);
+
+		fileChooser.setListener(new FileChooserListener() {
+
+			@Override
+			public void selected(Array<FileHandle> files) {
+				try {
+//					fileChooser.setTitle("Select the file to export the project texts");
+					
+					ImageUtils.unpackAtlas(new File(Ctx.project.getProjectPath() + "/" + Project.UI_PATH + "/1/ui.atlas"), 
+							files.get(0).file());
+
+					Message.showMsg(getStage(), "UI Atlas images exported sucessfully.", 4);
+				} catch (Exception e) {
+					Message.showMsg(getStage(), "There was a problem exporting images from UI Atlas.", 4);
+					EditorLogger.printStackTrace(e);
+				}				
+			}
+
+			@Override
+			public void canceled() {
+				
+			}
+		});
+		
 	}
 
 	private void exportTSV() {

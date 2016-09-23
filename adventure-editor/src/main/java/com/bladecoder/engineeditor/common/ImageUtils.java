@@ -125,19 +125,22 @@ public class ImageUtils {
 	}
 
 	public static void scaleAtlas(File orgAtlas, File destDir, float scale) throws IOException {
-		CustomTextureUnpacker unpacker = new CustomTextureUnpacker();
-		File outputDir = DesktopUtils.createTempDirectory();
-
-		String atlasParentPath = orgAtlas.getParentFile().getAbsolutePath();
-
-		TextureAtlasData atlas = new TextureAtlasData(new FileHandle(orgAtlas), new FileHandle(atlasParentPath), false);
+		File tmpDir = DesktopUtils.createTempDirectory();
+	
 		EditorLogger.debug("SCALING: " + orgAtlas.getName());
-		unpacker.splitAtlas(atlas, outputDir.getAbsolutePath());
+		unpackAtlas(orgAtlas, tmpDir);
 
-		createAtlas(outputDir.getAbsolutePath(), destDir.getAbsolutePath(), orgAtlas.getName(), scale,
+		createAtlas(tmpDir.getAbsolutePath(), destDir.getAbsolutePath(), orgAtlas.getName(), scale,
 				TextureFilter.Linear, TextureFilter.Linear);
 
-		DesktopUtils.removeDir(outputDir.getAbsolutePath());
+		DesktopUtils.removeDir(tmpDir.getAbsolutePath());
+	}
+	
+	public static void unpackAtlas(File orgAtlas, File destDir) {
+		CustomTextureUnpacker unpacker = new CustomTextureUnpacker();
+		String atlasParentPath = orgAtlas.getParentFile().getAbsolutePath();
+		TextureAtlasData atlas = new TextureAtlasData(new FileHandle(orgAtlas), new FileHandle(atlasParentPath), false);
+		unpacker.splitAtlas(atlas, destDir.getAbsolutePath());
 	}
 
 	public static void scaleDirAtlases(File orgDir, File destDir, float scale) throws IOException {
