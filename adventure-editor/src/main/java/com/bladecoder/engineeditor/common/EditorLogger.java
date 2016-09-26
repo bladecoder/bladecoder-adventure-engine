@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.common;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.bladecoder.engineeditor.Ctx;
 import com.strongjoshua.console.CommandExecutor;
 import com.strongjoshua.console.Console;
 import com.strongjoshua.console.LogLevel;
@@ -173,6 +175,17 @@ public class EditorLogger {
 			@SuppressWarnings("unused")
 			public void printUnusedSounds() {
 				ModelTools.printUnusedSounds();
+				EditorLogger.msg("PROCCESS FINISHED.");
+			}
+			
+			@SuppressWarnings("unused")
+			public void compareI18N(String lang) {
+				try {
+					I18NUtils.compare(Ctx.project.getProjectPath(), Ctx.project.getChapter().getId(), null, lang);
+				} catch (IOException e) {
+					EditorLogger.printStackTrace(e);
+				}
+				
 				EditorLogger.msg("PROCCESS FINISHED.");
 			}
 

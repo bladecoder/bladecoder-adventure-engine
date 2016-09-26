@@ -32,10 +32,8 @@ import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeSet;
 
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engineeditor.model.Project;
@@ -70,11 +68,11 @@ public class I18NUtils {
 
 		Properties props[] = new Properties[files.length + 1];
 
-		props[0] = new Properties();
+		props[0] = new OrderedProperties();
 		props[0].load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 
 		for (int i = 1; i < props.length; i++) {
-			props[i] = new Properties();
+			props[i] = new OrderedProperties();
 			props[i].load(new InputStreamReader(new FileInputStream(files[i - 1]), I18N.ENCODING));
 		}
 
@@ -125,7 +123,6 @@ public class I18NUtils {
 		writer.close();
 	}
 
-	@SuppressWarnings("serial")
 	public static final void importTSV(String projectPath, String tsvFile, String chapterId, String defaultLocale)
 			throws FileNotFoundException, IOException {
 		String modelPath = projectPath + Project.MODEL_PATH;
@@ -137,15 +134,10 @@ public class I18NUtils {
 
 			if (line != null) {
 				String[] langs = line.split(SEPARATOR);
-				Properties props[] = new Properties[langs.length - 1];
+				Properties props[] = new OrderedProperties[langs.length - 1];
 
 				for (int i = 0; i < props.length; i++) {
-					props[i] = new Properties() {
-						@Override
-						public synchronized Enumeration<Object> keys() {
-							return Collections.enumeration(new TreeSet<Object>(keySet()));
-						}
-					};
+					props[i] = new OrderedProperties();
 				}
 
 				// get keys and texts
@@ -154,7 +146,11 @@ public class I18NUtils {
 					String key = values[0];
 
 					for (int i = 0; i < props.length; i++) {
-						props[i].setProperty(key, values[i + 1]);
+						String value = values[i + 1];
+						if(value != null)
+							value = value.replace("\\n", "\n");
+							
+						props[i].setProperty(key, value);
 					}
 				}
 
@@ -177,25 +173,14 @@ public class I18NUtils {
 		}
 	}
 
-	@SuppressWarnings("serial")
 	public static final void newLocale(String projectPath, final String chapterId, String defaultLocale,
 			String newLocale) throws FileNotFoundException, IOException {
 		String modelPath = projectPath + Project.MODEL_PATH;
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 		File newChapter = new File(modelPath, chapterId + "_" + newLocale + PROPERTIES_EXT);
 
-		Properties defaultProp = new Properties() {
-			@Override
-			public synchronized Enumeration<Object> keys() {
-				return Collections.enumeration(new TreeSet<Object>(keySet()));
-			}
-		};
-		Properties newProp = new Properties() {
-			@Override
-			public synchronized Enumeration<Object> keys() {
-				return Collections.enumeration(new TreeSet<Object>(keySet()));
-			}
-		};
+		Properties defaultProp = new OrderedProperties();
+		Properties newProp = new OrderedProperties();
 
 		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 
@@ -209,25 +194,14 @@ public class I18NUtils {
 		newProp.store(out, newChapter.getName());
 	}
 	
-	@SuppressWarnings("serial")
 	public static final void compare(String projectPath, final String chapterId, String defaultLocale,
 			String destLocale) throws FileNotFoundException, IOException {
 		String modelPath = projectPath + Project.MODEL_PATH;
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 		File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
 
-		Properties defaultProp = new Properties() {
-			@Override
-			public synchronized Enumeration<Object> keys() {
-				return Collections.enumeration(new TreeSet<Object>(keySet()));
-			}
-		};
-		Properties destProp = new Properties() {
-			@Override
-			public synchronized Enumeration<Object> keys() {
-				return Collections.enumeration(new TreeSet<Object>(keySet()));
-			}
-		};
+		Properties defaultProp = new OrderedProperties();
+		Properties destProp = new OrderedProperties();
 
 		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 		destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
@@ -235,37 +209,26 @@ public class I18NUtils {
 		// SEARCH FOR NOT EXISTING DEST KEYS
 		for (Object key : defaultProp.keySet()) {
 			if(destProp.get(key) == null) {
-				System.out.println("Key not found in '" + destLocale + "' locale: " + key);
+				EditorLogger.error("Key not found in '" + destLocale + "' locale: " + key);
 			}
 		}
 		
 		// SEARCH FOR NOT EXISTING DEFAULT CHAPTER KEYS
 		for (Object key : destProp.keySet()) {
 			if(defaultProp.get(key) == null) {
-				System.out.println("Key not found in default locale: " + key);
+				EditorLogger.error("Key not found in default locale: " + key);
 			}
 		}
 	}
 	
-	@SuppressWarnings("serial")
 	public static final void sync(String projectPath, final String chapterId, String defaultLocale,
 			String destLocale) throws FileNotFoundException, IOException {
 		String modelPath = projectPath + Project.MODEL_PATH;
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 		File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
 
-		Properties defaultProp = new Properties() {
-			@Override
-			public synchronized Enumeration<Object> keys() {
-				return Collections.enumeration(new TreeSet<Object>(keySet()));
-			}
-		};
-		Properties destProp = new Properties() {
-			@Override
-			public synchronized Enumeration<Object> keys() {
-				return Collections.enumeration(new TreeSet<Object>(keySet()));
-			}
-		};
+		Properties defaultProp = new OrderedProperties();
+		Properties destProp = new OrderedProperties();
 
 		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 		destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
@@ -310,59 +273,5 @@ public class I18NUtils {
 		System.out.println("> TRANSLATED: " + translatedText);
 
 		return translatedText;
-	}
-
-	public static void usage() {
-		System.out.println("Usage:"
-				+ "\n\tI18NUtils import_tsv project_path input_tsv_file chapter_id default_locale"
-				+ "\n\tI18NUtils export_tsv project_path ouput_tsv_file chapter_id default_locale"
-				+ "\n\tI18NUtils newlocale project_path chapter_id default_locale new_locale"
-				+ "\n\tI18NUtils sync project_path chapter_id dest_locale"
-				+ "\n\tI18NUtils compare project_path chapter_id dest_locale");
-	}
-
-	public static final void main(String[] args) throws FileNotFoundException, IOException {
-
-		if (args[0].equals("import_tsv")) {
-			if (args.length != 5) {
-				usage();
-				System.exit(-1);
-			}
-
-			importTSV(args[1], args[2], args[3], args[4]);
-			System.out.println("Properties generated sucessfully.");
-		} else if (args[0].equals("export_tsv")) {
-			if (args.length != 5) {
-				usage();
-				System.exit(-1);
-			}
-
-			exportTSV(args[1], args[2], args[3], args[4]);
-			System.out.println(".tsv file generated sucessfully.");
-		} else if (args[0].equals("newlocale")) {
-			if (args.length != 5) {
-				usage();
-				System.exit(-1);
-			}
-
-			newLocale(args[1], args[2], args[3], args[4]);
-			System.out.println(args[2] + "_" + args[4] + PROPERTIES_EXT + " generated sucessfully.");
-		} else if (args[0].equals("compare")) {
-			if (args.length != 4) {
-				usage();
-				System.exit(-1);
-			}
-
-			compare(args[1], args[2], null, args[3]);
-			System.out.println("Compare ENDED.");	
-		} else if (args[0].equals("sync")) {
-			if (args.length != 4) {
-				usage();
-				System.exit(-1);
-			}
-
-			sync(args[1], args[2], null, args[3]);
-			System.out.println("Sync ENDED.");				
-		}
 	}
 }
