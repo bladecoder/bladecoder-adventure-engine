@@ -60,8 +60,8 @@ public class ViewWindow extends Container<Table> {
 		
 		table.row();		
 		final CheckBox console = new CheckBox("Show Debug Console", skin);
-		console.setChecked(!EditorLogger.console.isHidden());
-//		table.add(console);
+		console.setChecked(EditorLogger.console.isVisible());
+		table.add(console);
 		
 		inSceneCb.addListener(new ChangeListener() {
 
@@ -91,7 +91,7 @@ public class ViewWindow extends Container<Table> {
 
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-//				EditorLogger.console.setHidden(!console.isChecked());
+				EditorLogger.console.setVisible(console.isChecked());
 			}
 		});	
 

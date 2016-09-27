@@ -118,7 +118,7 @@ public class EditorLogger {
 
 	public static void setConsole(Console console) {
 		EditorLogger.console = console;
-		EditorLogger.console.setKeyID(Keys.F1);
+		EditorLogger.console.setDisplayKeyID(Keys.F1);
 		console.setMaxEntries(1000);
 
 		final Stage s = (Stage) console.getInputProcessor();
