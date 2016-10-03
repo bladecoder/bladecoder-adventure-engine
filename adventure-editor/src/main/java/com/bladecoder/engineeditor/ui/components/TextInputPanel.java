@@ -15,17 +15,13 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.components;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class TextInputPanel extends InputPanel {
 	private TextArea input;
 	private float prefRows = 10;
-	
-	private int oldRows;
 	
 	private ScrollPane scroll;
 	
@@ -34,7 +30,9 @@ public class TextInputPanel extends InputPanel {
 			@Override
 			public float getPrefHeight () {
 				
-				float prefHeight =  Math.max(prefRows, getLines() + 1) * textHeight;
+				calculateOffsets();
+				
+				float prefHeight =  Math.max(prefRows, getLines()) * textHeight;
 				
 				if (getStyle().background != null) {
 					prefHeight = Math.max(prefHeight + getStyle().background.getBottomHeight() + getStyle().background.getTopHeight(),
@@ -47,7 +45,7 @@ public class TextInputPanel extends InputPanel {
 			public void moveCursorLine (int line) {
 				super.moveCursorLine(line);
 				
-				scroll.setScrollPercentY((line + 1)/(float)input.getLines());
+				scroll.setScrollPercentY((line)/(float)input.getLines());
 			}
         };
         
@@ -60,22 +58,7 @@ public class TextInputPanel extends InputPanel {
 		
 		init(skin, title, desc, scroll, mandatory, defaultValue);
 		
-		input.addListener(new ChangeListener() {
-			
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {						
-				if(input.getLines() != oldRows) {
-					scroll.layout();
-					oldRows = input.getLines();
-					
-					int cursorLine = input.getCursorLine();
-					
-					scroll.setScrollPercentY((cursorLine + 1)/(float)input.getLines());
-				}
-				
-
-			}
-		});
+		getCell(scroll).maxHeight(input.getStyle().font.getLineHeight() * prefRows + input.getStyle().background.getBottomHeight() + input.getStyle().background.getTopHeight());
 	}
 
 	public String getText() {
@@ -86,13 +69,13 @@ public class TextInputPanel extends InputPanel {
 		if (s == null) s = "";
 		input.setText(s.replace("\\n", "\n"));
 		
-		oldRows = input.getLines();
-		
-		scroll.layout();
+		scroll.invalidate();
 	}
 	
 	public void setRows(float rows) {
 		prefRows = rows;
 		input.setPrefRows(rows);
+		
+		getCell(scroll).maxHeight(input.getStyle().font.getLineHeight() * prefRows + input.getStyle().background.getBottomHeight() + input.getStyle().background.getTopHeight());
 	}
 }
