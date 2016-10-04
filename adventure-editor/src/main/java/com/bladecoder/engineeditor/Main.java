@@ -31,11 +31,8 @@ public class Main extends LwjglApplication {
 
 		cfg.title = "Adventure Editor v" + Versions.getVersion();
 		
-//		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-//		cfg.width = (int) (bounds.getWidth() - bounds.getWidth() * 0.1);
-//		cfg.height = (int) (bounds.getHeight() - bounds.getHeight() * 0.1);
-
 		cfg.resizable = true;
+		cfg.vSyncEnabled = true;
 		// cfg.samples = 2;
 		// cfg.useGL30 = true;
 

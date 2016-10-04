@@ -1,6 +1,7 @@
 #!/bin/sh
 
 #ANDROID ICONS
+inkscape -w 192 -h 192 --export-area-page --export-png=../../src/main/resources/projectTmpl/android/res/drawable-xxxhdpi/ic_launcher.png  engine-default-icon.svg;
 inkscape -w 144 -h 144 --export-area-page --export-png=../../src/main/resources/projectTmpl/android/res/drawable-xxhdpi/ic_launcher.png  engine-default-icon.svg;
 inkscape -w 96 -h 96 --export-area-page --export-png=../../src/main/resources/projectTmpl/android/res/drawable-xhdpi/ic_launcher.png  engine-default-icon.svg;
 inkscape -w 72 -h 72 --export-area-page --export-png=../../src/main/resources/projectTmpl/android/res/drawable-hdpi/ic_launcher.png  engine-default-icon.svg;

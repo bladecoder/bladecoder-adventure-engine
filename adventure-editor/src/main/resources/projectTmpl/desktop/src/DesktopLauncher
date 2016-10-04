@@ -41,6 +41,7 @@ public class DesktopLauncher extends BladeEngine {
 
 		cfg.resizable = true;
 		//cfg.samples = 2;
+		cfg.vSyncEnabled = true;
 	}
 
 	public void run() {
