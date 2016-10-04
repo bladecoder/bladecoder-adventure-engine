@@ -32,6 +32,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogicgames.packr.Packr;
 import com.badlogicgames.packr.PackrConfig;
 import com.badlogicgames.packr.PackrConfig.Platform;
@@ -196,13 +198,15 @@ public class PackageDialog extends EditDialog {
 
 	@Override
 	protected void ok() {
+		Message.showMsg(getStage(), "Generating package...", true);
+		
 
-		new Thread(new Runnable() {
+		new Thread() {
 			Stage stage = getStage();
 
 			@Override
 			public void run() {
-				Message.showMsg(stage, "Generating package...", true);
+				
 				String msg;
 
 				if (Ctx.project.getSelectedScene() == null) {
@@ -241,10 +245,18 @@ public class PackageDialog extends EditDialog {
 
 				Message.hideMsg();
 
-				if (msg != null)
-					Message.showMsgDialog(stage, "Result", msg);
+				if (msg != null) {
+					final String  m = msg;
+					Timer.post( new Task() {
+						
+						@Override
+						public void run() {
+							Message.showMsgDialog(stage, "Result", m);
+						}					
+					});
+				}
 			}
-		}).start();
+		}.start();
 
 	}
 
@@ -262,7 +274,10 @@ public class PackageDialog extends EditDialog {
 			String jarDir = Ctx.project.getProjectDir().getAbsolutePath() + "/desktop/build/libs/";
 			String jarName = projectName + "-desktop-" + version.getText() + ".jar";
 
-			msg = genDesktopJar(projectName, versionParam, jarDir, jarName);
+			String error = genDesktopJar(projectName, versionParam, jarDir, jarName);
+			
+			if(error != null)
+				msg = error;
 
 			if (type.getText().equals(TYPES[0])) { // BUNDLE JRE
 				String launcher = getDesktopMainClass();
