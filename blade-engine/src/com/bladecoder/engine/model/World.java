@@ -54,15 +54,15 @@ public class World implements Serializable, AssetConsumer {
 
 	public static final String GAMESTATE_EXT = ".gamestate.v11";
 	private static final String GAMESTATE_FILENAME = "default" + GAMESTATE_EXT;
-	
-	private static final String DEFAULT_INVENTORY="DEFAULT";
+
+	private static final String DEFAULT_INVENTORY = "DEFAULT";
 
 	private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
 
 	public static enum AssetState {
 		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
 	};
-	
+
 	public static enum WorldProperties {
 		SAVED_GAME_VERSION, PREVIOUS_SCENE
 	};
@@ -82,10 +82,10 @@ public class World implements Serializable, AssetConsumer {
 
 	private Scene currentScene;
 	private Dialog currentDialog;
-	
+
 	private HashMap<String, Inventory> inventories;
 	private String currentInventory;
-	
+
 	private TextManager textManager;
 
 	private boolean paused;
@@ -105,8 +105,7 @@ public class World implements Serializable, AssetConsumer {
 	 * executed
 	 */
 	private String testScene;
-	
-	
+
 	/**
 	 * If true call 'initNewGame' or 'initSavedGame' verbs.
 	 */
@@ -129,7 +128,7 @@ public class World implements Serializable, AssetConsumer {
 	// We not dispose the last loaded scene.
 	// Instead we cache it to improve performance when returning
 	transient private Scene cachedScene;
-	
+
 	private MusicEngine musicEngine;
 
 	public static World getInstance() {
@@ -160,26 +159,27 @@ public class World implements Serializable, AssetConsumer {
 		spriteBatch = new SpriteBatch();
 
 		transition = new Transition();
-		
+
 		musicEngine = new MusicEngine();
-		
+
 		paused = false;
 
 		disposed = false;
-		
+
 		initGame = true;
 	}
-	
+
 	/**
 	 * Returns a scene from the cache. null if the scene is not cached.
 	 * 
-	 * Note that by now, the cache has only one Scene. In the future, the cache will be a Hastable.
+	 * Note that by now, the cache has only one Scene. In the future, the cache
+	 * will be a Hastable.
 	 */
 	public Scene getCachedScene(String id) {
-		
-		if(cachedScene != null && cachedScene.getId().equals(id))
+
+		if (cachedScene != null && cachedScene.getId().equals(id))
 			return cachedScene;
-		
+
 		return null;
 	}
 
@@ -201,7 +201,7 @@ public class World implements Serializable, AssetConsumer {
 	public VerbManager getVerbManager() {
 		return verbs;
 	}
-	
+
 	public MusicEngine getMusicEngine() {
 		return musicEngine;
 	}
@@ -236,18 +236,22 @@ public class World implements Serializable, AssetConsumer {
 			assetState = AssetState.LOADED;
 
 			EngineLogger.debug("ASSETS LOADING TIME (ms): " + (System.currentTimeMillis() - initLoadingTime));
-			
-			if(initGame) {
+
+			if (initGame) {
 				initGame = false;
-				
-				// Call world init verbs. Check for SAVED_GAME_VERSION property to know if new or loaded game.
-				if(customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) == null && verbs.getVerb(Verb.INIT_NEW_GAME_VERB, null, null) != null)
+
+				// Call world init verbs. Check for SAVED_GAME_VERSION property
+				// to know if new or loaded game.
+				if (customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) == null
+						&& verbs.getVerb(Verb.INIT_NEW_GAME_VERB, null, null) != null)
 					verbs.runVerb(Verb.INIT_NEW_GAME_VERB, null, null);
-				else if(customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) != null && verbs.getVerb(Verb.INIT_SAVED_GAME_VERB, null, null) != null)
+				else if (customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) != null
+						&& verbs.getVerb(Verb.INIT_SAVED_GAME_VERB, null, null) != null)
 					verbs.runVerb(Verb.INIT_SAVED_GAME_VERB, null, null);
-				
+
 				// If in test mode run 'test' verb
-				if (testScene != null && testScene.equals(currentScene.getId()) && currentScene.getVerb(Verb.TEST_VERB) != null)
+				if (testScene != null && testScene.equals(currentScene.getId())
+						&& currentScene.getVerb(Verb.TEST_VERB) != null)
 					currentScene.runVerb(Verb.TEST_VERB);
 			}
 
@@ -269,7 +273,7 @@ public class World implements Serializable, AssetConsumer {
 		timers.update(delta);
 
 		transition.update(delta);
-		
+
 		musicEngine.update(delta);
 
 		ActionCallbackQueue.run();
@@ -281,7 +285,7 @@ public class World implements Serializable, AssetConsumer {
 
 		if (getInventory().isDisposed())
 			getInventory().loadAssets();
-		
+
 		musicEngine.loadAssets();
 	}
 
@@ -304,7 +308,7 @@ public class World implements Serializable, AssetConsumer {
 				EngineLogger.debug("\t" + n);
 			}
 		}
-		
+
 		musicEngine.retrieveAssets();
 	}
 
@@ -368,7 +372,7 @@ public class World implements Serializable, AssetConsumer {
 						((InteractiveActor) a).getSounds().get(playingSound).stop();
 				}
 			}
-			
+
 			customProperties.put(WorldProperties.PREVIOUS_SCENE.toString(), currentScene.getId());
 
 			if (CACHE_ENABLED)
@@ -378,9 +382,9 @@ public class World implements Serializable, AssetConsumer {
 
 			transition.reset();
 		}
-		
+
 		currentScene = scene;
-		
+
 		musicEngine.leaveScene(currentScene.getMusicDesc());
 	}
 
@@ -437,15 +441,15 @@ public class World implements Serializable, AssetConsumer {
 				currentDialog = null;
 		}
 	}
-	
+
 	public void setInventory(String inventory) {
 		Inventory i = inventories.get(inventory);
-		
-		if(i == null) {
+
+		if (i == null) {
 			i = new Inventory();
 			inventories.put(inventory, i);
 		}
-		
+
 		currentInventory = inventory;
 	}
 
@@ -482,8 +486,8 @@ public class World implements Serializable, AssetConsumer {
 
 	@Override
 	public void dispose() {
-		
-		if(disposed)
+
+		if (disposed)
 			return;
 
 		try {
@@ -518,7 +522,7 @@ public class World implements Serializable, AssetConsumer {
 			Sprite3DRenderer.disposeBatchs();
 
 			assetState = null;
-			
+
 			musicEngine.dispose();
 
 		} catch (Exception e) {
@@ -732,11 +736,11 @@ public class World implements Serializable, AssetConsumer {
 
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
 		} else {
-			EngineLogger.error("ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT
-					+ " doesn't exists.");
+			EngineLogger.error(
+					"ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
 			dispose();
-			throw new IOException("ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT
-					+ " doesn't exists.");
+			throw new IOException(
+					"ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
 		}
 
 		EngineLogger.debug("MODEL LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
@@ -835,9 +839,11 @@ public class World implements Serializable, AssetConsumer {
 
 		try {
 			w.write(s);
-			w.close();
+			w.flush();
 		} catch (IOException e) {
 			throw new IOException("ERROR SAVING GAME", e);
+		} finally {
+			w.close();
 		}
 
 		// Save Screenshot
@@ -867,9 +873,11 @@ public class World implements Serializable, AssetConsumer {
 
 		try {
 			w.write(s);
-			w.close();
+			w.flush();
 		} catch (IOException e) {
 			throw new IOException("ERROR SAVING MODEL", e);
+		} finally {
+			w.close();
 		}
 	}
 
@@ -911,8 +919,7 @@ public class World implements Serializable, AssetConsumer {
 		} else {
 			json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
 					Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
-			json.writeValue(Config.VERSION_PROP,
-					Config.getProperty(Config.VERSION_PROP, null));
+			json.writeValue(Config.VERSION_PROP, Config.getProperty(Config.VERSION_PROP, null));
 			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
 			json.writeValue("currentScene", currentScene.getId());
 			json.writeValue("inventories", inventories);
@@ -934,7 +941,7 @@ public class World implements Serializable, AssetConsumer {
 
 			json.writeValue("chapter", currentChapter);
 			json.writeValue("musicEngine", musicEngine);
-			
+
 			ActionCallbackQueue.write(json);
 		}
 	}
@@ -964,14 +971,16 @@ public class World implements Serializable, AssetConsumer {
 			setCurrentScene(initScene);
 		} else {
 			String bladeVersion = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
-			if (bladeVersion != null && !bladeVersion.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
-				EngineLogger.debug("Saved Game Engine Version v" + bladeVersion + " differs from Current Engine Version v"
-						+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
+			if (bladeVersion != null
+					&& !bladeVersion.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
+				EngineLogger
+						.debug("Saved Game Engine Version v" + bladeVersion + " differs from Current Engine Version v"
+								+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
-			
+
 			String version = json.readValue(Config.VERSION_PROP, String.class, jsonData);
-			
-			if(version == null)
+
+			if (version == null)
 				version = "TEST";
 
 			currentChapter = json.readValue("chapter", String.class, jsonData);
@@ -1009,7 +1018,7 @@ public class World implements Serializable, AssetConsumer {
 
 			textManager = json.readValue("textmanager", TextManager.class, jsonData);
 			customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
-			customProperties.put(WorldProperties.SAVED_GAME_VERSION.toString(), version);			
+			customProperties.put(WorldProperties.SAVED_GAME_VERSION.toString(), version);
 
 			String actorId = json.readValue("dialogActor", String.class, jsonData);
 			String dialogId = json.readValue("currentDialog", String.class, jsonData);
@@ -1021,8 +1030,8 @@ public class World implements Serializable, AssetConsumer {
 
 			transition = json.readValue("transition", Transition.class, jsonData);
 			musicEngine = json.readValue("musicEngine", MusicEngine.class, jsonData);
-			
-			if(musicEngine == null)
+
+			if (musicEngine == null)
 				musicEngine = new MusicEngine();
 
 			ActionCallbackQueue.read(json, jsonData);
