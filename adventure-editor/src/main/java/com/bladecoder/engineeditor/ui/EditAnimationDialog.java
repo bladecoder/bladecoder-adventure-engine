@@ -32,6 +32,7 @@ import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
@@ -56,6 +57,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 	InputPanel source;
 	InputPanel atlas;
 	InputPanel id;
+	InputPanel localizable;
 	InputPanel repeat;
 	InputPanel speed;
 	InputPanel count;
@@ -79,6 +81,9 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		atlas = InputPanelFactory.createInputPanel(skin, "Atlas",
 				"Select the atlas for the selected Spine skeleton",
 				getAtlases(), true);
+		localizable = InputPanelFactory.createInputPanel(skin, "Localizable",
+				"True if the image is customizable per language.",Param.Type.BOOLEAN, true, "false"
+				);
 		id = InputPanelFactory.createInputPanel(skin, "ID",
 				"Select the id of the animation", new String[0], true);
 		repeat = InputPanelFactory.createInputPanel(skin, "Animation type",
@@ -100,12 +105,12 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 				"Select the distance in pixels to add to the actor position when the sprite is changed",
 				Param.Type.VECTOR2, false);
 		sound = InputPanelFactory.createInputPanel(skin, "Sound",
-				"Select the sound ID that will be play when displayed");
+				"Select the sound ID that will be played when showing");
 		preload = InputPanelFactory.createInputPanel(skin, "Preload",
 				"Preload the animation when the scene is loaded",
 				Param.Type.BOOLEAN, true, "true");
 		dispose = InputPanelFactory.createInputPanel(skin, "Dispose When Played",
-				"Dispose de animation when the animation is played",
+				"Dispose de animation after playing",
 				Param.Type.BOOLEAN, true, "false");
 
 		((SelectBox<String>) repeat.getField())
@@ -156,11 +161,20 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 		setInfoWidget(spriteWidget);
 		
-		init(p, e, new InputPanel [] { source, atlas, id, repeat, speed, 
+		init(p, e, new InputPanel [] { source, localizable, atlas, id, repeat, speed, 
 				count, in, out, sound, preload, dispose});
 		
 		setVisible(count,false);		
 		setVisible(atlas,false);
+		setVisible(localizable,false);
+		
+		ActorRenderer renderer = parent.getRenderer();
+		if(renderer instanceof ImageRenderer) {
+			setVisible(localizable,true);
+			setVisible(speed,false);
+			setVisible(repeat,false);
+			setVisible(id,false);
+		}
 
 		addSources();
 		if(e !=  null) {
@@ -429,10 +443,21 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		if(create) {
 			parent.getRenderer().addAnimation(e);
 		}
+		
+		ActorRenderer renderer = parent.getRenderer();
+		if(renderer instanceof ImageRenderer &&  Boolean.parseBoolean(localizable.getText())) {
+			String key = source.getText();
+			
+//			if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+//				key = Ctx.project.getI18N().genKey(parent.getId(), e.getId(), "image");
+//
+//			Ctx.project.getI18N().setTranslation(key, desc.getText());
+		}
 
 		// TODO UNDO OP
 //		UndoOp undoOp = new UndoAddElement(doc, e);
 //		Ctx.project.getUndoStack().add(undoOp);
+		
 		
 		Ctx.project.setModified();
 	}
@@ -455,6 +480,12 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		dispose.setText(Boolean.toString(e.disposeWhenPlayed));
 		
 		showHideFieldsDelayCountFields();
+		
+		ActorRenderer renderer = parent.getRenderer();
+		if(renderer instanceof ImageRenderer && e.source.charAt(0) == I18N.PREFIX) {
+			localizable.setText("true");
+			source.setText(Ctx.project.translate(e.source));
+		}
 	}
 
 }
