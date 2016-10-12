@@ -48,7 +48,7 @@ import com.bladecoder.engineeditor.ui.components.InputPanel;
 import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
 
 public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationDesc> {
-	
+
 	public static final String ANIMATION_TYPES[] = { Tween.Type.NO_REPEAT.toString(), Tween.Type.REPEAT.toString(),
 			Tween.Type.YOYO.toString(), Tween.Type.REVERSE.toString() };
 
@@ -66,7 +66,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 	InputPanel sound;
 	InputPanel preload;
 	InputPanel dispose;
-	
+
 	AnimationWidget spriteWidget = new AnimationWidget(this);
 
 	@SuppressWarnings("unchecked")
@@ -76,108 +76,91 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		setInfo(INFO);
 
 		source = InputPanelFactory.createInputPanel(skin, "Source",
-				"Select the source where the sprite or animation is defined",
-				new String[0], true);
-		atlas = InputPanelFactory.createInputPanel(skin, "Atlas",
-				"Select the atlas for the selected Spine skeleton",
+				"Select the source where the sprite or animation is defined", new String[0], true);
+		atlas = InputPanelFactory.createInputPanel(skin, "Atlas", "Select the atlas for the selected Spine skeleton",
 				getAtlases(), true);
 		localizable = InputPanelFactory.createInputPanel(skin, "Localizable",
-				"True if the image is customizable per language.",Param.Type.BOOLEAN, true, "false"
-				);
-		id = InputPanelFactory.createInputPanel(skin, "ID",
-				"Select the id of the animation", new String[0], true);
-		repeat = InputPanelFactory.createInputPanel(skin, "Animation type",
-				"Select the type of the animation", Param.Type.OPTION, true, Tween.Type.NO_REPEAT.toString(), Tween.Type.class.getEnumConstants());
-		
-		speed = InputPanelFactory.createInputPanel(skin, "Speed",
-				"Select the speed of the animation in secods",
+				"True if the image is customizable per language.", Param.Type.BOOLEAN, true, "false");
+		id = InputPanelFactory.createInputPanel(skin, "ID", "Select the id of the animation", new String[0], true);
+		repeat = InputPanelFactory.createInputPanel(skin, "Animation type", "Select the type of the animation",
+				Param.Type.OPTION, true, Tween.Type.NO_REPEAT.toString(), Tween.Type.class.getEnumConstants());
+
+		speed = InputPanelFactory.createInputPanel(skin, "Speed", "Select the speed of the animation in secods",
 				Param.Type.FLOAT, true, "1.0");
 		count = InputPanelFactory.createInputPanel(skin, "Count", "Select the repeat times. -1 for infinity",
 				Param.Type.INTEGER, true, "-1");
-		in = InputPanelFactory.createInputPanel(
-				skin,
-				"In Dist",
+		in = InputPanelFactory.createInputPanel(skin, "In Dist",
 				"Select the distance in pixels to add to the actor position when the sprite is displayed",
 				Param.Type.VECTOR2, false);
-		out = InputPanelFactory.createInputPanel(
-				skin,
-				"Out Dist",
+		out = InputPanelFactory.createInputPanel(skin, "Out Dist",
 				"Select the distance in pixels to add to the actor position when the sprite is changed",
 				Param.Type.VECTOR2, false);
 		sound = InputPanelFactory.createInputPanel(skin, "Sound",
 				"Select the sound ID that will be played when showing");
-		preload = InputPanelFactory.createInputPanel(skin, "Preload",
-				"Preload the animation when the scene is loaded",
+		preload = InputPanelFactory.createInputPanel(skin, "Preload", "Preload the animation when the scene is loaded",
 				Param.Type.BOOLEAN, true, "true");
-		dispose = InputPanelFactory.createInputPanel(skin, "Dispose When Played",
-				"Dispose de animation after playing",
+		dispose = InputPanelFactory.createInputPanel(skin, "Dispose When Played", "Dispose de animation after playing",
 				Param.Type.BOOLEAN, true, "false");
 
-		((SelectBox<String>) repeat.getField())
-				.addListener(new ChangeListener() {
+		((SelectBox<String>) repeat.getField()).addListener(new ChangeListener() {
 
-					@Override
-					public void changed(ChangeEvent event, Actor actor) {
-						showHideFieldsDelayCountFields();
-					}
-				});
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				showHideFieldsDelayCountFields();
+			}
+		});
 
-		((SelectBox<String>) source.getField())
-				.addListener(new ChangeListener() {
-					@Override
-					public void changed(ChangeEvent event, Actor actor) {
-						EditorLogger.debug("EditAnimationDialog.setSource():"
-								+ source.getText());
+		((SelectBox<String>) source.getField()).addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				EditorLogger.debug("EditAnimationDialog.setSource():" + source.getText());
 
-						setSource();
-						fillAnimations();
-					}
-				});
+				setSource();
+				fillAnimations();
+			}
+		});
 
-		((SelectBox<String>) id.getField())
-				.addListener(new ChangeListener() {
-					@Override
-					public void changed(ChangeEvent event, Actor actor) {
-						setAnimation();
-					}
-				});
-		
-		((SelectBox<String>) atlas.getField())
-		.addListener(new ChangeListener() {
+		((SelectBox<String>) id.getField()).addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				setAnimation();
+			}
+		});
+
+		((SelectBox<String>) atlas.getField()).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				setSource();
 				fillAnimations();
 			}
 		});
-		
 
 		((TextField) speed.getField()).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				setAnimation();
 			}
-		});	
+		});
 
 		setInfoWidget(spriteWidget);
-		
-		init(p, e, new InputPanel [] { source, localizable, atlas, id, repeat, speed, 
-				count, in, out, sound, preload, dispose});
-		
-		setVisible(count,false);		
-		setVisible(atlas,false);
-		setVisible(localizable,false);
-		
+
+		init(p, e, new InputPanel[] { source, localizable, atlas, id, repeat, speed, count, in, out, sound, preload,
+				dispose });
+
+		setVisible(count, false);
+		setVisible(atlas, false);
+		setVisible(localizable, false);
+
 		ActorRenderer renderer = parent.getRenderer();
-		if(renderer instanceof ImageRenderer) {
-			setVisible(localizable,true);
-			setVisible(speed,false);
-			setVisible(repeat,false);
-			setVisible(id,false);
+		if (renderer instanceof ImageRenderer) {
+			setVisible(localizable, true);
+			setVisible(speed, false);
+			setVisible(repeat, false);
+			setVisible(id, false);
 		}
 
 		addSources();
-		if(e !=  null) {
+		if (e != null) {
 			source.setText(e.source);
 		}
 
@@ -185,55 +168,54 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			setSource();
 
 			fillAnimations();
-			
-			if(e !=  null) {		
+
+			if (e != null) {
 				id.setText(e.id);
 			}
 		}
 	}
-	
+
 	private void showHideFieldsDelayCountFields() {
 		String type = repeat.getText();
 
 		if (type.equals(Tween.Type.REPEAT.toString()) || type.equals(Tween.Type.YOYO.toString())) {
-			setVisible(count,true);
+			setVisible(count, true);
 		} else {
-			setVisible(count,false);
+			setVisible(count, false);
 		}
 	}
-	
+
 	private void setSource() {
 		AnimationDesc anim = null;
-		
+
 		ActorRenderer renderer = parent.getRenderer();
 		String sourceStr = source.getText();
-		
+
 		if (renderer instanceof SpineRenderer) {
 			anim = new SpineAnimationDesc();
-			
-			if(spineAtlasExists(sourceStr)) {
-				((SpineAnimationDesc)anim).atlas = null;
-				setVisible(atlas,false);
+
+			if (spineAtlasExists(sourceStr)) {
+				((SpineAnimationDesc) anim).atlas = null;
+				setVisible(atlas, false);
 			} else {
-				if(!atlas.isVisible()) {
-					setVisible(atlas,true);
+				if (!atlas.isVisible()) {
+					setVisible(atlas, true);
 				}
-				
-				((SpineAnimationDesc)anim).atlas = atlas.getText();
+
+				((SpineAnimationDesc) anim).atlas = atlas.getText();
 			}
-			
-			
+
 		} else if (renderer instanceof AtlasRenderer) {
 			anim = new AtlasAnimationDesc();
 		} else {
 			anim = new AnimationDesc();
 		}
-		
+
 		anim.source = sourceStr;
 		anim.count = Tween.INFINITY;
 		anim.preload = true;
-		anim.disposeWhenPlayed = false;	
-		
+		anim.disposeWhenPlayed = false;
+
 		if (renderer instanceof SpineRenderer) {
 			spriteWidget.setSource(Project.SPINE_RENDERER_STRING, anim);
 		} else if (renderer instanceof AtlasRenderer) {
@@ -244,9 +226,10 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			spriteWidget.setSource(Project.S3D_RENDERER_STRING, anim);
 		}
 	}
-	
+
 	public boolean spineAtlasExists(String source) {
-		return EngineAssetManager.getInstance().assetExists(Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH + "/" + source + ".atlas");
+		return EngineAssetManager.getInstance()
+				.assetExists(Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH + "/" + source + ".atlas");
 	}
 
 	private void setAnimation() {
@@ -305,8 +288,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		ActorRenderer renderer = parent.getRenderer();
 
 		if (renderer instanceof AtlasRenderer) {
-			path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
-					+ Ctx.project.getResDir();
+			path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/" + Ctx.project.getResDir();
 			ext = EngineAssetManager.ATLAS_EXT;
 		} else if (renderer instanceof Sprite3DRenderer) {
 			path = Ctx.project.getProjectPath() + Project.SPRITE3D_PATH;
@@ -315,9 +297,8 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
 			ext = EngineAssetManager.SPINE_EXT;
 		} else if (renderer instanceof ImageRenderer) {
-			path = Ctx.project.getProjectPath() + Project.IMAGE_PATH + "/"
-					+ Ctx.project.getResDir();
-			ext = "";			
+			path = Ctx.project.getProjectPath() + Project.IMAGE_PATH + "/" + Ctx.project.getResDir();
+			ext = "";
 		}
 
 		File f = new File(path);
@@ -337,18 +318,16 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			Arrays.sort(sources);
 
 			for (int i = 0; i < sources.length; i++)
-				sources[i] = sources[i].substring(0,
-						sources[i].length() - ext.length());
+				sources[i] = sources[i].substring(0, sources[i].length() - ext.length());
 		} else {
 			sources = new String[0];
 		}
 
 		return sources;
 	}
-	
+
 	private String[] getAtlases() {
-		String path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
-				+ Ctx.project.getResDir();
+		String path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/" + Ctx.project.getResDir();
 
 		File f = new File(path);
 
@@ -367,14 +346,13 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			Arrays.sort(atlases);
 
 			for (int i = 0; i < atlases.length; i++)
-				atlases[i] = atlases[i].substring(0,
-						atlases[i].length() - EngineAssetManager.ATLAS_EXT.length());
+				atlases[i] = atlases[i].substring(0, atlases[i].length() - EngineAssetManager.ATLAS_EXT.length());
 		} else {
 			atlases = new String[0];
 		}
 
 		return atlases;
-	}	
+	}
 
 	/**
 	 * Override to append all animations if selected.
@@ -388,87 +366,81 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			for (int i = 1; i < cb.getItems().size; i++) {
 				cb.setSelectedIndex(i);
 				inputsToModel(true);
-//				doc.setId(e, cb.getItems().get(i));
-				
+				// doc.setId(e, cb.getItems().get(i));
+
 				if (listener != null)
 					listener.changed(new ChangeEvent(), this);
 			}
 
-			
 		} else {
 			super.ok();
 		}
 	}
-	
+
 	@Override
 	protected void inputsToModel(boolean create) {
-		
+
 		String sourceStr = source.getText();
-		
-		if(create) {		
-			ActorRenderer renderer = parent.getRenderer();		
-			
+
+		if (create) {
+			ActorRenderer renderer = parent.getRenderer();
+
 			if (renderer instanceof SpineRenderer) {
 				e = new SpineAnimationDesc();
-				
-				if(spineAtlasExists(sourceStr)) {
-					((SpineAnimationDesc)e).atlas = null;
-					setVisible(atlas,false);
+
+				if (spineAtlasExists(sourceStr)) {
+					((SpineAnimationDesc) e).atlas = null;
+					setVisible(atlas, false);
 				} else {
-					if(!atlas.isVisible()) {
-						setVisible(atlas,true);
+					if (!atlas.isVisible()) {
+						setVisible(atlas, true);
 					}
-					
-					((SpineAnimationDesc)e).atlas = atlas.getText();
+
+					((SpineAnimationDesc) e).atlas = atlas.getText();
 				}
-								
+
 			} else if (renderer instanceof AtlasRenderer) {
 				e = new AtlasAnimationDesc();
 			} else {
 				e = new AnimationDesc();
 			}
 		}
-		
+
 		e.id = id.getText();
 		e.sound = sound.getText();
 		e.source = sourceStr;
 		e.count = Integer.parseInt(count.getText());
 		e.preload = Boolean.parseBoolean(preload.getText());
-		e.disposeWhenPlayed =  Boolean.parseBoolean(dispose.getText());
+		e.disposeWhenPlayed = Boolean.parseBoolean(dispose.getText());
 		e.animationType = Type.valueOf(repeat.getText());
 		e.inD = Param.parseVector2(in.getText());
 		e.outD = Param.parseVector2(out.getText());
 		e.duration = Float.parseFloat(speed.getText());
-		
-		if(create) {
+
+		if (create) {
 			parent.getRenderer().addAnimation(e);
 		}
-		
+
 		ActorRenderer renderer = parent.getRenderer();
-		if(renderer instanceof ImageRenderer &&  Boolean.parseBoolean(localizable.getText())) {
-			String key = source.getText();
-			
-//			if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
-//				key = Ctx.project.getI18N().genKey(parent.getId(), e.getId(), "image");
-//
-//			Ctx.project.getI18N().setTranslation(key, desc.getText());
+		if (renderer instanceof ImageRenderer && Boolean.parseBoolean(localizable.getText()) && e.source != null
+				&& e.source.length() > 0) {
+			e.source = I18N.PREFIX + e.source;
 		}
 
 		// TODO UNDO OP
-//		UndoOp undoOp = new UndoAddElement(doc, e);
-//		Ctx.project.getUndoStack().add(undoOp);
-		
-		
+		// UndoOp undoOp = new UndoAddElement(doc, e);
+		// Ctx.project.getUndoStack().add(undoOp);
+
 		Ctx.project.setModified();
 	}
 
 	@Override
-	protected void modelToInputs() {			
+	protected void modelToInputs() {
 		source.setText(e.source);
-		
-		if(atlas.isVisible() && e instanceof SpineAnimationDesc)
-			atlas.setText(((SpineAnimationDesc)e).atlas);
-		
+
+		if (atlas.isVisible() && e instanceof SpineAnimationDesc)
+			atlas.setText(((SpineAnimationDesc) e).atlas);
+
 		id.setText(e.id);
 		repeat.setText(e.animationType.toString());
 		speed.setText(Float.toString(e.duration));
@@ -478,13 +450,14 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		sound.setText(e.sound);
 		preload.setText(Boolean.toString(e.preload));
 		dispose.setText(Boolean.toString(e.disposeWhenPlayed));
-		
+
 		showHideFieldsDelayCountFields();
-		
+
 		ActorRenderer renderer = parent.getRenderer();
-		if(renderer instanceof ImageRenderer && e.source.charAt(0) == I18N.PREFIX) {
+		if (renderer instanceof ImageRenderer && e.source != null && e.source.length() > 1
+				&& e.source.charAt(0) == I18N.PREFIX) {
 			localizable.setText("true");
-			source.setText(Ctx.project.translate(e.source));
+			source.setText(e.source.substring(1));
 		}
 	}
 

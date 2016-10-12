@@ -331,8 +331,10 @@ public class ImageRenderer implements ActorRenderer {
 
 		if (entry.refCounter == 0) {
 			// I18N for images
-			if (source.charAt(0) == I18N.PREFIX)
-				source = I18N.getString(source.substring(1));
+			if (source.charAt(0) == I18N.PREFIX) {
+				source = getI18NSource(source.substring(1));
+			}
+			
 			EngineAssetManager.getInstance().loadTexture(EngineAssetManager.IMAGE_DIR + source);
 		}
 
@@ -350,11 +352,27 @@ public class ImageRenderer implements ActorRenderer {
 
 		if (entry.tex == null) {
 			// I18N for images
-			if (source.charAt(0) == I18N.PREFIX)
-				source = I18N.getString(source.substring(1));
+			if (source.charAt(0) == I18N.PREFIX) {
+				source = getI18NSource(source.substring(1));
+			}
 
 			entry.tex = EngineAssetManager.getInstance().getTexture(EngineAssetManager.IMAGE_DIR + source);
 		}
+	}
+	
+	private String getI18NSource(String source) {
+		String lang = I18N.getCurrentLocale().getLanguage();
+		
+		int pointIdx = source.lastIndexOf('.');
+		String ext = source.substring(pointIdx);
+		String name = source.substring(0, pointIdx);
+		
+		String localName = name + "_" + lang + ext;
+		
+		if(EngineAssetManager.getInstance().assetExists(EngineAssetManager.IMAGE_DIR + localName))
+			return localName;
+		
+		return source;
 	}
 
 	private void disposeSource(String source) {
