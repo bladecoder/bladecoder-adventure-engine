@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.0]
+
+- Images can be localized now.
+- Added xxxhdpi icon folder to Android.
+- Better scroll handling in text areas.
+- Added "show console" checkbox in the view menu.
+
 ## [0.9.19]
 
 - EDITOR: Use libgdx FileChooser and get rid of JavaFX to avoid freezing when loading projects.

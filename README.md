@@ -29,7 +29,7 @@ The Engine has the following features:
 
 ### The Goddess Robbery
 
-The **Bladecoder Adventure Engine** is currently under continuous development and it's almost ready for production. **The Goddess Robbery** is a test game created to show the features of the Engine.
+The **Bladecoder Adventure Engine** is currently under continuous development and it's ready for production. **The Goddess Robbery** is a test game created to show the features of the Engine.
 
 The source of **The Goddess Robbery** can be downloaded  [here](https://github.com/bladecoder/bladecoder-adventure-tests/tree/master/venus) and it's useful to learn how to use the **Adventure Editor**.
 
