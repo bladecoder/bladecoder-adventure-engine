@@ -210,6 +210,7 @@ public class SceneList extends ModelList<World, Scene> {
 
 		String id = list.getItems().get(pos).getId();
 		World.getInstance().setInitScene(id);
+		Ctx.project.setModified();
 	}
 
 	@Override
