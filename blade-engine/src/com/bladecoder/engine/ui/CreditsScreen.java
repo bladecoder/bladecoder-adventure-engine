@@ -129,6 +129,8 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 					break;
 				case 'm':
 					processCreditMusic(s);
+					credits.remove(i);
+					i--;
 					break;
 				default:
 					y = processCreditDefault(batch, width, height, y, i, s);
@@ -186,10 +188,11 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 	private void processCreditMusic(String s) {
 		if (music != null)
 			music.dispose();
+		
+		String sound = EngineAssetManager.getInstance().checkIOSSoundName("music/" + s);
 
-		music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset("music/" + s));
+		music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset(sound));
 		music.play();
-		stringHead++;
 	}
 
 	private float processCreditDefault(SpriteBatch batch, int width, int height, float y, int i, String s) {

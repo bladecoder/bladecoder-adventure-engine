@@ -281,7 +281,7 @@ public class EngineAssetManager extends AssetManager {
 		instance = null;
 	}
 
-	private String checkIOSSoundName(String filename) {
+	public String checkIOSSoundName(String filename) {
 		
 		if (Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(OGG_EXT)) {
 			String aac = filename.substring(0, filename.length() - OGG_EXT.length()) + AAC_EXT;
