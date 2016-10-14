@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.1]
+
+- Music not working for iOS in CreditScreen
+- EDITOR: FIX bug when setting the init scene. The document wasn't marking as modified.
+
 ## [1.0.0]
 
 - Images can be localized now.
