@@ -139,6 +139,11 @@ public class DialogUI extends ScrollPane {
 			ob.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
 					DialogOption o = (DialogOption) event.getListenerActor().getUserObject();
+					
+					// Check for null due to a reported error in Google Play.
+					// However the current dialog never should be null here
+					if(World.getInstance().getCurrentDialog() == null)
+						return;
 
 					ArrayList<DialogOption> options = World.getInstance().getCurrentDialog().getVisibleOptions();
 
