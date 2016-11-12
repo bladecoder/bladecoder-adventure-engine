@@ -147,6 +147,12 @@ public class CharacterActor extends SpriteActor {
 
 		Vector2 p0 = new Vector2(bbox.getX(), bbox.getY());
 
+		// stop previous movement
+		if (posTween != null) {
+			posTween = null;
+			stand();
+		}
+
 		ArrayList<Vector2> walkingPath = null;
 
 		//
@@ -176,16 +182,17 @@ public class CharacterActor extends SpriteActor {
 
 		((WalkTween) posTween).start(this, walkingPath, walkingSpeed, cb);
 	}
-	
+
 	/**
-	 * If the character is walking, the character position is set to the final position and the walk is finish.
+	 * If the character is walking, the character position is set to the final
+	 * position and the walk is finish.
 	 * 
 	 * This is used to fast walk between scenes. Used when double clicking.
 	 */
 	public void fastWalk() {
-		if(posTween != null && posTween instanceof WalkTween) {
-			WalkTween wt = (WalkTween)posTween;
-			
+		if (posTween != null && posTween instanceof WalkTween) {
+			WalkTween wt = (WalkTween) posTween;
+
 			wt.completeNow(this);
 			wt = null;
 		}

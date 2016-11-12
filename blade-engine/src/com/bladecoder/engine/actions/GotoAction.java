@@ -79,10 +79,6 @@ public class GotoAction implements Action {
 			x = pos.x * scale;
 			y = pos.y * scale;
 		}
-		
-		// returns if the actor is already in the target position.
-		if(actor.getX() == x && actor.getY() == y)
-			return false;
 			
 		actor.goTo(new Vector2(x, y), wait ? cb : null);
 
