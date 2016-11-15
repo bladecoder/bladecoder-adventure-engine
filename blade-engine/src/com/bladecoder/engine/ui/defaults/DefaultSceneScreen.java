@@ -50,6 +50,7 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
@@ -146,7 +147,9 @@ public class DefaultSceneScreen implements SceneScreen {
 			else {
 				getInputUnProject(unprojectTmp);
 
-				if (w.inCutMode() && !recorder.isRecording()) {
+				if ((w.inCutMode() && !recorder.isRecording()) || 
+						(!w.inCutMode() && !TextManager.AUTO_HIDE_TEXTS && textManagerUI.isVisible())
+					) {
 					w.getTextManager().next();
 				} else if (state == UIStates.INVENTORY_MODE) {
 					inventoryUI.hide();

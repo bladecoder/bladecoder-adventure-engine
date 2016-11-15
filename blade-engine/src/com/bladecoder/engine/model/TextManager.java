@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.util.Config;
 
 /**
  * TextManager mantains a fifo for the character subtitles.
@@ -42,6 +43,8 @@ public class TextManager implements Serializable {
 	public static final float POS_SUBTITLE = -2f;
 	public static final float RECT_MARGIN = 18f;
 	public static final float RECT_BORDER = 2f;
+	
+	public static final boolean AUTO_HIDE_TEXTS = Config.getProperty(Config.AUTO_HIDE_TEXTS, true);
 
 	private float inScreenTime;
 	private Text currentText = null;
@@ -79,7 +82,7 @@ public class TextManager implements Serializable {
 			}
 
 			Text sub;
-
+			
 			if (i != text.length - 1) {
 				sub = new Text(finalStr, x, y, duration, type, color, font, actorId, null);
 			} else {
@@ -116,7 +119,7 @@ public class TextManager implements Serializable {
 
 		inScreenTime += delta;
 
-		if (inScreenTime > currentText.time) {
+		if (inScreenTime > currentText.time && AUTO_HIDE_TEXTS) {
 			next();
 		}
 	}
