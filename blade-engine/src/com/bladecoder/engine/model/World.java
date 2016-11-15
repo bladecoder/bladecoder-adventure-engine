@@ -20,9 +20,11 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.minimalcode.beans.ObjectWrapper;
 import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.files.FileHandle;
@@ -78,13 +80,13 @@ public class World implements Serializable, AssetConsumer {
 	private int height;
 
 	private String initScene;
-	private HashMap<String, Scene> scenes;
+	private Map<String, Scene> scenes;
 	private final VerbManager verbs = new VerbManager();
 
 	private Scene currentScene;
 	private Dialog currentDialog;
 
-	private HashMap<String, Inventory> inventories;
+	private Map<String, Inventory> inventories;
 	private String currentInventory;
 
 	private TextManager textManager;
@@ -131,8 +133,11 @@ public class World implements Serializable, AssetConsumer {
 	transient private Scene cachedScene;
 
 	private MusicEngine musicEngine;
-	
+
 	private final InkManager inkManager = new InkManager();
+
+	// New ObjectWrapper
+	private final ObjectWrapper wrapper = new ObjectWrapper(this);
 
 	public static World getInstance() {
 		return instance;
@@ -171,7 +176,7 @@ public class World implements Serializable, AssetConsumer {
 
 		initGame = true;
 	}
-	
+
 	public InkManager getInkManager() {
 		return inkManager;
 	}
@@ -419,7 +424,7 @@ public class World implements Serializable, AssetConsumer {
 		return scenes.get(id);
 	}
 
-	public HashMap<String, Scene> getScenes() {
+	public Map<String, Scene> getScenes() {
 		return scenes;
 	}
 
@@ -753,6 +758,14 @@ public class World implements Serializable, AssetConsumer {
 		EngineLogger.debug("MODEL LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 	}
 
+	public void setModelProp(String prop, String value) {
+		wrapper.setValue(prop, value);
+	}
+
+	public String getModelProp(String prop) {
+		return (String) wrapper.getValue(prop);
+	}
+
 	public void loadChapter(String chapter, String scene) throws Exception {
 		this.testScene = scene;
 
@@ -948,7 +961,7 @@ public class World implements Serializable, AssetConsumer {
 
 			json.writeValue("chapter", currentChapter);
 			json.writeValue("musicEngine", musicEngine);
-			
+
 			json.writeValue("inkManager", inkManager);
 
 			ActionCallbackQueue.write(json);
@@ -1005,7 +1018,7 @@ public class World implements Serializable, AssetConsumer {
 			SerializationHelper.getInstance().setMode(Mode.STATE);
 
 			inkManager.read(json, jsonData.get("inkManager"));
-			
+
 			currentScene = scenes.get(json.readValue("currentScene", String.class, jsonData));
 
 			for (Scene s : scenes.values()) {

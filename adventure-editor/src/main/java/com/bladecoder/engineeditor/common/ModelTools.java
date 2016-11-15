@@ -22,6 +22,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.LookAtAction;
@@ -43,7 +44,7 @@ import com.bladecoder.engineeditor.model.Project;
 
 public class ModelTools {
 	public static final void extractDialogs() {
-		HashMap<String, Scene> scenes = World.getInstance().getScenes();
+		Map<String, Scene> scenes = World.getInstance().getScenes();
 
 		BufferedWriter writer = null;
 		try {
@@ -56,7 +57,7 @@ public class ModelTools {
 					+ "\n\n");
 
 			for (Scene scn : scenes.values()) {
-				HashMap<String, BaseActor> actors = scn.getActors();
+				Map<String, BaseActor> actors = scn.getActors();
 
 				writer.write("\n## SCENE: " + scn.getId() + "\n\n");
 
@@ -155,10 +156,10 @@ public class ModelTools {
 	}
 
 	public static final void addCutMode() {
-		HashMap<String, Scene> scenes = World.getInstance().getScenes();
+		Map<String, Scene> scenes = World.getInstance().getScenes();
 
 		for (Scene scn : scenes.values()) {
-			HashMap<String, BaseActor> actors = scn.getActors();
+			Map<String, BaseActor> actors = scn.getActors();
 
 			for (BaseActor a : actors.values()) {
 				if (a instanceof InteractiveActor) {
@@ -203,10 +204,10 @@ public class ModelTools {
 	}
 
 	public static final void fixSaySubtitleActor() {
-		HashMap<String, Scene> scenes = World.getInstance().getScenes();
+		Map<String, Scene> scenes = World.getInstance().getScenes();
 
 		for (Scene scn : scenes.values()) {
-			HashMap<String, BaseActor> actors = scn.getActors();
+			Map<String, BaseActor> actors = scn.getActors();
 
 			HashMap<String, Verb> verbs = scn.getVerbManager().getVerbs();
 
@@ -264,10 +265,10 @@ public class ModelTools {
 
 	public static final void checkI18NMissingKeys()
 			throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-		HashMap<String, Scene> scenes = World.getInstance().getScenes();
+		Map<String, Scene> scenes = World.getInstance().getScenes();
 
 		for (Scene scn : scenes.values()) {
-			HashMap<String, BaseActor> actors = scn.getActors();
+			Map<String, BaseActor> actors = scn.getActors();
 
 			// SCENE VERBS
 			HashMap<String, Verb> verbs = scn.getVerbManager().getVerbs();
@@ -368,11 +369,11 @@ public class ModelTools {
 	}
 
 	public static void printUnusedSounds() {
-		HashMap<String, Scene> scenes = World.getInstance().getScenes();
+		Map<String, Scene> scenes = World.getInstance().getScenes();
 		ArrayList<String> unusedSounds = new ArrayList<String>(Arrays.asList(getSoundList()));
 
 		for (Scene scn : scenes.values()) {
-			HashMap<String, BaseActor> actors = scn.getActors();
+			Map<String, BaseActor> actors = scn.getActors();
 
 			for (BaseActor a : actors.values()) {
 				if (a instanceof InteractiveActor) {

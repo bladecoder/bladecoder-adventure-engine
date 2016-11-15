@@ -17,7 +17,7 @@ package com.bladecoder.engineeditor.ui.components;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -119,7 +119,7 @@ public class SceneActorInputPanel extends InputPanel {
 	}
 	
 	private String[] getActorValues(Scene scn) {
-		HashMap<String, BaseActor> actors = scn.getActors();
+		Map<String, BaseActor> actors = scn.getActors();
 		
 		ArrayList<BaseActor> filteredActors = new ArrayList<BaseActor>();
 		

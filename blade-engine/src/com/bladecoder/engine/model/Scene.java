@@ -18,6 +18,7 @@ package com.bladecoder.engine.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -264,7 +265,7 @@ public class Scene implements Serializable, AssetConsumer {
 		return a;
 	}
 
-	public HashMap<String, BaseActor> getActors() {
+	public Map<String, BaseActor> getActors() {
 		return actors;
 	}
 

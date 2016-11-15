@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.ActorAnimationRef;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.ink.runtime.Story.ExternalFunction;
 
@@ -83,6 +84,26 @@ public class ExternalFunctions {
 
 
 				return null;
+			}
+		});
+		
+		inkManager.getStory().bindExternalFunction("setModelProp", new ExternalFunction() {
+
+			@Override
+			public Object call(Object[] args) throws Exception {
+				
+				World.getInstance().setModelProp(args[0].toString(), args[1].toString());
+
+				return null;
+			}
+		});
+		
+		inkManager.getStory().bindExternalFunction("getModelProp", new ExternalFunction() {
+
+			@Override
+			public Object call(Object[] args) throws Exception {
+				
+				return World.getInstance().getModelProp(args[0].toString());
 			}
 		});
 	}

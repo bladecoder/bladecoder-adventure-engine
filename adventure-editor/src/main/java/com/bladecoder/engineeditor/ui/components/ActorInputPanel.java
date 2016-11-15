@@ -17,7 +17,7 @@ package com.bladecoder.engineeditor.ui.components;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.actions.Param;
@@ -41,7 +41,7 @@ public class ActorInputPanel extends EditableOptionsInputPanel<String> {
 	}
 
 	private static String[] getValues(boolean mandatory, Param.Type type) {
-		HashMap<String, BaseActor> actors = Ctx.project.getSelectedScene().getActors();
+		Map<String, BaseActor> actors = Ctx.project.getSelectedScene().getActors();
 		
 		ArrayList<BaseActor> filteredActors = new ArrayList<BaseActor>();
 		
