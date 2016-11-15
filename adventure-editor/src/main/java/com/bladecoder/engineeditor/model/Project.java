@@ -380,7 +380,6 @@ public class Project extends PropertyChange {
 				number += Math.pow(10, (split.length - i) * 2) * Integer.parseInt(split[i]);
 			}
 		} catch (NumberFormatException e) {
-			return 0;
 		}
 
 		return number;

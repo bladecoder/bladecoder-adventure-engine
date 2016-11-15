@@ -50,7 +50,9 @@ public class EngineLogger {
 	}
 
 	public static void error(String message, Exception e) {
-		if(message != null && e != null) {
+		error(message);
+		
+		if(e != null) {
 			Gdx.app.error(TAG, message, e);
 			lastError = message;
 			lastException = e;

@@ -44,6 +44,7 @@ dependencies {
   compile "eu.infomas:annotation-detector:3.0.5"
   compile "com.strongjoshua:libgdx-inGameConsole:0.5.2"
   compile "com.kotcrab.vis:vis-ui:1.2.2"
+  compile "com.bladecoder.ink:blade-ink:$bladeInkVersion"
   
   compile project(":blade-engine")
   compile project(":blade-engine-spine-plugin")
@@ -65,6 +66,7 @@ task setVersion << {
 		props."androidGradlePluginVersion" = androidGradlePluginVersion
 		props."gwtVersion" = gwtVersion
 		props."gwtGradlePluginVersion" = gwtGradlePluginVersion
+		props."bladeInkVersion" = bladeInkVersion
 		
 		def writer = new FileWriter(propFile)
    		try {

@@ -44,6 +44,7 @@ import com.bladecoder.engine.anim.Timers;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.ink.InkManager;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
@@ -130,6 +131,8 @@ public class World implements Serializable, AssetConsumer {
 	transient private Scene cachedScene;
 
 	private MusicEngine musicEngine;
+	
+	private final InkManager inkManager = new InkManager();
 
 	public static World getInstance() {
 		return instance;
@@ -167,6 +170,10 @@ public class World implements Serializable, AssetConsumer {
 		disposed = false;
 
 		initGame = true;
+	}
+	
+	public InkManager getInkManager() {
+		return inkManager;
 	}
 
 	/**
@@ -941,6 +948,8 @@ public class World implements Serializable, AssetConsumer {
 
 			json.writeValue("chapter", currentChapter);
 			json.writeValue("musicEngine", musicEngine);
+			
+			json.writeValue("inkManager", inkManager);
 
 			ActionCallbackQueue.write(json);
 		}
@@ -995,6 +1004,8 @@ public class World implements Serializable, AssetConsumer {
 			// restore the state after loading the model
 			SerializationHelper.getInstance().setMode(Mode.STATE);
 
+			inkManager.read(json, jsonData.get("inkManager"));
+			
 			currentScene = scenes.get(json.readValue("currentScene", String.class, jsonData));
 
 			for (Scene s : scenes.values()) {

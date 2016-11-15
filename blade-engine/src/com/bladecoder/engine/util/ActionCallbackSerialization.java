@@ -17,6 +17,7 @@ package com.bladecoder.engine.util;
 
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.ink.InkManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
@@ -42,7 +43,10 @@ import com.bladecoder.engine.model.World;
  * @author rgarcia
  */
 public class ActionCallbackSerialization {
-	public static final String SEPARATION_SYMBOL = "#";
+	
+	private static final String SEPARATION_SYMBOL = "#";
+	private static final String INK_MANAGER_TAG = "INK_MANAGER";
+	private static final String DEFAULT_VERB_TAG = "DEFAULT_VERB";
 
 	private static String find(ActionCallback cb, Verb v) {
 		String id = v.getHashKey();
@@ -105,6 +109,29 @@ public class ActionCallbackSerialization {
 
 		return null;
 	}
+	
+	private static String find(ActionCallback cb, InkManager im) {
+		if (im == null)
+			return null;
+
+		if(cb instanceof InkManager)
+			return INK_MANAGER_TAG;
+
+		int pos = 0;
+
+		for (Action a : im.getActions()) {
+			if (cb == a) {
+				StringBuilder stringBuilder = new StringBuilder(INK_MANAGER_TAG);
+				stringBuilder.append(SEPARATION_SYMBOL).append(pos);
+
+				return stringBuilder.toString();
+			}
+
+			pos++;
+		}
+
+		return null;
+	}
 
 	/**
 	 * Generates a String for serialization that allows locate the ActionCallback
@@ -117,6 +144,12 @@ public class ActionCallbackSerialization {
 
 		if (cb == null)
 			return null;
+			
+		// search in inkManager actions
+		id = find(cb, World.getInstance().getInkManager());
+		
+		if (id != null)
+			return id;
 
 		// search in scene verbs
 		Scene s = World.getInstance().getCurrentScene();
@@ -144,7 +177,7 @@ public class ActionCallbackSerialization {
 		for (Verb v : World.getInstance().getVerbManager().getVerbs().values()) {
 			id = find(cb, v);
 			if (id != null) {
-				StringBuilder stringBuilder = new StringBuilder("DEFAULT_VERB");
+				StringBuilder stringBuilder = new StringBuilder(DEFAULT_VERB_TAG);
 				stringBuilder.append(SEPARATION_SYMBOL).append(id);
 
 				return stringBuilder.toString();
@@ -167,6 +200,17 @@ public class ActionCallbackSerialization {
 		Scene s = World.getInstance().getCurrentScene();
 
 		String[] split = id.split(SEPARATION_SYMBOL);
+		
+		if(id.startsWith(INK_MANAGER_TAG)) {
+			if(split.length == 1)
+				return World.getInstance().getInkManager();
+			
+			int actionPos = Integer.parseInt(split[1]);
+			Action action = World.getInstance().getInkManager().getActions().get(actionPos);
+
+			if (action instanceof ActionCallback)
+				return (ActionCallback) action;
+		}
 
 		if (split.length < 2)
 			return null;
@@ -180,7 +224,7 @@ public class ActionCallbackSerialization {
 
 		Verb v = null;
 
-		if (actorId.equals("DEFAULT_VERB")) {
+		if (actorId.equals(DEFAULT_VERB_TAG)) {
 			v = World.getInstance().getVerbManager().getVerb(verbId, null, null);
 		} else {
 

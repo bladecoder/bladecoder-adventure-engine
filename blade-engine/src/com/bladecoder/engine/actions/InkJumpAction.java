@@ -15,41 +15,28 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.anim.Tween;
-import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
-@ActionDescription("Sets the animation for an actor")
-public class AnimationAction implements Action {
-
+@ActionDescription("Jump to a knot or stich.")
+public class InkJumpAction implements Action {
+	@ActionPropertyDescription("The knot/stich path to jump. Ej: 'myKnotName' or 'myKnotName.theStitchWithin'")
 	@ActionProperty(required = true)
-	@ActionPropertyDescription("The Animation to set")
-	private ActorAnimationRef animation;
-
-	@ActionProperty(required = true, defaultValue = "-1")
-	@ActionPropertyDescription("The times to repeat. -1 to infinity repeat")
-	private int count = -1;
-
+	private String path;
+	
 	@ActionProperty(required = true)
-	@ActionPropertyDescription("Waits to finish the animation.")
+	@ActionPropertyDescription("Waits for the action to finish.")
 	private boolean wait = true;
-
-	@ActionProperty(required = true, defaultValue = "SPRITE_DEFINED")
-	@ActionPropertyDescription("The repeat mode")
-	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
 
 	@Override
 	public boolean run(VerbRunner cb) {
-//		EngineLogger.debug(MessageFormat.format("ANIMATION_ACTION: {0}.{1}", animation.getActorId(), animation.getAnimationId()));
-		
-		String actorId = animation.getActorId();
-		
-		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
-
-		a.startAnimation(animation.getAnimationId(), repeat, count, wait?cb:null);
+		try {
+			World.getInstance().getInkManager().run(path, wait?cb:null);
+		} catch (Exception e) {
+			EngineLogger.error("Cannot jump to: " + path + " " + e.getMessage());
+		}
 
 		return wait;
 	}
-
 }
