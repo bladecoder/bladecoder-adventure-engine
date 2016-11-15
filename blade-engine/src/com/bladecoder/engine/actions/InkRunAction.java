@@ -19,8 +19,8 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
-@ActionDescription("Jump to a knot or stich.")
-public class InkJumpAction implements Action {
+@ActionDescription("Jump a Ink knot or stich.")
+public class InkRunAction implements Action {
 	@ActionPropertyDescription("The knot/stich path to jump. Ej: 'myKnotName' or 'myKnotName.theStitchWithin'")
 	@ActionProperty(required = true)
 	private String path;
