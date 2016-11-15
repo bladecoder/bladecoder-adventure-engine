@@ -54,6 +54,7 @@ public class ActorPanel extends HeaderPanel {
 		soundList = new SoundList(skin);
 		
 		setContent(tabPanel);
+		tabPanel.addTab("Verbs", verbList);
 
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ACTOR_SELECTED,
 				new PropertyChangeListener() {

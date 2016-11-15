@@ -28,6 +28,7 @@ public class Versions {
 	private static final String GWT_GRADLE_VERSION_PROP = "gwtGradlePluginVersion";
 	private static final String ANDROID_GRADLE_VERSION_PROP = "androidGradlePluginVersion";
 	private static final String ROBOVM_GRADLE_VERSION_PROP = "roboVMGradlePluginVersion";
+	private static final String BLADE_INK_VERSION_PROP = "bladeInkVersion";
 	
 	public static final String PROPERTIES_FILENAME = "/versions.properties";
 
@@ -91,4 +92,9 @@ public class Versions {
 	public static String getROBOVMGradlePluginVersion() {
 		return getProperty(ROBOVM_GRADLE_VERSION_PROP,null);
 	}
+	
+	public static String getBladeInkVersion() {
+		return getProperty(BLADE_INK_VERSION_PROP,null);
+	}
+
 }

@@ -13,33 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.bladecoder.engineeditor.ui.components;
+package com.bladecoder.engine.actions;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
-public class SceneInputPanel extends StringOptionsInputPanel {
-	SceneInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
-		super(skin, title, desc, mandatory, defaultValue, getValues(mandatory));
-	}
+@ActionDescription("Load an Ink story.")
+public class InkNewStoryAction implements Action {
+	@ActionPropertyDescription("The story to load")
+	@ActionProperty(required = true)
+	private String storyName;
 
-	private static String[] getValues(boolean mandatory) {
-		Map<String, Scene> scenes = World.getInstance().getScenes();
-		
-		String[] result = new String[scenes.size()];
-		
-		Scene[] v = scenes.values().toArray(new Scene[scenes.size()]);
-		
-		for(int i = 0; i < scenes.size(); i++) {
-			result[i] = v[i].getId();
+	@Override
+	public boolean run(VerbRunner cb) {
+		try {
+			World.getInstance().getInkManager().newStory(storyName);
+		} catch (Exception e) {
+			EngineLogger.error("Cannot load Ink Story: " + storyName + " " + e.getMessage());
 		}
-		
-		Arrays.sort(result);
-		
-		return result;
+
+		return false;
 	}
 }

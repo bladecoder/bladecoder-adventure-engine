@@ -16,6 +16,7 @@
 package com.bladecoder.engine.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -34,6 +35,7 @@ import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.ink.runtime.Choice;
 
 public class DialogUI extends ScrollPane {
 	public static final String DIALOG_END_COMMAND = "dialog_end";
@@ -46,6 +48,8 @@ public class DialogUI extends ScrollPane {
 
 	private Button up;
 	private Button down;
+
+	private final List<String> visibleOptions = new ArrayList<String>();
 
 	public DialogUI(UI ui) {
 		super(new Table(ui.getSkin()), ui.getSkin());
@@ -109,13 +113,13 @@ public class DialogUI extends ScrollPane {
 	}
 
 	public void show() {
-		ArrayList<DialogOption> options = World.getInstance().getCurrentDialog().getVisibleOptions();
+		getVisibleOptions();
 
-		if (options.size() == 0)
+		if (visibleOptions.size() == 0)
 			return;
 
-		else if (options.size() == 1) { // If only has one option,
-										// autoselect it
+		else if (visibleOptions.size() == 1) { // If only has one option,
+			// autoselect it
 			select(0);
 			return;
 		}
@@ -123,14 +127,14 @@ public class DialogUI extends ScrollPane {
 		panel.clear();
 		setVisible(true);
 
-		for (DialogOption o : options) {
-			String str = o.getText();
+		for (int i = 0; i < visibleOptions.size(); i++) {
+			String str = visibleOptions.get(i);
 
 			if (str.charAt(0) == I18N.PREFIX)
 				str = I18N.getString(str.substring(1));
 
 			TextButton ob = new TextButton(str, style.textButtonStyle);
-			ob.setUserObject(o);
+			ob.setUserObject(i);
 			panel.row();
 			panel.add(ob);
 			ob.getLabel().setWrap(true);
@@ -138,21 +142,9 @@ public class DialogUI extends ScrollPane {
 
 			ob.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
-					DialogOption o = (DialogOption) event.getListenerActor().getUserObject();
-					
-					// Check for null due to a reported error in Google Play.
-					// However the current dialog never should be null here
-					if(World.getInstance().getCurrentDialog() == null)
-						return;
+					int i = (Integer) event.getListenerActor().getUserObject();
 
-					ArrayList<DialogOption> options = World.getInstance().getCurrentDialog().getVisibleOptions();
-
-					for (int i = 0; i < options.size(); i++) {
-						if (options.get(i) == o) {
-							select(i);
-							break;
-						}
-					}
+					select(i);
 				}
 			});
 		}
@@ -187,9 +179,30 @@ public class DialogUI extends ScrollPane {
 			recorder.add(i);
 		}
 
-		World.getInstance().selectVisibleDialogOption(i);
+		if (World.getInstance().getCurrentDialog() != null)
+			World.getInstance().selectVisibleDialogOption(i);
+		else
+			World.getInstance().getInkManager().selectChoice(i);
 
 		hide();
+	}
+
+	private void getVisibleOptions() {
+		visibleOptions.clear();
+
+		if (World.getInstance().getCurrentDialog() != null) {
+			ArrayList<DialogOption> options = World.getInstance().getCurrentDialog().getVisibleOptions();
+
+			for (DialogOption o : options) {
+				visibleOptions.add(o.getText());
+			}
+		} else {
+			List<Choice> options = World.getInstance().getInkManager().getChoices();
+
+			for (Choice o : options) {
+				visibleOptions.add(o.getText());
+			}
+		}
 	}
 
 	/** The style for the DialogUI */

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.SerializationException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
@@ -206,9 +207,14 @@ public class Verb implements VerbRunner, Serializable {
 			JsonValue actionsValue = jsonData.get("actions");
 			for (int i = 0; i < actionsValue.size; i++) {
 				JsonValue aValue = actionsValue.get(i);
+				String clazz = aValue.getString("class");
 
-				Action a = ActionUtils.readJson(json, aValue);
-				actions.add(a);
+				try { 
+					Action a = ActionUtils.readJson(json, aValue);
+					actions.add(a);
+				} catch(SerializationException e) {
+					EngineLogger.error("Error loading action: " + clazz + " " + aValue.toString());
+				}
 			}
 		} else {
 			// MUTABLE

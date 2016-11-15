@@ -415,7 +415,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		case DIALOG_MODE:
 			stage.setScrollFocus(null);
 			
-			if (world.getCurrentDialog() == null)
+			if (world.getCurrentDialog() == null && 
+					!world.getInkManager().hasChoices())
 				setUIState(UIStates.SCENE_MODE);
 			else if (world.inCutMode())
 				setUIState(UIStates.CUT_MODE);
@@ -452,7 +453,8 @@ public class DefaultSceneScreen implements SceneScreen {
 				setUIState(UIStates.TESTER_BOT_MODE);
 			else if (inventoryUI.isVisible())
 				setUIState(UIStates.INVENTORY_MODE);
-			else if (world.getCurrentDialog() != null)
+			else if (world.getCurrentDialog() != null || 
+					world.getInkManager().hasChoices())
 				setUIState(UIStates.DIALOG_MODE);
 			break;
 		}

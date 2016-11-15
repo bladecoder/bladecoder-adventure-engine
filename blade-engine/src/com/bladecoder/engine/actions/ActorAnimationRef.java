@@ -25,9 +25,9 @@ public class ActorAnimationRef {
 		}
 	}
 
-	public ActorAnimationRef(String sceneId, String actorId) {
-		this.actor = sceneId;
-		this.animation = actorId;
+	public ActorAnimationRef(String actorId, String animationId) {
+		this.actor = actorId;
+		this.animation = animationId;
 	}
 
 	public String getActorId() {

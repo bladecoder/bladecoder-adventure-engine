@@ -13,33 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.bladecoder.engineeditor.ui.components;
+package com.bladecoder.engine.actions;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
-public class SceneInputPanel extends StringOptionsInputPanel {
-	SceneInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
-		super(skin, title, desc, mandatory, defaultValue, getValues(mandatory));
-	}
+@ActionDescription("Jump a Ink knot or stich.")
+public class InkRunAction implements Action {
+	@ActionPropertyDescription("The knot/stich path to jump. Ej: 'myKnotName' or 'myKnotName.theStitchWithin'")
+	@ActionProperty(required = true)
+	private String path;
+	
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("Waits for the action to finish.")
+	private boolean wait = true;
 
-	private static String[] getValues(boolean mandatory) {
-		Map<String, Scene> scenes = World.getInstance().getScenes();
-		
-		String[] result = new String[scenes.size()];
-		
-		Scene[] v = scenes.values().toArray(new Scene[scenes.size()]);
-		
-		for(int i = 0; i < scenes.size(); i++) {
-			result[i] = v[i].getId();
+	@Override
+	public boolean run(VerbRunner cb) {
+		try {
+			World.getInstance().getInkManager().run(path, wait?cb:null);
+		} catch (Exception e) {
+			EngineLogger.error("Cannot jump to: " + path + " " + e.getMessage());
 		}
-		
-		Arrays.sort(result);
-		
-		return result;
+
+		return wait;
 	}
 }

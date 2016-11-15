@@ -32,7 +32,7 @@ public class AnimationAction implements Action {
 	private int count = -1;
 
 	@ActionProperty(required = true)
-	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+	@ActionPropertyDescription("Waits to finish the animation.")
 	private boolean wait = true;
 
 	@ActionProperty(required = true, defaultValue = "SPRITE_DEFINED")

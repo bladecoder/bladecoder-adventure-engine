@@ -40,6 +40,8 @@ javadoc {
 dependencies {
   compile "com.badlogicgames.gdx:gdx:$libgdxVersion"
   compile "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
+  compile "com.bladecoder.ink:blade-ink:$bladeInkVersion"
+  compile "org.minimalcode:minimalcode-beans:0.5.1"
   compile fileTree(dir: 'libs', include: '*.jar')
 }
 
