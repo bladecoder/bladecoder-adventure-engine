@@ -194,7 +194,7 @@ public class DebugScreen implements BladeScreen {
 
 		recordings = new SelectBox<String>(ui.getSkin());
 
-		String[] testFiles = EngineAssetManager.getInstance().listAssetFiles("/tests");
+		String[] testFiles = EngineAssetManager.getInstance().listAssetFiles("tests");
 		ArrayList<String> al = new ArrayList<String>();
 
 		for (String file : testFiles)

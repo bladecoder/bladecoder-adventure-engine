@@ -45,16 +45,20 @@ public class Config {
 	
 	public static String getProperty(String key, String defaultValue) {
 		if(config == null) {
-			config = new Properties();
-			
-			try {
-				config.load(EngineAssetManager.getInstance().getAsset(PROPERTIES_FILENAME).reader());
-			} catch (Exception e) {
-				EngineLogger.error("ERROR LOADING PROPERTIES: " + e.getMessage());
-			}
+			load();
 		}
 		
 		return config.getProperty(key, defaultValue);
+	}
+	
+	public static void load() {
+		config = new Properties();
+		
+		try {
+			config.load(EngineAssetManager.getInstance().getAsset(PROPERTIES_FILENAME).reader());
+		} catch (Exception e) {
+			EngineLogger.error("ERROR LOADING PROPERTIES: " + e.getMessage());
+		}
 	}
 	
 	public static boolean getProperty(String key, boolean defaultValue) {

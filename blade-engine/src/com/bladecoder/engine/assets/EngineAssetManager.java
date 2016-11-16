@@ -141,7 +141,21 @@ public class EngineAssetManager extends AssetManager {
 			instance.dispose();
 
 		instance = new EngineAssetManager(new BasePathResolver(base));
+
 		instance.forceResolution("1");
+	}
+
+	/**
+	 * All assets will be searched in the selected folder.
+	 * 
+	 * @param base
+	 *            The asset base folder
+	 */
+	public static void setAssetFolder(String base) {
+		if (instance != null)
+			instance.dispose();
+
+		instance = new EngineAssetManager(new InternalFolderResolver(base));
 	}
 
 	public void forceResolution(String suffix) {
@@ -283,7 +297,7 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	public String checkIOSSoundName(String filename) {
-		
+
 		if (Gdx.app.getType() == ApplicationType.iOS && filename.toLowerCase().endsWith(OGG_EXT)) {
 			String aac = filename.substring(0, filename.length() - OGG_EXT.length()) + AAC_EXT;
 
@@ -379,7 +393,7 @@ public class EngineAssetManager extends AssetManager {
 	private Resolution[] getResolutions(FileHandleResolver resolver, int worldWidth, int worldHeight) {
 		ArrayList<Resolution> rl = new ArrayList<Resolution>();
 
-		String list[] = listAssetFiles("/ui");
+		String list[] = listAssetFiles("ui");
 
 		for (String name : list) {
 			try {
@@ -407,33 +421,43 @@ public class EngineAssetManager extends AssetManager {
 	public String[] listAssetFiles(String base) {
 		FileHandleResolver resolver = resResolver.getBaseResolver();
 
-		String list[];
+		String list[] = null;
 
-		URL u = EngineAssetManager.class.getResource(base);
+		if (Gdx.app.getType() != ApplicationType.Desktop) {
 
-		if (u != null && u.getProtocol().equals("jar")) {
-			list = getFilesFromJar(base);
-
-		} else {
-			String n = base.substring(1);
-			if (u != null)
-				n = u.getFile();
-
-			FileHandle f = null;
-
-			try {
-				f = resolver.resolve(URLDecoder.decode(n, "UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				EngineLogger.error("Error decoding URL", e);
-				return new String[0];
-			}
-
-			FileHandle[] l = f.list();
+			FileHandle[] l = resolver.resolve(base).list();
 			list = new String[l.length];
 
 			for (int i = 0; i < l.length; i++)
 				list[i] = l[i].name();
 
+		} else {
+			// FOR DESKTOP
+			URL u = EngineAssetManager.class.getResource("/" + resolver.resolve(base).path());
+
+			if (u != null && u.getProtocol().equals("jar")) {
+				list = getFilesFromJar("/" + base);
+			} else {
+				String n = resolver.resolve(base).path();
+
+				if (u != null)
+					n = u.getFile();
+
+				FileHandle f = null;
+				
+				try {
+					f = Gdx.files.absolute(URLDecoder.decode(n, "UTF-8"));
+				} catch (UnsupportedEncodingException e) {
+					EngineLogger.error("Error decoding URL", e);
+					return new String[0];
+				}
+				
+				FileHandle[] l = f.list();
+				list = new String[l.length];
+
+				for (int i = 0; i < l.length; i++)
+					list[i] = l[i].name();
+			}
 		}
 
 		return list;

@@ -76,6 +76,28 @@ public class BladeEngine implements ApplicationListener {
 	public UI getUI() {
 		return ui;
 	}
+	
+	public void loadGame(String baseFolder) {
+		if(ui != null) {
+			ui.dispose();
+			World.getInstance().dispose();
+		}
+		
+		if(baseFolder != null) {
+			EngineAssetManager.setAssetFolder(baseFolder);
+			Config.load();
+		}
+		
+		try {
+			World.getInstance().loadWorldDesc();
+		} catch (Exception e) {
+			// dispose();
+			EngineLogger.error("EXITING: " + e.getMessage());
+			Gdx.app.exit();
+		}
+			
+		ui = new UI();
+	}
 
 	@Override
 	public void create() {
@@ -94,15 +116,7 @@ public class BladeEngine implements ApplicationListener {
 			EngineAssetManager.getInstance().forceResolution(forceRes);
 		}
 
-		try {
-			World.getInstance().loadWorldDesc();
-		} catch (Exception e) {
-			// dispose();
-			EngineLogger.error("EXITING: " + e.getMessage());
-			Gdx.app.exit();
-		}
-
-		ui = new UI();
+		loadGame(null);
 
 		if (EngineLogger.debugMode()) {
 			if (chapter == null)
