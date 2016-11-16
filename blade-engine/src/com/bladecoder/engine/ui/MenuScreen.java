@@ -182,10 +182,11 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 							if (((Boolean) object).booleanValue()) {
 								try {
 									world.newGame();
+									ui.setCurrentScreen(Screens.SCENE_SCREEN);
 								} catch (Exception e) {
+									EngineLogger.error("IN NEW GAME", e);
 									Gdx.app.exit();
 								}
-								ui.setCurrentScreen(Screens.SCENE_SCREEN);
 							}
 						}
 					};
@@ -209,10 +210,11 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 					try {
 						world.newGame();
+						ui.setCurrentScreen(Screens.SCENE_SCREEN);				
 					} catch (Exception e) {
+						EngineLogger.error("IN NEW GAME", e);
 						Gdx.app.exit();
-					}
-					ui.setCurrentScreen(Screens.SCENE_SCREEN);
+					}					
 				}
 			}
 		});
