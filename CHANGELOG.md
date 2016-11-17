@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.2]
+
+- Added support to have several games packaged in the same application.
+- Reset previous walk animation before new walk animation added.
+
 ## [1.0.1]
 
 - Music not working for iOS in CreditScreen
