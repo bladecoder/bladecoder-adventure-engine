@@ -43,6 +43,7 @@ public class I18N {
 
 	public static void loadWorld(String i18nWorldFilename) {
 		try {
+			ResourceBundle.clearCache();
 			i18nWorld = ResourceBundle.getBundle(i18nWorldFilename, locale, new I18NControl(ENCODING));
 			I18N.i18nWorldFilename = i18nWorldFilename;
 		} catch (Exception e) {
