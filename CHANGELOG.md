@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.3]
+
+- FIX: error loading recordings from 'tests' folder.
+
 ## [1.0.2]
 
 - Added support to have several games packaged in the same application.
