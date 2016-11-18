@@ -146,8 +146,8 @@ public class CreateAtlasDialog extends EditDialog {
 				Message.showMsgDialog(getStage(), "Error creating atlas", e.getMessage());
 				return;
 			}
-			
-			Message.hideMsg();
 		}
+		
+		Message.hideMsg();
 	}
 }

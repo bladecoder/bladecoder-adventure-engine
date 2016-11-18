@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -235,14 +234,14 @@ public class Recorder {
 		FileHandle verbsFile = EngineAssetManager.getInstance().getUserFile(recordFileName);
 
 		if (!verbsFile.exists())
-			verbsFile = Gdx.files.internal("tests/" + recordFileName);
+			verbsFile = EngineAssetManager.getInstance().getAsset("tests/" + recordFileName);
 
 		if (verbsFile.exists()) {
 			// LOAD GAME STATE IF EXISTS
 			FileHandle gameStateFile = EngineAssetManager.getInstance().getUserFile(gameStateFileName);
 
 			if (!gameStateFile.exists())
-				gameStateFile = Gdx.files.internal("tests/" + gameStateFileName);
+				gameStateFile =  EngineAssetManager.getInstance().getAsset("tests/" + gameStateFileName);
 
 			if (gameStateFile.exists())
 				try {
