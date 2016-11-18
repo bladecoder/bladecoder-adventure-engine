@@ -398,7 +398,7 @@ public class ImageRenderer implements ActorRenderer {
 		} else if (currentAnimation == null && initAnimation != null) {
 			AnimationDesc fa = fanims.get(initAnimation);
 
-			if (!fa.preload)
+			if (fa != null && !fa.preload)
 				loadSource(fa.source);
 		}
 	}
