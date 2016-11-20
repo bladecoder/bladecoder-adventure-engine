@@ -188,6 +188,13 @@ public class EditorLogger {
 				
 				EditorLogger.msg("PROCCESS FINISHED.");
 			}
+			
+			@SuppressWarnings("unused")
+			public void addCutmode() {
+				ModelTools.addCutMode();
+				
+				EditorLogger.msg("PROCCESS FINISHED.");
+			}
 
 		});
 	}
