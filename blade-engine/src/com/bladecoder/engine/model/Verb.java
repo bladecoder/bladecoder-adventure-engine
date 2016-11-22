@@ -214,6 +214,7 @@ public class Verb implements VerbRunner, Serializable {
 					actions.add(a);
 				} catch(SerializationException e) {
 					EngineLogger.error("Error loading action: " + clazz + " " + aValue.toString());
+					throw e;
 				}
 			}
 		} else {
