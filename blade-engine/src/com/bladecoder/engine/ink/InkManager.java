@@ -98,7 +98,7 @@ public class InkManager implements VerbRunner, Serializable {
 		} else if (hasChoices()) {
 			wasInCutmode = World.getInstance().inCutMode();
 			World.getInstance().setCutMode(false);
-		} else {
+		} else if(cb != null){
 			ActionCallbackQueue.add(cb);
 		}
 	}
@@ -147,8 +147,13 @@ public class InkManager implements VerbRunner, Serializable {
 		params.put("text", line);
 
 		try {
-			Action action = ActionFactory.createByClass("com.bladecoder.engine.actions.SayAction", params);
-			actions.add(action);
+			if (!params.containsKey("actor")) {
+				Action action = ActionFactory.createByClass("com.bladecoder.engine.actions.TextAction", params);
+				actions.add(action);
+			} else {
+				Action action = ActionFactory.createByClass("com.bladecoder.engine.actions.SayAction", params);
+				actions.add(action);
+			}
 		} catch (ClassNotFoundException | ReflectionException e) {
 			EngineLogger.error(e.getMessage(), e);
 		}
@@ -306,7 +311,7 @@ public class InkManager implements VerbRunner, Serializable {
 
 		// SAVE STORY
 		json.writeValue("storyName", storyName);
-		
+
 		if (story != null) {
 			try {
 				json.writeValue("story", story.getState().toJson());
