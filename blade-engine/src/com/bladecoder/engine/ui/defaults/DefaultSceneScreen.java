@@ -899,6 +899,10 @@ public class DefaultSceneScreen implements SceneScreen {
 	public InventoryUI getInventoryUI() {
 		return inventoryUI;
 	}
+	
+	public Stage getStage() {
+		return stage;
+	}
 
 	@Override
 	public void show() {
@@ -911,12 +915,6 @@ public class DefaultSceneScreen implements SceneScreen {
 		stage.addActor(menuButton);
 		stage.addActor(inventoryUI);
 		stage.addActor(pie);
-
-		menuButton.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				ui.setCurrentScreen(Screens.MENU_SCREEN);
-			}
-		});
 
 		final InputMultiplexer multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(stage);
@@ -963,7 +961,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	}
 
 	@Override
-	public void setUI(UI ui) {
+	public void setUI(final UI ui) {
 		this.ui = ui;
 
 		recorder = ui.getRecorder();
@@ -984,5 +982,11 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 
 		pie.setVisible(false);
+		
+		menuButton.addListener(new ClickListener() {
+			public void clicked(InputEvent event, float x, float y) {
+				ui.setCurrentScreen(Screens.MENU_SCREEN);
+			}
+		});
 	}
 }

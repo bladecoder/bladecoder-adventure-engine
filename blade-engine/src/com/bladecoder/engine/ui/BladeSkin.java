@@ -131,6 +131,8 @@ public class BladeSkin extends Skin {
 					parameter.shadowOffsetX = json.readValue("shadowOffsetX", int.class, 0, jsonData);
 					parameter.shadowOffsetY = json.readValue("shadowOffsetY", int.class, 0, jsonData);
 					parameter.shadowColor = json.readValue("shadowColor", Color.class, Color.BLACK, jsonData);
+//					parameter.hinting = Hinting.Medium;
+//					parameter.mono = false;
 
 					font = generator.generateFont(parameter);
 					
