@@ -17,6 +17,7 @@ package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
@@ -71,10 +72,10 @@ public class Transition implements Serializable {
 
 		switch (type) {
 		case FADE_IN:
-			c.a = MathUtils.clamp(1 - currentTime / time, 0, 1);
+			c.a = MathUtils.clamp(Interpolation.fade.apply(1 - currentTime / time), 0, 1);
 			break;
 		case FADE_OUT:
-			c.a = MathUtils.clamp(currentTime / time, 0, 1);
+			c.a = MathUtils.clamp(Interpolation.fade.apply(currentTime / time), 0, 1);
 			break;
 		default:
 			break;

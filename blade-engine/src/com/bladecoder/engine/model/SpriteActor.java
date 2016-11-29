@@ -24,6 +24,7 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.SpritePosTween;
 import com.bladecoder.engine.anim.SpriteScaleTween;
+import com.bladecoder.engine.anim.SpriteTintTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.anim.WalkTween;
@@ -42,8 +43,9 @@ public class SpriteActor extends InteractiveActor {
 	protected ActorRenderer renderer;
 	protected SpritePosTween posTween;
 	private SpriteScaleTween scaleTween;
-	private float scale = 1.0f;
+	private SpriteTintTween tintTween;
 
+	private float scale = 1.0f;
 	private Color tint;
 
 	/** Scale sprite acording to the scene depth map */
@@ -139,6 +141,13 @@ public class SpriteActor extends InteractiveActor {
 				scaleTween.update(this, delta);
 				if (scaleTween.isComplete()) {
 					scaleTween = null;
+				}
+			}
+			
+			if (tintTween != null) {
+				tintTween.update(this, delta);
+				if (tintTween.isComplete()) {
+					tintTween = null;
 				}
 			}
 		}
@@ -238,6 +247,18 @@ public class SpriteActor extends InteractiveActor {
 
 		scaleTween.start(this, repeatType, count, scale, duration, interpolation, cb);
 	}
+	
+	
+	/**
+	 * Create tint animation.
+	 */
+	public void startTintAnimation(Tween.Type repeatType, int count, float duration, Color tint,
+			InterpolationMode interpolation, ActionCallback cb) {
+
+		tintTween = new SpriteTintTween();
+
+		tintTween.start(this, repeatType, count, tint, duration, interpolation, cb);
+	}
 
 	@Override
 	public String toString() {
@@ -297,6 +318,7 @@ public class SpriteActor extends InteractiveActor {
 		} else {
 			json.writeValue("posTween", posTween, null);
 			json.writeValue("scaleTween", scaleTween, null);
+			json.writeValue("tintTween", tintTween, null);
 		}
 
 		json.writeValue("scale", scale);
@@ -314,6 +336,7 @@ public class SpriteActor extends InteractiveActor {
 		} else {
 			posTween = json.readValue("posTween", SpritePosTween.class, jsonData);
 			scaleTween = json.readValue("scaleTween", SpriteScaleTween.class, jsonData);
+			tintTween = json.readValue("tintTween", SpriteTintTween.class, jsonData);
 			renderer.read(json, jsonData.get("renderer"));
 		}
 

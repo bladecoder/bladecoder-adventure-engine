@@ -200,7 +200,8 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	public boolean hasChoices() {
-		return story.getCurrentChoices().size() > 0;
+		return (story != null && 
+				story.getCurrentChoices().size() > 0);
 	}
 
 	public List<Choice> getChoices() {

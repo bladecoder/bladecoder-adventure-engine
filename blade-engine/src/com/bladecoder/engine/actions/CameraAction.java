@@ -22,6 +22,7 @@ import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.InterpolationMode;
 
 @ActionDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
 public class CameraAction implements Action {
@@ -40,6 +41,10 @@ public class CameraAction implements Action {
 	@ActionPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
 	@ActionProperty(type = Type.ACTOR)
 	private String followActor;
+	
+	@ActionProperty
+	@ActionPropertyDescription("The interpolation mode")
+	private InterpolationMode interpolation;
 
 	@ActionProperty(defaultValue = "true", required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
@@ -75,7 +80,7 @@ public class CameraAction implements Action {
 			camera.setPosition(pos.x * scale, pos.y * scale);
 			return false;
 		} else {
-			camera.startAnimation(pos.x * scale, pos.y * scale, zoom, duration, wait?cb:null);
+			camera.startAnimation(pos.x * scale, pos.y * scale, zoom, duration, interpolation, wait?cb:null);
 		}
 		
 		return wait;

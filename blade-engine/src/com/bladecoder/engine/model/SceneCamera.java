@@ -29,6 +29,7 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.anim.CameraTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.util.InterpolationMode;
 
 public class SceneCamera extends OrthographicCamera implements Serializable  {
 	
@@ -129,10 +130,10 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 	/**
 	 * Create camera animation.
 	 */
-	public void startAnimation(float destX, float destY, float zoom, float duration, ActionCallback cb) {
+	public void startAnimation(float destX, float destY, float zoom, float duration, InterpolationMode interpolation, ActionCallback cb) {
 		cameraTween = new CameraTween();
 		
-		cameraTween.start(this, Tween.Type.NO_REPEAT, 1, destX, destY, zoom, duration, cb);
+		cameraTween.start(this, Tween.Type.NO_REPEAT, 1, destX, destY, zoom, duration, interpolation, cb);
 	}
 
 	public void getInputUnProject(Viewport viewport, Vector3 out) {
