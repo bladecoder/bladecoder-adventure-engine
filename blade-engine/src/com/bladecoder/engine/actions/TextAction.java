@@ -19,6 +19,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.VerbRunner;
@@ -37,9 +40,14 @@ public class TextAction implements Action {
 	@ActionPropertyDescription("The color to use for the font (RRGGBBAA). If not set, the default color defined in the style is used.")
 	@ActionProperty(type = Type.COLOR)
 	private Color color;
+	
 
 	@ActionProperty
-	@ActionPropertyDescription("The position of the text. -1 for center")
+	@ActionPropertyDescription("Obtain the text position from this actor.")
+	private SceneActorRef target;
+
+	@ActionProperty
+	@ActionPropertyDescription("The position of the text. -1 for center. Absolute if no target is selected. Relative if the target is selected.")
 	private Vector2 pos;
 
 	@ActionProperty(required = true, defaultValue = "SUBTITLE")
@@ -59,8 +67,27 @@ public class TextAction implements Action {
 
 		if (text != null) {
 			float x =  TextManager.POS_CENTER, y =  TextManager.POS_CENTER;
+			
+			if (target != null) {
+				Scene ts = target.getScene();
+				BaseActor anchorActor = ts.getActor(target.getActorId(), true);
 
-			if (pos != null) {
+				x = anchorActor.getX();
+				y = anchorActor.getY();
+
+				if (anchorActor instanceof InteractiveActor) {
+					Vector2 refPoint = ((InteractiveActor) anchorActor).getRefPoint();
+					x += refPoint.x;
+					y += refPoint.y;
+				}
+				
+				if(pos != null){
+					float scale = EngineAssetManager.getInstance().getScale();
+					
+					x += pos.x * scale;
+					y += pos.y * scale;
+				}
+			} else if (pos != null) {
 				float scale = EngineAssetManager.getInstance().getScale();
 				
 				if(pos.x != TextManager.POS_CENTER)
@@ -68,6 +95,7 @@ public class TextAction implements Action {
 				
 				if(pos.y != TextManager.POS_CENTER)
 					y = pos.y * scale;
+
 			} else {
 
 				if (type == Text.Type.SUBTITLE) {
