@@ -19,7 +19,7 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @ActionDescription("Sets a property of the model based in a pattern")
-public class GetModelPropAction implements Action {
+public class SetModelPropAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("Property pattern")
 	private String prop;
