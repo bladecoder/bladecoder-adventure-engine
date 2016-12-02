@@ -903,6 +903,10 @@ public class DefaultSceneScreen implements SceneScreen {
 	public Stage getStage() {
 		return stage;
 	}
+	
+	public Button getMenuButton() {
+		return menuButton;
+	}
 
 	@Override
 	public void show() {
