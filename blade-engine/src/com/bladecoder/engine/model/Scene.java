@@ -48,7 +48,7 @@ public class Scene implements Serializable, AssetConsumer {
 	public static final Color OBSTACLE_COLOR = Color.RED;
 	public static final Color ANCHOR_COLOR = Color.RED;
 	public static final float ANCHOR_RADIUS = 14f;
-	
+
 	public static final String VAR_PLAYER = "$PLAYER";
 
 	/**
@@ -80,12 +80,12 @@ public class Scene implements Serializable, AssetConsumer {
 
 	/** The actor the camera will follow */
 	private SpriteActor followActor;
-	
+
 	/**
 	 * Music for the scene.
 	 */
 	private MusicDesc musicDesc;
-	
+
 	private Vector2 sceneSize;
 
 	private String id;
@@ -190,7 +190,7 @@ public class Scene implements Serializable, AssetConsumer {
 				batch.draw(tile, x, 0f);
 				x += tile.getRegionWidth();
 			}
-			
+
 			batch.end();
 			batch.enableBlending();
 		}
@@ -198,7 +198,7 @@ public class Scene implements Serializable, AssetConsumer {
 		// draw layers from bottom to top
 		for (int i = layers.size() - 1; i >= 0; i--) {
 			SceneLayer layer = layers.get(i);
-			
+
 			batch.setProjectionMatrix(camera.calculateParallaxMatrix(layer.getParallaxMultiplier(), 1));
 			batch.begin();
 			layer.draw(batch);
@@ -251,11 +251,10 @@ public class Scene implements Serializable, AssetConsumer {
 	}
 
 	public BaseActor getActor(String id, boolean searchInventory) {
-		
-		if(VAR_PLAYER.equals(id))
+
+		if (VAR_PLAYER.equals(id))
 			return actors.get(player);
-		
-		
+
 		BaseActor a = actors.get(id);
 
 		if (a == null && searchInventory) {
@@ -377,6 +376,17 @@ public class Scene implements Serializable, AssetConsumer {
 	 */
 	public BaseActor getActorAt(float x, float y) {
 
+		// 1. Search for ANCHOR Actors
+		for (BaseActor a : actors.values()) {
+			if (a instanceof AnchorActor) {
+				float dst = Vector2.dst(x, y, a.getX(), a.getY());
+
+				if (dst < ANCHOR_RADIUS)
+					return a;
+			}
+		}
+
+		// 2. Search for INTERACTIVE Actors
 		for (SceneLayer layer : layers) {
 
 			if (!layer.isVisible())
@@ -392,15 +402,10 @@ public class Scene implements Serializable, AssetConsumer {
 			}
 		}
 
-		// if not found check for obstacles and anchors
+		// 3. Search for OBSTACLE actors
 		for (BaseActor a : actors.values()) {
 			if (a instanceof ObstacleActor && a.hit(x, y)) {
 				return a;
-			} else if (a instanceof AnchorActor) {
-				float dst = Vector2.dst(x, y, a.getX(), a.getY());
-
-				if (dst < ANCHOR_RADIUS)
-					return a;
 			}
 		}
 
@@ -530,15 +535,15 @@ public class Scene implements Serializable, AssetConsumer {
 			int height = background.get(0).getRegionHeight();
 
 			// Sets the scrolling dimensions. It must be done here because
-			// the background must be loaded to calculate the bbox	
-			if(sceneSize == null)
+			// the background must be loaded to calculate the bbox
+			if (sceneSize == null)
 				camera.setScrollingDimensions(width, height);
 
 			// if(followActor != null)
 			// camera.updatePos(followActor);
 		}
-		
-		if(sceneSize != null)
+
+		if (sceneSize != null)
 			camera.setScrollingDimensions(sceneSize.x, sceneSize.y);
 
 		// RETRIEVE ACTORS
@@ -606,7 +611,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 			if (polygonalNavGraph != null)
 				json.writeValue("polygonalNavGraph", polygonalNavGraph);
-			
+
 			if (sceneSize != null)
 				json.writeValue("sceneSize", sceneSize);
 
@@ -666,7 +671,7 @@ public class Scene implements Serializable, AssetConsumer {
 			depthVector = json.readValue("depthVector", Vector2.class, jsonData);
 
 			polygonalNavGraph = json.readValue("polygonalNavGraph", PolygonalNavGraph.class, jsonData);
-			
+
 			sceneSize = json.readValue("sceneSize", Vector2.class, jsonData);
 
 		} else {
@@ -679,22 +684,23 @@ public class Scene implements Serializable, AssetConsumer {
 				actorRef = new SceneActorRef(jsonValueAct.name);
 				Scene sourceScn = World.getInstance().getScene(actorRef.getSceneId());
 
-				if(sourceScn != this) {
+				if (sourceScn != this) {
 					BaseActor actor = sourceScn.getActor(actorRef.getActorId(), false);
 					sourceScn.removeActor(actor);
 					addActor(actor);
 				}
 			}
-			
-			// READ ACTOR STATE. 
-			// The state must be retrieved after getting actors from his init scene to restore verb cb properly.
+
+			// READ ACTOR STATE.
+			// The state must be retrieved after getting actors from his init
+			// scene to restore verb cb properly.
 			for (int i = 0; i < jsonValueActors.size; i++) {
 				JsonValue jsonValueAct = jsonValueActors.get(i);
 				actorRef = new SceneActorRef(jsonValueAct.name);
 
 				BaseActor actor = getActor(actorRef.getActorId(), false);
-				
-				if(actor != null)
+
+				if (actor != null)
 					actor.read(json, jsonValueAct);
 				else
 					EngineLogger.debug("Actor not found: " + actorRef);
