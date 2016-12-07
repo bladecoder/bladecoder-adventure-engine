@@ -188,6 +188,17 @@ public class EditorLogger {
 				
 				EditorLogger.msg("PROCCESS FINISHED.");
 			}
+			
+			@SuppressWarnings("unused")
+			public void extractInkTexts(String story) {
+				try {
+					ModelTools.extractInkTexts(story);
+				} catch (Exception e) {
+					EditorLogger.printStackTrace(e);
+				}
+				
+				EditorLogger.msg("PROCCESS FINISHED.");
+			}
 
 		});
 	}

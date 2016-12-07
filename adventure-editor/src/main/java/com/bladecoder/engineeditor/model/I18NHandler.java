@@ -378,8 +378,8 @@ public class I18NHandler {
 		while (keys.hasMoreElements()) {
 			String key = (String) keys.nextElement();
 
-			// Doesn't remove ui keys
-			if (!usedKeys.contains(key) && !key.startsWith("ui.")) { 
+			// Doesn't remove ui and ink keys
+			if (!usedKeys.contains(key) && !key.startsWith("ui.") && !key.startsWith("ink.")) { 
 				EditorLogger.debug("Removing translation key: " + key);
 				i18nChapter.remove(key);
 			}

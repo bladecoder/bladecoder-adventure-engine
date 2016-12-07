@@ -15,19 +15,29 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.common;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.LookAtAction;
 import com.bladecoder.engine.actions.SayAction;
 import com.bladecoder.engine.actions.SetCutmodeAction;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
@@ -412,6 +422,59 @@ public class ModelTools {
 		Arrays.sort(soundFiles);
 
 		return soundFiles;
+	}
+	
+	public static void extractInkTexts(String story) throws IOException {
+		String file = Ctx.project.getModelPath() + "/" + story + EngineAssetManager.INK_EXT;
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+		StringBuilder sb = new StringBuilder();
+
+		try {
+			String line = br.readLine();
+
+			// Replace the BOM mark
+			if (line != null)
+				line = line.replace('\uFEFF', ' ');
+
+			while (line != null) {
+				sb.append(line);
+				sb.append("\n");
+				line = br.readLine();
+			}
+			
+		} finally {
+			br.close();
+		}
+		
+		JsonValue root = new JsonReader().parse(sb.toString());
+		
+		StringBuilder tsvString = new StringBuilder();
+		
+		extractInkTextsInternal(root, tsvString);
+		FileUtils.writeStringToFile(new File(file + ".tsv"), tsvString.toString());
+		
+		String json = root.toJson(OutputType.json);
+		FileUtils.writeStringToFile(new File(file + ".new"), json);
+		
+		Ctx.project.setModified();
+	}
+	
+	private static void extractInkTextsInternal(JsonValue v, StringBuilder sb) {
+		if(v.isArray() || v.isObject()) {
+			for (int i = 0; i < v.size; i++) {
+				JsonValue aValue = v.get(i);
+				
+				extractInkTextsInternal(aValue, sb);
+			}
+		} else if(v.isString() && v.asString().charAt(0) == '^') {
+			String value = v.asString().substring(1).trim();
+			String key = "ink." + value.hashCode();
+			
+			Ctx.project.getI18N().setTranslation(key, value);
+			sb.append(key + "\t" + value + "\n");
+			v.set("^" + I18N.PREFIX + key);
+		}
 	}
 
 }
