@@ -23,6 +23,9 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,6 +33,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
+import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
@@ -469,7 +473,19 @@ public class ModelTools {
 			}
 		} else if(v.isString() && v.asString().charAt(0) == '^') {
 			String value = v.asString().substring(1).trim();
-			String key = "ink." + value.hashCode();
+//			String key = "ink." + value.hashCode();
+			
+			String key = "ink.";
+			
+			try {
+				MessageDigest md = MessageDigest.getInstance("SHA-1");
+				byte[] bytes = value.getBytes(("UTF-8"));
+				md.update(bytes);
+				byte[] digest = md.digest();
+				key +=  Base64Coder.encodeLines(digest).substring(0, 10);
+			} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+				
+			}
 			
 			Ctx.project.getI18N().setTranslation(key, value);
 			sb.append(key + "\t" + value + "\n");
