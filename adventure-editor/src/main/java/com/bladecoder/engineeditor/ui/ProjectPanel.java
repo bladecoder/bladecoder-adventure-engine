@@ -28,7 +28,6 @@ public class ProjectPanel extends HeaderPanel  {
 
 	private TabPanel tabPanel;
 	private SceneList sceneList;
-//	private VerbList verbList;
 	private ChapterList chapterList;
 	
 	
@@ -37,14 +36,12 @@ public class ProjectPanel extends HeaderPanel  {
 		
 		tabPanel = new TabPanel(skin);
 		sceneList = new SceneList(skin);
-//		verbList = new VerbList(skin);
 		chapterList = new ChapterList(skin);
 	
 		setContent(tabPanel);
 		
 		tabPanel.addTab("Scenes", sceneList);
 		tabPanel.addTab("Chapters", chapterList);
-//		tabPanel.addTab("Verbs", verbList);
 		tabPanel.addTab("Game Props", new WorldProps(skin));
 		tabPanel.addTab("Assets", new AssetsList(skin));
 		tabPanel.addTab("Resolutions", new ResolutionList(skin));

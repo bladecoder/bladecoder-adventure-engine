@@ -55,7 +55,7 @@ public class HeaderPanel extends Table {
 		north.align(Align.left);
 		north.fill();
 		north.wrap(true);
-		north.rowLeft();
+		north.rowAlign(Align.left);
 		add(north).expandX().fillX();
 		row();
 		Image image = new Image(skin.getDrawable("white_pixel"));

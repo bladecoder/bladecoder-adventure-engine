@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 abstract public class ScopePanel extends Table {
@@ -40,7 +41,7 @@ abstract public class ScopePanel extends Table {
 		buttonGroup = new ButtonGroup<TextButton>();
 		hPanel = new HorizontalGroup();
 		hPanel.wrap(true);
-		hPanel.rowLeft();
+		hPanel.rowAlign(Align.left);
 		
 		buttonGroup.setMaxCheckCount(1);
 		buttonGroup.setMinCheckCount(1);

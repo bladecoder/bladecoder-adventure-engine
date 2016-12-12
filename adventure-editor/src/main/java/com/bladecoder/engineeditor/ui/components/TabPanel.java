@@ -28,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 public class TabPanel extends Table {
@@ -60,7 +61,7 @@ public class TabPanel extends Table {
 		buttonGroup.setUncheckLast(true);
 		
 		header.wrap(true);
-		header.rowLeft();
+		header.rowAlign(Align.left);
 		
 		add(header).expandX().fillX().left();
 		row();
