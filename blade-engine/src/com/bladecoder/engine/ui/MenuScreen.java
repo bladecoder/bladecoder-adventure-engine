@@ -58,7 +58,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 	private Button credits;
 	private Button help;
 	private Button debug;
-	
+
 	private final Table menuButtonTable = new Table();
 	private final Table iconStackTable = new Table();
 
@@ -78,8 +78,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
 		pointer.resize();
-		
-		float size = DPIUtils.getPrefButtonSize();	
+
+		float size = DPIUtils.getPrefButtonSize();
 		credits.setSize(size, size);
 		help.setSize(size, size);
 		debug.setSize(size, size);
@@ -87,14 +87,18 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 	@Override
 	public void dispose() {
-		stage.dispose();
-		stage = null;
 
-		if (bgTexFile != null) {
-			bgTexFile.dispose();
+		if (stage != null) {
+
+			stage.dispose();
+			stage = null;
+
+			if (bgTexFile != null) {
+				bgTexFile.dispose();
+			}
+
+			bgTexFile = null;
 		}
-
-		bgTexFile = null;
 	}
 
 	@Override
@@ -114,11 +118,11 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		if (bg == null && style.bgFile != null) {
 			bgTexFile = new Texture(EngineAssetManager.getInstance().getResAsset(style.bgFile));
 			bgTexFile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-			
-			float scale = (float)bgTexFile.getHeight() / (float) stage.getViewport().getScreenHeight();
-			
-			int width = (int)(stage.getViewport().getScreenWidth() * scale);
-			int x0 = (int)((bgTexFile.getWidth() - width) / 2);
+
+			float scale = (float) bgTexFile.getHeight() / (float) stage.getViewport().getScreenHeight();
+
+			int width = (int) (stage.getViewport().getScreenWidth() * scale);
+			int x0 = (int) ((bgTexFile.getWidth() - width) / 2);
 
 			bg = new TextureRegionDrawable(new TextureRegion(bgTexFile, x0, 0, width, bgTexFile.getHeight()));
 		}
@@ -146,7 +150,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 			Label title = new Label(Config.getProperty(Config.TITLE_PROP, "Adventure Blade Engine"), skin,
 					style.titleStyle);
-			
+
 			title.setAlignment(Align.center);
 
 			menuButtonTable.add(title).padBottom(DPIUtils.getMarginSize() * 2);
@@ -190,31 +194,31 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 							}
 						}
 					};
-					
+
 					d.pad(DPIUtils.getMarginSize());
 					d.getButtonTable().padTop(DPIUtils.getMarginSize());
 					d.getButtonTable().defaults().padLeft(DPIUtils.getMarginSize()).padRight(DPIUtils.getMarginSize());
-					
-					Label l = new Label( I18N.getString("ui.override"), ui.getSkin(), "ui-dialog");
-				    l.setWrap(true);
-				    l.setAlignment(Align.center);
 
-				    d.getContentTable().add( l ).prefWidth( Gdx.graphics.getWidth() * .7f);
-					
+					Label l = new Label(I18N.getString("ui.override"), ui.getSkin(), "ui-dialog");
+					l.setWrap(true);
+					l.setAlignment(Align.center);
+
+					d.getContentTable().add(l).prefWidth(Gdx.graphics.getWidth() * .7f);
+
 					d.button(I18N.getString("ui.yes"), true, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
 					d.button(I18N.getString("ui.no"), false, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
 					d.key(Keys.ENTER, true).key(Keys.ESCAPE, false);
-					
+
 					d.show(stage);
 				} else {
 
 					try {
 						world.newGame();
-						ui.setCurrentScreen(Screens.SCENE_SCREEN);				
+						ui.setCurrentScreen(Screens.SCENE_SCREEN);
 					} catch (Exception e) {
 						EngineLogger.error("IN NEW GAME", e);
 						Gdx.app.exit();
-					}					
+					}
 				}
 			}
 		});
@@ -287,11 +291,11 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		iconStackTable.setFillParent(true);
 		iconStackTable.pack();
 		stage.addActor(iconStackTable);
-		
-		Label version = new Label("v"+ Config.getProperty(Config.VERSION_PROP, " unspecified"), skin);
+
+		Label version = new Label("v" + Config.getProperty(Config.VERSION_PROP, " unspecified"), skin);
 		version.setPosition(DPIUtils.getMarginSize(), DPIUtils.getMarginSize());
 		stage.addActor(version);
-		
+
 		debug.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				DebugScreen debugScr = new DebugScreen();
@@ -305,19 +309,19 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 		Gdx.input.setInputProcessor(stage);
 	}
-	
+
 	protected Table getMenuButtonTable() {
 		return menuButtonTable;
 	}
-	
+
 	protected Table getIconStackTable() {
 		return iconStackTable;
 	}
-	
+
 	protected UI getUI() {
 		return ui;
 	}
-	
+
 	protected MenuScreenStyle getStyle() {
 		return ui.getSkin().get(MenuScreenStyle.class);
 	}
@@ -330,7 +334,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 	@Override
 	public void setUI(UI ui) {
 		this.ui = ui;
-		
+
 		menuButtonTable.setFillParent(true);
 		menuButtonTable.center();
 	}

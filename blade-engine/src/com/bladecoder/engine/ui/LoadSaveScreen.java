@@ -95,17 +95,19 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 	@Override
 	public void dispose() {
-		stage.dispose();
-		stage = null;
+		if (stage != null) {
+			stage.dispose();
+			stage = null;
 
-		if (bgTexFile != null) {
-			bgTexFile.dispose();
+			if (bgTexFile != null) {
+				bgTexFile.dispose();
+			}
+
+			bgTexFile = null;
+
+			for (Texture t : textureList)
+				t.dispose();
 		}
-
-		bgTexFile = null;
-
-		for (Texture t : textureList)
-			t.dispose();
 	}
 
 	@Override
@@ -393,13 +395,13 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
 			final Actor listenerActor = event.getListenerActor();
-			
+
 			Dialog d = new Dialog("", ui.getSkin()) {
 				protected void result(Object object) {
 					if (((Boolean) object).booleanValue()) {
 						final World world = World.getInstance();
 						final String filename = listenerActor.getName() + World.GAMESTATE_EXT;
-						
+
 						try {
 							world.removeGameState(filename);
 

@@ -203,6 +203,10 @@ public class UI {
 		if(!Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals(""))
 			EngineAssetManager.getInstance().disposeAtlas(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null));
 		
+		// DISPOSE ALL SCREENS
+		for(BladeScreen s:screens)
+			s.dispose();
+		
 		EngineAssetManager.getInstance().dispose();
 	}
 	

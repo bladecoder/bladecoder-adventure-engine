@@ -224,6 +224,7 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 		if (music != null) {
 			music.stop();
 			music.dispose();
+			music = null;
 		}
 	}
 

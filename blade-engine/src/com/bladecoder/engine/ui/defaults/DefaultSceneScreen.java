@@ -900,6 +900,10 @@ public class DefaultSceneScreen implements SceneScreen {
 		return inventoryUI;
 	}
 	
+	public TextManagerUI getTextManagerUI() {
+		return textManagerUI;
+	}
+	
 	public Stage getStage() {
 		return stage;
 	}
@@ -910,15 +914,6 @@ public class DefaultSceneScreen implements SceneScreen {
 
 	@Override
 	public void show() {
-		retrieveAssets(ui.getUIAtlas());
-
-		stage = new Stage(viewport);
-		stage.addActor(textManagerUI);
-		stage.addActor(dialogUI);
-		stage.addActor(inventoryButton);
-		stage.addActor(menuButton);
-		stage.addActor(inventoryUI);
-		stage.addActor(pie);
 
 		final InputMultiplexer multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(stage);
@@ -943,7 +938,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	public void hide() {
 		World.getInstance().pause();
 		resetUI();
-		dispose();
+//		dispose();
 	}
 
 	@Override
@@ -992,5 +987,15 @@ public class DefaultSceneScreen implements SceneScreen {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
 			}
 		});
+		
+		retrieveAssets(ui.getUIAtlas());
+
+		stage = new Stage(viewport);
+		stage.addActor(textManagerUI);
+		stage.addActor(dialogUI);
+		stage.addActor(inventoryButton);
+		stage.addActor(menuButton);
+		stage.addActor(inventoryUI);
+		stage.addActor(pie);
 	}
 }

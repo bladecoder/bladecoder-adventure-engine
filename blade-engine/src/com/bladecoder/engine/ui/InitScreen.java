@@ -88,7 +88,10 @@ public class InitScreen extends ScreenAdapter implements BladeScreen {
 
 	@Override
 	public void dispose() {
-		tex.dispose();
+		if(tex != null) {
+			tex.dispose();
+			tex = null;
+		}
 	}
 
 	@Override
