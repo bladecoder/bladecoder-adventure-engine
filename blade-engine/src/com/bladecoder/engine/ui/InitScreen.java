@@ -55,6 +55,7 @@ public class InitScreen extends ScreenAdapter implements BladeScreen {
 		if (time > FADE_TIME * 2 + SCREEN_TIME) {  // EXIT INIT SCREEN
 			batch.setColor(Color.WHITE);
 			ui.setCurrentScreen(Screens.MENU_SCREEN);
+			batch.end();
 			return;
 		} else if (time > FADE_TIME + SCREEN_TIME) {  // FADE_OUT
 			batch.setColor(1, 1, 1, 1 - fadeTime / FADE_TIME);
@@ -69,7 +70,7 @@ public class InitScreen extends ScreenAdapter implements BladeScreen {
 		final float texW = tex.getWidth() * scale;
 		final float texH = tex.getHeight() * scale;
 		batch.draw(tex, (viewportW - texW) / 2, (viewportH - texH) / 2, texW, texH);
-		batch.setColor(1, 1, 1, 1);
+		batch.setColor(Color.WHITE);
 
 		time += delta;
 		fadeTime += delta;
