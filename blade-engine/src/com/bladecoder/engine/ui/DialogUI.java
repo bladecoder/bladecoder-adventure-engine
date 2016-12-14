@@ -55,7 +55,6 @@ public class DialogUI extends ScrollPane {
 		super(new Table(ui.getSkin()), ui.getSkin());
 
 		setFadeScrollBars(true);
-		setOverscroll(false, true);
 		setOverscroll(false, false);
 
 		up = new Button(ui.getSkin(), "dialog-up");

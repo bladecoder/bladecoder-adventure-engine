@@ -31,7 +31,7 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Says a text")
 public class SayAction extends BaseCallbackAction {
 	@ActionPropertyDescription("The target actor.")
-	@ActionProperty(type = Type.CHARACTER_ACTOR, required=true)
+	@ActionProperty(type = Type.CHARACTER_ACTOR, required = true)
 	private String actor;
 
 	@ActionPropertyDescription("The 'text' to show.")
@@ -45,7 +45,7 @@ public class SayAction extends BaseCallbackAction {
 	@ActionProperty(required = true, defaultValue = "SUBTITLE")
 	@ActionPropertyDescription("The type of the text.")
 	private Text.Type type = Text.Type.SUBTITLE;
-	
+
 	@ActionPropertyDescription("The animation to set when talking.")
 	@ActionProperty(required = false)
 	private String animation;
@@ -58,33 +58,30 @@ public class SayAction extends BaseCallbackAction {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		float x, y;
+		float x = TextManager.POS_SUBTITLE, y = TextManager.POS_SUBTITLE;
 		Color color = null;
 
 		setVerbCb(cb);
-		InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, false);
+		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, false);
 
 		if (soundId != null)
 			a.playSound(soundId);
 
 		if (text != null) {
-			if (type != Text.Type.TALK) {
-				x = y = TextManager.POS_SUBTITLE;
-			} else {
-				
+			if (type == Text.Type.TALK && a != null) {
 				Rectangle boundingRectangle = a.getBBox().getBoundingRectangle();
-				
+
 				x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
 				y = boundingRectangle.getY() + boundingRectangle.getHeight();
-				
-				color = ((CharacterActor)a).getTextColor();
-				
-				restoreStandPose((CharacterActor)a);
-				startTalkAnim((CharacterActor)a);
+
+				color = ((CharacterActor) a).getTextColor();
+
+				restoreStandPose((CharacterActor) a);
+				startTalkAnim((CharacterActor) a);
 			}
 
-			World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null,
-					a!=null?a.getId():null, this);
+			World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null, 
+					a != null? a.getId(): actor, this);
 		}
 
 		return getWait();
@@ -97,7 +94,7 @@ public class SayAction extends BaseCallbackAction {
 			a.startAnimation(previousAnim, Tween.Type.SPRITE_DEFINED, 0, null);
 		}
 
-		if(getWait())
+		if (getWait())
 			super.resume();
 	}
 
@@ -109,8 +106,8 @@ public class SayAction extends BaseCallbackAction {
 
 		// If the actor was already talking we restore the actor to the 'stand'
 		// pose
-		String talkAnim = animation != null?animation:a.getTalkAnim();
-		
+		String talkAnim = animation != null ? animation : a.getTalkAnim();
+
 		if (fa.startsWith(talkAnim)) {
 			a.stand();
 		}
@@ -118,8 +115,8 @@ public class SayAction extends BaseCallbackAction {
 
 	private void startTalkAnim(CharacterActor a) {
 		previousAnim = a.getRenderer().getCurrentAnimationId();
-		
-		if(animation != null)
+
+		if (animation != null)
 			a.startAnimation(animation, null);
 		else
 			a.talk();
