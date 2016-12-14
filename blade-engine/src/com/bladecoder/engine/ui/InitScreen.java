@@ -55,6 +55,7 @@ public class InitScreen extends ScreenAdapter implements BladeScreen {
 		if (time > FADE_TIME * 2 + SCREEN_TIME) {  // EXIT INIT SCREEN
 			batch.setColor(Color.WHITE);
 			ui.setCurrentScreen(Screens.MENU_SCREEN);
+			return;
 		} else if (time > FADE_TIME + SCREEN_TIME) {  // FADE_OUT
 			batch.setColor(1, 1, 1, 1 - fadeTime / FADE_TIME);
 		} else if (time < FADE_TIME) { // FADE IN
