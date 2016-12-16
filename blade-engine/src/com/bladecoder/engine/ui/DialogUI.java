@@ -110,15 +110,27 @@ public class DialogUI extends ScrollPane {
 			}
 		});
 	}
+	
+	@Override
+	public void setVisible (boolean visible) {
+		super.setVisible(visible);
+		
+		if(visible) {
+			show();
+		} else {
+			up.remove();
+			down.remove();
+		}
+	}
 
-	public void show() {
+	private void show() {
 		getVisibleOptions();
 
 		if (visibleOptions.size() == 0)
 			return;
 
-		else if (visibleOptions.size() == 1) { // If only has one option,
-			// autoselect it
+		else if (visibleOptions.size() == 1) { 
+			// If only has one option, autoselect it
 			select(0);
 			return;
 		}
@@ -166,12 +178,6 @@ public class DialogUI extends ScrollPane {
 		down.setVisible(false);
 	}
 
-	public void hide() {
-		setVisible(false);
-		getStage().getActors().removeValue(up, true);
-		getStage().getActors().removeValue(down, true);
-	}
-
 	private void select(int i) {
 		// RECORD
 		if (recorder.isRecording()) {
@@ -183,7 +189,7 @@ public class DialogUI extends ScrollPane {
 		else
 			World.getInstance().getInkManager().selectChoice(i);
 
-		hide();
+		setVisible(false);
 	}
 
 	private void getVisibleOptions() {

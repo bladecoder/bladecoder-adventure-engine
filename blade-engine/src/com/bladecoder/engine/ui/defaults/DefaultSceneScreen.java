@@ -34,6 +34,7 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -82,8 +83,8 @@ public class DefaultSceneScreen implements SceneScreen {
 
 	private PieMenu pie;
 	private InventoryUI inventoryUI;
-	private DialogUI dialogUI;
-	private TextManagerUI textManagerUI;
+	private Actor dialogUI;
+	private Actor textManagerUI;
 	private ShapeRenderer renderer;
 
 	private InventoryButton inventoryButton;
@@ -332,7 +333,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		case DIALOG_MODE:
 			inventoryUI.hide();
 			inventoryButton.setVisible(false);
-			dialogUI.show();
+			dialogUI.setVisible(true);
 
 			inventoryUI.cancelDragging();
 			break;
@@ -343,7 +344,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			break;
 		case SCENE_MODE:
 			inventoryUI.hide();
-			dialogUI.hide();
+			dialogUI.setVisible(false);
 			break;
 		}
 
@@ -757,7 +758,6 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		pie.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
-		textManagerUI.resize();
 		inventoryButton.resize(width, height);
 		pointer.resize(width, height);
 
@@ -900,8 +900,24 @@ public class DefaultSceneScreen implements SceneScreen {
 		return inventoryUI;
 	}
 	
-	public TextManagerUI getTextManagerUI() {
+	public Actor getTextManagerUI() {
 		return textManagerUI;
+	}
+	
+	public Actor getDialogUI() {
+		return dialogUI;
+	}
+	
+	public void setTextManagerUI(Actor a) {
+		textManagerUI.remove();
+		textManagerUI = a;
+		stage.addActor(textManagerUI);
+	}
+	
+	public void setDialogUI(Actor a) {
+		dialogUI.remove();
+		dialogUI = a;
+		stage.addActor(dialogUI);
 	}
 	
 	public Stage getStage() {

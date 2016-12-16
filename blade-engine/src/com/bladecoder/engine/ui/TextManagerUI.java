@@ -213,9 +213,6 @@ public class TextManagerUI extends Actor {
 		style.font.draw(batch, layout, fontX, getY() + PADDING + layout.height);
 	}
 
-	public void resize() {
-	}
-
 	private TextManagerUIStyle getStyle(Text text) {
 		String key = "default";
 		if (text != null) {

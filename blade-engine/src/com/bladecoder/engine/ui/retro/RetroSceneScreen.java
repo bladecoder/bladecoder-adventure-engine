@@ -285,12 +285,12 @@ public class RetroSceneScreen implements SceneScreen {
 			pointer.hide();
 			break;
 		case DIALOG_MODE:
-			dialogUI.show();
+			dialogUI.setVisible(true);
 			verbUI.hide();
 			pointer.show();
 			break;
 		case SCENE_MODE:
-			dialogUI.hide();
+			dialogUI.setVisible(false);
 			verbUI.show();
 			pointer.show();
 			break;
@@ -600,7 +600,6 @@ public class RetroSceneScreen implements SceneScreen {
 			world.resize(screenViewport.getWorldWidth(), screenViewport.getWorldHeight());
 		}
 
-		textManagerUI.resize();
 		pointer.resize();
 
 		verbUI.setSize(screenViewport.getScreenWidth(), screenViewport.getScreenHeight() * UI_SCREEN_PERCENT);
