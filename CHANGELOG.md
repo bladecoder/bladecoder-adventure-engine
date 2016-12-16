@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.0]
+
+- Ink support. (http://www.inklestudios.com/ink/)
+- Update libgdx version to 1.9.5.
+- Improve text styles in ui.json for TextManager.
+- Added 'target' parameter to TextAction.
+- Added tint/color animation support.
+- Added interpolation to camera animation.
+
 ## [1.0.3]
 
 - FIX: error loading recordings from 'tests' folder.
