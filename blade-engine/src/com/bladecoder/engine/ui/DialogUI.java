@@ -116,7 +116,8 @@ public class DialogUI extends ScrollPane {
 		super.setVisible(visible);
 		
 		if(visible) {
-			show();
+			if(getParent() != null)
+				show();
 		} else {
 			up.remove();
 			down.remove();
@@ -129,14 +130,13 @@ public class DialogUI extends ScrollPane {
 		if (visibleOptions.size() == 0)
 			return;
 
-		else if (visibleOptions.size() == 1) { 
+		else if (style.autoselect && visibleOptions.size() == 1) { 
 			// If only has one option, autoselect it
 			select(0);
 			return;
 		}
 
 		panel.clear();
-		setVisible(true);
 
 		for (int i = 0; i < visibleOptions.size(); i++) {
 			String str = visibleOptions.get(i);
@@ -216,6 +216,9 @@ public class DialogUI extends ScrollPane {
 		public Drawable background;
 
 		public TextButtonStyle textButtonStyle;
+		
+		// If only one option is visible, auto select it.
+		public boolean autoselect = true;
 
 		public DialogUIStyle() {
 		}
@@ -223,6 +226,7 @@ public class DialogUI extends ScrollPane {
 		public DialogUIStyle(DialogUIStyle style) {
 			background = style.background;
 			textButtonStyle = style.textButtonStyle;
+			autoselect = style.autoselect;
 		}
 	}
 }
