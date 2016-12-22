@@ -28,7 +28,7 @@ import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.util.Config;
 
 /**
- * TextManager mantains a fifo for the character subtitles.
+ * TextManager maintains a fifo for the character subtitles.
  * 
  * For now, only one subtitle is displayed in the screen.
  * 
