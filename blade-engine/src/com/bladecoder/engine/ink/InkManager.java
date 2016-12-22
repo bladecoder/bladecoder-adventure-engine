@@ -89,8 +89,10 @@ public class InkManager implements VerbRunner, Serializable {
 					} else {
 						EngineLogger.debug("INK EMPTY LINE!");
 						
-						if(!story.canContinue())
+						if(!story.canContinue()) {
 							nextLine();
+							return;
+						}
 					}
 
 				} while (line.isEmpty() && 
