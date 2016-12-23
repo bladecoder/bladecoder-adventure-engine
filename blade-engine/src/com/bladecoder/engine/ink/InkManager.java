@@ -74,29 +74,24 @@ public class InkManager implements VerbRunner, Serializable {
 			String line = null;
 
 			try {
-				do {
-					actions.clear();
-					line = story.Continue();
+				actions.clear();
+				line = story.Continue();
 
-					if (!line.isEmpty()) {
-						// Remove trailing '\n'
-						line = line.substring(0, line.length() - 1);
+				if (!line.isEmpty()) {
+					// Remove trailing '\n'
+					line = line.substring(0, line.length() - 1);
 
-						EngineLogger.debug("INK LINE: " + line);
+					EngineLogger.debug("INK LINE: " + line);
 
-						List<String> tags = story.getCurrentTags();
-						processLine(tags, line);
-					} else {
-						EngineLogger.debug("INK EMPTY LINE!");
-						
-						if(!story.canContinue()) {
-							nextLine();
-							return;
-						}
-					}
+					List<String> tags = story.getCurrentTags();
+					processLine(tags, line);
+				} else {
+					EngineLogger.debug("INK EMPTY LINE!");
 
-				} while (line.isEmpty() && 
-						story.canContinue());
+					nextLine();
+					return;
+				}
+
 			} catch (Exception e) {
 				EngineLogger.error(e.getMessage(), e);
 			}
@@ -104,7 +99,7 @@ public class InkManager implements VerbRunner, Serializable {
 		} else if (hasChoices()) {
 			wasInCutmode = World.getInstance().inCutMode();
 			World.getInstance().setCutMode(false);
-		} else if(cb != null){
+		} else if (cb != null) {
 			ActionCallbackQueue.add(cb);
 		}
 	}
@@ -206,8 +201,7 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	public boolean hasChoices() {
-		return (story != null && 
-				story.getCurrentChoices().size() > 0);
+		return (story != null && story.getCurrentChoices().size() > 0);
 	}
 
 	public List<Choice> getChoices() {
