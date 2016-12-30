@@ -80,7 +80,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		super(skin);
 
 		id = InputPanelFactory.createInputPanel(skin, "Scene ID",
-				"The ID is mandatory for scenes. \nIDs can not contain '.' or '_' characters.", true);
+				"The ID is mandatory for scenes.", true);
 		backgroundAtlas = InputPanelFactory.createInputPanel(skin, "Background Atlas",
 				"The atlas where the background for the scene is located", atlasList, false);
 		backgroundRegion = InputPanelFactory.createInputPanel(skin, "Background Region Id",
