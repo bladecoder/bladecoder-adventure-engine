@@ -455,7 +455,7 @@ public class ModelTools {
 		
 		StringBuilder tsvString = new StringBuilder();
 		
-		extractInkTextsInternal(root, tsvString);
+		extractInkTextsInternal("ink." + story + ".", root, tsvString);
 		FileUtils.writeStringToFile(new File(file + ".tsv"), tsvString.toString());
 		
 		String json = root.toJson(OutputType.json);
@@ -464,18 +464,18 @@ public class ModelTools {
 		Ctx.project.setModified();
 	}
 	
-	private static void extractInkTextsInternal(JsonValue v, StringBuilder sb) {
+	private static void extractInkTextsInternal(String prefix, JsonValue v, StringBuilder sb) {
 		if(v.isArray() || v.isObject()) {
 			for (int i = 0; i < v.size; i++) {
 				JsonValue aValue = v.get(i);
 				
-				extractInkTextsInternal(aValue, sb);
+				extractInkTextsInternal(prefix, aValue, sb);
 			}
 		} else if(v.isString() && v.asString().charAt(0) == '^') {
 			String value = v.asString().substring(1).trim();
 //			String key = "ink." + value.hashCode();
 			
-			String key = "ink.";
+			String key = prefix;
 			
 			try {
 				MessageDigest md = MessageDigest.getInstance("SHA-1");
