@@ -99,10 +99,10 @@ public class PackageDialog extends EditDialog {
 				FileInputPanel.DialogType.OPEN_FILE);
 		winJRE = new FileInputPanel(skin, "JRE.Windows64",
 				"Select the Windows 64 bits JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
-		osxJRE = new FileInputPanel(skin, "JRE.OSX", "Select the OSX JRE Location to bundle. Must be a ZIP file",
+		osxJRE = new FileInputPanel(skin, "JRE.MACOS", "Select the MacOS JRE Location to bundle. Must be a ZIP file",
 				FileInputPanel.DialogType.OPEN_FILE);
 		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the package version", true);
-		icon = new FileInputPanel(skin, "Icon", "The icon for the .exe file", FileInputPanel.DialogType.OPEN_FILE,
+		icon = new FileInputPanel(skin, "MacOS Icon", "The icon (.icns) for the Mac package. It is not mandatory.", FileInputPanel.DialogType.OPEN_FILE,
 				false);
 		versionCode = InputPanelFactory.createInputPanel(skin, "Version Code",
 				"An integer that identify the version.", Type.INTEGER, true);
@@ -417,8 +417,9 @@ public class PackageDialog extends EditDialog {
 	}
 
 	private void osChanged() {
+		setVisible(icon, false);
+		
 		if (os.isVisible() && (os.getText().equals("windows") || os.getText().equals("all"))) {
-			setVisible(icon, true);
 			setVisible(winJRE, true);
 		} else {
 			setVisible(icon, false);
@@ -439,6 +440,7 @@ public class PackageDialog extends EditDialog {
 
 		if (os.isVisible() && (os.getText().equals("macOSX") || os.getText().equals("all"))) {
 			setVisible(osxJRE, true);
+			setVisible(icon, true);
 		} else {
 			setVisible(osxJRE, false);
 		}
@@ -523,7 +525,7 @@ public class PackageDialog extends EditDialog {
 			suffix = "lin64";
 			break;
 		case MacOS:
-			suffix = "mac";
+			suffix = "mac.app";
 			break;
 		case Windows64:
 		case Windows32:
@@ -544,6 +546,11 @@ public class PackageDialog extends EditDialog {
 		config.outDir = new File(outDir + "/" + exe + "-" + suffix);
 
 		new Packr().pack(config);
+		
+		// COPY MAC OS ICON
+		if(platform == Platform.MacOS && icon.getText() != null && icon.getText().endsWith(".icns")) {
+			FileUtils.copyFile(new File(icon.getText()), new File(config.outDir.getAbsolutePath() + "/Contents/Resources/icons.icns"));
+		}
 	}
 
 	/**
