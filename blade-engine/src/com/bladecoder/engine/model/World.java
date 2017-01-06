@@ -583,7 +583,10 @@ public class World implements Serializable, AssetConsumer {
 		paused = true;
 
 		if (currentScene != null) {
-			musicEngine.pauseMusic();
+			
+			// do not pause the music when going to the loading screen.
+			if (assetState == AssetState.LOADED)
+				musicEngine.pauseMusic();
 
 			// Pause all sounds
 			for (BaseActor a : currentScene.getActors().values()) {
