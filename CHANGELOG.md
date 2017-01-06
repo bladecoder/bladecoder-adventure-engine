@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.1]
+
+- Added new action to add an integer value to a property to increment/decrement it. Useful to create counters.
+- Add MacOS .icon when packaging.
+- Add .app extension to the MacOS package.
+- Added autoselect style property to the DialogUI.
+- Ink support cleanup.
+- FIX: music was stopped changing from scene when a change to the
+loading screen was needed.
+
 ## [1.1.0]
 
 - Ink support. (http://www.inklestudios.com/ink/)
