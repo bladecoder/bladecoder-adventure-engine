@@ -1023,7 +1023,9 @@ public class World implements Serializable, AssetConsumer {
 			currentScene = scenes.get(json.readValue("currentScene", String.class, jsonData));
 			
 			// read inkManager after setting he current scene but before reading scenes and verbs tweens
-			inkManager.read(json, jsonData.get("inkManager"));
+			if(jsonData.get("inkManager") != null) {
+				inkManager.read(json, jsonData.get("inkManager"));
+			}
 
 			for (Scene s : scenes.values()) {
 				JsonValue jsonValue = jsonData.get("scenes").get(s.getId());
