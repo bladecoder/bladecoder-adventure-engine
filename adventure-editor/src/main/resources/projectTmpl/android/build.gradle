@@ -1,6 +1,6 @@
 android {
-    buildToolsVersion "%BUILD_TOOLS_VERSION%"
-    compileSdkVersion %API_LEVEL%
+    buildToolsVersion latestBuildToolsAvailable("%BUILD_TOOLS_VERSION%")
+    compileSdkVersion highestSdkAvailable(%API_LEVEL%)
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -145,4 +145,43 @@ idea {
             }
         }
     }
+}
+
+int highestSdkAvailable(int defaultSdk) {
+  try {
+      def buildToolsDir = new File(android.getSdkDirectory().toString(), "platforms")
+      def sdks = buildToolsDir.list([accept:{ d, f-> f.startsWith("android-") && new File(d, f).isDirectory() }] as FilenameFilter).sort { a, b -> b <=> a }
+      def highestSdk = sdks[0]
+      if (highestSdk != null) {
+          println "Using highest found SDK " + highestSdk.substring(8)
+          highestSdk.substring(8).toInteger()
+      } else {
+          println "No installed SDKs found. Using default SDK " + defaultSdk
+          defaultSdk
+      }
+  } catch (any) {
+      println "Exception while determining highest SDK. Using default SDK " +
+              defaultSdk
+      defaultSdk
+  }
+}
+
+String latestBuildToolsAvailable(String defaultBuildTools) {
+  try {
+      def buildToolsDir = new File(android.getSdkDirectory().toString(), "build-tools")
+      def buildToolsVersions = buildToolsDir.list([accept:{ d, f-> new File(d, f).isDirectory() }] as FilenameFilter).sort { a, b -> b <=> a }
+      def latestBuildTools = buildToolsVersions[0]
+      if (latestBuildTools != null) {
+          println "Using latest found build tools " + latestBuildTools
+          latestBuildTools
+      } else {
+          println "No installed build tools found. Using default build tools " +
+                  defaultBuildTools
+          defaultBuildTools
+      }
+  } catch (any) {
+      println "Exception while determining latest build tools. Using default build tools " +
+              defaultBuildTools
+      defaultBuildTools
+  }
 }
