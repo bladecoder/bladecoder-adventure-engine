@@ -61,7 +61,10 @@ public class InkManager implements VerbRunner, Serializable {
 				.getAsset(EngineAssetManager.MODEL_DIR + storyName + EngineAssetManager.INK_EXT);
 
 		try {
+			long initTime = System.currentTimeMillis();
 			newStory(asset.read());
+			EngineLogger.debug("INK STORY LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+			
 			this.storyName = storyName;
 		} catch (Exception e) {
 			EngineLogger.error("Cannot load Ink Story: " + storyName + " " + e.getMessage());
@@ -360,7 +363,9 @@ public class InkManager implements VerbRunner, Serializable {
 			try {
 				newStory(storyName);
 
+				long initTime = System.currentTimeMillis();
 				story.getState().loadJson(storyString);
+				EngineLogger.debug("INK SAVED STATE LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 			} catch (Exception e) {
 				EngineLogger.error(e.getMessage(), e);
 			}

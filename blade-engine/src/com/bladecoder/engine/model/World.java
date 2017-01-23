@@ -792,7 +792,7 @@ public class World implements Serializable, AssetConsumer {
 	public void loadGameState() throws IOException {
 		long initTime = System.currentTimeMillis();
 		loadGameState(GAMESTATE_FILENAME);
-		EngineLogger.debug("JSON LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+		EngineLogger.debug("GAME STATE LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 	}
 
 	public void loadGameState(String filename) throws IOException {
