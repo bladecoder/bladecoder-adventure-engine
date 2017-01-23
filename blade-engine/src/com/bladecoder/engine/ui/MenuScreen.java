@@ -28,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -294,6 +295,37 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 		Label version = new Label("v" + Config.getProperty(Config.VERSION_PROP, " unspecified"), skin);
 		version.setPosition(DPIUtils.getMarginSize(), DPIUtils.getMarginSize());
+		version.addListener(new ClickListener() {
+			int count = 0;
+			long time = System.currentTimeMillis();
+			
+			public void clicked(InputEvent event, float x, float y) {
+				if(System.currentTimeMillis() - time < 500) {
+					count++;	
+				} else {
+					count = 0;
+				}
+				
+				time = System.currentTimeMillis();
+				
+				if(count == 4) {
+					EngineLogger.toggle();
+					
+					if(World.getInstance().isDisposed())
+						return;
+					
+					if(EngineLogger.debugMode()) {
+						iconStackTable.row();
+						iconStackTable.add(debug);
+					} else {
+						Cell<?> cell = iconStackTable.getCell(debug);
+						iconStackTable.removeActor(debug);
+						cell.reset();
+					}
+				}
+			}
+		});
+		
 		stage.addActor(version);
 
 		debug.addListener(new ClickListener() {
