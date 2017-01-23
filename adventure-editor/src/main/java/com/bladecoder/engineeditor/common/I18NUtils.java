@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -128,7 +127,7 @@ public class I18NUtils {
 		String modelPath = projectPath + Project.MODEL_PATH;
 		File inputFile = new File(tsvFile);
 
-		try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF8"))) {
 			// get header
 			String line = br.readLine();
 
@@ -143,6 +142,12 @@ public class I18NUtils {
 				// get keys and texts
 				while ((line = br.readLine()) != null) {
 					String[] values = line.split(SEPARATOR);
+					
+					if(values.length != langs.length) {
+						EditorLogger.error("Incorrect line in .tsv: " + line);
+						continue;
+					}
+					
 					String key = values[0];
 
 					for (int i = 0; i < props.length; i++) {
