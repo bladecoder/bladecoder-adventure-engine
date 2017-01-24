@@ -229,12 +229,18 @@ public class DebugScreen implements BladeScreen {
 		table.add(rGroup);
 
 		// ------------- SCENES
+		final TextButton testScene = new TextButton("Run Test Verb", ui.getSkin(), "toggle");
+		
 		TextButton go = new TextButton("Go", ui.getSkin());
 		go.addListener(new ClickListener() {
 
 			public void clicked(InputEvent event, float x, float y) {
 				World.getInstance().resume();
 				World.getInstance().setCutMode(false);
+				
+				if(testScene.isChecked())
+					World.getInstance().setTestScene(scenes.getSelected());
+				
 				World.getInstance().setCurrentScene(scenes.getSelected());
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
@@ -250,6 +256,7 @@ public class DebugScreen implements BladeScreen {
 		scGroup.space(10);
 		scGroup.addActor(scenes);
 		scGroup.addActor(go);
+		scGroup.addActor(testScene);
 
 		table.row().pad(5).align(Align.left);
 		table.add(new Label("Go to Scene: ", ui.getSkin(), "debug"));
