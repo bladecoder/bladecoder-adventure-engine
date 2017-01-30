@@ -260,16 +260,18 @@ public class World implements Serializable, AssetConsumer {
 				else if (customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) != null
 						&& verbs.getVerb(Verb.INIT_SAVED_GAME_VERB, null, null) != null)
 					verbs.runVerb(Verb.INIT_SAVED_GAME_VERB, null, null);
-
-				// If in test mode run 'test' verb
-				if (testScene != null && testScene.equals(currentScene.getId())
-						&& currentScene.getVerb(Verb.TEST_VERB) != null)
-					currentScene.runVerb(Verb.TEST_VERB);
 			}
 
 			// call 'init' verb only when arrives from setCurrentScene and not
 			// from load or restoring
 			if (initScene) {
+				// If in test mode run 'test' verb (only the first time)
+				if (testScene != null && testScene.equals(currentScene.getId())
+						&& currentScene.getVerb(Verb.TEST_VERB) != null) {
+					currentScene.runVerb(Verb.TEST_VERB);
+					testScene = null;
+				}
+				
 				initCurrentScene();
 			}
 
@@ -778,6 +780,10 @@ public class World implements Serializable, AssetConsumer {
 			currentScene = null;
 			setCurrentScene(testScene);
 		}
+	}
+	
+	public void setTestScene(String s) {
+		testScene = s;
 	}
 
 	public boolean savedGameExists() {
