@@ -41,6 +41,7 @@ import com.badlogic.gdx.utils.SerializationException;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
 
 /**
@@ -120,6 +121,8 @@ public class BladeSkin extends Skin {
 
 					if (size == -1)
 						throw new SerializationException("'size' mandatory parameter for .ttf fonts");
+					
+					long initTime = System.currentTimeMillis();
 
 					FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
 					FreeTypeFontParameter parameter = new FreeTypeFontParameter();
@@ -131,10 +134,13 @@ public class BladeSkin extends Skin {
 					parameter.shadowOffsetX = json.readValue("shadowOffsetX", int.class, 0, jsonData);
 					parameter.shadowOffsetY = json.readValue("shadowOffsetY", int.class, 0, jsonData);
 					parameter.shadowColor = json.readValue("shadowColor", Color.class, Color.BLACK, jsonData);
+					parameter.characters = "";
 //					parameter.hinting = Hinting.Medium;
 //					parameter.mono = false;
 
 					font = generator.generateFont(parameter);
+					
+					EngineLogger.debug(path + " TIME (ms): " + (System.currentTimeMillis() - initTime));
 					
 					// TODO Dispose all generators.
 
