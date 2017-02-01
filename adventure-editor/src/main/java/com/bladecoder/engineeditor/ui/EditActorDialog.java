@@ -40,6 +40,7 @@ import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
+import com.bladecoder.engine.model.TextRenderer;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
@@ -64,7 +65,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			OBSTACLE_TYPE_STR, ANCHOR_TYPE_STR };
 
 	public static final String ACTOR_RENDERERS[] = { Project.ATLAS_RENDERER_STRING, Project.SPINE_RENDERER_STRING,
-			Project.IMAGE_RENDERER_STRING, Project.S3D_RENDERER_STRING, Project.PARTICLE_RENDERER_STRING };
+			Project.IMAGE_RENDERER_STRING, Project.S3D_RENDERER_STRING, Project.PARTICLE_RENDERER_STRING, Project.TEXT_RENDERER_STRING };
 
 	public static final String TYPES_INFO[] = {
 			"Background actors don't have sprites or animations. They are used to interact with objects drawn in the background",
@@ -92,15 +93,26 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel zIndex;
 	private InputPanel walkingSpeed;
 
-	// 3d Actor
+	// 3d Renderer
 	private InputPanel spriteSize;
 	private InputPanel cameraName;
 	private InputPanel fov;
 	private InputPanel textColor;
 
-	// particle Actor
+	// Particle Renderer
 	private InputPanel particleName;
 	private InputPanel particleAtlas;
+	
+	// Text Renderer
+	private InputPanel text;
+	private InputPanel font;
+	private InputPanel size;
+	private InputPanel borderWidth;
+	private InputPanel borderColor;
+	private InputPanel borderStraight;
+	private InputPanel shadowOffsetX;
+	private InputPanel shadowOffsetY;
+	private InputPanel shadowColor;
 
 	@SuppressWarnings("unchecked")
 	public EditActorDialog(Skin skin, Scene parent, BaseActor e) {
@@ -161,6 +173,27 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		particleAtlas = InputPanelFactory.createInputPanel(skin, "Particle Atlas",
 				"The atlas used by the particle system.", Type.ATLAS_ASSET, true);
+		
+		text = InputPanelFactory.createInputPanel(skin, "Text",
+				"The text to draw.", Type.SMALL_TEXT, true);
+		text.getCell(text.getField()).fillX();
+		
+		font = InputPanelFactory.createInputPanel(skin, "Font",
+				"Select the font name.", Type.FONT_ASSET, true);
+		size = InputPanelFactory.createInputPanel(skin, "Size",
+				"The size of the text.", Type.INTEGER, true, "20");
+		borderWidth = InputPanelFactory.createInputPanel(skin, "Border Width",
+				"Zero for no border.", Type.INTEGER, true, "0");
+		borderColor = InputPanelFactory.createInputPanel(skin, "Border Color",
+				"The Border Color.", Type.COLOR, true, "black");
+		borderStraight = InputPanelFactory.createInputPanel(skin, "Border Straigh",
+				"Is the border straight?", Type.BOOLEAN, true);
+		shadowOffsetX = InputPanelFactory.createInputPanel(skin, "Shadow Offset X",
+				"The Shadow X offset.", Type.INTEGER, true, "0");
+		shadowOffsetY = InputPanelFactory.createInputPanel(skin, "Shadow Offset Y",
+				"The Shadow Y offset.", Type.INTEGER, true, "0");
+		shadowColor = InputPanelFactory.createInputPanel(skin, "Shadow Color",
+				"The shadow Color.", Type.COLOR, true, "black");
 
 		setInfo(TYPES_INFO[0]);
 
@@ -182,7 +215,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		init(parent, e,
 				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, depthType, scale,
-						tint, bboxFromRenderer, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
+						tint, text, font, size, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
+						shadowColor, bboxFromRenderer, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
 
 		typeChanged();
 
@@ -244,6 +278,16 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		setVisible(particleName, false);
 		setVisible(particleAtlas, false);
+		
+		setVisible(text, false);
+		setVisible(font, false);
+		setVisible(size, false);
+		setVisible(borderWidth, false);
+		setVisible(borderColor, false);
+		setVisible(borderStraight, false);
+		setVisible(shadowOffsetX, false);
+		setVisible(shadowOffsetY, false);
+		setVisible(shadowColor, false);
 
 		if (renderer.isVisible()) {
 			if (ACTOR_RENDERERS[i].equals(Project.S3D_RENDERER_STRING)) {
@@ -253,6 +297,16 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			} else if (ACTOR_RENDERERS[i].equals(Project.PARTICLE_RENDERER_STRING)) {
 				setVisible(particleName, true);
 				setVisible(particleAtlas, true);
+			} else if (ACTOR_RENDERERS[i].equals(Project.TEXT_RENDERER_STRING)) {
+				setVisible(text, true);
+				setVisible(font, true);
+				setVisible(size, true);
+				setVisible(borderWidth, true);
+				setVisible(borderColor, true);
+				setVisible(borderStraight, true);
+				setVisible(shadowOffsetX, true);
+				setVisible(shadowOffsetY, true);
+				setVisible(shadowColor, true);
 			}
 		}
 	}
@@ -408,7 +462,26 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 					r.setParticleName(particleName.getText());
 					r.setAtlasName(particleAtlas.getText());
+					
+				} else if (Project.TEXT_RENDERER_STRING.equals(rendererType)) {
+					TextRenderer r;
 
+					if (sa.getRenderer() == null || !(sa.getRenderer() instanceof TextRenderer)) {
+						r = new TextRenderer();
+						sa.setRenderer(r);
+					} else {
+						r = (TextRenderer) sa.getRenderer();
+					}
+					
+					r.setText(text.getText());
+					r.setFontSize(Integer.parseInt(size.getText()));
+					r.setFontName(font.getText());
+					r.setBorderWidth(Integer.parseInt(borderWidth.getText()));
+					r.setBorderColor(Param.parseColor(borderColor.getText()));
+					r.setBorderStraight(Boolean.parseBoolean(borderStraight.getText()));
+					r.setShadowOffsetX(Integer.parseInt(shadowOffsetX.getText()));
+					r.setShadowOffsetY(Integer.parseInt(shadowOffsetY.getText()));
+					r.setShadowColor(Param.parseColor(shadowColor.getText()));
 				} else if (Project.SPINE_RENDERER_STRING.equals(rendererType)) {
 					if (sa.getRenderer() == null || !(sa.getRenderer() instanceof SpineRenderer))
 						sa.setRenderer(new SpineRenderer());
@@ -481,10 +554,24 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					spriteSize.setText(Param.toStringParam(s3d.getSpriteSize()));
 				} else if (r instanceof ParticleRenderer) {
 					renderer.setText(Project.PARTICLE_RENDERER_STRING);
-					ParticleRenderer s3d = (ParticleRenderer) r;
+					ParticleRenderer pr = (ParticleRenderer) r;
 
-					particleName.setText(s3d.getParticleName());
-					particleAtlas.setText(s3d.getAtlasName());
+					particleName.setText(pr.getParticleName());
+					particleAtlas.setText(pr.getAtlasName());
+				} else if (r instanceof TextRenderer) {
+					renderer.setText(Project.TEXT_RENDERER_STRING);
+					TextRenderer tr = (TextRenderer) r;
+
+					text.setText(tr.getText());
+					size.setText(Integer.toString(tr.getFontSize()));
+					font.setText(tr.getFontName());
+					borderWidth.setText(Integer.toString(tr.getBorderWidth()));
+					borderColor.setText(tr.getBorderColor().toString());
+					borderStraight.setText(Boolean.toString(tr.isBorderStraight()));
+					shadowOffsetX.setText(Integer.toString(tr.getShadowOffsetX()));
+					shadowOffsetY.setText(Integer.toString(tr.getShadowOffsetY()));
+					shadowColor.setText(tr.getShadowColor().toString());
+					
 				} else if (r instanceof SpineRenderer) {
 					renderer.setText(Project.SPINE_RENDERER_STRING);
 				}

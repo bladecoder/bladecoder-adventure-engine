@@ -133,6 +133,7 @@ public class InputPanelFactory extends Table {
 		case MUSIC_ASSET:
 		case SOUND_ASSET:
 		case PARTICLE_ASSET:
+		case FONT_ASSET:
 			return getReadOnlyOptionsInputPanel(skin, title, desc, mandatory, defaultValue, getAssetList(type));
 		case NOT_SET:
 			break;
@@ -177,6 +178,11 @@ public class InputPanelFactory extends Table {
 		} else if (type == Type.PARTICLE_ASSET) {
 			path = Ctx.project.getProjectPath() + Project.PARTICLE_PATH + "/";
 			exts = null;
+		} else if (type == Type.FONT_ASSET) {
+			path = Ctx.project.getProjectPath() + Project.FONT_PATH + "/";
+			exts = new String[1];
+			exts[0] = ".ttf";
+			cutExt = true;	
 		} else {
 			exts = null;
 		}

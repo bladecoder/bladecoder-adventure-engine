@@ -144,6 +144,12 @@ public class ParticleRenderer implements ActorRenderer {
 
 	@Override
 	public void retrieveAssets() {
+		
+		if (!EngineAssetManager.getInstance().isAtlasLoaded(atlasName)) {
+			loadAssets();
+			EngineAssetManager.getInstance().finishLoading();
+		}
+		
 		atlasTex = EngineAssetManager.getInstance().getTextureAtlas(getAtlasName());
 		
 		effect.load(EngineAssetManager.getInstance().getParticle(getParticleName()), atlasTex);

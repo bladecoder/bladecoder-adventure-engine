@@ -67,11 +67,13 @@ public class EngineAssetManager extends AssetManager {
 	public static final String MODEL3D_DIR = "3d/";
 	public static final String SPINE_DIR = "spine/";
 	public static final String PARTICLE_DIR = "particles/";
+	public static final String FONT_DIR = "ui/fonts/";
 
 	public static final String MODEL3D_EXT = ".g3db";
 	public static final String SPINE_EXT = ".skel";
 	public static final String ATLAS_EXT = ".atlas";
 	public static final String INK_EXT = ".ink.json";
+	public static final String FONT_EXT = ".ttf";
 
 	public static final String CHAPTER_EXT = ".chapter.json";
 

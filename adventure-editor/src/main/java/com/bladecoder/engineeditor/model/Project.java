@@ -73,6 +73,7 @@ public class Project extends PropertyChange {
 	public static final String IMAGE_RENDERER_STRING = "image";
 	public static final String S3D_RENDERER_STRING = "3d";
 	public static final String PARTICLE_RENDERER_STRING = "particle";
+	public static final String TEXT_RENDERER_STRING = "text";
 
 	public static final String ASSETS_PATH = "/android/assets";
 	public static final String MODEL_PATH = ASSETS_PATH + "/model";
@@ -85,6 +86,7 @@ public class Project extends PropertyChange {
 	public static final String SPINE_PATH = ASSETS_PATH + "/spine";
 	public static final String PARTICLE_PATH = ASSETS_PATH + "/particles";
 	public static final String UI_PATH = ASSETS_PATH + "/ui";
+	public static final String FONT_PATH = UI_PATH + "/fonts";
 
 	public static final int DEFAULT_WIDTH = 1920;
 	public static final int DEFAULT_HEIGHT = 1080;

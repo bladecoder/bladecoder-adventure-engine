@@ -37,6 +37,7 @@ import com.bladecoder.engine.model.ParticleRenderer;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.TextRenderer;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
@@ -275,6 +276,8 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 				} else if (r instanceof SpineRenderer) {
 					u = "ic_spine";
 				} else if (r instanceof ParticleRenderer) {
+					u = "ic_anchor";
+				} else if (r instanceof TextRenderer) {
 					u = "ic_anchor";
 				} else if (r instanceof Sprite3DRenderer) {
 					u = "ic_3d";

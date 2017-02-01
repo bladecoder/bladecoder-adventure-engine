@@ -37,7 +37,7 @@
 	},
 
 
-	com.bladecoder.engineeditor.ui.components.CustomList$CustomListStyle: {
+	com.bladecoder.engineeditor.ui.panels.CustomList$CustomListStyle: {
 		default: {  fontColorUnselected: text-dark, selection: text_selected, fontColorSelected: text-dark, font: default-font, subtitleFont: thin-font},
 	},	
 
