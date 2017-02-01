@@ -33,6 +33,7 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.ObstacleActor;
+import com.bladecoder.engine.model.ParticleRenderer;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
@@ -40,9 +41,9 @@ import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditModelDialog;
-import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.ui.panels.CellRenderer;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteActor;
 
 public class ActorList extends ModelList<Scene, BaseActor> {
@@ -273,6 +274,8 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 					u = "ic_sprite_actor";
 				} else if (r instanceof SpineRenderer) {
 					u = "ic_spine";
+				} else if (r instanceof ParticleRenderer) {
+					u = "ic_anchor";
 				} else if (r instanceof Sprite3DRenderer) {
 					u = "ic_3d";
 				}
@@ -282,7 +285,6 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 				u = "ic_obstacle_actor";
 			} else if (a instanceof AnchorActor) {
 				u = "ic_anchor";
-
 			}
 
 			return Ctx.assetManager.getIcon(u);

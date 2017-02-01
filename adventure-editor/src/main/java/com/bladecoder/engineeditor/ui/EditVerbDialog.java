@@ -26,12 +26,12 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.ui.components.EditModelDialog;
-import com.bladecoder.engineeditor.ui.components.EditableSelectBox;
-import com.bladecoder.engineeditor.ui.components.InputPanel;
-import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
-import com.bladecoder.engineeditor.ui.components.ScopePanel;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.EditableSelectBox;
+import com.bladecoder.engineeditor.ui.panels.InputPanel;
+import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.panels.OptionsInputPanel;
+import com.bladecoder.engineeditor.ui.panels.ScopePanel;
 
 public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 	private static final String VERBS[] = { "lookat", "pickup", "talkto", "use",

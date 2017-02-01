@@ -31,7 +31,7 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
@@ -54,7 +54,7 @@ import com.esotericsoftware.spine.Slot;
 import com.esotericsoftware.spine.attachments.Attachment;
 import com.esotericsoftware.spine.attachments.RegionAttachment;
 
-public class SpineRenderer implements ActorRenderer {
+public class SpineRenderer implements AnimationRenderer {
 
 	private final static int PLAY_ANIMATION_EVENT = 0;
 	private final static int PLAY_SOUND_EVENT = 1;
@@ -278,6 +278,9 @@ public class SpineRenderer implements ActorRenderer {
 				currentSource.skeleton.setColor(tint);
 			
 			renderer.draw(batch, currentSource.skeleton);
+			
+			if(tint != null)
+				batch.setColor(Color.WHITE);
 			batch.setTransformMatrix(batch.getTransformMatrix().scale(1 / scale, 1 / scale, 1.0f));
 		} else {
 			x = x - getWidth() / 2 * scale;

@@ -42,7 +42,7 @@ import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
@@ -615,11 +615,11 @@ public class ScnWidget extends Widget {
 
 	public void setSelectedFA(String selFA) {
 		if (selectedActor instanceof SpriteActor) {
-			ActorRenderer s = ((SpriteActor) selectedActor).getRenderer();
+			AnimationRenderer s = (AnimationRenderer) ((SpriteActor) selectedActor).getRenderer();
 
 			if (selFA == null || (s.getAnimations().get(selFA) == null
 					&& s.getAnimations().get(AnimationDesc.getFlipId(selFA)) == null)) {
-				selFA = ((SpriteActor) selectedActor).getRenderer().getInitAnimation();
+				selFA = s.getInitAnimation();
 			}
 
 			if (selFA != null && (s.getAnimations().get(selFA) != null
@@ -628,13 +628,13 @@ public class ScnWidget extends Widget {
 				setAnimationRenderer(selectedActor, s.getAnimations().get(selFA));
 
 				if (inScene || s.getCurrentAnimation() == null
-						|| ((SpriteActor) selectedActor).getRenderer().getInitAnimation().equals(selFA)) {
+						|| s.equals(selFA)) {
 					try {
 
 						((SpriteActor) selectedActor).startAnimation(selFA, Tween.Type.REPEAT, Tween.INFINITY, null);
 					} catch (Exception e) {
 						setAnimationRenderer(selectedActor, null);
-						((SpriteActor) selectedActor).getRenderer().getAnimations().remove(selFA);
+						s.getAnimations().remove(selFA);
 					}
 				}
 			} else {

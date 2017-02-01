@@ -35,7 +35,7 @@ import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
 
-public class ImageRenderer implements ActorRenderer {
+public class ImageRenderer implements AnimationRenderer {
 
 	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
 

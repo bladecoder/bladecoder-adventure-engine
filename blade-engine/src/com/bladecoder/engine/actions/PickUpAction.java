@@ -17,6 +17,7 @@ package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
@@ -58,7 +59,7 @@ public class PickUpAction implements Action {
 
 			if(animation != null)
 				a.startAnimation(animation, null);
-			else if(a.getRenderer().getAnimations().get(a.getId() + ".inventory") != null)
+			else if(((AnimationRenderer)a.getRenderer()).getAnimations().get(a.getId() + ".inventory") != null)
 				a.startAnimation(a.getId() + ".inventory", null);
 			
 			World.getInstance().getInventory().addItem(a);

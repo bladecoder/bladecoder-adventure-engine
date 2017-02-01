@@ -32,10 +32,10 @@ import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ActionDetector;
 import com.bladecoder.engineeditor.common.EditorLogger;
-import com.bladecoder.engineeditor.ui.components.EditModelDialog;
-import com.bladecoder.engineeditor.ui.components.InputPanel;
-import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-import com.bladecoder.engineeditor.ui.components.ScopePanel;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.InputPanel;
+import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.panels.ScopePanel;
 
 public class EditActionDialog extends EditModelDialog<Verb, Action> {
 	private InputPanel actionPanel;

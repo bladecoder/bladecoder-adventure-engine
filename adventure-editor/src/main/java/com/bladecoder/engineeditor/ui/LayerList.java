@@ -25,9 +25,9 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.Message;
-import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditModelDialog;
-import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.ui.panels.CellRenderer;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.ModelList;
 
 public class LayerList extends ModelList<Scene, SceneLayer> {
 

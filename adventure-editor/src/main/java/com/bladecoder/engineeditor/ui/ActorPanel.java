@@ -23,6 +23,7 @@ import java.util.HashMap;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.model.AnchorActor;
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
@@ -32,8 +33,8 @@ import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.HeaderPanel;
-import com.bladecoder.engineeditor.ui.components.TabPanel;
+import com.bladecoder.engineeditor.ui.panels.HeaderPanel;
+import com.bladecoder.engineeditor.ui.panels.TabPanel;
 
 public class ActorPanel extends HeaderPanel {
 
@@ -69,7 +70,7 @@ public class ActorPanel extends HeaderPanel {
 
 						if (a != null) {
 						
-							if (a instanceof SpriteActor)
+							if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof AnimationRenderer)
 								tabPanel.addTab("Animations", faList);
 
 							if (!(a instanceof ObstacleActor) &&
@@ -96,8 +97,8 @@ public class ActorPanel extends HeaderPanel {
 							setTile("ACTOR");
 						}
 						
-						if(a instanceof SpriteActor) {
-							HashMap<String, AnimationDesc> anims = ((SpriteActor) a).getRenderer().getAnimations();
+						if(a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof AnimationRenderer) {
+							HashMap<String, AnimationDesc> anims = ((AnimationRenderer)((SpriteActor) a).getRenderer()).getAnimations();
 							if(anims != null)
 								faList.addElements((SpriteActor)a, Arrays.asList(anims.values().toArray(new AnimationDesc[0])));
 							else

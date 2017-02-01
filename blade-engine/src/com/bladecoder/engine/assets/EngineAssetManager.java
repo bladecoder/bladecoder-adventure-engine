@@ -66,6 +66,7 @@ public class EngineAssetManager extends AssetManager {
 	public static final String SOUND_DIR = "sounds/";
 	public static final String MODEL3D_DIR = "3d/";
 	public static final String SPINE_DIR = "spine/";
+	public static final String PARTICLE_DIR = "particles/";
 
 	public static final String MODEL3D_EXT = ".g3db";
 	public static final String SPINE_EXT = ".skel";
@@ -332,6 +333,11 @@ public class EngineAssetManager extends AssetManager {
 
 	public FileHandle getSpine(String name) {
 		return resResolver.baseResolve(SPINE_DIR + name + SPINE_EXT);
+	}
+	
+
+	public FileHandle getParticle(String name) {
+		return resResolver.baseResolve(PARTICLE_DIR + name);
 	}
 
 	public void loadModel3D(String name) {

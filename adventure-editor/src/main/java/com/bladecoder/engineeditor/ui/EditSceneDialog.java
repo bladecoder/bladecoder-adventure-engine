@@ -15,10 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Arrays;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -34,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.MusicDesc;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
@@ -43,9 +40,9 @@ import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.EditModelDialog;
-import com.bladecoder.engineeditor.ui.components.InputPanel;
-import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.InputPanel;
+import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 import com.bladecoder.engineeditor.undo.UndoCreateScene;
 import com.bladecoder.engineeditor.undo.UndoEditScene;
 
@@ -53,9 +50,6 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
 	public static final String INFO = "An adventure is composed of many scenes (screens).\n"
 			+ "Inside a scene there are actors and a 'player'.\nThe player/user can interact with the actors throught 'verbs'.";
-
-	private String atlasList[] = getAtlasList();
-	private String musicList[] = getMusicList();
 
 	private Image bgImage;
 	private Container<Image> infoContainer;
@@ -82,7 +76,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		id = InputPanelFactory.createInputPanel(skin, "Scene ID",
 				"The ID is mandatory for scenes.", true);
 		backgroundAtlas = InputPanelFactory.createInputPanel(skin, "Background Atlas",
-				"The atlas where the background for the scene is located", atlasList, false);
+				"The atlas where the background for the scene is located", Type.ATLAS_ASSET, false);
 		backgroundRegion = InputPanelFactory.createInputPanel(skin, "Background Region Id",
 				"The region id for the background.", new String[0], false);
 //		depthVector = InputPanelFactory.createInputPanel(skin, "Depth Vector",
@@ -93,7 +87,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 				"false");
 		
 		state = InputPanelFactory.createInputPanel(skin, "State", "The initial state for the scene.", false);
-		music = InputPanelFactory.createInputPanel(skin, "Music Filename", "The music for the scene", musicList, false);
+		music = InputPanelFactory.createInputPanel(skin, "Music Filename", "The music for the scene", Type.MUSIC_ASSET, false);
 		loopMusic = InputPanelFactory.createInputPanel(skin, "Loop Music", "If the music is playing in looping",
 				Param.Type.BOOLEAN, true, "true");
 		volumeMusic = InputPanelFactory.createInputPanel(skin, "Music Volume", "The volume of the music. Value is between 0 and 1.",
@@ -291,63 +285,6 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
 		if (e.getSceneSize() != null)
 			sceneSize.setText(Param.toStringParam(e.getSceneSize()));
-	}
-
-	private String[] getAtlasList() {
-		String bgPath = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/" + Ctx.project.getResDir();
-
-		File f = new File(bgPath);
-
-		String bgs[] = f.list(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File arg0, String arg1) {
-				if (arg1.endsWith(".atlas"))
-					return true;
-
-				return false;
-			}
-		});
-
-		Arrays.sort(bgs);
-
-		for (int i = 0; i < bgs.length; i++) {
-			int idx = bgs[i].lastIndexOf('.');
-			if (idx != -1)
-				bgs[i] = bgs[i].substring(0, idx);
-		}
-
-		return bgs;
-	}
-
-	private String[] getMusicList() {
-		String path = Ctx.project.getProjectPath() + Project.MUSIC_PATH;
-
-		File f = new File(path);
-
-		String musicFiles[] = f.list(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File arg0, String arg1) {
-				if (arg1.endsWith(".ogg") || arg1.endsWith(".mp3"))
-					return true;
-
-				return false;
-			}
-		});
-
-		if (musicFiles == null)
-			return new String[0];
-
-		Arrays.sort(musicFiles);
-
-		String musicFiles2[] = new String[musicFiles.length + 1];
-		musicFiles2[0] = "";
-
-		for (int i = 0; i < musicFiles.length; i++)
-			musicFiles2[i + 1] = musicFiles[i];
-
-		return musicFiles2;
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -39,9 +40,10 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ImageUtils;
 import com.bladecoder.engineeditor.common.Message;
+import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.CustomList;
-import com.bladecoder.engineeditor.ui.components.EditToolbar;
+import com.bladecoder.engineeditor.ui.panels.CustomList;
+import com.bladecoder.engineeditor.ui.panels.EditToolbar;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooser.Mode;
 import com.kotcrab.vis.ui.widget.file.FileChooser.SelectionMode;
@@ -50,7 +52,7 @@ import com.kotcrab.vis.ui.widget.file.FileChooserListener;
 import com.kotcrab.vis.ui.widget.file.FileTypeFilter;
 
 public class AssetsList extends Table {
-	private static final String[] ASSET_TYPES = { "3d models", "atlases", "music", "sounds", "images", "spine" };
+	private static final String[] ASSET_TYPES = { "3d models", "atlases", "music", "sounds", "images", "spine", "particles" };
 
 	private SelectBox<String> assetTypes;
 	protected EditToolbar toolbar;
@@ -184,6 +186,8 @@ public class AssetsList extends Table {
 			dir = Ctx.project.getProjectPath() + "/" + Project.SPRITE3D_PATH;
 		} else if (type.equals("spine")) {
 			dir = Ctx.project.getProjectPath() + "/" + Project.SPINE_PATH;
+		} else if (type.equals("particles")) {
+			dir = Ctx.project.getProjectPath() + "/" + Project.PARTICLE_PATH;
 		} else {
 			dir = Ctx.project.getProjectPath() + Project.ASSETS_PATH;
 		}
@@ -198,6 +202,17 @@ public class AssetsList extends Table {
 			new CreateAtlasDialog(skin).show(getStage());
 
 //			addAssets();
+			
+		} else if (type.equals("particles")) {
+			//	Open the particle editor
+			List<String> cp = new ArrayList<String>();
+			cp.add(System.getProperty("java.class.path"));
+			try {
+				RunProccess.runJavaProccess("com.badlogic.gdx.tools.particleeditor.ParticleEditor", cp, null);
+			} catch (IOException e) {
+				Message.showMsgDialog(getStage(), "Error", "Error launching Particle Editor.");
+				EditorLogger.printStackTrace(e);
+			}
 		} else {
 
 			FileChooser fileChooser = new FileChooser(Mode.OPEN);
@@ -231,7 +246,7 @@ public class AssetsList extends Table {
 				typeFilter.addRule("Spine (*.skel, *.json)", "skel", "json");
 				break;
 			default:
-
+				typeFilter.addRule("All", "");
 				break;
 			}
 			

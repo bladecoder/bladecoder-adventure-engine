@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.ImageRenderer;
@@ -40,7 +41,7 @@ public class SpriteDrawer {
 	private static final float HEIGHT = 200;
 
 	AnimationDesc currentAnimation;
-	private ActorRenderer renderer;
+	private AnimationRenderer renderer;
 	private float viewportW, viewportH;
 
 	public void setViewport(float w, float h) {
@@ -54,7 +55,7 @@ public class SpriteDrawer {
 			renderer = null;
 		}
 
-		if (a instanceof SpriteActor) {
+		if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof AnimationRenderer) {
 			ActorRenderer r = ((SpriteActor) a).getRenderer();
 
 			if (r instanceof Sprite3DRenderer) {
@@ -66,7 +67,7 @@ public class SpriteDrawer {
 				((SpineRenderer)renderer).enableEvents(false);
 			} else if (r instanceof ImageRenderer) {
 				renderer = new ImageRenderer();				
-			} else {
+			} else if (r instanceof AtlasRenderer) {
 				renderer = new AtlasRenderer();
 			}
 		}

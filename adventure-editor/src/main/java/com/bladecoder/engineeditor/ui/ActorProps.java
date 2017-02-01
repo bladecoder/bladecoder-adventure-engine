@@ -25,7 +25,7 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.PropertyTable;
+import com.bladecoder.engineeditor.ui.panels.PropertyTable;
 import com.eclipsesource.json.ParseException;
 
 public class ActorProps extends PropertyTable {

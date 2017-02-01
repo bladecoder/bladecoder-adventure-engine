@@ -24,7 +24,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.PropertyTable;
+import com.bladecoder.engineeditor.ui.panels.PropertyTable;
 
 public class WorldProps extends PropertyTable {
 	public WorldProps(Skin skin) {

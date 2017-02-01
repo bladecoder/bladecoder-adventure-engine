@@ -32,9 +32,9 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.common.ModelTools;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.EditModelDialog;
-import com.bladecoder.engineeditor.ui.components.InputPanel;
-import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.InputPanel;
+import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 import com.bladecoder.engineeditor.undo.UndoCreateSound;
 
 public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> {

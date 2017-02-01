@@ -167,6 +167,9 @@ public class SpriteActor extends InteractiveActor {
 
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
 
+		if(!(renderer instanceof AnimationRenderer)) 
+			return;
+		
 		inAnim();
 
 		// resets posTween when walking
@@ -174,7 +177,8 @@ public class SpriteActor extends InteractiveActor {
 			posTween = null;
 
 		EngineLogger.debug("ANIMATION: " + this.id + "." + id);
-		renderer.startAnimation(id, repeatType, count, cb);
+		
+		((AnimationRenderer)renderer).startAnimation(id, repeatType, count, cb);
 
 		outAnim(repeatType);
 	}
@@ -184,7 +188,7 @@ public class SpriteActor extends InteractiveActor {
 	 * - add 'out' distance from previous animation
 	 */
 	protected void inAnim() {
-		AnimationDesc fa = renderer.getCurrentAnimation();
+		AnimationDesc fa = ((AnimationRenderer)renderer).getCurrentAnimation();
 
 		if (fa != null) {
 
@@ -208,7 +212,7 @@ public class SpriteActor extends InteractiveActor {
 	 * @param repeatType
 	 */
 	protected void outAnim(Type repeatType) {
-		AnimationDesc fa = renderer.getCurrentAnimation();
+		AnimationDesc fa = ((AnimationRenderer)renderer).getCurrentAnimation();
 
 		if (fa != null) {
 

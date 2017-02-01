@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.Tween;
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
@@ -102,7 +103,7 @@ public class SayAction extends BaseCallbackAction {
 		if (a == null)
 			return;
 
-		String fa = a.getRenderer().getCurrentAnimationId();
+		String fa = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
 
 		// If the actor was already talking we restore the actor to the 'stand'
 		// pose
@@ -114,7 +115,7 @@ public class SayAction extends BaseCallbackAction {
 	}
 
 	private void startTalkAnim(CharacterActor a) {
-		previousAnim = a.getRenderer().getCurrentAnimationId();
+		previousAnim = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
 
 		if (animation != null)
 			a.startAnimation(animation, null);

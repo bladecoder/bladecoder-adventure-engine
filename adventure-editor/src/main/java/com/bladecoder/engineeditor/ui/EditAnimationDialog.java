@@ -34,6 +34,7 @@ import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
@@ -43,9 +44,9 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.scneditor.AnimationWidget;
-import com.bladecoder.engineeditor.ui.components.EditModelDialog;
-import com.bladecoder.engineeditor.ui.components.InputPanel;
-import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.InputPanel;
+import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 
 public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationDesc> {
 
@@ -418,7 +419,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		e.duration = Float.parseFloat(speed.getText());
 
 		if (create) {
-			parent.getRenderer().addAnimation(e);
+			((AnimationRenderer)parent.getRenderer()).addAnimation(e);
 		}
 
 		ActorRenderer renderer = parent.getRenderer();

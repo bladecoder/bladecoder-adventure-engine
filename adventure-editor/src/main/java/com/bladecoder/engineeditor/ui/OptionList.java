@@ -28,9 +28,9 @@ import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditModelDialog;
-import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.ui.panels.CellRenderer;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteOption;
 
 public class OptionList extends ModelList<Dialog, DialogOption> {

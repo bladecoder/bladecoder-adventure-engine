@@ -26,6 +26,7 @@ import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.AtlasRenderer;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
@@ -70,9 +71,8 @@ public class AnimationWidget extends Widget {
 	}
 
 	public String[] getAnimations() {
-
 		try {
-			return renderer.getInternalAnimations(fa);
+			return ((AnimationRenderer)renderer).getInternalAnimations(fa);
 		} catch (Exception e) {
 			// Message.show(getStage(),
 			// "Error loading animations from selected source", 4);
@@ -83,6 +83,7 @@ public class AnimationWidget extends Widget {
 	}
 
 	public void setAnimation(String id, String speedStr, Tween.Type t) {
+		
 		if (fa != null && id != null &&  !id.isEmpty()) {
 			
 			if(fa instanceof AtlasAnimationDesc)
@@ -109,17 +110,17 @@ public class AnimationWidget extends Widget {
 			fa.animationType = type;
 			fa.count = -1;
 			
-			renderer.getAnimations().clear();
+			((AnimationRenderer)renderer).getAnimations().clear();
 
-			renderer.addAnimation(fa);
-			renderer.startAnimation(fa.id, Tween.Type.SPRITE_DEFINED, 1, null);
+			((AnimationRenderer)renderer).addAnimation(fa);
+			((AnimationRenderer)renderer).startAnimation(fa.id, Tween.Type.SPRITE_DEFINED, 1, null);
 		}
 	}
 
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
 
-		if (renderer == null || renderer.getCurrentAnimation() == null)
+		if (renderer == null || ((AnimationRenderer)renderer).getCurrentAnimation() == null)
 			return;
 
 		Color tmp = batch.getColor();

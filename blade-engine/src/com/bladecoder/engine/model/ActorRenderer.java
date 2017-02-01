@@ -15,16 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json.Serializable;
-import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.anim.AnimationDesc;
-import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.AssetConsumer;
 
 public interface ActorRenderer extends Serializable, AssetConsumer {
@@ -34,25 +28,6 @@ public interface ActorRenderer extends Serializable, AssetConsumer {
 	
 	public float getWidth();
 	public float getHeight();
-	
-	public AnimationDesc getCurrentAnimation();
-	public String getCurrentAnimationId();
-	
-	public void startAnimation(String id, Tween.Type repeatType,
-			int count, ActionCallback cb);
-	
-	public void startAnimation(String id, Tween.Type repeatType,
-			int count, ActionCallback cb, String direction);
-	
-	public void startAnimation(String id, Tween.Type repeatType,
-			int count, ActionCallback cb, Vector2 p0, Vector2 pf);
-	
-	public void addAnimation(AnimationDesc anim);
-	public void setInitAnimation(String anim);
-	public String getInitAnimation();
-	
-	public String[] getInternalAnimations(AnimationDesc anim);
-	public HashMap<String, AnimationDesc> getAnimations();
 	
 	/**
 	 * Compute the bbox based in the size of the animation/sprite. T

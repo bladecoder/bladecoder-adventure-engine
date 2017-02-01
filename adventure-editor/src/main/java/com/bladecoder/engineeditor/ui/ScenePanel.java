@@ -24,8 +24,8 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.HeaderPanel;
-import com.bladecoder.engineeditor.ui.components.TabPanel;
+import com.bladecoder.engineeditor.ui.panels.HeaderPanel;
+import com.bladecoder.engineeditor.ui.panels.TabPanel;
 
 public class ScenePanel extends HeaderPanel {
 	

@@ -60,7 +60,7 @@ import com.bladecoder.engine.util.Utils3D;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 @SuppressWarnings("deprecation")
-public class Sprite3DRenderer implements ActorRenderer {
+public class Sprite3DRenderer implements AnimationRenderer {
 
 	private static final String FRAGMENT_SHADER = "com/bladecoder/engine/shading/cel.fragment.glsl";
 	private static final String FLOOR_FRAGMENT_SHADER = "com/bladecoder/engine/shading/floor.fragment.glsl";

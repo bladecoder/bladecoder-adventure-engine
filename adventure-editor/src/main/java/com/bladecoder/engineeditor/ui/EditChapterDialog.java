@@ -31,9 +31,9 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Chapter;
-import com.bladecoder.engineeditor.ui.components.EditDialog;
-import com.bladecoder.engineeditor.ui.components.InputPanel;
-import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.panels.EditDialog;
+import com.bladecoder.engineeditor.ui.panels.InputPanel;
+import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 
 public class EditChapterDialog extends EditDialog {
 

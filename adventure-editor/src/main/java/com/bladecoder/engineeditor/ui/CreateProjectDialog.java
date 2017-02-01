@@ -25,10 +25,10 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
-import com.bladecoder.engineeditor.ui.components.EditDialog;
-import com.bladecoder.engineeditor.ui.components.FileInputPanel;
-import com.bladecoder.engineeditor.ui.components.InputPanel;
-import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.panels.EditDialog;
+import com.bladecoder.engineeditor.ui.panels.FileInputPanel;
+import com.bladecoder.engineeditor.ui.panels.InputPanel;
+import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 
 public class CreateProjectDialog extends EditDialog {
 

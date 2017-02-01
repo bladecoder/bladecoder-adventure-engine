@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Param;
+import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.AnchorActor;
@@ -32,6 +33,7 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.ObstacleActor;
+import com.bladecoder.engine.model.ParticleRenderer;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SoundFX;
@@ -43,10 +45,10 @@ import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.EditModelDialog;
-import com.bladecoder.engineeditor.ui.components.InputPanel;
-import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
-import com.bladecoder.engineeditor.ui.components.OptionsInputPanel;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.InputPanel;
+import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.panels.OptionsInputPanel;
 
 public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
@@ -62,17 +64,18 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			OBSTACLE_TYPE_STR, ANCHOR_TYPE_STR };
 
 	public static final String ACTOR_RENDERERS[] = { Project.ATLAS_RENDERER_STRING, Project.SPINE_RENDERER_STRING,
-			Project.IMAGE_RENDERER_STRING, Project.S3D_RENDERER_STRING };
+			Project.IMAGE_RENDERER_STRING, Project.S3D_RENDERER_STRING, Project.PARTICLE_RENDERER_STRING };
 
 	public static final String TYPES_INFO[] = {
 			"Background actors don't have sprites or animations. They are used to interact with objects drawn in the background",
 			"Sprite actors have one or several sprites or animations",
 			"Character actors have dialogs and stand, walk and talk animations",
-			"Obstacle actors forbids zones for walking actors", "Anchor actors are used as reference for positioning other actors" };
+			"Obstacle actors forbids zones for walking actors",
+			"Anchor actors are used as reference for positioning other actors" };
 
 	public static final String RENDERERS_INFO[] = { "Atlas actor allows 2d image and animations",
 			"Spine actors allow Spine 2d skeletal animations", "3d actors allow 3d models and animations",
-			"Image actors show image files" };
+			"Image actors show image files", "Render Particle Effects" };
 
 	private InputPanel typePanel;
 	private InputPanel id;
@@ -88,10 +91,16 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel bboxFromRenderer;
 	private InputPanel zIndex;
 	private InputPanel walkingSpeed;
+
+	// 3d Actor
 	private InputPanel spriteSize;
 	private InputPanel cameraName;
 	private InputPanel fov;
 	private InputPanel textColor;
+
+	// particle Actor
+	private InputPanel particleName;
+	private InputPanel particleAtlas;
 
 	@SuppressWarnings("unchecked")
 	public EditActorDialog(Skin skin, Scene parent, BaseActor e) {
@@ -100,7 +109,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		typePanel = InputPanelFactory.createInputPanel(skin, "Actor Type", "Actors can be from different types",
 				ACTOR_TYPES, true);
 
-		id = InputPanelFactory.createInputPanel(skin, "Actor ID", "IDs can not contain '.' or '_' characters.", true);
+		id = InputPanelFactory.createInputPanel(skin, "Actor ID", "IDs can not contain '.' character.", true);
 
 		layer = InputPanelFactory.createInputPanel(skin, "Actor Layer", "The layer for drawing order",
 				getLayers(parent), true);
@@ -123,27 +132,35 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				DepthType.class.getEnumConstants(), true);
 
 		scale = InputPanelFactory.createInputPanel(skin, "Scale", "The sprite scale.", Param.Type.FLOAT, true, "1");
-		
+
 		tint = InputPanelFactory.createInputPanel(skin, "Tint", "Draw the actor with the specified color (RRGGBBAA).",
 				Param.Type.COLOR, false);
-		
+
 		bboxFromRenderer = InputPanelFactory.createInputPanel(skin, "BBox From Renderer",
-				"Sets the actor bounding box automatically from the sprite dimensions.", Param.Type.BOOLEAN, true, "true");
+				"Sets the actor bounding box automatically from the sprite dimensions.", Param.Type.BOOLEAN, true,
+				"true");
 
 		zIndex = InputPanelFactory.createInputPanel(skin, "zIndex", "The order to draw.", Param.Type.FLOAT, false, "0");
 
 		walkingSpeed = InputPanelFactory.createInputPanel(skin, "Walking Speed",
-				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT, true, Float.toString(CharacterActor.DEFAULT_WALKING_SPEED));
+				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT, true,
+				Float.toString(CharacterActor.DEFAULT_WALKING_SPEED));
 
 		spriteSize = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions", "The size of the 3d sprite.",
 				Param.Type.DIMENSION, true);
 		cameraName = InputPanelFactory.createInputPanel(skin, "Camera Name", "The name of the camera in the model.",
 				Param.Type.STRING, true, "Camera");
-		fov = InputPanelFactory.createInputPanel(skin, "Camera FOV", "The camera field of view.", Param.Type.FLOAT, true,
-				"49.3");
+		fov = InputPanelFactory.createInputPanel(skin, "Camera FOV", "The camera field of view.", Param.Type.FLOAT,
+				true, "49.3");
 
-		textColor = InputPanelFactory.createInputPanel(skin, "Text Color", "The text color (RRGGBBAA) when the actor talks.",
-				Param.Type.COLOR, false);
+		textColor = InputPanelFactory.createInputPanel(skin, "Text Color",
+				"The text color (RRGGBBAA) when the actor talks.", Param.Type.COLOR, false);
+
+		particleName = InputPanelFactory.createInputPanel(skin, "Particle Name", "The name of the particle system.",
+				Type.PARTICLE_ASSET, true);
+
+		particleAtlas = InputPanelFactory.createInputPanel(skin, "Particle Atlas",
+				"The atlas used by the particle system.", Type.ATLAS_ASSET, true);
 
 		setInfo(TYPES_INFO[0]);
 
@@ -163,8 +180,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			}
 		});
 
-		init(parent, e, new InputPanel[] { typePanel, id, renderer, layer, visible, interaction, desc, state, depthType,
-				scale, tint, bboxFromRenderer, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
+		init(parent, e,
+				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, depthType, scale,
+						tint, bboxFromRenderer, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
 
 		typeChanged();
 
@@ -224,10 +242,18 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		setVisible(cameraName, false);
 		setVisible(fov, false);
 
-		if (renderer.isVisible() && ACTOR_RENDERERS[i].equals(Project.S3D_RENDERER_STRING)) {
-			setVisible(spriteSize, true);
-			setVisible(cameraName, true);
-			setVisible(fov, true);
+		setVisible(particleName, false);
+		setVisible(particleAtlas, false);
+
+		if (renderer.isVisible()) {
+			if (ACTOR_RENDERERS[i].equals(Project.S3D_RENDERER_STRING)) {
+				setVisible(spriteSize, true);
+				setVisible(cameraName, true);
+				setVisible(fov, true);
+			} else if (ACTOR_RENDERERS[i].equals(Project.PARTICLE_RENDERER_STRING)) {
+				setVisible(particleName, true);
+				setVisible(particleAtlas, true);
+			}
 		}
 	}
 
@@ -246,8 +272,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		String type = typePanel.getText();
 		boolean typeChanged = false;
 		BaseActor oldElement = e;
-		
-		boolean isPlayer = false; 
+
+		boolean isPlayer = false;
 
 		if (!create) {
 
@@ -257,9 +283,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 							&& (!(e instanceof InteractiveActor) || e instanceof SpriteActor))
 					|| (type.equals(OBSTACLE_TYPE_STR) && !(e instanceof ObstacleActor))
 					|| (type.equals(ANCHOR_TYPE_STR) && !(e instanceof AnchorActor));
-			
+
 			isPlayer = parent.getPlayer() == e;
-			
+
 			// remove to allow id, zindex and layer change
 			parent.removeActor(e);
 		}
@@ -370,6 +396,19 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					r.setCameraFOV(Float.parseFloat(fov.getText()));
 					r.setCameraName(cameraName.getText());
 					r.setSpriteSize(Param.parseVector2(spriteSize.getText()));
+				} else if (Project.PARTICLE_RENDERER_STRING.equals(rendererType)) {
+					ParticleRenderer r;
+
+					if (sa.getRenderer() == null || !(sa.getRenderer() instanceof ParticleRenderer)) {
+						r = new ParticleRenderer();
+						sa.setRenderer(r);
+					} else {
+						r = (ParticleRenderer) sa.getRenderer();
+					}
+
+					r.setParticleName(particleName.getText());
+					r.setAtlasName(particleAtlas.getText());
+
 				} else if (Project.SPINE_RENDERER_STRING.equals(rendererType)) {
 					if (sa.getRenderer() == null || !(sa.getRenderer() instanceof SpineRenderer))
 						sa.setRenderer(new SpineRenderer());
@@ -391,9 +430,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		}
 
 		parent.addActor(e);
-		
-		if(isPlayer && !typeChanged)
-			parent.setPlayer((CharacterActor)e);
+
+		if (isPlayer && !typeChanged)
+			parent.setPlayer((CharacterActor) e);
 
 		if (e instanceof InteractiveActor) {
 			SceneLayer l = parent.getLayer(((InteractiveActor) e).getLayer());
@@ -440,6 +479,12 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					fov.setText(Float.toString(s3d.getCameraFOV()));
 					cameraName.setText(s3d.getCameraName());
 					spriteSize.setText(Param.toStringParam(s3d.getSpriteSize()));
+				} else if (r instanceof ParticleRenderer) {
+					renderer.setText(Project.PARTICLE_RENDERER_STRING);
+					ParticleRenderer s3d = (ParticleRenderer) r;
+
+					particleName.setText(s3d.getParticleName());
+					particleAtlas.setText(s3d.getAtlasName());
 				} else if (r instanceof SpineRenderer) {
 					renderer.setText(Project.SPINE_RENDERER_STRING);
 				}

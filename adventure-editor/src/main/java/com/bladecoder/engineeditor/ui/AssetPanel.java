@@ -21,8 +21,8 @@ import java.beans.PropertyChangeListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.HeaderPanel;
-import com.bladecoder.engineeditor.ui.components.TabPanel;
+import com.bladecoder.engineeditor.ui.panels.HeaderPanel;
+import com.bladecoder.engineeditor.ui.panels.TabPanel;
 
 public class AssetPanel extends HeaderPanel {
 	private TabPanel tabPanel;

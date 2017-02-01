@@ -39,7 +39,7 @@ import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
 
-public class AtlasRenderer implements ActorRenderer {
+public class AtlasRenderer implements AnimationRenderer {
 	private final static float DEFAULT_DIM = 200;
 
 	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();

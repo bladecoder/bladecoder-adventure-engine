@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engineeditor.model.Chapter;
-import com.bladecoder.engineeditor.ui.components.PropertyTable;
+import com.bladecoder.engineeditor.ui.panels.PropertyTable;
 
 public class SceneProps extends PropertyTable {
 	public static final String MUSIC_PROP = "Music filename";

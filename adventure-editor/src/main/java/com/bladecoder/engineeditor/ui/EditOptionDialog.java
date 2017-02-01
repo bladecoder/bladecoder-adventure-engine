@@ -23,9 +23,9 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.ui.components.EditModelDialog;
-import com.bladecoder.engineeditor.ui.components.InputPanel;
-import com.bladecoder.engineeditor.ui.components.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.InputPanel;
+import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 
 public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 

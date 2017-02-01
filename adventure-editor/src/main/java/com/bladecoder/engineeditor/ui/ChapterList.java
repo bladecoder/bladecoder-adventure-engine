@@ -26,8 +26,8 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditList;
+import com.bladecoder.engineeditor.ui.panels.CellRenderer;
+import com.bladecoder.engineeditor.ui.panels.EditList;
 
 public class ChapterList extends EditList<String> {
 

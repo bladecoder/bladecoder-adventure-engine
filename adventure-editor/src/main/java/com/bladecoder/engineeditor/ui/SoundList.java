@@ -33,8 +33,8 @@ import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.ui.panels.CellRenderer;
+import com.bladecoder.engineeditor.ui.panels.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteSound;
 
 public class SoundList extends ModelList<InteractiveActor, SoundFX> {

@@ -48,9 +48,9 @@ import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.components.CellRenderer;
-import com.bladecoder.engineeditor.ui.components.EditModelDialog;
-import com.bladecoder.engineeditor.ui.components.ModelList;
+import com.bladecoder.engineeditor.ui.panels.CellRenderer;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteScene;
 import com.bladecoder.engineeditor.undo.UndoOp;
 
