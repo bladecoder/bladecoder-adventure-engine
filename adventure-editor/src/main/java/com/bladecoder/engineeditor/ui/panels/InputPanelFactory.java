@@ -204,6 +204,10 @@ public class InputPanelFactory extends Table {
 			}
 		});
 
+		if(list == null) {
+			return new String[0];
+		}
+			
 		Arrays.sort(list);
 
 		if (cutExt) {
