@@ -94,6 +94,7 @@ public class InputPanelFactory extends Table {
 		case SCENE:
 			return new SceneInputPanel(skin, title, desc, mandatory, defaultValue);
 		case COLOR:
+			return new ColorInputPanel(skin, title, desc, mandatory, defaultValue);
 		case SOUND:
 		case TEXT_STYLE:
 		case STRING:

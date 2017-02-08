@@ -21,6 +21,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
@@ -38,6 +39,7 @@ public class FileInputPanel extends InputPanel {
 
 	private File cd;
 	private File selected;
+	private TextButton button;
 
 	private final static String FILE_TEXT = "Select file";
 	private final static String DIR_TEXT = "Select folder";
@@ -55,7 +57,12 @@ public class FileInputPanel extends InputPanel {
 
 	public FileInputPanel(Skin skin, String title, String desc, File current, final DialogType dialogType,
 			boolean mandatory) {
-		init(skin, title, desc, new TextButton(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT, skin),
+		Table t = new Table();
+		button = new TextButton(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT, skin, "no-toggled");
+		
+		t.add(button);
+		
+		init(skin, title, desc, t,
 				mandatory, null);
 
 		switch (dialogType) {
@@ -78,7 +85,7 @@ public class FileInputPanel extends InputPanel {
 		fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
 		fileChooser.setViewMode(ViewMode.LIST);
 
-		((TextButton) getField()).addListener(new ClickListener() {
+		button.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				if(cd != null)
 					fileChooser.setDirectory(cd);
@@ -91,7 +98,7 @@ public class FileInputPanel extends InputPanel {
 					public void selected(Array<FileHandle> files) {
 						selected = files.get(0).file();
 
-						((TextButton) getField()).setText(selected.getAbsolutePath());
+						button.setText(selected.getAbsolutePath());
 					}
 
 					@Override
@@ -100,6 +107,20 @@ public class FileInputPanel extends InputPanel {
 				});
 			}
 		});
+		
+		// Adds clear button if not mandatory
+		if(!mandatory) {
+			TextButton clearButton = new TextButton("Clear", skin, "no-toggled");
+			
+			clearButton.addListener(new ClickListener() {
+				public void clicked(InputEvent event, float x, float y) {
+					button.setText(dialogType == DialogType.DIRECTORY ? DIR_TEXT : FILE_TEXT);
+					selected = null;
+				}
+			});
+			
+			t.add(clearButton);
+		}
 	}
 
 	public File getFile() {
@@ -116,7 +137,7 @@ public class FileInputPanel extends InputPanel {
 
 	@Override
 	public void setText(String text) {
-		((TextButton) field).setText(text);
+		button.setText(text);
 		selected = new File(text);
 		cd = new File(text);
 	}
