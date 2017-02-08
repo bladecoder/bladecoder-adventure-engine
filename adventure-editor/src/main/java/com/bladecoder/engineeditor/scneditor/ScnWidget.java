@@ -140,7 +140,7 @@ public class ScnWidget extends Widget {
 				}
 			}
 		});
-		
+
 		showWalkZone = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.showWalkZone", "false"));
 		inScene = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.inScene", "false"));
 		animation = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.animation", "true"));
@@ -187,9 +187,10 @@ public class ScnWidget extends Widget {
 	}
 
 	private void handleKeyPositioning() {
-		
-		if (getStage() == null || getStage().getKeyboardFocus() != this) return;
-		
+
+		if (getStage() == null || getStage().getKeyboardFocus() != this)
+			return;
+
 		if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isKeyPressed(Keys.DOWN) || Gdx.input.isKeyPressed(Keys.LEFT)
 				|| Gdx.input.isKeyPressed(Keys.RIGHT)) {
 
@@ -236,7 +237,7 @@ public class ScnWidget extends Widget {
 				// WORLD CAMERA
 				sceneBatch.setProjectionMatrix(camera.combined);
 				sceneBatch.begin();
-				
+
 				Array<AtlasRegion> scnBackground = scn.getBackground();
 
 				if (scnBackground != null) {
@@ -327,11 +328,10 @@ public class ScnWidget extends Widget {
 						loading = false;
 
 						scn.retrieveAssets();
-						
+
 						// disable Spine events
-						for(BaseActor a: scn.getActors().values()) {
-							if(a instanceof SpriteActor && 
-									((SpriteActor) a).getRenderer() instanceof SpineRenderer) {
+						for (BaseActor a : scn.getActors().values()) {
+							if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof SpineRenderer) {
 								((SpineRenderer) ((SpriteActor) a).getRenderer()).enableEvents(false);
 							}
 						}
@@ -412,7 +412,7 @@ public class ScnWidget extends Widget {
 		if (!inScene)
 			setSelectedFA(null);
 	}
-	
+
 	public boolean getInSceneSprites() {
 		return inScene;
 	}
@@ -421,7 +421,7 @@ public class ScnWidget extends Widget {
 		animation = v;
 		Ctx.project.getEditorConfig().setProperty("view.animation", Boolean.toString(animation));
 	}
-	
+
 	public boolean getAnimation() {
 		return animation;
 	}
@@ -441,7 +441,7 @@ public class ScnWidget extends Widget {
 	public boolean getShowWalkZone() {
 		return showWalkZone;
 	}
-	
+
 	public void setShowWalkZone(boolean v) {
 		showWalkZone = v;
 		Ctx.project.getEditorConfig().setProperty("view.showWalkZone", Boolean.toString(showWalkZone));
@@ -627,15 +627,16 @@ public class ScnWidget extends Widget {
 
 				setAnimationRenderer(selectedActor, s.getAnimations().get(selFA));
 
-				if (inScene || s.getCurrentAnimation() == null
-						|| s.equals(selFA)) {
-					try {
+				
+				String animInScene = selFA;
+				if (!inScene && s.getInitAnimation() != null)
+					animInScene = s.getInitAnimation();
 
-						((SpriteActor) selectedActor).startAnimation(selFA, Tween.Type.REPEAT, Tween.INFINITY, null);
-					} catch (Exception e) {
-						setAnimationRenderer(selectedActor, null);
-						s.getAnimations().remove(selFA);
-					}
+				try {
+					((SpriteActor) selectedActor).startAnimation(animInScene, Tween.Type.REPEAT, Tween.INFINITY, null);
+				} catch (Exception e) {
+					setAnimationRenderer(selectedActor, null);
+					s.getAnimations().remove(selFA);
 				}
 			} else {
 				setAnimationRenderer(selectedActor, null);
