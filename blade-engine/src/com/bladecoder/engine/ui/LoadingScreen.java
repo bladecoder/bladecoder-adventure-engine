@@ -39,7 +39,7 @@ public class LoadingScreen extends ScreenAdapter implements BladeScreen {
 	private float squareHeight = 30f;
 	private float margin = 10f;
 
-	private long initTime = 100;
+	private float initTime = 0;
 
 	private float delta = 0;
 
