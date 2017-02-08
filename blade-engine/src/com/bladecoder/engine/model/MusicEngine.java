@@ -71,7 +71,8 @@ public class MusicEngine implements Serializable, AssetConsumer {
 	
 
 	public void setVolume(float volume) {
-		desc.setVolume(volume);
+		if(desc != null)
+			desc.setVolume(volume);
 		
 		if(music != null)
 			music.setVolume(volume);
