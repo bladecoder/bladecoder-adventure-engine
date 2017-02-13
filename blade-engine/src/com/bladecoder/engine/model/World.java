@@ -55,7 +55,7 @@ import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class World implements Serializable, AssetConsumer {
 
-	public static final String GAMESTATE_EXT = ".gamestate.v11";
+	public static final String GAMESTATE_EXT = ".gamestate.v12";
 	private static final String GAMESTATE_FILENAME = "default" + GAMESTATE_EXT;
 
 	private static final String DEFAULT_INVENTORY = "DEFAULT";

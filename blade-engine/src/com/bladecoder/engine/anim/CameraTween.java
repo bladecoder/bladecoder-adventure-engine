@@ -25,7 +25,7 @@ import com.bladecoder.engine.util.InterpolationMode;
 /**
  * Tween for camera position and zoom animation
  */
-public class CameraTween extends Tween {
+public class CameraTween extends Tween<SceneCamera> {
 
 	private float startX, startY, startZoom;
 	private float targetX, targetY, targetZoom;
@@ -36,6 +36,8 @@ public class CameraTween extends Tween {
 	public void start(SceneCamera camera, Tween.Type repeatType, int count, float targetX, float targetY,
 			float targetZoom, float duration, InterpolationMode interpolation, ActionCallback cb) {
 
+		this.target = camera;
+		
 		Vector2 currentPos = camera.getPosition();
 
 		startX = currentPos.x;
@@ -55,11 +57,10 @@ public class CameraTween extends Tween {
 		}
 	}
 
-	public void update(float delta, SceneCamera camera) {
-		update(delta);
-
-		camera.setZoom(startZoom + getPercent() * (targetZoom - startZoom));
-		camera.setPosition(startX + getPercent() * (targetX - startX), startY + getPercent() * (targetY - startY));
+	@Override
+	public void updateTarget() {
+		target.setZoom(startZoom + getPercent() * (targetZoom - startZoom));
+		target.setPosition(startX + getPercent() * (targetX - startX), startY + getPercent() * (targetY - startY));
 	}
 
 	@Override

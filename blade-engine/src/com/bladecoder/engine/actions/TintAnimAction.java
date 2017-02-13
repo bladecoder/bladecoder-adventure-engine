@@ -17,6 +17,7 @@ package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.graphics.Color;
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.anim.SpriteTintTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
@@ -57,7 +58,12 @@ public class TintAnimAction implements Action {
 	public boolean run(VerbRunner cb) {				
 		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, false);
 
-		a.startTintAnimation(repeat, count, speed, color, interpolation, wait?cb:null);
+		
+		SpriteTintTween t = new SpriteTintTween();
+		t.start(a, repeat, count, color, speed, interpolation,
+				wait ? cb : null);
+		
+		a.addTween(t);
 		
 		return wait;
 	}

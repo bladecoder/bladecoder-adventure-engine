@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -23,14 +25,10 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.SpritePosTween;
-import com.bladecoder.engine.anim.SpriteScaleTween;
-import com.bladecoder.engine.anim.SpriteTintTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.Tween.Type;
-import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.InterpolationMode;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
 
@@ -41,9 +39,8 @@ public class SpriteActor extends InteractiveActor {
 	};
 
 	protected ActorRenderer renderer;
-	protected SpritePosTween posTween;
-	private SpriteScaleTween scaleTween;
-	private SpriteTintTween tintTween;
+	
+	protected ArrayList<Tween<SpriteActor>> tweens = new ArrayList<>(0);
 
 	private float scale = 1.0f;
 	private Color tint;
@@ -128,26 +125,16 @@ public class SpriteActor extends InteractiveActor {
 
 		if (visible) {
 			renderer.update(delta);
-
-			if (posTween != null) {
-				if (posTween.isComplete()) {
-					posTween = null;
-				} else {
-					posTween.update(this, delta);
-				}
-			}
-
-			if (scaleTween != null) {
-				scaleTween.update(this, delta);
-				if (scaleTween.isComplete()) {
-					scaleTween = null;
-				}
-			}
 			
-			if (tintTween != null) {
-				tintTween.update(this, delta);
-				if (tintTween.isComplete()) {
-					tintTween = null;
+			for(int i = 0; i < tweens.size(); i++) {
+				Tween<SpriteActor> t = tweens.get(i);
+				
+				t.update(delta);
+				
+				// Needs extra checks before remove because the update can remove the tween
+				if(t.isComplete() && i < tweens.size() && tweens.get(i) == t) {
+					tweens.remove(i);
+					i--;
 				}
 			}
 		}
@@ -173,14 +160,23 @@ public class SpriteActor extends InteractiveActor {
 		inAnim();
 
 		// resets posTween when walking
-		if (posTween != null && posTween instanceof WalkTween)
-			posTween = null;
+		removeTween(SpritePosTween.class);
 
 		EngineLogger.debug("ANIMATION: " + this.id + "." + id);
 		
 		((AnimationRenderer)renderer).startAnimation(id, repeatType, count, cb);
 
 		outAnim(repeatType);
+	}
+	
+	public void removeTween(Class<?> clazz) {
+		for(int i = 0; i < tweens.size(); i++) {	
+			Tween<SpriteActor> t = tweens.get(i);
+			if(clazz.isInstance(t)) {
+				tweens.remove(i);
+				i--;
+			}
+		}
 	}
 
 	/**
@@ -229,39 +225,9 @@ public class SpriteActor extends InteractiveActor {
 			}
 		}
 	}
-
-	/**
-	 * Create position animation.
-	 */
-	public void startPosAnimation(Tween.Type repeatType, int count, float duration, float destX, float destY,
-			InterpolationMode interpolation, ActionCallback cb) {
-
-		posTween = new SpritePosTween();
-
-		posTween.start(this, repeatType, count, destX, destY, duration, interpolation, cb);
-	}
-
-	/**
-	 * Create scale animation.
-	 */
-	public void startScaleAnimation(Tween.Type repeatType, int count, float duration, float scale,
-			InterpolationMode interpolation, ActionCallback cb) {
-
-		scaleTween = new SpriteScaleTween();
-
-		scaleTween.start(this, repeatType, count, scale, duration, interpolation, cb);
-	}
 	
-	
-	/**
-	 * Create tint animation.
-	 */
-	public void startTintAnimation(Tween.Type repeatType, int count, float duration, Color tint,
-			InterpolationMode interpolation, ActionCallback cb) {
-
-		tintTween = new SpriteTintTween();
-
-		tintTween.start(this, repeatType, count, tint, duration, interpolation, cb);
+	public void addTween(Tween<SpriteActor> tween) {
+		tweens.add(tween);
 	}
 
 	@Override
@@ -320,9 +286,7 @@ public class SpriteActor extends InteractiveActor {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
 		} else {
-			json.writeValue("posTween", posTween, null);
-			json.writeValue("scaleTween", scaleTween, null);
-			json.writeValue("tintTween", tintTween, null);
+			json.writeValue("tweens", tweens, ArrayList.class, Tween.class);
 		}
 
 		json.writeValue("scale", scale);
@@ -331,6 +295,7 @@ public class SpriteActor extends InteractiveActor {
 		json.writeValue("bboxFromRenderer", bboxFromRenderer);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
@@ -338,9 +303,11 @@ public class SpriteActor extends InteractiveActor {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			renderer = json.readValue("renderer", ActorRenderer.class, jsonData);
 		} else {
-			posTween = json.readValue("posTween", SpritePosTween.class, jsonData);
-			scaleTween = json.readValue("scaleTween", SpriteScaleTween.class, jsonData);
-			tintTween = json.readValue("tintTween", SpriteTintTween.class, jsonData);
+			tweens = json.readValue("tweens", ArrayList.class, Tween.class, jsonData);
+			
+			for(Tween<SpriteActor> t:tweens) 
+				t.setTarget(this);
+			
 			renderer.read(json, jsonData.get("renderer"));
 		}
 

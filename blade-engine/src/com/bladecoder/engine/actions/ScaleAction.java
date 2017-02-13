@@ -16,6 +16,7 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.anim.SpriteScaleTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
@@ -61,8 +62,12 @@ public class ScaleAction implements Action {
 	@Override
 	public boolean run(VerbRunner cb) {				
 		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, false);
-
-		a.startScaleAnimation(repeat, count, speed, scale, interpolation, wait?cb:null);
+		
+		SpriteScaleTween t = new SpriteScaleTween();
+		t.start(a, repeat, count, speed, scale, interpolation,
+				wait ? cb : null);
+		
+		a.addTween(t);
 		
 		return wait;
 	}

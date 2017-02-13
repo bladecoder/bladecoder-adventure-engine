@@ -90,7 +90,7 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 	
 	public void update(float delta) {
 		if(cameraTween != null) {
-			cameraTween.update(delta, this);
+			cameraTween.update(delta);
 			if(cameraTween.isComplete()) {
 				cameraTween = null;
 			}
@@ -230,5 +230,8 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		update();
 
 		cameraTween = json.readValue("cameraTween", CameraTween.class, jsonData);
+		if(cameraTween != null) {
+			cameraTween.setTarget(this);
+		}
 	}	
 }

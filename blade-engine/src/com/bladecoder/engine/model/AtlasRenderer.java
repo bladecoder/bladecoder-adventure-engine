@@ -97,7 +97,7 @@ public class AtlasRenderer implements AnimationRenderer {
 	@Override
 	public void update(float delta) {
 		if (faTween != null) {
-			faTween.update(this, delta);
+			faTween.update(delta);
 			if (faTween.isComplete()) {
 				faTween = null;
 				computeBbox();
@@ -533,6 +533,9 @@ public class AtlasRenderer implements AnimationRenderer {
 			flipX = json.readValue("flipX", Boolean.class, jsonData);
 			currentFrameIndex = json.readValue("currentFrameIndex", Integer.class, jsonData);
 			faTween = json.readValue("faTween", FATween.class, jsonData);
+			
+			if(faTween != null)
+				faTween.setTarget(this);
 		}
 	}
 }

@@ -17,6 +17,7 @@ package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.anim.SpritePosTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
@@ -37,7 +38,7 @@ public class PositionAnimAction implements Action {
 	private String actor;
 	
 	@ActionPropertyDescription("Sets the position from this actor")
-	@ActionProperty(type = Type.ACTOR)
+	@ActionProperty(type = Type.SPRITE_ACTOR)
 	private String target;
 
 	@ActionProperty
@@ -117,8 +118,11 @@ public class PositionAnimAction implements Action {
 				s = speed;
 			}
 
-			((SpriteActor) a).startPosAnimation(repeat, count, s, x, y, interpolation,
+			SpritePosTween t = new SpritePosTween();
+			t.start((SpriteActor) a, repeat, count, s, x, y, interpolation,
 					wait ? cb : null);
+			
+			((SpriteActor) a).addTween(t);
 		}
 
 		return wait;

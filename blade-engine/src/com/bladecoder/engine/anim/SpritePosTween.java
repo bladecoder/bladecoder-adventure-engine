@@ -26,7 +26,7 @@ import com.bladecoder.engine.util.InterpolationMode;
  * 
  * TODO: Y speed depends on scale if fake depth is used
  */
-public class SpritePosTween extends Tween {
+public class SpritePosTween extends Tween<SpriteActor> {
 	
 	private float startX, startY;
 	private float targetX, targetY;
@@ -43,6 +43,7 @@ public class SpritePosTween extends Tween {
 	public void start(SpriteActor target, Tween.Type repeatType, int count, float tx, float ty, float duration, 
 			InterpolationMode interpolationX, InterpolationMode interpolationY, ActionCallback cb) {
 		
+		this.target = target;
 		startX = target.getX();
 		startY = target.getY();
 		targetX = tx;
@@ -62,13 +63,13 @@ public class SpritePosTween extends Tween {
 		restart();
 	}	
 	
-	public void update(SpriteActor a, float delta) {
-		update(delta);
+	@Override
+	public void updateTarget() {
 		
 		float percentX = getPercent(interpolationX);
 		float percentY = getPercent(interpolationY);
 		
-		a.setPosition(startX + percentX * (targetX - startX),
+		target.setPosition(startX + percentX * (targetX - startX),
 				startY + percentY * (targetY - startY));
 	}
 	

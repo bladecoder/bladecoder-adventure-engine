@@ -25,7 +25,6 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.CharacterActor;
-import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.InterpolationMode;
 
@@ -45,6 +44,7 @@ public class WalkTween extends SpritePosTween implements Serializable {
 
 	public void start(CharacterActor target, ArrayList<Vector2> walkingPath,
 			float speed, ActionCallback cb) {
+		this.target = target;
 		this.walkingPath = walkingPath;
 		this.speed = speed;
 		this.currentStep = 0;
@@ -113,11 +113,11 @@ public class WalkTween extends SpritePosTween implements Serializable {
 	}
 
 	@Override
-	public void update(SpriteActor a, float delta) {
-		super.update(a, delta);
+	public void updateTarget() {
+		super.updateTarget();
 		
 		if(isComplete())
-			segmentEnded((CharacterActor)a);
+			segmentEnded((CharacterActor)target);
 	}
 
 

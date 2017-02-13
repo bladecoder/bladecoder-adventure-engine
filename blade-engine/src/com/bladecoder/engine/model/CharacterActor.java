@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
+import com.bladecoder.engine.anim.SpritePosTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.util.EngineLogger;
@@ -104,7 +105,7 @@ public class CharacterActor extends SpriteActor {
 			return;
 		
 		inAnim();
-		posTween = null;
+		removeTween(SpritePosTween.class);
 		((AnimationRenderer)renderer).startAnimation(standAnim, Tween.Type.SPRITE_DEFINED, -1, null, new Vector2(bbox.getX(), bbox.getY()),
 				p);
 		outAnim(Tween.Type.SPRITE_DEFINED);
@@ -115,7 +116,7 @@ public class CharacterActor extends SpriteActor {
 			return;
 		
 		inAnim();
-		posTween = null;
+		removeTween(SpritePosTween.class);
 		((AnimationRenderer)renderer).startAnimation(standAnim, Tween.Type.SPRITE_DEFINED, -1, null, direction);
 		outAnim(Tween.Type.SPRITE_DEFINED);
 	}
@@ -125,7 +126,7 @@ public class CharacterActor extends SpriteActor {
 			return;
 		
 		inAnim();
-		posTween = null;
+		removeTween(SpritePosTween.class);
 		((AnimationRenderer)renderer).startAnimation(standAnim, Tween.Type.SPRITE_DEFINED, -1, null, null);
 		outAnim(Tween.Type.SPRITE_DEFINED);
 	}
@@ -135,7 +136,7 @@ public class CharacterActor extends SpriteActor {
 			return;
 		
 		inAnim();
-		posTween = null;
+		removeTween(SpritePosTween.class);
 		((AnimationRenderer)renderer).startAnimation(talkAnim, Tween.Type.SPRITE_DEFINED, -1, null, null);
 		outAnim(Tween.Type.SPRITE_DEFINED);
 	}
@@ -163,8 +164,8 @@ public class CharacterActor extends SpriteActor {
 		Vector2 p0 = new Vector2(bbox.getX(), bbox.getY());
 
 		// stop previous movement
-		if (posTween != null) {
-			posTween = null;
+		if (tweens.size() > 0) {
+			removeTween(SpritePosTween.class);
 			stand();
 		}
 
@@ -193,9 +194,10 @@ public class CharacterActor extends SpriteActor {
 			return;
 		}
 
-		posTween = new WalkTween();
+		WalkTween t = new WalkTween();
 
-		((WalkTween) posTween).start(this, walkingPath, walkingSpeed, cb);
+		t.start(this, walkingPath, walkingSpeed, cb);
+		addTween(t);
 	}
 
 	/**
@@ -204,12 +206,14 @@ public class CharacterActor extends SpriteActor {
 	 * 
 	 * This is used to fast walk between scenes. Used when double clicking.
 	 */
-	public void fastWalk() {
-		if (posTween != null && posTween instanceof WalkTween) {
-			WalkTween wt = (WalkTween) posTween;
-
-			wt.completeNow(this);
-			wt = null;
+	public void fastWalk() {	
+		for(Tween t: tweens) {	
+			if(t instanceof WalkTween) {
+				WalkTween wt = (WalkTween) t;
+				wt.completeNow(this);
+				wt = null;
+				break;
+			}
 		}
 	}
 

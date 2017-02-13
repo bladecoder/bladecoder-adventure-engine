@@ -24,7 +24,7 @@ import com.bladecoder.engine.util.InterpolationMode;
 /**
  * Tween for spriteactor scale animation
  */
-public class SpriteScaleTween extends Tween {
+public class SpriteScaleTween extends Tween<SpriteActor> {
 	
 	private float startScl;
 	private float targetScl;
@@ -33,6 +33,7 @@ public class SpriteScaleTween extends Tween {
 	}
 
 	public void start(SpriteActor target, Type repeatType, int count, float tScl, float duration, InterpolationMode interpolation, ActionCallback cb) {
+		this.target = target;
 		
 		startScl = target.getScale();
 		targetScl = tScl;
@@ -49,10 +50,9 @@ public class SpriteScaleTween extends Tween {
 		restart();
 	}
 
-	public void update(SpriteActor a, float delta) {
-		update(delta);
-		
-		a.setScale(startScl + getPercent() * (targetScl - startScl));
+	@Override
+	public void updateTarget() {
+		target.setScale(startScl + getPercent() * (targetScl - startScl));
 	}
 	
 	@Override

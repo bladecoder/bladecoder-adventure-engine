@@ -23,9 +23,9 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.util.InterpolationMode;
 
 /**
- * Tween for spriteactor scale animation
+ * Tween for SpriteActor tint animation
  */
-public class SpriteTintTween extends Tween {
+public class SpriteTintTween extends Tween<SpriteActor> {
 	
 	private Color startColor;
 	private Color targetColor;
@@ -34,6 +34,8 @@ public class SpriteTintTween extends Tween {
 	}
 
 	public void start(SpriteActor target, Type repeatType, int count, Color tColor, float duration, InterpolationMode interpolation, ActionCallback cb) {
+		
+		setTarget(target);
 		
 		startColor = target.getTint().cpy();
 		targetColor = tColor.cpy();
@@ -50,13 +52,13 @@ public class SpriteTintTween extends Tween {
 		restart();
 	}
 
-	public void update(SpriteActor a, float delta) {
-		update(delta);
+	@Override
+	public void updateTarget() {
 		
-		a.getTint().a = startColor.a + getPercent() * (targetColor.a - startColor.a);
-		a.getTint().r = startColor.r + getPercent() * (targetColor.r - startColor.r);
-		a.getTint().g = startColor.g + getPercent() * (targetColor.g - startColor.g);
-		a.getTint().b = startColor.b + getPercent() * (targetColor.b - startColor.b);
+		target.getTint().a = startColor.a + getPercent() * (targetColor.a - startColor.a);
+		target.getTint().r = startColor.r + getPercent() * (targetColor.r - startColor.r);
+		target.getTint().g = startColor.g + getPercent() * (targetColor.g - startColor.g);
+		target.getTint().b = startColor.b + getPercent() * (targetColor.b - startColor.b);
 	}
 	
 	@Override

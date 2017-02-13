@@ -23,7 +23,7 @@ import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.InterpolationMode;
 
-public class Tween implements Serializable {
+abstract public class Tween<T> implements Serializable {
 	public enum Type {
 		NO_REPEAT, REPEAT, YOYO, REVERSE, REVERSE_REPEAT, SPRITE_DEFINED;
 	}
@@ -37,6 +37,8 @@ public class Tween implements Serializable {
 	private int count;
 
 	private ActionCallback cb;
+	
+	protected T target;
 
 	public Tween() {
 	}
@@ -63,16 +65,33 @@ public class Tween implements Serializable {
 					reverse = !reverse;
 			}
 		}
+		
+		updateTarget();
 
 		if (complete) {
 			callCb();
 		}
 	}
+	
+	
+	/**
+	 * Called to update the target property.
+	 */
+	abstract protected void updateTarget();
 
 	private void callCb() {
 		if (cb != null) {
 			ActionCallbackQueue.add(cb);
 		}
+	}
+	
+	
+	public void setTarget(T t) {
+		target = t;
+	}
+	
+	public T getTarget() {
+		return target;
 	}
 
 	public float getPercent() {

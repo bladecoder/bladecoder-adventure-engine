@@ -23,12 +23,14 @@ import com.bladecoder.engine.model.AtlasRenderer;
 /**
  * Tween for spriteactor position animation
  */
-public class FATween extends Tween {
+public class FATween extends Tween<AtlasRenderer> {
 	
 	public FATween() {
 	}
 
 	public void start(AtlasRenderer target, Tween.Type repeatType, int count, float duration, ActionCallback cb) {
+		this.target = target;
+		
 		setDuration(duration);
 		setType(repeatType);
 		setCount(count);
@@ -40,11 +42,9 @@ public class FATween extends Tween {
 		restart();
 	}
 	
-	public void update(AtlasRenderer a, float delta) {
-		update(delta);
-		
+	public void updateTarget() {
 		if(!isComplete() && getPercent() < 1.0f)
-			a.setFrame((int)(getPercent() * a.getNumFrames()));
+			target.setFrame((int)(getPercent() * target.getNumFrames()));
 	}
 	
 	@Override
