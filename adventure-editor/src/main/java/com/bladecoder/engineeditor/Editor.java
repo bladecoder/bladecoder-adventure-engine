@@ -148,7 +148,10 @@ public class Editor implements ApplicationListener {
 		stage.setScrollFocus(scnEditor.getScnWidget());
 		stage.setKeyboardFocus(scnEditor.getScnWidget());
 
-		TooltipManager.getInstance().instant();
+//		TooltipManager.getInstance().instant();
+		TooltipManager.getInstance().initialTime = 0.2f;
+		TooltipManager.getInstance().hideAll();
+		TooltipManager.getInstance().subsequentTime = 0.2f;
 	}
 
 	private void setCtx() {

@@ -15,14 +15,17 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.panels;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 
 public abstract class InputPanel extends Table {
+	private static final boolean USE_TOOLTIPS = true;
 	
 	protected Actor field;
     private Label title;
@@ -33,22 +36,33 @@ public abstract class InputPanel extends Table {
     }
     
     protected void init(Skin skin, String title, String desc, Actor c, boolean mandatory, String defaultValue) {
+    	//debug();
+    	
     	this.mandatory = mandatory;
     	
        	this.setSkin(skin);
     	LabelStyle style = new LabelStyle(skin.get(LabelStyle.class));
-    	this.title = new Label(title, style);
+    	this.title = new Label(title + ":", style);
     	
         this.desc = new Label(desc,skin, "subtitle");
         this.desc.setWrap(false);  
     	     	
        	this.field = c;
        	
-       	add(this.title).left();
-       	row().expand();
-       	add(field).left();
-       	row().expand();
-       	add(this.desc).left();
+//       	row().expand();
+       	float titleWidth = this.title.getStyle().font.getSpaceWidth() * 35;
+       	add(this.title).width(titleWidth).left().top();
+       	//row().expand();
+       	add(field).expandX().left().top();
+       	
+       	if(USE_TOOLTIPS) {
+       		TextTooltip t = new TextTooltip(desc, skin);
+    		this.title.addListener(t);
+    		this.field.addListener(t);
+       	} else {
+       		row().expand();
+       		add(this.desc).colspan(2).left();
+       	}
     	
        	if(defaultValue != null)
     		setText(defaultValue);
