@@ -242,7 +242,9 @@ public class TextRenderer implements ActorRenderer {
 
 	@Override
 	public void dispose() {
-		EngineAssetManager.getInstance().unload(fontName + getFontSize() + ".ttf");
+		if (EngineAssetManager.getInstance().isLoaded(fontName + getFontSize() + ".ttf"))
+			EngineAssetManager.getInstance().unload(fontName + getFontSize() + ".ttf");
+		
 		font = null;
 	}
 
