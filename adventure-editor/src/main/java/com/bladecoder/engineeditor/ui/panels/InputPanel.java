@@ -41,7 +41,7 @@ public abstract class InputPanel extends Table {
     	
        	this.setSkin(skin);
     	LabelStyle style = new LabelStyle(skin.get(LabelStyle.class));
-    	this.title = new Label(title + ":", style);
+    	this.title = new Label(title, style);
     	
         this.desc = new Label(desc,skin, "subtitle");
         this.desc.setWrap(false);  
