@@ -106,7 +106,7 @@ public class ImageRenderer implements AnimationRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
 
 		x = x - getWidth() / 2 * scale; // SET THE X ORIGIN TO THE CENTER OF THE
 										// SPRITE
@@ -118,14 +118,9 @@ public class ImageRenderer implements AnimationRenderer {
 		
 		if(tint != null)
 			batch.setColor(tint);
-
-		if (!flipX) {
-			batch.draw(currentSource.tex, x, y, currentSource.tex.getWidth() * scale,
-					currentSource.tex.getHeight() * scale);
-		} else {
-			batch.draw(currentSource.tex, x, y, -currentSource.tex.getWidth() * scale,
-					currentSource.tex.getHeight() * scale);
-		}
+		
+		batch.draw(currentSource.tex, x, y, getWidth() / 2, 0f, getWidth(), getHeight(), scale, scale, rotation, 
+				0, 0, currentSource.tex.getWidth(), currentSource.tex.getHeight(), flipX, false);
 		
 		if(tint != null)
 			batch.setColor(Color.WHITE);

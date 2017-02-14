@@ -111,7 +111,7 @@ public class AtlasRenderer implements AnimationRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
 
 		if (tex == null) {
 			x = x - getWidth() / 2 * scale;
@@ -121,17 +121,17 @@ public class AtlasRenderer implements AnimationRenderer {
 		}
 
 		x = x + tex.offsetX - tex.originalWidth / 2;
-		y = y + tex.offsetY - tex.originalHeight * (1 - scale) / 2;
+		y = y + tex.offsetY;
 		
 		if(tint != null)
 			batch.setColor(tint);
 
 		if (!flipX) {
-			batch.draw(tex, x, y, tex.originalWidth / 2 - tex.offsetX, tex.originalHeight / 2  - tex.offsetY, tex.packedWidth, tex.packedHeight, scale,
-					scale, 0);
+			batch.draw(tex, x, y, tex.originalWidth / 2 - tex.offsetX, -tex.offsetY, tex.packedWidth, tex.packedHeight, scale,
+					scale, rotation);
 		} else {
-			batch.draw(tex, x, y, tex.originalWidth / 2 - tex.offsetX, tex.originalHeight / 2  - tex.offsetY, tex.packedWidth, tex.packedHeight, -scale,
-					scale, 0);
+			batch.draw(tex, x, y, tex.originalWidth / 2 - tex.offsetX, -tex.offsetY, tex.packedWidth, tex.packedHeight, -scale,
+					scale, rotation);
 		}
 		
 		if(tint != null)

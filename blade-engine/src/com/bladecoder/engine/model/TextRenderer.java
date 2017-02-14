@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -34,10 +35,10 @@ public class TextRenderer implements ActorRenderer {
 	private final static float DEFAULT_DIM = 200;
 
 	private Polygon bbox;
-	
+
 	private BitmapFont font;
 	private final GlyphLayout layout = new GlyphLayout();
-	
+
 	private int fontSize = 10;
 	private String text;
 	private String fontName;
@@ -56,22 +57,32 @@ public class TextRenderer implements ActorRenderer {
 	public void update(float delta) {
 	}
 
+	private static final Matrix4 tmp = new Matrix4();
+
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
 
 		if (font != null && text != null) {
-					
-			batch.setTransformMatrix(batch.getTransformMatrix().scale(scale, scale, 1.0f));
-			
-			if(tint != null)
+
+			Matrix4 tm = batch.getTransformMatrix();
+			tmp.set(tm);
+
+			float originX = -getWidth() / 2;
+			float originY = layout.height;
+
+			tm.translate(x, y, 0).rotate(0, 0, 1, rotation).scale(scale, scale, 1).translate(originX, originY, 0);
+
+			batch.setTransformMatrix(tm);
+
+			if (tint != null)
 				batch.setColor(tint);
-			
-			font.draw(batch, layout, x - getWidth() / 2 * scale, y + layout.height);
-			
-			if(tint != null)
+
+			font.draw(batch, layout, 0, 0);
+
+			if (tint != null)
 				batch.setColor(Color.WHITE);
-			
-			batch.setTransformMatrix(batch.getTransformMatrix().scale(1 / scale, 1 / scale, 1.0f));
+
+			batch.setTransformMatrix(tmp);
 		} else {
 			x = x - getWidth() / 2 * scale;
 			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
@@ -97,10 +108,10 @@ public class TextRenderer implements ActorRenderer {
 	@Override
 	public void updateBboxFromRenderer(Polygon bbox) {
 		this.bbox = bbox;
-		
+
 		computeBbox();
 	}
-	
+
 	private void computeBbox() {
 		if (bbox == null)
 			return;
@@ -197,7 +208,7 @@ public class TextRenderer implements ActorRenderer {
 	@Override
 	public void loadAssets() {
 		FreeTypeFontLoaderParameter params = new FreeTypeFontLoaderParameter();
-		
+
 		params.fontFileName = EngineAssetManager.FONT_DIR + fontName + EngineAssetManager.FONT_EXT;
 		params.fontParameters.size = fontSize;
 		params.fontParameters.borderWidth = borderWidth;
@@ -210,20 +221,20 @@ public class TextRenderer implements ActorRenderer {
 		params.fontParameters.incremental = true;
 		params.fontParameters.magFilter = TextureFilter.Linear;
 		params.fontParameters.minFilter = TextureFilter.Linear;
-		
+
 		EngineAssetManager.getInstance().load(fontName + getFontSize() + ".ttf", BitmapFont.class, params);
 	}
 
 	@Override
 	public void retrieveAssets() {
-		
+
 		if (!EngineAssetManager.getInstance().isLoaded(fontName + getFontSize() + ".ttf")) {
 			loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 		}
-		
+
 		font = EngineAssetManager.getInstance().get(fontName + getFontSize() + ".ttf", BitmapFont.class);
-		
+
 		layout.setText(font, text);
 
 		computeBbox();
@@ -237,7 +248,7 @@ public class TextRenderer implements ActorRenderer {
 
 	@Override
 	public void write(Json json) {
-		
+
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("text", text);
 			json.writeValue("fontName", fontName);
@@ -248,13 +259,13 @@ public class TextRenderer implements ActorRenderer {
 			json.writeValue("shadowOffsetX", shadowOffsetX);
 			json.writeValue("shadowOffsetY", shadowOffsetY);
 			json.writeValue("shadowColor", shadowColor);
-		} else {		
-			
+		} else {
+
 		}
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonData) {	
+	public void read(Json json, JsonValue jsonData) {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			text = json.readValue("text", String.class, jsonData);
 			fontName = json.readValue("fontName", String.class, jsonData);
@@ -265,8 +276,8 @@ public class TextRenderer implements ActorRenderer {
 			shadowOffsetX = json.readValue("shadowOffsetX", int.class, jsonData);
 			shadowOffsetY = json.readValue("shadowOffsetY", int.class, jsonData);
 			shadowColor = json.readValue("shadowColor", Color.class, jsonData);
-		} else {		
-			
+		} else {
+
 		}
 	}
 }

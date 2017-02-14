@@ -42,6 +42,7 @@ public class SpriteActor extends InteractiveActor {
 	
 	protected ArrayList<Tween<SpriteActor>> tweens = new ArrayList<>(0);
 
+	private float rot = 0.0f;
 	private float scale = 1.0f;
 	private Color tint;
 
@@ -118,6 +119,15 @@ public class SpriteActor extends InteractiveActor {
 		this.scale = scale;
 		bbox.setScale(scale, scale);
 	}
+	
+	public void setRot(float rot) {
+		this.rot = rot;
+		bbox.setRotation(rot);
+	}
+	
+	public float getRot() {
+		return rot;
+	}
 
 	@Override
 	public void update(float delta) {
@@ -143,7 +153,7 @@ public class SpriteActor extends InteractiveActor {
 	public void draw(SpriteBatch batch) {
 		if (isVisible()) {
 			if (scale != 0) {
-				renderer.draw(batch, getX(), getY(), scale, tint);
+				renderer.draw(batch, getX(), getY(), scale, rot, tint);
 			}
 		}
 	}
@@ -290,6 +300,7 @@ public class SpriteActor extends InteractiveActor {
 		}
 
 		json.writeValue("scale", scale);
+		json.writeValue("rot", rot);
 		json.writeValue("tint", tint);
 		json.writeValue("depthType", depthType);
 		json.writeValue("bboxFromRenderer", bboxFromRenderer);
@@ -312,6 +323,7 @@ public class SpriteActor extends InteractiveActor {
 		}
 
 		scale = json.readValue("scale", float.class, scale, jsonData);
+		rot = json.readValue("rot", float.class, rot, jsonData);
 		tint = json.readValue("tint", Color.class, tint, jsonData);
 
 		depthType = json.readValue("depthType", DepthType.class, depthType, jsonData);
@@ -321,6 +333,7 @@ public class SpriteActor extends InteractiveActor {
 			renderer.updateBboxFromRenderer(bbox);
 
 		setScale(scale);
+		setRot(rot);
 	}
 
 }

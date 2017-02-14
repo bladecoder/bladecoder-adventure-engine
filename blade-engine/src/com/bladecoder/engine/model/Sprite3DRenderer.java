@@ -555,7 +555,7 @@ public class Sprite3DRenderer implements AnimationRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
 
 		x = x - getWidth() / 2 * scale;
 

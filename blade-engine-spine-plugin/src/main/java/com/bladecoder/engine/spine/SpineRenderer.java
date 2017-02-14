@@ -266,11 +266,12 @@ public class SpineRenderer implements AnimationRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
 
 		if (currentSource != null && currentSource.skeleton != null) {
 			currentSource.skeleton.setX(x / scale);
 			currentSource.skeleton.setY(y / scale);
+			currentSource.skeleton.getRootBone().setRotation(rotation);
 
 			batch.setTransformMatrix(batch.getTransformMatrix().scale(scale, scale, 1.0f));
 			

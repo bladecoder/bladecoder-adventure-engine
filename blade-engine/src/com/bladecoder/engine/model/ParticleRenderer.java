@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -29,7 +30,7 @@ import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class ParticleRenderer implements ActorRenderer {
 
-	private final static float DEFAULT_DIM = 200;
+	private final static float DEFAULT_DIM = 100;
 
 	private final ParticleEffect effect = new ParticleEffect();
 
@@ -44,6 +45,7 @@ public class ParticleRenderer implements ActorRenderer {
 	
 	private float tmpPosX = 0;
 	private float tmpPosY = 0;
+	private static final Matrix4 tmp = new Matrix4();
 
 	public ParticleRenderer() {
 
@@ -55,18 +57,23 @@ public class ParticleRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
 
 		if (effect.getEmitters().size > 0) {
 			
-			if(tmpPosX != x || tmpPosY != y) {
+			Matrix4 tm = batch.getTransformMatrix();
+			tmp.set(tm);
+			
+			if(tmpPosX != x / scale || tmpPosY != y / scale) {
 				tmpPosX = x / scale;
 				tmpPosY = y / scale;
 				
 				effect.setPosition(tmpPosX, tmpPosY);
 			}
-					
-			batch.setTransformMatrix(batch.getTransformMatrix().scale(scale, scale, 1.0f));
+
+			tm.rotate(0, 0, 1, rotation).scale(scale, scale, 1);
+
+			batch.setTransformMatrix(tm);
 			
 			if(tint != null)
 				batch.setColor(tint);
@@ -76,7 +83,7 @@ public class ParticleRenderer implements ActorRenderer {
 			if(tint != null)
 				batch.setColor(Color.WHITE);
 			
-			batch.setTransformMatrix(batch.getTransformMatrix().scale(1 / scale, 1 / scale, 1.0f));
+			batch.setTransformMatrix(tmp);
 		} else {
 			x = x - getWidth() / 2 * scale;
 			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);

@@ -108,7 +108,7 @@ public class SpriteDrawer {
 
 			float scaleh = width / renderer.getWidth();
 			renderer.draw(batch, viewportW - width / 2,
-					viewportH - HEIGHT - 50, scaleh, null);
+					viewportH - HEIGHT - 50, scaleh, 0f, null);
 
 		}
 	}

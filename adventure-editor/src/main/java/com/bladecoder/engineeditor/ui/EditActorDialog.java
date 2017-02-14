@@ -88,6 +88,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel renderer;
 	private InputPanel depthType;
 	private InputPanel scale;
+	private InputPanel rot;
 	private InputPanel tint;
 	private InputPanel bboxFromRenderer;
 	private InputPanel zIndex;
@@ -144,6 +145,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				DepthType.class.getEnumConstants(), true);
 
 		scale = InputPanelFactory.createInputPanel(skin, "Scale", "The sprite scale.", Param.Type.FLOAT, true, "1");
+		
+		rot = InputPanelFactory.createInputPanel(skin, "Rotation", "The sprite rotation.", Param.Type.FLOAT, true, "0");
 
 		tint = InputPanelFactory.createInputPanel(skin, "Tint", "Draw the actor with the specified color (RRGGBBAA).",
 				Param.Type.COLOR, false);
@@ -214,7 +217,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		});
 
 		init(parent, e,
-				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, depthType, scale,
+				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, depthType, scale, rot,
 						tint, text, font, size, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
 						shadowColor, bboxFromRenderer, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
 
@@ -255,6 +258,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			setVisible(renderer, true);
 			setVisible(depthType, true);
 			setVisible(scale, true);
+			setVisible(rot, true);
 			setVisible(tint, true);
 			setVisible(bboxFromRenderer, true);
 		}
@@ -490,6 +494,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				sa.setBboxFromRenderer(true);
 				sa.setDepthType(DepthType.valueOf(depthType.getText()));
 				sa.setScale(Float.parseFloat(scale.getText()));
+				sa.setRot(Float.parseFloat(rot.getText()));
 				sa.setTint(Param.parseColor(tint.getText()));
 				sa.setBboxFromRenderer(Boolean.parseBoolean(bboxFromRenderer.getText()));
 
@@ -578,6 +583,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 				depthType.setText(sa.getDepthType().toString());
 				scale.setText(Float.toString(sa.getScale()));
+				rot.setText(Float.toString(sa.getRot()));
 				tint.setText(sa.getTint() == null ? null : sa.getTint().toString());
 				bboxFromRenderer.setText(Boolean.toString(sa.isBboxFromRenderer()));
 

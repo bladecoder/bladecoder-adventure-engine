@@ -207,7 +207,7 @@ public class CharacterActor extends SpriteActor {
 	 * This is used to fast walk between scenes. Used when double clicking.
 	 */
 	public void fastWalk() {	
-		for(Tween t: tweens) {	
+		for(Tween<SpriteActor> t: tweens) {	
 			if(t instanceof WalkTween) {
 				WalkTween wt = (WalkTween) t;
 				wt.completeNow(this);

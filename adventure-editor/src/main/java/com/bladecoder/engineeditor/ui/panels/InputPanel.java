@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.panels;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -52,6 +51,8 @@ public abstract class InputPanel extends Table {
 //       	row().expand();
        	float titleWidth = this.title.getStyle().font.getSpaceWidth() * 35;
        	add(this.title).width(titleWidth).left().top();
+       	this.title.setWidth(titleWidth);
+       	this.title.setWrap(true);
        	//row().expand();
        	add(field).expandX().left().top();
        	
