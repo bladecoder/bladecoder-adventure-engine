@@ -29,6 +29,9 @@ import com.bladecoder.ink.runtime.Choice;
 import com.bladecoder.ink.runtime.Story;
 
 public class InkManager implements VerbRunner, Serializable {
+	private final static char NAME_VALUE_SEPARATOR = ':';
+	private final static String PARAM_SEPARATOR = ",";
+	private final static char COMMAND_MARK = '>';
 
 	private Story story = null;
 	private ExternalFunctions externalFunctions;
@@ -64,20 +67,19 @@ public class InkManager implements VerbRunner, Serializable {
 			long initTime = System.currentTimeMillis();
 			newStory(asset.read());
 			EngineLogger.debug("INK STORY LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
-			
+
 			this.storyName = storyName;
 		} catch (Exception e) {
 			EngineLogger.error("Cannot load Ink Story: " + storyName + " " + e.getMessage());
 		}
 	}
 
-	private void nextLine() {
-		if (story.canContinue()) {
+	private void continueMaximally() {
+		String line = null;
+		actions.clear();
 
-			String line = null;
-
+		while (story.canContinue()) {
 			try {
-				actions.clear();
 				line = story.Continue();
 
 				if (!line.isEmpty()) {
@@ -86,24 +88,35 @@ public class InkManager implements VerbRunner, Serializable {
 
 					EngineLogger.debug("INK LINE: " + line);
 
-					List<String> tags = story.getCurrentTags();
-					processLine(tags, line);
+					HashMap<String, String> tags = processTags(story.getCurrentTags());
+
+					// PROCESS COMMANDS
+					if (line.charAt(0) == COMMAND_MARK) {
+						processCommand(tags, line);
+						return;
+					} else {
+						processTextLine(tags, line);
+					}
 				} else {
 					EngineLogger.debug("INK EMPTY LINE!");
-
-					nextLine();
 					return;
 				}
-
 			} catch (Exception e) {
 				EngineLogger.error(e.getMessage(), e);
 			}
 
-		} else if (hasChoices()) {
-			wasInCutmode = World.getInstance().inCutMode();
-			World.getInstance().setCutMode(false);
-		} else if (cb != null) {
-			ActionCallbackQueue.add(cb);
+		}
+
+		if (actions.size() > 0) {
+			run();
+		} else {
+
+			if (hasChoices()) {
+				wasInCutmode = World.getInstance().inCutMode();
+				World.getInstance().setCutMode(false);
+			} else if (cb != null) {
+				ActionCallbackQueue.add(cb);
+			}
 		}
 	}
 
@@ -115,7 +128,7 @@ public class InkManager implements VerbRunner, Serializable {
 			String key;
 			String value;
 
-			int i = t.indexOf(':');
+			int i = t.indexOf(NAME_VALUE_SEPARATOR);
 			if (i != -1) {
 				key = t.substring(0, i).trim();
 				value = t.substring(i + 1, t.length()).trim();
@@ -132,15 +145,54 @@ public class InkManager implements VerbRunner, Serializable {
 		return tagsMap;
 	}
 
-	private void processLine(List<String> tags, String line) {
+	private void processCommand(HashMap<String, String> params, String line) {
+		String commandName = null;
+		String commandParams[] = null;
+		
+		int i = line.indexOf(NAME_VALUE_SEPARATOR);
+		
+		if(i == -1) {
+			commandName = line.substring(1).trim();
+		} else {
+			commandName = line.substring(1, i).trim().toLowerCase();
+			commandParams = line.substring(i+1).split(PARAM_SEPARATOR);
+		}
+		
+		if("action".equals(commandName)) {
+			Action action;
+			try {
+				action = ActionFactory.createByClass("com.bladecoder.engine.actions." + commandParams + "Action", params);
+				actions.add(action);
+			} catch (ClassNotFoundException | ReflectionException e) {
+				EngineLogger.error(e.getMessage(), e);
+			}
+		} else if("leave".equals(commandName)) {
+			World.getInstance().setCurrentScene(commandParams[0].trim());
+		} else if("set".equals(commandName)) {
+			World.getInstance().setModelProp(commandParams[0].trim(), commandParams[1].trim());
+		} else {
+			EngineLogger.error("Ink Command Name not found: " + commandName);
+		}
+	}
+	
+	private void processTextLine(HashMap<String, String> params, String line) {
 
-		HashMap<String, String> params = processTags(tags);
+		// Get actor name from Line. Actor is separated by ':'. ej. "Johnny:
+		// Hello punks!"
+		if (!params.containsKey("actor")) {
+			int idx = line.indexOf(NAME_VALUE_SEPARATOR);
+
+			if (idx != -1) {
+				params.put("actor", line.substring(0, idx).trim());
+				line = line.substring(idx + 1).trim();
+			}
+		}
 
 		if (!params.containsKey("actor") && World.getInstance().getCurrentScene().getPlayer() != null) {
 			params.put("actor", Scene.VAR_PLAYER);
 
 			if (!params.containsKey("type")) {
-				params.put("type", Type.TALK.toString());
+				params.put("type", Type.SUBTITLE.toString());
 			}
 		} else if (params.containsKey("actor") && !params.containsKey("type")) {
 			params.put("type", Type.TALK.toString());
@@ -161,13 +213,11 @@ public class InkManager implements VerbRunner, Serializable {
 		} catch (ClassNotFoundException | ReflectionException e) {
 			EngineLogger.error(e.getMessage(), e);
 		}
-
-		run();
 	}
 
 	private void nextStep() {
 		if (ip >= actions.size() || ip < 0) {
-			nextLine();
+			continueMaximally();
 		} else {
 			boolean stop = false;
 
@@ -200,11 +250,11 @@ public class InkManager implements VerbRunner, Serializable {
 		this.cb = cb;
 
 		story.choosePathString(path);
-		nextLine();
+		continueMaximally();
 	}
 
 	public boolean hasChoices() {
-		return (story != null && story.getCurrentChoices().size() > 0);
+		return (story != null && actions.size() == 0 && story.getCurrentChoices().size() > 0);
 	}
 
 	public List<Choice> getChoices() {
@@ -245,7 +295,7 @@ public class InkManager implements VerbRunner, Serializable {
 
 		try {
 			story.chooseChoiceIndex(i);
-			nextLine();
+			continueMaximally();
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage(), e);
 		}
