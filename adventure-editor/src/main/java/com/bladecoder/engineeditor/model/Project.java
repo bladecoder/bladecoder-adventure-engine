@@ -177,6 +177,9 @@ public class Project extends PropertyChange {
 		selectedActor = null;
 		selectedFA = null;
 
+		if(scn != null)
+			Ctx.project.getEditorConfig().setProperty("project.selectedScene", scn.getId());
+		
 		firePropertyChange(NOTIFY_SCENE_SELECTED, null, selectedScene);
 	}
 
@@ -463,6 +466,7 @@ public class Project extends PropertyChange {
 
 		try {
 			chapter.load(selChapter);
+			Ctx.project.getEditorConfig().setProperty("project.selectedChapter", selChapter);
 		} catch (SerializationException ex) {
 			// check for not compiled custom actions
 			if (ex.getCause() != null  && ex.getCause() instanceof ClassNotFoundException) {

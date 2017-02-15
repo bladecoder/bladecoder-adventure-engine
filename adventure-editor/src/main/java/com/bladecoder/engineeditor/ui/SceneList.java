@@ -95,8 +95,6 @@ public class SceneList extends ModelList<World, Scene> {
 					Scene s = list.getItems().get(pos);
 
 					Ctx.project.setSelectedScene(s);
-
-					Ctx.project.getEditorConfig().setProperty("project.selectedScene", s.getId());
 				}
 
 				toolbar.disableEdit(pos == -1);
@@ -115,6 +113,7 @@ public class SceneList extends ModelList<World, Scene> {
 		});
 
 		chapters.addListener(chapterListener);
+		chapters.getSelection().setProgrammaticChangeEvents(false);
 
 		Ctx.project.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
@@ -175,6 +174,9 @@ public class SceneList extends ModelList<World, Scene> {
 
 					if (init != null) {
 						Scene s = World.getInstance().getScenes().get(init);
+						
+						if(s == null && World.getInstance().getInitScene() != null)
+							s = World.getInstance().getScenes().get(World.getInstance().getInitScene());
 
 						if (s != null) {
 							int indexOf = list.getItems().indexOf(s, true);
@@ -197,7 +199,21 @@ public class SceneList extends ModelList<World, Scene> {
 		}
 
 		chapters.setItems(array);
-		chapters.setSelected(Ctx.project.getChapter().getId());
+		
+		String init = Ctx.project.getEditorConfig().getProperty("project.selectedChapter",
+				World.getInstance().getInitChapter());
+		
+				
+		if (init != null) {
+			if(array.contains(init, false)) {
+				chapters.setSelected(init);
+			} else if(array.size > 0){
+				chapters.setSelected(Ctx.project.getChapter().getInitChapter());
+			}
+		}
+		
+		chapterListener.changed(null, null);
+		
 		invalidate();
 	}
 
