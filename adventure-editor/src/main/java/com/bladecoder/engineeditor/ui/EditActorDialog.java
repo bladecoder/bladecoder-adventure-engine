@@ -18,6 +18,7 @@ package com.bladecoder.engineeditor.ui;
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -87,6 +88,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel state;
 	private InputPanel renderer;
 	private InputPanel depthType;
+	private InputPanel pos;
 	private InputPanel scale;
 	private InputPanel rot;
 	private InputPanel tint;
@@ -144,6 +146,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		depthType = InputPanelFactory.createInputPanel(skin, "Depth Type", "Scene fake depth for scaling",
 				DepthType.class.getEnumConstants(), true);
 
+		pos = InputPanelFactory.createInputPanel(skin, "Position", "The sprite position.", Param.Type.VECTOR2, true, "0,0");
 		scale = InputPanelFactory.createInputPanel(skin, "Scale", "The sprite scale.", Param.Type.FLOAT, true, "1");
 		
 		rot = InputPanelFactory.createInputPanel(skin, "Rotation", "The sprite rotation.", Param.Type.FLOAT, true, "0");
@@ -217,7 +220,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		});
 
 		init(parent, e,
-				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, depthType, scale, rot,
+				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, depthType, pos, scale, rot,
 						tint, text, font, size, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
 						shadowColor, bboxFromRenderer, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
 
@@ -241,6 +244,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		setInfo(TYPES_INFO[i]);
 
 		hideAllInputs();
+		
+		setVisible(pos, true);
 
 		if (!ACTOR_TYPES[i].equals(ANCHOR_TYPE_STR)) {
 			setVisible(visible, true);
@@ -408,6 +413,10 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		e.setId(ElementUtils.getCheckedId(id.getText(), parent.getActors().keySet().toArray(new String[0])));
 		e.setVisible(Boolean.parseBoolean(visible.getText()));
+		
+		Vector2 p = Param.parseVector2(pos.getText());
+		
+		e.setPosition(p.x, p.y);
 
 		if (e instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor) e;
@@ -532,6 +541,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		id.setText(e.getId());
 		visible.setText(Boolean.toString(e.isVisible()));
+		pos.setText(Param.toStringParam(new Vector2(e.getX(), e.getY())));
 
 		if (e instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor) e;
