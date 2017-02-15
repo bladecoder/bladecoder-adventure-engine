@@ -20,6 +20,7 @@ import java.util.HashMap;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -264,16 +265,21 @@ public class SpineRenderer implements AnimationRenderer {
 		currentSource.animation.apply(currentSource.skeleton);
 		currentSource.skeleton.updateWorldTransform();
 	}
+	
+	private static final Matrix4 tmp = new Matrix4();
 
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
 
 		if (currentSource != null && currentSource.skeleton != null) {
+			Matrix4 tm = batch.getTransformMatrix();
+			tmp.set(tm);
+			
 			currentSource.skeleton.setX(x / scale);
 			currentSource.skeleton.setY(y / scale);
-			currentSource.skeleton.getRootBone().setRotation(rotation);
-
-			batch.setTransformMatrix(batch.getTransformMatrix().scale(scale, scale, 1.0f));
+			
+			tm.rotate(0, 0, 1, rotation).scale(scale, scale, 1);
+			batch.setTransformMatrix(tm);
 			
 			if(tint != null)
 				currentSource.skeleton.setColor(tint);
@@ -282,7 +288,7 @@ public class SpineRenderer implements AnimationRenderer {
 			
 			if(tint != null)
 				batch.setColor(Color.WHITE);
-			batch.setTransformMatrix(batch.getTransformMatrix().scale(1 / scale, 1 / scale, 1.0f));
+			batch.setTransformMatrix(tmp);
 		} else {
 			x = x - getWidth() / 2 * scale;
 			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
