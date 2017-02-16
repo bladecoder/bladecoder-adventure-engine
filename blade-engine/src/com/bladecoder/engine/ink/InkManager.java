@@ -29,7 +29,7 @@ import com.bladecoder.ink.runtime.Choice;
 import com.bladecoder.ink.runtime.Story;
 
 public class InkManager implements VerbRunner, Serializable {
-	private final static char NAME_VALUE_SEPARATOR = ':';
+	public final static char NAME_VALUE_SEPARATOR = ':';
 	private final static String PARAM_SEPARATOR = ",";
 	private final static char COMMAND_MARK = '>';
 

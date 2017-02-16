@@ -32,6 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.ink.InkManager;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.DPIUtils;
@@ -205,7 +206,15 @@ public class DialogUI extends ScrollPane {
 			List<Choice> options = World.getInstance().getInkManager().getChoices();
 
 			for (Choice o : options) {
-				visibleOptions.add(o.getText());
+				String line = o.getText();
+				
+				int idx = line.indexOf(InkManager.NAME_VALUE_SEPARATOR);
+
+				if (idx != -1) {
+					line = line.substring(idx + 1).trim();
+				}
+				
+				visibleOptions.add(line);
 			}
 		}
 	}
