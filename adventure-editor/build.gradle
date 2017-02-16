@@ -40,7 +40,7 @@ dependencies {
   compile "com.badlogicgames.gdx:gdx-platform:$libgdxVersion:natives-desktop"
   compile "com.badlogicgames.gdx:gdx-freetype-platform:$libgdxVersion:natives-desktop"
   compile "commons-io:commons-io:2.1"
-  compile "com.bladecoder.packr:packr:2.0"
+  compile "com.bladecoder.packr:packr:2.1"
   compile "eu.infomas:annotation-detector:3.0.5"
   compile "com.strongjoshua:libgdx-inGameConsole:0.5.2"
   compile "com.kotcrab.vis:vis-ui:1.2.2"

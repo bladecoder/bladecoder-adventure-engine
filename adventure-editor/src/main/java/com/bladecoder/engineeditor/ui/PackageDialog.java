@@ -233,6 +233,7 @@ public class PackageDialog extends EditDialog {
 					msg = packageAdv();
 				} catch (Exception e) {
 					msg = "Error Generating package\n\n" + e.getMessage();
+					e.printStackTrace();
 				}
 
 				Ctx.project.getEditorConfig().setProperty(ARCH_PROP, arch.getText());
@@ -606,10 +607,12 @@ public class PackageDialog extends EditDialog {
 	 */
 	private String getDesktopMainClass() {
 		File result = search(new File(Ctx.project.getProjectDir().getAbsolutePath() + "/desktop"));
+		
+		String absolutePath = result.getAbsolutePath().replace('\\', '/');
 
-		int cutIdx = result.getAbsolutePath().indexOf("src/") + 4;
+		int cutIdx = absolutePath.indexOf("src/") + 4;
 
-		return result.getAbsolutePath().substring(cutIdx, result.getAbsolutePath().length() - 5);
+		return absolutePath.substring(cutIdx, absolutePath.length() - 5);
 	}
 
 	private File search(File file) {
