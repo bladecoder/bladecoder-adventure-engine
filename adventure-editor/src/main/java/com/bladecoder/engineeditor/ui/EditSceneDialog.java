@@ -83,7 +83,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 //				"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.",
 //				Param.Type.VECTOR2, false);
 		
-		depthVector = InputPanelFactory.createInputPanel(skin, "Fake depth", "Activate actor scaling based in the 'y' axis position.", Param.Type.BOOLEAN, true,
+		depthVector = InputPanelFactory.createInputPanel(skin, "Fake depth", "Change actor scale based in the 'y' axis position.", Param.Type.BOOLEAN, true,
 				"false");
 		
 		state = InputPanelFactory.createInputPanel(skin, "State", "The initial state for the scene.", false);
