@@ -93,7 +93,6 @@ public class InkManager implements VerbRunner, Serializable {
 					// PROCESS COMMANDS
 					if (line.charAt(0) == COMMAND_MARK) {
 						processCommand(tags, line);
-						return;
 					} else {
 						processTextLine(tags, line);
 					}
@@ -161,7 +160,7 @@ public class InkManager implements VerbRunner, Serializable {
 		if("action".equals(commandName)) {
 			Action action;
 			try {
-				action = ActionFactory.createByClass("com.bladecoder.engine.actions." + commandParams + "Action", params);
+				action = ActionFactory.createByClass("com.bladecoder.engine.actions." + commandParams[0].trim() + "Action", params);
 				actions.add(action);
 			} catch (ClassNotFoundException | ReflectionException e) {
 				EngineLogger.error(e.getMessage(), e);

@@ -15,6 +15,10 @@ public class ActorAnimationRef {
 		}
 
 		int idx = actorAnimation.indexOf(Param.STRING_PARAM_SEPARATOR.charAt(0));
+		
+		// Also allow '.' character as separator because is more usable inside Ink files.
+		if(idx == -1)
+			idx = actorAnimation.indexOf('.');
 
 		if (idx != -1) {
 			actor = actorAnimation.substring(0, idx);
