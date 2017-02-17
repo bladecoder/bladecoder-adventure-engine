@@ -48,8 +48,8 @@ import com.bladecoder.engineeditor.undo.UndoEditScene;
 
 public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
-	public static final String INFO = "An adventure is composed of many scenes (screens).\n"
-			+ "Inside a scene there are actors and a 'player'.\nThe player/user can interact with the actors throught 'verbs'.";
+	public static final String INFO = "An adventure is composed of many scenes (rooms/screens).\n"
+			+ "Inside a scene, there are actors and a 'player'.\nThe player/user can interact with actors throught 'verbs'.";
 
 	private Image bgImage;
 	private Container<Image> infoContainer;
