@@ -215,7 +215,7 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	private void nextStep() {
-		if (ip >= actions.size() || ip < 0) {
+		if (ip < 0) {
 			continueMaximally();
 		} else {
 			boolean stop = false;
@@ -233,6 +233,9 @@ public class InkManager implements VerbRunner, Serializable {
 					ip++;
 				}
 			}
+			
+			if (ip >= actions.size() && !stop)
+				continueMaximally();
 		}
 	}
 
