@@ -119,7 +119,7 @@ public class PositionAnimAction implements Action {
 			}
 
 			SpritePosTween t = new SpritePosTween();
-			t.start((SpriteActor) a, repeat, count, s, x, y, interpolation,
+			t.start((SpriteActor) a, repeat, count, x, y, s, interpolation,
 					wait ? cb : null);
 			
 			((SpriteActor) a).addTween(t);
