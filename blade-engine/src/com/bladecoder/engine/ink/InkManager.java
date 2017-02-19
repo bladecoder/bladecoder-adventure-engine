@@ -18,7 +18,6 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Text.Type;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -188,7 +187,7 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 
 		if (!params.containsKey("actor") && World.getInstance().getCurrentScene().getPlayer() != null) {
-			params.put("actor", Scene.VAR_PLAYER);
+//			params.put("actor", Scene.VAR_PLAYER);
 
 			if (!params.containsKey("type")) {
 				params.put("type", Type.SUBTITLE.toString());
