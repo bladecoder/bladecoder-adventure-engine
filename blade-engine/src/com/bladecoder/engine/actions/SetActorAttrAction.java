@@ -57,6 +57,10 @@ public class SetActorAttrAction implements Action {
 	@ActionPropertyDescription("Sets the actor scale")
 	private Float scale;
 	
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor rotation")
+	private Float rotation;
+	
 	@ActionPropertyDescription("The tint to draw the actor (RRGGBBAA).")
 	@ActionProperty(type = Type.COLOR)
 	private Color tint;
@@ -129,6 +133,13 @@ public class SetActorAttrAction implements Action {
 				((SpriteActor) a).setScale(scale);
 			else
 				EngineLogger.error("'scale' property not supported for actor:" + a.getId());
+		}
+		
+		if (rotation != null) {
+			if (a instanceof SpriteActor)
+				((SpriteActor) a).setRot(rotation);
+			else
+				EngineLogger.error("'rotation' property not supported for actor:" + a.getId());
 		}
 		
 		if (tint != null) {
