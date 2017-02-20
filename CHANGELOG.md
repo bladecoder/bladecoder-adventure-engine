@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0]
+
+- Added particle effect actors.
+- Added text actors.
+- Added rotation to actors.
+- Several improvements to the ink integration. Updated 'blade-ink' package to v0.4.0.
+- Updated 'packr' package to the latest version.
+- Toggle debug mode tapping in the menu version label.
+- Autodetect the Android SDK version installed.
+- EDITOR: Show actor position when editing actor for precision positioning.
+- EDITOR: Added color selector dialog for color input.
+- EDITOR FIX: Init animation was not showing properly.
+
 ## [1.1.1]
 
 - Added new action to add an integer value to a property to increment/decrement it. Useful to create counters.
