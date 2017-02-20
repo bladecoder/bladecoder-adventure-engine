@@ -161,6 +161,8 @@ public class ParticleRenderer implements ActorRenderer {
 		
 		effect.load(EngineAssetManager.getInstance().getParticle(getParticleName()), atlasTex);
 		effect.start();
+		// reset tmp to force repositioning
+		tmpPosX = Float.MAX_VALUE;
 		effect.update(lastAnimationTime);
 
 		computeBbox();
