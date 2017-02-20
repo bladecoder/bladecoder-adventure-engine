@@ -108,7 +108,7 @@ public class ImageRenderer implements AnimationRenderer {
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
 
-		x = x - getWidth() / 2 * scale; // SET THE X ORIGIN TO THE CENTER OF THE
+		x = x - getWidth() / 2; // SET THE X ORIGIN TO THE CENTER OF THE
 										// SPRITE
 
 		if (currentSource == null || currentSource.tex == null) {
