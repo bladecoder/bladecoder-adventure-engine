@@ -17,6 +17,7 @@ package com.bladecoder.engineeditor.scneditor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -68,6 +69,7 @@ public class ToolsWindow extends Container<Table> {
 
 		TextButton exportUIImages = new TextButton("Export UI Images", skin, "no-toggled");
 		TextButton createUIAtlas = new TextButton("Create UI Atlas", skin, "no-toggled");
+		TextButton particleEditor = new TextButton("Particle Editor", skin, "no-toggled");
 
 		table.defaults().left().expandX();
 		table.top().pad(DPIUtils.getSpacing() / 2);
@@ -106,6 +108,9 @@ public class ToolsWindow extends Container<Table> {
 
 		table.row();
 		table.add(createUIAtlas).expandX().fill();
+
+		table.row();
+		table.add(particleEditor).expandX().fill();
 
 		// table.row();
 		// table.add(tmpButton).expandX().fill();
@@ -179,6 +184,13 @@ public class ToolsWindow extends Container<Table> {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				createUIAtlas();
+			}
+		});
+
+		particleEditor.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				particleEditor();
 			}
 		});
 
@@ -536,5 +548,17 @@ public class ToolsWindow extends Container<Table> {
 			}
 		}).start();
 
+	}
+
+	private void particleEditor() {
+		// Open the particle editor
+		List<String> cp = new ArrayList<String>();
+		cp.add(System.getProperty("java.class.path"));
+		try {
+			RunProccess.runJavaProccess("com.badlogic.gdx.tools.particleeditor.ParticleEditor", cp, null);
+		} catch (IOException e) {
+			Message.showMsgDialog(getStage(), "Error", "Error launching Particle Editor.");
+			EditorLogger.printStackTrace(e);
+		}
 	}
 }
