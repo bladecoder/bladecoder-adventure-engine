@@ -333,11 +333,6 @@ public class EngineAssetManager extends AssetManager {
 			unload(n);
 	}
 
-	public FileHandle getSpine(String name) {
-		return resResolver.baseResolve(SPINE_DIR + name + SPINE_EXT);
-	}
-	
-
 	public FileHandle getParticle(String name) {
 		return resResolver.baseResolve(PARTICLE_DIR + name);
 	}

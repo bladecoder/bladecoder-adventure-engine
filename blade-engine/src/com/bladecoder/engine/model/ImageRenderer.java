@@ -419,7 +419,8 @@ public class ImageRenderer implements AnimationRenderer {
 	@Override
 	public void dispose() {
 		for (ImageCacheEntry entry : sourceCache.values()) {
-			EngineAssetManager.getInstance().disposeTexture(entry.tex);
+			if(entry.refCounter > 0)
+				EngineAssetManager.getInstance().disposeTexture(entry.tex);
 		}
 
 		sourceCache.clear();

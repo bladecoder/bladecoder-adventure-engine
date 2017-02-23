@@ -485,7 +485,8 @@ public class AtlasRenderer implements AnimationRenderer {
 	@Override
 	public void dispose() {
 		for (String key : sourceCache.keySet()) {
-			EngineAssetManager.getInstance().disposeAtlas(key);
+			if(sourceCache.get(key).refCounter > 0)
+				EngineAssetManager.getInstance().disposeAtlas(key);
 		}
 
 		sourceCache.clear();

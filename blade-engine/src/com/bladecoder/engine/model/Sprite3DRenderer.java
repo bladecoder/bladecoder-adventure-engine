@@ -769,7 +769,8 @@ public class Sprite3DRenderer implements AnimationRenderer {
 	@Override
 	public void dispose() {
 		for (String key : sourceCache.keySet()) {
-			EngineAssetManager.getInstance().disposeModel3D(key);
+			if(sourceCache.get(key).refCounter > 0)
+				EngineAssetManager.getInstance().disposeModel3D(key);
 		}
 
 		sourceCache.clear();
