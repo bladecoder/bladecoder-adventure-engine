@@ -614,7 +614,8 @@ public class ScnWidget extends Widget {
 	}
 
 	public void setSelectedFA(String selFA) {
-		if (selectedActor instanceof SpriteActor) {
+		if (selectedActor instanceof SpriteActor && 
+				((SpriteActor) selectedActor).getRenderer() instanceof AnimationRenderer) {
 			AnimationRenderer s = (AnimationRenderer) ((SpriteActor) selectedActor).getRenderer();
 
 			if (selFA == null || (s.getAnimations().get(selFA) == null
