@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.1]
+
+- Added music support to the default Menu screen.
+- Added rotation property to SetActorAttr action.
+- FIX: Check if renderer is an AnimationRenderer when changing the selected animation in the editor.
+- FIX: Error disposing Spine actors when creating new project.
+- FIX: Error creating new project in Linux and MacOS due to CRLF in gradlew.
+
 ## [1.2.0]
 
 - Added particle effect actors.
