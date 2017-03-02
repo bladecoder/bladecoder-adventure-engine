@@ -18,6 +18,7 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -63,6 +64,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 	private final Table menuButtonTable = new Table();
 	private final Table iconStackTable = new Table();
 
+	private Music music;
+
 	public MenuScreen() {
 	}
 
@@ -96,9 +99,14 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 			if (bgTexFile != null) {
 				bgTexFile.dispose();
+				bgTexFile = null;
 			}
 
-			bgTexFile = null;
+			if (music != null) {
+				music.stop();
+				music.dispose();
+				music = null;
+			}
 		}
 	}
 
@@ -298,23 +306,23 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		version.addListener(new ClickListener() {
 			int count = 0;
 			long time = System.currentTimeMillis();
-			
+
 			public void clicked(InputEvent event, float x, float y) {
-				if(System.currentTimeMillis() - time < 500) {
-					count++;	
+				if (System.currentTimeMillis() - time < 500) {
+					count++;
 				} else {
 					count = 0;
 				}
-				
+
 				time = System.currentTimeMillis();
-				
-				if(count == 4) {
+
+				if (count == 4) {
 					EngineLogger.toggle();
-					
-					if(World.getInstance().isDisposed())
+
+					if (World.getInstance().isDisposed())
 						return;
-					
-					if(EngineLogger.debugMode()) {
+
+					if (EngineLogger.debugMode()) {
 						iconStackTable.row();
 						iconStackTable.add(debug);
 					} else {
@@ -325,7 +333,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 				}
 			}
 		});
-		
+
 		stage.addActor(version);
 
 		debug.addListener(new ClickListener() {
@@ -340,6 +348,12 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		stage.addActor(pointer);
 
 		Gdx.input.setInputProcessor(stage);
+
+		if (style.musicFile != null) {
+			music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset(style.musicFile));
+			music.setLooping(true);
+			music.play();
+		}
 	}
 
 	protected Table getMenuButtonTable() {
@@ -380,6 +394,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		public String textButtonStyle;
 		public String titleStyle;
 		public boolean showTitle;
+		public String musicFile;
 
 		public MenuScreenStyle() {
 		}
@@ -390,6 +405,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			textButtonStyle = style.textButtonStyle;
 			showTitle = style.showTitle;
 			titleStyle = style.titleStyle;
+			musicFile = style.musicFile;
 		}
 	}
 }
