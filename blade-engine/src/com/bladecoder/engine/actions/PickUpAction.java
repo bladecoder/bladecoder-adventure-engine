@@ -38,35 +38,36 @@ public class PickUpAction implements Action {
 	@Override
 	public boolean run(VerbRunner cb) {
 		Scene scn = this.actor.getScene();
-		InteractiveActor actor = (InteractiveActor)scn.getActor(this.actor.getActorId(), false);
-		
-		if(actor == null) {
+		InteractiveActor actor = (InteractiveActor) scn.getActor(this.actor.getActorId(), false);
+
+		if (actor == null) {
 			EngineLogger.error("PickUpAction - Actor not found:" + this.actor.getActorId());
-			
+
 			return false;
 		}
-		
+
 		scn.removeActor(actor);
 
-		if (scn !=  World.getInstance().getCurrentScene()) {
+		if (scn != World.getInstance().getCurrentScene()) {
 			actor.loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 			actor.retrieveAssets();
 		}
-		
+
 		if (actor instanceof SpriteActor) {
 			SpriteActor a = (SpriteActor) actor;
 
-			if(animation != null)
-				a.startAnimation(animation, null);
-			else if(((AnimationRenderer)a.getRenderer()).getAnimations().get(a.getId() + ".inventory") != null)
-				a.startAnimation(a.getId() + ".inventory", null);
-			
+			if (a.getRenderer() instanceof AnimationRenderer) {
+				if (animation != null)
+					a.startAnimation(animation, null);
+				else if (((AnimationRenderer) a.getRenderer()).getAnimations().get(a.getId() + ".inventory") != null)
+					a.startAnimation(a.getId() + ".inventory", null);
+			}
+
 			World.getInstance().getInventory().addItem(a);
 		}
-		
+
 		return false;
 	}
-
 
 }
