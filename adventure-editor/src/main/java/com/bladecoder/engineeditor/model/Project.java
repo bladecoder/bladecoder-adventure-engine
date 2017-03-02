@@ -243,6 +243,8 @@ public class Project extends PropertyChange {
 
 	public void createProject(String projectDir, String name, String pkg, String sdkLocation, boolean spinePlugin)
 			throws IOException {
+		closeProject();
+		
 		createLibGdxProject(projectDir, name, pkg, "BladeEngine", sdkLocation, spinePlugin);
 
 		projectFile = new File(projectDir + "/" + name);
@@ -306,10 +308,14 @@ public class Project extends PropertyChange {
 	}
 
 	public void closeProject() {
+		setSelectedScene(null);
 		this.projectFile = null;
 	}
 
 	public void loadProject(File projectFile) throws IOException {
+		
+		// dispose the current project
+		closeProject();
 
 		File oldProjectFile = this.projectFile;
 		this.projectFile = projectFile;
