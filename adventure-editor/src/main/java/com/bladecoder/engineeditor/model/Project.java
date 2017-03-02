@@ -312,15 +312,15 @@ public class Project extends PropertyChange {
 		this.projectFile = null;
 	}
 
-	public void loadProject(File projectFile) throws IOException {
-		
-		// dispose the current project
-		closeProject();
+	public void loadProject(File projectToLoad) throws IOException {
 
-		File oldProjectFile = this.projectFile;
-		this.projectFile = projectFile;
+		projectToLoad = checkProjectStructure(projectToLoad);
 
-		if (checkProjectStructure()) {
+		if (projectToLoad != null) {	
+			// dispose the current project
+			closeProject();
+			
+			this.projectFile = projectToLoad;
 
 			// Use FolderClassLoader for loading CUSTOM actions.
 			// TODO Add 'core/bin' and '/core/out' folders???
@@ -365,7 +365,6 @@ public class Project extends PropertyChange {
 			
 			firePropertyChange(NOTIFY_PROJECT_LOADED);
 		} else {
-			this.projectFile = oldProjectFile;
 			throw new IOException("Project not found.");
 		}
 	}
@@ -421,16 +420,22 @@ public class Project extends PropertyChange {
 		saveGradleProperties(prop);
 	}
 
-	public boolean checkProjectStructure() {
-		if (!new File(getModelPath()).exists()) {
-			projectFile = projectFile.getParentFile();
-			if (new File(getModelPath()).exists())
-				return true;
-			else
-				return false;
+	/**
+	 * Checks if the model folder exists in the passed folder or in his parent.
+	 * 
+	 * @return The correct project folder or null if the model folder is not found.
+	 */
+	private File checkProjectStructure(File folder) {
+		File projectFolder = folder;
+		
+		if (!new File(projectFolder.getAbsolutePath() + MODEL_PATH).exists()) {
+			projectFolder = projectFolder.getParentFile();
+
+			if (!new File(projectFolder.getAbsolutePath() + MODEL_PATH).exists())
+				return null;
 		}
 
-		return true;
+		return projectFolder;
 	}
 
 	public BaseActor getActor(String id) {
