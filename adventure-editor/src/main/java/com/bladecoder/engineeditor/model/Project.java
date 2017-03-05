@@ -474,6 +474,8 @@ public class Project extends PropertyChange {
 
 	public void loadChapter(String selChapter) throws IOException {
 		undoStack.clear();
+		
+		setSelectedScene(null);
 
 		try {
 			chapter.load(selChapter);

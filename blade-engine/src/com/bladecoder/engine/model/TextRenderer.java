@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -48,6 +49,8 @@ public class TextRenderer implements ActorRenderer {
 	private int shadowOffsetX = 0;
 	private int shadowOffsetY = 0;
 	private Color shadowColor = Color.BLACK;
+	private Color color = Color.WHITE;
+	private int align = Align.left;
 
 	public TextRenderer() {
 
@@ -63,6 +66,11 @@ public class TextRenderer implements ActorRenderer {
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
 
 		if (font != null && text != null) {
+			
+			if(tint != null && !tint.equals(color)) {
+				color = tint;
+				layout.setText(font, text, color, 0, align, false);
+			}
 
 			Matrix4 tm = batch.getTransformMatrix();
 			tmp.set(tm);
@@ -74,13 +82,7 @@ public class TextRenderer implements ActorRenderer {
 
 			batch.setTransformMatrix(tm);
 
-			if (tint != null)
-				batch.setColor(tint);
-
 			font.draw(batch, layout, 0, 0);
-
-			if (tint != null)
-				batch.setColor(Color.WHITE);
 
 			batch.setTransformMatrix(tmp);
 		} else {
@@ -235,7 +237,7 @@ public class TextRenderer implements ActorRenderer {
 
 		font = EngineAssetManager.getInstance().get(fontName + getFontSize() + ".ttf", BitmapFont.class);
 
-		layout.setText(font, text);
+		layout.setText(font, text, color, 0, align, false);
 
 		computeBbox();
 	}
