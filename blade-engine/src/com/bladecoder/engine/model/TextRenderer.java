@@ -51,9 +51,20 @@ public class TextRenderer implements ActorRenderer {
 	private Color shadowColor = Color.BLACK;
 	private Color color = Color.WHITE;
 	private int align = Align.left;
+	private int orgAlign = Align.bottom;
 
 	public TextRenderer() {
 
+	}
+		
+	@Override
+	public int getOrgAlign() {
+		return orgAlign;
+	}
+
+	@Override
+	public void setOrgAlign(int align) {
+		orgAlign = align;
 	}
 
 	@Override
@@ -277,6 +288,7 @@ public class TextRenderer implements ActorRenderer {
 			json.writeValue("shadowOffsetY", shadowOffsetY);
 			json.writeValue("shadowColor", shadowColor);
 			json.writeValue("align", align);
+			json.writeValue("orgAlign", orgAlign);
 		} else {
 
 		}
@@ -295,6 +307,7 @@ public class TextRenderer implements ActorRenderer {
 			shadowOffsetY = json.readValue("shadowOffsetY", int.class, jsonData);
 			shadowColor = json.readValue("shadowColor", Color.class, jsonData);
 			align = json.readValue("align", int.class, Align.left, jsonData);
+			orgAlign = json.readValue("orgAlign", int.class, Align.bottom, jsonData);
 		} else {
 
 		}

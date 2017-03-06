@@ -21,7 +21,6 @@ import java.util.Map.Entry;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -55,35 +54,22 @@ import com.esotericsoftware.spine.Slot;
 import com.esotericsoftware.spine.attachments.Attachment;
 import com.esotericsoftware.spine.attachments.RegionAttachment;
 
-public class SpineRenderer implements AnimationRenderer {
+public class SpineRenderer extends AnimationRenderer {
 
 	private final static int PLAY_ANIMATION_EVENT = 0;
 	private final static int PLAY_SOUND_EVENT = 1;
 	private final static int RUN_VERB_EVENT = 2;
 	private final static int LOOP_EVENT = 3;
 
-	private final static float DEFAULT_DIM = 200;
-
-	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
-
-	/** Starts this anim the first time that the scene is loaded */
-	private String initAnimation;
-	private AnimationDesc currentAnimation;
-
 	private ActionCallback animationCb = null;
 
 	private int currentCount;
 	private Tween.Type currentAnimationType;
 
-	private boolean flipX;
-
-	private SkeletonCacheEntry currentSource;
-
 	private SkeletonRenderer<SpriteBatch> renderer;
 	private SkeletonBounds bounds;
-	private float width = DEFAULT_DIM, height = DEFAULT_DIM;
-
-	private final HashMap<String, SkeletonCacheEntry> sourceCache = new HashMap<String, SkeletonCacheEntry>();
+	
+	private float width = super.getWidth(), height = super.getHeight();
 
 	private float lastAnimationTime = 0;
 
@@ -91,10 +77,7 @@ public class SpineRenderer implements AnimationRenderer {
 
 	private boolean eventsEnabled = true;
 
-	private Polygon bbox;
-
-	class SkeletonCacheEntry {
-		int refCounter;
+	class SkeletonCacheEntry extends CacheEntry {
 		Skeleton skeleton;
 		AnimationState animation;
 		String atlas;
@@ -118,12 +101,14 @@ public class SpineRenderer implements AnimationRenderer {
 					&& (currentCount == Tween.INFINITY || currentCount > loopCount)) {
 
 				// FIX for latest spine rt not setting setup pose when looping.
-				currentSource.skeleton.setToSetupPose();
-				currentSource.skeleton.setFlipX(flipX);
+				SkeletonCacheEntry cs = (SkeletonCacheEntry)currentSource;
+				
+				cs.skeleton.setToSetupPose();
+				cs.skeleton.setFlipX(flipX);
 				complete = true;
-				currentSource.animation.update(0);
-				currentSource.animation.apply(currentSource.skeleton);
-				currentSource.skeleton.updateWorldTransform();
+				cs.animation.update(0);
+				cs.animation.apply(cs.skeleton);
+				cs.skeleton.updateWorldTransform();
 				complete = false;
 				// END FIX
 
@@ -183,48 +168,10 @@ public class SpineRenderer implements AnimationRenderer {
 	};
 
 	@Override
-	public HashMap<String, AnimationDesc> getAnimations() {
-		return fanims;
-	}
-
-	@Override
-	public void addAnimation(AnimationDesc fa) {
-		if (initAnimation == null)
-			initAnimation = fa.id;
-
-		fanims.put(fa.id, fa);
-	}
-
-	@Override
-	public String getCurrentAnimationId() {
-		if (currentAnimation == null)
-			return null;
-
-		String id = currentAnimation.id;
-
-		if (flipX) {
-			id = AnimationDesc.getFlipId(id);
-		}
-
-		return id;
-
-	}
-
-	@Override
-	public void setInitAnimation(String fa) {
-		initAnimation = fa;
-	}
-
-	@Override
-	public String getInitAnimation() {
-		return initAnimation;
-	}
-
-	@Override
 	public String[] getInternalAnimations(AnimationDesc anim) {
 		retrieveSource(anim.source, ((SpineAnimationDesc) anim).atlas);
 
-		Array<Animation> animations = sourceCache.get(anim.source).skeleton.getData().getAnimations();
+		Array<Animation> animations = ((SkeletonCacheEntry)sourceCache.get(anim.source)).skeleton.getData().getAnimations();
 		String[] result = new String[animations.size];
 
 		for (int i = 0; i < animations.size; i++) {
@@ -241,7 +188,7 @@ public class SpineRenderer implements AnimationRenderer {
 			return;
 		}
 
-		if (currentSource != null && currentSource.skeleton != null) {
+		if (currentSource != null && ((SkeletonCacheEntry)currentSource).skeleton != null) {
 			float d = delta;
 
 			if (currentAnimationType == Tween.Type.REVERSE) {
@@ -262,9 +209,11 @@ public class SpineRenderer implements AnimationRenderer {
 	}
 
 	private void updateAnimation(float time) {
-		currentSource.animation.update(time);
-		currentSource.animation.apply(currentSource.skeleton);
-		currentSource.skeleton.updateWorldTransform();
+		SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
+		
+		cs.animation.update(time);
+		cs.animation.apply(cs.skeleton);
+		cs.skeleton.updateWorldTransform();
 	}
 
 	private static final Matrix4 tmp = new Matrix4();
@@ -272,20 +221,22 @@ public class SpineRenderer implements AnimationRenderer {
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
 
-		if (currentSource != null && currentSource.skeleton != null) {
+		SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
+		
+		if (cs != null && cs.skeleton != null) {
 			Matrix4 tm = batch.getTransformMatrix();
 			tmp.set(tm);
 
-			currentSource.skeleton.setX(x / scale);
-			currentSource.skeleton.setY(y / scale);
+			cs.skeleton.setX(x / scale);
+			cs.skeleton.setY(y / scale);
 
 			tm.rotate(0, 0, 1, rotation).scale(scale, scale, 1);
 			batch.setTransformMatrix(tm);
 
 			if (tint != null)
-				currentSource.skeleton.setColor(tint);
+				cs.skeleton.setColor(tint);
 
-			renderer.draw(batch, currentSource.skeleton);
+			renderer.draw(batch, cs.skeleton);
 
 			if (tint != null)
 				batch.setColor(Color.WHITE);
@@ -304,11 +255,6 @@ public class SpineRenderer implements AnimationRenderer {
 	@Override
 	public float getHeight() {
 		return height;
-	}
-
-	@Override
-	public AnimationDesc getCurrentAnimation() {
-		return currentAnimation;
 	}
 
 	@Override
@@ -388,7 +334,7 @@ public class SpineRenderer implements AnimationRenderer {
 
 		if (currentAnimationType == Tween.Type.REVERSE) {
 			// get animation duration
-			Array<Animation> animations = currentSource.skeleton.getData().getAnimations();
+			Array<Animation> animations = ((SkeletonCacheEntry)currentSource).skeleton.getData().getAnimations();
 
 			for (Animation a : animations) {
 				if (a.getName().equals(currentAnimation.id)) {
@@ -408,11 +354,11 @@ public class SpineRenderer implements AnimationRenderer {
 
 	private void setCurrentAnimation() {
 		try {
-			// TODO Make setup pose parametrizable in the AnimationDesc
-			currentSource.skeleton.setToSetupPose();
-			currentSource.skeleton.setFlipX(flipX);
-			currentSource.animation.setTimeScale(currentAnimation.duration);
-			currentSource.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.Type.REPEAT);
+			SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
+			cs.skeleton.setToSetupPose();
+			cs.skeleton.setFlipX(flipX);
+			cs.animation.setTimeScale(currentAnimation.duration);
+			cs.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.Type.REPEAT);
 
 			updateAnimation(lastAnimationTime);
 			computeBbox();
@@ -422,14 +368,17 @@ public class SpineRenderer implements AnimationRenderer {
 		}
 	}
 
-	private void computeBbox() {
+	@Override
+	public void computeBbox() {
 		float minX, minY, maxX, maxY;
 
 		if (bbox != null && (bbox.getVertices() == null || bbox.getVertices().length != 8)) {
 			bbox.setVertices(new float[8]);
 		}
+		
+		SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
 
-		if (currentSource == null || currentSource.skeleton == null) {
+		if (cs == null || cs.skeleton == null) {
 
 			if (bbox != null) {
 
@@ -448,9 +397,9 @@ public class SpineRenderer implements AnimationRenderer {
 			return;
 		}
 
-		currentSource.skeleton.setPosition(0, 0);
-		currentSource.skeleton.updateWorldTransform();
-		bounds.update(currentSource.skeleton, true);
+		cs.skeleton.setPosition(0, 0);
+		cs.skeleton.updateWorldTransform();
+		bounds.update(cs.skeleton, true);
 
 		if (bounds.getWidth() > 0 && bounds.getHeight() > 0) {
 			width = bounds.getWidth();
@@ -466,7 +415,7 @@ public class SpineRenderer implements AnimationRenderer {
 			maxX = Float.MIN_VALUE;
 			maxY = Float.MIN_VALUE;
 
-			Array<Slot> slots = currentSource.skeleton.getSlots();
+			Array<Slot> slots = cs.skeleton.getSlots();
 
 			for (int i = 0, n = slots.size; i < n; i++) {
 				Slot slot = slots.get(i);
@@ -492,8 +441,8 @@ public class SpineRenderer implements AnimationRenderer {
 			height = (maxY - minY);
 
 			if (width <= minX || height <= minY) {
-				width = height = DEFAULT_DIM;
-				float dim2 = DEFAULT_DIM / 2;
+				width = height = super.getWidth();
+				float dim2 = super.getWidth() / 2;
 				minX = -dim2;
 				minY = -dim2;
 				maxX = dim2;
@@ -589,13 +538,8 @@ public class SpineRenderer implements AnimationRenderer {
 		return fa;
 	}
 
-	@Override
-	public void updateBboxFromRenderer(Polygon bbox) {
-		this.bbox = bbox;
-	}
-
 	private void loadSource(String source, String atlas) {
-		SkeletonCacheEntry entry = sourceCache.get(source);
+		SkeletonCacheEntry entry = (SkeletonCacheEntry)sourceCache.get(source);
 
 		if (entry == null) {
 			entry = new SkeletonCacheEntry();
@@ -621,12 +565,12 @@ public class SpineRenderer implements AnimationRenderer {
 	}
 
 	private void retrieveSource(String source, String atlas) {
-		SkeletonCacheEntry entry = sourceCache.get(source);
+		SkeletonCacheEntry entry = (SkeletonCacheEntry)sourceCache.get(source);
 
 		if (entry == null || entry.refCounter < 1) {
 			loadSource(source, atlas);
 			EngineAssetManager.getInstance().finishLoading();
-			entry = sourceCache.get(source);
+			entry = (SkeletonCacheEntry)sourceCache.get(source);
 		}
 
 		if (entry.skeleton == null) {
@@ -647,7 +591,7 @@ public class SpineRenderer implements AnimationRenderer {
 	}
 
 	private void disposeSource(String source) {
-		SkeletonCacheEntry entry = sourceCache.get(source);
+		SkeletonCacheEntry entry = (SkeletonCacheEntry)sourceCache.get(source);
 
 		if (entry.refCounter == 1) {
 			EngineAssetManager.getInstance().disposeAtlas(source);
@@ -683,11 +627,11 @@ public class SpineRenderer implements AnimationRenderer {
 
 		for (String key : sourceCache.keySet()) {
 			if (sourceCache.get(key).refCounter > 0)
-				retrieveSource(key, sourceCache.get(key).atlas);
+				retrieveSource(key, ((SkeletonCacheEntry)sourceCache.get(key)).atlas);
 		}
 
 		if (currentAnimation != null) {
-			SkeletonCacheEntry entry = sourceCache.get(currentAnimation.source);
+			SkeletonCacheEntry entry = (SkeletonCacheEntry)sourceCache.get(currentAnimation.source);
 			currentSource = entry;
 
 			// Stop events to avoid event trigger
@@ -706,7 +650,7 @@ public class SpineRenderer implements AnimationRenderer {
 
 	@Override
 	public void dispose() {
-		for (Entry<String, SkeletonCacheEntry> entry : sourceCache.entrySet()) {
+		for (Entry<String, CacheEntry> entry : sourceCache.entrySet()) {
 			if (entry.getValue().refCounter > 0)
 				EngineAssetManager.getInstance()
 						.unload(EngineAssetManager.SPINE_DIR + entry.getKey() + EngineAssetManager.SPINE_EXT);
@@ -720,24 +664,16 @@ public class SpineRenderer implements AnimationRenderer {
 
 	@Override
 	public void write(Json json) {
-
+		super.write(json);
+		
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
-			json.writeValue("fanims", fanims, HashMap.class, AnimationDesc.class);
-			json.writeValue("initAnimation", initAnimation);
+
 		} else {
-			String currentAnimationId = null;
-
-			if (currentAnimation != null)
-				currentAnimationId = currentAnimation.id;
-
-			json.writeValue("currentAnimation", currentAnimationId, currentAnimationId == null ? null : String.class);
-
-			json.writeValue("flipX", flipX);
 
 			json.writeValue("cb", ActionCallbackSerialization.find(animationCb));
 			json.writeValue("currentCount", currentCount);
 
-			if (currentAnimationId != null)
+			if (currentAnimation != null)
 				json.writeValue("currentAnimationType", currentAnimationType);
 
 			json.writeValue("lastAnimationTime", lastAnimationTime);
@@ -748,22 +684,18 @@ public class SpineRenderer implements AnimationRenderer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
+		super.read(json, jsonData);
+		
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
-			fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
-			initAnimation = json.readValue("initAnimation", String.class, jsonData);
+			fanims = json.readValue("fanims", HashMap.class, SpineAnimationDesc.class, jsonData);
 		} else {
-			String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);
-
-			if (currentAnimationId != null)
-				currentAnimation = fanims.get(currentAnimationId);
-
-			flipX = json.readValue("flipX", Boolean.class, jsonData);
+			
 			String animationCbSer = json.readValue("cb", String.class, jsonData);
 			animationCb = ActionCallbackSerialization.find(animationCbSer);
 
 			currentCount = json.readValue("currentCount", Integer.class, jsonData);
 
-			if (currentAnimationId != null)
+			if (currentAnimation != null)
 				currentAnimationType = json.readValue("currentAnimationType", Tween.Type.class, jsonData);
 
 			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);

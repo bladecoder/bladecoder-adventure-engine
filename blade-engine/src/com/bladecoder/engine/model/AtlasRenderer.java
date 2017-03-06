@@ -22,7 +22,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -39,41 +38,15 @@ import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
 
-public class AtlasRenderer implements AnimationRenderer {
-	private final static float DEFAULT_DIM = 200;
-
-	private HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
-
-	/** Starts this anim the first time that the scene is loaded */
-	private String initAnimation;
-
-	private AtlasAnimationDesc currentAnimation;
+public class AtlasRenderer extends AnimationRenderer {
 
 	private AtlasRegion tex;
-	private boolean flipX;
 	private FATween faTween;
 
 	private int currentFrameIndex;
 
-	private final HashMap<String, AtlasCacheEntry> sourceCache = new HashMap<String, AtlasCacheEntry>();
-	private Polygon bbox;
-
-	class AtlasCacheEntry {
-		int refCounter;
-	}
-
 	public AtlasRenderer() {
 
-	}
-
-	@Override
-	public void setInitAnimation(String fa) {
-		initAnimation = fa;
-	}
-
-	@Override
-	public String getInitAnimation() {
-		return initAnimation;
 	}
 
 	@Override
@@ -107,7 +80,7 @@ public class AtlasRenderer implements AnimationRenderer {
 
 	public void setFrame(int i) {
 		currentFrameIndex = i;
-		tex = currentAnimation.regions.get(i);
+		tex = ((AtlasAnimationDesc)currentAnimation).regions.get(i);
 	}
 
 	@Override
@@ -141,7 +114,7 @@ public class AtlasRenderer implements AnimationRenderer {
 	@Override
 	public float getWidth() {
 		if (tex == null)
-			return DEFAULT_DIM;
+			return super.getWidth();
 
 		// return tex.getRegionWidth();
 		return tex.originalWidth;
@@ -150,20 +123,10 @@ public class AtlasRenderer implements AnimationRenderer {
 	@Override
 	public float getHeight() {
 		if (tex == null)
-			return DEFAULT_DIM;
+			return super.getHeight();
 
 		// return tex.getRegionHeight();
 		return tex.originalHeight;
-	}
-
-	@Override
-	public AnimationDesc getCurrentAnimation() {
-		return currentAnimation;
-	}
-
-	@Override
-	public HashMap<String, AnimationDesc> getAnimations() {
-		return (HashMap<String, AnimationDesc>) fanims;
 	}
 
 	@Override
@@ -182,31 +145,23 @@ public class AtlasRenderer implements AnimationRenderer {
 
 		if (currentAnimation != null && currentAnimation.disposeWhenPlayed) {
 			disposeSource(currentAnimation.source);
-			currentAnimation.regions = null;
+			((AtlasAnimationDesc)currentAnimation).regions = null;
 		}
 
 		currentAnimation = fa;
-
+		
 		// If the source is not loaded. Load it.
-		if (currentAnimation != null && currentAnimation.regions == null) {
+		if (fa.regions == null) {
 
 			retrieveFA(fa);
 
-			if (currentAnimation.regions == null || currentAnimation.regions.size == 0) {
+			if (fa.regions == null || fa.regions.size == 0) {
 				EngineLogger.error(currentAnimation.id + " has no regions in ATLAS " + currentAnimation.source);
 				fanims.remove(currentAnimation.id);
 			}
 		}
 
-		if (currentAnimation == null) {
-
-			tex = null;
-
-			computeBbox();
-			return;
-		}
-
-		if (currentAnimation.regions.size == 1 || currentAnimation.duration == 0.0) {
+		if (fa.regions.size == 1 || fa.duration == 0.0) {
 
 			setFrame(0);
 			computeBbox();
@@ -235,69 +190,7 @@ public class AtlasRenderer implements AnimationRenderer {
 	}
 
 	public int getNumFrames() {
-		return currentAnimation.regions.size;
-	}
-
-	@Override
-	public String getCurrentAnimationId() {
-		if (currentAnimation == null)
-			return null;
-
-		String id = currentAnimation.id;
-
-		if (flipX) {
-			id = AnimationDesc.getFlipId(id);
-		}
-
-		return id;
-
-	}
-
-	private void computeBbox() {
-		if (bbox == null)
-			return;
-
-		if (bbox.getVertices() == null || bbox.getVertices().length != 8) {
-			bbox.setVertices(new float[8]);
-		}
-
-		float[] verts = bbox.getVertices();
-
-		verts[0] = -getWidth() / 2;
-		verts[1] = 0f;
-		verts[2] = -getWidth() / 2;
-		verts[3] = getHeight();
-		verts[4] = getWidth() / 2;
-		verts[5] = getHeight();
-		verts[6] = getWidth() / 2;
-		verts[7] = 0f;
-		bbox.dirty();
-	}
-
-	@Override
-	public void addAnimation(AnimationDesc fa) {
-		if (initAnimation == null)
-			initAnimation = fa.id;
-
-		fanims.put(fa.id, (AtlasAnimationDesc) fa);
-	}
-
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer(super.toString());
-
-		sb.append("\n  Anims:");
-
-		for (String v : fanims.keySet()) {
-			sb.append(" ").append(v);
-		}
-
-		if (currentAnimation != null)
-			sb.append("\n  Current Anim: ").append(currentAnimation.id);
-
-		sb.append("\n");
-
-		return sb.toString();
+		return ((AtlasAnimationDesc)currentAnimation).regions.size;
 	}
 
 	private AtlasAnimationDesc getAnimation(String id) {
@@ -383,18 +276,11 @@ public class AtlasRenderer implements AnimationRenderer {
 		startAnimation(id, repeatType, count, cb, AnimationDesc.getDirectionString(p0, pf, AnimationDesc.getDirs(id, fanims)));
 	}
 
-	@Override
-	public void updateBboxFromRenderer(Polygon bbox) {
-		this.bbox = bbox;
-		
-		computeBbox();
-	}
-
 	private void loadSource(String source) {
-		AtlasCacheEntry entry = sourceCache.get(source);
+		CacheEntry entry = sourceCache.get(source);
 
 		if (entry == null) {
-			entry = new AtlasCacheEntry();
+			entry = new CacheEntry();
 			sourceCache.put(source, entry);
 		}
 
@@ -410,7 +296,7 @@ public class AtlasRenderer implements AnimationRenderer {
 	}
 
 	private void retrieveSource(String source) {
-		AtlasCacheEntry entry = sourceCache.get(source);
+		CacheEntry entry = sourceCache.get(source);
 
 		if (entry == null || entry.refCounter < 1) {
 			loadSource(source);
@@ -419,7 +305,7 @@ public class AtlasRenderer implements AnimationRenderer {
 	}
 
 	private void disposeSource(String source) {
-		AtlasCacheEntry entry = sourceCache.get(source);
+		CacheEntry entry = sourceCache.get(source);
 
 		if (entry.refCounter == 1) {
 			EngineAssetManager.getInstance().disposeAtlas(source);
@@ -444,7 +330,7 @@ public class AtlasRenderer implements AnimationRenderer {
 				a = AnimationDesc.getFlipId(a);
 			}
 
-			AtlasAnimationDesc fa = (AtlasAnimationDesc) fanims.get(a);
+			AnimationDesc fa = fanims.get(a);
 
 			if (fa != null && !fa.preload)
 				loadSource(fa.source);
@@ -459,7 +345,7 @@ public class AtlasRenderer implements AnimationRenderer {
 		}
 
 		if (currentAnimation != null && !currentAnimation.preload) {
-			retrieveFA(currentAnimation);
+			retrieveFA((AtlasAnimationDesc)currentAnimation);
 		} else if (currentAnimation == null && initAnimation != null) {
 			String a = initAnimation;
 
@@ -494,21 +380,11 @@ public class AtlasRenderer implements AnimationRenderer {
 
 	@Override
 	public void write(Json json) {
+		super.write(json);
+		
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
-			json.writeValue("fanims", fanims, HashMap.class, AtlasAnimationDesc.class);
-			json.writeValue("initAnimation", initAnimation);
-
 		} else {
-
-			String currentAnimationId = null;
-
-			if (currentAnimation != null)
-				currentAnimationId = currentAnimation.id;
-
-			json.writeValue("currentAnimation", currentAnimationId);
-
-			json.writeValue("flipX", flipX);
 			json.writeValue("currentFrameIndex", currentFrameIndex);
 
 			json.writeValue("faTween", faTween, faTween == null ? null : FATween.class);
@@ -518,20 +394,12 @@ public class AtlasRenderer implements AnimationRenderer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
+		super.read(json, jsonData);
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
-
 			fanims = json.readValue("fanims", HashMap.class, AtlasAnimationDesc.class, jsonData);
-			initAnimation = json.readValue("initAnimation", String.class, jsonData);
-
 		} else {
 
-			String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);
-
-			if (currentAnimationId != null)
-				currentAnimation = (AtlasAnimationDesc) fanims.get(currentAnimationId);
-
-			flipX = json.readValue("flipX", Boolean.class, jsonData);
 			currentFrameIndex = json.readValue("currentFrameIndex", Integer.class, jsonData);
 			faTween = json.readValue("faTween", FATween.class, jsonData);
 			

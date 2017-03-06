@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -46,9 +47,22 @@ public class ParticleRenderer implements ActorRenderer {
 	private float tmpPosX = 0;
 	private float tmpPosY = 0;
 	private static final Matrix4 tmp = new Matrix4();
+	
+	private int orgAlign = Align.bottom;
 
 	public ParticleRenderer() {
 
+	}
+	
+	
+	@Override
+	public int getOrgAlign() {
+		return orgAlign;
+	}
+
+	@Override
+	public void setOrgAlign(int align) {
+		orgAlign = align;
 	}
 
 	@Override
@@ -179,6 +193,7 @@ public class ParticleRenderer implements ActorRenderer {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("atlasName", getAtlasName());
 			json.writeValue("particleName", getParticleName());
+			json.writeValue("orgAlign", orgAlign);
 		} else {		
 			json.writeValue("lastAnimationTime", lastAnimationTime);
 		}
@@ -189,6 +204,7 @@ public class ParticleRenderer implements ActorRenderer {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			setAtlasName(json.readValue("atlasName", String.class, jsonData));
 			setParticleName(json.readValue("particleName", String.class, jsonData));
+			orgAlign = json.readValue("orgAlign", int.class, Align.bottom, jsonData);
 		} else {		
 			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 		}

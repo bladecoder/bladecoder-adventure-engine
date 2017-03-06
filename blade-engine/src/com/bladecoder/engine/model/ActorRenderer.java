@@ -29,6 +29,9 @@ public interface ActorRenderer extends Serializable, AssetConsumer {
 	public float getWidth();
 	public float getHeight();
 	
+	public int getOrgAlign();
+	public void setOrgAlign(int align);
+	
 	/**
 	 * Compute the bbox based in the size of the animation/sprite. T
 	 * 
