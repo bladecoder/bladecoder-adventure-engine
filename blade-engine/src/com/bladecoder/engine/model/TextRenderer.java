@@ -75,8 +75,13 @@ public class TextRenderer implements ActorRenderer {
 			Matrix4 tm = batch.getTransformMatrix();
 			tmp.set(tm);
 
-			float originX = -getWidth() / 2;
+			float originX = 0;
 			float originY = layout.height;
+			
+			if(align == Align.left)
+				originX = -getWidth()/2;
+			else if(align == Align.right) 
+				originX = getWidth()/2;
 
 			tm.translate(x, y, 0).rotate(0, 0, 1, rotation).scale(scale, scale, 1).translate(originX, originY, 0);
 
@@ -206,6 +211,14 @@ public class TextRenderer implements ActorRenderer {
 	public void setShadowColor(Color shadowColor) {
 		this.shadowColor = shadowColor;
 	}
+	
+	public int getAlign() {
+		return align;
+	}
+
+	public void setAlign(int align) {
+		this.align = align;
+	}
 
 	@Override
 	public void loadAssets() {
@@ -263,6 +276,7 @@ public class TextRenderer implements ActorRenderer {
 			json.writeValue("shadowOffsetX", shadowOffsetX);
 			json.writeValue("shadowOffsetY", shadowOffsetY);
 			json.writeValue("shadowColor", shadowColor);
+			json.writeValue("align", align);
 		} else {
 
 		}
@@ -280,6 +294,7 @@ public class TextRenderer implements ActorRenderer {
 			shadowOffsetX = json.readValue("shadowOffsetX", int.class, jsonData);
 			shadowOffsetY = json.readValue("shadowOffsetY", int.class, jsonData);
 			shadowColor = json.readValue("shadowColor", Color.class, jsonData);
+			align = json.readValue("align", int.class, Align.left, jsonData);
 		} else {
 
 		}

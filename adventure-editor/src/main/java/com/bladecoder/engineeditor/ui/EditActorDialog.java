@@ -45,6 +45,7 @@ import com.bladecoder.engine.model.TextRenderer;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.AlignUtils;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
@@ -62,22 +63,20 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private final static String OBSTACLE_TYPE_STR = "obstacle";
 	private final static String ANCHOR_TYPE_STR = "anchor";
 
-	public static final String ACTOR_TYPES[] = { BACKGROUND_TYPE_STR, SPRITE_TYPE_STR, CHARACTER_TYPE_STR,
+	private static final String ACTOR_TYPES[] = { BACKGROUND_TYPE_STR, SPRITE_TYPE_STR, CHARACTER_TYPE_STR,
 			OBSTACLE_TYPE_STR, ANCHOR_TYPE_STR };
 
-	public static final String ACTOR_RENDERERS[] = { Project.ATLAS_RENDERER_STRING, Project.SPINE_RENDERER_STRING,
+	private static final String ACTOR_RENDERERS[] = { Project.ATLAS_RENDERER_STRING, Project.SPINE_RENDERER_STRING,
 			Project.IMAGE_RENDERER_STRING, Project.S3D_RENDERER_STRING, Project.PARTICLE_RENDERER_STRING, Project.TEXT_RENDERER_STRING };
 
-	public static final String TYPES_INFO[] = {
+	private static final String TYPES_INFO[] = {
 			"Background actors don't have sprites or animations. They are used to interact with objects drawn in the background",
 			"Sprite actors have one or several sprites or animations",
 			"Character actors have dialogs and stand, walk and talk animations",
 			"Obstacle actors forbids zones for walking actors",
 			"Anchor actors are used as reference for positioning other actors" };
-
-	public static final String RENDERERS_INFO[] = { "Atlas actor allows 2d image and animations",
-			"Spine actors allow Spine 2d skeletal animations", "3d actors allow 3d models and animations",
-			"Image actors show image files", "Render Particle Effects" };
+	
+	private static final String TEXT_ALIGN[] = {"left", "center", "right"};
 
 	private InputPanel typePanel;
 	private InputPanel id;
@@ -110,6 +109,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel text;
 	private InputPanel font;
 	private InputPanel size;
+	private InputPanel textAlign;
 	private InputPanel borderWidth;
 	private InputPanel borderColor;
 	private InputPanel borderStraight;
@@ -188,6 +188,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				"Select the font name.", Type.FONT_ASSET, true);
 		size = InputPanelFactory.createInputPanel(skin, "Size",
 				"The size of the text.", Type.INTEGER, true, "20");
+		textAlign = InputPanelFactory.createInputPanel(skin, "Text Align",
+				"The alignment of the text.", TEXT_ALIGN, true);
 		borderWidth = InputPanelFactory.createInputPanel(skin, "Border Width",
 				"Zero for no border.", Type.INTEGER, true, "0");
 		borderColor = InputPanelFactory.createInputPanel(skin, "Border Color",
@@ -221,7 +223,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		init(parent, e,
 				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, depthType, pos, scale, rot,
-						tint, text, font, size, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
+						tint, text, font, size, textAlign, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
 						shadowColor, bboxFromRenderer, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
 
 		typeChanged();
@@ -291,6 +293,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		setVisible(text, false);
 		setVisible(font, false);
 		setVisible(size, false);
+		setVisible(textAlign, false);
 		setVisible(borderWidth, false);
 		setVisible(borderColor, false);
 		setVisible(borderStraight, false);
@@ -310,6 +313,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				setVisible(text, true);
 				setVisible(font, true);
 				setVisible(size, true);
+				setVisible(textAlign, true);
 				setVisible(borderWidth, true);
 				setVisible(borderColor, true);
 				setVisible(borderStraight, true);
@@ -489,6 +493,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					r.setText(text.getText());
 					r.setFontSize(Integer.parseInt(size.getText()));
 					r.setFontName(font.getText());
+					r.setAlign(AlignUtils.getAlign(textAlign.getText()));
 					r.setBorderWidth(Integer.parseInt(borderWidth.getText()));
 					r.setBorderColor(Param.parseColor(borderColor.getText()));
 					r.setBorderStraight(Boolean.parseBoolean(borderStraight.getText()));
@@ -581,6 +586,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					size.setText(Integer.toString(tr.getFontSize()));
 					font.setText(tr.getFontName());
 					borderWidth.setText(Integer.toString(tr.getBorderWidth()));
+					textAlign.setText(AlignUtils.getAlign(tr.getAlign()));
 					borderColor.setText(tr.getBorderColor().toString());
 					borderStraight.setText(Boolean.toString(tr.isBorderStraight()));
 					shadowOffsetX.setText(Integer.toString(tr.getShadowOffsetX()));

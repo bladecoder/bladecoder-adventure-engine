@@ -32,7 +32,7 @@ public interface ActorRenderer extends Serializable, AssetConsumer {
 	/**
 	 * Compute the bbox based in the size of the animation/sprite. T
 	 * 
-	 * @param bbox The polygon to update. It will be updated when start/finish an animation.
+	 * @param bbox The polygon to update. It will be updated when an animation starts/finishs.
 	 */
 	public void updateBboxFromRenderer(Polygon bbox);
 }
