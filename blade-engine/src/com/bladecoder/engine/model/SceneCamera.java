@@ -208,7 +208,9 @@ public class SceneCamera extends OrthographicCamera implements Serializable  {
 		p.y = p.y/worldScale;
 		json.writeValue("pos", p);
 		json.writeValue("zoom", getZoom());
-		json.writeValue("cameraTween", cameraTween);
+		
+		if(cameraTween != null)
+			json.writeValue("cameraTween", cameraTween);
 	}
 
 	@Override

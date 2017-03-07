@@ -384,7 +384,8 @@ public class AtlasRenderer extends AnimationRenderer {
 		} else {
 			json.writeValue("currentFrameIndex", currentFrameIndex);
 
-			json.writeValue("faTween", faTween, faTween == null ? null : FATween.class);
+			if(faTween != null)
+				json.writeValue("faTween", faTween);
 		}
 	}
 

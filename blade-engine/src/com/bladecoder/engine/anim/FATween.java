@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.model.AtlasRenderer;
 
@@ -45,16 +43,5 @@ public class FATween extends Tween<AtlasRenderer> {
 	public void updateTarget() {
 		if(!isComplete() && getPercent() < 1.0f)
 			target.setFrame((int)(getPercent() * target.getNumFrames()));
-	}
-	
-	@Override
-	public void write(Json json) {
-		super.write(json);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);	
-
 	}
 }

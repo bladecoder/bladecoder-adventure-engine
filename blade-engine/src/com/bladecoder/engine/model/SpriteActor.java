@@ -291,11 +291,10 @@ public class SpriteActor extends InteractiveActor {
 			super.write(json);
 		}
 
-		json.writeValue("renderer", renderer, null);
-
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
-
+			json.writeValue("renderer", renderer, null);
 		} else {
+			json.writeValue("renderer", renderer);
 			json.writeValue("tweens", tweens, ArrayList.class, Tween.class);
 		}
 
