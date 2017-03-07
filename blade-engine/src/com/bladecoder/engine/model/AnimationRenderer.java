@@ -49,7 +49,7 @@ public abstract class AnimationRenderer implements ActorRenderer {
 		public int refCounter;
 	}
 	
-	private int orgAlign = Align.left;
+	protected int orgAlign = Align.left;
 	
 	public abstract void startAnimation(String id, Tween.Type repeatType,
 			int count, ActionCallback cb);
@@ -74,6 +74,28 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	@Override
 	public float getHeight() {
 		return DEFAULT_DIM;
+	}
+	
+	public static float getAlignDx(float width, int align) {
+		if((align & Align.left) != 0)
+			return 0;
+		else if((align & Align.right) != 0)
+			return -width;
+		else if((align & Align.center) != 0)
+			return -width / 2.0f;
+		
+		return -width / 2.0f;
+	}
+	
+	public static float getAlignDy(float height, int align) {
+		if((align & Align.bottom) != 0)
+			return 0;
+		else if((align & Align.top) != 0)
+			return -height;
+		else if((align & Align.center) != 0)
+			return -height / 2.0f;
+		
+		return 0;
 	}
 	
 	public String getCurrentAnimationId() {
@@ -119,17 +141,23 @@ public abstract class AnimationRenderer implements ActorRenderer {
 		if (bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
+		
+		float dx =  getAlignDx(getWidth(), orgAlign);
+		float dy =  getAlignDy(getHeight(), orgAlign);
 
 		float[] verts = bbox.getVertices();
 
-		verts[0] = -getWidth() / 2;
-		verts[1] = 0f;
-		verts[2] = -getWidth() / 2;
-		verts[3] = getHeight();
-		verts[4] = getWidth() / 2;
-		verts[5] = getHeight();
-		verts[6] = getWidth() / 2;
-		verts[7] = 0f;
+		verts[0] = dx;
+		verts[1] = dy;
+		
+		verts[2] = dx;
+		verts[3] = getHeight() + dy;
+		
+		verts[4] = getWidth() + dx;
+		verts[5] = getHeight() + dy;
+		
+		verts[6] = getWidth() + dx;
+		verts[7] = dy;
 		bbox.dirty();
 	}
 	
@@ -194,7 +222,7 @@ public abstract class AnimationRenderer implements ActorRenderer {
 			// fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
 			
 			initAnimation = json.readValue("initAnimation", String.class, jsonData);
-			orgAlign = json.readValue("orgAlign", int.class, Align.left, jsonData);
+			orgAlign = json.readValue("orgAlign", int.class, Align.bottom, jsonData);
 		} else {
 
 			String currentAnimationId = json.readValue("currentAnimation", String.class, jsonData);

@@ -80,7 +80,7 @@ public class AtlasRenderer extends AnimationRenderer {
 
 	public void setFrame(int i) {
 		currentFrameIndex = i;
-		tex = ((AtlasAnimationDesc)currentAnimation).regions.get(i);
+		tex = ((AtlasAnimationDesc) currentAnimation).regions.get(i);
 	}
 
 	@Override
@@ -93,21 +93,19 @@ public class AtlasRenderer extends AnimationRenderer {
 			return;
 		}
 
-		x = x + tex.offsetX - tex.originalWidth / 2;
-		y = y + tex.offsetY;
-		
-		if(tint != null)
+		float dx = getAlignDx(getWidth(), orgAlign);
+		float dy = getAlignDy(getHeight(), orgAlign);
+
+		x = x + tex.offsetX + dx;
+		y = y + tex.offsetY + dy;
+
+		if (tint != null)
 			batch.setColor(tint);
 
-		if (!flipX) {
-			batch.draw(tex, x, y, tex.originalWidth / 2 - tex.offsetX, -tex.offsetY, tex.packedWidth, tex.packedHeight, scale,
-					scale, rotation);
-		} else {
-			batch.draw(tex, x, y, tex.originalWidth / 2 - tex.offsetX, -tex.offsetY, tex.packedWidth, tex.packedHeight, -scale,
-					scale, rotation);
-		}
-		
-		if(tint != null)
+		batch.draw(tex, x, y, -dx - tex.offsetX, -dy - tex.offsetY, tex.packedWidth, tex.packedHeight,
+				flipX ? -scale : scale, scale, rotation);
+
+		if (tint != null)
 			batch.setColor(Color.WHITE);
 	}
 
@@ -116,7 +114,6 @@ public class AtlasRenderer extends AnimationRenderer {
 		if (tex == null)
 			return super.getWidth();
 
-		// return tex.getRegionWidth();
 		return tex.originalWidth;
 	}
 
@@ -125,7 +122,6 @@ public class AtlasRenderer extends AnimationRenderer {
 		if (tex == null)
 			return super.getHeight();
 
-		// return tex.getRegionHeight();
 		return tex.originalHeight;
 	}
 
@@ -145,11 +141,11 @@ public class AtlasRenderer extends AnimationRenderer {
 
 		if (currentAnimation != null && currentAnimation.disposeWhenPlayed) {
 			disposeSource(currentAnimation.source);
-			((AtlasAnimationDesc)currentAnimation).regions = null;
+			((AtlasAnimationDesc) currentAnimation).regions = null;
 		}
 
 		currentAnimation = fa;
-		
+
 		// If the source is not loaded. Load it.
 		if (fa.regions == null) {
 
@@ -190,7 +186,7 @@ public class AtlasRenderer extends AnimationRenderer {
 	}
 
 	public int getNumFrames() {
-		return ((AtlasAnimationDesc)currentAnimation).regions.size;
+		return ((AtlasAnimationDesc) currentAnimation).regions.size;
 	}
 
 	private AtlasAnimationDesc getAnimation(String id) {
@@ -273,7 +269,8 @@ public class AtlasRenderer extends AnimationRenderer {
 
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
-		startAnimation(id, repeatType, count, cb, AnimationDesc.getDirectionString(p0, pf, AnimationDesc.getDirs(id, fanims)));
+		startAnimation(id, repeatType, count, cb,
+				AnimationDesc.getDirectionString(p0, pf, AnimationDesc.getDirs(id, fanims)));
 	}
 
 	private void loadSource(String source) {
@@ -345,7 +342,7 @@ public class AtlasRenderer extends AnimationRenderer {
 		}
 
 		if (currentAnimation != null && !currentAnimation.preload) {
-			retrieveFA((AtlasAnimationDesc)currentAnimation);
+			retrieveFA((AtlasAnimationDesc) currentAnimation);
 		} else if (currentAnimation == null && initAnimation != null) {
 			String a = initAnimation;
 
@@ -371,7 +368,7 @@ public class AtlasRenderer extends AnimationRenderer {
 	@Override
 	public void dispose() {
 		for (String key : sourceCache.keySet()) {
-			if(sourceCache.get(key).refCounter > 0)
+			if (sourceCache.get(key).refCounter > 0)
 				EngineAssetManager.getInstance().disposeAtlas(key);
 		}
 
@@ -381,7 +378,7 @@ public class AtlasRenderer extends AnimationRenderer {
 	@Override
 	public void write(Json json) {
 		super.write(json);
-		
+
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 
 		} else {
@@ -402,8 +399,8 @@ public class AtlasRenderer extends AnimationRenderer {
 
 			currentFrameIndex = json.readValue("currentFrameIndex", Integer.class, jsonData);
 			faTween = json.readValue("faTween", FATween.class, jsonData);
-			
-			if(faTween != null)
+
+			if (faTween != null)
 				faTween.setTarget(this);
 		}
 	}

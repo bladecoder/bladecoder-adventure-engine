@@ -474,6 +474,8 @@ public class Sprite3DRenderer extends AnimationRenderer {
 	public float getHeight() {
 		return height;
 	}
+	
+	private static final Vector3 tmp = new Vector3();
 
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
@@ -491,7 +493,6 @@ public class Sprite3DRenderer extends AnimationRenderer {
 		} else {
 			float p0x, p0y, pfx, pfy;
 
-			Vector3 tmp = new Vector3(); // TODO Make static for performance?
 			updateViewport();
 
 			// get screen coords for x and y

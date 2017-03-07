@@ -50,7 +50,7 @@ public class TextRenderer implements ActorRenderer {
 	private int shadowOffsetY = 0;
 	private Color shadowColor = Color.BLACK;
 	private Color color = Color.WHITE;
-	private int align = Align.left;
+	private int textAlign = Align.left;
 	private int orgAlign = Align.bottom;
 
 	public TextRenderer() {
@@ -80,19 +80,19 @@ public class TextRenderer implements ActorRenderer {
 			
 			if(tint != null && !tint.equals(color)) {
 				color = tint;
-				layout.setText(font, text, color, 0, align, false);
+				layout.setText(font, text, color, 0, textAlign, false);
 			}
 
 			Matrix4 tm = batch.getTransformMatrix();
 			tmp.set(tm);
 
-			float originX = 0;
-			float originY = layout.height;
+			float originX = getAlignDx(getWidth(), orgAlign);
+			float originY = layout.height + getAlignDy(getHeight(), orgAlign);
 			
-			if(align == Align.left)
-				originX = -getWidth()/2;
-			else if(align == Align.right) 
-				originX = getWidth()/2;
+			if(textAlign == Align.right) 
+				originX += getWidth();
+			else if(textAlign == Align.center)
+				originX += getWidth() / 2;
 
 			tm.translate(x, y, 0).rotate(0, 0, 1, rotation).scale(scale, scale, 1).translate(originX, originY, 0);
 
@@ -137,17 +137,23 @@ public class TextRenderer implements ActorRenderer {
 		if (bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
+		
+		float dx =  getAlignDx(getWidth(), orgAlign);
+		float dy =  getAlignDy(getHeight(), orgAlign);
 
 		float[] verts = bbox.getVertices();
 
-		verts[0] = -getWidth() / 2;
-		verts[1] = 0f;
-		verts[2] = -getWidth() / 2;
-		verts[3] = getHeight();
-		verts[4] = getWidth() / 2;
-		verts[5] = getHeight();
-		verts[6] = getWidth() / 2;
-		verts[7] = 0f;
+		verts[0] = dx;
+		verts[1] = dy;
+		
+		verts[2] = dx;
+		verts[3] = getHeight() + dy;
+		
+		verts[4] = getWidth() + dx;
+		verts[5] = getHeight() + dy;
+		
+		verts[6] = getWidth() + dx;
+		verts[7] = dy;
 		bbox.dirty();
 	}
 
@@ -224,11 +230,33 @@ public class TextRenderer implements ActorRenderer {
 	}
 	
 	public int getAlign() {
-		return align;
+		return textAlign;
 	}
 
 	public void setAlign(int align) {
-		this.align = align;
+		this.textAlign = align;
+	}
+	
+	public static float getAlignDx(float width, int align) {
+		if((align & Align.left) != 0)
+			return 0;
+		else if((align & Align.right) != 0)
+			return -width;
+		else if((align & Align.center) != 0)
+			return -width / 2.0f;
+		
+		return -width / 2.0f;
+	}
+	
+	public static float getAlignDy(float height, int align) {
+		if((align & Align.bottom) != 0)
+			return 0;
+		else if((align & Align.top) != 0)
+			return -height;
+		else if((align & Align.center) != 0)
+			return -height / 2.0f;
+		
+		return 0;
 	}
 
 	@Override
@@ -261,7 +289,7 @@ public class TextRenderer implements ActorRenderer {
 
 		font = EngineAssetManager.getInstance().get(fontName + getFontSize() + ".ttf", BitmapFont.class);
 
-		layout.setText(font, text, color, 0, align, false);
+		layout.setText(font, text, color, 0, textAlign, false);
 
 		computeBbox();
 	}
@@ -287,7 +315,7 @@ public class TextRenderer implements ActorRenderer {
 			json.writeValue("shadowOffsetX", shadowOffsetX);
 			json.writeValue("shadowOffsetY", shadowOffsetY);
 			json.writeValue("shadowColor", shadowColor);
-			json.writeValue("align", align);
+			json.writeValue("align", textAlign);
 			json.writeValue("orgAlign", orgAlign);
 		} else {
 
@@ -306,7 +334,7 @@ public class TextRenderer implements ActorRenderer {
 			shadowOffsetX = json.readValue("shadowOffsetX", int.class, jsonData);
 			shadowOffsetY = json.readValue("shadowOffsetY", int.class, jsonData);
 			shadowColor = json.readValue("shadowColor", Color.class, jsonData);
-			align = json.readValue("align", int.class, Align.left, jsonData);
+			textAlign = json.readValue("align", int.class, Align.left, jsonData);
 			orgAlign = json.readValue("orgAlign", int.class, Align.bottom, jsonData);
 		} else {
 

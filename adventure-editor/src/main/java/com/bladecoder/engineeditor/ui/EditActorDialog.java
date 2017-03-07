@@ -77,6 +77,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			"Anchor actors are used as reference for positioning other actors" };
 	
 	private static final String TEXT_ALIGN[] = {"left", "center", "right"};
+	private static final String ORG_ALIGN[] = {"bottom", "center", "left", "right", "top"};
 
 	private InputPanel typePanel;
 	private InputPanel id;
@@ -95,6 +96,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel zIndex;
 	private InputPanel walkingSpeed;
 
+	private InputPanel orgAlign;
+	
 	// 3d Renderer
 	private InputPanel spriteSize;
 	private InputPanel cameraName;
@@ -159,6 +162,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				"true");
 
 		zIndex = InputPanelFactory.createInputPanel(skin, "zIndex", "The order to draw.", Param.Type.FLOAT, false, "0");
+		
+		orgAlign = InputPanelFactory.createInputPanel(skin, "orgAlign", "Alignment of the origin for rotation and scale.", ORG_ALIGN, true);
 
 		walkingSpeed = InputPanelFactory.createInputPanel(skin, "Walking Speed",
 				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT, true,
@@ -224,7 +229,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		init(parent, e,
 				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, depthType, pos, scale, rot,
 						tint, text, font, size, textAlign, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
-						shadowColor, bboxFromRenderer, zIndex, walkingSpeed, spriteSize, cameraName, fov, textColor });
+						shadowColor, bboxFromRenderer, zIndex, orgAlign, walkingSpeed, spriteSize, cameraName, fov, textColor });
 
 		typeChanged();
 
@@ -268,6 +273,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			setVisible(rot, true);
 			setVisible(tint, true);
 			setVisible(bboxFromRenderer, true);
+			setVisible(orgAlign, true);
 		}
 
 		if (ACTOR_TYPES[i].equals(CHARACTER_TYPE_STR)) {
@@ -509,6 +515,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				sa.setDepthType(DepthType.valueOf(depthType.getText()));
 				sa.setScale(Float.parseFloat(scale.getText()));
 				sa.setRot(Float.parseFloat(rot.getText()));
+				sa.getRenderer().setOrgAlign(AlignUtils.getAlign(orgAlign.getText()));
 				sa.setTint(Param.parseColor(tint.getText()));
 				sa.setBboxFromRenderer(Boolean.parseBoolean(bboxFromRenderer.getText()));
 
@@ -602,6 +609,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				rot.setText(Float.toString(sa.getRot()));
 				tint.setText(sa.getTint() == null ? null : sa.getTint().toString());
 				bboxFromRenderer.setText(Boolean.toString(sa.isBboxFromRenderer()));
+				orgAlign.setText(AlignUtils.getAlign(sa.getRenderer().getOrgAlign()));
 
 				if (e instanceof CharacterActor) {
 					CharacterActor ca = (CharacterActor) e;

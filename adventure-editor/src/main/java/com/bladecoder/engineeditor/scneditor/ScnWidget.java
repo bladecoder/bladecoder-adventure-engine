@@ -66,7 +66,7 @@ public class ScnWidget extends Widget {
 
 	private final SpriteBatch sceneBatch = new SpriteBatch();
 	private final CanvasDrawer drawer = new CanvasDrawer();
-	private final SpriteDrawer faRenderer = new SpriteDrawer();
+	private final AnimationDrawer faRenderer = new AnimationDrawer();
 	private final ScnWidgetInputListener inputListner = new ScnWidgetInputListener(this);
 
 	private final Rectangle bounds = new Rectangle();

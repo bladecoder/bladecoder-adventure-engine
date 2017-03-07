@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
+import com.badlogic.gdx.utils.Align;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
@@ -64,7 +65,8 @@ public class AnimationWidget extends Widget {
 		} else {
 			renderer = new AtlasRenderer();
 		}
-
+		
+		renderer.setOrgAlign(Align.bottom);
 		renderer.loadAssets();
 		EngineAssetManager.getInstance().finishLoading();
 		renderer.retrieveAssets();

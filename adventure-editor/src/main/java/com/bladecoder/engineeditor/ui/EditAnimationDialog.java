@@ -145,6 +145,9 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 		setInfoWidget(spriteWidget);
 
+		parent = p;
+		addSources();
+		
 		init(p, e, new InputPanel[] { source, localizable, atlas, id, repeat, speed, count, in, out, sound, preload,
 				dispose });
 
@@ -160,7 +163,6 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			setVisible(id, false);
 		}
 
-		addSources();
 		if (e != null) {
 			source.setText(e.source);
 		}

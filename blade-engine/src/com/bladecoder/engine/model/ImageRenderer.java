@@ -55,9 +55,6 @@ public class ImageRenderer extends AnimationRenderer {
 
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
-
-		x = x - getWidth() / 2; // SET THE X ORIGIN TO THE CENTER OF THE
-										// SPRITE
 		
 		ImageCacheEntry source = (ImageCacheEntry)currentSource;
 
@@ -69,7 +66,13 @@ public class ImageRenderer extends AnimationRenderer {
 		if(tint != null)
 			batch.setColor(tint);
 		
-		batch.draw(source.tex, x, y, getWidth() / 2, 0f, getWidth(), getHeight(), scale, scale, rotation, 
+		float dx = getAlignDx(getWidth(), orgAlign);
+		float dy = getAlignDy(getHeight(), orgAlign);
+		
+		x = x + dx;
+		y = y + dy;
+		
+		batch.draw(source.tex, x, y, -dx, -dy, getWidth(), getHeight(), scale, scale, rotation, 
 				0, 0, source.tex.getWidth(), source.tex.getHeight(), flipX, false);
 		
 		if(tint != null)
