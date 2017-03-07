@@ -37,6 +37,8 @@ import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.TextRenderer;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
@@ -107,7 +109,6 @@ public class I18NHandler {
 		return i18nChapter.getProperty(key.substring(1), key);
 	}
 
-		
 	public void setTranslation(String key, String value) {
 		if (key.charAt(0) != I18N.PREFIX) {
 			if (value == null || value.equals(""))
@@ -139,7 +140,7 @@ public class I18NHandler {
 	private void save(String filename, Properties p) {
 		String i18nFilename = getI18NFilename(filename);
 
-		 deleteUnusedKeys();
+		deleteUnusedKeys();
 
 		try {
 			FileOutputStream os = new FileOutputStream(i18nFilename);
@@ -205,15 +206,15 @@ public class I18NHandler {
 
 		for (String name : names) {
 			if (name.toLowerCase().endsWith("text")) {
-				
+
 				try {
 					String value = null;
-							
-					if(worldScope)
+
+					if (worldScope)
 						value = getWorldTranslation(ActionUtils.getStringValue(a, name));
 					else
 						value = getTranslation(ActionUtils.getStringValue(a, name));
-					
+
 					ActionUtils.setParam(a, name, value);
 				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 					EditorLogger.error(e.getMessage());
@@ -272,6 +273,20 @@ public class I18NHandler {
 					for (Dialog d : dialogs.values())
 						extractStrings(sceneid, a.getId(), d);
 			}
+
+			// 4. Text for TextRenderer
+			if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof TextRenderer) {
+
+				TextRenderer r = (TextRenderer) ((SpriteActor) a).getRenderer();
+
+				String v = r.getText();
+
+				if (v != null && !v.isEmpty() && v.charAt(0) != I18N.PREFIX) {
+					String key = genKey(sceneid, a.getId(), "text");
+					r.setText(key);
+					setTranslation(key, v);
+				}
+			}
 		}
 	}
 
@@ -300,10 +315,11 @@ public class I18NHandler {
 			String key = genKey(sceneid, actorid, dialogid, pos, "text");
 			String value = o.getText();
 			o.setText(key);
-			setTranslation(key,  value);
+			setTranslation(key, value);
 		}
 
-		if (o.getResponseText() != null && !o.getResponseText().isEmpty()  && o.getResponseText().charAt(0) != I18N.PREFIX) {
+		if (o.getResponseText() != null && !o.getResponseText().isEmpty()
+				&& o.getResponseText().charAt(0) != I18N.PREFIX) {
 			String key = genKey(sceneid, actorid, dialogid, pos, "responseText");
 			String value = o.getResponseText();
 			o.setResponseText(key);
@@ -316,15 +332,15 @@ public class I18NHandler {
 
 		for (String name : names) {
 			if (name.toLowerCase().endsWith("text")) {
-				
+
 				try {
 					String value = ActionUtils.getStringValue(a, name);
-					
-					if(value != null && !value.isEmpty() && value.charAt(0) != I18N.PREFIX) {
+
+					if (value != null && !value.isEmpty() && value.charAt(0) != I18N.PREFIX) {
 						String key = genKey(sceneid, actorid, parent, pos, name);
 						ActionUtils.setParam(a, name, key);
-						
-						if(sceneid == null)
+
+						if (sceneid == null)
 							setWorldTranslation(key, value);
 						else
 							setTranslation(key, value);
@@ -335,61 +351,61 @@ public class I18NHandler {
 			}
 		}
 	}
-	
+
 	public String genKey(String sceneid, String actorid, String property) {
 		String key = I18N.PREFIX + sceneid + "." + actorid + "." + property;
-				
+
 		return getNotDuplicateKey(key);
 	}
-	
+
 	public String genKey(String sceneid, String actorid, String parent, int pos, String property) {
-		String key = I18N.PREFIX + (sceneid == null? WORLD_VERBS_PREFIX: sceneid) + (actorid == null?"": "." + actorid) + "." + parent + "." + pos + "." + property;
-				
-		if(sceneid == null)
+		String key = I18N.PREFIX + (sceneid == null ? WORLD_VERBS_PREFIX : sceneid)
+				+ (actorid == null ? "" : "." + actorid) + "." + parent + "." + pos + "." + property;
+
+		if (sceneid == null)
 			return getNotDuplicateKeyWorld(key);
-		
+
 		return getNotDuplicateKey(key);
 	}
-	
+
 	public String getNotDuplicateKey(String key) {
-		while(i18nChapter.containsKey(key.charAt(0) == I18N.PREFIX?key.substring(1):key))
+		while (i18nChapter.containsKey(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
 			key += '_';
-		
-		return key;
-	}
-	
-	public String getNotDuplicateKeyWorld(String key) {
-		while(i18nWorld.containsKey(key.charAt(0) == I18N.PREFIX?key.substring(1):key))
-			key += '_';
-		
+
 		return key;
 	}
 
+	public String getNotDuplicateKeyWorld(String key) {
+		while (i18nWorld.containsKey(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
+			key += '_';
+
+		return key;
+	}
 
 	private void deleteUnusedKeys() {
 		ArrayList<String> usedKeys = new ArrayList<String>();
-		
+
 		// SCENES
-		for(Scene s: World.getInstance().getScenes().values())
+		for (Scene s : World.getInstance().getScenes().values())
 			getUsedKeys(s, usedKeys);
-		
+
 		Enumeration<Object> keys = i18nChapter.keys();
 
 		while (keys.hasMoreElements()) {
 			String key = (String) keys.nextElement();
 
 			// Doesn't remove ui and ink keys
-			if (!usedKeys.contains(key) && !key.startsWith("ui.") && !key.startsWith("ink.")) { 
+			if (!usedKeys.contains(key) && !key.startsWith("ui.") && !key.startsWith("ink.")) {
 				EditorLogger.debug("Removing translation key: " + key);
 				i18nChapter.remove(key);
 			}
 		}
-		
+
 		usedKeys.clear();
 		// WORLD VERBS
-		for(Verb v: World.getInstance().getVerbManager().getVerbs().values())
+		for (Verb v : World.getInstance().getVerbManager().getVerbs().values())
 			getUsedKeys(v, usedKeys);
-		
+
 		keys = i18nWorld.keys();
 
 		while (keys.hasMoreElements()) {
@@ -405,56 +421,68 @@ public class I18NHandler {
 	}
 
 	private void getUsedKeys(Scene s, ArrayList<String> usedKeys) {
-		for(Verb v: s.getVerbManager().getVerbs().values())
+		for (Verb v : s.getVerbManager().getVerbs().values())
 			getUsedKeys(v, usedKeys);
 
-		for(BaseActor a: s.getActors().values()) {
-			if(a instanceof InteractiveActor) {
+		for (BaseActor a : s.getActors().values()) {
+			if (a instanceof InteractiveActor) {
 				InteractiveActor ia = (InteractiveActor) a;
-				
-				if(ia.getDesc() != null && !ia.getDesc().isEmpty() && ia.getDesc().charAt(0) == I18N.PREFIX)
+
+				if (ia.getDesc() != null && !ia.getDesc().isEmpty() && ia.getDesc().charAt(0) == I18N.PREFIX)
 					usedKeys.add(ia.getDesc().substring(1));
-				
-				for(Verb v: ia.getVerbManager().getVerbs().values())
+
+				for (Verb v : ia.getVerbManager().getVerbs().values())
 					getUsedKeys(v, usedKeys);
-				
-				if(a instanceof CharacterActor) {
+
+				if (a instanceof CharacterActor) {
 					CharacterActor ca = (CharacterActor) a;
-					
-					if(ca.getDialogs() != null) {
-						for(Dialog d: ca.getDialogs().values()) {
-							for(DialogOption o: d.getOptions()) {
-								if(o.getText() != null && !o.getText().isEmpty() && o.getText().charAt(0) == I18N.PREFIX)
+
+					if (ca.getDialogs() != null) {
+						for (Dialog d : ca.getDialogs().values()) {
+							for (DialogOption o : d.getOptions()) {
+								if (o.getText() != null && !o.getText().isEmpty()
+										&& o.getText().charAt(0) == I18N.PREFIX)
 									usedKeys.add(o.getText().substring(1));
-								
-								if(o.getResponseText() != null && !o.getResponseText().isEmpty() && o.getResponseText().charAt(0) == I18N.PREFIX)
+
+								if (o.getResponseText() != null && !o.getResponseText().isEmpty()
+										&& o.getResponseText().charAt(0) == I18N.PREFIX)
 									usedKeys.add(o.getResponseText().substring(1));
 							}
 						}
 					}
 				}
+
+				if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof TextRenderer) {
+
+					TextRenderer r = (TextRenderer) ((SpriteActor) a).getRenderer();
+
+					String k = r.getText();
+
+					if (k != null && !k.isEmpty() && k.charAt(0) == I18N.PREFIX)
+						usedKeys.add(k.substring(1));
+				}
 			}
 		}
 	}
-	
+
 	private void getUsedKeys(Verb v, ArrayList<String> usedKeys) {
-		for(Action a:v.getActions()) {
-			
-			if(a instanceof DisableActionAction)
+		for (Action a : v.getActions()) {
+
+			if (a instanceof DisableActionAction)
 				a = ((DisableActionAction) a).getAction();
-			
+
 			String[] fieldNames = ActionUtils.getFieldNames(a);
-			
-			for(String name: fieldNames) {
-				if(name.toLowerCase().endsWith("text")) {
+
+			for (String name : fieldNames) {
+				if (name.toLowerCase().endsWith("text")) {
 					String value = null;
-					
+
 					try {
 						value = ActionUtils.getStringValue(a, name);
 					} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 						EditorLogger.error(e.getMessage());
 					}
-					
+
 					if (value != null && !value.isEmpty() && value.charAt(0) == I18N.PREFIX) {
 						usedKeys.add(value.substring(1));
 					}

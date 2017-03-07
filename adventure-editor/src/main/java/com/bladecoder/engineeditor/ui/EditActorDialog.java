@@ -496,7 +496,18 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 						r = (TextRenderer) sa.getRenderer();
 					}
 					
-					r.setText(text.getText());
+					key = text.getText();
+
+					if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+						key = Ctx.project.getI18N().genKey(parent.getId(), e.getId(), "text");
+
+					Ctx.project.getI18N().setTranslation(key, text.getText());
+
+					if (text.getText() != null)
+						r.setText(key);
+					else
+						r.setText(null);
+					
 					r.setFontSize(Integer.parseInt(size.getText()));
 					r.setFontName(font.getText());
 					r.setAlign(AlignUtils.getAlign(textAlign.getText()));
@@ -589,7 +600,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					renderer.setText(Project.TEXT_RENDERER_STRING);
 					TextRenderer tr = (TextRenderer) r;
 
-					text.setText(tr.getText());
+					text.setText(Ctx.project.translate(tr.getText()));
 					size.setText(Integer.toString(tr.getFontSize()));
 					font.setText(tr.getFontName());
 					borderWidth.setText(Integer.toString(tr.getBorderWidth()));

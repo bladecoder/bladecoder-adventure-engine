@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
@@ -80,7 +81,13 @@ public class TextRenderer implements ActorRenderer {
 			
 			if(tint != null && !tint.equals(color)) {
 				color = tint;
-				layout.setText(font, text, color, 0, textAlign, false);
+				
+				String tt = text;
+				
+				if (tt.charAt(0) == I18N.PREFIX)
+					tt = I18N.getString(tt.substring(1));
+				
+				layout.setText(font, tt, color, 0, textAlign, false);
 			}
 
 			Matrix4 tm = batch.getTransformMatrix();
@@ -289,7 +296,12 @@ public class TextRenderer implements ActorRenderer {
 
 		font = EngineAssetManager.getInstance().get(fontName + getFontSize() + ".ttf", BitmapFont.class);
 
-		layout.setText(font, text, color, 0, textAlign, false);
+		String tt = text;
+		
+		if (tt.charAt(0) == I18N.PREFIX)
+			tt = I18N.getString(tt.substring(1));
+		
+		layout.setText(font, tt, color, 0, textAlign, false);
 
 		computeBbox();
 	}
