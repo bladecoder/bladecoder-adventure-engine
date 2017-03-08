@@ -77,7 +77,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			"Anchor actors are used as reference for positioning other actors" };
 	
 	private static final String TEXT_ALIGN[] = {"left", "center", "right"};
-	private static final String ORG_ALIGN[] = {"bottom", "center", "left", "right", "top"};
+	private static final String ORG_ALIGN[] = {"bottom", "center", "left", "right", "top", "botton-right", "botton-left", "top-right", "top-left"};
 
 	private InputPanel typePanel;
 	private InputPanel id;
@@ -504,9 +504,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					Ctx.project.getI18N().setTranslation(key, text.getText());
 
 					if (text.getText() != null)
-						r.setText(key);
+						r.setText(key, text.getText());
 					else
-						r.setText(null);
+						r.setText(null, null);
 					
 					r.setFontSize(Integer.parseInt(size.getText()));
 					r.setFontName(font.getText());
@@ -517,6 +517,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					r.setShadowOffsetX(Integer.parseInt(shadowOffsetX.getText()));
 					r.setShadowOffsetY(Integer.parseInt(shadowOffsetY.getText()));
 					r.setShadowColor(Param.parseColor(shadowColor.getText()));
+					
+					// dispose to force reload the text attributes
+					sa.dispose();
 				} else if (Project.SPINE_RENDERER_STRING.equals(rendererType)) {
 					if (sa.getRenderer() == null || !(sa.getRenderer() instanceof SpineRenderer))
 						sa.setRenderer(new SpineRenderer());

@@ -283,7 +283,7 @@ public class I18NHandler {
 
 				if (v != null && !v.isEmpty() && v.charAt(0) != I18N.PREFIX) {
 					String key = genKey(sceneid, a.getId(), "text");
-					r.setText(key);
+					r.setText(key, r.getText());
 					setTranslation(key, v);
 				}
 			}

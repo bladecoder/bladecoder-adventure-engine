@@ -50,9 +50,13 @@ public class TextRenderer implements ActorRenderer {
 	private int shadowOffsetX = 0;
 	private int shadowOffsetY = 0;
 	private Color shadowColor = Color.BLACK;
-	private Color color = Color.WHITE;
 	private int textAlign = Align.left;
 	private int orgAlign = Align.bottom;
+	
+	private final Color color = new Color(Color.WHITE);
+	
+	// Translated Text shown in the editor. When editing the text, the .properties with the translation is not ready.
+	private transient String editorTranslatedText;
 
 	public TextRenderer() {
 
@@ -80,12 +84,15 @@ public class TextRenderer implements ActorRenderer {
 		if (font != null && text != null) {
 			
 			if(tint != null && !tint.equals(color)) {
-				color = tint;
+				color.set(tint);
 				
 				String tt = text;
 				
 				if (tt.charAt(0) == I18N.PREFIX)
 					tt = I18N.getString(tt.substring(1));
+				
+				if(editorTranslatedText != null)
+					tt = editorTranslatedText;
 				
 				layout.setText(font, tt, color, 0, textAlign, false);
 			}
@@ -168,8 +175,9 @@ public class TextRenderer implements ActorRenderer {
 		return text;
 	}
 
-	public void setText(String text) {
+	public void setText(String text, String translatedText) {
 		this.text = text;
+		this.editorTranslatedText = translatedText;
 	}
 
 	public String getFontName() {
@@ -300,6 +308,9 @@ public class TextRenderer implements ActorRenderer {
 		
 		if (tt.charAt(0) == I18N.PREFIX)
 			tt = I18N.getString(tt.substring(1));
+		
+		if(editorTranslatedText != null)
+			tt = editorTranslatedText;
 		
 		layout.setText(font, tt, color, 0, textAlign, false);
 

@@ -276,9 +276,9 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 				} else if (r instanceof SpineRenderer) {
 					u = "ic_spine";
 				} else if (r instanceof ParticleRenderer) {
-					u = "ic_anchor";
+					u = "ic_particles";
 				} else if (r instanceof TextRenderer) {
-					u = "ic_anchor";
+					u = "ic_text";
 				} else if (r instanceof Sprite3DRenderer) {
 					u = "ic_3d";
 				}

@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
@@ -23,22 +22,22 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.util.InterpolationMode;
 
 /**
- * Tween for SpriteActor tint animation
+ * Tween for SpriteActor alpha animation
  */
-public class SpriteTintTween extends Tween<SpriteActor> {
+public class SpriteAlphaTween extends Tween<SpriteActor> {
 	
-	private Color startColor;
-	private Color targetColor;
+	private float startAlpha;
+	private float targetAlpha;
 	
-	public SpriteTintTween() {
+	public SpriteAlphaTween() {
 	}
 
-	public void start(SpriteActor target, Type repeatType, int count, Color tColor, float duration, InterpolationMode interpolation, ActionCallback cb) {
+	public void start(SpriteActor target, Type repeatType, int count, float tAlpha, float duration, InterpolationMode interpolation, ActionCallback cb) {
 		
 		setTarget(target);
 		
-		startColor = target.getTint().cpy();
-		targetColor = tColor.cpy();
+		startAlpha = target.getTint().a;
+		targetAlpha = tAlpha;
 		
 		setDuration(duration);
 		setType(repeatType);
@@ -54,26 +53,22 @@ public class SpriteTintTween extends Tween<SpriteActor> {
 
 	@Override
 	public void updateTarget() {
-		
-		target.getTint().a = startColor.a + getPercent() * (targetColor.a - startColor.a);
-		target.getTint().r = startColor.r + getPercent() * (targetColor.r - startColor.r);
-		target.getTint().g = startColor.g + getPercent() * (targetColor.g - startColor.g);
-		target.getTint().b = startColor.b + getPercent() * (targetColor.b - startColor.b);
+		target.getTint().a = startAlpha + getPercent() * (targetAlpha - startAlpha);
 	}
 	
 	@Override
 	public void write(Json json) {
 		super.write(json);
 
-		json.writeValue("startColor", startColor);
-		json.writeValue("targetColor", targetColor);
+		json.writeValue("startAlpha", startAlpha);
+		json.writeValue("targetAlpha", targetAlpha);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);	
 		
-		startColor = json.readValue("startColor", Color.class, Color.WHITE, jsonData);
-		targetColor = json.readValue("targetColor", Color.class, Color.WHITE, jsonData);
+		startAlpha = json.readValue("startAlpha", float.class, 1.0f, jsonData);
+		targetAlpha = json.readValue("targetAlpha", float.class, 1.0f, jsonData);
 	}
 }

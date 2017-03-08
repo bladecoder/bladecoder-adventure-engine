@@ -31,7 +31,7 @@ import com.bladecoder.engine.ui.UI.Screens;
 @ActionDescription("Sets actor position in screen coordinates. This is used to show an actor in the same screen position when the scene has scrolled.")
 public class ScreenPositionAction implements Action {
 	public enum Anchor {
-		NONE, CENTER, TOP_LEFT, TOP_RIGHT, DOWN_LEFT, DOWN_RIGHT
+		NONE, CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP, BOTTOM, LEFT, RIGHT
 	}
 	
 	
@@ -62,17 +62,31 @@ public class ScreenPositionAction implements Action {
 			
 			if(anchor == Anchor.CENTER) {
 				v.x += viewport.getWorldWidth() / 2;
-				v.y += (viewport.getWorldHeight()  - a.getBBox().getBoundingRectangle().getHeight()) / 2;
+				v.y += viewport.getWorldHeight() / 2;
 			} else if(anchor == Anchor.TOP_LEFT) {
-				v.x += a.getBBox().getBoundingRectangle().getWidth() / 2;
-				v.y += viewport.getWorldHeight() - a.getBBox().getBoundingRectangle().getHeight();		
+				v.x += 0;
+				v.y += viewport.getWorldHeight();		
 			} else if(anchor == Anchor.TOP_RIGHT) {
-				v.x += viewport.getWorldWidth() - a.getBBox().getBoundingRectangle().getWidth() / 2;
-				v.y += viewport.getWorldHeight() - a.getBBox().getBoundingRectangle().getHeight();				
-			} else if(anchor == Anchor.DOWN_RIGHT) {
-				v.x += viewport.getWorldWidth() - a.getBBox().getBoundingRectangle().getWidth() / 2;
-			} else if(anchor == Anchor.DOWN_LEFT) {
-				v.x += a.getBBox().getBoundingRectangle().getWidth() / 2;	
+				v.x += viewport.getWorldWidth();
+				v.y += viewport.getWorldHeight();				
+			} else if(anchor == Anchor.BOTTOM_RIGHT) {
+				v.x += viewport.getWorldWidth();
+				v.y += 0;
+			} else if(anchor == Anchor.BOTTOM_LEFT) {
+				v.x += 0;
+				v.y += 0;
+			} else if(anchor == Anchor.TOP) {
+				v.x += viewport.getWorldWidth() / 2;
+				v.y += viewport.getWorldHeight();
+			} else if(anchor == Anchor.BOTTOM) {
+				v.x += viewport.getWorldWidth() / 2;
+				v.y += 0;
+			} else if(anchor == Anchor.LEFT) {
+				v.x += 0;
+				v.y += viewport.getWorldHeight() / 2;
+			} else if(anchor == Anchor.RIGHT) {
+				v.x += viewport.getWorldWidth();
+				v.y += viewport.getWorldHeight() / 2;
 			}
 			
 //			viewport.project(v);

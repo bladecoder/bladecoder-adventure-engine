@@ -15,24 +15,23 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.badlogic.gdx.graphics.Color;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.anim.SpriteTintTween;
+import com.bladecoder.engine.anim.SpriteAlphaTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationMode;
 
-@ActionDescription(value= "Sets an actor Color animation")
-public class TintAnimAction implements Action {
+@ActionDescription(value= "Actor transparency (alpha channel) animation")
+public class AlphaAnimAction implements Action {
 	@ActionPropertyDescription("The target actor")
 	@ActionProperty(type = Type.SPRITE_ACTOR, required=true)
 	private String actor;
 
-	@ActionProperty(type = Type.COLOR, required = true)
-	@ActionPropertyDescription( "The target color (RRGGBBAA).")
-	private Color color;
+	@ActionProperty(required = true, defaultValue = "1.0")
+	@ActionPropertyDescription( "The target transparency value (0-1).")
+	private float alpha;
 
 	@ActionProperty(required = true, defaultValue = "1.0")
 	@ActionPropertyDescription("Duration of the animation in seconds")
@@ -43,7 +42,7 @@ public class TintAnimAction implements Action {
 	private int count = 1;
 
 	@ActionProperty(required = true)
-	@ActionPropertyDescription("If this param is 'false' the transition is showed and the action continues inmediatly")
+	@ActionPropertyDescription("If this param is 'false' the action continues inmediatly")
 	private boolean wait = true;
 
 	@ActionProperty(required = true, defaultValue = "NO_REPEAT")
@@ -59,8 +58,8 @@ public class TintAnimAction implements Action {
 		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, false);
 
 		
-		SpriteTintTween t = new SpriteTintTween();
-		t.start(a, repeat, count, color, speed, interpolation,
+		SpriteAlphaTween t = new SpriteAlphaTween();
+		t.start(a, repeat, count, alpha, speed, interpolation,
 				wait ? cb : null);
 		
 		a.addTween(t);

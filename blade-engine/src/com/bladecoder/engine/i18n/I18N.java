@@ -77,7 +77,7 @@ public class I18N {
 				return key;
 			}
 		}
-	}
+	}	
 	
 	public static Locale getCurrentLocale() {
 		return locale;
