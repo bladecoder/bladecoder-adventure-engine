@@ -102,7 +102,8 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 				Param.Type.BOOLEAN, true, "true");
 		dispose = InputPanelFactory.createInputPanel(skin, "Dispose When Played", "Dispose de animation after playing",
 				Param.Type.BOOLEAN, true, "false");
-
+		
+		
 		((SelectBox<String>) repeat.getField()).addListener(new ChangeListener() {
 
 			@Override
@@ -144,12 +145,15 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		});
 
 		setInfoWidget(spriteWidget);
-
-		parent = p;
-		addSources();
 		
 		init(p, e, new InputPanel[] { source, localizable, atlas, id, repeat, speed, count, in, out, sound, preload,
 				dispose });
+		
+		addSources();
+		
+		// call modelToInputs again to set the correct source
+		if( e != null )
+			modelToInputs();
 
 		setVisible(count, false);
 		setVisible(atlas, false);
