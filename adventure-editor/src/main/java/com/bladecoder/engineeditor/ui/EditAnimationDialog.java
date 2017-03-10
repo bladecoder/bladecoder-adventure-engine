@@ -18,6 +18,7 @@ package com.bladecoder.engineeditor.ui;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
@@ -411,6 +412,9 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			} else {
 				e = new AnimationDesc();
 			}
+		} else {
+			HashMap<String, AnimationDesc> animations = ((AnimationRenderer)parent.getRenderer()).getAnimations();
+			animations.remove(e.id);
 		}
 
 		e.id = id.getText();
@@ -424,9 +428,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		e.outD = Param.parseVector2(out.getText());
 		e.duration = Float.parseFloat(speed.getText());
 
-		if (create) {
-			((AnimationRenderer)parent.getRenderer()).addAnimation(e);
-		}
+		((AnimationRenderer)parent.getRenderer()).addAnimation(e);
 
 		ActorRenderer renderer = parent.getRenderer();
 		if (renderer instanceof ImageRenderer && Boolean.parseBoolean(localizable.getText()) && e.source != null
