@@ -650,7 +650,7 @@ public class RetroSceneScreen implements SceneScreen {
 					recorder.add(pos);
 				}
 
-				s.getPlayer().goTo(pos, null);
+				s.getPlayer().goTo(pos, null, false);
 			}
 		}
 	}

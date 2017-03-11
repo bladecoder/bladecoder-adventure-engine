@@ -82,7 +82,7 @@ public class Recorder {
 
 						stringBuilder.append(" SELECT DIALOG OPTION: ").append(v.dialogOption);
 					} else { // GOTO
-						s.getPlayer().goTo(v.pos, null);
+						s.getPlayer().goTo(v.pos, null, false);
 
 						stringBuilder.append(" GOTO ").append(v.pos.x).append(',').append(v.pos.y);
 					}

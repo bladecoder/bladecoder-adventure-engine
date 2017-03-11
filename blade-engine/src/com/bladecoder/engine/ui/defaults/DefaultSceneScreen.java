@@ -818,7 +818,7 @@ public class DefaultSceneScreen implements SceneScreen {
 					recorder.add(pos);
 				}
 
-				player.goTo(pos, null);
+				player.goTo(pos, null, false);
 			}
 		}
 	}

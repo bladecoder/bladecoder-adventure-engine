@@ -42,6 +42,10 @@ public class GotoAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The absolute position to walk to if no target actor is selected. Relative to target if selected.")
 	private Vector2 pos;
+	
+	@ActionProperty(required=true, defaultValue = "false")
+	@ActionPropertyDescription("Ignore the walking zone and walk in a straight line.")
+	private boolean ignoreWalkZone = false;
 
 	@ActionProperty(required = true, defaultValue = "true")
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
@@ -80,7 +84,7 @@ public class GotoAction implements Action {
 			y = pos.y * scale;
 		}
 			
-		actor.goTo(new Vector2(x, y), wait ? cb : null);
+		actor.goTo(new Vector2(x, y), wait ? cb : null, ignoreWalkZone);
 
 		return wait;
 	}
@@ -119,7 +123,7 @@ public class GotoAction implements Action {
 			pf = p3;
 		}
 
-		player.goTo(pf, cb);
+		player.goTo(pf, cb, ignoreWalkZone);
 	}
 
 }

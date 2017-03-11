@@ -158,7 +158,7 @@ public class CharacterActor extends SpriteActor {
 	 * @param cb
 	 *            The action callback
 	 */
-	public void goTo(Vector2 pf, ActionCallback cb) {
+	public void goTo(Vector2 pf, ActionCallback cb, boolean ignoreWalkZone) {
 		EngineLogger.debug(MessageFormat.format("GOTO {0},{1}", pf.x, pf.y));
 
 		Vector2 p0 = new Vector2(bbox.getX(), bbox.getY());
@@ -182,8 +182,12 @@ public class CharacterActor extends SpriteActor {
 			return;
 		}
 
-		if (scene.getPolygonalNavGraph() != null) {
+		if (scene.getPolygonalNavGraph() != null && !ignoreWalkZone) {
 			walkingPath = scene.getPolygonalNavGraph().findPath(p0.x, p0.y, pf.x, pf.y);
+		} else {
+			walkingPath = new ArrayList<Vector2>(2);
+			walkingPath.add(p0);
+			walkingPath.add(new Vector2(pf));
 		}
 
 		if (walkingPath == null || walkingPath.size() == 0) {

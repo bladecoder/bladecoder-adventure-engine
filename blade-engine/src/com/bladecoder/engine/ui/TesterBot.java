@@ -204,7 +204,7 @@ public class TesterBot {
 						s.getPlayer().runVerb(Verb.GOTO_VERB);
 					} else {
 						EngineLogger.debug("<TESTERBOT> GOTO: " + gotoVector);
-						s.getPlayer().goTo(gotoVector, null);
+						s.getPlayer().goTo(gotoVector, null, false);
 					}
 				}
 			} else {
