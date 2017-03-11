@@ -106,8 +106,12 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 				}
 
 				int i = list.getItems().indexOf(newActor, true);
-				if (i >= 0)
+				
+				if (i >= 0) {
 					list.setSelectedIndex(i);
+					
+					container.getActor().setScrollPercentY(i/(float)list.getItems().size);
+				}
 			}
 		});
 
