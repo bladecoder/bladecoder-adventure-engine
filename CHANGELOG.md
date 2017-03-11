@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.2]
+
+- Added I18N support to Text Actors.
+- New AlphaAnimation action to animate the alpha channel of sprite actors.
+- Added 'orgAlign' to Sprite Actors to set the origin for scale and rotation.
+- Updated library libgdx to v1.9.6
+- AnimationRenderer refactor.
+- Added text align to text actors.
+- FIX: tint for text actors not working.
+- FIX: Error saving/loading tweens state.
+- EDITOR: Added icons for text and particle actors.
+- EDITOR FIX: Problem when changing id to animations. 
+
 ## [1.2.1]
 
 - Added music support to the default Menu screen.
