@@ -34,11 +34,11 @@ public class PositionAnimAction implements Action {
 	}
 
 	@ActionPropertyDescription("The moving actor")
-	@ActionProperty(type = Type.ACTOR, required=true)
+	@ActionProperty(type = Type.SPRITE_ACTOR, required=true)
 	private String actor;
 	
 	@ActionPropertyDescription("Sets the position from this actor")
-	@ActionProperty(type = Type.SPRITE_ACTOR)
+	@ActionProperty(type = Type.ACTOR)
 	private String target;
 
 	@ActionProperty
