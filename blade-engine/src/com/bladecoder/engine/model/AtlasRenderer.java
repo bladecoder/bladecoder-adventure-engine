@@ -86,15 +86,16 @@ public class AtlasRenderer extends AnimationRenderer {
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
 
-		if (tex == null) {
-			x = x - getWidth() / 2 * scale;
-
-			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
+		float dx = getAlignDx(getWidth(), orgAlign);
+		float dy = getAlignDy(getHeight(), orgAlign);
+		
+		if (tex == null) {			
+			RectangleRenderer.draw(batch, x + dx * scale , y + dy * scale, getWidth() * scale, getHeight() * scale, Color.RED);
+			
 			return;
 		}
 
-		float dx = getAlignDx(getWidth(), orgAlign);
-		float dy = getAlignDy(getHeight(), orgAlign);
+
 
 		x = x + tex.offsetX + dx;
 		y = y + tex.offsetY + dy;

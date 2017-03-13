@@ -242,8 +242,10 @@ public class SpineRenderer extends AnimationRenderer {
 				batch.setColor(Color.WHITE);
 			batch.setTransformMatrix(tmp);
 		} else {
-			x = x - getWidth() / 2 * scale;
-			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
+			float dx = getAlignDx(getWidth(), orgAlign);
+			float dy = getAlignDy(getHeight(), orgAlign);
+			
+			RectangleRenderer.draw(batch, x + dx * scale , y + dy * scale, getWidth() * scale, getHeight() * scale, Color.RED);
 		}
 	}
 

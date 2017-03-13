@@ -80,6 +80,9 @@ public class TextRenderer implements ActorRenderer {
 
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
+		
+		float dx = getAlignDx(getWidth(), orgAlign);
+		float dy = getAlignDy(getHeight(), orgAlign);
 
 		if (font != null && text != null) {
 			
@@ -100,8 +103,8 @@ public class TextRenderer implements ActorRenderer {
 			Matrix4 tm = batch.getTransformMatrix();
 			tmp.set(tm);
 
-			float originX = getAlignDx(getWidth(), orgAlign);
-			float originY = layout.height + getAlignDy(getHeight(), orgAlign);
+			float originX = dx;
+			float originY = layout.height + dy;
 			
 			if(textAlign == Align.right) 
 				originX += getWidth();
@@ -116,8 +119,7 @@ public class TextRenderer implements ActorRenderer {
 
 			batch.setTransformMatrix(tmp);
 		} else {
-			x = x - getWidth() / 2 * scale;
-			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
+			RectangleRenderer.draw(batch, x + dx * scale , y + dy * scale, getWidth() * scale, getHeight() * scale, Color.RED);
 		}
 	}
 
