@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
 import com.strongjoshua.console.CommandExecutor;
 import com.strongjoshua.console.Console;
@@ -160,9 +161,13 @@ public class EditorLogger {
 				if (!value) {
 					level = Levels.ERROR;
 					console.setLoggingToSystem(false);
+					
+					if(EngineLogger.debugMode())
+						EngineLogger.toggle();
 				} else {
 					level = Levels.DEBUG;
 					console.setLoggingToSystem(true);
+					EngineLogger.setDebug();
 				}
 			}
 
