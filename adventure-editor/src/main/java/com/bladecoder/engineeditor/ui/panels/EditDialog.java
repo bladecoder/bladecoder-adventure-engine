@@ -45,6 +45,7 @@ public abstract class EditDialog extends Dialog {
 		this.skin = skin;
 
 		setResizable(false);
+		setKeepWithinStage(false);
 
 		infoLbl = new Label("", skin);
 		infoLbl.setWrap(true);
