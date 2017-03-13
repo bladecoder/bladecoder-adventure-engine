@@ -227,10 +227,13 @@ public class SpineRenderer extends AnimationRenderer {
 			Matrix4 tm = batch.getTransformMatrix();
 			tmp.set(tm);
 
-			cs.skeleton.setX(x / scale);
-			cs.skeleton.setY(y / scale);
-
-			tm.rotate(0, 0, 1, rotation).scale(scale, scale, 1);
+			float originX = cs.skeleton.getRootBone().getX();
+			float originY = cs.skeleton.getRootBone().getY();
+			tm.translate(x,y,0).rotate(0, 0, 1, rotation).scale(scale, scale, 1).translate(originX, originY, 0);
+			
+//			cs.skeleton.setX(x / scale);
+//			cs.skeleton.setY(y / scale);
+			
 			batch.setTransformMatrix(tm);
 
 			if (tint != null)
