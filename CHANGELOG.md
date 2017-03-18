@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.3]
+
+- Added 'ignoreWalkZone' parameter to Goto.
+- Get rid of SpriteActor restriction in PositionAnim target.
+- Update to gradle v3.4.1
+- EDITOR: Dialogs can exit the editor borders.
+- EDITOR: Scroll the actor list when actor is selected in ScnWidget.
+- FIX: bad rotation in Spine actors.
+- FIX: Error disposing source in getInternalAnimations.
+- FIX: Add WHITE tint to Sprite actor in anim if the actor doesn't have
+    it.
+
 ## [1.2.2]
 
 - Added I18N support to Text Actors.
