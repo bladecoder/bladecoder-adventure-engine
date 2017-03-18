@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.anim;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
@@ -35,6 +36,9 @@ public class SpriteAlphaTween extends Tween<SpriteActor> {
 	public void start(SpriteActor target, Type repeatType, int count, float tAlpha, float duration, InterpolationMode interpolation, ActionCallback cb) {
 		
 		setTarget(target);
+		
+		if(target.getTint() == null)
+			target.setTint(Color.WHITE.cpy());
 		
 		startAlpha = target.getTint().a;
 		targetAlpha = tAlpha;

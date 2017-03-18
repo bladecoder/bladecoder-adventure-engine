@@ -37,6 +37,9 @@ public class SpriteTintTween extends Tween<SpriteActor> {
 		
 		setTarget(target);
 		
+		if(target.getTint() == null)
+			target.setTint(Color.WHITE.cpy());
+		
 		startColor = target.getTint().cpy();
 		targetColor = tColor.cpy();
 		
