@@ -27,7 +27,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.minimalcode.beans.ObjectWrapper;
 import org.xml.sax.SAXException;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.PixmapIO;
@@ -917,6 +919,8 @@ public class World implements Serializable, AssetConsumer {
 		FrameBuffer fbo = new FrameBuffer(Format.RGB565, w, h, false);
 
 		fbo.begin();
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		draw();
 		Pixmap pixmap = ScreenUtils.getFrameBufferPixmap(0, 0, w, h);
 		fbo.end();
