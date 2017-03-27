@@ -39,6 +39,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -323,29 +325,36 @@ public class ScnWidget extends Widget {
 			if (loading) {
 				s = "LOADING...";
 
-				try {
-					if (!EngineAssetManager.getInstance().isLoading()) {
+				Timer.post(new Task() {
+					@Override
+					public void run() {
 						loading = false;
 
-						scn.retrieveAssets();
+						try {
 
-						// disable Spine events
-						for (BaseActor a : scn.getActors().values()) {
-							if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof SpineRenderer) {
-								((SpineRenderer) ((SpriteActor) a).getRenderer()).enableEvents(false);
+							EngineAssetManager.getInstance().finishLoading();
+
+							scn.retrieveAssets();
+
+							// disable Spine events
+							for (BaseActor a : scn.getActors().values()) {
+								if (a instanceof SpriteActor
+										&& ((SpriteActor) a).getRenderer() instanceof SpineRenderer) {
+									((SpineRenderer) ((SpriteActor) a).getRenderer()).enableEvents(false);
+								}
 							}
+
+							drawer.setCamera(camera);
+
+							invalidate();
+						} catch (Exception e) {
+							Message.showMsg(getStage(), "Could not load assets for scene", 4);
+							EditorLogger.printStackTrace(e);
+							loadingError = true;
+							loading = false;
 						}
-
-						drawer.setCamera(camera);
-
-						invalidate();
 					}
-				} catch (Exception e) {
-					Message.showMsg(getStage(), "Could not load assets for scene", 4);
-					EditorLogger.printStackTrace(e);
-					loadingError = true;
-					loading = false;
-				}
+				});
 
 			} else if (loadingError) {
 				s = "ERROR IN SCENE DATA. CANNOT DISPLAY SCENE";
@@ -614,8 +623,8 @@ public class ScnWidget extends Widget {
 	}
 
 	public void setSelectedFA(String selFA) {
-		if (selectedActor instanceof SpriteActor && 
-				((SpriteActor) selectedActor).getRenderer() instanceof AnimationRenderer) {
+		if (selectedActor instanceof SpriteActor
+				&& ((SpriteActor) selectedActor).getRenderer() instanceof AnimationRenderer) {
 			AnimationRenderer s = (AnimationRenderer) ((SpriteActor) selectedActor).getRenderer();
 
 			if (selFA == null || (s.getAnimations().get(selFA) == null
@@ -628,7 +637,6 @@ public class ScnWidget extends Widget {
 
 				setAnimationRenderer(selectedActor, s.getAnimations().get(selFA));
 
-				
 				String animInScene = selFA;
 				if (!inScene && s.getInitAnimation() != null)
 					animInScene = s.getInitAnimation();
