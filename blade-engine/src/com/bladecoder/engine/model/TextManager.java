@@ -150,10 +150,14 @@ public class TextManager implements Serializable {
 		currentText = null;
 	}
 
+
 	@Override
 	public void write(Json json) {
 		json.writeValue("inScreenTime", inScreenTime);
-		json.writeValue("currentText", currentText);
+		
+		if(currentText != null)
+			json.writeValue("currentText", currentText);
+		
 		json.writeValue("fifo", new ArrayList<Text>(fifo), ArrayList.class, Text.class);
 	}
 
