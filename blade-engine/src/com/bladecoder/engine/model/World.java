@@ -89,6 +89,8 @@ public class World implements Serializable, AssetConsumer {
 	private Dialog currentDialog;
 
 	private Map<String, Inventory> inventories;
+	private UIActors uiActors;
+	
 	private String currentInventory;
 
 	private TextManager textManager;

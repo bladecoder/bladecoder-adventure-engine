@@ -125,7 +125,7 @@ public class Inventory implements AssetConsumer, Serializable  {
 	public void write(Json json) {
 		SceneActorRef actorRef;
 		
-		json.writeValue("visible", visible);;
+		json.writeValue("visible", visible);
 
 		json.writeObjectStart("items");
 		for (SpriteActor a : items) {
