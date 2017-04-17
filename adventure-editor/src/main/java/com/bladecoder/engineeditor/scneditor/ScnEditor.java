@@ -209,14 +209,15 @@ public class ScnEditor extends Table {
 			Message.showMsgDialog(getStage(), "Error", msg);
 			return;
 		}
+		
+		Stage stage = getStage();
+		Message.showMsg(stage, "Running scene...", 5);
 
 		new Thread(new Runnable() {
-			Stage stage = getStage();
 
 			@Override
 			public void run() {
-				Message.showMsg(stage, "Running scene...", 5);
-
+				Stage stage = getStage();
 				try {					
 					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), Ctx.project.getChapter().getId(),
 							Ctx.project.getSelectedScene().getId()))
