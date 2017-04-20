@@ -31,32 +31,26 @@ public class ScaleAction implements Action {
 
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The target scale")
-
 	private float scale;
 
 	@ActionProperty(required = true, defaultValue = "1.0")
 	@ActionPropertyDescription("Duration of the animation in seconds")
-
 	private float speed;
 
 	@ActionProperty
 	@ActionPropertyDescription("The The times to repeat")
-
 	private int count = 1;
 
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the transition is showed and the action continues inmediatly")
-
 	private boolean wait = true;
 
 	@ActionProperty(required = true, defaultValue = "REPEAT")
 	@ActionPropertyDescription("The repeat mode")
-
 	private Tween.Type repeat = Tween.Type.REPEAT;
 
 	@ActionProperty
 	@ActionPropertyDescription("The interpolation mode")
-
 	private InterpolationMode interpolation;
 
 	@Override
@@ -64,7 +58,7 @@ public class ScaleAction implements Action {
 		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, false);
 		
 		SpriteScaleTween t = new SpriteScaleTween();
-		t.start(a, repeat, count, speed, scale, interpolation,
+		t.start(a, repeat, count, scale, speed, interpolation,
 				wait ? cb : null);
 		
 		a.addTween(t);

@@ -35,7 +35,7 @@ public class SpriteRotateTween extends Tween<SpriteActor> {
 	public void start(SpriteActor target, Type repeatType, int count, float tRot, float duration, InterpolationMode interpolation, ActionCallback cb) {
 		this.target = target;
 		
-		startRot = target.getScale();
+		startRot = target.getRot();
 		targetRot = tRot;
 		
 		setDuration(duration);
@@ -52,22 +52,22 @@ public class SpriteRotateTween extends Tween<SpriteActor> {
 
 	@Override
 	public void updateTarget() {
-		target.setScale(startRot + getPercent() * (targetRot - startRot));
+		target.setRot(startRot + getPercent() * (targetRot - startRot));
 	}
 	
 	@Override
 	public void write(Json json) {
 		super.write(json);
 
-		json.writeValue("startScl", startRot);
-		json.writeValue("targetScl", targetRot);
+		json.writeValue("startRot", startRot);
+		json.writeValue("targetRot", targetRot);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);	
 		
-		startRot = json.readValue("startScl", Float.class, jsonData);
-		targetRot = json.readValue("targetScl", Float.class, jsonData);
+		startRot = json.readValue("startRot", Float.class, jsonData);
+		targetRot = json.readValue("targetRot", Float.class, jsonData);
 	}
 }

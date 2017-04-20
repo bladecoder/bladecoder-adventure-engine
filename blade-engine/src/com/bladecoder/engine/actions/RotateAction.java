@@ -58,7 +58,7 @@ public class RotateAction implements Action {
 		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, false);
 		
 		SpriteRotateTween t = new SpriteRotateTween();
-		t.start(a, repeat, count, speed, rotation, interpolation,
+		t.start(a, repeat, count, rotation, speed, interpolation,
 				wait ? cb : null);
 		
 		a.addTween(t);
