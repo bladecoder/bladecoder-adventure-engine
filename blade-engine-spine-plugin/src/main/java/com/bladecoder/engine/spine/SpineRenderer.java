@@ -45,6 +45,8 @@ import com.bladecoder.engine.util.SerializationHelper.Mode;
 import com.esotericsoftware.spine.Animation;
 import com.esotericsoftware.spine.AnimationState;
 import com.esotericsoftware.spine.AnimationState.AnimationStateListener;
+import com.esotericsoftware.spine.AnimationState.AnimationStateAdapter;
+import com.esotericsoftware.spine.AnimationState.TrackEntry;
 import com.esotericsoftware.spine.AnimationStateData;
 import com.esotericsoftware.spine.Event;
 import com.esotericsoftware.spine.Skeleton;
@@ -77,6 +79,8 @@ public class SpineRenderer extends AnimationRenderer {
 	private boolean complete = false;
 
 	private boolean eventsEnabled = true;
+	
+	private int loopCount = 0;
 
 	class SkeletonCacheEntry extends CacheEntry {
 		Skeleton skeleton;
@@ -92,14 +96,16 @@ public class SpineRenderer extends AnimationRenderer {
 		eventsEnabled = v;
 	}
 
-	private AnimationStateListener animationListener = new AnimationStateListener() {
+	private AnimationStateListener animationListener = new AnimationStateAdapter() {
 		@Override
-		public void complete(int trackIndex, int loopCount) {
+		public void complete(TrackEntry entry) {
 			if (complete)
 				return;
+			
+			loopCount++;
 
 			if ((currentAnimationType == Tween.Type.REPEAT || currentAnimationType == Tween.Type.REVERSE_REPEAT)
-					&& (currentCount == Tween.INFINITY || currentCount > loopCount)) {
+					&& (currentCount == Tween.INFINITY || currentCount >= loopCount)) {
 
 				// FIX for latest spine rt not setting setup pose when looping.
 				SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
@@ -126,11 +132,7 @@ public class SpineRenderer extends AnimationRenderer {
 		}
 
 		@Override
-		public void end(int arg0) {
-		}
-
-		@Override
-		public void event(int trackIndex, Event event) {
+		public void event(TrackEntry entry, Event event) {
 			if (!eventsEnabled || currentAnimationType == Tween.Type.REVERSE)
 				return;
 
@@ -161,10 +163,6 @@ public class SpineRenderer extends AnimationRenderer {
 			default:
 				EngineLogger.error("Spine event not recognized.");
 			}
-		}
-
-		@Override
-		public void start(int arg0) {
 		}
 	};
 
@@ -207,7 +205,8 @@ public class SpineRenderer extends AnimationRenderer {
 
 				if (lastAnimationTime < 0) {
 					lastAnimationTime = 0;
-					animationListener.complete(0, 1);
+					loopCount = 0;
+					animationListener.complete(null);
 					return;
 				}
 			}
@@ -366,6 +365,7 @@ public class SpineRenderer extends AnimationRenderer {
 		}
 
 		complete = false;
+		loopCount = 0;
 		setCurrentAnimation();
 	}
 
