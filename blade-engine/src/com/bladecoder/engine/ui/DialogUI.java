@@ -208,7 +208,7 @@ public class DialogUI extends ScrollPane {
 			for (Choice o : options) {
 				String line = o.getText();
 				
-				int idx = line.indexOf(InkManager.NAME_VALUE_SEPARATOR);
+				int idx = line.indexOf(InkManager.NAME_VALUE_TAG_SEPARATOR);
 
 				if (idx != -1) {
 					line = line.substring(idx + 1).trim();

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,7 +29,8 @@ import com.bladecoder.ink.runtime.Choice;
 import com.bladecoder.ink.runtime.Story;
 
 public class InkManager implements VerbRunner, Serializable {
-	public final static char NAME_VALUE_SEPARATOR = ':';
+	public final static char NAME_VALUE_TAG_SEPARATOR = ':';
+	public final static char NAME_VALUE_PARAM_SEPARATOR = '=';
 	private final static String PARAM_SEPARATOR = ",";
 	private final static char COMMAND_MARK = '>';
 
@@ -77,9 +79,12 @@ public class InkManager implements VerbRunner, Serializable {
 		String line = null;
 		actions.clear();
 
+		HashMap<String, String> currentLineParams = new HashMap<String, String>();
+
 		while (story.canContinue()) {
 			try {
 				line = story.Continue();
+				currentLineParams.clear();
 
 				if (!line.isEmpty()) {
 					// Remove trailing '\n'
@@ -87,13 +92,13 @@ public class InkManager implements VerbRunner, Serializable {
 
 					EngineLogger.debug("INK LINE: " + line);
 
-					HashMap<String, String> tags = processTags(story.getCurrentTags());
+					processParams(story.getCurrentTags(), currentLineParams);
 
 					// PROCESS COMMANDS
 					if (line.charAt(0) == COMMAND_MARK) {
-						processCommand(tags, line);
+						processCommand(currentLineParams, line);
 					} else {
-						processTextLine(tags, line);
+						processTextLine(currentLineParams, line);
 					}
 				} else {
 					EngineLogger.debug("INK EMPTY LINE!");
@@ -117,15 +122,18 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 	}
 
-	private HashMap<String, String> processTags(List<String> tags) {
+	private void processParams(List<String> input, HashMap<String, String> output) {
 
-		HashMap<String, String> tagsMap = new HashMap<String, String>();
-
-		for (String t : tags) {
+		for (String t : input) {
 			String key;
 			String value;
 
-			int i = t.indexOf(NAME_VALUE_SEPARATOR);
+			int i = t.indexOf(NAME_VALUE_TAG_SEPARATOR);
+			
+			// support ':' and '=' as param separator
+			if(i == -1)
+				i = t.indexOf(NAME_VALUE_PARAM_SEPARATOR);
+			
 			if (i != -1) {
 				key = t.substring(0, i).trim();
 				value = t.substring(i + 1, t.length()).trim();
@@ -134,50 +142,64 @@ public class InkManager implements VerbRunner, Serializable {
 				value = null;
 			}
 
-			EngineLogger.debug("TAG: " + key + " value: " + value);
+			EngineLogger.debug("PARAM: " + key + " value: " + value);
 
-			tagsMap.put(key, value);
+			output.put(key, value);
 		}
-
-		return tagsMap;
 	}
 
 	private void processCommand(HashMap<String, String> params, String line) {
 		String commandName = null;
 		String commandParams[] = null;
-		
-		int i = line.indexOf(NAME_VALUE_SEPARATOR);
-		
-		if(i == -1) {
+
+		int i = line.indexOf(NAME_VALUE_TAG_SEPARATOR);
+
+		if (i == -1) {
 			commandName = line.substring(1).trim();
 		} else {
-			commandName = line.substring(1, i).trim().toLowerCase();
-			commandParams = line.substring(i+1).split(PARAM_SEPARATOR);
+			commandName = line.substring(1, i).trim();
+			commandParams = line.substring(i + 1).split(PARAM_SEPARATOR);
+
+			processParams(Arrays.asList(commandParams), params);
 		}
-		
-		if("action".equals(commandName)) {
-			Action action;
-			try {
-				action = ActionFactory.createByClass("com.bladecoder.engine.actions." + commandParams[0].trim() + "Action", params);
-				actions.add(action);
-			} catch (ClassNotFoundException | ReflectionException e) {
-				EngineLogger.error(e.getMessage(), e);
-			}
-		} else if("leave".equals(commandName)) {
-			World.getInstance().setCurrentScene(commandParams[0].trim());
-		} else if("set".equals(commandName)) {
-			World.getInstance().setModelProp(commandParams[0].trim(), commandParams[1].trim());
+
+		if ("leave".equals(commandName)) {
+			World.getInstance().setCurrentScene(params.get("scene"));
+		} else if ("set".equals(commandName)) {
+			World.getInstance().setModelProp(params.get("prop"), params.get("value"));
 		} else {
-			EngineLogger.error("Ink Command Name not found: " + commandName);
+			
+			// for backward compatibility
+			if ("action".equals(commandName)) {
+				commandName = commandParams[0].trim();
+				params.remove(commandName);
+			}
+
+			// Some preliminar validation to see if it's an action
+			if (commandName.length() > 0 && Character.isUpperCase(commandName.charAt(0))) {
+				// Try to create action by default
+				Action action;
+
+				try {
+					action = ActionFactory.createByClass("com.bladecoder.engine.actions." + commandName + "Action",
+							params);
+					actions.add(action);
+				} catch (ClassNotFoundException | ReflectionException e) {
+					EngineLogger.error(e.getMessage(), e);
+				}
+
+			} else {
+				EngineLogger.error("Ink command not found: " + commandName);
+			}
 		}
 	}
-	
+
 	private void processTextLine(HashMap<String, String> params, String line) {
 
-		// Get actor name from Line. Actor is separated by ':'. ej. "Johnny:
-		// Hello punks!"
+		// Get actor name from Line. Actor is separated by ':'.
+		// ej. "Johnny: Hello punks!"
 		if (!params.containsKey("actor")) {
-			int idx = line.indexOf(NAME_VALUE_SEPARATOR);
+			int idx = line.indexOf(NAME_VALUE_TAG_SEPARATOR);
 
 			if (idx != -1) {
 				params.put("actor", line.substring(0, idx).trim());
@@ -186,7 +208,7 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 
 		if (!params.containsKey("actor") && World.getInstance().getCurrentScene().getPlayer() != null) {
-//			params.put("actor", Scene.VAR_PLAYER);
+			// params.put("actor", Scene.VAR_PLAYER);
 
 			if (!params.containsKey("type")) {
 				params.put("type", Type.SUBTITLE.toString());
@@ -231,7 +253,7 @@ public class InkManager implements VerbRunner, Serializable {
 					ip++;
 				}
 			}
-			
+
 			if (ip >= actions.size() && !stop)
 				continueMaximally();
 		}

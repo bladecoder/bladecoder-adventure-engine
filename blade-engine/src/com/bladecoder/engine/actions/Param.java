@@ -22,12 +22,9 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Param {
 	public enum Type {
-		STRING, BOOLEAN, FLOAT, INTEGER, VECTOR2, VECTOR3, DIMENSION, ACTOR, CHARACTER_ACTOR, 
-		INTERACTIVE_ACTOR, SPRITE_ACTOR, SCENE, CHAPTER, FILE, OPTION, SCENE_ACTOR, ACTOR_ANIMATION, 
-		LAYER, EDITABLE_OPTION, SCENE_CHARACTER_ACTOR, SCENE_INTERACTIVE_ACTOR, SCENE_SPRITE_ACTOR, TEXT, SMALL_TEXT, 
-		BIG_TEXT, COLOR, SOUND, TEXT_STYLE, ATLAS_ASSET, MUSIC_ASSET, SOUND_ASSET, PARTICLE_ASSET, FONT_ASSET, NOT_SET
+		STRING, BOOLEAN, FLOAT, INTEGER, VECTOR2, VECTOR3, DIMENSION, ACTOR, CHARACTER_ACTOR, INTERACTIVE_ACTOR, SPRITE_ACTOR, SCENE, CHAPTER, FILE, OPTION, SCENE_ACTOR, ACTOR_ANIMATION, LAYER, EDITABLE_OPTION, SCENE_CHARACTER_ACTOR, SCENE_INTERACTIVE_ACTOR, SCENE_SPRITE_ACTOR, TEXT, SMALL_TEXT, BIG_TEXT, COLOR, SOUND, TEXT_STYLE, ATLAS_ASSET, MUSIC_ASSET, SOUND_ASSET, PARTICLE_ASSET, FONT_ASSET, NOT_SET
 	}
-	
+
 	public static final String NUMBER_PARAM_SEPARATOR = ",";
 	public static final String STRING_PARAM_SEPARATOR = "#";
 
@@ -46,31 +43,36 @@ public class Param {
 		this.defaultValue = defaultValue;
 		this.options = options;
 	}
-	
+
 	public Param(String name, String desc, Type type, boolean mandatory, String defaultValue) {
 		this(name, desc, type, mandatory, defaultValue, null);
 	}
-	
+
 	public Param(String name, String desc, Type type, boolean mandatory) {
 		this(name, desc, type, mandatory, null, null);
 	}
-	
+
 	public Param(String name, String desc, Type type) {
 		this(name, desc, type, false, null, null);
 	}
 
 	public static Vector2 parseVector2(String s) {
-		
-		if(s==null || s.isEmpty())
+
+		if (s == null || s.isEmpty())
 			return null;
-		
+
 		Vector2 v = null;
 
 		int idx = s.indexOf(NUMBER_PARAM_SEPARATOR.charAt(0));
 
+		// Also allow '_' character as separator because is more usable inside
+		// Ink files.
+		if (idx == -1)
+			idx = s.indexOf('_');
+
 		if (idx != -1) {
 			try {
-				float x = Float.parseFloat(s.substring(0,idx));
+				float x = Float.parseFloat(s.substring(0, idx));
 				float y = Float.parseFloat(s.substring(idx + 1));
 
 				v = new Vector2(x, y);
@@ -90,7 +92,7 @@ public class Param {
 
 		if (idx != -1 && idx2 != -1 && idx != idx2) {
 			try {
-				float x = Float.parseFloat(s.substring(0,idx));
+				float x = Float.parseFloat(s.substring(0, idx));
 				float y = Float.parseFloat(s.substring(idx + 1, idx2));
 				float z = Float.parseFloat(s.substring(idx2 + 1));
 
@@ -102,41 +104,41 @@ public class Param {
 
 		return v;
 	}
-	
+
 	public static void parsePolygon(Polygon p, String s) {
-		
+
 		String[] vs = s.split(NUMBER_PARAM_SEPARATOR);
-		
-		if(vs.length < 6)
+
+		if (vs.length < 6)
 			return;
-		
+
 		float verts[] = new float[vs.length];
-		
-		for(int i = 0; i < vs.length; i++) {
+
+		for (int i = 0; i < vs.length; i++) {
 			verts[i] = Float.parseFloat(vs[i]);
 		}
-		
+
 		p.setVertices(verts);
 
 	}
-	
+
 	public static void parsePolygon(Polygon p, String v, String pos) {
 		parsePolygon(p, v);
 		Vector2 v2 = parseVector2(pos);
 		p.setPosition(v2.x, v2.y);
 	}
-	
+
 	public static String toStringParam(Polygon p) {
 		StringBuilder sb = new StringBuilder();
-		float[]verts = p.getVertices();
-		
+		float[] verts = p.getVertices();
+
 		sb.append(verts[0]);
-		
-		for(int i = 1; i < verts.length; i++) {
+
+		for (int i = 1; i < verts.length; i++) {
 			sb.append(NUMBER_PARAM_SEPARATOR);
-			sb.append(verts[i]);	
+			sb.append(verts[i]);
 		}
-		
+
 		return sb.toString();
 	}
 
@@ -146,19 +148,19 @@ public class Param {
 		}
 
 		switch (color.trim()) {
-			case "black":
-				return Color.BLACK;
-			case "white":
-				return Color.WHITE;
-			default:
-				return Color.valueOf(color);
+		case "black":
+			return Color.BLACK;
+		case "white":
+			return Color.WHITE;
+		default:
+			return Color.valueOf(color);
 		}
 	}
 
 	public static String toStringParam(Vector2 v) {
-		if(v == null)
+		if (v == null)
 			return null;
-		
+
 		return v.x + NUMBER_PARAM_SEPARATOR + v.y;
 	}
 
