@@ -54,6 +54,11 @@ public class ParticleRenderer implements ActorRenderer {
 
 	}
 	
+	public void reset() {
+		tmpPosX = tmpPosY = 0;
+		effect.reset();
+	}
+	
 	
 	@Override
 	public int getOrgAlign() {
