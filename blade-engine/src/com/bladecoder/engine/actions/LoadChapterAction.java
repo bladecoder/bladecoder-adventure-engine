@@ -27,7 +27,7 @@ public class LoadChapterAction implements Action {
 	private String chapter;
 
 	@ActionPropertyDescription("The target scene")
-	@ActionProperty(type=Type.SCENE, required = false)
+	@ActionProperty(type=Type.STRING, required = false)
 	private String scene;
 
 	@Override
