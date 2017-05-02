@@ -704,6 +704,7 @@ public class SpineRenderer extends AnimationRenderer {
 
 			json.writeValue("lastAnimationTime", lastAnimationTime);
 			json.writeValue("complete", complete);
+			json.writeValue("loopCount", loopCount);
 		}
 	}
 
@@ -726,6 +727,7 @@ public class SpineRenderer extends AnimationRenderer {
 
 			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 			complete = json.readValue("complete", Boolean.class, jsonData);
+			loopCount = json.readValue("complete", int.class, loopCount, jsonData);
 		}
 	}
 }
