@@ -1,6 +1,7 @@
 package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Music.OnCompletionListener;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -23,10 +24,16 @@ public class VoiceManager implements Serializable, AssetConsumer {
 
 	private boolean isPlayingSer = false;
 	private float voicePosSer = 0;
-	transient private boolean isPaused = false;
 	
 	// the master volume
 	private float volume = 1.0f;
+	
+	transient private boolean isPaused = false;
+	transient private TextManager textManager = null;
+
+	public VoiceManager(TextManager textManager) {
+		this.textManager = textManager;
+	}
 
 	public void pause() {
 		if (voice != null && voice.isPlaying()) {
@@ -108,6 +115,13 @@ public class VoiceManager implements Serializable, AssetConsumer {
 			EngineLogger.debug("RETRIEVING VOICE: " + fileName);
 			
 			voice = EngineAssetManager.getInstance().get(EngineAssetManager.VOICE_DIR + fileName, Music.class);
+			
+			voice.setOnCompletionListener(new OnCompletionListener() {
+				@Override
+				public void onCompletion(Music music) {
+					textManager.next();
+				}
+			});
 			
 			if(voice != null)
 				voice.setVolume(volume);

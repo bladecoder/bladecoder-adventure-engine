@@ -48,13 +48,12 @@ public class TextManager implements Serializable {
 
 	private float inScreenTime;
 	private Text currentText = null;
-	private VoiceManager voiceManager;
+	private final VoiceManager voiceManager = new VoiceManager(this);
 
 	private Queue<Text> fifo;
 
 	public TextManager() {
 		fifo = new LinkedList<Text>();
-		voiceManager = new VoiceManager();
 	}
 
 	public void addText(String str, float x, float y, boolean quee, Text.Type type,
@@ -92,8 +91,10 @@ public class TextManager implements Serializable {
 			}
 			
 			// sets the voice to the first line. Thought, when using voices, single lines should be used.
-			if(i == 0 && voiceId != null)
+			if(i == 0 && voiceId != null) {
 				sub.voiceId = voiceId;
+				sub.time = Float.MAX_VALUE;
+			}
 
 			fifo.add(sub);
 		}
@@ -184,6 +185,10 @@ public class TextManager implements Serializable {
 		inScreenTime = json.readValue("inScreenTime", Float.class, jsonData);
 		currentText = json.readValue("currentText", Text.class, jsonData);
 		fifo = new LinkedList<Text>(json.readValue("fifo", ArrayList.class, Text.class, jsonData));
-		voiceManager = json.readValue("voiceManager", VoiceManager.class, jsonData);
+		
+		JsonValue jsonValue = jsonData.get("voiceManager");
+		
+		if(jsonValue != null)
+			voiceManager.read(json, jsonValue);
 	}
 }
