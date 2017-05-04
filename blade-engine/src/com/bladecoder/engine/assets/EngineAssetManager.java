@@ -408,14 +408,14 @@ public class EngineAssetManager extends AssetManager {
 					n = u.getFile();
 
 				FileHandle f = null;
-				
+
 				try {
 					f = Gdx.files.absolute(URLDecoder.decode(n, "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					EngineLogger.error("Error decoding URL", e);
 					return new String[0];
 				}
-				
+
 				FileHandle[] l = f.list();
 				list = new String[l.length];
 
@@ -486,7 +486,15 @@ public class EngineAssetManager extends AssetManager {
 
 			StringBuilder sb = new StringBuilder();
 			sb.append(".").append(dir).append("/").append(filename);
-			file = Gdx.files.external(sb.toString());
+			
+			if (System.getProperty("os.name").toLowerCase().contains("mac")
+					&& System.getenv("HOME").contains("Containers")) {
+
+				file = Gdx.files.absolute(System.getenv("HOME") + "/" + sb.toString());
+			} else {
+
+				file = Gdx.files.external(sb.toString());
+			}
 		} else {
 			file = Gdx.files.local(NOT_DESKTOP_PREFS_DIR + filename);
 		}
@@ -502,7 +510,16 @@ public class EngineAssetManager extends AssetManager {
 			dir.replace(" ", "");
 
 			StringBuilder sb = new StringBuilder(".");
-			file = Gdx.files.external(sb.append(dir).toString());
+			
+			if (System.getProperty("os.name").toLowerCase().contains("mac")
+					&& System.getenv("HOME").contains("Containers")) {
+
+				file = Gdx.files.absolute(System.getenv("HOME") + "/" + sb.append(dir).toString());
+			} else {
+
+				file = Gdx.files.external(sb.append(dir).toString());
+			}
+			
 		} else {
 			file = Gdx.files.local(NOT_DESKTOP_PREFS_DIR);
 		}
