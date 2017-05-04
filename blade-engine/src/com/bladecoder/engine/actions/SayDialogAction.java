@@ -36,6 +36,7 @@ public class SayDialogAction extends BaseCallbackAction {
 	private boolean characterTurn = false;
 	private String characterName;
 	private String responseText;
+	private String responseVoiceId;
 
 	private String previousAnim;
 
@@ -54,6 +55,7 @@ public class SayDialogAction extends BaseCallbackAction {
 		String playerText = o.getText();
 		
 		responseText = o.getResponseText();
+		responseVoiceId = o.getResponseVoiceId();
 		characterName = w.getCurrentDialog().getActor();
 		
 		characterTurn = true;
@@ -73,7 +75,7 @@ public class SayDialogAction extends BaseCallbackAction {
 			float y = boundingRectangle.getY() + boundingRectangle.getHeight();
 
 			w.getTextManager().addText(playerText, x, y, false,
-					Text.Type.TALK, player.getTextColor(), null, player.getId(), this);
+					Text.Type.TALK, player.getTextColor(), null, player.getId(), o.getVoiceId(), this);
  
 			startTalkAnim(player);
 
@@ -105,7 +107,7 @@ public class SayDialogAction extends BaseCallbackAction {
 				
 				World.getInstance().getTextManager().addText(responseText, x,
 						y, false, Text.Type.TALK,
-						((CharacterActor) actor).getTextColor(), null, actor.getId(), this);
+						((CharacterActor) actor).getTextColor(), null, actor.getId(), responseVoiceId, this);
 
 
 				if(actor instanceof CharacterActor) {
@@ -144,6 +146,7 @@ public class SayDialogAction extends BaseCallbackAction {
 	public void write(Json json) {
 		json.writeValue("previousFA", previousAnim);
 		json.writeValue("responseText", responseText);
+		json.writeValue("responseSoundId", responseVoiceId);
 		json.writeValue("characterTurn", characterTurn);
 		json.writeValue("characterName", characterName);
 		super.write(json);
@@ -153,6 +156,7 @@ public class SayDialogAction extends BaseCallbackAction {
 	public void read (Json json, JsonValue jsonData) {
 		previousAnim = json.readValue("previousFA", String.class, jsonData);
 		responseText = json.readValue("responseText", String.class, jsonData);
+		responseVoiceId = json.readValue("responseSoundId", String.class, jsonData);
 		characterTurn = json.readValue("characterTurn", boolean.class, false, jsonData);
 		characterName = json.readValue("characterName", String.class, jsonData);
 		super.read(json, jsonData);

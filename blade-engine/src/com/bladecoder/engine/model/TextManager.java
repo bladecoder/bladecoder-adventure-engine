@@ -48,15 +48,17 @@ public class TextManager implements Serializable {
 
 	private float inScreenTime;
 	private Text currentText = null;
+	private VoiceManager voiceManager;
 
 	private Queue<Text> fifo;
 
 	public TextManager() {
 		fifo = new LinkedList<Text>();
+		voiceManager = new VoiceManager();
 	}
 
 	public void addText(String str, float x, float y, boolean quee, Text.Type type,
-			Color color, String font, String actorId, ActionCallback cb) {
+			Color color, String font, String actorId, String voiceId, ActionCallback cb) {
 		
 		if(str.charAt(0) == I18N.PREFIX)
 			str = I18N.getString(str.substring(1));
@@ -84,10 +86,14 @@ public class TextManager implements Serializable {
 			Text sub;
 			
 			if (i != text.length - 1) {
-				sub = new Text(finalStr, x, y, duration, type, color, font, actorId, null);
+				sub = new Text(finalStr, x, y, duration, type, color, font, actorId, null, null);
 			} else {
-				sub = new Text(finalStr, x, y, duration, type, color, font, actorId, cb);
+				sub = new Text(finalStr, x, y, duration, type, color, font, actorId, null, cb);
 			}
+			
+			// sets the voice to the first line. Thought, when using voices, single lines should be used.
+			if(i == 0 && voiceId != null)
+				sub.voiceId = voiceId;
 
 			fifo.add(sub);
 		}
@@ -102,6 +108,10 @@ public class TextManager implements Serializable {
 
 	}
 	
+	public VoiceManager getVoiceManager() {
+		return voiceManager;
+	}
+	
 	public Text getCurrentText() {
 		return currentText;
 	}
@@ -109,6 +119,11 @@ public class TextManager implements Serializable {
 	private void setCurrentText(Text t) {
 		inScreenTime = 0f;
 		currentText = t;
+		
+		if(t != null)
+			voiceManager.play(t.voiceId);
+		else
+			voiceManager.stop();
 	}
 
 	public void update(float delta) {
@@ -139,6 +154,7 @@ public class TextManager implements Serializable {
 			next();
 		
 		inScreenTime = 0;
+		voiceManager.stop();
 	}
 
 	/**
@@ -159,6 +175,7 @@ public class TextManager implements Serializable {
 			json.writeValue("currentText", currentText);
 		
 		json.writeValue("fifo", new ArrayList<Text>(fifo), ArrayList.class, Text.class);
+		json.writeValue("voiceManager", voiceManager);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -167,5 +184,6 @@ public class TextManager implements Serializable {
 		inScreenTime = json.readValue("inScreenTime", Float.class, jsonData);
 		currentText = json.readValue("currentText", Text.class, jsonData);
 		fifo = new LinkedList<Text>(json.readValue("fifo", ArrayList.class, Text.class, jsonData));
+		voiceManager = json.readValue("voiceManager", VoiceManager.class, jsonData);
 	}
 }

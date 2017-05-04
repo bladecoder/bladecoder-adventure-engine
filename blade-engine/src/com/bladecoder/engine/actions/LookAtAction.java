@@ -51,6 +51,10 @@ public class LookAtAction implements Action {
 	@ActionPropertyDescription("The 'text' to show")
 	@ActionProperty(type = Type.SMALL_TEXT)
 	private String text;
+	
+	@ActionPropertyDescription("The 'voice' file to play if selected.")
+	@ActionProperty(type = Type.VOICE)
+	private String voiceId;
 
 	@ActionProperty
 	@ActionPropertyDescription("The direction to lookat. If empty, the player lookat to the actor")
@@ -81,7 +85,7 @@ public class LookAtAction implements Action {
 			String actorId = World.getInstance().getCurrentScene().getPlayer() != null? World.getInstance().getCurrentScene().getPlayer().getId():null;
 			
 			World.getInstance().getTextManager().addText(text, TextManager.POS_SUBTITLE, TextManager.POS_SUBTITLE,
-					false, Text.Type.SUBTITLE, null, null, actorId, wait ? cb : null);
+					false, Text.Type.SUBTITLE, null, null, actorId, voiceId, wait ? cb : null);
 			
 			return wait;
 		}

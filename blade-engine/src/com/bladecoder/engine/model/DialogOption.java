@@ -28,6 +28,8 @@ public class DialogOption implements Serializable {
 	private String next;
 	private boolean visible = true;
 	private boolean once = false;
+	private String voiceId;
+	private String responseVoiceId;
 
 	public boolean isVisible() {
 		return visible;
@@ -51,6 +53,22 @@ public class DialogOption implements Serializable {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+	
+	public String getVoiceId() {
+		return voiceId;
+	}
+
+	public void setVoiceId(String voiceId) {
+		this.voiceId = voiceId;
+	}
+	
+	public String getResponseVoiceId() {
+		return responseVoiceId;
+	}
+
+	public void setResponseVoiceId(String soundId) {
+		this.responseVoiceId = soundId;
 	}
 
 	public void setResponseText(String responseText) {
@@ -86,6 +104,8 @@ public class DialogOption implements Serializable {
 			json.writeValue("verbId", verbId);
 			json.writeValue("next", next);
 			json.writeValue("once", once);
+			json.writeValue("soundId", voiceId);
+			json.writeValue("responseSoundId", responseVoiceId);
 		} else {
 			
 		}
@@ -102,6 +122,8 @@ public class DialogOption implements Serializable {
 			verbId = json.readValue("verbId", String.class, jsonData);
 			next = json.readValue("next", String.class, jsonData);
 			once = json.readValue("once", Boolean.class, jsonData);
+			voiceId = json.readValue("soundId", String.class, jsonData);
+			responseVoiceId = json.readValue("responseSoundId", String.class, jsonData);
 		} else {
 			
 		}
