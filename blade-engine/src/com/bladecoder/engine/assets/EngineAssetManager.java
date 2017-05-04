@@ -408,14 +408,14 @@ public class EngineAssetManager extends AssetManager {
 					n = u.getFile();
 
 				FileHandle f = null;
-
+				
 				try {
 					f = Gdx.files.absolute(URLDecoder.decode(n, "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					EngineLogger.error("Error decoding URL", e);
 					return new String[0];
 				}
-
+				
 				FileHandle[] l = f.list();
 				list = new String[l.length];
 
@@ -481,18 +481,12 @@ public class EngineAssetManager extends AssetManager {
 		FileHandle file = null;
 
 		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Applet) {
+			String dir = Config.getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
+			dir.replace(" ", "");
 
-			if (System.getProperty("SandboxEnabled") == null) {
-				String dir = Config.getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
-				dir.replace(" ", "");
-
-				StringBuilder sb = new StringBuilder();
-				sb.append(".").append(dir).append("/").append(filename);
-				file = Gdx.files.external(sb.toString());
-			} else {
-				// We are in a Macos Sandbox
-				file = Gdx.files.external(System.getProperty("DocumentsDirectory") + "/" + filename);
-			}
+			StringBuilder sb = new StringBuilder();
+			sb.append(".").append(dir).append("/").append(filename);
+			file = Gdx.files.external(sb.toString());
 		} else {
 			file = Gdx.files.local(NOT_DESKTOP_PREFS_DIR + filename);
 		}
@@ -504,16 +498,11 @@ public class EngineAssetManager extends AssetManager {
 		FileHandle file = null;
 
 		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Applet) {
-			if (System.getProperty("SandboxEnabled") == null) {
-				String dir = Config.getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
-				dir.replace(" ", "");
+			String dir = Config.getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
+			dir.replace(" ", "");
 
-				StringBuilder sb = new StringBuilder(".");
-				file = Gdx.files.external(sb.append(dir).toString());
-			} else {
-				// We are in a Macos Sandbox
-				file = Gdx.files.external(System.getProperty("DocumentsDirectory"));
-			}
+			StringBuilder sb = new StringBuilder(".");
+			file = Gdx.files.external(sb.append(dir).toString());
 		} else {
 			file = Gdx.files.local(NOT_DESKTOP_PREFS_DIR);
 		}
