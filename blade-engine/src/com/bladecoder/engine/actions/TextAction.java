@@ -32,6 +32,10 @@ public class TextAction implements Action {
 	@ActionPropertyDescription("The 'text' to show")
 	@ActionProperty(type = Type.SMALL_TEXT)
 	private String text;
+	
+	@ActionPropertyDescription("The 'voice' file to play if selected.")
+	@ActionProperty(type = Type.VOICE)
+	private String voiceId;
 
 	@ActionPropertyDescription("The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section)")
 	@ActionProperty(type = Type.TEXT_STYLE, required = true, defaultValue = "default")
@@ -104,7 +108,7 @@ public class TextAction implements Action {
 			}
 
 			World.getInstance().getTextManager()
-						.addText(text, x, y, queue, type, color, style, null, wait?cb:null);
+						.addText(text, x, y, queue, type, color, style, null, voiceId, wait?cb:null);
 		}
 		
 		return wait;

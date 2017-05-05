@@ -30,7 +30,9 @@ import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 
 	private InputPanel text;
+	private InputPanel voice;
 	private InputPanel responseText;
+	private InputPanel responseVoice;
 	private InputPanel verb;
 	private InputPanel next;
 	private InputPanel visible;
@@ -45,8 +47,12 @@ public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 
 		text = InputPanelFactory.createInputPanel(skin, "Text", "The sentence of the dialog to say by the player",
 				Type.SMALL_TEXT, true);
-		responseText = InputPanelFactory.createInputPanel(skin, "Response Text", "The response by the character",
+		voice = InputPanelFactory.createInputPanel(skin, "Voice", "The voice filename",
+				Type.VOICE, true);
+		responseText = InputPanelFactory.createInputPanel(skin, "Response Text", "The response said by the character",
 				Type.TEXT, false);
+		responseVoice = InputPanelFactory.createInputPanel(skin, "Response Voice", "The voice filename for the response",
+				Type.VOICE, false);
 		verb = InputPanelFactory.createInputPanel(skin, "Verb", "The verb to execute when choosing this option");
 		next = InputPanelFactory.createInputPanel(skin, "Next Dialog",
 				"The next dialog to show when this option is selected",
@@ -60,7 +66,7 @@ public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 		text.getCell(text.getField()).fillX();
 		responseText.getCell(responseText.getField()).fillX();
 
-		init(parent, e, new InputPanel[] { text, responseText, verb, next, visible, once });
+		init(parent, e, new InputPanel[] { text, voice, responseText, responseVoice, verb, next, visible, once });
 	}
 
 	@Override
@@ -101,6 +107,9 @@ public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 		e.setNext(next.getText());
 		e.setVisible(Boolean.parseBoolean(visible.getText()));
 		e.setOnce(Boolean.parseBoolean(once.getText()));
+		e.setVoiceId(voice.getText());
+		e.setResponseVoiceId(responseVoice.getText());
+		
 
 		// TODO UNDO OP
 		// UndoOp undoOp = new UndoAddElement(doc, e);
@@ -121,6 +130,8 @@ public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 
 		visible.setText(Boolean.toString(e.isVisible()));
 		once.setText(Boolean.toString(e.isOnce()));
+		voice.setText(e.getVoiceId());
+		responseVoice.setText(e.getResponseVoiceId());
 	}
 
 	private String[] getActorDialogs(CharacterActor actor) {

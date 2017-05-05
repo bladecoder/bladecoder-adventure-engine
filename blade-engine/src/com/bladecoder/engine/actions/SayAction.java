@@ -39,9 +39,9 @@ public class SayAction extends BaseCallbackAction {
 	@ActionProperty(type = Type.SMALL_TEXT)
 	private String text;
 
-	@ActionPropertyDescription("The 'soundId' to play if selected.")
-	@ActionProperty(type = Type.SOUND)
-	private String soundId;
+	@ActionPropertyDescription("The 'voice' file to play if selected.")
+	@ActionProperty(type = Type.VOICE)
+	private String voiceId;
 
 	@ActionProperty(required = true, defaultValue = "SUBTITLE")
 	@ActionPropertyDescription("The type of the text.")
@@ -65,8 +65,8 @@ public class SayAction extends BaseCallbackAction {
 		setVerbCb(cb);
 		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, false);
 
-		if (soundId != null)
-			a.playSound(soundId);
+		if (voiceId != null)
+			a.playSound(voiceId);
 
 		if (text != null) {
 			if (type == Text.Type.TALK && a != null) {
@@ -82,7 +82,7 @@ public class SayAction extends BaseCallbackAction {
 			}
 
 			World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null, 
-					a != null? a.getId(): actor, this);
+					a != null? a.getId(): actor, voiceId, this);
 		}
 
 		return getWait();

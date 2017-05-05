@@ -11,7 +11,7 @@ import com.bladecoder.engine.util.EngineLogger;
 /**
  * Simple music engine.
  * 
- * Plays a music file, if another music is playing, stop it before playing the
+ * Plays a music file, if another music is playing, stops it before playing the
  * new music.
  * 
  * @author rgarcia

@@ -68,6 +68,7 @@ public class EngineAssetManager extends AssetManager {
 	public static final String SPINE_DIR = "spine/";
 	public static final String PARTICLE_DIR = "particles/";
 	public static final String FONT_DIR = "ui/fonts/";
+	public static final String VOICE_DIR = "voices/";
 
 	public static final String MODEL3D_EXT = ".g3db";
 	public static final String SPINE_EXT = ".skel";
