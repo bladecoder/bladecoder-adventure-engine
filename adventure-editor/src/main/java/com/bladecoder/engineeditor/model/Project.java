@@ -85,6 +85,7 @@ public class Project extends PropertyChange {
 	public static final String SPRITE3D_PATH = ASSETS_PATH + "/3d";
 	public static final String SPINE_PATH = ASSETS_PATH + "/spine";
 	public static final String PARTICLE_PATH = ASSETS_PATH + "/particles";
+	public static final String VOICE_PATH = ASSETS_PATH + "/voices";
 	public static final String UI_PATH = ASSETS_PATH + "/ui";
 	public static final String FONT_PATH = UI_PATH + "/fonts";
 

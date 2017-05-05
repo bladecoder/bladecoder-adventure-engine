@@ -52,7 +52,7 @@ import com.kotcrab.vis.ui.widget.file.FileChooserListener;
 import com.kotcrab.vis.ui.widget.file.FileTypeFilter;
 
 public class AssetsList extends Table {
-	private static final String[] ASSET_TYPES = { "3d models", "atlases", "music", "sounds", "images", "spine", "particles" };
+	private static final String[] ASSET_TYPES = { "3d models", "atlases", "music", "sounds", "images", "spine", "particles", "voices" };
 
 	private SelectBox<String> assetTypes;
 	protected EditToolbar toolbar;
@@ -188,6 +188,8 @@ public class AssetsList extends Table {
 			dir = Ctx.project.getProjectPath() + "/" + Project.SPINE_PATH;
 		} else if (type.equals("particles")) {
 			dir = Ctx.project.getProjectPath() + "/" + Project.PARTICLE_PATH;
+		} else if (type.equals("voices")) {
+			dir = Ctx.project.getProjectPath() + "/" + Project.VOICE_PATH;
 		} else {
 			dir = Ctx.project.getProjectPath() + Project.ASSETS_PATH;
 		}
@@ -237,6 +239,7 @@ public class AssetsList extends Table {
 				break;
 			case "music":
 			case "sounds":
+			case "voices":
 				typeFilter.addRule("Sound (*.mp3, *.wav, *.ogg)", "wav", "mp3", "ogg");
 				break;
 			case "3d models":
@@ -258,15 +261,20 @@ public class AssetsList extends Table {
 				public void selected(Array<FileHandle> files) {
 						
 					try {
-						String dir = getAssetDir(type);
+						String dirName = getAssetDir(type);
 						lastDir = files.get(0).parent().file();
+						
+						// Si no existe la carpeta la creamos
+						File dir = new File(dirName);
+						if(!dir.exists())
+							dir.mkdir();
 
 						for (FileHandle f : files) {
 							if (type.equals("images")) {
 								List<String> res = Ctx.project.getResolutions();
 
 								for (String r : res) {
-									File destFile = new File(dir + "/" + r + "/" + f.file().getName());
+									File destFile = new File(dirName + "/" + r + "/" + f.file().getName());
 									float scale = Float.parseFloat(r);
 
 									if (scale != 1.0f) {
@@ -277,7 +285,7 @@ public class AssetsList extends Table {
 									}
 								}
 							} else {
-								File destFile = new File(dir + "/" + f.file().getName());
+								File destFile = new File(dir, f.file().getName());
 								Files.copy(f.file().toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 							}
 
