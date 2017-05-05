@@ -97,7 +97,7 @@ public class VoiceManager implements Serializable, AssetConsumer {
 
 	@Override
 	public void loadAssets() {
-		if (voice == null) {
+		if (voice == null && fileName != null) {
 			EngineLogger.debug("LOADING VOICE: " + fileName);
 			EngineAssetManager.getInstance().load(EngineAssetManager.VOICE_DIR + fileName, Music.class);
 		}

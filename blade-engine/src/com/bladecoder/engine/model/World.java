@@ -303,6 +303,7 @@ public class World implements Serializable, AssetConsumer {
 			getInventory().loadAssets();
 
 		musicEngine.loadAssets();
+		textManager.getVoiceManager().loadAssets();
 	}
 
 	@Override
@@ -326,6 +327,7 @@ public class World implements Serializable, AssetConsumer {
 		}
 
 		musicEngine.retrieveAssets();
+		textManager.getVoiceManager().retrieveAssets();
 	}
 
 	public Transition getTransition() {
