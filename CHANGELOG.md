@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.4]
+
+- NEW BIG FEATURE: Voice support.
+- OSX Sandbox support to support releasing the game in the Mac App Store.
+- Updated Spine engine to v3.5.51
+- When adding new assets throught the Asset List view, create the asset folder if it doesn't exist.
+- FIX: Scene parameter in LoadChapterAction incorrect.
+- FIX: Scale and Rotation actions.
+- FIX: Loading integer atributes in actions.
+- FIX: Serialization error in TextManager.
+
 ## [1.2.3]
 
 - Added 'ignoreWalkZone' parameter to Goto.
