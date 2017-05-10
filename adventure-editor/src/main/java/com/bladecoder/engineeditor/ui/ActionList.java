@@ -546,6 +546,9 @@ public class ActionList extends ModelList<Verb, Action> {
 				
 				if(comment == null)
 					comment = "COMMENT";
+				else if(comment.indexOf('\n') != -1) {
+					comment = comment.substring(0, comment.indexOf('\n'));
+				}
 				
 				return "[YELLOW]" + comment + "[]";
 			}
