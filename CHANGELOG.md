@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.5]
+
+- Update Robovm to v2.3.1 fixing problems with the latest XCode update.
+- FIX: VoiceManager show log and continues when the voice file is not found instead of crash.
+- FIX: voice was mandatory in the edit option dialog.
+- FIX: Show only the first line of comment actions in the action list.
+
 ## [1.2.4]
 
 - NEW BIG FEATURE: Voice support.
