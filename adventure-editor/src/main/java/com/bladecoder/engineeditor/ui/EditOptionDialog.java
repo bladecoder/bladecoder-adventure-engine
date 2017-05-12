@@ -47,11 +47,11 @@ public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 
 		text = InputPanelFactory.createInputPanel(skin, "Text", "The sentence of the dialog to say by the player",
 				Type.SMALL_TEXT, true);
-		voice = InputPanelFactory.createInputPanel(skin, "Voice", "The voice filename",
-				Type.VOICE, true);
+		voice = InputPanelFactory.createInputPanel(skin, "Voice", "The voice filename for the player lines",
+				Type.VOICE, false);
 		responseText = InputPanelFactory.createInputPanel(skin, "Response Text", "The response said by the character",
 				Type.TEXT, false);
-		responseVoice = InputPanelFactory.createInputPanel(skin, "Response Voice", "The voice filename for the response",
+		responseVoice = InputPanelFactory.createInputPanel(skin, "Response Voice", "The voice filename for the response lines",
 				Type.VOICE, false);
 		verb = InputPanelFactory.createInputPanel(skin, "Verb", "The verb to execute when choosing this option");
 		next = InputPanelFactory.createInputPanel(skin, "Next Dialog",
@@ -66,7 +66,7 @@ public class EditOptionDialog extends EditModelDialog<Dialog, DialogOption> {
 		text.getCell(text.getField()).fillX();
 		responseText.getCell(responseText.getField()).fillX();
 
-		init(parent, e, new InputPanel[] { text, voice, responseText, responseVoice, verb, next, visible, once });
+		init(parent, e, new InputPanel[] { text, responseText, voice, responseVoice, verb, next, visible, once });
 	}
 
 	@Override
