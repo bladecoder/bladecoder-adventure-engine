@@ -2,6 +2,7 @@ package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Music.OnCompletionListener;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -64,7 +65,9 @@ public class VoiceManager implements Serializable, AssetConsumer {
 		
 		if (fileName != null) {
 			retrieveAssets();
-			voice.play();
+			
+			if(voice != null)
+				voice.play();
 		}
 	}
 	
@@ -109,7 +112,16 @@ public class VoiceManager implements Serializable, AssetConsumer {
 			
 			if(!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.VOICE_DIR + fileName)) {
 				loadAssets();
-				EngineAssetManager.getInstance().finishLoading();
+				
+				try {
+					EngineAssetManager.getInstance().finishLoading();
+				} catch (GdxRuntimeException e) {
+					EngineLogger.error(e.getMessage());
+					voice = null;
+					fileName = null;
+					textManager.next();
+					return;
+				}
 			}
 			
 			EngineLogger.debug("RETRIEVING VOICE: " + fileName);

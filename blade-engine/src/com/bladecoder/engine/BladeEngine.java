@@ -196,14 +196,9 @@ public class BladeEngine implements ApplicationListener {
 	public void render() {
 		ui.render();
 
-		// Pause the game and save state when an error is found
+		// Pause the game when an error is found in debug mode
 		if (EngineLogger.lastError != null && EngineLogger.debugMode() && !World.getInstance().isPaused()) {
-			ui.pause();
-			try {
-				World.getInstance().saveGameState();
-			} catch (IOException e) {
-				EngineLogger.error(e.getMessage());
-			}
+			pause();
 		}
 	}
 
@@ -220,7 +215,8 @@ public class BladeEngine implements ApplicationListener {
 		boolean bot = ui.getTesterBot().isEnabled();
 		boolean r = ui.getRecorder().isPlaying();
 
-		if (!bot && !r && !World.getInstance().isDisposed()) {
+		if (!World.getInstance().isDisposed() && 
+				((!bot && !r) || EngineLogger.lastError != null)) {
 			EngineLogger.debug("GAME PAUSE");
 			ui.pause();
 			try {
@@ -237,12 +233,6 @@ public class BladeEngine implements ApplicationListener {
 	public void resume() {
 		EngineLogger.debug("GAME RESUME");
 		ui.resume();
-
-		// resets the error when continue
-		if (EngineLogger.lastError != null && EngineLogger.debugMode()) {
-			EngineLogger.lastError = null;
-			EngineLogger.lastException = null;
-		}
 	}
 
 }

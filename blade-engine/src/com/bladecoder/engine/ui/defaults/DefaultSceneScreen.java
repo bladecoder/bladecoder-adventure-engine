@@ -155,12 +155,8 @@ public class DefaultSceneScreen implements SceneScreen {
 				} else if (state == UIStates.INVENTORY_MODE) {
 					inventoryUI.hide();
 				} else if (state == UIStates.SCENE_MODE) {
-					if (button == 2) { // Show
-										// inventory
-										// with
-										// the
-										// middle
-						// button
+					if (button == 2) {
+						// Show inventory with the middle button
 						if (!inventoryUI.isVisible())
 							inventoryUI.show();
 					} else {
@@ -265,9 +261,9 @@ public class DefaultSceneScreen implements SceneScreen {
 				break;
 			case 'p':
 				if (World.getInstance().isPaused()) {
-					World.getInstance().resume();
+					resume();
 				} else {
-					World.getInstance().pause();
+					pause();
 				}
 				break;
 			case ' ':
@@ -965,6 +961,12 @@ public class DefaultSceneScreen implements SceneScreen {
 	@Override
 	public void resume() {
 		World.getInstance().resume();
+		
+		// resets the error when continue
+		if (EngineLogger.lastError != null && EngineLogger.debugMode()) {
+			EngineLogger.lastError = null;
+			EngineLogger.lastException = null;
+		}
 	}
 
 	public Viewport getViewport() {

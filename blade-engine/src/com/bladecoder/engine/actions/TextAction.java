@@ -32,7 +32,7 @@ public class TextAction implements Action {
 	@ActionPropertyDescription("The 'text' to show")
 	@ActionProperty(type = Type.SMALL_TEXT)
 	private String text;
-	
+
 	@ActionPropertyDescription("The 'voice' file to play if selected.")
 	@ActionProperty(type = Type.VOICE)
 	private String voiceId;
@@ -44,7 +44,6 @@ public class TextAction implements Action {
 	@ActionPropertyDescription("The color to use for the font (RRGGBBAA). If not set, the default color defined in the style is used.")
 	@ActionProperty(type = Type.COLOR)
 	private Color color;
-	
 
 	@ActionProperty
 	@ActionPropertyDescription("Obtain the text position from this actor.")
@@ -61,7 +60,7 @@ public class TextAction implements Action {
 	@ActionProperty(defaultValue = "false")
 	@ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")
 	private boolean queue = false;
-	
+
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
@@ -69,48 +68,50 @@ public class TextAction implements Action {
 	@Override
 	public boolean run(VerbRunner cb) {
 
-		if (text != null) {
-			float x =  TextManager.POS_CENTER, y =  TextManager.POS_CENTER;
-			
-			if (target != null) {
-				Scene ts = target.getScene();
-				BaseActor anchorActor = ts.getActor(target.getActorId(), true);
+		if (text == null)
+			return false;
 
-				x = anchorActor.getX();
-				y = anchorActor.getY();
+		float x = TextManager.POS_CENTER, y = TextManager.POS_CENTER;
 
-				if (anchorActor instanceof InteractiveActor) {
-					Vector2 refPoint = ((InteractiveActor) anchorActor).getRefPoint();
-					x += refPoint.x;
-					y += refPoint.y;
-				}
-				
-				if(pos != null){
-					float scale = EngineAssetManager.getInstance().getScale();
-					
-					x += pos.x * scale;
-					y += pos.y * scale;
-				}
-			} else if (pos != null) {
-				float scale = EngineAssetManager.getInstance().getScale();
-				
-				if(pos.x != TextManager.POS_CENTER)
-					x = pos.x * scale;
-				
-				if(pos.y != TextManager.POS_CENTER)
-					y = pos.y * scale;
+		if (target != null) {
+			Scene ts = target.getScene();
+			BaseActor anchorActor = ts.getActor(target.getActorId(), true);
 
-			} else {
+			x = anchorActor.getX();
+			y = anchorActor.getY();
 
-				if (type == Text.Type.SUBTITLE) {
-					x = y = TextManager.POS_SUBTITLE;
-				}
+			if (anchorActor instanceof InteractiveActor) {
+				Vector2 refPoint = ((InteractiveActor) anchorActor).getRefPoint();
+				x += refPoint.x;
+				y += refPoint.y;
 			}
 
-			World.getInstance().getTextManager()
-						.addText(text, x, y, queue, type, color, style, null, voiceId, wait?cb:null);
+			if (pos != null) {
+				float scale = EngineAssetManager.getInstance().getScale();
+
+				x += pos.x * scale;
+				y += pos.y * scale;
+			}
+		} else if (pos != null) {
+			float scale = EngineAssetManager.getInstance().getScale();
+
+			if (pos.x != TextManager.POS_CENTER)
+				x = pos.x * scale;
+
+			if (pos.y != TextManager.POS_CENTER)
+				y = pos.y * scale;
+
+		} else {
+
+			if (type == Text.Type.SUBTITLE) {
+				x = y = TextManager.POS_SUBTITLE;
+			}
 		}
-		
+
+		World.getInstance().getTextManager().addText(text, x, y, queue, type, color, style, null, voiceId,
+				wait ? cb : null);
+
 		return wait;
+
 	}
 }

@@ -62,30 +62,29 @@ public class SayAction extends BaseCallbackAction {
 		float x = TextManager.POS_SUBTITLE, y = TextManager.POS_SUBTITLE;
 		Color color = null;
 
+		if (text == null)
+			return false;
+
 		setVerbCb(cb);
 		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, false);
 
-		if (voiceId != null)
-			a.playSound(voiceId);
+		if (type == Text.Type.TALK && a != null) {
+			Rectangle boundingRectangle = a.getBBox().getBoundingRectangle();
 
-		if (text != null) {
-			if (type == Text.Type.TALK && a != null) {
-				Rectangle boundingRectangle = a.getBBox().getBoundingRectangle();
+			x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
+			y = boundingRectangle.getY() + boundingRectangle.getHeight();
 
-				x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
-				y = boundingRectangle.getY() + boundingRectangle.getHeight();
+			color = ((CharacterActor) a).getTextColor();
 
-				color = ((CharacterActor) a).getTextColor();
-
-				restoreStandPose((CharacterActor) a);
-				startTalkAnim((CharacterActor) a);
-			}
-
-			World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null, 
-					a != null? a.getId(): actor, voiceId, this);
+			restoreStandPose((CharacterActor) a);
+			startTalkAnim((CharacterActor) a);
 		}
 
+		World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null,
+				a != null ? a.getId() : actor, voiceId, this);
+
 		return getWait();
+
 	}
 
 	@Override
@@ -103,7 +102,7 @@ public class SayAction extends BaseCallbackAction {
 		if (a == null)
 			return;
 
-		String fa = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
+		String fa = ((AnimationRenderer) a.getRenderer()).getCurrentAnimationId();
 
 		// If the actor was already talking we restore the actor to the 'stand'
 		// pose
@@ -115,7 +114,7 @@ public class SayAction extends BaseCallbackAction {
 	}
 
 	private void startTalkAnim(CharacterActor a) {
-		previousAnim = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
+		previousAnim = ((AnimationRenderer) a.getRenderer()).getCurrentAnimationId();
 
 		if (animation != null)
 			a.startAnimation(animation, null);
