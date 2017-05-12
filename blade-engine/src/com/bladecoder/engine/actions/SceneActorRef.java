@@ -1,5 +1,6 @@
 package com.bladecoder.engine.actions;
 
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 
@@ -48,6 +49,15 @@ public class SceneActorRef {
 		} else {
 			return world.getCurrentScene();
 		}
+	}
+	
+	
+	public BaseActor getActor(boolean searchInventory) {
+		return getScene().getActor(actorId, searchInventory);
+	}
+
+	public BaseActor getActor() {
+		return getActor(true);
 	}
 	
 	public String toString() {
