@@ -51,7 +51,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	private boolean playerInside = false;
 
 	protected String layer;
-	
+
 	/**
 	 * Characters use this point to walk to the actor.
 	 */
@@ -71,7 +71,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	public boolean canInteract() {
 		return interaction && visible;
 	}
-	
+
 	public boolean getInteraction() {
 		return interaction;
 	}
@@ -95,9 +95,9 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	public Vector2 getRefPoint() {
 		return refPoint;
 	}
-	
+
 	public void setRefPoint(float x, float y) {
-		refPoint.set(x,y);
+		refPoint.set(x, y);
 	}
 
 	public VerbManager getVerbManager() {
@@ -142,7 +142,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	public void runVerb(String id, String target) {
 		verbs.runVerb(id, state, target);
 	}
-	
+
 	public void addSound(SoundFX s) {
 		if (sounds == null)
 			sounds = new HashMap<String, SoundFX>();
@@ -181,7 +181,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 		playingSound = null;
 	}
-	
+
 	public String getPlayingSound() {
 		return playingSound;
 	}
@@ -246,7 +246,7 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 	@Override
 	public void dispose() {
-		if (sounds != null) {		
+		if (sounds != null) {
 			for (SoundFX s : sounds.values()) {
 				s.dispose();
 			}
@@ -265,14 +265,14 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("desc", desc);
 			json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass(), SoundFX.class);
-			
+
 			float worldScale = EngineAssetManager.getInstance().getScale();
 			json.writeValue("refPoint", new Vector2(getRefPoint().x / worldScale, getRefPoint().y / worldScale));
 		} else {
 			json.writeValue("playingSound", playingSound);
 			json.writeValue("playerInside", playerInside);
 		}
-		
+
 		verbs.write(json);
 		json.writeValue("interaction", interaction);
 		json.writeValue("state", state);
@@ -289,35 +289,37 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 			desc = json.readValue("desc", String.class, jsonData);
 			sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);
 			layer = json.readValue("layer", String.class, jsonData);
-			
+
 			Vector2 r = json.readValue("refPoint", Vector2.class, jsonData);
-			
+
 			if (r != null) {
 				float worldScale = EngineAssetManager.getInstance().getScale();
 				getRefPoint().set(r.x * worldScale, r.y * worldScale);
 			}
 		} else {
 			playingSound = json.readValue("playingSound", String.class, jsonData);
-			
-			if(playingSound != null && (sounds == null || sounds.get(playingSound) == null)) {
+
+			if (playingSound != null && (sounds == null || sounds.get(playingSound) == null)) {
 				EngineLogger.debug("Playing sound not found: " + playingSound);
 				playingSound = null;
 			}
-			
-			
+
 			playerInside = json.readValue("playerInside", boolean.class, false, jsonData);
 			String newLayer = json.readValue("layer", String.class, jsonData);
-			
-			if(newLayer != null && !newLayer.equals(layer)) {
-				scene.getLayer(layer).remove(this);
-				scene.getLayer(newLayer).add(this);
+
+			if (newLayer != null && !newLayer.equals(layer)) {
+				if (scene != null) {
+					if (scene.getLayer(layer).remove(this))
+						scene.getLayer(newLayer).add(this);
+				}
+
 				layer = newLayer;
 			}
 		}
-		
+
 		verbs.read(json, jsonData);
 		interaction = json.readValue("interaction", boolean.class, interaction, jsonData);
-		state = json.readValue("state", String.class, jsonData);			
+		state = json.readValue("state", String.class, jsonData);
 		zIndex = json.readValue("zIndex", float.class, zIndex, jsonData);
 	}
 

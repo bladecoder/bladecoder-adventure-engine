@@ -72,8 +72,8 @@ public class SceneLayer {
 		});
 	}
 
-	public void remove(BaseActor actor) {
-		actors.remove(actor);
+	public boolean remove(BaseActor actor) {
+		return actors.remove(actor);
 	}
 
 	public float getParallaxMultiplier() {
