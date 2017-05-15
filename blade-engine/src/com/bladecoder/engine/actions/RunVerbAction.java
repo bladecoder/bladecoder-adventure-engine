@@ -93,10 +93,10 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 				if (a.run(this))
 					stop = true;
 				else
-					ip++;
+					setIP(getVerb(verb, target, state).getIP()+1);
 			} catch (Exception e) {
 				EngineLogger.error("EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName(), e);
-				ip++;
+				setIP(getVerb(verb, target, state).getIP()+1);
 			}
 		}
 
@@ -107,7 +107,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	@Override
 	public void resume() {
-		ip++;
+		setIP(getVerb(verb, target, state).getIP()+1);
 		nextStep();
 	}
 
@@ -144,7 +144,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	@Override
 	public void run() {
-		ip = 0;
+		setIP(0);
 		
 		Scene s = World.getInstance().getCurrentScene();
 
@@ -166,6 +166,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	@Override
 	public void setIP(int ip) {
+		getVerb(verb, target, state).setIP(ip);
 		this.ip = ip;
 	}	
 
