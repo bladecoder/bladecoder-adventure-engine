@@ -24,7 +24,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
-@ActionDescription("Execute the actions inside the If/EndIf if the attribute has the specified value.")
+@ActionDescription(name="IfActorAttr", value="Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfAttrAction extends AbstractIfAction {
 	public static final String ENDTYPE_VALUE = "else";
 

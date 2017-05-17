@@ -113,6 +113,16 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	@Override
 	public void cancel() {
+		
+		// check if the actor has been moved during the execution
+		if(actor != null) {
+			InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, true);
+			
+			if(a == null)
+				return;
+		}
+		
+		
 		ArrayList<Action> actions = getActions();
 
 		for (Action c : actions) {
@@ -133,8 +143,11 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 		Verb v = getVerb(verb, target, state);
 
 		if (v == null) {
-			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for actor ''{1}({3})'' and target ''{2}''",
+			if( actor != null)
+				EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for actor ''{1}({3})'' and target ''{2}''.",
 					verb, actor, target, ((InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, true)).getState()));
+			else
+				EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found.", verb));
 
 			return new ArrayList<Action>(0);
 		}

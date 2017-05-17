@@ -23,12 +23,10 @@ import com.bladecoder.engine.util.ActionUtils;
 public class IfPropertyAction extends AbstractIfAction {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The property name")
-
 	private String name;
 
 	@ActionProperty
 	@ActionPropertyDescription("The property value")
-
 	private String value;
 
 	@Override

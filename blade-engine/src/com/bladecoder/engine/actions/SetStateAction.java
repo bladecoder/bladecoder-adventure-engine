@@ -21,7 +21,7 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
-@ActionDescription(name="State", value="Sets the actor state")
+@ActionDescription(name="ActorState", value="Sets the actor state")
 public class SetStateAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The target actor")

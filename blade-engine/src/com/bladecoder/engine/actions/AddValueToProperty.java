@@ -17,6 +17,7 @@ package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Adds an integer value to the selected property.")
 public class AddValueToProperty implements Action {
@@ -26,7 +27,7 @@ public class AddValueToProperty implements Action {
 
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The integer value to add.")
-	private float value;
+	private int value;
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -45,6 +46,7 @@ public class AddValueToProperty implements Action {
 		v += value;
 		
 		World.getInstance().setCustomProperty(prop, Integer.toString(v));
+		EngineLogger.debug("AddValueToProperty: " + prop + "=" + World.getInstance().getCustomProperty(prop));
 
 		return false;
 	}
