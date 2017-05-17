@@ -389,9 +389,9 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 	protected void inputsToModel(boolean create) {
 
 		String sourceStr = source.getText();
+		AnimationRenderer renderer = (AnimationRenderer)parent.getRenderer();
 
 		if (create) {
-			ActorRenderer renderer = parent.getRenderer();
 
 			if (renderer instanceof SpineRenderer) {
 				e = new SpineAnimationDesc();
@@ -413,8 +413,11 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 				e = new AnimationDesc();
 			}
 		} else {
-			HashMap<String, AnimationDesc> animations = ((AnimationRenderer)parent.getRenderer()).getAnimations();
+			HashMap<String, AnimationDesc> animations = renderer.getAnimations();
 			animations.remove(e.id);
+			
+			if(e.id.equals(renderer.getInitAnimation()))
+				renderer.setInitAnimation(null);
 		}
 
 		e.id = id.getText();
@@ -430,11 +433,13 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 		((AnimationRenderer)parent.getRenderer()).addAnimation(e);
 
-		ActorRenderer renderer = parent.getRenderer();
 		if (renderer instanceof ImageRenderer && Boolean.parseBoolean(localizable.getText()) && e.source != null
 				&& e.source.length() > 0) {
 			e.source = I18N.PREFIX + e.source;
 		}
+		
+		if(renderer.getInitAnimation() == null)
+			renderer.setInitAnimation(e.id);
 
 		// TODO UNDO OP
 		// UndoOp undoOp = new UndoAddElement(doc, e);
