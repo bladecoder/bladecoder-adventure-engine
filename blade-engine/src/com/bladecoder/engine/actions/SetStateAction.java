@@ -45,7 +45,7 @@ public class SetStateAction implements Action {
 		InteractiveActor a = (InteractiveActor)s.getActor(actorId, false);
 		
 		if(a == null) { // search in inventory
-			a = World.getInstance().getInventory().getItem(actorId);
+			a = World.getInstance().getInventory().get(actorId);
 		}
 		
 		if(a != null)

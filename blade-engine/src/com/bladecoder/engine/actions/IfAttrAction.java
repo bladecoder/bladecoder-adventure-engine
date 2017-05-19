@@ -83,7 +83,7 @@ public class IfAttrAction extends AbstractIfAction {
 			SpriteActor item = null;
 			
 			if(a != null)
-				item = World.getInstance().getInventory().getItem(a.getId());
+				item = World.getInstance().getInventory().get(a.getId());
 			
 			if ((val && item == null) || (!val && item != null)) {
 				gotoElse((VerbRunner) cb);

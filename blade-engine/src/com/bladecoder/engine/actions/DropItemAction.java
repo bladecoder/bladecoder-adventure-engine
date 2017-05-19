@@ -38,7 +38,7 @@ public class DropItemAction implements Action {
 	public boolean run(VerbRunner cb) {
 		float scale =  EngineAssetManager.getInstance().getScale();
 		
-		BaseActor actor = World.getInstance().getInventory().getItem(this.actor);
+		BaseActor actor = World.getInstance().getInventory().get(this.actor);
 		
 		if(actor==null) {
 			EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", this.actor));

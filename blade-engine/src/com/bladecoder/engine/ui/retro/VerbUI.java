@@ -172,7 +172,7 @@ public class VerbUI extends Table {
 			int pos = scroll * INVENTORY_COLS + i;
 
 			if (pos < inv.getNumItems()) {
-				r.setRenderer(inv.getItem(pos).getRenderer());				
+				r.setRenderer(inv.get(pos).getRenderer());				
 			} else {
 				r.setRenderer(null);
 			}
@@ -207,7 +207,7 @@ public class VerbUI extends Table {
 					target = null;
 
 					if (i < inv.getNumItems()) {
-						InteractiveActor actor = inv.getItem(i);
+						InteractiveActor actor = inv.get(i);
 
 						if (currentVerb.equals("use") || currentVerb.equals("give")) {
 							target = actor;

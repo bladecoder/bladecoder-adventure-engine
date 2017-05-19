@@ -52,7 +52,7 @@ public class RemoveInventoryItemAction implements Action {
 			int n = World.getInstance().getInventory().getNumItems();
 			
 			for(int i = 0; i < n; i++) {
-				SpriteActor a = World.getInstance().getInventory().getItem(i);			
+				SpriteActor a = World.getInstance().getInventory().get(i);			
 				s.addActor(a);
 			}
 			

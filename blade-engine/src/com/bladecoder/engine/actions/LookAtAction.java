@@ -70,7 +70,7 @@ public class LookAtAction implements Action {
 //		EngineLogger.debug("LOOKAT ACTION");
 		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, true);
 
-		if (World.getInstance().getInventory().getItem(actor) == null) {
+		if (World.getInstance().getInventory().get(actor) == null) {
 			CharacterActor player = World.getInstance().getCurrentScene().getPlayer();
 
 			if (direction != null && player != null)

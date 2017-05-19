@@ -139,7 +139,7 @@ public class TesterBot {
 					} else if (w.getInventory().getNumItems() > 0 && w.getInventory().isVisible()) {
 						// INVENTORY ACTOR
 						int pos = MathUtils.random(w.getInventory().getNumItems() - 1);
-						SpriteActor invActor = w.getInventory().getItem(pos);
+						SpriteActor invActor = w.getInventory().get(pos);
 						
 						if(excludeList.contains(invActor.getId()))
 							return;
@@ -164,7 +164,7 @@ public class TesterBot {
 								if (pos2 == pos)
 									pos2 = (pos2 + 1) % w.getInventory().getNumItems();
 
-								targetActor = w.getInventory().getItem(pos2);
+								targetActor = w.getInventory().get(pos2);
 								
 								if(excludeList.contains(targetActor.getId()))
 									return;

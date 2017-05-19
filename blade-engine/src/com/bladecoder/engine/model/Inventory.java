@@ -38,11 +38,11 @@ public class Inventory implements AssetConsumer, Serializable  {
 		return items.size();
 	}
 
-	public SpriteActor getItem(int i) {
+	public SpriteActor get(int i) {
 		return items.get(i);
 	}
 
-	public SpriteActor getItem(String actorId) {
+	public SpriteActor get(String actorId) {
 		for (SpriteActor a : items) {
 			if (a.getId().equals(actorId))
 				return a;
