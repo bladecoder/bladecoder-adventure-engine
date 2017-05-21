@@ -727,7 +727,7 @@ public class SpineRenderer extends AnimationRenderer {
 
 			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 			complete = json.readValue("complete", Boolean.class, jsonData);
-			loopCount = json.readValue("complete", int.class, loopCount, jsonData);
+			loopCount = json.readValue("loopCount", int.class, loopCount, jsonData);
 		}
 	}
 }
