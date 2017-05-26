@@ -106,6 +106,10 @@ public class InkManager implements VerbRunner, Serializable {
 			} catch (Exception e) {
 				EngineLogger.error(e.getMessage(), e);
 			}
+			
+			if(story.getCurrentErrors() != null && !story.getCurrentErrors().isEmpty()) {
+				EngineLogger.error(story.getCurrentErrors().get(0));
+			}
 
 		}
 
