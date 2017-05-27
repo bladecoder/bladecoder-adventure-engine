@@ -43,7 +43,7 @@ public class TextManager implements Serializable {
 	public static final float POS_SUBTITLE = -2f;
 	public static final float RECT_MARGIN = 18f;
 	public static final float RECT_BORDER = 2f;
-	
+
 	public static final boolean AUTO_HIDE_TEXTS = Config.getProperty(Config.AUTO_HIDE_TEXTS, true);
 
 	private float inScreenTime;
@@ -56,17 +56,19 @@ public class TextManager implements Serializable {
 		fifo = new LinkedList<Text>();
 	}
 
-	public void addText(String str, float x, float y, boolean quee, Text.Type type,
-			Color color, String font, String actorId, String voiceId, ActionCallback cb) {
-		
-		if(str.charAt(0) == I18N.PREFIX)
+	public void addText(String str, float x, float y, boolean quee, Text.Type type, Color color, String font,
+			String actorId, String voiceId, ActionCallback cb) {
+
+		if (str.charAt(0) == I18N.PREFIX)
 			str = I18N.getString(str.substring(1));
-		
+
 		String s = str.replace("\\n", "\n");
 		String[] text = s.split("\n\n");
 
 		if (!quee)
 			clear();
+		
+		String lineVoiceId = voiceId;
 
 		for (int i = 0; i < text.length; i++) {
 			String cutStr = text[i];
@@ -78,23 +80,23 @@ public class TextManager implements Serializable {
 
 			int idx = cutStr.indexOf('#');
 			if (idx != -1) {
-				duration = Float.parseFloat(cutStr.substring(0, idx));
+				String prefix = cutStr.substring(0, idx);
+
+				if (prefix.charAt(0) == 'v') {
+					lineVoiceId = prefix.substring(1).trim();
+				} else {
+					duration = Float.parseFloat(prefix);
+				}
+				
 				finalStr = cutStr.substring(idx + 1);
 			}
 
 			Text sub;
+
+			sub = new Text(finalStr, x, y, duration, type, color, font, actorId, lineVoiceId, i == text.length - 1?cb:null);
 			
-			if (i != text.length - 1) {
-				sub = new Text(finalStr, x, y, duration, type, color, font, actorId, null, null);
-			} else {
-				sub = new Text(finalStr, x, y, duration, type, color, font, actorId, null, cb);
-			}
-			
-			// sets the voice to the first line. Thought, when using voices, single lines should be used.
-			if(i == 0 && voiceId != null) {
-				sub.voiceId = voiceId;
-				sub.time = Float.MAX_VALUE;
-			}
+			// resets voice id for the next line
+			lineVoiceId = null;
 
 			fifo.add(sub);
 		}
@@ -108,11 +110,11 @@ public class TextManager implements Serializable {
 		}
 
 	}
-	
+
 	public VoiceManager getVoiceManager() {
 		return voiceManager;
 	}
-	
+
 	public Text getCurrentText() {
 		return currentText;
 	}
@@ -120,8 +122,8 @@ public class TextManager implements Serializable {
 	private void setCurrentText(Text t) {
 		inScreenTime = 0f;
 		currentText = t;
-		
-		if(t != null)
+
+		if (t != null)
 			voiceManager.play(t.voiceId);
 		else
 			voiceManager.stop();
@@ -149,11 +151,11 @@ public class TextManager implements Serializable {
 		}
 	}
 
-	private void clear() {		
+	private void clear() {
 		// CLEAR FIFO
-		while(currentText != null)
+		while (currentText != null)
 			next();
-		
+
 		inScreenTime = 0;
 		voiceManager.stop();
 	}
@@ -161,34 +163,33 @@ public class TextManager implements Serializable {
 	/**
 	 * Put manager in the init state. Use it when changing current scene
 	 */
-	public void reset() {	
+	public void reset() {
 		inScreenTime = 0;
 		fifo.clear();
 		currentText = null;
 	}
 
-
 	@Override
 	public void write(Json json) {
 		json.writeValue("inScreenTime", inScreenTime);
-		
-		if(currentText != null)
+
+		if (currentText != null)
 			json.writeValue("currentText", currentText);
-		
+
 		json.writeValue("fifo", new ArrayList<Text>(fifo), ArrayList.class, Text.class);
 		json.writeValue("voiceManager", voiceManager);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void read (Json json, JsonValue jsonData) {
+	public void read(Json json, JsonValue jsonData) {
 		inScreenTime = json.readValue("inScreenTime", Float.class, jsonData);
 		currentText = json.readValue("currentText", Text.class, jsonData);
 		fifo = new LinkedList<Text>(json.readValue("fifo", ArrayList.class, Text.class, jsonData));
-		
+
 		JsonValue jsonValue = jsonData.get("voiceManager");
-		
-		if(jsonValue != null)
+
+		if (jsonValue != null)
 			voiceManager.read(json, jsonValue);
 	}
 }
