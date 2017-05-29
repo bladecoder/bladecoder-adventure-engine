@@ -18,7 +18,7 @@ package com.bladecoder.engine.actions;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
-@ActionDescription("Sets a global game property")
+@ActionDescription("Sets a global game property. Properties are created by the user but the next ones always exists: SAVED_GAME_VERSION, PREVIOUS_SCENE, CURRENT_CHAPTER")
 public class PropertyAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("Property name")

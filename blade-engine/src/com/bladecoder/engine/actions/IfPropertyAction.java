@@ -19,7 +19,7 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 
-@ActionDescription("Execute the actions inside the If/EndIf if the game propert has the specified value.")
+@ActionDescription("Execute the actions inside the If/EndIf if the game property has the specified value. Properties are created by the user but the next always exists: SAVED_GAME_VERSION, PREVIOUS_SCENE, CURRENT_CHAPTER")
 public class IfPropertyAction extends AbstractIfAction {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The property name")
