@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.6]
+
+- Actors in inventory can be animated now.
+- Added UI actors: Actors that stays in all scenes not affected by scrolling nor any other scene camera effect. Normally used to create UI buttons.
+- Multiline texts can have a voice file per line using a '#' mark in each line.
+- Check for Ink engine errors after each line.
+- FIX: SpineRenderer serialization error when loading.
+- FIX: error loading objects in inventory when they have changed from layer.
+
 ## [1.2.5]
 
 - Update Robovm to v2.3.1 fixing problems with the latest XCode update.
