@@ -300,6 +300,7 @@ public class World implements Serializable, AssetConsumer {
 		getCurrentScene().update(delta);
 		
 		uiActors.update(delta);
+		getInventory().update(delta);
 		
 		textManager.update(delta);
 		timers.update(delta);

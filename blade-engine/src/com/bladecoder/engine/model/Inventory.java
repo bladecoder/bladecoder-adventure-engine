@@ -74,6 +74,12 @@ public class Inventory implements AssetConsumer, Serializable  {
 		return null;
 	}
 	
+	public void update(float delta) {
+		for (SpriteActor a : items) {
+			a.update(delta);
+		}
+	}
+	
 	/**
 	 * Dispose and remove all items.
 	 */
