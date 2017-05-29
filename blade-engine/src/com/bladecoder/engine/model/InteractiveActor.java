@@ -106,7 +106,11 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 	@Override
 	public void update(float delta) {
-		InteractiveActor player = scene.getPlayer();
+		InteractiveActor player = null;
+		
+		if(scene != null)
+			player = scene.getPlayer();
+		
 		if (visible && player != null) {
 			boolean hit = hit(player.getX(), player.getY());
 			if (!hit && playerInside) {

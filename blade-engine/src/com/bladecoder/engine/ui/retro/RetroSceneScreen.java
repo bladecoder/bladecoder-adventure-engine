@@ -377,9 +377,6 @@ public class RetroSceneScreen implements SceneScreen {
 		testerBot.update(delta * speed);
 
 		if (state == UIStates.SCENE_MODE) {
-			world.getSceneCamera().getInputUnProject(worldViewport, unprojectTmp);
-
-			final Scene currentScene = world.getCurrentScene();
 
 			final float tolerance;
 
@@ -388,7 +385,7 @@ public class RetroSceneScreen implements SceneScreen {
 			else
 				tolerance = 0;
 
-			currentActor = currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
+			currentActor = world.getInteractiveActorAtInput(worldViewport, tolerance);
 
 			verbUI.setCurrentActor(currentActor);
 

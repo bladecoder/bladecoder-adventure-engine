@@ -55,7 +55,7 @@ public class AlphaAnimAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {				
-		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, false);
+		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, true);
 
 		
 		SpriteAlphaTween t = new SpriteAlphaTween();

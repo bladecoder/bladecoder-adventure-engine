@@ -76,7 +76,7 @@ public class PositionAnimAction implements Action {
 
 		float scale = EngineAssetManager.getInstance().getScale();
 
-		BaseActor a = World.getInstance().getCurrentScene().getActor(actor, false);
+		BaseActor a = World.getInstance().getCurrentScene().getActor(actor, true);
 		
 		float x = a.getX();
 		float y = a.getY();

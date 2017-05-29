@@ -259,6 +259,10 @@ public class Scene implements Serializable, AssetConsumer {
 
 		if (a == null && searchInventory) {
 			a = World.getInstance().getInventory().get(id);
+			
+			// Search the uiActors
+			if(a == null)
+				a = World.getInstance().getUIActors().get(id);
 		}
 
 		return a;
@@ -323,8 +327,8 @@ public class Scene implements Serializable, AssetConsumer {
 	 * 
 	 * Creates a square with size = TOLERANCE and checks:
 	 * 
-	 * 1. if some vertex from the TOLERANCE square is inside an actor bbox 2. if
-	 * some actor bbox vertex is inside the TOLERANCE square
+	 * 1. if some vertex from the TOLERANCE square is inside an actor bbox. 
+	 * 2. if some actor of the actor vertexes is inside the TOLERANCE square.
 	 */
 	public InteractiveActor getInteractiveActorAt(float x, float y, float tolerance) {
 		if (tolerance <= 0) {
@@ -366,13 +370,14 @@ public class Scene implements Serializable, AssetConsumer {
 					}
 				}
 			}
+			
 		}
 
 		return null;
 	}
 
 	/**
-	 * Returns the actor at the position. Include not interactive actors.
+	 * Returns the actor at the position. Including not interactive actors.
 	 */
 	public BaseActor getActorAt(float x, float y) {
 

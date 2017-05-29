@@ -48,7 +48,9 @@ public class PickUpAction implements Action {
 
 		scn.removeActor(actor);
 
-		if (scn != World.getInstance().getCurrentScene()) {
+		if (scn != World.getInstance().getCurrentScene()  &&
+				World.getInstance().getCachedScene(scn.getId()) == null
+				) {
 			actor.loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 			actor.retrieveAssets();

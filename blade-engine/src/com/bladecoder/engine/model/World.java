@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,6 +37,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
@@ -42,6 +45,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.Timers;
@@ -54,6 +58,7 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
+import com.bladecoder.ink.runtime.Choice;
 
 public class World implements Serializable, AssetConsumer {
 
@@ -76,8 +81,7 @@ public class World implements Serializable, AssetConsumer {
 
 	private static final World instance = new World();
 
-	private AssetState assetState;
-
+	// ------------ WORLD PROPERTIES ------------
 	private int width;
 	private int height;
 
@@ -88,60 +92,54 @@ public class World implements Serializable, AssetConsumer {
 	private Scene currentScene;
 	private Dialog currentDialog;
 
-	private Map<String, Inventory> inventories;
-	private UIActors uiActors;
-	
+	private Map<String, Inventory> inventories;	
 	private String currentInventory;
+	
+	private UIActors uiActors;
 
 	private TextManager textManager;
 
 	private boolean paused;
 	private boolean cutMode;
 
-	/** keep track of the time of game in ms. */
+	// Keep track of the time of game in ms.
 	private long timeOfGame;
 
-	/** for debug purposes, keep track of loading time */
-	private long initLoadingTime;
-
 	private Timers timers;
-	private boolean disposed;
 
-	/**
-	 * If not null, this scene is set as the currentScene and the test Verb is
-	 * executed
-	 */
-	private String testScene;
-
-	/**
-	 * If true call 'initNewGame' or 'initSavedGame' verbs.
-	 */
-	private boolean initGame;
-
-	/**
-	 * Add support for the use of global custom properties/variables in the game
-	 * logic
-	 */
+	// Add support for the use of global custom properties/variables in the game
+	// logic
 	private HashMap<String, String> customProperties;
 
 	private String initChapter;
 	private String currentChapter;
 
-	/** For FADEIN/FADEOUT */
+	// For FADEIN/FADEOUT
 	private Transition transition;
+	private MusicEngine musicEngine;
 
+	// ------------ LAZY CREATED OBJECTS ------------
+	private InkManager inkManager;
+	private ObjectWrapper wrapper;
+
+	// ------------ TRANSIENT OBJECTS ------------
+	private AssetState assetState;
+	private boolean disposed;
 	transient private SpriteBatch spriteBatch;
+	
+	// for debug purposes, keep track of loading time
+	private long initLoadingTime;
 
 	// We not dispose the last loaded scene.
 	// Instead we cache it to improve performance when returning
 	transient private Scene cachedScene;
+	
+	// If not null, this scene is set as the currentScene and the test Verb is
+	// executed
+	private String testScene;
 
-	private MusicEngine musicEngine;
-
-	private final InkManager inkManager = new InkManager();
-
-	// New ObjectWrapper
-	private final ObjectWrapper wrapper = new ObjectWrapper(this);
+	// If true call 'initNewGame' or 'initSavedGame' verbs.
+	private boolean initGame;
 
 	public static World getInstance() {
 		return instance;
@@ -152,11 +150,11 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	private void init() {
-		// scenes = new HashMap<String, Scene>();
 		scenes = new HashMap<String, Scene>();
 		inventories = new HashMap<String, Inventory>();
 		inventories.put(DEFAULT_INVENTORY, new Inventory());
 		currentInventory = DEFAULT_INVENTORY;
+		uiActors = new UIActors();
 		textManager = new TextManager();
 
 		timers = new Timers();
@@ -182,6 +180,17 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public InkManager getInkManager() {
+		// Lazy creation
+		if(inkManager == null) {
+			// Allow not link the Blade Ink Engine library if you don't use Ink
+			try {
+				Class.forName("com.bladecoder.ink.runtime.Story");
+				inkManager = new InkManager();
+			} catch (ClassNotFoundException e) {
+				EngineLogger.debug("WARNING: Blade Ink Library not found.");
+			}
+		}
+		
 		return inkManager;
 	}
 
@@ -226,6 +235,8 @@ public class World implements Serializable, AssetConsumer {
 		if (assetState == AssetState.LOADED) {
 			getCurrentScene().draw(spriteBatch);
 		}
+		
+		uiActors.draw(spriteBatch);
 	}
 
 	public void update(float delta) {
@@ -287,6 +298,9 @@ public class World implements Serializable, AssetConsumer {
 		timeOfGame += delta * 1000f;
 
 		getCurrentScene().update(delta);
+		
+		uiActors.update(delta);
+		
 		textManager.update(delta);
 		timers.update(delta);
 
@@ -303,6 +317,9 @@ public class World implements Serializable, AssetConsumer {
 
 		if (getInventory().isDisposed())
 			getInventory().loadAssets();
+		
+		if(uiActors.isDisposed())
+			uiActors.loadAssets();
 
 		musicEngine.loadAssets();
 		textManager.getVoiceManager().loadAssets();
@@ -312,6 +329,9 @@ public class World implements Serializable, AssetConsumer {
 	public void retrieveAssets() {
 		if (getInventory().isDisposed())
 			getInventory().retrieveAssets();
+		
+		if(uiActors.isDisposed())
+			uiActors.retrieveAssets();
 
 		getCurrentScene().retrieveAssets();
 
@@ -423,6 +443,10 @@ public class World implements Serializable, AssetConsumer {
 	public Inventory getInventory() {
 		return inventories.get(currentInventory);
 	}
+	
+	public UIActors getUIActors() {
+		return uiActors;
+	}
 
 	public TextManager getTextManager() {
 		return textManager;
@@ -476,12 +500,69 @@ public class World implements Serializable, AssetConsumer {
 
 		currentInventory = inventory;
 	}
+	
+	public boolean hasDialogOptions() {
+		return currentDialog != null || 
+				(inkManager != null && inkManager.hasChoices());
+	}
 
-	public void selectVisibleDialogOption(int i) {
-		if (currentDialog == null)
-			return;
+	public void selectDialogOption(int i) {
+		if (currentDialog != null)
+			setCurrentDialog(currentDialog.selectOption(currentDialog.getVisibleOptions().get(i)));
+		else if(inkManager != null)
+			World.getInstance().getInkManager().selectChoice(i);
+	}
+	
+	public List<String> getDialogOptions() {
+		List<String> choices;
 
-		setCurrentDialog(currentDialog.selectOption(currentDialog.getVisibleOptions().get(i)));
+		if (World.getInstance().getCurrentDialog() != null) {
+			ArrayList<DialogOption> options = World.getInstance().getCurrentDialog().getVisibleOptions();
+			choices = new ArrayList<String>(options.size());
+
+			for (DialogOption o : options) {
+				choices.add(o.getText());
+			}
+		} else {
+			List<Choice> options = World.getInstance().getInkManager().getChoices();
+			choices = new ArrayList<String>(options.size());
+
+			for (Choice o : options) {
+				String line = o.getText();
+				
+				int idx = line.indexOf(InkManager.NAME_VALUE_TAG_SEPARATOR);
+
+				if (idx != -1) {
+					line = line.substring(idx + 1).trim();
+				}
+				
+				choices.add(line);
+			}
+		}
+		
+		return choices;
+	}
+	
+	
+	
+	// tmp vector to use in getInteractiveActorAtInput()
+	private final Vector3 unprojectTmp = new Vector3();
+	
+	/**
+	 * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and
+	 * the UIActors list.
+	 */ 
+	public InteractiveActor getInteractiveActorAtInput(Viewport v, float tolerance) {
+		
+		getSceneCamera().getInputUnProject(v, unprojectTmp);
+		
+		InteractiveActor a = currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
+		
+		if(a != null)
+			return a;
+		
+		// search in uiActors
+		return uiActors.getActorAtInput(v);
 	}
 
 	public int getWidth() {
@@ -540,6 +621,7 @@ public class World implements Serializable, AssetConsumer {
 			}
 
 			getInventory().dispose();
+			uiActors.dispose();
 
 			spriteBatch.dispose();
 
@@ -548,6 +630,8 @@ public class World implements Serializable, AssetConsumer {
 			assetState = null;
 
 			musicEngine.dispose();
+			
+			inkManager = null;
 
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage());
@@ -777,13 +861,20 @@ public class World implements Serializable, AssetConsumer {
 
 		EngineLogger.debug("MODEL LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 	}
+	
+	private  ObjectWrapper getObjectWrapper() {
+		if(wrapper == null)
+			wrapper = new ObjectWrapper(this);
+		
+		return wrapper;
+	}
 
 	public void setModelProp(String prop, String value) {
-		wrapper.setValue(prop, value);
+		getObjectWrapper().setValue(prop, value);
 	}
 
 	public String getModelProp(String prop) {
-		return (String) wrapper.getValue(prop);
+		return (String) getObjectWrapper().getValue(prop);
 	}
 
 	public void loadChapter(String chapter, String scene) throws Exception {
@@ -988,7 +1079,11 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("chapter", currentChapter);
 			json.writeValue("musicEngine", musicEngine);
 
-			json.writeValue("inkManager", inkManager);
+			if(inkManager != null)
+				json.writeValue("inkManager", inkManager);
+			
+			if(!uiActors.getActors().isEmpty())
+				json.writeValue("uiActors", uiActors);
 
 			ActionCallbackQueue.write(json);
 		}
@@ -1047,7 +1142,7 @@ public class World implements Serializable, AssetConsumer {
 			
 			// read inkManager after setting he current scene but before reading scenes and verbs tweens
 			if(jsonData.get("inkManager") != null) {
-				inkManager.read(json, jsonData.get("inkManager"));
+				getInkManager().read(json, jsonData.get("inkManager"));
 			}
 
 			for (Scene s : scenes.values()) {
@@ -1061,6 +1156,10 @@ public class World implements Serializable, AssetConsumer {
 
 			inventories = json.readValue("inventories", HashMap.class, Inventory.class, jsonData);
 			currentInventory = json.readValue("currentInventory", String.class, jsonData);
+			
+			if(jsonData.get("uiActors") != null) {
+				getUIActors().read(json, jsonData.get("uiActors"));
+			}
 
 			timeOfGame = json.readValue("timeOfGame", long.class, 0L, jsonData);
 			cutMode = json.readValue("cutmode", boolean.class, false, jsonData);

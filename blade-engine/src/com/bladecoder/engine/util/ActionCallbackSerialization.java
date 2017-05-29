@@ -21,6 +21,7 @@ import com.bladecoder.engine.ink.InkManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.UIActors;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 
@@ -34,18 +35,19 @@ import com.bladecoder.engine.model.World;
  * 
  * The String generated to locate an ActionCallback is like:
  * 
- * For verbs: actorId#verbId
- * For actions: actorId#verbId#actionPos
+ * For verbs: actorId#verbId For actions: actorId#verbId#actionPos
  * 
- * If actorId == "DEFAULT_VERB" the ActionCallback is searched in the World default verbs.
- * If actorId == current scene ID the ActionCallback is searched in the current scene verbs.
+ * If actorId == "DEFAULT_VERB" the ActionCallback is searched in the World
+ * default verbs. If actorId == current scene ID the ActionCallback is searched
+ * in the current scene verbs.
  * 
  * @author rgarcia
  */
 public class ActionCallbackSerialization {
-	
+
 	private static final String SEPARATION_SYMBOL = "#";
 	private static final String INK_MANAGER_TAG = "INK_MANAGER";
+	private static final String UIACTORS_TAG = "UIACTORS";
 	private static final String DEFAULT_VERB_TAG = "DEFAULT_VERB";
 
 	private static String find(ActionCallback cb, Verb v) {
@@ -109,12 +111,12 @@ public class ActionCallbackSerialization {
 
 		return null;
 	}
-	
+
 	private static String find(ActionCallback cb, InkManager im) {
 		if (im == null)
 			return null;
 
-		if(cb instanceof InkManager)
+		if (cb instanceof InkManager)
 			return INK_MANAGER_TAG;
 
 		int pos = 0;
@@ -133,10 +135,30 @@ public class ActionCallbackSerialization {
 		return null;
 	}
 
+	private static String find(ActionCallback cb, UIActors uia) {
+		if (uia == null)
+			return null;
+
+		for (InteractiveActor a : uia.getActors()) {
+			String id = find(cb, a);
+
+			if (id != null) {
+				StringBuilder stringBuilder = new StringBuilder(UIACTORS_TAG);
+				stringBuilder.append(SEPARATION_SYMBOL).append(id);
+
+				return stringBuilder.toString();
+			}
+		}
+
+		return null;
+	}
+
 	/**
-	 * Generates a String for serialization that allows locate the ActionCallback
+	 * Generates a String for serialization that allows locate the
+	 * ActionCallback
 	 * 
-	 * @param cb The ActionCallback to serialize
+	 * @param cb
+	 *            The ActionCallback to serialize
 	 * @return The generated location string
 	 */
 	public static String find(ActionCallback cb) {
@@ -144,10 +166,17 @@ public class ActionCallbackSerialization {
 
 		if (cb == null)
 			return null;
-			
+		
+
+		// search in UIActors
+		id = find(cb, World.getInstance().getUIActors());
+
+		if (id != null)
+			return id;
+
 		// search in inkManager actions
 		id = find(cb, World.getInstance().getInkManager());
-		
+
 		if (id != null)
 			return id;
 
@@ -165,10 +194,10 @@ public class ActionCallbackSerialization {
 
 		// search in actors
 		for (BaseActor a : s.getActors().values()) {
-			if(!(a instanceof InteractiveActor))
+			if (!(a instanceof InteractiveActor))
 				continue;
-			
-			id = find(cb, (InteractiveActor)a);
+
+			id = find(cb, (InteractiveActor) a);
 			if (id != null)
 				return id;
 		}
@@ -193,18 +222,18 @@ public class ActionCallbackSerialization {
 	 * @param id
 	 */
 	public static ActionCallback find(String id) {
-		
-		if(id == null)
+
+		if (id == null)
 			return null;
-		
+
 		Scene s = World.getInstance().getCurrentScene();
 
 		String[] split = id.split(SEPARATION_SYMBOL);
-		
-		if(id.startsWith(INK_MANAGER_TAG)) {
-			if(split.length == 1)
+
+		if (id.startsWith(INK_MANAGER_TAG)) {
+			if (split.length == 1)
 				return World.getInstance().getInkManager();
-			
+
 			int actionPos = Integer.parseInt(split[1]);
 			Action action = World.getInstance().getInkManager().getActions().get(actionPos);
 
@@ -214,13 +243,25 @@ public class ActionCallbackSerialization {
 
 		if (split.length < 2)
 			return null;
-
-		String actorId = split[0];
-		String verbId = split[1];
+		
+		String actorId;
+		String verbId;
 		int actionPos = -1;
 
-		if (split.length > 2)
-			actionPos = Integer.parseInt(split[2]);
+		if (id.startsWith(UIACTORS_TAG)) {
+
+			actorId = split[1];
+			verbId = split[2];
+
+			if (split.length > 3)
+				actionPos = Integer.parseInt(split[3]);
+		} else {
+			actorId = split[0];
+			verbId = split[1];
+
+			if (split.length > 2)
+				actionPos = Integer.parseInt(split[2]);
+		}
 
 		Verb v = null;
 
@@ -233,7 +274,7 @@ public class ActionCallbackSerialization {
 			if (actorId.equals(s.getId())) {
 				v = s.getVerbManager().getVerbs().get(verbId);
 			} else {
-				a = (InteractiveActor)s.getActor(actorId, true);
+				a = (InteractiveActor) s.getActor(actorId, true);
 
 				if (a == null)
 					return null;
@@ -245,7 +286,7 @@ public class ActionCallbackSerialization {
 		if (v == null)
 			return null;
 
-		if (split.length == 2)
+		if (actionPos == -1)
 			return v;
 
 		Action action = v.getActions().get(actionPos);

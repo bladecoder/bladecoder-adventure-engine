@@ -415,8 +415,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		case DIALOG_MODE:
 			stage.setScrollFocus(null);
 			
-			if (world.getCurrentDialog() == null && 
-					!world.getInkManager().hasChoices())
+			if (!world.hasDialogOptions())
 				setUIState(UIStates.SCENE_MODE);
 			else if (world.inCutMode())
 				setUIState(UIStates.CUT_MODE);
@@ -453,8 +452,7 @@ public class DefaultSceneScreen implements SceneScreen {
 				setUIState(UIStates.TESTER_BOT_MODE);
 			else if (inventoryUI.isVisible())
 				setUIState(UIStates.INVENTORY_MODE);
-			else if (world.getCurrentDialog() != null || 
-					world.getInkManager().hasChoices())
+			else if (world.hasDialogOptions())
 				setUIState(UIStates.DIALOG_MODE);
 			break;
 		}
@@ -473,10 +471,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			inventoryUI.screenToLocalCoordinates(unproject2Tmp);
 			currentActor = inventoryUI.getItemAt(unproject2Tmp.x, unproject2Tmp.y);
 			break;
-		case SCENE_MODE:
-			world.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
-
-			final Scene currentScene = world.getCurrentScene();
+		case SCENE_MODE:		
 
 			final float tolerance;
 
@@ -487,7 +482,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			else
 				tolerance = 0;
 
-			currentActor = currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
+			currentActor = world.getInteractiveActorAtInput(viewport, tolerance);
 
 			inventoryButton.setVisible(world.getInventory().isVisible());
 			break;

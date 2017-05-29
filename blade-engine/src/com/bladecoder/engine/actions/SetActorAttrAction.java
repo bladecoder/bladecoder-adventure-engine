@@ -17,6 +17,7 @@ package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.graphics.Color;
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -25,12 +26,13 @@ import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Change actor attributes.")
 public class SetActorAttrAction implements Action {
 	@ActionProperty(required = true)
-	@ActionPropertyDescription("The target actor")	
+	@ActionPropertyDescription("The target actor")
 	private SceneActorRef actor;
 
 	@ActionProperty
@@ -56,14 +58,18 @@ public class SetActorAttrAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor scale")
 	private Float scale;
-	
+
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor rotation")
 	private Float rotation;
-	
+
 	@ActionPropertyDescription("The tint to draw the actor (RRGGBBAA).")
 	@ActionProperty(type = Type.COLOR)
 	private Color tint;
+
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor as an UI Actor. UI actors persists between scenes and are not affected by the scroll.")
+	private Boolean uiActor;
 
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor 'stand' animation. Only supported for character actors.")
@@ -86,6 +92,12 @@ public class SetActorAttrAction implements Action {
 
 		BaseActor a = s.getActor(actor.getActorId(), true);
 
+		if (a == null) {
+			EngineLogger.error("SetActorAttr - Actor not found:" + this.actor.getActorId());
+
+			return false;
+		}
+
 		if (visible != null)
 			a.setVisible(visible);
 
@@ -99,7 +111,7 @@ public class SetActorAttrAction implements Action {
 		if (layer != null) {
 			if (a instanceof InteractiveActor) {
 				InteractiveActor iActor = (InteractiveActor) a;
-				
+
 				String oldLayer = iActor.getLayer();
 
 				s.getLayer(oldLayer).remove(iActor);
@@ -118,7 +130,7 @@ public class SetActorAttrAction implements Action {
 		if (zIndex != null) {
 			if (a instanceof InteractiveActor) {
 				InteractiveActor iActor = (InteractiveActor) a;
-				
+
 				iActor.setZIndex(zIndex);
 				SceneLayer l = s.getLayer(iActor.getLayer());
 
@@ -134,14 +146,14 @@ public class SetActorAttrAction implements Action {
 			else
 				EngineLogger.error("'scale' property not supported for actor:" + a.getId());
 		}
-		
+
 		if (rotation != null) {
 			if (a instanceof SpriteActor)
 				((SpriteActor) a).setRot(rotation);
 			else
 				EngineLogger.error("'rotation' property not supported for actor:" + a.getId());
 		}
-		
+
 		if (tint != null) {
 			if (a instanceof SpriteActor)
 				((SpriteActor) a).setTint(tint);
@@ -156,38 +168,75 @@ public class SetActorAttrAction implements Action {
 				else
 					((SpriteActor) a).setDepthType(DepthType.NONE);
 			} else
-				EngineLogger.error("fakeDepth property not supported for actor:" + a.getId());
+				EngineLogger.error("'fakeDepth' property not supported for actor:" + a.getId());
 		}
 
 		if (standAnimation != null) {
 			if (a instanceof CharacterActor)
 				((CharacterActor) a).setStandAnim(standAnimation);
 			else
-				EngineLogger.error("standAnimation property not supported for actor:" + a.getId());
+				EngineLogger.error("'standAnimation' property not supported for actor:" + a.getId());
 		}
 
 		if (walkAnimation != null) {
 			if (a instanceof CharacterActor)
 				((CharacterActor) a).setWalkAnim(walkAnimation);
 			else
-				EngineLogger.error("walkAnimation property not supported for actor:" + a.getId());
+				EngineLogger.error("'walkAnimation' property not supported for actor:" + a.getId());
 		}
 
 		if (talkAnimation != null) {
 			if (a instanceof CharacterActor)
 				((CharacterActor) a).setTalkAnim(talkAnimation);
 			else
-				EngineLogger.error("talkAnimation property not supported for actor:" + a.getId());
+				EngineLogger.error("'talkAnimation' property not supported for actor:" + a.getId());
 		}
 
 		if (walkingSpeed != null) {
 			if (a instanceof CharacterActor)
 				((CharacterActor) a).setWalkingSpeed(walkingSpeed);
 			else
-				EngineLogger.error("walkingSpeed property not supported for actor:" + a.getId());
+				EngineLogger.error("'walkingSpeed' property not supported for actor:" + a.getId());
+		}
+
+		if (uiActor != null) {
+			if (a instanceof InteractiveActor) {
+				if (uiActor)
+					setUIActor(s, (InteractiveActor) a);
+				else
+					removeUIActor(s, (InteractiveActor) a);
+			} else
+				EngineLogger.error("'uiActor' property not supported for actor:" + a.getId());
 		}
 
 		return false;
+	}
+
+	private void setUIActor(Scene scn, InteractiveActor actor) {
+
+		scn.removeActor(actor);
+
+		if (scn != World.getInstance().getCurrentScene() &&
+				World.getInstance().getCachedScene(scn.getId()) == null) {
+			actor.loadAssets();
+			EngineAssetManager.getInstance().finishLoading();
+			actor.retrieveAssets();
+		}
+
+		World.getInstance().getUIActors().addActor(actor);
+	}
+	
+	private void removeUIActor(Scene scn, InteractiveActor actor) {
+		InteractiveActor a = World.getInstance().getUIActors().removeActor(actor.getId());
+		
+		if(a!=null) {
+			if(scn != World.getInstance().getCurrentScene())
+				a.dispose();
+			
+			scn.addActor(a);
+		} else {
+			EngineLogger.debug("UIActor not found: " + actor.getId());
+		}		
 	}
 
 }

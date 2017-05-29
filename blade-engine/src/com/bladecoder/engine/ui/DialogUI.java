@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -32,11 +31,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engine.ink.InkManager;
-import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.DPIUtils;
-import com.bladecoder.ink.runtime.Choice;
 
 public class DialogUI extends ScrollPane {
 	public static final String DIALOG_END_COMMAND = "dialog_end";
@@ -50,7 +46,7 @@ public class DialogUI extends ScrollPane {
 	private Button up;
 	private Button down;
 
-	private final List<String> visibleOptions = new ArrayList<String>();
+	private List<String> choices;
 
 	public DialogUI(UI ui) {
 		super(new Table(ui.getSkin()), ui.getSkin());
@@ -126,12 +122,12 @@ public class DialogUI extends ScrollPane {
 	}
 
 	private void show() {
-		getVisibleOptions();
+		choices = World.getInstance().getDialogOptions();
 
-		if (visibleOptions.size() == 0)
+		if (choices.size() == 0)
 			return;
 
-		else if (style.autoselect && visibleOptions.size() == 1) { 
+		else if (style.autoselect && choices.size() == 1) { 
 			// If only has one option, autoselect it
 			select(0);
 			return;
@@ -139,8 +135,8 @@ public class DialogUI extends ScrollPane {
 
 		panel.clear();
 
-		for (int i = 0; i < visibleOptions.size(); i++) {
-			String str = visibleOptions.get(i);
+		for (int i = 0; i < choices.size(); i++) {
+			String str = choices.get(i);
 
 			if (str.charAt(0) == I18N.PREFIX)
 				str = I18N.getString(str.substring(1));
@@ -185,38 +181,9 @@ public class DialogUI extends ScrollPane {
 			recorder.add(i);
 		}
 
-		if (World.getInstance().getCurrentDialog() != null)
-			World.getInstance().selectVisibleDialogOption(i);
-		else
-			World.getInstance().getInkManager().selectChoice(i);
+		World.getInstance().selectDialogOption(i);
 
 		setVisible(false);
-	}
-
-	private void getVisibleOptions() {
-		visibleOptions.clear();
-
-		if (World.getInstance().getCurrentDialog() != null) {
-			ArrayList<DialogOption> options = World.getInstance().getCurrentDialog().getVisibleOptions();
-
-			for (DialogOption o : options) {
-				visibleOptions.add(o.getText());
-			}
-		} else {
-			List<Choice> options = World.getInstance().getInkManager().getChoices();
-
-			for (Choice o : options) {
-				String line = o.getText();
-				
-				int idx = line.indexOf(InkManager.NAME_VALUE_TAG_SEPARATOR);
-
-				if (idx != -1) {
-					line = line.substring(idx + 1).trim();
-				}
-				
-				visibleOptions.add(line);
-			}
-		}
 	}
 
 	/** The style for the DialogUI */

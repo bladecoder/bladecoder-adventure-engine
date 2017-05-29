@@ -28,7 +28,7 @@ public class RemoveInventoryItemAction implements Action {
 	@ActionProperty(type = Type.ACTOR)
 	private String id;
 	
-	@ActionPropertyDescription("The scene where the inventory items will be drop.")
+	@ActionPropertyDescription("The scene where the inventory items will be dropped.")
 	@ActionProperty(type = Type.SCENE, required=true)
 	private String scene;
 

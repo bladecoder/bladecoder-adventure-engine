@@ -53,7 +53,12 @@ public class SceneActorRef {
 	
 	
 	public BaseActor getActor(boolean searchInventory) {
-		return getScene().getActor(actorId, searchInventory);
+		Scene scn = getScene();
+		
+		if(scn == null)
+			scn = World.getInstance().getCurrentScene();
+		
+		return scn.getActor(actorId, searchInventory);
 	}
 
 	public BaseActor getActor() {
