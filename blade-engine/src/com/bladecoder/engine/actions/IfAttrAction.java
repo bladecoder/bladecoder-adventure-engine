@@ -29,7 +29,7 @@ public class IfAttrAction extends AbstractIfAction {
 	public static final String ENDTYPE_VALUE = "else";
 
 	public enum ActorAttribute {
-		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY, TARGET
+		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY, TARGET, IN_SCENE, LAYER
 	}
 
 	@ActionProperty
@@ -92,7 +92,19 @@ public class IfAttrAction extends AbstractIfAction {
 						
 			if (!ActionUtils.compareNullStr(value, cb.getTarget())) {
 				gotoElse((VerbRunner) cb);
-			}			
+			}
+		} else	if (attr.equals(ActorAttribute.IN_SCENE)) {
+			boolean val = Boolean.parseBoolean(value);
+			
+			BaseActor a2 = s.getActor(actorId, false);
+			
+			if ((val && a2 == null) || (!val && a2 != null))
+				gotoElse((VerbRunner) cb);
+		} else if (attr.equals(ActorAttribute.LAYER) && a instanceof InteractiveActor) {
+			InteractiveActor ia = (InteractiveActor)a;
+			if (!ActionUtils.compareNullStr(value, ia.getLayer())) {
+				gotoElse((VerbRunner) cb);
+			}
 		}
 
 		return false;
