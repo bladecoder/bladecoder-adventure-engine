@@ -878,14 +878,15 @@ public class World implements Serializable, AssetConsumer {
 		return (String) getObjectWrapper().getValue(prop);
 	}
 
-	public void loadChapter(String chapter, String scene) throws Exception {
-		this.testScene = scene;
+	public void loadChapter(String chapter, String scene, boolean test) throws Exception {
+		if(test)
+			this.testScene = scene;
 
 		loadChapter(chapter);
 
-		if (testScene != null) {
+		if (scene != null) {
 			currentScene = null;
-			setCurrentScene(testScene);
+			setCurrentScene(scene);
 		}
 	}
 	

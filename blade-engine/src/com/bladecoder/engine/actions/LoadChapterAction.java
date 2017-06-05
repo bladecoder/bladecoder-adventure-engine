@@ -33,12 +33,12 @@ public class LoadChapterAction implements Action {
 	@Override
 	public boolean run(VerbRunner cb) {
 		try {
-			World.getInstance().loadChapter(chapter, scene);
+			World.getInstance().loadChapter(chapter, scene, false);
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage());
 		}
 		
-		return false;
+		return true;
 	}
 
 }

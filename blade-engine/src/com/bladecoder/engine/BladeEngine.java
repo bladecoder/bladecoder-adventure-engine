@@ -128,7 +128,7 @@ public class BladeEngine implements ApplicationListener {
 
 			if (testScene != null || chapter != null) {
 				try {
-					World.getInstance().loadChapter(chapter, testScene);
+					World.getInstance().loadChapter(chapter, testScene, true);
 				} catch (Exception e) {
 					dispose();
 					EngineLogger.error("EXITING: " + e.getMessage());
