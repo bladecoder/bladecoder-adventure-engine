@@ -18,6 +18,8 @@ package com.bladecoder.engine.actions;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SceneCamera;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
@@ -26,6 +28,10 @@ import com.bladecoder.engine.util.InterpolationMode;
 
 @ActionDescription("Set/Animates the camera position and zoom. Also can stablish the follow character parameter")
 public class CameraAction implements Action {
+	@ActionPropertyDescription("Sets the camera position relative to this actor.")
+	@ActionProperty(type = Type.ACTOR)
+	private String target;
+	
 	@ActionProperty
 	@ActionPropertyDescription("The target position")
 	private Vector2 pos;
@@ -60,11 +66,31 @@ public class CameraAction implements Action {
 		if(zoom == null || zoom < 0)
 			zoom = camera.getZoom();
 		
-		if(pos == null) {
+		if(pos == null && target == null) {
 			pos = camera.getPosition();
 			pos.x /= scale;
 			pos.y /= scale;
 		}
+		
+		if (target != null) {
+			BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
+			
+			float x = target.getX();
+			float y = target.getY();
+			
+			if(target instanceof InteractiveActor) {
+				Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
+				x+= refPoint.x;
+				y+= refPoint.y;
+			}
+			
+			if(pos != null){
+				pos.x += x;
+				pos.y += y;
+			} else {
+				pos = new Vector2(x,y);
+			}
+		} 
 
 		if (followActor != null) {
 			if (followActor.equals("none"))
