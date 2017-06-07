@@ -160,7 +160,6 @@ public class World implements Serializable, AssetConsumer {
 		timers = new Timers();
 
 		cutMode = false;
-		timeOfGame = 0;
 		currentChapter = null;
 		cachedScene = null;
 
@@ -721,6 +720,7 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void newGame() throws Exception {
+		timeOfGame = 0;
 		loadChapter(null);
 	}
 
