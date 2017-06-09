@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -50,12 +51,13 @@ import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class MenuScreen extends ScreenAdapter implements BladeScreen {
-	private final static float BUTTON_PADDING = DPIUtils.UI_SPACE;
+//	private final static float BUTTON_PADDING = DPIUtils.UI_SPACE;
 
 	private UI ui;
 
 	private Stage stage;
 	private Texture bgTexFile = null;
+	private Texture titleTexFile = null;
 	private Pointer pointer;
 	private Button credits;
 	private Button help;
@@ -101,6 +103,11 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 				bgTexFile.dispose();
 				bgTexFile = null;
 			}
+			
+			if (titleTexFile != null) {
+				titleTexFile.dispose();
+				titleTexFile = null;
+			}
 
 			if (music != null) {
 				music.stop();
@@ -123,12 +130,14 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 		// Image background = new Image(style.background);
 		Drawable bg = style.background;
+		
+		float scale = 1;
 
 		if (bg == null && style.bgFile != null) {
 			bgTexFile = new Texture(EngineAssetManager.getInstance().getResAsset(style.bgFile));
 			bgTexFile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
-			float scale = (float) bgTexFile.getHeight() / (float) stage.getViewport().getScreenHeight();
+			scale = (float) bgTexFile.getHeight() / (float) stage.getViewport().getScreenHeight();
 
 			int width = (int) (stage.getViewport().getScreenWidth() * scale);
 			int x0 = (int) ((bgTexFile.getWidth() - width) / 2);
@@ -151,23 +160,37 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		menuButtonTable.defaults().pad(BUTTON_PADDING).width(buttonWidth);
+		menuButtonTable.align(getAlign());
+		menuButtonTable.pad(DPIUtils.getMarginSize() * 2);
+		menuButtonTable.defaults().pad(DPIUtils.getSpacing()).width(buttonWidth).align(getAlign());
+//		menuButtonTable.debug();
 
 		stage.setKeyboardFocus(menuButtonTable);
 
-		if (style.showTitle) {
+		if (style.showTitle && style.titleStyle != null) {
 
 			Label title = new Label(Config.getProperty(Config.TITLE_PROP, "Adventure Blade Engine"), skin,
 					style.titleStyle);
 
-			title.setAlignment(Align.center);
+			title.setAlignment(getAlign());
 
 			menuButtonTable.add(title).padBottom(DPIUtils.getMarginSize() * 2);
+			menuButtonTable.row();
+		}
+		
+		if(style.titleFile != null) {
+			titleTexFile = new Texture(EngineAssetManager.getInstance().getResAsset(style.titleFile));
+			titleTexFile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+			
+			Image img = new Image(titleTexFile);
+			
+			menuButtonTable.add(img).width((float)titleTexFile.getWidth() / scale).height((float)titleTexFile.getHeight() / scale).padBottom(DPIUtils.getMarginSize() * 2);
 			menuButtonTable.row();
 		}
 
 		if (world.savedGameExists() || world.getCurrentScene() != null) {
 			TextButton continueGame = new TextButton(I18N.getString("ui.continue"), skin, style.textButtonStyle);
+			continueGame.getLabel().setAlignment(getAlign());
 
 			continueGame.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
@@ -187,6 +210,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		}
 
 		TextButton newGame = new TextButton(I18N.getString("ui.new"), skin, style.textButtonStyle);
+		newGame.getLabel().setAlignment(getAlign());
 		newGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				if (world.savedGameExists()) {
@@ -236,6 +260,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		menuButtonTable.row();
 
 		TextButton loadGame = new TextButton(I18N.getString("ui.load"), skin, style.textButtonStyle);
+		loadGame.getLabel().setAlignment(getAlign());
 		loadGame.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.LOAD_GAME_SCREEN);
@@ -246,6 +271,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		menuButtonTable.row();
 
 		TextButton quit = new TextButton(I18N.getString("ui.quit"), skin, style.textButtonStyle);
+		quit.getLabel().setAlignment(getAlign());
 		quit.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				Gdx.app.exit();
@@ -371,6 +397,26 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 	protected MenuScreenStyle getStyle() {
 		return ui.getSkin().get(MenuScreenStyle.class);
 	}
+	
+	private int getAlign() {
+		if(getStyle().align == null ||
+				"center".equals(getStyle().align))
+			return Align.center;
+		
+		if("top".equals(getStyle().align))
+			return Align.top;
+		
+		if("bottom".equals(getStyle().align))
+			return Align.bottom;
+		
+		if("left".equals(getStyle().align))
+			return Align.left;
+		
+		if("right".equals(getStyle().align))
+			return Align.right;
+		
+		return Align.center;
+	}
 
 	@Override
 	public void hide() {
@@ -391,10 +437,12 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		public Drawable background;
 		/** if 'bg' not specified try to load the bgFile */
 		public String bgFile;
+		public String titleFile;
 		public String textButtonStyle;
 		public String titleStyle;
 		public boolean showTitle;
 		public String musicFile;
+		public String align;
 
 		public MenuScreenStyle() {
 		}
@@ -402,10 +450,12 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		public MenuScreenStyle(MenuScreenStyle style) {
 			background = style.background;
 			bgFile = style.bgFile;
+			titleFile = style.titleFile;
 			textButtonStyle = style.textButtonStyle;
 			showTitle = style.showTitle;
 			titleStyle = style.titleStyle;
 			musicFile = style.musicFile;
+			align = style.align;
 		}
 	}
 }
