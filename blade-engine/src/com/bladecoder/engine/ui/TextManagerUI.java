@@ -125,7 +125,7 @@ public class TextManagerUI extends Actor {
 				}
 
 				// CHAR ICON CALCS
-				if (!Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("") && subtitle.actorId != null) {
+				if (subtitle.type == Text.Type.SUBTITLE && !Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("") && subtitle.actorId != null) {
 					charIcon = EngineAssetManager.getInstance()
 							.getRegion(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null), subtitle.actorId);
 					
