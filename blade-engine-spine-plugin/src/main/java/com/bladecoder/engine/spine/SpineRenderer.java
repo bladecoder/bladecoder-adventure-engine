@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -44,8 +45,8 @@ import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
 import com.esotericsoftware.spine.Animation;
 import com.esotericsoftware.spine.AnimationState;
-import com.esotericsoftware.spine.AnimationState.AnimationStateListener;
 import com.esotericsoftware.spine.AnimationState.AnimationStateAdapter;
+import com.esotericsoftware.spine.AnimationState.AnimationStateListener;
 import com.esotericsoftware.spine.AnimationState.TrackEntry;
 import com.esotericsoftware.spine.AnimationStateData;
 import com.esotericsoftware.spine.Event;
@@ -53,9 +54,6 @@ import com.esotericsoftware.spine.Skeleton;
 import com.esotericsoftware.spine.SkeletonBounds;
 import com.esotericsoftware.spine.SkeletonData;
 import com.esotericsoftware.spine.SkeletonRenderer;
-import com.esotericsoftware.spine.Slot;
-import com.esotericsoftware.spine.attachments.Attachment;
-import com.esotericsoftware.spine.attachments.RegionAttachment;
 
 public class SpineRenderer extends AnimationRenderer {
 
@@ -69,7 +67,7 @@ public class SpineRenderer extends AnimationRenderer {
 	private int currentCount;
 	private Tween.Type currentAnimationType;
 
-	private SkeletonRenderer<SpriteBatch> renderer;
+	private SkeletonRenderer renderer;
 	private SkeletonBounds bounds;
 
 	private float width = super.getWidth(), height = super.getHeight();
@@ -106,19 +104,6 @@ public class SpineRenderer extends AnimationRenderer {
 
 			if ((currentAnimationType == Tween.Type.REPEAT || currentAnimationType == Tween.Type.REVERSE_REPEAT)
 					&& (currentCount == Tween.INFINITY || currentCount >= loopCount)) {
-
-				// FIX for latest spine rt not setting setup pose when looping.
-				SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
-
-				cs.skeleton.setToSetupPose();
-				cs.skeleton.setFlipX(flipX);
-				complete = true;
-				cs.animation.update(0);
-				cs.animation.apply(cs.skeleton);
-				cs.skeleton.updateWorldTransform();
-				complete = false;
-				// END FIX
-
 				return;
 			}
 
@@ -427,44 +412,16 @@ public class SpineRenderer extends AnimationRenderer {
 			maxY = bounds.getMaxY();
 		} else {
 
-			minX = Float.MAX_VALUE;
-			minY = Float.MAX_VALUE;
-			maxX = Float.MIN_VALUE;
-			maxY = Float.MIN_VALUE;
-
-			Array<Slot> slots = cs.skeleton.getSlots();
-
-			for (int i = 0, n = slots.size; i < n; i++) {
-				Slot slot = slots.get(i);
-				Attachment attachment = slot.getAttachment();
-				if (attachment == null)
-					continue;
-
-				if (!(attachment instanceof RegionAttachment))
-					continue;
-
-				((RegionAttachment) attachment).updateWorldVertices(slot, false);
-
-				float[] vertices = ((RegionAttachment) attachment).getWorldVertices();
-				for (int ii = 0, nn = vertices.length; ii < nn; ii += 5) {
-					minX = Math.min(minX, vertices[ii]);
-					minY = Math.min(minY, vertices[ii + 1]);
-					maxX = Math.max(maxX, vertices[ii]);
-					maxY = Math.max(maxY, vertices[ii + 1]);
-				}
-			}
-
-			width = (maxX - minX);
-			height = (maxY - minY);
-
-			if (width <= minX || height <= minY) {
-				width = height = super.getWidth();
-				float dim2 = super.getWidth() / 2;
-				minX = -dim2;
-				minY = -dim2;
-				maxX = dim2;
-				maxY = dim2;
-			}
+			Vector2 offset = new Vector2();
+			Vector2 size = new Vector2();
+			cs.skeleton.getBounds(offset, size, new FloatArray());
+			width = size.x;
+			height = size.y;
+			
+			minX = offset.x;
+			minY = offset.y;
+			maxX = offset.x + width;
+			maxY = offset.y + height;
 		}
 
 		if (bbox != null) {
@@ -647,7 +604,7 @@ public class SpineRenderer extends AnimationRenderer {
 
 	@Override
 	public void retrieveAssets() {
-		renderer = new SkeletonRenderer<SpriteBatch>();
+		renderer = new SkeletonRenderer();
 		renderer.setPremultipliedAlpha(false);
 		bounds = new SkeletonBounds();
 
