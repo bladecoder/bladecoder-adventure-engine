@@ -77,8 +77,10 @@ public class SpineRenderer extends AnimationRenderer {
 	private boolean complete = false;
 
 	private boolean eventsEnabled = true;
-	
+
 	private int loopCount = 0;
+
+	private String secondaryAnimation;
 
 	class SkeletonCacheEntry extends CacheEntry {
 		Skeleton skeleton;
@@ -97,9 +99,9 @@ public class SpineRenderer extends AnimationRenderer {
 	private AnimationStateListener animationListener = new AnimationStateAdapter() {
 		@Override
 		public void complete(TrackEntry entry) {
-			if (complete)
+			if (complete || entry.getTrackIndex() != 0)
 				return;
-			
+
 			loopCount++;
 
 			if ((currentAnimationType == Tween.Type.REPEAT || currentAnimationType == Tween.Type.REVERSE_REPEAT)
@@ -158,14 +160,14 @@ public class SpineRenderer extends AnimationRenderer {
 		} catch (GdxRuntimeException e) {
 			sourceCache.remove(anim.source);
 			Array<String> dependencies = EngineAssetManager.getInstance().getDependencies(getFileName(anim.source));
-			if(dependencies.size > 0)
+			if (dependencies.size > 0)
 				dependencies.removeIndex(dependencies.size - 1);
 			return new String[0];
 		}
 
 		Array<Animation> animations = ((SkeletonCacheEntry) sourceCache.get(anim.source)).skeleton.getData()
 				.getAnimations();
-		
+
 		String[] result = new String[animations.size];
 
 		for (int i = 0; i < animations.size; i++) {
@@ -340,8 +342,6 @@ public class SpineRenderer extends AnimationRenderer {
 			for (Animation a : animations) {
 				if (a.getName().equals(currentAnimation.id)) {
 					lastAnimationTime = a.getDuration() / currentAnimation.duration - 0.01f;
-
-					System.out.println("LAST ANIM TIME: " + lastAnimationTime + " ID: " + currentAnimation.id);
 					break;
 				}
 			}
@@ -354,6 +354,29 @@ public class SpineRenderer extends AnimationRenderer {
 		setCurrentAnimation();
 	}
 
+	public void setSecondaryAnimation(String animation) {
+		secondaryAnimation = animation;
+		SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
+		
+		if(animation == null || animation.isEmpty()) {
+			cs.animation.setEmptyAnimation(1, 0.01f);
+			return;
+		}
+
+		try {
+			SpineAnimationDesc fa = (SpineAnimationDesc) getAnimation(animation);
+			
+			if(fa == null) {
+				EngineLogger.error("SpineRenderer:setCurrentFA Animation not found: " + animation);
+				return;
+			}
+			
+			cs.animation.setAnimation(1, secondaryAnimation, fa.animationType == Tween.Type.REPEAT);
+		} catch (Exception e) {
+			EngineLogger.error("SpineRenderer:setCurrentFA " + e.getMessage());
+		}
+	}
+
 	private void setCurrentAnimation() {
 		try {
 			SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
@@ -364,6 +387,9 @@ public class SpineRenderer extends AnimationRenderer {
 
 			updateAnimation(lastAnimationTime);
 			computeBbox();
+			
+			if(secondaryAnimation != null)
+				setSecondaryAnimation(secondaryAnimation);
 
 		} catch (Exception e) {
 			EngineLogger.error("SpineRenderer:setCurrentFA " + e.getMessage());
@@ -417,7 +443,7 @@ public class SpineRenderer extends AnimationRenderer {
 			cs.skeleton.getBounds(offset, size, new FloatArray());
 			width = size.x;
 			height = size.y;
-			
+
 			minX = offset.x;
 			minY = offset.y;
 			maxX = offset.x + width;
@@ -511,8 +537,7 @@ public class SpineRenderer extends AnimationRenderer {
 
 		return fa;
 	}
-	
-	
+
 	private String getFileName(String source) {
 		return EngineAssetManager.SPINE_DIR + source + EngineAssetManager.SPINE_EXT;
 	}
@@ -537,8 +562,7 @@ public class SpineRenderer extends AnimationRenderer {
 			SkeletonDataLoaderParameter parameter = new SkeletonDataLoaderParameter(
 					EngineAssetManager.ATLASES_DIR + entry.atlas + EngineAssetManager.ATLAS_EXT,
 					EngineAssetManager.getInstance().getScale());
-			EngineAssetManager.getInstance().load(getFileName(source),
-					SkeletonData.class, parameter);
+			EngineAssetManager.getInstance().load(getFileName(source), SkeletonData.class, parameter);
 		}
 
 		entry.refCounter++;
@@ -555,8 +579,7 @@ public class SpineRenderer extends AnimationRenderer {
 		}
 
 		if (entry.skeleton == null) {
-			SkeletonData skeletonData = EngineAssetManager.getInstance()
-					.get(getFileName(source), SkeletonData.class);
+			SkeletonData skeletonData = EngineAssetManager.getInstance().get(getFileName(source), SkeletonData.class);
 
 			entry.skeleton = new Skeleton(skeletonData);
 
@@ -662,6 +685,7 @@ public class SpineRenderer extends AnimationRenderer {
 			json.writeValue("lastAnimationTime", lastAnimationTime);
 			json.writeValue("complete", complete);
 			json.writeValue("loopCount", loopCount);
+			json.writeValue("secondaryAnimation", secondaryAnimation);
 		}
 	}
 
@@ -685,6 +709,8 @@ public class SpineRenderer extends AnimationRenderer {
 			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 			complete = json.readValue("complete", Boolean.class, jsonData);
 			loopCount = json.readValue("loopCount", int.class, loopCount, jsonData);
+			
+			secondaryAnimation = json.readValue("secondaryAnimation", String.class, (String)null, jsonData);
 		}
 	}
 }

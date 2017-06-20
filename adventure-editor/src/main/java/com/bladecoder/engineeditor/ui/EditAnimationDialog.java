@@ -170,7 +170,15 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 		if (e != null) {
 			source.setText(e.source);
+		} else {
+			// If the actor has some animation, set the same source.
+			HashMap<String, AnimationDesc> animations = ((AnimationRenderer)p.getRenderer()).getAnimations();
+			if(animations.size() > 0) {
+				source.setText(animations.values().iterator().next().source);
+			}
 		}
+		
+		
 
 		if (source.getText() != null && !source.getText().isEmpty()) {
 			setSource();

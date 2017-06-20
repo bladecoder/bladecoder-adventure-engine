@@ -32,7 +32,6 @@ jar {
 
 dependencies {
   compile "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  compile "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
   compile "com.esotericsoftware.spine:spine-libgdx:3.6.34.0"
   
   compile project(":blade-engine")
