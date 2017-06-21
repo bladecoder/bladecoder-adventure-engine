@@ -171,10 +171,11 @@ public class CharacterActor extends SpriteActor {
 
 		ArrayList<Vector2> walkingPath = null;
 
-		//
+		//Doesn't move if dst is less than 2px
 		if (p0.dst(pf) < 2.0f) {
 			setPosition(pf.x, pf.y);
-
+			stand();
+			
 			// call the callback
 			if (cb != null)
 				ActionCallbackQueue.add(cb);

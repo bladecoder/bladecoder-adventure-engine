@@ -29,7 +29,7 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Shows the text and sets the player to lookat in the selected actor direction")
 public class LookAtAction implements Action {
 	public enum Direction {
-		EMPTY(""), FRONT(AnimationDesc.FRONT), BACK(AnimationDesc.BACK), LEFT(AnimationDesc.LEFT), RIGHT(
+		EMPTY(null), FRONT(AnimationDesc.FRONT), BACK(AnimationDesc.BACK), LEFT(AnimationDesc.LEFT), RIGHT(
 				AnimationDesc.RIGHT), FRONTLEFT(AnimationDesc.FRONTLEFT), FRONTRIGHT(
 						AnimationDesc.FRONTRIGHT), BACKLEFT(AnimationDesc.BACKLEFT), BACKRIGHT(AnimationDesc.BACKRIGHT);
 
