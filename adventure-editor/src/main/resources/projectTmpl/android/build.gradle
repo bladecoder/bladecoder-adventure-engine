@@ -24,6 +24,8 @@ android {
         
         if(project.hasProperty('versionCode'))
         	versionCode project.versionCode.toInteger()
+       	else
+          versionCode 1
     }
 
 	if(project.hasProperty('keystore')) {   
@@ -41,6 +43,13 @@ android {
             	signingConfig signingConfigs.release
              }
           }
+       }
+       
+       buildTypes {
+          release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+           }
        }
 }
 
