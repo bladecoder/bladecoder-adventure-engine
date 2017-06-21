@@ -181,6 +181,13 @@ public class SpineRenderer extends AnimationRenderer {
 	@Override
 	public void update(float delta) {
 		if (complete) {
+			
+			// keep updating secondary animation
+			// WARNING: It doesn't work with REVERSE ANIMATION
+			if(secondaryAnimation != null && currentSource != null &&
+					!((SkeletonCacheEntry) currentSource).animation.getTracks().get(1).isComplete())
+				updateAnimation(delta);
+			
 			return;
 		}
 
@@ -358,13 +365,13 @@ public class SpineRenderer extends AnimationRenderer {
 		secondaryAnimation = animation;
 		SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
 		
-		if(animation == null || animation.isEmpty()) {
+		if(animation == null) {
 			cs.animation.setEmptyAnimation(1, 0.01f);
 			return;
 		}
 
 		try {
-			SpineAnimationDesc fa = (SpineAnimationDesc) getAnimation(animation);
+			SpineAnimationDesc fa = (SpineAnimationDesc) fanims.get(animation);
 			
 			if(fa == null) {
 				EngineLogger.error("SpineRenderer:setCurrentFA Animation not found: " + animation);
@@ -384,12 +391,12 @@ public class SpineRenderer extends AnimationRenderer {
 			cs.skeleton.setFlipX(flipX);
 			cs.animation.setTimeScale(currentAnimation.duration);
 			cs.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.Type.REPEAT);
-
-			updateAnimation(lastAnimationTime);
-			computeBbox();
 			
 			if(secondaryAnimation != null)
 				setSecondaryAnimation(secondaryAnimation);
+			
+			updateAnimation(lastAnimationTime);
+			computeBbox();
 
 		} catch (Exception e) {
 			EngineLogger.error("SpineRenderer:setCurrentFA " + e.getMessage());

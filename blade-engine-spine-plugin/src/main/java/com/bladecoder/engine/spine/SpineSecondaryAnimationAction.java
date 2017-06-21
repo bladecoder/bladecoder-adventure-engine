@@ -41,7 +41,12 @@ public class SpineSecondaryAnimationAction implements Action {
 		
 		if(a.getRenderer() instanceof SpineRenderer) {
 			SpineRenderer r = (SpineRenderer) a.getRenderer();
-			r.setSecondaryAnimation(animation.getAnimationId());
+			String anim = animation.getAnimationId();
+			
+			if(anim.isEmpty())
+				anim = null;
+			
+			r.setSecondaryAnimation(anim);
 		} else {
 			EngineLogger.error("SpineSecondaryAnimation: The actor renderer has to be of Spine type.");
 		}
