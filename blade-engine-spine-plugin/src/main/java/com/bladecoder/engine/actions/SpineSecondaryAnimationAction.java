@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.bladecoder.engine.spine;
+package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionDescription;
@@ -23,6 +23,7 @@ import com.bladecoder.engine.actions.ActorAnimationRef;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("ONLY FOR SPINE ACTORS: Sets a secondary animation")

@@ -99,7 +99,7 @@ public class SpineRenderer extends AnimationRenderer {
 	private AnimationStateListener animationListener = new AnimationStateAdapter() {
 		@Override
 		public void complete(TrackEntry entry) {
-			if (complete || entry.getTrackIndex() != 0)
+			if (complete || (entry != null && entry.getTrackIndex() != 0))
 				return;
 
 			loopCount++;
@@ -181,13 +181,14 @@ public class SpineRenderer extends AnimationRenderer {
 	@Override
 	public void update(float delta) {
 		if (complete) {
-			
+
 			// keep updating secondary animation
 			// WARNING: It doesn't work with REVERSE ANIMATION
-			if(secondaryAnimation != null && currentSource != null &&
-					!((SkeletonCacheEntry) currentSource).animation.getTracks().get(1).isComplete())
+			if (secondaryAnimation != null && currentSource != null
+					&& (!((SkeletonCacheEntry) currentSource).animation.getTracks().get(1).isComplete()
+							|| ((SkeletonCacheEntry) currentSource).animation.getTracks().get(1).getLoop()))
 				updateAnimation(delta);
-			
+
 			return;
 		}
 
@@ -364,21 +365,25 @@ public class SpineRenderer extends AnimationRenderer {
 	public void setSecondaryAnimation(String animation) {
 		secondaryAnimation = animation;
 		SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
-		
-		if(animation == null) {
-			cs.animation.setEmptyAnimation(1, 0.01f);
-			return;
-		}
 
 		try {
-			SpineAnimationDesc fa = (SpineAnimationDesc) fanims.get(animation);
-			
-			if(fa == null) {
-				EngineLogger.error("SpineRenderer:setCurrentFA Animation not found: " + animation);
-				return;
+
+			if (animation == null) {
+				cs.animation.setEmptyAnimation(1, 0);
+				// cs.animation.clearTrack(1);
+			} else {
+
+				SpineAnimationDesc fa = (SpineAnimationDesc) fanims.get(animation);
+
+				if (fa == null) {
+					EngineLogger.error("SpineRenderer:setCurrentFA Animation not found: " + animation);
+					return;
+				}
+
+				cs.animation.setAnimation(1, secondaryAnimation, fa.animationType == Tween.Type.REPEAT);
 			}
-			
-			cs.animation.setAnimation(1, secondaryAnimation, fa.animationType == Tween.Type.REPEAT);
+
+			updateAnimation(0);
 		} catch (Exception e) {
 			EngineLogger.error("SpineRenderer:setCurrentFA " + e.getMessage());
 		}
@@ -390,11 +395,12 @@ public class SpineRenderer extends AnimationRenderer {
 			cs.skeleton.setToSetupPose();
 			cs.skeleton.setFlipX(flipX);
 			cs.animation.setTimeScale(currentAnimation.duration);
+			cs.animation.clearTracks();
 			cs.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.Type.REPEAT);
-			
-			if(secondaryAnimation != null)
+
+			if (secondaryAnimation != null)
 				setSecondaryAnimation(secondaryAnimation);
-			
+
 			updateAnimation(lastAnimationTime);
 			computeBbox();
 
@@ -664,9 +670,13 @@ public class SpineRenderer extends AnimationRenderer {
 	@Override
 	public void dispose() {
 		for (Entry<String, CacheEntry> entry : sourceCache.entrySet()) {
-			if (entry.getValue().refCounter > 0)
-				EngineAssetManager.getInstance()
-						.unload(EngineAssetManager.SPINE_DIR + entry.getKey() + EngineAssetManager.SPINE_EXT);
+
+			if (entry.getValue().refCounter > 0) {
+				String filename = EngineAssetManager.SPINE_DIR + entry.getKey() + EngineAssetManager.SPINE_EXT;
+				
+				if (EngineAssetManager.getInstance().isLoaded(filename))
+					EngineAssetManager.getInstance().unload(filename);
+			}
 		}
 
 		sourceCache.clear();
@@ -716,8 +726,8 @@ public class SpineRenderer extends AnimationRenderer {
 			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 			complete = json.readValue("complete", Boolean.class, jsonData);
 			loopCount = json.readValue("loopCount", int.class, loopCount, jsonData);
-			
-			secondaryAnimation = json.readValue("secondaryAnimation", String.class, (String)null, jsonData);
+
+			secondaryAnimation = json.readValue("secondaryAnimation", String.class, (String) null, jsonData);
 		}
 	}
 }
