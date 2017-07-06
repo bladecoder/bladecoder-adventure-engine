@@ -103,8 +103,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 				Param.Type.BOOLEAN, true, "true");
 		dispose = InputPanelFactory.createInputPanel(skin, "Dispose When Played", "Dispose de animation after playing",
 				Param.Type.BOOLEAN, true, "false");
-		
-		
+
 		((SelectBox<String>) repeat.getField()).addListener(new ChangeListener() {
 
 			@Override
@@ -146,14 +145,14 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		});
 
 		setInfoWidget(spriteWidget);
-		
+
 		init(p, e, new InputPanel[] { source, localizable, atlas, id, repeat, speed, count, in, out, sound, preload,
 				dispose });
-		
+
 		addSources();
-		
+
 		// call modelToInputs again to set the correct source
-		if( e != null )
+		if (e != null)
 			modelToInputs();
 
 		setVisible(count, false);
@@ -172,13 +171,15 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			source.setText(e.source);
 		} else {
 			// If the actor has some animation, set the same source.
-			HashMap<String, AnimationDesc> animations = ((AnimationRenderer)p.getRenderer()).getAnimations();
-			if(animations.size() > 0) {
+			HashMap<String, AnimationDesc> animations = ((AnimationRenderer) p.getRenderer()).getAnimations();
+			if (animations.size() > 0) {
 				source.setText(animations.values().iterator().next().source);
+			} else {
+				// set the background source it atlas type
+				if (p.getRenderer() instanceof AtlasRenderer && p.getScene().getBackgroundAtlas() != null)
+					source.setText(p.getScene().getBackgroundAtlas());
 			}
 		}
-		
-		
 
 		if (source.getText() != null && !source.getText().isEmpty()) {
 			setSource();
@@ -397,7 +398,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 	protected void inputsToModel(boolean create) {
 
 		String sourceStr = source.getText();
-		AnimationRenderer renderer = (AnimationRenderer)parent.getRenderer();
+		AnimationRenderer renderer = (AnimationRenderer) parent.getRenderer();
 
 		if (create) {
 
@@ -423,8 +424,8 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		} else {
 			HashMap<String, AnimationDesc> animations = renderer.getAnimations();
 			animations.remove(e.id);
-			
-			if(e.id.equals(renderer.getInitAnimation()))
+
+			if (e.id.equals(renderer.getInitAnimation()))
 				renderer.setInitAnimation(null);
 		}
 
@@ -439,14 +440,14 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		e.outD = Param.parseVector2(out.getText());
 		e.duration = Float.parseFloat(speed.getText());
 
-		((AnimationRenderer)parent.getRenderer()).addAnimation(e);
+		((AnimationRenderer) parent.getRenderer()).addAnimation(e);
 
 		if (renderer instanceof ImageRenderer && Boolean.parseBoolean(localizable.getText()) && e.source != null
 				&& e.source.length() > 0) {
 			e.source = I18N.PREFIX + e.source;
 		}
-		
-		if(renderer.getInitAnimation() == null)
+
+		if (renderer.getInitAnimation() == null)
 			renderer.setInitAnimation(e.id);
 
 		// TODO UNDO OP
