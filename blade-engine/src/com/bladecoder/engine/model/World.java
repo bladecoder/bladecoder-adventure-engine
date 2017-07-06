@@ -177,6 +177,10 @@ public class World implements Serializable, AssetConsumer {
 
 		initGame = true;
 	}
+	
+	public Timers getTimers() {
+		return timers;
+	}
 
 	public InkManager getInkManager() {
 		// Lazy creation
