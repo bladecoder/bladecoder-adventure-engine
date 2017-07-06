@@ -15,7 +15,9 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -38,6 +40,10 @@ public class AnimationAction implements Action {
 	@ActionProperty(required = true, defaultValue = "SPRITE_DEFINED")
 	@ActionPropertyDescription("The repeat mode")
 	private Tween.Type repeat = Tween.Type.SPRITE_DEFINED;
+	
+	@ActionProperty(required = true, defaultValue = "false")
+	@ActionPropertyDescription("Keeps the current actor animation direction.")
+	private boolean keepDirection = false;
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -46,8 +52,19 @@ public class AnimationAction implements Action {
 		String actorId = animation.getActorId();
 		
 		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
+		
+		String anim = animation.getAnimationId();
+		
+		if(keepDirection) {
+			String c = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
+			
+			if(anim.endsWith(AnimationDesc.LEFT) && c.endsWith(AnimationDesc.RIGHT) || 
+					anim.endsWith(AnimationDesc.RIGHT) && c.endsWith(AnimationDesc.LEFT)) {
+				anim = AnimationDesc.getFlipId(anim);
+			}
+		}
 
-		a.startAnimation(animation.getAnimationId(), repeat, count, wait?cb:null);
+		a.startAnimation(anim, repeat, count, wait?cb:null);
 
 		return wait;
 	}
