@@ -96,7 +96,7 @@ public class ActorAnimationInputPanel extends InputPanel {
 			a = (SpriteActor)Ctx.project.getSelectedScene().getActor(s, false);
 		}
 
-		if (a != null) {
+		if (a != null && a.getRenderer() instanceof AnimationRenderer) {
 
 			 HashMap<String, AnimationDesc> animations = ((AnimationRenderer)a.getRenderer()).getAnimations();
 
