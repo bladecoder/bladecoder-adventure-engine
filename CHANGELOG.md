@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## [1.2.7]
+- Added secondary animation support for Spine actors.
+- Added 'keepDirection' param to Animation action.
+- Added 'target' actor to position in Camera action.
+- Added 'LAYER' and 'IN_SCENE' params in IfAttr action.
+- Updated Spine plugin to latest Spine version.
+- Updated blade-ink dependency to v0.4.2
+- Added title image and aligment to the menu screen.
+- EDITOR: Edit Animation dialog now sets the initial source based in previous sources.
+
+
+
 ## [1.2.6]
 
 - Actors in inventory can be animated now.
