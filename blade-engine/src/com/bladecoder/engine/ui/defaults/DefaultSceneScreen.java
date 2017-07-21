@@ -428,6 +428,8 @@ public class DefaultSceneScreen implements SceneScreen {
 				setUIState(UIStates.SCENE_MODE);
 			else if (world.inCutMode())
 				setUIState(UIStates.CUT_MODE);
+			else if (world.hasDialogOptions())
+				setUIState(UIStates.DIALOG_MODE);
 			break;
 		case PAUSE_MODE:
 			if (!world.isPaused())
