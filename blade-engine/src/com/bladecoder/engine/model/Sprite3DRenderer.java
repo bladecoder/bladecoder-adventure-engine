@@ -416,21 +416,21 @@ public class Sprite3DRenderer extends AnimationRenderer {
 	private void lookat(String dir) {
 		EngineLogger.debug("LOOKAT DIRECTION - " + dir);
 
-		if (dir.equals(AnimationDesc.BACK))
+		if (dir.equals(BACK))
 			lookat(180);
-		else if (dir.equals(AnimationDesc.FRONT))
+		else if (dir.equals(FRONT))
 			lookat(0);
-		else if (dir.equals(AnimationDesc.LEFT))
+		else if (dir.equals(LEFT))
 			lookat(270);
-		else if (dir.equals(AnimationDesc.RIGHT))
+		else if (dir.equals(RIGHT))
 			lookat(90);
-		else if (dir.equals(AnimationDesc.BACKLEFT))
+		else if (dir.equals(BACKLEFT))
 			lookat(225);
-		else if (dir.equals(AnimationDesc.BACKRIGHT))
+		else if (dir.equals(BACKRIGHT))
 			lookat(135);
-		else if (dir.equals(AnimationDesc.FRONTLEFT))
+		else if (dir.equals(FRONTLEFT))
 			lookat(-45);
-		else if (dir.equals(AnimationDesc.FRONTRIGHT))
+		else if (dir.equals(FRONTRIGHT))
 			lookat(45);
 		else
 			EngineLogger.error("LOOKAT: Direction not found - " + dir);

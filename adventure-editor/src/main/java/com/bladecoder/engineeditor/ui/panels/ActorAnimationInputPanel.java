@@ -107,7 +107,7 @@ public class ActorAnimationInputPanel extends InputPanel {
 			for (AnimationDesc anim:animations.values()) {
 				values.add(anim.id);
 
-				String flipped = AnimationDesc.getFlipId(anim.id);
+				String flipped = AnimationRenderer.getFlipId(anim.id);
 
 				if (!flipped.isEmpty()) {
 					values.add(flipped);

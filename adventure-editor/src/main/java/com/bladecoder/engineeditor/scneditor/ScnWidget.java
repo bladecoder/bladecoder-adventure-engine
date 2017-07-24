@@ -628,12 +628,12 @@ public class ScnWidget extends Widget {
 			AnimationRenderer s = (AnimationRenderer) ((SpriteActor) selectedActor).getRenderer();
 
 			if (selFA == null || (s.getAnimations().get(selFA) == null
-					&& s.getAnimations().get(AnimationDesc.getFlipId(selFA)) == null)) {
+					&& s.getAnimations().get(AnimationRenderer.getFlipId(selFA)) == null)) {
 				selFA = s.getInitAnimation();
 			}
 
 			if (selFA != null && (s.getAnimations().get(selFA) != null
-					|| s.getAnimations().get(AnimationDesc.getFlipId(selFA)) != null)) {
+					|| s.getAnimations().get(AnimationRenderer.getFlipId(selFA)) != null)) {
 
 				setAnimationRenderer(selectedActor, s.getAnimations().get(selFA));
 

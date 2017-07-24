@@ -18,7 +18,7 @@ package com.bladecoder.engine.actions;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.anim.AnimationDesc;
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
@@ -29,9 +29,10 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Shows the text and sets the player to lookat in the selected actor direction")
 public class LookAtAction implements Action {
 	public enum Direction {
-		EMPTY(null), FRONT(AnimationDesc.FRONT), BACK(AnimationDesc.BACK), LEFT(AnimationDesc.LEFT), RIGHT(
-				AnimationDesc.RIGHT), FRONTLEFT(AnimationDesc.FRONTLEFT), FRONTRIGHT(
-						AnimationDesc.FRONTRIGHT), BACKLEFT(AnimationDesc.BACKLEFT), BACKRIGHT(AnimationDesc.BACKRIGHT);
+		EMPTY(null), FRONT(AnimationRenderer.FRONT), BACK(AnimationRenderer.BACK), 
+		LEFT(AnimationRenderer.LEFT), RIGHT(AnimationRenderer.RIGHT), FRONTLEFT(AnimationRenderer.FRONTLEFT), 
+		FRONTRIGHT(AnimationRenderer.FRONTRIGHT), BACKLEFT(AnimationRenderer.BACKLEFT), 
+		BACKRIGHT(AnimationRenderer.BACKRIGHT);
 
 		private final String direction;
 
@@ -51,7 +52,7 @@ public class LookAtAction implements Action {
 	@ActionPropertyDescription("The 'text' to show")
 	@ActionProperty(type = Type.SMALL_TEXT)
 	private String text;
-	
+
 	@ActionPropertyDescription("The 'voice' file to play if selected.")
 	@ActionProperty(type = Type.VOICE)
 	private String voiceId;
@@ -67,7 +68,7 @@ public class LookAtAction implements Action {
 	@Override
 	public boolean run(VerbRunner cb) {
 
-//		EngineLogger.debug("LOOKAT ACTION");
+		// EngineLogger.debug("LOOKAT ACTION");
 		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, true);
 
 		if (World.getInstance().getInventory().get(actor) == null) {
@@ -82,11 +83,12 @@ public class LookAtAction implements Action {
 		}
 
 		if (text != null) {
-			String actorId = World.getInstance().getCurrentScene().getPlayer() != null? World.getInstance().getCurrentScene().getPlayer().getId():null;
-			
+			String actorId = World.getInstance().getCurrentScene().getPlayer() != null
+					? World.getInstance().getCurrentScene().getPlayer().getId() : null;
+
 			World.getInstance().getTextManager().addText(text, TextManager.POS_SUBTITLE, TextManager.POS_SUBTITLE,
 					false, Text.Type.SUBTITLE, null, null, actorId, voiceId, wait ? cb : null);
-			
+
 			return wait;
 		}
 

@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.SpriteActor;
@@ -58,9 +57,9 @@ public class AnimationAction implements Action {
 		if(keepDirection) {
 			String c = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
 			
-			if(anim.endsWith(AnimationDesc.LEFT) && c.endsWith(AnimationDesc.RIGHT) || 
-					anim.endsWith(AnimationDesc.RIGHT) && c.endsWith(AnimationDesc.LEFT)) {
-				anim = AnimationDesc.getFlipId(anim);
+			if(anim.endsWith(AnimationRenderer.LEFT) && c.endsWith(AnimationRenderer.RIGHT) || 
+					anim.endsWith(AnimationRenderer.RIGHT) && c.endsWith(AnimationRenderer.LEFT)) {
+				anim = AnimationRenderer.getFlipId(anim);
 			}
 		}
 

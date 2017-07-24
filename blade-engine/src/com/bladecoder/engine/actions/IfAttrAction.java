@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
@@ -24,12 +25,12 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
-@ActionDescription(name="IfActorAttr", value="Execute the actions inside the If/EndIf if the attribute has the specified value.")
+@ActionDescription(name = "IfActorAttr", value = "Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfAttrAction extends AbstractIfAction {
 	public static final String ENDTYPE_VALUE = "else";
 
 	public enum ActorAttribute {
-		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY, TARGET, IN_SCENE, LAYER
+		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY, TARGET, IN_SCENE, LAYER, DIRECTION
 	}
 
 	@ActionProperty
@@ -58,7 +59,7 @@ public class IfAttrAction extends AbstractIfAction {
 		BaseActor a = s.getActor(actorId, true);
 
 		if (attr.equals(ActorAttribute.STATE) && a instanceof InteractiveActor) {
-			InteractiveActor ia = (InteractiveActor)a;
+			InteractiveActor ia = (InteractiveActor) a;
 			if (!ActionUtils.compareNullStr(value, ia.getState())) {
 				gotoElse((VerbRunner) cb);
 			}
@@ -67,43 +68,59 @@ public class IfAttrAction extends AbstractIfAction {
 			if (val != a.isVisible()) {
 				gotoElse((VerbRunner) cb);
 			}
-		} else 	if (attr.equals(ActorAttribute.INTERACTIVE)) {
+		} else if (attr.equals(ActorAttribute.INTERACTIVE)) {
 			boolean val = Boolean.parseBoolean(value);
-			
-			if(a instanceof InteractiveActor) {
-				if (val != ((InteractiveActor)a).getInteraction()) {
+
+			if (a instanceof InteractiveActor) {
+				if (val != ((InteractiveActor) a).getInteraction()) {
 					gotoElse((VerbRunner) cb);
-				}	
-			} else if(val == true) {
+				}
+			} else if (val == true) {
 				gotoElse((VerbRunner) cb);
 			}
-		} else	if (attr.equals(ActorAttribute.IN_INVENTORY)) {
+		} else if (attr.equals(ActorAttribute.IN_INVENTORY)) {
 			boolean val = Boolean.parseBoolean(value);
-			
+
 			SpriteActor item = null;
-			
-			if(a != null)
+
+			if (a != null)
 				item = World.getInstance().getInventory().get(a.getId());
-			
+
 			if ((val && item == null) || (!val && item != null)) {
 				gotoElse((VerbRunner) cb);
 			}
-		} else	if (attr.equals(ActorAttribute.TARGET)) {
-						
+		} else if (attr.equals(ActorAttribute.TARGET)) {
+
 			if (!ActionUtils.compareNullStr(value, cb.getTarget())) {
 				gotoElse((VerbRunner) cb);
 			}
-		} else	if (attr.equals(ActorAttribute.IN_SCENE)) {
+		} else if (attr.equals(ActorAttribute.IN_SCENE)) {
 			boolean val = Boolean.parseBoolean(value);
-			
+
 			BaseActor a2 = s.getActor(actorId, false);
-			
+
 			if ((val && a2 == null) || (!val && a2 != null))
 				gotoElse((VerbRunner) cb);
 		} else if (attr.equals(ActorAttribute.LAYER) && a instanceof InteractiveActor) {
-			InteractiveActor ia = (InteractiveActor)a;
+			InteractiveActor ia = (InteractiveActor) a;
 			if (!ActionUtils.compareNullStr(value, ia.getLayer())) {
 				gotoElse((VerbRunner) cb);
+			}
+		} else if (attr.equals(ActorAttribute.DIRECTION) && a instanceof SpriteActor) {
+			SpriteActor sa = (SpriteActor) a;
+
+			if (sa.getRenderer() instanceof AnimationRenderer) {
+				String dir = null;
+				
+				String anim = ((AnimationRenderer)sa.getRenderer()).getCurrentAnimationId();
+				int idx = anim.lastIndexOf('.');
+				
+				if( idx != -1)
+					dir = anim.substring(idx + 1);
+				
+				if (!ActionUtils.compareNullStr(value, dir)) {
+					gotoElse((VerbRunner) cb);
+				}
 			}
 		}
 

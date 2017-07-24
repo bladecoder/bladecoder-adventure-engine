@@ -126,7 +126,7 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 
 		String id = list.getItems().get(pos).id;
 
-		String newValue = AnimationDesc.getFlipId(id);
+		String newValue = AnimationRenderer.getFlipId(id);
 
 		renderer.setInitAnimation(newValue);
 		
@@ -213,7 +213,7 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 					init = "";
 			}
 
-			if (init.equals(name) || AnimationDesc.getFlipId(init).equals(name))
+			if (init.equals(name) || AnimationRenderer.getFlipId(init).equals(name))
 				name += " <init>";
 
 			return name;

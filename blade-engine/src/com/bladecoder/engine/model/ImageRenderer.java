@@ -139,58 +139,6 @@ public class ImageRenderer extends AnimationRenderer {
 		computeBbox();
 	}
 
-	private AnimationDesc getAnimation(String id) {
-		AnimationDesc fa = fanims.get(id);
-		flipX = false;
-
-		if (fa == null) {
-			// Search for flipped
-			String flipId = AnimationDesc.getFlipId(id);
-
-			fa = fanims.get(flipId);
-
-			if (fa != null)
-				flipX = true;
-			else {
-				// search for .left if .frontleft not found and viceversa
-				StringBuilder sb = new StringBuilder();
-
-				if (id.endsWith(AnimationDesc.FRONTLEFT)) {
-					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
-					sb.append(AnimationDesc.LEFT);
-				} else if (id.endsWith(AnimationDesc.FRONTRIGHT)) {
-					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
-					sb.append(AnimationDesc.RIGHT);
-				} else if (id.endsWith(AnimationDesc.BACKLEFT) || id.endsWith(AnimationDesc.BACKRIGHT)) {
-					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
-					sb.append(AnimationDesc.BACK);
-				} else if (id.endsWith(AnimationDesc.LEFT)) {
-					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
-					sb.append(AnimationDesc.FRONTLEFT);
-				} else if (id.endsWith(AnimationDesc.RIGHT)) {
-					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
-					sb.append(AnimationDesc.FRONTRIGHT);
-				}
-
-				String s = sb.toString();
-
-				fa = fanims.get(s);
-
-				if (fa == null) {
-					// Search for flipped
-					flipId = AnimationDesc.getFlipId(s);
-
-					fa = fanims.get(flipId);
-
-					if (fa != null)
-						flipX = true;
-				}
-			}
-		}
-
-		return fa;
-	}
-
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, String direction) {
 		StringBuilder sb = new StringBuilder(id);
@@ -219,7 +167,7 @@ public class ImageRenderer extends AnimationRenderer {
 
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
-		startAnimation(id, repeatType, count, cb, AnimationDesc.getDirectionString(p0, pf, AnimationDesc.getDirs(id, fanims)));
+		startAnimation(id, repeatType, count, cb, getDirectionString(p0, pf, getDirs(id, fanims)));
 	}
 
 	private void loadSource(String source) {
