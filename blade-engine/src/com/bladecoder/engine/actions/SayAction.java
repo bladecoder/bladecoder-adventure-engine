@@ -50,6 +50,11 @@ public class SayAction extends BaseCallbackAction {
 	@ActionPropertyDescription("The animation to set when talking.")
 	@ActionProperty(required = false)
 	private String animation;
+	
+
+	@ActionPropertyDescription("The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section)")
+	@ActionProperty(type = Type.TEXT_STYLE, required = false)
+	private String style;
 
 	@ActionProperty(defaultValue = "false")
 	@ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")
@@ -80,7 +85,7 @@ public class SayAction extends BaseCallbackAction {
 			startTalkAnim((CharacterActor) a);
 		}
 
-		World.getInstance().getTextManager().addText(text, x, y, queue, type, color, null,
+		World.getInstance().getTextManager().addText(text, x, y, queue, type, color, style,
 				a != null ? a.getId() : actor, voiceId, this);
 
 		return getWait();
