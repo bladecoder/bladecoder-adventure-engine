@@ -89,6 +89,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel renderer;
 	private InputPanel depthType;
 	private InputPanel pos;
+	private InputPanel refPoint;
 	private InputPanel scale;
 	private InputPanel rot;
 	private InputPanel tint;
@@ -150,6 +151,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				DepthType.class.getEnumConstants(), true);
 
 		pos = InputPanelFactory.createInputPanel(skin, "Position", "The sprite position.", Param.Type.VECTOR2, true, "0,0");
+		refPoint = InputPanelFactory.createInputPanel(skin, "Ref. Point", "Point of reference to relative position other actors.", Param.Type.VECTOR2, true, "0,0");
 		scale = InputPanelFactory.createInputPanel(skin, "Scale", "The sprite scale.", Param.Type.FLOAT, true, "1");
 		
 		rot = InputPanelFactory.createInputPanel(skin, "Rotation", "The sprite rotation.", Param.Type.FLOAT, true, "0");
@@ -227,7 +229,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		});
 
 		init(parent, e,
-				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, depthType, pos, scale, rot,
+				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, depthType, pos, refPoint, scale, rot,
 						tint, text, font, size, textAlign, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
 						shadowColor, bboxFromRenderer, zIndex, orgAlign, walkingSpeed, spriteSize, cameraName, fov, textColor });
 
@@ -264,6 +266,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			setVisible(desc, true);
 			setVisible(state, true);
 			setVisible(zIndex, true);
+			setVisible(refPoint, true);
 		}
 
 		if (ACTOR_TYPES[i].equals(SPRITE_TYPE_STR) || ACTOR_TYPES[i].equals(CHARACTER_TYPE_STR)) {
@@ -433,6 +436,11 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 			ia.setLayer(layer.getText());
 			ia.setInteraction(Boolean.parseBoolean(interaction.getText()));
+			
+			Vector2 rp = Param.parseVector2(refPoint.getText());
+			
+			ia.setRefPoint(rp.x, rp.y);
+
 
 			String key = desc.getText();
 
@@ -573,6 +581,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			InteractiveActor ia = (InteractiveActor) e;
 			layer.setText(ia.getLayer());
 			interaction.setText(Boolean.toString(ia.getInteraction()));
+			refPoint.setText(Param.toStringParam(ia.getRefPoint()));
 			desc.setText(Ctx.project.translate(ia.getDesc()));
 			state.setText(ia.getState());
 			zIndex.setText(Float.toString(ia.getZIndex()));
