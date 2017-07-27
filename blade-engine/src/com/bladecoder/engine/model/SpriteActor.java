@@ -24,9 +24,9 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.anim.AnimationDesc;
-import com.bladecoder.engine.anim.SpritePosTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.Tween.Type;
+import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.SerializationHelper;
@@ -170,7 +170,7 @@ public class SpriteActor extends InteractiveActor {
 		inAnim();
 
 		// resets posTween when walking
-		removeTween(SpritePosTween.class);
+		removeTween(WalkTween.class);
 
 		EngineLogger.debug("ANIMATION: " + this.id + "." + id);
 		
