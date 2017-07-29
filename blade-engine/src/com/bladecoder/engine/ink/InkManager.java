@@ -74,6 +74,14 @@ public class InkManager implements VerbRunner, Serializable {
 			EngineLogger.error("Cannot load Ink Story: " + storyName + " " + e.getMessage());
 		}
 	}
+	
+	public String getVariable(String name) {
+		return story.getVariablesState().get(name).toString();
+	}
+	
+	public void setVariable(String name, String value) throws Exception {
+		story.getVariablesState().set(name, value);
+	}
 
 	private void continueMaximally() {
 		String line = null;
