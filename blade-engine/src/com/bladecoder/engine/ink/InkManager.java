@@ -26,6 +26,7 @@ import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.ink.runtime.Choice;
+import com.bladecoder.ink.runtime.InkList;
 import com.bladecoder.ink.runtime.Story;
 
 public class InkManager implements VerbRunner, Serializable {
@@ -79,8 +80,19 @@ public class InkManager implements VerbRunner, Serializable {
 		return story.getVariablesState().get(name).toString();
 	}
 	
+	public boolean compareVariable(String name, String value) {
+		if(story.getVariablesState().get(name) instanceof InkList) {
+			return ((InkList)story.getVariablesState().get(name)).ContainsItemNamed(value);
+		} else {
+			return story.getVariablesState().get(name).toString().equals(value);
+		}
+	}
+	
 	public void setVariable(String name, String value) throws Exception {
-		story.getVariablesState().set(name, value);
+		if(story.getVariablesState().get(name) instanceof InkList) {
+			((InkList)story.getVariablesState().get(name)).addItem(value);
+		} else 
+			story.getVariablesState().set(name, value);
 	}
 
 	private void continueMaximally() {

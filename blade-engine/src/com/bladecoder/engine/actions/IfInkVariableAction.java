@@ -17,7 +17,6 @@ package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.ActionUtils;
 
 @ActionDescription("Execute the actions inside the If/EndIf if the Ink variable has the specified value.")
 public class IfInkVariableAction extends AbstractIfAction {
@@ -31,9 +30,8 @@ public class IfInkVariableAction extends AbstractIfAction {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		String valDest = World.getInstance().getInkManager().getVariable(name);
 		
-		if (!ActionUtils.compareNullStr(value, valDest)) {
+		if (! World.getInstance().getInkManager().compareVariable(name, value)) {
 			gotoElse((VerbRunner) cb);
 		}
 
