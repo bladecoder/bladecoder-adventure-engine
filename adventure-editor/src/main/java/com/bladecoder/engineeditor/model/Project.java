@@ -289,9 +289,9 @@ public class Project extends PropertyChange {
 
 			EngineLogger.setDebug();
 
-			// 1.- SAVE world.json
+			// 1.- SAVE world
 			World.getInstance().saveWorldDesc(
-					new FileHandle(new File(projectFile.getAbsolutePath() + MODEL_PATH + "/world.json")));
+					new FileHandle(new File(projectFile.getAbsolutePath() + MODEL_PATH + "/" + EngineAssetManager.WORLD_FILENAME)));
 
 			// 2.- SAVE .chapter
 			chapter.save();

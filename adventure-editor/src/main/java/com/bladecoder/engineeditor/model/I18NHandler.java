@@ -56,7 +56,7 @@ public class I18NHandler {
 	private Properties i18nChapter;
 
 	public I18NHandler(String modelPath) {
-		this.worldFilename = EngineAssetManager.WORLD_FILENAME_JSON;
+		this.worldFilename = EngineAssetManager.WORLD_FILENAME;
 		this.modelPath = modelPath;
 
 		if (!modelPath.endsWith("/"))
@@ -66,11 +66,11 @@ public class I18NHandler {
 	}
 
 	private String getI18NFilename(String modelFilename) {
-		return modelPath + modelFilename.substring(0, modelFilename.lastIndexOf('.')) + ".properties";
+		return modelPath + modelFilename + ".properties";
 	}
 
 	public void load(String chapterId) {
-		this.chapterFilename = chapterId + ".chapter";
+		this.chapterFilename = chapterId;
 		i18nChapter = loadI18N(chapterFilename);
 	}
 

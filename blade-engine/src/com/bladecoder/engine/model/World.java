@@ -92,9 +92,9 @@ public class World implements Serializable, AssetConsumer {
 	private Scene currentScene;
 	private Dialog currentDialog;
 
-	private Map<String, Inventory> inventories;	
+	private Map<String, Inventory> inventories;
 	private String currentInventory;
-	
+
 	private UIActors uiActors;
 
 	private TextManager textManager;
@@ -126,14 +126,14 @@ public class World implements Serializable, AssetConsumer {
 	private AssetState assetState;
 	private boolean disposed;
 	transient private SpriteBatch spriteBatch;
-	
+
 	// for debug purposes, keep track of loading time
 	private long initLoadingTime;
 
 	// We not dispose the last loaded scene.
 	// Instead we cache it to improve performance when returning
 	transient private Scene cachedScene;
-	
+
 	// If not null, this scene is set as the currentScene and the test Verb is
 	// executed
 	private String testScene;
@@ -177,14 +177,14 @@ public class World implements Serializable, AssetConsumer {
 
 		initGame = true;
 	}
-	
+
 	public Timers getTimers() {
 		return timers;
 	}
 
 	public InkManager getInkManager() {
 		// Lazy creation
-		if(inkManager == null) {
+		if (inkManager == null) {
 			// Allow not link the Blade Ink Engine library if you don't use Ink
 			try {
 				Class.forName("com.bladecoder.ink.runtime.Story");
@@ -193,7 +193,7 @@ public class World implements Serializable, AssetConsumer {
 				EngineLogger.debug("WARNING: Blade Ink Library not found.");
 			}
 		}
-		
+
 		return inkManager;
 	}
 
@@ -238,7 +238,7 @@ public class World implements Serializable, AssetConsumer {
 		if (assetState == AssetState.LOADED) {
 			getCurrentScene().draw(spriteBatch);
 		}
-		
+
 		uiActors.draw(spriteBatch);
 	}
 
@@ -289,7 +289,7 @@ public class World implements Serializable, AssetConsumer {
 					currentScene.runVerb(Verb.TEST_VERB);
 					testScene = null;
 				}
-				
+
 				initCurrentScene();
 			}
 
@@ -301,10 +301,10 @@ public class World implements Serializable, AssetConsumer {
 		timeOfGame += delta * 1000f;
 
 		getCurrentScene().update(delta);
-		
+
 		uiActors.update(delta);
 		getInventory().update(delta);
-		
+
 		textManager.update(delta);
 		timers.update(delta);
 
@@ -321,8 +321,8 @@ public class World implements Serializable, AssetConsumer {
 
 		if (getInventory().isDisposed())
 			getInventory().loadAssets();
-		
-		if(uiActors.isDisposed())
+
+		if (uiActors.isDisposed())
 			uiActors.loadAssets();
 
 		musicEngine.loadAssets();
@@ -333,8 +333,8 @@ public class World implements Serializable, AssetConsumer {
 	public void retrieveAssets() {
 		if (getInventory().isDisposed())
 			getInventory().retrieveAssets();
-		
-		if(uiActors.isDisposed())
+
+		if (uiActors.isDisposed())
 			uiActors.retrieveAssets();
 
 		getCurrentScene().retrieveAssets();
@@ -379,7 +379,7 @@ public class World implements Serializable, AssetConsumer {
 	public String getInitScene() {
 		return initScene;
 	}
-	
+
 	public String getCurrentChapter() {
 		return currentChapter;
 	}
@@ -447,7 +447,7 @@ public class World implements Serializable, AssetConsumer {
 	public Inventory getInventory() {
 		return inventories.get(currentInventory);
 	}
-	
+
 	public UIActors getUIActors() {
 		return uiActors;
 	}
@@ -504,19 +504,18 @@ public class World implements Serializable, AssetConsumer {
 
 		currentInventory = inventory;
 	}
-	
+
 	public boolean hasDialogOptions() {
-		return currentDialog != null || 
-				(inkManager != null && inkManager.hasChoices());
+		return currentDialog != null || (inkManager != null && inkManager.hasChoices());
 	}
 
 	public void selectDialogOption(int i) {
 		if (currentDialog != null)
 			setCurrentDialog(currentDialog.selectOption(currentDialog.getVisibleOptions().get(i)));
-		else if(inkManager != null)
+		else if (inkManager != null)
 			World.getInstance().getInkManager().selectChoice(i);
 	}
-	
+
 	public List<String> getDialogOptions() {
 		List<String> choices;
 
@@ -533,38 +532,36 @@ public class World implements Serializable, AssetConsumer {
 
 			for (Choice o : options) {
 				String line = o.getText();
-				
+
 				int idx = line.indexOf(InkManager.NAME_VALUE_TAG_SEPARATOR);
 
 				if (idx != -1) {
 					line = line.substring(idx + 1).trim();
 				}
-				
+
 				choices.add(line);
 			}
 		}
-		
+
 		return choices;
 	}
-	
-	
-	
+
 	// tmp vector to use in getInteractiveActorAtInput()
 	private final Vector3 unprojectTmp = new Vector3();
-	
+
 	/**
 	 * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and
 	 * the UIActors list.
-	 */ 
+	 */
 	public InteractiveActor getInteractiveActorAtInput(Viewport v, float tolerance) {
-		
+
 		getSceneCamera().getInputUnProject(v, unprojectTmp);
-		
+
 		InteractiveActor a = currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
-		
-		if(a != null)
+
+		if (a != null)
 			return a;
-		
+
 		// search in uiActors
 		return uiActors.getActorAtInput(v);
 	}
@@ -634,7 +631,7 @@ public class World implements Serializable, AssetConsumer {
 			assetState = null;
 
 			musicEngine.dispose();
-			
+
 			inkManager = null;
 
 		} catch (Exception e) {
@@ -683,7 +680,7 @@ public class World implements Serializable, AssetConsumer {
 		paused = true;
 
 		if (currentScene != null) {
-			
+
 			// do not pause the music when going to the loading screen.
 			if (assetState == AssetState.LOADED) {
 				musicEngine.pauseMusic();
@@ -770,32 +767,41 @@ public class World implements Serializable, AssetConsumer {
 	 * @throws IOException
 	 */
 	public void loadWorldDesc() throws IOException {
-		if (EngineAssetManager.getInstance().getModelFile(EngineAssetManager.WORLD_FILENAME_JSON).exists()) {
-			SerializationHelper.getInstance().setMode(Mode.MODEL);
 
-			JsonValue root = new JsonReader().parse(EngineAssetManager.getInstance()
-					.getModelFile(EngineAssetManager.WORLD_FILENAME_JSON).reader("UTF-8"));
+		String worldFilename = EngineAssetManager.WORLD_FILENAME;
 
-			Json json = new Json();
-			json.setIgnoreUnknownFields(true);
+		if (!EngineAssetManager.getInstance().getModelFile(worldFilename).exists()) {
+			
+			// Search the world file with ".json" ext if not found.
+			worldFilename = EngineAssetManager.WORLD_FILENAME + ".json";
 
-			int width = json.readValue("width", Integer.class, root);
-			int height = json.readValue("height", Integer.class, root);
-
-			// When we know the world width, we can put the scale
-			EngineAssetManager.getInstance().setScale(width, height);
-			float scale = EngineAssetManager.getInstance().getScale();
-
-			setWidth((int) (width * scale));
-			setHeight((int) (height * scale));
-			setInitChapter(json.readValue("initChapter", String.class, root));
-			verbs.read(json, root);
-			I18N.loadWorld(EngineAssetManager.MODEL_DIR + "world");
-		} else {
-			EngineLogger.error("ERROR LOADING WORLD: world.json doesn't exists.");
-			dispose();
-			throw new IOException("ERROR LOADING WORLD: world.json doesn't exists.");
+			if (!EngineAssetManager.getInstance().getModelFile(worldFilename).exists()) {
+				EngineLogger.error("ERROR LOADING WORLD: world file not found.");
+				dispose();
+				throw new IOException("ERROR LOADING WORLD: world file not found.");
+			}
 		}
+
+		SerializationHelper.getInstance().setMode(Mode.MODEL);
+
+		JsonValue root = new JsonReader()
+				.parse(EngineAssetManager.getInstance().getModelFile(worldFilename).reader("UTF-8"));
+
+		Json json = new Json();
+		json.setIgnoreUnknownFields(true);
+
+		int width = json.readValue("width", Integer.class, root);
+		int height = json.readValue("height", Integer.class, root);
+
+		// We know the world width, so we can set the scale
+		EngineAssetManager.getInstance().setScale(width, height);
+		float scale = EngineAssetManager.getInstance().getScale();
+
+		setWidth((int) (width * scale));
+		setHeight((int) (height * scale));
+		setInitChapter(json.readValue("initChapter", String.class, root));
+		verbs.read(json, root);
+		I18N.loadWorld(EngineAssetManager.MODEL_DIR + EngineAssetManager.WORLD_FILENAME);
 	}
 
 	public void saveWorldDesc(FileHandle file) throws IOException {
@@ -854,7 +860,7 @@ public class World implements Serializable, AssetConsumer {
 			read(json, root);
 
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
-			
+
 			customProperties.put(WorldProperties.CURRENT_CHAPTER.toString(), chapterName);
 		} else {
 			EngineLogger.error(
@@ -866,11 +872,11 @@ public class World implements Serializable, AssetConsumer {
 
 		EngineLogger.debug("MODEL LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 	}
-	
-	private  ObjectWrapper getObjectWrapper() {
-		if(wrapper == null)
+
+	private ObjectWrapper getObjectWrapper() {
+		if (wrapper == null)
 			wrapper = new ObjectWrapper(this);
-		
+
 		return wrapper;
 	}
 
@@ -883,7 +889,7 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void loadChapter(String chapter, String scene, boolean test) throws Exception {
-		if(test)
+		if (test)
 			this.testScene = scene;
 
 		loadChapter(chapter);
@@ -893,7 +899,7 @@ public class World implements Serializable, AssetConsumer {
 			setCurrentScene(scene);
 		}
 	}
-	
+
 	public void setTestScene(String s) {
 		testScene = s;
 	}
@@ -1085,10 +1091,10 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("chapter", currentChapter);
 			json.writeValue("musicEngine", musicEngine);
 
-			if(inkManager != null)
+			if (inkManager != null)
 				json.writeValue("inkManager", inkManager);
-			
-			if(!uiActors.getActors().isEmpty())
+
+			if (!uiActors.getActors().isEmpty())
 				json.writeValue("uiActors", uiActors);
 
 			ActionCallbackQueue.write(json);
@@ -1145,9 +1151,10 @@ public class World implements Serializable, AssetConsumer {
 			SerializationHelper.getInstance().setMode(Mode.STATE);
 
 			currentScene = scenes.get(json.readValue("currentScene", String.class, jsonData));
-			
-			// read inkManager after setting he current scene but before reading scenes and verbs tweens
-			if(jsonData.get("inkManager") != null) {
+
+			// read inkManager after setting he current scene but before reading
+			// scenes and verbs tweens
+			if (jsonData.get("inkManager") != null) {
 				getInkManager().read(json, jsonData.get("inkManager"));
 			}
 
@@ -1162,8 +1169,8 @@ public class World implements Serializable, AssetConsumer {
 
 			inventories = json.readValue("inventories", HashMap.class, Inventory.class, jsonData);
 			currentInventory = json.readValue("currentInventory", String.class, jsonData);
-			
-			if(jsonData.get("uiActors") != null) {
+
+			if (jsonData.get("uiActors") != null) {
 				getUIActors().read(json, jsonData.get("uiActors"));
 			}
 

@@ -56,12 +56,10 @@ public class I18N {
 
 		// RELOAD TRANSLATIONS
 		if (i18nWorld != null) {
-//			loadWorld(i18nWorld.getBaseBundleName());
 			loadWorld(i18nWorldFilename);
 		}
 
 		if (i18nChapter != null) {
-//			loadChapter(i18nChapter.getBaseBundleName());
 			loadChapter(i18nChapterFilename);
 		}
 	}

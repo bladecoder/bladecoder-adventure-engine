@@ -292,7 +292,7 @@ public class BladeEngineSetup {
 		
 		project.files.add(new ProjectFile("android/assets/model/00.chapter.json", assetPath + "/model/00.chapter.json", false));
 		project.files.add(new ProjectFile("android/assets/model/world.properties", assetPath + "/model/world.properties", false));
-		project.files.add(new ProjectFile("android/assets/model/world.json", assetPath + "/model/world.json", false));
+		project.files.add(new ProjectFile("android/assets/model/world", assetPath + "/model/world", false));
 		project.files.add(new ProjectFile("android/assets/model/world_es.properties", assetPath + "/model/world_es.properties", false));
 		
 		project.files.add(new ProjectFile("android/assets/ui/credits.txt", assetPath + "/ui/credits.txt", false));
