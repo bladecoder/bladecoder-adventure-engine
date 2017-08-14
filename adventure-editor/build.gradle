@@ -42,7 +42,7 @@ dependencies {
   compile "commons-io:commons-io:2.1"
   compile "com.bladecoder.packr:packr:2.1"
   compile "eu.infomas:annotation-detector:3.0.5"
-  compile "com.strongjoshua:libgdx-inGameConsole:0.5.2"
+  compile "com.strongjoshua:libgdx-inGameConsole:0.5.3"
   compile "com.kotcrab.vis:vis-ui:1.2.2"
   compile "com.bladecoder.ink:blade-ink:$bladeInkVersion"
   
