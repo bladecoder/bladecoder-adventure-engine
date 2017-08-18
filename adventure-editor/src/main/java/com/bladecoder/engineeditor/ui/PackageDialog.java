@@ -46,6 +46,7 @@ import com.bladecoder.engineeditor.ui.panels.EditDialog;
 import com.bladecoder.engineeditor.ui.panels.FileInputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
+import com.kotcrab.vis.ui.widget.file.FileTypeFilter;
 
 public class PackageDialog extends EditDialog {
 	private static final String ARCH_PROP = "package.arch";
@@ -63,10 +64,10 @@ public class PackageDialog extends EditDialog {
 	private InputPanel dir;
 	private InputPanel type;
 	private InputPanel os;
-	private InputPanel linux64JRE;
-	private InputPanel linux32JRE;
-	private InputPanel winJRE;
-	private InputPanel osxJRE;
+	private FileInputPanel linux64JRE;
+	private FileInputPanel linux32JRE;
+	private FileInputPanel winJRE;
+	private FileInputPanel osxJRE;
 	private InputPanel version;
 	private InputPanel icon;
 	private InputPanel versionCode;
@@ -91,16 +92,29 @@ public class PackageDialog extends EditDialog {
 				FileInputPanel.DialogType.DIRECTORY);
 		type = InputPanelFactory.createInputPanel(skin, "Type", "Select the package type", TYPES, true);
 		os = InputPanelFactory.createInputPanel(skin, "OS", "Select the OS of the package", OSS, true);
+		
+		FileTypeFilter typeFilter = new FileTypeFilter(true);
+		typeFilter.addRule("Zip files (*.zip)", "zip");
+		
 		linux64JRE = new FileInputPanel(skin, "JRE.Linux64",
 				"Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file",
 				FileInputPanel.DialogType.OPEN_FILE);
+		linux64JRE.setFileTypeFilter(typeFilter);
+		
+		
 		linux32JRE = new FileInputPanel(skin, "JRE.Linux32",
 				"Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file",
 				FileInputPanel.DialogType.OPEN_FILE);
+		linux32JRE.setFileTypeFilter(typeFilter);
+		
 		winJRE = new FileInputPanel(skin, "JRE.Windows64",
 				"Select the Windows 64 bits JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
+		winJRE.setFileTypeFilter(typeFilter);
+		
 		osxJRE = new FileInputPanel(skin, "JRE.MACOS", "Select the MacOS JRE Location to bundle. Must be a ZIP file",
 				FileInputPanel.DialogType.OPEN_FILE);
+		osxJRE.setFileTypeFilter(typeFilter);
+		
 		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the package version", true);
 		icon = new FileInputPanel(skin, "MacOS Icon", "The icon (.icns) for the Mac package. It is not mandatory.", FileInputPanel.DialogType.OPEN_FILE,
 				false);

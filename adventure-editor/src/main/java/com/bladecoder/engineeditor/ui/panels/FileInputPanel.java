@@ -31,6 +31,7 @@ import com.kotcrab.vis.ui.widget.file.FileChooser.Mode;
 import com.kotcrab.vis.ui.widget.file.FileChooser.SelectionMode;
 import com.kotcrab.vis.ui.widget.file.FileChooser.ViewMode;
 import com.kotcrab.vis.ui.widget.file.FileChooserListener;
+import com.kotcrab.vis.ui.widget.file.FileTypeFilter;
 
 public class FileInputPanel extends InputPanel {
 	public enum DialogType {
@@ -140,6 +141,10 @@ public class FileInputPanel extends InputPanel {
 		button.setText(text);
 		selected = new File(text);
 		cd = new File(text);
+	}
+	
+	public void setFileTypeFilter(FileTypeFilter ftf) {
+		fileChooser.setFileTypeFilter(ftf);
 	}
 
 }
