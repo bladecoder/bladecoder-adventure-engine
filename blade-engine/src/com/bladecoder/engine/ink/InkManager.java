@@ -106,10 +106,11 @@ public class InkManager implements VerbRunner, Serializable {
 				line = story.Continue();
 				currentLineParams.clear();
 
-				if (!line.isEmpty()) {
-					// Remove trailing '\n'
+				// Remove trailing '\n'
+				if (!line.isEmpty())
 					line = line.substring(0, line.length() - 1);
-
+				
+				if (!line.isEmpty()) {
 					EngineLogger.debug("INK LINE: " + line);
 
 					processParams(story.getCurrentTags(), currentLineParams);
