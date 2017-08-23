@@ -28,6 +28,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Polygon;
@@ -497,7 +498,16 @@ public class DefaultSceneScreen implements SceneScreen {
 					pointer.setDesc(currentActor.getDesc());
 
 				if (currentActor.getVerb("leave") != null) {
-					pointer.setLeaveIcon(calcLeaveArrowRotation(currentActor));
+					TextureRegion r = null;
+					
+					if(currentActor.getVerb("leave").getIcon() != null &&
+							(r = getUI().getSkin().getAtlas().findRegion(currentActor.getVerb("leave").getIcon())) != null
+							) {
+						pointer.setIcon(r);
+						
+					} else {
+						pointer.setLeaveIcon(calcLeaveArrowRotation(currentActor));
+					}
 				} else
 					pointer.setHotspotIcon();
 			} else {
