@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -91,13 +92,15 @@ public class UIActors implements AssetConsumer, Serializable {
 	@Override
 	public void loadAssets() {
 		for (InteractiveActor a : actors)
-			a.loadAssets();
+			if(a instanceof SpriteActor)
+				((AssetConsumer) a).loadAssets();
 	}
 
 	@Override
 	public void retrieveAssets() {
 		for (InteractiveActor a : actors) {
-			a.retrieveAssets();
+			if(a instanceof SpriteActor)
+			((AssetConsumer) a).retrieveAssets();
 		}
 		
 		cam = new SceneCamera();
@@ -109,7 +112,8 @@ public class UIActors implements AssetConsumer, Serializable {
 	@Override
 	public void dispose() {
 		for (InteractiveActor a : actors)
-			a.dispose();
+			if(a instanceof SpriteActor)
+				((Disposable) a).dispose();
 
 		disposed = true;
 	}

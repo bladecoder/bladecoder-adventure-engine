@@ -15,12 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
-import com.badlogic.gdx.audio.Sound;
-import com.bladecoder.engine.assets.AssetConsumer;
-import com.bladecoder.engine.assets.EngineAssetManager;
-
-public class SoundFX implements AssetConsumer {
-	transient private Sound s;
+public class SoundDesc {
 	private String id;
 	private boolean loop;
 	private String filename;
@@ -28,55 +23,16 @@ public class SoundFX implements AssetConsumer {
 	private float pan = 0f;
 	private boolean preload;
 	
-	public SoundFX() {
+	public SoundDesc() {
 		
 	}
 	
-	public SoundFX(String id, String filename, boolean loop, float volume, float pan, boolean preload) {
+	public SoundDesc(String id, String filename, boolean loop, float volume, float pan, boolean preload) {
 		this.id = id;
 		this.filename = filename;
 		this.loop = loop;
 		this.volume = volume;
 		this.pan = pan;
-	}
-	
-	public void play() {
-		if(s==null) {
-			if(!preload) {
-				loadAssets();
-				EngineAssetManager.getInstance().finishLoading();
-				retrieveAssets();
-				
-				if(s == null)
-					return;
-			} else {
-				return;
-			}
-		}
-		
-		if(loop) s.loop(volume, 1, pan);
-		else s.play(volume, 1, pan);
-	}
-
-	public void stop() {
-		if(s==null)
-			return;
-		
-		s.stop();
-	}
-	
-	public void pause() {
-		if(s==null)
-			return;
-		
-		s.pause();
-	}
-	
-	public void resume() {
-		if(s==null)
-			return;
-		
-		s.resume();
 	}
 	
 	public boolean getLoop() {
@@ -125,23 +81,5 @@ public class SoundFX implements AssetConsumer {
 
 	public void setPreload(boolean preload) {
 		this.preload = preload;
-	}
-
-	@Override
-	public void loadAssets() {
-//		EngineLogger.debug("LOADING SOUND: " + id + " - " + filename);
-		EngineAssetManager.getInstance().loadSound(getFilename());
-	}
-	
-	@Override
-	public void retrieveAssets() {
-		s = EngineAssetManager.getInstance().getSound(getFilename());
-	}
-	
-	@Override
-	public void dispose() {
-//		EngineLogger.debug("DISPOSING SOUND: " + id + " - " + filename);
-		stop();
-		EngineAssetManager.getInstance().disposeSound(getFilename());
 	}
 }

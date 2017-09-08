@@ -16,7 +16,7 @@ import com.bladecoder.engine.util.EngineLogger;
  * 
  * @author rgarcia
  */
-public class MusicEngine implements Serializable, AssetConsumer {
+public class MusicManager implements Serializable, AssetConsumer {
 	private MusicDesc desc = null;
 
 	private Music music = null;

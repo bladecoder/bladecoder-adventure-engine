@@ -26,8 +26,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Param;
-import com.bladecoder.engine.model.InteractiveActor;
-import com.bladecoder.engine.model.SoundFX;
+import com.bladecoder.engine.model.SoundDesc;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.common.ModelTools;
@@ -37,7 +37,7 @@ import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 import com.bladecoder.engineeditor.undo.UndoCreateSound;
 
-public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> {
+public class EditSoundDialog extends EditModelDialog<World, SoundDesc> {
 
 	private InputPanel id;
 	private InputPanel filename;
@@ -48,7 +48,7 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 	
 	private Sound s = null;
 
-	public EditSoundDialog(Skin skin, InteractiveActor parent, SoundFX e) {
+	public EditSoundDialog(Skin skin, World parent, SoundDesc e) {
 		super(skin);
 
 		id = InputPanelFactory.createInputPanel(skin, "Sound ID", "The id of the sound", true);
@@ -92,12 +92,12 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 	protected void inputsToModel(boolean create) {
 
 		if (create) {
-			e = new SoundFX();
+			e = new SoundDesc();
 
 			// UNDO OP
-			Ctx.project.getUndoStack().add(new UndoCreateSound(parent, e));
+			Ctx.project.getUndoStack().add(new UndoCreateSound(e));
 		} else {
-			HashMap<String, SoundFX> sounds = parent.getSounds();
+			HashMap<String, SoundDesc> sounds = parent.getSounds();
 			sounds.remove(e.getId());
 		}
 
@@ -111,7 +111,7 @@ public class EditSoundDialog extends EditModelDialog<InteractiveActor, SoundFX> 
 		e.setPan(Float.parseFloat(pan.getText()));
 		e.setPreload(Boolean.parseBoolean(preload.getText()));
 
-		parent.addSound(e);
+		parent.getSounds().put(e.getId(), e);
 
 		Ctx.project.setModified();
 	}

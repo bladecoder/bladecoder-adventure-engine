@@ -15,24 +15,31 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.model.MusicManager;
+import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
-@ActionDescription("Change the volume of the current playing music.")
-public class MusicVolumeAction implements Action {
+@ActionDescription("Play/Stop a sound")
+public class PlaySoundAction implements Action {
+	@ActionPropertyDescription("The 'soundId' to play. ")
+	@ActionProperty(required = true, type = Type.STRING)
+	private String sound;
 	
-	@ActionProperty(required = true, defaultValue = "1.0")
-	@ActionPropertyDescription("Volume of the music [0-1].")
-	private float volume = 1.0f;
+	@ActionProperty(required = true, defaultValue = "false")
+	@ActionPropertyDescription("When 'true' stops the sound instead of playing it.")
+	private boolean stop = false;
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		MusicManager musicEngine = World.getInstance().getMusicManager();
 		
-		musicEngine.setVolume(volume);
+		if(!stop)	{
+			World.getInstance().getCurrentScene().getSoundManager().playSound(sound);
+		} else {
+			World.getInstance().getCurrentScene().getSoundManager().stopSound(sound);
+		}
 		
 		return false;
 	}
+
 
 }

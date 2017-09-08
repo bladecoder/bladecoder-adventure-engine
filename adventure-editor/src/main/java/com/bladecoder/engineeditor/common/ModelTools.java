@@ -49,7 +49,7 @@ import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
-import com.bladecoder.engine.model.SoundFX;
+import com.bladecoder.engine.model.SoundDesc;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
@@ -364,7 +364,7 @@ public class ModelTools {
 										EditorLogger.error("Key not found: " + o.getText());
 									}
 								}
-								
+
 								if (o.getResponseText() != null && !o.getResponseText().isEmpty()
 										&& o.getResponseText().charAt(0) == I18N.PREFIX) {
 									String trans = Ctx.project.translate(o.getResponseText());
@@ -383,30 +383,20 @@ public class ModelTools {
 	}
 
 	public static void printUnusedSounds() {
-		Map<String, Scene> scenes = World.getInstance().getScenes();
 		ArrayList<String> unusedSounds = new ArrayList<String>(Arrays.asList(getSoundList()));
 
-		for (Scene scn : scenes.values()) {
-			Map<String, BaseActor> actors = scn.getActors();
+		HashMap<String, SoundDesc> sounds = World.getInstance().getSounds();
 
-			for (BaseActor a : actors.values()) {
-				if (a instanceof InteractiveActor) {
-					HashMap<String, SoundFX> sounds = ((InteractiveActor) a).getSounds();
-					
-					if(sounds != null) {
-						for(SoundFX s:sounds.values()) {
-							unusedSounds.remove(s.getFilename());
-						}
-					}
-					
-				}
+		if (sounds != null) {
+			for (SoundDesc s : sounds.values()) {
+				unusedSounds.remove(s.getFilename());
 			}
 		}
-		
-		for(String s:unusedSounds)
+
+		for (String s : unusedSounds)
 			EditorLogger.error(s);
 	}
-	
+
 	public static String[] getSoundList() {
 		String path = Ctx.project.getProjectPath() + Project.SOUND_PATH;
 
@@ -423,14 +413,17 @@ public class ModelTools {
 			}
 		});
 
+		if(soundFiles == null)
+			soundFiles = new String[0];
+		
 		Arrays.sort(soundFiles);
 
 		return soundFiles;
 	}
-	
+
 	public static void extractInkTexts(String story) throws IOException {
 		String file = Ctx.project.getModelPath() + "/" + story + EngineAssetManager.INK_EXT;
-		
+
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 		StringBuilder sb = new StringBuilder();
 
@@ -446,47 +439,47 @@ public class ModelTools {
 				sb.append("\n");
 				line = br.readLine();
 			}
-			
+
 		} finally {
 			br.close();
 		}
-		
+
 		JsonValue root = new JsonReader().parse(sb.toString());
-		
+
 		StringBuilder tsvString = new StringBuilder();
-		
+
 		extractInkTextsInternal("ink." + story + ".", root, tsvString);
 		FileUtils.writeStringToFile(new File(file + ".tsv"), tsvString.toString());
-		
+
 		String json = root.toJson(OutputType.json);
 		FileUtils.writeStringToFile(new File(file + ".new"), json);
-		
+
 		Ctx.project.setModified();
 	}
-	
+
 	private static void extractInkTextsInternal(String prefix, JsonValue v, StringBuilder sb) {
-		if(v.isArray() || v.isObject()) {
+		if (v.isArray() || v.isObject()) {
 			for (int i = 0; i < v.size; i++) {
 				JsonValue aValue = v.get(i);
-				
+
 				extractInkTextsInternal(prefix, aValue, sb);
 			}
-		} else if(v.isString() && v.asString().charAt(0) == '^') {
+		} else if (v.isString() && v.asString().charAt(0) == '^') {
 			String value = v.asString().substring(1).trim();
-//			String key = "ink." + value.hashCode();
-			
+			// String key = "ink." + value.hashCode();
+
 			String key = prefix;
-			
+
 			try {
 				MessageDigest md = MessageDigest.getInstance("SHA-1");
 				byte[] bytes = value.getBytes(("UTF-8"));
 				md.update(bytes);
 				byte[] digest = md.digest();
-				key +=  Base64Coder.encodeLines(digest).substring(0, 10);
+				key += Base64Coder.encodeLines(digest).substring(0, 10);
 			} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-				
+
 			}
-			
+
 			Ctx.project.getI18N().setTranslation(key, value);
 			sb.append(key + "\t" + value + "\n");
 			v.set("^" + I18N.PREFIX + key);

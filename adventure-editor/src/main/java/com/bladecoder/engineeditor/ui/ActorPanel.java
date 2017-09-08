@@ -22,14 +22,10 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.anim.AnimationDesc;
-import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
-import com.bladecoder.engine.model.InteractiveActor;
-import com.bladecoder.engine.model.ObstacleActor;
-import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
@@ -42,8 +38,6 @@ public class ActorPanel extends HeaderPanel {
 	private VerbList verbList;
 	private DialogList dialogList;
 	private SpriteList faList;
-	private SoundList soundList;
-//	private ActorProps props;
 
 	public ActorPanel(Skin skin) {
 		super(skin, "ACTOR");
@@ -52,7 +46,7 @@ public class ActorPanel extends HeaderPanel {
 		dialogList = new DialogList(skin);
 		faList = new SpriteList(skin);
 //		props = new ActorProps(skin);
-		soundList = new SoundList(skin);
+
 		
 		setContent(tabPanel);
 		tabPanel.addTab("Verbs", verbList);
@@ -72,10 +66,6 @@ public class ActorPanel extends HeaderPanel {
 						
 							if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof AnimationRenderer)
 								tabPanel.addTab("Animations", faList);
-
-							if (!(a instanceof ObstacleActor) &&
-									!(a instanceof AnchorActor))
-								tabPanel.addTab("Sounds", soundList);
 
 							if (a instanceof CharacterActor) {
 								tabPanel.addTab("Dialogs", dialogList);
@@ -105,16 +95,6 @@ public class ActorPanel extends HeaderPanel {
 								faList.addElements((SpriteActor)a, null);
 						} else {
 							faList.addElements(null, null);
-						}
-						
-						if(a instanceof InteractiveActor) {
-							HashMap<String, SoundFX> sounds = ((InteractiveActor) a).getSounds();
-							if(sounds != null)
-								soundList.addElements((InteractiveActor)a, Arrays.asList(sounds.values().toArray(new SoundFX[0])));
-							else
-								soundList.addElements((InteractiveActor)a, null);
-						} else {
-							soundList.addElements(null, null);
 						}
 						
 						verbList.changeActor();

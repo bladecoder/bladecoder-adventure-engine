@@ -229,8 +229,8 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 		parent.addActor(newElement);
 		Ctx.project.getI18N().extractStrings(parent.getId(), newElement);
 		
-		if(newElement instanceof InteractiveActor) {
-			InteractiveActor ia = (InteractiveActor) newElement;
+		if(newElement instanceof SpriteActor) {
+			SpriteActor ia = (SpriteActor) newElement;
 			ia.loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 			ia.retrieveAssets();

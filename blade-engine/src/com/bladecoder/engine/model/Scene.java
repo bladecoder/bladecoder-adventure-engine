@@ -94,6 +94,8 @@ public class Scene implements Serializable, AssetConsumer {
 	private String state;
 
 	private VerbManager verbs = new VerbManager();
+	
+	private SceneSoundManager soundManager = new SceneSoundManager();
 
 	public Scene() {
 	}
@@ -505,6 +507,10 @@ public class Scene implements Serializable, AssetConsumer {
 	public SpriteActor getCameraFollowActor() {
 		return followActor;
 	}
+	
+	public SceneSoundManager getSoundManager() {
+		return soundManager;
+	}
 
 	@Override
 	public void loadAssets() {
@@ -522,6 +528,8 @@ public class Scene implements Serializable, AssetConsumer {
 		if (polygonalNavGraph != null) {
 			polygonalNavGraph.createInitialGraph(actors.values());
 		}
+		
+		soundManager.loadAssets();
 	}
 
 	@Override
@@ -556,6 +564,8 @@ public class Scene implements Serializable, AssetConsumer {
 			if (a instanceof AssetConsumer)
 				((AssetConsumer) a).retrieveAssets();
 		}
+		
+		soundManager.retrieveAssets();
 	}
 
 	@Override
@@ -571,6 +581,8 @@ public class Scene implements Serializable, AssetConsumer {
 			if (a instanceof AssetConsumer)
 				((AssetConsumer) a).dispose();
 		}
+		
+		soundManager.dispose();
 	}
 
 	public Vector2 getSceneSize() {
@@ -634,6 +646,8 @@ public class Scene implements Serializable, AssetConsumer {
 
 			if (followActor != null)
 				json.writeValue("followActor", followActor.getId());
+			
+			soundManager.write(json);
 		}
 
 		verbs.write(json);
@@ -717,6 +731,8 @@ public class Scene implements Serializable, AssetConsumer {
 			String followActorId = json.readValue("followActor", String.class, jsonData);
 
 			setCameraFollowActor((SpriteActor) actors.get(followActorId));
+			
+			soundManager.read(json, jsonData);
 		}
 
 		verbs.read(json, jsonData);

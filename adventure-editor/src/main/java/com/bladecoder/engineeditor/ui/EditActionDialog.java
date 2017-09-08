@@ -48,12 +48,11 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 		this.scope = scope;
 		this.pos = e == null ? pos + 1 : pos;
-		
+
 		String[] actions = ActionDetector.getActionNames();
 		Arrays.sort(actions);
 
-		actionPanel = InputPanelFactory.createInputPanel(skin, "Action", "Select the action to create.", actions,
-				true);
+		actionPanel = InputPanelFactory.createInputPanel(skin, "Action", "Select the action to create.", actions, true);
 
 		((SelectBox<String>) actionPanel.getField()).addListener(new ChangeListener() {
 
@@ -62,7 +61,7 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 				setAction();
 			}
 		});
-		
+
 		if (e != null) {
 			String id = ActionUtils.getName(e.getClass());
 
@@ -89,8 +88,14 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 		Action tmp = null;
 
-			tmp = ActionDetector.create(id, null);
-			setInfo(ActionUtils.getInfo(tmp.getClass()));
+		tmp = ActionDetector.create(id, null);
+		
+		String info = ActionUtils.getInfo(tmp.getClass());
+		
+		if(ActionUtils.isDeprecated(tmp.getClass()))
+			info = "[RED]DEPRECATED[]\n" + info;
+		
+		setInfo(info);
 
 		if (e == null || tmp == null || !(e.getClass().getName().equals(tmp.getClass().getName())))
 			e = tmp;
@@ -133,20 +138,22 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 					if (scope.equals(ScopePanel.WORLD_SCOPE)) {
 						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
 							key = Ctx.project.getI18N().genKey(null, null, parent.getHashKey(), pos, i[j].getTitle());
-						
+
 						Ctx.project.getI18N().setWorldTranslation(key, v);
 					} else if (scope.equals(ScopePanel.SCENE_SCOPE)) {
 						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
-							key = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(), null, parent.getHashKey(), pos, i[j].getTitle());
-						
+							key = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(), null,
+									parent.getHashKey(), pos, i[j].getTitle());
+
 						Ctx.project.getI18N().setTranslation(key, v);
 					} else {
 						if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
-							key = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(), Ctx.project.getSelectedActor().getId(), parent.getHashKey(), pos, i[j].getTitle());
-						
+							key = Ctx.project.getI18N().genKey(Ctx.project.getSelectedScene().getId(),
+									Ctx.project.getSelectedActor().getId(), parent.getHashKey(), pos, i[j].getTitle());
+
 						Ctx.project.getI18N().setTranslation(key, v);
 					}
-					
+
 					if (v != null && !v.isEmpty())
 						v = key;
 					else
@@ -154,12 +161,12 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 				}
 
 				ActionUtils.setParam(e, i[j].getTitle(), v);
-				
+
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 				EditorLogger.error(e.getMessage());
 			}
 		}
-		
+
 		Ctx.project.setModified();
 	}
 

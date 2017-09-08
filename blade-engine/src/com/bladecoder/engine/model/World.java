@@ -86,8 +86,10 @@ public class World implements Serializable, AssetConsumer {
 	private int height;
 
 	private String initScene;
+	private HashMap<String, SoundDesc> sounds;
 	private Map<String, Scene> scenes;
 	private final VerbManager verbs = new VerbManager();
+
 
 	private Scene currentScene;
 	private Dialog currentDialog;
@@ -116,7 +118,8 @@ public class World implements Serializable, AssetConsumer {
 
 	// For FADEIN/FADEOUT
 	private Transition transition;
-	private MusicEngine musicEngine;
+	
+	private MusicManager musicManager;
 
 	// ------------ LAZY CREATED OBJECTS ------------
 	private InkManager inkManager;
@@ -150,7 +153,9 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	private void init() {
-		scenes = new HashMap<String, Scene>();
+		
+		sounds = null;
+		scenes = null;
 		inventories = new HashMap<String, Inventory>();
 		inventories.put(DEFAULT_INVENTORY, new Inventory());
 		currentInventory = DEFAULT_INVENTORY;
@@ -169,7 +174,7 @@ public class World implements Serializable, AssetConsumer {
 
 		transition = new Transition();
 
-		musicEngine = new MusicEngine();
+		musicManager = new MusicManager();
 
 		paused = false;
 
@@ -230,8 +235,12 @@ public class World implements Serializable, AssetConsumer {
 		return verbs;
 	}
 
-	public MusicEngine getMusicEngine() {
-		return musicEngine;
+	public MusicManager getMusicManager() {
+		return musicManager;
+	}
+	
+	public HashMap<String, SoundDesc> getSounds() {
+		return sounds;
 	}
 
 	public void draw() {
@@ -310,7 +319,7 @@ public class World implements Serializable, AssetConsumer {
 
 		transition.update(delta);
 
-		musicEngine.update(delta);
+		musicManager.update(delta);
 
 		ActionCallbackQueue.run();
 	}
@@ -325,7 +334,7 @@ public class World implements Serializable, AssetConsumer {
 		if (uiActors.isDisposed())
 			uiActors.loadAssets();
 
-		musicEngine.loadAssets();
+		musicManager.loadAssets();
 		textManager.getVoiceManager().loadAssets();
 	}
 
@@ -352,7 +361,7 @@ public class World implements Serializable, AssetConsumer {
 			}
 		}
 
-		musicEngine.retrieveAssets();
+		musicManager.retrieveAssets();
 		textManager.getVoiceManager().retrieveAssets();
 	}
 
@@ -412,14 +421,7 @@ public class World implements Serializable, AssetConsumer {
 			currentDialog = null;
 
 			// Stop Sounds
-			for (BaseActor a : currentScene.getActors().values()) {
-				if (a instanceof InteractiveActor) {
-					String playingSound = ((InteractiveActor) a).getPlayingSound();
-
-					if (playingSound != null)
-						((InteractiveActor) a).getSounds().get(playingSound).stop();
-				}
-			}
+			currentScene.getSoundManager().stop();
 
 			customProperties.put(WorldProperties.PREVIOUS_SCENE.toString(), currentScene.getId());
 
@@ -433,7 +435,7 @@ public class World implements Serializable, AssetConsumer {
 
 		currentScene = scene;
 
-		musicEngine.leaveScene(currentScene.getMusicDesc());
+		musicManager.leaveScene(currentScene.getMusicDesc());
 	}
 
 	private void initCurrentScene() {
@@ -611,7 +613,7 @@ public class World implements Serializable, AssetConsumer {
 			// ONLY dispose currentscene because other scenes are already
 			// disposed
 			if (currentScene != null) {
-				musicEngine.stopMusic();
+				musicManager.stopMusic();
 				currentScene.dispose();
 				currentScene = null;
 			}
@@ -630,7 +632,7 @@ public class World implements Serializable, AssetConsumer {
 
 			assetState = null;
 
-			musicEngine.dispose();
+			musicManager.dispose();
 
 			inkManager = null;
 
@@ -683,19 +685,12 @@ public class World implements Serializable, AssetConsumer {
 
 			// do not pause the music when going to the loading screen.
 			if (assetState == AssetState.LOADED) {
-				musicEngine.pauseMusic();
+				musicManager.pauseMusic();
 				textManager.getVoiceManager().pause();
 			}
 
 			// Pause all sounds
-			for (BaseActor a : currentScene.getActors().values()) {
-				if (a instanceof InteractiveActor) {
-					String playingSound = ((InteractiveActor) a).getPlayingSound();
-
-					if (playingSound != null)
-						((InteractiveActor) a).getSounds().get(playingSound).pause();
-				}
-			}
+			currentScene.getSoundManager().pause();
 		}
 	}
 
@@ -704,18 +699,11 @@ public class World implements Serializable, AssetConsumer {
 
 		if (assetState == AssetState.LOADED) {
 			if (currentScene != null) {
-				musicEngine.resumeMusic();
+				musicManager.resumeMusic();
 				textManager.getVoiceManager().resume();
 
 				// Resume all sounds
-				for (BaseActor a : currentScene.getActors().values()) {
-					if (a instanceof InteractiveActor) {
-						String playingSound = ((InteractiveActor) a).getPlayingSound();
-
-						if (playingSound != null)
-							((InteractiveActor) a).getSounds().get(playingSound).resume();
-					}
-				}
+				currentScene.getSoundManager().resume();
 			}
 		}
 	}
@@ -1062,6 +1050,8 @@ public class World implements Serializable, AssetConsumer {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
 					Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
+			
+			json.writeValue("sounds", sounds, sounds.getClass(), SoundDesc.class);
 			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
 			json.writeValue("initScene", initScene);
 
@@ -1089,7 +1079,7 @@ public class World implements Serializable, AssetConsumer {
 				json.writeValue("transition", transition);
 
 			json.writeValue("chapter", currentChapter);
-			json.writeValue("musicEngine", musicEngine);
+			json.writeValue("musicEngine", musicManager);
 
 			if (inkManager != null)
 				json.writeValue("inkManager", inkManager);
@@ -1111,7 +1101,13 @@ public class World implements Serializable, AssetConsumer {
 				EngineLogger.debug("Model Engine Version v" + version + " differs from Current Engine Version v"
 						+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
-
+			
+			sounds = json.readValue("sounds", HashMap.class, SoundDesc.class, jsonData);
+			
+			// For backwards compatibility
+			if(sounds == null)
+				sounds = new HashMap<String, SoundDesc>();
+			
 			scenes = json.readValue("scenes", HashMap.class, Scene.class, jsonData);
 			initScene = json.readValue("initScene", String.class, jsonData);
 
@@ -1124,6 +1120,7 @@ public class World implements Serializable, AssetConsumer {
 			}
 
 			setCurrentScene(initScene);
+
 		} else {
 			String bladeVersion = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
 			if (bladeVersion != null
@@ -1194,14 +1191,16 @@ public class World implements Serializable, AssetConsumer {
 			}
 
 			transition = json.readValue("transition", Transition.class, jsonData);
-			musicEngine = json.readValue("musicEngine", MusicEngine.class, jsonData);
+			musicManager = json.readValue("musicEngine", MusicManager.class, jsonData);
 
-			if (musicEngine == null)
-				musicEngine = new MusicEngine();
+			if (musicManager == null)
+				musicManager = new MusicManager();
 
 			ActionCallbackQueue.read(json, jsonData);
 
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + instance.currentChapter);
+			
+			// TODO: Playing sounds are not restored.
 		}
 	}
 }

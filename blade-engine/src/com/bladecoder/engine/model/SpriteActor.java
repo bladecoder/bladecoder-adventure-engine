@@ -27,19 +27,20 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.anim.WalkTween;
+import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
 
-public class SpriteActor extends InteractiveActor {
+public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	public static enum DepthType {
 		NONE, VECTOR
 	};
 
 	protected ActorRenderer renderer;
-	
+
 	protected ArrayList<Tween<SpriteActor>> tweens = new ArrayList<>(0);
 
 	private float rot = 0.0f;
@@ -50,6 +51,8 @@ public class SpriteActor extends InteractiveActor {
 	private DepthType depthType = DepthType.NONE;
 
 	private boolean bboxFromRenderer = false;
+
+	private String playingSound;
 
 	public void setRenderer(ActorRenderer r) {
 		renderer = r;
@@ -119,12 +122,12 @@ public class SpriteActor extends InteractiveActor {
 		this.scale = scale;
 		bbox.setScale(scale, scale);
 	}
-	
+
 	public void setRot(float rot) {
 		this.rot = rot;
 		bbox.setRotation(rot);
 	}
-	
+
 	public float getRot() {
 		return rot;
 	}
@@ -135,14 +138,14 @@ public class SpriteActor extends InteractiveActor {
 
 		if (visible) {
 			renderer.update(delta);
-			
-			for(int i = 0; i < tweens.size(); i++) {
+
+			for (int i = 0; i < tweens.size(); i++) {
 				Tween<SpriteActor> t = tweens.get(i);
-				
+
 				t.update(delta);
-				
+
 				// Needs extra checks before remove because the update can remove the tween
-				if(t.isComplete() && i < tweens.size() && tweens.get(i) == t) {
+				if (t.isComplete() && i < tweens.size() && tweens.get(i) == t) {
 					tweens.remove(i);
 					i--;
 				}
@@ -164,25 +167,25 @@ public class SpriteActor extends InteractiveActor {
 
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb) {
 
-		if(!(renderer instanceof AnimationRenderer)) 
+		if (!(renderer instanceof AnimationRenderer))
 			return;
-		
+
 		inAnim();
 
 		// resets posTween when walking
 		removeTween(WalkTween.class);
 
 		EngineLogger.debug("ANIMATION: " + this.id + "." + id);
-		
-		((AnimationRenderer)renderer).startAnimation(id, repeatType, count, cb);
+
+		((AnimationRenderer) renderer).startAnimation(id, repeatType, count, cb);
 
 		outAnim(repeatType);
 	}
-	
+
 	public void removeTween(Class<?> clazz) {
-		for(int i = 0; i < tweens.size(); i++) {	
+		for (int i = 0; i < tweens.size(); i++) {
 			Tween<SpriteActor> t = tweens.get(i);
-			if(clazz.isInstance(t)) {
+			if (clazz.isInstance(t)) {
 				tweens.remove(i);
 				i--;
 			}
@@ -190,16 +193,25 @@ public class SpriteActor extends InteractiveActor {
 	}
 
 	/**
-	 * Actions to do when setting an animation: - stop previous animation sound
-	 * - add 'out' distance from previous animation
+	 * Actions to do when setting an animation: - stop previous animation sound -
+	 * add 'out' distance from previous animation
 	 */
 	protected void inAnim() {
-		AnimationDesc fa = ((AnimationRenderer)renderer).getCurrentAnimation();
+		AnimationDesc fa = ((AnimationRenderer) renderer).getCurrentAnimation();
 
 		if (fa != null) {
 
-			if (fa.sound != null)
-				stopCurrentSound();
+			if (fa.sound != null) {
+				// Backwards compatibility
+				String sid = fa.sound; 
+				if(World.getInstance().getSounds().get(sid) == null)
+					sid = id + "_" + fa.sound;
+				
+				if(scene != null)
+					scene.getSoundManager().stopSound(sid);
+				else
+					World.getInstance().getCurrentScene().getSoundManager().stopSound(sid); // The actor is in the inventory
+			}
 
 			Vector2 outD = fa.outD;
 
@@ -212,18 +224,27 @@ public class SpriteActor extends InteractiveActor {
 	}
 
 	/**
-	 * Actions to do when setting an animation: - play animation sound - add
-	 * 'in' distance
+	 * Actions to do when setting an animation: - play animation sound - add 'in'
+	 * distance
 	 * 
 	 * @param repeatType
 	 */
 	protected void outAnim(Type repeatType) {
-		AnimationDesc fa = ((AnimationRenderer)renderer).getCurrentAnimation();
+		AnimationDesc fa = ((AnimationRenderer) renderer).getCurrentAnimation();
 
 		if (fa != null) {
 
 			if (fa.sound != null && repeatType != Tween.Type.REVERSE) {
-				playSound(fa.sound);
+				// Backwards compatibility
+				String sid = fa.sound; 
+				if(World.getInstance().getSounds().get(sid) == null)
+					sid = id + "_" + fa.sound;
+				
+				
+				if(scene != null)
+					scene.getSoundManager().playSound(sid);
+				else
+					World.getInstance().getCurrentScene().getSoundManager().playSound(sid); // The actor is in the inventory
 			}
 
 			Vector2 inD = fa.inD;
@@ -235,7 +256,7 @@ public class SpriteActor extends InteractiveActor {
 			}
 		}
 	}
-	
+
 	public void addTween(Tween<SpriteActor> tween) {
 		tweens.add(tween);
 	}
@@ -253,14 +274,12 @@ public class SpriteActor extends InteractiveActor {
 
 	@Override
 	public void loadAssets() {
-		super.loadAssets();
 
 		renderer.loadAssets();
 	}
 
 	@Override
 	public void retrieveAssets() {
-		super.retrieveAssets();
 
 		renderer.retrieveAssets();
 
@@ -272,7 +291,6 @@ public class SpriteActor extends InteractiveActor {
 	public void dispose() {
 		// EngineLogger.debug("DISPOSE: " + id);
 
-		super.dispose();
 		renderer.dispose();
 	}
 
@@ -283,9 +301,9 @@ public class SpriteActor extends InteractiveActor {
 		if (bboxFromRenderer && SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			float[] verts = bbox.getVertices();
 			bbox.setVertices(new float[8]);
-			
+
 			super.write(json);
-			
+
 			bbox.setVertices(verts);
 		} else {
 			super.write(json);
@@ -296,6 +314,7 @@ public class SpriteActor extends InteractiveActor {
 		} else {
 			json.writeValue("renderer", renderer);
 			json.writeValue("tweens", tweens, ArrayList.class, Tween.class);
+			json.writeValue("playingSound", playingSound);
 		}
 
 		json.writeValue("scale", scale);
@@ -314,11 +333,13 @@ public class SpriteActor extends InteractiveActor {
 			renderer = json.readValue("renderer", ActorRenderer.class, jsonData);
 		} else {
 			tweens = json.readValue("tweens", ArrayList.class, Tween.class, jsonData);
-			
-			for(Tween<SpriteActor> t:tweens) 
+
+			for (Tween<SpriteActor> t : tweens)
 				t.setTarget(this);
-			
+
 			renderer.read(json, jsonData.get("renderer"));
+			
+			playingSound = json.readValue("playingSound", String.class, jsonData);
 		}
 
 		scale = json.readValue("scale", float.class, scale, jsonData);

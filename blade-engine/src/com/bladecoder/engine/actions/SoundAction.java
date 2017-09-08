@@ -16,10 +16,10 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
+@Deprecated
 @ActionDescription("Play/Stop a sound")
 public class SoundAction implements Action {
 	@ActionPropertyDescription("The target actor")
@@ -33,11 +33,11 @@ public class SoundAction implements Action {
 	@Override
 	public boolean run(VerbRunner cb) {
 		
-		InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, true);
-		
-		if(play!= null)	a.playSound(play);
-		else
-			a.stopCurrentSound();
+		if(play!= null)	{
+			World.getInstance().getCurrentScene().getSoundManager().playSound(actor + "_" + play);
+		} else {
+			World.getInstance().getCurrentScene().getSoundManager().stopCurrentSound(actor);
+		}
 		
 		return false;
 	}

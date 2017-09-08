@@ -37,7 +37,6 @@ import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.ParticleRenderer;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
-import com.bladecoder.engine.model.SoundFX;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.SpriteActor.DepthType;
@@ -408,14 +407,6 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				for (String k : oldVerbs.keySet()) {
 					Verb v = oldVerbs.get(k);
 					verbs.put(k, v);
-				}
-
-				HashMap<String, SoundFX> oldSounds = ((InteractiveActor) oldElement).getSounds();
-
-				if (oldSounds != null) {
-					for (String k : oldSounds.keySet()) {
-						((InteractiveActor) e).addSound(oldSounds.get(k));
-					}
 				}
 			}
 

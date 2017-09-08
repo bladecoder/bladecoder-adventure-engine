@@ -15,7 +15,9 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.badlogic.gdx.utils.Disposable;
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
@@ -51,8 +53,8 @@ public class MoveToSceneAction implements Action {
 
 		s.removeActor(a);
 		
-		if(s == w.getCurrentScene())
-			a.dispose();
+		if(s == w.getCurrentScene() && a instanceof Disposable)
+			((Disposable) a).dispose();
 		
 		Scene ts =  null;
 		
@@ -63,11 +65,11 @@ public class MoveToSceneAction implements Action {
 		
 		// We must load assets when the target scene is the current scene or when
 		// the scene is cached.
-		if(ts == w.getCurrentScene() || 
-				(w.getCachedScene(ts.getId()) != null)) {
-			a.loadAssets();
+		if((ts == w.getCurrentScene() || 
+				w.getCachedScene(ts.getId()) != null) && a instanceof AssetConsumer) {
+			((AssetConsumer) a).loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
-			a.retrieveAssets();
+			((AssetConsumer) a).retrieveAssets();
 		}
 		
 		ts.addActor(a);

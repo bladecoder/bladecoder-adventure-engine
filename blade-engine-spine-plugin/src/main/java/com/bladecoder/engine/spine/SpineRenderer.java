@@ -129,20 +129,28 @@ public class SpineRenderer extends AnimationRenderer {
 
 			InteractiveActor actor = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actorId, true);
 
-			if (actor == null) {
-				EngineLogger.debug("Actor in Spine event not found in scene: " + actorId);
-				return;
-			}
-
 			switch (event.getInt()) {
 			case PLAY_ANIMATION_EVENT:
+				if (actor == null) {
+					EngineLogger.debug("Actor in Spine animation event not found in scene: " + actorId);
+					return;
+				}
+				
 				((SpriteActor) actor).startAnimation(event.getString(), null);
 				break;
 			case PLAY_SOUND_EVENT:
-				actor.playSound(event.getString());
+				// Backwards compatibility
+				String sid = event.getString(); 
+				if(World.getInstance().getSounds().get(sid) == null && actor != null)
+					sid = actor.getId() + "_" + sid;
+				
+				World.getInstance().getCurrentScene().getSoundManager().playSound(sid);
 				break;
 			case RUN_VERB_EVENT:
-				actor.runVerb(event.getString());
+				if(actor != null)
+					actor.runVerb(event.getString());
+				else
+					World.getInstance().getCurrentScene().runVerb(event.getString());
 				break;
 			case LOOP_EVENT:
 				// used for looping from a starting frame

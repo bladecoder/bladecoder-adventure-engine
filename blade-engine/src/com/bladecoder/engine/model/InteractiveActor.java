@@ -16,13 +16,12 @@
 package com.bladecoder.engine.model;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
 
@@ -32,7 +31,7 @@ import com.bladecoder.engine.util.SerializationHelper.Mode;
  * 
  * @author rgarcia
  */
-public class InteractiveActor extends BaseActor implements AssetConsumer, Comparable<InteractiveActor> {
+public class InteractiveActor extends BaseActor implements Comparable<InteractiveActor> {
 	protected String desc;
 	protected float zIndex;
 	protected boolean interaction = true;
@@ -41,12 +40,10 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	protected String state;
 
 	protected final VerbManager verbs = new VerbManager();
-	private HashMap<String, SoundFX> sounds;
-	private String playingSound;
 
 	/**
-	 * State to know when the player is inside this actor to trigger the
-	 * enter/exit verbs
+	 * State to know when the player is inside this actor to trigger the enter/exit
+	 * verbs
 	 */
 	private boolean playerInside = false;
 
@@ -84,10 +81,6 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		return desc;
 	}
 
-	public HashMap<String, SoundFX> getSounds() {
-		return sounds;
-	}
-
 	public void setDesc(String desc) {
 		this.desc = desc;
 	}
@@ -107,10 +100,10 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	@Override
 	public void update(float delta) {
 		InteractiveActor player = null;
-		
-		if(scene != null)
+
+		if (scene != null)
 			player = scene.getPlayer();
-		
+
 		if (visible && player != null) {
 			boolean hit = hit(player.getX(), player.getY());
 			if (!hit && playerInside) {
@@ -145,49 +138,6 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 	public void runVerb(String id, String target) {
 		verbs.runVerb(id, state, target);
-	}
-
-	public void addSound(SoundFX s) {
-		if (sounds == null)
-			sounds = new HashMap<String, SoundFX>();
-
-		sounds.put(s.getId(), s);
-	}
-
-	public void playSound(String id) {
-		if (sounds == null)
-			return;
-
-		SoundFX s = sounds.get(id);
-
-		if (s != null) {
-			if (playingSound != null) {
-				SoundFX s2 = sounds.get(playingSound);
-				s2.stop();
-			}
-
-			s.play();
-			playingSound = id;
-		} else {
-			EngineLogger.debug("Sound Not Found: " + id);
-		}
-	}
-
-	public void stopCurrentSound() {
-		if (playingSound == null)
-			return;
-
-		SoundFX s = sounds.get(playingSound);
-
-		if (s != null) {
-			s.stop();
-		}
-
-		playingSound = null;
-	}
-
-	public String getPlayingSound() {
-		return playingSound;
 	}
 
 	@Override
@@ -225,39 +175,6 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 	}
 
 	@Override
-	public void loadAssets() {
-		if (sounds != null) {
-			for (SoundFX s : sounds.values()) {
-				s.loadAssets();
-			}
-		}
-	}
-
-	@Override
-	public void retrieveAssets() {
-		if (sounds != null) {
-			for (SoundFX s : sounds.values()) {
-				s.retrieveAssets();
-			}
-
-			if (playingSound != null && sounds.get(playingSound).getLoop() == true) {
-				playSound(playingSound);
-			} else {
-				playingSound = null;
-			}
-		}
-	}
-
-	@Override
-	public void dispose() {
-		if (sounds != null) {
-			for (SoundFX s : sounds.values()) {
-				s.dispose();
-			}
-		}
-	}
-
-	@Override
 	public int compareTo(InteractiveActor o) {
 		return (int) (o.getBBox().getY() - this.getBBox().getY());
 	}
@@ -268,12 +185,10 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("desc", desc);
-			json.writeValue("sounds", sounds, sounds == null ? null : sounds.getClass(), SoundFX.class);
 
 			float worldScale = EngineAssetManager.getInstance().getScale();
 			json.writeValue("refPoint", new Vector2(getRefPoint().x / worldScale, getRefPoint().y / worldScale));
 		} else {
-			json.writeValue("playingSound", playingSound);
 			json.writeValue("playerInside", playerInside);
 		}
 
@@ -284,14 +199,12 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 		json.writeValue("layer", layer);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			desc = json.readValue("desc", String.class, jsonData);
-			sounds = json.readValue("sounds", HashMap.class, SoundFX.class, jsonData);
 			layer = json.readValue("layer", String.class, jsonData);
 
 			Vector2 r = json.readValue("refPoint", Vector2.class, jsonData);
@@ -300,13 +213,19 @@ public class InteractiveActor extends BaseActor implements AssetConsumer, Compar
 				float worldScale = EngineAssetManager.getInstance().getScale();
 				getRefPoint().set(r.x * worldScale, r.y * worldScale);
 			}
-		} else {
-			playingSound = json.readValue("playingSound", String.class, jsonData);
 
-			if (playingSound != null && (sounds == null || sounds.get(playingSound) == null)) {
-				EngineLogger.debug("Playing sound not found: " + playingSound);
-				playingSound = null;
+			// Load actor sounds for backwards compatibility. 
+			@SuppressWarnings("unchecked")
+			HashMap<String, SoundDesc> sounds = json.readValue("sounds", HashMap.class, SoundDesc.class, jsonData);
+
+			if (sounds != null) {
+				for (Entry<String, SoundDesc> e : sounds.entrySet()) {
+					e.getValue().setId(id + "_" + e.getKey());
+					World.getInstance().getSounds().put(id + "_" + e.getKey(), e.getValue());
+				}
 			}
+
+		} else {
 
 			playerInside = json.readValue("playerInside", boolean.class, false, jsonData);
 			String newLayer = json.readValue("layer", String.class, jsonData);

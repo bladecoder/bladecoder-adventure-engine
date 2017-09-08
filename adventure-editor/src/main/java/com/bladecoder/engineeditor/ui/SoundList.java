@@ -28,8 +28,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
-import com.bladecoder.engine.model.InteractiveActor;
-import com.bladecoder.engine.model.SoundFX;
+import com.bladecoder.engine.model.SoundDesc;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
@@ -37,7 +37,7 @@ import com.bladecoder.engineeditor.ui.panels.CellRenderer;
 import com.bladecoder.engineeditor.ui.panels.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteSound;
 
-public class SoundList extends ModelList<InteractiveActor, SoundFX> {
+public class SoundList extends ModelList<World, SoundDesc> {
 
 	private ImageButton playBtn;
 	private Sound playingSound = null;
@@ -54,9 +54,8 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				if (evt.getNewValue() instanceof SoundFX && !(evt.getSource() instanceof EditSoundDialog)
-						&& parent instanceof InteractiveActor) {
-					addElements(parent, Arrays.asList(parent.getSounds().values().toArray(new SoundFX[0])));
+				if (evt.getNewValue() instanceof SoundDesc && !(evt.getSource() instanceof EditSoundDialog)) {
+					addElements(parent, Arrays.asList(parent.getSounds().values().toArray(new SoundDesc[0])));
 				}
 			}
 		});
@@ -75,7 +74,7 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 		playBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				SoundFX selected = list.getSelected();
+				SoundDesc selected = list.getSelected();
 
 				if (playingSound != null) {
 					playingSound.stop();
@@ -104,36 +103,36 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 	}
 
 	@Override
-	protected EditSoundDialog getEditElementDialogInstance(SoundFX s) {
+	protected EditSoundDialog getEditElementDialogInstance(SoundDesc s) {
 		return new EditSoundDialog(skin, parent, s);
 	}
 
 	@Override
 	protected void delete() {
 
-		SoundFX s = removeSelected();
+		SoundDesc s = removeSelected();
 
 		parent.getSounds().remove(s.getId());
 
 		// UNDO
-		Ctx.project.getUndoStack().add(new UndoDeleteSound(parent, s));
+		Ctx.project.getUndoStack().add(new UndoDeleteSound(s));
 		Ctx.project.setModified();
 	}
 
 	@Override
 	protected void copy() {
-		SoundFX e = list.getSelected();
+		SoundDesc e = list.getSelected();
 
 		if (e == null)
 			return;
 
-		clipboard = (SoundFX) ElementUtils.cloneElement(e);
+		clipboard = (SoundDesc) ElementUtils.cloneElement(e);
 		toolbar.disablePaste(false);
 	}
 
 	@Override
 	protected void paste() {
-		SoundFX newElement = (SoundFX) ElementUtils.cloneElement(clipboard);
+		SoundDesc newElement = (SoundDesc) ElementUtils.cloneElement(clipboard);
 
 		int pos = list.getSelectedIndex() + 1;
 
@@ -147,7 +146,7 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 		
 		newElement.setId(id);
 
-		parent.addSound(newElement);
+		parent.getSounds().put(newElement.getId(), newElement);
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();
@@ -158,17 +157,17 @@ public class SoundList extends ModelList<InteractiveActor, SoundFX> {
 	// -------------------------------------------------------------------------
 	// ListCellRenderer
 	// -------------------------------------------------------------------------
-	private static final CellRenderer<SoundFX> listCellRenderer = new CellRenderer<SoundFX>() {
+	private static final CellRenderer<SoundDesc> listCellRenderer = new CellRenderer<SoundDesc>() {
 
 		@Override
-		protected String getCellTitle(SoundFX e) {
+		protected String getCellTitle(SoundDesc e) {
 			return e.getId();
 		}
 
 		StringBuilder sb = new StringBuilder();
 
 		@Override
-		protected String getCellSubTitle(SoundFX e) {
+		protected String getCellSubTitle(SoundDesc e) {
 			sb.setLength(0);
 
 			String filename = e.getFilename();

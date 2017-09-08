@@ -16,7 +16,9 @@
 package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.utils.Disposable;
 import com.bladecoder.engine.actions.Param.Type;
+import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
@@ -217,10 +219,10 @@ public class SetActorAttrAction implements Action {
 		scn.removeActor(actor);
 
 		if (scn != World.getInstance().getCurrentScene() &&
-				World.getInstance().getCachedScene(scn.getId()) == null) {
-			actor.loadAssets();
+				World.getInstance().getCachedScene(scn.getId()) == null && actor instanceof AssetConsumer) {
+			((AssetConsumer) actor).loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
-			actor.retrieveAssets();
+			((AssetConsumer) actor).retrieveAssets();
 		}
 
 		World.getInstance().getUIActors().addActor(actor);
@@ -230,8 +232,8 @@ public class SetActorAttrAction implements Action {
 		InteractiveActor a = World.getInstance().getUIActors().removeActor(actor.getId());
 		
 		if(a!=null) {
-			if(scn != World.getInstance().getCurrentScene())
-				a.dispose();
+			if(scn != World.getInstance().getCurrentScene() && a instanceof Disposable)
+				((Disposable) a).dispose();
 			
 			scn.addActor(a);
 		} else {

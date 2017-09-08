@@ -25,6 +25,10 @@ public class ActionUtils {
 	public static String getInfo(Class<?> clazz) {
 		return clazz.getAnnotation(ActionDescription.class).value();
 	}
+	
+	public static boolean isDeprecated(Class<?> clazz) {
+		return clazz.getAnnotation(Deprecated.class) != null;
+	}
 
 	public static String getName(Class<?> clazz) {
 		String name = clazz.getAnnotation(ActionDescription.class).name();

@@ -16,7 +16,7 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.model.MusicDesc;
-import com.bladecoder.engine.model.MusicEngine;
+import com.bladecoder.engine.model.MusicManager;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
@@ -49,7 +49,7 @@ public class MusicAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		MusicEngine musicEngine = World.getInstance().getMusicEngine();
+		MusicManager musicEngine = World.getInstance().getMusicManager();
 		
 		if(filename == null) {
 			musicEngine.setMusic(null);

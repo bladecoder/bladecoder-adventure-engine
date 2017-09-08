@@ -660,6 +660,9 @@ public class ActionList extends ModelList<Verb, Action> {
 					id = MessageFormat.format("[BLUE]{0}[]", id);
 			}
 
+			if(ActionUtils.isDeprecated(a.getClass()))
+				id = "[RED]D[] " + id;
+				
 			return id;
 		}
 
