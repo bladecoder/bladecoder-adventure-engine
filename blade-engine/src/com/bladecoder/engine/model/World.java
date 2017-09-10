@@ -46,13 +46,18 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
+import com.bladecoder.engine.actions.PlaySoundAction;
+import com.bladecoder.engine.actions.SoundAction;
+import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Timers;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.ink.InkManager;
+import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
@@ -90,7 +95,6 @@ public class World implements Serializable, AssetConsumer {
 	private Map<String, Scene> scenes;
 	private final VerbManager verbs = new VerbManager();
 
-
 	private Scene currentScene;
 	private Dialog currentDialog;
 
@@ -118,7 +122,7 @@ public class World implements Serializable, AssetConsumer {
 
 	// For FADEIN/FADEOUT
 	private Transition transition;
-	
+
 	private MusicManager musicManager;
 
 	// ------------ LAZY CREATED OBJECTS ------------
@@ -153,7 +157,7 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	private void init() {
-		
+
 		sounds = null;
 		scenes = null;
 		inventories = new HashMap<String, Inventory>();
@@ -205,8 +209,8 @@ public class World implements Serializable, AssetConsumer {
 	/**
 	 * Returns a scene from the cache. null if the scene is not cached.
 	 * 
-	 * Note that by now, the cache has only one Scene. In the future, the cache
-	 * will be a Hastable.
+	 * Note that by now, the cache has only one Scene. In the future, the cache will
+	 * be a Hastable.
 	 */
 	public Scene getCachedScene(String id) {
 
@@ -238,7 +242,7 @@ public class World implements Serializable, AssetConsumer {
 	public MusicManager getMusicManager() {
 		return musicManager;
 	}
-	
+
 	public HashMap<String, SoundDesc> getSounds() {
 		return sounds;
 	}
@@ -552,8 +556,8 @@ public class World implements Serializable, AssetConsumer {
 	private final Vector3 unprojectTmp = new Vector3();
 
 	/**
-	 * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and
-	 * the UIActors list.
+	 * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and the
+	 * UIActors list.
 	 */
 	public InteractiveActor getInteractiveActorAtInput(Viewport v, float tolerance) {
 
@@ -725,8 +729,7 @@ public class World implements Serializable, AssetConsumer {
 	// ********** SERIALIZATION **********
 
 	/**
-	 * Try to load the save game if exists. In other case, load the game from
-	 * XML.
+	 * Try to load the save game if exists. In other case, load the game from XML.
 	 * 
 	 * @throws Exception
 	 * 
@@ -759,7 +762,7 @@ public class World implements Serializable, AssetConsumer {
 		String worldFilename = EngineAssetManager.WORLD_FILENAME;
 
 		if (!EngineAssetManager.getInstance().getModelFile(worldFilename).exists()) {
-			
+
 			// Search the world file with ".json" ext if not found.
 			worldFilename = EngineAssetManager.WORLD_FILENAME + ".json";
 
@@ -1050,7 +1053,7 @@ public class World implements Serializable, AssetConsumer {
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
 					Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
-			
+
 			json.writeValue("sounds", sounds, sounds.getClass(), SoundDesc.class);
 			json.writeValue("scenes", scenes, scenes.getClass(), Scene.class);
 			json.writeValue("initScene", initScene);
@@ -1101,13 +1104,13 @@ public class World implements Serializable, AssetConsumer {
 				EngineLogger.debug("Model Engine Version v" + version + " differs from Current Engine Version v"
 						+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
-			
+
 			sounds = json.readValue("sounds", HashMap.class, SoundDesc.class, jsonData);
-			
+
 			// For backwards compatibility
-			if(sounds == null)
+			if (sounds == null)
 				sounds = new HashMap<String, SoundDesc>();
-			
+
 			scenes = json.readValue("scenes", HashMap.class, Scene.class, jsonData);
 			initScene = json.readValue("initScene", String.class, jsonData);
 
@@ -1120,6 +1123,109 @@ public class World implements Serializable, AssetConsumer {
 			}
 
 			setCurrentScene(initScene);
+
+			// POST PROCESSING
+
+			// Add sounds to cache
+			for (Scene s : scenes.values()) {
+
+				HashMap<String, Verb> verbs = s.getVerbManager().getVerbs();
+
+				// Search SoundAction and PlaySoundAction
+				for (Verb v : verbs.values()) {
+					ArrayList<Action> actions = v.getActions();
+
+					for (Action act : actions) {
+
+						try {
+							if (act instanceof SoundAction) {
+
+								String actor = ActionUtils.getStringValue(act, "actor");
+								String play = ActionUtils.getStringValue(act, "play");
+								if (play != null) {
+									SoundDesc sd = World.getInstance().getSounds().get(actor + "_" + play);
+
+									if (sd != null)
+										s.getSoundManager().addSoundToLoad(sd);
+								}
+
+							} else if (act instanceof PlaySoundAction) {
+								String sound = ActionUtils.getStringValue(act, "sound");
+								SoundDesc sd = World.getInstance().getSounds().get(sound);
+
+								if (sd != null)
+									s.getSoundManager().addSoundToLoad(sd);
+
+							}
+						} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+						}
+					}
+				}
+
+				for (BaseActor a : s.getActors().values()) {
+
+					if (a instanceof InteractiveActor) {
+						HashMap<String, Verb> actorVerbs = ((InteractiveActor) a).getVerbManager().getVerbs();
+
+						// Process SayAction of TALK type
+						for (Verb v : actorVerbs.values()) {
+							ArrayList<Action> actions = v.getActions();
+
+							for (Action act : actions) {
+
+
+								try {
+									if (act instanceof SoundAction) {
+
+										String actor = ActionUtils.getStringValue(act, "actor");
+										String play = ActionUtils.getStringValue(act, "play");
+										if (play != null) {
+											SoundDesc sd = World.getInstance().getSounds().get(actor + "_" + play);
+
+											if (sd != null)
+												s.getSoundManager().addSoundToLoad(sd);
+										}
+
+									} else if (act instanceof PlaySoundAction) {
+										String sound = ActionUtils.getStringValue(act, "sound");
+										SoundDesc sd = World.getInstance().getSounds().get(sound);
+
+										if (sd != null)
+											s.getSoundManager().addSoundToLoad(sd);
+
+									}
+								} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+								}
+							}
+						}
+					}
+
+					if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof AnimationRenderer) {
+						HashMap<String, AnimationDesc> anims = ((AnimationRenderer) ((SpriteActor) a).getRenderer())
+								.getAnimations();
+
+						for (AnimationDesc ad : anims.values()) {
+							if (ad.sound != null) {
+								String sid = ad.sound;
+
+								SoundDesc sd = World.getInstance().getSounds().get(sid);
+
+								if (sd == null)
+									sid = a.getId() + "_" + sid;
+
+								sd = World.getInstance().getSounds().get(sid);
+
+								if (sd != null)
+									s.getSoundManager().addSoundToLoad(sd);
+								else
+									EngineLogger.error(
+											a.getId() + ": SOUND not found: " + ad.sound + " in animation: " + ad.id);
+							}
+						}
+					}
+
+				}
+			}
 
 		} else {
 			String bladeVersion = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
@@ -1199,8 +1305,6 @@ public class World implements Serializable, AssetConsumer {
 			ActionCallbackQueue.read(json, jsonData);
 
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + instance.currentChapter);
-			
-			// TODO: Playing sounds are not restored.
 		}
 	}
 }

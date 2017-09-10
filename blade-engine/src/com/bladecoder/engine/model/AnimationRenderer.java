@@ -216,9 +216,12 @@ public abstract class AnimationRenderer implements ActorRenderer {
 				// search for .left if .frontleft not found and viceversa
 				StringBuilder sb = new StringBuilder();
 
-				if (id.endsWith(FRONTLEFT) || id.endsWith(FRONTRIGHT)) {
+				if (id.endsWith(FRONTLEFT)) {
 					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
-					sb.append(FRONT);
+					sb.append(LEFT);
+				} else if (id.endsWith(FRONTRIGHT)) {
+					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
+					sb.append(RIGHT);
 				} else if (id.endsWith(BACKLEFT) || id.endsWith(BACKRIGHT)) {
 					sb.append(id.substring(0, id.lastIndexOf('.') + 1));
 					sb.append(BACK);

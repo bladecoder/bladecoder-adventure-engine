@@ -1,6 +1,7 @@
 package com.bladecoder.engine.model;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Json;
@@ -100,8 +101,10 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	@Override
 	public void dispose() {
 		for(LoadedSound s:loadedSounds.values()) {
-			EngineLogger.debug("DISPOSING SOUND: " + s.desc.getId() + " - " + s.desc.getFilename());
-			s.sound.stop();
+//			EngineLogger.debug("DISPOSING SOUND: " + s.desc.getId() + " - " + s.desc.getFilename());
+			if(s.playing)
+				s.sound.stop();
+			
 			EngineAssetManager.getInstance().disposeSound(s.desc.getFilename());			
 		}
 	}
@@ -109,7 +112,7 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	@Override
 	public void loadAssets() {
 		for(LoadedSound s:loadedSounds.values()) {
-			EngineLogger.debug("LOADING SOUND: " + s.desc.getId() + " - " + s.desc.getFilename());
+//			EngineLogger.debug("LOADING SOUND: " + s.desc.getId() + " - " + s.desc.getFilename());
 			EngineAssetManager.getInstance().loadSound(s.desc.getFilename());			
 		}
 	}
@@ -118,6 +121,15 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	public void retrieveAssets() {
 		for(LoadedSound s:loadedSounds.values()) {
 			s.sound = EngineAssetManager.getInstance().getSound(s.desc.getFilename());
+			
+			// restore playing looping
+			if(s.playing) {
+				s.playing = false;
+				
+				if(s.desc.getLoop())
+					playSound(s.desc.getId());
+			}
+				
 		}
 	}
 	
@@ -131,7 +143,10 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	public void read(Json json, JsonValue jsonData) {
 		loadedSounds = json.readValue("loadedSounds", HashMap.class, SoundDesc.class, jsonData);
 		
-		// TODO Retrieve desc from World sound description.
+		// Retrieve desc from World sound description.
+		for(Entry<String, LoadedSound> e:loadedSounds.entrySet()) {
+			e.getValue().desc = World.getInstance().getSounds().get(e.getKey());
+		}
 	}
 	
 	class LoadedSound {

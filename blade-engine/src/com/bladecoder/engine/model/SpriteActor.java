@@ -203,14 +203,15 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 			if (fa.sound != null) {
 				// Backwards compatibility
-				String sid = fa.sound; 
-				if(World.getInstance().getSounds().get(sid) == null)
+				String sid = fa.sound;
+				if (World.getInstance().getSounds().get(sid) == null)
 					sid = id + "_" + fa.sound;
-				
-				if(scene != null)
+
+				if (scene != null)
 					scene.getSoundManager().stopSound(sid);
 				else
-					World.getInstance().getCurrentScene().getSoundManager().stopSound(sid); // The actor is in the inventory
+					World.getInstance().getCurrentScene().getSoundManager().stopSound(sid); // The actor is in the
+																							// inventory
 			}
 
 			Vector2 outD = fa.outD;
@@ -236,15 +237,15 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 			if (fa.sound != null && repeatType != Tween.Type.REVERSE) {
 				// Backwards compatibility
-				String sid = fa.sound; 
-				if(World.getInstance().getSounds().get(sid) == null)
+				String sid = fa.sound;
+				if (World.getInstance().getSounds().get(sid) == null)
 					sid = id + "_" + fa.sound;
-				
-				
-				if(scene != null)
+
+				if (scene != null)
 					scene.getSoundManager().playSound(sid);
 				else
-					World.getInstance().getCurrentScene().getSoundManager().playSound(sid); // The actor is in the inventory
+					World.getInstance().getCurrentScene().getSoundManager().playSound(sid); // The actor is in the
+																							// inventory
 			}
 
 			Vector2 inD = fa.inD;
@@ -338,7 +339,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 				t.setTarget(this);
 
 			renderer.read(json, jsonData.get("renderer"));
-			
+
 			playingSound = json.readValue("playingSound", String.class, jsonData);
 		}
 
