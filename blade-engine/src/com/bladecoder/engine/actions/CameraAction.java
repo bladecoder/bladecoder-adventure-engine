@@ -58,6 +58,11 @@ public class CameraAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
+		
+		Vector2 pos2 = null;
+		
+		if(pos != null)
+			pos2 = new Vector2(pos);
 
 		float scale = EngineAssetManager.getInstance().getScale();
 
@@ -67,9 +72,9 @@ public class CameraAction implements Action {
 			zoom = camera.getZoom();
 		
 		if(pos == null && target == null) {
-			pos = camera.getPosition();
-			pos.x /= scale;
-			pos.y /= scale;
+			pos2 = new Vector2(camera.getPosition());
+			pos2.x /= scale;
+			pos2.y /= scale;
 		}
 		
 		if (target != null) {
@@ -84,11 +89,11 @@ public class CameraAction implements Action {
 				y+= refPoint.y;
 			}
 			
-			if(pos != null){
-				pos.x += x;
-				pos.y += y;
+			if(pos2 != null){
+				pos2.x += x;
+				pos2.y += y;
 			} else {
-				pos = new Vector2(x,y);
+				pos2 = new Vector2(x,y);
 			}
 		} 
 
