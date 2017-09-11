@@ -61,6 +61,8 @@ public class CameraAction implements Action {
 		
 		Vector2 pos2 = null;
 		
+		Float zoom2 = zoom;
+		
 		if(pos != null)
 			pos2 = new Vector2(pos);
 
@@ -68,8 +70,8 @@ public class CameraAction implements Action {
 
 		SceneCamera camera = World.getInstance().getSceneCamera();
 		
-		if(zoom == null || zoom < 0)
-			zoom = camera.getZoom();
+		if(zoom2 == null || zoom2 < 0)
+			zoom2 = camera.getZoom();
 		
 		if(pos == null && target == null) {
 			pos2 = new Vector2(camera.getPosition());
@@ -107,11 +109,11 @@ public class CameraAction implements Action {
 		}
 
 		if (duration == null || duration == 0) {
-			camera.setZoom(zoom);
-			camera.setPosition(pos.x * scale, pos.y * scale);
+			camera.setZoom(zoom2);
+			camera.setPosition(pos2.x * scale, pos2.y * scale);
 			return false;
 		} else {
-			camera.startAnimation(pos.x * scale, pos.y * scale, zoom, duration, interpolation, wait?cb:null);
+			camera.startAnimation(pos2.x * scale, pos2.y * scale, zoom2, duration, interpolation, wait?cb:null);
 		}
 		
 		return wait;
