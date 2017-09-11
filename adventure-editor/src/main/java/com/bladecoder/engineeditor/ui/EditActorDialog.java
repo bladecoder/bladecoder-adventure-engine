@@ -524,13 +524,15 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 						sa.setRenderer(new SpineRenderer());
 				}
 
-				sa.setBboxFromRenderer(true);
+				boolean bbfr = Boolean.parseBoolean(bboxFromRenderer.getText());
+				if(bbfr != sa.isBboxFromRenderer())
+					sa.setBboxFromRenderer(bbfr);
+				
 				sa.setDepthType(DepthType.valueOf(depthType.getText()));
 				sa.setScale(Float.parseFloat(scale.getText()));
 				sa.setRot(Float.parseFloat(rot.getText()));
 				sa.getRenderer().setOrgAlign(AlignUtils.getAlign(orgAlign.getText()));
 				sa.setTint(Param.parseColor(tint.getText()));
-				sa.setBboxFromRenderer(Boolean.parseBoolean(bboxFromRenderer.getText()));
 
 				if (e instanceof CharacterActor) {
 					CharacterActor ca = (CharacterActor) e;
