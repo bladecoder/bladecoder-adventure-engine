@@ -18,7 +18,7 @@ import com.bladecoder.engine.util.EngineLogger;
  */
 public class SceneSoundManager implements Serializable, AssetConsumer {
 	
-	private HashMap<String, LoadedSound> loadedSounds = new HashMap<String, LoadedSound>();
+	private HashMap<String, LoadedSound> loadedSounds = new HashMap<String, LoadedSound>(0);
 	
 	public void addSoundToLoad(SoundDesc s) {
 		loadedSounds.put(s.getId(), new LoadedSound(s));
@@ -142,6 +142,9 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		loadedSounds = json.readValue("loadedSounds", HashMap.class, SoundDesc.class, jsonData);
+		
+		if(loadedSounds == null)
+			loadedSounds = new HashMap<String, LoadedSound>(0);
 		
 		// Retrieve desc from World sound description.
 		for(Entry<String, LoadedSound> e:loadedSounds.entrySet()) {
