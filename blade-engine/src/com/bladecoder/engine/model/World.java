@@ -250,9 +250,8 @@ public class World implements Serializable, AssetConsumer {
 	public void draw() {
 		if (assetState == AssetState.LOADED) {
 			getCurrentScene().draw(spriteBatch);
+			uiActors.draw(spriteBatch);
 		}
-
-		uiActors.draw(spriteBatch);
 	}
 
 	public void update(float delta) {
