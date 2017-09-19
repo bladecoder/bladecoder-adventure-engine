@@ -24,6 +24,10 @@ public class SceneActorRef {
 		}
 
 		int idx = sceneActor.indexOf(Param.STRING_PARAM_SEPARATOR.charAt(0));
+		
+		// Also allow '.' character as separator because is more usable inside Ink files.
+		if(idx == -1)
+			idx = sceneActor.indexOf('.');
 
 		if (idx != -1) {
 			sceneId = sceneActor.substring(0, idx);
