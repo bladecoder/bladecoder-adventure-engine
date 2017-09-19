@@ -224,7 +224,7 @@ public class InkManager implements VerbRunner, Serializable {
 		// Get actor name from Line. Actor is separated by ':'.
 		// ej. "Johnny: Hello punks!"
 		if (!params.containsKey("actor")) {
-			int idx = line.indexOf(NAME_VALUE_TAG_SEPARATOR);
+			int idx = line.indexOf(COMMAND_MARK);
 
 			if (idx != -1) {
 				params.put("actor", line.substring(0, idx).trim());
