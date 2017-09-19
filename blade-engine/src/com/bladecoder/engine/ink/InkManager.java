@@ -33,7 +33,7 @@ public class InkManager implements VerbRunner, Serializable {
 	public final static char NAME_VALUE_TAG_SEPARATOR = ':';
 	public final static char NAME_VALUE_PARAM_SEPARATOR = '=';
 	private final static String PARAM_SEPARATOR = ",";
-	private final static char COMMAND_MARK = '>';
+	public final static char COMMAND_MARK = '>';
 
 	private Story story = null;
 	private ExternalFunctions externalFunctions;
