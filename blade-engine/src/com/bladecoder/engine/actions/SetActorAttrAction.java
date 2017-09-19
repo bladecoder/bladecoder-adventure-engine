@@ -26,7 +26,6 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
@@ -165,10 +164,7 @@ public class SetActorAttrAction implements Action {
 
 		if (fakeDepth != null) {
 			if (a instanceof SpriteActor) {
-				if (fakeDepth)
-					((SpriteActor) a).setDepthType(DepthType.VECTOR);
-				else
-					((SpriteActor) a).setDepthType(DepthType.NONE);
+				((SpriteActor) a).setFakeDepth(fakeDepth);
 			} else
 				EngineLogger.error("'fakeDepth' property not supported for actor:" + a.getId());
 		}
@@ -218,8 +214,8 @@ public class SetActorAttrAction implements Action {
 
 		scn.removeActor(actor);
 
-		if (scn != World.getInstance().getCurrentScene() &&
-				World.getInstance().getCachedScene(scn.getId()) == null && actor instanceof AssetConsumer) {
+		if (scn != World.getInstance().getCurrentScene() && World.getInstance().getCachedScene(scn.getId()) == null
+				&& actor instanceof AssetConsumer) {
 			((AssetConsumer) actor).loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 			((AssetConsumer) actor).retrieveAssets();
@@ -227,18 +223,18 @@ public class SetActorAttrAction implements Action {
 
 		World.getInstance().getUIActors().addActor(actor);
 	}
-	
+
 	private void removeUIActor(Scene scn, InteractiveActor actor) {
 		InteractiveActor a = World.getInstance().getUIActors().removeActor(actor.getId());
-		
-		if(a!=null) {
-			if(scn != World.getInstance().getCurrentScene() && a instanceof Disposable)
+
+		if (a != null) {
+			if (scn != World.getInstance().getCurrentScene() && a instanceof Disposable)
 				((Disposable) a).dispose();
-			
+
 			scn.addActor(a);
 		} else {
 			EngineLogger.debug("UIActor not found: " + actor.getId());
-		}		
+		}
 	}
 
 }

@@ -35,10 +35,6 @@ import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
-	public static enum DepthType {
-		NONE, VECTOR
-	};
-
 	protected ActorRenderer renderer;
 
 	protected ArrayList<Tween<SpriteActor>> tweens = new ArrayList<>(0);
@@ -46,9 +42,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	private float rot = 0.0f;
 	private float scale = 1.0f;
 	private Color tint;
-
-	/** Scale sprite acording to the scene depth map */
-	private DepthType depthType = DepthType.NONE;
+	
+	private boolean fakeDepth = false;
 
 	private boolean bboxFromRenderer = false;
 
@@ -62,12 +57,12 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		return renderer;
 	}
 
-	public DepthType getDepthType() {
-		return depthType;
+	public boolean getFakeDepth() {
+		return fakeDepth;
 	}
 
-	public void setDepthType(DepthType v) {
-		depthType = v;
+	public void setFakeDepth(boolean fd) {
+		fakeDepth = fd;
 	}
 
 	@Override
@@ -75,7 +70,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		super.setPosition(x, y);
 
 		if (scene != null) {
-			if (depthType == DepthType.VECTOR) {
+			if (fakeDepth) {
 				// interpolation equation
 				float s = scene.getFakeDepthScale(y);
 
@@ -321,7 +316,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		json.writeValue("scale", scale);
 		json.writeValue("rot", rot);
 		json.writeValue("tint", tint);
-		json.writeValue("depthType", depthType);
+		json.writeValue("fakeDepth", fakeDepth);
 		json.writeValue("bboxFromRenderer", bboxFromRenderer);
 	}
 
@@ -347,7 +342,16 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		rot = json.readValue("rot", float.class, rot, jsonData);
 		tint = json.readValue("tint", Color.class, tint, jsonData);
 
-		depthType = json.readValue("depthType", DepthType.class, depthType, jsonData);
+		// backwards compatibility fakeDepth
+		if(jsonData.get("depthType") != null) {
+			String depthType = json.readValue("depthType", String.class, (String)null, jsonData);
+			
+			fakeDepth = "VECTOR".equals(depthType);
+		} else {
+			fakeDepth = json.readValue("fakeDepth", boolean.class, fakeDepth, jsonData);
+		}
+		
+		
 		bboxFromRenderer = json.readValue("bboxFromRenderer", boolean.class, bboxFromRenderer, jsonData);
 
 		if (bboxFromRenderer)

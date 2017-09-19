@@ -39,7 +39,6 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.SpriteActor.DepthType;
 import com.bladecoder.engine.model.TextRenderer;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.spine.SpineRenderer;
@@ -86,7 +85,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel desc;
 	private InputPanel state;
 	private InputPanel renderer;
-	private InputPanel depthType;
+	private InputPanel fakeDepth;
 	private InputPanel pos;
 	private InputPanel refPoint;
 	private InputPanel scale;
@@ -146,8 +145,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		renderer = InputPanelFactory.createInputPanel(skin, "Actor Renderer",
 				"Actors can be renderer from several sources", ACTOR_RENDERERS, true);
 
-		depthType = InputPanelFactory.createInputPanel(skin, "Depth Type", "Scene fake depth for scaling",
-				DepthType.class.getEnumConstants(), true);
+		fakeDepth = InputPanelFactory.createInputPanel(skin, "Fake Depth", "Scene fake depth for scaling",Param.Type.BOOLEAN, true,
+				"false");
 
 		pos = InputPanelFactory.createInputPanel(skin, "Position", "The sprite position.", Param.Type.VECTOR2, true, "0,0");
 		refPoint = InputPanelFactory.createInputPanel(skin, "Ref. Point", "Point of reference to relative position other actors.", Param.Type.VECTOR2, true, "0,0");
@@ -228,7 +227,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		});
 
 		init(parent, e,
-				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, depthType, pos, refPoint, scale, rot,
+				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, fakeDepth, pos, refPoint, scale, rot,
 						tint, text, font, size, textAlign, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
 						shadowColor, bboxFromRenderer, zIndex, orgAlign, walkingSpeed, spriteSize, cameraName, fov, textColor });
 
@@ -270,7 +269,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		if (ACTOR_TYPES[i].equals(SPRITE_TYPE_STR) || ACTOR_TYPES[i].equals(CHARACTER_TYPE_STR)) {
 			setVisible(renderer, true);
-			setVisible(depthType, true);
+			setVisible(fakeDepth, true);
 			setVisible(scale, true);
 			setVisible(rot, true);
 			setVisible(tint, true);
@@ -528,7 +527,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				if(bbfr != sa.isBboxFromRenderer())
 					sa.setBboxFromRenderer(bbfr);
 				
-				sa.setDepthType(DepthType.valueOf(depthType.getText()));
+				sa.setFakeDepth(Boolean.parseBoolean(fakeDepth.getText()));
 				sa.setScale(Float.parseFloat(scale.getText()));
 				sa.setRot(Float.parseFloat(rot.getText()));
 				sa.getRenderer().setOrgAlign(AlignUtils.getAlign(orgAlign.getText()));
@@ -620,7 +619,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					renderer.setText(Project.SPINE_RENDERER_STRING);
 				}
 
-				depthType.setText(sa.getDepthType().toString());
+				fakeDepth.setText(Boolean.toString(sa.getFakeDepth()));
 				scale.setText(Float.toString(sa.getScale()));
 				rot.setText(Float.toString(sa.getRot()));
 				tint.setText(sa.getTint() == null ? null : sa.getTint().toString());
