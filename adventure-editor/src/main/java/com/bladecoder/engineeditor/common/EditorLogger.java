@@ -28,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.model.Project;
 import com.strongjoshua.console.CommandExecutor;
 import com.strongjoshua.console.Console;
 import com.strongjoshua.console.LogLevel;
@@ -186,7 +187,7 @@ public class EditorLogger {
 			@SuppressWarnings("unused")
 			public void compareI18N(String lang) {
 				try {
-					I18NUtils.compare(Ctx.project.getProjectPath(), Ctx.project.getChapter().getId(), null, lang);
+					I18NUtils.compare(Ctx.project.getAssetPath() + Project.MODEL_PATH, Ctx.project.getChapter().getId(), null, lang);
 				} catch (IOException e) {
 					EditorLogger.printStackTrace(e);
 				}

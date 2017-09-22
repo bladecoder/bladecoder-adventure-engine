@@ -246,7 +246,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 	public boolean spineAtlasExists(String source) {
 		return EngineAssetManager.getInstance()
-				.assetExists(Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH + "/" + source + ".atlas");
+				.assetExists(Ctx.project.getAssetPath() + Project.ATLASES_PATH + "/" + source + ".atlas");
 	}
 
 	private void setAnimation() {
@@ -305,16 +305,16 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		ActorRenderer renderer = parent.getRenderer();
 
 		if (renderer instanceof AtlasRenderer) {
-			path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/" + Ctx.project.getResDir();
+			path = Ctx.project.getAssetPath() + Project.ATLASES_PATH + "/" + Ctx.project.getResDir();
 			ext = EngineAssetManager.ATLAS_EXT;
 		} else if (renderer instanceof Sprite3DRenderer) {
-			path = Ctx.project.getProjectPath() + Project.SPRITE3D_PATH;
+			path = Ctx.project.getAssetPath() + Project.SPRITE3D_PATH;
 			ext = EngineAssetManager.MODEL3D_EXT;
 		} else if (renderer instanceof SpineRenderer) {
-			path = Ctx.project.getProjectPath() + Project.SPINE_PATH;
+			path = Ctx.project.getAssetPath() + Project.SPINE_PATH;
 			ext = EngineAssetManager.SPINE_EXT;
 		} else if (renderer instanceof ImageRenderer) {
-			path = Ctx.project.getProjectPath() + Project.IMAGE_PATH + "/" + Ctx.project.getResDir();
+			path = Ctx.project.getAssetPath() + Project.IMAGE_PATH + "/" + Ctx.project.getResDir();
 			ext = "";
 		}
 
@@ -344,7 +344,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 	}
 
 	private String[] getAtlases() {
-		String path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/" + Ctx.project.getResDir();
+		String path = Ctx.project.getAssetPath() + Project.ATLASES_PATH + "/" + Ctx.project.getResDir();
 
 		File f = new File(path);
 

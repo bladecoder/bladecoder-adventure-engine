@@ -111,11 +111,11 @@ public class ResolutionList extends EditList<String> {
 			return;
 		}
 
-		removeDir(Ctx.project.getProjectDir() + "/" + Project.IMAGE_PATH
+		removeDir(Ctx.project.getAssetPath() + Project.IMAGE_PATH
 				+ "/" + r);
-		removeDir(Ctx.project.getProjectDir() + "/" + Project.UI_PATH + "/"
+		removeDir(Ctx.project.getAssetPath() + Project.UI_PATH + "/"
 				+ r);
-		removeDir(Ctx.project.getProjectDir() + "/" + Project.ATLASES_PATH
+		removeDir(Ctx.project.getAssetPath() + Project.ATLASES_PATH
 				+ "/" + r);
 
 		addResolutions();

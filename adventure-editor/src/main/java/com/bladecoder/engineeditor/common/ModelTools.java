@@ -398,7 +398,7 @@ public class ModelTools {
 	}
 
 	public static String[] getSoundList() {
-		String path = Ctx.project.getProjectPath() + Project.SOUND_PATH;
+		String path = Ctx.project.getAssetPath() + Project.SOUND_PATH;
 
 		File f = new File(path);
 

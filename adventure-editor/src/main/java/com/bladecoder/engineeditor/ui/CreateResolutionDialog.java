@@ -40,9 +40,9 @@ public class CreateResolutionDialog extends EditDialog {
 	
 	protected ChangeListener listener;
 	
-	String atlasDir = Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH;
-	String uiDir = Ctx.project.getProjectPath() + "/" + Project.UI_PATH;
-	String imageDir = Ctx.project.getProjectPath() + "/" + Project.IMAGE_PATH;
+	String atlasDir = Ctx.project.getAssetPath() + Project.ATLASES_PATH;
+	String uiDir = Ctx.project.getAssetPath() + Project.UI_PATH;
+	String imageDir = Ctx.project.getAssetPath() + Project.IMAGE_PATH;
 
 	public CreateResolutionDialog(Skin skin) {
 		super("CREATE RESOLUTION", skin);

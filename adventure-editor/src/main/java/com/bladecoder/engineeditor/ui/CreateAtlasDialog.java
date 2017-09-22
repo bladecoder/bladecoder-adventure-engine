@@ -97,7 +97,7 @@ public class CreateAtlasDialog extends EditDialog {
 	}
 
 	private void genAtlas() {
-		String outdir = Ctx.project.getProjectPath() + Project.ATLASES_PATH;
+		String outdir = Ctx.project.getAssetPath() + Project.ATLASES_PATH;
 		List<String> res = Ctx.project.getResolutions();
 		String name = this.name.getText();
 		String fMin = filterMin.getText();

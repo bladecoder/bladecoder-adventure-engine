@@ -381,7 +381,7 @@ public class ProjectToolbar extends Table {
 		if (Desktop.isDesktopSupported()) {
 			try {
 				Desktop.getDesktop()
-						.open(new File(Ctx.project.getProjectDir().getAbsoluteFile() + Project.ASSETS_PATH));
+						.open(new File(Ctx.project.getAssetPath(Ctx.project.getProjectDir().getAbsoluteFile().getAbsolutePath())));
 			} catch (IOException e1) {
 				String msg = "Something went wrong while opening assets folder.\n\n" + e1.getClass().getSimpleName()
 						+ " - " + e1.getMessage();

@@ -77,7 +77,7 @@ public class EditSoundDialog extends EditModelDialog<World, SoundDesc> {
 					s = null;
 				}
 				
-				s = Gdx.audio.newSound(new FileHandle(Ctx.project.getProjectPath() + "/" + Project.SOUND_PATH + "/" + filename.getText()));
+				s = Gdx.audio.newSound(new FileHandle(Ctx.project.getAssetPath() + Project.SOUND_PATH + "/" + filename.getText()));
 				
 				s.play(Float.parseFloat(volume.getText()), 1, Float.parseFloat(pan.getText()));
 

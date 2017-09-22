@@ -175,23 +175,23 @@ public class AssetsList extends Table {
 		String dir;
 
 		if (type.equals("atlases")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH;
+			dir = Ctx.project.getAssetPath() + Project.ATLASES_PATH;
 		} else if (type.equals("music")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.MUSIC_PATH;
+			dir = Ctx.project.getAssetPath() + Project.MUSIC_PATH;
 		} else if (type.equals("sounds")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.SOUND_PATH;
+			dir = Ctx.project.getAssetPath() + Project.SOUND_PATH;
 		} else if (type.equals("images")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.IMAGE_PATH;
+			dir = Ctx.project.getAssetPath() + Project.IMAGE_PATH;
 		} else if (type.equals("3d models")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.SPRITE3D_PATH;
+			dir = Ctx.project.getAssetPath() + Project.SPRITE3D_PATH;
 		} else if (type.equals("spine")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.SPINE_PATH;
+			dir = Ctx.project.getAssetPath() + Project.SPINE_PATH;
 		} else if (type.equals("particles")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.PARTICLE_PATH;
+			dir = Ctx.project.getAssetPath() + Project.PARTICLE_PATH;
 		} else if (type.equals("voices")) {
-			dir = Ctx.project.getProjectPath() + "/" + Project.VOICE_PATH;
+			dir = Ctx.project.getAssetPath() + Project.VOICE_PATH;
 		} else {
-			dir = Ctx.project.getProjectPath() + Project.ASSETS_PATH;
+			dir = Ctx.project.getAssetPath();
 		}
 
 		return dir;

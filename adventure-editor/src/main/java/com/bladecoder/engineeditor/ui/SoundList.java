@@ -82,7 +82,7 @@ public class SoundList extends ModelList<World, SoundDesc> {
 					playingSound = null;
 				}
 
-				playingSound = Gdx.audio.newSound(new FileHandle(Ctx.project.getProjectPath() + "/"
+				playingSound = Gdx.audio.newSound(new FileHandle(Ctx.project.getAssetPath()
 						+ Project.SOUND_PATH + "/" + selected.getFilename()));
 
 				playingSound.play(selected.getVolume(), 1, selected.getPan());

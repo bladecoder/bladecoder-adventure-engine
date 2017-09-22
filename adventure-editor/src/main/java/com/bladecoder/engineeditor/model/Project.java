@@ -75,18 +75,19 @@ public class Project extends PropertyChange {
 	public static final String PARTICLE_RENDERER_STRING = "particle";
 	public static final String TEXT_RENDERER_STRING = "text";
 
-	public static final String ASSETS_PATH = "/android/assets";
-	public static final String MODEL_PATH = ASSETS_PATH + "/model";
-	public static final String ATLASES_PATH = ASSETS_PATH + "/atlases";
-	public static final String FONTS_PATH = ASSETS_PATH + "/fonts";
-	public static final String MUSIC_PATH = ASSETS_PATH + "/music";
-	public static final String SOUND_PATH = ASSETS_PATH + "/sounds";
-	public static final String IMAGE_PATH = ASSETS_PATH + "/images";
-	public static final String SPRITE3D_PATH = ASSETS_PATH + "/3d";
-	public static final String SPINE_PATH = ASSETS_PATH + "/spine";
-	public static final String PARTICLE_PATH = ASSETS_PATH + "/particles";
-	public static final String VOICE_PATH = ASSETS_PATH + "/voices";
-	public static final String UI_PATH = ASSETS_PATH + "/ui";
+	public static final String NEW_ASSETS_PATH = "/assets";
+	public static final String OLD_ASSETS_PATH = "/android/assets";
+	public static final String MODEL_PATH = "/model";
+	public static final String ATLASES_PATH = "/atlases";
+	public static final String FONTS_PATH = "/fonts";
+	public static final String MUSIC_PATH = "/music";
+	public static final String SOUND_PATH = "/sounds";
+	public static final String IMAGE_PATH = "/images";
+	public static final String SPRITE3D_PATH = "/3d";
+	public static final String SPINE_PATH = "/spine";
+	public static final String PARTICLE_PATH = "/particles";
+	public static final String VOICE_PATH = "/voices";
+	public static final String UI_PATH = "/ui";
 	public static final String FONT_PATH = UI_PATH + "/fonts";
 
 	public static final int DEFAULT_WIDTH = 1920;
@@ -113,6 +114,20 @@ public class Project extends PropertyChange {
 
 	public Project() {
 		loadConfig();
+	}
+	
+	public String getAssetPath(String base) {
+		String path = base +  NEW_ASSETS_PATH;
+				
+		if(new File(path).exists()) {
+			return path;
+		} else {
+			return base + OLD_ASSETS_PATH;
+		}
+	}
+	
+	public String getAssetPath() {
+		return getAssetPath(getProjectPath());
 	}
 
 	public UndoStack getUndoStack() {
@@ -220,7 +235,7 @@ public class Project extends PropertyChange {
 	}
 
 	public String getModelPath() {
-		return projectFile.getAbsolutePath() + MODEL_PATH;
+		return getAssetPath() + MODEL_PATH;
 	}
 
 	public String getProjectPath() {
@@ -291,13 +306,13 @@ public class Project extends PropertyChange {
 
 			// 1.- SAVE world
 			World.getInstance().saveWorldDesc(
-					new FileHandle(new File(projectFile.getAbsolutePath() + MODEL_PATH + "/" + EngineAssetManager.WORLD_FILENAME)));
+					new FileHandle(new File(getAssetPath() + MODEL_PATH + "/" + EngineAssetManager.WORLD_FILENAME)));
 
 			// 2.- SAVE .chapter
 			chapter.save();
 
 			// 3.- SAVE BladeEngine.properties
-			projectConfig.store(new FileOutputStream(projectFile.getAbsolutePath() + "/" + ASSETS_PATH + "/"
+			projectConfig.store(new FileOutputStream(getAssetPath() + "/"
 					+ Config.PROPERTIES_FILENAME), null);
 
 			// 4.- SAVE I18N
@@ -328,7 +343,7 @@ public class Project extends PropertyChange {
 			FolderClassLoader folderClassLoader = new FolderClassLoader(projectFile.getAbsolutePath()
 					+ "/core/build/classes/main");
 			ActionFactory.setActionClassLoader(folderClassLoader);
-			EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
+			EngineAssetManager.createEditInstance(getAssetPath());
 
 			try {
 				World.getInstance().loadWorldDesc();
@@ -349,8 +364,8 @@ public class Project extends PropertyChange {
 				}
 			}
 
-			chapter = new Chapter(Ctx.project.getProjectDir().getAbsolutePath() + Project.MODEL_PATH);
-			i18n = new I18NHandler(Ctx.project.getProjectDir().getAbsolutePath() + Project.MODEL_PATH);
+			chapter = new Chapter(getAssetPath() + Project.MODEL_PATH);
+			i18n = new I18NHandler(getAssetPath() + Project.MODEL_PATH);
 
 			// No need to load the chapter. It's loaded by the chapter combo.
 			// loadChapter(World.getInstance().getInitChapter());
@@ -358,7 +373,7 @@ public class Project extends PropertyChange {
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 
 			projectConfig = new OrderedProperties();
-			projectConfig.load(new FileInputStream(projectFile.getAbsolutePath() + ASSETS_PATH + "/"
+			projectConfig.load(new FileInputStream(getAssetPath() + "/"
 					+ Config.PROPERTIES_FILENAME));
 			modified = false;
 			
@@ -429,10 +444,10 @@ public class Project extends PropertyChange {
 	private File checkProjectStructure(File folder) {
 		File projectFolder = folder;
 		
-		if (!new File(projectFolder.getAbsolutePath() + MODEL_PATH).exists()) {
+		if (!new File(getAssetPath(projectFolder.getAbsolutePath()) + MODEL_PATH).exists()) {
 			projectFolder = projectFolder.getParentFile();
 
-			if (!new File(projectFolder.getAbsolutePath() + MODEL_PATH).exists())
+			if (!new File(getAssetPath(projectFolder.getAbsolutePath()) + MODEL_PATH).exists())
 				return null;
 		}
 
@@ -444,7 +459,7 @@ public class Project extends PropertyChange {
 	}
 
 	public List<String> getResolutions() {
-		File atlasesPath = new File(projectFile.getAbsolutePath() + ATLASES_PATH);
+		File atlasesPath = new File(getAssetPath() + ATLASES_PATH);
 		ArrayList<String> l = new ArrayList<String>();
 
 		File[] list = atlasesPath.listFiles();

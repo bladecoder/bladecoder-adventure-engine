@@ -163,25 +163,25 @@ public class InputPanelFactory extends Table {
 		boolean cutExt = false;
 
 		if (type == Type.ATLAS_ASSET) {
-			path = Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/" + Ctx.project.getResDir();
+			path = Ctx.project.getAssetPath() + Project.ATLASES_PATH + "/" + Ctx.project.getResDir();
 			exts = new String[1];
 			exts[0] = EngineAssetManager.ATLAS_EXT;
 			cutExt = true;
 		} else if (type == Type.MUSIC_ASSET) {
-			path = Ctx.project.getProjectPath() + Project.MUSIC_PATH + "/";
+			path = Ctx.project.getAssetPath() + Project.MUSIC_PATH + "/";
 			exts = new String[2];
 			exts[0] = ".ogg";
 			exts[1] = ".mp3";
 		} else if (type == Type.SOUND_ASSET) {
-			path = Ctx.project.getProjectPath() + Project.SOUND_PATH + "/";
+			path = Ctx.project.getAssetPath() + Project.SOUND_PATH + "/";
 			exts = new String[2];
 			exts[0] = ".ogg";
 			exts[1] = ".mp3";
 		} else if (type == Type.PARTICLE_ASSET) {
-			path = Ctx.project.getProjectPath() + Project.PARTICLE_PATH + "/";
+			path = Ctx.project.getAssetPath() + Project.PARTICLE_PATH + "/";
 			exts = null;
 		} else if (type == Type.FONT_ASSET) {
-			path = Ctx.project.getProjectPath() + Project.FONT_PATH + "/";
+			path = Ctx.project.getAssetPath() + Project.FONT_PATH + "/";
 			exts = new String[1];
 			exts[0] = ".ttf";
 			cutExt = true;	

@@ -165,7 +165,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 			return;
 		}
 
-		atlas = new TextureAtlas(Gdx.files.absolute(Ctx.project.getProjectPath() + Project.ATLASES_PATH + "/"
+		atlas = new TextureAtlas(Gdx.files.absolute(Ctx.project.getAssetPath() + Project.ATLASES_PATH + "/"
 				+ Ctx.project.getResDir() + "/" + atlasInput.getText() + ".atlas"));
 
 		Array<AtlasRegion> regions = atlas.getRegions();

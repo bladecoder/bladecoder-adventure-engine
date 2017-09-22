@@ -353,7 +353,7 @@ public class SceneList extends ModelList<World, Scene> {
 
 	private TextureRegion createBgIcon(String atlas, String region) {
 		TextureAtlas a = new TextureAtlas(Gdx.files
-				.absolute(Ctx.project.getProjectPath() + "/" + Project.ATLASES_PATH + "/1/" + atlas + ".atlas"));
+				.absolute(Ctx.project.getAssetPath() + Project.ATLASES_PATH + "/1/" + atlas + ".atlas"));
 		AtlasRegion r = a.findRegion(region);
 
 		if (r == null) {

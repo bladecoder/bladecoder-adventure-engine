@@ -227,7 +227,7 @@ public class ToolsWindow extends Container<Table> {
 
 					try {
 						ImageUtils.createAtlas(files.get(0).file().getAbsolutePath(),
-								Ctx.project.getProjectPath() + "/" + Project.UI_PATH + "/" + r, "ui" + ".atlas", scale,
+								Ctx.project.getAssetPath() + Project.UI_PATH + "/" + r, "ui" + ".atlas", scale,
 								TextureFilter.Linear, TextureFilter.Nearest);
 					} catch (IOException e) {
 						EditorLogger.error(e.getMessage());
@@ -264,7 +264,7 @@ public class ToolsWindow extends Container<Table> {
 					// project texts");
 
 					ImageUtils.unpackAtlas(
-							new File(Ctx.project.getProjectPath() + "/" + Project.UI_PATH + "/1/ui.atlas"),
+							new File(Ctx.project.getAssetPath() + Project.UI_PATH + "/1/ui.atlas"),
 							files.get(0).file());
 
 					Message.showMsg(getStage(), "UI Atlas images exported sucessfully.", 4);
@@ -299,7 +299,7 @@ public class ToolsWindow extends Container<Table> {
 					// fileChooser.setTitle("Select the file to export the
 					// project texts");
 
-					I18NUtils.exportTSV(Ctx.project.getProjectDir().getAbsolutePath(),
+					I18NUtils.exportTSV(Ctx.project.getAssetPath() + Project.MODEL_PATH,
 							files.get(0).file().getAbsolutePath(), Ctx.project.getChapter().getId(), "default");
 
 					Message.showMsg(getStage(), files.get(0).file().getName() + " exported sucessfully.", 4);
@@ -332,7 +332,7 @@ public class ToolsWindow extends Container<Table> {
 				try {
 					// chooser.setTitle("Select the .tsv file to import");
 
-					I18NUtils.importTSV(Ctx.project.getProjectDir().getAbsolutePath(),
+					I18NUtils.importTSV(Ctx.project.getAssetPath() + Project.MODEL_PATH,
 							files.get(0).file().getAbsolutePath(), Ctx.project.getChapter().getId(), "default");
 
 					// Reload texts
