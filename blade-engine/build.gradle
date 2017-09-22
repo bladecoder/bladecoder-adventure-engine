@@ -5,8 +5,12 @@ apply plugin: "signing"
 group = 'com.bladecoder.engine'
 
 // java
-    sourceCompatibility = 1.7
-    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+sourceCompatibility=1.7
+targetCompatibility=1.7
+
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
 sourceSets {
 	main {
 		java.srcDirs = ['src']
@@ -65,7 +69,7 @@ artifacts {
 
 //********* artifact signing *********
 if(project.hasProperty("release")) {
-    signing {   
+    signing {
         sign configurations.archives
     }
 } else {
@@ -85,9 +89,9 @@ uploadArchives {
                     beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
                 }
 
-                repository(url: sonatypeRepositoryUrl) {                 
+                repository(url: sonatypeRepositoryUrl) {
                   authentication(
-                    userName: sonatypeUsername, 
+                    userName: sonatypeUsername,
                   	password: sonatypePassword
                   )
                 }
@@ -116,7 +120,7 @@ uploadArchives {
                        developer {
                            id 'rgarcia'
                            name 'Rafael Garcia'
-                       } 
+                       }
                    }
                }
             }

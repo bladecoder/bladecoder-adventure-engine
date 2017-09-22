@@ -10,6 +10,8 @@ allprojects {
 
 tasks.eclipse.doLast {
     delete ".project"
+    delete '.classpath'
+    delete '.settings/'
 }
 
 // DISABLES JAVADOC ULTRACHECKS IN JDK8
@@ -25,26 +27,26 @@ tasks.eclipse.doLast {
 def ask(title){
 	def console = System.console()
 	def string
-	
+
     if (console) {
         string = console.readLine(title)
     } else {
         logger.error "Cannot get console."
     }
-    
+
     return new String(string)
 }
 
 def askPasswd(title){
 	def console = System.console()
 	def string
-	
+
     if (console) {
         string = console.readPassword(title)
     } else {
         logger.error "Cannot get console."
     }
-    
+
     return new String(string)
 }
 
@@ -53,27 +55,26 @@ if(hasProperty("release")) {
     ext.sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 	if(!hasProperty("sonatypeUsername"))
 		ext.sonatypeUsername = ask('\nSonatype Username: ')
-	
+
 	if(!hasProperty("sonatypePassword"))
 		ext.sonatypePassword = askPasswd('\nSonatype Password: ')
-		
+
 	if(!hasProperty("signing.keyId"))
     	ext."signing.keyId" = ask('\nKey Id: ')
-    	
+
    	if(!hasProperty("signing.secretKeyRingFile"))
     	ext."signing.secretKeyRingFile" = ask('\nSecret Keyring file: ')
-    	
+
     if(!hasProperty("signing.password"))
     	ext."signing.password" = askPasswd('\nKey Password: ')
 } else if (hasProperty("ci")) {
     if(!version.endsWith("-SNAPSHOT"))
     	version += "-SNAPSHOT"
-    
+
     ext.sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
 	if(!hasProperty("sonatypeUsername"))
 		ext.sonatypeUsername = ask('\nSonatype Username: ')
-	
+
 	if(!hasProperty("sonatypePassword"))
 		ext.sonatypePassword = askPasswd('\nSonatype Password: ')
 }
-
