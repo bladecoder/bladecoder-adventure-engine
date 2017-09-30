@@ -30,7 +30,7 @@ public class Main extends LwjglApplication {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 
 		cfg.title = "Adventure Editor v" + Versions.getVersion();
-		
+
 		cfg.resizable = true;
 		cfg.vSyncEnabled = true;
 		// cfg.samples = 2;
@@ -59,22 +59,24 @@ public class Main extends LwjglApplication {
 				} catch (Exception ex) {
 					EditorLogger.printStackTrace(ex);
 				}
+			} else if (args[i].equals("-d")) {
+				EditorLogger.setDebug();
 			}
 		}
 	}
-	
+
 	public Main(Editor editor, LwjglApplicationConfiguration cfg) {
-		super(editor,cfg);
-		
-		 Gdx.graphics.setWindowedMode(Math.max((int) (Gdx.graphics.getDisplayMode().width * 0.9), 1920/2), 
-				 Math.max((int) (Gdx.graphics.getDisplayMode().height * 0.9), 1080/2));
+		super(editor, cfg);
+
+		Gdx.graphics.setWindowedMode(Math.max((int) (Gdx.graphics.getDisplayMode().width * 0.9), 1920 / 2),
+				Math.max((int) (Gdx.graphics.getDisplayMode().height * 0.9), 1080 / 2));
 	}
-	
+
 	@Override
 	public void exit() {
 		((Editor) listener).exit();
 	}
-	
+
 	public void exitSaved() {
 		super.exit();
 	}

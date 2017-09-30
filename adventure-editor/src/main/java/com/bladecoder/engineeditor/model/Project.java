@@ -115,17 +115,17 @@ public class Project extends PropertyChange {
 	public Project() {
 		loadConfig();
 	}
-	
+
 	public String getAssetPath(String base) {
-		String path = base +  NEW_ASSETS_PATH;
-				
-		if(new File(path).exists()) {
+		String path = base + NEW_ASSETS_PATH;
+
+		if (new File(path).exists()) {
 			return path;
 		} else {
 			return base + OLD_ASSETS_PATH;
 		}
 	}
-	
+
 	public String getAssetPath() {
 		return getAssetPath(getProjectPath());
 	}
@@ -193,9 +193,9 @@ public class Project extends PropertyChange {
 		selectedActor = null;
 		selectedFA = null;
 
-		if(scn != null)
+		if (scn != null)
 			Ctx.project.getEditorConfig().setProperty("project.selectedScene", scn.getId());
-		
+
 		firePropertyChange(NOTIFY_SCENE_SELECTED, null, selectedScene);
 	}
 
@@ -260,7 +260,7 @@ public class Project extends PropertyChange {
 	public void createProject(String projectDir, String name, String pkg, String sdkLocation, boolean spinePlugin)
 			throws IOException {
 		closeProject();
-		
+
 		createLibGdxProject(projectDir, name, pkg, "BladeEngine", sdkLocation, spinePlugin);
 
 		projectFile = new File(projectDir + "/" + name);
@@ -312,8 +312,7 @@ public class Project extends PropertyChange {
 			chapter.save();
 
 			// 3.- SAVE BladeEngine.properties
-			projectConfig.store(new FileOutputStream(getAssetPath() + "/"
-					+ Config.PROPERTIES_FILENAME), null);
+			projectConfig.store(new FileOutputStream(getAssetPath() + "/" + Config.PROPERTIES_FILENAME), null);
 
 			// 4.- SAVE I18N
 			i18n.save();
@@ -332,16 +331,22 @@ public class Project extends PropertyChange {
 
 		projectToLoad = checkProjectStructure(projectToLoad);
 
-		if (projectToLoad != null) {	
+		if (projectToLoad != null) {
 			// dispose the current project
 			closeProject();
-			
+
 			this.projectFile = projectToLoad;
 
 			// Use FolderClassLoader for loading CUSTOM actions.
 			// TODO Add 'core/bin' and '/core/out' folders???
-			FolderClassLoader folderClassLoader = new FolderClassLoader(projectFile.getAbsolutePath()
-					+ "/core/build/classes/main");
+			FolderClassLoader folderClassLoader = null;
+			
+			if (new File(projectFile, "/assets").exists()) {
+				folderClassLoader = new FolderClassLoader(projectFile.getAbsolutePath() + "/core/build/classes/java/main");
+			} else {
+				folderClassLoader = new FolderClassLoader(projectFile.getAbsolutePath() + "/core/build/classes/main");
+			}
+
 			ActionFactory.setActionClassLoader(folderClassLoader);
 			EngineAssetManager.createEditInstance(getAssetPath());
 
@@ -350,7 +355,7 @@ public class Project extends PropertyChange {
 			} catch (SerializationException ex) {
 				// check for not compiled custom actions
 				if (ex.getCause() != null && ex.getCause() instanceof ClassNotFoundException) {
-					EditorLogger.debug("Custom action class not found. Trying to compile...");
+					EditorLogger.msg("Custom action class not found. Trying to compile...");
 					if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
 						folderClassLoader.reload();
 						World.getInstance().loadWorldDesc();
@@ -373,12 +378,11 @@ public class Project extends PropertyChange {
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 
 			projectConfig = new OrderedProperties();
-			projectConfig.load(new FileInputStream(getAssetPath() + "/"
-					+ Config.PROPERTIES_FILENAME));
+			projectConfig.load(new FileInputStream(getAssetPath() + "/" + Config.PROPERTIES_FILENAME));
 			modified = false;
-			
-			Display.setTitle( "Adventure Editor v" + Versions.getVersion() + " - " + projectFile.getAbsolutePath() );
-			
+
+			Display.setTitle("Adventure Editor v" + Versions.getVersion() + " - " + projectFile.getAbsolutePath());
+
 			firePropertyChange(NOTIFY_PROJECT_LOADED);
 		} else {
 			throw new IOException("Project not found.");
@@ -443,7 +447,7 @@ public class Project extends PropertyChange {
 	 */
 	private File checkProjectStructure(File folder) {
 		File projectFolder = folder;
-		
+
 		if (!new File(getAssetPath(projectFolder.getAbsolutePath()) + MODEL_PATH).exists()) {
 			projectFolder = projectFolder.getParentFile();
 
@@ -490,7 +494,7 @@ public class Project extends PropertyChange {
 
 	public void loadChapter(String selChapter) throws IOException {
 		undoStack.clear();
-		
+
 		setSelectedScene(null);
 
 		try {
@@ -498,12 +502,10 @@ public class Project extends PropertyChange {
 			Ctx.project.getEditorConfig().setProperty("project.selectedChapter", selChapter);
 		} catch (SerializationException ex) {
 			// check for not compiled custom actions
-			if (ex.getCause() != null  && ex.getCause() instanceof ClassNotFoundException) {
-				EditorLogger.debug("Custom action class not found. Trying to compile...");
+			if (ex.getCause() != null && ex.getCause() instanceof ClassNotFoundException) {
+				EditorLogger.msg("Custom action class not found. Trying to compile...");
 				if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
-					FolderClassLoader folderClassLoader = new FolderClassLoader(projectFile.getAbsolutePath()
-							+ "/core/build/classes/main");
-					ActionFactory.setActionClassLoader(folderClassLoader);
+					((FolderClassLoader)ActionFactory.getActionClassLoader()).reload();
 					chapter.load(selChapter);
 				} else {
 					throw new IOException("Failed to run Gradle.");
@@ -534,7 +536,8 @@ public class Project extends PropertyChange {
 	}
 
 	public void saveGradleProperties(Properties prop) throws IOException {
-		FileOutputStream os = new FileOutputStream(Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties");
+		FileOutputStream os = new FileOutputStream(
+				Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties");
 
 		prop.store(os, null);
 	}
