@@ -176,6 +176,11 @@ public class TextRenderer implements ActorRenderer {
 	public String getText() {
 		return text;
 	}
+	
+	public void setText(String text) {
+		this.text = text;
+		this.editorTranslatedText = text;
+	}
 
 	public void setText(String text, String translatedText) {
 		this.text = text;

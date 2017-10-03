@@ -190,6 +190,14 @@ public class I18NHandler {
 						putTranslationsInElement(d);
 				}
 			}
+
+			// 4. Text for TextRenderer
+			if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof TextRenderer) {
+
+				TextRenderer r = (TextRenderer) ((SpriteActor) a).getRenderer();
+				
+				r.setText(getTranslation(r.getText()));
+			}
 		}
 	}
 

@@ -254,6 +254,9 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 		@Override
 		protected String getCellSubTitle(BaseActor e) {
+			if (e instanceof SpriteActor && ((SpriteActor) e).getRenderer() instanceof TextRenderer && ((TextRenderer) ((SpriteActor) e).getRenderer()).getText() != null)
+				return Ctx.project.translate(((TextRenderer) ((SpriteActor) e).getRenderer()).getText()).replace("\n", "|");
+			
 			if (e instanceof InteractiveActor)
 				return Ctx.project.translate(((InteractiveActor) e).getDesc());
 
