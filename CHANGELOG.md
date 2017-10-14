@@ -2,6 +2,25 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0]
+- New Sound System. Now adding sounds is more usable. Backwards compatibility preserved.
+- World properties can also be set in BladeEngine.properties. 
+- Added PLATFORM property.
+- Added OpenURL action.
+- Added actions for accessing to Ink variables: InkVariable and IfInkVariable actions.
+- Added DIRECTION attribute to IfActorAttr action.
+- Initial support for assets in the root folder.
+- Ink: Change the ':' character talk separator by '>'.
+- Set actor fake depth as boolean.
+- Custom icon support for the 'leave' verb.
+- Updated blade-ink to v0.4.3.
+- Updated InGameConsole to v0.7.1.
+- 'world.json' is now called 'world'. Old files can still be loaded.
+- EDITOR: Add refPoint to the EditActorDialog.
+- EDITOR: Undo bbox points, depth markers, ref. points and walkzone points.
+- EDITOR: Added zoom keys: '+' and '-'.
+- EDITOR: Filter .zip files in File Input Dialog when selecting JRE in the package dialog.
+- And many fixes Fixes.
 
 ## [1.2.7]
 - Added secondary animation support for Spine actors.
@@ -12,8 +31,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated blade-ink dependency to v0.4.2
 - Added title image and aligment to the menu screen.
 - EDITOR: Edit Animation dialog now sets the initial source based in previous sources.
-
-
 
 ## [1.2.6]
 
