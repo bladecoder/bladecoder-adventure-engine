@@ -79,7 +79,7 @@ public class World implements Serializable, AssetConsumer {
 	};
 
 	public static enum WorldProperties {
-		SAVED_GAME_VERSION, PREVIOUS_SCENE, CURRENT_CHAPTER
+		SAVED_GAME_VERSION, PREVIOUS_SCENE, CURRENT_CHAPTER, PLATFORM
 	};
 
 	private static final boolean CACHE_ENABLED = true;
@@ -852,6 +852,7 @@ public class World implements Serializable, AssetConsumer {
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
 
 			customProperties.put(WorldProperties.CURRENT_CHAPTER.toString(), chapterName);
+			customProperties.put(WorldProperties.PLATFORM.toString(), Gdx.app.getType().toString());
 		} else {
 			EngineLogger.error(
 					"ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
