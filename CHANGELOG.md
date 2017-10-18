@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.1]
+- Asset folder is created now in the project root.
+- Updated Gradle to v4.0.2
+- FIX sound error preventing to save the game.
+
 ## [1.3.0]
 - New Sound System. Now adding sounds is more usable. Backwards compatibility preserved.
 - World properties can also be set in BladeEngine.properties. 
