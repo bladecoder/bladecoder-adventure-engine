@@ -152,7 +152,7 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 		}
 	}
 	
-	class LoadedSound {
+	static class LoadedSound {
 		transient SoundDesc desc;
 		transient Sound sound;
 		
@@ -161,6 +161,10 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 		
 		public LoadedSound(SoundDesc s) {
 			desc = s;
+		}
+		
+		public LoadedSound() {
+			
 		}
 	}
 }
