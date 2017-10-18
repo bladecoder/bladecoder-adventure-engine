@@ -24,8 +24,6 @@ public class Versions {
 	private static final String ROBOVM_VERSION_PROP="roboVMVersion";
 	private static final String BUILDTOOLS_VERSION_PROP="buildToolsVersion";
 	private static final String ANDROID_API_LEVEL_PROP="androidAPILevel";
-	private static final String GWT_VERSION_PROP = "gwtVersion";
-	private static final String GWT_GRADLE_VERSION_PROP = "gwtGradlePluginVersion";
 	private static final String ANDROID_GRADLE_VERSION_PROP = "androidGradlePluginVersion";
 	private static final String ROBOVM_GRADLE_VERSION_PROP = "roboVMGradlePluginVersion";
 	private static final String BLADE_INK_VERSION_PROP = "bladeInkVersion";
@@ -69,20 +67,12 @@ public class Versions {
 		return getProperty(ANDROID_API_LEVEL_PROP,null);
 	}
 	
-	public static String getGwtVersion() {
-		return getProperty(GWT_VERSION_PROP,null);
-	}
-	
 	public static void setBuildToolsVersion(String v) {
 		config.setProperty(BUILDTOOLS_VERSION_PROP, v);
 	}
 	
 	public static void setAndroidAPILevel(String v) {
 		config.setProperty(ANDROID_API_LEVEL_PROP, v);
-	}
-	
-	public static String getGwtGradlePluginVersion() {
-		return getProperty(GWT_GRADLE_VERSION_PROP,null);
 	}
 	
 	public static String getAndroidGradlePluginVersion() {

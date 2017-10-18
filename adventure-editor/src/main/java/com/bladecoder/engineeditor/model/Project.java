@@ -44,11 +44,6 @@ import com.bladecoder.engineeditor.common.OrderedProperties;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.common.Versions;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
-import com.bladecoder.engineeditor.setup.Dependency;
-import com.bladecoder.engineeditor.setup.DependencyBank;
-import com.bladecoder.engineeditor.setup.DependencyBank.ProjectDependency;
-import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
-import com.bladecoder.engineeditor.setup.ProjectBuilder;
 import com.bladecoder.engineeditor.undo.UndoStack;
 
 public class Project extends PropertyChange {
@@ -278,25 +273,7 @@ public class Project extends PropertyChange {
 			sdk = System.getenv("ANDROID_HOME");
 		}
 
-		DependencyBank bank = new DependencyBank();
-		ProjectBuilder builder = new ProjectBuilder(bank);
-		List<ProjectType> projects = new ArrayList<ProjectType>();
-		projects.add(ProjectType.CORE);
-		projects.add(ProjectType.DESKTOP);
-		projects.add(ProjectType.ANDROID);
-		projects.add(ProjectType.IOS);
-		// projects.add(ProjectType.HTML);
-
-		List<Dependency> dependencies = new ArrayList<Dependency>();
-		dependencies.add(bank.getDependency(ProjectDependency.GDX));
-		dependencies.add(bank.getDependency(ProjectDependency.FREETYPE));
-
-		if (spinePlugin)
-			dependencies.add(bank.getDependency(ProjectDependency.SPINE));
-
-		builder.buildProject(projects, dependencies);
-		builder.build();
-		new BladeEngineSetup().build(builder, projectDir + "/" + name, name, pkg, mainClass, sdk, null);
+		new BladeEngineSetup().build(projectDir + "/" + name, name, pkg, mainClass, sdk, spinePlugin);
 	}
 
 	public void saveProject() throws IOException {

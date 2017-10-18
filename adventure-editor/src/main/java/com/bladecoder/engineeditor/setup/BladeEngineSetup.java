@@ -28,24 +28,25 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.common.Versions;
-import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
 
-/** Command line tool to generate libgdx projects
+/**
+ * Command line tool to generate libgdx projects
+ * 
  * @author badlogic
- * @author Tomski 
- * @author rgarcia*/
+ * @author Tomski
+ * @author rgarcia
+ */
 public class BladeEngineSetup {
-	public static boolean isSdkLocationValid (String sdkLocation) {
+	public static boolean isSdkLocationValid(String sdkLocation) {
 		return new File(sdkLocation, "tools").exists() && new File(sdkLocation, "platforms").exists();
 	}
 
-	public static boolean isEmptyDirectory (String destination) {
+	public static boolean isEmptyDirectory(String destination) {
 		if (new File(destination).exists()) {
 			return new File(destination).list().length == 0;
 		} else {
@@ -53,18 +54,18 @@ public class BladeEngineSetup {
 		}
 	}
 
-	public static boolean isSdkUpToDate (String sdkLocation) {
+	public static boolean isSdkUpToDate(String sdkLocation) {
 		File buildTools = new File(sdkLocation, "build-tools");
 		if (!buildTools.exists()) {
 			EditorLogger.error("You have no build tools!\nUpdate your Android SDK with build tools version: "
-				+ Versions.getBuildToolsVersion());
+					+ Versions.getBuildToolsVersion());
 			return false;
 		}
 
 		File apis = new File(sdkLocation, "platforms");
 		if (!apis.exists()) {
 			EditorLogger.error("You have no Android APIs!\nUpdate your Android SDK with API level: "
-				+ Versions.getAndroidAPILevel());
+					+ Versions.getAndroidAPILevel());
 			return false;
 		}
 		String newestLocalTool = getLatestTools(buildTools);
@@ -73,50 +74,52 @@ public class BladeEngineSetup {
 		if (compareVersions(targetToolVersion, localToolVersion)) {
 			// ALWAYS USE THE CURRENT BUILD TOOLS
 			Versions.setBuildToolsVersion(newestLocalTool);
-			
+
 			EditorLogger.error("Using build tools: " + Versions.getBuildToolsVersion());
 		} else {
 			if (!hasFileInDirectory(buildTools, Versions.getBuildToolsVersion())) {
-				EditorLogger.error("Please update your Android SDK, you need build tools: "
-					+ Versions.getBuildToolsVersion());
+				EditorLogger.error(
+						"Please update your Android SDK, you need build tools: " + Versions.getBuildToolsVersion());
 				return false;
 			}
 		}
 
 		int newestLocalApi = getLatestApi(apis);
 		if (newestLocalApi > Integer.valueOf(Versions.getAndroidAPILevel())) {
-		
+
 			// ALWAYS USE THE CURRENT API
 			Versions.setAndroidAPILevel(Integer.toString(newestLocalApi));
-			
+
 			EditorLogger.error("Using API level: " + Versions.getAndroidAPILevel());
 		} else {
 			if (!hasFileInDirectory(apis, "android-" + Versions.getAndroidAPILevel())) {
-				EditorLogger.error("Please update your Android SDK, you need the Android API: "
-					+ Versions.getAndroidAPILevel());
+				EditorLogger.error(
+						"Please update your Android SDK, you need the Android API: " + Versions.getAndroidAPILevel());
 				return false;
 			}
 		}
 		return true;
 	}
 
-	private static boolean hasFileInDirectory (File file, String fileName) {
+	private static boolean hasFileInDirectory(File file, String fileName) {
 		for (String name : file.list()) {
-			if (name.equals(fileName)) return true;
+			if (name.equals(fileName))
+				return true;
 		}
 		return false;
 	}
 
-	private static int getLatestApi (File apis) {
+	private static int getLatestApi(File apis) {
 		int apiLevel = 0;
 		for (File api : apis.listFiles()) {
 			int level = readAPIVersion(api);
-			if (level > apiLevel) apiLevel = level;
+			if (level > apiLevel)
+				apiLevel = level;
 		}
 		return apiLevel;
 	}
 
-	private static String getLatestTools (File buildTools) {
+	private static String getLatestTools(File buildTools) {
 		String version = null;
 		int[] versionSplit = new int[3];
 		int[] testSplit = new int[3];
@@ -138,7 +141,7 @@ public class BladeEngineSetup {
 		}
 	}
 
-	private static int readAPIVersion (File parentFile) {
+	private static int readAPIVersion(File parentFile) {
 		File properties = new File(parentFile, "source.properties");
 		FileReader reader;
 		BufferedReader buffer;
@@ -160,14 +163,14 @@ public class BladeEngineSetup {
 					return apiLevel;
 				}
 			}
-		} catch (IOException| NumberFormatException e) {
+		} catch (IOException | NumberFormatException e) {
 			EditorLogger.printStackTrace(e);
 		}
-		
+
 		return 0;
 	}
 
-	private static String readBuildToolsVersion (File parentFile) {
+	private static String readBuildToolsVersion(File parentFile) {
 		File properties = new File(parentFile, "source.properties");
 		FileReader reader;
 		BufferedReader buffer;
@@ -197,7 +200,7 @@ public class BladeEngineSetup {
 		}
 		return "0.0.0";
 	}
-	
+
 	private static boolean compareVersions(int[] version, int[] testVersion) {
 		if (testVersion[0] > version[0]) {
 			return true;
@@ -211,7 +214,7 @@ public class BladeEngineSetup {
 		return false;
 	}
 
-	private static int[] convertTools (String toolsVersion) {
+	private static int[] convertTools(String toolsVersion) {
 		String[] stringSplit = toolsVersion.split("\\.");
 		int[] versionSplit = new int[3];
 		if (stringSplit.length == 3) {
@@ -221,22 +224,21 @@ public class BladeEngineSetup {
 				versionSplit[2] = Integer.parseInt(stringSplit[2]);
 				return versionSplit;
 			} catch (NumberFormatException nfe) {
-				return new int[] {0, 0, 0};
+				return new int[] { 0, 0, 0 };
 			}
 		} else {
-			return new int[] {0, 0, 0};
+			return new int[] { 0, 0, 0 };
 		}
 	}
 
-	public void build (ProjectBuilder builder, String outputDir, String appName, String packageName, String mainClass,
-		String sdkLocation, List<String> gradleArgs) throws IOException {
+	public void build(String outputDir, String appName, String packageName, String mainClass, String sdkLocation,
+			boolean spinePlugin) throws IOException {
 		ProjectSetup project = new ProjectSetup();
 
 		String packageDir = packageName.replace('.', '/');
 		String sdkPath = null;
-		
-		
-		if(sdkLocation != null && !sdkLocation.isEmpty())
+
+		if (sdkLocation != null && !sdkLocation.isEmpty())
 			sdkPath = sdkLocation.replace('\\', '/');
 
 		if (!isSdkLocationValid(sdkLocation)) {
@@ -247,34 +249,30 @@ public class BladeEngineSetup {
 
 		// root dir/gradle files
 		project.files.add(new ProjectFile("gitignore", ".gitignore", false));
-		project.files.add(new TemporaryProjectFile(builder.settingsFile, "settings.gradle", false));
-		project.files.add(new TemporaryProjectFile(builder.buildFile, "build.gradle", true));
+		project.files.add(new ProjectFile("settings.gradle", false));
 		project.files.add(new ProjectFile("gradlew", false));
 		project.files.add(new ProjectFile("gradlew.bat", false));
 		project.files.add(new ProjectFile("gradle/wrapper/gradle-wrapper.jar", false));
 		project.files.add(new ProjectFile("gradle/wrapper/gradle-wrapper.properties", false));
 		project.files.add(new ProjectFile("gradle.properties"));
+		project.files.add(new ProjectFile("build.gradle", false));
 
 		// core project
 		project.files.add(new ProjectFile("core/build.gradle"));
-//		project.files.add(new ProjectFile("core/src/MainClass", "core/src/" + packageDir + "/" + mainClass + ".java", true));
-		if (builder.modules.contains(ProjectType.HTML)) {
-			project.files.add(new ProjectFile("core/CoreGdxDefinition", "core/src/" + mainClass + ".gwt.xml", true));
-		}
+		new File(outputDir + "/core/src/main/java").mkdirs();
 
-		// desktop project
-		if (builder.modules.contains(ProjectType.DESKTOP)) {
-			project.files.add(new ProjectFile("desktop/build.gradle"));
-			project.files.add(new ProjectFile("desktop/src/DesktopLauncher", "desktop/src/" + packageDir + "/desktop/DesktopLauncher.java", true));
-			
-			project.files.add(new ProjectFile("desktop/src/icons/icon16.png", false));
-			project.files.add(new ProjectFile("desktop/src/icons/icon32.png", false));
-			project.files.add(new ProjectFile("desktop/src/icons/icon128.png", false));
-		}
+		// DESKTOP project
+		project.files.add(new ProjectFile("desktop/build.gradle"));
+		project.files.add(new ProjectFile("desktop/src/DesktopLauncher",
+				"desktop/src/main/java/" + packageDir + "/desktop/DesktopLauncher.java", true));
+
+		project.files.add(new ProjectFile("desktop/src/icons/icon16.png", false));
+		project.files.add(new ProjectFile("desktop/src/icons/icon32.png", false));
+		project.files.add(new ProjectFile("desktop/src/icons/icon128.png", false));
 
 		// Assets
-		String assetPath = builder.modules.contains(ProjectType.ANDROID) ? "android/assets" : "core/assets";
-		
+		String assetPath = "assets";
+
 		// CREATE ASSETS EMPTY FOLDERS
 		new File(outputDir + "/" + assetPath + "/3d").mkdirs();
 		new File(outputDir + "/" + assetPath + "/atlases/1").mkdirs();
@@ -289,104 +287,112 @@ public class BladeEngineSetup {
 		new File(outputDir + "/" + assetPath + "/ui/1").mkdirs();
 		new File(outputDir + "/" + assetPath + "/ui/fonts").mkdirs();
 
-		
-		project.files.add(new ProjectFile("android/assets/model/00.chapter.json", assetPath + "/model/00.chapter.json", false));
-		project.files.add(new ProjectFile("android/assets/model/world.properties", assetPath + "/model/world.properties", false));
-		project.files.add(new ProjectFile("android/assets/model/world", assetPath + "/model/world", false));
-		project.files.add(new ProjectFile("android/assets/model/world_es.properties", assetPath + "/model/world_es.properties", false));
-		
-		project.files.add(new ProjectFile("android/assets/ui/credits.txt", assetPath + "/ui/credits.txt", false));
-		project.files.add(new ProjectFile("android/assets/ui/fonts/PaytoneOne.ttf", assetPath + "/ui/fonts/PaytoneOne.ttf", false));
-		project.files.add(new ProjectFile("android/assets/ui/fonts/ArchitectsDaughter.ttf", assetPath + "/ui/fonts/ArchitectsDaughter.ttf", false));
-		project.files.add(new ProjectFile("android/assets/ui/fonts/Roboto-Black.ttf", assetPath + "/ui/fonts/Roboto-Black.ttf", false));
-		project.files.add(new ProjectFile("android/assets/ui/fonts/Roboto-Regular.ttf", assetPath + "/ui/fonts/Roboto-Regular.ttf", false));
-		project.files.add(new ProjectFile("android/assets/ui/fonts/Roboto-Thin.ttf", assetPath + "/ui/fonts/Roboto-Thin.ttf", false));
-		project.files.add(new ProjectFile("android/assets/ui/fonts/Ubuntu-M.ttf", assetPath + "/ui/fonts/Ubuntu-M.ttf", false));
-		project.files.add(new ProjectFile("android/assets/ui/ui.json", assetPath + "/ui/ui.json", false));
-		
-		project.files.add(new ProjectFile("android/assets/ui/1/blade_logo.png", assetPath + "/ui/1/blade_logo.png", false));
-		project.files.add(new ProjectFile("android/assets/ui/1/helpDesktop.png", assetPath + "/ui/1/helpDesktop.png", false));
-		project.files.add(new ProjectFile("android/assets/ui/1/helpDesktop_es.png", assetPath + "/ui/1/helpDesktop_es.png", false));
-		project.files.add(new ProjectFile("android/assets/ui/1/helpPie.png", assetPath + "/ui/1/helpPie.png", false));
-		project.files.add(new ProjectFile("android/assets/ui/1/helpPie_es.png", assetPath + "/ui/1/helpPie_es.png", false));
-		project.files.add(new ProjectFile("android/assets/ui/1/libgdx_logo.png", assetPath + "/ui/1/libgdx_logo.png", false));
-		project.files.add(new ProjectFile("android/assets/ui/1/ui.atlas", assetPath + "/ui/1/ui.atlas", false));
-		project.files.add(new ProjectFile("android/assets/ui/1/ui.png", assetPath + "/ui/1/ui.png", false));
-		
-		project.files.add(new ProjectFile("android/assets/BladeEngine.properties", assetPath + "/BladeEngine.properties", false));
+		project.files.add(new ProjectFile("assets/model/00.chapter.json", assetPath + "/model/00.chapter.json", false));
+		project.files
+				.add(new ProjectFile("assets/model/world.properties", assetPath + "/model/world.properties", false));
+		project.files.add(new ProjectFile("assets/model/world", assetPath + "/model/world", false));
+		project.files.add(
+				new ProjectFile("assets/model/world_es.properties", assetPath + "/model/world_es.properties", false));
 
-		// android project
-		if (builder.modules.contains(ProjectType.ANDROID)) {
-			project.files.add(new ProjectFile("android/res/values/strings.xml"));
-			project.files.add(new ProjectFile("android/res/values/styles.xml", false));
-			project.files.add(new ProjectFile("android/res/drawable-hdpi/ic_launcher.png", false));
-			project.files.add(new ProjectFile("android/res/drawable-mdpi/ic_launcher.png", false));
-			project.files.add(new ProjectFile("android/res/drawable-xhdpi/ic_launcher.png", false));
-			project.files.add(new ProjectFile("android/res/drawable-xxhdpi/ic_launcher.png", false));
-			project.files.add(new ProjectFile("android/res/drawable-xxxhdpi/ic_launcher.png", false));
-			project.files.add(new ProjectFile("android/src/AndroidLauncher", "android/src/" + packageDir + "/AndroidLauncher.java", true));
-			project.files.add(new ProjectFile("android/AndroidManifest.xml"));
-			project.files.add(new ProjectFile("android/build.gradle", true));
-			project.files.add(new ProjectFile("android/ic_launcher-web.png", false));
-			project.files.add(new ProjectFile("android/proguard-rules.pro", false));
-			project.files.add(new ProjectFile("android/project.properties", true));
-			
-			if(sdkLocation != null)
-				project.files.add(new ProjectFile("local.properties", true));
-		}
+		project.files.add(new ProjectFile("assets/ui/credits.txt", assetPath + "/ui/credits.txt", false));
+		project.files
+				.add(new ProjectFile("assets/ui/fonts/PaytoneOne.ttf", assetPath + "/ui/fonts/PaytoneOne.ttf", false));
+		project.files.add(new ProjectFile("assets/ui/fonts/ArchitectsDaughter.ttf",
+				assetPath + "/ui/fonts/ArchitectsDaughter.ttf", false));
+		project.files.add(
+				new ProjectFile("assets/ui/fonts/Roboto-Black.ttf", assetPath + "/ui/fonts/Roboto-Black.ttf", false));
+		project.files.add(new ProjectFile("assets/ui/fonts/Roboto-Regular.ttf",
+				assetPath + "/ui/fonts/Roboto-Regular.ttf", false));
+		project.files.add(
+				new ProjectFile("assets/ui/fonts/Roboto-Thin.ttf", assetPath + "/ui/fonts/Roboto-Thin.ttf", false));
+		project.files.add(new ProjectFile("assets/ui/fonts/Ubuntu-M.ttf", assetPath + "/ui/fonts/Ubuntu-M.ttf", false));
+		project.files.add(new ProjectFile("assets/ui/ui.json", assetPath + "/ui/ui.json", false));
 
-		// html project
-		if (builder.modules.contains(ProjectType.HTML)) {
-			project.files.add(new ProjectFile("html/build.gradle"));
-			project.files.add(new ProjectFile("html/src/HtmlLauncher", "html/src/" + packageDir + "/client/HtmlLauncher.java", true));
-			project.files.add(new ProjectFile("html/GdxDefinition", "html/src/" + packageDir + "/GdxDefinition.gwt.xml", true));
-			project.files.add(new ProjectFile("html/GdxDefinitionSuperdev", "html/src/" + packageDir + "/GdxDefinitionSuperdev.gwt.xml", true));
-			project.files.add(new ProjectFile("html/war/index", "html/webapp/index.html", true));
-			project.files.add(new ProjectFile("html/war/styles.css", "html/webapp/styles.css", false));
-			project.files.add(new ProjectFile("html/war/refresh.png", "html/webapp/refresh.png", false));
-			project.files.add(new ProjectFile("html/war/soundmanager2-jsmin.js", "html/webapp/soundmanager2-jsmin.js", false));
-			project.files.add(new ProjectFile("html/war/soundmanager2-setup.js", "html/webapp/soundmanager2-setup.js", false));
-			project.files.add(new ProjectFile("html/war/WEB-INF/web.xml", "html/webapp/WEB-INF/web.xml", true));
-		}
+		project.files.add(new ProjectFile("assets/ui/1/blade_logo.png", assetPath + "/ui/1/blade_logo.png", false));
+		project.files.add(new ProjectFile("assets/ui/1/helpDesktop.png", assetPath + "/ui/1/helpDesktop.png", false));
+		project.files
+				.add(new ProjectFile("assets/ui/1/helpDesktop_es.png", assetPath + "/ui/1/helpDesktop_es.png", false));
+		project.files.add(new ProjectFile("assets/ui/1/helpPie.png", assetPath + "/ui/1/helpPie.png", false));
+		project.files.add(new ProjectFile("assets/ui/1/helpPie_es.png", assetPath + "/ui/1/helpPie_es.png", false));
+		project.files.add(new ProjectFile("assets/ui/1/libgdx_logo.png", assetPath + "/ui/1/libgdx_logo.png", false));
+		project.files.add(new ProjectFile("assets/ui/1/ui.atlas", assetPath + "/ui/1/ui.atlas", false));
+		project.files.add(new ProjectFile("assets/ui/1/ui.png", assetPath + "/ui/1/ui.png", false));
 
-		// ios robovm
-		if (builder.modules.contains(ProjectType.IOS)) {
-			project.files.add(new ProjectFile("ios/src/IOSLauncher", "ios/src/" + packageDir + "/IOSLauncher.java", true));
-			project.files.add(new ProjectFile("ios/data/Default.png", false));
-			project.files.add(new ProjectFile("ios/data/Default@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Default@2x~ipad.png", false));
-			project.files.add(new ProjectFile("ios/data/Default-568h@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Default~ipad.png", false));
-			project.files.add(new ProjectFile("ios/data/Default-375w-667h@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Default-414w-736h@3x.png", false));
-			project.files.add(new ProjectFile("ios/data/Default-1024w-1366h@2x~ipad.png", false));
-			
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/Contents.json", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/app-store-icon-1024@1x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/Contents.json", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-app-icon-76@1x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-app-icon-76@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-notifications-icon-20@1x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-notifications-icon-20@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-pro-app-icon-83.5@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-settings-icon-29@1x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-settings-icon-29@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-spotlight-icon-40@1x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-spotlight-icon-40@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-app-icon-60@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-app-icon-60@3x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-notification-icon-20@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-notification-icon-20@3x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-spotlight-icon-40@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-spotlight-icon-40@3x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-spotlight-settings-icon-29@2x.png", false));
-			project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-spotlight-settings-icon-29@3x.png", false));
-			
-			project.files.add(new ProjectFile("ios/build.gradle", true));
-			project.files.add(new ProjectFile("ios/Info.plist.xml", false));
-			project.files.add(new ProjectFile("ios/robovm.properties"));
-			project.files.add(new ProjectFile("ios/robovm.xml", true));
-		}
+		project.files
+				.add(new ProjectFile("assets/BladeEngine.properties", assetPath + "/BladeEngine.properties", false));
+
+		// ANDROID project
+		project.files.add(new ProjectFile("android/res/values/strings.xml"));
+		project.files.add(new ProjectFile("android/res/values/styles.xml", false));
+		project.files.add(new ProjectFile("android/res/drawable-hdpi/ic_launcher.png", false));
+		project.files.add(new ProjectFile("android/res/drawable-mdpi/ic_launcher.png", false));
+		project.files.add(new ProjectFile("android/res/drawable-xhdpi/ic_launcher.png", false));
+		project.files.add(new ProjectFile("android/res/drawable-xxhdpi/ic_launcher.png", false));
+		project.files.add(new ProjectFile("android/res/drawable-xxxhdpi/ic_launcher.png", false));
+		project.files.add(new ProjectFile("android/src/AndroidLauncher",
+				"android/src/main/java/" + packageDir + "/AndroidLauncher.java", true));
+		project.files.add(new ProjectFile("android/AndroidManifest.xml"));
+		project.files.add(new ProjectFile("android/build.gradle", true));
+		project.files.add(new ProjectFile("android/ic_launcher-web.png", false));
+		project.files.add(new ProjectFile("android/proguard-rules.pro", false));
+		project.files.add(new ProjectFile("android/project.properties", true));
+
+		if (sdkLocation != null)
+			project.files.add(new ProjectFile("local.properties", true));
+
+		// IOS ROBOVM
+		project.files.add(
+				new ProjectFile("ios/src/IOSLauncher", "ios/src/main/java/" + packageDir + "/IOSLauncher.java", true));
+		project.files.add(new ProjectFile("ios/data/Default.png", false));
+		project.files.add(new ProjectFile("ios/data/Default@2x.png", false));
+		project.files.add(new ProjectFile("ios/data/Default@2x~ipad.png", false));
+		project.files.add(new ProjectFile("ios/data/Default-568h@2x.png", false));
+		project.files.add(new ProjectFile("ios/data/Default~ipad.png", false));
+		project.files.add(new ProjectFile("ios/data/Default-375w-667h@2x.png", false));
+		project.files.add(new ProjectFile("ios/data/Default-414w-736h@3x.png", false));
+		project.files.add(new ProjectFile("ios/data/Default-1024w-1366h@2x~ipad.png", false));
+
+		project.files.add(new ProjectFile("ios/data/Media.xcassets/Contents.json", false));
+		project.files
+				.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/app-store-icon-1024@1x.png", false));
+		project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/Contents.json", false));
+		project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-app-icon-76@1x.png", false));
+		project.files.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-app-icon-76@2x.png", false));
+		project.files.add(
+				new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-notifications-icon-20@1x.png", false));
+		project.files.add(
+				new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-notifications-icon-20@2x.png", false));
+		project.files.add(
+				new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-pro-app-icon-83.5@2x.png", false));
+		project.files
+				.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-settings-icon-29@1x.png", false));
+		project.files
+				.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-settings-icon-29@2x.png", false));
+		project.files.add(
+				new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-spotlight-icon-40@1x.png", false));
+		project.files.add(
+				new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/ipad-spotlight-icon-40@2x.png", false));
+		project.files
+				.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-app-icon-60@2x.png", false));
+		project.files
+				.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-app-icon-60@3x.png", false));
+		project.files.add(new ProjectFile(
+				"ios/data/Media.xcassets/AppIcon.appiconset/iphone-notification-icon-20@2x.png", false));
+		project.files.add(new ProjectFile(
+				"ios/data/Media.xcassets/AppIcon.appiconset/iphone-notification-icon-20@3x.png", false));
+		project.files.add(
+				new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-spotlight-icon-40@2x.png", false));
+		project.files.add(
+				new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/iphone-spotlight-icon-40@3x.png", false));
+		project.files.add(new ProjectFile(
+				"ios/data/Media.xcassets/AppIcon.appiconset/iphone-spotlight-settings-icon-29@2x.png", false));
+		project.files.add(new ProjectFile(
+				"ios/data/Media.xcassets/AppIcon.appiconset/iphone-spotlight-settings-icon-29@3x.png", false));
+
+		project.files.add(new ProjectFile("ios/build.gradle", true));
+		project.files.add(new ProjectFile("ios/Info.plist.xml", false));
+		project.files.add(new ProjectFile("ios/robovm.properties"));
+		project.files.add(new ProjectFile("ios/robovm.xml", true));
 
 		Map<String, String> values = new HashMap<String, String>();
 		values.put("%APP_NAME%", appName);
@@ -394,65 +400,33 @@ public class BladeEngineSetup {
 		values.put("%PACKAGE%", packageName);
 		values.put("%PACKAGE_DIR%", packageDir);
 		values.put("%MAIN_CLASS%", mainClass);
-		
-		if(sdkPath != null)
+		values.put("%USE_SPINE%", Boolean.toString(spinePlugin));
+
+		if (sdkPath != null)
 			values.put("%ANDROID_SDK%", sdkPath);
-		
+
 		values.put("%ASSET_PATH%", assetPath);
 		values.put("%BUILD_TOOLS_VERSION%", Versions.getBuildToolsVersion());
 		values.put("%API_LEVEL%", Versions.getAndroidAPILevel());
-		values.put("%GWT_VERSION%", Versions.getGwtVersion());
-		
+
 		values.put("%BLADE_ENGINE_VERSION%", Versions.getVersion());
 		values.put("%LIBGDX_VERSION%", Versions.getLibgdxVersion());
 		values.put("%ROBOVM_VERSION%", Versions.getRoboVMVersion());
-		
+
 		values.put("%ANDROID_GRADLE_PLUGIN_VERSION%", Versions.getAndroidGradlePluginVersion());
 		values.put("%ROBOVM_GRADLE_PLUGIN_VERSION%", Versions.getROBOVMGradlePluginVersion());
-		
+
 		values.put("%BLADE_INK_VERSION%", Versions.getBladeInkVersion());
-		
-		if (builder.modules.contains(ProjectType.HTML)) {
-			values.put("%GWT_INHERITS%", parseGwtInherits(builder));
-		}
 
 		copyAndReplace(outputDir, project, values);
-		copyLibs(outputDir);
-
-		builder.cleanUp();
 
 		// HACK executable flag isn't preserved for whatever reason...
 		new File(outputDir, "gradlew").setExecutable(true);
 
-		// RunProccess.runGradle(new File(outputDir), "clean" + parseGradleArgs(builder.modules, gradleArgs));
-		
-		RunProccess.runGradle(new File(outputDir), "desktop:clean" + parseGradleArgs(builder.modules, gradleArgs));
-	}
-	
-	/** 
-	 * NOTE: Not necessary now.
-	 * Copy the blade-engine.jar and libgdx-spine.jar to the output folder
-	 * @param outputDir
-	 * @throws IOException 
-	 */
-	private void copyLibs(String outputDir) throws IOException {
-//		File bladeEngineFile =  new File(BladeEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-//		File libSpineFile =  new File(Skeleton.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-		
-//		FileUtils.copyFileToDirectory(libSpineFile, new File(outputDir + "/libs"));
-		
-		// blade-engine.jar is in Maven Central now
-//		if(bladeEngineFile.isDirectory()) {
-//			EditorLogger.error("Editor is running inside IDE. Trying to build blade-engine.jar");
-//			RunProccess.runGradle(bladeEngineFile.getParentFile().getParentFile(), ":blade-engine:jar");
-//			
-//			FileUtils.copyDirectory(new File(bladeEngineFile.getParent() + "/build/libs"), new File(outputDir + "/libs"));
-//		} else {
-//			FileUtils.copyFileToDirectory(bladeEngineFile, new File(outputDir + "/libs"));
-//		}
+		RunProccess.runGradle(new File(outputDir), "desktop:clean");
 	}
 
-	private void copyAndReplace (String outputDir, ProjectSetup project, Map<String, String> values) throws IOException {
+	private void copyAndReplace(String outputDir, ProjectSetup project, Map<String, String> values) throws IOException {
 		File out = new File(outputDir);
 		if (!out.exists() && !out.mkdirs()) {
 			throw new RuntimeException("Couldn't create output directory '" + out.getAbsolutePath() + "'");
@@ -463,13 +437,14 @@ public class BladeEngineSetup {
 		}
 	}
 
-	private byte[] readResource (String resource, String path) {
+	private byte[] readResource(String resource, String path) {
 		InputStream in = null;
 		try {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 			byte[] buffer = new byte[1024 * 10];
 			in = BladeEngineSetup.class.getResourceAsStream(path + resource);
-			if (in == null) throw new RuntimeException("Couldn't read resource '" + resource + "'");
+			if (in == null)
+				throw new RuntimeException("Couldn't read resource '" + resource + "'");
 			int read = 0;
 			while ((read = in.read(buffer)) > 0) {
 				bytes.write(buffer, 0, read);
@@ -478,14 +453,15 @@ public class BladeEngineSetup {
 		} catch (IOException e) {
 			throw new RuntimeException("Couldn't read resource '" + resource + "'", e);
 		} finally {
-			if (in != null) try {
-				in.close();
-			} catch (IOException e) {
-			}
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException e) {
+				}
 		}
 	}
 
-	private byte[] readResource (File file) throws IOException {
+	private byte[] readResource(File file) throws IOException {
 		InputStream in = null;
 		try {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -499,14 +475,15 @@ public class BladeEngineSetup {
 		} catch (Exception e) {
 			throw new IOException("Couldn't read resource '" + file.getAbsoluteFile() + "'", e);
 		} finally {
-			if (in != null) try {
-				in.close();
-			} catch (IOException e) {
-			}
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException e) {
+				}
 		}
 	}
 
-	private String readResourceAsString (String resource, String path) {
+	private String readResourceAsString(String resource, String path) {
 		try {
 			return new String(readResource(resource, path), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -514,7 +491,7 @@ public class BladeEngineSetup {
 		}
 	}
 
-	private String readResourceAsString (File file) throws IOException {
+	private String readResourceAsString(File file) throws IOException {
 		try {
 			return new String(readResource(file), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -522,7 +499,7 @@ public class BladeEngineSetup {
 		}
 	}
 
-	private void writeFile (File outFile, byte[] bytes) {
+	private void writeFile(File outFile, byte[] bytes) {
 		OutputStream out = null;
 
 		try {
@@ -531,14 +508,15 @@ public class BladeEngineSetup {
 		} catch (IOException e) {
 			throw new RuntimeException("Couldn't write file '" + outFile.getAbsolutePath() + "'", e);
 		} finally {
-			if (out != null) try {
-				out.close();
-			} catch (IOException e) {
-			}
+			if (out != null)
+				try {
+					out.close();
+				} catch (IOException e) {
+				}
 		}
 	}
 
-	private void writeFile (File outFile, String text) {
+	private void writeFile(File outFile, String text) {
 		try {
 			writeFile(outFile, text.getBytes("UTF-8"));
 		} catch (UnsupportedEncodingException e) {
@@ -546,7 +524,7 @@ public class BladeEngineSetup {
 		}
 	}
 
-	private void copyFile (ProjectFile file, File out, Map<String, String> values) throws IOException {
+	private void copyFile(ProjectFile file, File out, Map<String, String> values) throws IOException {
 		File outFile = new File(out, file.outputName);
 		if (!outFile.getParentFile().exists() && !outFile.getParentFile().mkdirs()) {
 			throw new RuntimeException("Couldn't create dir '" + outFile.getAbsolutePath() + "'");
@@ -557,7 +535,7 @@ public class BladeEngineSetup {
 		if (file.isTemplate) {
 			String txt;
 			if (isTemp) {
-				txt = readResourceAsString(((TemporaryProjectFile)file).file);
+				txt = readResourceAsString(((TemporaryProjectFile) file).file);
 			} else {
 				txt = readResourceAsString(file.resourceName, file.resourceLoc);
 			}
@@ -565,42 +543,18 @@ public class BladeEngineSetup {
 			writeFile(outFile, txt);
 		} else {
 			if (isTemp) {
-				writeFile(outFile, readResource(((TemporaryProjectFile)file).file));
+				writeFile(outFile, readResource(((TemporaryProjectFile) file).file));
 			} else {
 				writeFile(outFile, readResource(file.resourceName, file.resourceLoc));
 			}
 		}
 	}
 
-	private String replace (String txt, Map<String, String> values) {
+	private String replace(String txt, Map<String, String> values) {
 		for (String key : values.keySet()) {
 			String value = values.get(key);
 			txt = txt.replace(key, value);
 		}
 		return txt;
-	}
-
-	private String parseGwtInherits (ProjectBuilder builder) {
-		String parsed = "";
-		
-		for (Dependency dep : builder.dependencies) {
-			if (dep.getGwtInherits() != null) {
-				for (String inherit : dep.getGwtInherits()) {
-					parsed += "\t<inherits name='" + inherit + "' />\n";
-				}
-			}
-		}
-		
-		return parsed;
-	}
-
-	private String parseGradleArgs (List<ProjectType> modules, List<String> args) {
-		String argString = "";
-		if (args == null) return argString;
-		for (String argument : args) {
-			if (argument.equals("afterEclipseImport") && !modules.contains(ProjectType.DESKTOP)) continue;
-			argString += " " + argument;
-		}
-		return argString;
 	}
 }

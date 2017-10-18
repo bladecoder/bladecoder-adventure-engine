@@ -1,7 +1,8 @@
-sourceSets.main.java.srcDirs = [ "src/" ]
+apply plugin: 'robovm'
 
-sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+sourceCompatibility = 1.7
+targetCompatibility=1.7
 
 ext {
 	mainClassName = "%PACKAGE%.IOSLauncher"
@@ -12,8 +13,16 @@ launchIPadSimulator.dependsOn build
 launchIOSDevice.dependsOn build
 createIPA.dependsOn build
 
-
 eclipse.project {
-    name = appName + "-ios"
-    natures 'org.robovm.eclipse.RoboVMNature'
+  name = appName + "-ios"
+  natures 'org.robovm.eclipse.RoboVMNature'
+}
+
+dependencies {
+  compile project(':core')
+  compile "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
+  compile "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
+  compile "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
+  compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
+  compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
 }
