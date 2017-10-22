@@ -48,18 +48,21 @@ public class RunProccess {
 
 	public static boolean runBladeEngine(File prjFolder, String chapter,
 			String scene) throws IOException {
-		String args = ":desktop:run -PappArgs=['-w'";
+		List<String> args = new ArrayList<String>();
+		args.add(":desktop:run");
+		String appArgs = "-PappArgs=['-w'";
 
 		if (chapter != null) {
-			args += ",'-chapter','" + chapter + "'";
-			args += ",'-d'";
+			appArgs += ",'-chapter','" + chapter + "'";
+			appArgs += ",'-d'";
 		}
 
 		if (scene != null) {
-			args += ",'-t','" + scene + "'";
+			appArgs += ",'-t','" + scene + "'";
 		}
 
-		args += "]";
+		appArgs += "]";
+		args.add(appArgs);
 
 		return runGradle(prjFolder, args);
 	}
