@@ -32,11 +32,12 @@ import org.xml.sax.SAXException;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -209,8 +210,8 @@ public class World implements Serializable, AssetConsumer {
 	/**
 	 * Returns a scene from the cache. null if the scene is not cached.
 	 * 
-	 * Note that by now, the cache has only one Scene. In the future, the cache will
-	 * be a Hastable.
+	 * Note that by now, the cache has only one Scene. In the future, the cache
+	 * will be a Hastable.
 	 */
 	public Scene getCachedScene(String id) {
 
@@ -555,8 +556,8 @@ public class World implements Serializable, AssetConsumer {
 	private final Vector3 unprojectTmp = new Vector3();
 
 	/**
-	 * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and the
-	 * UIActors list.
+	 * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and
+	 * the UIActors list.
 	 */
 	public InteractiveActor getInteractiveActorAtInput(Viewport v, float tolerance) {
 
@@ -728,7 +729,8 @@ public class World implements Serializable, AssetConsumer {
 	// ********** SERIALIZATION **********
 
 	/**
-	 * Try to load the save game if exists. In other case, load the game from XML.
+	 * Try to load the save game if exists. In other case, load the game from
+	 * XML.
 	 * 
 	 * @throws Exception
 	 * 
@@ -1023,7 +1025,13 @@ public class World implements Serializable, AssetConsumer {
 
 		int h = (int) (w * getSceneCamera().viewportHeight / getSceneCamera().viewportWidth);
 
-		FrameBuffer fbo = new FrameBuffer(Format.RGB565, w, h, false);
+		GLFrameBuffer.FrameBufferBuilder frameBufferBuilder = new GLFrameBuffer.FrameBufferBuilder(
+				w, h);
+		
+		frameBufferBuilder.addColorTextureAttachment(GL30.GL_RGB565, GL30.GL_RGB, GL30.GL_UNSIGNED_BYTE);
+		FrameBuffer fbo = frameBufferBuilder.build();
+
+		// FrameBuffer fbo = new FrameBuffer(Format.RGB565, w, h, false);
 
 		fbo.begin();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -1172,7 +1180,6 @@ public class World implements Serializable, AssetConsumer {
 							ArrayList<Action> actions = v.getActions();
 
 							for (Action act : actions) {
-
 
 								try {
 									if (act instanceof SoundAction) {
