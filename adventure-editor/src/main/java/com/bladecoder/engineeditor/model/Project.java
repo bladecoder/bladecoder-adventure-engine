@@ -289,6 +289,17 @@ public class Project extends PropertyChange {
 			chapter.save();
 
 			// 3.- SAVE BladeEngine.properties
+			List<String> resolutions = getResolutions();
+			StringBuilder sb = new StringBuilder();
+			
+			for(int i = 0; i < resolutions.size(); i++) {
+				sb.append(resolutions.get(i));
+				
+				if(i < resolutions.size() - 1)
+					sb.append(',');
+			}
+			
+			projectConfig.setProperty(Config.RESOLUTIONS, sb.toString());
 			projectConfig.store(new FileOutputStream(getAssetPath() + "/" + Config.PROPERTIES_FILENAME), null);
 
 			// 4.- SAVE I18N
@@ -440,7 +451,7 @@ public class Project extends PropertyChange {
 	}
 
 	public List<String> getResolutions() {
-		File atlasesPath = new File(getAssetPath() + ATLASES_PATH);
+		File atlasesPath = new File(getAssetPath() + UI_PATH);
 		ArrayList<String> l = new ArrayList<String>();
 
 		File[] list = atlasesPath.listFiles();

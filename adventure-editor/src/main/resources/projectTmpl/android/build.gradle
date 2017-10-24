@@ -4,6 +4,29 @@ android {
     buildToolsVersion latestBuildToolsAvailable("%BUILD_TOOLS_VERSION%")
     compileSdkVersion highestSdkAvailable(%API_LEVEL%)
 
+    defaultConfig {
+        applicationId "%PACKAGE%"
+        minSdkVersion 15
+        targetSdkVersion %API_LEVEL% 
+        versionName version
+
+        if(project.hasProperty('versionCode'))
+          versionCode project.versionCode.toInteger()
+        else
+          versionCode 1
+
+	    buildConfigField "int", "EXPANSION_FILE_VERSION", "0"
+    }
+
+    productFlavors {
+	    full {
+	    }
+
+        expansion {
+		    buildConfigField "int", "EXPANSION_FILE_VERSION",  String.valueOf(android.defaultConfig.versionCode)
+        }
+    }
+
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -11,9 +34,11 @@ android {
             aidl.srcDirs = ['src/main/java']
             renderscript.srcDirs = ['src/main/java']
             res.srcDirs = ['res']
-            assets.srcDirs = ['../assets']
             jniLibs.srcDirs = ['libs']
         }
+
+	full.assets.srcDirs = ['../assets']
+ 	expansion.assets.srcDirs = ['../base-assets']
 
         instrumentTest.setRoot('tests')
     }
@@ -33,18 +58,6 @@ android {
     exclude 'META-INF/DEPENDENCIES'
     exclude 'META-INF/dependencies.txt'
   }    
-
-    defaultConfig {
-        applicationId "%PACKAGE%"
-        minSdkVersion 15
-        targetSdkVersion %API_LEVEL% 
-        versionName version
-
-        if(project.hasProperty('versionCode'))
-          versionCode project.versionCode.toInteger()
-        else
-          versionCode 1
-    }
 
     if(project.hasProperty('keystore')) {
           signingConfigs {
@@ -134,7 +147,28 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', android.defaultConfig.applicationId + '/%PACKAGE%.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', android.defaultConfig.applicationId + '/' + android.defaultConfig.applicationId + '.AndroidLauncher'
+}
+
+task('packageMainExpansionFile', type: Zip) {
+
+   FileTree tree = fileTree(dir: '../assets')
+
+   from tree
+   //into 'assets'
+
+   // Expansion file name format: main.versionCode.packageName.obb
+   entryCompression = ZipEntryCompression.STORED
+   archiveName = 'main.' + android.defaultConfig.versionCode + "." + android.defaultConfig.applicationId + ".obb"
+
+   println "Generating main." + archiveName
+
+}
+
+tasks.whenTaskAdded { task ->
+   if(task.name == 'generateExpansionReleaseBuildConfig') {
+       task.dependsOn packageMainExpansionFile
+   }
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.

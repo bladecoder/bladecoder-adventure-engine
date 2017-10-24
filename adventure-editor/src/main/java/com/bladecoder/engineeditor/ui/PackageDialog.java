@@ -18,6 +18,7 @@ package com.bladecoder.engineeditor.ui;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogicgames.packr.Packr;
 import com.badlogicgames.packr.PackrConfig;
 import com.badlogicgames.packr.PackrConfig.Platform;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
@@ -55,7 +57,6 @@ public class PackageDialog extends EditDialog {
 	private static final String DESKTOP_LAUNCHER = "DesktopLauncher.java";
 
 	private static final String INFO = "Package the Adventure for distribution";
-//	private static final String[] ARCHS = { "desktop", "android", "ios", "html" };
 	private static final String[] ARCHS = { "desktop", "android", "ios" };
 	private static final String[] TYPES = { "Bundle JRE", "Runnable jar" };
 	private static final String[] OSS = { "all", "windows32", "windows64", "linux64", "linux32", "macOSX" };
@@ -73,6 +74,7 @@ public class PackageDialog extends EditDialog {
 	private InputPanel icon;
 	private InputPanel versionCode;
 	private InputPanel androidSDK;
+	private InputPanel expansionFile;
 	private InputPanel androidKeyStore;
 	private InputPanel androidKeyAlias;
 	private InputPanel androidKeyStorePassword;
@@ -80,8 +82,8 @@ public class PackageDialog extends EditDialog {
 
 	private InputPanel iosSignIdentity;
 	private InputPanel iosProvisioningProfile;
-	
-	private InputPanel[] options = new InputPanel[15];
+
+	private InputPanel[] options;
 
 	@SuppressWarnings("unchecked")
 	public PackageDialog(Skin skin) {
@@ -93,70 +95,64 @@ public class PackageDialog extends EditDialog {
 				FileInputPanel.DialogType.DIRECTORY);
 		type = InputPanelFactory.createInputPanel(skin, "Type", "Select the package type", TYPES, true);
 		os = InputPanelFactory.createInputPanel(skin, "OS", "Select the OS of the package", OSS, true);
-		
+
 		FileTypeFilter typeFilter = new FileTypeFilter(true);
 		typeFilter.addRule("Zip files (*.zip)", "zip");
-		
+
 		linux64JRE = new FileInputPanel(skin, "JRE.Linux64",
 				"Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file",
 				FileInputPanel.DialogType.OPEN_FILE);
 		linux64JRE.setFileTypeFilter(typeFilter);
-		
-		
+
 		linux32JRE = new FileInputPanel(skin, "JRE.Linux32",
 				"Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file",
 				FileInputPanel.DialogType.OPEN_FILE);
 		linux32JRE.setFileTypeFilter(typeFilter);
-		
+
 		winJRE = new FileInputPanel(skin, "JRE.Windows32",
-				"Select the Windows 32 bits JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
+				"Select the Windows 32 bits JRE Location to bundle. Must be a ZIP file",
+				FileInputPanel.DialogType.OPEN_FILE);
 		winJRE.setFileTypeFilter(typeFilter);
-		
+
 		winJRE64 = new FileInputPanel(skin, "JRE.Windows64",
-				"Select the Windows 64 bits JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
+				"Select the Windows 64 bits JRE Location to bundle. Must be a ZIP file",
+				FileInputPanel.DialogType.OPEN_FILE);
 		winJRE64.setFileTypeFilter(typeFilter);
-		
+
 		osxJRE = new FileInputPanel(skin, "JRE.MACOS", "Select the MacOS JRE Location to bundle. Must be a ZIP file",
 				FileInputPanel.DialogType.OPEN_FILE);
 		osxJRE.setFileTypeFilter(typeFilter);
-		
+
 		version = InputPanelFactory.createInputPanel(skin, "Version", "Select the package version", true);
-		icon = new FileInputPanel(skin, "MacOS Icon", "The icon (.icns) for the Mac package. It is not mandatory.", FileInputPanel.DialogType.OPEN_FILE,
-				false);
-		versionCode = InputPanelFactory.createInputPanel(skin, "Version Code",
-				"An integer that identify the version.", Type.INTEGER, true);
+		icon = new FileInputPanel(skin, "MacOS Icon", "The icon (.icns) for the Mac package. It is not mandatory.",
+				FileInputPanel.DialogType.OPEN_FILE, false);
+		versionCode = InputPanelFactory.createInputPanel(skin, "Version Code", "An integer that identify the version.",
+				Type.INTEGER, true);
 		androidSDK = new FileInputPanel(skin, "SDK",
 				"Select the Android SDK Location. If empty, the ANDROID_HOME variable will be used.",
 				FileInputPanel.DialogType.DIRECTORY, false);
+		expansionFile = InputPanelFactory.createInputPanel(skin, "Expansion File",
+				"If your assets exceeds 100mb, you have to create an expansion file to upload the game to the Play Store.",
+				Param.Type.BOOLEAN, true, "false");
 		androidKeyStore = new FileInputPanel(skin, "KeyStore", "Select the Key Store Location",
 				FileInputPanel.DialogType.OPEN_FILE);
 		androidKeyAlias = InputPanelFactory.createInputPanel(skin, "KeyAlias", "Select the Key Alias Location", true);
-		androidKeyStorePassword = InputPanelFactory
-				.createInputPanel(skin, "KeyStorePasswd", "Key Store Password", true);
-		androidKeyAliasPassword = InputPanelFactory
-				.createInputPanel(skin, "KeyAliasPasswd", "Key Alias Password", true);
-		
-		iosSignIdentity = InputPanelFactory
-				.createInputPanel(skin, "Sign Identity", "Empty for auto select.\nThis field matches against the start of the certificate name. Alternatively you can use a certificate fingerprint.\nIf the value is enclosed in / a regexp search will be done against the certificate name instead.\nRun the command 'security find-identity -v -p codesigning' or use theKeyChain Access OS X app to view your installed certificates.", false);
-		
-		iosProvisioningProfile = InputPanelFactory
-				.createInputPanel(skin, "Provisioning Profile", "Empty for auto select.", false);
 
-		options[0] = type;
-		options[1] = os;
-		options[2] = linux64JRE;
-		options[3] = linux32JRE;
-		options[4] = winJRE;
-		options[5] = winJRE64;
-		options[6] = osxJRE;
-		options[7] = version;
-		options[8] = icon;
-		options[9] = versionCode;
-		options[10] = androidSDK;
-		options[11] = androidKeyStore;
-		options[12] = androidKeyAlias;
-		options[13] = iosSignIdentity;
-		options[14] = iosProvisioningProfile;
+		androidKeyStorePassword = InputPanelFactory.createInputPanel(skin, "KeyStorePasswd", "Key Store Password",
+				true);
+		androidKeyAliasPassword = InputPanelFactory.createInputPanel(skin, "KeyAliasPasswd", "Key Alias Password",
+				true);
+
+		iosSignIdentity = InputPanelFactory.createInputPanel(skin, "Sign Identity",
+				"Empty for auto select.\nThis field matches against the start of the certificate name. Alternatively you can use a certificate fingerprint.\nIf the value is enclosed in / a regexp search will be done against the certificate name instead.\nRun the command 'security find-identity -v -p codesigning' or use theKeyChain Access OS X app to view your installed certificates.",
+				false);
+
+		iosProvisioningProfile = InputPanelFactory.createInputPanel(skin, "Provisioning Profile",
+				"Empty for auto select.", false);
+
+		options = new InputPanel[] { type, os, linux64JRE, linux32JRE, winJRE, winJRE64, osxJRE, version, icon,
+				versionCode, androidSDK, expansionFile, androidKeyStore, androidKeyAlias, iosSignIdentity,
+				iosProvisioningProfile };
 
 		addInputPanel(arch);
 		addInputPanel(dir);
@@ -218,34 +214,35 @@ public class PackageDialog extends EditDialog {
 
 	@Override
 	protected void ok() {
-		Message.showMsg(getStage(), "Generating package...", true);
 		
+		final Stage stg = getStage(); 
 
 		new Thread() {
-			Stage stage = getStage();
 
 			@Override
 			public void run() {
 				
+				Message.showMsg(stg, "Generating package...", true);
+
 				String msg;
 
 				if (Ctx.project.getSelectedScene() == null) {
 					msg = "There are no scenes in this chapter.";
-					Message.showMsg(getStage(), msg, 3);
+					Message.showMsg(stg, msg, 3);
 					return;
 				}
 
 				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
 				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
 				setCurrentVersion(version.getText());
-				
 
 				try {
 					Ctx.project.saveProject();
 				} catch (Exception ex) {
 					msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
 							+ ex.getMessage();
-					Message.showMsgDialog(getStage(), "Error", msg);
+					
+					Message.showMsgDialog(stg, "Error", msg);
 					return;
 				}
 
@@ -263,17 +260,19 @@ public class PackageDialog extends EditDialog {
 					if (i.getText() != null)
 						Ctx.project.getEditorConfig().setProperty("package." + i.getTitle(), i.getText());
 				}
-
-				Message.hideMsg();
+				
+				
+				// hide message
+				Message.showMsg(stg, "", .5f);
 
 				if (msg != null) {
-					final String  m = msg;
-					Timer.post( new Task() {
-						
+					final String m = msg;
+					Timer.post(new Task() {
+
 						@Override
 						public void run() {
-							Message.showMsgDialog(stage, "Result", m);
-						}					
+							Message.showMsgDialog(stg, "Result", m);
+						}
 					});
 				}
 			}
@@ -296,8 +295,8 @@ public class PackageDialog extends EditDialog {
 			String jarName = projectName + "-desktop-" + version.getText() + ".jar";
 
 			String error = genDesktopJar(projectName, versionParam, jarDir, jarName);
-			
-			if(error != null)
+
+			if (error != null)
 				msg = error;
 
 			if (type.getText().equals(TYPES[0])) { // BUNDLE JRE
@@ -312,7 +311,8 @@ public class PackageDialog extends EditDialog {
 				} else if (os.getText().equals("windows32")) {
 					packr(Platform.Windows32, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				} else if (os.getText().equals("windows64")) {
-					packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher, dir.getText());					
+					packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher,
+							dir.getText());
 				} else if (os.getText().equals("macOSX")) {
 					packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				} else if (os.getText().equals("all")) {
@@ -321,7 +321,8 @@ public class PackageDialog extends EditDialog {
 					packr(Platform.Linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher,
 							dir.getText());
 					packr(Platform.Windows32, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-					packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+					packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher,
+							dir.getText());
 					packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				}
 			}
@@ -341,21 +342,48 @@ public class PackageDialog extends EditDialog {
 						new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties")), null);
 			}
 
-			if (RunProccess.runGradle(Ctx.project.getProjectDir(), params + "android:assembleRelease")) {
-				String apk = Ctx.project.getProjectDir().getAbsolutePath()
+			String task = "android:assembleFullRelease";
+			String apk = Ctx.project.getProjectDir().getAbsolutePath()
+					+ "/android/build/outputs/apk/android-full-release.apk";
+
+			boolean genExpansion = Boolean.parseBoolean(expansionFile.getText());
+			boolean newProjectStructure = new File(Ctx.project.getProjectDir().getAbsolutePath()
+					+ "/assets/").exists();
+			
+			if(!newProjectStructure && genExpansion)
+				return "You need to update your project to the new layout to generate expansion files.";
+			
+			if(!newProjectStructure) {
+				task = "android:assembleRelease";
+				apk = Ctx.project.getProjectDir().getAbsolutePath()
 						+ "/android/build/outputs/apk/android-release.apk";
+			}
+
+			if (genExpansion) {
+				task = "android:assembleExpansionRelease";
+				apk = Ctx.project.getProjectDir().getAbsolutePath()
+						+ "/android/build/outputs/apk/android-expansion-release.apk";
+			}
+
+			if (RunProccess.runGradle(Ctx.project.getProjectDir(), params + task)) {
 				File f = new File(apk);
-				// FileUtils.copyFileToDirectory(f, new File(dir.getText()));
 				FileUtils.copyFile(f, new File(dir.getText(), projectName + "-" + version.getText() + ".apk"));
+
+				if (genExpansion) {
+					File fExp = findObb(Ctx.project.getProjectDir().getAbsolutePath() + "/android/build/distributions/",
+							versionCode.getText());
+					FileUtils.copyFile(fExp, new File(dir.getText(), fExp.getName()));
+				}
+
 			} else {
 				msg = "Error Generating package";
 			}
 		} else if (arch.getText().equals("ios")) {
-			
+
 			if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
 				return "You need a MacOSX computer with XCode installed to generate the IOS package.";
 			}
-			
+
 			// UPDATE 'robovm.properties'
 			Properties p = new Properties();
 			p.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/ios/robovm.properties"));
@@ -364,34 +392,26 @@ public class PackageDialog extends EditDialog {
 			p.setProperty("app.name", projectName);
 			p.store(new FileOutputStream(
 					new File(Ctx.project.getProjectDir().getAbsolutePath(), "/ios/robovm.properties")), null);
-			
+
 			List<String> params = new ArrayList<String>();
-			
-			if(iosSignIdentity.getText() != null)
+
+			if (iosSignIdentity.getText() != null)
 				params.add("-Probovm.iosSignIdentity=" + iosSignIdentity.getText());
-			
-			if(iosProvisioningProfile.getText() != null)
-				params.add("-Probovm.iosProvisioningProfile=" + iosProvisioningProfile.getText() );
-			
+
+			if (iosProvisioningProfile.getText() != null)
+				params.add("-Probovm.iosProvisioningProfile=" + iosProvisioningProfile.getText());
+
 			// Add clean target in IOS because the app. is not signing well if not cleaning.
 			params.add("ios:clean");
-			
+
 			params.add("ios:createIPA");
-			
+
 			if (RunProccess.runGradle(Ctx.project.getProjectDir(), params)) {
-				
-				String apk = Ctx.project.getProjectDir().getAbsolutePath()
-						+ "/ios/build/robovm/IOSLauncher.ipa";
-				
+
+				String apk = Ctx.project.getProjectDir().getAbsolutePath() + "/ios/build/robovm/IOSLauncher.ipa";
+
 				File f = new File(apk);
 				FileUtils.copyFile(f, new File(dir.getText(), projectName + "-" + version.getText() + ".ipa"));
-			} else {
-				msg = "Error Generating package";
-			}
-		} else if (arch.getText().equals("html")) {
-			if (RunProccess.runGradle(Ctx.project.getProjectDir(), "html:dist")) {
-				FileUtils.copyDirectory(new File(Ctx.project.getProjectDir().getAbsolutePath() + "/html/build/dist"),
-						new File(dir.getText()));
 			} else {
 				msg = "Error Generating package";
 			}
@@ -407,6 +427,7 @@ public class PackageDialog extends EditDialog {
 
 		setVisible(androidKeyStorePassword, false);
 		setVisible(androidKeyAliasPassword, false);
+
 		setVisible(version, true);
 
 		String a = arch.getText();
@@ -416,6 +437,7 @@ public class PackageDialog extends EditDialog {
 		} else if (a.equals("android")) {
 			setVisible(versionCode, true);
 			setVisible(androidSDK, true);
+			setVisible(expansionFile, true);
 			setVisible(androidKeyStore, true);
 			setVisible(androidKeyAlias, true);
 			setVisible(androidKeyStorePassword, true);
@@ -424,8 +446,6 @@ public class PackageDialog extends EditDialog {
 			setVisible(versionCode, true);
 			setVisible(iosSignIdentity, true);
 			setVisible(iosProvisioningProfile, true);
-		} else if (a.equals("html")) {
-			Message.showMsgDialog(getStage(), "Not Supported", "HTML export is not supported yet.");
 		}
 	}
 
@@ -442,14 +462,14 @@ public class PackageDialog extends EditDialog {
 
 	private void osChanged() {
 		setVisible(icon, false);
-		
+
 		if (os.isVisible() && (os.getText().equals("windows32") || os.getText().equals("all"))) {
 			setVisible(winJRE, true);
 		} else {
 			setVisible(icon, false);
 			setVisible(winJRE, false);
 		}
-		
+
 		if (os.isVisible() && (os.getText().equals("windows64") || os.getText().equals("all"))) {
 			setVisible(winJRE64, true);
 		} else {
@@ -517,7 +537,7 @@ public class PackageDialog extends EditDialog {
 			winJRE.setError(true);
 			ok = false;
 		}
-		
+
 		if (winJRE64.isVisible()
 				&& (!new File(winJRE64.getText()).exists() || !winJRE64.getText().toLowerCase().endsWith(".zip"))) {
 			winJRE64.setError(true);
@@ -581,14 +601,15 @@ public class PackageDialog extends EditDialog {
 		config.mainClass = mainClass.replace('/', '.');
 		config.vmArgs = Arrays.asList("-Xmx1G");
 		config.minimizeJre = "hard";
-		
+
 		config.outDir = new File(outDir + "/" + exe + "-" + suffix);
 
 		new Packr().pack(config);
-		
+
 		// COPY MAC OS ICON
-		if(platform == Platform.MacOS && icon.getText() != null && icon.getText().endsWith(".icns")) {
-			FileUtils.copyFile(new File(icon.getText()), new File(config.outDir.getAbsolutePath() + "/Contents/Resources/icons.icns"));
+		if (platform == Platform.MacOS && icon.getText() != null && icon.getText().endsWith(".icns")) {
+			FileUtils.copyFile(new File(icon.getText()),
+					new File(config.outDir.getAbsolutePath() + "/Contents/Resources/icons.icns"));
 		}
 	}
 
@@ -606,7 +627,7 @@ public class PackageDialog extends EditDialog {
 
 		return null;
 	}
-	
+
 	/**
 	 * @return The version from the file gradle.properties from the game
 	 */
@@ -620,11 +641,8 @@ public class PackageDialog extends EditDialog {
 		}
 
 		return null;
-	}	
-	
-	
-	
-	
+	}
+
 	/**
 	 * Saves the selected version
 	 */
@@ -638,14 +656,13 @@ public class PackageDialog extends EditDialog {
 			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
 		}
 	}
-	
 
 	/**
 	 * @return Search the desktop main class in the desktop folder
 	 */
 	private String getDesktopMainClass() {
 		File result = search(new File(Ctx.project.getProjectDir().getAbsolutePath() + "/desktop"));
-		
+
 		String absolutePath = result.getAbsolutePath().replace('\\', '/');
 
 		int cutIdx = absolutePath.indexOf("src/") + 4;
@@ -661,8 +678,8 @@ public class PackageDialog extends EditDialog {
 			for (File temp : file.listFiles()) {
 				if (temp.isDirectory()) {
 					result = search(temp);
-					
-					if(result != null)
+
+					if (result != null)
 						return result;
 				} else {
 					if (temp.getName().equals(DESKTOP_LAUNCHER)) {
@@ -674,5 +691,24 @@ public class PackageDialog extends EditDialog {
 		}
 
 		return result;
+	}
+
+	private File findObb(String baseDir, final String versionCode) {
+		File dir = new File(baseDir);
+
+		File[] listFiles = dir.listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File arg0, String arg) {
+				if (arg.startsWith("main." + versionCode + ".") && arg.endsWith(".obb")) {
+					return true;
+				}
+
+				return false;
+			}
+
+		});
+
+		return listFiles == null || listFiles.length == 0 ? null : listFiles[0];
 	}
 }
