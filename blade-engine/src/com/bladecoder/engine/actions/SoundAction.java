@@ -20,7 +20,7 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
 @Deprecated
-@ActionDescription("Play/Stop a sound")
+@ActionDescription("Play/Stop a sound. Deprecated: Use PlaySound action instead.")
 public class SoundAction implements Action {
 	@ActionPropertyDescription("The target actor")
 	@ActionProperty(type = Type.INTERACTIVE_ACTOR, required = true)

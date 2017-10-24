@@ -18,17 +18,24 @@ package com.bladecoder.engine.actions;
 import java.text.MessageFormat;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Disposable;
+import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
-@ActionDescription("Drops the inventory actor in the current scene.")
+@ActionDescription("Drops the selected inventory actor.")
 public class DropItemAction implements Action {
-	@ActionProperty(required=true)
-	@ActionPropertyDescription("An actor in the inventory.")
+	@ActionProperty
+	@ActionPropertyDescription("The 'id' from the inventory item to remove. If empty remove all items.")
 	private String actor;
+
+	@ActionProperty(type = Type.SCENE, required = false)
+	@ActionPropertyDescription("The target scene. If not selected the item is dropped in the current scene.")
+	private String scene = null;
 
 	@ActionProperty
 	@ActionPropertyDescription("Position in the scene where de actor is dropped")
@@ -36,23 +43,51 @@ public class DropItemAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		float scale =  EngineAssetManager.getInstance().getScale();
+		Scene ts = null;
+
+		if (scene == null)
+			ts = World.getInstance().getCurrentScene();
+		else
+			ts = World.getInstance().getScene(scene);
+
 		
-		BaseActor actor = World.getInstance().getInventory().get(this.actor);
+		BaseActor a;
 		
-		if(actor==null) {
-			EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", this.actor));
-			return false;
+		if (actor != null) {
+			a = World.getInstance().getInventory().get(actor);
+
+			if (a == null) {
+				EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", actor));
+				return false;
+			}
+
+			removeActor(ts, a);
+		} else {
+			int n = World.getInstance().getInventory().getNumItems();
+			
+			for(int i = 0; i < n; i++) {
+				a = World.getInstance().getInventory().get(i);
+				
+				removeActor(ts, a);
+			}
 		}
-		
-		World.getInstance().getInventory().removeItem(this.actor);
-		
-		World.getInstance().getCurrentScene().addActor(actor);
-		
-		if(pos != null)
-			actor.setPosition(pos.x * scale, pos.y * scale);
-		
+
 		return false;
+	}
+
+	private void removeActor(Scene ts, BaseActor a) {
+		final World w = World.getInstance();
+		float scale = EngineAssetManager.getInstance().getScale();
+
+		w.getInventory().removeItem(a.getId());
+
+		if (ts != w.getCurrentScene() && w.getCachedScene(ts.getId()) == null && a instanceof Disposable)
+			((Disposable) a).dispose();
+
+		ts.addActor(a);
+
+		if (pos != null)
+			a.setPosition(pos.x * scale, pos.y * scale);
 	}
 
 }
