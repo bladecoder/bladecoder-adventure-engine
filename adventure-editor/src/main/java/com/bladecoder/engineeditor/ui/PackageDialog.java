@@ -58,7 +58,7 @@ public class PackageDialog extends EditDialog {
 //	private static final String[] ARCHS = { "desktop", "android", "ios", "html" };
 	private static final String[] ARCHS = { "desktop", "android", "ios" };
 	private static final String[] TYPES = { "Bundle JRE", "Runnable jar" };
-	private static final String[] OSS = { "all", "windows", "linux64", "linux32", "macOSX" };
+	private static final String[] OSS = { "all", "windows32", "windows64", "linux64", "linux32", "macOSX" };
 
 	private InputPanel arch;
 	private InputPanel dir;
@@ -67,6 +67,7 @@ public class PackageDialog extends EditDialog {
 	private FileInputPanel linux64JRE;
 	private FileInputPanel linux32JRE;
 	private FileInputPanel winJRE;
+	private FileInputPanel winJRE64;
 	private FileInputPanel osxJRE;
 	private InputPanel version;
 	private InputPanel icon;
@@ -80,7 +81,7 @@ public class PackageDialog extends EditDialog {
 	private InputPanel iosSignIdentity;
 	private InputPanel iosProvisioningProfile;
 	
-	private InputPanel[] options = new InputPanel[14];
+	private InputPanel[] options = new InputPanel[15];
 
 	@SuppressWarnings("unchecked")
 	public PackageDialog(Skin skin) {
@@ -107,9 +108,13 @@ public class PackageDialog extends EditDialog {
 				FileInputPanel.DialogType.OPEN_FILE);
 		linux32JRE.setFileTypeFilter(typeFilter);
 		
-		winJRE = new FileInputPanel(skin, "JRE.Windows64",
-				"Select the Windows 64 bits JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
+		winJRE = new FileInputPanel(skin, "JRE.Windows32",
+				"Select the Windows 32 bits JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
 		winJRE.setFileTypeFilter(typeFilter);
+		
+		winJRE64 = new FileInputPanel(skin, "JRE.Windows64",
+				"Select the Windows 64 bits JRE Location to bundle. Must be a ZIP file", FileInputPanel.DialogType.OPEN_FILE);
+		winJRE64.setFileTypeFilter(typeFilter);
 		
 		osxJRE = new FileInputPanel(skin, "JRE.MACOS", "Select the MacOS JRE Location to bundle. Must be a ZIP file",
 				FileInputPanel.DialogType.OPEN_FILE);
@@ -142,15 +147,16 @@ public class PackageDialog extends EditDialog {
 		options[2] = linux64JRE;
 		options[3] = linux32JRE;
 		options[4] = winJRE;
-		options[5] = osxJRE;
-		options[6] = version;
-		options[7] = icon;
-		options[8] = versionCode;
-		options[9] = androidSDK;
-		options[10] = androidKeyStore;
-		options[11] = androidKeyAlias;
-		options[12] = iosSignIdentity;
-		options[13] = iosProvisioningProfile;
+		options[5] = winJRE64;
+		options[6] = osxJRE;
+		options[7] = version;
+		options[8] = icon;
+		options[9] = versionCode;
+		options[10] = androidSDK;
+		options[11] = androidKeyStore;
+		options[12] = androidKeyAlias;
+		options[13] = iosSignIdentity;
+		options[14] = iosProvisioningProfile;
 
 		addInputPanel(arch);
 		addInputPanel(dir);
@@ -303,8 +309,10 @@ public class PackageDialog extends EditDialog {
 				} else if (os.getText().equals("linux32")) {
 					packr(Platform.Linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher,
 							dir.getText());
-				} else if (os.getText().equals("windows")) {
-					packr(Platform.Windows64, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+				} else if (os.getText().equals("windows32")) {
+					packr(Platform.Windows32, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+				} else if (os.getText().equals("windows64")) {
+					packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher, dir.getText());					
 				} else if (os.getText().equals("macOSX")) {
 					packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				} else if (os.getText().equals("all")) {
@@ -312,7 +320,8 @@ public class PackageDialog extends EditDialog {
 							dir.getText());
 					packr(Platform.Linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher,
 							dir.getText());
-					packr(Platform.Windows64, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+					packr(Platform.Windows32, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+					packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 					packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				}
 			}
@@ -434,11 +443,18 @@ public class PackageDialog extends EditDialog {
 	private void osChanged() {
 		setVisible(icon, false);
 		
-		if (os.isVisible() && (os.getText().equals("windows") || os.getText().equals("all"))) {
+		if (os.isVisible() && (os.getText().equals("windows32") || os.getText().equals("all"))) {
 			setVisible(winJRE, true);
 		} else {
 			setVisible(icon, false);
 			setVisible(winJRE, false);
+		}
+		
+		if (os.isVisible() && (os.getText().equals("windows64") || os.getText().equals("all"))) {
+			setVisible(winJRE64, true);
+		} else {
+			setVisible(icon, false);
+			setVisible(winJRE64, false);
 		}
 
 		if (os.isVisible() && (os.getText().equals("linux32") || os.getText().equals("all"))) {
@@ -499,6 +515,12 @@ public class PackageDialog extends EditDialog {
 		if (winJRE.isVisible()
 				&& (!new File(winJRE.getText()).exists() || !winJRE.getText().toLowerCase().endsWith(".zip"))) {
 			winJRE.setError(true);
+			ok = false;
+		}
+		
+		if (winJRE64.isVisible()
+				&& (!new File(winJRE64.getText()).exists() || !winJRE64.getText().toLowerCase().endsWith(".zip"))) {
+			winJRE64.setError(true);
 			ok = false;
 		}
 
