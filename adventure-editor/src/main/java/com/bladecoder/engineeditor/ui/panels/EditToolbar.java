@@ -85,7 +85,7 @@ public class EditToolbar extends HorizontalGroup {
 		if(imageDisabled != null)
 			style.imageDisabled = new TextureRegionDrawable(imageDisabled);
 		button.setStyle(style);
-		button.pad(0,0,0,0);
+		button.pad(6,3,6,3);
         addActor(button);
         button.setDisabled(true);
         TextTooltip t = new TextTooltip(tooltip, skin);

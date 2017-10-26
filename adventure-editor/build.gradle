@@ -101,7 +101,7 @@ task pack << {
   
   TexturePacker.process(
     'adventure-editor/assets-raw/engine/ui-atlas', 
-    'adventure-editor/src/main/resources/projectTmpl/android/assets/ui/1', 
+    'adventure-editor/src/main/resources/projectTmpl/assets/ui/1', 
     'ui'
   )
 }
