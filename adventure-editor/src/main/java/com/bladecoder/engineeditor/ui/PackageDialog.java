@@ -565,6 +565,8 @@ public class PackageDialog extends EditDialog {
 			suffix = "mac.app";
 			break;
 		case Windows64:
+			suffix = "win64";
+			break;
 		case Windows32:
 			suffix = "win";
 			break;
