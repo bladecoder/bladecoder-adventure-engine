@@ -288,6 +288,7 @@ public class BladeEngineSetup {
 		new File(outputDir + "/" + assetPath + "/ui/fonts").mkdirs();
 
 		project.files.add(new ProjectFile("assets/model/00.chapter.json", assetPath + "/model/00.chapter.json", false));
+		project.files.add(new ProjectFile("assets/model/00.properties", assetPath + "/model/00.properties", false));
 		project.files
 				.add(new ProjectFile("assets/model/world.properties", assetPath + "/model/world.properties", false));
 		project.files.add(new ProjectFile("assets/model/world", assetPath + "/model/world", false));
