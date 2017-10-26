@@ -183,7 +183,10 @@ public class Recorder {
 	}
 
 	public void setPlaying(boolean p) {
-		EngineLogger.debug("PLAYING...");
+		if(p)
+			EngineLogger.debug("PLAYING...");
+		else
+			EngineLogger.debug("STOP PLAYING...");
 
 		this.playing = p;
 		this.recording = false;
