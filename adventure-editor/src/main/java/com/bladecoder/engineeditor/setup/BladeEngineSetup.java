@@ -266,9 +266,9 @@ public class BladeEngineSetup {
 		project.files.add(new ProjectFile("desktop/src/DesktopLauncher",
 				"desktop/src/main/java/" + packageDir + "/desktop/DesktopLauncher.java", true));
 
-		project.files.add(new ProjectFile("desktop/src/icons/icon16.png", false));
-		project.files.add(new ProjectFile("desktop/src/icons/icon32.png", false));
-		project.files.add(new ProjectFile("desktop/src/icons/icon128.png", false));
+		project.files.add(new ProjectFile("desktop/src/icons/icon16.png", "desktop/src/main/resources/icons/icon16.png", false));
+		project.files.add(new ProjectFile("desktop/src/icons/icon32.png", "desktop/src/main/resources/icons/icon32.png", false));
+		project.files.add(new ProjectFile("desktop/src/icons/icon128.png", "desktop/src/main/resources/icons/icon128.png", false));
 
 		// Assets
 		String assetPath = "assets";
