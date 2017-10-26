@@ -1,16 +1,16 @@
 package com.bladecoder.engineeditor.undo;
 
 import com.badlogic.gdx.math.Vector2;
-import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engineeditor.Ctx;
 
 
 public class UndoBboxPointPos implements UndoOp {
-	private InteractiveActor a;
+	private BaseActor a;
 	private Vector2 pos;
 	private int i;
 	
-	public UndoBboxPointPos(InteractiveActor a, int i, Vector2 pos) {
+	public UndoBboxPointPos(BaseActor a, int i, Vector2 pos) {
 		this.pos = pos;
 		this.a = a;
 		this.i = i;
