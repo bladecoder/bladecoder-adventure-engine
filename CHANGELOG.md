@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.2]
+- Added Google Play expansion file support.
+- Added 64 and 32 bit support when generating package for windows. Previously only 64 bits was supported.
+- Bigger edit toolbar icons.
+- Create initial scene in new projects.
+- Fix: Recorder not recording dialog options.
+- Add target scene to DropItemAction and mark RemoveInventoryItem action deprecated.
+- Updated to libgdx v1.9.7.
+- EDITOR: Fix testing not working with scenes with spaces in ID
+- EDITOR: Fix nullpointer error when disabled imagen not exists.
+- EDITOR: Fix bug when undo bbox points.
+
+
 ## [1.3.1]
 - Asset folder is created now in the project root.
 - Updated Gradle to v4.0.2
