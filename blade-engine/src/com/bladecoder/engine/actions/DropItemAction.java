@@ -65,7 +65,7 @@ public class DropItemAction implements Action {
 		} else {
 			int n = World.getInstance().getInventory().getNumItems();
 			
-			for(int i = 0; i < n; i++) {
+			for(int i = n - 1; i >= 0; i--) {
 				a = World.getInstance().getInventory().get(i);
 				
 				removeActor(ts, a);
