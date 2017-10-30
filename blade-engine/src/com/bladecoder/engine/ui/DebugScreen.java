@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -42,6 +43,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class DebugScreen implements BladeScreen {
 	private UI ui;
@@ -52,7 +54,7 @@ public class DebugScreen implements BladeScreen {
 	private SelectBox<String> recordings;
 	private SelectBox<String> scenes;
 	private TextField recFilename;
-	TextButton rec;
+	private TextButton rec;
 
 	private TextField testerTimeConf;
 	private TextField inSceneTimeConf;
@@ -227,6 +229,37 @@ public class DebugScreen implements BladeScreen {
 		table.row().pad(5).align(Align.left);
 		table.add(new Label("Game Recording: ", ui.getSkin(), "debug"));
 		table.add(rGroup);
+		
+		// ------------- LOAD CHAPTER
+		table.row().pad(5).align(Align.left);
+		table.add(new Label("Load Chapter: ", ui.getSkin(), "debug"));
+		
+		HorizontalGroup chGroup = new HorizontalGroup();
+		chGroup.space(10);
+		
+		final TextField chapter = new TextField("", ui.getSkin());
+		chGroup.addActor(chapter);
+		
+		TextButton loadButton = new TextButton("Load", ui.getSkin());
+		loadButton.addListener(new ClickListener() {
+
+			public void clicked(InputEvent event, float x, float y) {
+				String c = chapter.getText();
+				
+				if(!c.isEmpty()) {
+					try {
+						World.getInstance().loadChapter(c);
+						ui.setCurrentScreen(Screens.SCENE_SCREEN);
+					} catch (IOException e) {
+						EngineLogger.error("Loading chapter.", e);
+					}
+				}
+			}
+		});
+		
+		chGroup.addActor(loadButton);
+		
+		table.add(chGroup);
 
 		// ------------- SCENES
 		final TextButton testScene = new TextButton("Run Test Verb", ui.getSkin(), "toggle");
