@@ -73,8 +73,8 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 			if (keycode == Input.Keys.ESCAPE
 					|| keycode == Input.Keys.BACK)
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
-			// FIXME: This should probably return true when we process ESCAPE or BACK?
-			return false;
+
+			return true;
 		}
 
 		@Override

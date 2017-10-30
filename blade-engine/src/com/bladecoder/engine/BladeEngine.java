@@ -183,6 +183,8 @@ public class BladeEngine implements ApplicationListener {
 			EngineLogger.debug("Size Multiplier: " + DPIUtils.getSizeMultiplier());
 		}
 		
+		// Capture back key
+		Gdx.input.setCatchBackKey(true);
 	}
 
 	@Override
