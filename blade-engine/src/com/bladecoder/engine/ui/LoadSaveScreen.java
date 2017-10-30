@@ -307,7 +307,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			}
 
 		// Add savedgames in '/tests' folder
-		if (EngineLogger.debugMode() && loadScreenMode) {
+		if (EngineLogger.debugMode()) {
 			String[] list2 = EngineAssetManager.getInstance().listAssetFiles("tests");
 
 			for (String file : list2)
