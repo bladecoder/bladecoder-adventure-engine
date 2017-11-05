@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.ActorRenderer;
+import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -34,8 +35,10 @@ public class ScenePointer {
 	private static final String LEAVE_ICON = "leave";
 	private static final String POINTER_ICON = "pointer";
 	private static final String HOTSPOT_ICON = "hotspotpointer";
-	
+
 	private static final Color DRAG_NOT_HOTSPOT_COLOR = new Color(.5f, 0.5f, 0.5f, 1f);
+
+	private Color tmpTint = new Color();
 
 	private BitmapFont font;
 
@@ -45,18 +48,18 @@ public class ScenePointer {
 	private TextureRegion pointerIcon;
 	private TextureRegion hotspotIcon;
 	private TextureRegion currentIcon;
-	private ActorRenderer draggingRenderer;
+	private SpriteActor draggingActor;
 
 	private final Vector2 mousepos = new Vector2();
-	
+
 	private float pointerScale;
 	private float leaveRotation = 0f;
-//	private Skin skin;
-	
+	// private Skin skin;
+
 	private final GlyphLayout layout = new GlyphLayout();
 
 	public ScenePointer(Skin skin) {
-//		this.skin = skin;
+		// this.skin = skin;
 		font = skin.getFont("desc");
 		pointerIcon = skin.getAtlas().findRegion(POINTER_ICON);
 		leaveIcon = skin.getAtlas().findRegion(LEAVE_ICON);
@@ -66,11 +69,15 @@ public class ScenePointer {
 
 	public void reset() {
 		setDefaultIcon();
-		draggingRenderer = null;
+		draggingActor = null;
 	}
-	
-	public void drag(ActorRenderer r) {
-		draggingRenderer = r;
+
+	public void drag(SpriteActor a) {
+		draggingActor = a;
+		tmpTint.set(DRAG_NOT_HOTSPOT_COLOR);
+		
+		if(a != null && draggingActor.getTint() != null)
+			tmpTint.mul(draggingActor.getTint());
 	}
 
 	public void setDefaultIcon() {
@@ -93,12 +100,12 @@ public class ScenePointer {
 
 	public void setDesc(String s) {
 		desc = s;
-		
+
 		if (desc != null) {
 
 			if (desc.charAt(0) == I18N.PREFIX)
 				desc = I18N.getString(desc.substring(1));
-					
+
 			layout.setText(font, desc);
 		}
 	}
@@ -112,7 +119,7 @@ public class ScenePointer {
 	public void draw(SpriteBatch batch, Viewport v) {
 
 		getInputUnproject(v, mousepos);
-		
+
 		boolean multiTouch = Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen);
 
 		// DRAW TARGET DESCRIPTION
@@ -125,40 +132,28 @@ public class ScenePointer {
 			if (textX < 0)
 				textX = 0;
 
-			RectangleRenderer.draw(batch, textX - margin, textY - layout.height - margin,
-					layout.width + margin*2, layout.height + margin*2, Color.BLACK);
+			RectangleRenderer.draw(batch, textX - margin, textY - layout.height - margin, layout.width + margin * 2,
+					layout.height + margin * 2, Color.BLACK);
 			font.draw(batch, layout, textX, textY);
 		}
 
-		if (draggingRenderer == null) {
-			if (!multiTouch
-					|| currentIcon == leaveIcon) {
-				
-				batch.draw(currentIcon,
-						mousepos.x - currentIcon.getRegionWidth() / 2,
-						mousepos.y - currentIcon.getRegionHeight() / 2,
-						currentIcon.getRegionWidth() / 2, 
-						currentIcon.getRegionHeight() / 2,
-						currentIcon.getRegionWidth(),
-						currentIcon.getRegionHeight(),
-						pointerScale, 
-						pointerScale,
-						currentIcon == leaveIcon? leaveRotation:0);
+		if (draggingActor == null) {
+			if (!multiTouch || currentIcon == leaveIcon) {
+
+				batch.draw(currentIcon, mousepos.x - currentIcon.getRegionWidth() / 2,
+						mousepos.y - currentIcon.getRegionHeight() / 2, currentIcon.getRegionWidth() / 2,
+						currentIcon.getRegionHeight() / 2, currentIcon.getRegionWidth(), currentIcon.getRegionHeight(),
+						pointerScale, pointerScale, currentIcon == leaveIcon ? leaveRotation : 0);
 			}
 		} else {
-			float h = (draggingRenderer.getHeight() > draggingRenderer.getWidth()? draggingRenderer.getHeight():draggingRenderer.getWidth());
-			float size =  DPIUtils.getTouchMinSize() / h * 1.8f;
-	         
-	        if(currentIcon != hotspotIcon) {
-	        	batch.setColor(DRAG_NOT_HOTSPOT_COLOR);
-	        }
-	     	
-	        draggingRenderer.draw(batch, mousepos.x,
-	        		mousepos.y - draggingRenderer.getHeight() * size / 2, size, 0f, null);
-	        
-	        if(currentIcon != hotspotIcon) {
-	        	batch.setColor(Color.WHITE);
-	        }	
+			float h = (draggingActor.getHeight() > draggingActor.getWidth() ? draggingActor.getHeight()
+					: draggingActor.getWidth());
+			float size = DPIUtils.getTouchMinSize() / h * 1.8f;
+
+			ActorRenderer r = draggingActor.getRenderer();
+
+			r.draw(batch, mousepos.x, mousepos.y - draggingActor.getHeight() * size / 2, size, 0f,
+					currentIcon != hotspotIcon ? tmpTint : draggingActor.getTint());
 		}
 	}
 

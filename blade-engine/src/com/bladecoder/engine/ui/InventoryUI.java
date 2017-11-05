@@ -281,7 +281,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	private void startDragging(float x, float y) {
 		draggedActor = getItemAt(x, y);
 		if (draggedActor != null)
-			pointer.drag(draggedActor.getRenderer());
+			pointer.drag(draggedActor);
 	}
 
 	public boolean isDragging() {
