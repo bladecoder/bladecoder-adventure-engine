@@ -381,7 +381,7 @@ public class Project extends PropertyChange {
 		String editorVersion = getEditorBladeEngineVersion();
 		String projectVersion = getProjectBladeEngineVersion();
 
-		if (editorVersion.equals(projectVersion) || editorVersion.endsWith("SNAPSHOT")
+		if (editorVersion.equals(projectVersion)
 				|| editorVersion.indexOf('.') == -1)
 			return true;
 
@@ -392,7 +392,13 @@ public class Project extends PropertyChange {
 	}
 
 	private int parseVersion(String v) {
-		int number = 0;
+		int number = 1; // 1 -> release, 0 -> snapshot
+		
+		if(v.endsWith("-SNAPSHOT")) {
+			number = 0;
+			v = v.substring(0, v.length() - "-SNAPSHOT".length());
+		}
+		
 		String[] split = v.split("\\.");
 
 		try {
@@ -424,6 +430,7 @@ public class Project extends PropertyChange {
 
 		prop.setProperty("roboVMGradlePluginVersion", Versions.getROBOVMGradlePluginVersion());
 		prop.setProperty("androidGradlePluginVersion", Versions.getAndroidGradlePluginVersion());
+		prop.setProperty("bladeInkVersion", Versions.getBladeInkVersion());
 
 		saveGradleProperties(prop);
 	}
