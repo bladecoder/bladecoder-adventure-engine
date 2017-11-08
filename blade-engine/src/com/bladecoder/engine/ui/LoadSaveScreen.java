@@ -327,8 +327,13 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 		if (EngineAssetManager.getInstance().getUserFile(filename).exists())
 			savedFile = EngineAssetManager.getInstance().getUserFile(filename);
-		else
+		else if (EngineAssetManager.getInstance().assetExists("tests/" + filename))
 			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
+		else {
+			Drawable d = ui.getSkin().getDrawable("black");
+			
+			return new Image(d);
+		}
 
 		Texture t = new Texture(savedFile);
 
