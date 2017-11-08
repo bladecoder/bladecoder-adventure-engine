@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.3]
+- Added 'textStyle' attribute to character actors.
+- Added basic QA rules/metrics of project.
+- EDITOR: Understand SNAPSHOT versions when checking for updating versions.
+- Actor 'tint' property are now used to draw inventory actors when dragged.
+- Catch back key in android.
+- Added load chapter option to the debug screen.
+- Fix not showing saved games in tests folder.
+- Fix error removing all items from inventory in 'DropItem' action.
+- Fix error creating screenshots for savedgames in Mac.
+- Fix crash when screenshot of a savegame doesn't exists.
+
 ## [1.3.2]
 - Added Google Play expansion file support.
 - Added 64 and 32 bit support when generating package for windows. Previously only 64 bits was supported.
