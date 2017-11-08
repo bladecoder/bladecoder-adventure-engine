@@ -97,11 +97,13 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 	private InputPanel orgAlign;
 	
+	private InputPanel textColor;
+	private InputPanel textStyle;
+	
 	// 3d Renderer
 	private InputPanel spriteSize;
 	private InputPanel cameraName;
 	private InputPanel fov;
-	private InputPanel textColor;
 
 	// Particle Renderer
 	private InputPanel particleName;
@@ -178,6 +180,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		textColor = InputPanelFactory.createInputPanel(skin, "Text Color",
 				"The text color (RRGGBBAA) when the actor talks.", Param.Type.COLOR, false);
+		
+		textStyle = InputPanelFactory.createInputPanel(skin, "Text Style",
+				"The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section).", Param.Type.STRING, false);
 
 		particleName = InputPanelFactory.createInputPanel(skin, "Particle Name", "The name of the particle system.",
 				Type.PARTICLE_ASSET, true);
@@ -229,7 +234,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		init(parent, e,
 				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, fakeDepth, pos, refPoint, scale, rot,
 						tint, text, font, size, textAlign, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
-						shadowColor, bboxFromRenderer, zIndex, orgAlign, walkingSpeed, spriteSize, cameraName, fov, textColor });
+						shadowColor, bboxFromRenderer, zIndex, orgAlign, walkingSpeed, spriteSize, cameraName, fov, textColor, textStyle });
 
 		typeChanged();
 
@@ -280,6 +285,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		if (ACTOR_TYPES[i].equals(CHARACTER_TYPE_STR)) {
 			setVisible(walkingSpeed, true);
 			setVisible(textColor, true);
+			setVisible(textStyle, true);
 		}
 
 		rendererChanged();
@@ -538,6 +544,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 					ca.setWalkingSpeed(Float.parseFloat(walkingSpeed.getText()));
 					ca.setTextColor(Param.parseColor(textColor.getText()));
+					ca.setTextStyle(textStyle.getText());
 				}
 			}
 		}
@@ -631,6 +638,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 					walkingSpeed.setText(Float.toString(ca.getWalkingSpeed()));
 					textColor.setText(ca.getTextColor() == null ? null : ca.getTextColor().toString());
+					textStyle.setText(ca.getTextStyle());
 					typePanel.setText(CHARACTER_TYPE_STR);
 				} else {
 					typePanel.setText(SPRITE_TYPE_STR);

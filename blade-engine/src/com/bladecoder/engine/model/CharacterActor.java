@@ -42,6 +42,7 @@ public class CharacterActor extends SpriteActor {
 
 	private float walkingSpeed = DEFAULT_WALKING_SPEED;
 	private Color textColor;
+	private String textStyle;
 
 	private String standAnim = DEFAULT_STAND_ANIM;
 	private String walkAnim = DEFAULT_WALK_ANIM;
@@ -55,6 +56,14 @@ public class CharacterActor extends SpriteActor {
 
 	public void setTextColor(Color textColor) {
 		this.textColor = textColor;
+	}
+
+	public String getTextStyle() {
+		return textStyle;
+	}
+
+	public void setTextStyle(String textStyle) {
+		this.textStyle = textStyle;
 	}
 
 	public String getStandAnim() {
@@ -241,6 +250,7 @@ public class CharacterActor extends SpriteActor {
 		json.writeValue("dialogs", dialogs, HashMap.class, Dialog.class);
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+			json.writeValue("textStyle", textStyle);
 		} else {
 			json.writeValue("standAnim", standAnim);
 			json.writeValue("walkAnim", walkAnim);
@@ -263,6 +273,8 @@ public class CharacterActor extends SpriteActor {
 				for (Dialog d : dialogs.values())
 					d.setActor(id);
 			}
+			
+			textStyle = json.readValue("textStyle", String.class, jsonData);
 
 		} else {
 			if (dialogs != null) {
