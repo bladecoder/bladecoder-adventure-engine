@@ -32,12 +32,11 @@ import org.xml.sax.SAXException;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -1025,13 +1024,9 @@ public class World implements Serializable, AssetConsumer {
 
 		int h = (int) (w * getSceneCamera().viewportHeight / getSceneCamera().viewportWidth);
 
-		GLFrameBuffer.FrameBufferBuilder frameBufferBuilder = new GLFrameBuffer.FrameBufferBuilder(
-				w, h);
-		
-		frameBufferBuilder.addColorTextureAttachment(GL30.GL_RGB565, GL30.GL_RGB, GL30.GL_UNSIGNED_BYTE);
-		FrameBuffer fbo = frameBufferBuilder.build();
-
 		// FrameBuffer fbo = new FrameBuffer(Format.RGB565, w, h, false);
+
+		FrameBuffer fbo = FrameBuffer.createFrameBuffer(Format.RGB565, w, h, false);
 
 		fbo.begin();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
