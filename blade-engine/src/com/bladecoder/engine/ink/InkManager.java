@@ -135,7 +135,7 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 
 		if (actions.size() > 0) {
-			run();
+			run(null);
 		} else {
 
 			if (hasChoices()) {
@@ -354,7 +354,7 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	@Override
-	public void run() {
+	public void run(String currentTarget) {
 		ip = 0;
 		nextStep();
 	}
@@ -382,7 +382,7 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	@Override
-	public String getTarget() {
+	public String getCurrentTarget() {
 		return null;
 	}
 

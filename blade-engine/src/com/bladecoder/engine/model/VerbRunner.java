@@ -37,8 +37,9 @@ public interface VerbRunner extends ActionCallback {
 	
 	/**
 	 * Run the verb
+	 * @param currentTarget the target for the 'use' verb.
 	 */
-	public void run();
+	public void run(String currentTarget);
 
 	/**
 	 * Return the current action pointer
@@ -58,8 +59,8 @@ public interface VerbRunner extends ActionCallback {
 	
 	
 	/**
-	 * The target actor in 'use' verb.
+	 * The target in 'use' verb.
 	 * @return The target actor 'id'
 	 */
-	public String getTarget();
+	public String getCurrentTarget();
 }

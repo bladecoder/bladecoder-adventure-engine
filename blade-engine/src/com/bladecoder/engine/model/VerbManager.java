@@ -100,7 +100,7 @@ public class VerbManager implements Serializable {
 		}
 
 		if (v != null) {
-			v.run();
+			v.run(target);
 		} else {
 			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}''", verb, target));
 		}

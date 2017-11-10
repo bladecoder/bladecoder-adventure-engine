@@ -44,12 +44,13 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	private String state;
 	private int ip = -1;
+	private String currentTarget;
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		setVerbCb(cb);
 		
-		run();
+		run(cb.getCurrentTarget());
 		
 		return getWait();
 	}
@@ -134,7 +135,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	}
 
 	@Override
-	public String getTarget() {
+	public String getCurrentTarget() {
 		return target;
 	}
 
@@ -156,8 +157,9 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	}
 
 	@Override
-	public void run() {
+	public void run(String currentTarget) {
 		ip = 0;
+		this.currentTarget = currentTarget;
 		
 		Scene s = World.getInstance().getCurrentScene();
 
@@ -186,6 +188,8 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	public void write(Json json) {
 		json.writeValue("ip", ip);
 		json.writeValue("state", state);
+		if(currentTarget != null)
+			json.writeValue("currentTarget", currentTarget);
 		super.write(json);
 	}
 
@@ -193,6 +197,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	public void read(Json json, JsonValue jsonData) {
 		ip = json.readValue("ip", int.class, -1, jsonData);
 		state = json.readValue("state", String.class, jsonData);
+		currentTarget = json.readValue("currentTarget", String.class, (String)null, jsonData);
 		super.read(json, jsonData);
 	}
 

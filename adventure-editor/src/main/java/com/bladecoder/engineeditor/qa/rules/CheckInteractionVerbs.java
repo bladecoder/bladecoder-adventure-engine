@@ -55,12 +55,13 @@ public class CheckInteractionVerbs implements ActorVisitor {
 							if(animations.size() == 0) {
 								EditorLogger.error("CheckInteractionVerbs: Actor with no animations! - "  + sa.getScene().getId() + "." + sa.getId());
 							}
-							
-							if(!hasUse)
-								EditorLogger.msg("CheckInteractionVerbs: Inventory item should has default 'use' - "  + sa.getScene().getId() + "." + sa.getId());
-							
-							if(animations.get(r.getInitAnimation()).source.contains("inventory"))
+														
+							if(animations.get(r.getInitAnimation()).source.contains("inventory")) {
+								if(!hasUse)
+									EditorLogger.msg("CheckInteractionVerbs: Inventory item should has default 'use' - "  + sa.getScene().getId() + "." + sa.getId());
+
 								return;
+							}
 						}
 					}
 				}
