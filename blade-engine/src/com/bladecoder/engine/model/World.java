@@ -877,7 +877,8 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public String getModelProp(String prop) {
-		return (String) getObjectWrapper().getValue(prop);
+		Object value = getObjectWrapper().getValue(prop);
+		return value==null?null:value.toString();
 	}
 
 	public void loadChapter(String chapter, String scene, boolean test) throws Exception {
@@ -1262,6 +1263,13 @@ public class World implements Serializable, AssetConsumer {
 			if (jsonData.get("inkManager") != null) {
 				getInkManager().read(json, jsonData.get("inkManager"));
 			}
+			
+			inventories = json.readValue("inventories", HashMap.class, Inventory.class, jsonData);
+			currentInventory = json.readValue("currentInventory", String.class, jsonData);
+
+			if (jsonData.get("uiActors") != null) {
+				getUIActors().read(json, jsonData.get("uiActors"));
+			}			
 
 			for (Scene s : scenes.values()) {
 				JsonValue jsonValue = jsonData.get("scenes").get(s.getId());
@@ -1270,13 +1278,6 @@ public class World implements Serializable, AssetConsumer {
 					s.read(json, jsonValue);
 				else
 					EngineLogger.debug("LOAD WARNING: Scene not found in saved game: " + s.getId());
-			}
-
-			inventories = json.readValue("inventories", HashMap.class, Inventory.class, jsonData);
-			currentInventory = json.readValue("currentInventory", String.class, jsonData);
-
-			if (jsonData.get("uiActors") != null) {
-				getUIActors().read(json, jsonData.get("uiActors"));
 			}
 
 			timeOfGame = json.readValue("timeOfGame", long.class, 0L, jsonData);

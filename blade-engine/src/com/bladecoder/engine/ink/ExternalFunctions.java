@@ -38,7 +38,7 @@ public class ExternalFunctions {
 				try {
 					return World.getInstance().getModelProp(args[0].toString());
 				} catch (Exception e) {
-					EngineLogger.error("Ink getModelProp: " + e.getMessage());
+					EngineLogger.error("Ink getModelProp: " + e.getMessage(), e);
 				}
 
 				return null;
