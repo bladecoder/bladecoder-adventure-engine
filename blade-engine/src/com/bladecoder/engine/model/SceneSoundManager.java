@@ -83,21 +83,21 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	
 	public void stop() {
 		for(LoadedSound s:loadedSounds.values()) {
-			if(s.playing)
+			if(s.playing && s.sound != null)
 				stopSound(s.desc.getId());
 		}
 	}
 	
 	public void resume() {
 		for(LoadedSound s:loadedSounds.values()) {
-			if(s.playing)
+			if(s.playing && s.sound != null)
 				s.sound.resume();
 		}
 	}
 	
 	public void pause() {
 		for(LoadedSound s:loadedSounds.values()) {
-			if(s.playing)
+			if(s.playing && s.sound != null)
 				s.sound.pause();
 		}
 	}
