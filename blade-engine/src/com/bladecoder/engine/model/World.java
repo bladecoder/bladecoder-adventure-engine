@@ -1049,6 +1049,8 @@ public class World implements Serializable, AssetConsumer {
 		pixels.put(lines);
 
 		PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap);
+
+        fbo.dispose();
 	}
 
 	@Override
