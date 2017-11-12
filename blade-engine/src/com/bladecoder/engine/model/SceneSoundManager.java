@@ -44,7 +44,11 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 		}
 
 		if (s != null) {
-			s.sound.play();
+			if(s.desc.getLoop())
+				s.sound.loop(s.desc.getVolume(), 1, s.desc.getPan());
+			else
+				s.sound.play(s.desc.getVolume(), 1, s.desc.getPan());
+			
 			s.playing = true;
 		} else {
 			EngineLogger.error("Sound Not Found: " + id);
