@@ -20,6 +20,7 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.ink.InkManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.UIActors;
 import com.bladecoder.engine.model.Verb;
@@ -48,6 +49,7 @@ public class ActionCallbackSerialization {
 	private static final String SEPARATION_SYMBOL = "#";
 	private static final String INK_MANAGER_TAG = "INK_MANAGER";
 	private static final String UIACTORS_TAG = "UIACTORS";
+	private static final String INVENTORY_TAG = "INVENTORY";
 	private static final String DEFAULT_VERB_TAG = "DEFAULT_VERB";
 
 	private static String find(ActionCallback cb, Verb v) {
@@ -152,6 +154,22 @@ public class ActionCallbackSerialization {
 
 		return null;
 	}
+	
+	private static String find(ActionCallback cb, Inventory inv) {
+		for (int i =0; i < inv.getNumItems(); i++) {
+			InteractiveActor a = inv.get(i);
+			String id = find(cb, a);
+
+			if (id != null) {
+				StringBuilder stringBuilder = new StringBuilder(INVENTORY_TAG);
+				stringBuilder.append(SEPARATION_SYMBOL).append(id);
+
+				return stringBuilder.toString();
+			}
+		}
+
+		return null;
+	}
 
 	/**
 	 * Generates a String for serialization that allows locate the
@@ -173,6 +191,12 @@ public class ActionCallbackSerialization {
 
 		if (id != null)
 			return id;
+		
+		// search in inventory
+		id = find(cb, World.getInstance().getInventory());
+
+		if (id != null)
+			return id;
 
 		// search in inkManager actions
 		id = find(cb, World.getInstance().getInkManager());
@@ -188,6 +212,7 @@ public class ActionCallbackSerialization {
 		if (id != null)
 			return id;
 
+		// search in player
 		id = find(cb, s.getPlayer());
 		if (id != null)
 			return id;
@@ -248,7 +273,7 @@ public class ActionCallbackSerialization {
 		String verbId;
 		int actionPos = -1;
 
-		if (id.startsWith(UIACTORS_TAG)) {
+		if (id.startsWith(UIACTORS_TAG) || id.startsWith(INVENTORY_TAG)) {
 
 			actorId = split[1];
 			verbId = split[2];
@@ -276,15 +301,20 @@ public class ActionCallbackSerialization {
 			} else {
 				a = (InteractiveActor) s.getActor(actorId, true);
 
-				if (a == null)
+				if (a == null) {
+					EngineLogger.error("ActionCallbackSerialization - Actor not found: " + actorId + " cb: " + id);
 					return null;
+				}
 
 				v = a.getVerbManager().getVerbs().get(verbId);
 			}
 		}
 
-		if (v == null)
+		if (v == null) {
+			EngineLogger.error("ActionCallbackSerialization - Verb not found: " + verbId + " cb: " + id);
+			
 			return null;
+		}
 
 		if (actionPos == -1)
 			return v;
@@ -293,6 +323,8 @@ public class ActionCallbackSerialization {
 
 		if (action instanceof ActionCallback)
 			return (ActionCallback) action;
+		
+		EngineLogger.error("ActionCallbackSerialization - CB not found: " + id);
 
 		return null;
 	}

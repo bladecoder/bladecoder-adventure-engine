@@ -1266,8 +1266,18 @@ public class World implements Serializable, AssetConsumer {
 				getInkManager().read(json, jsonData.get("inkManager"));
 			}
 			
-			inventories = json.readValue("inventories", HashMap.class, Inventory.class, jsonData);
+			// inventories have to be put in the hash to find the actors when reading saved data
 			currentInventory = json.readValue("currentInventory", String.class, jsonData);
+			
+			JsonValue jsonInventories = jsonData.get("inventories");
+			inventories = new HashMap<String,Inventory>();
+			
+			for (int i = 0; i < jsonInventories.size; i++) {
+				JsonValue jsonValue = jsonInventories.get(i);
+				Inventory inv = new Inventory();
+				inventories.put(jsonValue.name, inv);
+				inv.read(json, jsonValue);
+			}
 
 			if (jsonData.get("uiActors") != null) {
 				getUIActors().read(json, jsonData.get("uiActors"));
