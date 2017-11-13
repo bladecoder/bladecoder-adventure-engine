@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.4]
+- Added currentTarget to verbs.
+- Null checks in SoundManager before pause/resume sounds.
+- Fix loading callbacks from saved inventories.
+- Fix: Loop, volume and pan was not used when playing a sound.
+- Missing fbo dispose.
+- Fix: toString() instead of casting in getModelProp.
+
 ## [1.3.3]
 - Added 'textStyle' attribute to character actors.
 - Added basic QA rules/metrics of project.
