@@ -33,6 +33,7 @@ import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.defaults.ScenePointer;
 import com.bladecoder.engine.util.Config;
@@ -63,7 +64,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	private final Vector2 targetPos = new Vector2();
 
 	private final ScenePointer pointer;
-	
+
 	private boolean singleAction = Config.getProperty(Config.SINGLE_ACTION_INVENTORY, false);
 
 	public InventoryUI(SceneScreen scr, ScenePointer pointer) {
@@ -71,7 +72,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		sceneScreen = scr;
 		this.pointer = pointer;
 
-		inventoryPos = InventoryPos.valueOf(Config.getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH));
+		inventoryPos = InventoryPos
+				.valueOf(Config.getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH));
 
 		autosize = Config.getProperty(Config.INVENTORY_AUTOSIZE_PROP, true);
 
@@ -85,7 +87,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 					InteractiveActor actor = getItemAt(x, y);
 
 					if (actor != null) {
-						if(singleAction)
+						if (singleAction)
 							sceneScreen.runVerb(actor, "lookat", null);
 						else
 							sceneScreen.actorClick(actor, button);
@@ -192,16 +194,16 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			setSize(w + (cols - 1) * rowSpace + margin * 2, h + (rows - 1) * rowSpace + margin * 2);
 
 			capacity = cols * rows;
-			
-			if(inventory.getNumItems() > capacity) {
+
+			if (inventory.getNumItems() > capacity) {
 				tileSize *= .8;
 			}
-			
+
 		} while (inventory.getNumItems() > capacity);
 
-		 if (inventory.getNumItems() > capacity)
-			 EngineLogger.error("Items in inventory excees the UI capacity");
-		
+		if (inventory.getNumItems() > capacity)
+			EngineLogger.error("Items in inventory excees the UI capacity");
+
 		setVisible(false);
 
 		if (inventoryPos == InventoryPos.TOP) {
@@ -267,7 +269,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 
 			r.draw((SpriteBatch) batch, getX() + x * tileSize + x * rowSpace + tileSize / 2 + margin,
-					getY() + (tileSize - r.getHeight() * size) / 2 + y * tileSize + y * rowSpace + margin, size, 0f, a.getTint());
+					getY() + (tileSize - r.getHeight() * size) / 2 + y * tileSize + y * rowSpace + margin, size, 0f,
+					a.getTint());
 		}
 
 		super.draw(batch, alpha);
@@ -298,7 +301,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		if (targetActor != null) {
 			if (targetActor != draggedActor)
 				use(targetActor, draggedActor);
-			else if(singleAction)
+			else if (singleAction)
 				sceneScreen.runVerb(targetActor, "lookat", null);
 			else
 				sceneScreen.actorClick(targetActor, button);
@@ -309,7 +312,21 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	}
 
 	private void use(InteractiveActor targetActor, InteractiveActor invActor) {
-		if (targetActor.getVerb("use", invActor.getId()) != null) {
+		// get best matched verb
+		Verb vtarget = targetActor.getVerb("use", invActor.getId());
+		Verb vinv = invActor.getVerb("use", targetActor.getId());
+		Verb bestMatch = vtarget;
+
+		if (bestMatch == null) {
+			bestMatch = vinv;
+		} else if (vtarget != null && vinv != null && targetActor.getId().equals(vinv.getTarget())
+				&& !invActor.getId().equals(vtarget.getTarget())) {
+			// if the two actors have "use" verbs, we choose the one with the
+			// target matches the actor id.
+			bestMatch = vinv;
+		}
+
+		if (vtarget == bestMatch) {
 			sceneScreen.runVerb(targetActor, "use", invActor.getId());
 		} else {
 			sceneScreen.runVerb(invActor, "use", targetActor.getId());
