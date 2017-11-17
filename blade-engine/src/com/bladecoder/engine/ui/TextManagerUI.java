@@ -223,7 +223,7 @@ public class TextManagerUI extends Actor {
 		} else if (text.actorId != null) {
 			CharacterActor a = (CharacterActor) World.getInstance().getCurrentScene().getActor(text.actorId, false);
 			
-			if(a.getTextStyle() != null)
+			if(a != null && a.getTextStyle() != null)
 				key = a.getTextStyle();
 		}
 		
