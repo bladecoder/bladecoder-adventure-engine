@@ -54,6 +54,7 @@ import com.esotericsoftware.spine.Skeleton;
 import com.esotericsoftware.spine.SkeletonBounds;
 import com.esotericsoftware.spine.SkeletonData;
 import com.esotericsoftware.spine.SkeletonRenderer;
+import com.esotericsoftware.spine.Skin;
 
 public class SpineRenderer extends AnimationRenderer {
 
@@ -81,6 +82,8 @@ public class SpineRenderer extends AnimationRenderer {
 	private int loopCount = 0;
 
 	private String secondaryAnimation;
+	
+	private String skin;
 
 	class SkeletonCacheEntry extends CacheEntry {
 		Skeleton skeleton;
@@ -274,6 +277,25 @@ public class SpineRenderer extends AnimationRenderer {
 	@Override
 	public float getHeight() {
 		return height;
+	}
+
+	public String getSkin() {
+		return skin;
+	}
+
+	public void setSkin(String skin) {
+		// set the skin if the current source is loaded
+		if (currentSource != null && currentSource.refCounter > 0) {
+			SkeletonCacheEntry sce = (SkeletonCacheEntry)currentSource;
+			
+			if(skin != null) {
+				sce.skeleton.setSkin(skin);
+			} else {
+				sce.skeleton.setSkin((Skin)null);
+			}
+		}
+		
+		this.skin = skin;
 	}
 
 	@Override
@@ -599,6 +621,7 @@ public class SpineRenderer extends AnimationRenderer {
 			startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
 		}
 
+		setSkin(skin);
 		computeBbox();
 	}
 
@@ -638,6 +661,7 @@ public class SpineRenderer extends AnimationRenderer {
 			json.writeValue("complete", complete);
 			json.writeValue("loopCount", loopCount);
 			json.writeValue("secondaryAnimation", secondaryAnimation);
+			json.writeValue("skin", skin);
 		}
 	}
 
@@ -663,6 +687,7 @@ public class SpineRenderer extends AnimationRenderer {
 			loopCount = json.readValue("loopCount", int.class, loopCount, jsonData);
 
 			secondaryAnimation = json.readValue("secondaryAnimation", String.class, (String) null, jsonData);
+			skin = json.readValue("skin", String.class, (String) null, jsonData);
 		}
 	}
 }
