@@ -68,7 +68,12 @@ public class CheckInteractionVerbs implements ActorVisitor {
 
 				// check for lookat and pickup/talk verbs
 				if (!hasLookat || (!hasPickup && !hasTalkto)) {
-					EditorLogger.msg("CheckInteractionVerbs: " + a.getScene().getId() + "." + a.getId());
+					String msg = "CheckInteractionVerbs: " + a.getScene().getId() + "." + a.getId(); 
+					
+					if(!hasLookat)
+						EditorLogger.error(msg);
+					else
+						EditorLogger.msg(msg);
 				}
 			}
 		}

@@ -1,6 +1,7 @@
 package com.bladecoder.engineeditor.qa;
 
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engineeditor.qa.rules.CheckCutmodeEnd;
 import com.bladecoder.engineeditor.qa.rules.CheckDesc;
 import com.bladecoder.engineeditor.qa.rules.CheckInteractionVerbs;
 import com.bladecoder.engineeditor.qa.rules.Stats;
@@ -12,6 +13,7 @@ public class QA {
 		mw.addVisitor(new Stats());
 		mw.addVisitor(new CheckInteractionVerbs());
 		mw.addVisitor(new CheckDesc());
+		mw.addVisitor(new CheckCutmodeEnd());
 		
 		mw.walk(w);
 	}
