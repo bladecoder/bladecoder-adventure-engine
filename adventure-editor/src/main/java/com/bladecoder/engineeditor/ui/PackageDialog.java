@@ -33,8 +33,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogicgames.packr.Packr;
 import com.badlogicgames.packr.PackrConfig;
 import com.badlogicgames.packr.PackrConfig.Platform;
@@ -267,14 +265,8 @@ public class PackageDialog extends EditDialog {
 
 				if (msg != null) {
 					final String m = msg;
-					Timer.post(new Task() {
-
-						@Override
-						public void run() {
-							Message.showMsgDialog(stg, "Result", m);
-						}
-					});
-				}
+					Message.showMsgDialog(stg, "Result", m);
+				}				
 			}
 		}.start();
 
