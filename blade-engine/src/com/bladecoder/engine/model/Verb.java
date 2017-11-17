@@ -116,7 +116,7 @@ public class Verb implements VerbRunner, Serializable {
 		this.currentTarget = currentTarget;
 		
 		if (EngineLogger.debugMode()) {
-			StringBuilder sb = new StringBuilder(">>> Running verb: ").append("id");
+			StringBuilder sb = new StringBuilder(">>> Running verb: ").append(id);
 			
 			if(currentTarget != null) {
 				sb.append(" currentTarget: " + currentTarget);
