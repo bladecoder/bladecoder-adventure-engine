@@ -556,8 +556,10 @@ public class Scene implements Serializable, AssetConsumer {
 			// camera.updatePos(followActor);
 		}
 
-		if (sceneSize != null)
-			camera.setScrollingDimensions(sceneSize.x, sceneSize.y);
+		if (sceneSize != null) {
+			float scale = EngineAssetManager.getInstance().getScale();
+			camera.setScrollingDimensions(sceneSize.x * scale, sceneSize.y * scale);
+		}
 
 		// RETRIEVE ACTORS
 		for (BaseActor a : actors.values()) {

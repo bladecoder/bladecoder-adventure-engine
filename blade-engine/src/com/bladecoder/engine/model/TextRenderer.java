@@ -284,14 +284,16 @@ public class TextRenderer implements ActorRenderer {
 	@Override
 	public void loadAssets() {
 		FreeTypeFontLoaderParameter params = new FreeTypeFontLoaderParameter();
+		
+		float scale = EngineAssetManager.getInstance().getScale();
 
 		params.fontFileName = EngineAssetManager.FONT_DIR + fontName + EngineAssetManager.FONT_EXT;
-		params.fontParameters.size = fontSize;
-		params.fontParameters.borderWidth = borderWidth;
+		params.fontParameters.size = (int)(fontSize * scale);
+		params.fontParameters.borderWidth = (int)(borderWidth * scale);
 		params.fontParameters.borderColor = borderColor;
 		params.fontParameters.borderStraight = borderStraight;
-		params.fontParameters.shadowOffsetX = shadowOffsetX;
-		params.fontParameters.shadowOffsetY = shadowOffsetY;
+		params.fontParameters.shadowOffsetX = (int)(shadowOffsetX * scale);
+		params.fontParameters.shadowOffsetY = (int)(shadowOffsetY * scale);
 		params.fontParameters.shadowColor = shadowColor;
 		params.fontParameters.characters = "";
 		params.fontParameters.incremental = true;
