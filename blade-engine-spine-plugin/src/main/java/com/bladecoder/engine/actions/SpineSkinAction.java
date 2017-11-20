@@ -15,10 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -26,8 +24,8 @@ import com.bladecoder.engine.util.EngineLogger;
 public class SpineSkinAction implements Action {
 
 	@ActionPropertyDescription("The target actor")
-	@ActionProperty(type = Type.SPRITE_ACTOR, required = true)
-	private String actor;
+	@ActionProperty(required = true)
+	private SceneActorRef actor;
 
 	@ActionProperty(required = false)
 	@ActionPropertyDescription("The Skin. Empty to clear the skin.")
@@ -35,10 +33,9 @@ public class SpineSkinAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
+		SpriteActor a = (SpriteActor) actor.getActor();
 		
-		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, true);
-		
-		if(a.getRenderer() instanceof SpineRenderer) {
+		if(a instanceof SpriteActor && a.getRenderer() instanceof SpineRenderer) {
 			SpineRenderer r = (SpineRenderer) a.getRenderer();
 			
 			r.setSkin(skin);
