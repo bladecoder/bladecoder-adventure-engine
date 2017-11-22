@@ -100,6 +100,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel textColor;
 	private InputPanel textStyle;
 	
+	// Spine Renderer
+	private InputPanel spineSkin;
+	
 	// 3d Renderer
 	private InputPanel spriteSize;
 	private InputPanel cameraName;
@@ -170,6 +173,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		walkingSpeed = InputPanelFactory.createInputPanel(skin, "Walking Speed",
 				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT, true,
 				Float.toString(CharacterActor.DEFAULT_WALKING_SPEED));
+		
+		spineSkin = InputPanelFactory.createInputPanel(skin, "Skin", "The initial skin.");
 
 		spriteSize = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions", "The size of the 3d sprite.",
 				Param.Type.DIMENSION, true);
@@ -234,7 +239,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		init(parent, e,
 				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, fakeDepth, pos, refPoint, scale, rot,
 						tint, text, font, size, textAlign, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
-						shadowColor, bboxFromRenderer, zIndex, orgAlign, walkingSpeed, spriteSize, cameraName, fov, textColor, textStyle });
+						shadowColor, bboxFromRenderer, zIndex, orgAlign, walkingSpeed, spineSkin, spriteSize, cameraName, fov, textColor, textStyle });
 
 		typeChanged();
 
@@ -295,6 +300,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		int i = ((OptionsInputPanel) renderer).getSelectedIndex();
 
 		// setInfo(RENDERERS_INFO[i]);
+		
+		setVisible(spineSkin, false);
 
 		setVisible(spriteSize, false);
 		setVisible(cameraName, false);
@@ -315,7 +322,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		setVisible(shadowColor, false);
 
 		if (renderer.isVisible()) {
-			if (ACTOR_RENDERERS[i].equals(Project.S3D_RENDERER_STRING)) {
+			if (ACTOR_RENDERERS[i].equals(Project.SPINE_RENDERER_STRING)) {
+				setVisible(spineSkin, true);
+			} else if (ACTOR_RENDERERS[i].equals(Project.S3D_RENDERER_STRING)) {
 				setVisible(spriteSize, true);
 				setVisible(cameraName, true);
 				setVisible(fov, true);
@@ -525,8 +534,16 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					// dispose to force reload the text attributes
 					sa.dispose();
 				} else if (Project.SPINE_RENDERER_STRING.equals(rendererType)) {
-					if (sa.getRenderer() == null || !(sa.getRenderer() instanceof SpineRenderer))
-						sa.setRenderer(new SpineRenderer());
+					SpineRenderer r;
+					
+					if (sa.getRenderer() == null || !(sa.getRenderer() instanceof SpineRenderer)) {
+						r = new SpineRenderer();
+						sa.setRenderer(r);
+					} else {
+						r = (SpineRenderer) sa.getRenderer();
+					}
+					
+					r.setSkin(spineSkin.getText());
 				}
 
 				boolean bbfr = Boolean.parseBoolean(bboxFromRenderer.getText());
@@ -624,6 +641,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					
 				} else if (r instanceof SpineRenderer) {
 					renderer.setText(Project.SPINE_RENDERER_STRING);
+					spineSkin.setText(((SpineRenderer) r).getSkin());
 				}
 
 				fakeDepth.setText(Boolean.toString(sa.getFakeDepth()));

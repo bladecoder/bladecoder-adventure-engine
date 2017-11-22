@@ -661,8 +661,9 @@ public class SpineRenderer extends AnimationRenderer {
 			json.writeValue("complete", complete);
 			json.writeValue("loopCount", loopCount);
 			json.writeValue("secondaryAnimation", secondaryAnimation);
-			json.writeValue("skin", skin);
 		}
+		
+		json.writeValue("skin", skin);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -687,7 +688,8 @@ public class SpineRenderer extends AnimationRenderer {
 			loopCount = json.readValue("loopCount", int.class, loopCount, jsonData);
 
 			secondaryAnimation = json.readValue("secondaryAnimation", String.class, (String) null, jsonData);
-			skin = json.readValue("skin", String.class, (String) null, jsonData);
 		}
+		
+		skin = json.readValue("skin", String.class, skin, jsonData);
 	}
 }

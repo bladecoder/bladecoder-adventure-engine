@@ -66,6 +66,7 @@ public class AnimationDrawer {
 			} else if (r instanceof SpineRenderer) {
 				renderer = new SpineRenderer();
 				((SpineRenderer)renderer).enableEvents(false);
+				((SpineRenderer)renderer).setSkin(((SpineRenderer) r).getSkin());
 			} else if (r instanceof ImageRenderer) {
 				renderer = new ImageRenderer();				
 			} else if (r instanceof AtlasRenderer) {
