@@ -876,9 +876,8 @@ public class World implements Serializable, AssetConsumer {
 		getObjectWrapper().setValue(prop, value);
 	}
 
-	public String getModelProp(String prop) {
-		Object value = getObjectWrapper().getValue(prop);
-		return value==null?null:value.toString();
+	public Object getModelProp(String prop) {
+		return getObjectWrapper().getValue(prop);
 	}
 
 	public void loadChapter(String chapter, String scene, boolean test) throws Exception {
