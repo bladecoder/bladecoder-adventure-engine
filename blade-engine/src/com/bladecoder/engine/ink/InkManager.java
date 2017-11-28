@@ -39,6 +39,10 @@ public class InkManager implements VerbRunner, Serializable {
 	private ExternalFunctions externalFunctions;
 
 	private ActionCallback cb;
+	
+	// Depending on the reading order of Inventory, InkManager and Actor verbs,
+	// the verbCallbacks may not exist. So, we search the Cb lazily when needed.
+	private String sCb;	
 
 	private ArrayList<Action> actions;
 
@@ -141,7 +145,11 @@ public class InkManager implements VerbRunner, Serializable {
 			if (hasChoices()) {
 				wasInCutmode = World.getInstance().inCutMode();
 				World.getInstance().setCutMode(false);
-			} else if (cb != null) {
+			} else if (cb != null || sCb != null) {
+				if (cb == null) {
+					cb = ActionCallbackSerialization.find(sCb);
+				}
+				
 				ActionCallbackQueue.add(cb);
 			}
 		}
@@ -425,7 +433,7 @@ public class InkManager implements VerbRunner, Serializable {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		wasInCutmode = json.readValue("wasInCutmode", Boolean.class, jsonData);
-		cb = ActionCallbackSerialization.find(json.readValue("cb", String.class, jsonData));
+		sCb = json.readValue("cb", String.class, jsonData);
 
 		// READ ACTIONS
 		actions.clear();
