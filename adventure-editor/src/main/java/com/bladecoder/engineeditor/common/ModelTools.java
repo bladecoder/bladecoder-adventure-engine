@@ -468,6 +468,18 @@ public class ModelTools {
 			String value = v.asString().substring(1).trim();
 			// String key = "ink." + value.hashCode();
 
+			if(value.length() == 0 || value.charAt(0) == '>')
+				return;
+			
+			int idx = value.indexOf('>');
+			String charName = "";
+			
+			if(idx != -1) {
+				charName = value.substring(0, idx).trim();
+				value = value.substring(idx+1).trim();
+			}
+			
+			
 			String key = prefix;
 
 			try {
@@ -481,8 +493,8 @@ public class ModelTools {
 			}
 
 			Ctx.project.getI18N().setTranslation(key, value);
-			sb.append(key + "\t" + value + "\n");
-			v.set("^" + I18N.PREFIX + key);
+			sb.append(key + "\t" + charName + "\t" + value + "\n");
+			v.set("^" + charName + '>' + I18N.PREFIX + key);
 		}
 	}
 
