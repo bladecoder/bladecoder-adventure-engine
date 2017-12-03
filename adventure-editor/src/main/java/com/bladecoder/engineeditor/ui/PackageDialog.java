@@ -381,7 +381,7 @@ public class PackageDialog extends EditDialog {
 			p.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/ios/robovm.properties"));
 			p.setProperty("app.version", version.getText());
 			p.setProperty("app.build", versionCode.getText());
-			p.setProperty("app.name", projectName);
+			p.setProperty("app.name", Ctx.project.getTitle());
 			p.store(new FileOutputStream(
 					new File(Ctx.project.getProjectDir().getAbsolutePath(), "/ios/robovm.properties")), null);
 
