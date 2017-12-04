@@ -96,6 +96,7 @@ public class InputPanelFactory extends Table {
 		case COLOR:
 			return new ColorInputPanel(skin, title, desc, mandatory, defaultValue);
 		case SOUND:
+			return new SoundInputPanel(skin, title, desc, mandatory, defaultValue);
 		case VOICE:
 		case TEXT_STYLE:
 		case STRING:

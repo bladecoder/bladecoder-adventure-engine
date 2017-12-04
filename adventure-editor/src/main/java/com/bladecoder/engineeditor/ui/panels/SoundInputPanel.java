@@ -13,33 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.bladecoder.engine.actions;
+package com.bladecoder.engineeditor.ui.panels;
 
-import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.model.VerbRunner;
+import java.util.Arrays;
+import java.util.Map;
+
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.bladecoder.engine.model.SoundDesc;
 import com.bladecoder.engine.model.World;
 
-@ActionDescription("Play/Stop a sound")
-public class PlaySoundAction implements Action {
-	@ActionPropertyDescription("The 'soundId' to play. ")
-	@ActionProperty(required = true, type = Type.SOUND)
-	private String sound;
-	
-	@ActionProperty(required = true, defaultValue = "false")
-	@ActionPropertyDescription("When 'true' stops the sound instead of playing it.")
-	private boolean stop = false;
-
-	@Override
-	public boolean run(VerbRunner cb) {
-		
-		if(!stop)	{
-			World.getInstance().getCurrentScene().getSoundManager().playSound(sound);
-		} else {
-			World.getInstance().getCurrentScene().getSoundManager().stopSound(sound);
-		}
-		
-		return false;
+public class SoundInputPanel extends StringOptionsInputPanel {
+	SoundInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
+		super(skin, title, desc, mandatory, defaultValue, getValues(mandatory));
 	}
 
-
+	private static String[] getValues(boolean mandatory) {
+		Map<String, SoundDesc> sounds = World.getInstance().getSounds();
+		
+		String[] result = new String[sounds.size()];
+		
+		SoundDesc[] v = sounds.values().toArray(new SoundDesc[sounds.size()]);
+		
+		for(int i = 0; i < sounds.size(); i++) {
+			result[i] = v[i].getId();
+		}
+		
+		Arrays.sort(result);
+		
+		return result;
+	}
 }

@@ -98,7 +98,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 				"Select the distance in pixels to add to the actor position when the sprite is changed",
 				Param.Type.VECTOR2, false);
 		sound = InputPanelFactory.createInputPanel(skin, "Sound",
-				"Select the sound ID that will be played when showing");
+				"Select the sound ID that will be played when showing", Param.Type.SOUND, false);
 		preload = InputPanelFactory.createInputPanel(skin, "Preload", "Preload the animation when the scene is loaded",
 				Param.Type.BOOLEAN, true, "true");
 		dispose = InputPanelFactory.createInputPanel(skin, "Dispose When Played", "Dispose de animation after playing",
