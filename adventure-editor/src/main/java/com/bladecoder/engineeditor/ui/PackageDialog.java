@@ -653,13 +653,20 @@ public class PackageDialog extends EditDialog {
 	 * @return Search the desktop main class in the desktop folder
 	 */
 	private String getDesktopMainClass() {
+		
+		
 		File result = search(new File(Ctx.project.getProjectDir().getAbsolutePath() + "/desktop"));
 
 		String absolutePath = result.getAbsolutePath().replace('\\', '/');
 
-		int cutIdx = absolutePath.indexOf("src/") + 4;
+		int cutIdx =  absolutePath.indexOf("src/main/java/");
+		
+		if(cutIdx != -1)
+			cutIdx += 14;
+		else
+			cutIdx = absolutePath.indexOf("src/") + 4;
 
-		return absolutePath.substring(cutIdx, absolutePath.length() - 5);
+		return absolutePath.substring(cutIdx, absolutePath.length() - ".java".length());
 	}
 
 	private File search(File file) {
