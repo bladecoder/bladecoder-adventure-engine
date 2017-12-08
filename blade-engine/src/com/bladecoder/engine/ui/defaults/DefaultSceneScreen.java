@@ -716,16 +716,13 @@ public class DefaultSceneScreen implements SceneScreen {
 				if (ia.getVerb("leave") != null) {
 					TextureRegionDrawable drawable = (TextureRegionDrawable) getUI().getSkin().getDrawable("leave");
 
-					// drawable.draw(batch, unprojectTmp.x - size / 2,
-					// unprojectTmp.y - size / 2, size, size);
-
 					drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size / 2, size / 2, size,
 							size, 1.0f, 1.0f, calcLeaveArrowRotation(ia));
 				} else {
-					Drawable drawable = ((TextureRegionDrawable) getUI().getSkin().getDrawable("hotspot"))
-							.tint(Color.RED);
+					Drawable drawable = getUI().getSkin().getDrawable("hotspot");
 
-					drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size, size);
+					if(drawable != null)
+						drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size, size);
 				}
 			} else {
 				BitmapFont font = getUI().getSkin().getFont("desc");
