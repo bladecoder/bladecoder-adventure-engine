@@ -17,12 +17,8 @@ package com.bladecoder.engineeditor.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Arrays;
-import java.util.HashMap;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engine.model.SoundDesc;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.HeaderPanel;
@@ -58,8 +54,6 @@ public class ProjectPanel extends HeaderPanel  {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {	
 				chapterList.addElements();
-				HashMap<String, SoundDesc> sounds = World.getInstance().getSounds();
-				soundList.addElements(World.getInstance(), Arrays.asList(sounds.values().toArray(new SoundDesc[0])));
 				setTile("ADV - " + (Ctx.project.getTitle() != null? Ctx.project.getTitle():""));
 			}
 		});		

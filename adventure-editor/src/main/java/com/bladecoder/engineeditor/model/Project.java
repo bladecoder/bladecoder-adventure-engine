@@ -54,6 +54,7 @@ public class Project extends PropertyChange {
 	public static final String NOTIFY_VERB_SELECTED = "VERB_SELECTED";
 	public static final String NOTIFY_PROJECT_LOADED = "PROJECT_LOADED";
 	public static final String NOTIFY_PROJECT_SAVED = "PROJECT_SAVED";
+	public static final String NOTIFY_CHAPTER_LOADED = "CHAPTER_LOADED";
 
 	public static final String NOTIFY_ELEMENT_DELETED = "ELEMENT_DELETED";
 	public static final String NOTIFY_ELEMENT_CREATED = "ELEMENT_CREATED";
@@ -494,6 +495,7 @@ public class Project extends PropertyChange {
 
 		try {
 			chapter.load(selChapter);
+			firePropertyChange(NOTIFY_CHAPTER_LOADED);
 			Ctx.project.getEditorConfig().setProperty("project.selectedChapter", selChapter);
 		} catch (SerializationException ex) {
 			// check for not compiled custom actions
