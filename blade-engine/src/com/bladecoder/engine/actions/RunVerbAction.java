@@ -136,7 +136,7 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 
 	@Override
 	public String getCurrentTarget() {
-		return target;
+		return currentTarget;
 	}
 
 	@Override
