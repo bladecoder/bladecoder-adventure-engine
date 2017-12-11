@@ -149,9 +149,8 @@ public class DefaultSceneScreen implements SceneScreen {
 			else {
 				getInputUnProject(unprojectTmp);
 
-				if ((w.inCutMode() && !recorder.isRecording()) || 
-						(!w.inCutMode() && !TextManager.AUTO_HIDE_TEXTS && textManagerUI.isVisible())
-					) {
+				if ((w.inCutMode() && !recorder.isRecording())
+						|| (!w.inCutMode() && !TextManager.AUTO_HIDE_TEXTS && textManagerUI.isVisible())) {
 					w.getTextManager().next();
 				} else if (state == UIStates.INVENTORY_MODE) {
 					inventoryUI.hide();
@@ -230,34 +229,43 @@ public class DefaultSceneScreen implements SceneScreen {
 				// ui.toggleFullScreen();
 				break;
 			case 's':
-				try {
-					World.getInstance().saveGameState();
-				} catch (IOException e) {
-					EngineLogger.error(e.getMessage());
+				if (EngineLogger.debugMode()) {
+					try {
+						World.getInstance().saveGameState();
+					} catch (IOException e) {
+						EngineLogger.error(e.getMessage());
+					}
 				}
 				break;
 			case 'l':
-				try {
-					World.getInstance().loadGameState();
-				} catch (IOException e) {
-					EngineLogger.error(e.getMessage());
+				if (EngineLogger.debugMode()) {
+					try {
+						World.getInstance().loadGameState();
+					} catch (IOException e) {
+						EngineLogger.error(e.getMessage());
+					}
 				}
 				break;
 			case 't':
-				testerBot.setEnabled(!testerBot.isEnabled());
+				if (EngineLogger.debugMode())
+					testerBot.setEnabled(!testerBot.isEnabled());
 				break;
 			case '.':
-				if (recorder.isRecording())
-					recorder.setRecording(false);
-				else
-					recorder.setRecording(true);
+				if (EngineLogger.debugMode()) {
+					if (recorder.isRecording())
+						recorder.setRecording(false);
+					else
+						recorder.setRecording(true);
+				}
 				break;
 			case ',':
-				if (recorder.isPlaying())
-					recorder.setPlaying(false);
-				else {
-					recorder.load();
-					recorder.setPlaying(true);
+				if (EngineLogger.debugMode()) {
+					if (recorder.isPlaying())
+						recorder.setPlaying(false);
+					else {
+						recorder.load();
+						recorder.setPlaying(true);
+					}
 				}
 				break;
 			case 'p':
@@ -280,7 +288,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 
 		@Override
-		public boolean scrolled(int amount) {		
+		public boolean scrolled(int amount) {
 			if (state == UIStates.SCENE_MODE || state == UIStates.INVENTORY_MODE) {
 
 				boolean fromDown = (inventoryUI.getInventoryPos() == InventoryPos.CENTER
@@ -378,7 +386,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		AssetState assetState = world.getAssetState();
 
 		if (world.getAssetState() != AssetState.LOADED) {
-			
+
 			resetUI();
 
 			if (assetState == AssetState.LOAD_ASSETS || assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
@@ -415,14 +423,14 @@ public class DefaultSceneScreen implements SceneScreen {
 			break;
 		case DIALOG_MODE:
 			stage.setScrollFocus(null);
-			
+
 			if (!world.hasDialogOptions())
 				setUIState(UIStates.SCENE_MODE);
 			else if (world.inCutMode())
 				setUIState(UIStates.CUT_MODE);
 			else
 				stage.setScrollFocus(dialogUI);
-			
+
 			break;
 		case INVENTORY_MODE:
 			if (!inventoryUI.isVisible())
@@ -474,7 +482,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			inventoryUI.screenToLocalCoordinates(unproject2Tmp);
 			currentActor = inventoryUI.getItemAt(unproject2Tmp.x, unproject2Tmp.y);
 			break;
-		case SCENE_MODE:		
+		case SCENE_MODE:
 
 			final float tolerance;
 
@@ -499,12 +507,11 @@ public class DefaultSceneScreen implements SceneScreen {
 
 				if (currentActor.getVerb("leave") != null) {
 					TextureRegion r = null;
-					
-					if(currentActor.getVerb("leave").getIcon() != null &&
-							(r = getUI().getSkin().getAtlas().findRegion(currentActor.getVerb("leave").getIcon())) != null
-							) {
+
+					if (currentActor.getVerb("leave").getIcon() != null && (r = getUI().getSkin().getAtlas()
+							.findRegion(currentActor.getVerb("leave").getIcon())) != null) {
 						pointer.setIcon(r);
-						
+
 					} else {
 						pointer.setLeaveIcon(calcLeaveArrowRotation(currentActor));
 					}
@@ -721,7 +728,7 @@ public class DefaultSceneScreen implements SceneScreen {
 				} else {
 					Drawable drawable = getUI().getSkin().getDrawable("hotspot");
 
-					if(drawable != null)
+					if (drawable != null)
 						drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size, size);
 				}
 			} else {
@@ -753,7 +760,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			viewport.setWorldSize(width, height);
 			viewport.update(width, height, true);
 		}
-		
+
 		resetUI();
 
 		pie.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
@@ -795,12 +802,12 @@ public class DefaultSceneScreen implements SceneScreen {
 
 			// DOUBLE CLICK: Fastwalk when leaving scene.
 			if (count > 1) {
-				if (count == 2 && fastLeave && !recorder.isRecording() &&
-						player != null && currentActor.getVerb(Verb.LEAVE_VERB) != null) {
+				if (count == 2 && fastLeave && !recorder.isRecording() && player != null
+						&& currentActor.getVerb(Verb.LEAVE_VERB) != null) {
 
 					player.fastWalk();
 				}
-				
+
 				return;
 			}
 
@@ -808,7 +815,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		} else if (player != null) {
 			if (count > 1)
 				return;
-			
+
 			if (s.getPlayer().getVerb("goto") != null) {
 				runVerb(s.getPlayer(), "goto", null);
 			} else {
@@ -891,7 +898,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 
 		pointer.reset();
-		inventoryUI.cancelDragging();	
+		inventoryUI.cancelDragging();
 
 		currentActor = null;
 	}
@@ -899,31 +906,31 @@ public class DefaultSceneScreen implements SceneScreen {
 	public InventoryUI getInventoryUI() {
 		return inventoryUI;
 	}
-	
+
 	public Actor getTextManagerUI() {
 		return textManagerUI;
 	}
-	
+
 	public Actor getDialogUI() {
 		return dialogUI;
 	}
-	
+
 	public void setTextManagerUI(Actor a) {
 		textManagerUI.remove();
 		textManagerUI = a;
 		stage.addActor(textManagerUI);
 	}
-	
+
 	public void setDialogUI(Actor a) {
 		dialogUI.remove();
 		dialogUI = a;
 		stage.addActor(dialogUI);
 	}
-	
+
 	public Stage getStage() {
 		return stage;
 	}
-	
+
 	public Button getMenuButton() {
 		return menuButton;
 	}
@@ -954,7 +961,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	public void hide() {
 		World.getInstance().pause();
 		resetUI();
-//		dispose();
+		// dispose();
 	}
 
 	@Override
@@ -965,7 +972,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	@Override
 	public void resume() {
 		World.getInstance().resume();
-		
+
 		// resets the error when continue
 		if (EngineLogger.lastError != null && EngineLogger.debugMode()) {
 			EngineLogger.lastError = null;
@@ -1003,13 +1010,13 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 
 		pie.setVisible(false);
-		
+
 		menuButton.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
 			}
 		});
-		
+
 		retrieveAssets(ui.getUIAtlas());
 
 		stage = new Stage(viewport);
