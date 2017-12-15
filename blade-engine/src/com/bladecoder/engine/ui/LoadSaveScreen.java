@@ -175,7 +175,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 		final PagedScrollPane scroll = new PagedScrollPane();
 		scroll.setFlingTime(0.1f);
-		scroll.setPageSpacing(25);
+		scroll.setPageSpacing(0);
 
 		Table slots = new Table().pad(pad);
 		slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2).top();

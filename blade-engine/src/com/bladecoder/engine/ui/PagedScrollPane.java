@@ -12,8 +12,6 @@ public class PagedScrollPane extends ScrollPane {
 
 	private boolean wasPanDragFling = false;
 
-//	private float pageSpacing;
-
 	private Table content;
 
 	public PagedScrollPane () {
@@ -39,7 +37,7 @@ public class PagedScrollPane extends ScrollPane {
 	private void setup() {
 		content = new Table();
 		content.defaults().space(50);
-		super.setWidget(content);		
+		super.setActor(content);		
 	}
 
 	public void addPages (Actor... pages) {
@@ -64,11 +62,6 @@ public class PagedScrollPane extends ScrollPane {
 			}
 		}
 	}
-
-//	@Override
-//	public void setWidget (Actor widget) {
-//		throw new UnsupportedOperationException("Use PagedScrollPane#addPage.");
-//	}
 	
 	@Override
 	public void setWidth (float width) {
