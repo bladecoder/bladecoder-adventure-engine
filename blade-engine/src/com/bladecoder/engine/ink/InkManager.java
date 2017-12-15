@@ -27,6 +27,7 @@ import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.ink.runtime.Choice;
 import com.bladecoder.ink.runtime.InkList;
+import com.bladecoder.ink.runtime.ListDefinition;
 import com.bladecoder.ink.runtime.Story;
 
 public class InkManager implements VerbRunner, Serializable {
@@ -39,10 +40,10 @@ public class InkManager implements VerbRunner, Serializable {
 	private ExternalFunctions externalFunctions;
 
 	private ActionCallback cb;
-	
+
 	// Depending on the reading order of Inventory, InkManager and Actor verbs,
 	// the verbCallbacks may not exist. So, we search the Cb lazily when needed.
-	private String sCb;	
+	private String sCb;
 
 	private ArrayList<Action> actions;
 
@@ -79,23 +80,39 @@ public class InkManager implements VerbRunner, Serializable {
 			EngineLogger.error("Cannot load Ink Story: " + storyName + " " + e.getMessage());
 		}
 	}
-	
+
 	public String getVariable(String name) {
 		return story.getVariablesState().get(name).toString();
 	}
-	
+
 	public boolean compareVariable(String name, String value) {
-		if(story.getVariablesState().get(name) instanceof InkList) {
-			return ((InkList)story.getVariablesState().get(name)).ContainsItemNamed(value);
+		if (story.getVariablesState().get(name) instanceof InkList) {
+			return ((InkList) story.getVariablesState().get(name)).ContainsItemNamed(value);
 		} else {
 			return story.getVariablesState().get(name).toString().equals(value);
 		}
 	}
-	
+
 	public void setVariable(String name, String value) throws Exception {
-		if(story.getVariablesState().get(name) instanceof InkList) {
-			((InkList)story.getVariablesState().get(name)).addItem(value);
-		} else 
+		if (story.getVariablesState().get(name) instanceof InkList) {
+
+			InkList rawList = (InkList) story.getVariablesState().get(name);
+
+			if (rawList.getOrigins() == null) {
+				List<String> names = rawList.getOriginNames();
+				if (names != null) {
+					ArrayList<ListDefinition> origins = new ArrayList<ListDefinition>();
+					for (String n : names) {
+						ListDefinition def = story.getListDefinitions().getDefinition(n);
+						if (!origins.contains(def))
+							origins.add(def);
+					}
+					rawList.setOrigins(origins);
+				}
+			}
+
+			rawList.addItem(value);
+		} else
 			story.getVariablesState().set(name, value);
 	}
 
@@ -113,7 +130,7 @@ public class InkManager implements VerbRunner, Serializable {
 				// Remove trailing '\n'
 				if (!line.isEmpty())
 					line = line.substring(0, line.length() - 1);
-				
+
 				if (!line.isEmpty()) {
 					EngineLogger.debug("INK LINE: " + line);
 
@@ -131,8 +148,8 @@ public class InkManager implements VerbRunner, Serializable {
 			} catch (Exception e) {
 				EngineLogger.error(e.getMessage(), e);
 			}
-			
-			if(story.getCurrentErrors() != null && !story.getCurrentErrors().isEmpty()) {
+
+			if (story.getCurrentErrors() != null && !story.getCurrentErrors().isEmpty()) {
 				EngineLogger.error(story.getCurrentErrors().get(0));
 			}
 
@@ -149,7 +166,7 @@ public class InkManager implements VerbRunner, Serializable {
 				if (cb == null) {
 					cb = ActionCallbackSerialization.find(sCb);
 				}
-				
+
 				ActionCallbackQueue.add(cb);
 			}
 		}
@@ -162,11 +179,11 @@ public class InkManager implements VerbRunner, Serializable {
 			String value;
 
 			int i = t.indexOf(NAME_VALUE_TAG_SEPARATOR);
-			
+
 			// support ':' and '=' as param separator
-			if(i == -1)
+			if (i == -1)
 				i = t.indexOf(NAME_VALUE_PARAM_SEPARATOR);
-			
+
 			if (i != -1) {
 				key = t.substring(0, i).trim();
 				value = t.substring(i + 1, t.length()).trim();
@@ -201,7 +218,7 @@ public class InkManager implements VerbRunner, Serializable {
 		} else if ("set".equals(commandName)) {
 			World.getInstance().setModelProp(params.get("prop"), params.get("value"));
 		} else {
-			
+
 			// for backward compatibility
 			if ("action".equals(commandName)) {
 				commandName = commandParams[0].trim();
