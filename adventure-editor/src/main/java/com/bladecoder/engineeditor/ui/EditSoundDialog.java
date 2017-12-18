@@ -44,6 +44,7 @@ public class EditSoundDialog extends EditModelDialog<World, SoundDesc> {
 	private InputPanel loop;
 	private InputPanel volume;
 	private InputPanel pan;
+	private InputPanel pitch;
 	private InputPanel preload;
 	
 	private Sound s = null;
@@ -58,14 +59,17 @@ public class EditSoundDialog extends EditModelDialog<World, SoundDesc> {
 		volume = InputPanelFactory.createInputPanel(skin, "Volume", "Select the volume between 0 and 1",
 				Param.Type.FLOAT, true, "1.0");
 		pan = InputPanelFactory.createInputPanel(skin, "Pan",
-				"panning in the range -1 (full left) to 1 (full right). 0 is center position", Param.Type.FLOAT, true,
+				"Panning in the range -1 (full left) to 1 (full right). 0 is center position", Param.Type.FLOAT, true,
 				"0.0");
+		pitch = InputPanelFactory.createInputPanel(skin, "Pitch",
+				"The pitch multiplier, 1 == default, >1 == faster, <1 == slower, the value has to be between 0.5 and 2.0", Param.Type.FLOAT, true,
+				"1.0");
 		preload = InputPanelFactory.createInputPanel(skin, "Preload", "True if the sound has to be loaded when the scene is loaded.", Param.Type.BOOLEAN,
 				true, "true");
 
 		setInfo("Actors can have a list of sounds that can be associated to Sprites or played with the 'sound' action");
 
-		init(parent, e, new InputPanel[] { id, filename, loop, volume, pan, preload });
+		init(parent, e, new InputPanel[] { id, filename, loop, volume, pan, pitch, preload });
 
 		TextButton playButton = new TextButton("Play", skin, "no-toggled");
 
@@ -79,7 +83,7 @@ public class EditSoundDialog extends EditModelDialog<World, SoundDesc> {
 				
 				s = Gdx.audio.newSound(new FileHandle(Ctx.project.getAssetPath() + Project.SOUND_PATH + "/" + filename.getText()));
 				
-				s.play(Float.parseFloat(volume.getText()), 1, Float.parseFloat(pan.getText()));
+				s.play(Float.parseFloat(volume.getText()), Float.parseFloat(pitch.getText()), Float.parseFloat(pan.getText()));
 
 			}
 		});
@@ -109,6 +113,7 @@ public class EditSoundDialog extends EditModelDialog<World, SoundDesc> {
 		e.setLoop(Boolean.parseBoolean(loop.getText()));
 		e.setVolume(Float.parseFloat(volume.getText()));
 		e.setPan(Float.parseFloat(pan.getText()));
+		e.setPitch(Float.parseFloat(pitch.getText()));
 		e.setPreload(Boolean.parseBoolean(preload.getText()));
 
 		parent.getSounds().put(e.getId(), e);
@@ -123,6 +128,7 @@ public class EditSoundDialog extends EditModelDialog<World, SoundDesc> {
 		loop.setText(Boolean.toString(e.getLoop()));
 		volume.setText(Float.toString(e.getVolume()));
 		pan.setText(Float.toString(e.getPan()));
+		pitch.setText(Float.toString(e.getPitch()));
 		preload.setText(Boolean.toString(e.isPreload()));
 	}
 	
