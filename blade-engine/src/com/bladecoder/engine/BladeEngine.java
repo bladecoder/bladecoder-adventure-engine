@@ -234,6 +234,7 @@ public class BladeEngine implements ApplicationListener {
 	@Override
 	public void resume() {
 		EngineLogger.debug("GAME RESUME");
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		ui.resume();
 	}
 
