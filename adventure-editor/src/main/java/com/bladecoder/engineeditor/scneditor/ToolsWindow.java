@@ -381,7 +381,7 @@ public class ToolsWindow extends Container<Table> {
 				Message.showMsg(stage, "Running scene on Android device...", 5);
 
 				if (!RunProccess.runGradle(Ctx.project.getProjectDir(),
-						"android:uninstallDebug android:installDebug android:run")) {
+						"android:uninstallFullDebug android:installFullDebug android:run")) {
 					Message.showMsg(stage, "There was a problem running the project", 4);
 				}
 
