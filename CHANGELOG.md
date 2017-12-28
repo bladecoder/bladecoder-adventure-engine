@@ -2,6 +2,26 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.5]
+- Added Spine's skins support.
+- Choose the best matching 'use' verb when target and inventory actor have it.
+- Added pitch parameter to sounds.
+- Updated libgdx to v1.9.8.
+- Special keys (testerbot, record, play, etc) only enabled in debug mode.
+- Delete red tint in hotspots.
+- Added sound input panel.
+- FIX: Error in walking path calculation.
+- FIX: running test scene in android.
+- FIX: bad viewport configuration when pausing and restore the qqqgame when screen in 4:3.
+- FIX: bug when setting ink property if it doesn't exists after load game.
+- FIX: getCurrentTarget() in RunVerbAction.
+- FIX: sound list reload when changing chapters.
+- FIX: main class detection in desktop packaging.
+- FIX: error reading Cb from InkManager.
+- FIX: particles and bboxfromrenderer for resolutions other than 1.
+- 
+
+
 ## [1.3.4]
 - Added currentTarget to verbs.
 - Null checks in SoundManager before pause/resume sounds.
