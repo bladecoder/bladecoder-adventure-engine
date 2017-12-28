@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.util;
 
+import com.badlogic.gdx.math.GeometryUtils;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
@@ -254,7 +255,7 @@ public class PolygonUtils {
 		return obstacle?!result:result;
 	}
 
-	private static float TOLERANCE_LINE_SEGMENTS_CROSS = 0.1f;
+	private static float TOLERANCE_LINE_SEGMENTS_CROSS = 0.01f;
 	
 	public static boolean lineSegmentsCross(float ax, float ay, float bx,
 			float by, float cx, float cy, float dx, float dy) {
@@ -276,5 +277,19 @@ public class PolygonUtils {
 		float s = numerator2 / denominator;
 
 		return (r > TOLERANCE_LINE_SEGMENTS_CROSS && r < 1 - TOLERANCE_LINE_SEGMENTS_CROSS) && (s > TOLERANCE_LINE_SEGMENTS_CROSS && s < 1 - TOLERANCE_LINE_SEGMENTS_CROSS);
+	}
+	
+	static public void ensureClockWise (float[] polygon, int offset, int count) {
+		if (GeometryUtils.isClockwise(polygon, offset, count)) return;
+		int lastX = offset + count - 2;
+		for (int i = offset, n = offset + count / 2; i < n; i += 2) {
+			int other = lastX - i;
+			float x = polygon[i];
+			float y = polygon[i + 1];
+			polygon[i] = polygon[other];
+			polygon[i + 1] = polygon[other + 1];
+			polygon[other] = x;
+			polygon[other + 1] = y;
+		}
 	}
 }

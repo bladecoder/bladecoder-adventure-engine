@@ -320,8 +320,12 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 
 	@Override
 	public void write(Json json) {
+		PolygonUtils.ensureClockWise(walkZone.getVertices(), 0, walkZone.getVertices().length);
+		walkZone.dirty();
+		
 		Polygon p = new Polygon(walkZone.getVertices());
 		p.setPosition(walkZone.getX() / walkZone.getScaleX(), walkZone.getY() / walkZone.getScaleY());
+		
 		json.writeValue("walkZone", p);
 	}
 

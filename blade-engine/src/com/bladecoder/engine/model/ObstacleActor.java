@@ -15,6 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engine.model;
 
+import com.badlogic.gdx.utils.Json;
+import com.bladecoder.engine.util.PolygonUtils;
+import com.bladecoder.engine.util.SerializationHelper;
+import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 /**
  * An Obstacle actor is used to restrict the walk zone in the scene
@@ -50,5 +54,15 @@ public class ObstacleActor extends BaseActor {
 		if(inNavGraph) {
 			scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
 		}
+	}
+	
+	@Override
+	public void write(Json json) {
+		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+			PolygonUtils.ensureClockWise(bbox.getVertices(), 0, bbox.getVertices().length);
+			bbox.dirty();			
+		}
+		
+		super.write(json);
 	}
 }
