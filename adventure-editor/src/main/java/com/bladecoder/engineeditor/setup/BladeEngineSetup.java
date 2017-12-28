@@ -352,6 +352,8 @@ public class BladeEngineSetup {
 		project.files.add(new ProjectFile("ios/data/Default-375w-667h@2x.png", false));
 		project.files.add(new ProjectFile("ios/data/Default-414w-736h@3x.png", false));
 		project.files.add(new ProjectFile("ios/data/Default-1024w-1366h@2x~ipad.png", false));
+		project.files.add(new ProjectFile("ios/data/Default-375w-812h@3x.png", false));
+
 
 		project.files.add(new ProjectFile("ios/data/Media.xcassets/Contents.json", false));
 		project.files
