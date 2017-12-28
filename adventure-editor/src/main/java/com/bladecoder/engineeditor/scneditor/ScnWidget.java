@@ -197,6 +197,9 @@ public class ScnWidget extends Widget {
 				|| Gdx.input.isKeyPressed(Keys.RIGHT)) {
 
 			BaseActor selActor = getSelectedActor();
+			
+			if(selActor == null)
+				return;
 
 			if (Gdx.input.isKeyPressed(Keys.UP))
 				// p.translate(0, 1);
