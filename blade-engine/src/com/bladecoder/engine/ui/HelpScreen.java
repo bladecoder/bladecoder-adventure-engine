@@ -28,7 +28,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
@@ -50,7 +50,11 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 	private UI ui;
 
 	private String localeFilename;
-	private final Viewport viewport = new ScreenViewport();
+	private final Viewport viewport;
+	
+	public HelpScreen() {
+		viewport= new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getWidth() * 9f/16f);
+	}
 
 	private final InputProcessor inputProcessor = new InputAdapter() {
 		@Override
@@ -89,6 +93,14 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 
 	@Override
 	public void resize(int width, int height) {
+		
+		float aspect = width / height;
+		
+		if(aspect < 16f/9f)
+			viewport.setWorldSize(width, (int)(width * 9f/16f));
+		else
+			viewport.setWorldSize((int)(height * 16f/9f), height);
+		
 		viewport.update(width, height, true);
 	}
 

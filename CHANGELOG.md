@@ -19,8 +19,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - FIX: main class detection in desktop packaging.
 - FIX: error reading Cb from InkManager.
 - FIX: particles and bboxfromrenderer for resolutions other than 1.
-- 
-
 
 ## [1.3.4]
 - Added currentTarget to verbs.
