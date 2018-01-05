@@ -515,6 +515,8 @@ public class Scene implements Serializable, AssetConsumer {
 	@Override
 	public void loadAssets() {
 
+		soundManager.loadAssets();
+		
 		if (backgroundAtlas != null && !backgroundAtlas.isEmpty()) {
 			EngineAssetManager.getInstance().loadAtlas(backgroundAtlas);
 		}
@@ -528,8 +530,6 @@ public class Scene implements Serializable, AssetConsumer {
 		if (polygonalNavGraph != null) {
 			polygonalNavGraph.createInitialGraph(actors.values());
 		}
-		
-		soundManager.loadAssets();
 	}
 
 	@Override
