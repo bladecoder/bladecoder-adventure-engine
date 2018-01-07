@@ -34,21 +34,35 @@ public class I18N {
 
 	public static void loadChapter(String i18nChapterFilename) {
 		try {
-			i18nChapter = ResourceBundle.getBundle(i18nChapterFilename, locale, new I18NControl(ENCODING));
+			i18nChapter = getBundle(i18nChapterFilename, false);
 			I18N.i18nChapterFilename = i18nChapterFilename;
 		} catch (Exception e) {
-			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nChapter);
+			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nChapterFilename);
 		}
 	}
 
 	public static void loadWorld(String i18nWorldFilename) {
 		try {
-			ResourceBundle.clearCache();
-			i18nWorld = ResourceBundle.getBundle(i18nWorldFilename, locale, new I18NControl(ENCODING));
+			i18nWorld = getBundle(i18nWorldFilename, true);
 			I18N.i18nWorldFilename = i18nWorldFilename;
 		} catch (Exception e) {
-			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nWorld);
+			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nWorldFilename);
 		}
+	}
+	
+	public static ResourceBundle getBundle(String filename, boolean clearCache) {
+		ResourceBundle rb = null;
+		
+		try {
+			if(clearCache)
+				ResourceBundle.clearCache();
+			
+			rb = ResourceBundle.getBundle(filename, locale, new I18NControl(ENCODING));
+		} catch (Exception e) {
+			EngineLogger.error("ERROR LOADING BUNDLE: " + filename);
+		}
+		
+		return rb;
 	}
 
 	public static void setLocale(Locale l) {

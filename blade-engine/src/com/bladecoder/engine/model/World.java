@@ -63,7 +63,6 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
-import com.bladecoder.ink.runtime.Choice;
 
 public class World implements Serializable, AssetConsumer {
 
@@ -516,7 +515,7 @@ public class World implements Serializable, AssetConsumer {
 
 	public void selectDialogOption(int i) {
 		if (currentDialog != null)
-			setCurrentDialog(currentDialog.selectOption(currentDialog.getVisibleOptions().get(i)));
+			setCurrentDialog(currentDialog.selectOption(i));
 		else if (inkManager != null)
 			World.getInstance().getInkManager().selectChoice(i);
 	}
@@ -524,28 +523,10 @@ public class World implements Serializable, AssetConsumer {
 	public List<String> getDialogOptions() {
 		List<String> choices;
 
-		if (World.getInstance().getCurrentDialog() != null) {
-			ArrayList<DialogOption> options = World.getInstance().getCurrentDialog().getVisibleOptions();
-			choices = new ArrayList<String>(options.size());
-
-			for (DialogOption o : options) {
-				choices.add(o.getText());
-			}
+		if (getCurrentDialog() != null) {
+			choices = getCurrentDialog().getChoices();
 		} else {
-			List<Choice> options = World.getInstance().getInkManager().getChoices();
-			choices = new ArrayList<String>(options.size());
-
-			for (Choice o : options) {
-				String line = o.getText();
-
-				int idx = line.indexOf(InkManager.COMMAND_MARK);
-
-				if (idx != -1) {
-					line = line.substring(idx + 1).trim();
-				}
-
-				choices.add(line);
-			}
+			choices = getInkManager().getChoices();
 		}
 
 		return choices;

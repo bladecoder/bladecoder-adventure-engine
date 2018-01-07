@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.common;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -26,12 +25,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.qa.QA;
-import com.strongjoshua.console.CommandExecutor;
 import com.strongjoshua.console.Console;
 import com.strongjoshua.console.LogLevel;
 

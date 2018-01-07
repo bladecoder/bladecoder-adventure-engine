@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
@@ -19,6 +20,7 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Text.Type;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -35,6 +37,8 @@ public class InkManager implements VerbRunner, Serializable {
 	public final static char NAME_VALUE_PARAM_SEPARATOR = '=';
 	private final static String PARAM_SEPARATOR = ",";
 	public final static char COMMAND_MARK = '>';
+
+	private static ResourceBundle i18n;
 
 	private Story story = null;
 	private ExternalFunctions externalFunctions;
@@ -76,9 +80,41 @@ public class InkManager implements VerbRunner, Serializable {
 			EngineLogger.debug("INK STORY LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 
 			this.storyName = storyName;
+
+			loadI18NBundle();
 		} catch (Exception e) {
 			EngineLogger.error("Cannot load Ink Story: " + storyName + " " + e.getMessage());
 		}
+	}
+
+	public void loadI18NBundle() {
+		if (storyName != null && EngineAssetManager.getInstance().getModelFile(storyName + "-ink.properties").exists())
+			i18n = I18N.getBundle(EngineAssetManager.MODEL_DIR + storyName + "-ink", true);
+	}
+
+	public String translateLine(String line) {
+		if (line.charAt(0) == I18N.PREFIX) {
+			String key = line.substring(1);
+
+			
+			// In ink, several keys can be included in the same line.
+			String[] keys = key.split("@");
+
+			String translated = "";
+			
+			for (String k : keys) {
+				try {
+					translated += i18n.getString(k);
+				} catch (Exception e) {
+					EngineLogger.error("MISSING TRANSLATION KEY: " + key);
+					return key;
+				}
+			}
+			
+			return translated;
+		}
+
+		return line;
 	}
 
 	public String getVariable(String name) {
@@ -269,7 +305,7 @@ public class InkManager implements VerbRunner, Serializable {
 			params.put("type", Type.SUBTITLE.toString());
 		}
 
-		params.put("text", line);
+		params.put("text", translateLine(line));
 
 		try {
 			if (!params.containsKey("actor")) {
@@ -329,8 +365,24 @@ public class InkManager implements VerbRunner, Serializable {
 		return (story != null && actions.size() == 0 && story.getCurrentChoices().size() > 0);
 	}
 
-	public List<Choice> getChoices() {
-		return story.getCurrentChoices();
+	public List<String> getChoices() {
+
+		List<Choice> options = story.getCurrentChoices();
+		List<String> choices = new ArrayList<String>(options.size());
+
+		for (Choice o : options) {
+			String line = o.getText();
+
+			int idx = line.indexOf(InkManager.COMMAND_MARK);
+
+			if (idx != -1) {
+				line = line.substring(idx + 1).trim();
+			}
+
+			choices.add(translateLine(line));
+		}
+
+		return choices;
 	}
 
 	private String getJsonString(InputStream is) throws IOException {

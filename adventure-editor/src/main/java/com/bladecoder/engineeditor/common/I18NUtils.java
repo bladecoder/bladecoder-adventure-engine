@@ -161,7 +161,7 @@ public class I18NUtils {
 
 					String i18nFilename;
 
-					if (i == 0) {
+					if (langs[i + 1].equals(defaultLocale)) {
 						i18nFilename = modelPath + "/" + chapterId + PROPERTIES_EXT;
 					} else {
 						i18nFilename = modelPath + "/" + chapterId + "_" + langs[i + 1] + PROPERTIES_EXT;

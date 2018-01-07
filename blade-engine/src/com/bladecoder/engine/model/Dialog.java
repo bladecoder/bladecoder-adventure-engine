@@ -16,6 +16,7 @@
 package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
@@ -48,6 +49,24 @@ public class Dialog implements Serializable {
 
 	public void setActor(String actor) {
 		this.actor = actor;
+	}
+	
+	public Dialog selectOption(int i) {
+		return selectOption(getVisibleOptions().get(i));
+	}
+	
+	/**
+	 * @return The current visible options.
+	 */
+	public List<String> getChoices() {
+		ArrayList<DialogOption> options = getVisibleOptions();
+		List<String> choices = new ArrayList<String>(options.size());
+
+		for (DialogOption o : options) {
+			choices.add(o.getText());
+		}
+		
+		return choices;
 	}
 
 	public Dialog selectOption(DialogOption o) {
@@ -88,7 +107,7 @@ public class Dialog implements Serializable {
 		return options;
 	}
 
-	public ArrayList<DialogOption> getVisibleOptions() {
+	private ArrayList<DialogOption> getVisibleOptions() {
 		ArrayList<DialogOption> visible = new ArrayList<DialogOption>();
 
 		for (DialogOption o : options) {

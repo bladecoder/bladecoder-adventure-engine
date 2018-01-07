@@ -51,24 +51,40 @@ public class EditorCommandExecutor extends CommandExecutor {
 		ModelTools.printUnusedSounds();
 		EditorLogger.msg("PROCCESS FINISHED.");
 	}
-	
+
 	public void compareI18N(String lang) {
 		try {
-			I18NUtils.compare(Ctx.project.getAssetPath() + Project.MODEL_PATH, Ctx.project.getChapter().getId(), null, lang);
+			I18NUtils.compare(Ctx.project.getAssetPath() + Project.MODEL_PATH, Ctx.project.getChapter().getId(), null,
+					lang);
 		} catch (IOException e) {
 			EditorLogger.printStackTrace(e);
 		}
-		
+
 		EditorLogger.msg("PROCCESS FINISHED.");
 	}
-	
-	public void extractInkTexts(String story) {
+
+	public void extractInkTexts(String story, String lang) {
 		try {
-			ModelTools.extractInkTexts(story);
+			ModelTools.extractInkTexts(story, lang);
 		} catch (Exception e) {
 			EditorLogger.printStackTrace(e);
 		}
-		
+
+		EditorLogger.msg("PROCCESS FINISHED.");
+	}
+
+	public void importInkTSV(String tsvFile, String storyName) {
+		try {
+			I18NUtils.importTSV(Ctx.project.getAssetPath() + Project.MODEL_PATH, tsvFile,
+					storyName + "-ink", "default");
+
+			EditorLogger.msg( tsvFile + " imported sucessfully.");
+
+		} catch (IOException e) {
+			EditorLogger.error( "There was a problem importing the .tsv file.");
+			EditorLogger.printStackTrace(e);
+		}
+
 		EditorLogger.msg("PROCCESS FINISHED.");
 	}
 }
