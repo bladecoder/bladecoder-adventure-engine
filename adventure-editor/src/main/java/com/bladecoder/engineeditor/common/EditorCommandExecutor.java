@@ -1,5 +1,7 @@
 package com.bladecoder.engineeditor.common;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 
 import com.bladecoder.engine.model.World;
@@ -51,12 +53,32 @@ public class EditorCommandExecutor extends CommandExecutor {
 		ModelTools.printUnusedSounds();
 		EditorLogger.msg("PROCCESS FINISHED.");
 	}
-
-	public void compareI18N(String lang) {
+	
+	public void checkI18N() {
 		try {
-			I18NUtils.compare(Ctx.project.getAssetPath() + Project.MODEL_PATH, Ctx.project.getChapter().getId(), null,
+			EditorLogger.msg("Check for MODEL missing keys in default translation file for current chapter.");
+			ModelTools.checkI18NMissingKeys();
+			
+			String[] files = new File(Ctx.project.getAssetPath() + Project.MODEL_PATH).list(new FilenameFilter() {
+				@Override
+				public boolean accept(File arg0, String arg1) {
+
+					if (arg1.contains("_") && arg1.endsWith(".properties"))
+						return true;
+
+					return false;
+				}
+			});
+			
+			for(String f: files) {
+				int idx = f.indexOf('_');
+				String base = f.substring(0, idx);
+				String lang = f.substring(idx + 1, idx + 3);
+				EditorLogger.msg("Checking " + base + " LANG: " + lang);
+				I18NUtils.compare(Ctx.project.getAssetPath() + Project.MODEL_PATH, base, null,
 					lang);
-		} catch (IOException e) {
+			}
+		} catch (Exception e) {
 			EditorLogger.printStackTrace(e);
 		}
 

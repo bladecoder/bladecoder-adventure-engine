@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 
@@ -58,6 +57,7 @@ import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.NewOrderedProperties.OrderedPropertiesBuilder;
 import com.bladecoder.engineeditor.model.Project;
 
 public class ModelTools {
@@ -452,7 +452,9 @@ public class ModelTools {
 
 		StringBuilder tsvString = new StringBuilder();
 		
-		Properties prop = new Properties();
+		OrderedPropertiesBuilder builder = new OrderedPropertiesBuilder();
+		builder.withSuppressDateInComment(true);
+		NewOrderedProperties prop = builder.build();
 
 		extractInkTextsInternal(root, tsvString, prop);
 		FileUtils.writeStringToFile(new File(file + ".tsv"), tsvString.toString());
@@ -482,7 +484,7 @@ public class ModelTools {
 		//Ctx.project.setModified();
 	}
 
-	private static void extractInkTextsInternal(JsonValue v, StringBuilder sb, Properties prop) {
+	private static void extractInkTextsInternal(JsonValue v, StringBuilder sb, NewOrderedProperties prop) {
 		if (v.isArray() || v.isObject()) {
 			for (int i = 0; i < v.size; i++) {
 				JsonValue aValue = v.get(i);
