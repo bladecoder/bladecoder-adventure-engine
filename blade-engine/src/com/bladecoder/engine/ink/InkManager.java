@@ -466,6 +466,10 @@ public class InkManager implements VerbRunner, Serializable {
 	@Override
 	public void write(Json json) {
 		json.writeValue("wasInCutmode", wasInCutmode);
+		
+		if(cb == null && sCb != null)
+			cb = ActionCallbackSerialization.find(sCb);
+			
 		json.writeValue("cb", ActionCallbackSerialization.find(cb));
 
 		// SAVE ACTIONS
