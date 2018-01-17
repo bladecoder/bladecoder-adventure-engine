@@ -32,8 +32,13 @@ public class MusicManager implements Serializable, AssetConsumer {
 
 	public void playMusic() {
 		if (music != null && !music.isPlaying()) {
-			music.play();
-			music.setLooping(desc.isLoop());
+			
+			try {
+				music.play();
+				music.setLooping(desc.isLoop());
+			} catch(Exception e) {
+				EngineLogger.error("Error Playing music: " + desc.getFilename());
+			}
 		}
 	}
 
