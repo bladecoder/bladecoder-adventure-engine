@@ -95,11 +95,12 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 	public void resize(int width, int height) {
 		
 		float aspect = width / height;
+		float bgAspect = (float)tex.getWidth() / (float)tex.getHeight();
 		
-		if(aspect < 16f/9f)
-			viewport.setWorldSize(width, (int)(width * 9f/16f));
+		if(aspect < bgAspect)
+			viewport.setWorldSize(width, (int)(width / bgAspect));
 		else
-			viewport.setWorldSize((int)(height * 16f/9f), height);
+			viewport.setWorldSize((int)(height * bgAspect), height);
 		
 		viewport.update(width, height, true);
 	}
