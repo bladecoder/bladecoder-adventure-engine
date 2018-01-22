@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0]
+
+- HelpScreen doesn't stretch in 4:3 aspect ratio.
+- InkManager translation files support.
+- Import ink texts in order. Better I18N checks.
+- Add music volume fade support in MusicVolume action.
+- VoiceManager doesn't hide texts, now waits to the calc time.
+- FIX: bug when saving ink cb.
+
 ## [1.3.5]
 - Added Spine's skins support.
 - Choose the best matching 'use' verb when target and inventory actor have it.
