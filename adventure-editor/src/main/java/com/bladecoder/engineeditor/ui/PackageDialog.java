@@ -80,6 +80,8 @@ public class PackageDialog extends EditDialog {
 
 	private InputPanel iosSignIdentity;
 	private InputPanel iosProvisioningProfile;
+	
+	private InputPanel customBuildParameters;
 
 	private InputPanel[] options;
 
@@ -147,10 +149,13 @@ public class PackageDialog extends EditDialog {
 
 		iosProvisioningProfile = InputPanelFactory.createInputPanel(skin, "Provisioning Profile",
 				"Empty for auto select.", false);
+		
+		customBuildParameters = InputPanelFactory.createInputPanel(skin, "Custom build parameters",
+				"You can add extra build parameters for customized build scripts.", false);
 
 		options = new InputPanel[] { type, os, linux64JRE, linux32JRE, winJRE, winJRE64, osxJRE, version, icon,
 				versionCode, androidSDK, expansionFile, androidKeyStore, androidKeyAlias, iosSignIdentity,
-				iosProvisioningProfile };
+				iosProvisioningProfile, customBuildParameters };
 
 		addInputPanel(arch);
 		addInputPanel(dir);
@@ -281,12 +286,14 @@ public class PackageDialog extends EditDialog {
 
 		String versionParam = "-Pversion=" + version.getText() + " ";
 		Ctx.project.getProjectConfig().setProperty(Config.VERSION_PROP, version.getText());
+		
+		String customBuildParams = customBuildParameters.getText() == null? "": customBuildParameters.getText() + " ";
 
 		if (arch.getText().equals("desktop")) {
 			String jarDir = Ctx.project.getProjectDir().getAbsolutePath() + "/desktop/build/libs/";
 			String jarName = projectName + "-desktop-" + version.getText() + ".jar";
 
-			String error = genDesktopJar(projectName, versionParam, jarDir, jarName);
+			String error = genDesktopJar(projectName, versionParam, jarDir, jarName, customBuildParams);
 
 			if (error != null)
 				msg = error;
@@ -319,7 +326,7 @@ public class PackageDialog extends EditDialog {
 				}
 			}
 		} else if (arch.getText().equals("android")) {
-			String params = versionParam + "-PversionCode=" + versionCode.getText() + " " + "-Pkeystore="
+			String params = versionParam + customBuildParams + "-PversionCode=" + versionCode.getText() + " " + "-Pkeystore="
 					+ androidKeyStore.getText() + " " + "-PstorePassword=" + androidKeyStorePassword.getText() + " "
 					+ "-Palias=" + androidKeyAlias.getText() + " " + "-PkeyPassword="
 					+ androidKeyAliasPassword.getText() + " ";
@@ -392,6 +399,9 @@ public class PackageDialog extends EditDialog {
 
 			if (iosProvisioningProfile.getText() != null)
 				params.add("-Probovm.iosProvisioningProfile=" + iosProvisioningProfile.getText());
+			
+			if (customBuildParameters.getText() != null)
+				params.add(customBuildParams);
 
 			// Add clean target in IOS because the app. is not signing well if not cleaning.
 			params.add("ios:clean");
@@ -439,6 +449,8 @@ public class PackageDialog extends EditDialog {
 			setVisible(iosSignIdentity, true);
 			setVisible(iosProvisioningProfile, true);
 		}
+		
+		setVisible(customBuildParameters, true);
 	}
 
 	private void typeChanged() {
@@ -545,11 +557,11 @@ public class PackageDialog extends EditDialog {
 		return ok;
 	}
 
-	private String genDesktopJar(String projectName, String versionParam, String jarDir, String jarName)
+	private String genDesktopJar(String projectName, String versionParam, String jarDir, String jarName, String customBuildParams)
 			throws IOException {
 		String msg = null;
 
-		if (RunProccess.runGradle(Ctx.project.getProjectDir(), versionParam + "desktop:dist")) {
+		if (RunProccess.runGradle(Ctx.project.getProjectDir(), versionParam + customBuildParams + "desktop:dist")) {
 			File f = new File(jarDir + jarName);
 			FileUtils.copyFileToDirectory(f, new File(dir.getText()));
 
