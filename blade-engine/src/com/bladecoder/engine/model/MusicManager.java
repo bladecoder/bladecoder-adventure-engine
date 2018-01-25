@@ -36,6 +36,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 			try {
 				music.play();
 				music.setLooping(desc.isLoop());
+				music.setVolume(desc.getVolume());
 			} catch(Exception e) {
 				EngineLogger.error("Error Playing music: " + desc.getFilename(), e);
 			}
@@ -176,9 +177,6 @@ public class MusicManager implements Serializable, AssetConsumer {
 			EngineLogger.debug("RETRIEVING MUSIC: " + desc.getFilename());
 
 			music = EngineAssetManager.getInstance().getMusic(desc.getFilename());
-
-			if (music != null)
-				music.setVolume(desc.getVolume());
 
 			if (isPlayingSer) {
 				playMusic();

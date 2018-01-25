@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.1]
+
+- FIX: Capture random music error on desktop in credit screen.
+
 ## [2.0.0]
 
 - HelpScreen doesn't stretch in 4:3 aspect ratio.

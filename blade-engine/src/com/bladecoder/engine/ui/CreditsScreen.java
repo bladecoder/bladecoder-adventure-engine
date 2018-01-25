@@ -192,7 +192,13 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 		String sound = EngineAssetManager.getInstance().checkIOSSoundName("music/" + s);
 
 		music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset(sound));
-		music.play();
+		
+		try {
+			music.play();
+		} catch(Exception e) {
+			// sometimes the play method fails on desktop.
+			EngineLogger.error("Error Playing music: " + s, e);
+		}
 	}
 
 	private float processCreditDefault(SpriteBatch batch, int width, int height, float y, int i, String s) {
