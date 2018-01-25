@@ -525,7 +525,7 @@ public class Project extends PropertyChange {
 	}
 
 	public Properties getGradleProperties() throws FileNotFoundException, IOException {
-		Properties prop = new Properties();
+		Properties prop = new OrderedProperties();
 
 		prop.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties"));
 
