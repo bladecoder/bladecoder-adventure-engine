@@ -167,6 +167,7 @@ public class TextManager implements Serializable {
 		inScreenTime = 0;
 		fifo.clear();
 		currentText = null;
+		voiceManager.stop();
 	}
 
 	@Override
