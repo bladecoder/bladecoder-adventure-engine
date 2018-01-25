@@ -129,9 +129,14 @@ public class ImageUtils {
 	
 		EditorLogger.debug("SCALING: " + orgAtlas.getName());
 		unpackAtlas(orgAtlas, tmpDir);
+		
+		String atlasParentPath = orgAtlas.getParentFile().getAbsolutePath();
+		TextureAtlasData atlasData = new TextureAtlasData(new FileHandle(orgAtlas), new FileHandle(atlasParentPath), false);
+		
+		String outputFormat = atlasData.getPages().get(0).textureFile.extension();
 
 		createAtlas(tmpDir.getAbsolutePath(), destDir.getAbsolutePath(), orgAtlas.getName(), scale,
-				TextureFilter.Linear, TextureFilter.Linear);
+				atlasData.getPages().get(0).minFilter, atlasData.getPages().get(0).magFilter, outputFormat);
 
 		DesktopUtils.removeDir(tmpDir.getAbsolutePath());
 	}
@@ -161,7 +166,7 @@ public class ImageUtils {
 	}
 
 	public static void createAtlas(String inDir, String outdir, String name, float scale, TextureFilter filterMin,
-			TextureFilter filterMag) throws IOException {
+			TextureFilter filterMag, String outputFormat) throws IOException {
 		Settings settings = new Settings();
 
 		settings.pot = false;
@@ -182,7 +187,7 @@ public class ImageUtils {
 		settings.wrapY = Texture.TextureWrap.ClampToEdge;
 		settings.format = Format.RGBA8888;
 		settings.alias = true;
-		settings.outputFormat = "png";
+		settings.outputFormat = outputFormat;
 		settings.jpegQuality = 0.9f;
 		settings.ignoreBlankImages = true;
 		settings.fast = false;

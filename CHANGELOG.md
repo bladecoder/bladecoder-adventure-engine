@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.0.1]
 
+- Added option to the create atlas dialog to allow generating .jpg atlases.
+- Added build script custom parameter input box in the package dialog.
 - FIX: Capture random music error on desktop in credit screen.
 
 ## [2.0.0]

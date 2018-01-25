@@ -228,7 +228,7 @@ public class ToolsWindow extends Container<Table> {
 					try {
 						ImageUtils.createAtlas(files.get(0).file().getAbsolutePath(),
 								Ctx.project.getAssetPath() + Project.UI_PATH + "/" + r, "ui" + ".atlas", scale,
-								TextureFilter.Linear, TextureFilter.Nearest);
+								TextureFilter.Linear, TextureFilter.Nearest, "png");
 					} catch (IOException e) {
 						EditorLogger.error(e.getMessage());
 						Message.showMsgDialog(getStage(), "Error creating atlas", e.getMessage());

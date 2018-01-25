@@ -36,37 +36,41 @@ public class CreateAtlasDialog extends EditDialog {
 
 	private static final String INFO = "Package all the images in the selected dir to a new atlas";
 
-	private static final String[] FILTERS = { "Linear", "Nearest", "MipMap",
-			"MipMapLinearLinear", "MipMapLinearNearest", "MipMapNearestLinear",
-			"MipMapNearestNearest" };
-	
+	private static final String[] FILTERS = { "Linear", "Nearest", "MipMap", "MipMapLinearLinear",
+			"MipMapLinearNearest", "MipMapNearestLinear", "MipMapNearestNearest" };
+
+	private static final String[] OUTPUT_FORMATS = { "png", "jpg" };
+
 	private InputPanel name;
 	private InputPanel dir;
 	private InputPanel filterMin;
 	private InputPanel filterMag;
-
+	private InputPanel outputFormat;
 
 	public CreateAtlasDialog(Skin skin) {
 		super("CREATE ATLAS", skin);
-		
-		name = InputPanelFactory.createInputPanel(skin, "Atlas Name",
-				"The name of the sprite atlas", true);
-		dir = new FileInputPanel(skin, "Input Image Directory",
-				"Select the output directory with the images to create the Atlas",
-				FileInputPanel.DialogType.DIRECTORY);
 
-		filterMin = InputPanelFactory.createInputPanel(skin, "Min Filter",
-				"The filter when the texture is scaled down", FILTERS, true);
-		filterMag = InputPanelFactory.createInputPanel(skin, "Mag Filter",
-				"The filter when the texture is scaled up", FILTERS, true);
+		name = InputPanelFactory.createInputPanel(skin, "Atlas Name", "The name of the sprite atlas", true);
+		dir = new FileInputPanel(skin, "Input Image Directory",
+				"Select the output directory with the images to create the Atlas", FileInputPanel.DialogType.DIRECTORY);
+
+		filterMin = InputPanelFactory.createInputPanel(skin, "Min Filter", "The filter when the texture is scaled down",
+				FILTERS, true);
+		filterMag = InputPanelFactory.createInputPanel(skin, "Mag Filter", "The filter when the texture is scaled up",
+				FILTERS, true);
+
+		outputFormat = InputPanelFactory.createInputPanel(skin, "Output format",
+				"The output format of the image. Note that 'jpg' doesn't support transparency.", OUTPUT_FORMATS, true);
 
 		addInputPanel(name);
 		addInputPanel(dir);
 		addInputPanel(filterMin);
 		addInputPanel(filterMag);
+		addInputPanel(outputFormat);
 
 		filterMin.setText(FILTERS[0]);
 		filterMag.setText(FILTERS[0]);
+		outputFormat.setText(OUTPUT_FORMATS[0]);
 
 		setInfo(INFO);
 	}
@@ -74,13 +78,13 @@ public class CreateAtlasDialog extends EditDialog {
 	@Override
 	protected void ok() {
 		Message.showMsg(getStage(), "Generating atlas...", true);
-		
+
 		Timer.schedule(new Task() {
 			@Override
-			public void run() {			
-				genAtlas();				
+			public void run() {
+				genAtlas();
 			}
-		},1);
+		}, 1);
 	}
 
 	@Override
@@ -135,19 +139,19 @@ public class CreateAtlasDialog extends EditDialog {
 		else if (fMag.equals("MipMapNearestNearest"))
 			filterMag = TextureFilter.MipMapNearestNearest;
 
-
 		for (String r : res) {
 			float scale = Float.parseFloat(r);
-			
-			try {				
-				ImageUtils.createAtlas(dir.getText(), outdir + "/" + r, name + ".atlas", scale, filterMin, filterMag);
+
+			try {
+				ImageUtils.createAtlas(dir.getText(), outdir + "/" + r, name + ".atlas", scale, filterMin, filterMag,
+						outputFormat.getText());
 			} catch (IOException e) {
 				EditorLogger.error(e.getMessage());
 				Message.showMsgDialog(getStage(), "Error creating atlas", e.getMessage());
 				return;
 			}
 		}
-		
+
 		Message.hideMsg();
 	}
 }
