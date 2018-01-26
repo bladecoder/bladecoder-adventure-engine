@@ -38,9 +38,10 @@ public class MusicVolumeAction implements Action {
 	public boolean run(VerbRunner cb) {
 		MusicManager musicEngine = World.getInstance().getMusicManager();
 		
-		if(duration==0)
+		if(duration==0) {
 			musicEngine.setVolume(volume);
-		else {
+			return false;
+		} else {
 			World.getInstance().getMusicManager().fade(volume, duration, wait?cb:null);
 		}
 		
