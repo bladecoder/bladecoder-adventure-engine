@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -76,18 +76,18 @@ public class BladeEngine implements ApplicationListener {
 	public UI getUI() {
 		return ui;
 	}
-	
+
 	public void loadGame(String baseFolder) {
 		if(ui != null) {
 			ui.dispose();
 			World.getInstance().dispose();
 		}
-		
+
 		if(baseFolder != null) {
 			EngineAssetManager.setAssetFolder(baseFolder);
 			Config.load();
 		}
-		
+
 		try {
 			World.getInstance().loadWorldDesc();
 		} catch (Exception e) {
@@ -95,7 +95,7 @@ public class BladeEngine implements ApplicationListener {
 			EngineLogger.error("EXITING: " + e.getMessage());
 			Gdx.app.exit();
 		}
-			
+
 		ui = new UI();
 	}
 
@@ -152,7 +152,7 @@ public class BladeEngine implements ApplicationListener {
 			if (restart) {
 				try {
 					World.getInstance().loadChapter(null);
-					
+
 					ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 				} catch (Exception e) {
 					EngineLogger.error("ERROR LOADING GAME", e);
@@ -168,7 +168,7 @@ public class BladeEngine implements ApplicationListener {
 				ui.getRecorder().setFilename(recordName);
 				ui.getRecorder().load();
 				ui.getRecorder().setPlaying(true);
-				
+
 				ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 			}
 		}
@@ -182,7 +182,7 @@ public class BladeEngine implements ApplicationListener {
 			EngineLogger.debug("Density: " + Gdx.graphics.getDensity());
 			EngineLogger.debug("Size Multiplier: " + DPIUtils.getSizeMultiplier());
 		}
-		
+
 		Gdx.input.setCatchBackKey(true);
 	}
 
@@ -211,7 +211,7 @@ public class BladeEngine implements ApplicationListener {
 	@Override
 	public void resize(int width, int height) {
 		EngineLogger.debug(MessageFormat.format("GAME RESIZE {0}x{1}", width, height));
-		
+
 		if(ui != null)
 			ui.resize(width, height);
 	}
@@ -237,6 +237,7 @@ public class BladeEngine implements ApplicationListener {
 	@Override
 	public void resume() {
 		EngineLogger.debug("GAME RESUME");
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		ui.resume();
 
 		// resets the error when continue
