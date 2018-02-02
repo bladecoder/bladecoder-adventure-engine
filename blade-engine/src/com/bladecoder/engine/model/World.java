@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -171,7 +171,7 @@ public class World implements Serializable, AssetConsumer {
 
 	/**
 	 * Returns a scene from the cache. null if the scene is not cached.
-	 * 
+	 *
 	 * Note that by now, the cache has only one Scene. In the future, the cache
 	 * will be a Hastable.
 	 */
@@ -538,13 +538,15 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void resize(float viewportWidth, float viewportHeight) {
-		currentScene.getCamera().viewportWidth = viewportWidth;
-		currentScene.getCamera().viewportHeight = viewportHeight;
+		if (currentScene != null) {
+			currentScene.getCamera().viewportWidth = viewportWidth;
+			currentScene.getCamera().viewportHeight = viewportHeight;
 
-		if (currentScene.getCameraFollowActor() != null)
-			currentScene.getCamera().updatePos(currentScene.getCameraFollowActor());
+			if (currentScene.getCameraFollowActor() != null)
+				currentScene.getCamera().updatePos(currentScene.getCameraFollowActor());
 
-		currentScene.getCamera().update();
+			currentScene.getCamera().update();
+	  }
 	}
 
 	public void setChapter(String chapter) {
@@ -623,9 +625,9 @@ public class World implements Serializable, AssetConsumer {
 	/**
 	 * Try to load the save game if exists. In other case, load the game from
 	 * XML.
-	 * 
+	 *
 	 * @throws Exception
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws SAXException
 	 * @throws ParserConfigurationException
@@ -647,7 +649,7 @@ public class World implements Serializable, AssetConsumer {
 
 	/**
 	 * Load the world description in 'world.json'.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public void loadWorldDesc() throws IOException {
