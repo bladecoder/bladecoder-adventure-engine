@@ -446,8 +446,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			
 			ia.setRefPoint(rp.x, rp.y);
 
-
-			String key = desc.getText();
+			String key = ia.getDesc();
 
 			if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
 				key = Ctx.project.getI18N().genKey(parent.getId(), e.getId(), "desc");
