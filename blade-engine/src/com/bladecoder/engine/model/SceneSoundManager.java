@@ -45,7 +45,7 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 			}
 		}
 
-		if (s != null) {
+		if (s != null && s.sound != null) {
 			if (s.desc.getLoop())
 				s.sound.loop(s.desc.getVolume(), s.desc.getPitch(), s.desc.getPan());
 			else
@@ -124,9 +124,9 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 			// s.desc.getFilename());
 			EngineAssetManager.getInstance().loadSound(s.desc.getFilename());
 		}
-		
+
 		// Due to a bug in Android, try lo load the sounds as early as possible.
-		if(Gdx.app.getType() == ApplicationType.Android)
+		if (Gdx.app.getType() == ApplicationType.Android)
 			EngineAssetManager.getInstance().update();
 	}
 
