@@ -108,3 +108,18 @@ task pack {
 	  )
   }
 }
+
+distZip {
+  into(project.name + '-' + project.version + '/share/appdata') {
+      from './data'
+      include 'com.bladecoder.adventure-editor.appdata.xml'
+  }
+  into(project.name + '-' + project.version + '/share/applications') {
+      from './data'
+      include 'com.bladecoder.adventure-editor.desktop'
+  }
+  into(project.name + '-' + project.version + '/share/icons/hicolor/96x96/apps') {
+      from './data'
+      include 'com.bladecoder.adventure-editor.png'
+  }
+}
