@@ -111,15 +111,15 @@ task pack {
 
 distZip {
   into(project.name + '-' + project.version + '/share/appdata') {
-      from './data'
+      from './release-files'
       include 'com.bladecoder.adventure-editor.appdata.xml'
   }
   into(project.name + '-' + project.version + '/share/applications') {
-      from './data'
+      from './release-files'
       include 'com.bladecoder.adventure-editor.desktop'
   }
   into(project.name + '-' + project.version + '/share/icons/hicolor/96x96/apps') {
-      from './data'
+      from './release-files'
       include 'com.bladecoder.adventure-editor.png'
   }
 }
