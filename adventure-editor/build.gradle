@@ -112,6 +112,6 @@ task pack {
 distZip {
   into(project.name + '-' + project.version) {
       from '.'
-      include 'release-files/*'
+      include 'desktop/*'
   }
 }
