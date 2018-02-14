@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.3-SNAPSHOT]
+
+- Don't generate the key for desc if exists when editing actor. Better generation of not duplicated keys.
+- Safety nullchecks.
+
 ## [2.0.2]
 
 - FIX: Stop voices when changing scene.
@@ -81,7 +86,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.3.0]
 - New Sound System. Now adding sounds is more usable. Backwards compatibility preserved.
-- World properties can also be set in BladeEngine.properties. 
+- World properties can also be set in BladeEngine.properties.
 - Added PLATFORM property.
 - Added OpenURL action.
 - Added actions for accessing to Ink variables: InkVariable and IfInkVariable actions.
@@ -159,7 +164,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - FIX: tint for text actors not working.
 - FIX: Error saving/loading tweens state.
 - EDITOR: Added icons for text and particle actors.
-- EDITOR FIX: Problem when changing id to animations. 
+- EDITOR FIX: Problem when changing id to animations.
 
 ## [1.2.1]
 
@@ -248,7 +253,7 @@ loading screen was needed.
 - Dialog option UI now shows buttons to scroll add and down when necessary. New styles added to ui.json.
 - Added parameter in TextManagerUI style inside ui.json to set the subtitle Y position.
 - Improvement to the pathfinder. Now the clap algorithm always returns a point inside the polygon.
-- In IOS platform, sounds and music in ACC (.m4a) format are used if exists. As .ogg is not supported in IOS. 
+- In IOS platform, sounds and music in ACC (.m4a) format are used if exists. As .ogg is not supported in IOS.
 - FIX: The name of the loaded chapter was not set correctly, causing saved games not loading the current chapter.
 - FIX: Weird bug. Use toUpperCase with Locale.English to read enum values.
 - FIX: Bad IOS splash screen orientation.

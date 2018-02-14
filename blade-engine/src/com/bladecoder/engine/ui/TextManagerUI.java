@@ -34,6 +34,7 @@ import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 /**
  * TextManagerUI draws texts and dialogs on screen.
@@ -227,7 +228,14 @@ public class TextManagerUI extends Actor {
 				key = a.getTextStyle();
 		}
 		
-		return styles.get(key);
+		TextManagerUIStyle s = styles.get(key);
+		
+		if(s == null) {
+			EngineLogger.error("TextManagerUIStyle not found: " + key);
+			return styles.get("default");
+		}
+		
+		return s;
 	}
 
 	/** The style for the TextManagerUI */
