@@ -100,7 +100,7 @@ public class Chapter {
 	public String createChapter(String id) throws TransformerException, ParserConfigurationException, IOException {
 		String checkedId = ElementUtils.getCheckedId(id, getChapters());
 		
-		URL inputUrl = getClass().getResource("/projectTmpl/android/assets/model/00.chapter.json");
+		URL inputUrl = getClass().getResource("/projectTmpl/assets/model/00.chapter.json");
 		File dest = new File(modelPath + checkedId + EngineAssetManager.CHAPTER_EXT);
 		FileUtils.copyURLToFile(inputUrl, dest);
 		
