@@ -17,14 +17,6 @@ public class EditorCommandExecutor extends CommandExecutor {
 		qa.run(World.getInstance());
 	}
 
-	public void exit() {
-		super.exitApp();
-	}
-
-	public void saveLog(String path) {
-		super.printLog(path);
-	}
-
 	public void checkI18NMissingKeys() {
 		try {
 			ModelTools.checkI18NMissingKeys();
