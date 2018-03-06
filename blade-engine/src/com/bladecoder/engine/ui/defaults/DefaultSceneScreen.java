@@ -41,7 +41,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TransformDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -721,7 +721,7 @@ public class DefaultSceneScreen implements SceneScreen {
 				float size = DPIUtils.ICON_SIZE * DPIUtils.getSizeMultiplier();
 
 				if (ia.getVerb("leave") != null) {
-					TextureRegionDrawable drawable = (TextureRegionDrawable) getUI().getSkin().getDrawable("leave");
+					TransformDrawable drawable = (TransformDrawable) getUI().getSkin().getDrawable("leave");
 
 					drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size / 2, size / 2, size,
 							size, 1.0f, 1.0f, calcLeaveArrowRotation(ia));

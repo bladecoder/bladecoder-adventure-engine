@@ -15,14 +15,13 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui.panels;
 
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class StringOptionsInputPanel extends InputPanel implements OptionsInputPanel {
-	private final SelectBox<String> input;
+	private final FilteredSelectBox<String> input;
 	
 	StringOptionsInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, String[] options) {
-		input = new SelectBox<>(skin);
+		input = new FilteredSelectBox<String>(skin);
 		
 		int l = options.length;
 		if(!mandatory) l++;

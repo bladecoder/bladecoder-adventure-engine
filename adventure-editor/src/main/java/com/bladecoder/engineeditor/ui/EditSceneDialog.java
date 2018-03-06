@@ -23,7 +23,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -41,6 +40,7 @@ import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.FilteredSelectBox;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 import com.bladecoder.engineeditor.undo.UndoCreateScene;
@@ -108,7 +108,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		infoContainer = new Container<Image>(bgImage);
 		setInfo(INFO);
 
-		((SelectBox<String>) backgroundAtlas.getField()).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) backgroundAtlas.getField()).addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -120,7 +120,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 			}
 		});
 
-		((SelectBox<String>) backgroundRegion.getField()).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) backgroundRegion.getField()).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				showBgImage(backgroundRegion.getText());
@@ -150,7 +150,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
 	private void fillBGRegions(InputPanel atlasInput, InputPanel regionInput) {
 		@SuppressWarnings("unchecked")
-		SelectBox<String> cb = (SelectBox<String>) regionInput.getField();
+		FilteredSelectBox<String> cb = (FilteredSelectBox<String>) regionInput.getField();
 
 		// cb.clearItems();
 		cb.getItems().clear();

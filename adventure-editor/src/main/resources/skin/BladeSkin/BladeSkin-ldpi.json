@@ -110,6 +110,7 @@
 
 	com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 		default: { selection: textfield_selection, background: textfield_default, focusedBackground: textfield_focused, disabledBackground: textfield_disabled, font: thin-font, fontColor: text-dark, focusedFontColor: text-dark, disabledFontColor: text-dark, cursor: textfield_cursor, messageFont: default-font, messageFontColor: text-dark }
+		filter: { selection: textfield_selection, background: background, focusedBackground: background, disabledBackground: textfield_disabled, font: thin-font, fontColor: text-dark, focusedFontColor: text-dark, disabledFontColor: text-dark, cursor: textfield_cursor, messageFont: default-font, messageFontColor: text-dark }
 	},
 
 
@@ -137,5 +138,9 @@
 
 	com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
 		default: {label: { font: default-font, fontColor: text-dark}, background: message}
+	},
+	
+	com.bladecoder.engineeditor.ui.panels.FilteredSelectBox$FilteredSelectBoxStyle: {
+		default: { background: spinner_default, backgroundOver: spinner_focused, backgroundOpen: spinner_pressed, listStyle: default, scrollStyle: opaque, font: default-font, fontColor: text-dark, textFieldStyle: filter }
 	},
 }

@@ -46,6 +46,7 @@ import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.scneditor.AnimationWidget;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.FilteredSelectBox;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 
@@ -112,7 +113,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			}
 		});
 
-		((SelectBox<String>) source.getField()).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) source.getField()).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				EditorLogger.debug("EditAnimationDialog.setSource():" + source.getText());
@@ -122,14 +123,14 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 			}
 		});
 
-		((SelectBox<String>) id.getField()).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) id.getField()).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				setAnimation();
 			}
 		});
 
-		((SelectBox<String>) atlas.getField()).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) atlas.getField()).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				setSource();
@@ -255,7 +256,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		String speedStr = speed.getText();
 
 		@SuppressWarnings("unchecked")
-		SelectBox<String> cb = (SelectBox<String>) id.getField();
+		FilteredSelectBox<String> cb = (FilteredSelectBox<String>) id.getField();
 
 		if (e != null || cb.getSelectedIndex() != 0)
 			spriteWidget.setAnimation(ids, speedStr, Tween.Type.valueOf(type));
@@ -263,7 +264,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 	private void fillAnimations() {
 		@SuppressWarnings("unchecked")
-		SelectBox<String> cb = (SelectBox<String>) id.getField();
+		FilteredSelectBox<String> cb = (FilteredSelectBox<String>) id.getField();
 		cb.clearItems();
 
 		// When creating, give option to add all elements
@@ -287,7 +288,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 	private void addSources() {
 		@SuppressWarnings("unchecked")
-		SelectBox<String> cb = (SelectBox<String>) source.getField();
+		FilteredSelectBox<String> cb = (FilteredSelectBox<String>) source.getField();
 		String[] src = getSources();
 		cb.getItems().clear();
 
@@ -377,7 +378,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 	@Override
 	protected void ok() {
 		@SuppressWarnings("unchecked")
-		SelectBox<String> cb = (SelectBox<String>) id.getField();
+		FilteredSelectBox<String> cb = (FilteredSelectBox<String>) id.getField();
 
 		if (e == null && cb.getSelectedIndex() == 0) {
 			for (int i = 1; i < cb.getItems().size; i++) {

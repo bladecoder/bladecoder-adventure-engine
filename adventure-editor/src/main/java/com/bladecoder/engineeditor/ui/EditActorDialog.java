@@ -20,7 +20,6 @@ import java.util.HashMap;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Param;
@@ -47,6 +46,7 @@ import com.bladecoder.engineeditor.common.AlignUtils;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.FilteredSelectBox;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 import com.bladecoder.engineeditor.ui.panels.OptionsInputPanel;
@@ -220,7 +220,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		setInfo(TYPES_INFO[0]);
 
-		((SelectBox<String>) typePanel.getField()).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) typePanel.getField()).addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -228,7 +228,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			}
 		});
 
-		((SelectBox<String>) renderer.getField()).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) renderer.getField()).addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {

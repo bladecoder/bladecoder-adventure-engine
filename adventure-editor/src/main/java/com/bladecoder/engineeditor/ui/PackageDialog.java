@@ -29,7 +29,6 @@ import org.apache.commons.io.FileUtils;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -44,6 +43,7 @@ import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.ui.panels.EditDialog;
 import com.bladecoder.engineeditor.ui.panels.FileInputPanel;
+import com.bladecoder.engineeditor.ui.panels.FilteredSelectBox;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 import com.kotcrab.vis.ui.widget.file.FileTypeFilter;
@@ -191,21 +191,21 @@ public class PackageDialog extends EditDialog {
 
 		setInfo(INFO);
 
-		((SelectBox<String>) (arch.getField())).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) (arch.getField())).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				archChanged();
 			}
 		});
 
-		((SelectBox<String>) (type.getField())).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) (type.getField())).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				typeChanged();
 			}
 		});
 
-		((SelectBox<String>) (os.getField())).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) (os.getField())).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				osChanged();
