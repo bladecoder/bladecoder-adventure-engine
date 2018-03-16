@@ -361,6 +361,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		String type = typePanel.getText();
 		boolean typeChanged = false;
 		BaseActor oldElement = e;
+		String oldId = e.getId();
 
 		boolean isPlayer = false;
 
@@ -448,7 +449,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 			String key = ia.getDesc();
 
-			if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+			if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX || !oldId.equals(e.getId()))
 				key = Ctx.project.getI18N().genKey(parent.getId(), e.getId(), "desc");
 
 			Ctx.project.getI18N().setTranslation(key, desc.getText());
@@ -510,7 +511,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					
 					key = text.getText();
 
-					if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+					if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX || !oldId.equals(e.getId()))
 						key = Ctx.project.getI18N().genKey(parent.getId(), e.getId(), "text");
 
 					Ctx.project.getI18N().setTranslation(key, text.getText());
