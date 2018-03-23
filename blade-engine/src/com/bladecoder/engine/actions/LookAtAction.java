@@ -26,7 +26,7 @@ import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
-@ActionDescription("Shows the text and sets the player to lookat in the selected actor direction")
+@ActionDescription("Shows the text and puts the player looking at the selected actor direction")
 public class LookAtAction implements Action {
 	public enum Direction {
 		EMPTY(null), FRONT(AnimationRenderer.FRONT), BACK(AnimationRenderer.BACK), 
@@ -62,7 +62,7 @@ public class LookAtAction implements Action {
 	private Direction direction;
 
 	@ActionProperty(required = true)
-	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+	@ActionPropertyDescription("If this param is 'false' the text is shown and the action continues inmediatly")
 	private boolean wait = true;
 
 	@Override
