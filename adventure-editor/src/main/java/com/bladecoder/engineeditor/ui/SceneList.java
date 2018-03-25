@@ -24,14 +24,15 @@ import java.util.HashMap;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -174,8 +175,8 @@ public class SceneList extends ModelList<World, Scene> {
 
 					if (init != null) {
 						Scene s = World.getInstance().getScenes().get(init);
-						
-						if(s == null && World.getInstance().getInitScene() != null)
+
+						if (s == null && World.getInstance().getInitScene() != null)
 							s = World.getInstance().getScenes().get(World.getInstance().getInitScene());
 
 						if (s != null) {
@@ -199,21 +200,20 @@ public class SceneList extends ModelList<World, Scene> {
 		}
 
 		chapters.setItems(array);
-		
+
 		String init = Ctx.project.getEditorConfig().getProperty("project.selectedChapter",
 				World.getInstance().getInitChapter());
-		
-				
+
 		if (init != null) {
-			if(array.contains(init, false)) {
+			if (array.contains(init, false)) {
 				chapters.setSelected(init);
-			} else if(array.size > 0){
+			} else if (array.size > 0) {
 				chapters.setSelected(Ctx.project.getChapter().getInitChapter());
 			}
 		}
-		
+
 		chapterListener.changed(null, null);
-		
+
 		invalidate();
 	}
 
@@ -327,15 +327,16 @@ public class SceneList extends ModelList<World, Scene> {
 
 			try {
 				icon = createBgIcon(atlas, region);
-			} catch(Exception e) {
-				
-			}
-
-			if (icon != null) {
-				bgIconCache.put(s, icon);
-			} else {
+			} catch (Exception e) {
 				EditorLogger.error("Error creating Background icon: " + atlas + "." + region);
 			}
+
+			if (icon == null) {
+				EditorLogger.error("Error creating Background icon: " + atlas + "." + region);
+				icon = Ctx.assetManager.getIcon("ic_no_scene");
+			}
+
+			bgIconCache.put(s, icon);
 
 			batch.begin();
 
@@ -352,8 +353,8 @@ public class SceneList extends ModelList<World, Scene> {
 	}
 
 	private TextureRegion createBgIcon(String atlas, String region) {
-		TextureAtlas a = new TextureAtlas(Gdx.files
-				.absolute(Ctx.project.getAssetPath() + Project.ATLASES_PATH + "/1/" + atlas + ".atlas"));
+		TextureAtlas a = new TextureAtlas(
+				Gdx.files.absolute(Ctx.project.getAssetPath() + Project.ATLASES_PATH + "/1/" + atlas + ".atlas"));
 		AtlasRegion r = a.findRegion(region);
 
 		if (r == null) {
@@ -361,8 +362,11 @@ public class SceneList extends ModelList<World, Scene> {
 			return null;
 		}
 
-		FrameBuffer fbo = new FrameBuffer(Format.RGBA8888, 200, (int) (r.getRegionHeight() * 200f / r.getRegionWidth()),
-				false);
+		GLFrameBuffer.FrameBufferBuilder frameBufferBuilder = new GLFrameBuffer.FrameBufferBuilder(200,
+				(int) (r.getRegionHeight() * 200f / r.getRegionWidth()));
+
+		frameBufferBuilder.addColorTextureAttachment(GL30.GL_RGBA8, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE);
+		FrameBuffer fbo = frameBufferBuilder.build();
 
 		SpriteBatch fboBatch = new SpriteBatch();
 		fboBatch.setColor(Color.WHITE);

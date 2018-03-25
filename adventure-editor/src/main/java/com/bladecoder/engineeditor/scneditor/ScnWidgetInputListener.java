@@ -353,7 +353,7 @@ public class ScnWidgetInputListener extends ClickListener {
 			Ctx.project.getUndoStack().add(new UndoWalkzonePointPos(poly, vertIndex, new Vector2(undoOrg)));
 		} else if (draggingMode == DraggingModes.DRAGGING_BBOX_POINT) {
 			Ctx.project.getUndoStack()
-					.add(new UndoBboxPointPos((InteractiveActor) selActor, vertIndex, new Vector2(undoOrg)));
+					.add(new UndoBboxPointPos(selActor, vertIndex, new Vector2(undoOrg)));
 		} else if (draggingMode == DraggingModes.DRAGGING_MARKER_0
 				|| draggingMode == DraggingModes.DRAGGING_MARKER_100) {
 			Ctx.project.getUndoStack().add(new UndoDepthVector(scnWidget.getScene(), new Vector2(undoOrg)));

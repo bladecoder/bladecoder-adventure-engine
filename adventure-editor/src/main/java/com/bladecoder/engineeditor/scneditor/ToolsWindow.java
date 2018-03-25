@@ -228,7 +228,7 @@ public class ToolsWindow extends Container<Table> {
 					try {
 						ImageUtils.createAtlas(files.get(0).file().getAbsolutePath(),
 								Ctx.project.getAssetPath() + Project.UI_PATH + "/" + r, "ui" + ".atlas", scale,
-								TextureFilter.Linear, TextureFilter.Nearest);
+								TextureFilter.Linear, TextureFilter.Nearest, "png");
 					} catch (IOException e) {
 						EditorLogger.error(e.getMessage());
 						Message.showMsgDialog(getStage(), "Error creating atlas", e.getMessage());
@@ -381,7 +381,7 @@ public class ToolsWindow extends Container<Table> {
 				Message.showMsg(stage, "Running scene on Android device...", 5);
 
 				if (!RunProccess.runGradle(Ctx.project.getProjectDir(),
-						"android:uninstallDebug android:installDebug android:run")) {
+						"android:uninstallFullDebug android:installFullDebug android:run")) {
 					Message.showMsg(stage, "There was a problem running the project", 4);
 				}
 

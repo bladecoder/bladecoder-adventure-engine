@@ -28,11 +28,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 /**
  * TextManagerUI draws texts and dialogs on screen.
@@ -54,6 +56,8 @@ public class TextManagerUI extends Actor {
 	private float fontX = 0;
 
 	private AtlasRegion charIcon = null;
+	
+	private TextManagerUIStyle style;
 
 	public TextManagerUI(Skin skin) {
 		setTouchable(Touchable.disabled);
@@ -88,7 +92,7 @@ public class TextManagerUI extends Actor {
 				unprojectTmp.set(posx, posy, 0);
 				World.getInstance().getSceneCamera().scene2screen(getStage().getViewport(), unprojectTmp);
 				
-				final TextManagerUIStyle style = getStyle(currentSubtitle);
+				style = getStyle(currentSubtitle);
 				
 				float maxWidth = Math.min(getStage().getViewport().getScreenWidth() - DPIUtils.getMarginSize() * 2,
 						style.font.getXHeight() * (currentSubtitle.type == Text.Type.TALK ? style.maxTalkCharWidth : style.maxCharWidth));
@@ -143,7 +147,8 @@ public class TextManagerUI extends Actor {
 
 				if (currentSubtitle.type == Text.Type.TALK) {
 					if (style.talkBubble != null) {
-						setY(getY() + DPIUtils.getTouchMinSize() / 3 + PADDING);
+						float bubbleHeight = DPIUtils.getTouchMinSize()  * style.bubbleSize / 4;
+						setY(getY() + bubbleHeight + PADDING);
 					} else {
 						setY(getY() + PADDING);
 					}
@@ -174,8 +179,6 @@ public class TextManagerUI extends Actor {
 	@Override
 	public void draw(Batch batch, float alpha) {
 		batch.setColor(Color.WHITE);
-
-		final TextManagerUIStyle style = getStyle(subtitle);
 
 		if (subtitle.type == Text.Type.TALK) {
 			if (getX() < 0 || getX() > getStage().getViewport().getScreenWidth())
@@ -215,13 +218,24 @@ public class TextManagerUI extends Actor {
 
 	private TextManagerUIStyle getStyle(Text text) {
 		String key = "default";
-		if (text != null) {
+		
+		if (text != null &&  text.style != null && !text.style.isEmpty()) {
 			key = text.style;
+		} else if (text.actorId != null) {
+			CharacterActor a = (CharacterActor) World.getInstance().getCurrentScene().getActor(text.actorId, false);
+			
+			if(a != null && a.getTextStyle() != null)
+				key = a.getTextStyle();
 		}
-		if (key == null || key.isEmpty()) {
-			key = "default";
+		
+		TextManagerUIStyle s = styles.get(key);
+		
+		if(s == null) {
+			EngineLogger.error("TextManagerUIStyle not found: " + key);
+			return styles.get("default");
 		}
-		return styles.get(key);
+		
+		return s;
 	}
 
 	/** The style for the TextManagerUI */

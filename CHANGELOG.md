@@ -2,6 +2,107 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.3-SNAPSHOT]
+
+- Don't generate the key for desc if exists when editing actor. Better generation of not duplicated keys.
+- Safety nullchecks.
+
+## [2.0.2]
+
+- FIX: Stop voices when changing scene.
+- FIX: Volume action musn't wait if duration=0
+- FIX: Changes to try to fix the OpenAL error in desktop
+
+## [2.0.1]
+
+- Added option to the create atlas dialog to allow generating .jpg atlases.
+- Added build script custom parameter input box in the package dialog.
+- FIX: Capture random music error on desktop in credit screen.
+
+## [2.0.0]
+
+- HelpScreen doesn't stretch in 4:3 aspect ratio.
+- InkManager translation files support.
+- Import ink texts in order. Better I18N checks.
+- Add music volume fade support in MusicVolume action.
+- VoiceManager doesn't hide texts, now waits to the calc time.
+- FIX: bug when saving ink cb.
+
+## [1.3.5]
+- Added Spine's skins support.
+- Choose the best matching 'use' verb when target and inventory actor have it.
+- Added pitch parameter to sounds.
+- Updated libgdx to v1.9.8.
+- Special keys (testerbot, record, play, etc) only enabled in debug mode.
+- Delete red tint in hotspots.
+- Added sound input panel.
+- FIX: Error in walking path calculation.
+- FIX: running test scene in android.
+- FIX: bad viewport configuration when pausing and restore the qqqgame when screen in 4:3.
+- FIX: bug when setting ink property if it doesn't exists after load game.
+- FIX: getCurrentTarget() in RunVerbAction.
+- FIX: sound list reload when changing chapters.
+- FIX: main class detection in desktop packaging.
+- FIX: error reading Cb from InkManager.
+- FIX: particles and bboxfromrenderer for resolutions other than 1.
+
+## [1.3.4]
+- Added currentTarget to verbs.
+- Null checks in SoundManager before pause/resume sounds.
+- Fix loading callbacks from saved inventories.
+- Fix: Loop, volume and pan was not used when playing a sound.
+- Missing fbo dispose.
+- Fix: toString() instead of casting in getModelProp.
+
+## [1.3.3]
+- Added 'textStyle' attribute to character actors.
+- Added basic QA rules/metrics of project.
+- EDITOR: Understand SNAPSHOT versions when checking for updating versions.
+- Actor 'tint' property are now used to draw inventory actors when dragged.
+- Catch back key in android.
+- Added load chapter option to the debug screen.
+- Fix not showing saved games in tests folder.
+- Fix error removing all items from inventory in 'DropItem' action.
+- Fix error creating screenshots for savedgames in Mac.
+- Fix crash when screenshot of a savegame doesn't exists.
+
+## [1.3.2]
+- Added Google Play expansion file support.
+- Added 64 and 32 bit support when generating package for windows. Previously only 64 bits was supported.
+- Bigger edit toolbar icons.
+- Create initial scene in new projects.
+- Fix: Recorder not recording dialog options.
+- Add target scene to DropItemAction and mark RemoveInventoryItem action deprecated.
+- Updated to libgdx v1.9.7.
+- EDITOR: Fix testing not working with scenes with spaces in ID
+- EDITOR: Fix nullpointer error when disabled imagen not exists.
+- EDITOR: Fix bug when undo bbox points.
+
+
+## [1.3.1]
+- Asset folder is created now in the project root.
+- Updated Gradle to v4.0.2
+- FIX sound error preventing to save the game.
+
+## [1.3.0]
+- New Sound System. Now adding sounds is more usable. Backwards compatibility preserved.
+- World properties can also be set in BladeEngine.properties.
+- Added PLATFORM property.
+- Added OpenURL action.
+- Added actions for accessing to Ink variables: InkVariable and IfInkVariable actions.
+- Added DIRECTION attribute to IfActorAttr action.
+- Initial support for assets in the root folder.
+- Ink: Change the ':' character talk separator by '>'.
+- Set actor fake depth as boolean.
+- Custom icon support for the 'leave' verb.
+- Updated blade-ink to v0.4.3.
+- Updated InGameConsole to v0.7.1.
+- 'world.json' is now called 'world'. Old files can still be loaded.
+- EDITOR: Add refPoint to the EditActorDialog.
+- EDITOR: Undo bbox points, depth markers, ref. points and walkzone points.
+- EDITOR: Added zoom keys: '+' and '-'.
+- EDITOR: Filter .zip files in File Input Dialog when selecting JRE in the package dialog.
+- And many fixes Fixes.
 
 ## [1.2.7]
 - Added secondary animation support for Spine actors.
@@ -12,8 +113,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated blade-ink dependency to v0.4.2
 - Added title image and aligment to the menu screen.
 - EDITOR: Edit Animation dialog now sets the initial source based in previous sources.
-
-
 
 ## [1.2.6]
 
@@ -65,7 +164,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - FIX: tint for text actors not working.
 - FIX: Error saving/loading tweens state.
 - EDITOR: Added icons for text and particle actors.
-- EDITOR FIX: Problem when changing id to animations. 
+- EDITOR FIX: Problem when changing id to animations.
 
 ## [1.2.1]
 
@@ -154,7 +253,7 @@ loading screen was needed.
 - Dialog option UI now shows buttons to scroll add and down when necessary. New styles added to ui.json.
 - Added parameter in TextManagerUI style inside ui.json to set the subtitle Y position.
 - Improvement to the pathfinder. Now the clap algorithm always returns a point inside the polygon.
-- In IOS platform, sounds and music in ACC (.m4a) format are used if exists. As .ogg is not supported in IOS. 
+- In IOS platform, sounds and music in ACC (.m4a) format are used if exists. As .ogg is not supported in IOS.
 - FIX: The name of the loaded chapter was not set correctly, causing saved games not loading the current chapter.
 - FIX: Weird bug. Use toUpperCase with Locale.English to read enum values.
 - FIX: Bad IOS splash screen orientation.

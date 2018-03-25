@@ -29,7 +29,7 @@ import java.util.TreeSet;
  * Overide Properties methods to allow the next features:
  * 
  * - The keys are written in order. 
- * - The timestamp comment is not writing when
+ * - The timestamp comment is not written when
  * saving the .properties
  * 
  * @author rgarcia

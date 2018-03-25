@@ -38,6 +38,7 @@ public class Config {
 	public static final String UI_MODE = "ui_mode";
 	public static final String FAST_LEAVE = "fast_leave";
 	public static final String AUTO_HIDE_TEXTS = "auto_hide_texts";
+	public static final String RESOLUTIONS = "resolutions";
 
 	public static final String PROPERTIES_FILENAME = "BladeEngine.properties";
 

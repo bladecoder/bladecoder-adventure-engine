@@ -44,42 +44,51 @@ public class EditSoundDialog extends EditModelDialog<World, SoundDesc> {
 	private InputPanel loop;
 	private InputPanel volume;
 	private InputPanel pan;
+	private InputPanel pitch;
 	private InputPanel preload;
-	
+
 	private Sound s = null;
 
 	public EditSoundDialog(Skin skin, World parent, SoundDesc e) {
 		super(skin);
 
 		id = InputPanelFactory.createInputPanel(skin, "Sound ID", "The id of the sound", true);
-		filename = InputPanelFactory.createInputPanel(skin, "Filename", "Filename of the sound", ModelTools.getSoundList(), true);
+		filename = InputPanelFactory.createInputPanel(skin, "Filename", "Filename of the sound",
+				ModelTools.getSoundList(), true);
 		loop = InputPanelFactory.createInputPanel(skin, "Loop", "True if the sound is looping", Param.Type.BOOLEAN,
 				true, "false");
 		volume = InputPanelFactory.createInputPanel(skin, "Volume", "Select the volume between 0 and 1",
 				Param.Type.FLOAT, true, "1.0");
 		pan = InputPanelFactory.createInputPanel(skin, "Pan",
-				"panning in the range -1 (full left) to 1 (full right). 0 is center position", Param.Type.FLOAT, true,
+				"Panning in the range -1 (full left) to 1 (full right). 0 is center position", Param.Type.FLOAT, true,
 				"0.0");
-		preload = InputPanelFactory.createInputPanel(skin, "Preload", "True if the sound has to be loaded when the scene is loaded.", Param.Type.BOOLEAN,
-				true, "true");
+		pitch = InputPanelFactory.createInputPanel(skin, "Pitch",
+				"The pitch multiplier, 1 == default, >1 == faster, <1 == slower, the value has to be between 0.5 and 2.0",
+				Param.Type.FLOAT, true, "1.0");
+		preload = InputPanelFactory.createInputPanel(skin, "Preload",
+				"True if the sound has to be loaded when the scene is loaded.", Param.Type.BOOLEAN, true, "true");
 
 		setInfo("Actors can have a list of sounds that can be associated to Sprites or played with the 'sound' action");
 
-		init(parent, e, new InputPanel[] { id, filename, loop, volume, pan, preload });
+		init(parent, e, new InputPanel[] { id, filename, loop, volume, pan, pitch, preload });
 
 		TextButton playButton = new TextButton("Play", skin, "no-toggled");
 
 		playButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				if(s != null) {
+				if (s != null) {
 					s.dispose();
 					s = null;
 				}
-				
-				s = Gdx.audio.newSound(new FileHandle(Ctx.project.getAssetPath() + Project.SOUND_PATH + "/" + filename.getText()));
-				
-				s.play(Float.parseFloat(volume.getText()), 1, Float.parseFloat(pan.getText()));
+
+				if (filename.getText() != null && !filename.getText().isEmpty()) {
+					s = Gdx.audio.newSound(
+							new FileHandle(Ctx.project.getAssetPath() + Project.SOUND_PATH + "/" + filename.getText()));
+
+					s.play(Float.parseFloat(volume.getText()), Float.parseFloat(pitch.getText()),
+							Float.parseFloat(pan.getText()));
+				}
 
 			}
 		});
@@ -101,14 +110,16 @@ public class EditSoundDialog extends EditModelDialog<World, SoundDesc> {
 			sounds.remove(e.getId());
 		}
 
-		String checkedId = parent.getSounds() == null ? id.getText() : ElementUtils.getCheckedId(id.getText(), parent
-				.getSounds().keySet().toArray(new String[parent.getSounds().size()]));
+		String checkedId = parent.getSounds() == null ? id.getText()
+				: ElementUtils.getCheckedId(id.getText(),
+						parent.getSounds().keySet().toArray(new String[parent.getSounds().size()]));
 
 		e.setId(checkedId);
 		e.setFilename(filename.getText());
 		e.setLoop(Boolean.parseBoolean(loop.getText()));
 		e.setVolume(Float.parseFloat(volume.getText()));
 		e.setPan(Float.parseFloat(pan.getText()));
+		e.setPitch(Float.parseFloat(pitch.getText()));
 		e.setPreload(Boolean.parseBoolean(preload.getText()));
 
 		parent.getSounds().put(e.getId(), e);
@@ -123,16 +134,17 @@ public class EditSoundDialog extends EditModelDialog<World, SoundDesc> {
 		loop.setText(Boolean.toString(e.getLoop()));
 		volume.setText(Float.toString(e.getVolume()));
 		pan.setText(Float.toString(e.getPan()));
+		pitch.setText(Float.toString(e.getPitch()));
 		preload.setText(Boolean.toString(e.isPreload()));
 	}
-	
+
 	@Override
 	protected void result(Object object) {
-		if(s != null) {
+		if (s != null) {
 			s.dispose();
 			s = null;
 		}
-		
+
 		super.result(object);
 	}
 }

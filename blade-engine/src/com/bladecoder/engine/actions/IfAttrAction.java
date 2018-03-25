@@ -91,7 +91,7 @@ public class IfAttrAction extends AbstractIfAction {
 			}
 		} else if (attr.equals(ActorAttribute.TARGET)) {
 
-			if (!ActionUtils.compareNullStr(value, cb.getTarget())) {
+			if (!ActionUtils.compareNullStr(value, cb.getCurrentTarget())) {
 				gotoElse((VerbRunner) cb);
 			}
 		} else if (attr.equals(ActorAttribute.IN_SCENE)) {

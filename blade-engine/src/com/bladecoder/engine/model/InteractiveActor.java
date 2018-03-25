@@ -112,14 +112,14 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 				Verb v = getVerb("exit");
 				if (v != null)
-					v.run();
+					v.run(null);
 			} else if (hit && !playerInside) {
 				// the player enters
 				playerInside = true;
 
 				Verb v = getVerb("enter");
 				if (v != null)
-					v.run();
+					v.run(null);
 			}
 		}
 	}

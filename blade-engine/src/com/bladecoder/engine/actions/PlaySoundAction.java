@@ -22,7 +22,7 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Play/Stop a sound")
 public class PlaySoundAction implements Action {
 	@ActionPropertyDescription("The 'soundId' to play. ")
-	@ActionProperty(required = true, type = Type.STRING)
+	@ActionProperty(required = true, type = Type.SOUND)
 	private String sound;
 	
 	@ActionProperty(required = true, defaultValue = "false")

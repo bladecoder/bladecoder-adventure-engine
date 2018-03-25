@@ -35,6 +35,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engineeditor.common.NewOrderedProperties.OrderedPropertiesBuilder;
 
 public class I18NUtils {
 	private static final String SEPARATOR = "\t";
@@ -130,10 +131,12 @@ public class I18NUtils {
 
 			if (line != null) {
 				String[] langs = line.split(SEPARATOR);
-				Properties props[] = new OrderedProperties[langs.length - 1];
+				NewOrderedProperties props[] = new NewOrderedProperties[langs.length - 1];
 
 				for (int i = 0; i < props.length; i++) {
-					props[i] = new OrderedProperties();
+					OrderedPropertiesBuilder builder = new OrderedPropertiesBuilder();
+					builder.withSuppressDateInComment(true);
+					props[i] = builder.build();
 				}
 
 				// get keys and texts
@@ -161,7 +164,7 @@ public class I18NUtils {
 
 					String i18nFilename;
 
-					if (i == 0) {
+					if (langs[i + 1].equals(defaultLocale)) {
 						i18nFilename = modelPath + "/" + chapterId + PROPERTIES_EXT;
 					} else {
 						i18nFilename = modelPath + "/" + chapterId + "_" + langs[i + 1] + PROPERTIES_EXT;
@@ -169,7 +172,7 @@ public class I18NUtils {
 
 					FileOutputStream os = new FileOutputStream(i18nFilename);
 					Writer out = new OutputStreamWriter(os, I18N.ENCODING);
-					props[i].store(out, i18nFilename);
+					props[i].store(out, null);
 				}
 			}
 		}

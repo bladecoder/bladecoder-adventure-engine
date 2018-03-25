@@ -21,8 +21,8 @@ import java.util.HashMap;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -39,6 +39,7 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationListener
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -66,7 +67,6 @@ public class Sprite3DRenderer extends AnimationRenderer {
 	private static final String VERTEX_SHADER = "com/bladecoder/engine/shading/cel.vertex.glsl";
 	private final static boolean USE_FBO = false;
 	private final static int MAX_BONES = 40;
-	private final static Format FRAMEBUFFER_FORMAT = Format.RGBA4444;
 
 	private static final Rectangle VIEWPORT = new Rectangle();
 	private final static IntBuffer VIEWPORT_RESULTS = BufferUtils.newIntBuffer(16);
@@ -677,7 +677,11 @@ public class Sprite3DRenderer extends AnimationRenderer {
 			genShadowMap();
 
 		if (USE_FBO) {
-			fb = new FrameBuffer(FRAMEBUFFER_FORMAT, width, height, true);
+			GLFrameBuffer.FrameBufferBuilder frameBufferBuilder = new GLFrameBuffer.FrameBufferBuilder(
+					width, height);
+			
+			frameBufferBuilder.addColorTextureAttachment( GL30.GL_RGBA8,  GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE);
+			fb = frameBufferBuilder.build();
 
 			tex = new TextureRegion(fb.getColorBufferTexture());
 			tex.flip(false, true);

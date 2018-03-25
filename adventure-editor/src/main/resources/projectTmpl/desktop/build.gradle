@@ -1,17 +1,29 @@
-apply plugin: "java"
+apply plugin: 'application'
 
-sourceCompatibility = 1.6
-sourceSets.main.java.srcDirs = [ "src/" ]
-sourceSets.main.resources.srcDirs = [ "src/" ]
+sourceSets.main.resources.srcDirs += [ rootProject.file('assets').absolutePath ]
+mainClassName = "%PACKAGE%.desktop.DesktopLauncher"
+eclipse.project.name = appName + '-desktop'
+sourceCompatibility = 1.7
+targetCompatibility=1.7
 
-project.ext.mainClassName = "%PACKAGE%.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../%ASSET_PATH%");
+dependencies {
+    compile project(":core")
+    compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+    compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+}
 
-task run(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
-    classpath = sourceSets.main.runtimeClasspath
+jar {
+  archiveName "${appName}-${version}.jar"
+  from { configurations.compile.collect { zipTree(it) } }
+  manifest {
+    attributes 'Main-Class': project.mainClassName
+  }
+}
+
+
+run {
     standardInput = System.in
-    workingDir = project.assetsDir
     ignoreExitValue = true
     
     if (project.hasProperty("appArgs") ) {  
@@ -19,13 +31,13 @@ task run(dependsOn: classes, type: JavaExec) {
     }     
 }
 
+
 task dist(type: Jar) {
     baseName =  appName + "-desktop"
     
     from files(sourceSets.main.output.classesDir)
     from files(sourceSets.main.output.resourcesDir)
     from {configurations.compile.collect {zipTree(it)}}
-    from files(project.assetsDir);
  
     manifest {
         attributes 'Main-Class': project.mainClassName
@@ -33,21 +45,3 @@ task dist(type: Jar) {
 }
 
 dist.dependsOn classes
-
-eclipse {
-    project {
-        name = appName + "-desktop"
-        linkedResource name: 'assets', type: '2', location: 'PARENT-1-PROJECT_LOC/%ASSET_PATH%'
-    }
-}
-
-task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
-  doLast {
-    def classpath = new XmlParser().parse(file(".classpath"))
-    new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
-    def writer = new FileWriter(file(".classpath"))
-    def printer = new XmlNodePrinter(new PrintWriter(writer))
-    printer.setPreserveWhitespace(true)
-    printer.print(classpath)
-  }
-}

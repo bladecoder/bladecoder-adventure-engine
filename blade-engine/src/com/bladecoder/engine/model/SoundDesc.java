@@ -20,6 +20,7 @@ public class SoundDesc {
 	private boolean loop;
 	private String filename;
 	private float volume = 1f;
+	private float pitch = 1f;
 	private float pan = 0f;
 	private boolean preload;
 	
@@ -27,12 +28,13 @@ public class SoundDesc {
 		
 	}
 	
-	public SoundDesc(String id, String filename, boolean loop, float volume, float pan, boolean preload) {
+	public SoundDesc(String id, String filename, boolean loop, float volume, float pan, float pitch, boolean preload) {
 		this.id = id;
 		this.filename = filename;
 		this.loop = loop;
 		this.volume = volume;
 		this.pan = pan;
+		this.setPitch(pitch);
 	}
 	
 	public boolean getLoop() {
@@ -81,5 +83,13 @@ public class SoundDesc {
 
 	public void setPreload(boolean preload) {
 		this.preload = preload;
+	}
+
+	public float getPitch() {
+		return pitch;
+	}
+
+	public void setPitch(float pitch) {
+		this.pitch = pitch;
 	}
 }

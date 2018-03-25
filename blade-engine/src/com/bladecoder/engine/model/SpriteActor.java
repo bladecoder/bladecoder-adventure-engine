@@ -115,7 +115,13 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	public void setScale(float scale) {
 		this.scale = scale;
-		bbox.setScale(scale, scale);
+		
+		if(bboxFromRenderer)
+			bbox.setScale(scale, scale);
+		else {
+			float worldScale = EngineAssetManager.getInstance().getScale();
+			bbox.setScale(scale * worldScale, scale * worldScale);
+		}
 	}
 
 	public void setRot(float rot) {

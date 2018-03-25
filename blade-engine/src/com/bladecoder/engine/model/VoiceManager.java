@@ -131,7 +131,8 @@ public class VoiceManager implements Serializable, AssetConsumer {
 			voice.setOnCompletionListener(new OnCompletionListener() {
 				@Override
 				public void onCompletion(Music music) {
-					textManager.next();
+					if(textManager.getCurrentText() != null) 
+						textManager.getCurrentText().setAutoTime();
 				}
 			});
 			

@@ -358,9 +358,18 @@ public class EngineAssetManager extends AssetManager {
 	private Resolution[] getResolutions(FileHandleResolver resolver, int worldWidth, int worldHeight) {
 		ArrayList<Resolution> rl = new ArrayList<Resolution>();
 
-		String list[] = listAssetFiles("ui");
-
+		String list[] = null;
+		
+		String configRes = Config.getProperty(Config.RESOLUTIONS, null);
+		
+		if(configRes != null) {
+			list = configRes.split(",");
+		} else {
+			list = listAssetFiles("ui");
+		}
+		
 		for (String name : list) {
+			
 			try {
 				float scale = Float.parseFloat(name);
 

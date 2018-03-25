@@ -25,14 +25,27 @@ public class MusicVolumeAction implements Action {
 	@ActionProperty(required = true, defaultValue = "1.0")
 	@ActionPropertyDescription("Volume of the music [0-1].")
 	private float volume = 1.0f;
+	
+	@ActionProperty(required = true, defaultValue = "0.0")
+	@ActionPropertyDescription("For volume fade")
+	private float duration;
+
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the action continues inmediatly")
+	private boolean wait = true;
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		MusicManager musicEngine = World.getInstance().getMusicManager();
 		
-		musicEngine.setVolume(volume);
+		if(duration==0) {
+			musicEngine.setVolume(volume);
+			return false;
+		} else {
+			World.getInstance().getMusicManager().fade(volume, duration, wait?cb:null);
+		}
 		
-		return false;
+		return wait;
 	}
 
 }

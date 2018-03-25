@@ -22,7 +22,17 @@ public class ExternalFunctions {
 			public Object call(Object[] args) throws Exception {
 
 				try {
-					World.getInstance().setModelProp(args[0].toString(), args[1].toString());
+					String p = args[0].toString();
+					
+					if(p.charAt(0) == '>')
+						p = p.substring(1);
+					
+					String v = args[1].toString();
+					
+					if(v.charAt(0) == '>')
+						v = v.substring(1);
+					
+					World.getInstance().setModelProp(p, v);
 				} catch (Exception e) {
 					EngineLogger.error("Ink setModelProp: " + e.getMessage());
 				}
@@ -36,9 +46,14 @@ public class ExternalFunctions {
 			@Override
 			public Object call(Object[] args) throws Exception {
 				try {
-					return World.getInstance().getModelProp(args[0].toString());
+					String p = args[0].toString();
+					
+					if(p.charAt(0) == '>')
+						p = p.substring(1);
+					
+					return World.getInstance().getModelProp(p);
 				} catch (Exception e) {
-					EngineLogger.error("Ink getModelProp: " + e.getMessage());
+					EngineLogger.error("Ink getModelProp: " + e.getMessage(), e);
 				}
 
 				return null;
@@ -49,7 +64,12 @@ public class ExternalFunctions {
 
 			@Override
 			public Object call(Object[] args) throws Exception {
-				return World.getInstance().getInventory().get(args[0].toString()) != null;
+				String actor = args[0].toString();
+				
+				if(actor.charAt(0) == '>')
+					actor = actor.substring(1);
+				
+				return World.getInstance().getInventory().get(actor) != null;
 			}
 		});
 	}

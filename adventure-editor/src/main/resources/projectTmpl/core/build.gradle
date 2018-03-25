@@ -1,11 +1,35 @@
-apply plugin: "java"
-
-sourceCompatibility = 1.6
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+eclipse.project.name = appName + '-core'
 
-sourceSets.main.java.srcDirs = [ "src/" ]
-
-
-eclipse.project {
-    name = appName + "-core"
+dependencies {
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        compile fileTree(dir: '../libs', include: '*.jar')
+        compile "com.bladecoder.engine:blade-engine:$bladeEngineVersion"
+        compile "com.bladecoder.ink:blade-ink:$bladeInkVersion"
+        compile "org.minimalcode:minimalcode-beans:0.5.1"
+        compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        
+        if(project.hasProperty("spinePlugin") && project.spinePlugin.equals("true")) {
+        	println "Using Spine Plugin..."
+        	compile "com.bladecoder.engine:blade-engine-spine-plugin:$bladeEngineVersion"
+        }
 }
+
+
+task setVersion(type: WriteProperties) {
+	println "Set version info in versions.properties"
+
+	def props = new Properties()
+	def propFile = project.file("../assets/BladeEngine.properties");
+	props.load(new FileReader(propFile))
+
+    props."version" = version
+	props."bladeEngineVersion" = bladeEngineVersion
+	props."gdxVersion" = gdxVersion
+	props."roboVMVersion" = roboVMVersion
+
+	setProperties(props);
+	setOutputFile(propFile);
+}
+
+processResources.finalizedBy(setVersion)

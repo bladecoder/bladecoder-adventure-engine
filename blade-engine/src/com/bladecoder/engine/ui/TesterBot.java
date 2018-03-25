@@ -16,6 +16,7 @@
 package com.bladecoder.engine.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -23,7 +24,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
-import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
@@ -209,8 +209,8 @@ public class TesterBot {
 				}
 			} else {
 				// DIALOG MODE
-				ArrayList<DialogOption> visibleOptions = w.getCurrentDialog().getVisibleOptions();
-				
+				List<String> visibleOptions = w.getDialogOptions();
+						
 				if(visibleOptions.size() > 0) {
 					int pos = MathUtils.random(visibleOptions.size() - 1);
 					EngineLogger.debug("<TESTERBOT> SELECT OPTION: " + pos);

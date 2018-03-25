@@ -63,7 +63,6 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
-import com.bladecoder.ink.runtime.Choice;
 
 public class World implements Serializable, AssetConsumer {
 
@@ -79,7 +78,7 @@ public class World implements Serializable, AssetConsumer {
 	};
 
 	public static enum WorldProperties {
-		SAVED_GAME_VERSION, PREVIOUS_SCENE, CURRENT_CHAPTER
+		SAVED_GAME_VERSION, PREVIOUS_SCENE, CURRENT_CHAPTER, PLATFORM
 	};
 
 	private static final boolean CACHE_ENABLED = true;
@@ -209,8 +208,8 @@ public class World implements Serializable, AssetConsumer {
 	/**
 	 * Returns a scene from the cache. null if the scene is not cached.
 	 * 
-	 * Note that by now, the cache has only one Scene. In the future, the cache will
-	 * be a Hastable.
+	 * Note that by now, the cache has only one Scene. In the future, the cache
+	 * will be a Hastable.
 	 */
 	public Scene getCachedScene(String id) {
 
@@ -516,7 +515,7 @@ public class World implements Serializable, AssetConsumer {
 
 	public void selectDialogOption(int i) {
 		if (currentDialog != null)
-			setCurrentDialog(currentDialog.selectOption(currentDialog.getVisibleOptions().get(i)));
+			setCurrentDialog(currentDialog.selectOption(i));
 		else if (inkManager != null)
 			World.getInstance().getInkManager().selectChoice(i);
 	}
@@ -524,28 +523,10 @@ public class World implements Serializable, AssetConsumer {
 	public List<String> getDialogOptions() {
 		List<String> choices;
 
-		if (World.getInstance().getCurrentDialog() != null) {
-			ArrayList<DialogOption> options = World.getInstance().getCurrentDialog().getVisibleOptions();
-			choices = new ArrayList<String>(options.size());
-
-			for (DialogOption o : options) {
-				choices.add(o.getText());
-			}
+		if (getCurrentDialog() != null) {
+			choices = getCurrentDialog().getChoices();
 		} else {
-			List<Choice> options = World.getInstance().getInkManager().getChoices();
-			choices = new ArrayList<String>(options.size());
-
-			for (Choice o : options) {
-				String line = o.getText();
-
-				int idx = line.indexOf(InkManager.COMMAND_MARK);
-
-				if (idx != -1) {
-					line = line.substring(idx + 1).trim();
-				}
-
-				choices.add(line);
-			}
+			choices = getInkManager().getChoices();
 		}
 
 		return choices;
@@ -555,8 +536,8 @@ public class World implements Serializable, AssetConsumer {
 	private final Vector3 unprojectTmp = new Vector3();
 
 	/**
-	 * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and the
-	 * UIActors list.
+	 * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and
+	 * the UIActors list.
 	 */
 	public InteractiveActor getInteractiveActorAtInput(Viewport v, float tolerance) {
 
@@ -652,13 +633,15 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	public void resize(float viewportWidth, float viewportHeight) {
-		currentScene.getCamera().viewportWidth = viewportWidth;
-		currentScene.getCamera().viewportHeight = viewportHeight;
+		if (currentScene != null) {
+			currentScene.getCamera().viewportWidth = viewportWidth;
+			currentScene.getCamera().viewportHeight = viewportHeight;
 
-		if (currentScene.getCameraFollowActor() != null)
-			currentScene.getCamera().updatePos(currentScene.getCameraFollowActor());
+			if (currentScene.getCameraFollowActor() != null)
+				currentScene.getCamera().updatePos(currentScene.getCameraFollowActor());
 
-		currentScene.getCamera().update();
+			currentScene.getCamera().update();
+		}
 	}
 
 	public void setChapter(String chapter) {
@@ -728,7 +711,8 @@ public class World implements Serializable, AssetConsumer {
 	// ********** SERIALIZATION **********
 
 	/**
-	 * Try to load the save game if exists. In other case, load the game from XML.
+	 * Try to load the save game if exists. In other case, load the game from
+	 * XML.
 	 * 
 	 * @throws Exception
 	 * 
@@ -852,6 +836,7 @@ public class World implements Serializable, AssetConsumer {
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
 
 			customProperties.put(WorldProperties.CURRENT_CHAPTER.toString(), chapterName);
+			customProperties.put(WorldProperties.PLATFORM.toString(), Gdx.app.getType().toString());
 		} else {
 			EngineLogger.error(
 					"ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
@@ -874,8 +859,8 @@ public class World implements Serializable, AssetConsumer {
 		getObjectWrapper().setValue(prop, value);
 	}
 
-	public String getModelProp(String prop) {
-		return (String) getObjectWrapper().getValue(prop);
+	public Object getModelProp(String prop) {
+		return getObjectWrapper().getValue(prop);
 	}
 
 	public void loadChapter(String chapter, String scene, boolean test) throws Exception {
@@ -1044,6 +1029,8 @@ public class World implements Serializable, AssetConsumer {
 		pixels.put(lines);
 
 		PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap);
+
+		fbo.dispose();
 	}
 
 	@Override
@@ -1123,109 +1110,8 @@ public class World implements Serializable, AssetConsumer {
 
 			setCurrentScene(initScene);
 
-			// POST PROCESSING
-
 			// Add sounds to cache
-			for (Scene s : scenes.values()) {
-
-				HashMap<String, Verb> verbs = s.getVerbManager().getVerbs();
-
-				// Search SoundAction and PlaySoundAction
-				for (Verb v : verbs.values()) {
-					ArrayList<Action> actions = v.getActions();
-
-					for (Action act : actions) {
-
-						try {
-							if (act instanceof SoundAction) {
-
-								String actor = ActionUtils.getStringValue(act, "actor");
-								String play = ActionUtils.getStringValue(act, "play");
-								if (play != null) {
-									SoundDesc sd = World.getInstance().getSounds().get(actor + "_" + play);
-
-									if (sd != null)
-										s.getSoundManager().addSoundToLoad(sd);
-								}
-
-							} else if (act instanceof PlaySoundAction) {
-								String sound = ActionUtils.getStringValue(act, "sound");
-								SoundDesc sd = World.getInstance().getSounds().get(sound);
-
-								if (sd != null)
-									s.getSoundManager().addSoundToLoad(sd);
-
-							}
-						} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-						}
-					}
-				}
-
-				for (BaseActor a : s.getActors().values()) {
-
-					if (a instanceof InteractiveActor) {
-						HashMap<String, Verb> actorVerbs = ((InteractiveActor) a).getVerbManager().getVerbs();
-
-						// Process SayAction of TALK type
-						for (Verb v : actorVerbs.values()) {
-							ArrayList<Action> actions = v.getActions();
-
-							for (Action act : actions) {
-
-
-								try {
-									if (act instanceof SoundAction) {
-
-										String actor = ActionUtils.getStringValue(act, "actor");
-										String play = ActionUtils.getStringValue(act, "play");
-										if (play != null) {
-											SoundDesc sd = World.getInstance().getSounds().get(actor + "_" + play);
-
-											if (sd != null)
-												s.getSoundManager().addSoundToLoad(sd);
-										}
-
-									} else if (act instanceof PlaySoundAction) {
-										String sound = ActionUtils.getStringValue(act, "sound");
-										SoundDesc sd = World.getInstance().getSounds().get(sound);
-
-										if (sd != null)
-											s.getSoundManager().addSoundToLoad(sd);
-
-									}
-								} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-								}
-							}
-						}
-					}
-
-					if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof AnimationRenderer) {
-						HashMap<String, AnimationDesc> anims = ((AnimationRenderer) ((SpriteActor) a).getRenderer())
-								.getAnimations();
-
-						for (AnimationDesc ad : anims.values()) {
-							if (ad.sound != null) {
-								String sid = ad.sound;
-
-								SoundDesc sd = World.getInstance().getSounds().get(sid);
-
-								if (sd == null)
-									sid = a.getId() + "_" + sid;
-
-								sd = World.getInstance().getSounds().get(sid);
-
-								if (sd != null)
-									s.getSoundManager().addSoundToLoad(sd);
-								else
-									EngineLogger.error(
-											a.getId() + ": SOUND not found: " + ad.sound + " in animation: " + ad.id);
-							}
-						}
-					}
-
-				}
-			}
-
+			cacheSounds();
 		} else {
 			String bladeVersion = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
 			if (bladeVersion != null
@@ -1260,6 +1146,24 @@ public class World implements Serializable, AssetConsumer {
 				getInkManager().read(json, jsonData.get("inkManager"));
 			}
 
+			// inventories have to be put in the hash to find the actors when
+			// reading saved data
+			currentInventory = json.readValue("currentInventory", String.class, jsonData);
+
+			JsonValue jsonInventories = jsonData.get("inventories");
+			inventories = new HashMap<String, Inventory>();
+
+			for (int i = 0; i < jsonInventories.size; i++) {
+				JsonValue jsonValue = jsonInventories.get(i);
+				Inventory inv = new Inventory();
+				inventories.put(jsonValue.name, inv);
+				inv.read(json, jsonValue);
+			}
+
+			if (jsonData.get("uiActors") != null) {
+				getUIActors().read(json, jsonData.get("uiActors"));
+			}
+
 			for (Scene s : scenes.values()) {
 				JsonValue jsonValue = jsonData.get("scenes").get(s.getId());
 
@@ -1267,13 +1171,6 @@ public class World implements Serializable, AssetConsumer {
 					s.read(json, jsonValue);
 				else
 					EngineLogger.debug("LOAD WARNING: Scene not found in saved game: " + s.getId());
-			}
-
-			inventories = json.readValue("inventories", HashMap.class, Inventory.class, jsonData);
-			currentInventory = json.readValue("currentInventory", String.class, jsonData);
-
-			if (jsonData.get("uiActors") != null) {
-				getUIActors().read(json, jsonData.get("uiActors"));
 			}
 
 			timeOfGame = json.readValue("timeOfGame", long.class, 0L, jsonData);
@@ -1305,5 +1202,107 @@ public class World implements Serializable, AssetConsumer {
 
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + instance.currentChapter);
 		}
+	}
+
+	private void cacheSounds() {
+		for (Scene s : scenes.values()) {
+
+			HashMap<String, Verb> verbs = s.getVerbManager().getVerbs();
+
+			// Search SoundAction and PlaySoundAction
+			for (Verb v : verbs.values()) {
+				ArrayList<Action> actions = v.getActions();
+
+				for (Action act : actions) {
+
+					try {
+						if (act instanceof SoundAction) {
+
+							String actor = ActionUtils.getStringValue(act, "actor");
+							String play = ActionUtils.getStringValue(act, "play");
+							if (play != null) {
+								SoundDesc sd = World.getInstance().getSounds().get(actor + "_" + play);
+
+								if (sd != null)
+									s.getSoundManager().addSoundToLoad(sd);
+							}
+
+						} else if (act instanceof PlaySoundAction) {
+							String sound = ActionUtils.getStringValue(act, "sound");
+							SoundDesc sd = World.getInstance().getSounds().get(sound);
+
+							if (sd != null)
+								s.getSoundManager().addSoundToLoad(sd);
+
+						}
+					} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+					}
+				}
+			}
+
+			for (BaseActor a : s.getActors().values()) {
+
+				if (a instanceof InteractiveActor) {
+					HashMap<String, Verb> actorVerbs = ((InteractiveActor) a).getVerbManager().getVerbs();
+
+					// Process SayAction of TALK type
+					for (Verb v : actorVerbs.values()) {
+						ArrayList<Action> actions = v.getActions();
+
+						for (Action act : actions) {
+
+							try {
+								if (act instanceof SoundAction) {
+
+									String actor = ActionUtils.getStringValue(act, "actor");
+									String play = ActionUtils.getStringValue(act, "play");
+									if (play != null) {
+										SoundDesc sd = World.getInstance().getSounds().get(actor + "_" + play);
+
+										if (sd != null)
+											s.getSoundManager().addSoundToLoad(sd);
+									}
+
+								} else if (act instanceof PlaySoundAction) {
+									String sound = ActionUtils.getStringValue(act, "sound");
+									SoundDesc sd = World.getInstance().getSounds().get(sound);
+
+									if (sd != null)
+										s.getSoundManager().addSoundToLoad(sd);
+
+								}
+							} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+							}
+						}
+					}
+				}
+
+				if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof AnimationRenderer) {
+					HashMap<String, AnimationDesc> anims = ((AnimationRenderer) ((SpriteActor) a).getRenderer())
+							.getAnimations();
+
+					for (AnimationDesc ad : anims.values()) {
+						if (ad.sound != null) {
+							String sid = ad.sound;
+
+							SoundDesc sd = World.getInstance().getSounds().get(sid);
+
+							if (sd == null)
+								sid = a.getId() + "_" + sid;
+
+							sd = World.getInstance().getSounds().get(sid);
+
+							if (sd != null)
+								s.getSoundManager().addSoundToLoad(sd);
+							else
+								EngineLogger.error(
+										a.getId() + ": SOUND not found: " + ad.sound + " in animation: " + ad.id);
+						}
+					}
+				}
+
+			}
+		}
+
 	}
 }

@@ -77,20 +77,22 @@ public class ParticleRenderer implements ActorRenderer {
 
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
+		
+		float finalScale = EngineAssetManager.getInstance().getScale() * scale;
 
 		if (effect.getEmitters().size > 0) {
 			
 			Matrix4 tm = batch.getTransformMatrix();
 			tmp.set(tm);
 			
-			if(tmpPosX != x / scale || tmpPosY != y / scale) {
-				tmpPosX = x / scale;
-				tmpPosY = y / scale;
+			if(tmpPosX != x / finalScale || tmpPosY != y / finalScale) {
+				tmpPosX = x / finalScale;
+				tmpPosY = y / finalScale;
 				
 				effect.setPosition(tmpPosX, tmpPosY);
 			}
 
-			tm.rotate(0, 0, 1, rotation).scale(scale, scale, 1);
+			tm.rotate(0, 0, 1, rotation).scale(finalScale, finalScale, 1);
 
 			batch.setTransformMatrix(tm);
 			
@@ -104,8 +106,8 @@ public class ParticleRenderer implements ActorRenderer {
 			
 			batch.setTransformMatrix(tmp);
 		} else {
-			x = x - getWidth() / 2 * scale;
-			RectangleRenderer.draw(batch, x, y, getWidth() * scale, getHeight() * scale, Color.RED);
+			x = x - getWidth() / 2 * finalScale;
+			RectangleRenderer.draw(batch, x, y, getWidth() * finalScale, getHeight() * finalScale, Color.RED);
 		}
 	}
 

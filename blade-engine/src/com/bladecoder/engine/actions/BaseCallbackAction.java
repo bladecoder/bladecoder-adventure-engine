@@ -20,8 +20,12 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.badlogic.gdx.utils.JsonValue;
 
-public abstract class BaseCallbackAction implements Action, ActionCallback, Serializable {	
+public abstract class BaseCallbackAction implements Action, ActionCallback, Serializable {
 	private ActionCallback verbCb;
+
+	// Depending on the reading order of Inventory, InkManager and Actor verbs,
+	// the verbCallbacks may not exist. So, we search the Cb lazily when needed.
+	private String sCb;
 
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
@@ -29,32 +33,39 @@ public abstract class BaseCallbackAction implements Action, ActionCallback, Seri
 
 	@Override
 	public void resume() {
-		if(verbCb != null) {			
+		if (verbCb != null || sCb != null) {
+
+			if (verbCb == null) {
+				verbCb = ActionCallbackSerialization.find(sCb);
+			}
+
 			ActionCallback cb2 = verbCb;
 			verbCb = null;
+			sCb = null;
 			cb2.resume();
 		}
 	}
-	
+
 	public void setVerbCb(ActionCallback cb) {
-		this.verbCb = cb;
+		verbCb = cb;
+		sCb = null;
 	}
 
 	public void setWait(boolean wait) {
 		this.wait = wait;
 	}
-	
+
 	public boolean getWait() {
 		return wait;
 	}
 
 	@Override
 	public void write(Json json) {
-		json.writeValue("cb", ActionCallbackSerialization.find(verbCb));	
+		json.writeValue("cb", ActionCallbackSerialization.find(verbCb));
 	}
 
 	@Override
-	public void read (Json json, JsonValue jsonData) {		
-		verbCb = ActionCallbackSerialization.find(json.readValue("cb", String.class, jsonData));
+	public void read(Json json, JsonValue jsonData) {
+		sCb = json.readValue("cb", String.class, jsonData);
 	}
 }

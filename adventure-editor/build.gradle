@@ -76,8 +76,6 @@ task setVersion(type: WriteProperties) {
 	props."buildToolsVersion" = buildToolsVersion
 	props."androidAPILevel" = androidAPILevel
 	props."androidGradlePluginVersion" = androidGradlePluginVersion
-	props."gwtVersion" = gwtVersion
-	props."gwtGradlePluginVersion" = gwtGradlePluginVersion
 	props."bladeInkVersion" = bladeInkVersion
 
 	setProperties(props);
@@ -88,22 +86,32 @@ processResources.finalizedBy(setVersion)
 
 // Run `gradle pack` task to generate editor atlases
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
-task pack << {
-  TexturePacker.process(
-    'adventure-editor/assets-raw/editor/BladeSkin',           // Raw assets path.
-    'adventure-editor/src/main/resources/skin/BladeSkin',     // Output directory.
-    'BladeSkin-ldpi'              			 				  // Name of the generated atlas (without extension).
-  )
-  
-  TexturePacker.process(
-    'adventure-editor/assets-raw/editor/icons',           	// Raw assets path.
-    'adventure-editor/src/main/resources/images',    		// Output directory.
-    'icons'              					// Name of the generated atlas (without extension).
-  )
-  
-  TexturePacker.process(
-    'adventure-editor/assets-raw/engine/ui-atlas', 
-    'adventure-editor/src/main/resources/projectTmpl/android/assets/ui/1', 
-    'ui'
-  )
+task pack {
+
+	doLast {
+	  TexturePacker.process(
+	    'adventure-editor/assets-raw/editor/BladeSkin',           // Raw assets path.
+	    'adventure-editor/src/main/resources/skin/BladeSkin',     // Output directory.
+	    'BladeSkin-ldpi'              			 				  // Name of the generated atlas (without extension).
+	  )
+	  
+	  TexturePacker.process(
+	    'adventure-editor/assets-raw/editor/icons',
+	    'adventure-editor/src/main/resources/images', 
+	    'icons'  
+	  )
+	  
+	  TexturePacker.process(
+	    'adventure-editor/assets-raw/engine/ui-atlas', 
+	    'adventure-editor/src/main/resources/projectTmpl/assets/ui/1', 
+	    'ui'
+	  )
+  }
+}
+
+distZip {
+  into(project.name + '-' + project.version) {
+      from '.'
+      include 'desktop/*'
+  }
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
@@ -19,6 +20,7 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Text.Type;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -27,6 +29,7 @@ import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.ink.runtime.Choice;
 import com.bladecoder.ink.runtime.InkList;
+import com.bladecoder.ink.runtime.ListDefinition;
 import com.bladecoder.ink.runtime.Story;
 
 public class InkManager implements VerbRunner, Serializable {
@@ -35,10 +38,16 @@ public class InkManager implements VerbRunner, Serializable {
 	private final static String PARAM_SEPARATOR = ",";
 	public final static char COMMAND_MARK = '>';
 
+	private static ResourceBundle i18n;
+
 	private Story story = null;
 	private ExternalFunctions externalFunctions;
 
 	private ActionCallback cb;
+
+	// Depending on the reading order of Inventory, InkManager and Actor verbs,
+	// the verbCallbacks may not exist. So, we search the Cb lazily when needed.
+	private String sCb;
 
 	private ArrayList<Action> actions;
 
@@ -71,27 +80,75 @@ public class InkManager implements VerbRunner, Serializable {
 			EngineLogger.debug("INK STORY LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 
 			this.storyName = storyName;
+
+			loadI18NBundle();
 		} catch (Exception e) {
 			EngineLogger.error("Cannot load Ink Story: " + storyName + " " + e.getMessage());
 		}
 	}
-	
+
+	public void loadI18NBundle() {
+		if (storyName != null && EngineAssetManager.getInstance().getModelFile(storyName + "-ink.properties").exists())
+			i18n = I18N.getBundle(EngineAssetManager.MODEL_DIR + storyName + "-ink", true);
+	}
+
+	public String translateLine(String line) {
+		if (line.charAt(0) == I18N.PREFIX) {
+			String key = line.substring(1);
+
+			
+			// In ink, several keys can be included in the same line.
+			String[] keys = key.split("@");
+
+			String translated = "";
+			
+			for (String k : keys) {
+				try {
+					translated += i18n.getString(k);
+				} catch (Exception e) {
+					EngineLogger.error("MISSING TRANSLATION KEY: " + key);
+					return key;
+				}
+			}
+			
+			return translated;
+		}
+
+		return line;
+	}
+
 	public String getVariable(String name) {
 		return story.getVariablesState().get(name).toString();
 	}
-	
+
 	public boolean compareVariable(String name, String value) {
-		if(story.getVariablesState().get(name) instanceof InkList) {
-			return ((InkList)story.getVariablesState().get(name)).ContainsItemNamed(value);
+		if (story.getVariablesState().get(name) instanceof InkList) {
+			return ((InkList) story.getVariablesState().get(name)).ContainsItemNamed(value);
 		} else {
 			return story.getVariablesState().get(name).toString().equals(value);
 		}
 	}
-	
+
 	public void setVariable(String name, String value) throws Exception {
-		if(story.getVariablesState().get(name) instanceof InkList) {
-			((InkList)story.getVariablesState().get(name)).addItem(value);
-		} else 
+		if (story.getVariablesState().get(name) instanceof InkList) {
+
+			InkList rawList = (InkList) story.getVariablesState().get(name);
+
+			if (rawList.getOrigins() == null) {
+				List<String> names = rawList.getOriginNames();
+				if (names != null) {
+					ArrayList<ListDefinition> origins = new ArrayList<ListDefinition>();
+					for (String n : names) {
+						ListDefinition def = story.getListDefinitions().getDefinition(n);
+						if (!origins.contains(def))
+							origins.add(def);
+					}
+					rawList.setOrigins(origins);
+				}
+			}
+
+			rawList.addItem(value);
+		} else
 			story.getVariablesState().set(name, value);
 	}
 
@@ -109,7 +166,7 @@ public class InkManager implements VerbRunner, Serializable {
 				// Remove trailing '\n'
 				if (!line.isEmpty())
 					line = line.substring(0, line.length() - 1);
-				
+
 				if (!line.isEmpty()) {
 					EngineLogger.debug("INK LINE: " + line);
 
@@ -127,21 +184,25 @@ public class InkManager implements VerbRunner, Serializable {
 			} catch (Exception e) {
 				EngineLogger.error(e.getMessage(), e);
 			}
-			
-			if(story.getCurrentErrors() != null && !story.getCurrentErrors().isEmpty()) {
+
+			if (story.getCurrentErrors() != null && !story.getCurrentErrors().isEmpty()) {
 				EngineLogger.error(story.getCurrentErrors().get(0));
 			}
 
 		}
 
 		if (actions.size() > 0) {
-			run();
+			run(null);
 		} else {
 
 			if (hasChoices()) {
 				wasInCutmode = World.getInstance().inCutMode();
 				World.getInstance().setCutMode(false);
-			} else if (cb != null) {
+			} else if (cb != null || sCb != null) {
+				if (cb == null) {
+					cb = ActionCallbackSerialization.find(sCb);
+				}
+
 				ActionCallbackQueue.add(cb);
 			}
 		}
@@ -154,11 +215,11 @@ public class InkManager implements VerbRunner, Serializable {
 			String value;
 
 			int i = t.indexOf(NAME_VALUE_TAG_SEPARATOR);
-			
+
 			// support ':' and '=' as param separator
-			if(i == -1)
+			if (i == -1)
 				i = t.indexOf(NAME_VALUE_PARAM_SEPARATOR);
-			
+
 			if (i != -1) {
 				key = t.substring(0, i).trim();
 				value = t.substring(i + 1, t.length()).trim();
@@ -193,7 +254,7 @@ public class InkManager implements VerbRunner, Serializable {
 		} else if ("set".equals(commandName)) {
 			World.getInstance().setModelProp(params.get("prop"), params.get("value"));
 		} else {
-			
+
 			// for backward compatibility
 			if ("action".equals(commandName)) {
 				commandName = commandParams[0].trim();
@@ -244,7 +305,7 @@ public class InkManager implements VerbRunner, Serializable {
 			params.put("type", Type.SUBTITLE.toString());
 		}
 
-		params.put("text", line);
+		params.put("text", translateLine(line));
 
 		try {
 			if (!params.containsKey("actor")) {
@@ -304,8 +365,24 @@ public class InkManager implements VerbRunner, Serializable {
 		return (story != null && actions.size() == 0 && story.getCurrentChoices().size() > 0);
 	}
 
-	public List<Choice> getChoices() {
-		return story.getCurrentChoices();
+	public List<String> getChoices() {
+
+		List<Choice> options = story.getCurrentChoices();
+		List<String> choices = new ArrayList<String>(options.size());
+
+		for (Choice o : options) {
+			String line = o.getText();
+
+			int idx = line.indexOf(InkManager.COMMAND_MARK);
+
+			if (idx != -1) {
+				line = line.substring(idx + 1).trim();
+			}
+
+			choices.add(translateLine(line));
+		}
+
+		return choices;
 	}
 
 	private String getJsonString(InputStream is) throws IOException {
@@ -354,7 +431,7 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	@Override
-	public void run() {
+	public void run(String currentTarget) {
 		ip = 0;
 		nextStep();
 	}
@@ -382,13 +459,17 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	@Override
-	public String getTarget() {
+	public String getCurrentTarget() {
 		return null;
 	}
 
 	@Override
 	public void write(Json json) {
 		json.writeValue("wasInCutmode", wasInCutmode);
+		
+		if(cb == null && sCb != null)
+			cb = ActionCallbackSerialization.find(sCb);
+			
 		json.writeValue("cb", ActionCallbackSerialization.find(cb));
 
 		// SAVE ACTIONS
@@ -425,7 +506,7 @@ public class InkManager implements VerbRunner, Serializable {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		wasInCutmode = json.readValue("wasInCutmode", Boolean.class, jsonData);
-		cb = ActionCallbackSerialization.find(json.readValue("cb", String.class, jsonData));
+		sCb = json.readValue("cb", String.class, jsonData);
 
 		// READ ACTIONS
 		actions.clear();

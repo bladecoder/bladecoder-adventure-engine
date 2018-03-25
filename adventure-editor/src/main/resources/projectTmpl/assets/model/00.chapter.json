@@ -1,0 +1,25 @@
+{
+bladeEngineVersion: "1.3.1",
+sounds: {},
+scenes: {
+	"scene-1": {
+		id: "scene-1",
+		layers: [
+			{
+				name: "foreground"
+			},
+			{
+				name: "dynamic",
+				dynamic: true
+			},
+			{
+				name: "background"
+			}
+		],
+		actors: {},
+		musicDesc: null,
+		verbs: {}
+	}
+},
+initScene: "scene-1"
+}

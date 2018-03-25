@@ -19,11 +19,14 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -54,6 +57,7 @@ import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.NewOrderedProperties.OrderedPropertiesBuilder;
 import com.bladecoder.engineeditor.model.Project;
 
 public class ModelTools {
@@ -421,7 +425,7 @@ public class ModelTools {
 		return soundFiles;
 	}
 
-	public static void extractInkTexts(String story) throws IOException {
+	public static void extractInkTexts(String story, String lang) throws IOException {
 		String file = Ctx.project.getModelPath() + "/" + story + EngineAssetManager.INK_EXT;
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
@@ -447,42 +451,83 @@ public class ModelTools {
 		JsonValue root = new JsonReader().parse(sb.toString());
 
 		StringBuilder tsvString = new StringBuilder();
+		
+		OrderedPropertiesBuilder builder = new OrderedPropertiesBuilder();
+		builder.withSuppressDateInComment(true);
+		NewOrderedProperties prop = builder.build();
 
-		extractInkTextsInternal("ink." + story + ".", root, tsvString);
+		extractInkTextsInternal(root, tsvString, prop);
 		FileUtils.writeStringToFile(new File(file + ".tsv"), tsvString.toString());
 
 		String json = root.toJson(OutputType.json);
 		FileUtils.writeStringToFile(new File(file + ".new"), json);
+		
+		FileUtils.copyFile(new File(file), new File(file + ".old"));
+		FileUtils.copyFile(new File(file + ".new"), new File(file));
+		new File(file + ".new").delete();
 
-		Ctx.project.setModified();
+		try {
+			String file2 = file.substring(0,  file.length() - EngineAssetManager.INK_EXT.length());
+			
+			if(lang.equals("default"))
+				file2 += "-ink.properties";
+			else
+				file2 += "-ink" + "_" + lang + ".properties";
+			
+			FileOutputStream os = new FileOutputStream(file2);
+			Writer out = new OutputStreamWriter(os, I18N.ENCODING);
+			prop.store(out, null);
+		} catch (IOException e) {
+			EditorLogger.error("ERROR WRITING BUNDLE: " + file + ".properties");
+		}
+
+		//Ctx.project.setModified();
 	}
 
-	private static void extractInkTextsInternal(String prefix, JsonValue v, StringBuilder sb) {
+	private static void extractInkTextsInternal(JsonValue v, StringBuilder sb, NewOrderedProperties prop) {
 		if (v.isArray() || v.isObject()) {
 			for (int i = 0; i < v.size; i++) {
 				JsonValue aValue = v.get(i);
 
-				extractInkTextsInternal(prefix, aValue, sb);
+				extractInkTextsInternal(aValue, sb, prop);
 			}
 		} else if (v.isString() && v.asString().charAt(0) == '^') {
 			String value = v.asString().substring(1).trim();
 			// String key = "ink." + value.hashCode();
 
-			String key = prefix;
+			if(value.length() == 0 || value.charAt(0) == '>')
+				return;
+			
+			int idx = value.indexOf('>');
+			String charName = "";
+			
+			if(idx != -1) {
+				charName = value.substring(0, idx).trim();
+				value = value.substring(idx+1).trim();
+			}
+			
+			
+			String key = null;
 
 			try {
 				MessageDigest md = MessageDigest.getInstance("SHA-1");
 				byte[] bytes = value.getBytes(("UTF-8"));
 				md.update(bytes);
 				byte[] digest = md.digest();
-				key += Base64Coder.encodeLines(digest).substring(0, 10);
+				key = Base64Coder.encodeLines(digest).substring(0, 10);
 			} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-
+				EditorLogger.error("Error encoding key." + e);
+				return;
 			}
 
-			Ctx.project.getI18N().setTranslation(key, value);
-			sb.append(key + "\t" + value + "\n");
-			v.set("^" + I18N.PREFIX + key);
+			//Ctx.project.getI18N().setTranslation(key, value);
+			prop.setProperty(key, value);
+			sb.append(key + "\t" + charName + "\t" + value + "\n");
+			
+			if(charName.isEmpty())
+				v.set("^" + I18N.PREFIX + key);
+			else
+				v.set("^" + charName + '>' + I18N.PREFIX + key);
 		}
 	}
 

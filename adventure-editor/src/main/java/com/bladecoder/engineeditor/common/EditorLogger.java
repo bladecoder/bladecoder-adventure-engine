@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.common;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -26,10 +25,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.model.Project;
-import com.strongjoshua.console.CommandExecutor;
 import com.strongjoshua.console.Console;
 import com.strongjoshua.console.LogLevel;
 
@@ -135,77 +130,6 @@ public class EditorLogger {
 			}
 		});
 
-		console.setCommandExecutor(new CommandExecutor() {
-
-			@SuppressWarnings("unused")
-			public void exit() {
-				super.exitApp();
-			}
-
-			@SuppressWarnings("unused")
-			public void saveLog(String path) {
-				super.printLog(path);
-			}
-
-			@SuppressWarnings("unused")
-			public void checkI18NMissingKeys() {
-				try {
-					ModelTools.checkI18NMissingKeys();
-					EditorLogger.msg("PROCCESS FINISHED: checkI18NMissingKeys.");
-				} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-					EditorLogger.printStackTrace(e);
-				}
-			}
-
-			@SuppressWarnings("unused")
-			public void debug(boolean value) {
-				if (!value) {
-					level = Levels.ERROR;
-					console.setLoggingToSystem(false);
-					
-					if(EngineLogger.debugMode())
-						EngineLogger.toggle();
-				} else {
-					level = Levels.DEBUG;
-					console.setLoggingToSystem(true);
-					EngineLogger.setDebug();
-				}
-			}
-
-			@SuppressWarnings("unused")
-			public void extractDialogs() {
-				ModelTools.extractDialogs();
-				EditorLogger.msg("PROCCESS FINISHED.");
-			}
-
-			@SuppressWarnings("unused")
-			public void printUnusedSounds() {
-				ModelTools.printUnusedSounds();
-				EditorLogger.msg("PROCCESS FINISHED.");
-			}
-			
-			@SuppressWarnings("unused")
-			public void compareI18N(String lang) {
-				try {
-					I18NUtils.compare(Ctx.project.getAssetPath() + Project.MODEL_PATH, Ctx.project.getChapter().getId(), null, lang);
-				} catch (IOException e) {
-					EditorLogger.printStackTrace(e);
-				}
-				
-				EditorLogger.msg("PROCCESS FINISHED.");
-			}
-			
-			@SuppressWarnings("unused")
-			public void extractInkTexts(String story) {
-				try {
-					ModelTools.extractInkTexts(story);
-				} catch (Exception e) {
-					EditorLogger.printStackTrace(e);
-				}
-				
-				EditorLogger.msg("PROCCESS FINISHED.");
-			}
-
-		});
+		console.setCommandExecutor(new EditorCommandExecutor());
 	}
 }

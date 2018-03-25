@@ -377,6 +377,12 @@ public class I18NHandler {
 	}
 
 	public String getNotDuplicateKey(String key) {
+		// first delete all '_' at the end to avoid always growing keys
+		int idx = key.indexOf('_');
+		
+		if(idx != -1)
+			key = key.substring(0, idx);
+		
 		while (i18nChapter.containsKey(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
 			key += '_';
 
@@ -384,6 +390,12 @@ public class I18NHandler {
 	}
 
 	public String getNotDuplicateKeyWorld(String key) {
+		// first delete all '_' at the end
+		int idx = key.indexOf('_');
+		
+		if(idx != -1)
+			key = key.substring(0, idx);
+		
 		while (i18nWorld.containsKey(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
 			key += '_';
 

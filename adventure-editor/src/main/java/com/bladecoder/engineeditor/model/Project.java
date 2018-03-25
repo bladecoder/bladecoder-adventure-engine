@@ -44,11 +44,6 @@ import com.bladecoder.engineeditor.common.OrderedProperties;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.common.Versions;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
-import com.bladecoder.engineeditor.setup.Dependency;
-import com.bladecoder.engineeditor.setup.DependencyBank;
-import com.bladecoder.engineeditor.setup.DependencyBank.ProjectDependency;
-import com.bladecoder.engineeditor.setup.DependencyBank.ProjectType;
-import com.bladecoder.engineeditor.setup.ProjectBuilder;
 import com.bladecoder.engineeditor.undo.UndoStack;
 
 public class Project extends PropertyChange {
@@ -59,6 +54,7 @@ public class Project extends PropertyChange {
 	public static final String NOTIFY_VERB_SELECTED = "VERB_SELECTED";
 	public static final String NOTIFY_PROJECT_LOADED = "PROJECT_LOADED";
 	public static final String NOTIFY_PROJECT_SAVED = "PROJECT_SAVED";
+	public static final String NOTIFY_CHAPTER_LOADED = "CHAPTER_LOADED";
 
 	public static final String NOTIFY_ELEMENT_DELETED = "ELEMENT_DELETED";
 	public static final String NOTIFY_ELEMENT_CREATED = "ELEMENT_CREATED";
@@ -278,25 +274,7 @@ public class Project extends PropertyChange {
 			sdk = System.getenv("ANDROID_HOME");
 		}
 
-		DependencyBank bank = new DependencyBank();
-		ProjectBuilder builder = new ProjectBuilder(bank);
-		List<ProjectType> projects = new ArrayList<ProjectType>();
-		projects.add(ProjectType.CORE);
-		projects.add(ProjectType.DESKTOP);
-		projects.add(ProjectType.ANDROID);
-		projects.add(ProjectType.IOS);
-		// projects.add(ProjectType.HTML);
-
-		List<Dependency> dependencies = new ArrayList<Dependency>();
-		dependencies.add(bank.getDependency(ProjectDependency.GDX));
-		dependencies.add(bank.getDependency(ProjectDependency.FREETYPE));
-
-		if (spinePlugin)
-			dependencies.add(bank.getDependency(ProjectDependency.SPINE));
-
-		builder.buildProject(projects, dependencies);
-		builder.build();
-		new BladeEngineSetup().build(builder, projectDir + "/" + name, name, pkg, mainClass, sdk, null);
+		new BladeEngineSetup().build(projectDir + "/" + name, name, pkg, mainClass, sdk, spinePlugin);
 	}
 
 	public void saveProject() throws IOException {
@@ -312,6 +290,17 @@ public class Project extends PropertyChange {
 			chapter.save();
 
 			// 3.- SAVE BladeEngine.properties
+			List<String> resolutions = getResolutions();
+			StringBuilder sb = new StringBuilder();
+			
+			for(int i = 0; i < resolutions.size(); i++) {
+				sb.append(resolutions.get(i));
+				
+				if(i < resolutions.size() - 1)
+					sb.append(',');
+			}
+			
+			projectConfig.setProperty(Config.RESOLUTIONS, sb.toString());
 			projectConfig.store(new FileOutputStream(getAssetPath() + "/" + Config.PROPERTIES_FILENAME), null);
 
 			// 4.- SAVE I18N
@@ -393,7 +382,7 @@ public class Project extends PropertyChange {
 		String editorVersion = getEditorBladeEngineVersion();
 		String projectVersion = getProjectBladeEngineVersion();
 
-		if (editorVersion.equals(projectVersion) || editorVersion.endsWith("SNAPSHOT")
+		if (editorVersion.equals(projectVersion)
 				|| editorVersion.indexOf('.') == -1)
 			return true;
 
@@ -404,7 +393,13 @@ public class Project extends PropertyChange {
 	}
 
 	private int parseVersion(String v) {
-		int number = 0;
+		int number = 1; // 1 -> release, 0 -> snapshot
+		
+		if(v.endsWith("-SNAPSHOT")) {
+			number = 0;
+			v = v.substring(0, v.length() - "-SNAPSHOT".length());
+		}
+		
 		String[] split = v.split("\\.");
 
 		try {
@@ -436,6 +431,7 @@ public class Project extends PropertyChange {
 
 		prop.setProperty("roboVMGradlePluginVersion", Versions.getROBOVMGradlePluginVersion());
 		prop.setProperty("androidGradlePluginVersion", Versions.getAndroidGradlePluginVersion());
+		prop.setProperty("bladeInkVersion", Versions.getBladeInkVersion());
 
 		saveGradleProperties(prop);
 	}
@@ -463,7 +459,7 @@ public class Project extends PropertyChange {
 	}
 
 	public List<String> getResolutions() {
-		File atlasesPath = new File(getAssetPath() + ATLASES_PATH);
+		File atlasesPath = new File(getAssetPath() + UI_PATH);
 		ArrayList<String> l = new ArrayList<String>();
 
 		File[] list = atlasesPath.listFiles();
@@ -499,6 +495,7 @@ public class Project extends PropertyChange {
 
 		try {
 			chapter.load(selChapter);
+			firePropertyChange(NOTIFY_CHAPTER_LOADED);
 			Ctx.project.getEditorConfig().setProperty("project.selectedChapter", selChapter);
 		} catch (SerializationException ex) {
 			// check for not compiled custom actions
@@ -528,7 +525,7 @@ public class Project extends PropertyChange {
 	}
 
 	public Properties getGradleProperties() throws FileNotFoundException, IOException {
-		Properties prop = new Properties();
+		Properties prop = new OrderedProperties();
 
 		prop.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties"));
 

@@ -21,7 +21,6 @@ import java.util.Map;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -36,7 +35,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 
 public class SceneActorInputPanel extends InputPanel {
-	SelectBox<String> scene;
+	FilteredSelectBox<String> scene;
 	EditableSelectBox<String> actor;
 	Table panel;
 	
@@ -48,7 +47,7 @@ public class SceneActorInputPanel extends InputPanel {
 		this.type = type;
 		
 		panel = new Table(skin);
-		scene = new SelectBox<>(skin);
+		scene = new FilteredSelectBox<>(skin);
 		actor = new EditableSelectBox<>(skin);
 
 		panel.add(new Label(" Scene ", skin));

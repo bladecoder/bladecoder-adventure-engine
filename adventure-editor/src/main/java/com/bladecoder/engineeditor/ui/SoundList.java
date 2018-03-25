@@ -51,12 +51,11 @@ public class SoundList extends ModelList<World, SoundDesc> {
 
 		setCellRenderer(listCellRenderer);
 
-		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
+		Ctx.project.addPropertyChangeListener(Project.NOTIFY_CHAPTER_LOADED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				if (evt.getNewValue() instanceof SoundDesc && !(evt.getSource() instanceof EditSoundDialog)) {
-					addElements(parent, Arrays.asList(parent.getSounds().values().toArray(new SoundDesc[0])));
-				}
+				addElements(World.getInstance(),
+						Arrays.asList(World.getInstance().getSounds().values().toArray(new SoundDesc[0])));
 			}
 		});
 
@@ -82,8 +81,8 @@ public class SoundList extends ModelList<World, SoundDesc> {
 					playingSound = null;
 				}
 
-				playingSound = Gdx.audio.newSound(new FileHandle(Ctx.project.getAssetPath()
-						+ Project.SOUND_PATH + "/" + selected.getFilename()));
+				playingSound = Gdx.audio.newSound(
+						new FileHandle(Ctx.project.getAssetPath() + Project.SOUND_PATH + "/" + selected.getFilename()));
 
 				playingSound.play(selected.getVolume(), 1, selected.getPan());
 
@@ -139,11 +138,11 @@ public class SoundList extends ModelList<World, SoundDesc> {
 		list.getItems().insert(pos, newElement);
 
 		String id = newElement.getId();
-		
-		if(parent.getSounds() != null)
+
+		if (parent.getSounds() != null)
 			id = ElementUtils.getCheckedId(newElement.getId(),
 					parent.getSounds().keySet().toArray(new String[parent.getSounds().size()]));
-		
+
 		newElement.setId(id);
 
 		parent.getSounds().put(newElement.getId(), newElement);

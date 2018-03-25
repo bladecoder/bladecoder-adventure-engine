@@ -194,7 +194,9 @@ public class ProjectToolbar extends Table {
 
 		try {
 			TextureRegion imageDisabled = Ctx.assetManager.getIcon(icon + "_disabled");
-			style.imageDisabled = new TextureRegionDrawable(imageDisabled);
+			
+			if(imageDisabled != null)
+				style.imageDisabled = new TextureRegionDrawable(imageDisabled);
 		} catch (Exception e) {
 
 		}

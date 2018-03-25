@@ -22,7 +22,8 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
-@ActionDescription("Remove items from the inventory.")
+@Deprecated
+@ActionDescription("Remove items from the inventory. Deprecated: Use DropItem action instead.")
 public class RemoveInventoryItemAction implements Action {
 	@ActionPropertyDescription("The 'actorid' from the inventory item to remove. If empty remove all items.")
 	@ActionProperty(type = Type.ACTOR)

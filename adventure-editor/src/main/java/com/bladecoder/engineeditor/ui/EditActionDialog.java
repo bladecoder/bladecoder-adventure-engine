@@ -20,7 +20,6 @@ import java.util.Arrays;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -33,6 +32,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ActionDetector;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.FilteredSelectBox;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 import com.bladecoder.engineeditor.ui.panels.ScopePanel;
@@ -54,7 +54,7 @@ public class EditActionDialog extends EditModelDialog<Verb, Action> {
 
 		actionPanel = InputPanelFactory.createInputPanel(skin, "Action", "Select the action to create.", actions, true);
 
-		((SelectBox<String>) actionPanel.getField()).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) actionPanel.getField()).addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {

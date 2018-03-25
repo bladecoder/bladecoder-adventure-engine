@@ -175,7 +175,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 		final PagedScrollPane scroll = new PagedScrollPane();
 		scroll.setFlingTime(0.1f);
-		scroll.setPageSpacing(25);
+		scroll.setPageSpacing(0);
 
 		Table slots = new Table().pad(pad);
 		slots.defaults().pad(pad).size(slotWidth + pad, slotHeight + pad * 2).top();
@@ -307,7 +307,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			}
 
 		// Add savedgames in '/tests' folder
-		if (EngineLogger.debugMode() && loadScreenMode) {
+		if (EngineLogger.debugMode()) {
 			String[] list2 = EngineAssetManager.getInstance().listAssetFiles("tests");
 
 			for (String file : list2)
@@ -327,8 +327,13 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 		if (EngineAssetManager.getInstance().getUserFile(filename).exists())
 			savedFile = EngineAssetManager.getInstance().getUserFile(filename);
-		else
+		else if (EngineAssetManager.getInstance().assetExists("tests/" + filename))
 			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
+		else {
+			Drawable d = ui.getSkin().getDrawable("black");
+			
+			return new Image(d);
+		}
 
 		Texture t = new Texture(savedFile);
 

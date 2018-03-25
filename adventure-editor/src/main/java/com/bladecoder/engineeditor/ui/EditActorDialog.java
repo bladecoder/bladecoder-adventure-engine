@@ -20,7 +20,6 @@ import java.util.HashMap;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.actions.Param;
@@ -47,6 +46,7 @@ import com.bladecoder.engineeditor.common.AlignUtils;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.FilteredSelectBox;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 import com.bladecoder.engineeditor.ui.panels.OptionsInputPanel;
@@ -97,11 +97,16 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 	private InputPanel orgAlign;
 	
+	private InputPanel textColor;
+	private InputPanel textStyle;
+	
+	// Spine Renderer
+	private InputPanel spineSkin;
+	
 	// 3d Renderer
 	private InputPanel spriteSize;
 	private InputPanel cameraName;
 	private InputPanel fov;
-	private InputPanel textColor;
 
 	// Particle Renderer
 	private InputPanel particleName;
@@ -168,6 +173,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		walkingSpeed = InputPanelFactory.createInputPanel(skin, "Walking Speed",
 				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT, true,
 				Float.toString(CharacterActor.DEFAULT_WALKING_SPEED));
+		
+		spineSkin = InputPanelFactory.createInputPanel(skin, "Skin", "The initial skin.");
 
 		spriteSize = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions", "The size of the 3d sprite.",
 				Param.Type.DIMENSION, true);
@@ -178,6 +185,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		textColor = InputPanelFactory.createInputPanel(skin, "Text Color",
 				"The text color (RRGGBBAA) when the actor talks.", Param.Type.COLOR, false);
+		
+		textStyle = InputPanelFactory.createInputPanel(skin, "Text Style",
+				"The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section).", Param.Type.STRING, false);
 
 		particleName = InputPanelFactory.createInputPanel(skin, "Particle Name", "The name of the particle system.",
 				Type.PARTICLE_ASSET, true);
@@ -210,7 +220,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		setInfo(TYPES_INFO[0]);
 
-		((SelectBox<String>) typePanel.getField()).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) typePanel.getField()).addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -218,7 +228,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			}
 		});
 
-		((SelectBox<String>) renderer.getField()).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) renderer.getField()).addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -229,7 +239,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		init(parent, e,
 				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, fakeDepth, pos, refPoint, scale, rot,
 						tint, text, font, size, textAlign, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
-						shadowColor, bboxFromRenderer, zIndex, orgAlign, walkingSpeed, spriteSize, cameraName, fov, textColor });
+						shadowColor, bboxFromRenderer, zIndex, orgAlign, walkingSpeed, spineSkin, spriteSize, cameraName, fov, textColor, textStyle });
 
 		typeChanged();
 
@@ -280,6 +290,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		if (ACTOR_TYPES[i].equals(CHARACTER_TYPE_STR)) {
 			setVisible(walkingSpeed, true);
 			setVisible(textColor, true);
+			setVisible(textStyle, true);
 		}
 
 		rendererChanged();
@@ -289,6 +300,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		int i = ((OptionsInputPanel) renderer).getSelectedIndex();
 
 		// setInfo(RENDERERS_INFO[i]);
+		
+		setVisible(spineSkin, false);
 
 		setVisible(spriteSize, false);
 		setVisible(cameraName, false);
@@ -309,7 +322,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		setVisible(shadowColor, false);
 
 		if (renderer.isVisible()) {
-			if (ACTOR_RENDERERS[i].equals(Project.S3D_RENDERER_STRING)) {
+			if (ACTOR_RENDERERS[i].equals(Project.SPINE_RENDERER_STRING)) {
+				setVisible(spineSkin, true);
+			} else if (ACTOR_RENDERERS[i].equals(Project.S3D_RENDERER_STRING)) {
 				setVisible(spriteSize, true);
 				setVisible(cameraName, true);
 				setVisible(fov, true);
@@ -346,6 +361,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		String type = typePanel.getText();
 		boolean typeChanged = false;
 		BaseActor oldElement = e;
+		String oldId = null;
 
 		boolean isPlayer = false;
 
@@ -362,6 +378,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 			// remove to allow id, zindex and layer change
 			parent.removeActor(e);
+			
+			oldId = e.getId();
 		}
 
 		if (create || typeChanged) {
@@ -431,10 +449,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			
 			ia.setRefPoint(rp.x, rp.y);
 
+			String key = ia.getDesc();
 
-			String key = desc.getText();
-
-			if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+			if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX || !e.getId().equals(oldId))
 				key = Ctx.project.getI18N().genKey(parent.getId(), e.getId(), "desc");
 
 			Ctx.project.getI18N().setTranslation(key, desc.getText());
@@ -496,7 +513,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					
 					key = text.getText();
 
-					if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX)
+					if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX || !e.getId().equals(oldId))
 						key = Ctx.project.getI18N().genKey(parent.getId(), e.getId(), "text");
 
 					Ctx.project.getI18N().setTranslation(key, text.getText());
@@ -519,8 +536,16 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					// dispose to force reload the text attributes
 					sa.dispose();
 				} else if (Project.SPINE_RENDERER_STRING.equals(rendererType)) {
-					if (sa.getRenderer() == null || !(sa.getRenderer() instanceof SpineRenderer))
-						sa.setRenderer(new SpineRenderer());
+					SpineRenderer r;
+					
+					if (sa.getRenderer() == null || !(sa.getRenderer() instanceof SpineRenderer)) {
+						r = new SpineRenderer();
+						sa.setRenderer(r);
+					} else {
+						r = (SpineRenderer) sa.getRenderer();
+					}
+					
+					r.setSkin(spineSkin.getText());
 				}
 
 				boolean bbfr = Boolean.parseBoolean(bboxFromRenderer.getText());
@@ -538,6 +563,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 					ca.setWalkingSpeed(Float.parseFloat(walkingSpeed.getText()));
 					ca.setTextColor(Param.parseColor(textColor.getText()));
+					ca.setTextStyle(textStyle.getText());
 				}
 			}
 		}
@@ -617,6 +643,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					
 				} else if (r instanceof SpineRenderer) {
 					renderer.setText(Project.SPINE_RENDERER_STRING);
+					spineSkin.setText(((SpineRenderer) r).getSkin());
 				}
 
 				fakeDepth.setText(Boolean.toString(sa.getFakeDepth()));
@@ -631,6 +658,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 					walkingSpeed.setText(Float.toString(ca.getWalkingSpeed()));
 					textColor.setText(ca.getTextColor() == null ? null : ca.getTextColor().toString());
+					textStyle.setText(ca.getTextStyle());
 					typePanel.setText(CHARACTER_TYPE_STR);
 				} else {
 					typePanel.setText(SPRITE_TYPE_STR);

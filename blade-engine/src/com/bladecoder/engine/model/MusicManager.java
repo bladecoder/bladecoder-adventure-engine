@@ -4,9 +4,12 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.anim.MusicVolumeTween;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.InterpolationMode;
 
 /**
  * Simple music engine.
@@ -25,11 +28,18 @@ public class MusicManager implements Serializable, AssetConsumer {
 	private boolean isPlayingSer = false;
 	private float musicPosSer = 0;
 	transient private boolean isPaused = false;
+	private MusicVolumeTween volumeTween;
 
 	public void playMusic() {
 		if (music != null && !music.isPlaying()) {
-			music.play();
-			music.setLooping(desc.isLoop());
+			
+			try {
+				music.play();
+				music.setLooping(desc.isLoop());
+				music.setVolume(desc.getVolume());
+			} catch(Exception e) {
+				EngineLogger.error("Error Playing music: " + desc.getFilename(), e);
+			}
 		}
 	}
 
@@ -53,8 +63,10 @@ public class MusicManager implements Serializable, AssetConsumer {
 	}
 
 	public void setMusic(MusicDesc d) {
+		EngineLogger.debug(">>>SETTING MUSIC.");
 		stopMusic();
 		currentMusicDelay = 0;
+		volumeTween = null;
 
 		if (d != null) {
 			if (desc != null)
@@ -68,21 +80,26 @@ public class MusicManager implements Serializable, AssetConsumer {
 			desc = null;
 		}
 	}
-	
 
-	public void setVolume(float volume) {
-		if(desc != null)
+	public void setVolume(float volume) {	
+		if (desc != null)
 			desc.setVolume(volume);
-		
-		if(music != null)
+
+		if (music != null && music.isPlaying())
 			music.setVolume(volume);
 	}
 
+	public float getVolume() {
+		if (desc != null)
+			return desc.getVolume();
+
+		return 1f;
+	}
 
 	public void leaveScene(MusicDesc newMusicDesc) {
 
-		if (desc != null && !desc.isStopWhenLeaving() && 
-				(newMusicDesc == null || newMusicDesc.getFilename().equals(desc.getFilename())))
+		if (desc != null && !desc.isStopWhenLeaving()
+				&& (newMusicDesc == null || newMusicDesc.getFilename().equals(desc.getFilename())))
 			return;
 
 		if (desc != null) {
@@ -100,21 +117,32 @@ public class MusicManager implements Serializable, AssetConsumer {
 
 	public void update(float delta) {
 		// music delay update
-		if (music != null && !music.isPlaying()) {
-			boolean initialTime = false;
+		if (music != null) {
+			if (!music.isPlaying()) {
 
-			if (currentMusicDelay <= desc.getInitialDelay())
-				initialTime = true;
+				boolean initialTime = false;
 
-			currentMusicDelay += delta;
+				if (currentMusicDelay <= desc.getInitialDelay())
+					initialTime = true;
 
-			if (initialTime) {
-				if (currentMusicDelay > desc.getInitialDelay())
-					playMusic();
-			} else {
-				if (desc.getRepeatDelay() >= 0 && currentMusicDelay > desc.getRepeatDelay() + desc.getInitialDelay()) {
-					currentMusicDelay = desc.getInitialDelay();
-					playMusic();
+				currentMusicDelay += delta;
+
+				if (initialTime) {
+					if (currentMusicDelay > desc.getInitialDelay())
+						playMusic();
+				} else {
+					if (desc.getRepeatDelay() >= 0
+							&& currentMusicDelay > desc.getRepeatDelay() + desc.getInitialDelay()) {
+						currentMusicDelay = desc.getInitialDelay();
+						playMusic();
+					}
+				}
+			}
+			
+			if (volumeTween != null) {
+				volumeTween.update(delta);
+				if (volumeTween.isComplete()) {
+					volumeTween = null;
 				}
 			}
 		}
@@ -127,6 +155,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 			EngineAssetManager.getInstance().disposeMusic(desc.getFilename());
 			music = null;
 			desc = null;
+			volumeTween = null;
 		}
 	}
 
@@ -141,22 +170,19 @@ public class MusicManager implements Serializable, AssetConsumer {
 	@Override
 	public void retrieveAssets() {
 		if (music == null && desc != null) {
-			
-			if(!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.MUSIC_DIR + desc.getFilename())) {
+
+			if (!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.MUSIC_DIR + desc.getFilename())) {
 				loadAssets();
 				EngineAssetManager.getInstance().finishLoading();
 			}
-			
+
 			EngineLogger.debug("RETRIEVING MUSIC: " + desc.getFilename());
-			
+
 			music = EngineAssetManager.getInstance().getMusic(desc.getFilename());
-			
-			if(music != null)
-				music.setVolume(desc.getVolume());
 
 			if (isPlayingSer) {
 				playMusic();
-				
+
 				if (music != null) {
 					music.setPosition(musicPosSer);
 					musicPosSer = 0f;
@@ -167,12 +193,20 @@ public class MusicManager implements Serializable, AssetConsumer {
 		}
 	}
 
+	public void fade(float volume, float duration, ActionCallback cb) {
+		volumeTween = new MusicVolumeTween();
+		volumeTween.start(volume, duration, InterpolationMode.FADE, cb);
+	}
+
 	@Override
 	public void write(Json json) {
 		json.writeValue("desc", desc);
 		json.writeValue("currentMusicDelay", currentMusicDelay);
-		json.writeValue("isPlaying", music != null && (music.isPlaying()|| isPaused));
-		json.writeValue("musicPos", music != null && (music.isPlaying()|| isPaused) ? music.getPosition() : 0f);
+		json.writeValue("isPlaying", music != null && (music.isPlaying() || isPaused));
+		json.writeValue("musicPos", music != null && (music.isPlaying() || isPaused) ? music.getPosition() : 0f);
+
+		if (volumeTween != null)
+			json.writeValue("volumeTween", volumeTween);
 	}
 
 	@Override
@@ -181,5 +215,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 		currentMusicDelay = json.readValue("currentMusicDelay", float.class, jsonData);
 		isPlayingSer = json.readValue("isPlaying", boolean.class, jsonData);
 		musicPosSer = json.readValue("musicPos", float.class, jsonData);
+
+		volumeTween = json.readValue("volumeTween", MusicVolumeTween.class, jsonData);
 	}
 }
