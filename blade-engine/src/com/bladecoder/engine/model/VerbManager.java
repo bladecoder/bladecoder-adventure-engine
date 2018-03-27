@@ -20,6 +20,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
+import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.SerializationHelper;
 import com.bladecoder.engine.util.SerializationHelper.Mode;
@@ -87,7 +88,7 @@ public class VerbManager implements Serializable {
 	 * @param target
 	 *            When one object is used with another object.
 	 */
-	public void runVerb(String verb, String state, String target) {
+	public void runVerb(String verb, String state, String target, ActionCallback cb) {
 
 		Verb v = null;
 
@@ -100,7 +101,7 @@ public class VerbManager implements Serializable {
 		}
 
 		if (v != null) {
-			v.run(target);
+			v.run(target, cb);
 		} else {
 			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}''", verb, target));
 		}

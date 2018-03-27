@@ -39,7 +39,7 @@ public interface VerbRunner extends ActionCallback {
 	 * Run the verb
 	 * @param currentTarget the target for the 'use' verb.
 	 */
-	public void run(String currentTarget);
+	public void run(String currentTarget, ActionCallback cb);
 
 	/**
 	 * Return the current action pointer

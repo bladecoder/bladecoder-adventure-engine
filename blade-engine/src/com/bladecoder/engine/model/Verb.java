@@ -22,6 +22,8 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.SerializationException;
 import com.bladecoder.engine.actions.Action;
+import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.SerializationHelper;
@@ -48,6 +50,8 @@ public class Verb implements VerbRunner, Serializable {
 
 	private int ip = -1;
 	private String currentTarget;
+	
+	private ActionCallback cb;
 
 	public Verb() {
 	}
@@ -112,8 +116,9 @@ public class Verb implements VerbRunner, Serializable {
 		return currentTarget;
 	}
 
-	public void run(String currentTarget) {
+	public void run(String currentTarget, ActionCallback cb) {
 		this.currentTarget = currentTarget;
+		this.cb = cb;
 		
 		if (EngineLogger.debugMode()) {
 			StringBuilder sb = new StringBuilder(">>> Running verb: ").append(id);
@@ -150,8 +155,12 @@ public class Verb implements VerbRunner, Serializable {
 			}
 		}
 
-		if (EngineLogger.debugMode() && isFinished())
+		if (isFinished()) {
 			EngineLogger.debug(">>> Verb FINISHED: " + id);
+			
+			if(cb != null)
+				cb.resume();
+		}
 	}
 
 	public boolean isFinished() {
@@ -203,6 +212,7 @@ public class Verb implements VerbRunner, Serializable {
 			json.writeArrayEnd();
 		} else {
 			json.writeValue("ip", ip);
+			json.writeValue("cb", ActionCallbackSerialization.find(cb));
 			
 			if(currentTarget != null)
 				json.writeValue("currentTarget", currentTarget);
@@ -246,6 +256,8 @@ public class Verb implements VerbRunner, Serializable {
 			// MUTABLE
 			currentTarget = json.readValue("currentTarget", String.class, (String)null, jsonData);
 			ip = json.readValue("ip", Integer.class, jsonData);
+			String sCb = json.readValue("cb", String.class, jsonData);
+			cb = ActionCallbackSerialization.find(sCb);
 
 			JsonValue actionsValue = jsonData.get("actions");
 

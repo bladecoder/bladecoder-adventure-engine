@@ -192,7 +192,7 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 
 		if (actions.size() > 0) {
-			run(null);
+			run(null, null);
 		} else {
 
 			if (hasChoices()) {
@@ -349,7 +349,7 @@ public class InkManager implements VerbRunner, Serializable {
 		return story;
 	}
 
-	public void run(String path, ActionCallback cb) throws Exception {
+	public void runPath(String path, ActionCallback cb) throws Exception {
 		if (story == null) {
 			EngineLogger.error("Ink Story not loaded!");
 			return;
@@ -431,7 +431,7 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	@Override
-	public void run(String currentTarget) {
+	public void run(String currentTarget, ActionCallback cb) {
 		ip = 0;
 		nextStep();
 	}

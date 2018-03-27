@@ -159,7 +159,7 @@ public class Scene implements Serializable, AssetConsumer {
 	}
 
 	public void runVerb(String id) {
-		verbs.runVerb(id, state, null);
+		verbs.runVerb(id, state, null, null);
 	}
 
 	public void update(float delta) {

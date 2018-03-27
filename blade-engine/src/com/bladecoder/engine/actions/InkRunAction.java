@@ -19,7 +19,7 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
-@ActionDescription("Jump a Ink knot or stich.")
+@ActionDescription("Jump an Ink knot or stich.")
 public class InkRunAction implements Action {
 	@ActionPropertyDescription("The knot/stich path to jump. Ej: 'myKnotName' or 'myKnotName.theStitchWithin'")
 	@ActionProperty(required = true)
@@ -32,7 +32,7 @@ public class InkRunAction implements Action {
 	@Override
 	public boolean run(VerbRunner cb) {
 		try {
-			World.getInstance().getInkManager().run(path, wait?cb:null);
+			World.getInstance().getInkManager().runPath(path, wait?cb:null);
 		} catch (Exception e) {
 			EngineLogger.error("Cannot jump to: " + path + " " + e.getMessage());
 		}

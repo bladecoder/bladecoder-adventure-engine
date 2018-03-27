@@ -285,10 +285,10 @@ public class World implements Serializable, AssetConsumer {
 				// to know if new or loaded game.
 				if (customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) == null
 						&& verbs.getVerb(Verb.INIT_NEW_GAME_VERB, null, null) != null)
-					verbs.runVerb(Verb.INIT_NEW_GAME_VERB, null, null);
+					verbs.runVerb(Verb.INIT_NEW_GAME_VERB, null, null, null);
 				else if (customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) != null
 						&& verbs.getVerb(Verb.INIT_SAVED_GAME_VERB, null, null) != null)
-					verbs.runVerb(Verb.INIT_SAVED_GAME_VERB, null, null);
+					verbs.runVerb(Verb.INIT_SAVED_GAME_VERB, null, null, null);
 			}
 
 			// call 'init' verb only when arrives from setCurrentScene and not

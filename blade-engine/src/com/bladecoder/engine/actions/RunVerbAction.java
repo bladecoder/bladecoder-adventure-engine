@@ -18,8 +18,6 @@ package com.bladecoder.engine.actions;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
@@ -29,7 +27,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Runs an actor verb")
-public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
+public class RunVerbAction implements VerbRunner, Action {
 	@ActionPropertyDescription("The actor with the verb. If empty, the verb is searched in the scene and in the world.")
 	@ActionProperty(type = Type.INTERACTIVE_ACTOR)
 	private String actor;
@@ -41,35 +39,36 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	@ActionProperty
 	@ActionPropertyDescription("Aditional actor for 'use' verb")
 	private String target;
-
-	private String state;
-	private int ip = -1;
-	private String currentTarget;
+	
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+	private boolean wait = true;
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		setVerbCb(cb);
 		
-		run(cb.getCurrentTarget());
+		run(cb.getCurrentTarget(), cb);
 		
-		return getWait();
+		return wait;
 	}
 
-	private Verb getVerb(String verb, String target, String state) {
+	private Verb getVerb() {
 		Verb v = null;
+		
+		Scene s = World.getInstance().getCurrentScene();
 
 		if (actor != null) {
-			InteractiveActor a = (InteractiveActor)World.getInstance().getCurrentScene().getActor(actor, true);
+			InteractiveActor a = (InteractiveActor)s.getActor(actor, true);
 
-			v = a.getVerbManager().getVerb(verb, state, target);
+			v = a.getVerbManager().getVerb(verb, a.getState(), target);
 		}
 
 		if (v == null) {
-			v = World.getInstance().getCurrentScene().getVerb(verb);
+			v = s.getVerbManager().getVerb(verb, s.getState(), target);
 		}
 
 		if (v == null) {
-			v = World.getInstance().getVerbManager().getVerb(verb, null, null);
+			v = World.getInstance().getVerbManager().getVerb(verb, null, target);
 		}
 
 		if (v == null)
@@ -78,38 +77,9 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 		return v;
 	}
 
-	private void nextStep() {
-
-		boolean stop = false;
-
-		ArrayList<Action> actions = getActions();
-
-		while (ip < actions.size() && !stop) {
-			Action a = actions.get(ip);
-
-			if (EngineLogger.debugMode())
-				EngineLogger.debug("RunVerbAction: " + verb + "(" + ip + ") " + a.getClass().getSimpleName());
-
-			try {
-				if (a.run(this))
-					stop = true;
-				else
-					ip++;
-			} catch (Exception e) {
-				EngineLogger.error("EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName(), e);
-				ip++;
-			}
-		}
-
-		if (getWait() && !stop) {
-			super.resume();
-		}
-	}
-
 	@Override
 	public void resume() {
-		ip++;
-		nextStep();
+		getVerb().resume();
 	}
 
 	@Override
@@ -124,24 +94,17 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 		}
 		
 		
-		ArrayList<Action> actions = getActions();
-
-		for (Action c : actions) {
-			if (c instanceof VerbRunner)
-				((VerbRunner) c).cancel();
-		}
-
-		ip = actions.size();
+		getVerb().cancel();
 	}
 
 	@Override
 	public String getCurrentTarget() {
-		return currentTarget;
+		return getVerb().getCurrentTarget();
 	}
 
 	@Override
 	public ArrayList<Action> getActions() {
-		Verb v = getVerb(verb, target, state);
+		Verb v = getVerb();
 
 		if (v == null) {
 			if( actor != null)
@@ -157,48 +120,20 @@ public class RunVerbAction extends BaseCallbackAction implements VerbRunner {
 	}
 
 	@Override
-	public void run(String currentTarget) {
-		ip = 0;
-		this.currentTarget = currentTarget;
+	public void run(String currentTarget, ActionCallback cb) {
+		Verb v = getVerb();
 		
-		Scene s = World.getInstance().getCurrentScene();
-
-		// Gets the actor/scene state.
-		if (actor != null
-				&& ((InteractiveActor)s.getActor(actor, true)).getVerb(verb, target) != null) {
-			state = ((InteractiveActor)s.getActor(actor, true)).getState();
-		} else if (s.getVerb(verb) != null) {
-			state = s.getState();
-		}
-
-		nextStep();
+		v.run(currentTarget, cb);
 	}
 
 	@Override
 	public int getIP() {
-		return ip;
+		return getVerb().getIP();
 	}
 
 	@Override
 	public void setIP(int ip) {
-		this.ip = ip;
+		getVerb().setIP(ip);
 	}	
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("ip", ip);
-		json.writeValue("state", state);
-		if(currentTarget != null)
-			json.writeValue("currentTarget", currentTarget);
-		super.write(json);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		ip = json.readValue("ip", int.class, -1, jsonData);
-		state = json.readValue("state", String.class, jsonData);
-		currentTarget = json.readValue("currentTarget", String.class, (String)null, jsonData);
-		super.read(json, jsonData);
-	}
 
 }

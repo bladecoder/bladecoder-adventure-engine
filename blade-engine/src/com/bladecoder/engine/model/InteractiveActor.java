@@ -112,14 +112,14 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 				Verb v = getVerb("exit");
 				if (v != null)
-					v.run(null);
+					v.run(null, null);
 			} else if (hit && !playerInside) {
 				// the player enters
 				playerInside = true;
 
 				Verb v = getVerb("enter");
 				if (v != null)
-					v.run(null);
+					v.run(null, null);
 			}
 		}
 	}
@@ -133,11 +133,11 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 	}
 
 	public void runVerb(String id) {
-		verbs.runVerb(id, state, null);
+		verbs.runVerb(id, state, null, null);
 	}
 
 	public void runVerb(String id, String target) {
-		verbs.runVerb(id, state, target);
+		verbs.runVerb(id, state, target, null);
 	}
 
 	@Override
