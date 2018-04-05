@@ -275,7 +275,12 @@ public class Scene implements Serializable, AssetConsumer {
 	}
 
 	public void addActor(BaseActor actor) {
-		actors.put(actor.getId(), actor);
+		BaseActor prev = actors.put(actor.getId(), actor);
+		
+		if(prev != null) {
+			EngineLogger.error("Actor '" + actor.getId() +"' already exists in scene '" + id + "'.");
+		}
+		
 		actor.setScene(this);
 
 		if (actor instanceof InteractiveActor) {
