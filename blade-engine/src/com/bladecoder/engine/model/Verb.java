@@ -155,7 +155,7 @@ public class Verb implements VerbRunner, Serializable {
 			}
 		}
 
-		if (isFinished()) {
+		if (ip == actions.size()) {
 			EngineLogger.debug(">>> Verb FINISHED: " + id);
 			
 			if(cb != null)
