@@ -57,7 +57,7 @@ public class DialogUI extends ScrollPane {
 		up = new Button(ui.getSkin(), "dialog-up");
 		down = new Button(ui.getSkin(), "dialog-down");
 
-		panel = (Table) getWidget();
+		panel = (Table) getActor();
 		style = ui.getSkin().get(DialogUIStyle.class);
 		this.recorder = ui.getRecorder();
 

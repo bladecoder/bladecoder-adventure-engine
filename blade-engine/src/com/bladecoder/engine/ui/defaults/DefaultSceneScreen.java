@@ -52,10 +52,12 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.model.WorldListener;
 import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.InventoryButton;
@@ -85,7 +87,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	private PieMenu pie;
 	private InventoryUI inventoryUI;
 	private Actor dialogUI;
-	private Actor textManagerUI;
+	private TextManagerUI textManagerUI;
 	private ShapeRenderer renderer;
 
 	private InventoryButton inventoryButton;
@@ -289,7 +291,8 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		@Override
 		public boolean scrolled(int amount) {
-			if (state == UIStates.SCENE_MODE || state == UIStates.INVENTORY_MODE) {
+			if ((state == UIStates.SCENE_MODE || state == UIStates.INVENTORY_MODE)
+					&& World.getInstance().getInventory().isVisible()) {
 
 				boolean fromDown = (inventoryUI.getInventoryPos() == InventoryPos.CENTER
 						|| inventoryUI.getInventoryPos() == InventoryPos.DOWN);
@@ -303,6 +306,25 @@ public class DefaultSceneScreen implements SceneScreen {
 			return true;
 		}
 
+	};
+
+	private final WorldListener worldListener = new WorldListener() {
+		@Override
+		public void text(Text t) {
+			textManagerUI.setText(t);
+		}
+
+		@Override
+		public void dialog() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void cutMode(boolean value) {
+			// TODO Auto-generated method stub
+
+		}
 	};
 
 	public DefaultSceneScreen() {
@@ -915,7 +937,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		return dialogUI;
 	}
 
-	public void setTextManagerUI(Actor a) {
+	public void setTextManagerUI(TextManagerUI a) {
 		textManagerUI.remove();
 		textManagerUI = a;
 		stage.addActor(textManagerUI);
@@ -954,7 +976,10 @@ public class DefaultSceneScreen implements SceneScreen {
 			}
 		}
 
+		World.getInstance().setListener(worldListener);
 		World.getInstance().resume();
+
+		textManagerUI.setText(World.getInstance().getTextManager().getCurrentText());
 	}
 
 	@Override

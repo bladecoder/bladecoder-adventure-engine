@@ -123,6 +123,8 @@ public class World implements Serializable, AssetConsumer {
 	private Transition transition;
 
 	private MusicManager musicManager;
+	
+	private WorldListener listener;
 
 	// ------------ LAZY CREATED OBJECTS ------------
 	private InkManager inkManager;
@@ -164,6 +166,7 @@ public class World implements Serializable, AssetConsumer {
 		currentInventory = DEFAULT_INVENTORY;
 		uiActors = new UIActors();
 		textManager = new TextManager();
+		textManager.setWorld(this);
 
 		timers = new Timers();
 
@@ -184,6 +187,14 @@ public class World implements Serializable, AssetConsumer {
 		disposed = false;
 
 		initGame = true;
+	}
+	
+	public void setListener(WorldListener l) {
+		listener = l;
+	}
+	
+	public WorldListener getListener() {
+		return listener;
 	}
 
 	public Timers getTimers() {
@@ -474,6 +485,9 @@ public class World implements Serializable, AssetConsumer {
 
 	public void setCutMode(boolean v) {
 		cutMode = v;
+		
+		if(listener != null)
+			listener.cutMode(cutMode);
 	}
 
 	public void setCurrentScene(String id) {
@@ -1181,6 +1195,8 @@ public class World implements Serializable, AssetConsumer {
 			timers = json.readValue("timers", Timers.class, jsonData);
 
 			textManager = json.readValue("textmanager", TextManager.class, jsonData);
+			textManager.setWorld(this);
+			
 			customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
 			customProperties.put(WorldProperties.SAVED_GAME_VERSION.toString(), version);
 

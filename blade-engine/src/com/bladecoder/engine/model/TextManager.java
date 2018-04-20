@@ -51,9 +51,14 @@ public class TextManager implements Serializable {
 	private final VoiceManager voiceManager = new VoiceManager(this);
 
 	private Queue<Text> fifo;
+	private World world;
 
 	public TextManager() {
 		fifo = new LinkedList<Text>();
+	}
+	
+	public void setWorld(World w) {
+		this.world = w;		
 	}
 
 	public void addText(String str, float x, float y, boolean quee, Text.Type type, Color color, String font,
@@ -127,6 +132,9 @@ public class TextManager implements Serializable {
 			voiceManager.play(t.voiceId);
 		else
 			voiceManager.stop();
+		
+		if(world.getListener() != null)
+			world.getListener().text(t);
 	}
 
 	public void update(float delta) {
@@ -161,13 +169,12 @@ public class TextManager implements Serializable {
 	}
 
 	/**
-	 * Put manager in the init state. Use it when changing current scene
+	 * Put manager in the init state. Used when changing current scene
 	 */
 	public void reset() {
-		inScreenTime = 0;
 		fifo.clear();
-		currentText = null;
-		voiceManager.stop();
+		
+		setCurrentText(null);
 	}
 
 	@Override
