@@ -42,6 +42,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.bladecoder.engineeditor.common.EditorLogger;
 
 public class EditableSelectBox<T> extends Table {
 	static final Vector2 temp = new Vector2();
@@ -256,7 +257,10 @@ public class EditableSelectBox<T> extends Table {
 			addListener(new InputListener() {
 				public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
 					if (toActor == null || !isAscendantOf(toActor))
-						list.setSelectedIndex(selectedIndex);
+						if(selectedIndex >= list.getItems().size - 1)
+							list.setSelectedIndex(selectedIndex);
+						else
+							EditorLogger.error("EditableSelectBox:exit selectedIndex outOfBounds: " + selectedIndex);
 				}
 			});
 
