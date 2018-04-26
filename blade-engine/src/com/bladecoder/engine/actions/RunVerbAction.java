@@ -47,7 +47,7 @@ public class RunVerbAction implements VerbRunner, Action {
 	@Override
 	public boolean run(VerbRunner cb) {
 		
-		run(cb.getCurrentTarget(), cb);
+		run(cb.getCurrentTarget(),  wait?cb:null);
 		
 		return wait;
 	}
