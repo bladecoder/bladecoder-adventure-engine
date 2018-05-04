@@ -257,7 +257,7 @@ public class EditableSelectBox<T> extends Table {
 			addListener(new InputListener() {
 				public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
 					if (toActor == null || !isAscendantOf(toActor))
-						if(selectedIndex >= list.getItems().size - 1)
+						if(selectedIndex < list.getItems().size)
 							list.setSelectedIndex(selectedIndex);
 						else
 							EditorLogger.error("EditableSelectBox:exit selectedIndex outOfBounds: " + selectedIndex);
