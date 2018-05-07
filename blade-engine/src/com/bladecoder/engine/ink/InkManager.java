@@ -198,6 +198,7 @@ public class InkManager implements VerbRunner, Serializable {
 			if (hasChoices()) {
 				wasInCutmode = World.getInstance().inCutMode();
 				World.getInstance().setCutMode(false);
+				World.getInstance().getListener().dialogOptions();
 			} else if (cb != null || sCb != null) {
 				if (cb == null) {
 					cb = ActionCallbackSerialization.find(sCb);

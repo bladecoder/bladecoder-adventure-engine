@@ -510,6 +510,8 @@ public class World implements Serializable, AssetConsumer {
 			if (visibleOptions == 0)
 				currentDialog = null;
 		}
+		
+		World.getInstance().getListener().dialogOptions();
 	}
 
 	public void setInventory(String inventory) {
@@ -692,6 +694,8 @@ public class World implements Serializable, AssetConsumer {
 			// Pause all sounds
 			currentScene.getSoundManager().pause();
 		}
+		
+		listener.pause(true);
 	}
 
 	public void resume() {
@@ -706,6 +710,8 @@ public class World implements Serializable, AssetConsumer {
 				currentScene.getSoundManager().resume();
 			}
 		}
+		
+		listener.pause(false);
 	}
 
 	public void newGame() throws Exception {

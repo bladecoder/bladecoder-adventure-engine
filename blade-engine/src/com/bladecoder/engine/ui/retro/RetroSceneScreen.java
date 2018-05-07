@@ -46,8 +46,10 @@ import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.model.WorldListener;
 import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.Pointer;
@@ -101,15 +103,11 @@ public class RetroSceneScreen implements SceneScreen {
 
 	private float speed = 1.0f;
 
-	private static enum UIStates {
-		SCENE_MODE, CUT_MODE, PLAY_MODE, PAUSE_MODE, DIALOG_MODE, TESTER_BOT_MODE
-	};
-
-	private UIStates state = UIStates.SCENE_MODE;
-
 	private final GlyphLayout textLayout = new GlyphLayout();
 
 	private Pointer pointer;
+	
+	private boolean uiEnabled = true;
 
 	private final GestureDetector inputProcessor = new GestureDetector(new GestureDetector.GestureAdapter() {
 		@Override
@@ -123,7 +121,7 @@ public class RetroSceneScreen implements SceneScreen {
 
 			World w = World.getInstance();
 
-			if (state == UIStates.PAUSE_MODE || state == UIStates.PLAY_MODE || state == UIStates.TESTER_BOT_MODE)
+			if (w.isPaused() || recorder.isPlaying() || testerBot.isEnabled())
 				return true;
 
 			if (drawHotspots)
@@ -131,7 +129,7 @@ public class RetroSceneScreen implements SceneScreen {
 			else {
 				if (w.inCutMode() && !recorder.isRecording()) {
 					w.getTextManager().next();
-				} else if (state == UIStates.SCENE_MODE) {
+				} else if (!w.hasDialogOptions()) {
 					sceneClick(button);
 				}
 			}
@@ -143,7 +141,7 @@ public class RetroSceneScreen implements SceneScreen {
 		public boolean longPress(float x, float y) {
 			EngineLogger.debug("Event LONG PRESS");
 
-			if (state == UIStates.SCENE_MODE) {
+			if (uiEnabled && !World.getInstance().hasDialogOptions()) {
 				drawHotspots = true;
 			}
 
@@ -235,7 +233,7 @@ public class RetroSceneScreen implements SceneScreen {
 				}
 				break;
 			case ' ':
-				if (state == UIStates.SCENE_MODE) {
+				if (uiEnabled && !World.getInstance().hasDialogOptions()) {
 					drawHotspots = true;
 				}
 				break;
@@ -244,6 +242,36 @@ public class RetroSceneScreen implements SceneScreen {
 			// FIXME: This is returning false even in the cases where we
 			// actually process the character
 			return false;
+		}
+	};
+	
+	private final WorldListener worldListener = new WorldListener() {
+		@Override
+		public void text(Text t) {
+			textManagerUI.setText(t);
+		}
+
+		@Override
+		public void dialogOptions() {
+			updateUI();
+		}
+
+		@Override
+		public void cutMode(boolean value) {
+			updateUI();
+		}
+
+		@Override
+		public void inventoryEnabled(boolean value) {
+			if (value)
+				verbUI.show();
+			else
+				verbUI.hide();
+		}
+
+		@Override
+		public void pause(boolean value) {
+			updateUI();
 		}
 	};
 
@@ -270,33 +298,32 @@ public class RetroSceneScreen implements SceneScreen {
 	public UI getUI() {
 		return ui;
 	}
+	
+	private void updateUI() {
+		World w = World.getInstance();
 
-	private void setUIState(UIStates s) {
-		if (state == s)
-			return;
-
-		switch (s) {
-		case PAUSE_MODE:
-		case PLAY_MODE:
-		case TESTER_BOT_MODE:
-		case CUT_MODE:
+		if (w.isPaused() || w.inCutMode() || testerBot.isEnabled() || recorder.isPlaying()) {
+			// DISABLE UI
 			dialogUI.setVisible(false);
 			verbUI.hide();
 			pointer.hide();
-			break;
-		case DIALOG_MODE:
-			dialogUI.setVisible(true);
-			verbUI.hide();
+			uiEnabled = false;
+		} else {
+			if (World.getInstance().hasDialogOptions()) {
+				dialogUI.setVisible(true);
+				verbUI.hide();
+			} else {
+				dialogUI.setVisible(false);
+				
+				if (w.getInventory().isVisible())
+					verbUI.show();
+				else
+					verbUI.hide();
+			}
+			
 			pointer.show();
-			break;
-		case SCENE_MODE:
-			dialogUI.setVisible(false);
-			verbUI.show();
-			pointer.show();
-			break;
+			uiEnabled = true;
 		}
-
-		state = s;
 	}
 
 	/**
@@ -329,54 +356,16 @@ public class RetroSceneScreen implements SceneScreen {
 			return;
 		}
 
-		// CHECK FOR STATE CHANGES
-		switch (state) {
-		case CUT_MODE:
-			if (!world.inCutMode())
-				setUIState(UIStates.SCENE_MODE);
-			break;
-		case DIALOG_MODE:
-			if (world.getCurrentDialog() == null)
-				setUIState(UIStates.SCENE_MODE);
-			else if (world.inCutMode())
-				setUIState(UIStates.CUT_MODE);
-			break;
-		case PAUSE_MODE:
-			if (!world.isPaused())
-				setUIState(UIStates.SCENE_MODE);
-			break;
-		case PLAY_MODE:
-			if (!recorder.isPlaying())
-				setUIState(UIStates.SCENE_MODE);
-			break;
-		case TESTER_BOT_MODE:
-			if (!testerBot.isEnabled())
-				setUIState(UIStates.SCENE_MODE);
-			break;
-		case SCENE_MODE:
-			if (world.isPaused())
-				setUIState(UIStates.PAUSE_MODE);
-			else if (world.inCutMode())
-				setUIState(UIStates.CUT_MODE);
-			else if (recorder.isPlaying())
-				setUIState(UIStates.PLAY_MODE);
-			else if (testerBot.isEnabled())
-				setUIState(UIStates.TESTER_BOT_MODE);
-			else if (world.getCurrentDialog() != null)
-				setUIState(UIStates.DIALOG_MODE);
-			break;
-		}
-
 		stage.act(delta);
 		worldViewportStage.act(delta);
 
-		if (state == UIStates.PAUSE_MODE)
+		if (world.isPaused())
 			return;
 
 		recorder.update(delta * speed);
 		testerBot.update(delta * speed);
 
-		if (state == UIStates.SCENE_MODE) {
+		if (uiEnabled && !world.hasDialogOptions()) {
 
 			final float tolerance;
 
@@ -388,12 +377,6 @@ public class RetroSceneScreen implements SceneScreen {
 			currentActor = world.getInteractiveActorAtInput(worldViewport, tolerance);
 
 			verbUI.setCurrentActor(currentActor);
-
-			if (world.getInventory().isVisible())
-				verbUI.show();
-			else
-				verbUI.hide();
-
 		}
 	}
 
@@ -489,8 +472,6 @@ public class RetroSceneScreen implements SceneScreen {
 			// sbTmp.append(Gdx.graphics.getDensity());
 			// sbTmp.append(" UI Multiplier:");
 			// sbTmp.append(DPIUtils.getSizeMultiplier());
-			sbTmp.append(" UI STATE: ");
-			sbTmp.append(state.toString());
 
 			if (w.getCurrentScene().getPlayer() != null) {
 				sbTmp.append(" Depth Scl: ");
@@ -708,7 +689,12 @@ public class RetroSceneScreen implements SceneScreen {
 			}
 		}
 
+		World.getInstance().setListener(worldListener);
 		World.getInstance().resume();
+		
+		textManagerUI.setText(World.getInstance().getTextManager().getCurrentText());
+		
+		updateUI();
 	}
 
 	@Override
