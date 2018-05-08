@@ -139,8 +139,9 @@ public class DefaultSceneScreen implements SceneScreen {
 			if (w.isPaused() || recorder.isPlaying() || testerBot.isEnabled())
 				return true;
 
-			if (pie.isVisible())
+			if (pie.isVisible()) {
 				pie.hide();
+			}
 
 			if (drawHotspots)
 				drawHotspots = false;
@@ -473,19 +474,19 @@ public class DefaultSceneScreen implements SceneScreen {
 				actorUnderCursor = world.getInteractiveActorAtInput(viewport, tolerance);
 			}
 
-			if (actorUnderCursor != currentActor)
-				currentActor = actorUnderCursor;
-
-			if (!pie.isVisible()) {
+			// UPDATE POINTER
+			if (!pie.isVisible() && actorUnderCursor != currentActor) {
+				currentActor = actorUnderCursor;				
+				
 				if (currentActor != null) {
 					if (showDesc)
 						pointer.setDesc(currentActor.getDesc());
 
 					Verb leaveVerb = currentActor.getVerb(Verb.LEAVE_VERB);
-
+					
+					TextureRegion r = null;
+					
 					if (leaveVerb != null) {
-						TextureRegion r = null;
-
 						if (leaveVerb.getIcon() != null
 								&& (r = getUI().getSkin().getAtlas().findRegion(leaveVerb.getIcon())) != null) {
 							pointer.setIcon(r);
@@ -493,11 +494,21 @@ public class DefaultSceneScreen implements SceneScreen {
 						} else {
 							pointer.setLeaveIcon(calcLeaveArrowRotation(currentActor));
 						}
-					} else
-						pointer.setHotspotIcon();
+					} else {
+						Verb actionVerb = currentActor.getVerb(Verb.ACTION_VERB);
+						
+						if(actionVerb != null && actionVerb.getIcon() != null
+								&& (r = getUI().getSkin().getAtlas().findRegion(actionVerb.getIcon())) != null) {
+							pointer.setIcon(r);
+						} else {						
+							pointer.setHotspotIcon();
+						}
+					}
 				} else {
 					pointer.setDefaultIcon();
 				}
+			} else if(pie.isVisible()) {
+				currentActor = actorUnderCursor;
 			}
 		}
 	}
@@ -793,8 +804,8 @@ public class DefaultSceneScreen implements SceneScreen {
 			if (count > 1)
 				return;
 
-			if (s.getPlayer().getVerb("goto") != null) {
-				runVerb(s.getPlayer(), "goto", null);
+			if (s.getPlayer().getVerb(Verb.GOTO_VERB) != null) {
+				runVerb(s.getPlayer(), Verb.GOTO_VERB, null);
 			} else {
 				Vector2 pos = new Vector2(unprojectTmp.x, unprojectTmp.y);
 
@@ -808,17 +819,19 @@ public class DefaultSceneScreen implements SceneScreen {
 	}
 
 	public void actorClick(InteractiveActor a, int button) {
-		final boolean lookat = button == 1;
+		final boolean lookatButton = button == 1;
 
 		if (a.getVerb(Verb.LEAVE_VERB) != null) {
 			runVerb(a, Verb.LEAVE_VERB, null);
+		} else if (a.getVerb(Verb.ACTION_VERB) != null) {
+			runVerb(a, Verb.ACTION_VERB, null);
 		} else if (uiMode == UIModes.SINGLE_CLICK) {
 			// SINGLE CLICK UI
-			// Preference TALK_TO, PICKUP, LOOK_AT
+			// Preference TALKTO, ACTION, PICKUP, LOOKAT
 			String verb = Verb.TALKTO_VERB;
-
+			
 			if (a.getVerb(verb) == null)
-				verb = Verb.ACTION_VERB;
+				verb = Verb.PICKUP_VERB;
 
 			if (a.getVerb(verb) == null)
 				verb = Verb.LOOKAT_VERB;
@@ -827,8 +840,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		} else if (uiMode == UIModes.TWO_BUTTONS) {
 			String verb = Verb.LOOKAT_VERB;
 
-			if (!lookat) {
-				verb = a.getVerb(Verb.TALKTO_VERB) != null ? Verb.TALKTO_VERB : Verb.ACTION_VERB;
+			if (!lookatButton) {
+				verb = a.getVerb(Verb.TALKTO_VERB) != null ? Verb.TALKTO_VERB : Verb.PICKUP_VERB;
 			}
 
 			runVerb(a, verb, null);

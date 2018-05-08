@@ -31,7 +31,8 @@ import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class Verb implements VerbRunner, Serializable {
 	public static final String LOOKAT_VERB = "lookat";
-	public static final String ACTION_VERB = "pickup";
+	public static final String PICKUP_VERB = "pickup";
+	public static final String ACTION_VERB = "action";
 	public static final String LEAVE_VERB = "leave";
 	public static final String TALKTO_VERB = "talkto";
 	public static final String USE_VERB = "use";
