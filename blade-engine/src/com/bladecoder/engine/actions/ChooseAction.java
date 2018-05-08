@@ -41,11 +41,10 @@ public class ChooseAction extends AbstractControlAction implements Serializable 
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		VerbRunner v = (VerbRunner) cb;
 
-		int startIp = v.getIP();
+		int startIp = cb.getIP();
 		int ip0 = startIp + 1;
-		final List<Action> actions = v.getActions();
+		final List<Action> actions = cb.getActions();
 
 		int ip = skipControlIdBlock(actions, startIp);
 		int numActions = ip - startIp - 1;
@@ -65,10 +64,10 @@ public class ChooseAction extends AbstractControlAction implements Serializable 
 				break;
 		}
 
-		v.setIP(ip);
+		cb.setIP(ip);
 
 		if(chooseCount < numActions) {
-			return actions.get(ip0 + chooseCount).run(v);
+			return actions.get(ip0 + chooseCount).run(cb);
 		}
 
 		return false;

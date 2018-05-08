@@ -16,9 +16,9 @@
 package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -54,7 +54,7 @@ public class Scene implements Serializable, AssetConsumer {
 	/**
 	 * All actors in the scene
 	 */
-	private HashMap<String, BaseActor> actors = new HashMap<String, BaseActor>();
+	private Map<String, BaseActor> actors = new ConcurrentHashMap <String, BaseActor>();
 
 	/**
 	 * BaseActor layers
@@ -434,6 +434,9 @@ public class Scene implements Serializable, AssetConsumer {
 	}
 
 	public CharacterActor getPlayer() {
+		if(player == null)
+			return null;
+		
 		return (CharacterActor) actors.get(player);
 	}
 
@@ -673,7 +676,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 			id = json.readValue("id", String.class, jsonData);
 			layers = json.readValue("layers", ArrayList.class, SceneLayer.class, jsonData);
-			actors = json.readValue("actors", HashMap.class, BaseActor.class, jsonData);
+			actors = json.readValue("actors", ConcurrentHashMap.class, BaseActor.class, jsonData);
 
 			for (BaseActor actor : actors.values()) {
 				actor.setScene(this);

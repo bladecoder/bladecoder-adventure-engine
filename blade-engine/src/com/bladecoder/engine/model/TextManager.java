@@ -152,10 +152,11 @@ public class TextManager implements Serializable {
 
 	public void next() {
 		if (currentText != null) {
-
-			currentText.callCb();
-
+			Text t = currentText;
+			
 			setCurrentText(fifo.poll());
+			
+			t.callCb();
 		}
 	}
 
