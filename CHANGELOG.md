@@ -2,8 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.3-SNAPSHOT]
 
+## [2.0.3]
+- Added search box to combo boxes.
+- Added desktop files to generate Flatpak package. 
 - Don't generate the key for desc if exists when editing actor. Better generation of not duplicated keys.
 - Safety nullchecks.
 
