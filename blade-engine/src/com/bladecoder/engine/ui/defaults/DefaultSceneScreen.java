@@ -15,6 +15,9 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui.defaults;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+
 import java.io.IOException;
 import java.util.Locale;
 
@@ -31,6 +34,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -38,7 +42,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TransformDrawable;
@@ -319,7 +325,11 @@ public class DefaultSceneScreen implements SceneScreen {
 	private final WorldListener worldListener = new WorldListener() {
 		@Override
 		public void text(Text t) {
-			textManagerUI.setText(t);
+			if(t != null && t.type == Text.Type.UI) {
+				showUIText(t);
+			} else {			
+				textManagerUI.setText(t);
+			}
 		}
 
 		@Override
@@ -352,6 +362,45 @@ public class DefaultSceneScreen implements SceneScreen {
 
 	public UI getUI() {
 		return ui;
+	}
+	
+	private void showUIText(Text t) {
+		// Type UI texts will show at the same time that TextManagerUI texts.
+		
+		String style = t.style == null ?"ui-text":t.style;
+		Label msg = new Label(t.str, getUI().getSkin(), style);
+
+		msg.setWrap(true);
+		msg.setAlignment(Align.center, Align.center);
+		msg.setColor(t.color);
+		msg.setSize(msg.getWidth() + DPIUtils.getMarginSize() * 2, msg.getHeight() + DPIUtils.getMarginSize() * 2);
+		
+		stage.addActor(msg);
+		unprojectTmp.set(t.x, t.y, 0);
+		World.getInstance().getSceneCamera().scene2screen(getStage().getViewport(), unprojectTmp);
+		
+		float posx, posy;
+		
+		if (t.x == TextManager.POS_CENTER) {
+			posx = (getStage().getViewport().getScreenWidth() - msg.getWidth()) / 2;
+		} else if (t.y == TextManager.POS_SUBTITLE) {
+			posx = DPIUtils.getMarginSize();
+		} else {
+			posx = unprojectTmp.x;
+		}
+		
+		if (t.y == TextManager.POS_CENTER) {
+			posy = (getStage().getViewport().getScreenHeight() - msg.getHeight()) / 2;
+		} else if (t.y == TextManager.POS_SUBTITLE) {
+			posy = getStage().getViewport().getScreenHeight() - msg.getHeight() - DPIUtils.getMarginSize() * 3;
+		} else {
+			posy = unprojectTmp.y;
+		}
+		
+		msg.setPosition(posx, posy);
+		msg.getColor().a = 0;
+		msg.addAction(sequence(Actions.fadeIn(0.4f, Interpolation.fade), Actions.delay(t.time,
+				sequence(fadeOut(0.4f, Interpolation.fade), Actions.removeActor()))));
 	}
 
 	private void updateUI() {
