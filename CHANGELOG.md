@@ -2,8 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.3-SNAPSHOT]
+## [2.1.0-SNAPSHOT]
 
+- Added new text type UI to show debug or ui messages.
+- Added one click 'action' verb.
+
+## [2.0.3]
+
+- Error message if actor with same id exists when adding an actor to scene.
+- RunVerb now uses the Verb IP.
+- Added search box to combo boxes.
+- Added desktop files to generate Flatpak package.
 - Don't generate the key for desc if exists when editing actor. Better generation of not duplicated keys.
 - Safety nullchecks.
 

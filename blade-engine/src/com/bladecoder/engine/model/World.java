@@ -410,7 +410,7 @@ public class World implements Serializable, AssetConsumer {
 		this.initScene = initScene;
 	}
 
-	public void setCurrentScene(Scene scene) {
+	public void setCurrentScene(Scene scene, boolean init) {
 
 		initLoadingTime = System.currentTimeMillis();
 
@@ -418,14 +418,20 @@ public class World implements Serializable, AssetConsumer {
 		ActionCallbackQueue.clear();
 
 		if (cachedScene == scene) {
-			assetState = AssetState.LOADING_AND_INIT_SCENE;
+			if(init)
+				assetState = AssetState.LOADING_AND_INIT_SCENE;
+			else
+				assetState = AssetState.LOADING;
 		} else {
 			if (cachedScene != null) {
 				cachedScene.dispose();
 				cachedScene = null;
 			}
 
-			assetState = AssetState.LOAD_ASSETS_AND_INIT_SCENE;
+			if(init)
+				assetState = AssetState.LOAD_ASSETS_AND_INIT_SCENE;
+			else
+				assetState = AssetState.LOAD_ASSETS;
 		}
 
 		if (currentScene != null) {
@@ -452,7 +458,7 @@ public class World implements Serializable, AssetConsumer {
 	}
 
 	private void initCurrentScene() {
-		cutMode = false;
+		setCutMode(false);
 
 		// Run INIT action
 		if (currentScene.getVerb("init") != null)
@@ -490,11 +496,14 @@ public class World implements Serializable, AssetConsumer {
 			listener.cutMode(cutMode);
 	}
 
-	public void setCurrentScene(String id) {
+	public void setCurrentScene(String id, boolean init) {
+		if(id.equals("$" + WorldProperties.PREVIOUS_SCENE.toString()))
+			id = getCustomProperty(WorldProperties.PREVIOUS_SCENE.toString());
+		
 		Scene s = scenes.get(id);
 
 		if (s != null) {
-			setCurrentScene(s);
+			setCurrentScene(s, init);
 		} else {
 			EngineLogger.error("SetCurrentScene - COULD NOT FIND SCENE: " + id);
 		}
@@ -891,7 +900,7 @@ public class World implements Serializable, AssetConsumer {
 
 		if (scene != null) {
 			currentScene = null;
-			setCurrentScene(scene);
+			setCurrentScene(scene, true);
 		}
 	}
 
@@ -1128,7 +1137,7 @@ public class World implements Serializable, AssetConsumer {
 				s.resetCamera(width, height);
 			}
 
-			setCurrentScene(initScene);
+			setCurrentScene(initScene, true);
 
 			// Add sounds to cache
 			cacheSounds();

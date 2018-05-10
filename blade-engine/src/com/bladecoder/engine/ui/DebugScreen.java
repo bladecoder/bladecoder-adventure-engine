@@ -263,6 +263,9 @@ public class DebugScreen implements BladeScreen {
 
 		// ------------- SCENES
 		final TextButton testScene = new TextButton("Run Test Verb", ui.getSkin(), "toggle");
+		final TextButton initScene = new TextButton("Init", ui.getSkin(), "toggle");
+		
+		initScene.setChecked(true);
 		
 		TextButton go = new TextButton("Go", ui.getSkin());
 		go.addListener(new ClickListener() {
@@ -274,7 +277,7 @@ public class DebugScreen implements BladeScreen {
 				if(testScene.isChecked())
 					World.getInstance().setTestScene(scenes.getSelected());
 				
-				World.getInstance().setCurrentScene(scenes.getSelected());
+				World.getInstance().setCurrentScene(scenes.getSelected(), initScene.isChecked());
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
@@ -290,6 +293,7 @@ public class DebugScreen implements BladeScreen {
 		scGroup.addActor(scenes);
 		scGroup.addActor(go);
 		scGroup.addActor(testScene);
+		scGroup.addActor(initScene);
 
 		table.row().pad(5).align(Align.left);
 		table.add(new Label("Go to Scene: ", ui.getSkin(), "debug"));

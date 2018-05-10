@@ -24,10 +24,14 @@ public class LeaveAction implements Action {
 	@ActionPropertyDescription("The target scene")
 	@ActionProperty(type = Type.SCENE, required = true)
 	private String scene;
+	
+	@ActionPropertyDescription("Inits the scene and run the 'init' verb")
+	@ActionProperty(defaultValue = "true", required = true)
+	private boolean init = true;
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		World.getInstance().setCurrentScene(scene);
+		World.getInstance().setCurrentScene(scene, init);
 
 		return true;
 	}

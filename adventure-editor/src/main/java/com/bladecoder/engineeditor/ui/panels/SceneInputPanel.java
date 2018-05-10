@@ -30,13 +30,15 @@ public class SceneInputPanel extends StringOptionsInputPanel {
 	private static String[] getValues(boolean mandatory) {
 		Map<String, Scene> scenes = World.getInstance().getScenes();
 		
-		String[] result = new String[scenes.size()];
+		String[] result = new String[scenes.size() + 1];
 		
 		Scene[] v = scenes.values().toArray(new Scene[scenes.size()]);
 		
 		for(int i = 0; i < scenes.size(); i++) {
 			result[i] = v[i].getId();
 		}
+		
+		result[scenes.size()] = "$" + World.WorldProperties.PREVIOUS_SCENE.toString();
 		
 		Arrays.sort(result);
 		

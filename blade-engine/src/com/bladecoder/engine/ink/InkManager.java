@@ -251,7 +251,12 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 
 		if ("leave".equals(commandName)) {
-			World.getInstance().setCurrentScene(params.get("scene"));
+			boolean init = true;
+			
+			if(params.get("init") != null)
+				init = Boolean.parseBoolean(params.get("init"));
+			
+			World.getInstance().setCurrentScene(params.get("scene"), init);
 		} else if ("set".equals(commandName)) {
 			World.getInstance().setModelProp(params.get("prop"), params.get("value"));
 		} else {
