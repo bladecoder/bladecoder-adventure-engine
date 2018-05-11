@@ -376,9 +376,14 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		Gdx.input.setInputProcessor(stage);
 
 		if (style.musicFile != null) {
-			music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset(style.musicFile));
-			music.setLooping(true);
-			music.play();
+			new Thread() {
+				@Override
+				public void run() {
+					music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset(style.musicFile));
+					music.setLooping(true);
+					music.play();
+				}
+			}.start();
 		}
 	}
 

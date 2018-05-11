@@ -20,15 +20,15 @@ import com.bladecoder.engine.util.EngineLogger;
  */
 public class VoiceManager implements Serializable, AssetConsumer {
 	transient private Music voice = null;
-	
+
 	String fileName = null;
 
 	private boolean isPlayingSer = false;
 	private float voicePosSer = 0;
-	
+
 	// the master volume
 	private float volume = 1.0f;
-	
+
 	transient private boolean isPaused = false;
 	transient private TextManager textManager = null;
 
@@ -60,37 +60,41 @@ public class VoiceManager implements Serializable, AssetConsumer {
 
 	public void play(String fileName) {
 		stop();
-		
+
 		this.fileName = fileName;
-		
-		if (fileName != null) {
-			retrieveAssets();
-			
-			if(voice != null)
-				voice.play();
+
+		if (fileName != null) {		
+			// Load and play the voice file in a different Thread to avoid
+			// blocking the UI
+			new Thread() {
+				@Override
+				public void run() {
+					retrieveAssets();
+
+					if (voice != null)
+						voice.play();
+				}
+			}.start();
 		}
 	}
-	
 
 	public void setVolume(float volume) {
 		this.volume = volume;
-		
-		if(voice != null)
+
+		if (voice != null)
 			voice.setVolume(volume);
 	}
-
-
 
 	@Override
 	public void dispose() {
 		if (voice != null) {
-			
-			if(voice.isPlaying())
+
+			if (voice.isPlaying())
 				voice.stop();
-			
+
 			EngineLogger.debug("DISPOSING VOICE: " + fileName);
 			EngineAssetManager.getInstance().unload(EngineAssetManager.VOICE_DIR + fileName);
-			
+
 			voice = null;
 			fileName = null;
 			isPlayingSer = false;
@@ -109,10 +113,10 @@ public class VoiceManager implements Serializable, AssetConsumer {
 	@Override
 	public void retrieveAssets() {
 		if (voice == null && fileName != null) {
-			
-			if(!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.VOICE_DIR + fileName)) {
+
+			if (!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.VOICE_DIR + fileName)) {
 				loadAssets();
-				
+
 				try {
 					EngineAssetManager.getInstance().finishLoading();
 				} catch (GdxRuntimeException e) {
@@ -123,25 +127,25 @@ public class VoiceManager implements Serializable, AssetConsumer {
 					return;
 				}
 			}
-			
+
 			EngineLogger.debug("RETRIEVING VOICE: " + fileName);
-			
+
 			voice = EngineAssetManager.getInstance().get(EngineAssetManager.VOICE_DIR + fileName, Music.class);
-			
+
 			voice.setOnCompletionListener(new OnCompletionListener() {
 				@Override
 				public void onCompletion(Music music) {
-					if(textManager.getCurrentText() != null) 
+					if (textManager.getCurrentText() != null)
 						textManager.getCurrentText().setAutoTime();
 				}
 			});
-			
-			if(voice != null)
+
+			if (voice != null)
 				voice.setVolume(volume);
 
 			if (isPlayingSer) {
 				voice.play();
-				
+
 				if (voice != null) {
 					voice.setPosition(voicePosSer);
 				}
@@ -155,8 +159,8 @@ public class VoiceManager implements Serializable, AssetConsumer {
 	@Override
 	public void write(Json json) {
 		json.writeValue("fileName", fileName);
-		json.writeValue("isPlaying", voice != null && (voice.isPlaying()|| isPaused));
-		json.writeValue("musicPos", voice != null && (voice.isPlaying()|| isPaused) ? voice.getPosition() : 0f);
+		json.writeValue("isPlaying", voice != null && (voice.isPlaying() || isPaused));
+		json.writeValue("musicPos", voice != null && (voice.isPlaying() || isPaused) ? voice.getPosition() : 0f);
 	}
 
 	@Override

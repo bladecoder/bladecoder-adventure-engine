@@ -188,7 +188,12 @@ public class Verb implements VerbRunner, Serializable {
 				((VerbRunner) c).cancel();
 		}
 
-		ip = actions.size();
+		ip = actions.size() + 1;
+		
+		EngineLogger.debug(">>> Verb CANCELLED: " + id);
+		
+		if(cb != null)
+			cb.resume();
 	}
 
 	@Override

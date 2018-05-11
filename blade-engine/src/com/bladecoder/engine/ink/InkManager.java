@@ -70,20 +70,39 @@ public class InkManager implements VerbRunner, Serializable {
 		externalFunctions.bindExternalFunctions(this);
 	}
 
-	public void newStory(String storyName) throws Exception {
+	public void newStory(final String name) throws Exception {
+		new Thread() {
+			@Override
+			public void run() {
+				loadStory(name, null);
+			}
+		}.start();
+	}
+
+	synchronized private void loadStory(String name, String stateString) {
 		FileHandle asset = EngineAssetManager.getInstance()
-				.getAsset(EngineAssetManager.MODEL_DIR + storyName + EngineAssetManager.INK_EXT);
+				.getAsset(EngineAssetManager.MODEL_DIR + name + EngineAssetManager.INK_EXT);
 
 		try {
 			long initTime = System.currentTimeMillis();
 			newStory(asset.read());
-			EngineLogger.debug("INK STORY LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 
-			this.storyName = storyName;
+			storyName = name;
 
 			loadI18NBundle();
+
+			EngineLogger.debug("INK STORY LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+
+			if (stateString != null) {
+				initTime = System.currentTimeMillis();
+				story.getState().loadJson(stateString);
+				EngineLogger.debug("INK SAVED STATE LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+			}
+
 		} catch (Exception e) {
-			EngineLogger.error("Cannot load Ink Story: " + storyName + " " + e.getMessage());
+			EngineLogger.error("Cannot load Ink Story: " + name + " " + e.getMessage());
+			story = null;
+			storyName = null;
 		}
 	}
 
@@ -96,12 +115,11 @@ public class InkManager implements VerbRunner, Serializable {
 		if (line.charAt(0) == I18N.PREFIX) {
 			String key = line.substring(1);
 
-			
 			// In ink, several keys can be included in the same line.
 			String[] keys = key.split("@");
 
 			String translated = "";
-			
+
 			for (String k : keys) {
 				try {
 					translated += i18n.getString(k);
@@ -110,7 +128,7 @@ public class InkManager implements VerbRunner, Serializable {
 					return key;
 				}
 			}
-			
+
 			return translated;
 		}
 
@@ -252,10 +270,10 @@ public class InkManager implements VerbRunner, Serializable {
 
 		if ("leave".equals(commandName)) {
 			boolean init = true;
-			
-			if(params.get("init") != null)
+
+			if (params.get("init") != null)
 				init = Boolean.parseBoolean(params.get("init"));
-			
+
 			World.getInstance().setCurrentScene(params.get("scene"), init);
 		} else if ("set".equals(commandName)) {
 			World.getInstance().setModelProp(params.get("prop"), params.get("value"));
@@ -355,7 +373,7 @@ public class InkManager implements VerbRunner, Serializable {
 		return story;
 	}
 
-	public void runPath(String path, ActionCallback cb) throws Exception {
+	synchronized public void runPath(String path, ActionCallback cb) throws Exception {
 		if (story == null) {
 			EngineLogger.error("Ink Story not loaded!");
 			return;
@@ -472,10 +490,10 @@ public class InkManager implements VerbRunner, Serializable {
 	@Override
 	public void write(Json json) {
 		json.writeValue("wasInCutmode", wasInCutmode);
-		
-		if(cb == null && sCb != null)
+
+		if (cb == null && sCb != null)
 			cb = ActionCallbackSerialization.find(sCb);
-			
+
 		json.writeValue("cb", ActionCallbackSerialization.find(cb));
 
 		// SAVE ACTIONS
@@ -544,15 +562,7 @@ public class InkManager implements VerbRunner, Serializable {
 		String storyName = json.readValue("storyName", String.class, jsonData);
 		String storyString = json.readValue("story", String.class, jsonData);
 		if (storyString != null) {
-			try {
-				newStory(storyName);
-
-				long initTime = System.currentTimeMillis();
-				story.getState().loadJson(storyString);
-				EngineLogger.debug("INK SAVED STATE LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
-			} catch (Exception e) {
-				EngineLogger.error(e.getMessage(), e);
-			}
+			loadStory(storyName, storyString);
 		}
 	}
 }
