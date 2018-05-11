@@ -51,7 +51,7 @@ public class Verb implements VerbRunner, Serializable {
 
 	private int ip = -1;
 	private String currentTarget;
-	
+
 	private ActionCallback cb;
 
 	public Verb() {
@@ -76,7 +76,7 @@ public class Verb implements VerbRunner, Serializable {
 	public void setState(String state) {
 		this.state = state;
 	}
-	
+
 	public String getIcon() {
 		return icon;
 	}
@@ -92,16 +92,16 @@ public class Verb implements VerbRunner, Serializable {
 	public void setTarget(String target) {
 		this.target = target;
 	}
-	
+
 	public String getHashKey() {
 		String key = id;
-		
+
 		if (target != null)
 			key = key + "." + target;
 
 		if (state != null)
 			key = key + "." + state;
-		
+
 		return key;
 	}
 
@@ -112,7 +112,7 @@ public class Verb implements VerbRunner, Serializable {
 	public ArrayList<Action> getActions() {
 		return actions;
 	}
-	
+
 	public String getCurrentTarget() {
 		return currentTarget;
 	}
@@ -120,14 +120,14 @@ public class Verb implements VerbRunner, Serializable {
 	public void run(String currentTarget, ActionCallback cb) {
 		this.currentTarget = currentTarget;
 		this.cb = cb;
-		
+
 		if (EngineLogger.debugMode()) {
 			StringBuilder sb = new StringBuilder(">>> Running verb: ").append(id);
-			
-			if(currentTarget != null) {
+
+			if (currentTarget != null) {
 				sb.append(" currentTarget: " + currentTarget);
 			}
-			
+
 			EngineLogger.debug(sb.toString());
 		}
 
@@ -151,16 +151,21 @@ public class Verb implements VerbRunner, Serializable {
 				else
 					ip++;
 			} catch (Exception e) {
-				EngineLogger.error("EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName() + " - " + e.getMessage(), e);
+				EngineLogger.error(
+						"EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName() + " - " + e.getMessage(), e);
 				ip++;
 			}
 		}
 
 		if (ip == actions.size()) {
 			EngineLogger.debug(">>> Verb FINISHED: " + id);
-			
-			if(cb != null)
-				cb.resume();
+
+			if (cb != null) {
+				ActionCallback cb2 = cb;
+				cb = null;
+
+				cb2.resume();
+			}
 		}
 	}
 
@@ -183,17 +188,21 @@ public class Verb implements VerbRunner, Serializable {
 	}
 
 	public void cancel() {
+		ip = actions.size() + 1;
+
 		for (Action c : actions) {
 			if (c instanceof VerbRunner)
 				((VerbRunner) c).cancel();
 		}
 
-		ip = actions.size() + 1;
-		
+		if (cb != null) {
+			ActionCallback cb2 = cb;
+			cb = null;
+
+			cb2.resume();
+		}
+
 		EngineLogger.debug(">>> Verb CANCELLED: " + id);
-		
-		if(cb != null)
-			cb.resume();
 	}
 
 	@Override
@@ -201,16 +210,16 @@ public class Verb implements VerbRunner, Serializable {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			json.writeValue("id", id);
-			
-			if(target != null)
+
+			if (target != null)
 				json.writeValue("target", target);
-			
-			if(state != null)
+
+			if (state != null)
 				json.writeValue("state", state);
-			
-			if(icon != null)
+
+			if (icon != null)
 				json.writeValue("icon", icon);
-				
+
 			json.writeArrayStart("actions");
 			for (Action a : actions) {
 				ActionUtils.writeJson(a, json);
@@ -219,8 +228,8 @@ public class Verb implements VerbRunner, Serializable {
 		} else {
 			json.writeValue("ip", ip);
 			json.writeValue("cb", ActionCallbackSerialization.find(cb));
-			
-			if(currentTarget != null)
+
+			if (currentTarget != null)
 				json.writeValue("currentTarget", currentTarget);
 
 			json.writeArrayStart("actions");
@@ -240,27 +249,27 @@ public class Verb implements VerbRunner, Serializable {
 
 		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
 			id = json.readValue("id", String.class, jsonData);
-			target = json.readValue("target", String.class, (String)null, jsonData);
-			state = json.readValue("state", String.class, (String)null, jsonData);
-			icon = json.readValue("icon", String.class, (String)null, jsonData);
-			
+			target = json.readValue("target", String.class, (String) null, jsonData);
+			state = json.readValue("state", String.class, (String) null, jsonData);
+			icon = json.readValue("icon", String.class, (String) null, jsonData);
+
 			actions.clear();
 			JsonValue actionsValue = jsonData.get("actions");
 			for (int i = 0; i < actionsValue.size; i++) {
 				JsonValue aValue = actionsValue.get(i);
 				String clazz = aValue.getString("class");
 
-				try { 
+				try {
 					Action a = ActionUtils.readJson(json, aValue);
 					actions.add(a);
-				} catch(SerializationException e) {
+				} catch (SerializationException e) {
 					EngineLogger.error("Error loading action: " + clazz + " " + aValue.toString());
 					throw e;
 				}
 			}
 		} else {
 			// MUTABLE
-			currentTarget = json.readValue("currentTarget", String.class, (String)null, jsonData);
+			currentTarget = json.readValue("currentTarget", String.class, (String) null, jsonData);
 			ip = json.readValue("ip", Integer.class, jsonData);
 			String sCb = json.readValue("cb", String.class, jsonData);
 			cb = ActionCallbackSerialization.find(sCb);
@@ -271,9 +280,9 @@ public class Verb implements VerbRunner, Serializable {
 
 			for (Action a : actions) {
 				if (a instanceof Serializable && i < actionsValue.size) {
-					if(actionsValue.get(i) == null)
+					if (actionsValue.get(i) == null)
 						break;
-					
+
 					((Serializable) a).read(json, actionsValue.get(i));
 					i++;
 				}
