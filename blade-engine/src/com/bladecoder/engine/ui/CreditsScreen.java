@@ -185,20 +185,25 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 		return y;
 	}
 
-	private void processCreditMusic(String s) {
+	private void processCreditMusic(final String s) {
 		if (music != null)
 			music.dispose();
 		
-		String sound = EngineAssetManager.getInstance().checkIOSSoundName("music/" + s);
+		final String sound = EngineAssetManager.getInstance().checkIOSSoundName("music/" + s);
 
-		music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset(sound));
-		
-		try {
-			music.play();
-		} catch(Exception e) {
-			// sometimes the play method fails on desktop.
-			EngineLogger.error("Error Playing music: " + s, e);
-		}
+		new Thread() {
+			@Override
+			public void run() {
+				music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset(sound));
+				
+				try {
+					music.play();
+				} catch(Exception e) {
+					// sometimes the play method fails on desktop.
+					EngineLogger.error("Error Playing music: " + s, e);
+				}
+			}
+		}.start();	
 	}
 
 	private float processCreditDefault(SpriteBatch batch, int width, int height, float y, int i, String s) {

@@ -257,7 +257,7 @@ public class Scene implements Serializable, AssetConsumer {
 		if (VAR_PLAYER.equals(id))
 			return actors.get(player);
 
-		BaseActor a = actors.get(id);
+		BaseActor a = id==null? null:actors.get(id);
 
 		if (a == null && searchInventory) {
 			a = World.getInstance().getInventory().get(id);
@@ -737,7 +737,8 @@ public class Scene implements Serializable, AssetConsumer {
 			camera = json.readValue("camera", SceneCamera.class, jsonData);
 			String followActorId = json.readValue("followActor", String.class, jsonData);
 
-			setCameraFollowActor((SpriteActor) actors.get(followActorId));
+			if(followActor != null)
+				setCameraFollowActor((SpriteActor) actors.get(followActorId));
 			
 			soundManager.read(json, jsonData);
 		}

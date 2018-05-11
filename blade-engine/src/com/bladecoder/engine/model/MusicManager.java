@@ -32,12 +32,12 @@ public class MusicManager implements Serializable, AssetConsumer {
 
 	public void playMusic() {
 		if (music != null && !music.isPlaying()) {
-			
+
 			try {
 				music.play();
 				music.setLooping(desc.isLoop());
 				music.setVolume(desc.getVolume());
-			} catch(Exception e) {
+			} catch (Exception e) {
 				EngineLogger.error("Error Playing music: " + desc.getFilename(), e);
 			}
 		}
@@ -65,8 +65,8 @@ public class MusicManager implements Serializable, AssetConsumer {
 	public void setMusic(MusicDesc d) {
 		EngineLogger.debug(">>>SETTING MUSIC.");
 		stopMusic();
+		volumeTween = null;		
 		currentMusicDelay = 0;
-		volumeTween = null;
 
 		if (d != null) {
 			if (desc != null)
@@ -74,14 +74,21 @@ public class MusicManager implements Serializable, AssetConsumer {
 
 			desc = new MusicDesc(d);
 
-			retrieveAssets();
+			// Load and play the voice file in a different Thread to avoid
+			// blocking the UI
+			new Thread() {
+				@Override
+				public void run() {
+					retrieveAssets();
+				}
+			}.start();
 		} else {
 			dispose();
 			desc = null;
 		}
 	}
 
-	public void setVolume(float volume) {	
+	public void setVolume(float volume) {
 		if (desc != null)
 			desc.setVolume(volume);
 
@@ -138,7 +145,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 					}
 				}
 			}
-			
+
 			if (volumeTween != null) {
 				volumeTween.update(delta);
 				if (volumeTween.isComplete()) {
