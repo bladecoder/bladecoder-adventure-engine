@@ -147,7 +147,7 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 	}
 
-	public void setVariable(String name, String value) throws Exception {
+	public synchronized void setVariable(String name, String value) throws Exception {
 		if (story.getVariablesState().get(name) instanceof InkList) {
 
 			InkList rawList = (InkList) story.getVariablesState().get(name);

@@ -7,14 +7,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added new text type UI to show debug or ui messages.
 - Added one click 'action' verb.
 
-## [2.0.3]
 
-- Error message if actor with same id exists when adding an actor to scene.
-- RunVerb now uses the Verb IP.
+## [2.0.6]
+
+- All intensive tasks (load music, voices and ink) are now executed in a background thread.
+
 - Added search box to combo boxes.
 - Added desktop files to generate Flatpak package.
 - Don't generate the key for desc if exists when editing actor. Better generation of not duplicated keys.
 - Safety nullchecks.
+- Error message if actor with same id exists when adding an actor to scene.
+- RunVerb now uses the Verb IP.
+- Added search box to combo boxes.
+- Added desktop files to generate Flatpak package.
 
 ## [2.0.2]
 

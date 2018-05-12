@@ -6,16 +6,18 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
 
 /**
  * Manager to play/load/dispose voices.
- * 
+ *
  * Plays a voice file, if another voice is playing, stops it before playing the
  * new voice.
- * 
+ *
  * @author rgarcia
  */
 public class VoiceManager implements Serializable, AssetConsumer {
@@ -31,6 +33,29 @@ public class VoiceManager implements Serializable, AssetConsumer {
 
 	transient private boolean isPaused = false;
 	transient private TextManager textManager = null;
+
+	private final Task backgroundLoadingTask = new Task() {
+		@Override
+		public void run() {
+			try {
+				if (EngineAssetManager.getInstance().isLoading()) {
+					cancel();
+					Timer.post(backgroundLoadingTask);
+				} else {
+					retrieveAssets();
+
+					if (voice != null)
+						voice.play();
+				}
+
+			} catch (GdxRuntimeException e) {
+				EngineLogger.error(e.getMessage());
+				voice = null;
+				fileName = null;
+				textManager.next();
+			}
+		}
+	};
 
 	public VoiceManager(TextManager textManager) {
 		this.textManager = textManager;
@@ -63,18 +88,12 @@ public class VoiceManager implements Serializable, AssetConsumer {
 
 		this.fileName = fileName;
 
-		if (fileName != null) {		
-			// Load and play the voice file in a different Thread to avoid
+		if (fileName != null) {
+			// Load and play the voice file in background to avoid
 			// blocking the UI
-			new Thread() {
-				@Override
-				public void run() {
-					retrieveAssets();
-
-					if (voice != null)
-						voice.play();
-				}
-			}.start();
+			loadAssets();
+			backgroundLoadingTask.cancel();
+			Timer.post(backgroundLoadingTask);
 		}
 	}
 
@@ -113,20 +132,6 @@ public class VoiceManager implements Serializable, AssetConsumer {
 	@Override
 	public void retrieveAssets() {
 		if (voice == null && fileName != null) {
-
-			if (!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.VOICE_DIR + fileName)) {
-				loadAssets();
-
-				try {
-					EngineAssetManager.getInstance().finishLoading();
-				} catch (GdxRuntimeException e) {
-					EngineLogger.error(e.getMessage());
-					voice = null;
-					fileName = null;
-					textManager.next();
-					return;
-				}
-			}
 
 			EngineLogger.debug("RETRIEVING VOICE: " + fileName);
 
