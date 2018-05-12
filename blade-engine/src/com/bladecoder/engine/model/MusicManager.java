@@ -1,9 +1,13 @@
 package com.bladecoder.engine.model;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.anim.MusicVolumeTween;
 import com.bladecoder.engine.assets.AssetConsumer;
@@ -30,6 +34,18 @@ public class MusicManager implements Serializable, AssetConsumer {
 	transient private boolean isPaused = false;
 	private MusicVolumeTween volumeTween;
 
+	private final Task backgroundLoadingTask = new Task() {
+		@Override
+		public void run() {
+			if (EngineAssetManager.getInstance().isLoading()) {
+				cancel();
+				Timer.post(backgroundLoadingTask);
+			} else {
+				retrieveAssets();
+			}
+		}
+	};
+
 	public void playMusic() {
 		if (music != null && !music.isPlaying()) {
 
@@ -38,6 +54,15 @@ public class MusicManager implements Serializable, AssetConsumer {
 				music.setLooping(desc.isLoop());
 				music.setVolume(desc.getVolume());
 			} catch (Exception e) {
+
+				// DEAL WITH OPENAL BUG
+				if (Gdx.app.getType() == ApplicationType.Desktop && e.getMessage().contains("40963")) {
+					EngineLogger.debug("!!!!!!!!!!!!!!!!!!!!!!!ERROR playing music trying again...!!!!!!!!!!!!!!!");
+					setMusic(desc);
+					
+					return;
+				}
+				
 				EngineLogger.error("Error Playing music: " + desc.getFilename(), e);
 			}
 		}
@@ -65,27 +90,31 @@ public class MusicManager implements Serializable, AssetConsumer {
 	public void setMusic(MusicDesc d) {
 		EngineLogger.debug(">>>SETTING MUSIC.");
 		stopMusic();
-		volumeTween = null;		
+		volumeTween = null;
 		currentMusicDelay = 0;
 
 		if (d != null) {
-			if (desc != null)
+			if (desc != null) {
 				dispose();
+			}
 
 			desc = new MusicDesc(d);
 
-			// Load and play the voice file in a different Thread to avoid
+			// Load the music file in background to avoid
 			// blocking the UI
-			new Thread() {
-				@Override
-				public void run() {
-					retrieveAssets();
-				}
-			}.start();
+			loadTask();
 		} else {
 			dispose();
 			desc = null;
 		}
+	}
+
+	private void loadTask() {
+		loadAssets();
+
+		backgroundLoadingTask.cancel();
+		// Timer.schedule(backgroundLoadingTask, 0.2f);
+		Timer.post(backgroundLoadingTask);
 	}
 
 	public void setVolume(float volume) {
@@ -110,7 +139,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 			return;
 
 		if (desc != null) {
-			currentMusicDelay = 0;
+			currentMusicDelay = 0f;
 			stopMusic();
 			dispose();
 		}
@@ -177,10 +206,12 @@ public class MusicManager implements Serializable, AssetConsumer {
 	@Override
 	public void retrieveAssets() {
 		if (music == null && desc != null) {
-
+			// Check if not loaded, this happens when setting a cached scene
 			if (!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.MUSIC_DIR + desc.getFilename())) {
-				loadAssets();
-				EngineAssetManager.getInstance().finishLoading();
+				// Load the music file in background to avoid
+				// blocking the UI
+				loadTask();
+				return;
 			}
 
 			EngineLogger.debug("RETRIEVING MUSIC: " + desc.getFilename());
