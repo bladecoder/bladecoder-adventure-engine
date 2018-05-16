@@ -17,6 +17,8 @@ android {
 
 	    buildConfigField "int", "EXPANSION_FILE_VERSION", "0"
     }
+    
+    flavorDimensions "default"
 
     productFlavors {
 	    full {
