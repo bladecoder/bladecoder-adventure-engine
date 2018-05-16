@@ -39,8 +39,6 @@ android {
 
 	full.assets.srcDirs = ['../assets']
  	expansion.assets.srcDirs = ['../base-assets']
-
-        instrumentTest.setRoot('tests')
     }
     
   packagingOptions {
