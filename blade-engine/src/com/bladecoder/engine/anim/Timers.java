@@ -23,15 +23,15 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.util.ActionCallbackSerialization;
 
 public class Timers {
-	private List<Timer> timers = new ArrayList<>();
+	private List<Timer> timers = new ArrayList<>(3);
+	private List<Timer> timersTmp = new ArrayList<>(3);
 
 	public void addTimer(float time, ActionCallback cb) {
 		Timer t = new Timer();
-		
+
 		t.time = time;
 		t.cb = cb;
 
@@ -51,8 +51,20 @@ public class Timers {
 
 			if (t.currentTime >= t.time) {
 				it.remove();
-				ActionCallbackQueue.add(t.cb);
+
+				// we add the timers to call the 'cb' later because the 'cb' can add new timers
+				// while iterating.
+				timersTmp.add(t);
 			}
+		}
+
+		if (timersTmp.size() > 0) {
+			// process ended timers
+			for (Timer t : timersTmp) {
+				 t.cb.resume();
+			}
+
+			timersTmp.clear();
 		}
 	}
 
@@ -60,16 +72,16 @@ public class Timers {
 		private float time;
 		private float currentTime = 0;
 		private ActionCallback cb;
-		
+
 		@Override
-		public void write(Json json) {	
+		public void write(Json json) {
 			json.writeValue("time", time);
-			json.writeValue("currentTime", currentTime);	
-			json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null : String.class);	
+			json.writeValue("currentTime", currentTime);
+			json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null : String.class);
 		}
 
 		@Override
-		public void read (Json json, JsonValue jsonData) {
+		public void read(Json json, JsonValue jsonData) {
 			time = json.readValue("time", Float.class, jsonData);
 			currentTime = json.readValue("currentTime", Float.class, jsonData);
 			String cbSer = json.readValue("cb", String.class, jsonData);
