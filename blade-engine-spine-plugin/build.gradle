@@ -34,7 +34,7 @@ dependencies {
   compile "com.badlogicgames.gdx:gdx:$libgdxVersion"
   compile "com.esotericsoftware.spine:spine-libgdx:3.6.34.0"
   
-  compile project(":blade-engine")
+  implementation project(":blade-engine")
 }
 
 

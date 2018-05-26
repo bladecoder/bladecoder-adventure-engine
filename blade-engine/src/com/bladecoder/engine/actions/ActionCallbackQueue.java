@@ -38,8 +38,10 @@ public class ActionCallbackQueue {
 	private static final List<ActionCallback> runQueue = new ArrayList<ActionCallback>();
 	
 	public static void add(ActionCallback cb) {
-		if(World.getInstance().getAssetState() == AssetState.LOADED)
-			queue.add(cb);
+//		if(World.getInstance().getAssetState() == AssetState.LOADED)
+//			queue.add(cb);
+		
+		cb.resume();
 	}
 	
 	/**

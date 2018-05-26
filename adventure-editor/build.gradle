@@ -58,8 +58,8 @@ dependencies {
   compile "com.kotcrab.vis:vis-ui:1.2.2"
   compile "com.bladecoder.ink:blade-ink:$bladeInkVersion"
 
-  compile project(":blade-engine")
-  compile project(":blade-engine-spine-plugin")
+  implementation project(":blade-engine")
+  implementation project(":blade-engine-spine-plugin")
 }
 
 task setVersion(type: WriteProperties) {
