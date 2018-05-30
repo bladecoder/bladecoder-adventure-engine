@@ -48,7 +48,6 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.actions.PlaySoundAction;
 import com.bladecoder.engine.actions.SoundAction;
 import com.bladecoder.engine.anim.AnimationDesc;
@@ -66,7 +65,7 @@ import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class World implements Serializable, AssetConsumer {
 
-	public static final String GAMESTATE_EXT = ".gamestate.v12";
+	public static final String GAMESTATE_EXT = ".gamestate.v13";
 	private static final String GAMESTATE_FILENAME = "default" + GAMESTATE_EXT;
 
 	private static final String DEFAULT_INVENTORY = "DEFAULT";
@@ -333,8 +332,6 @@ public class World implements Serializable, AssetConsumer {
 		transition.update(delta);
 
 		musicManager.update(delta);
-
-		ActionCallbackQueue.run();
 	}
 
 	@Override
@@ -413,9 +410,6 @@ public class World implements Serializable, AssetConsumer {
 	public void setCurrentScene(Scene scene, boolean init) {
 
 		initLoadingTime = System.currentTimeMillis();
-
-		// Clear all pending callbacks
-		ActionCallbackQueue.clear();
 
 		if (cachedScene == scene) {
 			if(init)
@@ -615,9 +609,6 @@ public class World implements Serializable, AssetConsumer {
 			currentDialog = null;
 
 			transition.reset();
-
-			// Clear all pending callbacks
-			ActionCallbackQueue.clear();
 
 			// ONLY dispose currentscene because other scenes are already
 			// disposed
@@ -1104,8 +1095,6 @@ public class World implements Serializable, AssetConsumer {
 
 			if (!uiActors.getActors().isEmpty())
 				json.writeValue("uiActors", uiActors);
-
-			ActionCallbackQueue.write(json);
 		}
 	}
 
@@ -1228,8 +1217,6 @@ public class World implements Serializable, AssetConsumer {
 
 			if (musicManager == null)
 				musicManager = new MusicManager();
-
-			ActionCallbackQueue.read(json, jsonData);
 
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + instance.currentChapter);
 		}

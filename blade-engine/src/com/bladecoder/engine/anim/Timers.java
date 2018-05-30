@@ -61,7 +61,7 @@ public class Timers {
 		if (timersTmp.size() > 0) {
 			// process ended timers
 			for (Timer t : timersTmp) {
-				 t.cb.resume();
+				t.cb.resume();
 			}
 
 			timersTmp.clear();

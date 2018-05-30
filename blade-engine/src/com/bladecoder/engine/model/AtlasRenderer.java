@@ -27,7 +27,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.FATween;
@@ -164,7 +163,9 @@ public class AtlasRenderer extends AnimationRenderer {
 			computeBbox();
 
 			if (cb != null) {
-				ActionCallbackQueue.add(cb);
+				ActionCallback tmpcb = cb;
+				cb = null;
+				tmpcb.resume();
 			}
 
 			return;

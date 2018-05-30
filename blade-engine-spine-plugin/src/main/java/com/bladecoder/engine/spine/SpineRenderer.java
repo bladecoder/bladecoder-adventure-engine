@@ -28,7 +28,6 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
@@ -116,8 +115,9 @@ public class SpineRenderer extends AnimationRenderer {
 			computeBbox();
 
 			if (animationCb != null) {
-				ActionCallbackQueue.add(animationCb);
+				ActionCallback tmpcb = animationCb;
 				animationCb = null;
+				tmpcb.resume();
 			}
 		}
 

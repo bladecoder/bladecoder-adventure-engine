@@ -24,7 +24,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.SpritePosTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
@@ -185,8 +184,11 @@ public class CharacterActor extends SpriteActor {
 			setPosition(pf.x, pf.y);
 
 			// call the callback
-			if (cb != null)
-				ActionCallbackQueue.add(cb);
+			if (cb != null) {
+				ActionCallback tmpcb = cb;
+				cb = null;
+				tmpcb.resume();
+			}
 
 			return;
 		}
@@ -201,8 +203,11 @@ public class CharacterActor extends SpriteActor {
 
 		if (walkingPath == null || walkingPath.size() == 0) {
 			// call the callback even when the path is empty
-			if (cb != null)
-				ActionCallbackQueue.add(cb);
+			if (cb != null) {
+				ActionCallback tmpcb = cb;
+				cb = null;
+				tmpcb.resume();
+			}
 
 			return;
 		}

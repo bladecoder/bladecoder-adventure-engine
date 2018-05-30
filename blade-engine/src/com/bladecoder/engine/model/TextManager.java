@@ -24,7 +24,6 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.util.Config;
 
@@ -76,8 +75,11 @@ public class TextManager implements Serializable {
 			
 			world.getListener().text(t);
 			
-			if(cb != null)
-				ActionCallbackQueue.add(cb);
+			if(cb != null) {
+				ActionCallback tmpcb = cb;
+				cb = null;
+				tmpcb.resume();
+			}
 					
 			return;
 		}

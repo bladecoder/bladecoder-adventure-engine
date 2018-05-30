@@ -17,7 +17,6 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
@@ -222,7 +221,9 @@ public class InkManager implements VerbRunner, Serializable {
 					cb = ActionCallbackSerialization.find(sCb);
 				}
 
-				ActionCallbackQueue.add(cb);
+				ActionCallback tmpcb = cb;
+				cb = null;
+				tmpcb.resume();
 			}
 		}
 	}

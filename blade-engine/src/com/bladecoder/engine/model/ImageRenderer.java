@@ -24,7 +24,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -109,8 +108,11 @@ public class ImageRenderer extends AnimationRenderer {
 			return;
 		}
 
-		if (cb != null)
-			ActionCallbackQueue.add(cb);
+		if (cb != null) {
+			ActionCallback tmpcb = cb;
+			cb = null;
+			tmpcb.resume();
+		}
 
 		if (currentAnimation != null && currentAnimation.disposeWhenPlayed)
 			disposeSource(currentAnimation.source);

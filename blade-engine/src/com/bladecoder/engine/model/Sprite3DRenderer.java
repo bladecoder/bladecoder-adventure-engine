@@ -49,7 +49,6 @@ import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -296,8 +295,10 @@ public class Sprite3DRenderer extends AnimationRenderer {
 
 		@Override
 		public void onEnd(com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc animation) {
-			if (animationCb != null) {
-				ActionCallbackQueue.add(animationCb);
+			if(animationCb != null) {
+				ActionCallback tmpcb = animationCb;
+				animationCb = null;
+				tmpcb.resume();
 			}
 		}
 	};
@@ -388,7 +389,9 @@ public class Sprite3DRenderer extends AnimationRenderer {
 		}
 
 		if (cb != null) {
-			ActionCallbackQueue.add(cb);
+			ActionCallback tmpcb = cb;
+			cb = null;
+			tmpcb.resume();
 		}
 
 		computeBbox();
