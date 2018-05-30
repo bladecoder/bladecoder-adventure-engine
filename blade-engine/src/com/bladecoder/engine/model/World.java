@@ -47,11 +47,9 @@ import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.PlaySoundAction;
 import com.bladecoder.engine.actions.SoundAction;
 import com.bladecoder.engine.anim.AnimationDesc;
-import com.bladecoder.engine.anim.Timers;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
@@ -109,8 +107,6 @@ public class World implements Serializable, AssetConsumer {
 	// Keep track of the time of game in ms.
 	private long timeOfGame;
 
-	private Timers timers;
-
 	// Add support for the use of global custom properties/variables in the game
 	// logic
 	private HashMap<String, String> customProperties;
@@ -167,8 +163,6 @@ public class World implements Serializable, AssetConsumer {
 		textManager = new TextManager();
 		textManager.setWorld(this);
 
-		timers = new Timers();
-
 		cutMode = false;
 		currentChapter = null;
 		cachedScene = null;
@@ -194,10 +188,6 @@ public class World implements Serializable, AssetConsumer {
 	
 	public WorldListener getListener() {
 		return listener;
-	}
-
-	public Timers getTimers() {
-		return timers;
 	}
 
 	public InkManager getInkManager() {
@@ -227,10 +217,6 @@ public class World implements Serializable, AssetConsumer {
 			return cachedScene;
 
 		return null;
-	}
-
-	public void addTimer(float time, ActionCallback cb) {
-		timers.addTimer(time, cb);
 	}
 
 	public String getCustomProperty(String name) {
@@ -311,7 +297,7 @@ public class World implements Serializable, AssetConsumer {
 					testScene = null;
 				}
 
-				initCurrentScene();
+				currentScene.init();
 			}
 
 		}
@@ -327,7 +313,6 @@ public class World implements Serializable, AssetConsumer {
 		getInventory().update(delta);
 
 		textManager.update(delta);
-		timers.update(delta);
 
 		transition.update(delta);
 
@@ -430,7 +415,6 @@ public class World implements Serializable, AssetConsumer {
 
 		if (currentScene != null) {
 			textManager.reset();
-			timers.clear();
 			currentDialog = null;
 
 			// Stop Sounds
@@ -449,14 +433,6 @@ public class World implements Serializable, AssetConsumer {
 		currentScene = scene;
 
 		musicManager.leaveScene(currentScene.getMusicDesc());
-	}
-
-	private void initCurrentScene() {
-		setCutMode(false);
-
-		// Run INIT action
-		if (currentScene.getVerb("init") != null)
-			currentScene.runVerb("init");
 	}
 
 	public Inventory getInventory() {
@@ -604,7 +580,6 @@ public class World implements Serializable, AssetConsumer {
 		try {
 
 			textManager.reset();
-			timers.clear();
 
 			currentDialog = null;
 
@@ -1075,7 +1050,6 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("timeOfGame", timeOfGame);
 			json.writeValue("cutmode", cutMode);
 			verbs.write(json);
-			json.writeValue("timers", timers);
 			json.writeValue("textmanager", textManager);
 			json.writeValue("customProperties", customProperties);
 
@@ -1195,8 +1169,6 @@ public class World implements Serializable, AssetConsumer {
 			cutMode = json.readValue("cutmode", boolean.class, false, jsonData);
 
 			verbs.read(json, jsonData);
-
-			timers = json.readValue("timers", Timers.class, jsonData);
 
 			textManager = json.readValue("textmanager", TextManager.class, jsonData);
 			textManager.setWorld(this);

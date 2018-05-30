@@ -41,6 +41,23 @@ public class Timers {
 	public void clear() {
 		timers.clear();
 	}
+	
+	public boolean isEmpty() {
+		return timers.isEmpty();
+	}
+	
+	public void removeTimerWithCb(ActionCallback cb) {
+		final Iterator<Timer> it = timers.iterator();
+		
+		while (it.hasNext()) {
+			final Timer t = it.next();
+			if(t.cb == cb) {
+				it.remove();
+				
+				return;
+			}
+		}
+	}
 
 	public void update(float delta) {
 		final Iterator<Timer> it = timers.iterator();

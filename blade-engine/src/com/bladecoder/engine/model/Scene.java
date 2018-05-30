@@ -32,7 +32,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.SceneActorRef;
+import com.bladecoder.engine.anim.Timers;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
@@ -60,6 +62,8 @@ public class Scene implements Serializable, AssetConsumer {
 	 * BaseActor layers
 	 */
 	private List<SceneLayer> layers = new ArrayList<SceneLayer>();
+	
+	private Timers timers = new Timers();
 
 	private SceneCamera camera = new SceneCamera();
 
@@ -132,6 +136,14 @@ public class Scene implements Serializable, AssetConsumer {
 	public void addLayer(SceneLayer layer) {
 		layers.add(layer);
 	}
+	
+	public Timers getTimers() {
+		return timers;
+	}
+	
+	public void addTimer(float time, ActionCallback cb) {
+		timers.addTimer(time, cb);
+	}
 
 	public MusicDesc getMusicDesc() {
 		return musicDesc;
@@ -148,6 +160,16 @@ public class Scene implements Serializable, AssetConsumer {
 		float worldScale = EngineAssetManager.getInstance().getScale();
 
 		return Math.max(0, (y - depthVector.x * worldScale) / ((depthVector.y - depthVector.x) * worldScale));
+	}
+	
+	public void init() {
+		World.getInstance().setCutMode(false);
+		
+		timers.clear();
+
+		// Run INIT action
+		if (getVerb("init") != null)
+			runVerb("init");
 	}
 
 	public VerbManager getVerbManager() {
@@ -177,6 +199,8 @@ public class Scene implements Serializable, AssetConsumer {
 		if (followActor != null) {
 			camera.updatePos(followActor);
 		}
+		
+		timers.update(delta);
 	}
 
 	public void draw(SpriteBatch batch) {
@@ -658,6 +682,9 @@ public class Scene implements Serializable, AssetConsumer {
 				json.writeValue("followActor", followActor.getId());
 			
 			soundManager.write(json);
+			
+			if(!timers.isEmpty())
+				json.writeValue("timers", timers);
 		}
 
 		verbs.write(json);
@@ -744,6 +771,9 @@ public class Scene implements Serializable, AssetConsumer {
 				setCameraFollowActor((SpriteActor) actors.get(followActorId));
 			
 			soundManager.read(json, jsonData);
+
+			if(jsonData.get("timers") != null)
+				timers = json.readValue("timers", Timers.class, jsonData);
 		}
 
 		verbs.read(json, jsonData);
