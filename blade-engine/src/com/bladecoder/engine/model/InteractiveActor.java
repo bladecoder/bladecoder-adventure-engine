@@ -22,8 +22,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.SerializationHelper;
+import com.bladecoder.engine.serialization.SerializationHelper.Mode;
 
 /**
  * An InteractiveActor is any object in a scene or in the inventory that has
@@ -142,7 +142,7 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		sb.append(super.toString());
 		sb.append("  State: ").append(state);

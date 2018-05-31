@@ -86,7 +86,7 @@ public class LookAtAction implements Action {
 			String actorId = World.getInstance().getCurrentScene().getPlayer() != null
 					? World.getInstance().getCurrentScene().getPlayer().getId() : null;
 
-			World.getInstance().getTextManager().addText(text, TextManager.POS_SUBTITLE, TextManager.POS_SUBTITLE,
+			World.getInstance().getCurrentScene().getTextManager().addText(text, TextManager.POS_SUBTITLE, TextManager.POS_SUBTITLE,
 					false, Text.Type.SUBTITLE, null, null, actorId, voiceId, wait ? cb : null);
 
 			return wait;

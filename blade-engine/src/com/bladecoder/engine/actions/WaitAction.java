@@ -27,7 +27,7 @@ public class WaitAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		World.getInstance().addTimer(time, cb);
+		World.getInstance().getCurrentScene().addTimer(time, cb);
 		return true;
 	}
 }

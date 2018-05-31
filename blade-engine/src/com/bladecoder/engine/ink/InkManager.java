@@ -17,14 +17,13 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Text.Type;
+import com.bladecoder.engine.serialization.ActionCallbackSerialization;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.ink.runtime.Choice;
@@ -222,7 +221,9 @@ public class InkManager implements VerbRunner, Serializable {
 					cb = ActionCallbackSerialization.find(sCb);
 				}
 
-				ActionCallbackQueue.add(cb);
+				ActionCallback tmpcb = cb;
+				cb = null;
+				tmpcb.resume();
 			}
 		}
 	}
@@ -274,7 +275,7 @@ public class InkManager implements VerbRunner, Serializable {
 			if (params.get("init") != null)
 				init = Boolean.parseBoolean(params.get("init"));
 
-			World.getInstance().setCurrentScene(params.get("scene"), init);
+			World.getInstance().enterScene(params.get("scene"), init);
 		} else if ("set".equals(commandName)) {
 			World.getInstance().setModelProp(params.get("prop"), params.get("value"));
 		} else {

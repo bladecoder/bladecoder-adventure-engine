@@ -32,14 +32,16 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.actions.SceneActorRef;
+import com.bladecoder.engine.anim.Timers;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
+import com.bladecoder.engine.serialization.SerializationHelper;
+import com.bladecoder.engine.serialization.SerializationHelper.Mode;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class Scene implements Serializable, AssetConsumer {
 
@@ -54,12 +56,14 @@ public class Scene implements Serializable, AssetConsumer {
 	/**
 	 * All actors in the scene
 	 */
-	private Map<String, BaseActor> actors = new ConcurrentHashMap <String, BaseActor>();
+	private Map<String, BaseActor> actors = new ConcurrentHashMap<String, BaseActor>();
 
 	/**
 	 * BaseActor layers
 	 */
 	private List<SceneLayer> layers = new ArrayList<SceneLayer>();
+
+	private Timers timers = new Timers();
 
 	private SceneCamera camera = new SceneCamera();
 
@@ -94,10 +98,13 @@ public class Scene implements Serializable, AssetConsumer {
 	private String state;
 
 	private VerbManager verbs = new VerbManager();
-	
+
 	private SceneSoundManager soundManager = new SceneSoundManager();
 
+	private TextManager textManager = new TextManager();
+
 	public Scene() {
+		textManager.setWorld(World.getInstance());
 	}
 
 	public String getId() {
@@ -133,6 +140,18 @@ public class Scene implements Serializable, AssetConsumer {
 		layers.add(layer);
 	}
 
+	public TextManager getTextManager() {
+		return textManager;
+	}
+
+	public Timers getTimers() {
+		return timers;
+	}
+
+	public void addTimer(float time, ActionCallback cb) {
+		timers.addTimer(time, cb);
+	}
+
 	public MusicDesc getMusicDesc() {
 		return musicDesc;
 	}
@@ -148,6 +167,17 @@ public class Scene implements Serializable, AssetConsumer {
 		float worldScale = EngineAssetManager.getInstance().getScale();
 
 		return Math.max(0, (y - depthVector.x * worldScale) / ((depthVector.y - depthVector.x) * worldScale));
+	}
+
+	public void init() {
+		World.getInstance().setCutMode(false);
+
+		timers.clear();
+		textManager.reset();
+
+		// Run INIT action
+		if (getVerb("init") != null)
+			runVerb("init");
 	}
 
 	public VerbManager getVerbManager() {
@@ -177,6 +207,9 @@ public class Scene implements Serializable, AssetConsumer {
 		if (followActor != null) {
 			camera.updatePos(followActor);
 		}
+
+		timers.update(delta);
+		textManager.update(delta);
 	}
 
 	public void draw(SpriteBatch batch) {
@@ -257,13 +290,13 @@ public class Scene implements Serializable, AssetConsumer {
 		if (VAR_PLAYER.equals(id))
 			return actors.get(player);
 
-		BaseActor a = id==null? null:actors.get(id);
+		BaseActor a = id == null ? null : actors.get(id);
 
 		if (a == null && searchInventory) {
 			a = World.getInstance().getInventory().get(id);
-			
+
 			// Search the uiActors
-			if(a == null)
+			if (a == null)
 				a = World.getInstance().getUIActors().get(id);
 		}
 
@@ -276,11 +309,11 @@ public class Scene implements Serializable, AssetConsumer {
 
 	public void addActor(BaseActor actor) {
 		BaseActor prev = actors.put(actor.getId(), actor);
-		
-		if(prev != null) {
-			EngineLogger.error("Actor '" + actor.getId() +"' already exists in scene '" + id + "'.");
+
+		if (prev != null) {
+			EngineLogger.error("Actor '" + actor.getId() + "' already exists in scene '" + id + "'.");
 		}
-		
+
 		actor.setScene(this);
 
 		if (actor instanceof InteractiveActor) {
@@ -334,8 +367,8 @@ public class Scene implements Serializable, AssetConsumer {
 	 * 
 	 * Creates a square with size = TOLERANCE and checks:
 	 * 
-	 * 1. if some vertex from the TOLERANCE square is inside an actor bbox. 
-	 * 2. if some actor of the actor vertexes is inside the TOLERANCE square.
+	 * 1. if some vertex from the TOLERANCE square is inside an actor bbox. 2. if
+	 * some actor of the actor vertexes is inside the TOLERANCE square.
 	 */
 	public InteractiveActor getInteractiveActorAt(float x, float y, float tolerance) {
 		if (tolerance <= 0) {
@@ -377,7 +410,7 @@ public class Scene implements Serializable, AssetConsumer {
 					}
 				}
 			}
-			
+
 		}
 
 		return null;
@@ -434,9 +467,9 @@ public class Scene implements Serializable, AssetConsumer {
 	}
 
 	public CharacterActor getPlayer() {
-		if(player == null)
+		if (player == null)
 			return null;
-		
+
 		return (CharacterActor) actors.get(player);
 	}
 
@@ -515,7 +548,7 @@ public class Scene implements Serializable, AssetConsumer {
 	public SpriteActor getCameraFollowActor() {
 		return followActor;
 	}
-	
+
 	public SceneSoundManager getSoundManager() {
 		return soundManager;
 	}
@@ -524,7 +557,8 @@ public class Scene implements Serializable, AssetConsumer {
 	public void loadAssets() {
 
 		soundManager.loadAssets();
-		
+		textManager.getVoiceManager().loadAssets();
+
 		if (backgroundAtlas != null && !backgroundAtlas.isEmpty()) {
 			EngineAssetManager.getInstance().loadAtlas(backgroundAtlas);
 		}
@@ -574,8 +608,9 @@ public class Scene implements Serializable, AssetConsumer {
 			if (a instanceof AssetConsumer)
 				((AssetConsumer) a).retrieveAssets();
 		}
-		
+
 		soundManager.retrieveAssets();
+		textManager.getVoiceManager().retrieveAssets();
 	}
 
 	@Override
@@ -591,8 +626,9 @@ public class Scene implements Serializable, AssetConsumer {
 			if (a instanceof AssetConsumer)
 				((AssetConsumer) a).dispose();
 		}
-		
+
 		soundManager.dispose();
+		getTextManager().getVoiceManager().dispose();
 	}
 
 	public Vector2 getSceneSize() {
@@ -656,8 +692,14 @@ public class Scene implements Serializable, AssetConsumer {
 
 			if (followActor != null)
 				json.writeValue("followActor", followActor.getId());
-			
+
 			soundManager.write(json);
+
+			if (!timers.isEmpty())
+				json.writeValue("timers", timers);
+
+			if (textManager.getCurrentText() != null)
+				json.writeValue("textmanager", textManager);
 		}
 
 		verbs.write(json);
@@ -740,10 +782,18 @@ public class Scene implements Serializable, AssetConsumer {
 			camera = json.readValue("camera", SceneCamera.class, jsonData);
 			String followActorId = json.readValue("followActor", String.class, jsonData);
 
-			if(followActor != null)
+			if (followActor != null)
 				setCameraFollowActor((SpriteActor) actors.get(followActorId));
-			
+
 			soundManager.read(json, jsonData);
+
+			if (jsonData.get("timers") != null)
+				timers = json.readValue("timers", Timers.class, jsonData);
+
+			if (jsonData.get("textmanager") != null) {
+				textManager = json.readValue("textmanager", TextManager.class, jsonData);
+				textManager.setWorld(World.getInstance());
+			}
 		}
 
 		verbs.read(json, jsonData);

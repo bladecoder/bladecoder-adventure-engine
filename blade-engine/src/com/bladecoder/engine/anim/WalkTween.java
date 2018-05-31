@@ -22,10 +22,9 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.CharacterActor;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
+import com.bladecoder.engine.serialization.ActionCallbackSerialization;
 import com.bladecoder.engine.util.InterpolationMode;
 
 /**
@@ -109,8 +108,11 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		target.setPosition(p.x, p.y);
 		target.stand();
 
-		if (walkCb != null)
-			ActionCallbackQueue.add(walkCb);
+		if (walkCb != null) {
+			ActionCallback tmpcb = walkCb;
+			walkCb = null;
+			tmpcb.resume();
+		}
 	}
 
 	@Override

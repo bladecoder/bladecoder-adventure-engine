@@ -27,16 +27,15 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.FATween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.serialization.SerializationHelper;
+import com.bladecoder.engine.serialization.SerializationHelper.Mode;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class AtlasRenderer extends AnimationRenderer {
 
@@ -164,7 +163,9 @@ public class AtlasRenderer extends AnimationRenderer {
 			computeBbox();
 
 			if (cb != null) {
-				ActionCallbackQueue.add(cb);
+				ActionCallback tmpcb = cb;
+				cb = null;
+				tmpcb.resume();
 			}
 
 			return;

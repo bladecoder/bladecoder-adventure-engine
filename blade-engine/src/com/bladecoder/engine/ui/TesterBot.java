@@ -74,7 +74,7 @@ public class TesterBot {
 		inSceneTimeDelta += d;
 
 		if(w.inCutMode() && isPassTexts())
-			w.getTextManager().next();
+			w.getCurrentScene().getTextManager().next();
 		
 		if (deltaTime > waitInverval && !w.inCutMode()) {
 			deltaTime = 0;

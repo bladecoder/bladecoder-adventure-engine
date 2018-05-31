@@ -34,7 +34,7 @@ public class EngineLogger {
 	
 	public static String lastError = null;
 	public static Exception lastException = null;
-	public static StringBuffer errorBuffer = new StringBuffer();
+	public static StringBuilder errorBuffer = new StringBuilder();
 
 	public static void debug(String message) {
 		Gdx.app.debug(TAG, message);

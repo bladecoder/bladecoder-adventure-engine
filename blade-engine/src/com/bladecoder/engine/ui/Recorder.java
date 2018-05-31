@@ -28,6 +28,7 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.serialization.JsonSerializer;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -40,7 +41,7 @@ import com.bladecoder.engine.util.RectangleRenderer;
 public class Recorder {
 	private static final String DEFAULT_RECORD_FILENAME = "record";
 	public static final String RECORD_EXT = ".verbs.rec";
-	public static final String GAMESTATE_EXT = ".gamestate.rec";
+	public static final String GAMESTATE_REC_EXT = ".gamestate.rec";
 	private static final float WAITING_TIME = .5f;
 
 	private ArrayList<TimeVerb> list = new ArrayList<TimeVerb>();
@@ -170,7 +171,7 @@ public class Recorder {
 		if (recording) {
 			EngineLogger.debug("RECORDING...");
 			try {
-				World.getInstance().saveGameState(fileName + GAMESTATE_EXT);
+				new JsonSerializer(World.getInstance()).saveGameState(fileName + GAMESTATE_REC_EXT);
 			} catch (IOException e) {
 				EngineLogger.error(e.getMessage());
 			}
@@ -228,7 +229,7 @@ public class Recorder {
 
 	@SuppressWarnings("unchecked")
 	public void load() {
-		String gameStateFileName = fileName + GAMESTATE_EXT;
+		String gameStateFileName = fileName + GAMESTATE_REC_EXT;
 		String recordFileName = fileName + RECORD_EXT;
 
 		FileHandle verbsFile = EngineAssetManager.getInstance().getUserFile(recordFileName);
@@ -245,7 +246,7 @@ public class Recorder {
 
 			if (gameStateFile.exists())
 				try {
-					World.getInstance().loadGameState(gameStateFile);
+					new JsonSerializer(World.getInstance()).loadGameState(gameStateFile);
 				} catch (IOException e) {
 					EngineLogger.error(e.getMessage());
 				}

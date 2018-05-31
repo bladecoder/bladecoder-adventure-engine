@@ -23,7 +23,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
+import com.bladecoder.engine.serialization.ActionCallbackSerialization;
 
 public class Timers {
 	private List<Timer> timers = new ArrayList<>(3);
@@ -40,6 +40,23 @@ public class Timers {
 
 	public void clear() {
 		timers.clear();
+	}
+	
+	public boolean isEmpty() {
+		return timers.isEmpty();
+	}
+	
+	public void removeTimerWithCb(ActionCallback cb) {
+		final Iterator<Timer> it = timers.iterator();
+		
+		while (it.hasNext()) {
+			final Timer t = it.next();
+			if(t.cb == cb) {
+				it.remove();
+				
+				return;
+			}
+		}
 	}
 
 	public void update(float delta) {
@@ -61,7 +78,7 @@ public class Timers {
 		if (timersTmp.size() > 0) {
 			// process ended timers
 			for (Timer t : timersTmp) {
-				 t.cb.resume();
+				t.cb.resume();
 			}
 
 			timersTmp.clear();

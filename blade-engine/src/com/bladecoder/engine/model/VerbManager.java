@@ -21,9 +21,9 @@ import java.util.HashMap;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.serialization.SerializationHelper;
+import com.bladecoder.engine.serialization.SerializationHelper.Mode;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class VerbManager implements Serializable {

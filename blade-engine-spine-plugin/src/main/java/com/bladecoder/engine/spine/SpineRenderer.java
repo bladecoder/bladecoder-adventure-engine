@@ -28,7 +28,6 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.SpineAnimationDesc;
 import com.bladecoder.engine.anim.Tween;
@@ -37,12 +36,12 @@ import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.serialization.ActionCallbackSerialization;
+import com.bladecoder.engine.serialization.SerializationHelper;
+import com.bladecoder.engine.serialization.SerializationHelper.Mode;
 import com.bladecoder.engine.spine.SkeletonDataLoader.SkeletonDataLoaderParameter;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 import com.esotericsoftware.spine.Animation;
 import com.esotericsoftware.spine.AnimationState;
 import com.esotericsoftware.spine.AnimationState.AnimationStateAdapter;
@@ -116,8 +115,9 @@ public class SpineRenderer extends AnimationRenderer {
 			computeBbox();
 
 			if (animationCb != null) {
-				ActionCallbackQueue.add(animationCb);
+				ActionCallback tmpcb = animationCb;
 				animationCb = null;
+				tmpcb.resume();
 			}
 		}
 

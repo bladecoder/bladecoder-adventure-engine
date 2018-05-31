@@ -20,8 +20,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
+import com.bladecoder.engine.serialization.ActionCallbackSerialization;
 
 public class Text implements Serializable {
 	private static final float DEFAULT_TIME = 1f;
@@ -71,8 +70,10 @@ public class Text implements Serializable {
 	}
 	
 	public void callCb() {
-		if (cb != null) {
-			ActionCallbackQueue.add(cb);
+		if(cb != null) {
+			ActionCallback tmpcb = cb;
+			cb = null;
+			tmpcb.resume();
 		}
 	}
 	

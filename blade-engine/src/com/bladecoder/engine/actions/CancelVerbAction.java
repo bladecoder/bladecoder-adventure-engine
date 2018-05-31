@@ -64,9 +64,12 @@ public class CancelVerbAction implements Action {
 			v = World.getInstance().getVerbManager().getVerb(verb, null, null);
 		}
 
-		if (v != null)
+		if (v != null) {
 			v.cancel();
-		else
+			
+			// Cancel possible pending timer
+			World.getInstance().getCurrentScene().getTimers().removeTimerWithCb(v);
+		} else
 			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actor);
 
 		return false;

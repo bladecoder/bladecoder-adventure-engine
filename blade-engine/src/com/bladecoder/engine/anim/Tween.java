@@ -19,8 +19,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
+import com.bladecoder.engine.serialization.ActionCallbackSerialization;
 import com.bladecoder.engine.util.InterpolationMode;
 
 abstract public class Tween<T> implements Serializable {
@@ -81,7 +80,9 @@ abstract public class Tween<T> implements Serializable {
 
 	private void callCb() {
 		if (cb != null) {
-			ActionCallbackQueue.add(cb);
+			ActionCallback tmpcb = cb;
+			cb = null;
+			tmpcb.resume();
 		}
 	}
 	
