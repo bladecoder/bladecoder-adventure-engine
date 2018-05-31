@@ -85,7 +85,7 @@ public class SayAction extends BaseCallbackAction {
 			startTalkAnim((CharacterActor) a);
 		}
 
-		World.getInstance().getTextManager().addText(text, x, y, queue, type, color, style,
+		World.getInstance().getCurrentScene().getTextManager().addText(text, x, y, queue, type, color, style,
 				a != null ? a.getId() : actor, voiceId, this);
 
 		return getWait();

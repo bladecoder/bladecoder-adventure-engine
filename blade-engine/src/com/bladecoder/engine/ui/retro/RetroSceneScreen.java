@@ -128,7 +128,7 @@ public class RetroSceneScreen implements SceneScreen {
 				drawHotspots = false;
 			else {
 				if (w.inCutMode() && !recorder.isRecording()) {
-					w.getTextManager().next();
+					w.getCurrentScene().getTextManager().next();
 				} else if (!w.hasDialogOptions()) {
 					sceneClick(button);
 				}
@@ -692,7 +692,7 @@ public class RetroSceneScreen implements SceneScreen {
 		World.getInstance().setListener(worldListener);
 		World.getInstance().resume();
 		
-		textManagerUI.setText(World.getInstance().getTextManager().getCurrentText());
+		textManagerUI.setText(World.getInstance().getCurrentScene().getTextManager().getCurrentText());
 		
 		updateUI();
 	}

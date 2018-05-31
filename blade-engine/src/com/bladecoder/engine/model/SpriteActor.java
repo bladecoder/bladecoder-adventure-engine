@@ -265,7 +265,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer(super.toString());
+		StringBuilder sb = new StringBuilder(super.toString());
 
 		sb.append("  Sprite Bbox: ").append(getBBox().toString());
 

@@ -108,7 +108,7 @@ public class TextAction implements Action {
 			}
 		}
 
-		World.getInstance().getTextManager().addText(text, x, y, queue, type, color, style, null, voiceId,
+		World.getInstance().getCurrentScene().getTextManager().addText(text, x, y, queue, type, color, style, null, voiceId,
 				wait ? cb : null);
 
 		return wait;

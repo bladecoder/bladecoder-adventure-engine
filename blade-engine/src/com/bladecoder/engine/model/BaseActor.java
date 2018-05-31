@@ -72,7 +72,7 @@ abstract public class BaseActor implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		sb.append("\nObject: ").append(id);
 		sb.append("\n  Visible: ").append(visible);

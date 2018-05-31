@@ -241,7 +241,7 @@ public class CharacterActor extends SpriteActor {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer(super.toString());
+		StringBuilder sb = new StringBuilder(super.toString());
 
 		sb.append("  Walking Speed: ").append(walkingSpeed);
 		sb.append("\nText Color: ").append(textColor);

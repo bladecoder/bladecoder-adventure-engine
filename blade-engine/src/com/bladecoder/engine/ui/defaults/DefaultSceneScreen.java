@@ -156,7 +156,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 				if ((w.inCutMode() && !recorder.isRecording())
 						|| (!w.inCutMode() && !TextManager.AUTO_HIDE_TEXTS && textManagerUI.isVisible())) {
-					w.getTextManager().next();
+					w.getCurrentScene().getTextManager().next();
 				} else if (inventoryUI.isVisible()) {
 					inventoryUI.hide();
 				} else if (!w.hasDialogOptions()) {
@@ -996,7 +996,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		World.getInstance().setListener(worldListener);
 		World.getInstance().resume();
 
-		textManagerUI.setText(World.getInstance().getTextManager().getCurrentText());
+		textManagerUI.setText(World.getInstance().getCurrentScene().getTextManager().getCurrentText());
 
 		updateUI();
 	}

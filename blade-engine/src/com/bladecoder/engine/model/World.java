@@ -99,8 +99,6 @@ public class World implements Serializable, AssetConsumer {
 
 	private UIActors uiActors;
 
-	private TextManager textManager;
-
 	private boolean paused;
 	private boolean cutMode;
 
@@ -160,8 +158,6 @@ public class World implements Serializable, AssetConsumer {
 		inventories.put(DEFAULT_INVENTORY, new Inventory());
 		currentInventory = DEFAULT_INVENTORY;
 		uiActors = new UIActors();
-		textManager = new TextManager();
-		textManager.setWorld(this);
 
 		cutMode = false;
 		currentChapter = null;
@@ -312,8 +308,6 @@ public class World implements Serializable, AssetConsumer {
 		uiActors.update(delta);
 		getInventory().update(delta);
 
-		textManager.update(delta);
-
 		transition.update(delta);
 
 		musicManager.update(delta);
@@ -330,7 +324,6 @@ public class World implements Serializable, AssetConsumer {
 			uiActors.loadAssets();
 
 		musicManager.loadAssets();
-		textManager.getVoiceManager().loadAssets();
 	}
 
 	@Override
@@ -357,7 +350,6 @@ public class World implements Serializable, AssetConsumer {
 		}
 
 		musicManager.retrieveAssets();
-		textManager.getVoiceManager().retrieveAssets();
 	}
 
 	public Transition getTransition() {
@@ -414,7 +406,6 @@ public class World implements Serializable, AssetConsumer {
 		}
 
 		if (currentScene != null) {
-			textManager.reset();
 			currentDialog = null;
 
 			// Stop Sounds
@@ -441,10 +432,6 @@ public class World implements Serializable, AssetConsumer {
 
 	public UIActors getUIActors() {
 		return uiActors;
-	}
-
-	public TextManager getTextManager() {
-		return textManager;
 	}
 
 	public void addScene(Scene scene) {
@@ -579,8 +566,6 @@ public class World implements Serializable, AssetConsumer {
 
 		try {
 
-			textManager.reset();
-
 			currentDialog = null;
 
 			transition.reset();
@@ -589,6 +574,7 @@ public class World implements Serializable, AssetConsumer {
 			// disposed
 			if (currentScene != null) {
 				musicManager.stopMusic();
+				currentScene.getTextManager().reset();
 				currentScene.dispose();
 				currentScene = null;
 			}
@@ -663,7 +649,7 @@ public class World implements Serializable, AssetConsumer {
 			// do not pause the music when going to the loading screen.
 			if (assetState == AssetState.LOADED) {
 				musicManager.pauseMusic();
-				textManager.getVoiceManager().pause();
+				currentScene.getTextManager().getVoiceManager().pause();
 			}
 
 			// Pause all sounds
@@ -679,7 +665,7 @@ public class World implements Serializable, AssetConsumer {
 		if (assetState == AssetState.LOADED) {
 			if (currentScene != null) {
 				musicManager.resumeMusic();
-				textManager.getVoiceManager().resume();
+				currentScene.getTextManager().getVoiceManager().resume();
 
 				// Resume all sounds
 				currentScene.getSoundManager().resume();
@@ -1050,7 +1036,6 @@ public class World implements Serializable, AssetConsumer {
 			json.writeValue("timeOfGame", timeOfGame);
 			json.writeValue("cutmode", cutMode);
 			verbs.write(json);
-			json.writeValue("textmanager", textManager);
 			json.writeValue("customProperties", customProperties);
 
 			if (currentDialog != null) {
@@ -1169,9 +1154,6 @@ public class World implements Serializable, AssetConsumer {
 			cutMode = json.readValue("cutmode", boolean.class, false, jsonData);
 
 			verbs.read(json, jsonData);
-
-			textManager = json.readValue("textmanager", TextManager.class, jsonData);
-			textManager.setWorld(this);
 			
 			customProperties = json.readValue("customProperties", HashMap.class, String.class, jsonData);
 			customProperties.put(WorldProperties.SAVED_GAME_VERSION.toString(), version);
