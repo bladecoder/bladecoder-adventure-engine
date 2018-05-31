@@ -28,7 +28,6 @@ import org.xml.sax.SAXException;
 
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.serialization.JsonSerializer;
 import com.bladecoder.engineeditor.common.ElementUtils;
 
 public class Chapter {
@@ -60,7 +59,7 @@ public class Chapter {
 	}
 	
 	public void save() throws IOException {
-		new JsonSerializer(World.getInstance()).saveModel(id);
+		World.getInstance().getSerializer().saveModel(id);
 	}
 	
 	public String[] getChapters() {

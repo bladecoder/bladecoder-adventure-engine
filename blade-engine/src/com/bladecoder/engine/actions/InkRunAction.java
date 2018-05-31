@@ -28,11 +28,18 @@ public class InkRunAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("Waits for the action to finish.")
 	private boolean wait = true;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		try {
-			World.getInstance().getInkManager().runPath(path, wait?cb:null);
+			w.getInkManager().runPath(path, wait?cb:null);
 		} catch (Exception e) {
 			EngineLogger.error("Cannot jump to: " + path + " " + e.getMessage());
 		}

@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 
 @ActionDescription("Execute only one action inside the Choose/EndChoose block.")
 public class ChooseAction extends AbstractControlAction implements Serializable {
@@ -38,6 +39,10 @@ public class ChooseAction extends AbstractControlAction implements Serializable 
 
 	/** Used when choose_criteria is 'iterate' or 'cycle' */
 	int chooseCount = -1;
+	
+	@Override
+	public void setWorld(World w) {
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {

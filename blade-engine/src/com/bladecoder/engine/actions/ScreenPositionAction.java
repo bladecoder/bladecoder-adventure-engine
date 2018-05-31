@@ -46,10 +46,17 @@ public class ScreenPositionAction implements Action {
 	@ActionProperty(defaultValue = "NONE")
 	@ActionPropertyDescription("The position can be relative to an anchor.")
 	private Anchor anchor = Anchor.NONE;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		Scene s = actor.getScene();
+		Scene s = actor.getScene(w);
 
 		BaseActor a = s.getActor(actor.getActorId(), true);
 
@@ -97,7 +104,7 @@ public class ScreenPositionAction implements Action {
 //			v.y = viewport.getScreenHeight() - v.y;
 			v.y = Gdx.graphics.getHeight() - v.y;		
 			
-			World.getInstance().getCurrentScene().getCamera().
+			w.getCurrentScene().getCamera().
 				unproject(v, 0, 0, 
 					viewport.getScreenWidth(), viewport.getScreenHeight());	
 

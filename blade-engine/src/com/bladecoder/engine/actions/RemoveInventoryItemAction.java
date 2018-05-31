@@ -32,17 +32,24 @@ public class RemoveInventoryItemAction implements Action {
 	@ActionPropertyDescription("The scene where the inventory items will be dropped.")
 	@ActionProperty(type = Type.SCENE, required=true)
 	private String scene;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		
-		Scene s =  World.getInstance().getScene(scene);
+		Scene s =  w.getScene(scene);
 		
 		if(id != null) {
-			SpriteActor a = World.getInstance().getInventory().removeItem(id);
+			SpriteActor a = w.getInventory().removeItem(id);
 			
 			if(a!=null) {
-				if(s != World.getInstance().getCurrentScene())
+				if(s != w.getCurrentScene())
 					a.dispose();
 				
 				s.addActor(a);
@@ -50,14 +57,14 @@ public class RemoveInventoryItemAction implements Action {
 				EngineLogger.debug("RemoveInventoryAction - Inventory actor not found: " + id);
 			}
 		} else {
-			int n = World.getInstance().getInventory().getNumItems();
+			int n = w.getInventory().getNumItems();
 			
 			for(int i = 0; i < n; i++) {
-				SpriteActor a = World.getInstance().getInventory().get(i);			
+				SpriteActor a = w.getInventory().get(i);			
 				s.addActor(a);
 			}
 			
-			World.getInstance().getInventory().removeAllItems();
+			w.getInventory().removeAllItems();
 		}	
 		
 		return false;

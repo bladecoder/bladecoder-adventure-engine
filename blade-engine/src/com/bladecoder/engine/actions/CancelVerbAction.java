@@ -40,6 +40,13 @@ public class CancelVerbAction implements Action {
 	@ActionPropertyDescription("If the verb is 'use', the target actor")
 	@ActionProperty(type=Type.ACTOR)
 	private String target;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -51,24 +58,24 @@ public class CancelVerbAction implements Action {
 		}
 
 		if (v == null && actor != null) {
-			BaseActor a = World.getInstance().getCurrentScene()
+			BaseActor a = w.getCurrentScene()
 					.getActor(actor, true);
 			v = ((InteractiveActor)a).getVerb(verb, target);
 		}
 
 		if (v == null) {
-			v = World.getInstance().getCurrentScene().getVerb(verb);
+			v = w.getCurrentScene().getVerb(verb);
 		}
 
 		if (v == null) {
-			v = World.getInstance().getVerbManager().getVerb(verb, null, null);
+			v = w.getVerbManager().getVerb(verb, null, null);
 		}
 
 		if (v != null) {
 			v.cancel();
 			
 			// Cancel possible pending timer
-			World.getInstance().getCurrentScene().getTimers().removeTimerWithCb(v);
+			w.getCurrentScene().getTimers().removeTimerWithCb(v);
 		} else
 			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actor);
 

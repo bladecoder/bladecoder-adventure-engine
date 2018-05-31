@@ -539,7 +539,7 @@ public class InkManager implements VerbRunner, Serializable {
 		for (int i = 0; i < actionsValue.size; i++) {
 			JsonValue aValue = actionsValue.get(i);
 
-			Action a = ActionUtils.readJson(json, aValue);
+			Action a = ActionUtils.readJson(World.getInstance(), json, aValue);
 			actions.add(a);
 		}
 

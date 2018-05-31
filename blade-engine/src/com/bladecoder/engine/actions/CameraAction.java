@@ -55,6 +55,13 @@ public class CameraAction implements Action {
 	@ActionProperty(defaultValue = "true", required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -68,7 +75,7 @@ public class CameraAction implements Action {
 
 		float scale = EngineAssetManager.getInstance().getScale();
 
-		SceneCamera camera = World.getInstance().getSceneCamera();
+		SceneCamera camera = w.getSceneCamera();
 		
 		if(zoom2 == null || zoom2 < 0)
 			zoom2 = camera.getZoom();
@@ -80,7 +87,7 @@ public class CameraAction implements Action {
 		}
 		
 		if (target != null) {
-			BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
+			BaseActor target = w.getCurrentScene().getActor(this.target, false);
 			
 			float x = target.getX();
 			float y = target.getY();
@@ -101,9 +108,9 @@ public class CameraAction implements Action {
 
 		if (followActor != null) {
 			if (followActor.equals("none"))
-				World.getInstance().getCurrentScene().setCameraFollowActor(null);
+				w.getCurrentScene().setCameraFollowActor(null);
 			else {
-				World.getInstance().getCurrentScene().setCameraFollowActor((SpriteActor) World.getInstance().getCurrentScene()
+				w.getCurrentScene().setCameraFollowActor((SpriteActor) w.getCurrentScene()
 						.getActor(followActor, false));
 			}
 		}

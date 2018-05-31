@@ -70,19 +70,26 @@ public class PositionAnimAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The target actor")
 	private InterpolationMode interpolation;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 
 		float scale = EngineAssetManager.getInstance().getScale();
 
-		BaseActor a = World.getInstance().getCurrentScene().getActor(actor, true);
+		BaseActor a = w.getCurrentScene().getActor(actor, true);
 		
 		float x = a.getX();
 		float y = a.getY();
 		
 		if(target != null){
-			BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
+			BaseActor target = w.getCurrentScene().getActor(this.target, false);
 					
 			x = target.getX();
 			y = target.getY();

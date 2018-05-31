@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Action;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.serialization.SerializationHelper;
 import com.bladecoder.engine.serialization.SerializationHelper.Mode;
 import com.bladecoder.engine.util.ActionUtils;
@@ -47,7 +48,7 @@ public class ElementUtils {
 			String str = buffer.toString();
 			EditorLogger.debug(str);
 			JsonValue root = new JsonReader().parse(str);
-			return ActionUtils.readJson(json, root);
+			return ActionUtils.readJson(World.getInstance(), json, root);
 		} else {
 			SerializationHelper.getInstance().setMode(Mode.MODEL);
 			String str = json.toJson(e, (Class<?>) null);

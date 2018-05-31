@@ -64,6 +64,13 @@ public class TextAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -74,7 +81,7 @@ public class TextAction implements Action {
 		float x = TextManager.POS_CENTER, y = TextManager.POS_CENTER;
 
 		if (target != null) {
-			Scene ts = target.getScene();
+			Scene ts = target.getScene(w);
 			BaseActor anchorActor = ts.getActor(target.getActorId(), true);
 
 			x = anchorActor.getX();
@@ -108,7 +115,7 @@ public class TextAction implements Action {
 			}
 		}
 
-		World.getInstance().getCurrentScene().getTextManager().addText(text, x, y, queue, type, color, style, null, voiceId,
+		w.getCurrentScene().getTextManager().addText(text, x, y, queue, type, color, style, null, voiceId,
 				wait ? cb : null);
 
 		return wait;

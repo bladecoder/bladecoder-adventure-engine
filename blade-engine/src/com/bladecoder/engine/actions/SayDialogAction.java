@@ -39,10 +39,16 @@ public class SayDialogAction extends BaseCallbackAction {
 	private String responseVoiceId;
 
 	private String previousAnim;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		World w = World.getInstance();
 		
 		if(w.getCurrentDialog() == null || w.getCurrentDialog().getCurrentOption() == null) {
 			EngineLogger.debug("SayDialogAction WARNING: Current dialog doesn't found.");
@@ -89,14 +95,13 @@ public class SayDialogAction extends BaseCallbackAction {
 	@Override
 	public void resume() {
 
-		World w = World.getInstance();
 		BaseActor actor = w.getCurrentScene().getActor(characterName, false);
 		
 		if (characterTurn) {
 			characterTurn = false;
 			
 			if(previousAnim!= null){
-				SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
+				SpriteActor player = w.getCurrentScene().getPlayer();
 				player.startAnimation(previousAnim, null);
 			}
 
@@ -105,7 +110,7 @@ public class SayDialogAction extends BaseCallbackAction {
 				float x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
 				float y = boundingRectangle.getY() + boundingRectangle.getHeight();
 				
-				World.getInstance().getCurrentScene().getTextManager().addText(responseText, x,
+				w.getCurrentScene().getTextManager().addText(responseText, x,
 						y, false, Text.Type.TALK,
 						((CharacterActor) actor).getTextColor(), null, actor.getId(), responseVoiceId, this);
 

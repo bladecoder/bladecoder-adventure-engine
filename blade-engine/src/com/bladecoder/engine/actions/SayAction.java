@@ -61,6 +61,13 @@ public class SayAction extends BaseCallbackAction {
 	private boolean queue = false;
 
 	private String previousAnim = null;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -71,7 +78,7 @@ public class SayAction extends BaseCallbackAction {
 			return false;
 
 		setVerbCb(cb);
-		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, false);
+		InteractiveActor a = (InteractiveActor) w.getCurrentScene().getActor(actor, false);
 
 		if (type == Text.Type.TALK && a != null) {
 			Rectangle boundingRectangle = a.getBBox().getBoundingRectangle();
@@ -85,7 +92,7 @@ public class SayAction extends BaseCallbackAction {
 			startTalkAnim((CharacterActor) a);
 		}
 
-		World.getInstance().getCurrentScene().getTextManager().addText(text, x, y, queue, type, color, style,
+		w.getCurrentScene().getTextManager().addText(text, x, y, queue, type, color, style,
 				a != null ? a.getId() : actor, voiceId, this);
 
 		return getWait();
@@ -95,7 +102,7 @@ public class SayAction extends BaseCallbackAction {
 	@Override
 	public void resume() {
 		if (type == Text.Type.TALK) {
-			CharacterActor a = (CharacterActor) World.getInstance().getCurrentScene().getActor(actor, false);
+			CharacterActor a = (CharacterActor) w.getCurrentScene().getActor(actor, false);
 			a.startAnimation(previousAnim, Tween.Type.SPRITE_DEFINED, 0, null);
 		}
 

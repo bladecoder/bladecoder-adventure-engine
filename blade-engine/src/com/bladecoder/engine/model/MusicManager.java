@@ -37,10 +37,8 @@ public class MusicManager implements Serializable, AssetConsumer {
 	private final Task backgroundLoadingTask = new Task() {
 		@Override
 		public void run() {
-			if (EngineAssetManager.getInstance().isLoading()) {
+			if (!EngineAssetManager.getInstance().isLoading()) {
 				cancel();
-				Timer.post(backgroundLoadingTask);
-			} else {
 				retrieveAssets();
 			}
 		}
@@ -113,8 +111,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 		loadAssets();
 
 		backgroundLoadingTask.cancel();
-		// Timer.schedule(backgroundLoadingTask, 0.2f);
-		Timer.post(backgroundLoadingTask);
+		Timer.schedule(backgroundLoadingTask, 0, 0);
 	}
 
 	public void setVolume(float volume) {
@@ -233,7 +230,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 
 	public void fade(float volume, float duration, ActionCallback cb) {
 		volumeTween = new MusicVolumeTween();
-		volumeTween.start(volume, duration, InterpolationMode.FADE, cb);
+		volumeTween.start(this, volume, duration, InterpolationMode.FADE, cb);
 	}
 
 	@Override
@@ -255,5 +252,8 @@ public class MusicManager implements Serializable, AssetConsumer {
 		musicPosSer = json.readValue("musicPos", float.class, jsonData);
 
 		volumeTween = json.readValue("volumeTween", MusicVolumeTween.class, jsonData);
+		if(volumeTween != null) {
+			volumeTween.setTarget(this);
+		}
 	}
 }

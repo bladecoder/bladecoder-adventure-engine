@@ -43,6 +43,13 @@ public class AnimationAction implements Action {
 	@ActionProperty(required = true, defaultValue = "false")
 	@ActionPropertyDescription("Keeps the current actor animation direction.")
 	private boolean keepDirection = false;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -50,7 +57,7 @@ public class AnimationAction implements Action {
 		
 		String actorId = animation.getActorId();
 		
-		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
+		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actorId, true);
 		
 		String anim = animation.getAnimationId();
 		

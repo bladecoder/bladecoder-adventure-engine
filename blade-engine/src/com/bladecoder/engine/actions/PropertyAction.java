@@ -29,11 +29,18 @@ public class PropertyAction implements Action {
 	@ActionPropertyDescription("Property value")
 
 	private String value;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 
-		World.getInstance().setCustomProperty(prop, value);
+		w.setCustomProperty(prop, value);
 
 		return false;
 	}

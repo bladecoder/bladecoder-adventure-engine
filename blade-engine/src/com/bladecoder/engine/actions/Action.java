@@ -16,8 +16,18 @@
 package com.bladecoder.engine.actions;
 
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 
 public interface Action {
+	
+	/**
+	 * This is to inject the world dependency.
+	 * 
+	 * @param w The world to inject
+	 */
+	public void setWorld(World w);
+	
+	
 	/**
 	 * Execute the action
 	 * 

@@ -28,14 +28,21 @@ public class PlaySoundAction implements Action {
 	@ActionProperty(required = true, defaultValue = "false")
 	@ActionPropertyDescription("When 'true' stops the sound instead of playing it.")
 	private boolean stop = false;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		
 		if(!stop)	{
-			World.getInstance().getCurrentScene().getSoundManager().playSound(sound);
+			w.getCurrentScene().getSoundManager().playSound(sound);
 		} else {
-			World.getInstance().getCurrentScene().getSoundManager().stopSound(sound);
+			w.getCurrentScene().getSoundManager().stopSound(sound);
 		}
 		
 		return false;

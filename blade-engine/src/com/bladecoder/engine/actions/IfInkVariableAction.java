@@ -27,11 +27,18 @@ public class IfInkVariableAction extends AbstractIfAction {
 	@ActionProperty
 	@ActionPropertyDescription("The value")
 	private String value;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		
-		if (! World.getInstance().getInkManager().compareVariable(name, value)) {
+		if (! w.getInkManager().compareVariable(name, value)) {
 			gotoElse((VerbRunner) cb);
 		}
 

@@ -52,10 +52,17 @@ public class RotateAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The interpolation mode")
 	private InterpolationMode interpolation;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {				
-		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, false);
+		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actor, false);
 		
 		SpriteRotateTween t = new SpriteRotateTween();
 		t.start(a, repeat, count, rotation, speed, interpolation,

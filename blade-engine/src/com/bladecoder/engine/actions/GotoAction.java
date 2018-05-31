@@ -50,17 +50,24 @@ public class GotoAction implements Action {
 	@ActionProperty(required = true, defaultValue = "true")
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 
-		CharacterActor actor = (CharacterActor) World.getInstance().getCurrentScene().getActor(this.actor, false);
+		CharacterActor actor = (CharacterActor) w.getCurrentScene().getActor(this.actor, false);
 		
 		float x = actor.getX();
 		float y = actor.getY();
 
 		if (target != null) {
-			BaseActor target = World.getInstance().getCurrentScene().getActor(this.target, false);
+			BaseActor target = w.getCurrentScene().getActor(this.target, false);
 			
 			x = target.getX();
 			y = target.getY();

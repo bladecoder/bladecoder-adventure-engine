@@ -260,7 +260,7 @@ public class JsonSerializer implements Serializable {
 
 			for (int i = 0; i < jsonSounds.size; i++) {
 				JsonValue jsonValue = jsonSounds.get(i);
-				SoundDesc s = json.readValue(SoundDesc.class, jsonData);
+				SoundDesc s = json.readValue(SoundDesc.class, jsonValue);
 				sounds.put(jsonValue.name, s);
 			}
 
@@ -272,7 +272,7 @@ public class JsonSerializer implements Serializable {
 				JsonValue jsonValue = jsonScenes.get(i);
 				Scene s = new Scene();
 				scenes.put(jsonValue.name, s);
-				s.read(json, jsonData);
+				s.read(json, jsonValue);
 			}
 
 			w.setInitScene(json.readValue("initScene", String.class, jsonData));

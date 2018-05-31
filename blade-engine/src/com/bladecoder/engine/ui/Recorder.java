@@ -28,7 +28,6 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.serialization.JsonSerializer;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -171,7 +170,7 @@ public class Recorder {
 		if (recording) {
 			EngineLogger.debug("RECORDING...");
 			try {
-				new JsonSerializer(World.getInstance()).saveGameState(fileName + GAMESTATE_REC_EXT);
+				World.getInstance().getSerializer().saveGameState(fileName + GAMESTATE_REC_EXT);
 			} catch (IOException e) {
 				EngineLogger.error(e.getMessage());
 			}
@@ -246,7 +245,7 @@ public class Recorder {
 
 			if (gameStateFile.exists())
 				try {
-					new JsonSerializer(World.getInstance()).loadGameState(gameStateFile);
+					World.getInstance().getSerializer().loadGameState(gameStateFile);
 				} catch (IOException e) {
 					EngineLogger.error(e.getMessage());
 				}

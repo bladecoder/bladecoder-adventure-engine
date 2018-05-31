@@ -33,16 +33,23 @@ public class MusicVolumeAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the action continues inmediatly")
 	private boolean wait = true;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		MusicManager musicEngine = World.getInstance().getMusicManager();
+		MusicManager musicEngine = w.getMusicManager();
 		
 		if(duration==0) {
 			musicEngine.setVolume(volume);
 			return false;
 		} else {
-			World.getInstance().getMusicManager().fade(volume, duration, wait?cb:null);
+			w.getMusicManager().fade(volume, duration, wait?cb:null);
 		}
 		
 		return wait;

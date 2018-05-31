@@ -86,10 +86,17 @@ public class SetActorAttrAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor speed for walking. Only supported for character actors.")
 	private Float walkingSpeed;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		Scene s = actor.getScene();
+		Scene s = actor.getScene(w);
 
 		BaseActor a = s.getActor(actor.getActorId(), true);
 
@@ -214,21 +221,21 @@ public class SetActorAttrAction implements Action {
 
 		scn.removeActor(actor);
 
-		if (scn != World.getInstance().getCurrentScene() && World.getInstance().getCachedScene(scn.getId()) == null
+		if (scn != w.getCurrentScene() && w.getCachedScene(scn.getId()) == null
 				&& actor instanceof AssetConsumer) {
 			((AssetConsumer) actor).loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 			((AssetConsumer) actor).retrieveAssets();
 		}
 
-		World.getInstance().getUIActors().addActor(actor);
+		w.getUIActors().addActor(actor);
 	}
 
 	private void removeUIActor(Scene scn, InteractiveActor actor) {
-		InteractiveActor a = World.getInstance().getUIActors().removeActor(actor.getId());
+		InteractiveActor a = w.getUIActors().removeActor(actor.getId());
 
 		if (a != null) {
-			if (scn != World.getInstance().getCurrentScene() && a instanceof Disposable)
+			if (scn != w.getCurrentScene() && a instanceof Disposable)
 				((Disposable) a).dispose();
 
 			scn.addActor(a);

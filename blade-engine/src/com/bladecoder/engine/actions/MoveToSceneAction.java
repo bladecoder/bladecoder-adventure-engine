@@ -34,14 +34,19 @@ public class MoveToSceneAction implements Action {
 	@ActionPropertyDescription("The target scene. The current scene if empty.")
 	@ActionProperty(type = Type.SCENE)
 	private String scene;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {			
-		final Scene s = actor.getScene();
+		final Scene s = actor.getScene(w);
 
-		final String actorId = actor.getActorId();
-		final World w = World.getInstance();
-		
+		final String actorId = actor.getActorId();		
 		
 		if (actorId == null) {
 			// if called in a scene verb and no actor is specified, we do nothing

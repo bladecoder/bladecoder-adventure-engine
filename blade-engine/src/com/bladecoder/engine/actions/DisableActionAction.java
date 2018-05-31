@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 
 /**
@@ -34,6 +35,13 @@ public class DisableActionAction implements Action {
 	private String serializedAction;
 	
 	private Action action;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -53,7 +61,7 @@ public class DisableActionAction implements Action {
 		if(action == null) {
 			Json json = new Json();
 			JsonValue root = new JsonReader().parse(serializedAction);
-			action =  ActionUtils.readJson(json, root);
+			action =  ActionUtils.readJson(w, json, root);
 		}
 		
 		return action;

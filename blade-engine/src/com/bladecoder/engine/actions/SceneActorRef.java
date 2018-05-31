@@ -46,8 +46,7 @@ public class SceneActorRef {
 		return actorId;
 	}
 
-	public Scene getScene() {
-		final World world = World.getInstance();
+	public Scene getScene(World world) {
 		if (sceneId != null && !sceneId.trim().isEmpty()) {
 			return world.getScene(sceneId);
 		} else {
@@ -56,17 +55,17 @@ public class SceneActorRef {
 	}
 	
 	
-	public BaseActor getActor(boolean searchInventory) {
-		Scene scn = getScene();
+	public BaseActor getActor(World w, boolean searchInventory) {
+		Scene scn = getScene(w);
 		
 		if(scn == null)
-			scn = World.getInstance().getCurrentScene();
+			scn = w.getCurrentScene();
 		
 		return scn.getActor(actorId, searchInventory);
 	}
 
-	public BaseActor getActor() {
-		return getActor(true);
+	public BaseActor getActor(World w) {
+		return getActor(w, true);
 	}
 	
 	public String toString() {

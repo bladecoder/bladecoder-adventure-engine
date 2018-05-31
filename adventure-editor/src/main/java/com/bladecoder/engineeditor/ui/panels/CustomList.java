@@ -210,6 +210,11 @@ public class CustomList<T> extends Widget implements Cullable {
 			public int compare(T o1, T o2) {
 				String s1 = cellRenderer.getCellTitle(o1);
 				String s2 = cellRenderer.getCellTitle(o2);
+				
+				if(s1 == null) {
+					System.out.println("nul");
+				}
+				
 				return s1.compareTo(s2);
 			}
 		});

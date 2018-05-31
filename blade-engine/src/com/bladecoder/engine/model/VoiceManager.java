@@ -38,10 +38,8 @@ public class VoiceManager implements Serializable, AssetConsumer {
 		@Override
 		public void run() {
 			try {
-				if (EngineAssetManager.getInstance().isLoading()) {
+				if (!EngineAssetManager.getInstance().isLoading()) {
 					cancel();
-					Timer.post(backgroundLoadingTask);
-				} else {
 					retrieveAssets();
 
 					if (voice != null)
@@ -92,8 +90,9 @@ public class VoiceManager implements Serializable, AssetConsumer {
 			// Load and play the voice file in background to avoid
 			// blocking the UI
 			loadAssets();
+			
 			backgroundLoadingTask.cancel();
-			Timer.post(backgroundLoadingTask);
+			Timer.schedule(backgroundLoadingTask, 0, 0);
 		}
 	}
 

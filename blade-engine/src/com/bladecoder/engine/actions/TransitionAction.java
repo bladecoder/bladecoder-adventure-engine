@@ -38,10 +38,17 @@ public class TransitionAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the transition is showed and the action continues inmediatly")
 	private boolean wait = true;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		Transition t = World.getInstance().getTransition();
+		Transition t = w.getTransition();
 		t.create(time, color, type, wait?cb:null);
 		
 		return wait;

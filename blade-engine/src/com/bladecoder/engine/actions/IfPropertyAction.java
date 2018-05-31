@@ -29,10 +29,17 @@ public class IfPropertyAction extends AbstractIfAction {
 	@ActionProperty
 	@ActionPropertyDescription("The property value")
 	private String value;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		String valDest = World.getInstance().getCustomProperty(name);
+		String valDest = w.getCustomProperty(name);
 		
 		if(valDest == null)
 			valDest = Config.getProperty(name, null);

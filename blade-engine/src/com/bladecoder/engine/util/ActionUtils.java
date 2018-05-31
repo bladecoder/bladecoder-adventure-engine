@@ -20,6 +20,7 @@ import com.bladecoder.engine.actions.ActorAnimationRef;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.actions.SceneActorRef;
+import com.bladecoder.engine.model.World;
 
 public class ActionUtils {
 	public static String getInfo(Class<?> clazz) {
@@ -339,7 +340,7 @@ public class ActionUtils {
 		json.writeObjectEnd();
 	}
 
-	public static Action readJson(Json json, JsonValue jsonData) {
+	public static Action readJson(World w, Json json, JsonValue jsonData) {
 		String className = jsonData.getString("class", null);
 		Action action = null;
 		if (className != null) {
@@ -347,6 +348,9 @@ public class ActionUtils {
 
 			try {
 				action = ActionFactory.createByClass(className, null);
+				
+				action.setWorld(w);
+				
 			} catch (ClassNotFoundException | ReflectionException e1) {
 				throw new SerializationException(e1);
 			}

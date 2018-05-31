@@ -32,6 +32,13 @@ public class CommentAction implements Action {
 	@ActionProperty(required = true, defaultValue = "false")
 	@ActionPropertyDescription("When true, the comment will be showed on screen while testing.")
 	private boolean debug = false;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -39,7 +46,7 @@ public class CommentAction implements Action {
 			EngineLogger.debug(comment);
 
 			if (debug)
-				World.getInstance().getCurrentScene().getTextManager().addText(comment, TextManager.POS_SUBTITLE,
+				w.getCurrentScene().getTextManager().addText(comment, TextManager.POS_SUBTITLE,
 						TextManager.POS_SUBTITLE, false, Text.Type.UI, Color.YELLOW, null, null, null, null);
 		}
 

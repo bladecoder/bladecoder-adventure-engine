@@ -21,6 +21,7 @@ import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
 @ActionDescription("Change the selected dialog option properties")
@@ -40,10 +41,17 @@ public class SetDialogOptionAttrAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("Show/Hide the dialog option")
 	private Boolean visible;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		final Scene s = actor.getScene();
+		final Scene s = actor.getScene(w);
 
 		CharacterActor a = (CharacterActor) s.getActor(actor.getActorId(), true);
 

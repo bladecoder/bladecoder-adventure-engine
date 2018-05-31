@@ -260,7 +260,7 @@ public class Verb implements VerbRunner, Serializable {
 				String clazz = aValue.getString("class");
 
 				try {
-					Action a = ActionUtils.readJson(json, aValue);
+					Action a = ActionUtils.readJson(World.getInstance(), json, aValue);
 					actions.add(a);
 				} catch (SerializationException e) {
 					EngineLogger.error("Error loading action: " + clazz + " " + aValue.toString());

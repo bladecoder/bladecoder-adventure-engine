@@ -28,11 +28,18 @@ public class AddValueToProperty implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The integer value to add.")
 	private int value;
+	
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		
-		String p = World.getInstance().getCustomProperty(prop);
+		String p = w.getCustomProperty(prop);
 		
 		int v = 0;
 		
@@ -45,8 +52,8 @@ public class AddValueToProperty implements Action {
 		
 		v += value;
 		
-		World.getInstance().setCustomProperty(prop, Integer.toString(v));
-		EngineLogger.debug("AddValueToProperty: " + prop + "=" + World.getInstance().getCustomProperty(prop));
+		w.setCustomProperty(prop, Integer.toString(v));
+		EngineLogger.debug("AddValueToProperty: " + prop + "=" + w.getCustomProperty(prop));
 
 		return false;
 	}

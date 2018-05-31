@@ -111,7 +111,7 @@ public class World implements AssetConsumer {
 
 	// ------------ TRANSIENT OBJECTS ------------
 	private AssetState assetState;
-	private boolean disposed;
+	private boolean disposed = true;
 	transient private SpriteBatch spriteBatch;
 
 	// for debug purposes, keep track of loading time
@@ -127,13 +127,14 @@ public class World implements AssetConsumer {
 
 	// If true call 'initNewGame' or 'initSavedGame' verbs.
 	private boolean initGame;
+	
+	final JsonSerializer serializer = new JsonSerializer(this);
 
 	public static World getInstance() {
 		return instance;
 	}
 
 	private World() {
-		disposed = true;
 	}
 
 	private void init() {
@@ -172,6 +173,10 @@ public class World implements AssetConsumer {
 	
 	public WorldListener getListener() {
 		return listener;
+	}
+	
+	public JsonSerializer getSerializer() {
+		return serializer;
 	}
 
 	public InkManager getInkManager() {
@@ -704,7 +709,7 @@ public class World implements AssetConsumer {
 	// ********** SERIALIZATION **********
 	
 	public void saveGameState() throws IOException {
-		new JsonSerializer(this).saveGameState(GAMESTATE_FILENAME);
+		serializer.saveGameState(GAMESTATE_FILENAME);
 	}
 
 	public void removeGameState(String filename) throws IOException {
@@ -760,7 +765,7 @@ public class World implements AssetConsumer {
 			Json json = new Json();
 			json.setIgnoreUnknownFields(true);
 
-			new JsonSerializer(this).read(json, root);
+			serializer.read(json, root);
 
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
 
@@ -814,11 +819,11 @@ public class World implements AssetConsumer {
 	 * @throws IOException
 	 */
 	public void loadWorldDesc() throws IOException {
-		new JsonSerializer(this).loadWorldDesc();
+		serializer.loadWorldDesc();
 	}
 
 	public void saveWorldDesc(FileHandle file) throws IOException {
-		new JsonSerializer(this).saveWorldDesc(file);
+		serializer.saveWorldDesc(file);
 	}
 
 	public boolean savedGameExists() {
@@ -844,7 +849,7 @@ public class World implements AssetConsumer {
 		else
 			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
 		
-		new JsonSerializer(this).loadGameState(savedFile);
+		serializer.loadGameState(savedFile);
 		
 		assetState = AssetState.LOAD_ASSETS;
 	}

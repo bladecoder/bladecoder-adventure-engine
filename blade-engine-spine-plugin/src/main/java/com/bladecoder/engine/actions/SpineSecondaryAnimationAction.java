@@ -33,12 +33,19 @@ public class SpineSecondaryAnimationAction implements Action {
 	@ActionPropertyDescription("The Animation to set. Empty to clear the secondary animation")
 	private ActorAnimationRef animation;
 
+	private World w;
+	
+	@Override
+	public void setWorld(World w) {
+		this.w = w;
+	}
+	
 	@Override
 	public boolean run(VerbRunner cb) {
 		
 		String actorId = animation.getActorId();
 		
-		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
+		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actorId, true);
 		
 		if(a.getRenderer() instanceof SpineRenderer) {
 			SpineRenderer r = (SpineRenderer) a.getRenderer();
