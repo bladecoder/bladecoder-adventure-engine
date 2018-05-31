@@ -21,9 +21,9 @@ import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Text.Type;
+import com.bladecoder.engine.serialization.ActionCallbackSerialization;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.ink.runtime.Choice;
@@ -275,7 +275,7 @@ public class InkManager implements VerbRunner, Serializable {
 			if (params.get("init") != null)
 				init = Boolean.parseBoolean(params.get("init"));
 
-			World.getInstance().setCurrentScene(params.get("scene"), init);
+			World.getInstance().enterScene(params.get("scene"), init);
 		} else if ("set".equals(commandName)) {
 			World.getInstance().setModelProp(params.get("prop"), params.get("value"));
 		} else {

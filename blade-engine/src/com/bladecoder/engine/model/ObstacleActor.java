@@ -16,9 +16,9 @@
 package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.utils.Json;
+import com.bladecoder.engine.serialization.SerializationHelper;
+import com.bladecoder.engine.serialization.SerializationHelper.Mode;
 import com.bladecoder.engine.util.PolygonUtils;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 /**
  * An Obstacle actor is used to restrict the walk zone in the scene

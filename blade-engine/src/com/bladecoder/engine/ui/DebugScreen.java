@@ -277,7 +277,7 @@ public class DebugScreen implements BladeScreen {
 				if(testScene.isChecked())
 					World.getInstance().setTestScene(scenes.getSelected());
 				
-				World.getInstance().setCurrentScene(scenes.getSelected(), initScene.isChecked());
+				World.getInstance().enterScene(scenes.getSelected(), initScene.isChecked());
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});

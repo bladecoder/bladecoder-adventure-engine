@@ -27,9 +27,9 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.anim.SpritePosTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
+import com.bladecoder.engine.serialization.SerializationHelper;
+import com.bladecoder.engine.serialization.SerializationHelper.Mode;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class CharacterActor extends SpriteActor {
 	public final static float DEFAULT_WALKING_SPEED = 1000f; // Speed units:

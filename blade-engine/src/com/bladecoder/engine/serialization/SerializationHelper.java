@@ -1,4 +1,4 @@
-package com.bladecoder.engine.util;
+package com.bladecoder.engine.serialization;
 
 public class SerializationHelper {
 

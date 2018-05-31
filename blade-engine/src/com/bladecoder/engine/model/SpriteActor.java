@@ -29,9 +29,9 @@ import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.serialization.SerializationHelper;
+import com.bladecoder.engine.serialization.SerializationHelper.Mode;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class SpriteActor extends InteractiveActor implements AssetConsumer {
 

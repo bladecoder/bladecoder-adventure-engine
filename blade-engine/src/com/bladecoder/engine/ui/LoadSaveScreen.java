@@ -24,8 +24,8 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -37,13 +37,13 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -52,6 +52,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.serialization.JsonSerializer;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
@@ -244,7 +245,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 	}
 
 	private boolean slotExists(String slot) {
-		String filename = slot + World.GAMESTATE_EXT;
+		String filename = slot + JsonSerializer.GAMESTATE_EXT;
 		return World.getInstance().savedGameExists(filename);
 	}
 
@@ -300,8 +301,8 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		FileHandle[] list = EngineAssetManager.getInstance().getUserFolder().list();
 
 		for (FileHandle file : list)
-			if (file.name().endsWith(World.GAMESTATE_EXT)) {
-				String name = file.name().substring(0, file.name().indexOf(World.GAMESTATE_EXT));
+			if (file.name().endsWith(JsonSerializer.GAMESTATE_EXT)) {
+				String name = file.name().substring(0, file.name().indexOf(JsonSerializer.GAMESTATE_EXT));
 				if (!name.equals("default"))
 					al.add(name);
 			}
@@ -311,8 +312,8 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			String[] list2 = EngineAssetManager.getInstance().listAssetFiles("tests");
 
 			for (String file : list2)
-				if (file.endsWith(World.GAMESTATE_EXT)) {
-					String name = file.substring(0, file.indexOf(World.GAMESTATE_EXT));
+				if (file.endsWith(JsonSerializer.GAMESTATE_EXT)) {
+					String name = file.substring(0, file.indexOf(JsonSerializer.GAMESTATE_EXT));
 					al.add(name);
 				}
 		}
@@ -321,7 +322,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 	}
 
 	private Image getScreenshot(String slot) {
-		String filename = slot + World.GAMESTATE_EXT + ".png";
+		String filename = slot + JsonSerializer.GAMESTATE_EXT + ".png";
 
 		FileHandle savedFile = null;
 
@@ -347,7 +348,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
 			final World world = World.getInstance();
-			final String filename = event.getListenerActor().getName() + World.GAMESTATE_EXT;
+			final String filename = event.getListenerActor().getName() + JsonSerializer.GAMESTATE_EXT;
 
 			if (world.savedGameExists()) {
 				Dialog d = new Dialog("", ui.getSkin()) {
@@ -405,7 +406,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 				protected void result(Object object) {
 					if (((Boolean) object).booleanValue()) {
 						final World world = World.getInstance();
-						final String filename = listenerActor.getName() + World.GAMESTATE_EXT;
+						final String filename = listenerActor.getName() + JsonSerializer.GAMESTATE_EXT;
 
 						try {
 							world.removeGameState(filename);
@@ -442,10 +443,10 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
 			final World world = World.getInstance();
-			final String filename = event.getListenerActor().getName() + World.GAMESTATE_EXT;
+			final String filename = event.getListenerActor().getName() + JsonSerializer.GAMESTATE_EXT;
 
 			try {
-				world.saveGameState(filename);
+				new JsonSerializer(world).saveGameState(filename);
 
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 
