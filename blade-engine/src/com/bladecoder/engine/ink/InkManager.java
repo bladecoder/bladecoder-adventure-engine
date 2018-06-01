@@ -156,7 +156,7 @@ public class InkManager implements VerbRunner, Serializable {
 				if (names != null) {
 					ArrayList<ListDefinition> origins = new ArrayList<ListDefinition>();
 					for (String n : names) {
-						ListDefinition def = story.getListDefinitions().getDefinition(n);
+						ListDefinition def = story.getListDefinitions().getListDefinition(n);
 						if (!origins.contains(def))
 							origins.add(def);
 					}
