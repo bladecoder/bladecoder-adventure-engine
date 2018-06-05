@@ -11,7 +11,7 @@ public class OpenURLAction implements Action {
 	private String url;
 	
 	@Override
-	public void setWorld(World w) {
+	public void init(World w) {
 	}
 
 	@Override

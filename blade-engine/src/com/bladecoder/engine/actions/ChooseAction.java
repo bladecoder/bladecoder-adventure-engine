@@ -41,7 +41,7 @@ public class ChooseAction extends AbstractControlAction implements Serializable 
 	int chooseCount = -1;
 	
 	@Override
-	public void setWorld(World w) {
+	public void init(World w) {
 	}
 
 	@Override

@@ -24,7 +24,7 @@ import com.bladecoder.engine.model.World;
 public class EndAction extends AbstractControlAction {
 	
 	@Override
-	public void setWorld(World w) {
+	public void init(World w) {
 	}
 
 	@Override

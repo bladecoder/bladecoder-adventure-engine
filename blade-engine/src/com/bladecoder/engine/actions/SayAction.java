@@ -65,7 +65,7 @@ public class SayAction extends BaseCallbackAction {
 	private World w;
 	
 	@Override
-	public void setWorld(World w) {
+	public void init(World w) {
 		this.w = w;
 	}
 

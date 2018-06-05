@@ -26,7 +26,7 @@ public class EndGameAction implements Action {
 	private World w;
 	
 	@Override
-	public void setWorld(World w) {
+	public void init(World w) {
 		this.w = w;
 	}
 

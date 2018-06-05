@@ -25,7 +25,7 @@ public interface Action {
 	 * 
 	 * @param w The world to inject
 	 */
-	public void setWorld(World w);
+	public void init(World w);
 	
 	
 	/**

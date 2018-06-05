@@ -349,7 +349,7 @@ public class ActionUtils {
 			try {
 				action = ActionFactory.createByClass(className, null);
 				
-				action.setWorld(w);
+				action.init(w);
 				
 			} catch (ClassNotFoundException | ReflectionException e1) {
 				throw new SerializationException(e1);

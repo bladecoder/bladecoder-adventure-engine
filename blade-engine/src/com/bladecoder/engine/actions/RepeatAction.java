@@ -30,7 +30,7 @@ public class RepeatAction extends AbstractControlAction implements Serializable 
 	private int currentRepeat = 0;
 	
 	@Override
-	public void setWorld(World w) {
+	public void init(World w) {
 	}
 
 	@Override
