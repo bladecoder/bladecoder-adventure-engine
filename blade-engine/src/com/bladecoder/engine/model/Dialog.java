@@ -20,9 +20,9 @@ import java.util.List;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 
 public class Dialog implements Serializable {
 
@@ -33,7 +33,7 @@ public class Dialog implements Serializable {
 	private int currentOption = -1;
 
 	private String id;
-	private String actor;
+	private CharacterActor actor;
 
 	public String getId() {
 		return id;
@@ -43,18 +43,18 @@ public class Dialog implements Serializable {
 		this.id = id;
 	}
 
-	public String getActor() {
+	public CharacterActor getActor() {
 		return actor;
 	}
 
-	public void setActor(String actor) {
+	public void setActor(CharacterActor actor) {
 		this.actor = actor;
 	}
-	
+
 	public Dialog selectOption(int i) {
 		return selectOption(getVisibleOptions().get(i));
 	}
-	
+
 	/**
 	 * @return The current visible options.
 	 */
@@ -65,7 +65,7 @@ public class Dialog implements Serializable {
 		for (DialogOption o : options) {
 			choices.add(o.getText());
 		}
-		
+
 		return choices;
 	}
 
@@ -78,9 +78,7 @@ public class Dialog implements Serializable {
 		if (v == null)
 			v = DEFAULT_DIALOG_VERB;
 
-		// TODO: DELETE REFERENCE TO WORLD FROM DIALOG
-		CharacterActor a = (CharacterActor) World.getInstance().getCurrentScene().getActor(actor, false);
-		a.runVerb(v);
+		actor.runVerb(v);
 
 		if (o.isOnce())
 			o.setVisible(false);
@@ -93,7 +91,7 @@ public class Dialog implements Serializable {
 			if (next.equals("this"))
 				return this;
 			else
-				return a.getDialog(next);
+				return actor.getDialog(next);
 		}
 
 		return null;
@@ -140,9 +138,10 @@ public class Dialog implements Serializable {
 	@Override
 	public void write(Json json) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("id", id);
-//			json.writeValue("actor", actor);
+			// json.writeValue("actor", actor);
 		} else {
 			json.writeValue("currentOption", currentOption);
 		}
@@ -154,9 +153,10 @@ public class Dialog implements Serializable {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			id = json.readValue("id", String.class, jsonData);
-//			actor = json.readValue("actor", String.class, jsonData);
+			// actor = json.readValue("actor", String.class, jsonData);
 			options = json.readValue("options", ArrayList.class, DialogOption.class, jsonData);
 		} else {
 			JsonValue optionsValue = jsonData.get("options");
@@ -165,10 +165,10 @@ public class Dialog implements Serializable {
 
 			for (DialogOption o : options) {
 				JsonValue jsonValue = optionsValue.get(i);
-				
-				if(jsonValue == null)
+
+				if (jsonValue == null)
 					break;
-				
+
 				o.read(json, jsonValue);
 				i++;
 			}

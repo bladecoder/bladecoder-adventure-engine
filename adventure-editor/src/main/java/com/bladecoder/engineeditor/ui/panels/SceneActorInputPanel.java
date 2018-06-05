@@ -31,7 +31,6 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 
 public class SceneActorInputPanel extends InputPanel {
@@ -55,7 +54,7 @@ public class SceneActorInputPanel extends InputPanel {
 		panel.add(new Label("  Actor ", skin));
 		panel.add(actor);
 
-		Scene[] scenes = World.getInstance().getScenes().values().toArray(new Scene[0]);
+		Scene[] scenes = Ctx.project.getWorld().getScenes().values().toArray(new Scene[0]);
 		
 		int l = scenes.length + 1;
 		
@@ -97,7 +96,7 @@ public class SceneActorInputPanel extends InputPanel {
 			s = Ctx.project.getSelectedScene().getId();
 		}
 		
-		Scene scn = World.getInstance().getScene(s);
+		Scene scn = Ctx.project.getWorld().getScene(s);
 		
 		actor.setItems(getActorValues(scn));	
 	}

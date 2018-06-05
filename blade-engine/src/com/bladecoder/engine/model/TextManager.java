@@ -53,12 +53,9 @@ public class TextManager implements Serializable {
 	private Queue<Text> fifo;
 	private World world;
 
-	public TextManager() {
+	public TextManager(World w) {
 		fifo = new LinkedList<Text>();
-	}
-	
-	public void setWorld(World w) {
-		this.world = w;		
+		this.world = w;
 	}
 
 	public void addText(String str, float x, float y, boolean quee, Text.Type type, Color color, String font,

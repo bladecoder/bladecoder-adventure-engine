@@ -21,9 +21,10 @@ import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Text.Type;
-import com.bladecoder.engine.serialization.ActionCallbackSerialization;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.serialization.ActionCallbackSerializer;
+import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.ink.runtime.Choice;
@@ -55,8 +56,11 @@ public class InkManager implements VerbRunner, Serializable {
 	private String storyName;
 
 	private int ip = -1;
+	
+	private final World w;
 
-	public InkManager() {
+	public InkManager(World w) {
+		this.w = w;
 		externalFunctions = new ExternalFunctions();
 		actions = new ArrayList<Action>();
 	}
@@ -66,7 +70,7 @@ public class InkManager implements VerbRunner, Serializable {
 		String json = getJsonString(is);
 		story = new Story(json);
 
-		externalFunctions.bindExternalFunctions(this);
+		externalFunctions.bindExternalFunctions(w, this);
 	}
 
 	public void newStory(final String name) throws Exception {
@@ -213,12 +217,12 @@ public class InkManager implements VerbRunner, Serializable {
 		} else {
 
 			if (hasChoices()) {
-				wasInCutmode = World.getInstance().inCutMode();
-				World.getInstance().setCutMode(false);
-				World.getInstance().getListener().dialogOptions();
+				wasInCutmode = w.inCutMode();
+				w.setCutMode(false);
+				w.getListener().dialogOptions();
 			} else if (cb != null || sCb != null) {
 				if (cb == null) {
-					cb = ActionCallbackSerialization.find(sCb);
+					cb = ActionCallbackSerializer.find(w, sCb);
 				}
 
 				ActionCallback tmpcb = cb;
@@ -275,9 +279,9 @@ public class InkManager implements VerbRunner, Serializable {
 			if (params.get("init") != null)
 				init = Boolean.parseBoolean(params.get("init"));
 
-			World.getInstance().enterScene(params.get("scene"), init);
+			w.enterScene(params.get("scene"), init);
 		} else if ("set".equals(commandName)) {
-			World.getInstance().setModelProp(params.get("prop"), params.get("value"));
+			w.setModelProp(params.get("prop"), params.get("value"));
 		} else {
 
 			// for backward compatibility
@@ -318,7 +322,7 @@ public class InkManager implements VerbRunner, Serializable {
 			}
 		}
 
-		if (!params.containsKey("actor") && World.getInstance().getCurrentScene().getPlayer() != null) {
+		if (!params.containsKey("actor") && w.getCurrentScene().getPlayer() != null) {
 			// params.put("actor", Scene.VAR_PLAYER);
 
 			if (!params.containsKey("type")) {
@@ -440,7 +444,7 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	public void selectChoice(int i) {
-		World.getInstance().setCutMode(wasInCutmode);
+		w.setCutMode(wasInCutmode);
 
 		try {
 			story.chooseChoiceIndex(i);
@@ -490,12 +494,15 @@ public class InkManager implements VerbRunner, Serializable {
 
 	@Override
 	public void write(Json json) {
+		World w = ((BladeJson)json).getWorld();
+		
 		json.writeValue("wasInCutmode", wasInCutmode);
 
 		if (cb == null && sCb != null)
-			cb = ActionCallbackSerialization.find(sCb);
+			cb = ActionCallbackSerializer.find(w, sCb);
 
-		json.writeValue("cb", ActionCallbackSerialization.find(cb));
+		if (cb != null)
+			json.writeValue("cb", ActionCallbackSerializer.find(w, cb));
 
 		// SAVE ACTIONS
 		json.writeArrayStart("actions");
@@ -539,7 +546,7 @@ public class InkManager implements VerbRunner, Serializable {
 		for (int i = 0; i < actionsValue.size; i++) {
 			JsonValue aValue = actionsValue.get(i);
 
-			Action a = ActionUtils.readJson(World.getInstance(), json, aValue);
+			Action a = ActionUtils.readJson(w, json, aValue);
 			actions.add(a);
 		}
 

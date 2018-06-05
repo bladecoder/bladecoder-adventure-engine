@@ -26,7 +26,6 @@ import org.xml.sax.SAXException;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
@@ -102,7 +101,7 @@ public class EditChapterDialog extends EditDialog {
 				
 				// sets the init chapter
 				if(previousId.equals(doc.getInitChapter())) {
-					World.getInstance().setInitChapter(newId);
+					Ctx.project.getWorld().setInitChapter(newId);
 				}
 				
 				Ctx.project.saveProject();

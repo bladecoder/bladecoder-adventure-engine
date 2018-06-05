@@ -16,8 +16,8 @@
 package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.utils.Json;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.PolygonUtils;
 
 /**
@@ -29,9 +29,9 @@ public class ObstacleActor extends BaseActor {
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-		
-		if(scene!= null && scene.getPolygonalNavGraph() != null) {
-			if(visible)
+
+		if (scene != null && scene.getPolygonalNavGraph() != null) {
+			if (visible)
 				scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
 			else
 				scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
@@ -44,25 +44,26 @@ public class ObstacleActor extends BaseActor {
 
 	public void setPosition(float x, float y) {
 		boolean inNavGraph = false;
-		
-		if(scene != null && scene.getPolygonalNavGraph() != null) {
+
+		if (scene != null && scene.getPolygonalNavGraph() != null) {
 			inNavGraph = scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
 		}
-		
+
 		bbox.setPosition(x, y);
-		
-		if(inNavGraph) {
+
+		if (inNavGraph) {
 			scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
 		}
 	}
-	
+
 	@Override
 	public void write(Json json) {
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			PolygonUtils.ensureClockWise(bbox.getVertices(), 0, bbox.getVertices().length);
-			bbox.dirty();			
+			bbox.dirty();
 		}
-		
+
 		super.write(json);
 	}
 }

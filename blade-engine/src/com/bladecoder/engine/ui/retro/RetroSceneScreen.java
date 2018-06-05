@@ -49,8 +49,8 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.model.WorldListener;
 import com.bladecoder.engine.model.World.AssetState;
+import com.bladecoder.engine.model.WorldListener;
 import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.Pointer;
 import com.bladecoder.engine.ui.Recorder;
@@ -119,7 +119,7 @@ public class RetroSceneScreen implements SceneScreen {
 		public boolean tap(float x, float y, int count, int button) {
 			EngineLogger.debug("Event TAP button: " + button);
 
-			World w = World.getInstance();
+			World w = ui.getWorld();
 
 			if (w.isPaused() || recorder.isPlaying() || testerBot.isEnabled())
 				return true;
@@ -141,7 +141,7 @@ public class RetroSceneScreen implements SceneScreen {
 		public boolean longPress(float x, float y) {
 			EngineLogger.debug("Event LONG PRESS");
 
-			if (uiEnabled && !World.getInstance().hasDialogOptions()) {
+			if (uiEnabled && !ui.getWorld().hasDialogOptions()) {
 				drawHotspots = true;
 			}
 
@@ -196,14 +196,14 @@ public class RetroSceneScreen implements SceneScreen {
 				break;
 			case 's':
 				try {
-					World.getInstance().saveGameState();
+					ui.getWorld().saveGameState();
 				} catch (IOException e) {
 					EngineLogger.error(e.getMessage());
 				}
 				break;
 			case 'l':
 				try {
-					World.getInstance().loadGameState();
+					ui.getWorld().loadGameState();
 				} catch (IOException e) {
 					EngineLogger.error(e.getMessage());
 				}
@@ -226,14 +226,14 @@ public class RetroSceneScreen implements SceneScreen {
 				}
 				break;
 			case 'p':
-				if (World.getInstance().isPaused()) {
-					World.getInstance().resume();
+				if (ui.getWorld().isPaused()) {
+					ui.getWorld().resume();
 				} else {
-					World.getInstance().pause();
+					ui.getWorld().pause();
 				}
 				break;
 			case ' ':
-				if (uiEnabled && !World.getInstance().hasDialogOptions()) {
+				if (uiEnabled && !ui.getWorld().hasDialogOptions()) {
 					drawHotspots = true;
 				}
 				break;
@@ -300,7 +300,7 @@ public class RetroSceneScreen implements SceneScreen {
 	}
 	
 	private void updateUI() {
-		World w = World.getInstance();
+		World w = ui.getWorld();
 
 		if (w.isPaused() || w.inCutMode() || testerBot.isEnabled() || recorder.isPlaying()) {
 			// DISABLE UI
@@ -309,7 +309,7 @@ public class RetroSceneScreen implements SceneScreen {
 			pointer.hide();
 			uiEnabled = false;
 		} else {
-			if (World.getInstance().hasDialogOptions()) {
+			if (ui.getWorld().hasDialogOptions()) {
 				dialogUI.setVisible(true);
 				verbUI.hide();
 			} else {
@@ -341,7 +341,7 @@ public class RetroSceneScreen implements SceneScreen {
 	}
 
 	private void update(float delta) {
-		final World world = World.getInstance();
+		final World world = ui.getWorld();
 
 		currentActor = null;
 
@@ -382,7 +382,7 @@ public class RetroSceneScreen implements SceneScreen {
 
 	@Override
 	public void render(float delta) {
-		final World world = World.getInstance();
+		final World world = ui.getWorld();
 
 		update(delta);
 
@@ -448,7 +448,7 @@ public class RetroSceneScreen implements SceneScreen {
 	}
 
 	private void drawDebugText(SpriteBatch batch) {
-		World w = World.getInstance();
+		World w = ui.getWorld();
 
 		w.getSceneCamera().getInputUnProject(worldViewport, unprojectTmp);
 
@@ -514,7 +514,7 @@ public class RetroSceneScreen implements SceneScreen {
 	}
 
 	private void drawHotspots(SpriteBatch batch) {
-		final World world = World.getInstance();
+		final World world = ui.getWorld();
 		for (BaseActor a : world.getCurrentScene().getActors().values()) {
 			if (!(a instanceof InteractiveActor) || !a.isVisible() || a == world.getCurrentScene().getPlayer())
 				continue;
@@ -566,7 +566,7 @@ public class RetroSceneScreen implements SceneScreen {
 
 	@Override
 	public void resize(int width, int height) {
-		final World world = World.getInstance();
+		final World world = ui.getWorld();
 
 		if (!world.isDisposed()) {
 			screenViewport.setWorldSize(world.getWidth(), world.getHeight());
@@ -605,7 +605,7 @@ public class RetroSceneScreen implements SceneScreen {
 	}
 
 	private void sceneClick(int button) {
-		World w = World.getInstance();
+		World w = ui.getWorld();
 
 		w.getSceneCamera().getInputUnProject(worldViewport, unprojectTmp);
 
@@ -678,9 +678,9 @@ public class RetroSceneScreen implements SceneScreen {
 		multiplexer.addProcessor(inputProcessor);
 		Gdx.input.setInputProcessor(multiplexer);
 
-		if (World.getInstance().isDisposed()) {
+		if (ui.getWorld().isDisposed()) {
 			try {
-				World.getInstance().load();
+				ui.getWorld().load();
 			} catch (Exception e) {
 				EngineLogger.error("ERROR LOADING GAME", e);
 
@@ -689,29 +689,29 @@ public class RetroSceneScreen implements SceneScreen {
 			}
 		}
 
-		World.getInstance().setListener(worldListener);
-		World.getInstance().resume();
+		ui.getWorld().setListener(worldListener);
+		ui.getWorld().resume();
 		
-		textManagerUI.setText(World.getInstance().getCurrentScene().getTextManager().getCurrentText());
+		textManagerUI.setText(ui.getWorld().getCurrentScene().getTextManager().getCurrentText());
 		
 		updateUI();
 	}
 
 	@Override
 	public void hide() {
-		World.getInstance().pause();
+		ui.getWorld().pause();
 		currentActor = null;
 		dispose();
 	}
 
 	@Override
 	public void pause() {
-		World.getInstance().pause();
+		ui.getWorld().pause();
 	}
 
 	@Override
 	public void resume() {
-		World.getInstance().resume();
+		ui.getWorld().resume();
 	}
 
 	public Viewport getViewport() {
@@ -729,7 +729,7 @@ public class RetroSceneScreen implements SceneScreen {
 		recorder = ui.getRecorder();
 		testerBot = ui.getTesterBot();
 
-		textManagerUI = new TextManagerUI(ui.getSkin());
+		textManagerUI = new TextManagerUI(ui);
 		menuButton = new Button(ui.getSkin(), "menu");
 		dialogUI = new DialogUI(ui);
 

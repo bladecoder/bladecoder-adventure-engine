@@ -15,11 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionDescription;
-import com.bladecoder.engine.actions.ActionProperty;
-import com.bladecoder.engine.actions.ActionPropertyDescription;
-import com.bladecoder.engine.actions.ActorAnimationRef;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;

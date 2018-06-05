@@ -21,6 +21,7 @@ import java.util.Map;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engineeditor.Ctx;
 
 public class SceneInputPanel extends StringOptionsInputPanel {
 	SceneInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
@@ -28,7 +29,7 @@ public class SceneInputPanel extends StringOptionsInputPanel {
 	}
 
 	private static String[] getValues(boolean mandatory) {
-		Map<String, Scene> scenes = World.getInstance().getScenes();
+		Map<String, Scene> scenes = Ctx.project.getWorld().getScenes();
 		
 		String[] result = new String[scenes.size() + 1];
 		

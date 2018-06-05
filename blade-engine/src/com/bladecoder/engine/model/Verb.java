@@ -23,9 +23,9 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.SerializationException;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.serialization.ActionCallbackSerialization;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.ActionCallbackSerializer;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -208,7 +208,8 @@ public class Verb implements VerbRunner, Serializable {
 	@Override
 	public void write(Json json) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("id", id);
 
 			if (target != null)
@@ -227,7 +228,9 @@ public class Verb implements VerbRunner, Serializable {
 			json.writeArrayEnd();
 		} else {
 			json.writeValue("ip", ip);
-			json.writeValue("cb", ActionCallbackSerialization.find(cb));
+			
+			if(cb != null)
+				json.writeValue("cb", ActionCallbackSerializer.find(bjson.getWorld(), cb));
 
 			if (currentTarget != null)
 				json.writeValue("currentTarget", currentTarget);
@@ -247,7 +250,8 @@ public class Verb implements VerbRunner, Serializable {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			id = json.readValue("id", String.class, jsonData);
 			target = json.readValue("target", String.class, (String) null, jsonData);
 			state = json.readValue("state", String.class, (String) null, jsonData);
@@ -260,7 +264,7 @@ public class Verb implements VerbRunner, Serializable {
 				String clazz = aValue.getString("class");
 
 				try {
-					Action a = ActionUtils.readJson(World.getInstance(), json, aValue);
+					Action a = ActionUtils.readJson(bjson.getWorld(), json, aValue);
 					actions.add(a);
 				} catch (SerializationException e) {
 					EngineLogger.error("Error loading action: " + clazz + " " + aValue.toString());
@@ -271,8 +275,7 @@ public class Verb implements VerbRunner, Serializable {
 			// MUTABLE
 			currentTarget = json.readValue("currentTarget", String.class, (String) null, jsonData);
 			ip = json.readValue("ip", Integer.class, jsonData);
-			String sCb = json.readValue("cb", String.class, jsonData);
-			cb = ActionCallbackSerialization.find(sCb);
+			cb = ActionCallbackSerializer.find(bjson.getWorld(), json.readValue("cb", String.class, jsonData));
 
 			JsonValue actionsValue = jsonData.get("actions");
 

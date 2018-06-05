@@ -20,7 +20,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.bladecoder.engine.model.SoundDesc;
-import com.bladecoder.engine.model.World;
+import com.bladecoder.engineeditor.Ctx;
 
 public class SoundInputPanel extends StringOptionsInputPanel {
 	SoundInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue) {
@@ -28,7 +28,7 @@ public class SoundInputPanel extends StringOptionsInputPanel {
 	}
 
 	private static String[] getValues(boolean mandatory) {
-		Map<String, SoundDesc> sounds = World.getInstance().getSounds();
+		Map<String, SoundDesc> sounds = Ctx.project.getWorld().getSounds();
 		
 		String[] result = new String[sounds.size()];
 		

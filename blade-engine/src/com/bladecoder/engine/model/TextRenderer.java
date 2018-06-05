@@ -28,8 +28,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class TextRenderer implements ActorRenderer {
@@ -52,16 +52,17 @@ public class TextRenderer implements ActorRenderer {
 	private Color shadowColor = Color.BLACK;
 	private int textAlign = Align.left;
 	private int orgAlign = Align.bottom;
-	
+
 	private final Color color = new Color(Color.WHITE);
-	
-	// Translated Text shown in the editor. When editing the text, the .properties with the translation is not ready.
+
+	// Translated Text shown in the editor. When editing the text, the .properties
+	// with the translation is not ready.
 	private transient String editorTranslatedText;
 
 	public TextRenderer() {
 
 	}
-		
+
 	@Override
 	public int getOrgAlign() {
 		return orgAlign;
@@ -80,23 +81,23 @@ public class TextRenderer implements ActorRenderer {
 
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
-		
+
 		float dx = getAlignDx(getWidth(), orgAlign);
 		float dy = getAlignDy(getHeight(), orgAlign);
 
 		if (font != null && text != null) {
-			
-			if(tint != null && !tint.equals(color)) {
+
+			if (tint != null && !tint.equals(color)) {
 				color.set(tint);
-				
+
 				String tt = text;
-				
+
 				if (tt.charAt(0) == I18N.PREFIX)
 					tt = I18N.getString(tt.substring(1));
-				
-				if(editorTranslatedText != null)
+
+				if (editorTranslatedText != null)
 					tt = editorTranslatedText;
-				
+
 				layout.setText(font, tt, color, 0, textAlign, false);
 			}
 
@@ -105,10 +106,10 @@ public class TextRenderer implements ActorRenderer {
 
 			float originX = dx;
 			float originY = layout.height + dy;
-			
-			if(textAlign == Align.right) 
+
+			if (textAlign == Align.right)
 				originX += getWidth();
-			else if(textAlign == Align.center)
+			else if (textAlign == Align.center)
 				originX += getWidth() / 2;
 
 			tm.translate(x, y, 0).rotate(0, 0, 1, rotation).scale(scale, scale, 1).translate(originX, originY, 0);
@@ -119,7 +120,8 @@ public class TextRenderer implements ActorRenderer {
 
 			batch.setTransformMatrix(tmp);
 		} else {
-			RectangleRenderer.draw(batch, x + dx * scale , y + dy * scale, getWidth() * scale, getHeight() * scale, Color.RED);
+			RectangleRenderer.draw(batch, x + dx * scale, y + dy * scale, getWidth() * scale, getHeight() * scale,
+					Color.RED);
 		}
 	}
 
@@ -153,21 +155,21 @@ public class TextRenderer implements ActorRenderer {
 		if (bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
-		
-		float dx =  getAlignDx(getWidth(), orgAlign);
-		float dy =  getAlignDy(getHeight(), orgAlign);
+
+		float dx = getAlignDx(getWidth(), orgAlign);
+		float dy = getAlignDy(getHeight(), orgAlign);
 
 		float[] verts = bbox.getVertices();
 
 		verts[0] = dx;
 		verts[1] = dy;
-		
+
 		verts[2] = dx;
 		verts[3] = getHeight() + dy;
-		
+
 		verts[4] = getWidth() + dx;
 		verts[5] = getHeight() + dy;
-		
+
 		verts[6] = getWidth() + dx;
 		verts[7] = dy;
 		bbox.dirty();
@@ -176,7 +178,7 @@ public class TextRenderer implements ActorRenderer {
 	public String getText() {
 		return text;
 	}
-	
+
 	public void setText(String text) {
 		this.text = text;
 		this.editorTranslatedText = text;
@@ -250,7 +252,7 @@ public class TextRenderer implements ActorRenderer {
 	public void setShadowColor(Color shadowColor) {
 		this.shadowColor = shadowColor;
 	}
-	
+
 	public int getAlign() {
 		return textAlign;
 	}
@@ -258,42 +260,42 @@ public class TextRenderer implements ActorRenderer {
 	public void setAlign(int align) {
 		this.textAlign = align;
 	}
-	
+
 	public static float getAlignDx(float width, int align) {
-		if((align & Align.left) != 0)
+		if ((align & Align.left) != 0)
 			return 0;
-		else if((align & Align.right) != 0)
+		else if ((align & Align.right) != 0)
 			return -width;
-		else if((align & Align.center) != 0)
+		else if ((align & Align.center) != 0)
 			return -width / 2.0f;
-		
+
 		return -width / 2.0f;
 	}
-	
+
 	public static float getAlignDy(float height, int align) {
-		if((align & Align.bottom) != 0)
+		if ((align & Align.bottom) != 0)
 			return 0;
-		else if((align & Align.top) != 0)
+		else if ((align & Align.top) != 0)
 			return -height;
-		else if((align & Align.center) != 0)
+		else if ((align & Align.center) != 0)
 			return -height / 2.0f;
-		
+
 		return 0;
 	}
 
 	@Override
 	public void loadAssets() {
 		FreeTypeFontLoaderParameter params = new FreeTypeFontLoaderParameter();
-		
+
 		float scale = EngineAssetManager.getInstance().getScale();
 
 		params.fontFileName = EngineAssetManager.FONT_DIR + fontName + EngineAssetManager.FONT_EXT;
-		params.fontParameters.size = (int)(fontSize * scale);
-		params.fontParameters.borderWidth = (int)(borderWidth * scale);
+		params.fontParameters.size = (int) (fontSize * scale);
+		params.fontParameters.borderWidth = (int) (borderWidth * scale);
 		params.fontParameters.borderColor = borderColor;
 		params.fontParameters.borderStraight = borderStraight;
-		params.fontParameters.shadowOffsetX = (int)(shadowOffsetX * scale);
-		params.fontParameters.shadowOffsetY = (int)(shadowOffsetY * scale);
+		params.fontParameters.shadowOffsetX = (int) (shadowOffsetX * scale);
+		params.fontParameters.shadowOffsetY = (int) (shadowOffsetY * scale);
 		params.fontParameters.shadowColor = shadowColor;
 		params.fontParameters.characters = "";
 		params.fontParameters.incremental = true;
@@ -314,13 +316,13 @@ public class TextRenderer implements ActorRenderer {
 		font = EngineAssetManager.getInstance().get(fontName + getFontSize() + ".ttf", BitmapFont.class);
 
 		String tt = text;
-		
+
 		if (tt.charAt(0) == I18N.PREFIX)
 			tt = I18N.getString(tt.substring(1));
-		
-		if(editorTranslatedText != null)
+
+		if (editorTranslatedText != null)
 			tt = editorTranslatedText;
-		
+
 		layout.setText(font, tt, color, 0, textAlign, false);
 
 		computeBbox();
@@ -330,14 +332,15 @@ public class TextRenderer implements ActorRenderer {
 	public void dispose() {
 		if (EngineAssetManager.getInstance().isLoaded(fontName + getFontSize() + ".ttf"))
 			EngineAssetManager.getInstance().unload(fontName + getFontSize() + ".ttf");
-		
+
 		font = null;
 	}
 
 	@Override
 	public void write(Json json) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("text", text);
 			json.writeValue("fontName", fontName);
 			json.writeValue("fontSize", fontSize);
@@ -356,7 +359,8 @@ public class TextRenderer implements ActorRenderer {
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			text = json.readValue("text", String.class, jsonData);
 			fontName = json.readValue("fontName", String.class, jsonData);
 			fontSize = json.readValue("fontSize", int.class, jsonData);

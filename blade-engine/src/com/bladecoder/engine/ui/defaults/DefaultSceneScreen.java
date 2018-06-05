@@ -140,7 +140,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		public boolean tap(float x, float y, int count, int button) {
 			EngineLogger.debug("Event TAP button: " + button + " count: " + count);
 
-			World w = World.getInstance();
+			World w = ui.getWorld();
 
 			if (w.isPaused() || recorder.isPlaying() || testerBot.isEnabled())
 				return true;
@@ -178,7 +178,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		public boolean longPress(float x, float y) {
 			EngineLogger.debug("Event LONG PRESS");
 
-			if (uiEnabled && !World.getInstance().hasDialogOptions()) {
+			if (uiEnabled && !ui.getWorld().hasDialogOptions()) {
 				drawHotspots = true;
 			}
 
@@ -237,7 +237,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			case 's':
 				if (EngineLogger.debugMode()) {
 					try {
-						World.getInstance().saveGameState();
+						ui.getWorld().saveGameState();
 					} catch (IOException e) {
 						EngineLogger.error(e.getMessage());
 					}
@@ -246,7 +246,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			case 'l':
 				if (EngineLogger.debugMode()) {
 					try {
-						World.getInstance().loadGameState();
+						ui.getWorld().loadGameState();
 					} catch (IOException e) {
 						EngineLogger.error(e.getMessage());
 					}
@@ -281,14 +281,14 @@ public class DefaultSceneScreen implements SceneScreen {
 				}
 				break;
 			case 'p':
-				if (World.getInstance().isPaused()) {
+				if (ui.getWorld().isPaused()) {
 					resume();
 				} else {
 					pause();
 				}
 				break;
 			case ' ':
-				if (uiEnabled && !World.getInstance().hasDialogOptions()) {
+				if (uiEnabled && !ui.getWorld().hasDialogOptions()) {
 					drawHotspots = true;
 				}
 				break;
@@ -301,8 +301,8 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		@Override
 		public boolean scrolled(int amount) {
-			if (uiEnabled && !World.getInstance().hasDialogOptions()
-					&& World.getInstance().getInventory().isVisible()) {
+			if (uiEnabled && !ui.getWorld().hasDialogOptions()
+					&& ui.getWorld().getInventory().isVisible()) {
 
 				boolean fromDown = (inventoryUI.getInventoryPos() == InventoryPos.CENTER
 						|| inventoryUI.getInventoryPos() == InventoryPos.DOWN);
@@ -377,7 +377,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		
 		stage.addActor(msg);
 		unprojectTmp.set(t.x, t.y, 0);
-		World.getInstance().getSceneCamera().scene2screen(getStage().getViewport(), unprojectTmp);
+		ui.getWorld().getSceneCamera().scene2screen(getStage().getViewport(), unprojectTmp);
 		
 		float posx, posy;
 		
@@ -404,7 +404,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	}
 
 	private void updateUI() {
-		World w = World.getInstance();
+		World w = ui.getWorld();
 
 		if (uiMode == UIModes.PIE && pie.isVisible())
 			pie.hide();
@@ -421,7 +421,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			pointer.reset();
 			uiEnabled = false;
 		} else {
-			if (World.getInstance().hasDialogOptions()) {
+			if (ui.getWorld().hasDialogOptions()) {
 				inventoryUI.hide();
 				inventoryButton.setVisible(false);
 				dialogUI.setVisible(true);
@@ -452,7 +452,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	}
 
 	private void update(float delta) {
-		final World world = World.getInstance();
+		final World world = ui.getWorld();
 
 		if (!world.isDisposed()) {
 			world.update(delta * speed);
@@ -606,7 +606,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 	@Override
 	public void render(float delta) {
-		final World world = World.getInstance();
+		final World world = ui.getWorld();
 
 		update(delta);
 
@@ -659,7 +659,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	}
 
 	private void drawDebugText(SpriteBatch batch) {
-		World w = World.getInstance();
+		World w = ui.getWorld();
 
 		w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
 
@@ -732,7 +732,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	}
 
 	private void drawHotspots(SpriteBatch batch) {
-		final World world = World.getInstance();
+		final World world = ui.getWorld();
 		for (BaseActor a : world.getCurrentScene().getActors().values()) {
 			if (!(a instanceof InteractiveActor) || !a.isVisible() || a == world.getCurrentScene().getPlayer())
 				continue;
@@ -788,7 +788,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 	@Override
 	public void resize(int width, int height) {
-		final World world = World.getInstance();
+		final World world = ui.getWorld();
 		if (!world.isDisposed()) {
 			viewport.setWorldSize(world.getWidth(), world.getHeight());
 			viewport.update(width, height, true);
@@ -824,7 +824,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	}
 
 	private void sceneClick(int button, int count) {
-		World w = World.getInstance();
+		World w = ui.getWorld();
 
 		w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
 
@@ -982,9 +982,9 @@ public class DefaultSceneScreen implements SceneScreen {
 		multiplexer.addProcessor(inputProcessor);
 		Gdx.input.setInputProcessor(multiplexer);
 
-		if (World.getInstance().isDisposed()) {
+		if (ui.getWorld().isDisposed()) {
 			try {
-				World.getInstance().load();
+				ui.getWorld().load();
 			} catch (Exception e) {
 				EngineLogger.error("ERROR LOADING GAME", e);
 
@@ -993,29 +993,29 @@ public class DefaultSceneScreen implements SceneScreen {
 			}
 		}
 
-		World.getInstance().setListener(worldListener);
-		World.getInstance().resume();
+		ui.getWorld().setListener(worldListener);
+		ui.getWorld().resume();
 
-		textManagerUI.setText(World.getInstance().getCurrentScene().getTextManager().getCurrentText());
+		textManagerUI.setText(ui.getWorld().getCurrentScene().getTextManager().getCurrentText());
 
 		updateUI();
 	}
 
 	@Override
 	public void hide() {
-		World.getInstance().pause();
+		ui.getWorld().pause();
 		resetUI();
 		// dispose();
 	}
 
 	@Override
 	public void pause() {
-		World.getInstance().pause();
+		ui.getWorld().pause();
 	}
 
 	@Override
 	public void resume() {
-		World.getInstance().resume();
+		ui.getWorld().resume();
 
 		// resets the error when continue
 		if (EngineLogger.lastError != null && EngineLogger.debugMode()) {
@@ -1040,12 +1040,12 @@ public class DefaultSceneScreen implements SceneScreen {
 		testerBot = ui.getTesterBot();
 
 		pie = new PieMenu(this);
-		textManagerUI = new TextManagerUI(ui.getSkin());
+		textManagerUI = new TextManagerUI(ui);
 		menuButton = new Button(ui.getSkin(), "menu");
 		dialogUI = new DialogUI(ui);
 		pointer = new ScenePointer(ui.getSkin());
 		inventoryUI = new InventoryUI(this, pointer);
-		inventoryButton = new InventoryButton(ui.getSkin(), inventoryUI);
+		inventoryButton = new InventoryButton(ui, inventoryUI);
 
 		uiMode = UIModes.valueOf(Config.getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
 

@@ -20,7 +20,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.serialization.ActionCallbackSerialization;
+import com.bladecoder.engine.serialization.ActionCallbackSerializer;
+import com.bladecoder.engine.serialization.BladeJson;
 
 public class Text implements Serializable {
 	private static final float DEFAULT_TIME = 1f;
@@ -89,8 +90,9 @@ public class Text implements Serializable {
 		json.writeValue("style", style);
 		json.writeValue("actorId", actorId);
 		json.writeValue("voiceId", voiceId);
-		json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null
-				: String.class);
+		
+		if(cb != null)
+			json.writeValue("cb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), cb));
 	}
 
 	@Override
@@ -104,8 +106,6 @@ public class Text implements Serializable {
 		style = json.readValue("style", String.class, jsonData);
 		actorId = json.readValue("actorId", String.class, jsonData);
 		voiceId = json.readValue("voiceId", String.class, jsonData);
-		String cbSer = json.readValue("cb", String.class, jsonData);
-		if(cbSer != null)
-			cb = ActionCallbackSerialization.find(cbSer);
+		cb = ActionCallbackSerializer.find(((BladeJson) json).getWorld(), json.readValue("cb", String.class, jsonData));
 	}	
 }

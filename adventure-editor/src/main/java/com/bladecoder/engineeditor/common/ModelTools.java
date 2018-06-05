@@ -54,7 +54,6 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SoundDesc;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.NewOrderedProperties.OrderedPropertiesBuilder;
@@ -62,7 +61,7 @@ import com.bladecoder.engineeditor.model.Project;
 
 public class ModelTools {
 	public static final void extractDialogs() {
-		Map<String, Scene> scenes = World.getInstance().getScenes();
+		Map<String, Scene> scenes = Ctx.project.getWorld().getScenes();
 
 		BufferedWriter writer = null;
 		try {
@@ -174,7 +173,7 @@ public class ModelTools {
 	}
 
 	public static final void addCutMode() {
-		Map<String, Scene> scenes = World.getInstance().getScenes();
+		Map<String, Scene> scenes = Ctx.project.getWorld().getScenes();
 
 		for (Scene scn : scenes.values()) {
 			Map<String, BaseActor> actors = scn.getActors();
@@ -222,7 +221,7 @@ public class ModelTools {
 	}
 
 	public static final void fixSaySubtitleActor() {
-		Map<String, Scene> scenes = World.getInstance().getScenes();
+		Map<String, Scene> scenes = Ctx.project.getWorld().getScenes();
 
 		for (Scene scn : scenes.values()) {
 			Map<String, BaseActor> actors = scn.getActors();
@@ -283,7 +282,7 @@ public class ModelTools {
 
 	public static final void checkI18NMissingKeys()
 			throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-		Map<String, Scene> scenes = World.getInstance().getScenes();
+		Map<String, Scene> scenes = Ctx.project.getWorld().getScenes();
 
 		for (Scene scn : scenes.values()) {
 			Map<String, BaseActor> actors = scn.getActors();
@@ -389,7 +388,7 @@ public class ModelTools {
 	public static void printUnusedSounds() {
 		ArrayList<String> unusedSounds = new ArrayList<String>(Arrays.asList(getSoundList()));
 
-		HashMap<String, SoundDesc> sounds = World.getInstance().getSounds();
+		HashMap<String, SoundDesc> sounds = Ctx.project.getWorld().getSounds();
 
 		if (sounds != null) {
 			for (SoundDesc s : sounds.values()) {

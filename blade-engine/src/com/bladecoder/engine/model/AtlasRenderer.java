@@ -32,8 +32,8 @@ import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.FATween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -87,14 +87,13 @@ public class AtlasRenderer extends AnimationRenderer {
 
 		float dx = getAlignDx(getWidth(), orgAlign);
 		float dy = getAlignDy(getHeight(), orgAlign);
-		
-		if (tex == null) {			
-			RectangleRenderer.draw(batch, x + dx * scale , y + dy * scale, getWidth() * scale, getHeight() * scale, Color.RED);
-			
+
+		if (tex == null) {
+			RectangleRenderer.draw(batch, x + dx * scale, y + dy * scale, getWidth() * scale, getHeight() * scale,
+					Color.RED);
+
 			return;
 		}
-
-
 
 		x = x + tex.offsetX + dx;
 		y = y + tex.offsetY + dy;
@@ -131,7 +130,7 @@ public class AtlasRenderer extends AnimationRenderer {
 		if (id == null)
 			id = initAnimation;
 
-		AtlasAnimationDesc fa = (AtlasAnimationDesc)getAnimation(id);
+		AtlasAnimationDesc fa = (AtlasAnimationDesc) getAnimation(id);
 
 		if (fa == null) {
 			EngineLogger.error("AnimationDesc not found: " + id);
@@ -219,8 +218,7 @@ public class AtlasRenderer extends AnimationRenderer {
 
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
-		startAnimation(id, repeatType, count, cb,
-				getDirectionString(p0, pf, getDirs(id, fanims)));
+		startAnimation(id, repeatType, count, cb, getDirectionString(p0, pf, getDirs(id, fanims)));
 	}
 
 	private void loadSource(String source) {
@@ -329,12 +327,13 @@ public class AtlasRenderer extends AnimationRenderer {
 	public void write(Json json) {
 		super.write(json);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 
 		} else {
 			json.writeValue("currentFrameIndex", currentFrameIndex);
 
-			if(faTween != null)
+			if (faTween != null)
 				json.writeValue("faTween", faTween);
 		}
 	}
@@ -344,7 +343,8 @@ public class AtlasRenderer extends AnimationRenderer {
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			fanims = json.readValue("fanims", HashMap.class, AtlasAnimationDesc.class, jsonData);
 		} else {
 

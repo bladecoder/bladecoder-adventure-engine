@@ -27,7 +27,6 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.VerbRunner;
-import com.bladecoder.engine.model.World;
 
 @ActionDescription("Says a text")
 public class SayAction extends BaseCallbackAction {
@@ -61,13 +60,6 @@ public class SayAction extends BaseCallbackAction {
 	private boolean queue = false;
 
 	private String previousAnim = null;
-	
-	private World w;
-	
-	@Override
-	public void init(World w) {
-		this.w = w;
-	}
 
 	@Override
 	public boolean run(VerbRunner cb) {

@@ -107,9 +107,14 @@ public class Project extends PropertyChange {
 	private BaseActor selectedActor;
 	private String selectedFA;
 	private boolean modified = false;
+	private final World world = new World();
 
 	public Project() {
 		loadConfig();
+	}
+	
+	public World getWorld() {
+		return world;
 	}
 
 	public String getAssetPath(String base) {
@@ -283,7 +288,7 @@ public class Project extends PropertyChange {
 			EngineLogger.setDebug();
 
 			// 1.- SAVE world
-			World.getInstance().saveWorldDesc(
+			world.saveWorldDesc(
 					new FileHandle(new File(getAssetPath() + MODEL_PATH + "/" + EngineAssetManager.WORLD_FILENAME)));
 
 			// 2.- SAVE .chapter
@@ -340,14 +345,14 @@ public class Project extends PropertyChange {
 			EngineAssetManager.createEditInstance(getAssetPath());
 
 			try {
-				World.getInstance().loadWorldDesc();
+				world.loadWorldDesc();
 			} catch (SerializationException ex) {
 				// check for not compiled custom actions
 				if (ex.getCause() != null && ex.getCause() instanceof ClassNotFoundException) {
 					EditorLogger.msg("Custom action class not found. Trying to compile...");
 					if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
 						folderClassLoader.reload();
-						World.getInstance().loadWorldDesc();
+						world.loadWorldDesc();
 					} else {
 						this.projectFile = null;
 						throw new IOException("Failed to run Gradle.");
@@ -362,7 +367,7 @@ public class Project extends PropertyChange {
 			i18n = new I18NHandler(getAssetPath() + Project.MODEL_PATH);
 
 			// No need to load the chapter. It's loaded by the chapter combo.
-			// loadChapter(World.getInstance().getInitChapter());
+			// loadChapter(world.getInitChapter());
 
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 

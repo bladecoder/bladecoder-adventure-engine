@@ -54,8 +54,8 @@ public class SoundList extends ModelList<World, SoundDesc> {
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_CHAPTER_LOADED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				addElements(World.getInstance(),
-						Arrays.asList(World.getInstance().getSounds().values().toArray(new SoundDesc[0])));
+				addElements(Ctx.project.getWorld(),
+						Arrays.asList(Ctx.project.getWorld().getSounds().values().toArray(new SoundDesc[0])));
 			}
 		});
 

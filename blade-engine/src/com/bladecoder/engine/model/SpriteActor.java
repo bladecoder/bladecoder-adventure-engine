@@ -29,8 +29,8 @@ import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class SpriteActor extends InteractiveActor implements AssetConsumer {
@@ -42,7 +42,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	private float rot = 0.0f;
 	private float scale = 1.0f;
 	private Color tint;
-	
+
 	private boolean fakeDepth = false;
 
 	private boolean bboxFromRenderer = false;
@@ -115,8 +115,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	public void setScale(float scale) {
 		this.scale = scale;
-		
-		if(bboxFromRenderer)
+
+		if (bboxFromRenderer)
 			bbox.setScale(scale, scale);
 		else {
 			float worldScale = EngineAssetManager.getInstance().getScale();
@@ -205,13 +205,13 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			if (fa.sound != null) {
 				// Backwards compatibility
 				String sid = fa.sound;
-				if (World.getInstance().getSounds().get(sid) == null)
+				if (scene != null && scene.getWorld().getSounds().get(sid) == null)
 					sid = id + "_" + fa.sound;
 
 				if (scene != null)
 					scene.getSoundManager().stopSound(sid);
 				else
-					World.getInstance().getCurrentScene().getSoundManager().stopSound(sid); // The actor is in the
+					scene.getWorld().getCurrentScene().getSoundManager().stopSound(sid); // FIXME: The actor is in the
 																							// inventory
 			}
 
@@ -239,13 +239,13 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			if (fa.sound != null && repeatType != Tween.Type.REVERSE) {
 				// Backwards compatibility
 				String sid = fa.sound;
-				if (World.getInstance().getSounds().get(sid) == null)
+				if (scene != null && scene.getWorld().getSounds().get(sid) == null)
 					sid = id + "_" + fa.sound;
 
 				if (scene != null)
 					scene.getSoundManager().playSound(sid);
 				else
-					World.getInstance().getCurrentScene().getSoundManager().playSound(sid); // The actor is in the
+					scene.getWorld().getCurrentScene().getSoundManager().playSound(sid); // The actor is in the
 																							// inventory
 			}
 
@@ -298,9 +298,10 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	@Override
 	public void write(Json json) {
+		BladeJson bjson = (BladeJson) json;
 
 		// Reset vertices if bboxFromRenderer to save always with 0.0 value
-		if (bboxFromRenderer && SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		if (bboxFromRenderer && bjson.getMode() == Mode.MODEL) {
 			float[] verts = bbox.getVertices();
 			bbox.setVertices(new float[8]);
 
@@ -310,8 +311,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		} else {
 			super.write(json);
 		}
-
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("renderer", renderer, null);
 		} else {
 			json.writeValue("renderer", renderer);
@@ -331,7 +332,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			renderer = json.readValue("renderer", ActorRenderer.class, jsonData);
 		} else {
 			tweens = json.readValue("tweens", ArrayList.class, Tween.class, jsonData);
@@ -349,15 +351,14 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		tint = json.readValue("tint", Color.class, tint, jsonData);
 
 		// backwards compatibility fakeDepth
-		if(jsonData.get("depthType") != null) {
-			String depthType = json.readValue("depthType", String.class, (String)null, jsonData);
-			
+		if (jsonData.get("depthType") != null) {
+			String depthType = json.readValue("depthType", String.class, (String) null, jsonData);
+
 			fakeDepth = "VECTOR".equals(depthType);
 		} else {
 			fakeDepth = json.readValue("fakeDepth", boolean.class, fakeDepth, jsonData);
 		}
-		
-		
+
 		bboxFromRenderer = json.readValue("bboxFromRenderer", boolean.class, bboxFromRenderer, jsonData);
 
 		if (bboxFromRenderer)

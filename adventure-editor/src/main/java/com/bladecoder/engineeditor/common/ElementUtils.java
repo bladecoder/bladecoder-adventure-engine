@@ -6,10 +6,10 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.ActionUtils;
+import com.bladecoder.engineeditor.Ctx;
 
 public class ElementUtils {
 	public static String getCheckedId(String id, String[] values) {
@@ -39,7 +39,7 @@ public class ElementUtils {
 	}
 
 	public static Object cloneElement(Object e) {
-		Json json = new Json();
+		Json json = new BladeJson(Ctx.project.getWorld(), Mode.MODEL);
 
 		if (e instanceof Action) {
 			StringWriter buffer = new StringWriter();
@@ -48,9 +48,8 @@ public class ElementUtils {
 			String str = buffer.toString();
 			EditorLogger.debug(str);
 			JsonValue root = new JsonReader().parse(str);
-			return ActionUtils.readJson(World.getInstance(), json, root);
+			return ActionUtils.readJson(Ctx.project.getWorld(), json, root);
 		} else {
-			SerializationHelper.getInstance().setMode(Mode.MODEL);
 			String str = json.toJson(e, (Class<?>) null);
 			return json.fromJson(e.getClass(), str);
 		}

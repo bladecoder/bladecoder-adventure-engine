@@ -34,7 +34,6 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.defaults.ScenePointer;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
@@ -159,7 +158,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	public void resize(int width, int height) {
 
-		Inventory inventory = World.getInstance().getInventory();
+		Inventory inventory = sceneScreen.getUI().getWorld().getInventory();
 
 		tileSize = (int) DPIUtils.getTouchMinSize() * 2;
 		margin = (int) DPIUtils.getMarginSize();
@@ -239,7 +238,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	@Override
 	public void draw(Batch batch, float alpha) {
-		Inventory inventory = World.getInstance().getInventory();
+		Inventory inventory = sceneScreen.getUI().getWorld().getInventory();
 
 		if (!inventory.isVisible()) {
 			setVisible(false);
@@ -294,7 +293,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	private final Vector3 mousepos = new Vector3();
 
 	private void stopDragging(int button) {
-		World.getInstance().getSceneCamera().getInputUnProject(sceneScreen.getViewport(), mousepos);
+		sceneScreen.getUI().getWorld().getSceneCamera().getInputUnProject(sceneScreen.getViewport(), mousepos);
 
 		InteractiveActor targetActor = sceneScreen.getCurrentActor();
 
@@ -337,7 +336,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		if (x < margin || y < margin || x >= getWidth() - margin || y >= getHeight() - margin)
 			return null;
 
-		Inventory inventory = World.getInstance().getInventory();
+		Inventory inventory = sceneScreen.getUI().getWorld().getInventory();
 
 		int i = ((rows - 1) - ((int) (y - margin) / (tileSize + (int) rowSpace))) * cols
 				+ (int) (x - margin) / (tileSize + (int) rowSpace);

@@ -27,7 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.xml.sax.SAXException;
 
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.World;
+import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
 
 public class Chapter {
@@ -55,11 +55,11 @@ public class Chapter {
 	
 	public void load(String id) throws IOException {
 		setId(id);
-		World.getInstance().loadChapter(id);
+		Ctx.project.getWorld().getSerializer().loadChapter(id);
 	}
 	
 	public void save() throws IOException {
-		World.getInstance().getSerializer().saveModel(id);
+		Ctx.project.getWorld().getSerializer().saveModel(id);
 	}
 	
 	public String[] getChapters() {
@@ -86,12 +86,12 @@ public class Chapter {
 	}
 	
 	public String getInitChapter() {
-		String init = World.getInstance().getInitChapter();
+		String init = Ctx.project.getWorld().getInitChapter();
 		
 		if(init == null || init.isEmpty()) {
 			init = getChapters()[0];
 			
-			World.getInstance().setInitChapter(init);
+			Ctx.project.getWorld().setInitChapter(init);
 		}
 		
 		return init;

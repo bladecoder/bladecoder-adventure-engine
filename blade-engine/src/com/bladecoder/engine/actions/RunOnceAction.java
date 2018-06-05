@@ -25,11 +25,9 @@ import com.bladecoder.engine.model.World;
 public class RunOnceAction extends AbstractControlAction implements Serializable {
 	boolean executed = false;
 	
-	private World w;
 	
 	@Override
 	public void init(World w) {
-		this.w = w;
 	}
 
 	@Override

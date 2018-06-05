@@ -25,8 +25,8 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class ParticleRenderer implements ActorRenderer {
@@ -38,28 +38,27 @@ public class ParticleRenderer implements ActorRenderer {
 	private float lastAnimationTime = 0;
 
 	private Polygon bbox;
-	
+
 	private String particleName;
 	private String atlasName;
-	
+
 	private TextureAtlas atlasTex;
-	
+
 	private float tmpPosX = 0;
 	private float tmpPosY = 0;
 	private static final Matrix4 tmp = new Matrix4();
-	
+
 	private int orgAlign = Align.bottom;
 
 	public ParticleRenderer() {
 
 	}
-	
+
 	public void reset() {
 		tmpPosX = tmpPosY = 0;
 		effect.reset();
 	}
-	
-	
+
 	@Override
 	public int getOrgAlign() {
 		return orgAlign;
@@ -77,33 +76,33 @@ public class ParticleRenderer implements ActorRenderer {
 
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
-		
+
 		float finalScale = EngineAssetManager.getInstance().getScale() * scale;
 
 		if (effect.getEmitters().size > 0) {
-			
+
 			Matrix4 tm = batch.getTransformMatrix();
 			tmp.set(tm);
-			
-			if(tmpPosX != x / finalScale || tmpPosY != y / finalScale) {
+
+			if (tmpPosX != x / finalScale || tmpPosY != y / finalScale) {
 				tmpPosX = x / finalScale;
 				tmpPosY = y / finalScale;
-				
+
 				effect.setPosition(tmpPosX, tmpPosY);
 			}
 
 			tm.rotate(0, 0, 1, rotation).scale(finalScale, finalScale, 1);
 
 			batch.setTransformMatrix(tm);
-			
-			if(tint != null)
+
+			if (tint != null)
 				batch.setColor(tint);
-			
+
 			effect.draw(batch);
-			
-			if(tint != null)
+
+			if (tint != null)
 				batch.setColor(Color.WHITE);
-			
+
 			batch.setTransformMatrix(tmp);
 		} else {
 			x = x - getWidth() / 2 * finalScale;
@@ -128,7 +127,7 @@ public class ParticleRenderer implements ActorRenderer {
 	public void setParticleName(String particleName) {
 		this.particleName = particleName;
 	}
-	
+
 	public String getAtlasName() {
 		return atlasName;
 	}
@@ -140,10 +139,10 @@ public class ParticleRenderer implements ActorRenderer {
 	@Override
 	public void updateBboxFromRenderer(Polygon bbox) {
 		this.bbox = bbox;
-		
+
 		computeBbox();
 	}
-	
+
 	private void computeBbox() {
 		if (bbox == null)
 			return;
@@ -172,14 +171,14 @@ public class ParticleRenderer implements ActorRenderer {
 
 	@Override
 	public void retrieveAssets() {
-		
+
 		if (!EngineAssetManager.getInstance().isAtlasLoaded(atlasName)) {
 			loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 		}
-		
+
 		atlasTex = EngineAssetManager.getInstance().getTextureAtlas(getAtlasName());
-		
+
 		effect.load(EngineAssetManager.getInstance().getParticle(getParticleName()), atlasTex);
 		effect.start();
 		// reset tmp to force repositioning
@@ -196,23 +195,25 @@ public class ParticleRenderer implements ActorRenderer {
 
 	@Override
 	public void write(Json json) {
-		
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("atlasName", getAtlasName());
 			json.writeValue("particleName", getParticleName());
 			json.writeValue("orgAlign", orgAlign);
-		} else {		
+		} else {
 			json.writeValue("lastAnimationTime", lastAnimationTime);
 		}
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonData) {	
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+	public void read(Json json, JsonValue jsonData) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			setAtlasName(json.readValue("atlasName", String.class, jsonData));
 			setParticleName(json.readValue("particleName", String.class, jsonData));
 			orgAlign = json.readValue("orgAlign", int.class, Align.bottom, jsonData);
-		} else {		
+		} else {
 			lastAnimationTime = json.readValue("lastAnimationTime", Float.class, jsonData);
 		}
 	}

@@ -21,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
@@ -60,7 +59,7 @@ public class ChapterList extends EditList<String> {
 		if (e == null)
 			return;
 		
-		World.getInstance().setInitChapter(e);
+		Ctx.project.getWorld().setInitChapter(e);
 		Ctx.project.setModified();
 	}
 
@@ -82,7 +81,7 @@ public class ChapterList extends EditList<String> {
 		String e = list.getItems().removeIndex(pos);
 
 		if (e.equals(Ctx.project.getChapter().getInitChapter())) {
-			World.getInstance().setInitChapter(list.getItems().get(0));
+			Ctx.project.getWorld().setInitChapter(list.getItems().get(0));
 			Ctx.project.setModified();
 		}
 
@@ -188,7 +187,7 @@ public class ChapterList extends EditList<String> {
 		protected String getCellTitle(String e) {
 			String id = e;
 
-			String init = World.getInstance().getInitChapter();
+			String init = Ctx.project.getWorld().getInitChapter();
 
 			if (init.equals(id))
 				id += " <init>";

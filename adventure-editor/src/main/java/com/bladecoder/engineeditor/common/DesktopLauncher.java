@@ -36,8 +36,8 @@ public class DesktopLauncher extends BladeEngine {
 		cfg.title = p.getProperty(Config.TITLE_PROP, "Blade Engine Adventure");
 //		cfg.useGL30 = true;
 
-		// cfg.width = World.getInstance().getWidth();
-		// cfg.height = World.getInstance().getHeight();
+		// cfg.width = Ctx.project.getWorld().getWidth();
+		// cfg.height = Ctx.project.getWorld().getHeight();
 
 		cfg.width = 1920 / 2;
 		cfg.height = 1080 / 2;

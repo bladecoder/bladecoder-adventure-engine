@@ -349,8 +349,6 @@ public class ActionUtils {
 			try {
 				action = ActionFactory.createByClass(className, null);
 				
-				action.init(w);
-				
 			} catch (ClassNotFoundException | ReflectionException e1) {
 				throw new SerializationException(e1);
 			}
@@ -369,6 +367,8 @@ public class ActionUtils {
 							+ (v == null ? "null" : v.asString()));
 				}
 			}
+			
+			action.init(w);
 		}
 
 		return action;

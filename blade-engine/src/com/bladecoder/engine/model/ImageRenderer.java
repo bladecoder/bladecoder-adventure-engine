@@ -28,8 +28,8 @@ import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -54,34 +54,35 @@ public class ImageRenderer extends AnimationRenderer {
 
 	@Override
 	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
-		
+
 		float dx = getAlignDx(getWidth(), orgAlign);
 		float dy = getAlignDy(getHeight(), orgAlign);
-		
-		ImageCacheEntry source = (ImageCacheEntry)currentSource;
 
-		if (source == null || source.tex == null) {			
-			RectangleRenderer.draw(batch, x + dx * scale , y + dy * scale, getWidth() * scale, getHeight() * scale, Color.RED);
+		ImageCacheEntry source = (ImageCacheEntry) currentSource;
+
+		if (source == null || source.tex == null) {
+			RectangleRenderer.draw(batch, x + dx * scale, y + dy * scale, getWidth() * scale, getHeight() * scale,
+					Color.RED);
 			return;
 		}
-		
-		if(tint != null)
+
+		if (tint != null)
 			batch.setColor(tint);
-		
+
 		x = x + dx;
 		y = y + dy;
-		
-		batch.draw(source.tex, x, y, -dx, -dy, getWidth(), getHeight(), scale, scale, rotation, 
-				0, 0, source.tex.getWidth(), source.tex.getHeight(), flipX, false);
-		
-		if(tint != null)
+
+		batch.draw(source.tex, x, y, -dx, -dy, getWidth(), getHeight(), scale, scale, rotation, 0, 0,
+				source.tex.getWidth(), source.tex.getHeight(), flipX, false);
+
+		if (tint != null)
 			batch.setColor(Color.WHITE);
 	}
 
 	@Override
 	public float getWidth() {
-		ImageCacheEntry source = (ImageCacheEntry)currentSource;
-		
+		ImageCacheEntry source = (ImageCacheEntry) currentSource;
+
 		if (source == null || source.tex == null)
 			return super.getWidth();
 
@@ -90,8 +91,8 @@ public class ImageRenderer extends AnimationRenderer {
 
 	@Override
 	public float getHeight() {
-		ImageCacheEntry source = (ImageCacheEntry)currentSource;
-		
+		ImageCacheEntry source = (ImageCacheEntry) currentSource;
+
 		if (source == null || source.tex == null)
 			return super.getHeight();
 
@@ -118,7 +119,7 @@ public class ImageRenderer extends AnimationRenderer {
 			disposeSource(currentAnimation.source);
 
 		currentAnimation = fa;
-		currentSource = (ImageCacheEntry)sourceCache.get(fa.source);
+		currentSource = (ImageCacheEntry) sourceCache.get(fa.source);
 
 		// If the source is not loaded. Load it.
 		if (currentSource == null || currentSource.refCounter < 1) {
@@ -127,7 +128,7 @@ public class ImageRenderer extends AnimationRenderer {
 
 			retrieveSource(fa.source);
 
-			currentSource = (ImageCacheEntry)sourceCache.get(fa.source);
+			currentSource = (ImageCacheEntry) sourceCache.get(fa.source);
 
 			if (currentSource == null) {
 				EngineLogger.error("Could not load AnimationDesc: " + id);
@@ -185,7 +186,7 @@ public class ImageRenderer extends AnimationRenderer {
 			if (source.charAt(0) == I18N.PREFIX) {
 				source = getI18NSource(source.substring(1));
 			}
-			
+
 			EngineAssetManager.getInstance().loadTexture(EngineAssetManager.IMAGE_DIR + source);
 		}
 
@@ -201,33 +202,34 @@ public class ImageRenderer extends AnimationRenderer {
 			entry = sourceCache.get(source);
 		}
 
-		if (((ImageCacheEntry)entry).tex == null) {
+		if (((ImageCacheEntry) entry).tex == null) {
 			// I18N for images
 			if (source.charAt(0) == I18N.PREFIX) {
 				source = getI18NSource(source.substring(1));
 			}
 
-			((ImageCacheEntry)entry).tex = EngineAssetManager.getInstance().getTexture(EngineAssetManager.IMAGE_DIR + source);
+			((ImageCacheEntry) entry).tex = EngineAssetManager.getInstance()
+					.getTexture(EngineAssetManager.IMAGE_DIR + source);
 		}
 	}
-	
+
 	private String getI18NSource(String source) {
 		String lang = I18N.getCurrentLocale().getLanguage();
-		
+
 		int pointIdx = source.lastIndexOf('.');
 		String ext = source.substring(pointIdx);
 		String name = source.substring(0, pointIdx);
-		
+
 		String localName = name + "_" + lang + ext;
-		
-		if(EngineAssetManager.getInstance().assetExists(EngineAssetManager.IMAGE_DIR + localName))
+
+		if (EngineAssetManager.getInstance().assetExists(EngineAssetManager.IMAGE_DIR + localName))
 			return localName;
-		
+
 		return source;
 	}
 
 	private void disposeSource(String source) {
-		ImageCacheEntry entry = (ImageCacheEntry)sourceCache.get(source);
+		ImageCacheEntry entry = (ImageCacheEntry) sourceCache.get(source);
 
 		if (entry.refCounter == 1) {
 			EngineAssetManager.getInstance().disposeTexture(entry.tex);
@@ -275,22 +277,22 @@ public class ImageRenderer extends AnimationRenderer {
 	@Override
 	public void dispose() {
 		for (CacheEntry entry : sourceCache.values()) {
-			Texture tex = ((ImageCacheEntry)entry).tex;
-			if(entry.refCounter > 0 && tex != null)
+			Texture tex = ((ImageCacheEntry) entry).tex;
+			if (entry.refCounter > 0 && tex != null)
 				EngineAssetManager.getInstance().disposeTexture(tex);
 		}
 
 		sourceCache.clear();
 		currentSource = null;
 	}
-	
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
 		} else {
 

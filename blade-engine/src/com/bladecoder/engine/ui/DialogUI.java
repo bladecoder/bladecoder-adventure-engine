@@ -31,7 +31,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.DPIUtils;
 
 public class DialogUI extends ScrollPane {
@@ -47,9 +46,13 @@ public class DialogUI extends ScrollPane {
 	private Button down;
 
 	private List<String> choices;
+	
+	private final UI ui;
 
 	public DialogUI(UI ui) {
 		super(new Table(ui.getSkin()), ui.getSkin());
+		
+		this.ui = ui;
 
 		setFadeScrollBars(true);
 		setOverscroll(false, false);
@@ -122,7 +125,7 @@ public class DialogUI extends ScrollPane {
 	}
 
 	private void show() {
-		choices = World.getInstance().getDialogOptions();
+		choices = ui.getWorld().getDialogOptions();
 
 		if (choices.size() == 0)
 			return;
@@ -181,7 +184,7 @@ public class DialogUI extends ScrollPane {
 			recorder.add(i);
 		}
 
-		World.getInstance().selectDialogOption(i);
+		ui.getWorld().selectDialogOption(i);
 
 		setVisible(false);
 	}

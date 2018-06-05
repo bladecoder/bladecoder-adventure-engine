@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
@@ -30,19 +31,20 @@ import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.WorldProperties;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 
-public class JsonSerializer implements Serializable {
+@SuppressWarnings("deprecation")
+public class WorldSerialization implements Serializable {
 	public static final String GAMESTATE_EXT = ".gamestate.v13";
 
 	private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
 
-	World w;
+	private final World w;
 
-	public JsonSerializer(World w) {
+	public WorldSerialization(World w) {
 		this.w = w;
 	}
 
@@ -67,12 +69,10 @@ public class JsonSerializer implements Serializable {
 			}
 		}
 
-		SerializationHelper.getInstance().setMode(Mode.MODEL);
-
 		JsonValue root = new JsonReader()
 				.parse(EngineAssetManager.getInstance().getModelFile(worldFilename).reader("UTF-8"));
 
-		Json json = new Json();
+		Json json = new BladeJson(w, Mode.MODEL);
 		json.setIgnoreUnknownFields(true);
 
 		int width = json.readValue("width", Integer.class, root);
@@ -93,10 +93,8 @@ public class JsonSerializer implements Serializable {
 
 		float scale = EngineAssetManager.getInstance().getScale();
 
-		Json json = new Json();
+		Json json = new BladeJson(w, Mode.MODEL);
 		json.setOutputType(OutputType.javascript);
-
-		SerializationHelper.getInstance().setMode(Mode.MODEL);
 
 		json.setWriter(new StringWriter());
 
@@ -119,18 +117,52 @@ public class JsonSerializer implements Serializable {
 		w.close();
 	}
 
+	public void loadChapter(String chapterName) throws IOException {
+		if (!w.isDisposed())
+			w.dispose();
+
+		long initTime = System.currentTimeMillis();
+
+		if (chapterName == null)
+			chapterName = w.getInitChapter();
+
+		w.setChapter(chapterName);
+
+		if (EngineAssetManager.getInstance().getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).exists()) {
+
+			JsonValue root = new JsonReader().parse(EngineAssetManager.getInstance()
+					.getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).reader("UTF-8"));
+
+			Json json = new BladeJson(w, Mode.MODEL);
+			json.setIgnoreUnknownFields(true);
+
+			read(json, root);
+
+			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
+
+			w.getCustomProperties().put(WorldProperties.CURRENT_CHAPTER.toString(), chapterName);
+			w.getCustomProperties().put(WorldProperties.PLATFORM.toString(), Gdx.app.getType().toString());
+		} else {
+			EngineLogger.error(
+					"ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
+			w.dispose();
+			throw new IOException(
+					"ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
+		}
+
+		EngineLogger.debug("MODEL LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+	}
+
 	public void saveModel(String chapterId) throws IOException {
 		EngineLogger.debug("SAVING GAME MODEL");
 
 		if (w.isDisposed())
 			return;
 
-		Json json = new Json();
+		Json json = new BladeJson(w, Mode.MODEL);
 		json.setOutputType(OutputType.javascript);
 
 		String s = null;
-
-		SerializationHelper.getInstance().setMode(Mode.MODEL);
 
 		if (EngineLogger.debugMode())
 			s = json.prettyPrint(this);
@@ -149,16 +181,15 @@ public class JsonSerializer implements Serializable {
 			w.close();
 		}
 	}
-	
+
 	public void loadGameState(FileHandle savedFile) throws IOException {
 		EngineLogger.debug("LOADING GAME STATE");
 
 		if (savedFile.exists()) {
-			SerializationHelper.getInstance().setMode(Mode.STATE);
 
 			JsonValue root = new JsonReader().parse(savedFile.reader("UTF-8"));
 
-			Json json = new Json();
+			Json json = new BladeJson(w, Mode.STATE);
 			json.setIgnoreUnknownFields(true);
 
 			read(json, root);
@@ -174,12 +205,10 @@ public class JsonSerializer implements Serializable {
 		if (w.isDisposed())
 			return;
 
-		Json json = new Json();
+		Json json = new BladeJson(w, Mode.STATE);
 		json.setOutputType(OutputType.javascript);
 
 		String s = null;
-
-		SerializationHelper.getInstance().setMode(Mode.STATE);
 
 		if (EngineLogger.debugMode())
 			s = json.prettyPrint(this);
@@ -203,8 +232,9 @@ public class JsonSerializer implements Serializable {
 
 	@Override
 	public void write(Json json) {
-
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
 					Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
 
@@ -247,7 +277,8 @@ public class JsonSerializer implements Serializable {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			String version = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
 			if (version != null && !version.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
 				EngineLogger.debug("Model Engine Version v" + version + " differs from Current Engine Version v"
@@ -306,14 +337,11 @@ public class JsonSerializer implements Serializable {
 			String currentChapter = json.readValue("chapter", String.class, jsonData);
 
 			try {
-				w.loadChapter(currentChapter);
+				loadChapter(currentChapter);
 			} catch (IOException e1) {
 				EngineLogger.error("Error Loading Chapter");
 				return;
 			}
-
-			// restore the state after loading the model
-			SerializationHelper.getInstance().setMode(Mode.STATE);
 
 			w.setCurrentScene(w.getScene(json.readValue("currentScene", String.class, jsonData)));
 
@@ -360,7 +388,7 @@ public class JsonSerializer implements Serializable {
 
 			for (int i = 0; i < jsonProperties.size; i++) {
 				JsonValue jsonValue = jsonProperties.get(i);
-				props.put(jsonValue.name, jsonValue.asString());
+				props.put(jsonValue.name,  json.readValue("value", String.class, jsonData));
 			}
 
 			props.put(WorldProperties.SAVED_GAME_VERSION.toString(), version);
@@ -372,7 +400,7 @@ public class JsonSerializer implements Serializable {
 				CharacterActor actor = (CharacterActor) w.getCurrentScene().getActor(actorId, false);
 				w.setCurrentDialog(actor.getDialog(dialogId));
 			}
-			
+
 			w.getTransition().read(json, jsonData.get("transition"));
 			w.getMusicManager().read(json, jsonData.get("musicEngine"));
 
@@ -397,7 +425,7 @@ public class JsonSerializer implements Serializable {
 							String actor = ActionUtils.getStringValue(act, "actor");
 							String play = ActionUtils.getStringValue(act, "play");
 							if (play != null) {
-								SoundDesc sd = World.getInstance().getSounds().get(actor + "_" + play);
+								SoundDesc sd = w.getSounds().get(actor + "_" + play);
 
 								if (sd != null)
 									s.getSoundManager().addSoundToLoad(sd);
@@ -405,7 +433,7 @@ public class JsonSerializer implements Serializable {
 
 						} else if (act instanceof PlaySoundAction) {
 							String sound = ActionUtils.getStringValue(act, "sound");
-							SoundDesc sd = World.getInstance().getSounds().get(sound);
+							SoundDesc sd = w.getSounds().get(sound);
 
 							if (sd != null)
 								s.getSoundManager().addSoundToLoad(sd);
@@ -433,7 +461,7 @@ public class JsonSerializer implements Serializable {
 									String actor = ActionUtils.getStringValue(act, "actor");
 									String play = ActionUtils.getStringValue(act, "play");
 									if (play != null) {
-										SoundDesc sd = World.getInstance().getSounds().get(actor + "_" + play);
+										SoundDesc sd = w.getSounds().get(actor + "_" + play);
 
 										if (sd != null)
 											s.getSoundManager().addSoundToLoad(sd);
@@ -441,7 +469,7 @@ public class JsonSerializer implements Serializable {
 
 								} else if (act instanceof PlaySoundAction) {
 									String sound = ActionUtils.getStringValue(act, "sound");
-									SoundDesc sd = World.getInstance().getSounds().get(sound);
+									SoundDesc sd = w.getSounds().get(sound);
 
 									if (sd != null)
 										s.getSoundManager().addSoundToLoad(sd);
@@ -461,12 +489,12 @@ public class JsonSerializer implements Serializable {
 						if (ad.sound != null) {
 							String sid = ad.sound;
 
-							SoundDesc sd = World.getInstance().getSounds().get(sid);
+							SoundDesc sd = w.getSounds().get(sid);
 
 							if (sd == null)
 								sid = a.getId() + "_" + sid;
 
-							sd = World.getInstance().getSounds().get(sid);
+							sd = w.getSounds().get(sid);
 
 							if (sd != null)
 								s.getSoundManager().addSoundToLoad(sd);

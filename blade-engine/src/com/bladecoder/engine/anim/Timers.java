@@ -23,7 +23,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.serialization.ActionCallbackSerialization;
+import com.bladecoder.engine.serialization.ActionCallbackSerializer;
+import com.bladecoder.engine.serialization.BladeJson;
 
 public class Timers {
 	private List<Timer> timers = new ArrayList<>(3);
@@ -94,15 +95,18 @@ public class Timers {
 		public void write(Json json) {
 			json.writeValue("time", time);
 			json.writeValue("currentTime", currentTime);
-			json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null : String.class);
+			
+			if(cb != null)
+				json.writeValue("cb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), cb));
 		}
 
 		@Override
 		public void read(Json json, JsonValue jsonData) {
 			time = json.readValue("time", Float.class, jsonData);
 			currentTime = json.readValue("currentTime", Float.class, jsonData);
-			String cbSer = json.readValue("cb", String.class, jsonData);
-			cb = ActionCallbackSerialization.find(cbSer);
+			
+			BladeJson bjson = (BladeJson) json;
+			cb = ActionCallbackSerializer.find(bjson.getWorld(), json.readValue("cb", String.class, jsonData));
 		}
 	}
 }

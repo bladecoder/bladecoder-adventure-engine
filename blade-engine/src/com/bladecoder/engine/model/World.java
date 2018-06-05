@@ -36,24 +36,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.ink.InkManager;
-import com.bladecoder.engine.serialization.JsonSerializer;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.WorldSerialization;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
 
 public class World implements AssetConsumer {
 
-	private static final String GAMESTATE_FILENAME = "default" + JsonSerializer.GAMESTATE_EXT;
+	private static final String GAMESTATE_FILENAME = "default" + WorldSerialization.GAMESTATE_EXT;
 	private static final String DEFAULT_INVENTORY = "DEFAULT";
 
 	public static enum AssetState {
@@ -65,8 +59,6 @@ public class World implements AssetConsumer {
 	};
 
 	private static final boolean CACHE_ENABLED = true;
-
-	private static final World instance = new World();
 
 	// ------------ WORLD PROPERTIES ------------
 	private int width;
@@ -111,7 +103,6 @@ public class World implements AssetConsumer {
 
 	// ------------ TRANSIENT OBJECTS ------------
 	private AssetState assetState;
-	private boolean disposed = true;
 	transient private SpriteBatch spriteBatch;
 
 	// for debug purposes, keep track of loading time
@@ -128,13 +119,10 @@ public class World implements AssetConsumer {
 	// If true call 'initNewGame' or 'initSavedGame' verbs.
 	private boolean initGame;
 	
-	final JsonSerializer serializer = new JsonSerializer(this);
+	private final WorldSerialization serialization = new WorldSerialization(this);
 
-	public static World getInstance() {
-		return instance;
-	}
-
-	private World() {
+	public World() {
+		init();
 	}
 
 	private void init() {
@@ -146,7 +134,7 @@ public class World implements AssetConsumer {
 		scenes.clear();
 		sounds.clear();
 		
-		uiActors = new UIActors();
+		uiActors = new UIActors(this);
 
 		cutMode = false;
 		currentChapter = null;
@@ -162,8 +150,6 @@ public class World implements AssetConsumer {
 
 		paused = false;
 
-		disposed = false;
-
 		initGame = true;
 	}
 	
@@ -175,8 +161,8 @@ public class World implements AssetConsumer {
 		return listener;
 	}
 	
-	public JsonSerializer getSerializer() {
-		return serializer;
+	public WorldSerialization getSerializer() {
+		return serialization;
 	}
 
 	public InkManager getInkManager() {
@@ -185,7 +171,7 @@ public class World implements AssetConsumer {
 			// Allow not link the Blade Ink Engine library if you don't use Ink
 			try {
 				Class.forName("com.bladecoder.ink.runtime.Story");
-				inkManager = new InkManager();
+				inkManager = new InkManager(this);
 			} catch (ClassNotFoundException e) {
 				EngineLogger.debug("WARNING: Blade Ink Library not found.");
 			}
@@ -486,7 +472,7 @@ public class World implements AssetConsumer {
 				currentDialog = null;
 		}
 		
-		World.getInstance().getListener().dialogOptions();
+		listener.dialogOptions();
 	}
 
 	public void setInventory(String inventory) {
@@ -508,7 +494,7 @@ public class World implements AssetConsumer {
 		if (currentDialog != null)
 			setCurrentDialog(currentDialog.selectOption(i));
 		else if (inkManager != null)
-			World.getInstance().getInkManager().selectChoice(i);
+			getInkManager().selectChoice(i);
 	}
 
 	public List<String> getDialogOptions() {
@@ -572,13 +558,13 @@ public class World implements AssetConsumer {
 	}
 
 	public boolean isDisposed() {
-		return disposed;
+		return currentScene == null;
 	}
 
 	@Override
 	public void dispose() {
 
-		if (disposed)
+		if (isDisposed())
 			return;
 
 		try {
@@ -618,8 +604,7 @@ public class World implements AssetConsumer {
 			EngineLogger.error(e.getMessage());
 		}
 
-		paused = true;
-		disposed = true;
+		init();
 	}
 
 	public SceneCamera getSceneCamera() {
@@ -694,7 +679,7 @@ public class World implements AssetConsumer {
 
 	public void newGame() throws Exception {
 		timeOfGame = 0;
-		loadChapter(null);
+		serialization.loadChapter(null);
 	}
 
 	public void endGame() {
@@ -709,7 +694,7 @@ public class World implements AssetConsumer {
 	// ********** SERIALIZATION **********
 	
 	public void saveGameState() throws IOException {
-		serializer.saveGameState(GAMESTATE_FILENAME);
+		serialization.saveGameState(GAMESTATE_FILENAME);
 	}
 
 	public void removeGameState(String filename) throws IOException {
@@ -731,55 +716,15 @@ public class World implements AssetConsumer {
 		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
 			// SAVEGAME EXISTS
 			try {
-				instance.loadGameState();
+				loadGameState();
 			} catch (Exception e) {
 				EngineLogger.error("ERROR LOADING SAVED GAME", e);
-				instance.loadChapter(null);
+				serialization.loadChapter(null);
 			}
 		} else {
-			// XML LOADING
-			instance.loadChapter(null);
+			// Load the model if fails loading the saved game
+			serialization.loadChapter(null);
 		}
-	}
-
-	public void loadChapter(String chapterName) throws IOException {
-		if (!disposed)
-			dispose();
-
-		init();
-
-		long initTime = System.currentTimeMillis();
-
-		SerializationHelper.getInstance().setMode(Mode.MODEL);
-
-		if (chapterName == null)
-			chapterName = initChapter;
-
-		currentChapter = chapterName;
-
-		if (EngineAssetManager.getInstance().getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).exists()) {
-
-			JsonValue root = new JsonReader().parse(EngineAssetManager.getInstance()
-					.getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).reader("UTF-8"));
-
-			Json json = new Json();
-			json.setIgnoreUnknownFields(true);
-
-			serializer.read(json, root);
-
-			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
-
-			customProperties.put(WorldProperties.CURRENT_CHAPTER.toString(), chapterName);
-			customProperties.put(WorldProperties.PLATFORM.toString(), Gdx.app.getType().toString());
-		} else {
-			EngineLogger.error(
-					"ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
-			dispose();
-			throw new IOException(
-					"ERROR LOADING CHAPTER: " + chapterName + EngineAssetManager.CHAPTER_EXT + " doesn't exists.");
-		}
-
-		EngineLogger.debug("MODEL LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
 	}
 
 	private ObjectWrapper getObjectWrapper() {
@@ -801,7 +746,7 @@ public class World implements AssetConsumer {
 		if (test)
 			this.testScene = scene;
 
-		loadChapter(chapter);
+		serialization.loadChapter(chapter);
 
 		if (scene != null) {
 			currentScene = null;
@@ -819,11 +764,11 @@ public class World implements AssetConsumer {
 	 * @throws IOException
 	 */
 	public void loadWorldDesc() throws IOException {
-		serializer.loadWorldDesc();
+		serialization.loadWorldDesc();
 	}
 
 	public void saveWorldDesc(FileHandle file) throws IOException {
-		serializer.saveWorldDesc(file);
+		serialization.saveWorldDesc(file);
 	}
 
 	public boolean savedGameExists() {
@@ -849,7 +794,7 @@ public class World implements AssetConsumer {
 		else
 			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
 		
-		serializer.loadGameState(savedFile);
+		serialization.loadGameState(savedFile);
 		
 		assetState = AssetState.LOAD_ASSETS;
 	}

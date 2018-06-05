@@ -58,8 +58,10 @@ public class TesterBot {
 	private final ArrayList<String> excludeList = new ArrayList<String>();
 	
 	private final boolean inventoryAction;
+	private final World w;
 
-	public TesterBot() {
+	public TesterBot(World w) {
+		this.w = w;
 		inventoryAction = !Config.getProperty(Config.SINGLE_ACTION_INVENTORY, false);
 	}
 
@@ -67,8 +69,6 @@ public class TesterBot {
 		
 		if(!enabled)
 			return;
-		
-		World w = World.getInstance();
 
 		deltaTime += d;
 		inSceneTimeDelta += d;

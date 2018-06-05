@@ -18,6 +18,11 @@ public class UIActors implements AssetConsumer, Serializable {
 
 	transient private boolean disposed = true;
 	private SceneCamera cam;
+	private World w;
+	
+	public UIActors(World w) {
+		this.w = w;
+	}
 
 	public void addActor(InteractiveActor a) {
 		actors.add(a);
@@ -104,7 +109,7 @@ public class UIActors implements AssetConsumer, Serializable {
 		}
 		
 		cam = new SceneCamera();
-		cam.create(World.getInstance().getWidth(), World.getInstance().getHeight());
+		cam.create(w.getWidth(), w.getHeight());
 
 		disposed = false;
 	}
@@ -146,7 +151,7 @@ public class UIActors implements AssetConsumer, Serializable {
 		for (int i = 0; i < jsonValueActors.size; i++) {
 			JsonValue jsonValueAct = jsonValueActors.get(i);
 			actorRef = new SceneActorRef(jsonValueAct.name);
-			Scene sourceScn = World.getInstance().getScene(actorRef.getSceneId());
+			Scene sourceScn = w.getScene(actorRef.getSceneId());
 
 			BaseActor actor = sourceScn.getActor(actorRef.getActorId(), false);
 			sourceScn.removeActor(actor);

@@ -40,8 +40,8 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.TextRenderer;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
+import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.OrderedProperties;
 
@@ -406,7 +406,7 @@ public class I18NHandler {
 		ArrayList<String> usedKeys = new ArrayList<String>();
 
 		// SCENES
-		for (Scene s : World.getInstance().getScenes().values())
+		for (Scene s : Ctx.project.getWorld().getScenes().values())
 			getUsedKeys(s, usedKeys);
 
 		Enumeration<Object> keys = i18nChapter.keys();
@@ -423,7 +423,7 @@ public class I18NHandler {
 
 		usedKeys.clear();
 		// WORLD VERBS
-		for (Verb v : World.getInstance().getVerbManager().getVerbs().values())
+		for (Verb v : Ctx.project.getWorld().getVerbManager().getVerbs().values())
 			getUsedKeys(v, usedKeys);
 
 		keys = i18nWorld.keys();

@@ -19,7 +19,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.serialization.ActionCallbackSerialization;
+import com.bladecoder.engine.serialization.ActionCallbackSerializer;
+import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.util.InterpolationMode;
 
 abstract public class Tween<T> implements Serializable {
@@ -198,7 +199,9 @@ abstract public class Tween<T> implements Serializable {
 		json.writeValue("count", count);
 
 		json.writeValue("interpolation", interpolation);
-		json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null : String.class);
+		
+		if(cb != null)
+			json.writeValue("cb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), cb));
 	}
 
 	@Override
@@ -214,7 +217,7 @@ abstract public class Tween<T> implements Serializable {
 
 		interpolation = json.readValue("interpolation", InterpolationMode.class, jsonData);
 
-		String cbSer = json.readValue("cb", String.class, jsonData);
-		cb = ActionCallbackSerialization.find(cbSer);
+		BladeJson bjson = (BladeJson) json;
+		cb = ActionCallbackSerializer.find(bjson.getWorld(), json.readValue("cb", String.class, jsonData));
 	}
 }

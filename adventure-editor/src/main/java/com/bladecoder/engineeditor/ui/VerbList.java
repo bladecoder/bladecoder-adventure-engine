@@ -29,7 +29,6 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.VerbManager;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.model.Project;
@@ -58,7 +57,7 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 			@Override
 			public void scopeChanged(String scope) {
 				if (WORLD_SCOPE.equals(scope)) {
-					addElements(World.getInstance().getVerbManager(), Arrays.asList(World.getInstance()
+					addElements(Ctx.project.getWorld().getVerbManager(), Arrays.asList(Ctx.project.getWorld()
 							.getVerbManager().getVerbs().values().toArray(new Verb[0])));
 				} else if (SCENE_SCOPE.equals(scope)) {
 					if (Ctx.project.getSelectedScene() != null)
@@ -111,8 +110,8 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 				if (evt.getNewValue() instanceof Verb && !(evt.getSource() instanceof EditVerbDialog)) {
 					if (ScopePanel.WORLD_SCOPE.equals(scopePanel.getScope())) {
 						addElements(
-								World.getInstance().getVerbManager(),
-								Arrays.asList(World.getInstance().getVerbManager().getVerbs().values()
+								Ctx.project.getWorld().getVerbManager(),
+								Arrays.asList(Ctx.project.getWorld().getVerbManager().getVerbs().values()
 										.toArray(new Verb[0])));
 					} else if (ScopePanel.SCENE_SCOPE.equals(scopePanel.getScope())) {
 						addElements(

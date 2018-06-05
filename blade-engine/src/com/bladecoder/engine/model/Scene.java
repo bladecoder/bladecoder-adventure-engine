@@ -39,8 +39,8 @@ import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class Scene implements Serializable, AssetConsumer {
@@ -99,12 +99,13 @@ public class Scene implements Serializable, AssetConsumer {
 
 	private VerbManager verbs = new VerbManager();
 
-	private SceneSoundManager soundManager = new SceneSoundManager();
+	private SceneSoundManager soundManager;
 
-	private TextManager textManager = new TextManager();
+	private TextManager textManager;
+
+	private World w;
 
 	public Scene() {
-		textManager.setWorld(World.getInstance());
 	}
 
 	public String getId() {
@@ -143,6 +144,10 @@ public class Scene implements Serializable, AssetConsumer {
 	public TextManager getTextManager() {
 		return textManager;
 	}
+	
+	public World getWorld() {
+		return w;
+	}
 
 	public Timers getTimers() {
 		return timers;
@@ -170,7 +175,7 @@ public class Scene implements Serializable, AssetConsumer {
 	}
 
 	public void init() {
-		World.getInstance().setCutMode(false);
+		w.setCutMode(false);
 
 		timers.clear();
 		textManager.reset();
@@ -293,11 +298,11 @@ public class Scene implements Serializable, AssetConsumer {
 		BaseActor a = id == null ? null : actors.get(id);
 
 		if (a == null && searchInventory) {
-			a = World.getInstance().getInventory().get(id);
+			a = w.getInventory().get(id);
 
 			// Search the uiActors
 			if (a == null)
-				a = World.getInstance().getUIActors().get(id);
+				a = w.getUIActors().get(id);
 		}
 
 		return a;
@@ -655,7 +660,8 @@ public class Scene implements Serializable, AssetConsumer {
 
 	@Override
 	public void write(Json json) {
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 
 			json.writeValue("id", id);
 			json.writeValue("layers", layers, layers.getClass(), SceneLayer.class);
@@ -714,7 +720,8 @@ public class Scene implements Serializable, AssetConsumer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 
 			id = json.readValue("id", String.class, jsonData);
 			layers = json.readValue("layers", ArrayList.class, SceneLayer.class, jsonData);
@@ -744,6 +751,10 @@ public class Scene implements Serializable, AssetConsumer {
 			polygonalNavGraph = json.readValue("polygonalNavGraph", PolygonalNavGraph.class, jsonData);
 
 			sceneSize = json.readValue("sceneSize", Vector2.class, jsonData);
+			
+			w = bjson.getWorld();
+			textManager = new TextManager(w);
+			soundManager = new SceneSoundManager(w);
 
 		} else {
 			JsonValue jsonValueActors = jsonData.get("actors");
@@ -753,7 +764,7 @@ public class Scene implements Serializable, AssetConsumer {
 			for (int i = 0; i < jsonValueActors.size; i++) {
 				JsonValue jsonValueAct = jsonValueActors.get(i);
 				actorRef = new SceneActorRef(jsonValueAct.name);
-				Scene sourceScn = World.getInstance().getScene(actorRef.getSceneId());
+				Scene sourceScn = w.getScene(actorRef.getSceneId());
 
 				if (sourceScn != this) {
 					BaseActor actor = sourceScn.getActor(actorRef.getActorId(), false);
@@ -792,7 +803,6 @@ public class Scene implements Serializable, AssetConsumer {
 
 			if (jsonData.get("textmanager") != null) {
 				textManager = json.readValue("textmanager", TextManager.class, jsonData);
-				textManager.setWorld(World.getInstance());
 			}
 		}
 

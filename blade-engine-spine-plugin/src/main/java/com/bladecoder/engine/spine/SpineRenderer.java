@@ -36,9 +36,9 @@ import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.serialization.ActionCallbackSerialization;
-import com.bladecoder.engine.serialization.SerializationHelper;
-import com.bladecoder.engine.serialization.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.ActionCallbackSerializer;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.spine.SkeletonDataLoader.SkeletonDataLoaderParameter;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
@@ -81,8 +81,10 @@ public class SpineRenderer extends AnimationRenderer {
 	private int loopCount = 0;
 
 	private String secondaryAnimation;
-	
+
 	private String skin;
+
+	private World world;
 
 	class SkeletonCacheEntry extends CacheEntry {
 		Skeleton skeleton;
@@ -130,7 +132,7 @@ public class SpineRenderer extends AnimationRenderer {
 
 			EngineLogger.debug("Spine event " + event.getInt() + ":" + actorId + "." + event.getString());
 
-			InteractiveActor actor = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actorId, true);
+			InteractiveActor actor = (InteractiveActor) world.getCurrentScene().getActor(actorId, true);
 
 			switch (event.getInt()) {
 			case PLAY_ANIMATION_EVENT:
@@ -138,22 +140,22 @@ public class SpineRenderer extends AnimationRenderer {
 					EngineLogger.debug("Actor in Spine animation event not found in scene: " + actorId);
 					return;
 				}
-				
+
 				((SpriteActor) actor).startAnimation(event.getString(), null);
 				break;
 			case PLAY_SOUND_EVENT:
 				// Backwards compatibility
-				String sid = event.getString(); 
-				if(World.getInstance().getSounds().get(sid) == null && actor != null)
+				String sid = event.getString();
+				if (world.getSounds().get(sid) == null && actor != null)
 					sid = actor.getId() + "_" + sid;
-				
-				World.getInstance().getCurrentScene().getSoundManager().playSound(sid);
+
+				world.getCurrentScene().getSoundManager().playSound(sid);
 				break;
 			case RUN_VERB_EVENT:
-				if(actor != null)
+				if (actor != null)
 					actor.runVerb(event.getString());
 				else
-					World.getInstance().getCurrentScene().runVerb(event.getString());
+					world.getCurrentScene().runVerb(event.getString());
 				break;
 			case LOOP_EVENT:
 				// used for looping from a starting frame
@@ -286,15 +288,15 @@ public class SpineRenderer extends AnimationRenderer {
 	public void setSkin(String skin) {
 		// set the skin if the current source is loaded
 		if (currentSource != null && currentSource.refCounter > 0) {
-			SkeletonCacheEntry sce = (SkeletonCacheEntry)currentSource;
-			
-			if(skin != null) {
+			SkeletonCacheEntry sce = (SkeletonCacheEntry) currentSource;
+
+			if (skin != null) {
 				sce.skeleton.setSkin(skin);
 			} else {
-				sce.skeleton.setSkin((Skin)null);
+				sce.skeleton.setSkin((Skin) null);
 			}
 		}
-		
+
 		this.skin = skin;
 	}
 
@@ -326,8 +328,7 @@ public class SpineRenderer extends AnimationRenderer {
 
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
-		startAnimation(id, repeatType, count, cb,
-				getDirectionString(p0, pf, getDirs(id, fanims)));
+		startAnimation(id, repeatType, count, cb, getDirectionString(p0, pf, getDirs(id, fanims)));
 	}
 
 	@Override
@@ -631,7 +632,7 @@ public class SpineRenderer extends AnimationRenderer {
 
 			if (entry.getValue().refCounter > 0) {
 				String filename = EngineAssetManager.SPINE_DIR + entry.getKey() + EngineAssetManager.SPINE_EXT;
-				
+
 				if (EngineAssetManager.getInstance().isLoaded(filename))
 					EngineAssetManager.getInstance().unload(filename);
 			}
@@ -647,11 +648,14 @@ public class SpineRenderer extends AnimationRenderer {
 	public void write(Json json) {
 		super.write(json);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 
 		} else {
 
-			json.writeValue("cb", ActionCallbackSerialization.find(animationCb));
+			if (animationCb != null)
+				json.writeValue("cb", ActionCallbackSerializer.find(bjson.getWorld(), animationCb));
+
 			json.writeValue("currentCount", currentCount);
 
 			if (currentAnimation != null)
@@ -662,7 +666,7 @@ public class SpineRenderer extends AnimationRenderer {
 			json.writeValue("loopCount", loopCount);
 			json.writeValue("secondaryAnimation", secondaryAnimation);
 		}
-		
+
 		json.writeValue("skin", skin);
 	}
 
@@ -671,12 +675,15 @@ public class SpineRenderer extends AnimationRenderer {
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			fanims = json.readValue("fanims", HashMap.class, SpineAnimationDesc.class, jsonData);
+
+			world = bjson.getWorld();
 		} else {
 
-			String animationCbSer = json.readValue("cb", String.class, jsonData);
-			animationCb = ActionCallbackSerialization.find(animationCbSer);
+			animationCb = ActionCallbackSerializer.find(((BladeJson) json).getWorld(),
+					json.readValue("cb", String.class, jsonData));
 
 			currentCount = json.readValue("currentCount", Integer.class, jsonData);
 
@@ -689,7 +696,7 @@ public class SpineRenderer extends AnimationRenderer {
 
 			secondaryAnimation = json.readValue("secondaryAnimation", String.class, (String) null, jsonData);
 		}
-		
+
 		skin = json.readValue("skin", String.class, skin, jsonData);
 	}
 }

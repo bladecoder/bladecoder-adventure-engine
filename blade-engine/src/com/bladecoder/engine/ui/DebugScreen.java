@@ -39,7 +39,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
@@ -248,7 +247,7 @@ public class DebugScreen implements BladeScreen {
 				
 				if(!c.isEmpty()) {
 					try {
-						World.getInstance().loadChapter(c);
+						ui.getWorld().getSerializer().loadChapter(c);
 						ui.setCurrentScreen(Screens.SCENE_SCREEN);
 					} catch (IOException e) {
 						EngineLogger.error("Loading chapter.", e);
@@ -271,13 +270,13 @@ public class DebugScreen implements BladeScreen {
 		go.addListener(new ClickListener() {
 
 			public void clicked(InputEvent event, float x, float y) {
-				World.getInstance().resume();
-				World.getInstance().setCutMode(false);
+				ui.getWorld().resume();
+				ui.getWorld().setCutMode(false);
 				
 				if(testScene.isChecked())
-					World.getInstance().setTestScene(scenes.getSelected());
+					ui.getWorld().setTestScene(scenes.getSelected());
 				
-				World.getInstance().enterScene(scenes.getSelected(), initScene.isChecked());
+				ui.getWorld().enterScene(scenes.getSelected(), initScene.isChecked());
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
@@ -286,7 +285,7 @@ public class DebugScreen implements BladeScreen {
 
 		scenes = new SelectBox<String>(ui.getSkin());
 		scenes.setItems(
-				World.getInstance().getScenes().keySet().toArray(new String[World.getInstance().getScenes().size()]));
+				ui.getWorld().getScenes().keySet().toArray(new String[ui.getWorld().getScenes().size()]));
 
 		HorizontalGroup scGroup = new HorizontalGroup();
 		scGroup.space(10);

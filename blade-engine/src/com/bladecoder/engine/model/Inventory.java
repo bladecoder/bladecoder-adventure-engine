@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.assets.AssetConsumer;
+import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class Inventory implements AssetConsumer, Serializable  {
@@ -143,6 +144,8 @@ public class Inventory implements AssetConsumer, Serializable  {
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
+		BladeJson bjson = (BladeJson) json;
+		
 		visible = json.readValue("visible", Boolean.class, jsonData);
 		
 		items.clear();
@@ -154,7 +157,7 @@ public class Inventory implements AssetConsumer, Serializable  {
 		for (int i = 0; i < jsonValueActors.size; i++) {
 			JsonValue jsonValueAct = jsonValueActors.get(i);
 			actorRef = new SceneActorRef(jsonValueAct.name);
-			Scene sourceScn = World.getInstance().getScene(actorRef.getSceneId());
+			Scene sourceScn = bjson.getWorld().getScene(actorRef.getSceneId());
 
 			BaseActor actor = sourceScn.getActor(actorRef.getActorId(), false);
 			sourceScn.removeActor(actor);

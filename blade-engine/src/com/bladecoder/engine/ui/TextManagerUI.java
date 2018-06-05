@@ -23,7 +23,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -31,7 +30,6 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
@@ -60,10 +58,12 @@ public class TextManagerUI extends Actor {
 	private TextManagerUIStyle style;
 	
 	private float maxWidth;
-
-	public TextManagerUI(Skin skin) {
+	private final UI ui;
+	
+	public TextManagerUI(UI ui) {
+		this.ui = ui;
 		setTouchable(Touchable.disabled);
-		styles = skin.getAll(TextManagerUIStyle.class);
+		styles = ui.getSkin().getAll(TextManagerUIStyle.class);
 
 		for (TextManagerUIStyle style : styles.values()) {
 			style.font.getData().markupEnabled = true;
@@ -103,7 +103,7 @@ public class TextManagerUI extends Actor {
 		float posy = text.y;
 
 		unprojectTmp.set(posx, posy, 0);
-		World.getInstance().getSceneCamera().scene2screen(getStage().getViewport(), unprojectTmp);
+		ui.getWorld().getSceneCamera().scene2screen(getStage().getViewport(), unprojectTmp);
 
 		if (posx == TextManager.POS_CENTER || posx == TextManager.POS_SUBTITLE) {
 			posx = getStage().getViewport().getScreenWidth() / 2;
@@ -136,7 +136,7 @@ public class TextManagerUI extends Actor {
 					.getRegion(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null), text.actorId);
 
 			if (charIcon != null) {
-				float scale = getStage().getViewport().getScreenHeight() / (float) World.getInstance().getHeight();
+				float scale = getStage().getViewport().getScreenHeight() / (float) ui.getWorld().getHeight();
 				float iconPosY = getStage().getViewport().getScreenHeight() - charIcon.getRegionHeight() * scale
 						- DPIUtils.getMarginSize();
 				posy = Math.min(posy, iconPosY);
@@ -209,7 +209,7 @@ public class TextManagerUI extends Actor {
 			}
 
 			if (charIcon != null) {
-				float scale = getStage().getViewport().getScreenHeight() / (float) World.getInstance().getHeight();
+				float scale = getStage().getViewport().getScreenHeight() / (float) ui.getWorld().getHeight();
 				batch.draw(charIcon, getX() - charIcon.getRegionWidth() * scale, getY(),
 						charIcon.getRegionWidth() * scale, charIcon.getRegionHeight() * scale);
 			}
@@ -225,7 +225,7 @@ public class TextManagerUI extends Actor {
 		if (text != null && text.style != null && !text.style.isEmpty()) {
 			key = text.style;
 		} else if (text.actorId != null) {
-			CharacterActor a = (CharacterActor) World.getInstance().getCurrentScene().getActor(text.actorId, false);
+			CharacterActor a = (CharacterActor) ui.getWorld().getCurrentScene().getActor(text.actorId, false);
 
 			if (a != null && a.getTextStyle() != null)
 				key = a.getTextStyle();

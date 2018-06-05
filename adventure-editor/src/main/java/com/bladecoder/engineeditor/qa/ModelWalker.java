@@ -13,6 +13,7 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engineeditor.Ctx;
 
 public class ModelWalker {
 
@@ -52,7 +53,7 @@ public class ModelWalker {
 	}
 
 	public void walk(World w) {
-		Map<String, Scene> scenes = World.getInstance().getScenes();
+		Map<String, Scene> scenes = Ctx.project.getWorld().getScenes();
 
 		for (StartVisitor sv : startVisitors)
 			sv.start(w);

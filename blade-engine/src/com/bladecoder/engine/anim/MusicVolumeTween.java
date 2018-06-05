@@ -19,7 +19,6 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.model.MusicManager;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationMode;
 
 /**
@@ -36,7 +35,7 @@ public class MusicVolumeTween extends Tween<MusicManager> {
 	public void start(MusicManager mm, float tVolume, float duration, InterpolationMode interpolation, ActionCallback cb) {	
 		this.target = mm;
 		
-		startVolume = World.getInstance().getMusicManager().getVolume();
+		startVolume = mm.getVolume();
 		targetVolume = tVolume;
 		
 		setDuration(duration);
