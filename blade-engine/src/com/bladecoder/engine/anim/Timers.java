@@ -28,7 +28,7 @@ import com.bladecoder.engine.serialization.BladeJson;
 
 public class Timers {
 	private List<Timer> timers = new ArrayList<>(3);
-	private List<Timer> timersTmp = new ArrayList<>(3);
+	private transient List<Timer> timersTmp = new ArrayList<>(3);
 
 	public void addTimer(float time, ActionCallback cb) {
 		Timer t = new Timer();

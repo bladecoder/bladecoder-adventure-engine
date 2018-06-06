@@ -3,8 +3,6 @@ package com.bladecoder.engine.model;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import com.badlogic.gdx.Application.ApplicationType;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
@@ -21,7 +19,7 @@ import com.bladecoder.engine.util.EngineLogger;
 public class SceneSoundManager implements Serializable, AssetConsumer {
 
 	private HashMap<String, LoadedSound> loadedSounds = new HashMap<String, LoadedSound>(0);
-	private World w;
+	private final World w;
 	
 	public SceneSoundManager(World w) {
 		this.w = w;
@@ -129,10 +127,6 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 			// s.desc.getFilename());
 			EngineAssetManager.getInstance().loadSound(s.desc.getFilename());
 		}
-
-		// Due to a bug in Android, try lo load the sounds as early as possible.
-		if (Gdx.app.getType() == ApplicationType.Android)
-			EngineAssetManager.getInstance().update();
 	}
 
 	@Override

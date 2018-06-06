@@ -134,9 +134,10 @@ public class SayDialogAction extends BaseCallbackAction {
 	}
 	
 	private void startTalkAnim(CharacterActor a) {
+		// set up the talk animation, but the textmanager is in charge of starting it
 		previousAnim = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
 		
-		a.talk();
+		//a.talk();
 	}
 
 	@Override

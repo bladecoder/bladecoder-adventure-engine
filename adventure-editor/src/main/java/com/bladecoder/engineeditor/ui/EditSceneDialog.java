@@ -187,7 +187,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 	protected void inputsToModel(boolean create) {
 
 		if (create) {
-			e = new Scene();
+			e = new Scene(Ctx.project.getWorld());
 
 			// CREATE DEFAULT LAYERS: BG, DYNAMIC, FG
 			SceneLayer l = new SceneLayer();

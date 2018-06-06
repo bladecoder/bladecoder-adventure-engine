@@ -298,6 +298,7 @@ public class InkManager implements VerbRunner, Serializable {
 				try {
 					action = ActionFactory.createByClass("com.bladecoder.engine.actions." + commandName + "Action",
 							params);
+					action.init(w);
 					actions.add(action);
 				} catch (ClassNotFoundException | ReflectionException e) {
 					EngineLogger.error(e.getMessage(), e);
@@ -337,13 +338,16 @@ public class InkManager implements VerbRunner, Serializable {
 		params.put("text", translateLine(line));
 
 		try {
+			Action action = null;
+			
 			if (!params.containsKey("actor")) {
-				Action action = ActionFactory.createByClass("com.bladecoder.engine.actions.TextAction", params);
-				actions.add(action);
+				action = ActionFactory.createByClass("com.bladecoder.engine.actions.TextAction", params);
 			} else {
-				Action action = ActionFactory.createByClass("com.bladecoder.engine.actions.SayAction", params);
-				actions.add(action);
+				action = ActionFactory.createByClass("com.bladecoder.engine.actions.SayAction", params);
 			}
+			
+			action.init(w);
+			actions.add(action);
 		} catch (ClassNotFoundException | ReflectionException e) {
 			EngineLogger.error(e.getMessage(), e);
 		}

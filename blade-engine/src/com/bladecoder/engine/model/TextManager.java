@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.model.Text.Type;
 import com.bladecoder.engine.util.Config;
 
 /**
@@ -51,14 +52,14 @@ public class TextManager implements Serializable {
 	private final VoiceManager voiceManager = new VoiceManager(this);
 
 	private Queue<Text> fifo;
-	private World world;
+	private Scene scene;
 
-	public TextManager(World w) {
+	public TextManager(Scene s) {
 		fifo = new LinkedList<Text>();
-		this.world = w;
+		this.scene = s;
 	}
 
-	public void addText(String str, float x, float y, boolean quee, Text.Type type, Color color, String font,
+	public void addText(String str, float x, float y, boolean queue, Text.Type type, Color color, String font,
 			String actorId, String voiceId, ActionCallback cb) {
 
 		if (str.charAt(0) == I18N.PREFIX)
@@ -66,11 +67,11 @@ public class TextManager implements Serializable {
 
 		String s = str.replace("\\n", "\n");
 		
-		if(type == Text.Type.UI && world.getListener() != null) {
+		if(type == Text.Type.UI && scene.getWorld().getListener() != null) {
 			
 			Text t = new Text(s, x, y, 0, type, color, font, actorId, voiceId, null);
 			
-			world.getListener().text(t);
+			scene.getWorld().getListener().text(t);
 			
 			if(cb != null) {
 				ActionCallback tmpcb = cb;
@@ -83,9 +84,8 @@ public class TextManager implements Serializable {
 		
 		
 		String[] text = s.split("\n\n");
-
-		if (!quee)
-			clear();
+	
+		int nQueued = fifo.size();
 		
 		String lineVoiceId = voiceId;
 
@@ -119,8 +119,11 @@ public class TextManager implements Serializable {
 
 			fifo.add(sub);
 		}
+		
+		if (!queue)
+			clear(nQueued);
 
-		if (!quee || currentText == null) {
+		if (!queue || currentText == null) {
 			if (currentText != null) {
 				next();
 			} else {
@@ -142,13 +145,21 @@ public class TextManager implements Serializable {
 		inScreenTime = 0f;
 		currentText = t;
 
-		if (t != null)
+		if (t != null) {
 			voiceManager.play(t.voiceId);
-		else
+			
+			// Start talk animation
+			if(t.type == Type.TALK && t.actorId != null) {
+				CharacterActor a = (CharacterActor) scene.getActor(t.actorId, false);
+				
+				a.talk();
+			}
+		} else {
 			voiceManager.stop();
+		}
 		
-		if(world.getListener() != null)
-			world.getListener().text(t);
+		if(scene.getWorld().getListener() != null)
+			scene.getWorld().getListener().text(t);
 	}
 
 	public void update(float delta) {
@@ -174,9 +185,9 @@ public class TextManager implements Serializable {
 		}
 	}
 
-	private void clear() {
-		// CLEAR FIFO
-		while (currentText != null)
+	private void clear(int n) {
+		// CLEAR
+		for(int i = 0; i < n; i++)
 			next();
 
 		inScreenTime = 0;

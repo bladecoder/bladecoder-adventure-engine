@@ -60,6 +60,7 @@ public class SayAction extends BaseCallbackAction {
 	private boolean queue = false;
 
 	private String previousAnim = null;
+	private String previousDefaultTalkAnim = null;
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -115,26 +116,34 @@ public class SayAction extends BaseCallbackAction {
 		if (fa.startsWith(talkAnim)) {
 			a.stand();
 		}
+		
+		if (animation != null) {
+			a.setTalkAnim(previousDefaultTalkAnim);
+		}
 	}
 
 	private void startTalkAnim(CharacterActor a) {
+		
+		// set up the talk animation, but the textmanager is in charge of starting it
 		previousAnim = ((AnimationRenderer) a.getRenderer()).getCurrentAnimationId();
 
-		if (animation != null)
-			a.startAnimation(animation, null);
-		else
-			a.talk();
+		if (animation != null) {
+			previousDefaultTalkAnim = a.getTalkAnim();
+			a.setTalkAnim(animation);
+		}
 	}
 
 	@Override
 	public void write(Json json) {
 		json.writeValue("previousAnim", previousAnim);
+		json.writeValue("previousDefaultTalkAnim", previousDefaultTalkAnim);
 		super.write(json);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		previousAnim = json.readValue("previousAnim", String.class, jsonData);
+		previousDefaultTalkAnim = json.readValue("previousDefaultTalkAnim", String.class, jsonData);
 		super.read(json, jsonData);
 	}
 

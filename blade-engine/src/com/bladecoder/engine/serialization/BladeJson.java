@@ -1,7 +1,6 @@
 package com.bladecoder.engine.serialization;
 
 import com.badlogic.gdx.utils.Json;
-import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.model.World;
 
 /**

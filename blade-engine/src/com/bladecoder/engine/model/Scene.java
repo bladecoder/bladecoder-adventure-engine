@@ -99,13 +99,17 @@ public class Scene implements Serializable, AssetConsumer {
 
 	private VerbManager verbs = new VerbManager();
 
-	private SceneSoundManager soundManager;
+	private final SceneSoundManager soundManager;
 
-	private TextManager textManager;
+	private final TextManager textManager;
 
 	private World w;
 
-	public Scene() {
+	public Scene(World w) {
+		this.w = w;
+		
+		textManager = new TextManager(this);
+		soundManager = new SceneSoundManager(w);
 	}
 
 	public String getId() {
@@ -751,10 +755,6 @@ public class Scene implements Serializable, AssetConsumer {
 			polygonalNavGraph = json.readValue("polygonalNavGraph", PolygonalNavGraph.class, jsonData);
 
 			sceneSize = json.readValue("sceneSize", Vector2.class, jsonData);
-			
-			w = bjson.getWorld();
-			textManager = new TextManager(w);
-			soundManager = new SceneSoundManager(w);
 
 		} else {
 			JsonValue jsonValueActors = jsonData.get("actors");
@@ -802,7 +802,7 @@ public class Scene implements Serializable, AssetConsumer {
 				timers = json.readValue("timers", Timers.class, jsonData);
 
 			if (jsonData.get("textmanager") != null) {
-				textManager = json.readValue("textmanager", TextManager.class, jsonData);
+				textManager.read(json, jsonData.get("textmanager"));
 			}
 		}
 

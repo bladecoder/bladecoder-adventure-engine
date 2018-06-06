@@ -301,7 +301,7 @@ public class WorldSerialization implements Serializable {
 
 			for (int i = 0; i < jsonScenes.size; i++) {
 				JsonValue jsonValue = jsonScenes.get(i);
-				Scene s = new Scene();
+				Scene s = new Scene(w);
 				scenes.put(jsonValue.name, s);
 				s.read(json, jsonValue);
 			}
@@ -435,7 +435,7 @@ public class WorldSerialization implements Serializable {
 							String sound = ActionUtils.getStringValue(act, "sound");
 							SoundDesc sd = w.getSounds().get(sound);
 
-							if (sd != null)
+							if (sd != null && sd.isPreload())
 								s.getSoundManager().addSoundToLoad(sd);
 
 						}
@@ -471,7 +471,7 @@ public class WorldSerialization implements Serializable {
 									String sound = ActionUtils.getStringValue(act, "sound");
 									SoundDesc sd = w.getSounds().get(sound);
 
-									if (sd != null)
+									if (sd != null && sd.isPreload())
 										s.getSoundManager().addSoundToLoad(sd);
 
 								}
@@ -496,7 +496,7 @@ public class WorldSerialization implements Serializable {
 
 							sd = w.getSounds().get(sid);
 
-							if (sd != null)
+							if (sd != null && sd.isPreload())
 								s.getSoundManager().addSoundToLoad(sd);
 							else
 								EngineLogger.error(
