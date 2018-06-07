@@ -38,7 +38,7 @@ public class LeaveAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		w.enterScene(scene, init);
+		w.setCurrentScene(scene, init);
 
 		return true;
 	}

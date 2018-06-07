@@ -72,10 +72,10 @@ public class SayDialogAction extends BaseCallbackAction {
 			float x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
 			float y = boundingRectangle.getY() + boundingRectangle.getHeight();
 
+			startTalkAnim(player);
+			
 			w.getCurrentScene().getTextManager().addText(playerText, x, y, false,
 					Text.Type.TALK, player.getTextColor(), null, player.getId(), o.getVoiceId(), this);
- 
-			startTalkAnim(player);
 
 		} else {
 			resume();
@@ -102,14 +102,15 @@ public class SayDialogAction extends BaseCallbackAction {
 				float x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
 				float y = boundingRectangle.getY() + boundingRectangle.getHeight();
 				
+				if(actor instanceof CharacterActor) {
+					startTalkAnim((CharacterActor)actor);
+				}
+				
 				w.getCurrentScene().getTextManager().addText(responseText, x,
 						y, false, Text.Type.TALK,
 						((CharacterActor) actor).getTextColor(), null, actor.getId(), responseVoiceId, this);
 
 
-				if(actor instanceof CharacterActor) {
-					startTalkAnim((CharacterActor)actor);
-				}
 			} else {
 				previousAnim = null;
 				super.resume();
@@ -125,12 +126,13 @@ public class SayDialogAction extends BaseCallbackAction {
 	private void restoreStandPose(CharacterActor a) {
 		if(a == null) return;
 		
-		String fa = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
+		// FIXME: Commenting to test if the talk animation continues playing.
+		//String fa = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
 		
 		// If the actor was already talking we restore the actor to the 'stand' pose	
-		if(fa.startsWith(a.getTalkAnim())){ 		
-			a.stand();
-		}
+//		if(fa.startsWith(a.getTalkAnim())){ 		
+//			a.stand();
+//		}
 	}
 	
 	private void startTalkAnim(CharacterActor a) {

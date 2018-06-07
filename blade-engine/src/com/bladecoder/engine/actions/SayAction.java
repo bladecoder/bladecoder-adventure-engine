@@ -107,15 +107,16 @@ public class SayAction extends BaseCallbackAction {
 		if (a == null)
 			return;
 
-		String fa = ((AnimationRenderer) a.getRenderer()).getCurrentAnimationId();
+		// FIXME: Commenting to test if the talk animation continues playing.
+		//String fa = ((AnimationRenderer) a.getRenderer()).getCurrentAnimationId();
 
 		// If the actor was already talking we restore the actor to the 'stand'
 		// pose
-		String talkAnim = animation != null ? animation : a.getTalkAnim();
-
-		if (fa.startsWith(talkAnim)) {
-			a.stand();
-		}
+//		String talkAnim = animation != null ? animation : a.getTalkAnim();
+//
+//		if (fa.startsWith(talkAnim)) {
+//			a.stand();
+//		}
 		
 		if (animation != null) {
 			a.setTalkAnim(previousDefaultTalkAnim);

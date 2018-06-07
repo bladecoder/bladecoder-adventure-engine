@@ -33,6 +33,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.ui.BladeSkin;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
@@ -56,6 +57,10 @@ public class Editor implements ApplicationListener {
 
 	@Override
 	public void create() {
+		
+		if(EditorLogger.debugMode()) {
+			EngineLogger.setDebug();
+		}
 
 		Gdx.graphics.setWindowedMode(Math.max((int) (Gdx.graphics.getDisplayMode().width * 0.9), 1920 / 2),
 				Math.max((int) (Gdx.graphics.getDisplayMode().height * 0.9), 1080 / 2));

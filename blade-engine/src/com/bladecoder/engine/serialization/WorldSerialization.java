@@ -14,7 +14,9 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
+import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.bladecoder.engine.actions.Action;
+import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.PlaySoundAction;
 import com.bladecoder.engine.actions.SoundAction;
 import com.bladecoder.engine.anim.AnimationDesc;
@@ -316,7 +318,7 @@ public class WorldSerialization implements Serializable {
 				s.resetCamera(w.getWidth(), w.getHeight());
 			}
 
-			w.setCurrentScene(w.getScenes().get(w.getInitScene()));
+			w.setCurrentScene(w.getScenes().get(w.getInitScene()), true);
 
 			// Add sounds to cache
 			cacheSounds();
@@ -343,7 +345,7 @@ public class WorldSerialization implements Serializable {
 				return;
 			}
 
-			w.setCurrentScene(w.getScene(json.readValue("currentScene", String.class, jsonData)));
+			w.setCurrentScene(w.getScene(json.readValue("currentScene", String.class, jsonData)), false);
 
 			// read inkManager after setting he current scene but before reading
 			// scenes and verbs tweens
@@ -417,7 +419,9 @@ public class WorldSerialization implements Serializable {
 			for (Verb v : verbs.values()) {
 				ArrayList<Action> actions = v.getActions();
 
-				for (Action act : actions) {
+				for (int i = 0; i < actions.size(); i++) {
+					
+					Action act = actions.get(i);
 
 					try {
 						if (act instanceof SoundAction) {
@@ -429,6 +433,20 @@ public class WorldSerialization implements Serializable {
 
 								if (sd != null)
 									s.getSoundManager().addSoundToLoad(sd);
+								
+								HashMap<String, String> params = new HashMap<String, String>();
+								params.put("sound", sd.getId());
+								
+								try {
+									Action a2 = ActionFactory.createByClass(PlaySoundAction.class.getName(), params);
+									actions.set(i, a2);
+									a2.init(w);
+								} catch (ClassNotFoundException | ReflectionException e) {
+									e.printStackTrace();
+								}
+								EngineLogger.debug("Converting SoundAction:" + s.getId() + "." + v.getId());
+							} else {
+								EngineLogger.debug("WARNING: Cannot convert SoundAction:" + s.getId() + "." + v.getId());
 							}
 
 						} else if (act instanceof PlaySoundAction) {
@@ -449,11 +467,12 @@ public class WorldSerialization implements Serializable {
 				if (a instanceof InteractiveActor) {
 					HashMap<String, Verb> actorVerbs = ((InteractiveActor) a).getVerbManager().getVerbs();
 
-					// Process SayAction of TALK type
 					for (Verb v : actorVerbs.values()) {
 						ArrayList<Action> actions = v.getActions();
 
-						for (Action act : actions) {
+						for (int i = 0; i < actions.size(); i++) {
+							
+							Action act = actions.get(i);
 
 							try {
 								if (act instanceof SoundAction) {
@@ -465,7 +484,22 @@ public class WorldSerialization implements Serializable {
 
 										if (sd != null)
 											s.getSoundManager().addSoundToLoad(sd);
+										
+										HashMap<String, String> params = new HashMap<String, String>();
+										params.put("sound", sd.getId());
+										
+										try {
+											Action a2 = ActionFactory.createByClass(PlaySoundAction.class.getName(), params);
+											actions.set(i, a2);
+											a2.init(w);
+										} catch (ClassNotFoundException | ReflectionException e) {
+											e.printStackTrace();
+										}
+										EngineLogger.debug("Converting SoundAction in:" + s.getId() + "." + a.getId() + "." + v.getId());
+									} else {
+										EngineLogger.debug("WARNING: Cannot convert SoundAction:" + s.getId() + "." + a.getId() + "." + v.getId());
 									}
+
 
 								} else if (act instanceof PlaySoundAction) {
 									String sound = ActionUtils.getStringValue(act, "sound");
@@ -496,9 +530,10 @@ public class WorldSerialization implements Serializable {
 
 							sd = w.getSounds().get(sid);
 
-							if (sd != null && sd.isPreload())
-								s.getSoundManager().addSoundToLoad(sd);
-							else
+							if (sd != null) {
+								if(sd.isPreload())
+									s.getSoundManager().addSoundToLoad(sd);
+							} else
 								EngineLogger.error(
 										a.getId() + ": SOUND not found: " + ad.sound + " in animation: " + ad.id);
 						}

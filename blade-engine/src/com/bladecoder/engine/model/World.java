@@ -354,10 +354,6 @@ public class World implements AssetConsumer {
 	public Scene getCurrentScene() {
 		return currentScene;
 	}
-	
-	public void setCurrentScene(Scene s) {
-		currentScene = s;
-	}
 
 	public String getInitScene() {
 		return initScene;
@@ -371,7 +367,7 @@ public class World implements AssetConsumer {
 		this.initScene = initScene;
 	}
 
-	public void enterScene(Scene scene, boolean init) {
+	public void setCurrentScene(Scene scene, boolean init) {
 
 		initLoadingTime = System.currentTimeMillis();
 
@@ -448,14 +444,14 @@ public class World implements AssetConsumer {
 			listener.cutMode(cutMode);
 	}
 
-	public void enterScene(String id, boolean init) {
+	public void setCurrentScene(String id, boolean init) {
 		if(id.equals("$" + WorldProperties.PREVIOUS_SCENE.toString()))
 			id = getCustomProperty(WorldProperties.PREVIOUS_SCENE.toString());
 		
 		Scene s = scenes.get(id);
 
 		if (s != null) {
-			enterScene(s, init);
+			setCurrentScene(s, init);
 		} else {
 			EngineLogger.error("SetCurrentScene - COULD NOT FIND SCENE: " + id);
 		}
@@ -750,7 +746,7 @@ public class World implements AssetConsumer {
 
 		if (scene != null) {
 			currentScene = null;
-			enterScene(scene, true);
+			setCurrentScene(scene, true);
 		}
 	}
 

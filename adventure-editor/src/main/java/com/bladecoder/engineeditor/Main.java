@@ -22,6 +22,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.bladecoder.engineeditor.common.EditorLogger;
+import com.bladecoder.engineeditor.common.EditorLogger.Levels;
 import com.bladecoder.engineeditor.common.Versions;
 
 public class Main extends LwjglApplication {
@@ -51,16 +52,16 @@ public class Main extends LwjglApplication {
 	}
 
 	private static void parseArgs(String[] args) {
-		for (int i = 1; i < args.length; i++) {
-			if (args[i - 1].equals("-f")) {
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("-f") && i < args.length - 1) {
 				try {
-					File file = new File(args[i]).getCanonicalFile();
+					File file = new File(args[i + 1]).getCanonicalFile();
 					Ctx.project.loadProject(file);
 				} catch (Exception ex) {
 					EditorLogger.printStackTrace(ex);
 				}
 			} else if (args[i].equals("-d")) {
-				EditorLogger.setDebug();
+				EditorLogger.setDebugLevel(Levels.DEBUG);
 			}
 		}
 	}

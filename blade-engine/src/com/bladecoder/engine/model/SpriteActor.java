@@ -208,11 +208,9 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 				if (scene != null && scene.getWorld().getSounds().get(sid) == null)
 					sid = id + "_" + fa.sound;
 
+				// it will not play the sound in inventory
 				if (scene != null)
 					scene.getSoundManager().stopSound(sid);
-				else
-					scene.getWorld().getCurrentScene().getSoundManager().stopSound(sid); // FIXME: The actor is in the
-																							// inventory
 			}
 
 			Vector2 outD = fa.outD;
@@ -242,11 +240,9 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 				if (scene != null && scene.getWorld().getSounds().get(sid) == null)
 					sid = id + "_" + fa.sound;
 
+				// it will not play the sound in inventory
 				if (scene != null)
 					scene.getSoundManager().playSound(sid);
-				else
-					scene.getWorld().getCurrentScene().getSoundManager().playSound(sid); // The actor is in the
-																							// inventory
 			}
 
 			Vector2 inD = fa.inD;
