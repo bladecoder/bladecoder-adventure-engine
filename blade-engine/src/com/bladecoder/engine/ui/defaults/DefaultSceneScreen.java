@@ -154,8 +154,12 @@ public class DefaultSceneScreen implements SceneScreen {
 			else {
 				getInputUnProject(unprojectTmp);
 
-				if ((w.inCutMode() && !recorder.isRecording())
+				if (w.inCutMode()
 						|| (!w.inCutMode() && !TextManager.AUTO_HIDE_TEXTS && textManagerUI.isVisible())) {
+					
+					if(recorder.isRecording())
+						return true;
+					
 					w.getCurrentScene().getTextManager().next();
 				} else if (inventoryUI.isVisible()) {
 					inventoryUI.hide();
