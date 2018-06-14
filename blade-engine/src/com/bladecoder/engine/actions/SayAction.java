@@ -81,7 +81,6 @@ public class SayAction extends BaseCallbackAction {
 
 			color = ((CharacterActor) a).getTextColor();
 
-			restoreStandPose((CharacterActor) a);
 			startTalkAnim((CharacterActor) a);
 		}
 
@@ -94,33 +93,18 @@ public class SayAction extends BaseCallbackAction {
 
 	@Override
 	public void resume() {
-		if (type == Text.Type.TALK) {
-			CharacterActor a = (CharacterActor) w.getCurrentScene().getActor(actor, false);
+		CharacterActor a = (CharacterActor) w.getCurrentScene().getActor(actor, false);
+		
+		if (type == Text.Type.TALK && a != null) {
 			a.startAnimation(previousAnim, Tween.Type.SPRITE_DEFINED, 0, null);
+			
+			if (animation != null) {
+				a.setTalkAnim(previousDefaultTalkAnim);
+			}
 		}
 
 		if (getWait())
 			super.resume();
-	}
-
-	private void restoreStandPose(CharacterActor a) {
-		if (a == null)
-			return;
-
-		// FIXME: Commenting to test if the talk animation continues playing.
-		//String fa = ((AnimationRenderer) a.getRenderer()).getCurrentAnimationId();
-
-		// If the actor was already talking we restore the actor to the 'stand'
-		// pose
-//		String talkAnim = animation != null ? animation : a.getTalkAnim();
-//
-//		if (fa.startsWith(talkAnim)) {
-//			a.stand();
-//		}
-		
-		if (animation != null) {
-			a.setTalkAnim(previousDefaultTalkAnim);
-		}
 	}
 
 	private void startTalkAnim(CharacterActor a) {
