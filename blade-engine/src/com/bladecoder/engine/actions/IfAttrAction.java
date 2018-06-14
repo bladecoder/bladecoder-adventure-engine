@@ -33,7 +33,7 @@ public class IfAttrAction extends AbstractIfAction {
 		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY, TARGET, IN_SCENE, LAYER, DIRECTION
 	}
 
-	@ActionProperty
+	@ActionProperty(required = true)
 	@ActionPropertyDescription("The target actor")
 	private SceneActorRef actor;
 
