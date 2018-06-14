@@ -88,14 +88,14 @@ public class EditChapterDialog extends EditDialog {
 
 			try {
 				// save selected chapter if renamed chapter is the selected chapter
-				if(previousId.equals(Ctx.project.getChapter())) {
+				if(previousId.equals(Ctx.project.getChapter().getId())) {
 					Ctx.project.getChapter().save();
 				}
 				
 				doc.renameChapter(previousId, newId);
 				
 				// Reload chapter if renamed chapter is the selected chapter
-				if(previousId.equals(Ctx.project.getChapter())) {
+				if(previousId.equals(Ctx.project.getChapter().getId())) {
 					Ctx.project.loadChapter(newId);
 				}
 				
