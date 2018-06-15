@@ -47,7 +47,7 @@ public class CommentAction implements Action {
 
 			if (debug)
 				w.getCurrentScene().getTextManager().addText(comment, TextManager.POS_SUBTITLE,
-						TextManager.POS_SUBTITLE, false, Text.Type.UI, Color.YELLOW, null, null, null, null);
+						TextManager.POS_SUBTITLE, false, Text.Type.UI, Color.YELLOW, null, null, null, null, null);
 		}
 
 		return false;

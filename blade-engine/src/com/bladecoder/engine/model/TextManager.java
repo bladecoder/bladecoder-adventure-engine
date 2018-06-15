@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Text.Type;
 import com.bladecoder.engine.util.Config;
@@ -53,6 +54,11 @@ public class TextManager implements Serializable {
 
 	private Queue<Text> fifo;
 	private Scene scene;
+	
+	/**
+	 * Stores the previous animation to restore it when the character ends his talk.
+	 */
+	private String previousCharacterAnim = null;
 
 	public TextManager(Scene s) {
 		fifo = new LinkedList<Text>();
@@ -60,7 +66,7 @@ public class TextManager implements Serializable {
 	}
 
 	public void addText(String str, float x, float y, boolean queue, Text.Type type, Color color, String font,
-			String actorId, String voiceId, ActionCallback cb) {
+			String actorId, String voiceId, String talkAnimation, ActionCallback cb) {
 
 		if (str.charAt(0) == I18N.PREFIX)
 			str = I18N.getString(str.substring(1));
@@ -69,7 +75,7 @@ public class TextManager implements Serializable {
 
 		if (type == Text.Type.UI && scene.getWorld().getListener() != null) {
 
-			Text t = new Text(s, x, y, 0, type, color, font, actorId, voiceId, null);
+			Text t = new Text(s, x, y, 0, type, color, font, actorId, voiceId, talkAnimation, null);
 
 			scene.getWorld().getListener().text(t);
 
@@ -111,7 +117,7 @@ public class TextManager implements Serializable {
 
 			Text sub;
 
-			sub = new Text(finalStr, x, y, duration, type, color, font, actorId, lineVoiceId,
+			sub = new Text(finalStr, x, y, duration, type, color, font, actorId, lineVoiceId, talkAnimation,
 					i == text.length - 1 ? cb : null);
 
 			// resets voice id for the next line
@@ -145,7 +151,9 @@ public class TextManager implements Serializable {
 		if (currentText != null && currentText.type == Type.TALK && currentText.actorId != null) {
 			CharacterActor a = (CharacterActor) scene.getActor(currentText.actorId, false);
 
-			a.stand();
+			// restore previous stand animation
+			a.startAnimation(previousCharacterAnim, Tween.Type.SPRITE_DEFINED, 0, null);
+			previousCharacterAnim = null;
 		}
 
 		inScreenTime = 0f;
@@ -158,7 +166,12 @@ public class TextManager implements Serializable {
 			if (t.type == Type.TALK && t.actorId != null) {
 				CharacterActor a = (CharacterActor) scene.getActor(t.actorId, false);
 
-				a.talk();
+				previousCharacterAnim = ((AnimationRenderer) a.getRenderer()).getCurrentAnimationId();
+				
+				if(t.animation != null)
+					a.startAnimation(t.animation, Tween.Type.SPRITE_DEFINED, 0, null);
+				else
+					a.talk();
 			}
 		} else {
 			voiceManager.stop();
@@ -218,6 +231,9 @@ public class TextManager implements Serializable {
 
 		json.writeValue("fifo", new ArrayList<Text>(fifo), ArrayList.class, Text.class);
 		json.writeValue("voiceManager", voiceManager);
+		
+		if(previousCharacterAnim != null)
+			json.writeValue("previousAnim", previousCharacterAnim);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -226,6 +242,7 @@ public class TextManager implements Serializable {
 		inScreenTime = json.readValue("inScreenTime", Float.class, jsonData);
 		currentText = json.readValue("currentText", Text.class, jsonData);
 		fifo = new LinkedList<Text>(json.readValue("fifo", ArrayList.class, Text.class, jsonData));
+		previousCharacterAnim = json.readValue("previousAnim", String.class, jsonData);
 
 		JsonValue jsonValue = jsonData.get("voiceManager");
 

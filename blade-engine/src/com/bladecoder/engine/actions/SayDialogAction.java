@@ -61,7 +61,7 @@ public class SayDialogAction implements Action {
 			float y = boundingRectangle.getY() + boundingRectangle.getHeight();
 		
 			w.getCurrentScene().getTextManager().addText(playerText, x, y, false,
-					Text.Type.TALK, player.getTextColor(), null, player.getId(), o.getVoiceId(), responseText == null && wait?cb:null);
+					Text.Type.TALK, player.getTextColor(), null, player.getId(), o.getVoiceId(), null, responseText == null && wait?cb:null);
 		}
 		
 		if (responseText != null) {
@@ -74,7 +74,7 @@ public class SayDialogAction implements Action {
 			float y = boundingRectangle.getY() + boundingRectangle.getHeight();
 		
 			w.getCurrentScene().getTextManager().addText(responseText, x, y, true,
-					Text.Type.TALK, actor.getTextColor(), null, actor.getId(), responseVoiceId, wait?cb:null);
+					Text.Type.TALK, actor.getTextColor(), null, actor.getId(), responseVoiceId, null, wait?cb:null);
 		}
 
 

@@ -40,11 +40,12 @@ public class Text implements Serializable {
 	private ActionCallback cb;
 	public String actorId;
 	public String voiceId;
+	public String animation;
 
 	public Text() {
 	}
 
-	public Text(String str, float x, float y, float time, Type type, Color color, String style, String actorId, String voiceId, ActionCallback cb) {
+	public Text(String str, float x, float y, float time, Type type, Color color, String style, String actorId, String voiceId, String talkAnimation, ActionCallback cb) {
 		this.str = str;
 		this.x = x;
 		this.y = y;
@@ -55,6 +56,7 @@ public class Text implements Serializable {
 		this.cb = cb;
 		this.actorId = actorId;
 		this.voiceId = voiceId;
+		this.animation = talkAnimation;
 
 		// 0s -> Auto duration
 		// <0 -> Infinity
@@ -90,6 +92,7 @@ public class Text implements Serializable {
 		json.writeValue("style", style);
 		json.writeValue("actorId", actorId);
 		json.writeValue("voiceId", voiceId);
+		json.writeValue("animation", animation);
 		
 		if(cb != null)
 			json.writeValue("cb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), cb));
@@ -106,6 +109,7 @@ public class Text implements Serializable {
 		style = json.readValue("style", String.class, jsonData);
 		actorId = json.readValue("actorId", String.class, jsonData);
 		voiceId = json.readValue("voiceId", String.class, jsonData);
+		animation = json.readValue("animation", String.class, jsonData);
 		cb = ActionCallbackSerializer.find(((BladeJson) json).getWorld(), json.readValue("cb", String.class, jsonData));
 	}	
 }

@@ -94,7 +94,7 @@ public class LookAtAction implements Action {
 					? w.getCurrentScene().getPlayer().getId() : null;
 
 			w.getCurrentScene().getTextManager().addText(text, TextManager.POS_SUBTITLE, TextManager.POS_SUBTITLE,
-					false, Text.Type.SUBTITLE, null, null, actorId, voiceId, wait ? cb : null);
+					false, Text.Type.SUBTITLE, null, null, actorId, voiceId, null, wait ? cb : null);
 
 			return wait;
 		}

@@ -17,19 +17,16 @@ package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.Param.Type;
-import com.bladecoder.engine.anim.Tween;
-import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 
 @ActionDescription("Says a text")
-public class SayAction extends BaseCallbackAction {
+public class SayAction implements Action {
 	@ActionPropertyDescription("The target actor.")
 	@ActionProperty(type = Type.CHARACTER_ACTOR, required = true)
 	private String actor;
@@ -49,7 +46,6 @@ public class SayAction extends BaseCallbackAction {
 	@ActionPropertyDescription("The animation to set when talking.")
 	@ActionProperty(required = false)
 	private String animation;
-	
 
 	@ActionPropertyDescription("The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section)")
 	@ActionProperty(type = Type.TEXT_STYLE, required = false)
@@ -58,9 +54,17 @@ public class SayAction extends BaseCallbackAction {
 	@ActionProperty(defaultValue = "false")
 	@ActionPropertyDescription("Queue the text if other text is showing, or show it immediately.")
 	private boolean queue = false;
-
-	private String previousAnim = null;
-	private String previousDefaultTalkAnim = null;
+	
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+	private boolean wait = true;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -70,7 +74,6 @@ public class SayAction extends BaseCallbackAction {
 		if (text == null)
 			return false;
 
-		setVerbCb(cb);
 		InteractiveActor a = (InteractiveActor) w.getCurrentScene().getActor(actor, false);
 
 		if (type == Text.Type.TALK && a != null) {
@@ -80,56 +83,12 @@ public class SayAction extends BaseCallbackAction {
 			y = boundingRectangle.getY() + boundingRectangle.getHeight();
 
 			color = ((CharacterActor) a).getTextColor();
-
-			startTalkAnim((CharacterActor) a);
 		}
 
 		w.getCurrentScene().getTextManager().addText(text, x, y, queue, type, color, style,
-				a != null ? a.getId() : actor, voiceId, this);
+				a != null ? a.getId() : actor, voiceId, animation, wait?cb:null);
 
-		return getWait();
+		return wait;
 
 	}
-
-	@Override
-	public void resume() {
-		CharacterActor a = (CharacterActor) w.getCurrentScene().getActor(actor, false);
-		
-		if (type == Text.Type.TALK && a != null) {
-			a.startAnimation(previousAnim, Tween.Type.SPRITE_DEFINED, 0, null);
-			
-			if (animation != null) {
-				a.setTalkAnim(previousDefaultTalkAnim);
-			}
-		}
-
-		if (getWait())
-			super.resume();
-	}
-
-	private void startTalkAnim(CharacterActor a) {
-		
-		// set up the talk animation, but the textmanager is in charge of starting it
-		previousAnim = ((AnimationRenderer) a.getRenderer()).getCurrentAnimationId();
-
-		if (animation != null) {
-			previousDefaultTalkAnim = a.getTalkAnim();
-			a.setTalkAnim(animation);
-		}
-	}
-
-	@Override
-	public void write(Json json) {
-		json.writeValue("previousAnim", previousAnim);
-		json.writeValue("previousDefaultTalkAnim", previousDefaultTalkAnim);
-		super.write(json);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		previousAnim = json.readValue("previousAnim", String.class, jsonData);
-		previousDefaultTalkAnim = json.readValue("previousDefaultTalkAnim", String.class, jsonData);
-		super.read(json, jsonData);
-	}
-
 }
