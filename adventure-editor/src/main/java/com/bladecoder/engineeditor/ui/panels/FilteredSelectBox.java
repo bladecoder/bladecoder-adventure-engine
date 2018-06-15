@@ -499,7 +499,7 @@ public class FilteredSelectBox<T> extends Widget implements Disableable {
 				Drawable listBackground = list.getStyle().background;
 				if (listBackground != null) height += listBackground.getTopHeight() + listBackground.getBottomHeight();
 
-				float heightBelow = screenPosition.y;
+				float heightBelow = screenPosition.y - itemHeight;
 				float heightAbove = stage.getCamera().viewportHeight - screenPosition.y - selectBox.getHeight();
 				boolean below = true;
 				if (height > heightBelow) {
