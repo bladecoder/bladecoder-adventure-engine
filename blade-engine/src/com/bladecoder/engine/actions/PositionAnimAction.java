@@ -109,7 +109,7 @@ public class PositionAnimAction implements Action {
 			y = pos.y * scale;
 		}
 
-		if (speed == 0 || !(a instanceof SpriteActor)) {
+		if (!(a instanceof SpriteActor)) {
 			a.setPosition(x, y);
 
 			return false;

@@ -256,6 +256,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	}
 
 	public void addTween(Tween<SpriteActor> tween) {
+		removeTween(tween.getClass());
+		
 		tweens.add(tween);
 	}
 
