@@ -793,7 +793,7 @@ public class Scene implements Serializable, AssetConsumer {
 			camera = json.readValue("camera", SceneCamera.class, jsonData);
 			String followActorId = json.readValue("followActor", String.class, jsonData);
 
-			if (followActor != null)
+			if (followActorId != null)
 				setCameraFollowActor((SpriteActor) actors.get(followActorId));
 
 			soundManager.read(json, jsonData);
