@@ -34,9 +34,9 @@ public class PositionAnimAction implements Action {
 	}
 
 	@ActionPropertyDescription("The moving actor")
-	@ActionProperty(type = Type.SPRITE_ACTOR, required=true)
+	@ActionProperty(type = Type.SPRITE_ACTOR, required = true)
 	private String actor;
-	
+
 	@ActionPropertyDescription("Sets the position from this actor")
 	@ActionProperty(type = Type.ACTOR)
 	private String target;
@@ -70,9 +70,9 @@ public class PositionAnimAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The target actor")
 	private InterpolationMode interpolation;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
@@ -84,28 +84,28 @@ public class PositionAnimAction implements Action {
 		float scale = EngineAssetManager.getInstance().getScale();
 
 		BaseActor a = w.getCurrentScene().getActor(actor, true);
-		
+
 		float x = a.getX();
 		float y = a.getY();
-		
-		if(target != null){
+
+		if (target != null) {
 			BaseActor target = w.getCurrentScene().getActor(this.target, false);
-					
+
 			x = target.getX();
 			y = target.getY();
-			
-			if(target instanceof InteractiveActor) {
+
+			if (target instanceof InteractiveActor && target != a) {
 				Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
-				x+= refPoint.x;
-				y+= refPoint.y;
+				x += refPoint.x;
+				y += refPoint.y;
 			}
-			
-			if(pos != null){			
+
+			if (pos != null) {
 				x += pos.x * scale;
 				y += pos.y * scale;
 			}
 		} else if (pos != null) {
-			x = pos.x * scale; 
+			x = pos.x * scale;
 			y = pos.y * scale;
 		}
 
@@ -126,9 +126,8 @@ public class PositionAnimAction implements Action {
 			}
 
 			SpritePosTween t = new SpritePosTween();
-			t.start((SpriteActor) a, repeat, count, x, y, s, interpolation,
-					wait ? cb : null);
-			
+			t.start((SpriteActor) a, repeat, count, x, y, s, interpolation, wait ? cb : null);
+
 			((SpriteActor) a).addTween(t);
 		}
 

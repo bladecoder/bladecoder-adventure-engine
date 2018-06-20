@@ -60,7 +60,7 @@ public class PositionAction implements Action {
 			x = anchorActor.getX();
 			y = anchorActor.getY();
 
-			if (anchorActor instanceof InteractiveActor) {
+			if (anchorActor instanceof InteractiveActor && a != anchorActor) {
 				Vector2 refPoint = ((InteractiveActor) anchorActor).getRefPoint();
 				x += refPoint.x;
 				y += refPoint.y;

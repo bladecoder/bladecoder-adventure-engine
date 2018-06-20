@@ -72,7 +72,7 @@ public class GotoAction implements Action {
 			x = target.getX();
 			y = target.getY();
 			
-			if(target instanceof InteractiveActor) {
+			if(target instanceof InteractiveActor && target != actor) {
 				Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
 				x+= refPoint.x;
 				y+= refPoint.y;
