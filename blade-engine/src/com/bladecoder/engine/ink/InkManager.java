@@ -56,7 +56,7 @@ public class InkManager implements VerbRunner, Serializable {
 	private String storyName;
 
 	private int ip = -1;
-	
+
 	private final World w;
 
 	public InkManager(World w) {
@@ -80,6 +80,10 @@ public class InkManager implements VerbRunner, Serializable {
 				loadStory(name, null);
 			}
 		}.start();
+
+		// Some sleep to give some time to start the thread to avoid calling
+		// setVariable() before the thread starts.
+		Thread.sleep(20);
 	}
 
 	synchronized private void loadStory(String name, String stateString) {
@@ -339,13 +343,13 @@ public class InkManager implements VerbRunner, Serializable {
 
 		try {
 			Action action = null;
-			
+
 			if (!params.containsKey("actor")) {
 				action = ActionFactory.createByClass("com.bladecoder.engine.actions.TextAction", params);
 			} else {
 				action = ActionFactory.createByClass("com.bladecoder.engine.actions.SayAction", params);
 			}
-			
+
 			action.init(w);
 			actions.add(action);
 		} catch (ClassNotFoundException | ReflectionException e) {
@@ -498,8 +502,8 @@ public class InkManager implements VerbRunner, Serializable {
 
 	@Override
 	public void write(Json json) {
-		World w = ((BladeJson)json).getWorld();
-		
+		World w = ((BladeJson) json).getWorld();
+
 		json.writeValue("wasInCutmode", wasInCutmode);
 
 		if (cb == null && sCb != null)
