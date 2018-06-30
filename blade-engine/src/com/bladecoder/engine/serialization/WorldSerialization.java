@@ -255,7 +255,7 @@ public class WorldSerialization implements Serializable {
 			json.writeValue("timeOfGame", w.getTimeOfGame());
 			json.writeValue("cutmode", w.inCutMode());
 			w.getVerbManager().write(json);
-			json.writeValue("customProperties", w.getCustomProperties());
+			json.writeValue("customProperties", w.getCustomProperties(),  w.getCustomProperties().getClass(), String.class);
 
 			if (w.getCurrentDialog() != null) {
 				json.writeValue("dialogActor", w.getCurrentDialog().getActor());
@@ -390,7 +390,7 @@ public class WorldSerialization implements Serializable {
 
 			for (int i = 0; i < jsonProperties.size; i++) {
 				JsonValue jsonValue = jsonProperties.get(i);
-				props.put(jsonValue.name,  json.readValue("value", String.class, jsonData));
+				props.put(jsonValue.name, jsonValue.asString());
 			}
 
 			props.put(WorldProperties.SAVED_GAME_VERSION.toString(), version);
