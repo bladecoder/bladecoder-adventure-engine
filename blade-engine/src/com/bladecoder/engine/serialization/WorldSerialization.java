@@ -235,7 +235,7 @@ public class WorldSerialization implements Serializable {
 	@Override
 	public void write(Json json) {
 		BladeJson bjson = (BladeJson) json;
-		
+
 		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
 					Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
@@ -255,7 +255,8 @@ public class WorldSerialization implements Serializable {
 			json.writeValue("timeOfGame", w.getTimeOfGame());
 			json.writeValue("cutmode", w.inCutMode());
 			w.getVerbManager().write(json);
-			json.writeValue("customProperties", w.getCustomProperties(),  w.getCustomProperties().getClass(), String.class);
+			json.writeValue("customProperties", w.getCustomProperties(), w.getCustomProperties().getClass(),
+					String.class);
 
 			if (w.getCurrentDialog() != null) {
 				json.writeValue("dialogActor", w.getCurrentDialog().getActor());
@@ -291,10 +292,12 @@ public class WorldSerialization implements Serializable {
 			JsonValue jsonSounds = jsonData.get("sounds");
 			HashMap<String, SoundDesc> sounds = w.getSounds();
 
-			for (int i = 0; i < jsonSounds.size; i++) {
-				JsonValue jsonValue = jsonSounds.get(i);
-				SoundDesc s = json.readValue(SoundDesc.class, jsonValue);
-				sounds.put(jsonValue.name, s);
+			if (jsonSounds != null) {
+				for (int i = 0; i < jsonSounds.size; i++) {
+					JsonValue jsonValue = jsonSounds.get(i);
+					SoundDesc s = json.readValue(SoundDesc.class, jsonValue);
+					sounds.put(jsonValue.name, s);
+				}
 			}
 
 			// SCENES
@@ -420,7 +423,7 @@ public class WorldSerialization implements Serializable {
 				ArrayList<Action> actions = v.getActions();
 
 				for (int i = 0; i < actions.size(); i++) {
-					
+
 					Action act = actions.get(i);
 
 					try {
@@ -433,10 +436,10 @@ public class WorldSerialization implements Serializable {
 
 								if (sd != null)
 									s.getSoundManager().addSoundToLoad(sd);
-								
+
 								HashMap<String, String> params = new HashMap<String, String>();
 								params.put("sound", sd.getId());
-								
+
 								try {
 									Action a2 = ActionFactory.createByClass(PlaySoundAction.class.getName(), params);
 									actions.set(i, a2);
@@ -446,7 +449,8 @@ public class WorldSerialization implements Serializable {
 								}
 								EngineLogger.debug("Converting SoundAction:" + s.getId() + "." + v.getId());
 							} else {
-								EngineLogger.debug("WARNING: Cannot convert SoundAction:" + s.getId() + "." + v.getId());
+								EngineLogger
+										.debug("WARNING: Cannot convert SoundAction:" + s.getId() + "." + v.getId());
 							}
 
 						} else if (act instanceof PlaySoundAction) {
@@ -471,7 +475,7 @@ public class WorldSerialization implements Serializable {
 						ArrayList<Action> actions = v.getActions();
 
 						for (int i = 0; i < actions.size(); i++) {
-							
+
 							Action act = actions.get(i);
 
 							try {
@@ -484,22 +488,24 @@ public class WorldSerialization implements Serializable {
 
 										if (sd != null)
 											s.getSoundManager().addSoundToLoad(sd);
-										
+
 										HashMap<String, String> params = new HashMap<String, String>();
 										params.put("sound", sd.getId());
-										
+
 										try {
-											Action a2 = ActionFactory.createByClass(PlaySoundAction.class.getName(), params);
+											Action a2 = ActionFactory.createByClass(PlaySoundAction.class.getName(),
+													params);
 											actions.set(i, a2);
 											a2.init(w);
 										} catch (ClassNotFoundException | ReflectionException e) {
 											e.printStackTrace();
 										}
-										EngineLogger.debug("Converting SoundAction in:" + s.getId() + "." + a.getId() + "." + v.getId());
+										EngineLogger.debug("Converting SoundAction in:" + s.getId() + "." + a.getId()
+												+ "." + v.getId());
 									} else {
-										EngineLogger.debug("WARNING: Cannot convert SoundAction:" + s.getId() + "." + a.getId() + "." + v.getId());
+										EngineLogger.debug("WARNING: Cannot convert SoundAction:" + s.getId() + "."
+												+ a.getId() + "." + v.getId());
 									}
-
 
 								} else if (act instanceof PlaySoundAction) {
 									String sound = ActionUtils.getStringValue(act, "sound");
@@ -531,7 +537,7 @@ public class WorldSerialization implements Serializable {
 							sd = w.getSounds().get(sid);
 
 							if (sd != null) {
-								if(sd.isPreload())
+								if (sd.isPreload())
 									s.getSoundManager().addSoundToLoad(sd);
 							} else
 								EngineLogger.error(
