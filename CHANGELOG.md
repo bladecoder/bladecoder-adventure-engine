@@ -2,11 +2,20 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.1.0-SNAPSHOT]
+## [2.1.1-SNAPSHOT]
 
-- Added new text type UI to show debug or ui messages.
+## [2.1.0]
+
+- TextManager now sets the talk animation for characters. This ease characters to have conversations in the background.
+- Code refactor to get rid of the 'World' singleton. This breaks custom action backwards compatibility.
+- Leave action have the param 'init' to avoid call the init verb when false. This allows to change between scenes without worrying about losing the state.
+- Update blade-ink lib to v0.5.0.
+- Upgrade to gradle 2.6. Maybe it needs some more tweaks.
+- Added new text type 'UI' to show debug or ui messages.
 - Added one click 'action' verb.
-
+- Don't use ref point in position actions if the target actor is the same that the current actor.
+- All intensive tasks (load music, voices and ink) are now executed in a background thread.
+- FIX: filteredbox height bigger than screen and don't show the last element.
 
 ## [2.0.6]
 
