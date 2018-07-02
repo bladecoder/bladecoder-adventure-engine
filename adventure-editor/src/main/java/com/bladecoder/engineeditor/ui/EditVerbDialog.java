@@ -35,7 +35,7 @@ import com.bladecoder.engineeditor.ui.panels.ScopePanel;
 
 public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 	private static final String VERBS[] = { "lookat", "pickup", "talkto", "use",
-			"leave", "enter", "exit" };
+			"leave", "action", "enter", "exit" };
 
 	private static final String SCENE_VERBS[] = { "init", "test" };
 	
@@ -48,6 +48,7 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 			"Called when the user clicks\n in the 'talkto' icon\n over a character in scene",
 			"Called when the user drags and drops\n an inventory object over\n an object in scene or in inventory",
 			"Called when the user clicks\n in an exit zone in scene",
+			"Called when the user clicks in the actor. Useful for one click actions. Doesn't show the verb menu.",
 			"Called when the player enters\n in the object bounding box",
 			"Called when the player exits\n the object bounding box"};
 
