@@ -8,7 +8,7 @@ import java.util.Properties;
 import com.bladecoder.engine.BladeEngine;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.ui.UI.Screens;
-import com.bladecoder.engine.ui.defaults.DefaultSceneScreen;
+import com.bladecoder.engine.ui.SceneScreen;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Cursor;
@@ -153,8 +153,8 @@ public class DesktopLauncher extends BladeEngine {
 		
 		super.create();
 		
-		if(getUI().getScreen(Screens.SCENE_SCREEN) instanceof DefaultSceneScreen)
-			((DefaultSceneScreen) getUI().getScreen(Screens.SCENE_SCREEN)).setSpeed(speed);
+		if(getUI().getScreen(Screens.SCENE_SCREEN) instanceof SceneScreen)
+			((SceneScreen) getUI().getScreen(Screens.SCENE_SCREEN)).setSpeed(speed);
 	}
 
 	private void hideCursor() {
