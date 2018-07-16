@@ -2,7 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.1.1-SNAPSHOT]
+## [2.1.1]
+
+-  Fix several UI bugs: inventory button doesn't hide, dialog not working well when autoselect one option and text doesn't show when returning to a scene without init.
+-  Add -s parameter to DestkopLauncher.
 
 ## [2.1.0]
 
