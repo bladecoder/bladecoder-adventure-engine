@@ -543,6 +543,9 @@ public class World implements AssetConsumer {
 
 	public void showInventory(boolean b) {
 		getInventory().setVisible(b);
+		
+		if(listener != null)
+			listener.inventoryEnabled(b);
 	}
 
 	public String getCurrentInventory() {

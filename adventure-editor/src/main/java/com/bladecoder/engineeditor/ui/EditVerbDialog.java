@@ -124,7 +124,7 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 				.getSelectedIndex();
 
 		if(i == -1) {
-			if(idStr.isEmpty())
+			if(idStr != null && idStr.isEmpty())
 				setInfo(DEFAULT_DESC);
 			else
 				setInfo(CUSTOM_VERB_DESC);

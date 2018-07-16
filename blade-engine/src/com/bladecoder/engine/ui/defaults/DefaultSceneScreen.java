@@ -348,6 +348,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		@Override
 		public void inventoryEnabled(boolean value) {
+			inventoryUI.hide();
 			inventoryButton.setVisible(value);
 		}
 
@@ -999,8 +1000,6 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		ui.getWorld().setListener(worldListener);
 		ui.getWorld().resume();
-
-		textManagerUI.setText(ui.getWorld().getCurrentScene().getTextManager().getCurrentText());
 
 		updateUI();
 	}

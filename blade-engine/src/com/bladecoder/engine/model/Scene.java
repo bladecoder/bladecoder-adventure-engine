@@ -620,6 +620,9 @@ public class Scene implements Serializable, AssetConsumer {
 
 		soundManager.retrieveAssets();
 		textManager.getVoiceManager().retrieveAssets();
+		
+		if (getWorld().getListener() != null)
+			getWorld().getListener().text(textManager.getCurrentText());
 	}
 
 	@Override

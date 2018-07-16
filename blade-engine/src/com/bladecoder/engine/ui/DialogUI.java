@@ -30,6 +30,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.util.DPIUtils;
 
@@ -46,12 +48,12 @@ public class DialogUI extends ScrollPane {
 	private Button down;
 
 	private List<String> choices;
-	
+
 	private final UI ui;
 
 	public DialogUI(UI ui) {
 		super(new Table(ui.getSkin()), ui.getSkin());
-		
+
 		this.ui = ui;
 
 		setFadeScrollBars(true);
@@ -110,13 +112,13 @@ public class DialogUI extends ScrollPane {
 			}
 		});
 	}
-	
+
 	@Override
-	public void setVisible (boolean visible) {
+	public void setVisible(boolean visible) {
 		super.setVisible(visible);
-		
-		if(visible) {
-			if(getParent() != null)
+
+		if (visible) {
+			if (getParent() != null)
 				show();
 		} else {
 			up.remove();
@@ -130,10 +132,20 @@ public class DialogUI extends ScrollPane {
 		if (choices.size() == 0)
 			return;
 
-		else if (style.autoselect && choices.size() == 1) { 
+		else if (style.autoselect && choices.size() == 1) {
 			// If only has one option, autoselect it
-			select(0);
-			return;
+
+			// To work properly, delay the selection one frame to avoid select it before
+			// 'talkto' finished.
+			Timer.post(new Task() {
+
+				@Override
+				public void run() {
+					select(0);
+
+					return;
+				}
+			});
 		}
 
 		panel.clear();
@@ -195,7 +207,7 @@ public class DialogUI extends ScrollPane {
 		public Drawable background;
 
 		public TextButtonStyle textButtonStyle;
-		
+
 		// If only one option is visible, auto select it.
 		public boolean autoselect = true;
 
