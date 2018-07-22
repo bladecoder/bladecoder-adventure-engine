@@ -360,7 +360,7 @@ public class ScnWidget extends Widget {
 
 			} else if (loadingError) {
 				s = "ERROR IN SCENE DATA. CANNOT DISPLAY SCENE";
-			} else if (Ctx.project.getProjectDir() == null) {
+			} else if (!Ctx.project.isLoaded()) {
 				s = "CREATE OR LOAD A PROJECT";
 			} else {
 				s = "THERE ARE NO SCENES IN THIS CHAPTER YET";

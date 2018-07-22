@@ -29,11 +29,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 
 public class Message {
-	private static final float FADE_DURATION = 0.4f;
+	private static final float FADE_DURATION = 0f;
 	private static Label msg;
 	private static Skin skin;
 	private static boolean isModal;
@@ -59,28 +57,23 @@ public class Message {
 		showMsg(stage, text, false);
 	}
 
+	@SuppressWarnings("unused")
 	public static void showMsg(final Stage stage, final String text, final boolean modal) {
 
-		Timer.post(new Task() {
+		isModal = modal;
 
-			@Override
-			public void run() {
-				isModal = modal;
+		if (text == null) {
+			hideMsg();
+			return;
+		}
 
-				if (text == null) {
-					hideMsg();
-					return;
-				}
+		add(stage, text);
 
-				add(stage, text);
+		if (FADE_DURATION > 0) {
+			msg.getColor().a = 0;
+			msg.addAction(Actions.fadeIn(FADE_DURATION, Interpolation.fade));
+		}
 
-				if (FADE_DURATION > 0) {
-					msg.getColor().a = 0;
-					msg.addAction(Actions.fadeIn(FADE_DURATION, Interpolation.fade));
-				}
-
-			}
-		});
 	}
 
 	private static void add(Stage stage, String text) {
@@ -102,49 +95,41 @@ public class Message {
 		msg.invalidate();
 	}
 
+	@SuppressWarnings("unused")
 	public static void showMsg(final Stage stage, final String text, final float duration) {
+		isModal = false;
 
-		Timer.post(new Task() {
+		if (text == null) {
+			hideMsg();
+			return;
+		}
 
-			@Override
-			public void run() {
-				isModal = false;
+		add(stage, text);
 
-				if (text == null) {
-					hideMsg();
-					return;
-				}
+		if (FADE_DURATION > 0) {
+			msg.getColor().a = 0;
+			msg.addAction(sequence(Actions.fadeIn(FADE_DURATION, Interpolation.fade), Actions.delay(duration,
+					sequence(fadeOut(FADE_DURATION, Interpolation.fade), Actions.removeActor()))));
+		} else {
+			msg.addAction(sequence(Actions.delay(duration, Actions.removeActor())));
+		}
 
-				add(stage, text);
-
-				if (FADE_DURATION > 0) {
-					msg.getColor().a = 0;
-					msg.addAction(sequence(Actions.fadeIn(FADE_DURATION, Interpolation.fade), Actions.delay(duration,
-							sequence(fadeOut(FADE_DURATION, Interpolation.fade), Actions.removeActor()))));
-				}
-
-			}
-		});
 	}
 
+	@SuppressWarnings("unused")
 	public static void hideMsg() {
 		isModal = false;
 		msg.setText("");
 
 		if (FADE_DURATION > 0) {
 			msg.addAction(sequence(fadeOut(FADE_DURATION, Interpolation.fade), Actions.removeActor()));
+		} else {
+			msg.remove();
 		}
 	}
 
 	public static void showMsgDialog(final Stage stage, final String title, final String msg) {
-		Timer.post(new Task() {
-
-			@Override
-			public void run() {
-				new Dialog(title, skin).text(msg).button("Close", true).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
-						.show(stage);
-
-			}
-		});
+		new Dialog(title, skin).text(msg).button("Close", true).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
+				.show(stage);
 	}
 }

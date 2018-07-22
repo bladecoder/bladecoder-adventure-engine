@@ -132,7 +132,7 @@ public class SceneList extends ModelList<World, Scene> {
 								Arrays.asList(Ctx.project.getWorld().getScenes().values().toArray(new Scene[0])));
 					}
 				} else if (evt.getPropertyName().equals(Project.NOTIFY_PROJECT_LOADED)) {
-					toolbar.disableCreate(Ctx.project.getProjectDir() == null);
+					toolbar.disableCreate(!Ctx.project.isLoaded());
 
 					disposeBgCache = true;
 					addChapters();
@@ -187,29 +187,37 @@ public class SceneList extends ModelList<World, Scene> {
 				} catch (IOException e1) {
 					EditorLogger.printStackTrace(e1);
 				}
+			} else {
+				addElements(null, null);
 			}
 		}
 	};
 
 	public void addChapters() {
-		String[] nl = Ctx.project.getChapter().getChapters();
 		Array<String> array = new Array<String>();
+		
+		if (Ctx.project.isLoaded()) {
 
-		for (int i = 0; i < nl.length; i++) {
-			array.add(nl[i]);
-		}
+			String[] nl = Ctx.project.getChapter().getChapters();
 
-		chapters.setItems(array);
-
-		String init = Ctx.project.getEditorConfig().getProperty("project.selectedChapter",
-				Ctx.project.getWorld().getInitChapter());
-
-		if (init != null) {
-			if (array.contains(init, false)) {
-				chapters.setSelected(init);
-			} else if (array.size > 0) {
-				chapters.setSelected(Ctx.project.getChapter().getInitChapter());
+			for (int i = 0; i < nl.length; i++) {
+				array.add(nl[i]);
 			}
+
+			chapters.setItems(array);
+
+			String init = Ctx.project.getEditorConfig().getProperty("project.selectedChapter",
+					Ctx.project.getWorld().getInitChapter());
+
+			if (init != null) {
+				if (array.contains(init, false)) {
+					chapters.setSelected(init);
+				} else if (array.size > 0) {
+					chapters.setSelected(Ctx.project.getChapter().getInitChapter());
+				}
+			}
+		} else {
+			chapters.setItems(array);
 		}
 
 		chapterListener.changed(null, null);

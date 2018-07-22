@@ -54,14 +54,14 @@ public class ResolutionList extends EditList<String> {
 				new PropertyChangeListener() {
 					@Override
 					public void propertyChange(PropertyChangeEvent arg0) {
-						toolbar.disableCreate(Ctx.project.getProjectDir() == null);
+						toolbar.disableCreate(!Ctx.project.isLoaded());
 						addResolutions();
 					}
 				});
 	}
 
 	private void addResolutions() {
-		if (Ctx.project.getProjectDir() != null) {
+		if (Ctx.project.isLoaded()) {
 
 			list.getItems().clear();
 
@@ -81,7 +81,7 @@ public class ResolutionList extends EditList<String> {
 			}
 		}
 
-		toolbar.disableCreate(Ctx.project.getProjectDir() == null);
+		toolbar.disableCreate(!Ctx.project.isLoaded());
 	}
 
 	@Override

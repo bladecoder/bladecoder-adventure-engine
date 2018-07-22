@@ -35,6 +35,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.ui.BladeSkin;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.common.EditorLogger;
+import com.bladecoder.engineeditor.common.EditorUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.scneditor.ScnEditor;
@@ -57,8 +58,8 @@ public class Editor implements ApplicationListener {
 
 	@Override
 	public void create() {
-		
-		if(EditorLogger.debugMode()) {
+
+		if (EditorLogger.debugMode()) {
 			EngineLogger.setDebug();
 		}
 
@@ -118,32 +119,13 @@ public class Editor implements ApplicationListener {
 
 		// LOAD LAST OPEN PROJECT
 		String lastProject = Ctx.project.getEditorConfig().getProperty(Project.LAST_PROJECT_PROP, "");
+		final File lastProjectFile = new File(lastProject);
 
-		if (!lastProject.isEmpty() && new File(lastProject).exists()) {
+		if (!lastProject.isEmpty() && lastProjectFile.exists()) {
+			EditorLogger.debug("Loading last project: " + lastProject);
+
 			try {
-				EditorLogger.debug("Loading last project: " + lastProject);
-				Ctx.project.loadProject(new File(lastProject));
-
-				if (!Ctx.project.checkVersion()) {
-					new Dialog("Update Engine", skin) {
-						protected void result(Object object) {
-							if (((Boolean) object).booleanValue()) {
-								try {
-									Ctx.project.updateEngineVersion();
-									Message.showMsg(getStage(), "Project successfully updated.", 3);
-								} catch (IOException e1) {
-									String msg = "Something went wrong while updating the engine.\n\n"
-											+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
-									Message.showMsgDialog(getStage(), "Error", msg);
-
-									EditorLogger.error(msg, e1);
-								}
-							}
-						}
-					}.text("Your game uses an old (" + Ctx.project.getProjectBladeEngineVersion()
-							+ ") Engine version. Do you want to update the engine?").button("Yes", true)
-							.button("No", false).key(Keys.ENTER, true).key(Keys.ESCAPE, false).show(stage);
-				}
+				EditorUtils.checkVersionAndLoadProject(lastProjectFile, stage, skin);
 			} catch (Exception e) {
 				EditorLogger.error("Error loading last project.", e);
 				Ctx.project.closeProject();
@@ -153,7 +135,7 @@ public class Editor implements ApplicationListener {
 		stage.setScrollFocus(scnEditor.getScnWidget());
 		stage.setKeyboardFocus(scnEditor.getScnWidget());
 
-//		TooltipManager.getInstance().instant();
+		// TooltipManager.getInstance().instant();
 		TooltipManager.getInstance().initialTime = 0.2f;
 		TooltipManager.getInstance().hideAll();
 		TooltipManager.getInstance().subsequentTime = 0.2f;
@@ -205,7 +187,7 @@ public class Editor implements ApplicationListener {
 	}
 
 	public void exit() {
-		if (Ctx.project.getProjectDir() != null && Ctx.project.isModified()) {
+		if (Ctx.project.isLoaded() && Ctx.project.isModified()) {
 			new Dialog("Save Project", skin) {
 				protected void result(Object object) {
 					if (((Boolean) object).booleanValue()) {
