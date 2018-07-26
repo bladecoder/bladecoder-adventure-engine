@@ -152,7 +152,7 @@ public class ScenePointer {
 
 			ActorRenderer r = draggingActor.getRenderer();
 
-			r.draw(batch, mousepos.x, mousepos.y - draggingActor.getHeight() * size / 2, size, 0f,
+			r.draw(batch, mousepos.x, mousepos.y - draggingActor.getHeight() * size / 2, size, size, 0f,
 					currentIcon != hotspotIcon ? tmpTint : draggingActor.getTint());
 		}
 	}

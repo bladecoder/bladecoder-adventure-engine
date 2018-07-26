@@ -80,7 +80,7 @@ public class TextRenderer implements ActorRenderer {
 	private static final Matrix4 tmp = new Matrix4();
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint) {
 
 		float dx = getAlignDx(getWidth(), orgAlign);
 		float dy = getAlignDy(getHeight(), orgAlign);
@@ -112,7 +112,7 @@ public class TextRenderer implements ActorRenderer {
 			else if (textAlign == Align.center)
 				originX += getWidth() / 2;
 
-			tm.translate(x, y, 0).rotate(0, 0, 1, rotation).scale(scale, scale, 1).translate(originX, originY, 0);
+			tm.translate(x, y, 0).rotate(0, 0, 1, rotation).scale(scaleX, scaleY, 1).translate(originX, originY, 0);
 
 			batch.setTransformMatrix(tm);
 
@@ -120,7 +120,7 @@ public class TextRenderer implements ActorRenderer {
 
 			batch.setTransformMatrix(tmp);
 		} else {
-			RectangleRenderer.draw(batch, x + dx * scale, y + dy * scale, getWidth() * scale, getHeight() * scale,
+			RectangleRenderer.draw(batch, x + dx * scaleX, y + dy * scaleY, getWidth() * scaleX, getHeight() * scaleY,
 					Color.RED);
 		}
 	}

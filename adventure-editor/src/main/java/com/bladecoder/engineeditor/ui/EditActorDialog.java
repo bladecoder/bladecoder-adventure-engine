@@ -155,7 +155,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		pos = InputPanelFactory.createInputPanel(skin, "Position", "The sprite position.", Param.Type.VECTOR2, true, "0,0");
 		refPoint = InputPanelFactory.createInputPanel(skin, "Ref. Point", "Point of reference to relative position other actors.", Param.Type.VECTOR2, true, "0,0");
-		scale = InputPanelFactory.createInputPanel(skin, "Scale", "The sprite scale.", Param.Type.FLOAT, true, "1");
+		scale = InputPanelFactory.createInputPanel(skin, "Scale", "The sprite scale.", Param.Type.VECTOR2, true, "1,1");
 		
 		rot = InputPanelFactory.createInputPanel(skin, "Rotation", "The sprite rotation.", Param.Type.FLOAT, true, "0");
 
@@ -553,7 +553,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					sa.setBboxFromRenderer(bbfr);
 				
 				sa.setFakeDepth(Boolean.parseBoolean(fakeDepth.getText()));
-				sa.setScale(Float.parseFloat(scale.getText()));
+				
+				Vector2 ps = Param.parseVector2(scale.getText());
+				sa.setScale(ps.x, ps.y);
 				sa.setRot(Float.parseFloat(rot.getText()));
 				sa.getRenderer().setOrgAlign(AlignUtils.getAlign(orgAlign.getText()));
 				sa.setTint(Param.parseColor(tint.getText()));
@@ -647,7 +649,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				}
 
 				fakeDepth.setText(Boolean.toString(sa.getFakeDepth()));
-				scale.setText(Float.toString(sa.getScale()));
+				scale.setText(Param.toStringParam(new Vector2(sa.getScaleX(), sa.getScaleY())));
 				rot.setText(Float.toString(sa.getRot()));
 				tint.setText(sa.getTint() == null ? null : sa.getTint().toString());
 				bboxFromRenderer.setText(Boolean.toString(sa.isBboxFromRenderer()));

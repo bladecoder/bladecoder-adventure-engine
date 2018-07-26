@@ -479,15 +479,15 @@ public class Sprite3DRenderer extends AnimationRenderer {
 	private static final Vector3 tmp = new Vector3();
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint) {
 
-		x = x - getWidth() / 2 * scale;
+		x = x - getWidth() / 2 * scaleX;
 
 		if (USE_FBO) {
 			if (tint != null)
 				batch.setColor(tint);
 
-			batch.draw(tex, x, y, 0, 0, width, height, scale, scale, 0);
+			batch.draw(tex, x, y, 0, 0, width, height, scaleX, scaleY, 0);
 
 			if (tint != null)
 				batch.setColor(Color.WHITE);
@@ -504,7 +504,7 @@ public class Sprite3DRenderer extends AnimationRenderer {
 			p0x = VIEWPORT.width * (tmp.x + 1) / 2;
 			p0y = VIEWPORT.height * (tmp.y + 1) / 2;
 
-			tmp.set(x + width * scale, y + height * scale, 0);
+			tmp.set(x + width * scaleX, y + height * scaleY, 0);
 			tmp.mul(batch.getTransformMatrix());
 			tmp.prj(batch.getProjectionMatrix());
 			pfx = VIEWPORT.width * (tmp.x + 1) / 2;

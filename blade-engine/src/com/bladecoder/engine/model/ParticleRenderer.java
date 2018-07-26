@@ -75,23 +75,24 @@ public class ParticleRenderer implements ActorRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint) {
 
-		float finalScale = EngineAssetManager.getInstance().getScale() * scale;
+		float finalScaleX = EngineAssetManager.getInstance().getScale() * scaleX;
+		float finalScaleY = EngineAssetManager.getInstance().getScale() * scaleY;
 
 		if (effect.getEmitters().size > 0) {
 
 			Matrix4 tm = batch.getTransformMatrix();
 			tmp.set(tm);
 
-			if (tmpPosX != x / finalScale || tmpPosY != y / finalScale) {
-				tmpPosX = x / finalScale;
-				tmpPosY = y / finalScale;
+			if (tmpPosX != x / finalScaleX || tmpPosY != y / finalScaleY) {
+				tmpPosX = x / finalScaleX;
+				tmpPosY = y / finalScaleY;
 
 				effect.setPosition(tmpPosX, tmpPosY);
 			}
 
-			tm.rotate(0, 0, 1, rotation).scale(finalScale, finalScale, 1);
+			tm.rotate(0, 0, 1, rotation).scale(finalScaleX, finalScaleY, 1);
 
 			batch.setTransformMatrix(tm);
 
@@ -105,8 +106,8 @@ public class ParticleRenderer implements ActorRenderer {
 
 			batch.setTransformMatrix(tmp);
 		} else {
-			x = x - getWidth() / 2 * finalScale;
-			RectangleRenderer.draw(batch, x, y, getWidth() * finalScale, getHeight() * finalScale, Color.RED);
+			x = x - getWidth() / 2 * finalScaleX;
+			RectangleRenderer.draw(batch, x, y, getWidth() * finalScaleX, getHeight() * finalScaleY, Color.RED);
 		}
 	}
 

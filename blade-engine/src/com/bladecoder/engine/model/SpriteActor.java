@@ -40,7 +40,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	protected ArrayList<Tween<SpriteActor>> tweens = new ArrayList<>(0);
 
 	private float rot = 0.0f;
-	private float scale = 1.0f;
+	private float scaleX = 1.0f;
+	private float scaleY = 1.0f;
 	private Color tint;
 
 	private boolean fakeDepth = false;
@@ -94,15 +95,23 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	}
 
 	public float getWidth() {
-		return renderer.getWidth() * scale;
+		return renderer.getWidth() * scaleX;
 	}
 
 	public float getHeight() {
-		return renderer.getHeight() * scale;
+		return renderer.getHeight() * scaleY;
 	}
 
 	public float getScale() {
-		return scale;
+		return scaleX;
+	}
+	
+	public float getScaleX() {
+		return scaleX;
+	}
+	
+	public float getScaleY() {
+		return scaleY;
 	}
 
 	public Color getTint() {
@@ -114,13 +123,18 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	}
 
 	public void setScale(float scale) {
-		this.scale = scale;
+		setScale(scale, scale);
+	}
+	
+	public void setScale(float scaleX, float scaleY) {
+		this.scaleX = scaleX;
+		this.scaleY = scaleY;
 
 		if (bboxFromRenderer)
-			bbox.setScale(scale, scale);
+			bbox.setScale(scaleX, scaleY);
 		else {
 			float worldScale = EngineAssetManager.getInstance().getScale();
-			bbox.setScale(scale * worldScale, scale * worldScale);
+			bbox.setScale(scaleX * worldScale, scaleY * worldScale);
 		}
 	}
 
@@ -156,8 +170,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	public void draw(SpriteBatch batch) {
 		if (isVisible()) {
-			if (scale != 0) {
-				renderer.draw(batch, getX(), getY(), scale, rot, tint);
+			if (scaleX != 0 && scaleY != 0) {
+				renderer.draw(batch, getX(), getY(), scaleX, scaleY, rot, tint);
 			}
 		}
 	}
@@ -318,7 +332,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			json.writeValue("playingSound", playingSound);
 		}
 
-		json.writeValue("scale", scale);
+		json.writeValue("scaleX", scaleX);
+		json.writeValue("scaleY", scaleY);
 		json.writeValue("rot", rot);
 		json.writeValue("tint", tint);
 		json.writeValue("fakeDepth", fakeDepth);
@@ -344,7 +359,14 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			playingSound = json.readValue("playingSound", String.class, jsonData);
 		}
 
-		scale = json.readValue("scale", float.class, scale, jsonData);
+		if (jsonData.get("scale") != null) {
+			scaleX = json.readValue("scale", float.class, jsonData);
+			scaleY = scaleX;
+		} else {
+			scaleX = json.readValue("scaleX", float.class, scaleX, jsonData);
+			scaleY = json.readValue("scaleY", float.class, scaleY, jsonData);
+		}
+		
 		rot = json.readValue("rot", float.class, rot, jsonData);
 		tint = json.readValue("tint", Color.class, tint, jsonData);
 
@@ -362,7 +384,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		if (bboxFromRenderer)
 			renderer.updateBboxFromRenderer(bbox);
 
-		setScale(scale);
+		setScale(scaleX, scaleY);
 		setRot(rot);
 	}
 

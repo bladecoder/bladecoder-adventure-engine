@@ -237,7 +237,7 @@ public class SpineRenderer extends AnimationRenderer {
 	private static final Matrix4 tmp = new Matrix4();
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint) {
 
 		SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
 
@@ -247,7 +247,7 @@ public class SpineRenderer extends AnimationRenderer {
 
 			float originX = cs.skeleton.getRootBone().getX();
 			float originY = cs.skeleton.getRootBone().getY();
-			tm.translate(x, y, 0).rotate(0, 0, 1, rotation).scale(scale, scale, 1).translate(originX, originY, 0);
+			tm.translate(x, y, 0).rotate(0, 0, 1, rotation).scale(scaleX, scaleY, 1).translate(originX, originY, 0);
 
 			// cs.skeleton.setX(x / scale);
 			// cs.skeleton.setY(y / scale);
@@ -266,7 +266,7 @@ public class SpineRenderer extends AnimationRenderer {
 			float dx = getAlignDx(getWidth(), orgAlign);
 			float dy = getAlignDy(getHeight(), orgAlign);
 
-			RectangleRenderer.draw(batch, x + dx * scale, y + dy * scale, getWidth() * scale, getHeight() * scale,
+			RectangleRenderer.draw(batch, x + dx * scaleX, y + dy * scaleY, getWidth() * scaleX, getHeight() * scaleY,
 					Color.RED);
 		}
 	}

@@ -16,6 +16,7 @@
 package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.AssetConsumer;
@@ -57,8 +58,12 @@ public class SetActorAttrAction implements Action {
 	private Boolean fakeDepth;
 
 	@ActionProperty
-	@ActionPropertyDescription("Sets the actor scale")
+	@ActionPropertyDescription("Sets the actor scale proportionally")
 	private Float scale;
+	
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor scale non proportionally")
+	private Vector2 scaleXY;
 
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor rotation")
@@ -151,6 +156,13 @@ public class SetActorAttrAction implements Action {
 		if (scale != null) {
 			if (a instanceof SpriteActor)
 				((SpriteActor) a).setScale(scale);
+			else
+				EngineLogger.error("'scale' property not supported for actor:" + a.getId());
+		}
+		
+		if (scaleXY != null) {
+			if (a instanceof SpriteActor)
+				((SpriteActor) a).setScale(scaleXY.x, scaleXY.y);
 			else
 				EngineLogger.error("'scale' property not supported for actor:" + a.getId());
 		}

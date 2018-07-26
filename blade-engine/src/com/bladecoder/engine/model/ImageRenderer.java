@@ -53,7 +53,7 @@ public class ImageRenderer extends AnimationRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint) {
 
 		float dx = getAlignDx(getWidth(), orgAlign);
 		float dy = getAlignDy(getHeight(), orgAlign);
@@ -61,7 +61,7 @@ public class ImageRenderer extends AnimationRenderer {
 		ImageCacheEntry source = (ImageCacheEntry) currentSource;
 
 		if (source == null || source.tex == null) {
-			RectangleRenderer.draw(batch, x + dx * scale, y + dy * scale, getWidth() * scale, getHeight() * scale,
+			RectangleRenderer.draw(batch, x + dx * scaleX, y + dy * scaleY, getWidth() * scaleX, getHeight() * scaleY,
 					Color.RED);
 			return;
 		}
@@ -72,7 +72,7 @@ public class ImageRenderer extends AnimationRenderer {
 		x = x + dx;
 		y = y + dy;
 
-		batch.draw(source.tex, x, y, -dx, -dy, getWidth(), getHeight(), scale, scale, rotation, 0, 0,
+		batch.draw(source.tex, x, y, -dx, -dy, getWidth(), getHeight(), scaleX, scaleY, rotation, 0, 0,
 				source.tex.getWidth(), source.tex.getHeight(), flipX, false);
 
 		if (tint != null)
