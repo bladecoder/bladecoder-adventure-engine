@@ -8,12 +8,11 @@ buildscript {
   }
 }
 
-
+apply plugin: 'java-library'
 apply plugin: "java"
 apply plugin: 'application'
 
 group = 'com.bladecoder.engineeditor'
-
 mainClassName = 'com.bladecoder.engineeditor.Main'
 
 // java
@@ -44,26 +43,25 @@ javadoc {
 }
 
 dependencies {
-  compile "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  compile "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
-  compile "com.badlogicgames.gdx:gdx-tools:$libgdxVersion"
-  compile fileTree(dir: 'libs', include: '*.jar')
-  compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$libgdxVersion"
-  compile "com.badlogicgames.gdx:gdx-platform:$libgdxVersion:natives-desktop"
-  compile "com.badlogicgames.gdx:gdx-freetype-platform:$libgdxVersion:natives-desktop"
-  compile "commons-io:commons-io:2.1"
-  compile "com.bladecoder.packr:packr:2.1"
-  compile "eu.infomas:annotation-detector:3.0.5"
-  compile "com.strongjoshua:libgdx-inGameConsole:0.7.1"
-  compile "com.kotcrab.vis:vis-ui:1.2.2"
-  compile "com.bladecoder.ink:blade-ink:$bladeInkVersion"
+  api "com.badlogicgames.gdx:gdx:$libgdxVersion"
+  api "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
+  api "com.badlogicgames.gdx:gdx-tools:$libgdxVersion"
+  api fileTree(dir: 'libs', include: '*.jar')
+  api "com.badlogicgames.gdx:gdx-backend-lwjgl:$libgdxVersion"
+  api "com.badlogicgames.gdx:gdx-platform:$libgdxVersion:natives-desktop"
+  api "com.badlogicgames.gdx:gdx-freetype-platform:$libgdxVersion:natives-desktop"
+  api "commons-io:commons-io:2.1"
+  api "com.bladecoder.packr:packr:2.1"
+  api "eu.infomas:annotation-detector:3.0.5"
+  api "com.strongjoshua:libgdx-inGameConsole:0.7.1"
+  api "com.kotcrab.vis:vis-ui:1.2.2"
+  api "com.bladecoder.ink:blade-ink:$bladeInkVersion"
 
   implementation project(":blade-engine")
   implementation project(":blade-engine-spine-plugin")
 }
 
 task setVersion(type: WriteProperties) {
-	println "Set version info in versions.properties"
 
 	def props = new Properties()
 	def propFile = project.file("./src/main/resources/versions.properties");
@@ -80,6 +78,10 @@ task setVersion(type: WriteProperties) {
 
 	setProperties(props);
 	setOutputFile(propFile);
+	
+	doLast {
+		println "Set version info in versions.properties"
+	}
 }
 
 processResources.finalizedBy(setVersion)
@@ -109,6 +111,7 @@ task pack {
   }
 }
 
+// include flatpack files in .zip
 distZip {
   into(project.name + '-' + project.version) {
       from '.'

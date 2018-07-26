@@ -19,10 +19,10 @@ eclipse.project {
 }
 
 dependencies {
-  compile project(':core')
-  compile "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
-  compile "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
-  compile "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
-  compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-  compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
+  api project(':core')
+  api "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
+  api "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
+  api "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
+  api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
+  api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
 }

@@ -7,10 +7,10 @@ sourceCompatibility = 1.7
 targetCompatibility=1.7
 
 dependencies {
-    compile project(":core")
-    compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-    compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-    compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+    api project(":core")
+    api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+    api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
 }
 
 jar {
@@ -35,9 +35,9 @@ run {
 task dist(type: Jar) {
     baseName =  appName + "-desktop"
     
-    from files(sourceSets.main.output.classesDir)
+    from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compile.collect {zipTree(it)}}
+    from {configurations.runtimeClasspath.collect {zipTree(it)}}
  
     manifest {
         attributes 'Main-Class': project.mainClassName
