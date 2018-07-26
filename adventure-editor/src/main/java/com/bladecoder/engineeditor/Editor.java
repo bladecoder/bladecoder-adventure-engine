@@ -122,12 +122,12 @@ public class Editor implements ApplicationListener {
 		final File lastProjectFile = new File(lastProject);
 
 		if (!lastProject.isEmpty() && lastProjectFile.exists()) {
-			EditorLogger.debug("Loading last project: " + lastProject);
+			EditorLogger.debug("Loading previous project: " + lastProject);
 
 			try {
 				EditorUtils.checkVersionAndLoadProject(lastProjectFile, stage, skin);
 			} catch (Exception e) {
-				EditorLogger.error("Error loading last project.", e);
+				EditorLogger.error("Error loading previous project.", e);
 				Ctx.project.closeProject();
 			}
 		}

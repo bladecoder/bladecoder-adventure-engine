@@ -29,6 +29,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
 public class Message {
 	private static final float FADE_DURATION = 0f;
@@ -60,19 +62,27 @@ public class Message {
 	@SuppressWarnings("unused")
 	public static void showMsg(final Stage stage, final String text, final boolean modal) {
 
-		isModal = modal;
+		// show in the next frame to allow calling when no OpenGL context is available.
+		Timer.post(new Task() {
 
-		if (text == null) {
-			hideMsg();
-			return;
-		}
+			@Override
+			public void run() {
+				isModal = modal;
 
-		add(stage, text);
+				if (text == null) {
+					hideMsg();
+					return;
+				}
 
-		if (FADE_DURATION > 0) {
-			msg.getColor().a = 0;
-			msg.addAction(Actions.fadeIn(FADE_DURATION, Interpolation.fade));
-		}
+				add(stage, text);
+
+				if (FADE_DURATION > 0) {
+					msg.getColor().a = 0;
+					msg.addAction(Actions.fadeIn(FADE_DURATION, Interpolation.fade));
+				}
+
+			}
+		});
 
 	}
 
@@ -97,22 +107,29 @@ public class Message {
 
 	@SuppressWarnings("unused")
 	public static void showMsg(final Stage stage, final String text, final float duration) {
-		isModal = false;
 
-		if (text == null) {
-			hideMsg();
-			return;
-		}
+		Timer.post(new Task() {
 
-		add(stage, text);
+			@Override
+			public void run() {
+				isModal = false;
 
-		if (FADE_DURATION > 0) {
-			msg.getColor().a = 0;
-			msg.addAction(sequence(Actions.fadeIn(FADE_DURATION, Interpolation.fade), Actions.delay(duration,
-					sequence(fadeOut(FADE_DURATION, Interpolation.fade), Actions.removeActor()))));
-		} else {
-			msg.addAction(sequence(Actions.delay(duration, Actions.removeActor())));
-		}
+				if (text == null) {
+					hideMsg();
+					return;
+				}
+
+				add(stage, text);
+
+				if (FADE_DURATION > 0) {
+					msg.getColor().a = 0;
+					msg.addAction(sequence(Actions.fadeIn(FADE_DURATION, Interpolation.fade), Actions.delay(duration,
+							sequence(fadeOut(FADE_DURATION, Interpolation.fade), Actions.removeActor()))));
+				} else {
+					msg.addAction(sequence(Actions.delay(duration, Actions.removeActor())));
+				}
+			}
+		});
 
 	}
 
