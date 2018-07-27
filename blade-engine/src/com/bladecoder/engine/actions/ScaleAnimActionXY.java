@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
+import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.anim.SpriteScaleTween;
 import com.bladecoder.engine.anim.Tween;
@@ -23,15 +24,15 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationMode;
 
-@ActionDescription(name = "ScaleAnim", value= "Proportional Scale animation for sprite actors")
-public class ScaleAction implements Action {
+@ActionDescription(name = "ScaleAnimXY", value= "Scale animation for sprite actors")
+public class ScaleAnimActionXY implements Action {
 	@ActionPropertyDescription("The target actor")
 	@ActionProperty(type = Type.SPRITE_ACTOR)
 	private String actor;
 
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The target scale")
-	private float scale;
+	private Vector2 scale;
 
 	@ActionProperty(required = true, defaultValue = "1.0")
 	@ActionPropertyDescription("Duration of the animation in seconds")
@@ -65,7 +66,7 @@ public class ScaleAction implements Action {
 		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actor, false);
 		
 		SpriteScaleTween t = new SpriteScaleTween();
-		t.start(a, repeat, count, scale, scale, speed, interpolation,
+		t.start(a, repeat, count, scale.x, scale.y, speed, interpolation,
 				wait ? cb : null);
 		
 		a.addTween(t);
