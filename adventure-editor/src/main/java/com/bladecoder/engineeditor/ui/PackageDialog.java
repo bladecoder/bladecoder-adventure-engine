@@ -655,7 +655,7 @@ public class PackageDialog extends EditDialog {
 		try {
 			Properties prop = Ctx.project.getGradleProperties(Ctx.project.getProjectDir());
 			prop.setProperty("version", version);
-			Ctx.project.saveGradleProperties(prop);
+			Ctx.project.saveGradleProperties(prop, Ctx.project.getProjectDir());
 		} catch (IOException e) {
 			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
 		}

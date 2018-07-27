@@ -445,7 +445,7 @@ public class Project extends PropertyChange {
 		prop.setProperty("androidGradlePluginVersion", Versions.getAndroidGradlePluginVersion());
 		prop.setProperty("bladeInkVersion", Versions.getBladeInkVersion());
 
-		saveGradleProperties(prop);
+		saveGradleProperties(prop, projectPath);
 	}
 
 	/**
@@ -544,9 +544,9 @@ public class Project extends PropertyChange {
 		return prop;
 	}
 
-	public void saveGradleProperties(Properties prop) throws IOException {
+	public void saveGradleProperties(Properties prop, File projectPath) throws IOException {
 		FileOutputStream os = new FileOutputStream(
-				getProjectDir().getAbsolutePath() + "/gradle.properties");
+				projectPath.getAbsolutePath() + "/gradle.properties");
 
 		prop.store(os, null);
 	}
