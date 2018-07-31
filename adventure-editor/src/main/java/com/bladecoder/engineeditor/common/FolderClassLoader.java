@@ -95,7 +95,9 @@ public class FolderClassLoader extends ClassLoader {
 
 							classes.put(className, result);
 						}
-					} catch (IOException | NoClassDefFoundError e) {						
+					} catch (NoClassDefFoundError e) {
+						EditorLogger.error("ERROR - Could not load class: " + e.getMessage());
+					} catch (IOException e) {						
 						throw e;
 					} finally {
 						is.close();
