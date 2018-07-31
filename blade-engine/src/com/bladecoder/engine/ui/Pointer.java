@@ -27,63 +27,67 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.util.DPIUtils;
 
+/**
+ * WARNING!!! This is a *struct* in C# so we have to use assign instead of '='
+ * operator. And always create the object, null value is not allowed.
+ * 
+ */
 public class Pointer extends Actor {
 	private static final String POINTER_ICON = "pointer";
-	
+
 	private TextureRegion pointerIcon;
 
 	private final Vector2 mousepos = new Vector2();
-	
+
 	private float pointerScale;
 
 	public Pointer(Skin skin) {
 		pointerIcon = skin.getAtlas().findRegion(POINTER_ICON);
 		setTouchable(Touchable.disabled);
-		
+
 		resize();
 		show();
 	}
 
-	
 	private void getInputUnproject(Viewport v, Vector2 out) {
 		out.set(Gdx.input.getX(), Gdx.input.getY());
 
 		v.unproject(out);
 	}
-	
+
 	@Override
-	public void act (float delta) {
+	public void act(float delta) {
 		super.act(delta);
-		
-		if(getStage().getActors().get(getStage().getActors().size - 1) != this)
+
+		if (getStage().getActors().get(getStage().getActors().size - 1) != this)
 			toFront();
 	}
-	
+
 	@Override
 	public void draw(Batch batch, float alpha) {
-		
+
 		getInputUnproject(getStage().getViewport(), mousepos);
-		
+
 		setPosition(mousepos.x - getWidth() / 2, mousepos.y - getHeight() / 2);
-		
+
 		batch.setColor(Color.WHITE);
-		
+
 		batch.draw(pointerIcon, getX(), getY(), getWidth(), getHeight());
 	}
-	
+
 	public void resize() {
 		pointerScale = DPIUtils.getTouchMinSize() / pointerIcon.getRegionHeight() * .8f;
 		setSize(pointerIcon.getRegionWidth() * pointerScale, pointerIcon.getRegionHeight() * pointerScale);
 	}
-	
-	public void show() {	
-		if(!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)) {
+
+	public void show() {
+		if (!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)) {
 			setVisible(true);
 		} else {
 			setVisible(false);
 		}
 	}
-	
+
 	public void hide() {
 		setVisible(false);
 	}

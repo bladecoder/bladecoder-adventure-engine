@@ -7,6 +7,8 @@ import java.util.Properties;
 
 import com.bladecoder.engine.BladeEngine;
 import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.ui.SceneScreen;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Cursor;
@@ -21,6 +23,8 @@ public class DesktopLauncher extends BladeEngine {
 
 	private boolean fullscreen = true;
 	private LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
+	
+	private float speed = 1.0f;
 
 	DesktopLauncher() {
 		Properties p = new Properties();
@@ -70,6 +74,11 @@ public class DesktopLauncher extends BladeEngine {
 					i++;
 					setPlayMode(args[i]);
 				}
+			} else if (s.equals("-s")) {
+				if (i + 1 < args.length) {
+					i++;
+					speed = Float.parseFloat(args[i]);
+				}				
 			} else if (s.equals("-chapter")) {
 				if (i + 1 < args.length) {
 					i++;
@@ -116,23 +125,21 @@ public class DesktopLauncher extends BladeEngine {
 			}
 		}
 	}
-
 	
 	public void usage() {
-		System.out.println(
-				"Usage:\n" +
-				"-chapter chapter\tLoads the selected chapter\n" +
-			    "-t scene_name\tStart test mode for the scene\n" +
-			    "-p record_name\tPlay previusly recorded games\n" +
-			    "-f\tSet fullscreen mode\n" +
-			    "-w\tSet windowed mode\n" +
-			    "-d\tShow debug messages\n" +
-			    "-res width\tForce the resolution width\n" +
-			    "-l game_state\tLoad the previusly saved game state\n" + 
-			    "-r\tRun the game from the begining\n" +
-			    "-aspect aspect_ratio\tSets the specified screen aspect (16:9, 4:3, 16:10)\n"
-				);
-		
+		System.out.println("Usage:\n" 
+				+ "-chapter chapter\tLoads the selected chapter\n"
+				+ "-t scene_name\tStart test mode for the scene\n" 
+				+ "-p record_name\tPlay previusly recorded games\n"
+				+ "-f\tSet fullscreen mode\n"
+				+ "-w\tSet windowed mode\n" 
+				+ "-d\tShow debug messages\n"
+				+ "-res width\tForce the resolution width\n" 
+				+ "-l game_state\tLoad the previusly saved game state\n"
+				+ "-r\tRun the game from the begining\n"
+				+ "-s speed\tSets the game speed\n"
+				+ "-aspect aspect_ratio\tSets the specified screen aspect (16:9, 4:3, 16:10)\n");
+
 		System.exit(0);
 	}
 
@@ -145,6 +152,9 @@ public class DesktopLauncher extends BladeEngine {
 		hideCursor();
 		
 		super.create();
+		
+		if(getUI().getScreen(Screens.SCENE_SCREEN) instanceof SceneScreen)
+			((SceneScreen) getUI().getScreen(Screens.SCENE_SCREEN)).setSpeed(speed);
 	}
 
 	private void hideCursor() {

@@ -20,13 +20,16 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
-import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class VerbManager implements Serializable {
 	protected HashMap<String, Verb> verbs = new HashMap<String, Verb>();
+
+	private World w;
 
 	public void addVerb(Verb v) {
 		verbs.put(v.getHashKey(), v);
@@ -87,7 +90,7 @@ public class VerbManager implements Serializable {
 	 * @param target
 	 *            When one object is used with another object.
 	 */
-	public void runVerb(String verb, String state, String target) {
+	public void runVerb(String verb, String state, String target, ActionCallback cb) {
 
 		Verb v = null;
 
@@ -96,11 +99,11 @@ public class VerbManager implements Serializable {
 		v = getVerb(verb, state, target);
 
 		if (v == null) {
-			v = World.getInstance().getVerbManager().getVerb(verb, null, null);
+			v = w.getVerbManager().getVerb(verb, null, null);
 		}
 
 		if (v != null) {
-			v.run(target);
+			v.run(target, cb);
 		} else {
 			EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for target ''{1}''", verb, target));
 		}
@@ -118,7 +121,7 @@ public class VerbManager implements Serializable {
 		v = getVerb(verb, state, target);
 
 		if (v == null) {
-			v = World.getInstance().getVerbManager().getVerb(verb, null, null);
+			v = w.getVerbManager().getVerb(verb, null, null);
 		}
 
 		if (v != null)
@@ -136,16 +139,19 @@ public class VerbManager implements Serializable {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
+			this.w = bjson.getWorld();
+			
 			verbs = json.readValue("verbs", HashMap.class, Verb.class, jsonData);
 		} else {
-			for(String v: verbs.keySet()) {
+			for (String v : verbs.keySet()) {
 				Verb verb = verbs.get(v);
-							
+
 				JsonValue jsonValue = jsonData.get("verbs").get(v);
-				
-				if(jsonValue != null)
+
+				if (jsonValue != null)
 					verb.read(json, jsonValue);
 				else
 					EngineLogger.debug("LOAD WARNING: Verb not found in saved game: " + jsonData.name + "." + v);

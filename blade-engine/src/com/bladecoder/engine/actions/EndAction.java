@@ -18,9 +18,14 @@ package com.bladecoder.engine.actions;
 import java.util.List;
 
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 
 @ActionDescription("Marks the end of a block for a control action")
 public class EndAction extends AbstractControlAction {
+	
+	@Override
+	public void init(World w) {
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {

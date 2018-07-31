@@ -24,10 +24,17 @@ public class WaitAction implements Action {
 	@ActionPropertyDescription("The time pause in seconds")
 
 	private float time;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		World.getInstance().addTimer(time, cb);
+		w.getCurrentScene().addTimer(time, cb);
 		return true;
 	}
 }

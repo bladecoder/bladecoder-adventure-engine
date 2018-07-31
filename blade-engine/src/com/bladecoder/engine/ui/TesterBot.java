@@ -58,8 +58,10 @@ public class TesterBot {
 	private final ArrayList<String> excludeList = new ArrayList<String>();
 	
 	private final boolean inventoryAction;
+	private final World w;
 
-	public TesterBot() {
+	public TesterBot(World w) {
+		this.w = w;
 		inventoryAction = !Config.getProperty(Config.SINGLE_ACTION_INVENTORY, false);
 	}
 
@@ -67,14 +69,12 @@ public class TesterBot {
 		
 		if(!enabled)
 			return;
-		
-		World w = World.getInstance();
 
 		deltaTime += d;
 		inSceneTimeDelta += d;
 
 		if(w.inCutMode() && isPassTexts())
-			w.getTextManager().next();
+			w.getCurrentScene().getTextManager().next();
 		
 		if (deltaTime > waitInverval && !w.inCutMode()) {
 			deltaTime = 0;
@@ -126,7 +126,7 @@ public class TesterBot {
 						} else {
 							// ACTION			
 							verb = scnActor.getVerb(Verb.TALKTO_VERB) != null ? Verb.TALKTO_VERB
-									: Verb.ACTION_VERB;
+									: Verb.PICKUP_VERB;
 						}
 						
 						if(!(verb.equals(Verb.LEAVE_VERB) && (!runLeaveVerbs || inSceneTime > inSceneTimeDelta))) {
@@ -151,8 +151,8 @@ public class TesterBot {
 							EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.LOOKAT_VERB);
 							invActor.runVerb(Verb.LOOKAT_VERB);
 						} else if (choosedVerb == 1 && inventoryAction) {
-							EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.ACTION_VERB);
-							invActor.runVerb(Verb.ACTION_VERB);
+							EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.PICKUP_VERB);
+							invActor.runVerb(Verb.PICKUP_VERB);
 						} else { // 2 and 3
 
 							InteractiveActor targetActor = null;

@@ -29,13 +29,20 @@ public class TalktoAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("The 'dialogId' to show")
 	private String dialog;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		
-		CharacterActor a = (CharacterActor)World.getInstance().getCurrentScene().getActor(actor, false);
+		CharacterActor a = (CharacterActor)w.getCurrentScene().getActor(actor, false);
 		
-		World.getInstance().setCurrentDialog(a.getDialog(dialog));
+		w.setCurrentDialog(a.getDialog(dialog));
 		
 		return false;
 	}

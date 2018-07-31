@@ -20,7 +20,6 @@ import java.beans.PropertyChangeListener;
 import java.util.Locale;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.model.Project;
@@ -41,11 +40,11 @@ public class WorldProps extends PropertyTable {
 	@Override
 	protected void updateModel(String property, String value) {
 		if (property.equals(Project.WIDTH_PROPERTY)) {
-			World.getInstance().setWidth(Integer.parseInt(value));
+			Ctx.project.getWorld().setWidth(Integer.parseInt(value));
 		} else if (property.equals(Config.TITLE_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.TITLE_PROP, value);
 		} else if (property.equals(Project.HEIGHT_PROPERTY)) {
-			World.getInstance().setHeight(Integer.parseInt(value));
+			Ctx.project.getWorld().setHeight(Integer.parseInt(value));
 		} else if (property.equals(Config.INVENTORY_POS_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.INVENTORY_POS_PROP, value);
 		} else if (property.equals(Config.INVENTORY_AUTOSIZE_PROP)) {
@@ -74,9 +73,9 @@ public class WorldProps extends PropertyTable {
 	private void setProject() {
 		clearProps();
 
-		if (Ctx.project.getProjectDir() != null) {
-			addProperty(Project.WIDTH_PROPERTY, World.getInstance().getWidth());
-			addProperty(Project.HEIGHT_PROPERTY, World.getInstance().getHeight());
+		if (Ctx.project.isLoaded()) {
+			addProperty(Project.WIDTH_PROPERTY, Ctx.project.getWorld().getWidth());
+			addProperty(Project.HEIGHT_PROPERTY, Ctx.project.getWorld().getHeight());
 			addProperty(Config.TITLE_PROP, Ctx.project.getTitle());
 			addProperty(Config.INVENTORY_POS_PROP,
 					Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH),  new String[] {"TOP", "DOWN", "LEFT", "RIGHT", "CENTER"});

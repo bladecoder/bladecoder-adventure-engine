@@ -21,7 +21,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
@@ -39,8 +38,7 @@ public class ChapterList extends EditList<String> {
 		list.setCellRenderer(listCellRenderer);
 
 		initBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(initBtn, "ic_check", "Set init chapter",
-				"Set init chapter");
+		toolbar.addToolBarButton(initBtn, "ic_check", "Set init chapter", "Set init chapter");
 
 		initBtn.setDisabled(false);
 		toolbar.hideCopyPaste();
@@ -59,8 +57,8 @@ public class ChapterList extends EditList<String> {
 
 		if (e == null)
 			return;
-		
-		World.getInstance().setInitChapter(e);
+
+		Ctx.project.getWorld().setInitChapter(e);
 		Ctx.project.setModified();
 	}
 
@@ -82,22 +80,21 @@ public class ChapterList extends EditList<String> {
 		String e = list.getItems().removeIndex(pos);
 
 		if (e.equals(Ctx.project.getChapter().getInitChapter())) {
-			World.getInstance().setInitChapter(list.getItems().get(0));
+			Ctx.project.getWorld().setInitChapter(list.getItems().get(0));
 			Ctx.project.setModified();
 		}
 
 		try {
 			Ctx.project.getChapter().deleteChapter(e);
 		} catch (Exception ex) {
-			String msg = "Something went wrong.\n\n"
-					+ ex.getClass().getSimpleName() + " - " + ex.getMessage();
+			String msg = "Something went wrong.\n\n" + ex.getClass().getSimpleName() + " - " + ex.getMessage();
 			Message.showMsgDialog(getStage(), "Error deleting chapter", msg);
 
 			EditorLogger.printStackTrace(ex);
 		}
-		
+
 		list.setSelectedIndex(0);
-		
+
 		Ctx.project.notifyPropertyChange(Project.CHAPTER_PROPERTY);
 	}
 
@@ -115,7 +112,7 @@ public class ChapterList extends EditList<String> {
 					list.setSelectedIndex(i);
 
 				list.invalidateHierarchy();
-				
+
 				Ctx.project.notifyPropertyChange(Project.CHAPTER_PROPERTY);
 			}
 		});
@@ -150,31 +147,36 @@ public class ChapterList extends EditList<String> {
 	@Override
 	protected void paste() {
 	}
-	
 
 	public void addElements() {
 
 		list.getItems().clear();
 		list.getSelection().clear();
-		toolbar.disableCreate(false);
 
-		String nl[] = Ctx.project.getChapter().getChapters();
+		if (Ctx.project.isLoaded()) {
+			toolbar.disableCreate(false);
 
-		for (int i = 0; i < nl.length; i++) {
-			addItem(nl[i]);
-		}
+			String nl[] = Ctx.project.getChapter().getChapters();
 
-		if (getItems().size > 0)
-			list.setSelectedIndex(0);
-
-		toolbar.disableEdit(list.getSelectedIndex() < 0);
-
-		list.getItems().sort(new Comparator<String>() {
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.compareTo(o2);
+			for (int i = 0; i < nl.length; i++) {
+				addItem(nl[i]);
 			}
-		});
+
+			if (getItems().size > 0)
+				list.setSelectedIndex(0);
+
+			toolbar.disableEdit(list.getSelectedIndex() < 0);
+
+			list.getItems().sort(new Comparator<String>() {
+				@Override
+				public int compare(String o1, String o2) {
+					return o1.compareTo(o2);
+				}
+			});
+
+		} else {
+			toolbar.disableCreate(true);
+		}
 
 		invalidateHierarchy();
 	}
@@ -188,7 +190,7 @@ public class ChapterList extends EditList<String> {
 		protected String getCellTitle(String e) {
 			String id = e;
 
-			String init = World.getInstance().getInitChapter();
+			String init = Ctx.project.getWorld().getInitChapter();
 
 			if (init.equals(id))
 				id += " <init>";

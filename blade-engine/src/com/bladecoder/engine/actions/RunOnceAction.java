@@ -19,10 +19,16 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 
 @ActionDescription("Execute the actions inside the RunOnce/EndRunOnce only once.")
 public class RunOnceAction extends AbstractControlAction implements Serializable {
 	boolean executed = false;
+	
+	
+	@Override
+	public void init(World w) {
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {

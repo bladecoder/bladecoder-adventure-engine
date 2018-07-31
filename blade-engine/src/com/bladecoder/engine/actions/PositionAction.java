@@ -21,6 +21,7 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 
 @ActionDescription("Sets actor position.")
 public class PositionAction implements Action {
@@ -35,10 +36,17 @@ public class PositionAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The absolute position to set if no target is selected. Relative if target is selected.")
 	private Vector2 position;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		Scene s = actor.getScene();
+		Scene s = actor.getScene(w);
 
 		BaseActor a = s.getActor(actor.getActorId(), true);
 
@@ -46,13 +54,13 @@ public class PositionAction implements Action {
 		float y = a.getY();
 
 		if (target != null) {
-			Scene ts = target.getScene();
+			Scene ts = target.getScene(w);
 			BaseActor anchorActor = ts.getActor(target.getActorId(), false);
 
 			x = anchorActor.getX();
 			y = anchorActor.getY();
 
-			if (anchorActor instanceof InteractiveActor) {
+			if (anchorActor instanceof InteractiveActor && a != anchorActor) {
 				Vector2 refPoint = ((InteractiveActor) anchorActor).getRefPoint();
 				x += refPoint.x;
 				y += refPoint.y;

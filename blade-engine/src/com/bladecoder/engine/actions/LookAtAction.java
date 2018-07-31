@@ -64,15 +64,22 @@ public class LookAtAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is shown and the action continues inmediatly")
 	private boolean wait = true;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 
 		// EngineLogger.debug("LOOKAT ACTION");
-		InteractiveActor a = (InteractiveActor) World.getInstance().getCurrentScene().getActor(actor, true);
+		InteractiveActor a = (InteractiveActor) w.getCurrentScene().getActor(actor, true);
 
-		if (World.getInstance().getInventory().get(actor) == null) {
-			CharacterActor player = World.getInstance().getCurrentScene().getPlayer();
+		if (w.getInventory().get(actor) == null) {
+			CharacterActor player = w.getCurrentScene().getPlayer();
 
 			if (direction != null && player != null)
 				player.lookat(direction.getDirection());
@@ -83,11 +90,11 @@ public class LookAtAction implements Action {
 		}
 
 		if (text != null) {
-			String actorId = World.getInstance().getCurrentScene().getPlayer() != null
-					? World.getInstance().getCurrentScene().getPlayer().getId() : null;
+			String actorId = w.getCurrentScene().getPlayer() != null
+					? w.getCurrentScene().getPlayer().getId() : null;
 
-			World.getInstance().getTextManager().addText(text, TextManager.POS_SUBTITLE, TextManager.POS_SUBTITLE,
-					false, Text.Type.SUBTITLE, null, null, actorId, voiceId, wait ? cb : null);
+			w.getCurrentScene().getTextManager().addText(text, TextManager.POS_SUBTITLE, TextManager.POS_SUBTITLE,
+					false, Text.Type.SUBTITLE, null, null, actorId, voiceId, null, wait ? cb : null);
 
 			return wait;
 		}

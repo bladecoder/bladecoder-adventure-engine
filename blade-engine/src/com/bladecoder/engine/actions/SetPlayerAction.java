@@ -33,17 +33,23 @@ public class SetPlayerAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The inventory 'id' for the player. If empty, the inventory will not change.")	
 	private String inventory;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {		
-		Scene s = actor.getScene();
+		Scene s = actor.getScene(w);
 
 		BaseActor a = s.getActor(actor.getActorId(), true);
 		
 		s.setPlayer((CharacterActor)a);
 		
 		if(inventory != null) {
-			World w = World.getInstance();
 			w.getInventory().dispose();
 			w.setInventory(inventory);
 			w.getInventory().loadAssets();

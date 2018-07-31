@@ -27,11 +27,18 @@ public class SetModelPropAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("Property value")
 	private String value;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 
-		World.getInstance().setModelProp(prop, value);
+		w.setModelProp(prop, value);
 
 		return false;
 	}

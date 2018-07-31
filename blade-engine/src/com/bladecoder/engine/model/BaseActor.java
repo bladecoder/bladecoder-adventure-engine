@@ -21,8 +21,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 
 /**
  * A BaseActor is the foundation for all actors in Scenes
@@ -72,7 +72,7 @@ abstract public class BaseActor implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		sb.append("\nObject: ").append(id);
 		sb.append("\n  Visible: ").append(visible);
@@ -105,7 +105,8 @@ abstract public class BaseActor implements Serializable {
 
 	@Override
 	public void write(Json json) {
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("id", id);
 			json.writeValue("bbox", bbox.getVertices());
 		} else {
@@ -115,13 +116,14 @@ abstract public class BaseActor implements Serializable {
 		float worldScale = EngineAssetManager.getInstance().getScale();
 		Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
 		json.writeValue("pos", scaledPos);
-		
+
 		json.writeValue("visible", visible);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			id = json.readValue("id", String.class, jsonData);
 
 			float[] verts = json.readValue("bbox", float[].class, jsonData);
@@ -138,7 +140,7 @@ abstract public class BaseActor implements Serializable {
 			float worldScale = EngineAssetManager.getInstance().getScale();
 			bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
 			bbox.setScale(worldScale, worldScale);
-			
+
 			visible = json.readValue("visible", boolean.class, visible, jsonData);
 		}
 	}

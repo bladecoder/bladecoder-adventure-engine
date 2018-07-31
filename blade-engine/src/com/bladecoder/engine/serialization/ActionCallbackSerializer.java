@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.bladecoder.engine.util;
+package com.bladecoder.engine.serialization;
 
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
@@ -25,6 +25,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.UIActors;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.EngineLogger;
 
 /**
  * 
@@ -44,7 +45,7 @@ import com.bladecoder.engine.model.World;
  * 
  * @author rgarcia
  */
-public class ActionCallbackSerialization {
+public class ActionCallbackSerializer {
 
 	private static final String SEPARATION_SYMBOL = "#";
 	private static final String INK_MANAGER_TAG = "INK_MANAGER";
@@ -154,9 +155,9 @@ public class ActionCallbackSerialization {
 
 		return null;
 	}
-	
+
 	private static String find(ActionCallback cb, Inventory inv) {
-		for (int i =0; i < inv.getNumItems(); i++) {
+		for (int i = 0; i < inv.getNumItems(); i++) {
 			InteractiveActor a = inv.get(i);
 			String id = find(cb, a);
 
@@ -172,40 +173,38 @@ public class ActionCallbackSerialization {
 	}
 
 	/**
-	 * Generates a String for serialization that allows locate the
-	 * ActionCallback
+	 * Generates a String for serialization that allows locate the ActionCallback
 	 * 
 	 * @param cb
 	 *            The ActionCallback to serialize
 	 * @return The generated location string
 	 */
-	public static String find(ActionCallback cb) {
+	public static String find(World w, ActionCallback cb) {
 		String id = null;
 
 		if (cb == null)
 			return null;
-		
 
 		// search in UIActors
-		id = find(cb, World.getInstance().getUIActors());
+		id = find(cb, w.getUIActors());
 
 		if (id != null)
 			return id;
-		
+
 		// search in inventory
-		id = find(cb, World.getInstance().getInventory());
+		id = find(cb, w.getInventory());
 
 		if (id != null)
 			return id;
 
 		// search in inkManager actions
-		id = find(cb, World.getInstance().getInkManager());
+		id = find(cb, w.getInkManager());
 
 		if (id != null)
 			return id;
 
 		// search in scene verbs
-		Scene s = World.getInstance().getCurrentScene();
+		Scene s = w.getCurrentScene();
 
 		id = find(cb, s);
 
@@ -228,7 +227,7 @@ public class ActionCallbackSerialization {
 		}
 
 		// search in worldVerbs
-		for (Verb v : World.getInstance().getVerbManager().getVerbs().values()) {
+		for (Verb v : w.getVerbManager().getVerbs().values()) {
 			id = find(cb, v);
 			if (id != null) {
 				StringBuilder stringBuilder = new StringBuilder(DEFAULT_VERB_TAG);
@@ -246,21 +245,21 @@ public class ActionCallbackSerialization {
 	 * 
 	 * @param id
 	 */
-	public static ActionCallback find(String id) {
+	public static ActionCallback find(World w, String id) {
 
 		if (id == null)
 			return null;
 
-		Scene s = World.getInstance().getCurrentScene();
+		Scene s = w.getCurrentScene();
 
 		String[] split = id.split(SEPARATION_SYMBOL);
 
 		if (id.startsWith(INK_MANAGER_TAG)) {
 			if (split.length == 1)
-				return World.getInstance().getInkManager();
+				return w.getInkManager();
 
 			int actionPos = Integer.parseInt(split[1]);
-			Action action = World.getInstance().getInkManager().getActions().get(actionPos);
+			Action action = w.getInkManager().getActions().get(actionPos);
 
 			if (action instanceof ActionCallback)
 				return (ActionCallback) action;
@@ -268,7 +267,7 @@ public class ActionCallbackSerialization {
 
 		if (split.length < 2)
 			return null;
-		
+
 		String actorId;
 		String verbId;
 		int actionPos = -1;
@@ -291,7 +290,7 @@ public class ActionCallbackSerialization {
 		Verb v = null;
 
 		if (actorId.equals(DEFAULT_VERB_TAG)) {
-			v = World.getInstance().getVerbManager().getVerb(verbId, null, null);
+			v = w.getVerbManager().getVerb(verbId, null, null);
 		} else {
 
 			InteractiveActor a;
@@ -312,7 +311,7 @@ public class ActionCallbackSerialization {
 
 		if (v == null) {
 			EngineLogger.error("ActionCallbackSerialization - Verb not found: " + verbId + " cb: " + id);
-			
+
 			return null;
 		}
 
@@ -323,7 +322,7 @@ public class ActionCallbackSerialization {
 
 		if (action instanceof ActionCallback)
 			return (ActionCallback) action;
-		
+
 		EngineLogger.error("ActionCallbackSerialization - CB not found: " + id);
 
 		return null;

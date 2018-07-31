@@ -34,10 +34,17 @@ public class PickUpAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'")
 	private String animation;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		Scene scn = this.actor.getScene();
+		Scene scn = this.actor.getScene(w);
 		InteractiveActor actor = (InteractiveActor) scn.getActor(this.actor.getActorId(), false);
 
 		if (actor == null) {
@@ -51,8 +58,8 @@ public class PickUpAction implements Action {
 		if (actor instanceof SpriteActor) {
 			SpriteActor a = (SpriteActor) actor;
 			
-			if (scn != World.getInstance().getCurrentScene()  &&
-					World.getInstance().getCachedScene(scn.getId()) == null
+			if (scn != w.getCurrentScene()  &&
+					w.getCachedScene(scn.getId()) == null
 					) {
 				a.loadAssets();
 				EngineAssetManager.getInstance().finishLoading();
@@ -66,7 +73,7 @@ public class PickUpAction implements Action {
 					a.startAnimation(a.getId() + ".inventory", null);
 			}
 
-			World.getInstance().getInventory().addItem(a);
+			w.getInventory().addItem(a);
 		}
 
 		return false;

@@ -1,6 +1,9 @@
 package com.bladecoder.engineeditor.ui.panels;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 import java.util.ArrayList;
 
@@ -20,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
@@ -495,7 +499,7 @@ public class FilteredSelectBox<T> extends Widget implements Disableable {
 				Drawable listBackground = list.getStyle().background;
 				if (listBackground != null) height += listBackground.getTopHeight() + listBackground.getBottomHeight();
 
-				float heightBelow = screenPosition.y;
+				float heightBelow = screenPosition.y - itemHeight;
 				float heightAbove = stage.getCamera().viewportHeight - screenPosition.y - selectBox.getHeight();
 				boolean below = true;
 				if (height > heightBelow) {

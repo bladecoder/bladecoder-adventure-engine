@@ -20,14 +20,14 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
+import com.bladecoder.engine.serialization.ActionCallbackSerializer;
+import com.bladecoder.engine.serialization.BladeJson;
 
 public class Text implements Serializable {
 	private static final float DEFAULT_TIME = 1f;
 	
 	public enum Type {
-		PLAIN, SUBTITLE, TALK
+		PLAIN, SUBTITLE, TALK, UI
 	};
 	
 	public String str;
@@ -40,11 +40,12 @@ public class Text implements Serializable {
 	private ActionCallback cb;
 	public String actorId;
 	public String voiceId;
+	public String animation;
 
 	public Text() {
 	}
 
-	public Text(String str, float x, float y, float time, Type type, Color color, String style, String actorId, String voiceId, ActionCallback cb) {
+	public Text(String str, float x, float y, float time, Type type, Color color, String style, String actorId, String voiceId, String talkAnimation, ActionCallback cb) {
 		this.str = str;
 		this.x = x;
 		this.y = y;
@@ -55,6 +56,7 @@ public class Text implements Serializable {
 		this.cb = cb;
 		this.actorId = actorId;
 		this.voiceId = voiceId;
+		this.animation = talkAnimation;
 
 		// 0s -> Auto duration
 		// <0 -> Infinity
@@ -71,8 +73,10 @@ public class Text implements Serializable {
 	}
 	
 	public void callCb() {
-		if (cb != null) {
-			ActionCallbackQueue.add(cb);
+		if(cb != null) {
+			ActionCallback tmpcb = cb;
+			cb = null;
+			tmpcb.resume();
 		}
 	}
 	
@@ -88,8 +92,10 @@ public class Text implements Serializable {
 		json.writeValue("style", style);
 		json.writeValue("actorId", actorId);
 		json.writeValue("voiceId", voiceId);
-		json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null
-				: String.class);
+		json.writeValue("animation", animation);
+		
+		if(cb != null)
+			json.writeValue("cb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), cb));
 	}
 
 	@Override
@@ -103,8 +109,7 @@ public class Text implements Serializable {
 		style = json.readValue("style", String.class, jsonData);
 		actorId = json.readValue("actorId", String.class, jsonData);
 		voiceId = json.readValue("voiceId", String.class, jsonData);
-		String cbSer = json.readValue("cb", String.class, jsonData);
-		if(cbSer != null)
-			cb = ActionCallbackSerialization.find(cbSer);
+		animation = json.readValue("animation", String.class, jsonData);
+		cb = ActionCallbackSerializer.find(((BladeJson) json).getWorld(), json.readValue("cb", String.class, jsonData));
 	}	
 }

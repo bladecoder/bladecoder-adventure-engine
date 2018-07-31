@@ -22,6 +22,13 @@ import com.bladecoder.engine.ui.UI;
 
 @ActionDescription("Ends the game and show the credits.")
 public class EndGameAction implements Action {
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
@@ -29,7 +36,7 @@ public class EndGameAction implements Action {
 		UI ui = BladeEngine.getAppUI();
 		ui.setCurrentScreen(UI.Screens.CREDIT_SCREEN);
 
-		World.getInstance().endGame();
+		w.endGame();
 
 		return true;
 	}

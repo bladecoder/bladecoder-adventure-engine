@@ -46,10 +46,17 @@ public class MusicAction implements Action {
 	@ActionProperty(required = true, defaultValue = "1.0")
 	@ActionPropertyDescription("Volume of the music [0-1].")
 	private float volume = 1.0f;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		MusicManager musicEngine = World.getInstance().getMusicManager();
+		MusicManager musicEngine = w.getMusicManager();
 		
 		if(filename == null) {
 			musicEngine.setMusic(null);

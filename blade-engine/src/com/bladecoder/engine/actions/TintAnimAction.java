@@ -53,10 +53,17 @@ public class TintAnimAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The interpolation mode")
 	private InterpolationMode interpolation;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {				
-		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actor, true);
+		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actor, true);
 
 		
 		SpriteTintTween t = new SpriteTintTween();

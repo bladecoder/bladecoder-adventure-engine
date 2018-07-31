@@ -11,7 +11,7 @@ public class ExternalFunctions {
 	public ExternalFunctions() {
 	}
 
-	public void bindExternalFunctions(InkManager ink) throws Exception {
+	public void bindExternalFunctions(final World w, InkManager ink) throws Exception {
 
 		this.inkManager = ink;
 
@@ -32,7 +32,7 @@ public class ExternalFunctions {
 					if(v.charAt(0) == '>')
 						v = v.substring(1);
 					
-					World.getInstance().setModelProp(p, v);
+					w.setModelProp(p, v);
 				} catch (Exception e) {
 					EngineLogger.error("Ink setModelProp: " + e.getMessage());
 				}
@@ -51,7 +51,7 @@ public class ExternalFunctions {
 					if(p.charAt(0) == '>')
 						p = p.substring(1);
 					
-					return World.getInstance().getModelProp(p);
+					return w.getModelProp(p);
 				} catch (Exception e) {
 					EngineLogger.error("Ink getModelProp: " + e.getMessage(), e);
 				}
@@ -69,7 +69,7 @@ public class ExternalFunctions {
 				if(actor.charAt(0) == '>')
 					actor = actor.substring(1);
 				
-				return World.getInstance().getInventory().get(actor) != null;
+				return w.getInventory().get(actor) != null;
 			}
 		});
 	}

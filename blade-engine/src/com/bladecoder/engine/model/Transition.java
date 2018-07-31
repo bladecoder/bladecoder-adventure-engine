@@ -23,8 +23,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
-import com.bladecoder.engine.util.ActionCallbackSerialization;
+import com.bladecoder.engine.serialization.ActionCallbackSerializer;
+import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 /**
@@ -48,11 +48,12 @@ public class Transition implements Serializable {
 		if (isFinish()) {
 
 			if (cb != null) {
-				ActionCallbackQueue.add(cb);
+				ActionCallback tmpcb = cb;
 				cb = null;
+				tmpcb.resume();
 			}
 
-			// reset the transition when finish. Only in fade in case, fade out
+			// reset the transition when finish. Only in 'fade in' case, 'fade out'
 			// must stay in screen even when finished
 			if (type == Type.FADE_IN)
 				reset();
@@ -102,7 +103,9 @@ public class Transition implements Serializable {
 		json.writeValue("time", time);
 		json.writeValue("color", c);
 		json.writeValue("type", type);
-		json.writeValue("cb", ActionCallbackSerialization.find(cb), cb == null ? null : String.class);
+		
+		if(cb != null)
+			json.writeValue("cb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), cb));
 	}
 
 	@Override
@@ -111,8 +114,6 @@ public class Transition implements Serializable {
 		time = json.readValue("time", Float.class, jsonData);
 		c = json.readValue("color", Color.class, jsonData);
 		type = json.readValue("type", Type.class, jsonData);
-		String cbSer = json.readValue("cb", String.class, jsonData);
-		if (cbSer != null)
-			cb = ActionCallbackSerialization.find(cbSer);
+		cb = ActionCallbackSerializer.find(((BladeJson) json).getWorld(), json.readValue("cb", String.class, jsonData));
 	}
 }

@@ -3,8 +3,6 @@ package com.bladecoder.engine.model;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
@@ -21,6 +19,11 @@ import com.bladecoder.engine.util.EngineLogger;
 public class SceneSoundManager implements Serializable, AssetConsumer {
 
 	private HashMap<String, LoadedSound> loadedSounds = new HashMap<String, LoadedSound>(0);
+	private final World w;
+	
+	public SceneSoundManager(World w) {
+		this.w = w;
+	}
 
 	public void addSoundToLoad(SoundDesc s) {
 		loadedSounds.put(s.getId(), new LoadedSound(s));
@@ -32,7 +35,7 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 
 		if (s == null) {
 			// Not loaded, load and add to the loaded list.
-			SoundDesc sd = World.getInstance().getSounds().get(id);
+			SoundDesc sd = w.getSounds().get(id);
 
 			if (sd != null) {
 				addSoundToLoad(sd);
@@ -124,10 +127,6 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 			// s.desc.getFilename());
 			EngineAssetManager.getInstance().loadSound(s.desc.getFilename());
 		}
-
-		// Due to a bug in Android, try lo load the sounds as early as possible.
-		if (Gdx.app.getType() == ApplicationType.Android)
-			EngineAssetManager.getInstance().update();
 	}
 
 	@Override
@@ -161,7 +160,7 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 
 		// Retrieve desc from World sound description.
 		for (Entry<String, LoadedSound> e : loadedSounds.entrySet()) {
-			e.getValue().desc = World.getInstance().getSounds().get(e.getKey());
+			e.getValue().desc = w.getSounds().get(e.getKey());
 		}
 	}
 

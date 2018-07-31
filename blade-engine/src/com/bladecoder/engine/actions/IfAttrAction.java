@@ -33,7 +33,7 @@ public class IfAttrAction extends AbstractIfAction {
 		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY, TARGET, IN_SCENE, LAYER, DIRECTION
 	}
 
-	@ActionProperty
+	@ActionProperty(required = true)
 	@ActionPropertyDescription("The target actor")
 	private SceneActorRef actor;
 
@@ -44,10 +44,17 @@ public class IfAttrAction extends AbstractIfAction {
 	@ActionProperty
 	@ActionPropertyDescription("The attribute value")
 	private String value;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		Scene s = actor.getScene();
+		Scene s = actor.getScene(w);
 
 		final String actorId = actor.getActorId();
 		if (actorId == null) {
@@ -84,7 +91,7 @@ public class IfAttrAction extends AbstractIfAction {
 			SpriteActor item = null;
 
 			if (a != null)
-				item = World.getInstance().getInventory().get(a.getId());
+				item = w.getInventory().get(a.getId());
 
 			if ((val && item == null) || (!val && item != null)) {
 				gotoElse((VerbRunner) cb);

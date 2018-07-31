@@ -27,16 +27,15 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.AtlasAnimationDesc;
 import com.bladecoder.engine.anim.FATween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class AtlasRenderer extends AnimationRenderer {
 
@@ -84,18 +83,17 @@ public class AtlasRenderer extends AnimationRenderer {
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float x, float y, float scale, float rotation, Color tint) {
+	public void draw(SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint) {
 
 		float dx = getAlignDx(getWidth(), orgAlign);
 		float dy = getAlignDy(getHeight(), orgAlign);
-		
-		if (tex == null) {			
-			RectangleRenderer.draw(batch, x + dx * scale , y + dy * scale, getWidth() * scale, getHeight() * scale, Color.RED);
-			
+
+		if (tex == null) {
+			RectangleRenderer.draw(batch, x + dx * scaleX, y + dy * scaleY, getWidth() * scaleX, getHeight() * scaleY,
+					Color.RED);
+
 			return;
 		}
-
-
 
 		x = x + tex.offsetX + dx;
 		y = y + tex.offsetY + dy;
@@ -104,7 +102,7 @@ public class AtlasRenderer extends AnimationRenderer {
 			batch.setColor(tint);
 
 		batch.draw(tex, x, y, -dx - tex.offsetX, -dy - tex.offsetY, tex.packedWidth, tex.packedHeight,
-				flipX ? -scale : scale, scale, rotation);
+				flipX ? -scaleX : scaleX, scaleY, rotation);
 
 		if (tint != null)
 			batch.setColor(Color.WHITE);
@@ -132,7 +130,7 @@ public class AtlasRenderer extends AnimationRenderer {
 		if (id == null)
 			id = initAnimation;
 
-		AtlasAnimationDesc fa = (AtlasAnimationDesc)getAnimation(id);
+		AtlasAnimationDesc fa = (AtlasAnimationDesc) getAnimation(id);
 
 		if (fa == null) {
 			EngineLogger.error("AnimationDesc not found: " + id);
@@ -164,7 +162,9 @@ public class AtlasRenderer extends AnimationRenderer {
 			computeBbox();
 
 			if (cb != null) {
-				ActionCallbackQueue.add(cb);
+				ActionCallback tmpcb = cb;
+				cb = null;
+				tmpcb.resume();
 			}
 
 			return;
@@ -218,8 +218,7 @@ public class AtlasRenderer extends AnimationRenderer {
 
 	@Override
 	public void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0, Vector2 pf) {
-		startAnimation(id, repeatType, count, cb,
-				getDirectionString(p0, pf, getDirs(id, fanims)));
+		startAnimation(id, repeatType, count, cb, getDirectionString(p0, pf, getDirs(id, fanims)));
 	}
 
 	private void loadSource(String source) {
@@ -328,12 +327,13 @@ public class AtlasRenderer extends AnimationRenderer {
 	public void write(Json json) {
 		super.write(json);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 
 		} else {
 			json.writeValue("currentFrameIndex", currentFrameIndex);
 
-			if(faTween != null)
+			if (faTween != null)
 				json.writeValue("faTween", faTween);
 		}
 	}
@@ -343,7 +343,8 @@ public class AtlasRenderer extends AnimationRenderer {
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			fanims = json.readValue("fanims", HashMap.class, AtlasAnimationDesc.class, jsonData);
 		} else {
 

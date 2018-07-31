@@ -29,10 +29,17 @@ public class SetSceneStateAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The scene 'state'")
 	private String state;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {			
-		Scene s = (scene != null && !scene.isEmpty())? World.getInstance().getScene(scene): World.getInstance().getCurrentScene();
+		Scene s = (scene != null && !scene.isEmpty())? w.getScene(scene): w.getCurrentScene();
 		
 		s.setState(state);
 		

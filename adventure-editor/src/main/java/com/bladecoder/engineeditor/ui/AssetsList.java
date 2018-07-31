@@ -122,7 +122,7 @@ public class AssetsList extends Table {
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent arg0) {
-				toolbar.disableCreate(Ctx.project.getProjectDir() == null);
+				toolbar.disableCreate(!Ctx.project.isLoaded());
 				addAssets();
 			}
 		});
@@ -139,7 +139,7 @@ public class AssetsList extends Table {
 	private void addAssets() {
 		list.getItems().clear();
 
-		if (Ctx.project.getProjectDir() != null) {
+		if (Ctx.project.isLoaded()) {
 			String type = assetTypes.getSelected();
 			String dir = getAssetDir(type);
 
@@ -167,7 +167,7 @@ public class AssetsList extends Table {
 			}
 		}
 
-		toolbar.disableCreate(Ctx.project.getProjectDir() == null);
+		toolbar.disableCreate(!Ctx.project.isLoaded());
 		list.invalidateHierarchy();
 	}
 

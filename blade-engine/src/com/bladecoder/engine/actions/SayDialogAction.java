@@ -16,13 +16,8 @@
 package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.bladecoder.engine.model.AnimationRenderer;
-import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.DialogOption;
-import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -32,17 +27,21 @@ import com.bladecoder.engine.util.EngineLogger;
 "\n- Sets the player 'talk' animation and say the player text" +
 "\n- Restore the previous player animation and set the target actor 'talk' animation and say the response text" +
 "\n- Restore the target actor animation")
-public class SayDialogAction extends BaseCallbackAction {
-	private boolean characterTurn = false;
-	private String characterName;
-	private String responseText;
-	private String responseVoiceId;
+public class SayDialogAction implements Action {
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
+	private boolean wait = true;
+	
+	private World w;
+	
 
-	private String previousAnim;
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		World w = World.getInstance();
 		
 		if(w.getCurrentDialog() == null || w.getCurrentDialog().getCurrentOption() == null) {
 			EngineLogger.debug("SayDialogAction WARNING: Current dialog doesn't found.");
@@ -50,117 +49,36 @@ public class SayDialogAction extends BaseCallbackAction {
 			return false;
 		}
 		
-		setVerbCb(cb);
 		DialogOption o = w.getCurrentDialog().getCurrentOption();
 		String playerText = o.getText();
+		String responseText = o.getResponseText();
 		
-		responseText = o.getResponseText();
-		responseVoiceId = o.getResponseVoiceId();
-		characterName = w.getCurrentDialog().getActor();
-		
-		characterTurn = true;
-		previousAnim = null;
-		
-		// If the player or the character is talking restore to 'stand' pose
-		restoreStandPose(w.getCurrentScene().getPlayer());
-		
-		if(w.getCurrentScene().getActor(characterName, false) instanceof SpriteActor)
-			restoreStandPose((CharacterActor)w.getCurrentScene().getActor(characterName, false));
-
 		if (playerText != null) {
 			CharacterActor player = w.getCurrentScene().getPlayer();
 			
 			Rectangle boundingRectangle = player.getBBox().getBoundingRectangle();
 			float x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
 			float y = boundingRectangle.getY() + boundingRectangle.getHeight();
-
-			w.getTextManager().addText(playerText, x, y, false,
-					Text.Type.TALK, player.getTextColor(), null, player.getId(), o.getVoiceId(), this);
- 
-			startTalkAnim(player);
-
-		} else {
-			resume();
+		
+			w.getCurrentScene().getTextManager().addText(playerText, x, y, false,
+					Text.Type.TALK, player.getTextColor(), null, player.getId(), o.getVoiceId(), null, responseText == null && wait?cb:null);
 		}
 		
-		return getWait();
-	}
-
-	@Override
-	public void resume() {
-
-		World w = World.getInstance();
-		BaseActor actor = w.getCurrentScene().getActor(characterName, false);
-		
-		if (characterTurn) {
-			characterTurn = false;
+		if (responseText != null) {
+			CharacterActor actor = w.getCurrentDialog().getActor();
 			
-			if(previousAnim!= null){
-				SpriteActor player = World.getInstance().getCurrentScene().getPlayer();
-				player.startAnimation(previousAnim, null);
-			}
-
-			if (responseText != null) {
-				Rectangle boundingRectangle = actor.getBBox().getBoundingRectangle();
-				float x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
-				float y = boundingRectangle.getY() + boundingRectangle.getHeight();
-				
-				World.getInstance().getTextManager().addText(responseText, x,
-						y, false, Text.Type.TALK,
-						((CharacterActor) actor).getTextColor(), null, actor.getId(), responseVoiceId, this);
-
-
-				if(actor instanceof CharacterActor) {
-					startTalkAnim((CharacterActor)actor);
-				}
-			} else {
-				previousAnim = null;
-				super.resume();
-			}
-		} else {
-			if(actor instanceof SpriteActor && previousAnim != null) {
-				((SpriteActor)actor).startAnimation(previousAnim, null);
-			}
-			super.resume();			
+			String responseVoiceId = o.getResponseVoiceId();
+			
+			Rectangle boundingRectangle = actor.getBBox().getBoundingRectangle();
+			float x = boundingRectangle.getX() + boundingRectangle.getWidth() / 2;
+			float y = boundingRectangle.getY() + boundingRectangle.getHeight();
+		
+			w.getCurrentScene().getTextManager().addText(responseText, x, y, true,
+					Text.Type.TALK, actor.getTextColor(), null, actor.getId(), responseVoiceId, null, wait?cb:null);
 		}
-	}
-	
-	private void restoreStandPose(CharacterActor a) {
-		if(a == null) return;
-		
-		String fa = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
-		
-		// If the actor was already talking we restore the actor to the 'stand' pose	
-		if(fa.startsWith(a.getTalkAnim())){ 		
-			a.stand();
-		}
-	}
-	
-	private void startTalkAnim(CharacterActor a) {
-		previousAnim = ((AnimationRenderer)a.getRenderer()).getCurrentAnimationId();
-		
-		a.talk();
-	}
 
-	@Override
-	public void write(Json json) {
-		json.writeValue("previousFA", previousAnim);
-		json.writeValue("responseText", responseText);
-		json.writeValue("responseSoundId", responseVoiceId);
-		json.writeValue("characterTurn", characterTurn);
-		json.writeValue("characterName", characterName);
-		super.write(json);
-	}
 
-	@Override
-	public void read (Json json, JsonValue jsonData) {
-		previousAnim = json.readValue("previousFA", String.class, jsonData);
-		responseText = json.readValue("responseText", String.class, jsonData);
-		responseVoiceId = json.readValue("responseSoundId", String.class, jsonData);
-		characterTurn = json.readValue("characterTurn", boolean.class, false, jsonData);
-		characterName = json.readValue("characterName", String.class, jsonData);
-		super.read(json, jsonData);
+		return wait;
 	}
-
 
 }

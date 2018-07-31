@@ -40,21 +40,28 @@ public class DropItemAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("Position in the scene where de actor is dropped")
 	private Vector2 pos;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		Scene ts = null;
 
 		if (scene == null)
-			ts = World.getInstance().getCurrentScene();
+			ts = w.getCurrentScene();
 		else
-			ts = World.getInstance().getScene(scene);
+			ts = w.getScene(scene);
 
 		
 		BaseActor a;
 		
 		if (actor != null) {
-			a = World.getInstance().getInventory().get(actor);
+			a = w.getInventory().get(actor);
 
 			if (a == null) {
 				EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", actor));
@@ -63,10 +70,10 @@ public class DropItemAction implements Action {
 
 			removeActor(ts, a);
 		} else {
-			int n = World.getInstance().getInventory().getNumItems();
+			int n = w.getInventory().getNumItems();
 			
 			for(int i = n - 1; i >= 0; i--) {
-				a = World.getInstance().getInventory().get(i);
+				a = w.getInventory().get(i);
 				
 				removeActor(ts, a);
 			}
@@ -76,7 +83,7 @@ public class DropItemAction implements Action {
 	}
 
 	private void removeActor(Scene ts, BaseActor a) {
-		final World w = World.getInstance();
+
 		float scale = EngineAssetManager.getInstance().getScale();
 
 		w.getInventory().removeItem(a.getId());

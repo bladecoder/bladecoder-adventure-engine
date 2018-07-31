@@ -37,11 +37,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
+import com.bladecoder.engineeditor.common.EditorUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.model.Project;
@@ -96,7 +95,12 @@ public class ProjectToolbar extends Table {
 		newBtn.setDisabled(false);
 		loadBtn.setDisabled(false);
 		exitBtn.setDisabled(false);
-
+		
+		playBtn.setDisabled(true);
+		packageBtn.setDisabled(true);
+		atlasBtn.setDisabled(true);
+		assetsBtn.setDisabled(true);
+		
 		newBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -179,10 +183,10 @@ public class ProjectToolbar extends Table {
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_PROJECT_LOADED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent arg0) {
-				packageBtn.setDisabled(Ctx.project.getProjectDir() == null);
-				playBtn.setDisabled(Ctx.project.getProjectDir() == null);
-				assetsBtn.setDisabled(Ctx.project.getProjectDir() == null);
-				atlasBtn.setDisabled(Ctx.project.getProjectDir() == null);
+				packageBtn.setDisabled(!Ctx.project.isLoaded());
+				playBtn.setDisabled(!Ctx.project.isLoaded());
+				assetsBtn.setDisabled(!Ctx.project.isLoaded());
+				atlasBtn.setDisabled(!Ctx.project.isLoaded());
 			}
 		});
 	}
@@ -229,78 +233,15 @@ public class ProjectToolbar extends Table {
 
 			@Override
 			public void selected(Array<FileHandle> files) {
-				Message.showMsg(getStage(), "Loading project...", true);
 				
 				final File f = files.get(0).file();
 
-				Timer.post(new Task() {
-					@Override
-					public void run() {
-						try {
-							Ctx.project.loadProject(f);
-							playBtn.setDisabled(false);
-							packageBtn.setDisabled(false);
-							Message.showMsg(getStage(), null);
-
-							if (!Ctx.project.checkVersion()) {
-								new Dialog("Update Engine", skin) {
-									protected void result(Object object) {
-										if (((Boolean) object).booleanValue()) {
-											try {
-												Ctx.project.updateEngineVersion();
-												Message.showMsg(getStage(), "Project successfully updated.", 3);
-											} catch (IOException e1) {
-												String msg = "Something went wrong while updating the engine.\n\n"
-														+ e1.getClass().getSimpleName() + " - " + e1.getMessage();
-												Message.showMsgDialog(getStage(), "Error", msg);
-
-												EditorLogger.printStackTrace(e1);
-											}
-										}
-									}
-								}.text("Your game uses an old (" + Ctx.project.getProjectBladeEngineVersion()
-										+ ") Engine version. Do you want to update the engine?").button("Yes", true)
-										.button("No", false).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
-										.show(getStage());
-							}
-
-						} catch (Exception ex) {
-							if (ex.getCause() != null && ex.getCause().getCause() != null
-									&& ex.getCause().getCause() instanceof ClassNotFoundException) {
-								String msg = "The game have custom actions that can not be loaded. Probably the game needs to be compiled. Trying 'gradlew compile'...";
-								Message.showMsg(getStage(), msg, true);
-								Timer.post(new Task() {
-									@Override
-									public void run() {
-										if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
-											try {
-												Ctx.project.loadProject(f);
-												playBtn.setDisabled(false);
-												packageBtn.setDisabled(false);
-												Message.showMsg(getStage(), "Project loaded Successfully", 3);
-											} catch (IOException e) {
-												String msg = e.getClass().getSimpleName() + " - " + e.getMessage();
-												Message.hideMsg();
-												Message.showMsgDialog(getStage(), "Error loading project", msg);
-											}
-										} else {
-											Message.hideMsg();
-											Message.showMsgDialog(getStage(), "Error loading project",
-													"error running 'gradlew desktop:compileJava'");
-										}
-									}
-								});
-							} else {
-
-								String msg = ex.getClass().getSimpleName() + " - " + ex.getMessage();
-								Message.hideMsg();
-								Message.showMsgDialog(getStage(), "Error loading project", msg);
-							}
-
-							EditorLogger.printStackTrace(ex);
-						}
-					}
-				});
+				try {
+					EditorUtils.checkVersionAndLoadProject(f, getStage(), skin);
+				} catch (Exception e) {
+					EditorLogger.error("Error loading last project.", e);
+					Ctx.project.closeProject();
+				}
 
 			}
 
@@ -397,7 +338,7 @@ public class ProjectToolbar extends Table {
 	}
 
 	private void saveProjectAndExecute(final Runnable task) {
-		if (Ctx.project.getProjectDir() != null && Ctx.project.isModified()) {
+		if (Ctx.project.isLoaded() && Ctx.project.isModified()) {
 			new Dialog("Save Project", skin) {
 				protected void result(Object object) {
 					if (((Boolean) object).booleanValue()) {

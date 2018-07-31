@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,14 +22,17 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.SerializationException;
 import com.bladecoder.engine.actions.Action;
+import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.serialization.ActionCallbackSerializer;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class Verb implements VerbRunner, Serializable {
 	public static final String LOOKAT_VERB = "lookat";
-	public static final String ACTION_VERB = "pickup";
+	public static final String PICKUP_VERB = "pickup";
+	public static final String ACTION_VERB = "action";
 	public static final String LEAVE_VERB = "leave";
 	public static final String TALKTO_VERB = "talkto";
 	public static final String USE_VERB = "use";
@@ -48,6 +51,8 @@ public class Verb implements VerbRunner, Serializable {
 
 	private int ip = -1;
 	private String currentTarget;
+
+	private ActionCallback cb;
 
 	public Verb() {
 	}
@@ -71,7 +76,7 @@ public class Verb implements VerbRunner, Serializable {
 	public void setState(String state) {
 		this.state = state;
 	}
-	
+
 	public String getIcon() {
 		return icon;
 	}
@@ -87,16 +92,16 @@ public class Verb implements VerbRunner, Serializable {
 	public void setTarget(String target) {
 		this.target = target;
 	}
-	
+
 	public String getHashKey() {
 		String key = id;
-		
+
 		if (target != null)
 			key = key + "." + target;
 
 		if (state != null)
 			key = key + "." + state;
-		
+
 		return key;
 	}
 
@@ -107,21 +112,22 @@ public class Verb implements VerbRunner, Serializable {
 	public ArrayList<Action> getActions() {
 		return actions;
 	}
-	
+
 	public String getCurrentTarget() {
 		return currentTarget;
 	}
 
-	public void run(String currentTarget) {
+	public void run(String currentTarget, ActionCallback cb) {
 		this.currentTarget = currentTarget;
-		
+		this.cb = cb;
+
 		if (EngineLogger.debugMode()) {
 			StringBuilder sb = new StringBuilder(">>> Running verb: ").append(id);
-			
-			if(currentTarget != null) {
+
+			if (currentTarget != null) {
 				sb.append(" currentTarget: " + currentTarget);
 			}
-			
+
 			EngineLogger.debug(sb.toString());
 		}
 
@@ -145,13 +151,22 @@ public class Verb implements VerbRunner, Serializable {
 				else
 					ip++;
 			} catch (Exception e) {
-				EngineLogger.error("EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName() + " - " + e.getMessage(), e);
+				EngineLogger.error(
+						"EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName() + " - " + e.getMessage(), e);
 				ip++;
 			}
 		}
 
-		if (EngineLogger.debugMode() && isFinished())
+		if (ip == actions.size()) {
 			EngineLogger.debug(">>> Verb FINISHED: " + id);
+
+			if (cb != null) {
+				ActionCallback cb2 = cb;
+				cb = null;
+
+				cb2.resume();
+			}
+		}
 	}
 
 	public boolean isFinished() {
@@ -173,29 +188,39 @@ public class Verb implements VerbRunner, Serializable {
 	}
 
 	public void cancel() {
+		ip = actions.size() + 1;
+
 		for (Action c : actions) {
 			if (c instanceof VerbRunner)
 				((VerbRunner) c).cancel();
 		}
 
-		ip = actions.size();
+		if (cb != null) {
+			ActionCallback cb2 = cb;
+			cb = null;
+
+			cb2.resume();
+		}
+
+		EngineLogger.debug(">>> Verb CANCELLED: " + id);
 	}
 
 	@Override
 	public void write(Json json) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("id", id);
-			
-			if(target != null)
+
+			if (target != null)
 				json.writeValue("target", target);
-			
-			if(state != null)
+
+			if (state != null)
 				json.writeValue("state", state);
-			
-			if(icon != null)
+
+			if (icon != null)
 				json.writeValue("icon", icon);
-				
+
 			json.writeArrayStart("actions");
 			for (Action a : actions) {
 				ActionUtils.writeJson(a, json);
@@ -204,7 +229,10 @@ public class Verb implements VerbRunner, Serializable {
 		} else {
 			json.writeValue("ip", ip);
 			
-			if(currentTarget != null)
+			if(cb != null)
+				json.writeValue("cb", ActionCallbackSerializer.find(bjson.getWorld(), cb));
+
+			if (currentTarget != null)
 				json.writeValue("currentTarget", currentTarget);
 
 			json.writeArrayStart("actions");
@@ -222,30 +250,32 @@ public class Verb implements VerbRunner, Serializable {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			id = json.readValue("id", String.class, jsonData);
-			target = json.readValue("target", String.class, (String)null, jsonData);
-			state = json.readValue("state", String.class, (String)null, jsonData);
-			icon = json.readValue("icon", String.class, (String)null, jsonData);
-			
+			target = json.readValue("target", String.class, (String) null, jsonData);
+			state = json.readValue("state", String.class, (String) null, jsonData);
+			icon = json.readValue("icon", String.class, (String) null, jsonData);
+
 			actions.clear();
 			JsonValue actionsValue = jsonData.get("actions");
 			for (int i = 0; i < actionsValue.size; i++) {
 				JsonValue aValue = actionsValue.get(i);
 				String clazz = aValue.getString("class");
 
-				try { 
-					Action a = ActionUtils.readJson(json, aValue);
+				try {
+					Action a = ActionUtils.readJson(bjson.getWorld(), json, aValue);
 					actions.add(a);
-				} catch(SerializationException e) {
+				} catch (SerializationException e) {
 					EngineLogger.error("Error loading action: " + clazz + " " + aValue.toString());
 					throw e;
 				}
 			}
 		} else {
 			// MUTABLE
-			currentTarget = json.readValue("currentTarget", String.class, (String)null, jsonData);
+			currentTarget = json.readValue("currentTarget", String.class, (String) null, jsonData);
 			ip = json.readValue("ip", Integer.class, jsonData);
+			cb = ActionCallbackSerializer.find(bjson.getWorld(), json.readValue("cb", String.class, jsonData));
 
 			JsonValue actionsValue = jsonData.get("actions");
 
@@ -253,9 +283,9 @@ public class Verb implements VerbRunner, Serializable {
 
 			for (Action a : actions) {
 				if (a instanceof Serializable && i < actionsValue.size) {
-					if(actionsValue.get(i) == null)
+					if (actionsValue.get(i) == null)
 						break;
-					
+
 					((Serializable) a).read(json, actionsValue.get(i));
 					i++;
 				}

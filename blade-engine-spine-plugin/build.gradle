@@ -1,12 +1,14 @@
 apply plugin: "java"
+apply plugin: 'java-library'
 apply plugin: "maven"
 apply plugin: "signing"
 
 group = 'com.bladecoder.engine'
 
 // java
-    sourceCompatibility = 1.7
-    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+ sourceCompatibility = 1.7
+ targetCompatibility=1.7
+ [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 jar {
 	manifest.attributes += [
@@ -31,10 +33,10 @@ jar {
     }
 
 dependencies {
-  compile "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  compile "com.esotericsoftware.spine:spine-libgdx:3.6.34.0"
+  api "com.badlogicgames.gdx:gdx:$libgdxVersion"
+  api "com.esotericsoftware.spine:spine-libgdx:3.6.53.1"
   
-  compile project(":blade-engine")
+  implementation project(":blade-engine")
 }
 
 

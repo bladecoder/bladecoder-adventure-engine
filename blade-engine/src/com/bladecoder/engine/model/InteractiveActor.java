@@ -22,8 +22,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 
 /**
  * An InteractiveActor is any object in a scene or in the inventory that has
@@ -112,14 +112,14 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 				Verb v = getVerb("exit");
 				if (v != null)
-					v.run(null);
+					v.run(null, null);
 			} else if (hit && !playerInside) {
 				// the player enters
 				playerInside = true;
 
 				Verb v = getVerb("enter");
 				if (v != null)
-					v.run(null);
+					v.run(null, null);
 			}
 		}
 	}
@@ -133,16 +133,16 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 	}
 
 	public void runVerb(String id) {
-		verbs.runVerb(id, state, null);
+		verbs.runVerb(id, state, null, null);
 	}
 
 	public void runVerb(String id, String target) {
-		verbs.runVerb(id, state, target);
+		verbs.runVerb(id, state, target, null);
 	}
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		sb.append(super.toString());
 		sb.append("  State: ").append(state);
@@ -183,7 +183,8 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 	public void write(Json json) {
 		super.write(json);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("desc", desc);
 
 			float worldScale = EngineAssetManager.getInstance().getScale();
@@ -203,7 +204,8 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			desc = json.readValue("desc", String.class, jsonData);
 			layer = json.readValue("layer", String.class, jsonData);
 
@@ -214,14 +216,14 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 				getRefPoint().set(r.x * worldScale, r.y * worldScale);
 			}
 
-			// Load actor sounds for backwards compatibility. 
+			// Load actor sounds for backwards compatibility.
 			@SuppressWarnings("unchecked")
 			HashMap<String, SoundDesc> sounds = json.readValue("sounds", HashMap.class, SoundDesc.class, jsonData);
 
 			if (sounds != null) {
 				for (Entry<String, SoundDesc> e : sounds.entrySet()) {
 					e.getValue().setId(id + "_" + e.getKey());
-					World.getInstance().getSounds().put(id + "_" + e.getKey(), e.getValue());
+					bjson.getWorld().getSounds().put(id + "_" + e.getKey(), e.getValue());
 				}
 			}
 

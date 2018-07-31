@@ -33,7 +33,7 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 public class Message {
-	private static final float FADE_DURATION = 0.4f;
+	private static final float FADE_DURATION = 0f;
 	private static Label msg;
 	private static Skin skin;
 	private static boolean isModal;
@@ -59,8 +59,10 @@ public class Message {
 		showMsg(stage, text, false);
 	}
 
+	@SuppressWarnings("unused")
 	public static void showMsg(final Stage stage, final String text, final boolean modal) {
 
+		// show in the next frame to allow calling when no OpenGL context is available.
 		Timer.post(new Task() {
 
 			@Override
@@ -81,6 +83,7 @@ public class Message {
 
 			}
 		});
+
 	}
 
 	private static void add(Stage stage, String text) {
@@ -102,6 +105,7 @@ public class Message {
 		msg.invalidate();
 	}
 
+	@SuppressWarnings("unused")
 	public static void showMsg(final Stage stage, final String text, final float duration) {
 
 		Timer.post(new Task() {
@@ -121,30 +125,28 @@ public class Message {
 					msg.getColor().a = 0;
 					msg.addAction(sequence(Actions.fadeIn(FADE_DURATION, Interpolation.fade), Actions.delay(duration,
 							sequence(fadeOut(FADE_DURATION, Interpolation.fade), Actions.removeActor()))));
+				} else {
+					msg.addAction(sequence(Actions.delay(duration, Actions.removeActor())));
 				}
-
 			}
 		});
+
 	}
 
+	@SuppressWarnings("unused")
 	public static void hideMsg() {
 		isModal = false;
 		msg.setText("");
 
 		if (FADE_DURATION > 0) {
 			msg.addAction(sequence(fadeOut(FADE_DURATION, Interpolation.fade), Actions.removeActor()));
+		} else {
+			msg.remove();
 		}
 	}
 
 	public static void showMsgDialog(final Stage stage, final String title, final String msg) {
-		Timer.post(new Task() {
-
-			@Override
-			public void run() {
-				new Dialog(title, skin).text(msg).button("Close", true).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
-						.show(stage);
-
-			}
-		});
+		new Dialog(title, skin).text(msg).button("Close", true).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
+				.show(stage);
 	}
 }

@@ -15,7 +15,7 @@ public class UndoEditActor implements UndoOp {
 	@Override
 	public void undo() {
 		// TODO restore attributes
-//		World.getInstance().getScenes().remove(scn);
+//		Ctx.project.getWorld().getScenes().remove(scn);
 		Ctx.project.setModified(this, Project.NOTIFY_ELEMENT_CREATED, null, scn);
 	}
 }

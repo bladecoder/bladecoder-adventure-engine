@@ -23,10 +23,17 @@ public class SetCutmodeAction implements Action {
 	@ActionProperty(required = true, defaultValue = "true")
 	@ActionPropertyDescription("when 'true' sets the scene in 'cutmode'")
 	private boolean value = true;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		World.getInstance().setCutMode(value);
+		w.setCutMode(value);
 		
 		return false;
 	}

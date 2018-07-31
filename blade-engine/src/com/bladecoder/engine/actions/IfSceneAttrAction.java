@@ -40,10 +40,17 @@ public class IfSceneAttrAction extends AbstractIfAction {
 	@ActionProperty
 	@ActionPropertyDescription("The attribute value")
 	private String value;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		Scene s = (scene != null && !scene.isEmpty()) ? World.getInstance().getScene(scene) : World.getInstance()
+		Scene s = (scene != null && !scene.isEmpty()) ? w.getScene(scene) : w
 				.getCurrentScene();
 
 		if (attr == SceneAttr.STATE) {
@@ -51,7 +58,7 @@ public class IfSceneAttrAction extends AbstractIfAction {
 				gotoElse((VerbRunner) cb);
 			}
 		} else if (attr == SceneAttr.CURRENT_SCENE) {
-			String scn = World.getInstance().getCurrentScene().getId();
+			String scn = w.getCurrentScene().getId();
 			
 			if (!ActionUtils.compareNullStr(value, scn)) {
 				gotoElse((VerbRunner) cb);

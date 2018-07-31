@@ -2,10 +2,43 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.3-SNAPSHOT]
+## [2.1.2]
 
+- Sprite Actors can have different scales in X and Y axis allowing unproportional scaling.
+- Check project version before loading + show loading message.
+- Fix gradle deprecation warnings.
+- Continue loading custom classes if some error found in one of them.
+
+## [2.1.1]
+
+-  Fix several UI bugs: inventory button doesn't hide, dialog not working well when autoselect one option and text doesn't show when returning to a scene without init.
+-  Add -s parameter to DestkopLauncher.
+
+## [2.1.0]
+
+- TextManager now sets the talk animation for characters. This ease characters to have conversations in the background.
+- Code refactor to get rid of the 'World' singleton. This breaks custom action backwards compatibility.
+- Leave action have the param 'init' to avoid call the init verb when false. This allows to change between scenes without worrying about losing the state.
+- Update blade-ink lib to v0.5.0.
+- Upgrade to gradle 2.6. Maybe it needs some more tweaks.
+- Added new text type 'UI' to show debug or ui messages.
+- Added one click 'action' verb.
+- Don't use ref point in position actions if the target actor is the same that the current actor.
+- All intensive tasks (load music, voices and ink) are now executed in a background thread.
+- FIX: filteredbox height bigger than screen and don't show the last element.
+
+## [2.0.6]
+
+- All intensive tasks (load music, voices and ink) are now executed in a background thread.
+
+- Added search box to combo boxes.
+- Added desktop files to generate Flatpak package.
 - Don't generate the key for desc if exists when editing actor. Better generation of not duplicated keys.
 - Safety nullchecks.
+- Error message if actor with same id exists when adding an actor to scene.
+- RunVerb now uses the Verb IP.
+- Added search box to combo boxes.
+- Added desktop files to generate Flatpak package.
 
 ## [2.0.2]
 

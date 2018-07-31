@@ -25,11 +25,11 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 
 public abstract class AnimationRenderer implements ActorRenderer {
-	
+
 	public final static String BACK = "back";
 	public final static String FRONT = "front";
 	public final static String RIGHT = "right";
@@ -39,9 +39,8 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	public final static String FRONTRIGHT = "frontright";
 	public final static String FRONTLEFT = "frontleft";
 
-	
 	private final static float DEFAULT_DIM = 200;
-	
+
 	protected HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
 
 	/** Starts this anim the first time that the scene is loaded */
@@ -58,24 +57,23 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	public class CacheEntry {
 		public int refCounter;
 	}
-	
+
 	protected int orgAlign = Align.left;
-	
-	public abstract void startAnimation(String id, Tween.Type repeatType,
-			int count, ActionCallback cb);
-	
-	public abstract void startAnimation(String id, Tween.Type repeatType,
-			int count, ActionCallback cb, String direction);
-	
-	public abstract void startAnimation(String id, Tween.Type repeatType,
-			int count, ActionCallback cb, Vector2 p0, Vector2 pf);
-	
+
+	public abstract void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb);
+
+	public abstract void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb,
+			String direction);
+
+	public abstract void startAnimation(String id, Tween.Type repeatType, int count, ActionCallback cb, Vector2 p0,
+			Vector2 pf);
+
 	public abstract String[] getInternalAnimations(AnimationDesc anim);
-	
+
 	public AnimationDesc getCurrentAnimation() {
 		return currentAnimation;
 	}
-	
+
 	@Override
 	public float getWidth() {
 		return DEFAULT_DIM;
@@ -85,29 +83,29 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	public float getHeight() {
 		return DEFAULT_DIM;
 	}
-	
+
 	public static float getAlignDx(float width, int align) {
-		if((align & Align.left) != 0)
+		if ((align & Align.left) != 0)
 			return 0;
-		else if((align & Align.right) != 0)
+		else if ((align & Align.right) != 0)
 			return -width;
-		else if((align & Align.center) != 0)
+		else if ((align & Align.center) != 0)
 			return -width / 2.0f;
-		
+
 		return -width / 2.0f;
 	}
-	
+
 	public static float getAlignDy(float height, int align) {
-		if((align & Align.bottom) != 0)
+		if ((align & Align.bottom) != 0)
 			return 0;
-		else if((align & Align.top) != 0)
+		else if ((align & Align.top) != 0)
 			return -height;
-		else if((align & Align.center) != 0)
+		else if ((align & Align.center) != 0)
 			return -height / 2.0f;
-		
+
 		return 0;
 	}
-	
+
 	public String getCurrentAnimationId() {
 		if (currentAnimation == null)
 			return null;
@@ -123,7 +121,7 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer(super.toString());
+		StringBuilder sb = new StringBuilder(super.toString());
 
 		sb.append("\n  Anims:");
 
@@ -138,12 +136,12 @@ public abstract class AnimationRenderer implements ActorRenderer {
 
 		return sb.toString();
 	}
-	
+
 	public void updateBboxFromRenderer(Polygon bbox) {
 		this.bbox = bbox;
 		computeBbox();
 	}
-	
+
 	protected void computeBbox() {
 		if (bbox == null)
 			return;
@@ -151,37 +149,37 @@ public abstract class AnimationRenderer implements ActorRenderer {
 		if (bbox.getVertices() == null || bbox.getVertices().length != 8) {
 			bbox.setVertices(new float[8]);
 		}
-		
-		float dx =  getAlignDx(getWidth(), orgAlign);
-		float dy =  getAlignDy(getHeight(), orgAlign);
+
+		float dx = getAlignDx(getWidth(), orgAlign);
+		float dy = getAlignDy(getHeight(), orgAlign);
 
 		float[] verts = bbox.getVertices();
 
 		verts[0] = dx;
 		verts[1] = dy;
-		
+
 		verts[2] = dx;
 		verts[3] = getHeight() + dy;
-		
+
 		verts[4] = getWidth() + dx;
 		verts[5] = getHeight() + dy;
-		
+
 		verts[6] = getWidth() + dx;
 		verts[7] = dy;
 		bbox.dirty();
 	}
-	
+
 	public void addAnimation(AnimationDesc fa) {
 		if (initAnimation == null)
 			initAnimation = fa.id;
 
 		fanims.put(fa.id, fa);
 	}
-	
+
 	public HashMap<String, AnimationDesc> getAnimations() {
 		return fanims;
 	}
-	
+
 	public void setInitAnimation(String fa) {
 		initAnimation = fa;
 	}
@@ -189,7 +187,7 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	public String getInitAnimation() {
 		return initAnimation;
 	}
-	
+
 	@Override
 	public int getOrgAlign() {
 		return orgAlign;
@@ -199,7 +197,7 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	public void setOrgAlign(int align) {
 		orgAlign = align;
 	}
-	
+
 	protected AnimationDesc getAnimation(String id) {
 		AnimationDesc fa = fanims.get(id);
 		flipX = false;
@@ -275,7 +273,7 @@ public abstract class AnimationRenderer implements ActorRenderer {
 
 		return fa;
 	}
-	
+
 	public static String getFlipId(String id) {
 		StringBuilder sb = new StringBuilder();
 
@@ -306,7 +304,8 @@ public abstract class AnimationRenderer implements ActorRenderer {
 		if (ratio2 < 1.0)
 			ratio2 = 1.0f / ratio;
 
-//		EngineLogger.debug("P0: " + p0 + " PF: " + pf + " dx: " + dx + " dy: " + dy + " RATIO: " + ratio);
+		// EngineLogger.debug("P0: " + p0 + " PF: " + pf + " dx: " + dx + " dy: " + dy +
+		// " RATIO: " + ratio);
 
 		if (ratio2 < DIRECTION_ASPECT_TOLERANCE && numDirs > 4) { // DIAGONAL
 																	// MOVEMENT
@@ -347,10 +346,9 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	 * Returns:
 	 * 
 	 * 8 -> when 8 dir animation mode (RIGHT, LEFT, FRONT, BACK, BACKRIGHT,
-	 * BACKLEFT, FRONTRIGHT, FRONTLEFT) 4 -> when 4 dir animation mode (RIGHT,
-	 * LEFT, FRONT, BACK) 2 -> when 2 dir animation mode (RIGHT, LEFT) 0 -> when
-	 * no dirs availables for the base animation -1 -> when base animation
-	 * doesn't exists
+	 * BACKLEFT, FRONTRIGHT, FRONTLEFT) 4 -> when 4 dir animation mode (RIGHT, LEFT,
+	 * FRONT, BACK) 2 -> when 2 dir animation mode (RIGHT, LEFT) 0 -> when no dirs
+	 * availables for the base animation -1 -> when base animation doesn't exists
 	 * 
 	 * @param base
 	 *            Base animation
@@ -374,12 +372,12 @@ public abstract class AnimationRenderer implements ActorRenderer {
 
 		return -1;
 	}
-	
 
 	@Override
 	public void write(Json json) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 
 			json.writeValue("fanims", fanims, HashMap.class, null);
 			json.writeValue("initAnimation", initAnimation);
@@ -401,11 +399,13 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 
 			// In next versions, the fanims loading will be generic
-			// fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class, jsonData);
-			
+			// fanims = json.readValue("fanims", HashMap.class, AnimationDesc.class,
+			// jsonData);
+
 			initAnimation = json.readValue("initAnimation", String.class, jsonData);
 			orgAlign = json.readValue("orgAlign", int.class, Align.bottom, jsonData);
 		} else {
@@ -418,4 +418,3 @@ public abstract class AnimationRenderer implements ActorRenderer {
 		}
 	}
 }
-

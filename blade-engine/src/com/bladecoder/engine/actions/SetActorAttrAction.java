@@ -16,6 +16,7 @@
 package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.AssetConsumer;
@@ -57,8 +58,12 @@ public class SetActorAttrAction implements Action {
 	private Boolean fakeDepth;
 
 	@ActionProperty
-	@ActionPropertyDescription("Sets the actor scale")
+	@ActionPropertyDescription("Sets the actor scale proportionally")
 	private Float scale;
+	
+	@ActionProperty
+	@ActionPropertyDescription("Sets the actor scale non proportionally")
+	private Vector2 scaleXY;
 
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor rotation")
@@ -86,10 +91,17 @@ public class SetActorAttrAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor speed for walking. Only supported for character actors.")
 	private Float walkingSpeed;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		Scene s = actor.getScene();
+		Scene s = actor.getScene(w);
 
 		BaseActor a = s.getActor(actor.getActorId(), true);
 
@@ -144,6 +156,13 @@ public class SetActorAttrAction implements Action {
 		if (scale != null) {
 			if (a instanceof SpriteActor)
 				((SpriteActor) a).setScale(scale);
+			else
+				EngineLogger.error("'scale' property not supported for actor:" + a.getId());
+		}
+		
+		if (scaleXY != null) {
+			if (a instanceof SpriteActor)
+				((SpriteActor) a).setScale(scaleXY.x, scaleXY.y);
 			else
 				EngineLogger.error("'scale' property not supported for actor:" + a.getId());
 		}
@@ -214,21 +233,21 @@ public class SetActorAttrAction implements Action {
 
 		scn.removeActor(actor);
 
-		if (scn != World.getInstance().getCurrentScene() && World.getInstance().getCachedScene(scn.getId()) == null
+		if (scn != w.getCurrentScene() && w.getCachedScene(scn.getId()) == null
 				&& actor instanceof AssetConsumer) {
 			((AssetConsumer) actor).loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 			((AssetConsumer) actor).retrieveAssets();
 		}
 
-		World.getInstance().getUIActors().addActor(actor);
+		w.getUIActors().addActor(actor);
 	}
 
 	private void removeUIActor(Scene scn, InteractiveActor actor) {
-		InteractiveActor a = World.getInstance().getUIActors().removeActor(actor.getId());
+		InteractiveActor a = w.getUIActors().removeActor(actor.getId());
 
 		if (a != null) {
-			if (scn != World.getInstance().getCurrentScene() && a instanceof Disposable)
+			if (scn != w.getCurrentScene() && a instanceof Disposable)
 				((Disposable) a).dispose();
 
 			scn.addActor(a);

@@ -18,13 +18,17 @@ allprojects {
 
 configure(subprojects - project(':android')) {
   apply plugin: 'java'
+  apply plugin: 'java-library'
+  
   sourceCompatibility = 1.7
+  targetCompatibility=1.7
 }
 
 subprojects {
     repositories {
         mavenCentral()
-	jcenter()
+        google()
+		jcenter()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
    }
@@ -38,7 +42,9 @@ tasks.eclipse.doLast {
 
 // Run `gradle pack` task to generate skin.atlas file at assets/ui.
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
-task pack << {
+task pack {
+	doLast {
+
   // Note that if you need multiple atlases, you can duplicate the
   // TexturePacker.process invocation and change paths to generate
   // additional atlases with this task.
@@ -47,5 +53,6 @@ task pack << {
     'assets/ui/1/',        // Output directory.
     'ui'              // Name of the generated atlas (without extension).
   )
+  }
 }
 

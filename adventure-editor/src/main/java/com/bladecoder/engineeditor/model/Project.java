@@ -107,9 +107,14 @@ public class Project extends PropertyChange {
 	private BaseActor selectedActor;
 	private String selectedFA;
 	private boolean modified = false;
+	private final World world = new World();
 
 	public Project() {
 		loadConfig();
+	}
+	
+	public World getWorld() {
+		return world;
 	}
 
 	public String getAssetPath(String base) {
@@ -190,7 +195,7 @@ public class Project extends PropertyChange {
 		selectedFA = null;
 
 		if (scn != null)
-			Ctx.project.getEditorConfig().setProperty("project.selectedScene", scn.getId());
+			getEditorConfig().setProperty("project.selectedScene", scn.getId());
 
 		firePropertyChange(NOTIFY_SCENE_SELECTED, null, selectedScene);
 	}
@@ -248,6 +253,10 @@ public class Project extends PropertyChange {
 
 		return projectConfig.getProperty(Config.TITLE_PROP, getProjectDir().getName());
 	}
+	
+	public boolean isLoaded() {
+		return Ctx.project.getProjectDir() != null;
+	}
 
 	public String getPackageTitle() {
 		return getTitle().replace(" ", "").replace("'", "");
@@ -283,7 +292,7 @@ public class Project extends PropertyChange {
 			EngineLogger.setDebug();
 
 			// 1.- SAVE world
-			World.getInstance().saveWorldDesc(
+			world.saveWorldDesc(
 					new FileHandle(new File(getAssetPath() + MODEL_PATH + "/" + EngineAssetManager.WORLD_FILENAME)));
 
 			// 2.- SAVE .chapter
@@ -314,6 +323,8 @@ public class Project extends PropertyChange {
 	public void closeProject() {
 		setSelectedScene(null);
 		this.projectFile = null;
+		this.projectConfig = null;
+		firePropertyChange(NOTIFY_PROJECT_LOADED);
 	}
 
 	public void loadProject(File projectToLoad) throws IOException {
@@ -340,14 +351,14 @@ public class Project extends PropertyChange {
 			EngineAssetManager.createEditInstance(getAssetPath());
 
 			try {
-				World.getInstance().loadWorldDesc();
+				world.loadWorldDesc();
 			} catch (SerializationException ex) {
 				// check for not compiled custom actions
 				if (ex.getCause() != null && ex.getCause() instanceof ClassNotFoundException) {
 					EditorLogger.msg("Custom action class not found. Trying to compile...");
-					if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
+					if (RunProccess.runGradle(getProjectDir(), "desktop:compileJava")) {
 						folderClassLoader.reload();
-						World.getInstance().loadWorldDesc();
+						world.loadWorldDesc();
 					} else {
 						this.projectFile = null;
 						throw new IOException("Failed to run Gradle.");
@@ -362,7 +373,7 @@ public class Project extends PropertyChange {
 			i18n = new I18NHandler(getAssetPath() + Project.MODEL_PATH);
 
 			// No need to load the chapter. It's loaded by the chapter combo.
-			// loadChapter(World.getInstance().getInitChapter());
+			// loadChapter(world.getInitChapter());
 
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 
@@ -374,13 +385,14 @@ public class Project extends PropertyChange {
 
 			firePropertyChange(NOTIFY_PROJECT_LOADED);
 		} else {
+			closeProject();
 			throw new IOException("Project not found.");
 		}
 	}
 
-	public boolean checkVersion() throws FileNotFoundException, IOException {
+	public boolean checkVersion(File projectPath) throws FileNotFoundException, IOException {
 		String editorVersion = getEditorBladeEngineVersion();
-		String projectVersion = getProjectBladeEngineVersion();
+		String projectVersion = getProjectBladeEngineVersion(projectPath);
 
 		if (editorVersion.equals(projectVersion)
 				|| editorVersion.indexOf('.') == -1)
@@ -412,8 +424,8 @@ public class Project extends PropertyChange {
 		return number;
 	}
 
-	public String getProjectBladeEngineVersion() throws FileNotFoundException, IOException {
-		Properties properties = getGradleProperties();
+	public String getProjectBladeEngineVersion(File projectPath) throws FileNotFoundException, IOException {
+		Properties properties = getGradleProperties(projectPath);
 
 		return properties.getProperty(Config.BLADE_ENGINE_VERSION_PROP, "default");
 	}
@@ -422,8 +434,8 @@ public class Project extends PropertyChange {
 		return Versions.getVersion();
 	}
 
-	public void updateEngineVersion() throws FileNotFoundException, IOException {
-		Properties prop = getGradleProperties();
+	public void updateEngineVersion(File projectPath) throws FileNotFoundException, IOException {
+		Properties prop = getGradleProperties(projectPath);
 
 		prop.setProperty(Config.BLADE_ENGINE_VERSION_PROP, Versions.getVersion());
 		prop.setProperty("gdxVersion", Versions.getLibgdxVersion());
@@ -433,7 +445,7 @@ public class Project extends PropertyChange {
 		prop.setProperty("androidGradlePluginVersion", Versions.getAndroidGradlePluginVersion());
 		prop.setProperty("bladeInkVersion", Versions.getBladeInkVersion());
 
-		saveGradleProperties(prop);
+		saveGradleProperties(prop, projectPath);
 	}
 
 	/**
@@ -496,12 +508,12 @@ public class Project extends PropertyChange {
 		try {
 			chapter.load(selChapter);
 			firePropertyChange(NOTIFY_CHAPTER_LOADED);
-			Ctx.project.getEditorConfig().setProperty("project.selectedChapter", selChapter);
+			getEditorConfig().setProperty("project.selectedChapter", selChapter);
 		} catch (SerializationException ex) {
 			// check for not compiled custom actions
 			if (ex.getCause() != null && ex.getCause() instanceof ClassNotFoundException) {
 				EditorLogger.msg("Custom action class not found. Trying to compile...");
-				if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
+				if (RunProccess.runGradle(getProjectDir(), "desktop:compileJava")) {
 					((FolderClassLoader)ActionFactory.getActionClassLoader()).reload();
 					chapter.load(selChapter);
 				} else {
@@ -524,17 +536,17 @@ public class Project extends PropertyChange {
 		firePropertyChange(NOTIFY_MODEL_MODIFIED);
 	}
 
-	public Properties getGradleProperties() throws FileNotFoundException, IOException {
+	public Properties getGradleProperties(File projectPath) throws FileNotFoundException, IOException {
 		Properties prop = new OrderedProperties();
 
-		prop.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties"));
+		prop.load(new FileReader(projectPath.getAbsolutePath() + "/gradle.properties"));
 
 		return prop;
 	}
 
-	public void saveGradleProperties(Properties prop) throws IOException {
+	public void saveGradleProperties(Properties prop, File projectPath) throws IOException {
 		FileOutputStream os = new FileOutputStream(
-				Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties");
+				projectPath.getAbsolutePath() + "/gradle.properties");
 
 		prop.store(os, null);
 	}

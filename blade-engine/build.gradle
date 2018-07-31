@@ -1,3 +1,4 @@
+apply plugin: 'java-library'
 apply plugin: "java"
 apply plugin: "maven"
 apply plugin: "signing"
@@ -7,7 +8,6 @@ group = 'com.bladecoder.engine'
 // java
 sourceCompatibility=1.7
 targetCompatibility=1.7
-
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
@@ -42,11 +42,11 @@ javadoc {
 }
 
 dependencies {
-  compile "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  compile "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
-  compile "com.bladecoder.ink:blade-ink:$bladeInkVersion"
-  compile "org.minimalcode:minimalcode-beans:0.5.1"
-  compile fileTree(dir: 'libs', include: '*.jar')
+  api "com.badlogicgames.gdx:gdx:$libgdxVersion"
+  api "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
+  api "com.bladecoder.ink:blade-ink:$bladeInkVersion"
+  api "org.minimalcode:minimalcode-beans:0.5.1"
+  api fileTree(dir: 'libs', include: '*.jar')
 }
 
 

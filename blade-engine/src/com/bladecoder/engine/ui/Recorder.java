@@ -40,7 +40,7 @@ import com.bladecoder.engine.util.RectangleRenderer;
 public class Recorder {
 	private static final String DEFAULT_RECORD_FILENAME = "record";
 	public static final String RECORD_EXT = ".verbs.rec";
-	public static final String GAMESTATE_EXT = ".gamestate.rec";
+	public static final String GAMESTATE_REC_EXT = ".gamestate.rec";
 	private static final float WAITING_TIME = .5f;
 
 	private ArrayList<TimeVerb> list = new ArrayList<TimeVerb>();
@@ -49,10 +49,15 @@ public class Recorder {
 	private float time;
 	private int pos;
 	private String fileName = DEFAULT_RECORD_FILENAME;
+	private final World w;
+	
+	public Recorder(World w) {
+		this.w = w;
+	}
 
 	public void update(float delta) {
 
-		if (World.getInstance().isPaused())
+		if (w.isPaused())
 			return;
 
 		if (recording) {
@@ -67,17 +72,17 @@ public class Recorder {
 
 			TimeVerb v = list.get(pos);
 
-			Scene s = World.getInstance().getCurrentScene();
+			Scene s = w.getCurrentScene();
 
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("RECORDER - ");
 
 			// while (playing && v.time < time) {
-			if (playing && v.time < time && !World.getInstance().inCutMode()) {
+			if (playing && v.time < time && !w.inCutMode()) {
 				
 				if (v.verb == null) {
 					if (v.pos == null) { // DIALOG OPTION
-						World.getInstance().selectDialogOption(v.dialogOption);
+						w.selectDialogOption(v.dialogOption);
 
 						stringBuilder.append(" SELECT DIALOG OPTION: ").append(v.dialogOption);
 					} else { // GOTO
@@ -136,7 +141,7 @@ public class Recorder {
 			time += WAITING_TIME;
 			v.time = time;
 
-			if (World.getInstance().hasDialogOptions()) {
+			if (w.hasDialogOptions()) {
 				v.dialogOption = dialogOption;
 			}
 
@@ -170,7 +175,7 @@ public class Recorder {
 		if (recording) {
 			EngineLogger.debug("RECORDING...");
 			try {
-				World.getInstance().saveGameState(fileName + GAMESTATE_EXT);
+				w.getSerializer().saveGameState(fileName + GAMESTATE_REC_EXT);
 			} catch (IOException e) {
 				EngineLogger.error(e.getMessage());
 			}
@@ -197,7 +202,7 @@ public class Recorder {
 	public void draw(SpriteBatch batch) {
 		if (recording && ((int) time) % 2 == 0) {
 			// RectangleRenderer.draw(batch, 10,
-			// World.getInstance().getCamera().getViewport().commandHeight - 30,
+			// w.getCamera().getViewport().commandHeight - 30,
 			// 20, 20, Color.RED);
 
 			// TODO: Provisional. Pass viewport to get height
@@ -228,7 +233,7 @@ public class Recorder {
 
 	@SuppressWarnings("unchecked")
 	public void load() {
-		String gameStateFileName = fileName + GAMESTATE_EXT;
+		String gameStateFileName = fileName + GAMESTATE_REC_EXT;
 		String recordFileName = fileName + RECORD_EXT;
 
 		FileHandle verbsFile = EngineAssetManager.getInstance().getUserFile(recordFileName);
@@ -245,7 +250,7 @@ public class Recorder {
 
 			if (gameStateFile.exists())
 				try {
-					World.getInstance().loadGameState(gameStateFile);
+					w.getSerializer().loadGameState(gameStateFile);
 				} catch (IOException e) {
 					EngineLogger.error(e.getMessage());
 				}
@@ -265,6 +270,7 @@ public class Recorder {
 
 //		String s = json.prettyPrint(list);
 		String s = json.toJson(list, ArrayList.class, TimeVerb.class);
+		s = json.prettyPrint(s);
 
 		Writer w = EngineAssetManager.getInstance().getUserFile(fileName + RECORD_EXT).writer(false, "UTF-8");
 

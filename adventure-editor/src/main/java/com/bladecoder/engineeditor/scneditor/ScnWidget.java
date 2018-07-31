@@ -50,7 +50,6 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engineeditor.Ctx;
@@ -361,7 +360,7 @@ public class ScnWidget extends Widget {
 
 			} else if (loadingError) {
 				s = "ERROR IN SCENE DATA. CANNOT DISPLAY SCENE";
-			} else if (Ctx.project.getProjectDir() == null) {
+			} else if (!Ctx.project.isLoaded()) {
 				s = "CREATE OR LOAD A PROJECT";
 			} else {
 				s = "THERE ARE NO SCENES IN THIS CHAPTER YET";
@@ -476,8 +475,8 @@ public class ScnWidget extends Widget {
 
 			float aspect = getWidth() / getHeight();
 
-			float wWidth = World.getInstance().getWidth();
-			float wHeight = World.getInstance().getHeight();
+			float wWidth = Ctx.project.getWorld().getWidth();
+			float wHeight = Ctx.project.getWorld().getHeight();
 			float aspectWorld = wWidth / wHeight;
 
 			if (aspectWorld > aspect) {
@@ -490,7 +489,7 @@ public class ScnWidget extends Widget {
 
 			camera.setToOrtho(false, wWidth, wHeight);
 			camera.zoom = 1f;
-			camera.position.set(World.getInstance().getWidth() / 2, World.getInstance().getHeight() / 2, 0);
+			camera.position.set(Ctx.project.getWorld().getWidth() / 2, Ctx.project.getWorld().getHeight() / 2, 0);
 			camera.update();
 			zoom(+1);
 		}
@@ -589,8 +588,8 @@ public class ScnWidget extends Widget {
 
 			float aspect = getWidth() / getHeight();
 
-			float wWidth = World.getInstance().getWidth();
-			float wHeight = World.getInstance().getHeight();
+			float wWidth = Ctx.project.getWorld().getWidth();
+			float wHeight = Ctx.project.getWorld().getHeight();
 			float aspectWorld = wWidth / wHeight;
 
 			if (aspectWorld > aspect) {

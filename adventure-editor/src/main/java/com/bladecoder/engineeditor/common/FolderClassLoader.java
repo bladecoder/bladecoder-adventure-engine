@@ -52,7 +52,7 @@ public class FolderClassLoader extends ClassLoader {
 		}
 	}
 
-	private void loadClassesInFolder(File folder, String classPackage) throws IOException {
+	private void loadClassesInFolder(File folder, String classPackage) throws IOException, NoClassDefFoundError {
 		byte classByte[];
 
 		File[] list = folder.listFiles();
@@ -95,8 +95,9 @@ public class FolderClassLoader extends ClassLoader {
 
 							classes.put(className, result);
 						}
-
-					} catch (IOException e) {
+					} catch (NoClassDefFoundError e) {
+						EditorLogger.error("ERROR - Could not load class: " + e.getMessage());
+					} catch (IOException e) {						
 						throw e;
 					} finally {
 						is.close();

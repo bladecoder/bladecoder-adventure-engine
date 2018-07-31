@@ -18,8 +18,8 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -122,7 +122,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		stage = new Stage(new ScreenViewport());
 
 		final Skin skin = ui.getSkin();
-		final World world = World.getInstance();
+		final World world =ui.getWorld();
 
 		final MenuScreenStyle style = getStyle();
 		final BitmapFont f = skin.get(style.textButtonStyle, TextButtonStyle.class).font;
@@ -345,7 +345,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 				if (count == 4) {
 					EngineLogger.toggle();
 
-					if (World.getInstance().isDisposed())
+					if (ui.getWorld().isDisposed())
 						return;
 
 					if (EngineLogger.debugMode()) {
@@ -376,9 +376,14 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		Gdx.input.setInputProcessor(stage);
 
 		if (style.musicFile != null) {
-			music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset(style.musicFile));
-			music.setLooping(true);
-			music.play();
+			new Thread() {
+				@Override
+				public void run() {
+					music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset(style.musicFile));
+					music.setLooping(true);
+					music.play();
+				}
+			}.start();
 		}
 	}
 

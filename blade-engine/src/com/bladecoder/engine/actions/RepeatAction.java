@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.model.VerbRunner;
+import com.bladecoder.engine.model.World;
 
 @ActionDescription("Repeats the actions inside the Repeat/EndRepeat actions.")
 public class RepeatAction extends AbstractControlAction implements Serializable {
@@ -27,6 +28,10 @@ public class RepeatAction extends AbstractControlAction implements Serializable 
 	private int repeat = 1;
 
 	private int currentRepeat = 0;
+	
+	@Override
+	public void init(World w) {
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {

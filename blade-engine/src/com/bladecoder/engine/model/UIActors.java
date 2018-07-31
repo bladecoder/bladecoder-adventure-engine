@@ -18,6 +18,11 @@ public class UIActors implements AssetConsumer, Serializable {
 
 	transient private boolean disposed = true;
 	private SceneCamera cam;
+	private World w;
+
+	public UIActors(World w) {
+		this.w = w;
+	}
 
 	public void addActor(InteractiveActor a) {
 		actors.add(a);
@@ -35,7 +40,7 @@ public class UIActors implements AssetConsumer, Serializable {
 
 		return null;
 	}
-	
+
 	public InteractiveActor get(String actorId) {
 		for (InteractiveActor a : actors) {
 			if (a.getId().equals(actorId))
@@ -44,7 +49,7 @@ public class UIActors implements AssetConsumer, Serializable {
 
 		return null;
 	}
-	
+
 	public List<InteractiveActor> getActors() {
 		return actors;
 	}
@@ -56,55 +61,54 @@ public class UIActors implements AssetConsumer, Serializable {
 	}
 
 	public void draw(SpriteBatch batch) {
-		
+
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
-		
+
 		for (InteractiveActor a : actors) {
 			if (a instanceof SpriteActor) {
 				if (a.isVisible()) {
 					if (((SpriteActor) a).getScale() != 0) {
-						((SpriteActor) a).getRenderer().draw(batch, a.getX() , a.getY(),
-								((SpriteActor) a).getScale(), ((SpriteActor) a).getRot(), ((SpriteActor) a).getTint());
+						((SpriteActor) a).getRenderer().draw(batch, a.getX(), a.getY(), ((SpriteActor) a).getScaleX(),
+								((SpriteActor) a).getScaleY(), ((SpriteActor) a).getRot(), ((SpriteActor) a).getTint());
 					}
 				}
 			}
 		}
 		batch.end();
 	}
-	
-	
+
 	// tmp vector to use in getActorAtInput()
 	private final Vector3 unprojectTmp = new Vector3();
-	
+
 	public InteractiveActor getActorAtInput(Viewport v) {
-		
+
 		cam.getInputUnProject(v, unprojectTmp);
-		
-		for(InteractiveActor uia: actors) {
-			if(uia.hit(unprojectTmp.x, unprojectTmp.y))
+
+		for (InteractiveActor uia : actors) {
+			if (uia.hit(unprojectTmp.x, unprojectTmp.y))
 				return uia;
 		}
-		
+
 		return null;
 	}
 
 	@Override
 	public void loadAssets() {
 		for (InteractiveActor a : actors)
-			if(a instanceof SpriteActor)
+			if (a instanceof SpriteActor)
 				((AssetConsumer) a).loadAssets();
 	}
 
 	@Override
 	public void retrieveAssets() {
 		for (InteractiveActor a : actors) {
-			if(a instanceof SpriteActor)
-			((AssetConsumer) a).retrieveAssets();
+			if (a instanceof SpriteActor)
+				((AssetConsumer) a).retrieveAssets();
 		}
-		
+
 		cam = new SceneCamera();
-		cam.create(World.getInstance().getWidth(), World.getInstance().getHeight());
+		cam.create(w.getWidth(), w.getHeight());
 
 		disposed = false;
 	}
@@ -112,7 +116,7 @@ public class UIActors implements AssetConsumer, Serializable {
 	@Override
 	public void dispose() {
 		for (InteractiveActor a : actors)
-			if(a instanceof SpriteActor)
+			if (a instanceof SpriteActor)
 				((Disposable) a).dispose();
 
 		disposed = true;
@@ -146,7 +150,7 @@ public class UIActors implements AssetConsumer, Serializable {
 		for (int i = 0; i < jsonValueActors.size; i++) {
 			JsonValue jsonValueAct = jsonValueActors.get(i);
 			actorRef = new SceneActorRef(jsonValueAct.name);
-			Scene sourceScn = World.getInstance().getScene(actorRef.getSceneId());
+			Scene sourceScn = w.getScene(actorRef.getSceneId());
 
 			BaseActor actor = sourceScn.getActor(actorRef.getActorId(), false);
 			sourceScn.removeActor(actor);

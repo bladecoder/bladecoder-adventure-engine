@@ -128,18 +128,18 @@ public class SceneList extends ModelList<World, Scene> {
 					if (evt.getNewValue() instanceof World) {
 						addChapters();
 					} else if (evt.getNewValue() instanceof Scene) {
-						addElements(World.getInstance(),
-								Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[0])));
+						addElements(Ctx.project.getWorld(),
+								Arrays.asList(Ctx.project.getWorld().getScenes().values().toArray(new Scene[0])));
 					}
 				} else if (evt.getPropertyName().equals(Project.NOTIFY_PROJECT_LOADED)) {
-					toolbar.disableCreate(Ctx.project.getProjectDir() == null);
+					toolbar.disableCreate(!Ctx.project.isLoaded());
 
 					disposeBgCache = true;
 					addChapters();
 				} else if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_CREATED)) {
 					if (evt.getNewValue() instanceof Scene && !(evt.getSource() instanceof EditSceneDialog)) {
-						addElements(World.getInstance(),
-								Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[0])));
+						addElements(Ctx.project.getWorld(),
+								Arrays.asList(Ctx.project.getWorld().getScenes().values().toArray(new Scene[0])));
 					}
 				}
 			}
@@ -168,16 +168,16 @@ public class SceneList extends ModelList<World, Scene> {
 						Ctx.project.loadChapter(selChapter);
 
 					String init = Ctx.project.getEditorConfig().getProperty("project.selectedScene",
-							World.getInstance().getInitScene());
+							Ctx.project.getWorld().getInitScene());
 
-					addElements(World.getInstance(),
-							Arrays.asList(World.getInstance().getScenes().values().toArray(new Scene[0])));
+					addElements(Ctx.project.getWorld(),
+							Arrays.asList(Ctx.project.getWorld().getScenes().values().toArray(new Scene[0])));
 
 					if (init != null) {
-						Scene s = World.getInstance().getScenes().get(init);
+						Scene s = Ctx.project.getWorld().getScenes().get(init);
 
-						if (s == null && World.getInstance().getInitScene() != null)
-							s = World.getInstance().getScenes().get(World.getInstance().getInitScene());
+						if (s == null && Ctx.project.getWorld().getInitScene() != null)
+							s = Ctx.project.getWorld().getScenes().get(Ctx.project.getWorld().getInitScene());
 
 						if (s != null) {
 							int indexOf = list.getItems().indexOf(s, true);
@@ -187,29 +187,37 @@ public class SceneList extends ModelList<World, Scene> {
 				} catch (IOException e1) {
 					EditorLogger.printStackTrace(e1);
 				}
+			} else {
+				addElements(null, null);
 			}
 		}
 	};
 
 	public void addChapters() {
-		String[] nl = Ctx.project.getChapter().getChapters();
 		Array<String> array = new Array<String>();
+		
+		if (Ctx.project.isLoaded()) {
 
-		for (int i = 0; i < nl.length; i++) {
-			array.add(nl[i]);
-		}
+			String[] nl = Ctx.project.getChapter().getChapters();
 
-		chapters.setItems(array);
-
-		String init = Ctx.project.getEditorConfig().getProperty("project.selectedChapter",
-				World.getInstance().getInitChapter());
-
-		if (init != null) {
-			if (array.contains(init, false)) {
-				chapters.setSelected(init);
-			} else if (array.size > 0) {
-				chapters.setSelected(Ctx.project.getChapter().getInitChapter());
+			for (int i = 0; i < nl.length; i++) {
+				array.add(nl[i]);
 			}
+
+			chapters.setItems(array);
+
+			String init = Ctx.project.getEditorConfig().getProperty("project.selectedChapter",
+					Ctx.project.getWorld().getInitChapter());
+
+			if (init != null) {
+				if (array.contains(init, false)) {
+					chapters.setSelected(init);
+				} else if (array.size > 0) {
+					chapters.setSelected(Ctx.project.getChapter().getInitChapter());
+				}
+			}
+		} else {
+			chapters.setItems(array);
 		}
 
 		chapterListener.changed(null, null);
@@ -225,7 +233,7 @@ public class SceneList extends ModelList<World, Scene> {
 			return;
 
 		String id = list.getItems().get(pos).getId();
-		World.getInstance().setInitScene(id);
+		Ctx.project.getWorld().setInitScene(id);
 		Ctx.project.setModified();
 	}
 
@@ -273,13 +281,13 @@ public class SceneList extends ModelList<World, Scene> {
 		Scene newElement = (Scene) ElementUtils.cloneElement(clipboard);
 
 		newElement.setId(ElementUtils.getCheckedId(newElement.getId(),
-				World.getInstance().getScenes().keySet().toArray(new String[0])));
+				Ctx.project.getWorld().getScenes().keySet().toArray(new String[0])));
 
 		int pos = list.getSelectedIndex() + 1;
 
 		list.getItems().insert(pos, newElement);
 
-		World.getInstance().addScene(newElement);
+		Ctx.project.getWorld().addScene(newElement);
 		Ctx.project.getI18N().extractStrings(newElement);
 
 		if (parent.getInitScene() == null) {
@@ -403,7 +411,7 @@ public class SceneList extends ModelList<World, Scene> {
 			String name = e.getId();
 
 			// TODO SET INIT SCENE
-			String init = World.getInstance().getInitScene();
+			String init = Ctx.project.getWorld().getInitScene();
 
 			if (name.equals(init))
 				name += " <init>";

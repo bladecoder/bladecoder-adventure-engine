@@ -23,10 +23,17 @@ public class ShowInventoryAction implements Action {
 	@ActionProperty(required = true, defaultValue = "true")
 	@ActionPropertyDescription("When 'true' shows the inventory button to show the inventory.")
 	private boolean value = true;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		World.getInstance().showInventory(value);
+		w.showInventory(value);
 		
 		return false;
 	}

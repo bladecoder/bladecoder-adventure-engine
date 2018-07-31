@@ -28,11 +28,18 @@ public class InkVariable implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("Value")
 	private String value;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		try {
-			World.getInstance().getInkManager().setVariable(name, value);
+			w.getInkManager().setVariable(name, value);
 		} catch (Exception e) {
 			EngineLogger.error("Cannot set Ink variable: " + name + " " + e.getMessage());
 		}

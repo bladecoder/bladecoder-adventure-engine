@@ -30,10 +30,17 @@ public class SetStateAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The actor 'state'")
 	private String state;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {			
-		final Scene s = actor.getScene();
+		final Scene s = actor.getScene(w);
 
 		String actorId = actor.getActorId();
 		if (actorId == null) {
@@ -45,7 +52,7 @@ public class SetStateAction implements Action {
 		InteractiveActor a = (InteractiveActor)s.getActor(actorId, false);
 		
 		if(a == null) { // search in inventory
-			a = World.getInstance().getInventory().get(actorId);
+			a = w.getInventory().get(actorId);
 		}
 		
 		if(a != null)

@@ -15,11 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.actions.Action;
-import com.bladecoder.engine.actions.ActionDescription;
-import com.bladecoder.engine.actions.ActionProperty;
-import com.bladecoder.engine.actions.ActionPropertyDescription;
-import com.bladecoder.engine.actions.ActorAnimationRef;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -33,12 +28,19 @@ public class SpineSecondaryAnimationAction implements Action {
 	@ActionPropertyDescription("The Animation to set. Empty to clear the secondary animation")
 	private ActorAnimationRef animation;
 
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
+	
 	@Override
 	public boolean run(VerbRunner cb) {
 		
 		String actorId = animation.getActorId();
 		
-		SpriteActor a = (SpriteActor) World.getInstance().getCurrentScene().getActor(actorId, true);
+		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actorId, true);
 		
 		if(a.getRenderer() instanceof SpineRenderer) {
 			SpineRenderer r = (SpineRenderer) a.getRenderer();

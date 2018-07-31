@@ -29,9 +29,9 @@ import com.bladecoder.engine.anim.Tween.Type;
 import com.bladecoder.engine.anim.WalkTween;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
@@ -40,9 +40,10 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	protected ArrayList<Tween<SpriteActor>> tweens = new ArrayList<>(0);
 
 	private float rot = 0.0f;
-	private float scale = 1.0f;
+	private float scaleX = 1.0f;
+	private float scaleY = 1.0f;
 	private Color tint;
-	
+
 	private boolean fakeDepth = false;
 
 	private boolean bboxFromRenderer = false;
@@ -94,15 +95,23 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	}
 
 	public float getWidth() {
-		return renderer.getWidth() * scale;
+		return renderer.getWidth() * scaleX;
 	}
 
 	public float getHeight() {
-		return renderer.getHeight() * scale;
+		return renderer.getHeight() * scaleY;
 	}
 
 	public float getScale() {
-		return scale;
+		return scaleX;
+	}
+	
+	public float getScaleX() {
+		return scaleX;
+	}
+	
+	public float getScaleY() {
+		return scaleY;
 	}
 
 	public Color getTint() {
@@ -114,13 +123,18 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	}
 
 	public void setScale(float scale) {
-		this.scale = scale;
-		
-		if(bboxFromRenderer)
-			bbox.setScale(scale, scale);
+		setScale(scale, scale);
+	}
+	
+	public void setScale(float scaleX, float scaleY) {
+		this.scaleX = scaleX;
+		this.scaleY = scaleY;
+
+		if (bboxFromRenderer)
+			bbox.setScale(scaleX, scaleY);
 		else {
 			float worldScale = EngineAssetManager.getInstance().getScale();
-			bbox.setScale(scale * worldScale, scale * worldScale);
+			bbox.setScale(scaleX * worldScale, scaleY * worldScale);
 		}
 	}
 
@@ -156,8 +170,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	public void draw(SpriteBatch batch) {
 		if (isVisible()) {
-			if (scale != 0) {
-				renderer.draw(batch, getX(), getY(), scale, rot, tint);
+			if (scaleX != 0 && scaleY != 0) {
+				renderer.draw(batch, getX(), getY(), scaleX, scaleY, rot, tint);
 			}
 		}
 	}
@@ -205,14 +219,12 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			if (fa.sound != null) {
 				// Backwards compatibility
 				String sid = fa.sound;
-				if (World.getInstance().getSounds().get(sid) == null)
+				if (scene != null && scene.getWorld().getSounds().get(sid) == null)
 					sid = id + "_" + fa.sound;
 
+				// it will not play the sound in inventory
 				if (scene != null)
 					scene.getSoundManager().stopSound(sid);
-				else
-					World.getInstance().getCurrentScene().getSoundManager().stopSound(sid); // The actor is in the
-																							// inventory
 			}
 
 			Vector2 outD = fa.outD;
@@ -239,14 +251,12 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			if (fa.sound != null && repeatType != Tween.Type.REVERSE) {
 				// Backwards compatibility
 				String sid = fa.sound;
-				if (World.getInstance().getSounds().get(sid) == null)
+				if (scene != null && scene.getWorld().getSounds().get(sid) == null)
 					sid = id + "_" + fa.sound;
 
+				// it will not play the sound in inventory
 				if (scene != null)
 					scene.getSoundManager().playSound(sid);
-				else
-					World.getInstance().getCurrentScene().getSoundManager().playSound(sid); // The actor is in the
-																							// inventory
 			}
 
 			Vector2 inD = fa.inD;
@@ -260,12 +270,14 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	}
 
 	public void addTween(Tween<SpriteActor> tween) {
+		removeTween(tween.getClass());
+		
 		tweens.add(tween);
 	}
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer(super.toString());
+		StringBuilder sb = new StringBuilder(super.toString());
 
 		sb.append("  Sprite Bbox: ").append(getBBox().toString());
 
@@ -298,9 +310,10 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	@Override
 	public void write(Json json) {
+		BladeJson bjson = (BladeJson) json;
 
 		// Reset vertices if bboxFromRenderer to save always with 0.0 value
-		if (bboxFromRenderer && SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		if (bboxFromRenderer && bjson.getMode() == Mode.MODEL) {
 			float[] verts = bbox.getVertices();
 			bbox.setVertices(new float[8]);
 
@@ -310,8 +323,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		} else {
 			super.write(json);
 		}
-
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("renderer", renderer, null);
 		} else {
 			json.writeValue("renderer", renderer);
@@ -319,7 +332,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			json.writeValue("playingSound", playingSound);
 		}
 
-		json.writeValue("scale", scale);
+		json.writeValue("scaleX", scaleX);
+		json.writeValue("scaleY", scaleY);
 		json.writeValue("rot", rot);
 		json.writeValue("tint", tint);
 		json.writeValue("fakeDepth", fakeDepth);
@@ -331,7 +345,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			renderer = json.readValue("renderer", ActorRenderer.class, jsonData);
 		} else {
 			tweens = json.readValue("tweens", ArrayList.class, Tween.class, jsonData);
@@ -344,26 +359,32 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			playingSound = json.readValue("playingSound", String.class, jsonData);
 		}
 
-		scale = json.readValue("scale", float.class, scale, jsonData);
+		if (jsonData.get("scale") != null) {
+			scaleX = json.readValue("scale", float.class, jsonData);
+			scaleY = scaleX;
+		} else {
+			scaleX = json.readValue("scaleX", float.class, scaleX, jsonData);
+			scaleY = json.readValue("scaleY", float.class, scaleY, jsonData);
+		}
+		
 		rot = json.readValue("rot", float.class, rot, jsonData);
 		tint = json.readValue("tint", Color.class, tint, jsonData);
 
 		// backwards compatibility fakeDepth
-		if(jsonData.get("depthType") != null) {
-			String depthType = json.readValue("depthType", String.class, (String)null, jsonData);
-			
+		if (jsonData.get("depthType") != null) {
+			String depthType = json.readValue("depthType", String.class, (String) null, jsonData);
+
 			fakeDepth = "VECTOR".equals(depthType);
 		} else {
 			fakeDepth = json.readValue("fakeDepth", boolean.class, fakeDepth, jsonData);
 		}
-		
-		
+
 		bboxFromRenderer = json.readValue("bboxFromRenderer", boolean.class, bboxFromRenderer, jsonData);
 
 		if (bboxFromRenderer)
 			renderer.updateBboxFromRenderer(bbox);
 
-		setScale(scale);
+		setScale(scaleX, scaleY);
 		setRot(rot);
 	}
 

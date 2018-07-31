@@ -19,7 +19,6 @@ import com.badlogic.gdx.utils.Align;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.SceneScreen;
 import com.bladecoder.engine.util.DPIUtils;
 
@@ -107,7 +106,7 @@ public class VerbUI extends Table {
 
 		down.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
-				Inventory inv = World.getInstance().getInventory();
+				Inventory inv = sceneScreen.getUI().getWorld().getInventory();
 				
 				int itemsLeft = inv.getNumItems() - scroll * INVENTORY_COLS;
 				
@@ -163,7 +162,7 @@ public class VerbUI extends Table {
 	public void act(float delta) {
 		super.act(delta);
 
-		Inventory inv = World.getInstance().getInventory();
+		Inventory inv = sceneScreen.getUI().getWorld().getInventory();
 
 		// fill inventory
 		for (int i = 0; i < inventorySlots.size(); i++) {
@@ -203,7 +202,7 @@ public class VerbUI extends Table {
 			b.addListener(new ClickListener() {
 				public void clicked(InputEvent event, float x, float y) {
 					int i = (Integer) event.getListenerActor().getUserObject();
-					Inventory inv = World.getInstance().getInventory();
+					Inventory inv = sceneScreen.getUI().getWorld().getInventory();
 					target = null;
 
 					if (i < inv.getNumItems()) {

@@ -17,9 +17,9 @@ package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 import com.badlogic.gdx.utils.JsonValue;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 
 public class DialogOption implements Serializable {
 	private String text;
@@ -54,7 +54,7 @@ public class DialogOption implements Serializable {
 	public void setText(String text) {
 		this.text = text;
 	}
-	
+
 	public String getVoiceId() {
 		return voiceId;
 	}
@@ -62,7 +62,7 @@ public class DialogOption implements Serializable {
 	public void setVoiceId(String voiceId) {
 		this.voiceId = voiceId;
 	}
-	
+
 	public String getResponseVoiceId() {
 		return responseVoiceId;
 	}
@@ -74,7 +74,7 @@ public class DialogOption implements Serializable {
 	public void setResponseText(String responseText) {
 		this.responseText = responseText;
 	}
-	
+
 	public String getResponseText() {
 		return responseText;
 	}
@@ -94,11 +94,12 @@ public class DialogOption implements Serializable {
 	public void setOnce(boolean once) {
 		this.once = once;
 	}
-	
+
 	@Override
 	public void write(Json json) {
-	
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("text", text);
 			json.writeValue("responseText", responseText);
 			json.writeValue("verbId", verbId);
@@ -107,16 +108,17 @@ public class DialogOption implements Serializable {
 			json.writeValue("soundId", voiceId);
 			json.writeValue("responseSoundId", responseVoiceId);
 		} else {
-			
+
 		}
-		
+
 		json.writeValue("visible", visible);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-				
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			text = json.readValue("text", String.class, jsonData);
 			responseText = json.readValue("responseText", String.class, jsonData);
 			verbId = json.readValue("verbId", String.class, jsonData);
@@ -125,9 +127,9 @@ public class DialogOption implements Serializable {
 			voiceId = json.readValue("soundId", String.class, jsonData);
 			responseVoiceId = json.readValue("responseSoundId", String.class, jsonData);
 		} else {
-			
+
 		}
-		
+
 		visible = json.readValue("visible", boolean.class, false, jsonData);
-	}		
+	}
 }

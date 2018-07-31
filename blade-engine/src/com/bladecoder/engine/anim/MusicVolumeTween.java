@@ -18,14 +18,13 @@ package com.bladecoder.engine.anim;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.model.MusicManager;
 import com.bladecoder.engine.util.InterpolationMode;
 
 /**
  * Tween for Music fade in/out
  */
-public class MusicVolumeTween extends Tween<SpriteActor> {
+public class MusicVolumeTween extends Tween<MusicManager> {
 	
 	private float startVolume;
 	private float targetVolume;
@@ -33,8 +32,10 @@ public class MusicVolumeTween extends Tween<SpriteActor> {
 	public MusicVolumeTween() {
 	}
 
-	public void start(float tVolume, float duration, InterpolationMode interpolation, ActionCallback cb) {	
-		startVolume = World.getInstance().getMusicManager().getVolume();
+	public void start(MusicManager mm, float tVolume, float duration, InterpolationMode interpolation, ActionCallback cb) {	
+		this.target = mm;
+		
+		startVolume = mm.getVolume();
 		targetVolume = tVolume;
 		
 		setDuration(duration);
@@ -51,7 +52,7 @@ public class MusicVolumeTween extends Tween<SpriteActor> {
 
 	@Override
 	public void updateTarget() {
-		World.getInstance().getMusicManager().setVolume(startVolume + getPercent() * (targetVolume - startVolume));
+		target.setVolume(startVolume + getPercent() * (targetVolume - startVolume));
 	}
 	
 	@Override

@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.bladecoder.engine.util.EngineLogger;
 import com.strongjoshua.console.Console;
 import com.strongjoshua.console.LogLevel;
 
@@ -110,6 +111,7 @@ public class EditorLogger {
 
 	public static void setDebug() {
 		level = Levels.DEBUG;
+		EngineLogger.setDebug();
 		console.setLoggingToSystem(true);
 	}
 

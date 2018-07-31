@@ -24,13 +24,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.actions.ActionCallbackQueue;
 import com.bladecoder.engine.anim.SpritePosTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
+import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.SerializationHelper;
-import com.bladecoder.engine.util.SerializationHelper.Mode;
 
 public class CharacterActor extends SpriteActor {
 	public final static float DEFAULT_WALKING_SPEED = 1000f; // Speed units:
@@ -110,52 +109,52 @@ public class CharacterActor extends SpriteActor {
 	}
 
 	public void lookat(Vector2 p) {
-		if(!(renderer instanceof AnimationRenderer)) 
+		if (!(renderer instanceof AnimationRenderer))
 			return;
-		
+
 		inAnim();
 		removeTween(SpritePosTween.class);
-		((AnimationRenderer)renderer).startAnimation(standAnim, Tween.Type.SPRITE_DEFINED, -1, null, new Vector2(bbox.getX(), bbox.getY()),
-				p);
+		((AnimationRenderer) renderer).startAnimation(standAnim, Tween.Type.SPRITE_DEFINED, -1, null,
+				new Vector2(bbox.getX(), bbox.getY()), p);
 		outAnim(Tween.Type.SPRITE_DEFINED);
 	}
 
 	public void lookat(String direction) {
-		if(!(renderer instanceof AnimationRenderer)) 
+		if (!(renderer instanceof AnimationRenderer))
 			return;
-		
+
 		inAnim();
 		removeTween(SpritePosTween.class);
-		((AnimationRenderer)renderer).startAnimation(standAnim, Tween.Type.SPRITE_DEFINED, -1, null, direction);
+		((AnimationRenderer) renderer).startAnimation(standAnim, Tween.Type.SPRITE_DEFINED, -1, null, direction);
 		outAnim(Tween.Type.SPRITE_DEFINED);
 	}
 
 	public void stand() {
-		if(!(renderer instanceof AnimationRenderer)) 
+		if (!(renderer instanceof AnimationRenderer))
 			return;
-		
+
 		inAnim();
 		removeTween(SpritePosTween.class);
-		((AnimationRenderer)renderer).startAnimation(standAnim, Tween.Type.SPRITE_DEFINED, -1, null, null);
+		((AnimationRenderer) renderer).startAnimation(standAnim, Tween.Type.SPRITE_DEFINED, -1, null, null);
 		outAnim(Tween.Type.SPRITE_DEFINED);
 	}
 
 	public void talk() {
-		if(!(renderer instanceof AnimationRenderer)) 
+		if (!(renderer instanceof AnimationRenderer))
 			return;
-		
+
 		inAnim();
 		removeTween(SpritePosTween.class);
-		((AnimationRenderer)renderer).startAnimation(talkAnim, Tween.Type.SPRITE_DEFINED, -1, null, null);
+		((AnimationRenderer) renderer).startAnimation(talkAnim, Tween.Type.SPRITE_DEFINED, -1, null, null);
 		outAnim(Tween.Type.SPRITE_DEFINED);
 	}
 
 	public void startWalkAnim(Vector2 p0, Vector2 pf) {
-		if(!(renderer instanceof AnimationRenderer)) 
+		if (!(renderer instanceof AnimationRenderer))
 			return;
-		
+
 		inAnim();
-		((AnimationRenderer)renderer).startAnimation(walkAnim, Tween.Type.SPRITE_DEFINED, -1, null, p0, pf);
+		((AnimationRenderer) renderer).startAnimation(walkAnim, Tween.Type.SPRITE_DEFINED, -1, null, p0, pf);
 		outAnim(Tween.Type.SPRITE_DEFINED);
 	}
 
@@ -180,13 +179,16 @@ public class CharacterActor extends SpriteActor {
 
 		ArrayList<Vector2> walkingPath = null;
 
-		//Doesn't move if dst is less than 2px
+		// Doesn't move if dst is less than 2px
 		if (p0.dst(pf) < 2.0f) {
 			setPosition(pf.x, pf.y);
 
 			// call the callback
-			if (cb != null)
-				ActionCallbackQueue.add(cb);
+			if (cb != null) {
+				ActionCallback tmpcb = cb;
+				cb = null;
+				tmpcb.resume();
+			}
 
 			return;
 		}
@@ -201,8 +203,11 @@ public class CharacterActor extends SpriteActor {
 
 		if (walkingPath == null || walkingPath.size() == 0) {
 			// call the callback even when the path is empty
-			if (cb != null)
-				ActionCallbackQueue.add(cb);
+			if (cb != null) {
+				ActionCallback tmpcb = cb;
+				cb = null;
+				tmpcb.resume();
+			}
 
 			return;
 		}
@@ -219,9 +224,9 @@ public class CharacterActor extends SpriteActor {
 	 * 
 	 * This is used to fast walk between scenes. Used when double clicking.
 	 */
-	public void fastWalk() {	
-		for(Tween<SpriteActor> t: tweens) {	
-			if(t instanceof WalkTween) {
+	public void fastWalk() {
+		for (Tween<SpriteActor> t : tweens) {
+			if (t instanceof WalkTween) {
 				WalkTween wt = (WalkTween) t;
 				wt.completeNow(this);
 				wt = null;
@@ -236,7 +241,7 @@ public class CharacterActor extends SpriteActor {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer(super.toString());
+		StringBuilder sb = new StringBuilder(super.toString());
 
 		sb.append("  Walking Speed: ").append(walkingSpeed);
 		sb.append("\nText Color: ").append(textColor);
@@ -249,7 +254,8 @@ public class CharacterActor extends SpriteActor {
 		super.write(json);
 		json.writeValue("dialogs", dialogs, HashMap.class, Dialog.class);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("textStyle", textStyle);
 		} else {
 			json.writeValue("standAnim", standAnim);
@@ -266,14 +272,15 @@ public class CharacterActor extends SpriteActor {
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		if (SerializationHelper.getInstance().getMode() == Mode.MODEL) {
+		BladeJson bjson = (BladeJson) json;
+		if (bjson.getMode() == Mode.MODEL) {
 			dialogs = json.readValue("dialogs", HashMap.class, Dialog.class, jsonData);
 
 			if (dialogs != null) {
 				for (Dialog d : dialogs.values())
-					d.setActor(id);
+					d.setActor(this);
 			}
-			
+
 			textStyle = json.readValue("textStyle", String.class, jsonData);
 
 		} else {

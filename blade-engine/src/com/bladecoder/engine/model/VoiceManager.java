@@ -6,31 +6,54 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
 
 /**
  * Manager to play/load/dispose voices.
- * 
+ *
  * Plays a voice file, if another voice is playing, stops it before playing the
  * new voice.
- * 
+ *
  * @author rgarcia
  */
 public class VoiceManager implements Serializable, AssetConsumer {
 	transient private Music voice = null;
-	
+
 	String fileName = null;
 
 	private boolean isPlayingSer = false;
 	private float voicePosSer = 0;
-	
+
 	// the master volume
 	private float volume = 1.0f;
-	
+
 	transient private boolean isPaused = false;
 	transient private TextManager textManager = null;
+
+	private final Task backgroundLoadingTask = new Task() {
+		@Override
+		public void run() {
+			try {
+				if (!EngineAssetManager.getInstance().isLoading()) {
+					cancel();
+					retrieveAssets();
+
+					if (voice != null)
+						voice.play();
+				}
+
+			} catch (GdxRuntimeException e) {
+				EngineLogger.error(e.getMessage());
+				voice = null;
+				fileName = null;
+				textManager.next();
+			}
+		}
+	};
 
 	public VoiceManager(TextManager textManager) {
 		this.textManager = textManager;
@@ -60,37 +83,36 @@ public class VoiceManager implements Serializable, AssetConsumer {
 
 	public void play(String fileName) {
 		stop();
-		
+
 		this.fileName = fileName;
-		
+
 		if (fileName != null) {
-			retrieveAssets();
+			// Load and play the voice file in background to avoid
+			// blocking the UI
+			loadAssets();
 			
-			if(voice != null)
-				voice.play();
+			backgroundLoadingTask.cancel();
+			Timer.schedule(backgroundLoadingTask, 0, 0);
 		}
 	}
-	
 
 	public void setVolume(float volume) {
 		this.volume = volume;
-		
-		if(voice != null)
+
+		if (voice != null)
 			voice.setVolume(volume);
 	}
-
-
 
 	@Override
 	public void dispose() {
 		if (voice != null) {
-			
-			if(voice.isPlaying())
+
+			if (voice.isPlaying())
 				voice.stop();
-			
+
 			EngineLogger.debug("DISPOSING VOICE: " + fileName);
 			EngineAssetManager.getInstance().unload(EngineAssetManager.VOICE_DIR + fileName);
-			
+
 			voice = null;
 			fileName = null;
 			isPlayingSer = false;
@@ -109,39 +131,25 @@ public class VoiceManager implements Serializable, AssetConsumer {
 	@Override
 	public void retrieveAssets() {
 		if (voice == null && fileName != null) {
-			
-			if(!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.VOICE_DIR + fileName)) {
-				loadAssets();
-				
-				try {
-					EngineAssetManager.getInstance().finishLoading();
-				} catch (GdxRuntimeException e) {
-					EngineLogger.error(e.getMessage());
-					voice = null;
-					fileName = null;
-					textManager.next();
-					return;
-				}
-			}
-			
+
 			EngineLogger.debug("RETRIEVING VOICE: " + fileName);
-			
+
 			voice = EngineAssetManager.getInstance().get(EngineAssetManager.VOICE_DIR + fileName, Music.class);
-			
+
 			voice.setOnCompletionListener(new OnCompletionListener() {
 				@Override
 				public void onCompletion(Music music) {
-					if(textManager.getCurrentText() != null) 
+					if (textManager.getCurrentText() != null)
 						textManager.getCurrentText().setAutoTime();
 				}
 			});
-			
-			if(voice != null)
+
+			if (voice != null)
 				voice.setVolume(volume);
 
 			if (isPlayingSer) {
 				voice.play();
-				
+
 				if (voice != null) {
 					voice.setPosition(voicePosSer);
 				}
@@ -155,8 +163,8 @@ public class VoiceManager implements Serializable, AssetConsumer {
 	@Override
 	public void write(Json json) {
 		json.writeValue("fileName", fileName);
-		json.writeValue("isPlaying", voice != null && (voice.isPlaying()|| isPaused));
-		json.writeValue("musicPos", voice != null && (voice.isPlaying()|| isPaused) ? voice.getPosition() : 0f);
+		json.writeValue("isPlaying", voice != null && (voice.isPlaying() || isPaused));
+		json.writeValue("musicPos", voice != null && (voice.isPlaying() || isPaused) ? voice.getPosition() : 0f);
 	}
 
 	@Override

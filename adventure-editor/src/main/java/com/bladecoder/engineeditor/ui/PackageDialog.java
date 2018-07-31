@@ -218,14 +218,14 @@ public class PackageDialog extends EditDialog {
 	@Override
 	protected void ok() {
 		
-		final Stage stg = getStage(); 
+		final Stage stg = getStage();
+		
+		Message.showMsg(stg, "Generating package...", true);
 
 		new Thread() {
 
 			@Override
 			public void run() {
-				
-				Message.showMsg(stg, "Generating package...", true);
 
 				String msg;
 
@@ -266,7 +266,7 @@ public class PackageDialog extends EditDialog {
 				
 				
 				// hide message
-				Message.showMsg(stg, "", .5f);
+				Message.hideMsg();
 
 				if (msg != null) {
 					final String m = msg;
@@ -343,7 +343,7 @@ public class PackageDialog extends EditDialog {
 
 			String task = "android:assembleFullRelease";
 			String apk = Ctx.project.getProjectDir().getAbsolutePath()
-					+ "/android/build/outputs/apk/android-full-release.apk";
+					+ "/android/build/outputs/apk/full/release/android-full-release.apk";
 
 			boolean genExpansion = Boolean.parseBoolean(expansionFile.getText());
 			boolean newProjectStructure = new File(Ctx.project.getProjectDir().getAbsolutePath()
@@ -361,7 +361,7 @@ public class PackageDialog extends EditDialog {
 			if (genExpansion) {
 				task = "android:assembleExpansionRelease";
 				apk = Ctx.project.getProjectDir().getAbsolutePath()
-						+ "/android/build/outputs/apk/android-expansion-release.apk";
+						+ "/android/build/outputs/apk/expansion/release/android-expansion-release.apk";
 			}
 
 			if (RunProccess.runGradle(Ctx.project.getProjectDir(), params + task)) {
@@ -623,7 +623,7 @@ public class PackageDialog extends EditDialog {
 	private String getAppName() {
 
 		try {
-			Properties prop = Ctx.project.getGradleProperties();
+			Properties prop = Ctx.project.getGradleProperties(Ctx.project.getProjectDir());
 			return prop.getProperty("appName");
 		} catch (IOException e) {
 			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
@@ -638,7 +638,7 @@ public class PackageDialog extends EditDialog {
 	private String getCurrentVersion() {
 
 		try {
-			Properties prop = Ctx.project.getGradleProperties();
+			Properties prop = Ctx.project.getGradleProperties(Ctx.project.getProjectDir());
 			return prop.getProperty("version");
 		} catch (IOException e) {
 			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
@@ -653,9 +653,9 @@ public class PackageDialog extends EditDialog {
 	private void setCurrentVersion(String version) {
 
 		try {
-			Properties prop = Ctx.project.getGradleProperties();
+			Properties prop = Ctx.project.getGradleProperties(Ctx.project.getProjectDir());
 			prop.setProperty("version", version);
-			Ctx.project.saveGradleProperties(prop);
+			Ctx.project.saveGradleProperties(prop, Ctx.project.getProjectDir());
 		} catch (IOException e) {
 			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
 		}

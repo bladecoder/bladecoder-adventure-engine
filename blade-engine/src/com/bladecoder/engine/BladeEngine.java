@@ -40,6 +40,7 @@ public class BladeEngine implements ApplicationListener {
 	private boolean debug = false;
 	private boolean restart = false;
 	private UI ui;
+	private World world;
 
 	public static UI getAppUI() {
 		return ((BladeEngine) Gdx.app.getApplicationListener()).getUI();
@@ -80,8 +81,10 @@ public class BladeEngine implements ApplicationListener {
 	public void loadGame(String baseFolder) {
 		if(ui != null) {
 			ui.dispose();
-			World.getInstance().dispose();
+			world.dispose();
 		}
+		
+		world = new World();
 		
 		if(baseFolder != null) {
 			EngineAssetManager.setAssetFolder(baseFolder);
@@ -89,14 +92,14 @@ public class BladeEngine implements ApplicationListener {
 		}
 		
 		try {
-			World.getInstance().loadWorldDesc();
+			world.loadWorldDesc();
 		} catch (Exception e) {
 			// dispose();
 			EngineLogger.error("EXITING: " + e.getMessage());
 			Gdx.app.exit();
 		}
 			
-		ui = new UI();
+		ui = new UI(world);
 	}
 
 	@Override
@@ -128,10 +131,10 @@ public class BladeEngine implements ApplicationListener {
 
 			if (testScene != null || chapter != null) {
 				try {
-					World.getInstance().loadChapter(chapter, testScene, true);
+					world.loadChapter(chapter, testScene, true);
 				} catch (Exception e) {
 					dispose();
-					EngineLogger.error("EXITING: " + e.getMessage());
+					EngineLogger.error("Error loading model:" + e.getMessage(), e);
 					Gdx.app.exit();
 				}
 
@@ -143,7 +146,7 @@ public class BladeEngine implements ApplicationListener {
 
 			if (gameState != null) {
 				try {
-					World.getInstance().loadGameState(gameState);
+					world.loadGameState(gameState);
 				} catch (IOException e) {
 					EngineLogger.error(e.getMessage());
 				}
@@ -151,7 +154,7 @@ public class BladeEngine implements ApplicationListener {
 
 			if (restart) {
 				try {
-					World.getInstance().loadChapter(null);
+					world.getSerializer().loadChapter(null);
 					
 					ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 				} catch (Exception e) {
@@ -190,7 +193,7 @@ public class BladeEngine implements ApplicationListener {
 	@Override
 	public void dispose() {
 		EngineLogger.debug("GAME DISPOSE");
-		World.getInstance().dispose();
+		world.dispose();
 		ui.dispose();
 	}
 
@@ -199,7 +202,7 @@ public class BladeEngine implements ApplicationListener {
 		ui.render();
 
 		// Pause the game when an error is found in debug mode
-		if (EngineLogger.lastError != null && EngineLogger.debugMode() && !World.getInstance().isPaused()) {
+		if (EngineLogger.lastError != null && EngineLogger.debugMode() && !world.isPaused()) {
 			pause();
 		}
 	}
@@ -217,12 +220,12 @@ public class BladeEngine implements ApplicationListener {
 		boolean bot = ui.getTesterBot().isEnabled();
 		boolean r = ui.getRecorder().isPlaying();
 
-		if (!World.getInstance().isDisposed() && 
+		if (!world.isDisposed() && 
 				((!bot && !r) || EngineLogger.lastError != null)) {
 			EngineLogger.debug("GAME PAUSE");
 			ui.pause();
 			try {
-				World.getInstance().saveGameState();
+				world.saveGameState();
 			} catch (IOException e) {
 				EngineLogger.error(e.getMessage());
 			}

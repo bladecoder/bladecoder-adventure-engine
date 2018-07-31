@@ -187,7 +187,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 	protected void inputsToModel(boolean create) {
 
 		if (create) {
-			e = new Scene();
+			e = new Scene(Ctx.project.getWorld());
 
 			// CREATE DEFAULT LAYERS: BG, DYNAMIC, FG
 			SceneLayer l = new SceneLayer();
@@ -211,7 +211,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 			parent.getScenes().remove(e.getId());
 		}
 
-		e.setId(ElementUtils.getCheckedId(id.getText(), World.getInstance().getScenes().keySet().toArray(new String[0])));
+		e.setId(ElementUtils.getCheckedId(id.getText(), Ctx.project.getWorld().getScenes().keySet().toArray(new String[0])));
 
 		e.setBackgroundAtlas(backgroundAtlas.getText());
 		e.setBackgroundRegionId(backgroundRegion.getText());
@@ -219,7 +219,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		boolean dv = Boolean.parseBoolean(depthVector.getText());
 		
 		if(dv == true && e.getDepthVector() == null) { // create depth vector
-			e.setDepthVector(new Vector2(World.getInstance().getHeight(), 0));
+			e.setDepthVector(new Vector2(Ctx.project.getWorld().getHeight(), 0));
 		} else if(dv == false && e.getDepthVector() != null) { // Remove depth vector
 			e.setDepthVector(null);
 		}

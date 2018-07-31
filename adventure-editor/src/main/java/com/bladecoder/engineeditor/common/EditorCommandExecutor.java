@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
-import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger.Levels;
 import com.bladecoder.engineeditor.model.Project;
@@ -14,7 +13,7 @@ import com.strongjoshua.console.CommandExecutor;
 public class EditorCommandExecutor extends CommandExecutor {
 	public void qa() {
 		QA qa = new QA();
-		qa.run(World.getInstance());
+		qa.run(Ctx.project.getWorld());
 	}
 
 	public void checkI18NMissingKeys() {

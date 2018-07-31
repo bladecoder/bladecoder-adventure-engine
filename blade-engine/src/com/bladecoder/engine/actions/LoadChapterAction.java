@@ -29,11 +29,18 @@ public class LoadChapterAction implements Action {
 	@ActionPropertyDescription("The target scene")
 	@ActionProperty(type=Type.STRING, required = false)
 	private String scene;
+	
+	private World w;
+	
+	@Override
+	public void init(World w) {
+		this.w = w;
+	}
 
 	@Override
 	public boolean run(VerbRunner cb) {
 		try {
-			World.getInstance().loadChapter(chapter, scene, false);
+			w.loadChapter(chapter, scene, false);
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage());
 		}
