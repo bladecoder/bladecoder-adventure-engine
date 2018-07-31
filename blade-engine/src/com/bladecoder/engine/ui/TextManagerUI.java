@@ -37,12 +37,12 @@ import com.bladecoder.engine.util.EngineLogger;
 /**
  * TextManagerUI draws texts and dialogs on screen.
  * 
- * For now, only one subtitle is displayed in the screen.
+ * For now, only one subtitle is displayed in the screen at a time.
  * 
  * @author rgarcia
  * 
  */
-public class TextManagerUI extends Actor {
+public class TextManagerUI extends Actor implements ITextManagerUI {
 	private static final float PADDING = DPIUtils.getMarginSize();
 
 	private final Vector3 unprojectTmp = new Vector3();
@@ -72,6 +72,7 @@ public class TextManagerUI extends Actor {
 		setVisible(false);
 	}
 
+	@Override
 	public void setText(Text t) {
 		text = t;
 

@@ -76,6 +76,7 @@ import com.bladecoder.engine.ui.SceneFitViewport;
 import com.bladecoder.engine.ui.SceneScreen;
 import com.bladecoder.engine.ui.TesterBot;
 import com.bladecoder.engine.ui.TextManagerUI;
+import com.bladecoder.engine.ui.ITextManagerUI;
 import com.bladecoder.engine.ui.UI;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.Config;
@@ -93,7 +94,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	private PieMenu pie;
 	private InventoryUI inventoryUI;
 	private Actor dialogUI;
-	private TextManagerUI textManagerUI;
+	private Actor textManagerUI;
 	private ShapeRenderer renderer;
 
 	private InventoryButton inventoryButton;
@@ -154,12 +155,11 @@ public class DefaultSceneScreen implements SceneScreen {
 			else {
 				getInputUnProject(unprojectTmp);
 
-				if (w.inCutMode()
-						|| (!w.inCutMode() && !TextManager.AUTO_HIDE_TEXTS && textManagerUI.isVisible())) {
-					
-					if(recorder.isRecording())
+				if (w.inCutMode() || (!w.inCutMode() && !TextManager.AUTO_HIDE_TEXTS && textManagerUI.isVisible())) {
+
+					if (recorder.isRecording())
 						return true;
-					
+
 					w.getCurrentScene().getTextManager().next();
 				} else if (inventoryUI.isVisible()) {
 					inventoryUI.hide();
@@ -305,8 +305,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		@Override
 		public boolean scrolled(int amount) {
-			if (uiEnabled && !ui.getWorld().hasDialogOptions()
-					&& ui.getWorld().getInventory().isVisible()) {
+			if (uiEnabled && !ui.getWorld().hasDialogOptions() && ui.getWorld().getInventory().isVisible()) {
 
 				boolean fromDown = (inventoryUI.getInventoryPos() == InventoryPos.CENTER
 						|| inventoryUI.getInventoryPos() == InventoryPos.DOWN);
@@ -329,10 +328,10 @@ public class DefaultSceneScreen implements SceneScreen {
 	private final WorldListener worldListener = new WorldListener() {
 		@Override
 		public void text(Text t) {
-			if(t != null && t.type == Text.Type.UI) {
+			if (t != null && t.type == Text.Type.UI) {
 				showUIText(t);
-			} else {			
-				textManagerUI.setText(t);
+			} else {
+				((ITextManagerUI) textManagerUI).setText(t);
 			}
 		}
 
@@ -368,24 +367,24 @@ public class DefaultSceneScreen implements SceneScreen {
 	public UI getUI() {
 		return ui;
 	}
-	
+
 	private void showUIText(Text t) {
 		// Type UI texts will show at the same time that TextManagerUI texts.
-		
-		String style = t.style == null ?"ui-text":t.style;
+
+		String style = t.style == null ? "ui-text" : t.style;
 		Label msg = new Label(t.str, getUI().getSkin(), style);
 
 		msg.setWrap(true);
 		msg.setAlignment(Align.center, Align.center);
 		msg.setColor(t.color);
 		msg.setSize(msg.getWidth() + DPIUtils.getMarginSize() * 2, msg.getHeight() + DPIUtils.getMarginSize() * 2);
-		
+
 		stage.addActor(msg);
 		unprojectTmp.set(t.x, t.y, 0);
 		ui.getWorld().getSceneCamera().scene2screen(getStage().getViewport(), unprojectTmp);
-		
+
 		float posx, posy;
-		
+
 		if (t.x == TextManager.POS_CENTER) {
 			posx = (getStage().getViewport().getScreenWidth() - msg.getWidth()) / 2;
 		} else if (t.y == TextManager.POS_SUBTITLE) {
@@ -393,7 +392,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		} else {
 			posx = unprojectTmp.x;
 		}
-		
+
 		if (t.y == TextManager.POS_CENTER) {
 			posy = (getStage().getViewport().getScreenHeight() - msg.getHeight()) / 2;
 		} else if (t.y == TextManager.POS_SUBTITLE) {
@@ -401,11 +400,11 @@ public class DefaultSceneScreen implements SceneScreen {
 		} else {
 			posy = unprojectTmp.y;
 		}
-		
+
 		msg.setPosition(posx, posy);
 		msg.getColor().a = 0;
-		msg.addAction(sequence(Actions.fadeIn(0.4f, Interpolation.fade), Actions.delay(t.time,
-				sequence(fadeOut(0.4f, Interpolation.fade), Actions.removeActor()))));
+		msg.addAction(sequence(Actions.fadeIn(0.4f, Interpolation.fade),
+				Actions.delay(t.time, sequence(fadeOut(0.4f, Interpolation.fade), Actions.removeActor()))));
 	}
 
 	private void updateUI() {
@@ -530,16 +529,16 @@ public class DefaultSceneScreen implements SceneScreen {
 
 			// UPDATE POINTER
 			if (!pie.isVisible() && actorUnderCursor != currentActor) {
-				currentActor = actorUnderCursor;				
-				
+				currentActor = actorUnderCursor;
+
 				if (currentActor != null) {
 					if (showDesc)
 						pointer.setDesc(currentActor.getDesc());
 
 					Verb leaveVerb = currentActor.getVerb(Verb.LEAVE_VERB);
-					
+
 					TextureRegion r = null;
-					
+
 					if (leaveVerb != null) {
 						if (leaveVerb.getIcon() != null
 								&& (r = getUI().getSkin().getAtlas().findRegion(leaveVerb.getIcon())) != null) {
@@ -550,18 +549,18 @@ public class DefaultSceneScreen implements SceneScreen {
 						}
 					} else {
 						Verb actionVerb = currentActor.getVerb(Verb.ACTION_VERB);
-						
-						if(actionVerb != null && actionVerb.getIcon() != null
+
+						if (actionVerb != null && actionVerb.getIcon() != null
 								&& (r = getUI().getSkin().getAtlas().findRegion(actionVerb.getIcon())) != null) {
 							pointer.setIcon(r);
-						} else {						
+						} else {
 							pointer.setHotspotIcon();
 						}
 					}
 				} else {
 					pointer.setDefaultIcon();
 				}
-			} else if(pie.isVisible()) {
+			} else if (pie.isVisible()) {
 				currentActor = actorUnderCursor;
 			}
 		}
@@ -883,7 +882,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			// SINGLE CLICK UI
 			// Preference TALKTO, ACTION, PICKUP, LOOKAT
 			String verb = Verb.TALKTO_VERB;
-			
+
 			if (a.getVerb(verb) == null)
 				verb = Verb.PICKUP_VERB;
 
@@ -959,10 +958,17 @@ public class DefaultSceneScreen implements SceneScreen {
 		return dialogUI;
 	}
 
-	public void setTextManagerUI(TextManagerUI a) {
-		textManagerUI.remove();
-		textManagerUI = a;
-		stage.addActor(textManagerUI);
+	public void setTextManagerUI(Actor a) {
+		if (a instanceof ITextManagerUI) {
+			textManagerUI.remove();
+			textManagerUI = a;
+			stage.addActor(textManagerUI);
+		} else {
+			EngineLogger.error("ERROR setTextManagerUI: actor is not a ITextManagerUI");
+
+			dispose();
+			Gdx.app.exit();
+		}
 	}
 
 	public void setDialogUI(Actor a) {
