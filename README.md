@@ -17,6 +17,8 @@ The **Bladecoder Adventure Engine** has been developed using the [LibGDX](http:/
 ### Adventure Editor
 The **Adventure Editor** is a graphical editor to create full point and click games with minimal programming.
 
+<a href="https://flathub.org/apps/details/com.bladecoder.adventure-editor"><img width="240" alt="Download on Flathub" src="https://flathub.org/assets/badges/flathub-badge-en.png"/></a>
+
 ![adventure editor 2014-09-26](https://cloud.githubusercontent.com/assets/6229260/4420346/1d3a1b8a-4578-11e4-8eec-415f5e27c005.png)
 
 ### Blade Engine
