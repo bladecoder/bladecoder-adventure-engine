@@ -81,9 +81,9 @@ public class InkManager implements VerbRunner, Serializable {
 			}
 		}.start();
 
-		// Some sleep to give some time to start the thread to avoid calling
-		// setVariable() before the thread starts.
-		Thread.sleep(20);
+		// Start the child thread now to avoid calling setVariable() before the thread
+		// starts.
+		Thread.yield();
 	}
 
 	synchronized private void loadStory(String name, String stateString) {

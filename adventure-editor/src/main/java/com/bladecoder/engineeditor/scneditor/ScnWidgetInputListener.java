@@ -40,6 +40,7 @@ import com.bladecoder.engineeditor.undo.UndoDeleteActor;
 import com.bladecoder.engineeditor.undo.UndoDepthVector;
 import com.bladecoder.engineeditor.undo.UndoPosition;
 import com.bladecoder.engineeditor.undo.UndoRefPosition;
+import com.bladecoder.engineeditor.undo.UndoRotation;
 import com.bladecoder.engineeditor.undo.UndoWalkZonePosition;
 import com.bladecoder.engineeditor.undo.UndoWalkzonePointPos;
 
@@ -47,13 +48,14 @@ public class ScnWidgetInputListener extends ClickListener {
 	private final ScnWidget scnWidget;
 
 	private static enum DraggingModes {
-		NONE, DRAGGING_ACTOR, DRAGGING_BBOX_POINT, DRAGGING_WALKZONE, DRAGGING_WALKZONE_POINT, DRAGGING_MARKER_0, DRAGGING_MARKER_100, DRAGGING_REFPOINT
+		NONE, DRAGGING_ACTOR, DRAGGING_BBOX_POINT, DRAGGING_WALKZONE, DRAGGING_WALKZONE_POINT, DRAGGING_MARKER_0, DRAGGING_MARKER_100, DRAGGING_REFPOINT, ROTATE_ACTOR
 	};
 
 	private DraggingModes draggingMode = DraggingModes.NONE;
 	private BaseActor selActor = null;
 	private Vector2 org = new Vector2();
 	private Vector2 undoOrg = new Vector2();
+	private float undoRot = 0;
 	private int vertIndex;
 
 	public ScnWidgetInputListener(ScnWidget w) {
@@ -168,42 +170,59 @@ public class ScnWidgetInputListener extends ClickListener {
 
 			}
 
-			// SELACTOR ORIGIN DRAGGING
-			if (selActor != null && selActor instanceof InteractiveActor) {
-				Vector2 refPoint = ((InteractiveActor) selActor).getRefPoint();
+			if (selActor != null) {
 
-				float orgX = selActor.getX() + refPoint.x;
-				float orgY = selActor.getY() + refPoint.y;
+				// ORIGIN DRAGGING
+				if (selActor instanceof InteractiveActor) {
+					Vector2 refPoint = ((InteractiveActor) selActor).getRefPoint();
 
-				float dst = Vector2.dst(p.x, p.y, orgX, orgY);
+					float orgX = selActor.getX() + refPoint.x;
+					float orgY = selActor.getY() + refPoint.y;
 
-				if (dst < Scene.ANCHOR_RADIUS) {
-					draggingMode = DraggingModes.DRAGGING_REFPOINT;
-					undoOrg.set(refPoint.x, refPoint.y);
+					float dst = Vector2.dst(p.x, p.y, orgX, orgY);
+
+					if (dst < Scene.ANCHOR_RADIUS) {
+						draggingMode = DraggingModes.DRAGGING_REFPOINT;
+						undoOrg.set(refPoint.x, refPoint.y);
+						return true;
+					}
+				}
+
+				// VERTEXs DRAGGING
+				if ((!(selActor instanceof SpriteActor) || !((SpriteActor) selActor).isBboxFromRenderer())
+						&& !(scnWidget.getSelectedActor() instanceof AnchorActor)) {
+
+					Polygon bbox = selActor.getBBox();
+					float verts[] = bbox.getTransformedVertices();
+					for (int i = 0; i < verts.length; i += 2) {
+						if (p.dst(verts[i], verts[i + 1]) < CanvasDrawer.CORNER_DIST) {
+							draggingMode = DraggingModes.DRAGGING_BBOX_POINT;
+							vertIndex = i;
+
+							float v[] = bbox.getVertices();
+							undoOrg.set(v[i], v[i + 1]);
+							return true;
+						}
+					}
+				}
+
+				// CLICK IN MOVE ICON
+				if (scnWidget.inMoveIcon(p.x, p.y)) {
+					draggingMode = DraggingModes.DRAGGING_ACTOR;
+					undoOrg.set(selActor.getX(), selActor.getY());
+					return true;
+				}
+
+				// CHECK CLICK IN ROTATE ICON
+				if (selActor instanceof SpriteActor && scnWidget.inRotateIcon(p.x, p.y)) {
+					draggingMode = DraggingModes.ROTATE_ACTOR;
+					undoRot = ((SpriteActor) selActor).getRot();
 					return true;
 				}
 			}
 
-			// SELACTOR VERTEXs DRAGGING
-			if (selActor != null
-					&& (!(selActor instanceof SpriteActor) || !((SpriteActor) selActor).isBboxFromRenderer())
-					&& !(scnWidget.getSelectedActor() instanceof AnchorActor)) {
-
-				Polygon bbox = selActor.getBBox();
-				float verts[] = bbox.getTransformedVertices();
-				for (int i = 0; i < verts.length; i += 2) {
-					if (p.dst(verts[i], verts[i + 1]) < CanvasDrawer.CORNER_DIST) {
-						draggingMode = DraggingModes.DRAGGING_BBOX_POINT;
-						vertIndex = i;
-						
-						float v[] = bbox.getVertices();
-						undoOrg.set(v[i], v[i + 1]);
-						return true;
-					}
-				}
-			}
-
-			BaseActor a = scn.getActorAt(p.x, p.y); // CHECK FOR ACTORS
+			// CHECK FOR CLICK INSIDE ACTOR TO CHANGE SELECTION
+			BaseActor a = scn.getActorAt(p.x, p.y);
 
 			if (a != null && a != selActor) {
 				selActor = a;
@@ -213,11 +232,11 @@ public class ScnWidgetInputListener extends ClickListener {
 				return true;
 			}
 
-			if (a != null) {
-				draggingMode = DraggingModes.DRAGGING_ACTOR;
-				undoOrg.set(selActor.getX(), selActor.getY());
-				return true;
-			}
+			// if (a != null) {
+			// draggingMode = DraggingModes.DRAGGING_ACTOR;
+			// undoOrg.set(selActor.getX(), selActor.getY());
+			// return true;
+			// }
 
 			// CHECK FOR DRAGGING DEPTH MARKERS
 			Vector2 depthVector = scnWidget.getScene().getDepthVector();
@@ -263,12 +282,20 @@ public class ScnWidgetInputListener extends ClickListener {
 			Vector2 d = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 			scnWidget.screenToWorldCoords(d);
 
+			float angle = d.angle(org);
+
 			d.sub(org);
 			org.add(d);
 
 			if (draggingMode == DraggingModes.DRAGGING_ACTOR) {
 				selActor.setPosition(selActor.getX() + d.x, selActor.getY() + d.y);
 				Ctx.project.setModified(this, Project.POSITION_PROPERTY, null, selActor);
+			} else if (draggingMode == DraggingModes.ROTATE_ACTOR) {
+				if (selActor instanceof SpriteActor) {
+					SpriteActor sa = (SpriteActor) selActor;
+					sa.setRot(sa.getRot() - angle);
+					Ctx.project.setModified();
+				}
 			} else if (draggingMode == DraggingModes.DRAGGING_REFPOINT) {
 				Vector2 refPoint = ((InteractiveActor) selActor).getRefPoint();
 				refPoint.add(d.x, d.y);
@@ -345,6 +372,8 @@ public class ScnWidgetInputListener extends ClickListener {
 
 		if (draggingMode == DraggingModes.DRAGGING_ACTOR) {
 			Ctx.project.getUndoStack().add(new UndoPosition(selActor, new Vector2(undoOrg)));
+		} else if (draggingMode == DraggingModes.ROTATE_ACTOR) {
+			Ctx.project.getUndoStack().add(new UndoRotation((SpriteActor)selActor, undoRot));
 		} else if (draggingMode == DraggingModes.DRAGGING_REFPOINT) {
 			Ctx.project.getUndoStack().add(new UndoRefPosition((InteractiveActor) selActor, new Vector2(undoOrg)));
 		} else if (draggingMode == DraggingModes.DRAGGING_WALKZONE_POINT) {
@@ -352,8 +381,7 @@ public class ScnWidgetInputListener extends ClickListener {
 
 			Ctx.project.getUndoStack().add(new UndoWalkzonePointPos(poly, vertIndex, new Vector2(undoOrg)));
 		} else if (draggingMode == DraggingModes.DRAGGING_BBOX_POINT) {
-			Ctx.project.getUndoStack()
-					.add(new UndoBboxPointPos(selActor, vertIndex, new Vector2(undoOrg)));
+			Ctx.project.getUndoStack().add(new UndoBboxPointPos(selActor, vertIndex, new Vector2(undoOrg)));
 		} else if (draggingMode == DraggingModes.DRAGGING_MARKER_0
 				|| draggingMode == DraggingModes.DRAGGING_MARKER_100) {
 			Ctx.project.getUndoStack().add(new UndoDepthVector(scnWidget.getScene(), new Vector2(undoOrg)));

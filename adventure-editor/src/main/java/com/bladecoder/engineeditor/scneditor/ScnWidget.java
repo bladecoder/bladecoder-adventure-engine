@@ -29,7 +29,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -64,6 +66,8 @@ public class ScnWidget extends Widget {
 	private final Vector3 tmpV3 = new Vector3();
 	private final Vector2 tmpV2 = new Vector2();
 	private final Vector2 tmp2V2 = new Vector2();
+	private final Vector3 tmpV3Draw = new Vector3();
+	private final Vector2 tmpV2Transform = new Vector2();
 
 	private final SpriteBatch sceneBatch = new SpriteBatch();
 	private final CanvasDrawer drawer = new CanvasDrawer();
@@ -95,9 +99,12 @@ public class ScnWidget extends Widget {
 
 	private final OrthographicCamera camera = new OrthographicCamera();
 
+	private final TextureRegion scnMoveIcon;
+	private final TextureRegion scnRotateIcon;
+
 	/**
-	 * The NOTIFY_PROJECT_LOADED listener is called from other thread. This flag
-	 * is to recreate the scene in the OpenGL thread.
+	 * The NOTIFY_PROJECT_LOADED listener is called from other thread. This flag is
+	 * to recreate the scene in the OpenGL thread.
 	 */
 	private boolean projectLoadedFlag = false;
 
@@ -145,6 +152,9 @@ public class ScnWidget extends Widget {
 		showWalkZone = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.showWalkZone", "false"));
 		inScene = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.inScene", "false"));
 		animation = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.animation", "true"));
+
+		scnMoveIcon = Ctx.assetManager.getIcon("scn_move");
+		scnRotateIcon = Ctx.assetManager.getIcon("scn_rotate");
 	}
 
 	public OrthographicCamera getCamera() {
@@ -196,8 +206,8 @@ public class ScnWidget extends Widget {
 				|| Gdx.input.isKeyPressed(Keys.RIGHT)) {
 
 			BaseActor selActor = getSelectedActor();
-			
-			if(selActor == null)
+
+			if (selActor == null)
 				return;
 
 			if (Gdx.input.isKeyPressed(Keys.UP))
@@ -228,7 +238,7 @@ public class ScnWidget extends Widget {
 			tile.draw(batch, getX(), getY(), getWidth(), getHeight());
 			batch.enableBlending();
 
-			Vector3 v = new Vector3(getX(), getY(), 0);
+			Vector3 v = tmpV3Draw.set(getX(), getY(), 0);
 			v = v.prj(batch.getTransformMatrix());
 
 			batch.end();
@@ -306,8 +316,13 @@ public class ScnWidget extends Widget {
 				faRenderer.draw((SpriteBatch) batch);
 			}
 
+			// DRAW selected actor ICONS
+			if (selectedActor != null) {
+				drawTransformIcons((SpriteBatch) batch, selectedActor);
+			}
+
 			// DRAW COORDS
-			Vector2 coords = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+			Vector2 coords = tmpV2Transform.set(Gdx.input.getX(), Gdx.input.getY());
 			screenToWorldCoords(coords);
 			String str = MessageFormat.format("({0}, {1})", (int) coords.x, (int) coords.y);
 
@@ -373,6 +388,37 @@ public class ScnWidget extends Widget {
 
 		}
 
+	}
+
+	private void drawTransformIcons(SpriteBatch batch, BaseActor a) {
+		Polygon p = a.getBBox();
+
+		if (a instanceof InteractiveActor) {
+
+			InteractiveActor ia = (InteractiveActor) a;
+
+			if (!scn.getLayer(ia.getLayer()).isVisible())
+				return;
+
+			Rectangle r = p.getBoundingRectangle();
+
+			worldToScreenCoords(tmpV2Transform.set(r.x, r.y));
+
+			float x = tmpV2Transform.x;
+			// float y = tmpV2Transform.y;
+
+			worldToScreenCoords(tmpV2Transform.set(r.x + r.width, r.y + r.height));
+
+			float x2 = tmpV2Transform.x;
+			float y2 = tmpV2Transform.y;
+
+			batch.draw(scnMoveIcon, x + (x2 - x - scnMoveIcon.getRegionWidth()) / 2, y2);
+
+			if (a instanceof SpriteActor) {
+				batch.draw(scnRotateIcon, x2 - scnRotateIcon.getRegionWidth() / 2,
+						y2 - scnRotateIcon.getRegionHeight() / 2);
+			}
+		}
 	}
 
 	private void drawFakeDepthMarkers(SpriteBatch batch) {
@@ -553,6 +599,62 @@ public class ScnWidget extends Widget {
 		camera.project(tmpV3, tmpV2.x, tmpV2.y, getWidth(), getHeight());
 		coords.set(tmpV3.x, tmpV3.y);
 		stageToLocalCoordinates(coords);
+	}
+
+	public boolean inMoveIcon(float px, float py) {
+		Polygon p = selectedActor.getBBox();
+
+		if (selectedActor instanceof InteractiveActor) {
+
+			InteractiveActor ia = (InteractiveActor) selectedActor;
+
+			if (!scn.getLayer(ia.getLayer()).isVisible())
+				return false;
+
+			Rectangle r = p.getBoundingRectangle();
+
+			worldToScreenCoords(tmpV2Transform.set(r.x + r.width / 2, r.y + r.height));
+
+			float x = tmpV2Transform.x;
+			float y = tmpV2Transform.y;
+
+			Rectangle r2 = new Rectangle(x - scnMoveIcon.getRegionWidth() / 2, y, scnMoveIcon.getRegionWidth(),
+					scnMoveIcon.getRegionHeight());
+
+			worldToScreenCoords(tmpV2Transform.set(px, py));
+
+			return r2.contains(tmpV2Transform.x, tmpV2Transform.y);
+		}
+
+		return false;
+	}
+
+	public boolean inRotateIcon(float px, float py) {
+		Polygon p = selectedActor.getBBox();
+
+		if (selectedActor instanceof SpriteActor) {
+
+			InteractiveActor ia = (InteractiveActor) selectedActor;
+
+			if (!scn.getLayer(ia.getLayer()).isVisible())
+				return false;
+
+			Rectangle r = p.getBoundingRectangle();
+
+			worldToScreenCoords(tmpV2Transform.set(r.x + r.width, r.y + r.height));
+
+			float x = tmpV2Transform.x;
+			float y = tmpV2Transform.y;
+
+			Rectangle r2 = new Rectangle(x - scnMoveIcon.getRegionWidth() / 2, y, scnMoveIcon.getRegionWidth(),
+					scnMoveIcon.getRegionHeight());
+
+			worldToScreenCoords(tmpV2Transform.set(px, py));
+
+			return r2.contains(tmpV2Transform.x, tmpV2Transform.y);
+		}
+
+		return false;
 	}
 
 	public Scene getScene() {
