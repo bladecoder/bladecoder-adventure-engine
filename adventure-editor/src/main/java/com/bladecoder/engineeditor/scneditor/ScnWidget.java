@@ -46,6 +46,7 @@ import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -93,7 +94,7 @@ public class ScnWidget extends Widget {
 	private boolean loading = false;
 	private boolean loadingError = false;
 
-	private boolean showWalkZone;
+	private boolean showSpriteBounds = true;
 
 	private final GlyphLayout textLayout = new GlyphLayout();
 
@@ -149,7 +150,7 @@ public class ScnWidget extends Widget {
 			}
 		});
 
-		showWalkZone = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.showWalkZone", "false"));
+		showSpriteBounds = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.showSpriteBounds", "true"));
 		inScene = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.inScene", "false"));
 		animation = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.animation", "true"));
 
@@ -292,14 +293,7 @@ public class ScnWidget extends Widget {
 			}
 
 			drawer.drawBGBounds();
-
-			if (showWalkZone && scn.getPolygonalNavGraph() != null) {
-				drawer.drawBBoxWalkZone(scn, false);
-
-				drawer.drawPolygonVertices(scn.getPolygonalNavGraph().getWalkZone(), Color.GREEN);
-			}
-
-			drawer.drawBBoxActors(scn);
+			drawer.drawBBoxActors(scn, showSpriteBounds);
 
 			if (selectedActor != null) {
 				drawer.drawSelectedActor(selectedActor);
@@ -393,12 +387,14 @@ public class ScnWidget extends Widget {
 	private void drawTransformIcons(SpriteBatch batch, BaseActor a) {
 		Polygon p = a.getBBox();
 
-		if (a instanceof InteractiveActor) {
+		if (!(a instanceof AnchorActor)) {
 
-			InteractiveActor ia = (InteractiveActor) a;
+			if (a instanceof InteractiveActor) {
+				InteractiveActor ia = (InteractiveActor) a;
 
-			if (!scn.getLayer(ia.getLayer()).isVisible())
-				return;
+				if (!scn.getLayer(ia.getLayer()).isVisible())
+					return;
+			}
 
 			Rectangle r = p.getBoundingRectangle();
 
@@ -495,13 +491,13 @@ public class ScnWidget extends Widget {
 		}
 	}
 
-	public boolean getShowWalkZone() {
-		return showWalkZone;
+	public boolean getShowSpriteBounds() {
+		return showSpriteBounds;
 	}
 
-	public void setShowWalkZone(boolean v) {
-		showWalkZone = v;
-		Ctx.project.getEditorConfig().setProperty("view.showWalkZone", Boolean.toString(showWalkZone));
+	public void setShowSpriteBounds(boolean v) {
+		showSpriteBounds = v;
+		Ctx.project.getEditorConfig().setProperty("view.showSpriteBounds", Boolean.toString(showSpriteBounds));
 	}
 
 	@Override
@@ -604,12 +600,14 @@ public class ScnWidget extends Widget {
 	public boolean inMoveIcon(float px, float py) {
 		Polygon p = selectedActor.getBBox();
 
-		if (selectedActor instanceof InteractiveActor) {
+		if (!(selectedActor instanceof AnchorActor)) {
 
-			InteractiveActor ia = (InteractiveActor) selectedActor;
+			if (selectedActor instanceof InteractiveActor) {
+				InteractiveActor ia = (InteractiveActor) selectedActor;
 
-			if (!scn.getLayer(ia.getLayer()).isVisible())
-				return false;
+				if (!scn.getLayer(ia.getLayer()).isVisible())
+					return false;
+			}
 
 			Rectangle r = p.getBoundingRectangle();
 

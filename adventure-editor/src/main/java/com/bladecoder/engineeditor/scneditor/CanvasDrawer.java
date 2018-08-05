@@ -33,6 +33,7 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.WalkZoneActor;
 import com.bladecoder.engine.polygonalpathfinder.NavNodePolygonal;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
@@ -53,7 +54,7 @@ public class CanvasDrawer {
 		this.camera = camera;
 	}
 
-	public void drawBBoxActors(Scene scn) {
+	public void drawBBoxActors(Scene scn, boolean showSpriteBounds) {
 		drawer.setProjectionMatrix(camera.combined);
 		drawer.setTransformMatrix(new Matrix4());
 		drawer.begin(ShapeType.Line);
@@ -73,6 +74,9 @@ public class CanvasDrawer {
 				drawer.polygon(p.getTransformedVertices());
 			} else if (a instanceof InteractiveActor) {
 				InteractiveActor iActor = (InteractiveActor) a;
+				
+				if(a instanceof SpriteActor && !showSpriteBounds)
+					continue;
 
 				if (!scn.getLayer(iActor.getLayer()).isVisible())
 					continue;
@@ -80,7 +84,10 @@ public class CanvasDrawer {
 				drawer.setColor(Scene.ACTOR_BBOX_COLOR);
 				if (p.getTransformedVertices().length > 2)
 					drawer.polygon(p.getTransformedVertices());
-
+			} else if (a instanceof WalkZoneActor) {				
+				drawer.setColor(Scene.WALKZONE_COLOR);
+				if (p.getTransformedVertices().length > 2)
+					drawer.polygon(p.getTransformedVertices());
 			} else if (a instanceof AnchorActor) {
 				drawer.setColor(Scene.ANCHOR_COLOR);
 				drawer.line(p.getX() - Scene.ANCHOR_RADIUS, p.getY(), p.getX() + Scene.ANCHOR_RADIUS, p.getY());

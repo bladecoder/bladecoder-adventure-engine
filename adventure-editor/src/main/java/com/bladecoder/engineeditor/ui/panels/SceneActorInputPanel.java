@@ -31,6 +31,7 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.WalkZoneActor;
 import com.bladecoder.engineeditor.Ctx;
 
 public class SceneActorInputPanel extends InputPanel {
@@ -130,22 +131,32 @@ public class SceneActorInputPanel extends InputPanel {
 					filteredActors.add(a);
 			} else if(type == Param.Type.SCENE_SPRITE_ACTOR) {
 				if(a instanceof SpriteActor)
+					filteredActors.add(a);
+			} else if(type == Param.Type.SCENE_WALKZONE_ACTOR) {
+				if(a instanceof WalkZoneActor)
 					filteredActors.add(a);				
 			} else {
 				filteredActors.add(a);
 			}
 		}
 		
-		String[] result = new String[isMandatory()?filteredActors.size() + 1:filteredActors.size() + 2];
+		String[] result = null;
 		
-		// Add player variable to the list
-		result[0] = Scene.VAR_PLAYER;
-		
-		if(!isMandatory())
-			result[filteredActors.size() + 1] = "";
-		
-		for(int i = 0; i < filteredActors.size(); i++) {
-			result[i+1] = filteredActors.get(i).getId();
+		if (type != Param.Type.SCENE_WALKZONE_ACTOR) {
+			// Add player variable to the list
+			result = new String[filteredActors.size() + 1];
+
+			result[0] = Scene.VAR_PLAYER;
+
+			for (int i = 0; i < filteredActors.size(); i++) {
+				result[i + 1] = filteredActors.get(i).getId();
+			}
+		} else {
+			result = new String[filteredActors.size()];
+			
+			for (int i = 0; i < filteredActors.size(); i++) {
+				result[i] = filteredActors.get(i).getId();
+			}
 		}
 		
 		Arrays.sort(result);

@@ -72,12 +72,15 @@ public class ScnWidgetInputListener extends ClickListener {
 		scnWidget.screenToWorldCoords(p);
 
 		// DOUBLE CLICK TO CREATE OR DELETE POINTS
-		if (getTapCount() == 2) {
-			// Check WALKZONE
-			if (scn.getPolygonalNavGraph() != null && scnWidget.getShowWalkZone()) {
-				Polygon poly = scn.getPolygonalNavGraph().getWalkZone();
+		if (getTapCount() == 2 && scnWidget.getSelectedActor() != null) {
 
+			Polygon poly = scnWidget.getSelectedActor().getBBox();
+
+			if ((!(scnWidget.getSelectedActor() instanceof SpriteActor)
+					|| !((SpriteActor) scnWidget.getSelectedActor()).isBboxFromRenderer())
+					&& !(scnWidget.getSelectedActor() instanceof AnchorActor)) {
 				if (UIUtils.ctrl()) {
+
 					// Delete the point if selected
 					boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
@@ -85,42 +88,12 @@ public class ScnWidgetInputListener extends ClickListener {
 						Ctx.project.setModified();
 						return;
 					}
-
 				} else {
-
 					boolean created = PolygonUtils.addClampPointIfTolerance(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
 
 					if (created) {
 						Ctx.project.setModified();
 						return;
-					}
-				}
-			}
-
-			if (scnWidget.getSelectedActor() != null) {
-
-				Polygon poly = scnWidget.getSelectedActor().getBBox();
-
-				if ((!(scnWidget.getSelectedActor() instanceof SpriteActor)
-						|| !((SpriteActor) scnWidget.getSelectedActor()).isBboxFromRenderer())
-						&& !(scnWidget.getSelectedActor() instanceof AnchorActor)) {
-					if (UIUtils.ctrl()) {
-
-						// Delete the point if selected
-						boolean deleted = PolygonUtils.deletePoint(poly, p.x, p.y, CanvasDrawer.CORNER_DIST);
-
-						if (deleted) {
-							Ctx.project.setModified();
-							return;
-						}
-					} else {
-						boolean created = PolygonUtils.addClampPointIfTolerance(poly, p.x, p.y,
-								CanvasDrawer.CORNER_DIST);
-
-						if (created) {
-							Ctx.project.setModified();
-							return;
-						}
 					}
 				}
 			}
@@ -143,32 +116,6 @@ public class ScnWidgetInputListener extends ClickListener {
 
 		if (button == Buttons.LEFT) {
 			selActor = scnWidget.getSelectedActor();
-
-			if (scn.getPolygonalNavGraph() != null && scnWidget.getShowWalkZone()) { // Check
-																						// WALKZONE
-
-				// CHECK WALKZONE VERTEXS
-				Polygon wzPoly = scn.getPolygonalNavGraph().getWalkZone();
-				float verts[] = wzPoly.getTransformedVertices();
-
-				for (int i = 0; i < verts.length; i += 2) {
-					if (p.dst(verts[i], verts[i + 1]) < CanvasDrawer.CORNER_DIST) {
-						draggingMode = DraggingModes.DRAGGING_WALKZONE_POINT;
-						vertIndex = i;
-						float v[] = wzPoly.getVertices();
-						undoOrg.set(v[i], v[i + 1]);
-						return true;
-					}
-				}
-
-				// CHECK FOR WALKZONE DRAGGING
-				if (wzPoly.contains(p.x, p.y)) {
-					draggingMode = DraggingModes.DRAGGING_WALKZONE;
-					undoOrg.set(wzPoly.getX(), wzPoly.getY());
-					return true;
-				}
-
-			}
 
 			if (selActor != null) {
 
@@ -373,7 +320,7 @@ public class ScnWidgetInputListener extends ClickListener {
 		if (draggingMode == DraggingModes.DRAGGING_ACTOR) {
 			Ctx.project.getUndoStack().add(new UndoPosition(selActor, new Vector2(undoOrg)));
 		} else if (draggingMode == DraggingModes.ROTATE_ACTOR) {
-			Ctx.project.getUndoStack().add(new UndoRotation((SpriteActor)selActor, undoRot));
+			Ctx.project.getUndoStack().add(new UndoRotation((SpriteActor) selActor, undoRot));
 		} else if (draggingMode == DraggingModes.DRAGGING_REFPOINT) {
 			Ctx.project.getUndoStack().add(new UndoRefPosition((InteractiveActor) selActor, new Vector2(undoOrg)));
 		} else if (draggingMode == DraggingModes.DRAGGING_WALKZONE_POINT) {

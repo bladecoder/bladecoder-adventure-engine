@@ -40,6 +40,7 @@ import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.TextRenderer;
 import com.bladecoder.engine.model.Verb;
+import com.bladecoder.engine.model.WalkZoneActor;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.AlignUtils;
@@ -60,9 +61,10 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private final static String CHARACTER_TYPE_STR = "character";
 	private final static String OBSTACLE_TYPE_STR = "obstacle";
 	private final static String ANCHOR_TYPE_STR = "anchor";
+	private final static String WALKZONE_TYPE_STR = "walkzone";
 
 	private static final String ACTOR_TYPES[] = { BACKGROUND_TYPE_STR, SPRITE_TYPE_STR, CHARACTER_TYPE_STR,
-			OBSTACLE_TYPE_STR, ANCHOR_TYPE_STR };
+			ANCHOR_TYPE_STR, WALKZONE_TYPE_STR, OBSTACLE_TYPE_STR };
 
 	private static final String ACTOR_RENDERERS[] = { Project.ATLAS_RENDERER_STRING, Project.SPINE_RENDERER_STRING,
 			Project.IMAGE_RENDERER_STRING, Project.S3D_RENDERER_STRING, Project.PARTICLE_RENDERER_STRING, Project.TEXT_RENDERER_STRING };
@@ -71,8 +73,10 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			"Background actors don't have sprites or animations. They are used to interact with objects drawn in the background",
 			"Sprite actors have one or several sprites or animations",
 			"Character actors have dialogs and stand, walk and talk animations",
-			"Obstacle actors forbids zones for walking actors",
-			"Anchor actors are used as reference for positioning other actors" };
+			"Anchor actors are used as reference for positioning other actors",
+			"Define the walkable area for characters",
+			"Obstacle actors forbids zones for walking actors"
+			};
 	
 	private static final String TEXT_ALIGN[] = {"left", "center", "right"};
 	private static final String ORG_ALIGN[] = {"bottom", "center", "left", "right", "top", "botton-right", "botton-left", "top-right", "top-left"};
@@ -264,11 +268,13 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		
 		setVisible(pos, true);
 
-		if (!ACTOR_TYPES[i].equals(ANCHOR_TYPE_STR)) {
+		if (!ACTOR_TYPES[i].equals(ANCHOR_TYPE_STR) &&
+				!ACTOR_TYPES[i].equals(WALKZONE_TYPE_STR)) {
 			setVisible(visible, true);
 		}
 
-		if (!ACTOR_TYPES[i].equals(OBSTACLE_TYPE_STR) && !ACTOR_TYPES[i].equals(ANCHOR_TYPE_STR)) {
+		if (!ACTOR_TYPES[i].equals(OBSTACLE_TYPE_STR) && !ACTOR_TYPES[i].equals(ANCHOR_TYPE_STR) &&
+				!ACTOR_TYPES[i].equals(WALKZONE_TYPE_STR)) {
 			setVisible(layer, true);
 			setVisible(interaction, true);
 			setVisible(desc, true);
@@ -372,7 +378,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					|| (type.equals(BACKGROUND_TYPE_STR)
 							&& (!(e instanceof InteractiveActor) || e instanceof SpriteActor))
 					|| (type.equals(OBSTACLE_TYPE_STR) && !(e instanceof ObstacleActor))
-					|| (type.equals(ANCHOR_TYPE_STR) && !(e instanceof AnchorActor));
+					|| (type.equals(ANCHOR_TYPE_STR) && !(e instanceof AnchorActor))
+					|| (type.equals(WALKZONE_TYPE_STR) && !(e instanceof WalkZoneActor));
 
 			isPlayer = parent.getPlayer() == e;
 
@@ -391,6 +398,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				e = new CharacterActor();
 			} else if (type.equals(OBSTACLE_TYPE_STR)) {
 				e = new ObstacleActor();
+			} else if (type.equals(WALKZONE_TYPE_STR)) {
+				e = new WalkZoneActor();
 			} else if (type.equals(ANCHOR_TYPE_STR)) {
 				e = new AnchorActor();
 			}
@@ -582,6 +591,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		if (e instanceof SpriteActor)
 			((SpriteActor) e).retrieveAssets();
+		
+		if(create && e instanceof WalkZoneActor && parent.getWalkZone() == null)
+			parent.setWalkZone(e.getId());
 
 		// TODO UNDO OP
 		// UndoOp undoOp = new UndoAddElement(doc, e);
@@ -670,6 +682,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			}
 		} else if (e instanceof AnchorActor) {
 			typePanel.setText(ANCHOR_TYPE_STR);
+		} else if (e instanceof WalkZoneActor) {
+			typePanel.setText(WALKZONE_TYPE_STR);
 		} else if (e instanceof ObstacleActor) {
 			typePanel.setText(OBSTACLE_TYPE_STR);
 		}

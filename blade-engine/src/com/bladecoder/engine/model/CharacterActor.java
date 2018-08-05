@@ -193,7 +193,7 @@ public class CharacterActor extends SpriteActor {
 			return;
 		}
 
-		if (scene.getPolygonalNavGraph() != null && !ignoreWalkZone) {
+		if (scene.getWalkZone() != null && !ignoreWalkZone) {
 			walkingPath = scene.getPolygonalNavGraph().findPath(p0.x, p0.y, pf.x, pf.y);
 		} else {
 			walkingPath = new ArrayList<Vector2>(2);

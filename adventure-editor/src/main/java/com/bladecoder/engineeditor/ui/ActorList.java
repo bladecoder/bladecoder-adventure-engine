@@ -38,6 +38,7 @@ import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.TextRenderer;
+import com.bladecoder.engine.model.WalkZoneActor;
 import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
@@ -143,6 +144,10 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 		// delete player attr if the actor to delete is the player
 		if (parent.getPlayer() == a) {
 			parent.setPlayer(null);
+		}
+		
+		if(a.getId().equals(parent.getWalkZone())) {
+			parent.setWalkZone(null);
 		}
 
 		// TRANSLATIONS
@@ -295,6 +300,10 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 				u = "ic_obstacle_actor";
 			} else if (a instanceof AnchorActor) {
 				u = "ic_anchor";
+			} else if (a instanceof WalkZoneActor) {
+				u = "ic_walkzone";
+			} else {
+				u = "ic_base_actor";
 			}
 
 			return Ctx.assetManager.getIcon(u);

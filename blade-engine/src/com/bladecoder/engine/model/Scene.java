@@ -72,7 +72,7 @@ public class Scene implements Serializable, AssetConsumer {
 	private String backgroundRegionId;
 
 	/** For polygonal PathFinding */
-	private PolygonalNavGraph polygonalNavGraph;
+	private final PolygonalNavGraph polygonalNavGraph = new PolygonalNavGraph();
 
 	/**
 	 * depth vector. X: the actor 'y' position for a 0.0 scale, Y: the actor 'y'
@@ -104,10 +104,13 @@ public class Scene implements Serializable, AssetConsumer {
 	private final TextManager textManager;
 
 	private World w;
+	
+	/** The current walkzone actor */
+	private String walkZone;
 
 	public Scene(World w) {
 		this.w = w;
-		
+
 		textManager = new TextManager(this);
 		soundManager = new SceneSoundManager(w);
 	}
@@ -148,7 +151,7 @@ public class Scene implements Serializable, AssetConsumer {
 	public TextManager getTextManager() {
 		return textManager;
 	}
-	
+
 	public World getWorld() {
 		return w;
 	}
@@ -277,7 +280,7 @@ public class Scene implements Serializable, AssetConsumer {
 			// renderer.rect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
 		}
 
-		if (polygonalNavGraph != null) {
+		if (walkZone != null) {
 			renderer.setColor(WALKZONE_COLOR);
 			renderer.polygon(polygonalNavGraph.getWalkZone().getTransformedVertices());
 
@@ -463,6 +466,13 @@ public class Scene implements Serializable, AssetConsumer {
 			}
 		}
 
+		// 4. Search for WALKZONE actors
+		for (BaseActor a : actors.values()) {
+			if (a instanceof WalkZoneActor && a.hit(x, y)) {
+				return a;
+			}
+		}
+
 		return null;
 	}
 
@@ -480,6 +490,14 @@ public class Scene implements Serializable, AssetConsumer {
 			return null;
 
 		return (CharacterActor) actors.get(player);
+	}
+
+	public String getWalkZone() {
+		return walkZone;
+	}
+
+	public void setWalkZone(String walkZone) {
+		this.walkZone = walkZone;
 	}
 
 	public Vector2 getDepthVector() {
@@ -525,7 +543,7 @@ public class Scene implements Serializable, AssetConsumer {
 			layer.getActors().remove(ia);
 		}
 
-		if (a instanceof ObstacleActor && polygonalNavGraph != null)
+		if (a instanceof ObstacleActor && walkZone != null)
 			polygonalNavGraph.removeDinamicObstacle(a.getBBox());
 
 		a.setScene(null);
@@ -561,6 +579,12 @@ public class Scene implements Serializable, AssetConsumer {
 	public SceneSoundManager getSoundManager() {
 		return soundManager;
 	}
+	
+	public void calcWalkzone() {
+		if (walkZone != null) {
+			polygonalNavGraph.createInitialGraph(actors.get(walkZone), actors.values());
+		}		
+	}
 
 	@Override
 	public void loadAssets() {
@@ -578,11 +602,9 @@ public class Scene implements Serializable, AssetConsumer {
 		}
 
 		// CALC WALK GRAPH
-		if (polygonalNavGraph != null) {
-			polygonalNavGraph.createInitialGraph(actors.values());
-		}
+		calcWalkzone();
 	}
-
+	
 	@Override
 	public void retrieveAssets() {
 
@@ -620,7 +642,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 		soundManager.retrieveAssets();
 		textManager.getVoiceManager().retrieveAssets();
-		
+
 		if (getWorld().getListener() != null)
 			getWorld().getListener().text(textManager.getCurrentText());
 	}
@@ -661,10 +683,6 @@ public class Scene implements Serializable, AssetConsumer {
 		return polygonalNavGraph;
 	}
 
-	public void setPolygonalNavGraph(PolygonalNavGraph polygonalNavGraph) {
-		this.polygonalNavGraph = polygonalNavGraph;
-	}
-
 	@Override
 	public void write(Json json) {
 		BladeJson bjson = (BladeJson) json;
@@ -684,9 +702,6 @@ public class Scene implements Serializable, AssetConsumer {
 
 			if (depthVector != null)
 				json.writeValue("depthVector", depthVector);
-
-			if (polygonalNavGraph != null)
-				json.writeValue("polygonalNavGraph", polygonalNavGraph);
 
 			if (sceneSize != null)
 				json.writeValue("sceneSize", sceneSize);
@@ -722,6 +737,8 @@ public class Scene implements Serializable, AssetConsumer {
 
 		if (player != null)
 			json.writeValue("player", player);
+		
+		json.writeValue("walkZone", walkZone);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -754,9 +771,29 @@ public class Scene implements Serializable, AssetConsumer {
 			musicDesc = json.readValue("musicDesc", MusicDesc.class, jsonData);
 
 			depthVector = json.readValue("depthVector", Vector2.class, jsonData);
+			
+			if(jsonData.get("polygonalNavGraph") != null) {
+				
+				JsonValue jsonValuePNG = jsonData.get("polygonalNavGraph");
+				
+				float worldScale = EngineAssetManager.getInstance().getScale();
 
-			polygonalNavGraph = json.readValue("polygonalNavGraph", PolygonalNavGraph.class, jsonData);
-
+				Polygon walkZonePol = json.readValue("walkZone", Polygon.class, jsonValuePNG);
+				walkZonePol.setScale(worldScale, worldScale);
+				walkZonePol.setPosition(walkZonePol.getX() * worldScale, walkZonePol.getY() * worldScale);
+				
+				WalkZoneActor wz = new WalkZoneActor();
+				wz.setId("walkzone");
+				wz.bbox.setVertices(walkZonePol.getVertices());
+				wz.bbox.setScale(walkZonePol.getScaleX(), walkZonePol.getScaleY());
+				wz.bbox.setPosition(walkZonePol.getX(), walkZonePol.getY());			
+				wz.setScene(this);
+				wz.setInitScene(id);
+				
+				actors.put(wz.getId(), wz);
+				walkZone = wz.getId();
+			}
+			
 			sceneSize = json.readValue("sceneSize", Vector2.class, jsonData);
 
 		} else {
@@ -812,5 +849,6 @@ public class Scene implements Serializable, AssetConsumer {
 		verbs.read(json, jsonData);
 		state = json.readValue("state", String.class, jsonData);
 		player = json.readValue("player", String.class, jsonData);
+		walkZone = json.readValue("walkZone", String.class, jsonData);
 	}
 }

@@ -28,7 +28,7 @@ import com.bladecoder.engineeditor.common.EditorLogger;
 public class ViewWindow extends Container<Table> {
 	ScnWidget scnWidget;
 	
-	CheckBox walkZone;
+	CheckBox spriteBounds;
 
 	public ViewWindow(Skin skin, ScnWidget sw) {
 		
@@ -54,9 +54,9 @@ public class ViewWindow extends Container<Table> {
 		table.add(animCb);
 		
 		table.row();		
-		walkZone = new CheckBox("Show Walkzone", skin);
-		walkZone.setChecked(scnWidget.getShowWalkZone());
-		table.add(walkZone);
+		spriteBounds = new CheckBox("Show Sprite Bounds", skin);
+		spriteBounds.setChecked(scnWidget.getShowSpriteBounds());
+		table.add(spriteBounds);
 		
 		table.row();		
 		final CheckBox console = new CheckBox("Show Debug Console", skin);
@@ -79,11 +79,11 @@ public class ViewWindow extends Container<Table> {
 			}
 		});
 		
-		walkZone.addListener(new ChangeListener() {
+		spriteBounds.addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-				scnWidget.setShowWalkZone(walkZone.isChecked());
+				scnWidget.setShowSpriteBounds(spriteBounds.isChecked());
 			}
 		});		
 		
@@ -104,7 +104,7 @@ public class ViewWindow extends Container<Table> {
 	}
 	
 	public void showWalkZone() {
-		scnWidget.setShowWalkZone(true);
-		walkZone.setChecked(true);
+		scnWidget.setShowSpriteBounds(true);
+		spriteBounds.setChecked(true);
 	}
 }

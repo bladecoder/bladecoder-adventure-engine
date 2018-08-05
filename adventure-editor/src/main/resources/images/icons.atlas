@@ -20,21 +20,21 @@ eye_disabled
   index: -1
 ic_3d
   rotate: false
-  xy: 420, 14
+  xy: 462, 48
   size: 31, 31
   orig: 31, 31
   offset: 0, 0
   index: -1
 ic_add
   rotate: false
-  xy: 495, 58
+  xy: 528, 56
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_add_disabled
   rotate: false
-  xy: 521, 56
+  xy: 554, 56
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -104,56 +104,56 @@ ic_goto
   index: -1
 ic_check
   rotate: false
-  xy: 547, 56
+  xy: 580, 56
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_check_disabled
   rotate: false
-  xy: 573, 56
+  xy: 606, 56
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_closed
   rotate: false
-  xy: 599, 56
+  xy: 634, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_closed_disabled
   rotate: false
-  xy: 634, 68
+  xy: 660, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_copy
   rotate: false
-  xy: 660, 68
+  xy: 686, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_copy_disabled
   rotate: false
-  xy: 686, 68
+  xy: 712, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_create_all
   rotate: false
-  xy: 712, 68
+  xy: 738, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_create_all_disabled
   rotate: false
-  xy: 791, 51
+  xy: 954, 51
   size: 15, 15
   orig: 15, 15
   offset: 0, 0
@@ -167,14 +167,14 @@ ic_custom
   index: -1
 ic_delete
   rotate: false
-  xy: 738, 68
+  xy: 764, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_delete_disabled
   rotate: false
-  xy: 764, 68
+  xy: 790, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -195,28 +195,28 @@ ic_talkto
   index: -1
 ic_down
   rotate: false
-  xy: 790, 68
+  xy: 816, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_down_disabled
   rotate: false
-  xy: 816, 68
+  xy: 842, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_edit
   rotate: false
-  xy: 842, 68
+  xy: 868, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_edit_disabled
   rotate: false
-  xy: 868, 68
+  xy: 894, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -237,14 +237,14 @@ ic_exit
   index: -1
 ic_eye
   rotate: false
-  xy: 894, 68
+  xy: 920, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_eye_disabled
   rotate: false
-  xy: 920, 68
+  xy: 946, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -258,7 +258,7 @@ ic_fg_actor
   index: -1
 ic_flip
   rotate: false
-  xy: 946, 68
+  xy: 972, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -279,14 +279,14 @@ ic_leave
   index: -1
 ic_left
   rotate: false
-  xy: 972, 68
+  xy: 998, 68
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_left_disabled
   rotate: false
-  xy: 998, 68
+  xy: 632, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -328,14 +328,14 @@ ic_obstacle_actor
   index: -1
 ic_open
   rotate: false
-  xy: 495, 32
+  xy: 658, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_open_disabled
   rotate: false
-  xy: 521, 30
+  xy: 684, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -363,14 +363,14 @@ ic_particles
   index: -1
 ic_paste
   rotate: false
-  xy: 547, 30
+  xy: 710, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_paste_disabled
   rotate: false
-  xy: 573, 30
+  xy: 736, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -405,14 +405,14 @@ ic_player
   index: -1
 ic_player_small
   rotate: false
-  xy: 599, 30
+  xy: 762, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_player_small_disabled
   rotate: false
-  xy: 625, 42
+  xy: 788, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -433,14 +433,14 @@ ic_repeat
   index: -1
 ic_right
   rotate: false
-  xy: 651, 42
+  xy: 814, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_right_disabled
   rotate: false
-  xy: 677, 42
+  xy: 840, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -461,7 +461,7 @@ ic_save_disabled
   index: -1
 ic_spine
   rotate: false
-  xy: 462, 48
+  xy: 495, 51
   size: 31, 31
   orig: 31, 31
   offset: 0, 0
@@ -489,14 +489,14 @@ ic_text
   index: -1
 ic_up
   rotate: false
-  xy: 703, 42
+  xy: 866, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_up_disabled
   rotate: false
-  xy: 729, 42
+  xy: 892, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -508,9 +508,16 @@ ic_use
   orig: 32, 32
   offset: 0, 0
   index: -1
-ic_yoyo
+ic_walkzone
   rotate: false
   xy: 386, 13
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+ic_yoyo
+  rotate: false
+  xy: 428, 47
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -531,7 +538,7 @@ scn_move
   index: -1
 scn_rotate
   rotate: false
-  xy: 428, 47
+  xy: 420, 13
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -552,14 +559,14 @@ title
   index: -1
 transparent-dark
   rotate: false
-  xy: 755, 50
+  xy: 918, 50
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 transparent-light
   rotate: false
-  xy: 773, 50
+  xy: 936, 50
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
