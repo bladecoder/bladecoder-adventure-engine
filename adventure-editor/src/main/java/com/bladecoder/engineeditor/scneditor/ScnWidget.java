@@ -431,11 +431,6 @@ public class ScnWidget extends Widget {
 	public boolean inTransforIcon(float px, float py, DraggingModes dm) {
 		Polygon p = selectedActor.getBBox();
 
-		InteractiveActor ia = (InteractiveActor) selectedActor;
-
-		if (!scn.getLayer(ia.getLayer()).isVisible())
-			return false;
-
 		Rectangle r = p.getBoundingRectangle();
 
 		worldToScreenCoords(tmpV2Transform.set(r.x, r.y));
