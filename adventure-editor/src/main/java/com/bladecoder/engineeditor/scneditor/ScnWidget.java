@@ -59,6 +59,7 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
+import com.bladecoder.engineeditor.scneditor.ScnWidgetInputListener.DraggingModes;
 
 public class ScnWidget extends Widget {
 	private static final Color BLACK_TRANSPARENT = new Color(0f, 0f, 0f, 0.5f);
@@ -102,6 +103,8 @@ public class ScnWidget extends Widget {
 
 	private final TextureRegion scnMoveIcon;
 	private final TextureRegion scnRotateIcon;
+	private final TextureRegion scnScaleLockIcon;
+	private final TextureRegion scnScaleIcon;
 
 	/**
 	 * The NOTIFY_PROJECT_LOADED listener is called from other thread. This flag is
@@ -150,12 +153,15 @@ public class ScnWidget extends Widget {
 			}
 		});
 
-		showSpriteBounds = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.showSpriteBounds", "true"));
+		showSpriteBounds = Boolean
+				.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.showSpriteBounds", "true"));
 		inScene = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.inScene", "false"));
 		animation = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty("view.animation", "true"));
 
 		scnMoveIcon = Ctx.assetManager.getIcon("scn_move");
 		scnRotateIcon = Ctx.assetManager.getIcon("scn_rotate");
+		scnScaleLockIcon = Ctx.assetManager.getIcon("scn_scale_lock");
+		scnScaleIcon = Ctx.assetManager.getIcon("scn_scale");
 	}
 
 	public OrthographicCamera getCamera() {
@@ -401,7 +407,7 @@ public class ScnWidget extends Widget {
 			worldToScreenCoords(tmpV2Transform.set(r.x, r.y));
 
 			float x = tmpV2Transform.x;
-			// float y = tmpV2Transform.y;
+			float y = tmpV2Transform.y;
 
 			worldToScreenCoords(tmpV2Transform.set(r.x + r.width, r.y + r.height));
 
@@ -411,10 +417,61 @@ public class ScnWidget extends Widget {
 			batch.draw(scnMoveIcon, x + (x2 - x - scnMoveIcon.getRegionWidth()) / 2, y2);
 
 			if (a instanceof SpriteActor) {
-				batch.draw(scnRotateIcon, x2 - scnRotateIcon.getRegionWidth() / 2,
-						y2 - scnRotateIcon.getRegionHeight() / 2);
+				batch.draw(scnRotateIcon, x2 - scnRotateIcon.getRegionWidth() / 3,
+						y2 - scnRotateIcon.getRegionHeight() / 3);
+
+				if (!((SpriteActor) a).getFakeDepth()) {
+					batch.draw(scnScaleLockIcon, x - scnScaleLockIcon.getRegionWidth(), y2);
+					batch.draw(scnScaleIcon, x - scnScaleIcon.getRegionWidth(), y - scnScaleIcon.getRegionHeight());
+				}
 			}
 		}
+	}
+
+	public boolean inTransforIcon(float px, float py, DraggingModes dm) {
+		Polygon p = selectedActor.getBBox();
+
+		if (selectedActor instanceof SpriteActor) {
+
+			InteractiveActor ia = (InteractiveActor) selectedActor;
+
+			if (!scn.getLayer(ia.getLayer()).isVisible())
+				return false;
+
+			Rectangle r = p.getBoundingRectangle();
+
+			worldToScreenCoords(tmpV2Transform.set(r.x, r.y));
+
+			float x = tmpV2Transform.x;
+			float y = tmpV2Transform.y;
+
+			worldToScreenCoords(tmpV2Transform.set(r.x + r.width, r.y + r.height));
+
+			float x2 = tmpV2Transform.x;
+			float y2 = tmpV2Transform.y;
+
+			Rectangle r2 = null;
+
+			if (dm == DraggingModes.ROTATE_ACTOR) {
+				r2 = new Rectangle(x2 - scnRotateIcon.getRegionWidth() / 3, y2 - scnRotateIcon.getRegionHeight() / 3,
+						(float) scnRotateIcon.getRegionWidth(), (float) scnRotateIcon.getRegionHeight());
+			} else if (dm == DraggingModes.SCALE_ACTOR) {
+				r2 = new Rectangle(x - scnScaleIcon.getRegionWidth(), y - scnScaleIcon.getRegionHeight(),
+						(float) scnScaleIcon.getRegionWidth(), (float) scnScaleIcon.getRegionHeight());
+			} else if (dm == DraggingModes.SCALE_LOCK_ACTOR) {
+				r2 = new Rectangle(x - scnScaleLockIcon.getRegionWidth(), y2, (float) scnScaleLockIcon.getRegionWidth(),
+						(float) scnScaleLockIcon.getRegionHeight());
+			} else if (dm == DraggingModes.DRAGGING_ACTOR) {
+				r2 = new Rectangle(x + (x2 - x - scnMoveIcon.getRegionWidth()) / 2, y2,
+						(float) scnMoveIcon.getRegionWidth(), (float) scnMoveIcon.getRegionHeight());
+			}
+
+			worldToScreenCoords(tmpV2Transform.set(px, py));
+
+			return r2.contains(tmpV2Transform.x, tmpV2Transform.y);
+		}
+
+		return false;
 	}
 
 	private void drawFakeDepthMarkers(SpriteBatch batch) {
@@ -597,37 +654,7 @@ public class ScnWidget extends Widget {
 		stageToLocalCoordinates(coords);
 	}
 
-	public boolean inMoveIcon(float px, float py) {
-		Polygon p = selectedActor.getBBox();
-
-		if (!(selectedActor instanceof AnchorActor)) {
-
-			if (selectedActor instanceof InteractiveActor) {
-				InteractiveActor ia = (InteractiveActor) selectedActor;
-
-				if (!scn.getLayer(ia.getLayer()).isVisible())
-					return false;
-			}
-
-			Rectangle r = p.getBoundingRectangle();
-
-			worldToScreenCoords(tmpV2Transform.set(r.x + r.width / 2, r.y + r.height));
-
-			float x = tmpV2Transform.x;
-			float y = tmpV2Transform.y;
-
-			Rectangle r2 = new Rectangle(x - scnMoveIcon.getRegionWidth() / 2, y, scnMoveIcon.getRegionWidth(),
-					scnMoveIcon.getRegionHeight());
-
-			worldToScreenCoords(tmpV2Transform.set(px, py));
-
-			return r2.contains(tmpV2Transform.x, tmpV2Transform.y);
-		}
-
-		return false;
-	}
-
-	public boolean inRotateIcon(float px, float py) {
+	public boolean inScaleIcon(float px, float py) {
 		Polygon p = selectedActor.getBBox();
 
 		if (selectedActor instanceof SpriteActor) {
