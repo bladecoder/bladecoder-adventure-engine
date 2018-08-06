@@ -431,47 +431,42 @@ public class ScnWidget extends Widget {
 	public boolean inTransforIcon(float px, float py, DraggingModes dm) {
 		Polygon p = selectedActor.getBBox();
 
-		if (selectedActor instanceof SpriteActor) {
+		InteractiveActor ia = (InteractiveActor) selectedActor;
 
-			InteractiveActor ia = (InteractiveActor) selectedActor;
+		if (!scn.getLayer(ia.getLayer()).isVisible())
+			return false;
 
-			if (!scn.getLayer(ia.getLayer()).isVisible())
-				return false;
+		Rectangle r = p.getBoundingRectangle();
 
-			Rectangle r = p.getBoundingRectangle();
+		worldToScreenCoords(tmpV2Transform.set(r.x, r.y));
 
-			worldToScreenCoords(tmpV2Transform.set(r.x, r.y));
+		float x = tmpV2Transform.x;
+		float y = tmpV2Transform.y;
 
-			float x = tmpV2Transform.x;
-			float y = tmpV2Transform.y;
+		worldToScreenCoords(tmpV2Transform.set(r.x + r.width, r.y + r.height));
 
-			worldToScreenCoords(tmpV2Transform.set(r.x + r.width, r.y + r.height));
+		float x2 = tmpV2Transform.x;
+		float y2 = tmpV2Transform.y;
 
-			float x2 = tmpV2Transform.x;
-			float y2 = tmpV2Transform.y;
+		Rectangle r2 = null;
 
-			Rectangle r2 = null;
-
-			if (dm == DraggingModes.ROTATE_ACTOR) {
-				r2 = new Rectangle(x2 - scnRotateIcon.getRegionWidth() / 3, y2 - scnRotateIcon.getRegionHeight() / 3,
-						(float) scnRotateIcon.getRegionWidth(), (float) scnRotateIcon.getRegionHeight());
-			} else if (dm == DraggingModes.SCALE_ACTOR) {
-				r2 = new Rectangle(x - scnScaleIcon.getRegionWidth(), y - scnScaleIcon.getRegionHeight(),
-						(float) scnScaleIcon.getRegionWidth(), (float) scnScaleIcon.getRegionHeight());
-			} else if (dm == DraggingModes.SCALE_LOCK_ACTOR) {
-				r2 = new Rectangle(x - scnScaleLockIcon.getRegionWidth(), y2, (float) scnScaleLockIcon.getRegionWidth(),
-						(float) scnScaleLockIcon.getRegionHeight());
-			} else if (dm == DraggingModes.DRAGGING_ACTOR) {
-				r2 = new Rectangle(x + (x2 - x - scnMoveIcon.getRegionWidth()) / 2, y2,
-						(float) scnMoveIcon.getRegionWidth(), (float) scnMoveIcon.getRegionHeight());
-			}
-
-			worldToScreenCoords(tmpV2Transform.set(px, py));
-
-			return r2.contains(tmpV2Transform.x, tmpV2Transform.y);
+		if (dm == DraggingModes.ROTATE_ACTOR) {
+			r2 = new Rectangle(x2 - scnRotateIcon.getRegionWidth() / 3, y2 - scnRotateIcon.getRegionHeight() / 3,
+					(float) scnRotateIcon.getRegionWidth(), (float) scnRotateIcon.getRegionHeight());
+		} else if (dm == DraggingModes.SCALE_ACTOR) {
+			r2 = new Rectangle(x - scnScaleIcon.getRegionWidth(), y - scnScaleIcon.getRegionHeight(),
+					(float) scnScaleIcon.getRegionWidth(), (float) scnScaleIcon.getRegionHeight());
+		} else if (dm == DraggingModes.SCALE_LOCK_ACTOR) {
+			r2 = new Rectangle(x - scnScaleLockIcon.getRegionWidth(), y2, (float) scnScaleLockIcon.getRegionWidth(),
+					(float) scnScaleLockIcon.getRegionHeight());
+		} else if (dm == DraggingModes.DRAGGING_ACTOR) {
+			r2 = new Rectangle(x + (x2 - x - scnMoveIcon.getRegionWidth()) / 2, y2,
+					(float) scnMoveIcon.getRegionWidth(), (float) scnMoveIcon.getRegionHeight());
 		}
 
-		return false;
+		worldToScreenCoords(tmpV2Transform.set(px, py));
+
+		return r2.contains(tmpV2Transform.x, tmpV2Transform.y);
 	}
 
 	private void drawFakeDepthMarkers(SpriteBatch batch) {
