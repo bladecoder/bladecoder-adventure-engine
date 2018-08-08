@@ -333,6 +333,7 @@ public class BladeEngineSetup {
 		project.files.add(new ProjectFile("android/src/AndroidLauncher",
 				"android/src/main/java/" + packageDir + "/AndroidLauncher.java", true));
 		project.files.add(new ProjectFile("android/AndroidManifest.xml"));
+		project.files.add(new ProjectFile("android/src/expansion/AndroidManifest.xml"));
 		project.files.add(new ProjectFile("android/build.gradle", true));
 		project.files.add(new ProjectFile("android/ic_launcher-web.png", false));
 		project.files.add(new ProjectFile("android/proguard-rules.pro", false));
