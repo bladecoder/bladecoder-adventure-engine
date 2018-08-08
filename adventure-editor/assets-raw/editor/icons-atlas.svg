@@ -27,8 +27,8 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.9976595"
-     inkscape:cx="2375.8158"
+     inkscape:zoom="0.70627929"
+     inkscape:cx="2258.6787"
      inkscape:cy="874.77137"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -4914,12 +4914,12 @@
     </g>
     <path
        style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-       d="M 2194.7188 1364.002 L 2177.4902 1373.0684 L 2194.7188 1381.7969 L 2194.7188 1376.9863 C 2221.425 1377.0512 2243.0223 1398.4279 2243.4609 1425.043 L 2238.0879 1425.043 L 2247.1562 1442.2715 L 2255.8848 1425.043 L 2250.459 1425.043 C 2250.0168 1394.6417 2225.2086 1370.0516 2194.7188 1369.9863 L 2194.7188 1364.002 z "
+       d="m 1522.9228,2192.9958 -17.2286,9.0664 17.2286,8.7285 v -4.8106 c 26.7062,0.065 48.3035,21.4416 48.7421,48.0567 h -5.373 l 9.0683,17.2285 8.7286,-17.2285 h -5.4258 c -0.4422,-30.4013 -25.2504,-54.9914 -55.7402,-55.0567 z"
        id="path1500-0"
        inkscape:export-filename="icons/scn_rotate.png"
        inkscape:export-xdpi="36.561573"
        inkscape:export-ydpi="36.561573"
-       transform="translate(-198.89525,616.61321)" />
+       inkscape:connector-curvature="0" />
     <g
        id="g1639"
        inkscape:export-filename="icons/ic_walkzone.png"
@@ -5107,19 +5107,19 @@
     <path
        inkscape:connector-curvature="0"
        id="path1565"
-       d="m 2051.6562,2195.9177 -24.0458,12.6779 24.0458,12.6783 v -8.1439 h 30.3425 v 8.1439 l 24.0457,-12.6783 -24.0457,-12.6779 v 8.1437 h -30.3425 z"
+       d="m 1774.1456,2193.086 -24.0458,12.6779 24.0458,12.6783 v -8.1439 h 30.3425 v 8.1439 l 24.0457,-12.6783 -24.0457,-12.6779 v 8.1437 h -30.3425 z"
        style="color:#000000;overflow:visible;opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2.99999952;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal"
        sodipodi:nodetypes="ccccccccccc" />
     <path
        style="color:#000000;overflow:visible;opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2.99999976;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal"
-       d="m 2054.6045,2261.7168 -36.0555,13.831 36.0555,13.831 v -8.8843 h 37.022 v 8.8843 l 36.0554,-13.831 -36.0554,-13.831 v 8.8843 h -37.022 z"
+       d="m 1777.0939,2258.8851 -36.0555,13.831 36.0555,13.831 v -8.8843 h 37.022 v 8.8843 l 36.0554,-13.831 -36.0554,-13.831 v 8.8843 h -37.022 z"
        id="path1567"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccccccc" />
     <path
        inkscape:connector-curvature="0"
        id="path1572"
-       d="m 2253.0167,2164.7446 -37.921,11.7384 11.7382,-37.9212 8.4095,8.4093 31.3317,-31.3316 -8.4094,-8.4095 37.9212,-11.738 -11.7384,37.9208 -8.4093,-8.4091 -31.3316,31.3317 z"
+       d="m 1666.8463,2272.3508 -37.921,11.7384 11.7382,-37.9212 8.4095,8.4093 31.3317,-31.3316 -8.4094,-8.4095 37.9212,-11.738 -11.7384,37.9208 -8.4093,-8.4091 -31.3316,31.3317 z"
        style="color:#000000;overflow:visible;opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2.99999952;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal"
        sodipodi:nodetypes="ccccccccccc"
        inkscape:export-filename="icons/scn_scale.png"
@@ -5128,8 +5128,9 @@
     <g
        id="g1605"
        inkscape:export-filename="icons/scn_scale_lock.png"
-       inkscape:export-xdpi="36"
-       inkscape:export-ydpi="36">
+       inkscape:export-xdpi="20.201239"
+       inkscape:export-ydpi="20.201239"
+       transform="translate(-222.29167,16.990446)">
       <path
          inkscape:connector-curvature="0"
          id="path1569"
@@ -5166,21 +5167,21 @@
       </g>
     </g>
     <path
-       inkscape:export-ydpi="36.561573"
-       inkscape:export-xdpi="36.561573"
+       inkscape:export-ydpi="24.609156"
+       inkscape:export-xdpi="24.609156"
        inkscape:export-filename="icons/scn_rotate.png"
        id="path1609"
-       d="m 2005.7346,2083.3896 -17.2286,11.0664 17.2286,10.7285 v -4.8106 c 26.7062,0.065 46.3035,19.4416 46.7421,46.0567 h -5.373 l 11.0683,17.2285 10.7286,-17.2285 h -5.4258 c -0.4422,-30.4013 -27.2504,-56.9914 -57.7402,-57.0567 z"
+       d="m 2223.7786,1998.4373 -17.2286,11.0664 17.2286,10.7285 v -4.8106 c 26.7062,0.065 46.3035,19.4416 46.7421,46.0567 h -5.373 l 11.0683,17.2285 10.7286,-17.2285 h -5.4258 c -0.4422,-30.4013 -27.2504,-56.9914 -57.7402,-57.0567 z"
        style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;paint-order:normal;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccccccc" />
     <path
-       inkscape:export-ydpi="36"
-       inkscape:export-xdpi="36"
+       inkscape:export-ydpi="17.913513"
+       inkscape:export-xdpi="17.913513"
        inkscape:export-filename="icons/scn_scale.png"
        sodipodi:nodetypes="ccccccccccc"
        style="color:#000000;overflow:visible;opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2.99999952;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;marker-start:none;marker-mid:none;marker-end:none;paint-order:normal"
-       d="m 2258.6071,2242.8579 -32.9991,10.2148 10.2147,-32.9992 7.3181,7.3177 27.2649,-27.2648 -7.3178,-7.318 32.9991,-10.2145 -10.2148,32.9988 -7.3179,-7.3175 -27.2648,27.265 z"
+       d="m 2145.3374,2060.2106 -32.9991,10.2148 10.2147,-32.9992 7.3181,7.3177 27.2649,-27.2648 -7.3178,-7.318 32.9991,-10.2145 -10.2148,32.9988 -7.3179,-7.3175 -27.2648,27.265 z"
        id="path1533"
        inkscape:connector-curvature="0" />
   </g>
