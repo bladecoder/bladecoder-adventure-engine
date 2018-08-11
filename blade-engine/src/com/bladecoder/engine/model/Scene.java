@@ -849,6 +849,8 @@ public class Scene implements Serializable, AssetConsumer {
 		verbs.read(json, jsonData);
 		state = json.readValue("state", String.class, jsonData);
 		player = json.readValue("player", String.class, jsonData);
-		walkZone = json.readValue("walkZone", String.class, jsonData);
+		
+		if(jsonData.get("walkZone") != null)
+			walkZone = json.readValue("walkZone", String.class, jsonData);
 	}
 }
