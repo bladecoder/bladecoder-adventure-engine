@@ -71,10 +71,10 @@ public class ScnEditor extends Table {
 		row();
 
 		Table bottomTable = new Table(skin);
-		
+
 		Drawable drawable = skin.getDrawable("background");
 		bottomTable.setBackground(drawable);
-		
+
 		bottomTable.left();
 		add(bottomTable).fill();
 
@@ -140,8 +140,8 @@ public class ScnEditor extends Table {
 			Message.showMsg(getStage(), msg, 3);
 			return;
 		}
-		
-		Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);			
+
+		Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
 		Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
 
 		try {
@@ -160,9 +160,10 @@ public class ScnEditor extends Table {
 			public void run() {
 				Message.showMsg(stage, "Running scene...", 5);
 
-				try {					
+				try {
 					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), Ctx.project.getChapter().getId(),
-							Ctx.project.getSelectedScene().getId()))
+							Ctx.project.getSelectedScene().getId(), Boolean.parseBoolean(
+									Ctx.project.getEditorConfig().getProperty("view.fullscreenPlay", "false"))))
 						Message.showMsg(stage, "There was a problem running the scene", 4);
 				} catch (IOException e) {
 					Message.showMsgDialog(stage, "Error", "There was a problem running the scene: " + e.getMessage());

@@ -47,14 +47,16 @@ public class RunProccess {
 	}
 
 	public static boolean runBladeEngine(File prjFolder, String chapter,
-			String scene) throws IOException {
+			String scene, boolean fullscreen) throws IOException {
 		List<String> args = new ArrayList<String>();
 		args.add(":desktop:run");
-		String appArgs = "-PappArgs=['-w'";
+		String appArgs = "-PappArgs=['-d'";
+		
+		if(!fullscreen)
+			appArgs += ",'-w'";
 
 		if (chapter != null) {
 			appArgs += ",'-chapter','" + chapter + "'";
-			appArgs += ",'-d'";
 		}
 
 		if (scene != null) {

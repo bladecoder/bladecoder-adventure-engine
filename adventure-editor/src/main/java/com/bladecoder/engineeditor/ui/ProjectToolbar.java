@@ -61,7 +61,7 @@ public class ProjectToolbar extends Table {
 	private ImageButton atlasBtn;
 
 	private Skin skin;
-	
+
 	private FileChooser fileChooser;
 
 	public ProjectToolbar(Skin skin) {
@@ -76,7 +76,7 @@ public class ProjectToolbar extends Table {
 		playBtn = new ImageButton(skin);
 		assetsBtn = new ImageButton(skin);
 		atlasBtn = new ImageButton(skin);
-		
+
 		fileChooser = new FileChooser(Mode.OPEN);
 		fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
 		fileChooser.setViewMode(ViewMode.LIST);
@@ -95,12 +95,12 @@ public class ProjectToolbar extends Table {
 		newBtn.setDisabled(false);
 		loadBtn.setDisabled(false);
 		exitBtn.setDisabled(false);
-		
+
 		playBtn.setDisabled(true);
 		packageBtn.setDisabled(true);
 		atlasBtn.setDisabled(true);
 		assetsBtn.setDisabled(true);
-		
+
 		newBtn.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -198,8 +198,8 @@ public class ProjectToolbar extends Table {
 
 		try {
 			TextureRegion imageDisabled = Ctx.assetManager.getIcon(icon + "_disabled");
-			
-			if(imageDisabled != null)
+
+			if (imageDisabled != null)
 				style.imageDisabled = new TextureRegionDrawable(imageDisabled);
 		} catch (Exception e) {
 
@@ -233,7 +233,7 @@ public class ProjectToolbar extends Table {
 
 			@Override
 			public void selected(Array<FileHandle> files) {
-				
+
 				final File f = files.get(0).file();
 
 				try {
@@ -309,7 +309,9 @@ public class ProjectToolbar extends Table {
 				Message.showMsg(stage, "Running scene...", 3);
 
 				try {
-					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), null, null))
+					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), null, null,
+							Boolean.parseBoolean(
+									Ctx.project.getEditorConfig().getProperty("view.fullscreenPlay", "false"))))
 						Message.showMsg(getStage(), "There was a problem running the project", 3);
 				} catch (IOException e) {
 					Message.showMsgDialog(stage, "Error", "There was a problem running the project: " + e.getMessage());
@@ -323,8 +325,8 @@ public class ProjectToolbar extends Table {
 	private void openAssetFolder() {
 		if (Desktop.isDesktopSupported()) {
 			try {
-				Desktop.getDesktop()
-						.open(new File(Ctx.project.getAssetPath(Ctx.project.getProjectDir().getAbsoluteFile().getAbsolutePath())));
+				Desktop.getDesktop().open(new File(
+						Ctx.project.getAssetPath(Ctx.project.getProjectDir().getAbsoluteFile().getAbsolutePath())));
 			} catch (IOException e1) {
 				String msg = "Something went wrong while opening assets folder.\n\n" + e1.getClass().getSimpleName()
 						+ " - " + e1.getMessage();
