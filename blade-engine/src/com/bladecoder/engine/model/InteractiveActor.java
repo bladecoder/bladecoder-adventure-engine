@@ -185,7 +185,8 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 		BladeJson bjson = (BladeJson) json;
 		if (bjson.getMode() == Mode.MODEL) {
-			json.writeValue("desc", desc);
+			if(desc != null)
+				json.writeValue("desc", desc);
 
 			float worldScale = EngineAssetManager.getInstance().getScale();
 			json.writeValue("refPoint", new Vector2(getRefPoint().x / worldScale, getRefPoint().y / worldScale));
@@ -195,7 +196,10 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 		verbs.write(json);
 		json.writeValue("interaction", interaction);
-		json.writeValue("state", state);
+		
+		if(state != null)
+			json.writeValue("state", state);
+		
 		json.writeValue("zIndex", zIndex);
 		json.writeValue("layer", layer);
 	}
