@@ -28,8 +28,11 @@ public class VoiceManager implements Serializable, AssetConsumer {
 	private boolean isPlayingSer = false;
 	private float voicePosSer = 0;
 
-	// the master volume
+	// the music volume
 	private float volume = 1.0f;
+	
+	// the global configurable by user volume
+	private float volumeMultiplier = 1.0f;
 
 	transient private boolean isPaused = false;
 	transient private TextManager textManager = null;
@@ -100,7 +103,15 @@ public class VoiceManager implements Serializable, AssetConsumer {
 		this.volume = volume;
 
 		if (voice != null)
-			voice.setVolume(volume);
+			voice.setVolume(volume * volumeMultiplier);
+	}
+
+	public float getVolumeMultiplier() {
+		return volumeMultiplier;
+	}
+
+	public void setVolumeMultiplier(float volumeMultiplier) {
+		this.volumeMultiplier = volumeMultiplier;
 	}
 
 	@Override
@@ -145,7 +156,7 @@ public class VoiceManager implements Serializable, AssetConsumer {
 			});
 
 			if (voice != null)
-				voice.setVolume(volume);
+				voice.setVolume(volume * volumeMultiplier);
 
 			if (isPlayingSer) {
 				voice.play();
