@@ -21,6 +21,7 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	private HashMap<String, LoadedSound> loadedSounds = new HashMap<String, LoadedSound>(0);
 	private final World w;
 	
+	// the global configurable by user volume
 	public static float VOLUME_MULTIPLIER = 1f;
 	
 	public SceneSoundManager(World w) {
