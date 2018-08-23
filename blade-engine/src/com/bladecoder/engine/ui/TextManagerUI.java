@@ -192,8 +192,9 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 				float scale = DPIUtils.getTouchMinSize() * style.bubbleSize / 4 / style.talkBubble.getMinHeight();
 
 				float bubbleX = unprojectTmp.x - style.talkBubble.getMinWidth() * scale / 2;
-				bubbleX = Math.max(bubbleX, getX() + PADDING);
-				bubbleX = Math.min(bubbleX, getX() + getWidth() - PADDING - style.talkBubble.getMinWidth() * scale);
+				// check screen exit
+				bubbleX = Math.max(bubbleX, getX() + PADDING  - style.talkBubble.getMinWidth() * scale / 2);
+				bubbleX = Math.min(bubbleX, getX() + getWidth() - PADDING - style.talkBubble.getMinWidth() * scale / 2);
 				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + 2;
 
 				style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
