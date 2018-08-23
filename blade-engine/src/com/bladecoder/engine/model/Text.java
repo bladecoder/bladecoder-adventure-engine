@@ -25,11 +25,13 @@ import com.bladecoder.engine.serialization.BladeJson;
 
 public class Text implements Serializable {
 	private static final float DEFAULT_TIME = 1f;
-	
+
+	public static float TIME_MULTIPLIER = 1f;
+
 	public enum Type {
 		PLAIN, SUBTITLE, TALK, UI
 	};
-	
+
 	public String str;
 	public float x;
 	public float y;
@@ -45,11 +47,12 @@ public class Text implements Serializable {
 	public Text() {
 	}
 
-	public Text(String str, float x, float y, float time, Type type, Color color, String style, String actorId, String voiceId, String talkAnimation, ActionCallback cb) {
+	public Text(String str, float x, float y, float time, Type type, Color color, String style, String actorId,
+			String voiceId, String talkAnimation, ActionCallback cb) {
 		this.str = str;
 		this.x = x;
 		this.y = y;
-		this.time = time;
+		this.time = time * TIME_MULTIPLIER;
 		this.type = type;
 		this.color = color;
 		this.style = style;
@@ -60,46 +63,46 @@ public class Text implements Serializable {
 
 		// 0s -> Auto duration
 		// <0 -> Infinity
-		
-		if(this.time < 0 || voiceId != null) {
+
+		if (this.time < 0 || voiceId != null) {
 			this.time = Float.MAX_VALUE;
 		} else if (this.time == 0) {
 			setAutoTime();
 		}
 	}
-	
+
 	public void setAutoTime() {
-		this.time = DEFAULT_TIME + DEFAULT_TIME * str.length() / 20f;
+		time = (DEFAULT_TIME + DEFAULT_TIME * str.length() / 20f) * TIME_MULTIPLIER;
 	}
-	
+
 	public void callCb() {
-		if(cb != null) {
+		if (cb != null) {
 			ActionCallback tmpcb = cb;
 			cb = null;
 			tmpcb.resume();
 		}
 	}
-	
+
 	@Override
-	public void write(Json json) {	
-		
+	public void write(Json json) {
+
 		json.writeValue("str", str);
 		json.writeValue("x", x);
 		json.writeValue("y", y);
-		json.writeValue("time",time);
+		json.writeValue("time", time);
 		json.writeValue("type", type);
 		json.writeValue("color", color);
 		json.writeValue("style", style);
 		json.writeValue("actorId", actorId);
 		json.writeValue("voiceId", voiceId);
 		json.writeValue("animation", animation);
-		
-		if(cb != null)
+
+		if (cb != null)
 			json.writeValue("cb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), cb));
 	}
 
 	@Override
-	public void read (Json json, JsonValue jsonData) {
+	public void read(Json json, JsonValue jsonData) {
 		str = json.readValue("str", String.class, jsonData);
 		x = json.readValue("x", Float.class, jsonData);
 		y = json.readValue("y", Float.class, jsonData);
@@ -111,5 +114,5 @@ public class Text implements Serializable {
 		voiceId = json.readValue("voiceId", String.class, jsonData);
 		animation = json.readValue("animation", String.class, jsonData);
 		cb = ActionCallbackSerializer.find(((BladeJson) json).getWorld(), json.readValue("cb", String.class, jsonData));
-	}	
+	}
 }
