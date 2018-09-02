@@ -129,10 +129,9 @@ public class DialogUI extends ScrollPane {
 	private void show() {
 		choices = ui.getWorld().getDialogOptions();
 
-		if (choices.size() == 0)
+		if (choices.size() == 0) {
 			return;
-
-		else if (style.autoselect && choices.size() == 1) {
+		} else if (style.autoselect && choices.size() == 1) {
 			// If only has one option, autoselect it
 
 			// To work properly, delay the selection one frame to avoid select it before
@@ -142,10 +141,10 @@ public class DialogUI extends ScrollPane {
 				@Override
 				public void run() {
 					select(0);
-
-					return;
 				}
 			});
+			
+			return;
 		}
 
 		panel.clear();
