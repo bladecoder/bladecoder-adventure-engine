@@ -154,7 +154,7 @@ public class BladeEngine implements ApplicationListener {
 
 			if (restart) {
 				try {
-					world.getSerializer().loadChapter(null);
+					world.getSerializer().loadChapter();
 					
 					ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 				} catch (Exception e) {

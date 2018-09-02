@@ -118,8 +118,12 @@ public class WorldSerialization implements Serializable {
 		w.write(s);
 		w.close();
 	}
+	
+	public void loadChapter() throws IOException {
+		loadChapter(null, null, true);
+	}
 
-	public void loadChapter(String chapterName) throws IOException {
+	public void loadChapter(String chapterName, String scene, boolean initScene) throws IOException {
 		if (!w.isDisposed())
 			w.dispose();
 
@@ -139,6 +143,11 @@ public class WorldSerialization implements Serializable {
 			json.setIgnoreUnknownFields(true);
 
 			read(json, root);
+			
+			if(scene == null)
+				w.setCurrentScene(w.getScenes().get(w.getInitScene()), initScene);
+			else
+				w.setCurrentScene(w.getScenes().get(scene), initScene);
 
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
 
@@ -321,8 +330,6 @@ public class WorldSerialization implements Serializable {
 				s.resetCamera(w.getWidth(), w.getHeight());
 			}
 
-			w.setCurrentScene(w.getScenes().get(w.getInitScene()), true);
-
 			// Add sounds to cache
 			cacheSounds();
 		} else {
@@ -340,15 +347,14 @@ public class WorldSerialization implements Serializable {
 				version = "TEST";
 
 			String currentChapter = json.readValue("chapter", String.class, jsonData);
+			String currentScene = json.readValue("currentScene", String.class, jsonData);
 
 			try {
-				loadChapter(currentChapter);
+				loadChapter(currentChapter, currentScene, false);
 			} catch (IOException e1) {
 				EngineLogger.error("Error Loading Chapter");
 				return;
 			}
-
-			w.setCurrentScene(w.getScene(json.readValue("currentScene", String.class, jsonData)), false);
 
 			// read inkManager after setting he current scene but before reading
 			// scenes and verbs tweens
