@@ -56,7 +56,7 @@ import com.bladecoder.engine.model.SoundDesc;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.common.NewOrderedProperties.OrderedPropertiesBuilder;
+import com.bladecoder.engineeditor.common.OrderedProperties.OrderedPropertiesBuilder;
 import com.bladecoder.engineeditor.model.Project;
 
 public class ModelTools {
@@ -453,7 +453,7 @@ public class ModelTools {
 		
 		OrderedPropertiesBuilder builder = new OrderedPropertiesBuilder();
 		builder.withSuppressDateInComment(true);
-		NewOrderedProperties prop = builder.build();
+		OrderedProperties prop = builder.build();
 
 		extractInkTextsInternal(root, tsvString, prop);
 		FileUtils.writeStringToFile(new File(file + ".tsv"), tsvString.toString());
@@ -483,7 +483,7 @@ public class ModelTools {
 		//Ctx.project.setModified();
 	}
 
-	private static void extractInkTextsInternal(JsonValue v, StringBuilder sb, NewOrderedProperties prop) {
+	private static void extractInkTextsInternal(JsonValue v, StringBuilder sb, OrderedProperties prop) {
 		if (v.isArray() || v.isObject()) {
 			for (int i = 0; i < v.size; i++) {
 				JsonValue aValue = v.get(i);
@@ -503,6 +503,9 @@ public class ModelTools {
 			if(idx != -1) {
 				charName = value.substring(0, idx).trim();
 				value = value.substring(idx+1).trim();
+				
+				if (value.length() == 0)
+					return;
 			}
 			
 			

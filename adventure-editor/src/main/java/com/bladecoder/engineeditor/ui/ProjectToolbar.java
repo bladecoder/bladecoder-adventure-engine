@@ -294,8 +294,8 @@ public class ProjectToolbar extends Table {
 					return;
 				}
 
-				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
-				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.CHAPTER_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.TEST_SCENE_PROP);
 
 				try {
 					Ctx.project.saveProject();

@@ -40,6 +40,7 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.Message;
+import com.bladecoder.engineeditor.common.OrderedProperties;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.ui.panels.EditDialog;
 import com.bladecoder.engineeditor.ui.panels.FileInputPanel;
@@ -235,8 +236,8 @@ public class PackageDialog extends EditDialog {
 					return;
 				}
 
-				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
-				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.CHAPTER_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.TEST_SCENE_PROP);
 				setCurrentVersion(version.getText());
 
 				try {
@@ -623,7 +624,7 @@ public class PackageDialog extends EditDialog {
 	private String getAppName() {
 
 		try {
-			Properties prop = Ctx.project.getGradleProperties(Ctx.project.getProjectDir());
+			OrderedProperties prop = Ctx.project.getGradleProperties(Ctx.project.getProjectDir());
 			return prop.getProperty("appName");
 		} catch (IOException e) {
 			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
@@ -638,7 +639,7 @@ public class PackageDialog extends EditDialog {
 	private String getCurrentVersion() {
 
 		try {
-			Properties prop = Ctx.project.getGradleProperties(Ctx.project.getProjectDir());
+			OrderedProperties prop = Ctx.project.getGradleProperties(Ctx.project.getProjectDir());
 			return prop.getProperty("version");
 		} catch (IOException e) {
 			Message.showMsg(getStage(), "Error reading file 'gradle.properties' from the game.", 3);
@@ -653,7 +654,7 @@ public class PackageDialog extends EditDialog {
 	private void setCurrentVersion(String version) {
 
 		try {
-			Properties prop = Ctx.project.getGradleProperties(Ctx.project.getProjectDir());
+			OrderedProperties prop = Ctx.project.getGradleProperties(Ctx.project.getProjectDir());
 			prop.setProperty("version", version);
 			Ctx.project.saveGradleProperties(prop, Ctx.project.getProjectDir());
 		} catch (IOException e) {

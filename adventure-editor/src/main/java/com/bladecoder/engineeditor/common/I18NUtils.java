@@ -29,13 +29,11 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engineeditor.common.NewOrderedProperties.OrderedPropertiesBuilder;
+import com.bladecoder.engineeditor.common.OrderedProperties.OrderedPropertiesBuilder;
 
 public class I18NUtils {
 	private static final String SEPARATOR = "\t";
@@ -64,13 +62,14 @@ public class I18NUtils {
 			}
 		});
 
-		Properties props[] = new Properties[files.length + 1];
-
-		props[0] = new OrderedProperties();
+		OrderedProperties props[] = new OrderedProperties[files.length + 1];
+		
+		props[0] = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+		
 		props[0].load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 
 		for (int i = 1; i < props.length; i++) {
-			props[i] = new OrderedProperties();
+			props[i] = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 			props[i].load(new InputStreamReader(new FileInputStream(files[i - 1]), I18N.ENCODING));
 		}
 
@@ -94,24 +93,17 @@ public class I18NUtils {
 
 		writer.write("\n");
 		
-		Set<Object> keySet = props[0].keySet();
-		ArrayList<String> keys = new ArrayList<>();
-		
-		for (Object key : keySet) {
-			keys.add((String)key);
-		}
-		
-		Collections.sort(keys);
+		Set<Entry<String, String>> keySet = props[0].entrySet();
 
-		for (String key : keys) {
-			writer.write(key);
+		for (Entry<String, String> e : keySet) {
+			writer.write(e.getKey());
 
-			for (Properties p : props) {
-				if(p.getProperty((String) key) == null) {
-					writer.write(SEPARATOR + "**" + props[0].getProperty((String) key).replace("\n", "\\n"));
-					System.out.println("KEY NOT FOUND: " + key);
+			for (OrderedProperties p : props) {
+				if(p.getProperty(e.getKey()) == null) {
+					writer.write(SEPARATOR + "**" + props[0].getProperty(e.getKey()).replace("\n", "\\n"));
+					System.out.println("KEY NOT FOUND: " + e);
 				} else {
-					writer.write(SEPARATOR + p.getProperty((String) key).replace("\n", "\\n"));
+					writer.write(SEPARATOR + p.getProperty(e.getKey()).replace("\n", "\\n"));
 				}
 			}
 
@@ -131,7 +123,7 @@ public class I18NUtils {
 
 			if (line != null) {
 				String[] langs = line.split(SEPARATOR);
-				NewOrderedProperties props[] = new NewOrderedProperties[langs.length - 1];
+				OrderedProperties props[] = new OrderedProperties[langs.length - 1];
 
 				for (int i = 0; i < props.length; i++) {
 					OrderedPropertiesBuilder builder = new OrderedPropertiesBuilder();
@@ -183,13 +175,13 @@ public class I18NUtils {
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 		File newChapter = new File(modelPath, chapterId + "_" + newLocale + PROPERTIES_EXT);
 
-		Properties defaultProp = new OrderedProperties();
-		Properties newProp = new OrderedProperties();
+		OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+		OrderedProperties newProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 
 		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 
-		for (Object key : defaultProp.keySet()) {
-			newProp.setProperty((String) key, "**" + (String) defaultProp.get(key));
+		for (Entry<String, String> e : defaultProp.entrySet()) {
+			newProp.setProperty(e.getKey(), "**" + (String) defaultProp.getProperty(e.getKey()));
 		}
 
 		// save new .properties
@@ -203,23 +195,23 @@ public class I18NUtils {
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 		File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
 
-		Properties defaultProp = new OrderedProperties();
-		Properties destProp = new OrderedProperties();
+		OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+		OrderedProperties destProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 
 		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 		destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
 
 		// SEARCH FOR NOT EXISTING DEST KEYS
-		for (Object key : defaultProp.keySet()) {
-			if(destProp.get(key) == null) {
-				EditorLogger.error("Key not found in '" + destLocale + "' locale: " + key);
+		for (Entry<String, String> e : defaultProp.entrySet()) {
+			if(destProp.getProperty(e.getKey()) == null) {
+				EditorLogger.error("Key not found in '" + destLocale + "' locale: " + e.getKey());
 			}
 		}
 		
 		// SEARCH FOR NOT EXISTING DEFAULT CHAPTER KEYS
-		for (Object key : destProp.keySet()) {
-			if(defaultProp.get(key) == null) {
-				EditorLogger.error("Key not found in default locale: " + key);
+		for (Entry<String, String> e : destProp.entrySet()) {
+			if(defaultProp.getProperty(e.getKey()) == null) {
+				EditorLogger.error("Key not found in default locale: " + e.getKey());
 			}
 		}
 	}
@@ -229,15 +221,15 @@ public class I18NUtils {
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 		File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
 
-		Properties defaultProp = new OrderedProperties();
-		Properties destProp = new OrderedProperties();
+		OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+		OrderedProperties destProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 
 		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 		destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
 
 		// SEARCH FOR NOT EXISTING DEST KEYS
 		for (String key : defaultProp.stringPropertyNames()) {
-			if(destProp.get(key) == null) {
+			if(destProp.getProperty(key) == null) {
 				System.out.println("ADDING Key not found in '" + destLocale + "' locale: " + key + "=" + defaultProp.getProperty(key));
 				destProp.setProperty(key, "**" + defaultProp.getProperty(key));
 			}
@@ -245,7 +237,7 @@ public class I18NUtils {
 		
 		// SEARCH FOR NOT EXISTING DEFAULT CHAPTER KEYS
 		for (String key : destProp.stringPropertyNames()) {
-			if(defaultProp.get(key) == null) {
+			if(defaultProp.getProperty(key) == null) {
 				System.out.println("DELETE MANUALLY Key not found in default locale: " + key);
 			}
 		}
