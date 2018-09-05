@@ -46,17 +46,16 @@ public class Transition implements Serializable {
 	public void update(float delta) {
 
 		if (isFinish()) {
-
+			// reset the transition when finish. Only in 'fade in' case, 'fade out'
+			// must stay in screen even when finished
+			if (type == Type.FADE_IN)
+				reset();
+			
 			if (cb != null) {
 				ActionCallback tmpcb = cb;
 				cb = null;
 				tmpcb.resume();
 			}
-
-			// reset the transition when finish. Only in 'fade in' case, 'fade out'
-			// must stay in screen even when finished
-			if (type == Type.FADE_IN)
-				reset();
 		} else {
 			currentTime += delta;
 		}

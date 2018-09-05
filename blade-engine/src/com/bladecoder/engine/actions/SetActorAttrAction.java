@@ -229,6 +229,13 @@ public class SetActorAttrAction implements Action {
 			} else
 				EngineLogger.error("'uiActor' property not supported for actor:" + a.getId());
 		}
+		
+		if (talkingTextPos != null) {
+			if (a instanceof CharacterActor)
+				((CharacterActor) a).setTalkingTextPos(talkingTextPos);
+			else
+				EngineLogger.error("'talkingTextPos' property not supported for actor:" + a.getId());
+		}
 
 		return false;
 	}
