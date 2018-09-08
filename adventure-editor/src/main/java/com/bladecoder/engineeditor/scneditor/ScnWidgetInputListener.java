@@ -153,10 +153,24 @@ public class ScnWidgetInputListener extends ClickListener {
 				}
 
 				// CLICK IN MOVE ICON
-				if (scnWidget.inTransforIcon(p.x, p.y, DraggingModes.DRAGGING_ACTOR)) {
+				if (!(selActor instanceof AnchorActor)
+						&& scnWidget.inTransforIcon(p.x, p.y, DraggingModes.DRAGGING_ACTOR)) {
 					draggingMode = DraggingModes.DRAGGING_ACTOR;
 					undoOrg.set(selActor.getX(), selActor.getY());
 					return true;
+				}
+				
+				if(selActor instanceof AnchorActor) {
+					float orgX = selActor.getX();
+					float orgY = selActor.getY();
+					
+					float dst = Vector2.dst(p.x, p.y, orgX, orgY);
+
+					if (dst < Scene.ANCHOR_RADIUS) {
+						draggingMode = DraggingModes.DRAGGING_ACTOR;
+						undoOrg.set(selActor.getX(), selActor.getY());
+						return true;
+					}
 				}
 
 				// CHECK CLICK IN TRANSFORM ICON
