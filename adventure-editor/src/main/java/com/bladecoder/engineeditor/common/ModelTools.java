@@ -449,14 +449,19 @@ public class ModelTools {
 
 		JsonValue root = new JsonReader().parse(sb.toString());
 
+		// .tsv generation to help in translation
 		StringBuilder tsvString = new StringBuilder();
+		
+		// .md generation to have a better readable document of texts
+		StringBuilder mdString = new StringBuilder();
 		
 		OrderedPropertiesBuilder builder = new OrderedPropertiesBuilder();
 		builder.withSuppressDateInComment(true);
 		OrderedProperties prop = builder.build();
 
-		extractInkTextsInternal(root, tsvString, prop);
+		extractInkTextsInternal(root, tsvString, mdString, prop);
 		FileUtils.writeStringToFile(new File(file + ".tsv"), tsvString.toString());
+		FileUtils.writeStringToFile(new File(file + ".txt"), mdString.toString());
 
 		String json = root.toJson(OutputType.json);
 		FileUtils.writeStringToFile(new File(file + ".new"), json);
@@ -483,13 +488,17 @@ public class ModelTools {
 		//Ctx.project.setModified();
 	}
 
-	private static void extractInkTextsInternal(JsonValue v, StringBuilder sb, OrderedProperties prop) {
+	private static void extractInkTextsInternal(JsonValue v, StringBuilder sbTSV, StringBuilder sbMD, OrderedProperties prop) {
 		if (v.isArray() || v.isObject()) {
+			if(v.name != null && v.isArray())
+				sbMD.append("\n----" + v.name + "\n");
+			
 			for (int i = 0; i < v.size; i++) {
 				JsonValue aValue = v.get(i);
 
-				extractInkTextsInternal(aValue, sb, prop);
+				extractInkTextsInternal(aValue, sbTSV, sbMD, prop);
 			}
+			
 		} else if (v.isString() && v.asString().charAt(0) == '^') {
 			String value = v.asString().substring(1).trim();
 			// String key = "ink." + value.hashCode();
@@ -524,7 +533,9 @@ public class ModelTools {
 
 			//Ctx.project.getI18N().setTranslation(key, value);
 			prop.setProperty(key, value);
-			sb.append(key + "\t" + charName + "\t" + value + "\n");
+			sbTSV.append(key + "\t" + charName + "\t" + value + "\n");
+			
+			sbMD.append(charName + (charName.isEmpty() ? "" : ": ") + value + " (" + key + ")\n");
 			
 			if(charName.isEmpty())
 				v.set("^" + I18N.PREFIX + key);
