@@ -11,6 +11,10 @@ import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.qa.VerbVisitor;
 
+/**
+ * Checks that cutmode is set to false before ending the verb if it was previously set to true.
+ * @author rgarcia
+ */
 public class CheckCutmodeEnd implements VerbVisitor {
 
 

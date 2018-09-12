@@ -416,9 +416,9 @@ public class ModelTools {
 			}
 		});
 
-		if(soundFiles == null)
+		if (soundFiles == null)
 			soundFiles = new String[0];
-		
+
 		Arrays.sort(soundFiles);
 
 		return soundFiles;
@@ -451,10 +451,10 @@ public class ModelTools {
 
 		// .tsv generation to help in translation
 		StringBuilder tsvString = new StringBuilder();
-		
+
 		// .md generation to have a better readable document of texts
 		StringBuilder mdString = new StringBuilder();
-		
+
 		OrderedPropertiesBuilder builder = new OrderedPropertiesBuilder();
 		builder.withSuppressDateInComment(true);
 		OrderedProperties prop = builder.build();
@@ -465,19 +465,19 @@ public class ModelTools {
 
 		String json = root.toJson(OutputType.json);
 		FileUtils.writeStringToFile(new File(file + ".new"), json);
-		
+
 		FileUtils.copyFile(new File(file), new File(file + ".old"));
 		FileUtils.copyFile(new File(file + ".new"), new File(file));
 		new File(file + ".new").delete();
 
 		try {
-			String file2 = file.substring(0,  file.length() - EngineAssetManager.INK_EXT.length());
-			
-			if(lang.equals("default"))
+			String file2 = file.substring(0, file.length() - EngineAssetManager.INK_EXT.length());
+
+			if (lang.equals("default"))
 				file2 += "-ink.properties";
 			else
 				file2 += "-ink" + "_" + lang + ".properties";
-			
+
 			FileOutputStream os = new FileOutputStream(file2);
 			Writer out = new OutputStreamWriter(os, I18N.ENCODING);
 			prop.store(out, null);
@@ -485,39 +485,48 @@ public class ModelTools {
 			EditorLogger.error("ERROR WRITING BUNDLE: " + file + ".properties");
 		}
 
-		//Ctx.project.setModified();
+		// Ctx.project.setModified();
 	}
 
-	private static void extractInkTextsInternal(JsonValue v, StringBuilder sbTSV, StringBuilder sbMD, OrderedProperties prop) {
+	private static void extractInkTextsInternal(JsonValue v, StringBuilder sbTSV, StringBuilder sbMD,
+			OrderedProperties prop) {
 		if (v.isArray() || v.isObject()) {
-			if(v.name != null && v.isArray())
-				sbMD.append("\n----" + v.name + "\n");
-			
+			if (v.name != null && v.isArray() && v.parent != null && v.parent.parent != null
+					&& v.parent.parent.parent != null) {
+				if (v.name.contains("-"))
+					sbMD.append('\n');
+				else if (v.parent.parent.parent.parent == null)
+					sbMD.append("\n==== " + v.name + " ====\n");
+				else if(v.name.equals("s"))
+					sbMD.append("  * ");
+//				else
+//					sbMD.append("\n-- " + v.name + " --\n");
+			}
+
 			for (int i = 0; i < v.size; i++) {
 				JsonValue aValue = v.get(i);
 
 				extractInkTextsInternal(aValue, sbTSV, sbMD, prop);
 			}
-			
+
 		} else if (v.isString() && v.asString().charAt(0) == '^') {
 			String value = v.asString().substring(1).trim();
 			// String key = "ink." + value.hashCode();
 
-			if(value.length() == 0 || value.charAt(0) == '>')
+			if (value.length() == 0 || value.charAt(0) == '>')
 				return;
-			
+
 			int idx = value.indexOf('>');
 			String charName = "";
-			
-			if(idx != -1) {
+
+			if (idx != -1) {
 				charName = value.substring(0, idx).trim();
-				value = value.substring(idx+1).trim();
-				
+				value = value.substring(idx + 1).trim();
+
 				if (value.length() == 0)
 					return;
 			}
-			
-			
+
 			String key = null;
 
 			try {
@@ -531,13 +540,13 @@ public class ModelTools {
 				return;
 			}
 
-			//Ctx.project.getI18N().setTranslation(key, value);
+			// Ctx.project.getI18N().setTranslation(key, value);
 			prop.setProperty(key, value);
 			sbTSV.append(key + "\t" + charName + "\t" + value + "\n");
-			
+
 			sbMD.append(charName + (charName.isEmpty() ? "" : ": ") + value + " (" + key + ")\n");
-			
-			if(charName.isEmpty())
+
+			if (charName.isEmpty())
 				v.set("^" + I18N.PREFIX + key);
 			else
 				v.set("^" + charName + '>' + I18N.PREFIX + key);

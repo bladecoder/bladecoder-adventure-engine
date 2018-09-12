@@ -11,6 +11,15 @@ import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.qa.ActorVisitor;
 
+/**
+ * Checks:
+ *   - That inventory actors has the use verb.
+ *   - Interactive actors have lookat and pickup/talkto verbs.
+ *   - SpriteActors have at least one animation.
+ * 
+ * @author rgarcia
+ *
+ */
 public class CheckInteractionVerbs implements ActorVisitor {
 
 	private InteractiveActor ia;

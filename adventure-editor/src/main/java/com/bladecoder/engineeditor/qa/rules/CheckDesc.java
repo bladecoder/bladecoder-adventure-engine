@@ -8,6 +8,11 @@ import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.qa.ActorVisitor;
 
+/**
+ * Checks that all interactive actors have description.
+ * @author rgarcia
+ *
+ */
 public class CheckDesc implements ActorVisitor {
 
 	private InteractiveActor ia;
