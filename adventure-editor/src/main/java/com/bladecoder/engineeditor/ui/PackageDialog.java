@@ -341,6 +341,10 @@ public class PackageDialog extends EditDialog {
 				p.store(new FileOutputStream(
 						new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties")), null);
 			}
+			
+			if(!new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties").exists() && System.getenv("ANDROID_HOME") == null) {
+				return "You have to specify the Android SDK path or set the ANDROID_HOME environtment variable.";
+			}
 
 			String task = "android:assembleFullRelease";
 			String apk = Ctx.project.getProjectDir().getAbsolutePath()

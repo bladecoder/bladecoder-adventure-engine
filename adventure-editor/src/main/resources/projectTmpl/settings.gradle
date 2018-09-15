@@ -1,1 +1,17 @@
-include 'core', 'desktop', 'android', 'ios'
+include 'core', 'desktop', 'ios'
+
+// include android project only when calling a subproject task or a task without subproject
+def tasks=gradle.startParameter.getTaskNames()
+def includeAndroid=false
+
+for(t in tasks) {
+    if(t.indexOf(':') == -1 || t.contains("android:")) {
+        println "INCLUDING ANDROID PROJECT"
+        includeAndroid = true
+        break;
+    }
+}
+
+if (includeAndroid) {
+   include 'android'
+}

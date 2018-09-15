@@ -1,10 +1,14 @@
+apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'application'
+  
+sourceCompatibility = 1.7
+targetCompatibility=1.7
+
 
 sourceSets.main.resources.srcDirs += [ rootProject.file('assets').absolutePath ]
 mainClassName = "%PACKAGE%.desktop.DesktopLauncher"
 eclipse.project.name = appName + '-desktop'
-sourceCompatibility = 1.7
-targetCompatibility=1.7
 
 dependencies {
     api project(":core")

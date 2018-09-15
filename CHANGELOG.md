@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.4]
+
+- Now the editor works without having the Android SDK installed.
+- FIX: Bug when moving target actor.
+- FIX: Bug in 'Transition' action.  
+- FIX:'actorTextPosition' property in 'SetActorAttr' action wasn't working.
+
 ## [2.1.3]
 
 - Support for several walkzones in a scene. Now walkzones are also actors.

@@ -1,3 +1,5 @@
+apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'robovm'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
