@@ -79,21 +79,8 @@ public class DialogUI extends ScrollPane {
 
 			@Override
 			public boolean handle(Event event) {
-				if (isScrollY()) {
-
-					if (getScrollPercentY() > 0f && up.isVisible() == false) {
-						up.setVisible(true);
-					} else if (getScrollPercentY() == 0f && up.isVisible() == true) {
-						up.setVisible(false);
-					}
-
-					if (getScrollPercentY() < 1f && down.isVisible() == false) {
-						down.setVisible(true);
-					} else if (getScrollPercentY() == 1f && down.isVisible() == true) {
-						down.setVisible(false);
-					}
-				}
-
+				setUpDownVisibility();
+				
 				return false;
 			}
 		});
@@ -111,6 +98,23 @@ public class DialogUI extends ScrollPane {
 				setScrollY(getScrollY() + DPIUtils.getPrefButtonSize());
 			}
 		});
+	}
+
+	private void setUpDownVisibility() {
+		if (isScrollY()) {
+
+			if (getScrollPercentY() > 0f && up.isVisible() == false) {
+				up.setVisible(true);
+			} else if (getScrollPercentY() == 0f && up.isVisible() == true) {
+				up.setVisible(false);
+			}
+
+			if (getScrollPercentY() < 1f && down.isVisible() == false) {
+				down.setVisible(true);
+			} else if (getScrollPercentY() == 1f && down.isVisible() == true) {
+				down.setVisible(false);
+			}
+		}
 	}
 
 	@Override
@@ -143,7 +147,7 @@ public class DialogUI extends ScrollPane {
 					select(0);
 				}
 			});
-			
+
 			return;
 		}
 
@@ -187,6 +191,8 @@ public class DialogUI extends ScrollPane {
 		down.setSize(size, size);
 		down.setPosition(getX() + getWidth() - size - margin, getY() + margin);
 		down.setVisible(false);
+		
+		setUpDownVisibility();
 	}
 
 	private void select(int i) {
