@@ -474,12 +474,24 @@ public class SpineRenderer extends AnimationRenderer {
 		bounds.update(cs.skeleton, true);
 
 		if (bounds.getWidth() > 0 && bounds.getHeight() > 0) {
-			width = bounds.getWidth();
-			height = bounds.getHeight();
-			minX = bounds.getMinX();
-			minY = bounds.getMinY();
-			maxX = bounds.getMaxX();
-			maxY = bounds.getMaxY();
+			// if there is only one bbox, get the polygon, else get the rectangle bbox
+			// (union of all bboxes).
+			if (bounds.getPolygons().size == 1) {
+				FloatArray p = bounds.getPolygons().get(0);
+
+				bbox.setVertices(p.items);
+				bbox.dirty();
+				return;
+
+			} else {
+				width = bounds.getWidth();
+				height = bounds.getHeight();
+				minX = bounds.getMinX();
+				minY = bounds.getMinY();
+				maxX = bounds.getMaxX();
+				maxY = bounds.getMaxY();
+			}
+
 		} else {
 
 			Vector2 offset = new Vector2();
