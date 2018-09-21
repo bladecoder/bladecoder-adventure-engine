@@ -468,6 +468,9 @@ public class SpineRenderer extends AnimationRenderer {
 			}
 			return;
 		}
+		
+		if(bbox == null)
+			return;
 
 		cs.skeleton.setPosition(0, 0);
 		cs.skeleton.updateWorldTransform();
@@ -479,7 +482,7 @@ public class SpineRenderer extends AnimationRenderer {
 			if (bounds.getPolygons().size == 1) {
 				FloatArray p = bounds.getPolygons().get(0);
 
-				bbox.setVertices(p.items);
+				bbox.setVertices(p.toArray());
 				bbox.dirty();
 				return;
 
