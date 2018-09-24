@@ -62,7 +62,7 @@ public class InkManager implements VerbRunner, Serializable {
 	public InkManager(World w) {
 		this.w = w;
 		externalFunctions = new ExternalFunctions();
-		actions = new ArrayList<Action>();
+		actions = new ArrayList<>();
 	}
 
 	public void newStory(InputStream is) throws Exception {
@@ -162,7 +162,7 @@ public class InkManager implements VerbRunner, Serializable {
 			if (rawList.getOrigins() == null) {
 				List<String> names = rawList.getOriginNames();
 				if (names != null) {
-					ArrayList<ListDefinition> origins = new ArrayList<ListDefinition>();
+					ArrayList<ListDefinition> origins = new ArrayList<>();
 					for (String n : names) {
 						ListDefinition def = story.getListDefinitions().getListDefinition(n);
 						if (!origins.contains(def))
@@ -181,7 +181,7 @@ public class InkManager implements VerbRunner, Serializable {
 		String line = null;
 		actions.clear();
 
-		HashMap<String, String> currentLineParams = new HashMap<String, String>();
+		HashMap<String, String> currentLineParams = new HashMap<>();
 
 		while (story.canContinue()) {
 			try {
@@ -405,10 +405,14 @@ public class InkManager implements VerbRunner, Serializable {
 	public List<String> getChoices() {
 
 		List<Choice> options = story.getCurrentChoices();
-		List<String> choices = new ArrayList<String>(options.size());
+		List<String> choices = new ArrayList<>(options.size());
 
 		for (Choice o : options) {
 			String line = o.getText();
+
+			// the line maybe empty in default choices.
+			if (line.isEmpty())
+				continue;
 
 			int idx = line.indexOf(InkManager.COMMAND_MARK);
 
