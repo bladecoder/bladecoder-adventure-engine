@@ -43,14 +43,14 @@ public class Recorder {
 	public static final String GAMESTATE_REC_EXT = ".gamestate.rec";
 	private static final float WAITING_TIME = .5f;
 
-	private ArrayList<TimeVerb> list = new ArrayList<TimeVerb>();
+	private ArrayList<TimeVerb> list = new ArrayList<>();
 	private boolean playing = false;
 	private boolean recording = false;
 	private float time;
 	private int pos;
 	private String fileName = DEFAULT_RECORD_FILENAME;
 	private final World w;
-	
+
 	public Recorder(World w) {
 		this.w = w;
 	}
@@ -79,7 +79,7 @@ public class Recorder {
 
 			// while (playing && v.time < time) {
 			if (playing && v.time < time && !w.inCutMode()) {
-				
+
 				if (v.verb == null) {
 					if (v.pos == null) { // DIALOG OPTION
 						w.selectDialogOption(v.dialogOption);
@@ -92,19 +92,31 @@ public class Recorder {
 					}
 				} else {
 
-					InteractiveActor a = (InteractiveActor) s.getActor(v.actorId, true);
+					stringBuilder.append(v.verb);
 
-					if (a != null) {
-						stringBuilder.append(v.verb);
-						stringBuilder.append(' ').append(v.actorId);
-
-						if (v.target != null) {
-							stringBuilder.append(" with ").append(v.target);
+					if (v.verb.equals("SAVEGAME")) {
+						// SPECIAL VERB TO SAVE THE GAME
+						stringBuilder.append(v.target);
+						try {
+							w.getSerializer().saveGameState(v.target);
+						} catch (IOException e) {
+							EngineLogger.error("Couldn't save game: " + v.target + " : " + e.getMessage());
 						}
+					} else {
 
-						a.runVerb(v.verb, v.target);
-					} else
-						EngineLogger.error("PLAYING ERROR: BaseActor not found: " + v.actorId);
+						InteractiveActor a = (InteractiveActor) s.getActor(v.actorId, true);
+
+						if (a != null) {
+							stringBuilder.append(' ').append(v.actorId);
+
+							if (v.target != null) {
+								stringBuilder.append(" with ").append(v.target);
+							}
+
+							a.runVerb(v.verb, v.target);
+						} else
+							EngineLogger.error("PLAYING ERROR: BaseActor not found: " + v.actorId);
+					}
 				}
 
 				EngineLogger.debug(stringBuilder.toString());
@@ -188,7 +200,7 @@ public class Recorder {
 	}
 
 	public void setPlaying(boolean p) {
-		if(p)
+		if (p)
 			EngineLogger.debug("PLAYING...");
 		else
 			EngineLogger.debug("STOP PLAYING...");
@@ -246,7 +258,7 @@ public class Recorder {
 			FileHandle gameStateFile = EngineAssetManager.getInstance().getUserFile(gameStateFileName);
 
 			if (!gameStateFile.exists())
-				gameStateFile =  EngineAssetManager.getInstance().getAsset("tests/" + gameStateFileName);
+				gameStateFile = EngineAssetManager.getInstance().getAsset("tests/" + gameStateFileName);
 
 			if (gameStateFile.exists())
 				try {
@@ -268,7 +280,7 @@ public class Recorder {
 
 		Json json = new Json();
 
-//		String s = json.prettyPrint(list);
+		// String s = json.prettyPrint(list);
 		String s = json.toJson(list, ArrayList.class, TimeVerb.class);
 		s = json.prettyPrint(s);
 
