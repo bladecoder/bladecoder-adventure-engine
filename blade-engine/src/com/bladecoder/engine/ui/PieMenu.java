@@ -41,46 +41,46 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 	private InteractiveActor iActor = null;
 
 	private final SceneScreen sceneScreen;
-	
+
 	private int viewportWidth, viewportHeight;
-	
+
 	private final GlyphLayout layout = new GlyphLayout();
-	
+
 	private String desc = null;
 
 	public PieMenu(SceneScreen scr) {
 		sceneScreen = scr;
 		font = scr.getUI().getSkin().getFont("desc");
-				
+
 		lookatButton = new Button(scr.getUI().getSkin(), "pie_lookat");
 		addActor(lookatButton);
-		lookatButton.addListener(new ChangeListener() {			
+		lookatButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-				if (iActor != null) {
+				if (iActor != null && iActor.canInteract()) {
 					sceneScreen.runVerb(iActor, "lookat", null);
 				}
 
 				hide();
 			}
 		});
-		
+
 		talktoButton = new Button(scr.getUI().getSkin(), "pie_talkto");
 		addActor(talktoButton);
-		talktoButton.addListener(new ChangeListener() {			
+		talktoButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-				if (iActor != null) {
+				if (iActor != null && iActor.canInteract()) {
 					sceneScreen.runVerb(iActor, "talkto", null);
 				}
 
 				hide();
 			}
 		});
-		
+
 		pickupButton = new Button(scr.getUI().getSkin(), "pie_pickup");
 		addActor(pickupButton);
-		pickupButton.addListener(new ChangeListener() {			
+		pickupButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
 				if (iActor != null) {
@@ -95,12 +95,18 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 	@Override
 	public void draw(Batch batch, float alpha) {
 
+		// check if the interactive or visible property has change and hide it.
+		if (!iActor.canInteract()) {
+			hide();
+			return;
+		}
+
 		super.draw(batch, alpha);
 
 		// DRAW TARGET DESCRIPTION
 		String desc = iActor.getDesc();
 
-		if (desc != null) {			
+		if (desc != null) {
 			float margin = DPIUtils.UI_SPACE;
 
 			float textX = x - layout.width / 2;
@@ -109,8 +115,8 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 			if (textX < 0)
 				textX = 0;
 
-			RectangleRenderer.draw(batch, textX - margin, textY - layout.height - margin,
-					layout.width + margin*2, layout.height + margin*2, Color.BLACK);
+			RectangleRenderer.draw(batch, textX - margin, textY - layout.height - margin, layout.width + margin * 2,
+					layout.height + margin * 2, Color.BLACK);
 			font.draw(batch, layout, textX, textY);
 		}
 	}
@@ -125,7 +131,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		this.x = x;
 		this.y = y;
 		iActor = a;
-		
+
 		// DRAW TARGET DESCRIPTION
 		desc = iActor.getDesc();
 
@@ -133,10 +139,10 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 
 			if (desc.charAt(0) == I18N.PREFIX)
 				desc = I18N.getString(desc.substring(1));
-					
+
 			layout.setText(font, desc);
 		}
-		
+
 		Actor rightButton;
 
 		if (a.getVerb("talkto") != null) {
@@ -148,40 +154,38 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 			pickupButton.setVisible(true);
 			rightButton = pickupButton;
 		}
-		
-		float margin = DPIUtils.getMarginSize();
-		
-		// FITS TO SCREEN
-		if(x < lookatButton.getWidth() + margin)
-			this.x = lookatButton.getWidth() + margin;
-		else if(x > viewportWidth - lookatButton.getWidth() - margin)
-			this.x = viewportWidth - lookatButton.getWidth() - margin;
-		
-		if(y < margin)
-			this.y = margin;
-		else if(y > viewportHeight - lookatButton.getHeight() - margin)
-			this.y = viewportHeight - lookatButton.getHeight() - margin;
-		
-		//lookatButton.setPosition(this.x - lookatButton.getWidth() - margin / 2, this.y + margin);
-		lookatButton.setPosition(this.x - lookatButton.getWidth() / 2, this.y - lookatButton.getHeight() / 2);
-		lookatButton.addAction(Actions
-				.moveTo(this.x - lookatButton.getWidth() - margin / 2, this.y + margin, .1f));
-		
 
-//		rightButton.setPosition(this.x + margin / 2, this.y + margin);
+		float margin = DPIUtils.getMarginSize();
+
+		// FITS TO SCREEN
+		if (x < lookatButton.getWidth() + margin)
+			this.x = lookatButton.getWidth() + margin;
+		else if (x > viewportWidth - lookatButton.getWidth() - margin)
+			this.x = viewportWidth - lookatButton.getWidth() - margin;
+
+		if (y < margin)
+			this.y = margin;
+		else if (y > viewportHeight - lookatButton.getHeight() - margin)
+			this.y = viewportHeight - lookatButton.getHeight() - margin;
+
+		// lookatButton.setPosition(this.x - lookatButton.getWidth() - margin / 2,
+		// this.y + margin);
+		lookatButton.setPosition(this.x - lookatButton.getWidth() / 2, this.y - lookatButton.getHeight() / 2);
+		lookatButton.addAction(Actions.moveTo(this.x - lookatButton.getWidth() - margin / 2, this.y + margin, .1f));
+
+		// rightButton.setPosition(this.x + margin / 2, this.y + margin);
 		rightButton.setPosition(this.x - lookatButton.getWidth() / 2, this.y - lookatButton.getHeight() / 2);
-		rightButton.addAction(Actions
-				.moveTo(this.x + margin / 2, this.y + margin, .1f));
+		rightButton.addAction(Actions.moveTo(this.x + margin / 2, this.y + margin, .1f));
 
 	}
 
 	public void resize(int width, int height) {
 		viewportWidth = width;
 		viewportHeight = height;
-		
+
 		setBounds(0, 0, width, height);
-		
-		float size = DPIUtils.getPrefButtonSize();	
+
+		float size = DPIUtils.getPrefButtonSize();
 		lookatButton.setSize(size, size);
 		talktoButton.setSize(size, size);
 		pickupButton.setSize(size, size);
