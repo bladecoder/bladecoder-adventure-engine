@@ -98,21 +98,23 @@ public class AnimationDrawer {
 	public void draw(SpriteBatch batch) {
 		if (renderer != null && currentAnimation != null) {
 
-			float width;
+			float width = HEIGHT / renderer.getHeight() * renderer.getWidth();
+			float height = HEIGHT;
+			float scaleh = width / renderer.getWidth();
 			
-			if(renderer.getWidth() < renderer.getHeight())
-				width = HEIGHT / renderer.getHeight() * renderer.getWidth();
-			else
-				width = HEIGHT / renderer.getWidth() * renderer.getHeight();
+			if(renderer.getWidth() > renderer.getHeight()) {
+				scaleh = HEIGHT / renderer.getWidth();
+				width = HEIGHT;
+				height = renderer.getHeight() * scaleh;
+			}
 
 			RectangleRenderer.draw(batch, viewportW - width - 5, viewportH
-					- HEIGHT - 55, width + 10, HEIGHT + 10, Color.BLACK);
-			RectangleRenderer.draw(batch, viewportW - width, viewportH - HEIGHT
-					- 50, width, HEIGHT, BG_COLOR);
-
-			float scaleh = width / renderer.getWidth();
+					- height - 55, width + 10, height + 10, Color.BLACK);
+			RectangleRenderer.draw(batch, viewportW - width, viewportH - height
+					- 50, width, height, BG_COLOR);
+			
 			renderer.draw(batch, viewportW - width / 2,
-					viewportH - HEIGHT - 50, scaleh, scaleh, 0f, null);
+					viewportH - height - 50, scaleh, scaleh, 0f, null);
 
 		}
 	}
