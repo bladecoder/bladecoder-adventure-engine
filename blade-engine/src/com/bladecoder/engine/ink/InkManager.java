@@ -136,6 +136,9 @@ public class InkManager implements VerbRunner, Serializable {
 				}
 			}
 
+			// In translated lines, spaces can be escaped with '_'.
+			translated = translated.replace('_', ' ');
+
 			return translated;
 		}
 
@@ -193,7 +196,8 @@ public class InkManager implements VerbRunner, Serializable {
 					line = line.substring(0, line.length() - 1);
 
 				if (!line.isEmpty()) {
-					EngineLogger.debug("INK LINE: " + line);
+					if (EngineLogger.debugMode())
+						EngineLogger.debug("INK LINE: " + translateLine(line));
 
 					processParams(story.getCurrentTags(), currentLineParams);
 
