@@ -71,7 +71,11 @@ public class ParticleRenderer implements ActorRenderer {
 
 	@Override
 	public void update(float delta) {
-		effect.update(delta);
+		try {
+			effect.update(delta);
+		} catch (Exception e) {
+			// avoid crashing if atlas is not found
+		}
 	}
 
 	@Override
