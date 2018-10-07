@@ -354,6 +354,11 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		} else {
 			tweens = json.readValue("tweens", ArrayList.class, Tween.class, jsonData);
 
+			if(tweens == null) {
+				EngineLogger.debug("Couldn't load state of actor: " + id);
+				return;
+			}
+				
 			for (Tween<SpriteActor> t : tweens)
 				t.setTarget(this);
 
