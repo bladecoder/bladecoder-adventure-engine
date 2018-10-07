@@ -145,11 +145,11 @@ public class InkManager implements VerbRunner, Serializable {
 		return line;
 	}
 
-	public String getVariable(String name) {
+	public synchronized String getVariable(String name) {
 		return story.getVariablesState().get(name).toString();
 	}
 
-	public boolean compareVariable(String name, String value) {
+	public synchronized boolean compareVariable(String name, String value) {
 		if (story.getVariablesState().get(name) instanceof InkList) {
 			return ((InkList) story.getVariablesState().get(name)).ContainsItemNamed(value);
 		} else {
