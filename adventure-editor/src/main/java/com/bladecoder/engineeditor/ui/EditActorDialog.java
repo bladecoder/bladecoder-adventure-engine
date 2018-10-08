@@ -67,19 +67,19 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			ANCHOR_TYPE_STR, WALKZONE_TYPE_STR, OBSTACLE_TYPE_STR };
 
 	private static final String ACTOR_RENDERERS[] = { Project.ATLAS_RENDERER_STRING, Project.SPINE_RENDERER_STRING,
-			Project.IMAGE_RENDERER_STRING, Project.S3D_RENDERER_STRING, Project.PARTICLE_RENDERER_STRING, Project.TEXT_RENDERER_STRING };
+			Project.IMAGE_RENDERER_STRING, Project.S3D_RENDERER_STRING, Project.PARTICLE_RENDERER_STRING,
+			Project.TEXT_RENDERER_STRING };
 
 	private static final String TYPES_INFO[] = {
 			"Background actors don't have sprites or animations. They are used to interact with objects drawn in the background",
 			"Sprite actors have one or several sprites or animations",
 			"Character actors have dialogs and stand, walk and talk animations",
 			"Anchor actors are used as reference for positioning other actors",
-			"Define the walkable area for characters",
-			"Obstacle actors forbids zones for walking actors"
-			};
-	
-	private static final String TEXT_ALIGN[] = {"left", "center", "right"};
-	private static final String ORG_ALIGN[] = {"bottom", "center", "left", "right", "top", "botton-right", "botton-left", "top-right", "top-left"};
+			"Define the walkable area for characters", "Obstacle actors forbids zones for walking actors" };
+
+	private static final String TEXT_ALIGN[] = { "left", "center", "right" };
+	private static final String ORG_ALIGN[] = { "bottom", "center", "left", "right", "top", "botton-right",
+			"botton-left", "top-right", "top-left" };
 
 	private InputPanel typePanel;
 	private InputPanel id;
@@ -101,13 +101,13 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	private InputPanel talkingTextPos;
 
 	private InputPanel orgAlign;
-	
+
 	private InputPanel textColor;
 	private InputPanel textStyle;
-	
+
 	// Spine Renderer
 	private InputPanel spineSkin;
-	
+
 	// 3d Renderer
 	private InputPanel spriteSize;
 	private InputPanel cameraName;
@@ -116,7 +116,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 	// Particle Renderer
 	private InputPanel particleName;
 	private InputPanel particleAtlas;
-	
+
 	// Text Renderer
 	private InputPanel text;
 	private InputPanel font;
@@ -155,13 +155,15 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		renderer = InputPanelFactory.createInputPanel(skin, "Actor Renderer",
 				"Actors can be renderer from several sources", ACTOR_RENDERERS, true);
 
-		fakeDepth = InputPanelFactory.createInputPanel(skin, "Fake Depth", "Scene fake depth for scaling",Param.Type.BOOLEAN, true,
-				"false");
+		fakeDepth = InputPanelFactory.createInputPanel(skin, "Fake Depth", "Scene fake depth for scaling",
+				Param.Type.BOOLEAN, true, "false");
 
-		pos = InputPanelFactory.createInputPanel(skin, "Position", "The sprite position.", Param.Type.VECTOR2, true, "0,0");
-		refPoint = InputPanelFactory.createInputPanel(skin, "Ref. Point", "Point of reference to relative position other actors.", Param.Type.VECTOR2, true, "0,0");
+		pos = InputPanelFactory.createInputPanel(skin, "Position", "The sprite position.", Param.Type.VECTOR2, true,
+				"0,0");
+		refPoint = InputPanelFactory.createInputPanel(skin, "Ref. Point",
+				"Point of reference to relative position other actors.", Param.Type.VECTOR2, true, "0,0");
 		scale = InputPanelFactory.createInputPanel(skin, "Scale", "The sprite scale.", Param.Type.VECTOR2, true, "1,1");
-		
+
 		rot = InputPanelFactory.createInputPanel(skin, "Rotation", "The sprite rotation.", Param.Type.FLOAT, true, "0");
 
 		tint = InputPanelFactory.createInputPanel(skin, "Tint", "Draw the actor with the specified color (RRGGBBAA).",
@@ -172,13 +174,14 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 				"true");
 
 		zIndex = InputPanelFactory.createInputPanel(skin, "zIndex", "The order to draw.", Param.Type.FLOAT, false, "0");
-		
-		orgAlign = InputPanelFactory.createInputPanel(skin, "orgAlign", "Alignment of the origin for rotation and scale.", ORG_ALIGN, true);
+
+		orgAlign = InputPanelFactory.createInputPanel(skin, "orgAlign",
+				"Alignment of the origin for rotation and scale.", ORG_ALIGN, true);
 
 		walkingSpeed = InputPanelFactory.createInputPanel(skin, "Walking Speed",
 				"The walking speed in pix/sec. Default 700.", Param.Type.FLOAT, true,
 				Float.toString(CharacterActor.DEFAULT_WALKING_SPEED));
-		
+
 		spineSkin = InputPanelFactory.createInputPanel(skin, "Skin", "The initial skin.");
 
 		spriteSize = InputPanelFactory.createInputPanel(skin, "Sprite Dimensions", "The size of the 3d sprite.",
@@ -190,40 +193,39 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		textColor = InputPanelFactory.createInputPanel(skin, "Text Color",
 				"The text color (RRGGBBAA) when the actor talks.", Param.Type.COLOR, false);
-		
+
 		textStyle = InputPanelFactory.createInputPanel(skin, "Text Style",
-				"The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section).", Param.Type.STRING, false);
-		
-		talkingTextPos = InputPanelFactory.createInputPanel(skin, "Talking Text Pos", "Position of the text when talking. Relative to the character position.", Param.Type.VECTOR2, false);
+				"The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section).",
+				Param.Type.STRING, false);
+
+		talkingTextPos = InputPanelFactory.createInputPanel(skin, "Talking Text Pos",
+				"Position of the text when talking. Relative to the character position.", Param.Type.VECTOR2, false);
 
 		particleName = InputPanelFactory.createInputPanel(skin, "Particle Name", "The name of the particle system.",
 				Type.PARTICLE_ASSET, true);
 
 		particleAtlas = InputPanelFactory.createInputPanel(skin, "Particle Atlas",
 				"The atlas used by the particle system.", Type.ATLAS_ASSET, true);
-		
-		text = InputPanelFactory.createInputPanel(skin, "Text",
-				"The text to draw.", Type.SMALL_TEXT, true);
+
+		text = InputPanelFactory.createInputPanel(skin, "Text", "The text to draw.", Type.SMALL_TEXT, true);
 		text.getCell(text.getField()).fillX();
-		
-		font = InputPanelFactory.createInputPanel(skin, "Font",
-				"Select the font name.", Type.FONT_ASSET, true);
-		size = InputPanelFactory.createInputPanel(skin, "Size",
-				"The size of the text.", Type.INTEGER, true, "20");
-		textAlign = InputPanelFactory.createInputPanel(skin, "Text Align",
-				"The alignment of the text.", TEXT_ALIGN, true);
-		borderWidth = InputPanelFactory.createInputPanel(skin, "Border Width",
-				"Zero for no border.", Type.INTEGER, true, "0");
-		borderColor = InputPanelFactory.createInputPanel(skin, "Border Color",
-				"The Border Color.", Type.COLOR, true, "black");
-		borderStraight = InputPanelFactory.createInputPanel(skin, "Border Straigh",
-				"Is the border straight?", Type.BOOLEAN, true);
-		shadowOffsetX = InputPanelFactory.createInputPanel(skin, "Shadow Offset X",
-				"The Shadow X offset.", Type.INTEGER, true, "0");
-		shadowOffsetY = InputPanelFactory.createInputPanel(skin, "Shadow Offset Y",
-				"The Shadow Y offset.", Type.INTEGER, true, "0");
-		shadowColor = InputPanelFactory.createInputPanel(skin, "Shadow Color",
-				"The shadow Color.", Type.COLOR, true, "black");
+
+		font = InputPanelFactory.createInputPanel(skin, "Font", "Select the font name.", Type.FONT_ASSET, true);
+		size = InputPanelFactory.createInputPanel(skin, "Size", "The size of the text.", Type.INTEGER, true, "20");
+		textAlign = InputPanelFactory.createInputPanel(skin, "Text Align", "The alignment of the text.", TEXT_ALIGN,
+				true);
+		borderWidth = InputPanelFactory.createInputPanel(skin, "Border Width", "Zero for no border.", Type.INTEGER,
+				true, "0");
+		borderColor = InputPanelFactory.createInputPanel(skin, "Border Color", "The Border Color.", Type.COLOR, true,
+				"black");
+		borderStraight = InputPanelFactory.createInputPanel(skin, "Border Straigh", "Is the border straight?",
+				Type.BOOLEAN, true);
+		shadowOffsetX = InputPanelFactory.createInputPanel(skin, "Shadow Offset X", "The Shadow X offset.",
+				Type.INTEGER, true, "0");
+		shadowOffsetY = InputPanelFactory.createInputPanel(skin, "Shadow Offset Y", "The Shadow Y offset.",
+				Type.INTEGER, true, "0");
+		shadowColor = InputPanelFactory.createInputPanel(skin, "Shadow Color", "The shadow Color.", Type.COLOR, true,
+				"black");
 
 		setInfo(TYPES_INFO[0]);
 
@@ -244,9 +246,11 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		});
 
 		init(parent, e,
-				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction, desc, state, fakeDepth, pos, refPoint, scale, rot,
-						tint, text, font, size, textAlign, borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY,
-						shadowColor, bboxFromRenderer, zIndex, orgAlign, walkingSpeed, talkingTextPos, spineSkin, spriteSize, cameraName, fov, textColor, textStyle });
+				new InputPanel[] { typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction,
+						desc, state, fakeDepth, pos, refPoint, scale, rot, tint, text, font, size, textAlign,
+						borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY, shadowColor,
+						bboxFromRenderer, zIndex, orgAlign, walkingSpeed, talkingTextPos, spineSkin, spriteSize,
+						cameraName, fov, textColor, textStyle });
 
 		typeChanged();
 
@@ -268,16 +272,15 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		setInfo(TYPES_INFO[i]);
 
 		hideAllInputs();
-		
+
 		setVisible(pos, true);
 
-		if (!ACTOR_TYPES[i].equals(ANCHOR_TYPE_STR) &&
-				!ACTOR_TYPES[i].equals(WALKZONE_TYPE_STR)) {
+		if (!ACTOR_TYPES[i].equals(ANCHOR_TYPE_STR) && !ACTOR_TYPES[i].equals(WALKZONE_TYPE_STR)) {
 			setVisible(visible, true);
 		}
 
-		if (!ACTOR_TYPES[i].equals(OBSTACLE_TYPE_STR) && !ACTOR_TYPES[i].equals(ANCHOR_TYPE_STR) &&
-				!ACTOR_TYPES[i].equals(WALKZONE_TYPE_STR)) {
+		if (!ACTOR_TYPES[i].equals(OBSTACLE_TYPE_STR) && !ACTOR_TYPES[i].equals(ANCHOR_TYPE_STR)
+				&& !ACTOR_TYPES[i].equals(WALKZONE_TYPE_STR)) {
 			setVisible(layer, true);
 			setVisible(interaction, true);
 			setVisible(desc, true);
@@ -310,7 +313,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 		int i = ((OptionsInputPanel) renderer).getSelectedIndex();
 
 		// setInfo(RENDERERS_INFO[i]);
-		
+
 		setVisible(spineSkin, false);
 
 		setVisible(spriteSize, false);
@@ -319,7 +322,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		setVisible(particleName, false);
 		setVisible(particleAtlas, false);
-		
+
 		setVisible(text, false);
 		setVisible(font, false);
 		setVisible(size, false);
@@ -389,7 +392,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 			// remove to allow id, zindex and layer change
 			parent.removeActor(e);
-			
+
 			oldId = e.getId();
 		}
 
@@ -447,9 +450,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		e.setId(ElementUtils.getCheckedId(id.getText(), parent.getActors().keySet().toArray(new String[0])));
 		e.setVisible(Boolean.parseBoolean(visible.getText()));
-		
+
 		Vector2 p = Param.parseVector2(pos.getText());
-		
+
 		e.setPosition(p.x, p.y);
 
 		if (e instanceof InteractiveActor) {
@@ -457,9 +460,9 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 			ia.setLayer(layer.getText());
 			ia.setInteraction(Boolean.parseBoolean(interaction.getText()));
-			
+
 			Vector2 rp = Param.parseVector2(refPoint.getText());
-			
+
 			ia.setRefPoint(rp.x, rp.y);
 
 			String key = ia.getDesc();
@@ -513,7 +516,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 					r.setParticleName(particleName.getText());
 					r.setAtlasName(particleAtlas.getText());
-					
+
 				} else if (Project.TEXT_RENDERER_STRING.equals(rendererType)) {
 					TextRenderer r;
 
@@ -523,7 +526,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					} else {
 						r = (TextRenderer) sa.getRenderer();
 					}
-					
+
 					key = text.getText();
 
 					if (key == null || key.isEmpty() || key.charAt(0) != I18N.PREFIX || !e.getId().equals(oldId))
@@ -535,7 +538,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 						r.setText(key, text.getText());
 					else
 						r.setText(null, null);
-					
+
 					r.setFontSize(Integer.parseInt(size.getText()));
 					r.setFontName(font.getText());
 					r.setAlign(AlignUtils.getAlign(textAlign.getText()));
@@ -545,28 +548,37 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					r.setShadowOffsetX(Integer.parseInt(shadowOffsetX.getText()));
 					r.setShadowOffsetY(Integer.parseInt(shadowOffsetY.getText()));
 					r.setShadowColor(Param.parseColor(shadowColor.getText()));
-					
+
 					// dispose to force reload the text attributes
 					sa.dispose();
 				} else if (Project.SPINE_RENDERER_STRING.equals(rendererType)) {
 					SpineRenderer r;
-					
+
 					if (sa.getRenderer() == null || !(sa.getRenderer() instanceof SpineRenderer)) {
 						r = new SpineRenderer();
 						sa.setRenderer(r);
 					} else {
 						r = (SpineRenderer) sa.getRenderer();
 					}
-					
+
 					r.setSkin(spineSkin.getText());
 				}
 
 				boolean bbfr = Boolean.parseBoolean(bboxFromRenderer.getText());
-				if(bbfr != sa.isBboxFromRenderer())
+
+				if (bbfr != sa.isBboxFromRenderer())
 					sa.setBboxFromRenderer(bbfr);
-				
+
+				// Bbox always has to be valid
+				if (sa.getBBox().getVertices().length < 4) {
+					sa.getRenderer().updateBboxFromRenderer(sa.getBBox());
+
+					if (!sa.isBboxFromRenderer())
+						sa.getRenderer().updateBboxFromRenderer(null);
+				}
+
 				sa.setFakeDepth(Boolean.parseBoolean(fakeDepth.getText()));
-				
+
 				Vector2 ps = Param.parseVector2(scale.getText());
 				sa.setScale(ps.x, ps.y);
 				sa.setRot(Float.parseFloat(rot.getText()));
@@ -596,8 +608,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
 		if (e instanceof SpriteActor)
 			((SpriteActor) e).retrieveAssets();
-		
-		if(create && e instanceof WalkZoneActor && parent.getWalkZone() == null)
+
+		if (create && e instanceof WalkZoneActor && parent.getWalkZone() == null)
 			parent.setWalkZone(e.getId());
 
 		// TODO UNDO OP
@@ -659,7 +671,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					shadowOffsetX.setText(Integer.toString(tr.getShadowOffsetX()));
 					shadowOffsetY.setText(Integer.toString(tr.getShadowOffsetY()));
 					shadowColor.setText(tr.getShadowColor().toString());
-					
+
 				} else if (r instanceof SpineRenderer) {
 					renderer.setText(Project.SPINE_RENDERER_STRING);
 					spineSkin.setText(((SpineRenderer) r).getSkin());
