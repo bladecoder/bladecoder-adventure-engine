@@ -118,8 +118,12 @@ public class WorldSerialization implements Serializable {
 		w.write(s);
 		w.close();
 	}
+	
+	public void loadChapter() throws IOException {
+		loadChapter(null, null, true);
+	}
 
-	public void loadChapter(String chapterName) throws IOException {
+	public void loadChapter(String chapterName, String scene, boolean initScene) throws IOException {
 		if (!w.isDisposed())
 			w.dispose();
 
@@ -139,6 +143,11 @@ public class WorldSerialization implements Serializable {
 			json.setIgnoreUnknownFields(true);
 
 			read(json, root);
+			
+			if(scene == null)
+				w.setCurrentScene(w.getScenes().get(w.getInitScene()), initScene);
+			else
+				w.setCurrentScene(w.getScenes().get(scene), initScene);
 
 			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
 
@@ -235,18 +244,16 @@ public class WorldSerialization implements Serializable {
 	@Override
 	public void write(Json json) {
 		BladeJson bjson = (BladeJson) json;
+		
+		json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
+				Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
 
 		if (bjson.getMode() == Mode.MODEL) {
-			json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
-					Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
-
 			json.writeValue("sounds", w.getSounds(), w.getSounds().getClass(), SoundDesc.class);
 			json.writeValue("scenes", w.getScenes(), w.getScenes().getClass(), Scene.class);
 			json.writeValue("initScene", w.getInitScene());
 
 		} else {
-			json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
-					Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
 			json.writeValue(Config.VERSION_PROP, Config.getProperty(Config.VERSION_PROP, null));
 			json.writeValue("scenes", w.getScenes(), w.getScenes().getClass(), Scene.class);
 			json.writeValue("currentScene", w.getCurrentScene().getId());
@@ -279,12 +286,13 @@ public class WorldSerialization implements Serializable {
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
+		
+		String bladeVersion = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
 
 		BladeJson bjson = (BladeJson) json;
 		if (bjson.getMode() == Mode.MODEL) {
-			String version = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
-			if (version != null && !version.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
-				EngineLogger.debug("Model Engine Version v" + version + " differs from Current Engine Version v"
+			if (bladeVersion != null && !bladeVersion.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
+				EngineLogger.debug("Model Engine Version v" + bladeVersion + " differs from Current Engine Version v"
 						+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
 
@@ -321,12 +329,9 @@ public class WorldSerialization implements Serializable {
 				s.resetCamera(w.getWidth(), w.getHeight());
 			}
 
-			w.setCurrentScene(w.getScenes().get(w.getInitScene()), true);
-
 			// Add sounds to cache
 			cacheSounds();
 		} else {
-			String bladeVersion = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
 			if (bladeVersion != null
 					&& !bladeVersion.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
 				EngineLogger
@@ -334,21 +339,15 @@ public class WorldSerialization implements Serializable {
 								+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
 
-			String version = json.readValue(Config.VERSION_PROP, String.class, jsonData);
-
-			if (version == null)
-				version = "TEST";
-
 			String currentChapter = json.readValue("chapter", String.class, jsonData);
+			String currentScene = json.readValue("currentScene", String.class, jsonData);
 
 			try {
-				loadChapter(currentChapter);
+				loadChapter(currentChapter, currentScene, false);
 			} catch (IOException e1) {
 				EngineLogger.error("Error Loading Chapter");
 				return;
 			}
-
-			w.setCurrentScene(w.getScene(json.readValue("currentScene", String.class, jsonData)), false);
 
 			// read inkManager after setting he current scene but before reading
 			// scenes and verbs tweens
@@ -396,6 +395,9 @@ public class WorldSerialization implements Serializable {
 				props.put(jsonValue.name, jsonValue.asString());
 			}
 
+			String version = json.readValue(Config.VERSION_PROP, String.class, jsonData);
+			if (version == null)
+				version = "TEST";
 			props.put(WorldProperties.SAVED_GAME_VERSION.toString(), version);
 
 			String actorId = json.readValue("dialogActor", String.class, jsonData);

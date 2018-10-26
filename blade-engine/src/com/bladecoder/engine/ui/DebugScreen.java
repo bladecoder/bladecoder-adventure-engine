@@ -247,7 +247,7 @@ public class DebugScreen implements BladeScreen {
 				
 				if(!c.isEmpty()) {
 					try {
-						ui.getWorld().getSerializer().loadChapter(c);
+						ui.getWorld().getSerializer().loadChapter(c, null, true);
 						ui.setCurrentScreen(Screens.SCENE_SCREEN);
 					} catch (IOException e) {
 						EngineLogger.error("Loading chapter.", e);

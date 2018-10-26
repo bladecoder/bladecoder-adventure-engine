@@ -385,8 +385,8 @@ public class ToolsWindow extends Container<Table> {
 					Message.showMsg(stage, "There was a problem running the project", 4);
 				}
 
-				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
-				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.CHAPTER_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.TEST_SCENE_PROP);
 				Ctx.project.setModified();
 
 				try {
@@ -434,8 +434,8 @@ public class ToolsWindow extends Container<Table> {
 					Message.showMsg(stage, "There was a problem running the project", 4);
 				}
 
-				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
-				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.CHAPTER_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.TEST_SCENE_PROP);
 				Ctx.project.setModified();
 
 				try {
@@ -483,8 +483,8 @@ public class ToolsWindow extends Container<Table> {
 					Message.showMsg(stage, "There was a problem running the project", 4);
 				}
 
-				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
-				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.CHAPTER_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.TEST_SCENE_PROP);
 				Ctx.project.setModified();
 
 				try {
@@ -532,8 +532,8 @@ public class ToolsWindow extends Container<Table> {
 					Message.showMsg(stage, "There was a problem running the project", 4);
 				}
 
-				Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);
-				Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.CHAPTER_PROP);
+				Ctx.project.getProjectConfig().removeProperty(Config.TEST_SCENE_PROP);
 				Ctx.project.setModified();
 
 				try {

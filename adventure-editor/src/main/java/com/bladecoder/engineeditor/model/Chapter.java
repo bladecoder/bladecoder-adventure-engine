@@ -55,7 +55,7 @@ public class Chapter {
 	
 	public void load(String id) throws IOException {
 		setId(id);
-		Ctx.project.getWorld().getSerializer().loadChapter(id);
+		Ctx.project.getWorld().getSerializer().loadChapter(id, null, true);
 	}
 	
 	public void save() throws IOException {

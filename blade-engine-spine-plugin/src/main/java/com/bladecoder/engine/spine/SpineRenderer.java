@@ -21,6 +21,8 @@ import java.util.Map.Entry;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
@@ -444,6 +446,9 @@ public class SpineRenderer extends AnimationRenderer {
 	public void computeBbox() {
 		float minX, minY, maxX, maxY;
 
+		if (bbox == null)
+			bbox = new Polygon(new float[8]);
+
 		if (bbox != null && (bbox.getVertices() == null || bbox.getVertices().length != 8)) {
 			bbox.setVertices(new float[8]);
 		}
@@ -452,20 +457,17 @@ public class SpineRenderer extends AnimationRenderer {
 
 		if (cs == null || cs.skeleton == null) {
 
-			if (bbox != null) {
+			float[] verts = bbox.getVertices();
 
-				float[] verts = bbox.getVertices();
-
-				verts[0] = -getWidth() / 2;
-				verts[1] = 0f;
-				verts[2] = -getWidth() / 2;
-				verts[3] = getHeight();
-				verts[4] = getWidth() / 2;
-				verts[5] = getHeight();
-				verts[6] = getWidth() / 2;
-				verts[7] = 0f;
-				bbox.dirty();
-			}
+			verts[0] = -getWidth() / 2;
+			verts[1] = 0f;
+			verts[2] = -getWidth() / 2;
+			verts[3] = getHeight();
+			verts[4] = getWidth() / 2;
+			verts[5] = getHeight();
+			verts[6] = getWidth() / 2;
+			verts[7] = 0f;
+			bbox.dirty();
 			return;
 		}
 
@@ -474,12 +476,27 @@ public class SpineRenderer extends AnimationRenderer {
 		bounds.update(cs.skeleton, true);
 
 		if (bounds.getWidth() > 0 && bounds.getHeight() > 0) {
-			width = bounds.getWidth();
-			height = bounds.getHeight();
-			minX = bounds.getMinX();
-			minY = bounds.getMinY();
-			maxX = bounds.getMaxX();
-			maxY = bounds.getMaxY();
+			// if there is only one bbox, get the polygon, else get the rectangle bbox
+			// (union of all bboxes).
+			if (bounds.getPolygons().size == 1) {
+				FloatArray p = bounds.getPolygons().get(0);
+
+				bbox.setVertices(p.toArray());
+				bbox.dirty();
+				Rectangle boundingRectangle = bbox.getBoundingRectangle();
+				width = boundingRectangle.getWidth();
+				height = boundingRectangle.getHeight();
+				return;
+
+			} else {
+				width = bounds.getWidth();
+				height = bounds.getHeight();
+				minX = bounds.getMinX();
+				minY = bounds.getMinY();
+				maxX = bounds.getMaxX();
+				maxY = bounds.getMaxY();
+			}
+
 		} else {
 
 			Vector2 offset = new Vector2();
@@ -494,19 +511,17 @@ public class SpineRenderer extends AnimationRenderer {
 			maxY = offset.y + height;
 		}
 
-		if (bbox != null) {
-			float[] verts = bbox.getVertices();
-			verts[0] = minX;
-			verts[1] = minY;
-			verts[2] = minX;
-			verts[3] = maxY;
-			verts[4] = maxX;
-			verts[5] = maxY;
-			verts[6] = maxX;
-			verts[7] = minY;
+		float[] verts = bbox.getVertices();
+		verts[0] = minX;
+		verts[1] = minY;
+		verts[2] = minX;
+		verts[3] = maxY;
+		verts[4] = maxX;
+		verts[5] = maxY;
+		verts[6] = maxX;
+		verts[7] = minY;
 
-			bbox.dirty();
-		}
+		bbox.dirty();
 	}
 
 	private String getFileName(String source) {

@@ -92,6 +92,10 @@ public class SetActorAttrAction implements Action {
 	@ActionPropertyDescription("Sets the actor speed for walking. Only supported for character actors.")
 	private Float walkingSpeed;
 	
+	@ActionProperty
+	@ActionPropertyDescription("Sets the position of the text when talking. Relative to the character position.")
+	private Vector2 talkingTextPos;
+	
 	private World w;
 	
 	@Override
@@ -224,6 +228,13 @@ public class SetActorAttrAction implements Action {
 					removeUIActor(s, (InteractiveActor) a);
 			} else
 				EngineLogger.error("'uiActor' property not supported for actor:" + a.getId());
+		}
+		
+		if (talkingTextPos != null) {
+			if (a instanceof CharacterActor)
+				((CharacterActor) a).setTalkingTextPos(talkingTextPos);
+			else
+				EngineLogger.error("'talkingTextPos' property not supported for actor:" + a.getId());
 		}
 
 		return false;

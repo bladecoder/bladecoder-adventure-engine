@@ -414,6 +414,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			pie.hide();
 
 		currentActor = null;
+		pointer.reset();
 
 		if (w.isPaused() || w.inCutMode() || testerBot.isEnabled() || recorder.isPlaying()) {
 			// DISABLE UI
@@ -422,7 +423,6 @@ public class DefaultSceneScreen implements SceneScreen {
 			dialogUI.setVisible(false);
 
 			inventoryUI.cancelDragging();
-			pointer.reset();
 			uiEnabled = false;
 		} else {
 			if (ui.getWorld().hasDialogOptions()) {
@@ -430,7 +430,6 @@ public class DefaultSceneScreen implements SceneScreen {
 				inventoryButton.setVisible(false);
 				dialogUI.setVisible(true);
 				inventoryUI.cancelDragging();
-				pointer.reset();
 			} else {
 				inventoryUI.hide();
 				dialogUI.setVisible(false);

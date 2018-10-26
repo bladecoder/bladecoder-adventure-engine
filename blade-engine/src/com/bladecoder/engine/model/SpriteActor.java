@@ -335,7 +335,10 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		json.writeValue("scaleX", scaleX);
 		json.writeValue("scaleY", scaleY);
 		json.writeValue("rot", rot);
-		json.writeValue("tint", tint);
+		
+		if(tint != null)
+			json.writeValue("tint", tint);
+		
 		json.writeValue("fakeDepth", fakeDepth);
 		json.writeValue("bboxFromRenderer", bboxFromRenderer);
 	}
@@ -351,6 +354,11 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		} else {
 			tweens = json.readValue("tweens", ArrayList.class, Tween.class, jsonData);
 
+			if(tweens == null) {
+				EngineLogger.debug("Couldn't load state of actor: " + id);
+				return;
+			}
+				
 			for (Tween<SpriteActor> t : tweens)
 				t.setTarget(this);
 

@@ -19,19 +19,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.bladecoder.engine.polygonalpathfinder.PolygonalNavGraph;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
@@ -40,15 +35,12 @@ import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.model.Project;
 
 public class ScnEditor extends Table {
-	private static final String DELETE_WALK_ZONE_TEXT = "Delete Walk Zone";
-	private static final String CREATE_WALK_ZONE_TEXT = "Create Walk Zone";
 
 	private ScnWidget scnWidget;
 	private TextButton testButton;
 
 	private ButtonGroup<Button> buttonGroup;
 
-	private TextButton walkZoneButton;
 	private TextButton toolsButton;
 	private TextButton viewButton;
 
@@ -66,7 +58,6 @@ public class ScnEditor extends Table {
 		buttonGroup.setMinCheckCount(0);
 		buttonGroup.setUncheckLast(true);
 
-		walkZoneButton = new TextButton(CREATE_WALK_ZONE_TEXT, skin, "no-toggled");
 		toolsButton = new TextButton("Tools", skin);
 		viewButton = new TextButton("View", skin);
 
@@ -80,58 +71,16 @@ public class ScnEditor extends Table {
 		row();
 
 		Table bottomTable = new Table(skin);
-		
+
 		Drawable drawable = skin.getDrawable("background");
 		bottomTable.setBackground(drawable);
-		
+
 		bottomTable.left();
 		add(bottomTable).fill();
 
 		bottomTable.add(viewButton);
 		bottomTable.add(toolsButton);
 		bottomTable.add(testButton);
-		bottomTable.add(walkZoneButton).right().expandX();
-
-		walkZoneButton.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-
-				if (scnWidget.getScene().getPolygonalNavGraph() == null) {
-
-					float[] verts = new float[8];
-
-					float width = scnWidget.getScene().getCamera().getScrollingWidth();
-					float height = scnWidget.getScene().getCamera().getScrollingHeight();
-
-					verts[3] = height;
-					verts[4] = width;
-					verts[5] = height;
-					verts[6] = width;
-
-					Polygon poly = new Polygon(verts);
-					PolygonalNavGraph pf = new PolygonalNavGraph();
-					pf.setWalkZone(poly);
-					scnWidget.getScene().setPolygonalNavGraph(pf);
-					Ctx.project.setModified();
-					walkZoneButton.setText(DELETE_WALK_ZONE_TEXT);
-					viewWindow.showWalkZone();
-
-				} else {
-					new Dialog("Delete Walk Zone", getSkin()) {
-						protected void result(Object object) {
-							if (((Boolean) object).booleanValue()) {
-								walkZoneButton.setText(CREATE_WALK_ZONE_TEXT);
-
-								scnWidget.getScene().setPolygonalNavGraph(null);
-								Ctx.project.setModified();
-							}
-						}
-					}.text("Are you sure you want to delete the Walk Zone?").button("Yes", true).button("No", false).key(Keys.ENTER, true)
-							.key(Keys.ESCAPE, false).show(getStage());
-				}
-
-			}
-		});
 
 		toolsButton.addListener(new ChangeListener() {
 			@Override
@@ -175,12 +124,6 @@ public class ScnEditor extends Table {
 				if (e.getPropertyName().equals(Project.NOTIFY_SCENE_SELECTED)) {
 					if (Ctx.project.getSelectedScene() == null)
 						return;
-
-					if (Ctx.project.getSelectedScene().getPolygonalNavGraph() != null) {
-						walkZoneButton.setText(DELETE_WALK_ZONE_TEXT);
-					} else {
-						walkZoneButton.setText(CREATE_WALK_ZONE_TEXT);
-					}
 				}
 			}
 		});
@@ -197,9 +140,9 @@ public class ScnEditor extends Table {
 			Message.showMsg(getStage(), msg, 3);
 			return;
 		}
-		
-		Ctx.project.getProjectConfig().remove(Config.CHAPTER_PROP);			
-		Ctx.project.getProjectConfig().remove(Config.TEST_SCENE_PROP);
+
+		Ctx.project.getProjectConfig().removeProperty(Config.CHAPTER_PROP);
+		Ctx.project.getProjectConfig().removeProperty(Config.TEST_SCENE_PROP);
 
 		try {
 			Ctx.project.saveProject();
@@ -217,9 +160,10 @@ public class ScnEditor extends Table {
 			public void run() {
 				Message.showMsg(stage, "Running scene...", 5);
 
-				try {					
+				try {
 					if (!RunProccess.runBladeEngine(Ctx.project.getProjectDir(), Ctx.project.getChapter().getId(),
-							Ctx.project.getSelectedScene().getId()))
+							Ctx.project.getSelectedScene().getId(), Boolean.parseBoolean(
+									Ctx.project.getEditorConfig().getProperty("view.fullscreenPlay", "false"))))
 						Message.showMsg(stage, "There was a problem running the scene", 4);
 				} catch (IOException e) {
 					Message.showMsgDialog(stage, "Error", "There was a problem running the scene: " + e.getMessage());

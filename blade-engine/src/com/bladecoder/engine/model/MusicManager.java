@@ -33,6 +33,9 @@ public class MusicManager implements Serializable, AssetConsumer {
 	private float musicPosSer = 0;
 	transient private boolean isPaused = false;
 	private MusicVolumeTween volumeTween;
+	
+	// the global configurable by user volume
+	public static float VOLUME_MULTIPLIER = 1f;
 
 	private final Task backgroundLoadingTask = new Task() {
 		@Override
@@ -50,7 +53,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 			try {
 				music.play();
 				music.setLooping(desc.isLoop());
-				music.setVolume(desc.getVolume());
+				music.setVolume(desc.getVolume() * VOLUME_MULTIPLIER);
 			} catch (Exception e) {
 
 				// DEAL WITH OPENAL BUG

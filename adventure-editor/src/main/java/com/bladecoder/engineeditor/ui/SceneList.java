@@ -152,7 +152,10 @@ public class SceneList extends ModelList<World, Scene> {
 		public void changed(ChangeEvent event, Actor actor) {
 			String selChapter = (String) chapters.getSelected();
 
-			if (selChapter != null && !selChapter.equals(Ctx.project.getChapter().getId())) {
+			if (selChapter != null) {
+				
+				 if(selChapter.equals(Ctx.project.getChapter().getId()))
+					 return;
 
 				// Save the project when changing chapter
 				try {

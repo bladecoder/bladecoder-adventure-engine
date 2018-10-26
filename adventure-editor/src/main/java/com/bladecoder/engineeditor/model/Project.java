@@ -43,6 +43,7 @@ import com.bladecoder.engineeditor.common.FolderClassLoader;
 import com.bladecoder.engineeditor.common.OrderedProperties;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.common.Versions;
+import com.bladecoder.engineeditor.common.OrderedProperties.OrderedPropertiesBuilder;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.undo.UndoStack;
 
@@ -99,7 +100,7 @@ public class Project extends PropertyChange {
 	private File projectFile;
 
 	private final UndoStack undoStack = new UndoStack();
-	private Properties projectConfig;
+	private OrderedProperties projectConfig;
 
 	private I18NHandler i18n;
 	private Chapter chapter;
@@ -167,7 +168,7 @@ public class Project extends PropertyChange {
 		return editorConfig;
 	}
 
-	public Properties getProjectConfig() {
+	public OrderedProperties getProjectConfig() {
 		return projectConfig;
 	}
 
@@ -377,7 +378,7 @@ public class Project extends PropertyChange {
 
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 
-			projectConfig = new OrderedProperties();
+			projectConfig =  new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 			projectConfig.load(new FileInputStream(getAssetPath() + "/" + Config.PROPERTIES_FILENAME));
 			modified = false;
 
@@ -425,7 +426,7 @@ public class Project extends PropertyChange {
 	}
 
 	public String getProjectBladeEngineVersion(File projectPath) throws FileNotFoundException, IOException {
-		Properties properties = getGradleProperties(projectPath);
+		OrderedProperties properties = getGradleProperties(projectPath);
 
 		return properties.getProperty(Config.BLADE_ENGINE_VERSION_PROP, "default");
 	}
@@ -435,7 +436,7 @@ public class Project extends PropertyChange {
 	}
 
 	public void updateEngineVersion(File projectPath) throws FileNotFoundException, IOException {
-		Properties prop = getGradleProperties(projectPath);
+		OrderedProperties prop = getGradleProperties(projectPath);
 
 		prop.setProperty(Config.BLADE_ENGINE_VERSION_PROP, Versions.getVersion());
 		prop.setProperty("gdxVersion", Versions.getLibgdxVersion());
@@ -536,15 +537,15 @@ public class Project extends PropertyChange {
 		firePropertyChange(NOTIFY_MODEL_MODIFIED);
 	}
 
-	public Properties getGradleProperties(File projectPath) throws FileNotFoundException, IOException {
-		Properties prop = new OrderedProperties();
+	public OrderedProperties getGradleProperties(File projectPath) throws FileNotFoundException, IOException {
+		OrderedProperties prop =  new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 
 		prop.load(new FileReader(projectPath.getAbsolutePath() + "/gradle.properties"));
 
 		return prop;
 	}
 
-	public void saveGradleProperties(Properties prop, File projectPath) throws IOException {
+	public void saveGradleProperties(OrderedProperties prop, File projectPath) throws IOException {
 		FileOutputStream os = new FileOutputStream(
 				projectPath.getAbsolutePath() + "/gradle.properties");
 

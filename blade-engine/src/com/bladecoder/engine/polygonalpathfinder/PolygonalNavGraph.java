@@ -20,10 +20,6 @@ import java.util.Collection;
 
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.Json.Serializable;
-import com.badlogic.gdx.utils.JsonValue;
-import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.pathfinder.AStarPathFinder;
@@ -39,7 +35,7 @@ import com.bladecoder.engine.util.PolygonUtils;
  * 
  * @author rgarcia
  */
-public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializable {
+public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 	private static final int MAX_PATHFINDER_SEARCH_DISTANCE = 50;
 
 	private static final Vector2 tmp = new Vector2();
@@ -147,8 +143,15 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		}
 	}
 
-	public void createInitialGraph(Collection<BaseActor> actors) {
+	public void createInitialGraph(BaseActor wz, Collection<BaseActor> actors) {
 		graphNodes.clear();
+		
+		if(wz == null) {
+			walkZone = null;
+			return;
+		}
+		
+		walkZone = wz.getBBox();
 
 		// 1.- Add WalkZone convex nodes
 		float verts[] = walkZone.getTransformedVertices();
@@ -316,25 +319,5 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal>, Serializab
 		}
 
 		return true;
-	}
-
-	@Override
-	public void write(Json json) {
-		PolygonUtils.ensureClockWise(walkZone.getVertices(), 0, walkZone.getVertices().length);
-		walkZone.dirty();
-		
-		Polygon p = new Polygon(walkZone.getVertices());
-		p.setPosition(walkZone.getX() / walkZone.getScaleX(), walkZone.getY() / walkZone.getScaleY());
-		
-		json.writeValue("walkZone", p);
-	}
-
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		float worldScale = EngineAssetManager.getInstance().getScale();
-
-		walkZone = json.readValue("walkZone", Polygon.class, jsonData);
-		walkZone.setScale(worldScale, worldScale);
-		walkZone.setPosition(walkZone.getX() * worldScale, walkZone.getY() * worldScale);
 	}
 }

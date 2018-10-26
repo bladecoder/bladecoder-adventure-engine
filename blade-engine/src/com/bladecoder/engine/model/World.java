@@ -678,7 +678,7 @@ public class World implements AssetConsumer {
 
 	public void newGame() throws Exception {
 		timeOfGame = 0;
-		serialization.loadChapter(null);
+		serialization.loadChapter();
 	}
 
 	public void endGame() {
@@ -702,8 +702,7 @@ public class World implements AssetConsumer {
 	}
 
 	/**
-	 * Try to load the save game if exists. In other case, load the game from
-	 * XML.
+	 * Try to load the saved game if exists. In other case, load the model.
 	 * 
 	 * @throws Exception
 	 * 
@@ -718,11 +717,11 @@ public class World implements AssetConsumer {
 				loadGameState();
 			} catch (Exception e) {
 				EngineLogger.error("ERROR LOADING SAVED GAME", e);
-				serialization.loadChapter(null);
+				// Load the model if fails loading the saved game
+				serialization.loadChapter();
 			}
 		} else {
-			// Load the model if fails loading the saved game
-			serialization.loadChapter(null);
+			serialization.loadChapter();
 		}
 	}
 
@@ -745,12 +744,7 @@ public class World implements AssetConsumer {
 		if (test)
 			this.testScene = scene;
 
-		serialization.loadChapter(chapter);
-
-		if (scene != null) {
-			currentScene = null;
-			setCurrentScene(scene, true);
-		}
+		serialization.loadChapter(chapter, scene, true);
 	}
 
 	public void setTestScene(String s) {

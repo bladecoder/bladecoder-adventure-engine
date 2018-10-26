@@ -62,7 +62,7 @@ public class InkManager implements VerbRunner, Serializable {
 	public InkManager(World w) {
 		this.w = w;
 		externalFunctions = new ExternalFunctions();
-		actions = new ArrayList<Action>();
+		actions = new ArrayList<>();
 	}
 
 	public void newStory(InputStream is) throws Exception {
@@ -81,9 +81,9 @@ public class InkManager implements VerbRunner, Serializable {
 			}
 		}.start();
 
-		// Some sleep to give some time to start the thread to avoid calling
-		// setVariable() before the thread starts.
-		Thread.sleep(20);
+		// Start the child thread now to avoid calling setVariable() before the thread
+		// starts.
+		Thread.yield();
 	}
 
 	synchronized private void loadStory(String name, String stateString) {
@@ -136,17 +136,20 @@ public class InkManager implements VerbRunner, Serializable {
 				}
 			}
 
+			// In translated lines, spaces can be escaped with '_'.
+			translated = translated.replace('_', ' ');
+
 			return translated;
 		}
 
 		return line;
 	}
 
-	public String getVariable(String name) {
+	public synchronized String getVariable(String name) {
 		return story.getVariablesState().get(name).toString();
 	}
 
-	public boolean compareVariable(String name, String value) {
+	public synchronized boolean compareVariable(String name, String value) {
 		if (story.getVariablesState().get(name) instanceof InkList) {
 			return ((InkList) story.getVariablesState().get(name)).ContainsItemNamed(value);
 		} else {
@@ -162,7 +165,7 @@ public class InkManager implements VerbRunner, Serializable {
 			if (rawList.getOrigins() == null) {
 				List<String> names = rawList.getOriginNames();
 				if (names != null) {
-					ArrayList<ListDefinition> origins = new ArrayList<ListDefinition>();
+					ArrayList<ListDefinition> origins = new ArrayList<>();
 					for (String n : names) {
 						ListDefinition def = story.getListDefinitions().getListDefinition(n);
 						if (!origins.contains(def))
@@ -181,7 +184,7 @@ public class InkManager implements VerbRunner, Serializable {
 		String line = null;
 		actions.clear();
 
-		HashMap<String, String> currentLineParams = new HashMap<String, String>();
+		HashMap<String, String> currentLineParams = new HashMap<>();
 
 		while (story.canContinue()) {
 			try {
@@ -193,7 +196,8 @@ public class InkManager implements VerbRunner, Serializable {
 					line = line.substring(0, line.length() - 1);
 
 				if (!line.isEmpty()) {
-					EngineLogger.debug("INK LINE: " + line);
+					if (EngineLogger.debugMode())
+						EngineLogger.debug("INK LINE: " + translateLine(line));
 
 					processParams(story.getCurrentTags(), currentLineParams);
 
@@ -405,10 +409,14 @@ public class InkManager implements VerbRunner, Serializable {
 	public List<String> getChoices() {
 
 		List<Choice> options = story.getCurrentChoices();
-		List<String> choices = new ArrayList<String>(options.size());
+		List<String> choices = new ArrayList<>(options.size());
 
 		for (Choice o : options) {
 			String line = o.getText();
+
+			// the line maybe empty in default choices.
+			if (line.isEmpty())
+				continue;
 
 			int idx = line.indexOf(InkManager.COMMAND_MARK);
 

@@ -67,6 +67,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 	private InputPanel repeatMusicDelay;
 	private InputPanel stopWhenLeaving;
 	private InputPanel sceneSize;
+	private InputPanel walkzone;
 
 	@SuppressWarnings("unchecked")
 	public EditSceneDialog(Skin skin, World parent, Scene e) {
@@ -102,6 +103,8 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		sceneSize = InputPanelFactory.createInputPanel(skin, "Scene Dimension",
 				"Sets the size of the scene. If empty, the background image size is used as the scene dimension.",
 				Param.Type.DIMENSION, false);
+		
+		walkzone = InputPanelFactory.createInputPanel(skin, "Walkzone", "The initial walkzone.", Type.WALKZONE_ACTOR, false);
 
 		bgImage = new Image();
 		bgImage.setScaling(Scaling.fit);
@@ -134,7 +137,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		}
 
 		init(parent, e, new InputPanel[] { id, backgroundAtlas, backgroundRegion, depthVector, state, sceneSize, music,
-				loopMusic, volumeMusic, initialMusicDelay, repeatMusicDelay, stopWhenLeaving });
+				loopMusic, volumeMusic, initialMusicDelay, repeatMusicDelay, stopWhenLeaving, walkzone });
 	}
 
 	private void showBgImage(String r) {
@@ -242,6 +245,8 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		e.setMusicDesc(md);
 
 		e.setSceneSize(Param.parseVector2(sceneSize.getText()));
+		
+		e.setWalkZone(walkzone.getText());
 
 		parent.addScene(e);
 
@@ -285,6 +290,8 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
 		if (e.getSceneSize() != null)
 			sceneSize.setText(Param.toStringParam(e.getSceneSize()));
+		
+		walkzone.setText(e.getWalkZone());
 	}
 
 	@Override

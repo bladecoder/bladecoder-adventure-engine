@@ -50,6 +50,7 @@ public class EditorCommandExecutor extends CommandExecutor {
 			EditorLogger.msg("Check for MODEL missing keys in default translation file for current chapter.");
 			ModelTools.checkI18NMissingKeys();
 			
+			EditorLogger.msg("Compare translation files with the base file:");
 			String[] files = new File(Ctx.project.getAssetPath() + Project.MODEL_PATH).list(new FilenameFilter() {
 				@Override
 				public boolean accept(File arg0, String arg1) {

@@ -26,15 +26,16 @@ import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.WalkZoneActor;
 import com.bladecoder.engineeditor.Ctx;
 
 public class ActorInputPanel extends EditableOptionsInputPanel<String> {
-	
+
 	ActorInputPanel(Skin skin, String title, String desc, boolean mandatory, String defaultValue, Param.Type type) {
 		super(skin, title, desc, mandatory, defaultValue, getValues(mandatory, type));
-		
-		if(mandatory)
-			if(type == Param.Type.ACTOR)
+
+		if (mandatory)
+			if (type == Param.Type.ACTOR)
 				setText(Ctx.project.getSelectedActor().getId());
 			else
 				input.setSelectedIndex(0);
@@ -42,33 +43,47 @@ public class ActorInputPanel extends EditableOptionsInputPanel<String> {
 
 	private static String[] getValues(boolean mandatory, Param.Type type) {
 		Map<String, BaseActor> actors = Ctx.project.getSelectedScene().getActors();
-		
+
 		ArrayList<BaseActor> filteredActors = new ArrayList<BaseActor>();
-		
-		for(BaseActor a: actors.values()) {
-			if(type == Param.Type.CHARACTER_ACTOR) {
-				if(a instanceof CharacterActor)
+
+		for (BaseActor a : actors.values()) {
+			if (type == Param.Type.CHARACTER_ACTOR) {
+				if (a instanceof CharacterActor)
 					filteredActors.add(a);
-			} else if(type == Param.Type.INTERACTIVE_ACTOR) {
-				if(a instanceof InteractiveActor)
+			} else if (type == Param.Type.INTERACTIVE_ACTOR) {
+				if (a instanceof InteractiveActor)
 					filteredActors.add(a);
-			} else if(type == Param.Type.SPRITE_ACTOR) {
-				if(a instanceof SpriteActor)
-					filteredActors.add(a);				
+			} else if (type == Param.Type.WALKZONE_ACTOR) {
+				if (a instanceof WalkZoneActor)
+					filteredActors.add(a);
+			} else if (type == Param.Type.SPRITE_ACTOR) {
+				if (a instanceof SpriteActor)
+					filteredActors.add(a);
 			} else {
 				filteredActors.add(a);
 			}
 		}
+
+		String[] result = null;
+
+		if (type != Param.Type.WALKZONE_ACTOR) {
+			// Add player variable to the list
+			result = new String[filteredActors.size() + 1];
+
+			result[0] = Scene.VAR_PLAYER;
+
+			for (int i = 0; i < filteredActors.size(); i++) {
+				result[i + 1] = filteredActors.get(i).getId();
+			}
+		} else {
+			result = new String[filteredActors.size()];
 			
-		String[] result = new String[filteredActors.size() + 1];
-		
-		// Add player variable to the list
-		result[0] = Scene.VAR_PLAYER;
-		
-		for(int i = 0; i < filteredActors.size(); i++) {
-			result[i+1] = filteredActors.get(i).getId();
+			for (int i = 0; i < filteredActors.size(); i++) {
+				result[i] = filteredActors.get(i).getId();
+			}
+
 		}
-		
+
 		Arrays.sort(result);
 		return result;
 	}

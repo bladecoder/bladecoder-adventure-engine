@@ -25,7 +25,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Properties;
 
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.DisableActionAction;
@@ -44,6 +43,7 @@ import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.OrderedProperties;
+import com.bladecoder.engineeditor.common.OrderedProperties.OrderedPropertiesBuilder;
 
 public class I18NHandler {
 	public static final String WORLD_VERBS_PREFIX = "default";
@@ -52,8 +52,8 @@ public class I18NHandler {
 	private String worldFilename;
 	private String chapterFilename;
 
-	private Properties i18nWorld;
-	private Properties i18nChapter;
+	private OrderedProperties i18nWorld;
+	private OrderedProperties i18nChapter;
 
 	public I18NHandler(String modelPath) {
 		this.worldFilename = EngineAssetManager.WORLD_FILENAME;
@@ -74,11 +74,11 @@ public class I18NHandler {
 		i18nChapter = loadI18N(chapterFilename);
 	}
 
-	private Properties loadI18N(String modelFilename) {
+	private OrderedProperties loadI18N(String modelFilename) {
 		String i18nFilename = getI18NFilename(modelFilename);
 
 		// To save in alphabetical order we use the OrderedProperties
-		Properties i18n = new OrderedProperties();
+		OrderedProperties i18n = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 
 		try {
 			i18n.load(new InputStreamReader(new FileInputStream(i18nFilename), I18N.ENCODING));
@@ -112,12 +112,12 @@ public class I18NHandler {
 	public void setTranslation(String key, String value) {
 		if (key.charAt(0) != I18N.PREFIX) {
 			if (value == null || value.equals(""))
-				i18nChapter.remove(key);
+				i18nChapter.removeProperty(key);
 			else
 				i18nChapter.setProperty(key, value);
 		} else {
 			if (value == null || value.equals(""))
-				i18nChapter.remove(key.substring(1));
+				i18nChapter.removeProperty(key.substring(1));
 			else
 				i18nChapter.setProperty(key.substring(1), value);
 		}
@@ -126,18 +126,18 @@ public class I18NHandler {
 	public void setWorldTranslation(String key, String value) {
 		if (key.charAt(0) != I18N.PREFIX) {
 			if (value == null || value.equals(""))
-				i18nWorld.remove(key);
+				i18nWorld.removeProperty(key);
 			else
 				i18nWorld.setProperty(key, value);
 		} else {
 			if (value == null || value.equals(""))
-				i18nWorld.remove(key.substring(1));
+				i18nWorld.removeProperty(key.substring(1));
 			else
 				i18nWorld.setProperty(key.substring(1), value);
 		}
 	}
 
-	private void save(String filename, Properties p) {
+	private void save(String filename, OrderedProperties p) {
 		String i18nFilename = getI18NFilename(filename);
 
 		deleteUnusedKeys();
@@ -383,7 +383,7 @@ public class I18NHandler {
 		if(idx != -1)
 			key = key.substring(0, idx);
 		
-		while (i18nChapter.containsKey(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
+		while (i18nChapter.containsProperty(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
 			key += '_';
 
 		return key;
@@ -396,7 +396,7 @@ public class I18NHandler {
 		if(idx != -1)
 			key = key.substring(0, idx);
 		
-		while (i18nWorld.containsKey(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
+		while (i18nWorld.containsProperty(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
 			key += '_';
 
 		return key;
@@ -409,15 +409,15 @@ public class I18NHandler {
 		for (Scene s : Ctx.project.getWorld().getScenes().values())
 			getUsedKeys(s, usedKeys);
 
-		Enumeration<Object> keys = i18nChapter.keys();
+		Enumeration<String> keys = i18nChapter.propertyNames();
 
 		while (keys.hasMoreElements()) {
-			String key = (String) keys.nextElement();
+			String key = keys.nextElement();
 
 			// Doesn't remove ui and ink keys
 			if (!usedKeys.contains(key) && !key.startsWith("ui.") && !key.startsWith("ink.")) {
 				EditorLogger.debug("Removing translation key: " + key);
-				i18nChapter.remove(key);
+				i18nChapter.removeProperty(key);
 			}
 		}
 
@@ -426,7 +426,7 @@ public class I18NHandler {
 		for (Verb v : Ctx.project.getWorld().getVerbManager().getVerbs().values())
 			getUsedKeys(v, usedKeys);
 
-		keys = i18nWorld.keys();
+		keys = i18nWorld.propertyNames();
 
 		while (keys.hasMoreElements()) {
 			String key = (String) keys.nextElement();
@@ -434,7 +434,7 @@ public class I18NHandler {
 			// Doesn't remove ui keys
 			if (!usedKeys.contains(key) && !key.startsWith("ui.")) {
 				EditorLogger.debug("Removing translation key: " + key);
-				i18nWorld.remove(key);
+				i18nWorld.removeProperty(key);
 			}
 		}
 

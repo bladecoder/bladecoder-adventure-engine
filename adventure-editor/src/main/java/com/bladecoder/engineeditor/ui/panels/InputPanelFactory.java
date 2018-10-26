@@ -78,6 +78,7 @@ public class InputPanelFactory extends Table {
 		case CHARACTER_ACTOR:
 		case INTERACTIVE_ACTOR:
 		case SPRITE_ACTOR:
+		case WALKZONE_ACTOR:
 			return new ActorInputPanel(skin, title, desc, mandatory, defaultValue, type);
 		case LAYER:
 			return new LayerInputPanel(skin, title, desc, mandatory, defaultValue);
@@ -114,6 +115,7 @@ public class InputPanelFactory extends Table {
 		case SCENE_CHARACTER_ACTOR:
 		case SCENE_INTERACTIVE_ACTOR:
 		case SCENE_SPRITE_ACTOR:
+		case SCENE_WALKZONE_ACTOR:
 			return new SceneActorInputPanel(skin, title, desc, mandatory, defaultValue, type);
 		case ACTOR_ANIMATION:
 			return new ActorAnimationInputPanel(skin, title, desc, mandatory, defaultValue);

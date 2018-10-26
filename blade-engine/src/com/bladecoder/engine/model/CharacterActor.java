@@ -27,6 +27,7 @@ import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.anim.SpritePosTween;
 import com.bladecoder.engine.anim.Tween;
 import com.bladecoder.engine.anim.WalkTween;
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.EngineLogger;
@@ -42,6 +43,7 @@ public class CharacterActor extends SpriteActor {
 	private float walkingSpeed = DEFAULT_WALKING_SPEED;
 	private Color textColor;
 	private String textStyle;
+	private Vector2 talkingTextPos;
 
 	private String standAnim = DEFAULT_STAND_ANIM;
 	private String walkAnim = DEFAULT_WALK_ANIM;
@@ -106,6 +108,14 @@ public class CharacterActor extends SpriteActor {
 
 	public float getWalkingSpeed() {
 		return walkingSpeed;
+	}
+
+	public Vector2 getTalkingTextPos() {
+		return talkingTextPos;
+	}
+
+	public void setTalkingTextPos(Vector2 talkingTextPos) {
+		this.talkingTextPos = talkingTextPos;
 	}
 
 	public void lookat(Vector2 p) {
@@ -193,7 +203,7 @@ public class CharacterActor extends SpriteActor {
 			return;
 		}
 
-		if (scene.getPolygonalNavGraph() != null && !ignoreWalkZone) {
+		if (scene.getWalkZone() != null && !ignoreWalkZone) {
 			walkingPath = scene.getPolygonalNavGraph().findPath(p0.x, p0.y, pf.x, pf.y);
 		} else {
 			walkingPath = new ArrayList<Vector2>(2);
@@ -252,11 +262,14 @@ public class CharacterActor extends SpriteActor {
 	@Override
 	public void write(Json json) {
 		super.write(json);
-		json.writeValue("dialogs", dialogs, HashMap.class, Dialog.class);
+		
+		if(dialogs != null)
+			json.writeValue("dialogs", dialogs, HashMap.class, Dialog.class);
 
 		BladeJson bjson = (BladeJson) json;
 		if (bjson.getMode() == Mode.MODEL) {
-			json.writeValue("textStyle", textStyle);
+			if(textStyle != null)
+				json.writeValue("textStyle", textStyle);
 		} else {
 			json.writeValue("standAnim", standAnim);
 			json.writeValue("walkAnim", walkAnim);
@@ -264,7 +277,14 @@ public class CharacterActor extends SpriteActor {
 		}
 
 		json.writeValue("walkingSpeed", walkingSpeed);
-		json.writeValue("textColor", textColor);
+		
+		if(textColor != null)
+			json.writeValue("textColor", textColor);
+		
+		if(talkingTextPos != null) {
+			float worldScale = EngineAssetManager.getInstance().getScale();
+			json.writeValue("talkingTextPos", new Vector2(talkingTextPos.x / worldScale, talkingTextPos.y / worldScale));
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -303,6 +323,13 @@ public class CharacterActor extends SpriteActor {
 
 		walkingSpeed = json.readValue("walkingSpeed", float.class, walkingSpeed, jsonData);
 		textColor = json.readValue("textColor", Color.class, jsonData);
+		talkingTextPos = json.readValue("talkingTextPos", Vector2.class, jsonData);
+		
+		if(talkingTextPos != null) {
+			float worldScale = EngineAssetManager.getInstance().getScale();
+			talkingTextPos.x *= worldScale;
+			talkingTextPos.y *= worldScale;
+		}
 	}
 
 }

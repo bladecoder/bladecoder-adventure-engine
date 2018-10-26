@@ -146,7 +146,16 @@ public class Message {
 	}
 
 	public static void showMsgDialog(final Stage stage, final String title, final String msg) {
-		new Dialog(title, skin).text(msg).button("Close", true).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
-				.show(stage);
+
+		Timer.post(new Task() {
+
+			@Override
+			public void run() {
+				Message.hideMsg();
+				
+				new Dialog(title, skin).text(msg).button("Close", true).key(Keys.ENTER, true).key(Keys.ESCAPE, false)
+						.show(stage);
+			}
+		});
 	}
 }

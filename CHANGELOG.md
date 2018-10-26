@@ -2,6 +2,27 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.4]
+
+- Now the editor works without having the Android SDK installed.
+- FIX: Bug when moving target actor.
+- FIX: Bug in 'Transition' action.  
+- FIX:'actorTextPosition' property in 'SetActorAttr' action wasn't working.
+
+## [2.1.3]
+
+- Support for several walkzones in a scene. Now walkzones are also actors.
+- Added icons to translate, scale and rotate actors in editor.
+- Android: Added runtime permission query when necessary to make expansion files work in newer android apis.
+- EDITOR: Added play in fullscreen option.
+- Added talking text position to characters.
+- Update Blade Ink to v0.5.1.
+- FIX: Reset pointer always when updating UI to avoid showing last pointer when changing scene.
+- FIX: Bad bubble alignment showing small texts.
+- FIX: Bug creating/deleting chapters in editor.
+- FIX: The current scene was setting twice when loading a saved game triggering an error. 
+- FIX: The dialog option was showing for 1 frame when autoselected enabled.
+
 ## [2.1.2]
 
 - Sprite Actors can have different scales in X and Y axis allowing unproportional scaling.

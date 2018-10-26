@@ -17,6 +17,7 @@ package com.bladecoder.engine.actions;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
@@ -83,6 +84,13 @@ public class SayAction implements Action {
 			y = boundingRectangle.getY() + boundingRectangle.getHeight();
 
 			color = ((CharacterActor) a).getTextColor();
+			
+			Vector2 talkingTextPos = ((CharacterActor) a).getTalkingTextPos();
+			
+			if(talkingTextPos != null) {
+				x += talkingTextPos.x;
+				y += talkingTextPos.y;
+			}
 		}
 
 		w.getCurrentScene().getTextManager().addText(text, x, y, queue, type, color, style,
