@@ -86,7 +86,7 @@ public class UIActors implements AssetConsumer, Serializable {
 		cam.getInputUnProject(v, unprojectTmp);
 
 		for (InteractiveActor uia : actors) {
-			if (uia.hit(unprojectTmp.x, unprojectTmp.y))
+			if (uia.canInteract() && uia.hit(unprojectTmp.x, unprojectTmp.y))
 				return uia;
 		}
 
