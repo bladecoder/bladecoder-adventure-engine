@@ -226,9 +226,11 @@ public class ToolsWindow extends Container<Table> {
 					float scale = Float.parseFloat(r);
 
 					try {
+						int maxWH = (int) (ImageUtils.getRecommendedAtlasSize() * scale);
+
 						ImageUtils.createAtlas(files.get(0).file().getAbsolutePath(),
-								Ctx.project.getAssetPath() + Project.UI_PATH + "/" + r, "ui" + ".atlas", scale,
-								TextureFilter.Linear, TextureFilter.Nearest, "png");
+								Ctx.project.getAssetPath() + Project.UI_PATH + "/" + r, "ui" + ".atlas", scale, maxWH,
+								maxWH, TextureFilter.Linear, TextureFilter.Nearest, "png");
 					} catch (IOException e) {
 						EditorLogger.error(e.getMessage());
 						Message.showMsgDialog(getStage(), "Error creating atlas", e.getMessage());
@@ -263,8 +265,7 @@ public class ToolsWindow extends Container<Table> {
 					// fileChooser.setTitle("Select the file to export the
 					// project texts");
 
-					ImageUtils.unpackAtlas(
-							new File(Ctx.project.getAssetPath() + Project.UI_PATH + "/1/ui.atlas"),
+					ImageUtils.unpackAtlas(new File(Ctx.project.getAssetPath() + Project.UI_PATH + "/1/ui.atlas"),
 							files.get(0).file());
 
 					Message.showMsg(getStage(), "UI Atlas images exported sucessfully.", 4);

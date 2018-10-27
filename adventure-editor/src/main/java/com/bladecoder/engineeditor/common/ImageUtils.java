@@ -16,7 +16,6 @@
 package com.bladecoder.engineeditor.common;
 
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -46,10 +45,10 @@ public class ImageUtils {
 		ImageIcon icon = null;
 
 		if (tmp != null) {
-			float h = (float) tmp.getHeight() * (float) w / (float) tmp.getWidth();
+			float h = (float) tmp.getHeight() * (float) w / tmp.getWidth();
 
 			img = scaleImage(w, (int) h, tmp, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-			icon = new ImageIcon((Image) img);
+			icon = new ImageIcon(img);
 		}
 
 		return icon;
@@ -59,7 +58,7 @@ public class ImageUtils {
 		BufferedImage bi;
 
 		bi = new BufferedImage(w, h, img.getType());
-		Graphics2D g2d = (Graphics2D) bi.createGraphics();
+		Graphics2D g2d = bi.createGraphics();
 		// g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 		// RenderingHints.VALUE_ANTIALIAS_ON);
 		// g2d.addRenderingHints(new
@@ -126,21 +125,24 @@ public class ImageUtils {
 
 	public static void scaleAtlas(File orgAtlas, File destDir, float scale) throws IOException {
 		File tmpDir = DesktopUtils.createTempDirectory();
-	
+
 		EditorLogger.debug("SCALING: " + orgAtlas.getName());
 		unpackAtlas(orgAtlas, tmpDir);
-		
+
 		String atlasParentPath = orgAtlas.getParentFile().getAbsolutePath();
-		TextureAtlasData atlasData = new TextureAtlasData(new FileHandle(orgAtlas), new FileHandle(atlasParentPath), false);
-		
+		TextureAtlasData atlasData = new TextureAtlasData(new FileHandle(orgAtlas), new FileHandle(atlasParentPath),
+				false);
+
 		String outputFormat = atlasData.getPages().get(0).textureFile.extension();
 
-		createAtlas(tmpDir.getAbsolutePath(), destDir.getAbsolutePath(), orgAtlas.getName(), scale,
+		int maxWH = (int) (getRecommendedAtlasSize() * scale);
+
+		createAtlas(tmpDir.getAbsolutePath(), destDir.getAbsolutePath(), orgAtlas.getName(), scale, maxWH, maxWH,
 				atlasData.getPages().get(0).minFilter, atlasData.getPages().get(0).magFilter, outputFormat);
 
 		DesktopUtils.removeDir(tmpDir.getAbsolutePath());
 	}
-	
+
 	public static void unpackAtlas(File orgAtlas, File destDir) {
 		CustomTextureUnpacker unpacker = new CustomTextureUnpacker();
 		String atlasParentPath = orgAtlas.getParentFile().getAbsolutePath();
@@ -165,8 +167,14 @@ public class ImageUtils {
 		}
 	}
 
-	public static void createAtlas(String inDir, String outdir, String name, float scale, TextureFilter filterMin,
-			TextureFilter filterMag, String outputFormat) throws IOException {
+	public static int getRecommendedAtlasSize() {
+		int wWidth = Ctx.project.getWorld().getWidth();
+
+		return MathUtils.nextPowerOfTwo((int) (wWidth * 2f));
+	}
+
+	public static void createAtlas(String inDir, String outdir, String name, float scale, int maxWidth, int maxHeight,
+			TextureFilter filterMin, TextureFilter filterMag, String outputFormat) throws IOException {
 		Settings settings = new Settings();
 
 		settings.pot = false;
@@ -193,16 +201,14 @@ public class ImageUtils {
 		settings.fast = false;
 		settings.debug = false;
 
-		int wWidth = Ctx.project.getWorld().getWidth();
-
-		settings.maxWidth = MathUtils.nextPowerOfTwo((int) (wWidth * scale * 2f));
-		settings.maxHeight = MathUtils.nextPowerOfTwo((int) (wWidth * scale * 2f));
+		settings.maxWidth = maxWidth;
+		settings.maxHeight = maxHeight;
 
 		EditorLogger.debug("ATLAS MAXWIDTH: " + settings.maxWidth);
 
 		File inTmpDir = new File(inDir);
 
-		// Resize images to create atlas for diferent resolutions
+		// Resize images to create atlas for different resolutions
 		if (scale != 1.0f) {
 			inTmpDir = DesktopUtils.createTempDirectory();
 

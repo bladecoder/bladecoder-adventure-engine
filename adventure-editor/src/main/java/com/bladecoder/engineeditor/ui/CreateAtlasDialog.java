@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
+import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ImageUtils;
@@ -45,6 +46,8 @@ public class CreateAtlasDialog extends EditDialog {
 	private InputPanel dir;
 	private InputPanel filterMin;
 	private InputPanel filterMag;
+	private InputPanel maxWidth;
+	private InputPanel maxHeight;
 	private InputPanel outputFormat;
 
 	public CreateAtlasDialog(Skin skin) {
@@ -58,6 +61,10 @@ public class CreateAtlasDialog extends EditDialog {
 				FILTERS, true);
 		filterMag = InputPanelFactory.createInputPanel(skin, "Mag Filter", "The filter when the texture is scaled up",
 				FILTERS, true);
+		maxWidth = InputPanelFactory.createInputPanel(skin, "Max Width",
+				"The atlas max page width. Be careful, some devices has a 4096px limit.", Param.Type.INTEGER, true);
+		maxHeight = InputPanelFactory.createInputPanel(skin, "Max Height",
+				"The atlas max page height. Be careful, some devices has a 4096px limit.", Param.Type.INTEGER, true);
 
 		outputFormat = InputPanelFactory.createInputPanel(skin, "Output format",
 				"The output format of the image. Note that 'jpg' doesn't support transparency.", OUTPUT_FORMATS, true);
@@ -66,8 +73,14 @@ public class CreateAtlasDialog extends EditDialog {
 		addInputPanel(dir);
 		addInputPanel(filterMin);
 		addInputPanel(filterMag);
+		addInputPanel(maxWidth);
+		addInputPanel(maxHeight);
 		addInputPanel(outputFormat);
 
+		String maxWH = Integer.toString(ImageUtils.getRecommendedAtlasSize());
+
+		maxWidth.setText(maxWH);
+		maxHeight.setText(maxWH);
 		filterMin.setText(FILTERS[0]);
 		filterMag.setText(FILTERS[0]);
 		outputFormat.setText(OUTPUT_FORMATS[0]);
@@ -139,12 +152,15 @@ public class CreateAtlasDialog extends EditDialog {
 		else if (fMag.equals("MipMapNearestNearest"))
 			filterMag = TextureFilter.MipMapNearestNearest;
 
+		int maxW = Integer.parseInt(maxWidth.getText());
+		int maxH = Integer.parseInt(maxHeight.getText());
+
 		for (String r : res) {
 			float scale = Float.parseFloat(r);
 
 			try {
-				ImageUtils.createAtlas(dir.getText(), outdir + "/" + r, name + ".atlas", scale, filterMin, filterMag,
-						outputFormat.getText());
+				ImageUtils.createAtlas(dir.getText(), outdir + "/" + r, name + ".atlas", scale, (int) (maxW * scale),
+						(int) (maxH * scale), filterMin, filterMag, outputFormat.getText());
 			} catch (IOException e) {
 				EditorLogger.error(e.getMessage());
 				Message.showMsgDialog(getStage(), "Error creating atlas", e.getMessage());
