@@ -33,7 +33,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 	private float musicPosSer = 0;
 	transient private boolean isPaused = false;
 	private MusicVolumeTween volumeTween;
-	
+
 	// the global configurable by user volume
 	public static float VOLUME_MULTIPLIER = 1f;
 
@@ -177,7 +177,8 @@ public class MusicManager implements Serializable, AssetConsumer {
 
 			if (volumeTween != null) {
 				volumeTween.update(delta);
-				if (volumeTween.isComplete()) {
+
+				if (volumeTween != null && volumeTween.isComplete()) {
 					volumeTween = null;
 				}
 			}
@@ -255,7 +256,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 		musicPosSer = json.readValue("musicPos", float.class, jsonData);
 
 		volumeTween = json.readValue("volumeTween", MusicVolumeTween.class, jsonData);
-		if(volumeTween != null) {
+		if (volumeTween != null) {
 			volumeTween.setTarget(this);
 		}
 	}
