@@ -233,8 +233,12 @@ public class MusicManager implements Serializable, AssetConsumer {
 	}
 
 	public void fade(float volume, float duration, ActionCallback cb) {
-		volumeTween = new MusicVolumeTween();
-		volumeTween.start(this, volume, duration, InterpolationMode.FADE, cb);
+		if (music != null) {
+			volumeTween = new MusicVolumeTween();
+			volumeTween.start(this, volume, duration, InterpolationMode.FADE, cb);
+		} else if (cb != null) {
+			cb.resume();
+		}
 	}
 
 	@Override
