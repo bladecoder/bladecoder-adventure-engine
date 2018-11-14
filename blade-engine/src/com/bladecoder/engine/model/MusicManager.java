@@ -89,6 +89,12 @@ public class MusicManager implements Serializable, AssetConsumer {
 	}
 
 	public void setMusic(MusicDesc d) {
+		if (desc != null && d != null && d.getFilename() != null && d.getFilename().equals(desc.getFilename())) {
+
+			EngineLogger.debug(">>>NOT SETTING MUSIC: This music file is already playing.");
+			return;
+		}
+
 		EngineLogger.debug(">>>SETTING MUSIC.");
 		stopMusic();
 		volumeTween = null;
