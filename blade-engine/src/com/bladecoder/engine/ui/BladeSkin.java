@@ -1,8 +1,5 @@
 package com.bladecoder.engine.ui;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -11,29 +8,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.ui.Tree;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.ReadOnlySerializer;
 import com.badlogic.gdx.utils.JsonValue;
@@ -59,6 +35,10 @@ public class BladeSkin extends Skin {
 		super(skinFile, atlas);
 	}
 
+	public BladeSkin(TextureAtlas atlas) {
+		super(atlas);
+	}
+
 	/**
 	 * Override BitmapFont.class serializer to support TTF fonts
 	 * 
@@ -69,14 +49,16 @@ public class BladeSkin extends Skin {
 		Json json = super.getJsonLoader(skinFile);
 
 		final Skin skin = this;
-		
+
 		json.setSerializer(Skin.class, new ReadOnlySerializer<Skin>() {
-			public Skin read (Json json, JsonValue typeToValueMap, @SuppressWarnings("rawtypes") Class ignored) {
+			@Override
+			public Skin read(Json json, JsonValue typeToValueMap, @SuppressWarnings("rawtypes") Class ignored) {
 				for (JsonValue valueMap = typeToValueMap.child; valueMap != null; valueMap = valueMap.next) {
 					try {
 						Class<?> type = json.getClass(valueMap.name());
-						if (type == null) type = ClassReflection.forName(valueMap.name());
-						 	readNamedObjects(json, type, valueMap);
+						if (type == null)
+							type = ClassReflection.forName(valueMap.name());
+						readNamedObjects(json, type, valueMap);
 					} catch (ReflectionException ex) {
 						throw new SerializationException(ex);
 					}
@@ -84,24 +66,26 @@ public class BladeSkin extends Skin {
 				return skin;
 			}
 
-			private void readNamedObjects (Json json, Class<?> type, JsonValue valueMap) {
+			private void readNamedObjects(Json json, Class<?> type, JsonValue valueMap) {
 				Class<?> addType = type == TintedDrawable.class ? Drawable.class : type;
 				for (JsonValue valueEntry = valueMap.child; valueEntry != null; valueEntry = valueEntry.next) {
 					Object object = json.readValue(type, valueEntry);
-					if (object == null) continue;
+					if (object == null)
+						continue;
 					try {
 						add(valueEntry.name, object, addType);
 						if (addType != Drawable.class && ClassReflection.isAssignableFrom(Drawable.class, addType))
 							add(valueEntry.name, object, Drawable.class);
 					} catch (Exception ex) {
 						throw new SerializationException(
-							"Error reading " + ClassReflection.getSimpleName(type) + ": " + valueEntry.name, ex);
+								"Error reading " + ClassReflection.getSimpleName(type) + ": " + valueEntry.name, ex);
 					}
 				}
 			}
 		});
 
 		json.setSerializer(BitmapFont.class, new ReadOnlySerializer<BitmapFont>() {
+			@Override
 			public BitmapFont read(Json json, JsonValue jsonData, @SuppressWarnings("rawtypes") Class type) {
 				String path = json.readValue("file", String.class, jsonData);
 				int scaledSize = json.readValue("scaledSize", int.class, -1, jsonData);
@@ -121,7 +105,7 @@ public class BladeSkin extends Skin {
 
 					if (size == -1)
 						throw new SerializationException("'size' mandatory parameter for .ttf fonts");
-					
+
 					long initTime = System.currentTimeMillis();
 
 					FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
@@ -134,17 +118,17 @@ public class BladeSkin extends Skin {
 					parameter.shadowOffsetX = json.readValue("shadowOffsetX", int.class, 0, jsonData);
 					parameter.shadowOffsetY = json.readValue("shadowOffsetY", int.class, 0, jsonData);
 					parameter.shadowColor = json.readValue("shadowColor", Color.class, Color.BLACK, jsonData);
-					if(parameter.incremental)
+					if (parameter.incremental)
 						parameter.characters = "";
 
-					//	parameter.hinting = Hinting.Medium;
+					// parameter.hinting = Hinting.Medium;
 
-					//	parameter.mono = false;
+					// parameter.mono = false;
 
 					font = generator.generateFont(parameter);
-					
+
 					EngineLogger.debug(path + " TIME (ms): " + (System.currentTimeMillis() - initTime));
-					
+
 					// TODO Dispose all generators.
 
 				} else {
@@ -181,28 +165,11 @@ public class BladeSkin extends Skin {
 				return font;
 			}
 		});
-		
-		for (Class<?> cls : TAGGED_STYLES){
-			json.addClassTag(cls.getSimpleName(), cls);
-		}
 
 		return json;
 	}
-	
-	private static final Class<?>[] AUTO_TAGGED_STYLES = {
-			BitmapFont.class, Color.class, TintedDrawable.class,
-			NinePatchDrawable.class, SpriteDrawable.class, TextureRegionDrawable.class, TiledDrawable.class,
-			Button.ButtonStyle.class, CheckBox.CheckBoxStyle.class, ImageButton.ImageButtonStyle.class, 
-			ImageTextButton.ImageTextButtonStyle.class, Label.LabelStyle.class, List.ListStyle.class, 
-			ProgressBar.ProgressBarStyle.class, ScrollPane.ScrollPaneStyle.class, SelectBox.SelectBoxStyle.class,
-			Slider.SliderStyle.class, SplitPane.SplitPaneStyle.class, TextButton.TextButtonStyle.class, 
-			TextField.TextFieldStyle.class, TextTooltip.TextTooltipStyle.class, Touchpad.TouchpadStyle.class,
-			Tree.TreeStyle.class, Window.WindowStyle.class
-		};
-	
-	private final static ArrayList<Class<?>> TAGGED_STYLES = new ArrayList<Class<?>>(Arrays.asList(AUTO_TAGGED_STYLES));
-	
-	public static final void addStyleTag(Class<?> tag) {
-		TAGGED_STYLES.add(tag);
+
+	public void addStyleTag(Class<?> tag) {
+		getJsonClassTags().put(tag.getSimpleName(), tag);
 	}
 }

@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.2.0]
+
+- Java 11 support (Gradle v4.10.2).
+- Update to libgdx v1.9.9.
+- iOS 12 bug fix (robovm v2.3.5).
+- Added property to change the text position of bubbles for character actors.
+- Add max width/height in the create atlas dialog.
+- Android SDK is not mandatory to create or edit projects.
+- A lot of bugs fixed (see git log).
+
 ## [2.1.4]
 
 - Now the editor works without having the Android SDK installed.

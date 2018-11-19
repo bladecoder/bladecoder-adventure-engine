@@ -236,7 +236,7 @@ public class ScnWidget extends Widget {
 	public void draw(Batch batch, float parentAlpha) {
 		validate();
 
-		Color tmp = batch.getColor();
+		float tmp = batch.getPackedColor();
 		batch.setColor(Color.WHITE);
 
 		if (scn != null && !loading && !loadingError) {
@@ -328,11 +328,11 @@ public class ScnWidget extends Widget {
 
 			textLayout.setText(defaultFont, str);
 
-			RectangleRenderer.draw((SpriteBatch) batch, 0f, getY() + getHeight() - textLayout.height - 15,
-					textLayout.width + 10, textLayout.height + 10, BLACK_TRANSPARENT);
+			RectangleRenderer.draw(batch, 0f, getY() + getHeight() - textLayout.height - 15, textLayout.width + 10,
+					textLayout.height + 10, BLACK_TRANSPARENT);
 			defaultFont.draw(batch, textLayout, 5, getHeight() + getY() - 10);
 
-			batch.setColor(tmp);
+			batch.setPackedColor(tmp);
 
 		} else {
 			background.draw(batch, getX(), getY(), getWidth(), getHeight());
@@ -428,7 +428,7 @@ public class ScnWidget extends Widget {
 		}
 	}
 
-	public boolean inTransforIcon(float px, float py, DraggingModes dm) {
+	public boolean inTransformIcon(float px, float py, DraggingModes dm) {
 		Polygon p = selectedActor.getBBox();
 
 		Rectangle r = p.getBoundingRectangle();
@@ -447,16 +447,16 @@ public class ScnWidget extends Widget {
 
 		if (dm == DraggingModes.ROTATE_ACTOR) {
 			r2 = new Rectangle(x2 - scnRotateIcon.getRegionWidth() / 3, y2 - scnRotateIcon.getRegionHeight() / 3,
-					(float) scnRotateIcon.getRegionWidth(), (float) scnRotateIcon.getRegionHeight());
+					scnRotateIcon.getRegionWidth(), scnRotateIcon.getRegionHeight());
 		} else if (dm == DraggingModes.SCALE_ACTOR) {
 			r2 = new Rectangle(x - scnScaleIcon.getRegionWidth(), y - scnScaleIcon.getRegionHeight(),
-					(float) scnScaleIcon.getRegionWidth(), (float) scnScaleIcon.getRegionHeight());
+					scnScaleIcon.getRegionWidth(), scnScaleIcon.getRegionHeight());
 		} else if (dm == DraggingModes.SCALE_LOCK_ACTOR) {
-			r2 = new Rectangle(x - scnScaleLockIcon.getRegionWidth(), y2, (float) scnScaleLockIcon.getRegionWidth(),
-					(float) scnScaleLockIcon.getRegionHeight());
+			r2 = new Rectangle(x - scnScaleLockIcon.getRegionWidth(), y2, scnScaleLockIcon.getRegionWidth(),
+					scnScaleLockIcon.getRegionHeight());
 		} else if (dm == DraggingModes.DRAGGING_ACTOR) {
-			r2 = new Rectangle(x + (x2 - x - scnMoveIcon.getRegionWidth()) / 2, y2,
-					(float) scnMoveIcon.getRegionWidth(), (float) scnMoveIcon.getRegionHeight());
+			r2 = new Rectangle(x + (x2 - x - scnMoveIcon.getRegionWidth()) / 2, y2, scnMoveIcon.getRegionWidth(),
+					scnMoveIcon.getRegionHeight());
 		}
 
 		worldToScreenCoords(tmpV2Transform.set(px, py));
@@ -482,9 +482,9 @@ public class ScnWidget extends Widget {
 
 		float posx = tmp2V2.x - textLayout.width - 20;
 
-		RectangleRenderer.draw((SpriteBatch) batch, posx, tmp2V2.y, textLayout.width + margin * 2,
-				textLayout.height + margin * 2, Color.BLACK);
-		RectangleRenderer.draw((SpriteBatch) batch, tmp2V2.x - 20, tmp2V2.y, 20, 2, Color.BLACK);
+		RectangleRenderer.draw(batch, posx, tmp2V2.y, textLayout.width + margin * 2, textLayout.height + margin * 2,
+				Color.BLACK);
+		RectangleRenderer.draw(batch, tmp2V2.x - 20, tmp2V2.y, 20, 2, Color.BLACK);
 
 		defaultFont.draw(batch, textLayout, posx + margin, tmp2V2.y + textLayout.height + margin);
 
@@ -497,9 +497,9 @@ public class ScnWidget extends Widget {
 
 		posx = tmp2V2.x - textLayout.width - 20;
 
-		RectangleRenderer.draw((SpriteBatch) batch, posx, tmp2V2.y, textLayout.width + margin * 2,
-				textLayout.height + margin * 2, Color.BLACK);
-		RectangleRenderer.draw((SpriteBatch) batch, tmp2V2.x - 20, tmp2V2.y, 20, 2, Color.BLACK);
+		RectangleRenderer.draw(batch, posx, tmp2V2.y, textLayout.width + margin * 2, textLayout.height + margin * 2,
+				Color.BLACK);
+		RectangleRenderer.draw(batch, tmp2V2.x - 20, tmp2V2.y, 20, 2, Color.BLACK);
 
 		defaultFont.draw(batch, textLayout, posx + margin, tmp2V2.y + textLayout.height + margin);
 

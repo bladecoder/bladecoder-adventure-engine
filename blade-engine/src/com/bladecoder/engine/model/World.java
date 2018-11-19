@@ -65,14 +65,14 @@ public class World implements AssetConsumer {
 	private int height;
 
 	private String initScene;
-	private final HashMap<String, SoundDesc> sounds = new HashMap<String, SoundDesc>();
-	private final HashMap<String, Scene> scenes = new HashMap<String, Scene>();
+	private final HashMap<String, SoundDesc> sounds = new HashMap<>();
+	private final HashMap<String, Scene> scenes = new HashMap<>();
 	private final VerbManager verbs = new VerbManager();
 
 	private Scene currentScene;
 	private Dialog currentDialog;
 
-	private final Map<String, Inventory> inventories = new HashMap<String, Inventory>();
+	private final Map<String, Inventory> inventories = new HashMap<>();
 	private String currentInventory;
 
 	private UIActors uiActors;
@@ -85,7 +85,7 @@ public class World implements AssetConsumer {
 
 	// Add support for the use of global custom properties/variables in the game
 	// logic
-	private final HashMap<String, String> customProperties = new HashMap<String, String>();
+	private final HashMap<String, String> customProperties = new HashMap<>();
 
 	private String initChapter;
 	private String currentChapter;
@@ -94,7 +94,7 @@ public class World implements AssetConsumer {
 	private Transition transition;
 
 	private MusicManager musicManager;
-	
+
 	private WorldListener listener;
 
 	// ------------ LAZY CREATED OBJECTS ------------
@@ -118,7 +118,7 @@ public class World implements AssetConsumer {
 
 	// If true call 'initNewGame' or 'initSavedGame' verbs.
 	private boolean initGame;
-	
+
 	private final WorldSerialization serialization = new WorldSerialization(this);
 
 	public World() {
@@ -126,14 +126,14 @@ public class World implements AssetConsumer {
 	}
 
 	private void init() {
-		
+
 		inventories.clear();
 		inventories.put(DEFAULT_INVENTORY, new Inventory());
 		setCurrentInventory(DEFAULT_INVENTORY);
-		
+
 		scenes.clear();
 		sounds.clear();
-		
+
 		uiActors = new UIActors(this);
 
 		cutMode = false;
@@ -152,15 +152,15 @@ public class World implements AssetConsumer {
 
 		initGame = true;
 	}
-	
+
 	public void setListener(WorldListener l) {
 		listener = l;
 	}
-	
+
 	public WorldListener getListener() {
 		return listener;
 	}
-	
+
 	public WorldSerialization getSerializer() {
 		return serialization;
 	}
@@ -183,8 +183,8 @@ public class World implements AssetConsumer {
 	/**
 	 * Returns a scene from the cache. null if the scene is not cached.
 	 * 
-	 * Note that by now, the cache has only one Scene. In the future, the cache
-	 * will be a Hastable.
+	 * Note that by now, the cache has only one Scene. In the future, the cache will
+	 * be a Hastable.
 	 */
 	public Scene getCachedScene(String id) {
 
@@ -338,7 +338,7 @@ public class World implements AssetConsumer {
 	public long getTimeOfGame() {
 		return timeOfGame;
 	}
-	
+
 	public void setTimeOfGame(long t) {
 		timeOfGame = t;
 	}
@@ -372,7 +372,7 @@ public class World implements AssetConsumer {
 		initLoadingTime = System.currentTimeMillis();
 
 		if (cachedScene == scene) {
-			if(init)
+			if (init)
 				assetState = AssetState.LOADING_AND_INIT_SCENE;
 			else
 				assetState = AssetState.LOADING;
@@ -382,7 +382,7 @@ public class World implements AssetConsumer {
 				cachedScene = null;
 			}
 
-			if(init)
+			if (init)
 				assetState = AssetState.LOAD_ASSETS_AND_INIT_SCENE;
 			else
 				assetState = AssetState.LOAD_ASSETS;
@@ -412,11 +412,11 @@ public class World implements AssetConsumer {
 	public Inventory getInventory() {
 		return inventories.get(currentInventory);
 	}
-	
+
 	public HashMap<String, String> getCustomProperties() {
 		return customProperties;
 	}
-	
+
 	public Map<String, Inventory> getInvetories() {
 		return inventories;
 	}
@@ -439,15 +439,15 @@ public class World implements AssetConsumer {
 
 	public void setCutMode(boolean v) {
 		cutMode = v;
-		
-		if(listener != null)
+
+		if (listener != null)
 			listener.cutMode(cutMode);
 	}
 
 	public void setCurrentScene(String id, boolean init) {
-		if(id.equals("$" + WorldProperties.PREVIOUS_SCENE.toString()))
+		if (id.equals("$" + WorldProperties.PREVIOUS_SCENE.toString()))
 			id = getCustomProperty(WorldProperties.PREVIOUS_SCENE.toString());
-		
+
 		Scene s = scenes.get(id);
 
 		if (s != null) {
@@ -467,7 +467,7 @@ public class World implements AssetConsumer {
 			if (visibleOptions == 0)
 				currentDialog = null;
 		}
-		
+
 		listener.dialogOptions();
 	}
 
@@ -509,8 +509,8 @@ public class World implements AssetConsumer {
 	private final Vector3 unprojectTmp = new Vector3();
 
 	/**
-	 * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and
-	 * the UIActors list.
+	 * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and the
+	 * UIActors list.
 	 */
 	public InteractiveActor getInteractiveActorAtInput(Viewport v, float tolerance) {
 
@@ -543,8 +543,8 @@ public class World implements AssetConsumer {
 
 	public void showInventory(boolean b) {
 		getInventory().setVisible(b);
-		
-		if(listener != null)
+
+		if (listener != null)
 			listener.inventoryEnabled(b);
 	}
 
@@ -656,7 +656,7 @@ public class World implements AssetConsumer {
 			// Pause all sounds
 			currentScene.getSoundManager().pause();
 		}
-		
+
 		listener.pause(true);
 	}
 
@@ -672,7 +672,7 @@ public class World implements AssetConsumer {
 				currentScene.getSoundManager().resume();
 			}
 		}
-		
+
 		listener.pause(false);
 	}
 
@@ -691,7 +691,7 @@ public class World implements AssetConsumer {
 	}
 
 	// ********** SERIALIZATION **********
-	
+
 	public void saveGameState() throws IOException {
 		serialization.saveGameState(GAMESTATE_FILENAME);
 	}
@@ -750,7 +750,7 @@ public class World implements AssetConsumer {
 	public void setTestScene(String s) {
 		testScene = s;
 	}
-	
+
 	/**
 	 * Load the world description in 'world.json'.
 	 * 
@@ -786,9 +786,9 @@ public class World implements AssetConsumer {
 			savedFile = EngineAssetManager.getInstance().getUserFile(filename);
 		else
 			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
-		
+
 		serialization.loadGameState(savedFile);
-		
+
 		assetState = AssetState.LOAD_ASSETS;
 	}
 

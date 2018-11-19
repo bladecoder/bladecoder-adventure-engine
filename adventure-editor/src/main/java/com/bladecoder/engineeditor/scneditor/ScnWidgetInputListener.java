@@ -154,7 +154,7 @@ public class ScnWidgetInputListener extends ClickListener {
 
 				// CLICK IN MOVE ICON
 				if (!(selActor instanceof AnchorActor)
-						&& scnWidget.inTransforIcon(p.x, p.y, DraggingModes.DRAGGING_ACTOR)) {
+						&& scnWidget.inTransformIcon(p.x, p.y, DraggingModes.DRAGGING_ACTOR)) {
 					draggingMode = DraggingModes.DRAGGING_ACTOR;
 					undoOrg.set(selActor.getX(), selActor.getY());
 					return true;
@@ -175,20 +175,20 @@ public class ScnWidgetInputListener extends ClickListener {
 
 				// CHECK CLICK IN TRANSFORM ICON
 				if (selActor instanceof SpriteActor) {
-					if (scnWidget.inTransforIcon(p.x, p.y, DraggingModes.ROTATE_ACTOR)) {
+					if (scnWidget.inTransformIcon(p.x, p.y, DraggingModes.ROTATE_ACTOR)) {
 						draggingMode = DraggingModes.ROTATE_ACTOR;
 						undoRot = ((SpriteActor) selActor).getRot();
 						return true;
 					}
 
 					if (!((SpriteActor) selActor).getFakeDepth()) {
-						if (scnWidget.inTransforIcon(p.x, p.y, DraggingModes.SCALE_ACTOR)) {
+						if (scnWidget.inTransformIcon(p.x, p.y, DraggingModes.SCALE_ACTOR)) {
 							draggingMode = DraggingModes.SCALE_ACTOR;
 							undoOrg.set(((SpriteActor) selActor).getScaleX(), ((SpriteActor) selActor).getScaleY());
 							return true;
 						}
 
-						if (scnWidget.inTransforIcon(p.x, p.y, DraggingModes.SCALE_LOCK_ACTOR)) {
+						if (scnWidget.inTransformIcon(p.x, p.y, DraggingModes.SCALE_LOCK_ACTOR)) {
 							draggingMode = DraggingModes.SCALE_LOCK_ACTOR;
 							undoOrg.set(((SpriteActor) selActor).getScaleX(), ((SpriteActor) selActor).getScaleY());
 							return true;

@@ -33,21 +33,21 @@ public final class RectangleRenderer {
 		return _temp;
 	}
 
-	public static void draw(Batch batch, float posX, float posY,
-			float width, float height, Color color) {
-		
-		if(texture == null) texture = makePixel();
-		
-		Color tmp = batch.getColor();
+	public static void draw(Batch batch, float posX, float posY, float width, float height, Color color) {
+
+		if (texture == null)
+			texture = makePixel();
+
+		float tmp = batch.getPackedColor();
 		batch.setColor(color);
-		batch.draw(texture, posX, posY, 0,
-				0, width, height, 1, 1, 0, 0, 0, 1, 1, false, false);
-		
-		batch.setColor(tmp);
+		batch.draw(texture, posX, posY, 0, 0, width, height, 1, 1, 0, 0, 0, 1, 1, false, false);
+
+		batch.setPackedColor(tmp);
 	}
-	
+
 	public static void dispose() {
-		if(texture!=null) texture.dispose();
+		if (texture != null)
+			texture.dispose();
 		texture = null;
 	}
 

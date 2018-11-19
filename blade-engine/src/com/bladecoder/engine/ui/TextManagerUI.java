@@ -56,10 +56,10 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 	private AtlasRegion charIcon = null;
 
 	private TextManagerUIStyle style;
-	
+
 	private float maxWidth;
 	private final UI ui;
-	
+
 	public TextManagerUI(UI ui) {
 		this.ui = ui;
 		setTouchable(Touchable.disabled);
@@ -90,15 +90,16 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 				color = Color.BLACK;
 
 			maxWidth = Math.min(getStage().getViewport().getScreenWidth() - DPIUtils.getMarginSize() * 2,
-					style.font.getXHeight() * (text.type == Text.Type.TALK ? style.maxTalkCharWidth : style.maxCharWidth));
-			
+					style.font.getXHeight()
+							* (text.type == Text.Type.TALK ? style.maxTalkCharWidth : style.maxCharWidth));
+
 			layout.setText(style.font, text.str, color, maxWidth, Align.center, true);
 			setSize(layout.width + PADDING * 2, layout.height + PADDING * 2);
-			
+
 			calcPos();
 		}
 	}
-	
+
 	private void calcPos() {
 		float posx = text.x;
 		float posy = text.y;
@@ -133,8 +134,8 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 		// CHAR ICON CALCS
 		if (text.type == Text.Type.SUBTITLE && !Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")
 				&& text.actorId != null) {
-			charIcon = EngineAssetManager.getInstance()
-					.getRegion(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null), text.actorId);
+			charIcon = EngineAssetManager.getInstance().getRegion(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null),
+					text.actorId);
 
 			if (charIcon != null) {
 				float scale = getStage().getViewport().getScreenHeight() / (float) ui.getWorld().getHeight();
@@ -173,18 +174,17 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 
 		if (getY() + getHeight() > getStage().getViewport().getScreenHeight()) {
 			setY(getStage().getViewport().getScreenHeight() - getHeight() - PADDING);
-		}		
+		}
 	}
 
 	@Override
 	public void draw(Batch batch, float alpha) {
-		batch.setColor(Color.WHITE);
 
 		if (text.type == Text.Type.TALK) {
-			
+
 			// When the type is TALK we recalc the pos because of scrolling
 			calcPos();
-			
+
 			if (getX() < 0 || getX() > getStage().getViewport().getScreenWidth())
 				return;
 
@@ -193,7 +193,7 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 
 				float bubbleX = unprojectTmp.x - style.talkBubble.getMinWidth() * scale / 2;
 				// check screen exit
-				bubbleX = Math.max(bubbleX, getX() + PADDING  - style.talkBubble.getMinWidth() * scale / 2);
+				bubbleX = Math.max(bubbleX, getX() + PADDING - style.talkBubble.getMinWidth() * scale / 2);
 				bubbleX = Math.min(bubbleX, getX() + getWidth() - PADDING - style.talkBubble.getMinWidth() * scale / 2);
 				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + 2;
 

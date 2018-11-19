@@ -25,90 +25,89 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 
 public abstract class InputPanel extends Table {
 	private static final boolean USE_TOOLTIPS = true;
-	
-	protected Actor field;
-    private Label title;
-    private Label desc;
-    private boolean mandatory = false;
 
-    InputPanel() {
-    }
-    
-    protected void init(Skin skin, String title, String desc, Actor c, boolean mandatory, String defaultValue) {
-    	//debug();
-    	
-    	this.mandatory = mandatory;
-    	
-       	this.setSkin(skin);
-    	LabelStyle style = new LabelStyle(skin.get(LabelStyle.class));
-    	this.title = new Label(title, style);
-    	
-        this.desc = new Label(desc,skin, "subtitle");
-        this.desc.setWrap(false);  
-    	     	
-       	this.field = c;
-       	
-//       	row().expand();
-       	float titleWidth = this.title.getStyle().font.getSpaceWidth() * 35;
-       	add(this.title).width(titleWidth).left().top();
-       	this.title.setWidth(titleWidth);
-       	this.title.setWrap(true);
-       	//row().expand();
-       	add(field).expandX().left().top();
-       	
-       	if(USE_TOOLTIPS) {
-       		TextTooltip t = new TextTooltip(desc, skin);
-    		this.title.addListener(t);
-    		this.field.addListener(t);
-       	} else {
-       		row().expand();
-       		add(this.desc).colspan(2).left();
-       	}
-    	
-       	if(defaultValue != null)
-    		setText(defaultValue);
-    }
-    
-    
-    public void setMandatory(boolean value) {
-    	mandatory = value;
-    }
-    
-    public boolean isMandatory() {
-    	return mandatory;
-    }
+	protected Actor field;
+	private Label title;
+	private Label desc;
+	private boolean mandatory = false;
+
+	InputPanel() {
+	}
+
+	protected void init(Skin skin, String title, String desc, Actor c, boolean mandatory, String defaultValue) {
+		// debug();
+
+		this.mandatory = mandatory;
+
+		this.setSkin(skin);
+		LabelStyle style = new LabelStyle(skin.get(LabelStyle.class));
+		this.title = new Label(title, style);
+
+		this.desc = new Label(desc, skin, "subtitle");
+		this.desc.setWrap(false);
+
+		this.field = c;
+
+		// row().expand();
+		float titleWidth = this.title.getStyle().font.getSpaceXadvance() * 35;
+		add(this.title).width(titleWidth).left().top();
+		this.title.setWidth(titleWidth);
+		this.title.setWrap(true);
+		// row().expand();
+		add(field).expandX().left().top();
+
+		if (USE_TOOLTIPS) {
+			TextTooltip t = new TextTooltip(desc, skin);
+			this.title.addListener(t);
+			this.field.addListener(t);
+		} else {
+			row().expand();
+			add(this.desc).colspan(2).left();
+		}
+
+		if (defaultValue != null)
+			setText(defaultValue);
+	}
+
+	public void setMandatory(boolean value) {
+		mandatory = value;
+	}
+
+	public boolean isMandatory() {
+		return mandatory;
+	}
 
 	public void setError(boolean value) {
-    	if(value)
-    		title.getStyle().fontColor = Color.RED;
-    	else
-    		title.getStyle().fontColor = Color.WHITE;
-    }
-    
+		if (value)
+			title.getStyle().fontColor = Color.RED;
+		else
+			title.getStyle().fontColor = Color.WHITE;
+	}
+
 	public abstract String getText();
-	
+
 	public abstract void setText(String text);
-    
-    public String getTitle() {
-    	return title.getText().toString();
-    }
-    
-    public Actor getField() {
-    	return field;
-    }
-	
+
+	public String getTitle() {
+		return title.getText().toString();
+	}
+
+	public Actor getField() {
+		return field;
+	}
+
 	public boolean validateField() {
-	
+
 		String s = getText();
-		
-		if(mandatory) {
-			if(s == null || s.trim().isEmpty()) {
+
+		if (mandatory) {
+			if (s == null || s.trim().isEmpty()) {
 				setError(true);
 				return false;
-			}		
+			}
 		}
-		
-		setError(false);	
+
+		setError(false);
 		return true;
 	}
 }

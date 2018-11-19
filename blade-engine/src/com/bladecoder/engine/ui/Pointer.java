@@ -17,7 +17,6 @@ package com.bladecoder.engine.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Peripheral;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -69,8 +68,6 @@ public class Pointer extends Actor {
 		getInputUnproject(getStage().getViewport(), mousepos);
 
 		setPosition(mousepos.x - getWidth() / 2, mousepos.y - getHeight() / 2);
-
-		batch.setColor(Color.WHITE);
 
 		batch.draw(pointerIcon, getX(), getY(), getWidth(), getHeight());
 	}

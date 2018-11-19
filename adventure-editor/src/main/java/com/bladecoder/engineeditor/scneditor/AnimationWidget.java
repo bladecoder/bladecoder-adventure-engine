@@ -65,7 +65,7 @@ public class AnimationWidget extends Widget {
 		} else {
 			renderer = new AtlasRenderer();
 		}
-		
+
 		renderer.setOrgAlign(Align.bottom);
 		renderer.loadAssets();
 		EngineAssetManager.getInstance().finishLoading();
@@ -74,7 +74,7 @@ public class AnimationWidget extends Widget {
 
 	public String[] getAnimations() {
 		try {
-			return ((AnimationRenderer)renderer).getInternalAnimations(fa);
+			return ((AnimationRenderer) renderer).getInternalAnimations(fa);
 		} catch (Exception e) {
 			// Message.show(getStage(),
 			// "Error loading animations from selected source", 4);
@@ -85,10 +85,10 @@ public class AnimationWidget extends Widget {
 	}
 
 	public void setAnimation(String id, String speedStr, Tween.Type t) {
-		
-		if (fa != null && id != null &&  !id.isEmpty()) {
-			
-			if(fa instanceof AtlasAnimationDesc)
+
+		if (fa != null && id != null && !id.isEmpty()) {
+
+			if (fa instanceof AtlasAnimationDesc)
 				((AtlasAnimationDesc) fa).regions = null;
 
 			Tween.Type type = Tween.Type.REPEAT;
@@ -97,46 +97,47 @@ public class AnimationWidget extends Widget {
 			if (speedStr != null && !speedStr.isEmpty()) {
 				try {
 					speed = Float.parseFloat(speedStr);
-				} catch(NumberFormatException e) {
+				} catch (NumberFormatException e) {
 					speed = 0;
 				}
 			}
 
 			if (t == Tween.Type.YOYO)
 				type = Tween.Type.YOYO;
-			else if(t == Tween.Type.REVERSE)
+			else if (t == Tween.Type.REVERSE)
 				type = Tween.Type.REVERSE_REPEAT;
 
 			fa.id = id;
 			fa.duration = speed;
 			fa.animationType = type;
 			fa.count = -1;
-			
-			((AnimationRenderer)renderer).getAnimations().clear();
 
-			((AnimationRenderer)renderer).addAnimation(fa);
-			((AnimationRenderer)renderer).startAnimation(fa.id, Tween.Type.SPRITE_DEFINED, 1, null);
+			((AnimationRenderer) renderer).getAnimations().clear();
+
+			((AnimationRenderer) renderer).addAnimation(fa);
+			((AnimationRenderer) renderer).startAnimation(fa.id, Tween.Type.SPRITE_DEFINED, 1, null);
 		}
 	}
 
+	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
 
-		if (renderer == null || ((AnimationRenderer)renderer).getCurrentAnimation() == null)
+		if (renderer == null || ((AnimationRenderer) renderer).getCurrentAnimation() == null)
 			return;
 
-		Color tmp = batch.getColor();
+		float tmp = batch.getPackedColor();
 		batch.setColor(Color.WHITE);
 
 		renderer.update(Gdx.graphics.getDeltaTime());
 
-		RectangleRenderer.draw((SpriteBatch) batch, getX(), getY(), getWidth(), getHeight(), Color.MAGENTA);
+		RectangleRenderer.draw(batch, getX(), getY(), getWidth(), getHeight(), Color.MAGENTA);
 
 		float scalew = getWidth() / renderer.getWidth();
 		float scaleh = getHeight() / renderer.getHeight();
 		float scale = scalew > scaleh ? scaleh : scalew;
 		renderer.draw((SpriteBatch) batch, getX() + renderer.getWidth() * scale / 2, getY(), scale, scale, 0f, null);
-		batch.setColor(tmp);
+		batch.setPackedColor(tmp);
 	}
 
 	public void dispose() {

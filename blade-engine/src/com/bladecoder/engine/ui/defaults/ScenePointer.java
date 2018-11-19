@@ -75,8 +75,8 @@ public class ScenePointer {
 	public void drag(SpriteActor a) {
 		draggingActor = a;
 		tmpTint.set(DRAG_NOT_HOTSPOT_COLOR);
-		
-		if(a != null && draggingActor.getTint() != null)
+
+		if (a != null && draggingActor.getTint() != null)
 			tmpTint.mul(draggingActor.getTint());
 	}
 
@@ -136,6 +136,8 @@ public class ScenePointer {
 					layout.height + margin * 2, Color.BLACK);
 			font.draw(batch, layout, textX, textY);
 		}
+
+		// batch.setColor(Color.WHITE);
 
 		if (draggingActor == null) {
 			if (!multiTouch || currentIcon == leaveIcon) {

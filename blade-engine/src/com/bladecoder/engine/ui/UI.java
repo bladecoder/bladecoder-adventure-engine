@@ -37,7 +37,7 @@ public class UI {
 
 	private final Recorder recorder;
 	private final TesterBot testerBot;
-	
+
 	private boolean fullscreen = false;
 
 	private BladeScreen screen;
@@ -56,74 +56,83 @@ public class UI {
 		this.w = w;
 		recorder = new Recorder(w);
 		testerBot = new TesterBot(w);
-		
+
 		batch = new SpriteBatch();
-		
+
 		screens = new BladeScreen[Screens.values().length];
 
 		Gdx.input.setCatchMenuKey(true);
 
 		loadAssets();
 
-		screens[Screens.INIT_SCREEN.ordinal()] = getCustomScreenInstance(Screens.INIT_SCREEN.toString(), InitScreen.class);
-		screens[Screens.SCENE_SCREEN.ordinal()] = getCustomScreenInstance(Screens.SCENE_SCREEN.toString(), DefaultSceneScreen.class);
-		screens[Screens.LOADING_SCREEN.ordinal()] = getCustomScreenInstance(Screens.LOADING_SCREEN.toString(), LoadingScreen.class);
-		screens[Screens.MENU_SCREEN.ordinal()] = getCustomScreenInstance(Screens.MENU_SCREEN.toString(), MenuScreen.class);
-		screens[Screens.HELP_SCREEN.ordinal()] = getCustomScreenInstance(Screens.HELP_SCREEN.toString(), HelpScreen.class);
-		screens[Screens.CREDIT_SCREEN.ordinal()] =  getCustomScreenInstance(Screens.CREDIT_SCREEN.toString(), CreditsScreen.class);
-		screens[Screens.LOAD_GAME_SCREEN.ordinal()] = getCustomScreenInstance(Screens.LOAD_GAME_SCREEN.toString(), LoadSaveScreen.class);
-		screens[Screens.SAVE_GAME_SCREEN.ordinal()] = getCustomScreenInstance(Screens.SAVE_GAME_SCREEN.toString(), LoadSaveScreen.class);
+		screens[Screens.INIT_SCREEN.ordinal()] = getCustomScreenInstance(Screens.INIT_SCREEN.toString(),
+				InitScreen.class);
+		screens[Screens.SCENE_SCREEN.ordinal()] = getCustomScreenInstance(Screens.SCENE_SCREEN.toString(),
+				DefaultSceneScreen.class);
+		screens[Screens.LOADING_SCREEN.ordinal()] = getCustomScreenInstance(Screens.LOADING_SCREEN.toString(),
+				LoadingScreen.class);
+		screens[Screens.MENU_SCREEN.ordinal()] = getCustomScreenInstance(Screens.MENU_SCREEN.toString(),
+				MenuScreen.class);
+		screens[Screens.HELP_SCREEN.ordinal()] = getCustomScreenInstance(Screens.HELP_SCREEN.toString(),
+				HelpScreen.class);
+		screens[Screens.CREDIT_SCREEN.ordinal()] = getCustomScreenInstance(Screens.CREDIT_SCREEN.toString(),
+				CreditsScreen.class);
+		screens[Screens.LOAD_GAME_SCREEN.ordinal()] = getCustomScreenInstance(Screens.LOAD_GAME_SCREEN.toString(),
+				LoadSaveScreen.class);
+		screens[Screens.SAVE_GAME_SCREEN.ordinal()] = getCustomScreenInstance(Screens.SAVE_GAME_SCREEN.toString(),
+				LoadSaveScreen.class);
 
-		for (BladeScreen s:screens)
+		for (BladeScreen s : screens)
 			s.setUI(this);
 
 		setCurrentScreen(Screens.INIT_SCREEN);
 	}
-	
+
 	public World getWorld() {
 		return w;
 	}
-	
+
 	public Recorder getRecorder() {
 		return recorder;
 	}
-	
+
 	public TesterBot getTesterBot() {
 		return testerBot;
 	}
-	
+
 	private BladeScreen getCustomScreenInstance(String prop, Class<?> defaultClass) {
 		String clsName = Config.getProperty(prop, null);
 		Class<?> instanceClass = defaultClass;
-		
-		if( clsName != null  && !clsName.isEmpty()) {
+
+		if (clsName != null && !clsName.isEmpty()) {
 			try {
 				instanceClass = ClassReflection.forName(clsName);
-				return (BladeScreen)ClassReflection.newInstance(instanceClass);
+				return (BladeScreen) ClassReflection.newInstance(instanceClass);
 			} catch (Exception e) {
 				EngineLogger.error("Error instancing screen. " + e.getMessage());
-				// FIXME: Probably we just want to fail in this case, instead of creating a different screen than the one expected?
+				// FIXME: Probably we just want to fail in this case, instead of creating a
+				// different screen than the one expected?
 				instanceClass = defaultClass;
 			}
-		} 
-		
+		}
+
 		try {
-			return (BladeScreen)ClassReflection.newInstance(instanceClass);
+			return (BladeScreen) ClassReflection.newInstance(instanceClass);
 		} catch (Exception e) {
 			EngineLogger.error("Error instancing screen", e);
 		}
-		
+
 		return null;
 	}
-	
+
 	public BladeScreen getScreen(Screens state) {
 		return screens[state.ordinal()];
 	}
-	
+
 	public void setScreen(Screens state, BladeScreen s) {
 		screens[state.ordinal()] = s;
 	}
-	
+
 	public SpriteBatch getBatch() {
 		return batch;
 	}
@@ -136,50 +145,52 @@ public class UI {
 		EngineLogger.debug("Setting SCREEN: " + s.name());
 		setCurrentScreen(screens[s.ordinal()]);
 	}
-	
+
 	public void setCurrentScreen(BladeScreen s) {
 
 		if (screen != null) {
 			screen.hide();
 		}
-		
+
 		screen = s;
 
 		screen.show();
-			
+
 		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
-	
+
 	public TextureAtlas getUIAtlas() {
 		return skin.getAtlas();
 	}
-	
+
 	public Skin getSkin() {
 		return skin;
 	}
 
 	public void render() {
-		// for long processing frames, limit delta to 1/30f to avoid skipping animations 
+		// for long processing frames, limit delta to 1/30f to avoid skipping animations
 		float delta = Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f);
 
 		screen.render(delta);
 	}
 
 	private void loadAssets() {
-		BladeSkin.addStyleTag(VerbUI.VerbUIStyle.class);
-		BladeSkin.addStyleTag(TextManagerUI.TextManagerUIStyle.class);
-		BladeSkin.addStyleTag(DialogUI.DialogUIStyle.class);
-		BladeSkin.addStyleTag(InventoryUI.InventoryUIStyle.class);
-		BladeSkin.addStyleTag(CreditsScreen.CreditScreenStyle.class);
-		BladeSkin.addStyleTag(LoadSaveScreen.LoadSaveScreenStyle.class);
-		BladeSkin.addStyleTag(MenuScreen.MenuScreenStyle.class);
-		
 		FileHandle skinFile = EngineAssetManager.getInstance().getAsset(SKIN_FILENAME);
-		TextureAtlas atlas = new TextureAtlas(EngineAssetManager.getInstance().getResAsset(
-				SKIN_FILENAME.substring(0,SKIN_FILENAME.lastIndexOf('.')) + ".atlas"));
-		skin = new BladeSkin(skinFile, atlas);
-		
-		if(!Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")) {
+		TextureAtlas atlas = new TextureAtlas(EngineAssetManager.getInstance()
+				.getResAsset(SKIN_FILENAME.substring(0, SKIN_FILENAME.lastIndexOf('.')) + ".atlas"));
+		skin = new BladeSkin(atlas);
+
+		((BladeSkin) skin).addStyleTag(VerbUI.VerbUIStyle.class);
+		((BladeSkin) skin).addStyleTag(TextManagerUI.TextManagerUIStyle.class);
+		((BladeSkin) skin).addStyleTag(DialogUI.DialogUIStyle.class);
+		((BladeSkin) skin).addStyleTag(InventoryUI.InventoryUIStyle.class);
+		((BladeSkin) skin).addStyleTag(CreditsScreen.CreditScreenStyle.class);
+		((BladeSkin) skin).addStyleTag(LoadSaveScreen.LoadSaveScreenStyle.class);
+		((BladeSkin) skin).addStyleTag(MenuScreen.MenuScreenStyle.class);
+
+		skin.load(skinFile);
+
+		if (!Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")) {
 			EngineAssetManager.getInstance().loadAtlas(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null));
 			EngineAssetManager.getInstance().finishLoading();
 		}
@@ -204,32 +215,32 @@ public class UI {
 		screen.hide();
 		batch.dispose();
 		skin.dispose();
-		
+
 		RectangleRenderer.dispose();
 		Utils3D.dispose();
-				
-		if(!Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals(""))
+
+		if (!Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals(""))
 			EngineAssetManager.getInstance().disposeAtlas(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null));
-		
+
 		// DISPOSE ALL SCREENS
-		for(BladeScreen s:screens)
+		for (BladeScreen s : screens)
 			s.dispose();
-		
+
 		EngineAssetManager.getInstance().dispose();
 	}
-	
+
 	public void resume() {
-		if(Gdx.app.getType() != ApplicationType.Desktop) {
+		if (Gdx.app.getType() != ApplicationType.Desktop) {
 			// RESTORE GL CONTEXT
 			RectangleRenderer.dispose();
 		}
-		
-		if(screen != null)
+
+		if (screen != null)
 			screen.resume();
 	}
-	
+
 	public void pause() {
-		if(screen != null)
+		if (screen != null)
 			screen.pause();
 	}
 }
