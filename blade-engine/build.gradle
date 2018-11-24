@@ -43,9 +43,9 @@ javadoc {
 
 dependencies {
   api "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  api "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
-  api "com.bladecoder.ink:blade-ink:$bladeInkVersion"
-  api "org.minimalcode:minimalcode-beans:0.5.1"
+  implementation "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
+  implementation "com.bladecoder.ink:blade-ink:$bladeInkVersion"
+  implementation "org.minimalcode:minimalcode-beans:0.5.1"
   api fileTree(dir: 'libs', include: '*.jar')
 }
 

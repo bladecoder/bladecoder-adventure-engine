@@ -22,7 +22,6 @@
   <forceLinkClasses>
     <pattern>com.bladecoder.engine.**</pattern>
     <pattern>com.badlogic.gdx.scenes.scene2d.ui.*</pattern>
-    <pattern>com.badlogic.gdx.scenes.scene2d.ui.*</pattern>
     <pattern>com.badlogic.gdx.graphics.g3d.particles.**</pattern>
     <pattern>com.android.okhttp.HttpHandler</pattern>
     <pattern>com.android.okhttp.HttpsHandler</pattern>

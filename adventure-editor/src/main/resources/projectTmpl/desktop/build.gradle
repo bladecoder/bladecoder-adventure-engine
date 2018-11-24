@@ -1,5 +1,4 @@
 apply plugin: 'java'
-apply plugin: 'java-library'
 apply plugin: 'application'
   
 sourceCompatibility = 1.7
@@ -11,10 +10,10 @@ mainClassName = "%PACKAGE%.desktop.DesktopLauncher"
 eclipse.project.name = appName + '-desktop'
 
 dependencies {
-    api project(":core")
-    api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-    api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-    api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+    implementation project(":core")
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
 }
 
 jar {
