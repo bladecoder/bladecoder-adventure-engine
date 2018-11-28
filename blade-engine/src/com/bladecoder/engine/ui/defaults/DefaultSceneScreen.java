@@ -155,7 +155,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			else {
 				getInputUnProject(unprojectTmp);
 
-				if (w.inCutMode() || (!w.inCutMode() && !TextManager.AUTO_HIDE_TEXTS && textManagerUI.isVisible())) {
+				if (w.inCutMode() || (!TextManager.AUTO_HIDE_TEXTS && textManagerUI.isVisible())) {
 
 					if (recorder.isRecording())
 						return true;
@@ -472,7 +472,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		if (world.getAssetState() != AssetState.LOADED) {
 
-			resetUI();
+			updateUI();
 
 			if (assetState == AssetState.LOAD_ASSETS || assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
 				// update() to set LOADING state
@@ -516,17 +516,7 @@ public class DefaultSceneScreen implements SceneScreen {
 				inventoryUI.screenToLocalCoordinates(unproject2Tmp);
 				actorUnderCursor = inventoryUI.getItemAt(unproject2Tmp.x, unproject2Tmp.y);
 			} else {
-
-				final float tolerance;
-
-				if (inventoryUI.isDragging())
-					tolerance = DPIUtils.getTouchMinSize();
-				else if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
-					tolerance = DPIUtils.getTouchMinSize() / 2;
-				else
-					tolerance = 0;
-
-				actorUnderCursor = world.getInteractiveActorAtInput(viewport, tolerance);
+				actorUnderCursor = getActorUnderCursor();
 			}
 
 			// UPDATE POINTER
@@ -566,6 +556,19 @@ public class DefaultSceneScreen implements SceneScreen {
 				currentActor = actorUnderCursor;
 			}
 		}
+	}
+
+	private InteractiveActor getActorUnderCursor() {
+		final float tolerance;
+
+		if (inventoryUI.isDragging())
+			tolerance = DPIUtils.getTouchMinSize();
+		else if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
+			tolerance = DPIUtils.getTouchMinSize() / 2;
+		else
+			tolerance = 0;
+
+		return ui.getWorld().getInteractiveActorAtInput(viewport, tolerance);
 	}
 
 	/**
@@ -804,7 +807,7 @@ public class DefaultSceneScreen implements SceneScreen {
 			viewport.update(width, height, true);
 		}
 
-		resetUI();
+		updateUI();
 
 		pie.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
 		inventoryUI.resize(viewport.getScreenWidth(), viewport.getScreenHeight());
@@ -837,6 +840,8 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		Scene s = w.getCurrentScene();
 		CharacterActor player = s.getPlayer();
+
+		currentActor = getActorUnderCursor();
 
 		if (currentActor != null) {
 
@@ -940,17 +945,6 @@ public class DefaultSceneScreen implements SceneScreen {
 		ui.setCurrentScreen(Screens.MENU_SCREEN);
 	}
 
-	private void resetUI() {
-		if (pie.isVisible()) {
-			pie.hide();
-		}
-
-		pointer.reset();
-		inventoryUI.cancelDragging();
-
-		currentActor = null;
-	}
-
 	public InventoryUI getInventoryUI() {
 		return inventoryUI;
 	}
@@ -1017,7 +1011,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	@Override
 	public void hide() {
 		ui.getWorld().pause();
-		resetUI();
+		updateUI();
 		// dispose();
 	}
 

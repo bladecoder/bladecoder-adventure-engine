@@ -140,7 +140,7 @@ public class ScenePointer {
 		// batch.setColor(Color.WHITE);
 
 		if (draggingActor == null) {
-			if (!multiTouch || currentIcon == leaveIcon) {
+			if (!multiTouch || (currentIcon == leaveIcon && Gdx.input.isTouched())) {
 
 				batch.draw(currentIcon, mousepos.x - currentIcon.getRegionWidth() / 2,
 						mousepos.y - currentIcon.getRegionHeight() / 2, currentIcon.getRegionWidth() / 2,
