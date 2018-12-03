@@ -75,7 +75,7 @@ public class Recorder {
 			Scene s = w.getCurrentScene();
 
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("RECORDER - ");
+			stringBuilder.append("RECORDER (").append(pos).append(") - ");
 
 			// while (playing && v.time < time) {
 			if (playing && v.time < time && !w.inCutMode()) {
