@@ -56,12 +56,12 @@ public class Scene implements Serializable, AssetConsumer {
 	/**
 	 * All actors in the scene
 	 */
-	private Map<String, BaseActor> actors = new ConcurrentHashMap<String, BaseActor>();
+	private Map<String, BaseActor> actors = new ConcurrentHashMap<>();
 
 	/**
 	 * BaseActor layers
 	 */
-	private List<SceneLayer> layers = new ArrayList<SceneLayer>();
+	private List<SceneLayer> layers = new ArrayList<>();
 
 	private Timers timers = new Timers();
 
@@ -205,15 +205,6 @@ public class Scene implements Serializable, AssetConsumer {
 	}
 
 	public void update(float delta) {
-		// We draw the elements in order: from top to bottom.
-		// so we need to order the array list
-		for (SceneLayer layer : layers)
-			layer.update();
-
-		for (BaseActor a : actors.values()) {
-			a.update(delta);
-		}
-
 		camera.update(delta);
 
 		if (followActor != null) {
@@ -222,6 +213,19 @@ public class Scene implements Serializable, AssetConsumer {
 
 		timers.update(delta);
 		textManager.update(delta);
+
+		for (BaseActor a : actors.values()) {
+			// stops if scene has changed, ex. a Leave has been done in some actor update.
+			if (w.getCurrentScene() != this)
+				break;
+
+			a.update(delta);
+		}
+
+		// We draw the elements in order: from top to bottom.
+		// so we need to order the array list
+		for (SceneLayer layer : layers)
+			layer.update();
 	}
 
 	public void draw(SpriteBatch batch) {
