@@ -118,7 +118,7 @@ public class WorldSerialization implements Serializable {
 		w.write(s);
 		w.close();
 	}
-	
+
 	public void loadChapter() throws IOException {
 		loadChapter(null, null, true);
 	}
@@ -143,8 +143,8 @@ public class WorldSerialization implements Serializable {
 			json.setIgnoreUnknownFields(true);
 
 			read(json, root);
-			
-			if(scene == null)
+
+			if (scene == null)
 				w.setCurrentScene(w.getScenes().get(w.getInitScene()), initScene);
 			else
 				w.setCurrentScene(w.getScenes().get(scene), initScene);
@@ -244,9 +244,8 @@ public class WorldSerialization implements Serializable {
 	@Override
 	public void write(Json json) {
 		BladeJson bjson = (BladeJson) json;
-		
-		json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
-				Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
+
+		json.writeValue(Config.BLADE_ENGINE_VERSION_PROP, Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
 
 		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("sounds", w.getSounds(), w.getSounds().getClass(), SoundDesc.class);
@@ -276,22 +275,23 @@ public class WorldSerialization implements Serializable {
 			json.writeValue("chapter", w.getCurrentChapter());
 			json.writeValue("musicEngine", w.getMusicManager());
 
-			if (w.getInkManager() != null)
-				json.writeValue("inkManager", w.getInkManager());
-
 			if (!w.getUIActors().getActors().isEmpty())
 				json.writeValue("uiActors", w.getUIActors());
 		}
+
+		if (w.getInkManager() != null && w.getInkManager().getStoryName() != null)
+			json.writeValue("inkManager", w.getInkManager());
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		
+
 		String bladeVersion = json.readValue(Config.BLADE_ENGINE_VERSION_PROP, String.class, jsonData);
 
 		BladeJson bjson = (BladeJson) json;
 		if (bjson.getMode() == Mode.MODEL) {
-			if (bladeVersion != null && !bladeVersion.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
+			if (bladeVersion != null
+					&& !bladeVersion.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
 				EngineLogger.debug("Model Engine Version v" + bladeVersion + " differs from Current Engine Version v"
 						+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
@@ -327,6 +327,11 @@ public class WorldSerialization implements Serializable {
 
 			for (Scene s : w.getScenes().values()) {
 				s.resetCamera(w.getWidth(), w.getHeight());
+			}
+
+			// Load Ink story
+			if (jsonData.get("inkManager") != null) {
+				w.getInkManager().read(json, jsonData.get("inkManager"));
 			}
 
 			// Add sounds to cache
@@ -439,7 +444,7 @@ public class WorldSerialization implements Serializable {
 								if (sd != null)
 									s.getSoundManager().addSoundToLoad(sd);
 
-								HashMap<String, String> params = new HashMap<String, String>();
+								HashMap<String, String> params = new HashMap<>();
 								params.put("sound", sd.getId());
 
 								try {
@@ -491,7 +496,7 @@ public class WorldSerialization implements Serializable {
 										if (sd != null)
 											s.getSoundManager().addSoundToLoad(sd);
 
-										HashMap<String, String> params = new HashMap<String, String>();
+										HashMap<String, String> params = new HashMap<>();
 										params.put("sound", sd.getId());
 
 										try {

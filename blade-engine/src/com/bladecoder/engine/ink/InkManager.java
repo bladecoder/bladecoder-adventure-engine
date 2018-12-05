@@ -25,6 +25,7 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.serialization.ActionCallbackSerializer;
 import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.ink.runtime.Choice;
@@ -59,52 +60,35 @@ public class InkManager implements VerbRunner, Serializable {
 
 	private final World w;
 
+	private Thread loaderThread;
+
 	public InkManager(World w) {
 		this.w = w;
 		externalFunctions = new ExternalFunctions();
 		actions = new ArrayList<>();
 	}
 
-	public void newStory(InputStream is) throws Exception {
-
-		String json = getJsonString(is);
-		story = new Story(json);
-
-		externalFunctions.bindExternalFunctions(w, this);
-	}
-
 	public void newStory(final String name) throws Exception {
-		new Thread() {
-			@Override
-			public void run() {
-				loadStory(name, null);
-			}
-		}.start();
-
-		// Start the child thread now to avoid calling setVariable() before the thread
-		// starts.
-		Thread.yield();
+		loadThreaded(name, null);
 	}
 
-	synchronized private void loadStory(String name, String stateString) {
-		FileHandle asset = EngineAssetManager.getInstance()
-				.getAsset(EngineAssetManager.MODEL_DIR + name + EngineAssetManager.INK_EXT);
-
+	private void loadStory(String name) {
 		try {
+			FileHandle asset = EngineAssetManager.getInstance()
+					.getAsset(EngineAssetManager.MODEL_DIR + name + EngineAssetManager.INK_EXT);
+
 			long initTime = System.currentTimeMillis();
-			newStory(asset.read());
+
+			String json = getJsonString(asset.read());
+			story = new Story(json);
+
+			externalFunctions.bindExternalFunctions(w, this);
 
 			storyName = name;
 
 			loadI18NBundle();
 
 			EngineLogger.debug("INK STORY LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
-
-			if (stateString != null) {
-				initTime = System.currentTimeMillis();
-				story.getState().loadJson(stateString);
-				EngineLogger.debug("INK SAVED STATE LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
-			}
 
 		} catch (Exception e) {
 			EngineLogger.error("Cannot load Ink Story: " + name + " " + e.getMessage());
@@ -113,8 +97,19 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 	}
 
+	private void loadStoryState(String stateString) {
+		try {
+			long initTime = System.currentTimeMillis();
+			story.getState().loadJson(stateString);
+			EngineLogger.debug("INK *SAVED STATE* LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+		} catch (Exception e) {
+			EngineLogger.error("Cannot load Ink Story State for: " + storyName + " " + e.getMessage());
+		}
+	}
+
 	public void loadI18NBundle() {
-		if (storyName != null && EngineAssetManager.getInstance().getModelFile(storyName + "-ink.properties").exists())
+		if (getStoryName() != null
+				&& EngineAssetManager.getInstance().getModelFile(storyName + "-ink.properties").exists())
 			i18n = I18N.getBundle(EngineAssetManager.MODEL_DIR + storyName + "-ink", true);
 	}
 
@@ -145,11 +140,13 @@ public class InkManager implements VerbRunner, Serializable {
 		return line;
 	}
 
-	public synchronized String getVariable(String name) {
+	public String getVariable(String name) {
 		return story.getVariablesState().get(name).toString();
 	}
 
-	public synchronized boolean compareVariable(String name, String value) {
+	public boolean compareVariable(String name, String value) {
+		waitIfNotLoaded();
+
 		if (story.getVariablesState().get(name) instanceof InkList) {
 			return ((InkList) story.getVariablesState().get(name)).ContainsItemNamed(value);
 		} else {
@@ -157,7 +154,9 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 	}
 
-	public synchronized void setVariable(String name, String value) throws Exception {
+	public void setVariable(String name, String value) throws Exception {
+		waitIfNotLoaded();
+
 		if (story.getVariablesState().get(name) instanceof InkList) {
 
 			InkList rawList = (InkList) story.getVariablesState().get(name);
@@ -390,7 +389,9 @@ public class InkManager implements VerbRunner, Serializable {
 		return story;
 	}
 
-	synchronized public void runPath(String path, ActionCallback cb) throws Exception {
+	public void runPath(String path, ActionCallback cb) throws Exception {
+		waitIfNotLoaded();
+
 		if (story == null) {
 			EngineLogger.error("Ink Story not loaded!");
 			return;
@@ -403,6 +404,8 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	public boolean hasChoices() {
+		waitIfNotLoaded();
+
 		return (story != null && actions.size() == 0 && story.getCurrentChoices().size() > 0);
 	}
 
@@ -508,85 +511,139 @@ public class InkManager implements VerbRunner, Serializable {
 		return null;
 	}
 
-	@Override
-	public void write(Json json) {
-		World w = ((BladeJson) json).getWorld();
+	public String getStoryName() {
+		return storyName;
+	}
 
-		json.writeValue("wasInCutmode", wasInCutmode);
+	public void setStoryName(String storyName) {
+		this.storyName = storyName;
+	}
 
-		if (cb == null && sCb != null)
-			cb = ActionCallbackSerializer.find(w, sCb);
-
-		if (cb != null)
-			json.writeValue("cb", ActionCallbackSerializer.find(w, cb));
-
-		// SAVE ACTIONS
-		json.writeArrayStart("actions");
-		for (Action a : actions) {
-			ActionUtils.writeJson(a, json);
-		}
-		json.writeArrayEnd();
-
-		json.writeValue("ip", ip);
-
-		json.writeArrayStart("actionsSer");
-		for (Action a : actions) {
-			if (a instanceof Serializable) {
-				json.writeObjectStart();
-				((Serializable) a).write(json);
-				json.writeObjectEnd();
+	private void waitIfNotLoaded() {
+		if (loaderThread != null && loaderThread.isAlive()) {
+			EngineLogger.debug(">>> Loader thread not finished. Waiting for it!!!");
+			try {
+				loaderThread.join();
+			} catch (InterruptedException e) {
 			}
 		}
-		json.writeArrayEnd();
+	}
 
-		// SAVE STORY
+	private void loadThreaded(final String story, final String state) {
+		loaderThread = new Thread() {
+			@Override
+			public void run() {
+				if (story != null)
+					loadStory(story);
+
+				if (state != null)
+					loadStoryState(state);
+			}
+		};
+
+		loaderThread.start();
+	}
+
+	@Override
+	public void write(Json json) {
+		BladeJson bjson = (BladeJson) json;
+		World w = bjson.getWorld();
+
 		json.writeValue("storyName", storyName);
 
-		if (story != null) {
-			try {
-				json.writeValue("story", story.getState().toJson());
-			} catch (Exception e) {
-				EngineLogger.error(e.getMessage(), e);
+		if (bjson.getMode() == Mode.STATE) {
+			json.writeValue("wasInCutmode", wasInCutmode);
+
+			if (cb == null && sCb != null)
+				cb = ActionCallbackSerializer.find(w, sCb);
+
+			if (cb != null)
+				json.writeValue("cb", ActionCallbackSerializer.find(w, cb));
+
+			// SAVE ACTIONS
+			json.writeArrayStart("actions");
+			for (Action a : actions) {
+				ActionUtils.writeJson(a, json);
+			}
+			json.writeArrayEnd();
+
+			json.writeValue("ip", ip);
+
+			json.writeArrayStart("actionsSer");
+			for (Action a : actions) {
+				if (a instanceof Serializable) {
+					json.writeObjectStart();
+					((Serializable) a).write(json);
+					json.writeObjectEnd();
+				}
+			}
+			json.writeArrayEnd();
+
+			// SAVE STORY
+			if (story != null) {
+				try {
+					json.writeValue("story", story.getState().toJson());
+				} catch (Exception e) {
+					EngineLogger.error(e.getMessage(), e);
+				}
 			}
 		}
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		wasInCutmode = json.readValue("wasInCutmode", Boolean.class, jsonData);
-		sCb = json.readValue("cb", String.class, jsonData);
+		BladeJson bjson = (BladeJson) json;
+		World w = bjson.getWorld();
 
-		// READ ACTIONS
-		actions.clear();
-		JsonValue actionsValue = jsonData.get("actions");
-		for (int i = 0; i < actionsValue.size; i++) {
-			JsonValue aValue = actionsValue.get(i);
+		final String name = json.readValue("storyName", String.class, jsonData);
 
-			Action a = ActionUtils.readJson(w, json, aValue);
-			actions.add(a);
-		}
-
-		ip = json.readValue("ip", Integer.class, jsonData);
-
-		actionsValue = jsonData.get("actionsSer");
-
-		int i = 0;
-
-		for (Action a : actions) {
-			if (a instanceof Serializable && i < actionsValue.size) {
-				if (actionsValue.get(i) == null)
-					break;
-
-				((Serializable) a).read(json, actionsValue.get(i));
-				i++;
+		if (bjson.getMode() == Mode.MODEL) {
+			if (name != null) {
+				loadThreaded(name, null);
 			}
-		}
+		} else {
+			wasInCutmode = json.readValue("wasInCutmode", Boolean.class, jsonData);
+			sCb = json.readValue("cb", String.class, jsonData);
 
-		// READ STORY
-		String storyName = json.readValue("storyName", String.class, jsonData);
-		String storyString = json.readValue("story", String.class, jsonData);
-		if (storyString != null) {
-			loadStory(storyName, storyString);
+			// READ ACTIONS
+			actions.clear();
+			JsonValue actionsValue = jsonData.get("actions");
+			for (int i = 0; i < actionsValue.size; i++) {
+				JsonValue aValue = actionsValue.get(i);
+
+				Action a = ActionUtils.readJson(w, json, aValue);
+				actions.add(a);
+			}
+
+			ip = json.readValue("ip", Integer.class, jsonData);
+
+			actionsValue = jsonData.get("actionsSer");
+
+			int i = 0;
+
+			for (Action a : actions) {
+				if (a instanceof Serializable && i < actionsValue.size) {
+					if (actionsValue.get(i) == null)
+						break;
+
+					((Serializable) a).read(json, actionsValue.get(i));
+					i++;
+				}
+			}
+
+			// READ STORY
+			final String storyString = json.readValue("story", String.class, jsonData);
+			if (storyString != null) {
+				waitIfNotLoaded();
+
+				if (!name.equals(storyName)) {
+					EngineLogger.debug("Different story than the specified in chapter. Loading..." + name);
+					loadThreaded(name, storyString);
+				} else {
+					// load only the state because the story was loaded with the model
+					loadThreaded(null, storyString);
+				}
+			}
 		}
 	}
 }

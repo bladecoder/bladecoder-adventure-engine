@@ -34,16 +34,21 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ElementUtils;
@@ -59,18 +64,33 @@ public class SceneList extends ModelList<World, Scene> {
 
 	private ImageButton initBtn;
 	private SelectBox<String> chapters;
-	private HashMap<String, TextureRegion> bgIconCache = new HashMap<String, TextureRegion>();
+	private HashMap<String, TextureRegion> bgIconCache = new HashMap<>();
 	private boolean disposeBgCache = false;
 
-	public SceneList(Skin skin) {
+	public SceneList(final Skin skin) {
 		super(skin, true);
 
 		HorizontalGroup chapterPanel = new HorizontalGroup();
-		chapters = new SelectBox<String>(skin);
-		chapters.setFillParent(true);
+		chapterPanel.padRight(DPIUtils.MARGIN_SIZE);
+
+		chapters = new SelectBox<>(skin);
+		// chapters.setFillParent(true);
+		TextButton inkBtn = new TextButton("Ink", skin, "no-toggled");
+
+		TextTooltip t = new TextTooltip("Sets the Ink Story file", skin);
+		inkBtn.addListener(t);
+
+		inkBtn.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				EditInkDialog dialog = new EditInkDialog(skin);
+				dialog.show(getStage());
+			}
+		});
 
 		chapterPanel.addActor(new Label("CHAPTER ", skin, "big"));
 		chapterPanel.addActor(chapters);
+		chapterPanel.addActor(inkBtn);
 
 		clearChildren();
 
@@ -150,12 +170,12 @@ public class SceneList extends ModelList<World, Scene> {
 	ChangeListener chapterListener = new ChangeListener() {
 		@Override
 		public void changed(ChangeEvent event, Actor actor) {
-			String selChapter = (String) chapters.getSelected();
+			String selChapter = chapters.getSelected();
 
 			if (selChapter != null) {
-				
-				 if(selChapter.equals(Ctx.project.getChapter().getId()))
-					 return;
+
+				if (selChapter.equals(Ctx.project.getChapter().getId()))
+					return;
 
 				// Save the project when changing chapter
 				try {
@@ -197,8 +217,8 @@ public class SceneList extends ModelList<World, Scene> {
 	};
 
 	public void addChapters() {
-		Array<String> array = new Array<String>();
-		
+		Array<String> array = new Array<>();
+
 		if (Ctx.project.isLoaded()) {
 
 			String[] nl = Ctx.project.getChapter().getChapters();

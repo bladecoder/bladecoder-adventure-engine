@@ -85,7 +85,7 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class DefaultSceneScreen implements SceneScreen {
-	private final static float LOADING_WAIT_TIME_MS = 500f;
+	private final static float LOADING_WAIT_TIME_MS = 400f;
 
 	private UI ui;
 
@@ -353,7 +353,8 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		@Override
 		public void pause(boolean value) {
-			updateUI();
+			if (ui.getWorld().getAssetState() == AssetState.LOADED)
+				updateUI();
 		}
 	};
 
@@ -411,6 +412,10 @@ public class DefaultSceneScreen implements SceneScreen {
 	private void updateUI() {
 		World w = ui.getWorld();
 
+		if (w.getAssetState() == null || w.getAssetState() == AssetState.LOAD_ASSETS
+				|| w.getAssetState() == AssetState.LOAD_ASSETS_AND_INIT_SCENE)
+			return;
+
 		if (uiMode == UIModes.PIE && pie.isVisible())
 			pie.hide();
 
@@ -425,6 +430,8 @@ public class DefaultSceneScreen implements SceneScreen {
 
 			inventoryUI.cancelDragging();
 			uiEnabled = false;
+
+			EngineLogger.debug("Updating UI: DISABLED.");
 		} else {
 			if (ui.getWorld().hasDialogOptions()) {
 				inventoryUI.hide();
@@ -438,6 +445,8 @@ public class DefaultSceneScreen implements SceneScreen {
 			}
 
 			uiEnabled = true;
+
+			EngineLogger.debug("Updating UI: ENABLED.");
 		}
 	}
 
@@ -468,16 +477,7 @@ public class DefaultSceneScreen implements SceneScreen {
 				return;
 		}
 
-		AssetState assetState = world.getAssetState();
-
 		if (world.getAssetState() != AssetState.LOADED) {
-
-			updateUI();
-
-			if (assetState == AssetState.LOAD_ASSETS || assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
-				// update() to set LOADING state
-				world.update(0);
-			}
 
 			// TRY TO LOAD THE ASSETS FOR LOADING_WAIT_TIME_MS TO AVOID
 			// BLACK/LOADING SCREEN
@@ -491,6 +491,8 @@ public class DefaultSceneScreen implements SceneScreen {
 				// Sets loading screen if resources are not loaded yet
 				ui.setCurrentScreen(Screens.LOADING_SCREEN);
 			} else {
+				updateUI();
+
 				world.resize(viewport.getWorldWidth(), viewport.getWorldHeight());
 
 				// update() to retrieve assets and exec init verb
@@ -1004,14 +1006,11 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		ui.getWorld().setListener(worldListener);
 		ui.getWorld().resume();
-
-		updateUI();
 	}
 
 	@Override
 	public void hide() {
 		ui.getWorld().pause();
-		updateUI();
 		// dispose();
 	}
 
