@@ -530,6 +530,7 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	private void loadThreaded(final String story, final String state) {
+		EngineLogger.debug("LOADING INK STORY: " + story + (state == null ? "" : " WITH SAVED STATE."));
 		loaderThread = new Thread() {
 			@Override
 			public void run() {
@@ -598,7 +599,10 @@ public class InkManager implements VerbRunner, Serializable {
 		final String name = json.readValue("storyName", String.class, jsonData);
 
 		if (bjson.getMode() == Mode.MODEL) {
-			if (name != null) {
+			// Only load in new game.
+			// If assetState is not null means that we are not loading a saved
+			// game and we will load the story in the STATE mode.
+			if (name != null && w.getAssetState() == null) {
 				loadThreaded(name, null);
 			}
 		} else {
@@ -634,15 +638,7 @@ public class InkManager implements VerbRunner, Serializable {
 			// READ STORY
 			final String storyString = json.readValue("story", String.class, jsonData);
 			if (storyString != null) {
-				waitIfNotLoaded();
-
-				if (!name.equals(storyName)) {
-					EngineLogger.debug("Different story than the specified in chapter. Loading..." + name);
-					loadThreaded(name, storyString);
-				} else {
-					// load only the state because the story was loaded with the model
-					loadThreaded(null, storyString);
-				}
+				loadThreaded(name, storyString);
 			}
 		}
 	}
