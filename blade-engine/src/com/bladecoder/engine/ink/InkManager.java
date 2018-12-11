@@ -599,6 +599,7 @@ public class InkManager implements VerbRunner, Serializable {
 		final String name = json.readValue("storyName", String.class, jsonData);
 
 		if (bjson.getMode() == Mode.MODEL) {
+			story = null;
 			// Only load in new game.
 			// If assetState is not null means that we are not loading a saved
 			// game and we will load the story in the STATE mode.
