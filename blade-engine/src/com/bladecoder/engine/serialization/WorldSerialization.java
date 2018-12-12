@@ -123,6 +123,17 @@ public class WorldSerialization implements Serializable {
 		loadChapter(null, null, true);
 	}
 
+	/**
+	 * Loads a JSON chapter file.
+	 * 
+	 * @param chapterName
+	 *            filename without path and extension.
+	 * @param scene
+	 *            the init scene. null to use the chapter defined init scene.
+	 * @param initScene
+	 *            false only when it comes from loading a saved game.
+	 * @throws IOException
+	 */
 	public void loadChapter(String chapterName, String scene, boolean initScene) throws IOException {
 		if (!w.isDisposed())
 			w.dispose();
@@ -139,7 +150,7 @@ public class WorldSerialization implements Serializable {
 			JsonValue root = new JsonReader().parse(EngineAssetManager.getInstance()
 					.getModelFile(chapterName + EngineAssetManager.CHAPTER_EXT).reader("UTF-8"));
 
-			Json json = new BladeJson(w, Mode.MODEL);
+			Json json = new BladeJson(w, Mode.MODEL, initScene);
 			json.setIgnoreUnknownFields(true);
 
 			read(json, root);
