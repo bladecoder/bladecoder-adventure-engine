@@ -53,6 +53,7 @@ public class EditInkDialog extends EditDialog {
 	@Override
 	protected void ok() {
 		Ctx.project.getWorld().getInkManager().setStoryName(inkStory.getText());
+		Ctx.project.setModified();
 	}
 
 	private String[] getInkFiles() {

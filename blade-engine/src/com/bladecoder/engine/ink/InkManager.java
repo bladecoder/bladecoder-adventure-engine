@@ -600,7 +600,7 @@ public class InkManager implements VerbRunner, Serializable {
 
 		if (bjson.getMode() == Mode.MODEL) {
 			story = null;
-			storyName = null;
+			storyName = name;
 
 			// Only load in new game.
 			// If the SAVED_GAME_VERSION property exists we are loading a saved
