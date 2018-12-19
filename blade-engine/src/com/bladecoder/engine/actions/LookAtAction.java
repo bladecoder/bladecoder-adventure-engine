@@ -29,10 +29,10 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Shows the text and puts the player looking at the selected actor direction")
 public class LookAtAction implements Action {
 	public enum Direction {
-		EMPTY(null), FRONT(AnimationRenderer.FRONT), BACK(AnimationRenderer.BACK), 
-		LEFT(AnimationRenderer.LEFT), RIGHT(AnimationRenderer.RIGHT), FRONTLEFT(AnimationRenderer.FRONTLEFT), 
-		FRONTRIGHT(AnimationRenderer.FRONTRIGHT), BACKLEFT(AnimationRenderer.BACKLEFT), 
-		BACKRIGHT(AnimationRenderer.BACKRIGHT);
+		EMPTY(null), FRONT(AnimationRenderer.FRONT), BACK(AnimationRenderer.BACK), LEFT(AnimationRenderer.LEFT), RIGHT(
+				AnimationRenderer.RIGHT), FRONTLEFT(AnimationRenderer.FRONTLEFT), FRONTRIGHT(
+						AnimationRenderer.FRONTRIGHT), BACKLEFT(
+								AnimationRenderer.BACKLEFT), BACKRIGHT(AnimationRenderer.BACKRIGHT);
 
 		private final String direction;
 
@@ -64,9 +64,9 @@ public class LookAtAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is shown and the action continues inmediatly")
 	private boolean wait = true;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
@@ -85,13 +85,12 @@ public class LookAtAction implements Action {
 				player.lookat(direction.getDirection());
 			else if (a != null && player != null) {
 				Rectangle bbox = a.getBBox().getBoundingRectangle();
-				player.lookat(new Vector2(bbox.x, bbox.y));
+				player.lookat(new Vector2(bbox.width / 2 + bbox.x, bbox.y));
 			}
 		}
 
 		if (text != null) {
-			String actorId = w.getCurrentScene().getPlayer() != null
-					? w.getCurrentScene().getPlayer().getId() : null;
+			String actorId = w.getCurrentScene().getPlayer() != null ? w.getCurrentScene().getPlayer().getId() : null;
 
 			w.getCurrentScene().getTextManager().addText(text, TextManager.POS_SUBTITLE, TextManager.POS_SUBTITLE,
 					false, Text.Type.SUBTITLE, null, null, actorId, voiceId, null, wait ? cb : null);

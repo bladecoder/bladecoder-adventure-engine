@@ -97,7 +97,7 @@ public class CharacterActor extends SpriteActor {
 
 	public void addDialog(Dialog d) {
 		if (dialogs == null)
-			dialogs = new HashMap<String, Dialog>();
+			dialogs = new HashMap<>();
 
 		dialogs.put(d.getId(), d);
 	}
@@ -206,7 +206,7 @@ public class CharacterActor extends SpriteActor {
 		if (scene.getWalkZone() != null && !ignoreWalkZone) {
 			walkingPath = scene.getPolygonalNavGraph().findPath(p0.x, p0.y, pf.x, pf.y);
 		} else {
-			walkingPath = new ArrayList<Vector2>(2);
+			walkingPath = new ArrayList<>(2);
 			walkingPath.add(p0);
 			walkingPath.add(new Vector2(pf));
 		}
@@ -262,13 +262,13 @@ public class CharacterActor extends SpriteActor {
 	@Override
 	public void write(Json json) {
 		super.write(json);
-		
-		if(dialogs != null)
+
+		if (dialogs != null)
 			json.writeValue("dialogs", dialogs, HashMap.class, Dialog.class);
 
 		BladeJson bjson = (BladeJson) json;
 		if (bjson.getMode() == Mode.MODEL) {
-			if(textStyle != null)
+			if (textStyle != null)
 				json.writeValue("textStyle", textStyle);
 		} else {
 			json.writeValue("standAnim", standAnim);
@@ -277,13 +277,14 @@ public class CharacterActor extends SpriteActor {
 		}
 
 		json.writeValue("walkingSpeed", walkingSpeed);
-		
-		if(textColor != null)
+
+		if (textColor != null)
 			json.writeValue("textColor", textColor);
-		
-		if(talkingTextPos != null) {
+
+		if (talkingTextPos != null) {
 			float worldScale = EngineAssetManager.getInstance().getScale();
-			json.writeValue("talkingTextPos", new Vector2(talkingTextPos.x / worldScale, talkingTextPos.y / worldScale));
+			json.writeValue("talkingTextPos",
+					new Vector2(talkingTextPos.x / worldScale, talkingTextPos.y / worldScale));
 		}
 	}
 
@@ -324,8 +325,8 @@ public class CharacterActor extends SpriteActor {
 		walkingSpeed = json.readValue("walkingSpeed", float.class, walkingSpeed, jsonData);
 		textColor = json.readValue("textColor", Color.class, jsonData);
 		talkingTextPos = json.readValue("talkingTextPos", Vector2.class, jsonData);
-		
-		if(talkingTextPos != null) {
+
+		if (talkingTextPos != null) {
 			float worldScale = EngineAssetManager.getInstance().getScale();
 			talkingTextPos.x *= worldScale;
 			talkingTextPos.y *= worldScale;
