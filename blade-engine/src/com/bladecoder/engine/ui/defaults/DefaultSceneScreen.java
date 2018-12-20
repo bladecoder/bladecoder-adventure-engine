@@ -143,7 +143,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 			World w = ui.getWorld();
 
-			if (w.isPaused() || recorder.isPlaying() || testerBot.isEnabled())
+			if (w.getAssetState() != AssetState.LOADED || w.isPaused() || recorder.isPlaying() || testerBot.isEnabled())
 				return true;
 
 			if (pie.isVisible()) {

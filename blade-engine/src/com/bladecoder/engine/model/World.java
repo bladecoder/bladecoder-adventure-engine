@@ -516,13 +516,13 @@ public class World implements AssetConsumer {
 
 		getSceneCamera().getInputUnProject(v, unprojectTmp);
 
-		InteractiveActor a = currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
+		// search first in ui actors
+		InteractiveActor a = uiActors.getActorAtInput(v);
 
 		if (a != null)
 			return a;
 
-		// search in uiActors
-		return uiActors.getActorAtInput(v);
+		return currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
 	}
 
 	public int getWidth() {
