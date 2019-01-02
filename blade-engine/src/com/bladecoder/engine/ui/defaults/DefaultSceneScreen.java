@@ -232,9 +232,6 @@ public class DefaultSceneScreen implements SceneScreen {
 			case '2':
 				EngineLogger.setDebugLevel(EngineLogger.DEBUG1);
 				break;
-			case '3':
-				EngineLogger.setDebugLevel(EngineLogger.DEBUG2);
-				break;
 			case 'f':
 				// ui.toggleFullScreen();
 				break;
@@ -468,9 +465,10 @@ public class DefaultSceneScreen implements SceneScreen {
 
 	private void update(float delta) {
 		final World world = ui.getWorld();
+		float deltaScaled = delta * speed;
 
 		if (!world.isDisposed()) {
-			world.update(delta * speed);
+			world.update(deltaScaled);
 
 			// if the game ends returns
 			if (world.isDisposed())
@@ -507,8 +505,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		if (world.isPaused())
 			return;
 
-		recorder.update(delta * speed);
-		testerBot.update(delta * speed);
+		recorder.update(deltaScaled);
+		testerBot.update(deltaScaled);
 
 		InteractiveActor actorUnderCursor = null;
 
@@ -684,12 +682,6 @@ public class DefaultSceneScreen implements SceneScreen {
 			color = Color.RED;
 		} else {
 
-			// sbTmp.append("( ");
-			// sbTmp.append((int) unprojectTmp.x);
-			// sbTmp.append(", ");
-			// sbTmp.append((int) unprojectTmp.y);
-			// sbTmp.append(") FPS:");
-			// sbTmp.append(Gdx.graphics.getFramesPerSecond());
 			// sbTmp.append(" Density:");
 			// sbTmp.append(Gdx.graphics.getDensity());
 			// sbTmp.append(" UI Multiplier:");
@@ -705,10 +697,32 @@ public class DefaultSceneScreen implements SceneScreen {
 
 			sbTmp.append(time);
 
-			// if (w.getCurrentScene().getPlayer() != null) {
-			// sbTmp.append(" Depth Scl: ");
-			// sbTmp.append(w.getCurrentScene().getFakeDepthScale(unprojectTmp.y));
-			// }
+			if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
+				if (w.inCutMode()) {
+					sbTmp.append(" CUT_MODE ");
+				} else if (w.hasDialogOptions()) {
+					sbTmp.append(" DIALOG_MODE ");
+				} else if (w.isPaused()) {
+					sbTmp.append(" PAUSED ");
+				}
+
+				sbTmp.append(" ( ");
+				sbTmp.append((int) unprojectTmp.x);
+				sbTmp.append(", ");
+				sbTmp.append((int) unprojectTmp.y);
+				sbTmp.append(") FPS:");
+				sbTmp.append(Gdx.graphics.getFramesPerSecond());
+
+				if (w.getCurrentScene().getState() != null) {
+					sbTmp.append(" Scn State: ");
+					sbTmp.append(w.getCurrentScene().getState());
+				}
+
+				if (w.getCurrentScene().getPlayer() != null) {
+					sbTmp.append(" Depth Scl: ");
+					sbTmp.append(w.getCurrentScene().getFakeDepthScale(unprojectTmp.y));
+				}
+			}
 
 			color = Color.WHITE;
 		}

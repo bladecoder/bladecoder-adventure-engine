@@ -42,21 +42,21 @@ public class TesterBot {
 	private float maxWaitInverval = 1f;
 	private float waitInverval = 0f;
 	private float deltaTime = 0f;
-	
+
 	/** Min. time to stay in scene before leave */
 	private float inSceneTime = 20;
 	private float inSceneTimeDelta = 0f;
 
 	private Vector2 gotoVector = new Vector2();
-	
+
 	private boolean enabled = false;
 	private boolean runLeaveVerbs = true;
 	private boolean runGoto = false;
 	private boolean passTexts = true;
 	private boolean waitWhenWalking = true;
-	
-	private final ArrayList<String> excludeList = new ArrayList<String>();
-	
+
+	private final ArrayList<String> excludeList = new ArrayList<>();
+
 	private final boolean inventoryAction;
 	private final World w;
 
@@ -66,33 +66,34 @@ public class TesterBot {
 	}
 
 	public void update(float d) {
-		
-		if(!enabled)
+
+		if (!enabled)
 			return;
 
 		deltaTime += d;
 		inSceneTimeDelta += d;
 
-		if(w.inCutMode() && isPassTexts())
+		if (w.inCutMode() && isPassTexts())
 			w.getCurrentScene().getTextManager().next();
-		
+
 		if (deltaTime > waitInverval && !w.inCutMode()) {
 			deltaTime = 0;
 			waitInverval = MathUtils.random(maxWaitInverval);
-			
+
 			boolean isWalking = false;
 			SpriteActor player = w.getCurrentScene().getPlayer();
-			if(player != null) {
-				if(((AnimationRenderer)player.getRenderer()).getCurrentAnimationId().startsWith(CharacterActor.DEFAULT_WALK_ANIM))
+			if (player != null) {
+				if (((AnimationRenderer) player.getRenderer()).getCurrentAnimationId()
+						.startsWith(CharacterActor.DEFAULT_WALK_ANIM))
 					isWalking = true;
 			}
-			
-			if(isWaitWhenWalking() && isWalking)
+
+			if (isWaitWhenWalking() && isWalking)
 				return;
-			
+
 			Scene s = w.getCurrentScene();
 
-			if (w.getCurrentDialog() == null) {
+			if (!w.hasDialogOptions()) {
 
 				// Select actor or goto
 				boolean chooseActor = MathUtils.randomBoolean(.75f);
@@ -106,16 +107,15 @@ public class TesterBot {
 						// SCENE ACTOR
 						int pos = MathUtils.random(s.getActors().size() - 1);
 						BaseActor a = (BaseActor) (s.getActors().values().toArray()[pos]);
-						
-						if(!(a instanceof InteractiveActor))
-							return;
-						
-						InteractiveActor scnActor = (InteractiveActor)a;
 
-						if (excludeList.contains(scnActor.getId()) || !scnActor.isVisible() || 
-								!scnActor.canInteract())
+						if (!(a instanceof InteractiveActor))
 							return;
-						
+
+						InteractiveActor scnActor = (InteractiveActor) a;
+
+						if (excludeList.contains(scnActor.getId()) || !scnActor.canInteract())
+							return;
+
 						String verb;
 
 						if (scnActor.getVerb(Verb.LEAVE_VERB) != null) {
@@ -124,24 +124,23 @@ public class TesterBot {
 							// LOOKAT
 							verb = Verb.LOOKAT_VERB;
 						} else {
-							// ACTION			
-							verb = scnActor.getVerb(Verb.TALKTO_VERB) != null ? Verb.TALKTO_VERB
-									: Verb.PICKUP_VERB;
+							// ACTION
+							verb = scnActor.getVerb(Verb.TALKTO_VERB) != null ? Verb.TALKTO_VERB : Verb.PICKUP_VERB;
 						}
-						
-						if(!(verb.equals(Verb.LEAVE_VERB) && (!runLeaveVerbs || inSceneTime > inSceneTimeDelta))) {
+
+						if (!(verb.equals(Verb.LEAVE_VERB) && (!runLeaveVerbs || inSceneTime > inSceneTimeDelta))) {
 							EngineLogger.debug("<TESTERBOT>: " + scnActor.getId() + "::" + verb);
 							scnActor.runVerb(verb);
-							
-							if(verb.equals(Verb.LEAVE_VERB))
+
+							if (verb.equals(Verb.LEAVE_VERB))
 								inSceneTimeDelta = 0;
 						}
 					} else if (w.getInventory().getNumItems() > 0 && w.getInventory().isVisible()) {
 						// INVENTORY ACTOR
 						int pos = MathUtils.random(w.getInventory().getNumItems() - 1);
 						SpriteActor invActor = w.getInventory().get(pos);
-						
-						if(excludeList.contains(invActor.getId()))
+
+						if (excludeList.contains(invActor.getId()))
 							return;
 
 						// Select lookat, action or use
@@ -165,28 +164,31 @@ public class TesterBot {
 									pos2 = (pos2 + 1) % w.getInventory().getNumItems();
 
 								targetActor = w.getInventory().get(pos2);
-								
-								if(excludeList.contains(targetActor.getId()))
+
+								if (excludeList.contains(targetActor.getId()))
 									return;
-								
-								EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.USE_VERB + "::" + targetActor.getId());
-								
-								if(invActor.getVerb(Verb.USE_VERB, targetActor.getId()) != null)
+
+								EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.USE_VERB
+										+ "::" + targetActor.getId());
+
+								if (invActor.getVerb(Verb.USE_VERB, targetActor.getId()) != null)
 									invActor.runVerb(Verb.USE_VERB, targetActor.getId());
 								else
 									targetActor.runVerb(Verb.USE_VERB, invActor.getId());
 							} else {
 								int pos2 = MathUtils.random(s.getActors().size() - 1);
-								
-								if(!(s.getActors().values().toArray()[pos2] instanceof InteractiveActor))
+
+								if (!(s.getActors().values().toArray()[pos2] instanceof InteractiveActor))
 									return;
-								
+
 								targetActor = (InteractiveActor) (s.getActors().values().toArray()[pos2]);
 
-								if (!excludeList.contains(targetActor.getId()) && targetActor.isVisible() && targetActor.canInteract()) {
-									EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::" + Verb.USE_VERB + "::" + targetActor.getId());
-									
-									if(invActor.getVerb(Verb.USE_VERB, targetActor.getId()) != null)
+								if (!excludeList.contains(targetActor.getId()) && targetActor.isVisible()
+										&& targetActor.canInteract()) {
+									EngineLogger.debug("<TESTERBOT> INVENTORY: " + invActor.getId() + "::"
+											+ Verb.USE_VERB + "::" + targetActor.getId());
+
+									if (invActor.getVerb(Verb.USE_VERB, targetActor.getId()) != null)
 										invActor.runVerb(Verb.USE_VERB, targetActor.getId());
 									else
 										targetActor.runVerb(Verb.USE_VERB, invActor.getId());
@@ -210,21 +212,21 @@ public class TesterBot {
 			} else {
 				// DIALOG MODE
 				List<String> visibleOptions = w.getDialogOptions();
-						
-				if(visibleOptions.size() > 0) {
+
+				if (visibleOptions.size() > 0) {
 					int pos = MathUtils.random(visibleOptions.size() - 1);
 					EngineLogger.debug("<TESTERBOT> SELECT OPTION: " + pos);
 					w.selectDialogOption(pos);
 				}
 			}
-		} 
+		}
 	}
-	
+
 	public void draw(SpriteBatch batch) {
 		if (enabled) {
 			// TODO draw bot icon
 		}
-	}	
+	}
 
 	public boolean isEnabled() {
 		return enabled;
@@ -232,8 +234,8 @@ public class TesterBot {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-		
-		if(enabled)
+
+		if (enabled)
 			EngineLogger.debug("<TESTERBOT> BOT ENABLED...");
 		else
 			EngineLogger.debug("<TESTERBOT> BOT DISABLED...");
@@ -258,13 +260,13 @@ public class TesterBot {
 	public float getMaxWaitInverval() {
 		return maxWaitInverval;
 	}
-	
+
 	public void setMaxWaitInverval(float maxWaitInverval) {
-		this.maxWaitInverval =  maxWaitInverval;
+		this.maxWaitInverval = maxWaitInverval;
 	}
 
 	public float getInSceneTime() {
-		return inSceneTime ;
+		return inSceneTime;
 	}
 
 	public void setInSceneTime(float inSceneTime) {
@@ -286,26 +288,26 @@ public class TesterBot {
 	public void setWaitWhenWalking(boolean waitWhenWalking) {
 		this.waitWhenWalking = waitWhenWalking;
 	}
-	
+
 	public String getExcludeList() {
 		StringBuilder s = new StringBuilder();
-		
-		for(int i = 0; i < excludeList.size(); i++) {
+
+		for (int i = 0; i < excludeList.size(); i++) {
 			s.append(excludeList.get(i));
-			
-			if(i < excludeList.size() - 1)
+
+			if (i < excludeList.size() - 1)
 				s.append(',');
 		}
-		
+
 		return s.toString();
 	}
-	
+
 	public void setExcludeList(String l) {
 		String[] split = l.split(",");
-		
+
 		excludeList.clear();
-		
-		for(int i = 0; i < split.length; i++)
+
+		for (int i = 0; i < split.length; i++)
 			excludeList.add(split[i].trim());
 	}
 }

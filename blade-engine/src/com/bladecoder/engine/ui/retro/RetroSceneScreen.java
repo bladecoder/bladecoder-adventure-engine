@@ -106,7 +106,7 @@ public class RetroSceneScreen implements SceneScreen {
 	private final GlyphLayout textLayout = new GlyphLayout();
 
 	private Pointer pointer;
-	
+
 	private boolean uiEnabled = true;
 
 	private final GestureDetector inputProcessor = new GestureDetector(new GestureDetector.GestureAdapter() {
@@ -188,9 +188,6 @@ public class RetroSceneScreen implements SceneScreen {
 			case '2':
 				EngineLogger.setDebugLevel(EngineLogger.DEBUG1);
 				break;
-			case '3':
-				EngineLogger.setDebugLevel(EngineLogger.DEBUG2);
-				break;
 			case 'f':
 				// ui.toggleFullScreen();
 				break;
@@ -244,7 +241,7 @@ public class RetroSceneScreen implements SceneScreen {
 			return false;
 		}
 	};
-	
+
 	private final WorldListener worldListener = new WorldListener() {
 		@Override
 		public void text(Text t) {
@@ -295,10 +292,11 @@ public class RetroSceneScreen implements SceneScreen {
 		worldViewport.setCamera(screenViewport.getCamera());
 	}
 
+	@Override
 	public UI getUI() {
 		return ui;
 	}
-	
+
 	private void updateUI() {
 		World w = ui.getWorld();
 
@@ -314,13 +312,13 @@ public class RetroSceneScreen implements SceneScreen {
 				verbUI.hide();
 			} else {
 				dialogUI.setVisible(false);
-				
+
 				if (w.getInventory().isVisible())
 					verbUI.show();
 				else
 					verbUI.hide();
 			}
-			
+
 			pointer.show();
 			uiEnabled = true;
 		}
@@ -332,10 +330,12 @@ public class RetroSceneScreen implements SceneScreen {
 	 * @param s
 	 *            The multiplier speed. ej. 2.0
 	 */
+	@Override
 	public void setSpeed(float s) {
 		speed = s;
 	}
 
+	@Override
 	public float getSpeed() {
 		return speed;
 	}
@@ -581,19 +581,16 @@ public class RetroSceneScreen implements SceneScreen {
 		pointer.resize();
 
 		verbUI.setSize(screenViewport.getScreenWidth(), screenViewport.getScreenHeight() * UI_SCREEN_PERCENT);
-		
+
 		float size = DPIUtils.getPrefButtonSize();
 		float margin = DPIUtils.getMarginSize();
-		
+
 		menuButton.setSize(size, size);
-		menuButton.setPosition(
-				stage.getViewport().getScreenWidth() - menuButton.getWidth()
-						- margin, stage.getViewport()
-						.getScreenHeight()
-						- menuButton.getHeight()
-						- margin);
+		menuButton.setPosition(stage.getViewport().getScreenWidth() - menuButton.getWidth() - margin,
+				stage.getViewport().getScreenHeight() - menuButton.getHeight() - margin);
 	}
 
+	@Override
 	public void dispose() {
 		renderer.dispose();
 		stage.dispose();
@@ -633,6 +630,7 @@ public class RetroSceneScreen implements SceneScreen {
 		}
 	}
 
+	@Override
 	public void actorClick(InteractiveActor a, int button) {
 		runVerb(a, verbUI.getCurrentVerb(), verbUI.getTarget());
 	}
@@ -644,6 +642,7 @@ public class RetroSceneScreen implements SceneScreen {
 	 * @param verb
 	 * @param target
 	 */
+	@Override
 	public void runVerb(InteractiveActor a, String verb, String target) {
 
 		if (recorder.isRecording()) {
@@ -663,8 +662,9 @@ public class RetroSceneScreen implements SceneScreen {
 		stage.addActor(menuButton);
 		stage.addActor(verbUI);
 		stage.addActor(pointer);
-		
+
 		menuButton.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
 			}
@@ -691,9 +691,9 @@ public class RetroSceneScreen implements SceneScreen {
 
 		ui.getWorld().setListener(worldListener);
 		ui.getWorld().resume();
-		
+
 		textManagerUI.setText(ui.getWorld().getCurrentScene().getTextManager().getCurrentText());
-		
+
 		updateUI();
 	}
 
@@ -714,10 +714,12 @@ public class RetroSceneScreen implements SceneScreen {
 		ui.getWorld().resume();
 	}
 
+	@Override
 	public Viewport getViewport() {
 		return screenViewport;
 	}
 
+	@Override
 	public InteractiveActor getCurrentActor() {
 		return currentActor;
 	}

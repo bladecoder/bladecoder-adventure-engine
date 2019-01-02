@@ -28,10 +28,9 @@ public class EngineLogger {
 
 	public static final int DEBUG0 = 0;
 	public static final int DEBUG1 = 1;
-	public static final int DEBUG2 = 2;
 
 	public static int debugLevel = DEBUG0;
-	
+
 	public static String lastError = null;
 	public static Exception lastException = null;
 	public static StringBuilder errorBuffer = new StringBuilder();
@@ -41,7 +40,7 @@ public class EngineLogger {
 	}
 
 	public static void error(String message) {
-		if(message != null) {
+		if (message != null) {
 			Gdx.app.error(TAG, message);
 			lastError = message;
 			lastException = null;
@@ -51,17 +50,17 @@ public class EngineLogger {
 
 	public static void error(String message, Exception e) {
 		error(message);
-		
-		if(e != null) {
+
+		if (e != null) {
 			Gdx.app.error(TAG, message, e);
 			lastError = message;
 			lastException = e;
 			errorBuffer.append(message);
-			
+
 			// print stack trace to buffer
 			Writer result = new StringWriter();
-		    PrintWriter printWriter = new PrintWriter(result);
-		    e.printStackTrace(printWriter);
+			PrintWriter printWriter = new PrintWriter(result);
+			e.printStackTrace(printWriter);
 			errorBuffer.append(result.toString());
 		}
 	}
@@ -89,7 +88,7 @@ public class EngineLogger {
 	public static void setDebugLevel(int level) {
 		debugLevel = level;
 	}
-	
+
 	public static void setDebug() {
 		level = Application.LOG_DEBUG;
 
