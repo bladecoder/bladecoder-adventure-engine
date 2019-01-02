@@ -839,6 +839,8 @@ public class Scene implements Serializable, AssetConsumer {
 
 			if (followActorId != null)
 				setCameraFollowActor((SpriteActor) actors.get(followActorId));
+			else
+				setCameraFollowActor(null);
 
 			soundManager.read(json, jsonData);
 
