@@ -276,7 +276,7 @@ public class WorldSerialization implements Serializable {
 					String.class);
 
 			if (w.getCurrentDialog() != null) {
-				json.writeValue("dialogActor", w.getCurrentDialog().getActor());
+				json.writeValue("dialogActor", w.getCurrentDialog().getActor().getId());
 				json.writeValue("currentDialog", w.getCurrentDialog().getId());
 			}
 
