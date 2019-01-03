@@ -16,15 +16,6 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
 }
 
-jar {
-  archiveName "${appName}-${version}.jar"
-  from { configurations.compile.collect { zipTree(it) } }
-  manifest {
-    attributes 'Main-Class': project.mainClassName
-  }
-}
-
-
 run {
     standardInput = System.in
     ignoreExitValue = true
@@ -48,3 +39,4 @@ task dist(type: Jar) {
 }
 
 dist.dependsOn classes
+dist.dependsOn ':core:jar'
