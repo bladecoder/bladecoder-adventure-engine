@@ -468,7 +468,8 @@ public class World implements AssetConsumer {
 				currentDialog = null;
 		}
 
-		listener.dialogOptions();
+		if (listener != null)
+			listener.dialogOptions();
 	}
 
 	public void setInventory(String inventory) {
