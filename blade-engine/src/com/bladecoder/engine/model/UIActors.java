@@ -14,10 +14,10 @@ import com.bladecoder.engine.actions.SceneActorRef;
 import com.bladecoder.engine.assets.AssetConsumer;
 
 public class UIActors implements AssetConsumer, Serializable {
-	private ArrayList<InteractiveActor> actors = new ArrayList<InteractiveActor>(0);
+	private ArrayList<InteractiveActor> actors = new ArrayList<>(0);
 
 	transient private boolean disposed = true;
-	private SceneCamera cam;
+	private final SceneCamera cam = new SceneCamera();
 	private World w;
 
 	public UIActors(World w) {
@@ -58,6 +58,10 @@ public class UIActors implements AssetConsumer, Serializable {
 		for (InteractiveActor a : actors) {
 			a.update(delta);
 		}
+	}
+
+	public void resize(float viewportWidth, float viewportHeight) {
+		cam.create(viewportWidth, viewportHeight);
 	}
 
 	public void draw(SpriteBatch batch) {
@@ -106,9 +110,6 @@ public class UIActors implements AssetConsumer, Serializable {
 			if (a instanceof SpriteActor)
 				((AssetConsumer) a).retrieveAssets();
 		}
-
-		cam = new SceneCamera();
-		cam.create(w.getWidth(), w.getHeight());
 
 		disposed = false;
 	}

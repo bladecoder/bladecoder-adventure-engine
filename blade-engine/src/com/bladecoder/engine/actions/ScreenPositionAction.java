@@ -33,22 +33,21 @@ public class ScreenPositionAction implements Action {
 	public enum Anchor {
 		NONE, CENTER, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP, BOTTOM, LEFT, RIGHT
 	}
-	
-	
-	@ActionProperty( required = true)
-	@ActionPropertyDescription("The target actor")	
+
+	@ActionProperty(required = true)
+	@ActionPropertyDescription("The target actor")
 	private SceneActorRef actor;
 
-	@ActionProperty( required = true)
+	@ActionProperty(required = true)
 	@ActionPropertyDescription("The position to set")
 	private Vector2 position;
-	
+
 	@ActionProperty(defaultValue = "NONE")
 	@ActionPropertyDescription("The position can be relative to an anchor.")
 	private Anchor anchor = Anchor.NONE;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
@@ -62,51 +61,49 @@ public class ScreenPositionAction implements Action {
 
 		if (position != null) {
 			float scale = EngineAssetManager.getInstance().getScale();
-			
-			Viewport viewport = ((SceneScreen)BladeEngine.getAppUI().getScreen(Screens.SCENE_SCREEN)).getViewport();
-			
+
+			Viewport viewport = ((SceneScreen) BladeEngine.getAppUI().getScreen(Screens.SCENE_SCREEN)).getViewport();
+
 			Vector3 v = new Vector3(position.x * scale, position.y * scale, 0);
-			
-			if(anchor == Anchor.CENTER) {
+
+			if (anchor == Anchor.CENTER) {
 				v.x += viewport.getWorldWidth() / 2;
 				v.y += viewport.getWorldHeight() / 2;
-			} else if(anchor == Anchor.TOP_LEFT) {
+			} else if (anchor == Anchor.TOP_LEFT) {
 				v.x += 0;
-				v.y += viewport.getWorldHeight();		
-			} else if(anchor == Anchor.TOP_RIGHT) {
+				v.y += viewport.getWorldHeight();
+			} else if (anchor == Anchor.TOP_RIGHT) {
 				v.x += viewport.getWorldWidth();
-				v.y += viewport.getWorldHeight();				
-			} else if(anchor == Anchor.BOTTOM_RIGHT) {
+				v.y += viewport.getWorldHeight();
+			} else if (anchor == Anchor.BOTTOM_RIGHT) {
 				v.x += viewport.getWorldWidth();
 				v.y += 0;
-			} else if(anchor == Anchor.BOTTOM_LEFT) {
+			} else if (anchor == Anchor.BOTTOM_LEFT) {
 				v.x += 0;
 				v.y += 0;
-			} else if(anchor == Anchor.TOP) {
+			} else if (anchor == Anchor.TOP) {
 				v.x += viewport.getWorldWidth() / 2;
 				v.y += viewport.getWorldHeight();
-			} else if(anchor == Anchor.BOTTOM) {
+			} else if (anchor == Anchor.BOTTOM) {
 				v.x += viewport.getWorldWidth() / 2;
 				v.y += 0;
-			} else if(anchor == Anchor.LEFT) {
+			} else if (anchor == Anchor.LEFT) {
 				v.x += 0;
 				v.y += viewport.getWorldHeight() / 2;
-			} else if(anchor == Anchor.RIGHT) {
+			} else if (anchor == Anchor.RIGHT) {
 				v.x += viewport.getWorldWidth();
 				v.y += viewport.getWorldHeight() / 2;
 			}
-			
-//			viewport.project(v);
-			
+
+			// viewport.project(v);
+
 			v.x *= viewport.getScreenWidth() / viewport.getWorldWidth();
-			v.y *= viewport.getScreenHeight() /  viewport.getWorldHeight();
-			
-//			v.y = viewport.getScreenHeight() - v.y;
-			v.y = Gdx.graphics.getHeight() - v.y;		
-			
-			w.getCurrentScene().getCamera().
-				unproject(v, 0, 0, 
-					viewport.getScreenWidth(), viewport.getScreenHeight());	
+			v.y *= viewport.getScreenHeight() / viewport.getWorldHeight();
+
+			// v.y = viewport.getScreenHeight() - v.y;
+			v.y = Gdx.graphics.getHeight() - v.y;
+
+			w.getCurrentScene().getCamera().unproject(v, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
 
 			a.setPosition(v.x, v.y);
 		}

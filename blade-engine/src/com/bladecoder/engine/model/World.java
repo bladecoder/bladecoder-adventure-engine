@@ -620,6 +620,8 @@ public class World implements AssetConsumer {
 				currentScene.getCamera().updatePos(currentScene.getCameraFollowActor());
 
 			currentScene.getCamera().update();
+
+			uiActors.resize(viewportWidth, viewportHeight);
 		}
 	}
 
