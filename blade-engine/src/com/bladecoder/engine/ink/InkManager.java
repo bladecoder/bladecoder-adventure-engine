@@ -180,6 +180,8 @@ public class InkManager implements VerbRunner, Serializable {
 	}
 
 	private void continueMaximally() {
+		waitIfNotLoaded();
+
 		String line = null;
 		actions.clear();
 
