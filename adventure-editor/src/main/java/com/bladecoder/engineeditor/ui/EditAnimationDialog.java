@@ -405,18 +405,6 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 			if (renderer instanceof SpineRenderer) {
 				e = new SpineAnimationDesc();
-
-				if (spineAtlasExists(sourceStr)) {
-					((SpineAnimationDesc) e).atlas = null;
-					setVisible(atlas, false);
-				} else {
-					if (!atlas.isVisible()) {
-						setVisible(atlas, true);
-					}
-
-					((SpineAnimationDesc) e).atlas = atlas.getText();
-				}
-
 			} else if (renderer instanceof AtlasRenderer) {
 				e = new AtlasAnimationDesc();
 			} else {
@@ -428,6 +416,19 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 
 			if (e.id.equals(renderer.getInitAnimation()))
 				renderer.setInitAnimation(null);
+		}
+
+		if (renderer instanceof SpineRenderer) {
+			if (spineAtlasExists(sourceStr)) {
+				((SpineAnimationDesc) e).atlas = null;
+				setVisible(atlas, false);
+			} else {
+				if (!atlas.isVisible()) {
+					setVisible(atlas, true);
+				}
+
+				((SpineAnimationDesc) e).atlas = atlas.getText();
+			}
 		}
 
 		e.id = id.getText();
