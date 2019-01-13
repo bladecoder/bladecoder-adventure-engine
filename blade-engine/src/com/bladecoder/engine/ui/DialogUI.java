@@ -18,8 +18,6 @@ package com.bladecoder.engine.ui;
 import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -75,16 +73,6 @@ public class DialogUI extends ScrollPane {
 		setVisible(false);
 		panel.defaults().expandX().fillX().top().left().padBottom(DPIUtils.getSpacing());
 
-		addListener(new EventListener() {
-
-			@Override
-			public boolean handle(Event event) {
-				setUpDownVisibility();
-				
-				return false;
-			}
-		});
-
 		up.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -101,6 +89,7 @@ public class DialogUI extends ScrollPane {
 	}
 
 	private void setUpDownVisibility() {
+		System.out.println("setUpDownVisibility: " + isScrollY());
 		if (isScrollY()) {
 
 			if (getScrollPercentY() > 0f && up.isVisible() == false) {
@@ -114,6 +103,9 @@ public class DialogUI extends ScrollPane {
 			} else if (getScrollPercentY() == 1f && down.isVisible() == true) {
 				down.setVisible(false);
 			}
+		} else {
+			up.setVisible(false);
+			down.setVisible(false);
 		}
 	}
 
@@ -125,9 +117,17 @@ public class DialogUI extends ScrollPane {
 			if (getParent() != null)
 				show();
 		} else {
+			up.setVisible(false);
+			down.setVisible(false);
 			up.remove();
 			down.remove();
 		}
+	}
+
+	@Override
+	public void setScrollY(float pixels) {
+		super.setScrollY(pixels);
+		setUpDownVisibility();
 	}
 
 	private void show() {
@@ -167,6 +167,7 @@ public class DialogUI extends ScrollPane {
 			ob.getLabel().setAlignment(Align.left);
 
 			ob.addListener(new ClickListener() {
+				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					int i = (Integer) event.getListenerActor().getUserObject();
 
@@ -185,13 +186,13 @@ public class DialogUI extends ScrollPane {
 		getStage().addActor(up);
 		up.setSize(size, size);
 		up.setPosition(getX() + getWidth() - size - margin, getY() + getHeight() - margin - size);
-		up.setVisible(false);
 
 		getStage().addActor(down);
 		down.setSize(size, size);
 		down.setPosition(getX() + getWidth() - size - margin, getY() + margin);
-		down.setVisible(false);
-		
+
+		layout();
+
 		setUpDownVisibility();
 	}
 
