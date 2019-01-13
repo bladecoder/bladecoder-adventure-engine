@@ -124,7 +124,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		stage = new Stage(new ScreenViewport());
 
 		slotWidth = (int) (stage.getViewport().getWorldWidth() / (ROW_SLOTS + 1) - 2 * pad);
-		slotHeight = (int) (slotWidth * stage.getViewport().getScreenHeight() / stage.getViewport().getScreenWidth());
+		slotHeight = slotWidth * stage.getViewport().getScreenHeight() / stage.getViewport().getScreenWidth();
 
 		LoadSaveScreenStyle style = skin.get(LoadSaveScreenStyle.class);
 
@@ -147,6 +147,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		Button back = new Button(skin, "back");
 
 		back.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
 			}
@@ -332,7 +333,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
 		else {
 			Drawable d = ui.getSkin().getDrawable("black");
-			
+
 			return new Image(d);
 		}
 
@@ -347,11 +348,12 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 	private ClickListener loadClickListener = new ClickListener() {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
-			final World world =ui.getWorld();
+			final World world = ui.getWorld();
 			final String filename = event.getListenerActor().getName() + WorldSerialization.GAMESTATE_EXT;
 
-			if (world.savedGameExists()) {
+			if (world.savedGameExists() || world.getCurrentScene() != null) {
 				Dialog d = new Dialog("", ui.getSkin()) {
+					@Override
 					protected void result(Object object) {
 						if (((Boolean) object).booleanValue()) {
 							try {
@@ -403,9 +405,10 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			final Actor listenerActor = event.getListenerActor();
 
 			Dialog d = new Dialog("", ui.getSkin()) {
+				@Override
 				protected void result(Object object) {
 					if (((Boolean) object).booleanValue()) {
-						final World world =ui.getWorld();
+						final World world = ui.getWorld();
 						final String filename = listenerActor.getName() + WorldSerialization.GAMESTATE_EXT;
 
 						try {
@@ -442,7 +445,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 	private ClickListener saveClickListener = new ClickListener() {
 		@Override
 		public void clicked(InputEvent event, float x, float y) {
-			final World world =ui.getWorld();
+			final World world = ui.getWorld();
 			final String filename = event.getListenerActor().getName() + WorldSerialization.GAMESTATE_EXT;
 
 			try {
