@@ -32,6 +32,7 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class DialogUI extends ScrollPane {
 	public static final String DIALOG_END_COMMAND = "dialog_end";
@@ -89,8 +90,9 @@ public class DialogUI extends ScrollPane {
 	}
 
 	private void setUpDownVisibility() {
-		System.out.println("setUpDownVisibility: " + isScrollY());
-		if (isScrollY()) {
+		EngineLogger.debug(
+				"setUpDownVisibility: " + isScrollY() + " maxY: " + getMaxY() + " Margin: " + DPIUtils.getMarginSize());
+		if (isScrollY() && getMaxY() > DPIUtils.getMarginSize()) {
 
 			if (getScrollPercentY() > 0f && up.isVisible() == false) {
 				up.setVisible(true);
