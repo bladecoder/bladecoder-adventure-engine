@@ -57,8 +57,8 @@ import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.model.WorldListener;
 import com.bladecoder.engine.model.World.AssetState;
+import com.bladecoder.engine.model.WorldListener;
 import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.InventoryButton;
 import com.bladecoder.engine.ui.InventoryUI;
@@ -334,6 +334,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		fastLeave = Config.getProperty(Config.FAST_LEAVE, false);
 	}
 
+	@Override
 	public UI getUI() {
 		return ui;
 	}
@@ -384,10 +385,12 @@ public class DefaultSceneScreen implements SceneScreen {
 	 * @param s
 	 *            The multiplier speed. ej. 2.0
 	 */
+	@Override
 	public void setSpeed(float s) {
 		speed = s;
 	}
 
+	@Override
 	public float getSpeed() {
 		return speed;
 	}
@@ -798,6 +801,7 @@ public class DefaultSceneScreen implements SceneScreen {
 				stage.getViewport().getScreenHeight() - menuButton.getHeight() - margin);
 	}
 
+	@Override
 	public void dispose() {
 		renderer.dispose();
 		stage.dispose();
@@ -852,6 +856,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 	}
 
+	@Override
 	public void actorClick(InteractiveActor a, int button) {
 		final boolean lookat = button == 1;
 
@@ -897,6 +902,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	 * @param verb
 	 * @param target
 	 */
+	@Override
 	public void runVerb(InteractiveActor a, String verb, String target) {
 		// COMMENTED BECAUSE THE INVENTORY ONLY HIDES WHEN CUTMODE
 		// if (inventoryUI.isVisible())
@@ -1005,10 +1011,12 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 	}
 
+	@Override
 	public Viewport getViewport() {
 		return viewport;
 	}
 
+	@Override
 	public InteractiveActor getCurrentActor() {
 		return currentActor;
 	}
@@ -1037,6 +1045,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		pie.setVisible(false);
 
 		menuButton.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
 			}
