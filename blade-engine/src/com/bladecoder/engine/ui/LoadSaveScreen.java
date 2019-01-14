@@ -24,8 +24,8 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -37,13 +37,13 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -71,7 +71,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 	private int slotHeight = 0;
 
 	// texture list for final dispose
-	private final ArrayList<Texture> textureList = new ArrayList<Texture>();
+	private final ArrayList<Texture> textureList = new ArrayList<>();
 
 	private Pointer pointer;
 
@@ -123,7 +123,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		stage = new Stage(new ScreenViewport());
 
 		slotWidth = (int) (stage.getViewport().getWorldWidth() / (ROW_SLOTS + 1) - 2 * pad);
-		slotHeight = (int) (slotWidth * stage.getViewport().getScreenHeight() / stage.getViewport().getScreenWidth());
+		slotHeight = slotWidth * stage.getViewport().getScreenHeight() / stage.getViewport().getScreenWidth();
 
 		LoadSaveScreenStyle style = skin.get(LoadSaveScreenStyle.class);
 
@@ -146,6 +146,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		Button back = new Button(skin, "back");
 
 		back.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
 			}
@@ -153,7 +154,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 		Table header = new Table();
 		// header.padBottom(pad);
-		Container<Button> cont = new Container<Button>(back);
+		Container<Button> cont = new Container<>(back);
 		cont.size(size);
 		header.add(cont);
 		header.add(title).fillX().expandX().left();
@@ -208,7 +209,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			removeButton.setName(s);
 			removeButton.addListener(removeClickListener);
 
-			Container<Button> container = new Container<Button>(removeButton);
+			Container<Button> container = new Container<>(removeButton);
 			container.size(DPIUtils.getPrefButtonSize() * .75f);
 			container.align(Align.topRight);
 
@@ -295,7 +296,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 	}
 
 	private List<String> getSlots() {
-		final List<String> al = new ArrayList<String>();
+		final List<String> al = new ArrayList<>();
 
 		FileHandle[] list = EngineAssetManager.getInstance().getUserFolder().list();
 
@@ -331,7 +332,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
 		else {
 			Drawable d = ui.getSkin().getDrawable("black");
-			
+
 			return new Image(d);
 		}
 
@@ -349,8 +350,9 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			final World world = World.getInstance();
 			final String filename = event.getListenerActor().getName() + World.GAMESTATE_EXT;
 
-			if (world.savedGameExists()) {
+			if (world.savedGameExists() || world.getCurrentScene() != null) {
 				Dialog d = new Dialog("", ui.getSkin()) {
+					@Override
 					protected void result(Object object) {
 						if (((Boolean) object).booleanValue()) {
 							try {
@@ -402,6 +404,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			final Actor listenerActor = event.getListenerActor();
 
 			Dialog d = new Dialog("", ui.getSkin()) {
+				@Override
 				protected void result(Object object) {
 					if (((Boolean) object).booleanValue()) {
 						final World world = World.getInstance();

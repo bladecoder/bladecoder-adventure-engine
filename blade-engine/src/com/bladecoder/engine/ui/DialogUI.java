@@ -18,8 +18,6 @@ package com.bladecoder.engine.ui;
 import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -33,6 +31,7 @@ import com.badlogic.gdx.utils.Align;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.DPIUtils;
+import com.bladecoder.engine.util.EngineLogger;
 
 public class DialogUI extends ScrollPane {
 	public static final String DIALOG_END_COMMAND = "dialog_end";
@@ -70,29 +69,6 @@ public class DialogUI extends ScrollPane {
 		setVisible(false);
 		panel.defaults().expandX().fillX().top().left().padBottom(DPIUtils.getSpacing());
 
-		addListener(new EventListener() {
-
-			@Override
-			public boolean handle(Event event) {
-				if (isScrollY()) {
-
-					if (getScrollPercentY() > 0f && up.isVisible() == false) {
-						up.setVisible(true);
-					} else if (getScrollPercentY() == 0f && up.isVisible() == true) {
-						up.setVisible(false);
-					}
-
-					if (getScrollPercentY() < 1f && down.isVisible() == false) {
-						down.setVisible(true);
-					} else if (getScrollPercentY() == 1f && down.isVisible() == true) {
-						down.setVisible(false);
-					}
-				}
-
-				return false;
-			}
-		});
-
 		up.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -107,18 +83,48 @@ public class DialogUI extends ScrollPane {
 			}
 		});
 	}
-	
+
+	private void setUpDownVisibility() {
+		EngineLogger.debug(
+				"setUpDownVisibility: " + isScrollY() + " maxY: " + getMaxY() + " Margin: " + DPIUtils.getMarginSize());
+		if (isScrollY() && getMaxY() > DPIUtils.getMarginSize()) {
+
+			if (getScrollPercentY() > 0f && up.isVisible() == false) {
+				up.setVisible(true);
+			} else if (getScrollPercentY() == 0f && up.isVisible() == true) {
+				up.setVisible(false);
+			}
+
+			if (getScrollPercentY() < 1f && down.isVisible() == false) {
+				down.setVisible(true);
+			} else if (getScrollPercentY() == 1f && down.isVisible() == true) {
+				down.setVisible(false);
+			}
+		} else {
+			up.setVisible(false);
+			down.setVisible(false);
+		}
+	}
+
 	@Override
-	public void setVisible (boolean visible) {
+	public void setVisible(boolean visible) {
 		super.setVisible(visible);
-		
-		if(visible) {
-			if(getParent() != null)
+
+		if (visible) {
+			if (getParent() != null)
 				show();
 		} else {
+			up.setVisible(false);
+			down.setVisible(false);
 			up.remove();
 			down.remove();
 		}
+	}
+
+	@Override
+	public void setScrollY(float pixels) {
+		super.setScrollY(pixels);
+		setUpDownVisibility();
 	}
 
 	private void show() {
@@ -127,7 +133,7 @@ public class DialogUI extends ScrollPane {
 		if (choices.size() == 0)
 			return;
 
-		else if (style.autoselect && choices.size() == 1) { 
+		else if (style.autoselect && choices.size() == 1) {
 			// If only has one option, autoselect it
 			select(0);
 			return;
@@ -149,6 +155,7 @@ public class DialogUI extends ScrollPane {
 			ob.getLabel().setAlignment(Align.left);
 
 			ob.addListener(new ClickListener() {
+				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					int i = (Integer) event.getListenerActor().getUserObject();
 
@@ -167,12 +174,14 @@ public class DialogUI extends ScrollPane {
 		getStage().addActor(up);
 		up.setSize(size, size);
 		up.setPosition(getX() + getWidth() - size - margin, getY() + getHeight() - margin - size);
-		up.setVisible(false);
 
 		getStage().addActor(down);
 		down.setSize(size, size);
 		down.setPosition(getX() + getWidth() - size - margin, getY() + margin);
-		down.setVisible(false);
+
+		layout();
+
+		setUpDownVisibility();
 	}
 
 	private void select(int i) {
@@ -192,7 +201,7 @@ public class DialogUI extends ScrollPane {
 		public Drawable background;
 
 		public TextButtonStyle textButtonStyle;
-		
+
 		// If only one option is visible, auto select it.
 		public boolean autoselect = true;
 
