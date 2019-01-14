@@ -17,6 +17,7 @@ package com.bladecoder.engine.model;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.AssetConsumer;
@@ -797,6 +799,10 @@ public class World implements AssetConsumer {
 
 	public void takeScreenshot(String filename, int w) {
 
+		// get viewport
+		IntBuffer results = BufferUtils.newIntBuffer(16);
+		Gdx.gl20.glGetIntegerv(GL20.GL_VIEWPORT, results);
+
 		int h = (int) (w * getSceneCamera().viewportHeight / getSceneCamera().viewportWidth);
 
 		FrameBuffer fbo = new FrameBuffer(Format.RGB565, w, h, false);
@@ -806,7 +812,9 @@ public class World implements AssetConsumer {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		draw();
 		Pixmap pixmap = ScreenUtils.getFrameBufferPixmap(0, 0, w, h);
-		fbo.end();
+
+		// restore viewport
+		fbo.end(results.get(0), results.get(1), results.get(2), results.get(3));
 
 		// Flip the pixmap upside down
 		ByteBuffer pixels = pixmap.getPixels();
