@@ -126,12 +126,10 @@ public class WorldSerialization implements Serializable {
 	/**
 	 * Loads a JSON chapter file.
 	 * 
-	 * @param chapterName
-	 *            filename without path and extension.
-	 * @param scene
-	 *            the init scene. null to use the chapter defined init scene.
-	 * @param initScene
-	 *            false only when it comes from loading a saved game.
+	 * @param chapterName filename without path and extension.
+	 * @param scene       the init scene. null to use the chapter defined init
+	 *                    scene.
+	 * @param initScene   false only when it comes from loading a saved game.
 	 * @throws IOException
 	 */
 	public void loadChapter(String chapterName, String scene, boolean initScene) throws IOException {
@@ -221,7 +219,7 @@ public class WorldSerialization implements Serializable {
 		}
 	}
 
-	public void saveGameState(String filename) throws IOException {
+	public void saveGameState(String filename, boolean screenshot) throws IOException {
 		EngineLogger.debug("SAVING GAME STATE");
 
 		if (w.isDisposed())
@@ -249,7 +247,8 @@ public class WorldSerialization implements Serializable {
 		}
 
 		// Save Screenshot
-		w.takeScreenshot(filename + ".png", SCREENSHOT_DEFAULT_WIDTH);
+		if (screenshot)
+			w.takeScreenshot(filename + ".png", SCREENSHOT_DEFAULT_WIDTH);
 	}
 
 	@Override

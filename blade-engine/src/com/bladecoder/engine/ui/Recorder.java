@@ -98,7 +98,7 @@ public class Recorder {
 						// SPECIAL VERB TO SAVE THE GAME
 						stringBuilder.append(v.target);
 						try {
-							w.getSerializer().saveGameState(v.target);
+							w.getSerializer().saveGameState(v.target, true);
 						} catch (IOException e) {
 							EngineLogger.error("Couldn't save game: " + v.target + " : " + e.getMessage());
 						}
@@ -187,7 +187,7 @@ public class Recorder {
 		if (recording) {
 			EngineLogger.debug("RECORDING...");
 			try {
-				w.getSerializer().saveGameState(fileName + GAMESTATE_REC_EXT);
+				w.getSerializer().saveGameState(fileName + GAMESTATE_REC_EXT, false);
 			} catch (IOException e) {
 				EngineLogger.error(e.getMessage());
 			}

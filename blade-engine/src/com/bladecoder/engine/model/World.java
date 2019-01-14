@@ -27,6 +27,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.minimalcode.beans.ObjectWrapper;
 import org.xml.sax.SAXException;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
@@ -698,7 +699,13 @@ public class World implements AssetConsumer {
 	// ********** SERIALIZATION **********
 
 	public void saveGameState() throws IOException {
-		serialization.saveGameState(GAMESTATE_FILENAME);
+		boolean takeScreenshot = false;
+
+		// Only take screenshot for desktop. For iOs or Android is slow.
+		if (Gdx.app.getType() == ApplicationType.Desktop)
+			takeScreenshot = true;
+
+		serialization.saveGameState(GAMESTATE_FILENAME, takeScreenshot);
 	}
 
 	public void removeGameState(String filename) throws IOException {

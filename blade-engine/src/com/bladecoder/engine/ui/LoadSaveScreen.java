@@ -449,7 +449,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			final String filename = event.getListenerActor().getName() + WorldSerialization.GAMESTATE_EXT;
 
 			try {
-				world.getSerializer().saveGameState(filename);
+				world.getSerializer().saveGameState(filename, true);
 
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 
