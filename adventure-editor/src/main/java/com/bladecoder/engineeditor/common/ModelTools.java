@@ -497,7 +497,7 @@ public class ModelTools {
 					sbMD.append('\n');
 				else if (v.parent.parent.parent.parent == null)
 					sbMD.append("\n==== " + v.name + " ====\n");
-				else if(v.name.equals("s"))
+				else if (v.name.equals("s"))
 					sbMD.append("  * ");
 //				else
 //					sbMD.append("\n-- " + v.name + " --\n");
@@ -550,6 +550,91 @@ public class ModelTools {
 				v.set("^" + I18N.PREFIX + key);
 			else
 				v.set("^" + charName + '>' + I18N.PREFIX + key);
+		}
+	}
+
+	public static void readableInkDialogs(String story, String lang) throws IOException {
+		String file = Ctx.project.getModelPath() + "/" + story + EngineAssetManager.INK_EXT;
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+		StringBuilder sb = new StringBuilder();
+
+		try {
+			String line = br.readLine();
+
+			// Replace the BOM mark
+			if (line != null)
+				line = line.replace('\uFEFF', ' ');
+
+			while (line != null) {
+				sb.append(line);
+				sb.append("\n");
+				line = br.readLine();
+			}
+
+		} finally {
+			br.close();
+		}
+
+		JsonValue root = new JsonReader().parse(sb.toString());
+
+		// TODO: Add lang and check if default
+		File propFile = new File(Ctx.project.getModelPath() + "/" + story + "-ink.properties");
+		OrderedProperties langProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
+				.build();
+
+		langProp.load(new InputStreamReader(new FileInputStream(propFile), I18N.ENCODING));
+
+		// .md generation to have a better readable document of texts
+		StringBuilder mdString = new StringBuilder();
+
+		readableInkDialogsInternal(root, mdString, langProp);
+		FileUtils.writeStringToFile(new File(Ctx.project.getModelPath() + "/" + story + "-DIALOGS.txt"),
+				mdString.toString());
+	}
+
+	private static void readableInkDialogsInternal(JsonValue v, StringBuilder sbMD, OrderedProperties prop) {
+		if (v.isArray() || v.isObject()) {
+			if (v.name != null && v.isArray() && v.parent != null && v.parent.parent != null
+					&& v.parent.parent.parent != null) {
+				if (v.name.contains("-"))
+					sbMD.append('\n');
+				else if (v.parent.parent.parent.parent == null)
+					sbMD.append("\n==== " + v.name + " ====\n");
+				else if (v.name.equals("s"))
+					sbMD.append("  * ");
+//				else
+//					sbMD.append("\n-- " + v.name + " --\n");
+			}
+
+			for (int i = 0; i < v.size; i++) {
+				JsonValue aValue = v.get(i);
+
+				readableInkDialogsInternal(aValue, sbMD, prop);
+			}
+
+		} else if (v.isString() && v.asString().charAt(0) == '^') {
+			String key = v.asString().substring(1).trim();
+
+			if (key.length() == 0 || key.charAt(0) == '>')
+				return;
+
+			int idx = key.indexOf('>');
+			String charName = "";
+
+			if (idx != -1) {
+				charName = key.substring(0, idx).trim();
+				key = key.substring(idx + 1).trim();
+
+				if (key.length() <= 1)
+					return;
+			}
+
+			key = key.substring(1);
+
+			String value = prop.getProperty(key);
+
+			sbMD.append(charName + (charName.isEmpty() ? "" : ": ") + value + " (" + key + ")\n");
 		}
 	}
 

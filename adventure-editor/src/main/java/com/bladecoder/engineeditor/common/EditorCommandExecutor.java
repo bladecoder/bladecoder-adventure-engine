@@ -44,12 +44,12 @@ public class EditorCommandExecutor extends CommandExecutor {
 		ModelTools.printUnusedSounds();
 		EditorLogger.msg("PROCCESS FINISHED.");
 	}
-	
+
 	public void checkI18N() {
 		try {
 			EditorLogger.msg("Check for MODEL missing keys in default translation file for current chapter.");
 			ModelTools.checkI18NMissingKeys();
-			
+
 			EditorLogger.msg("Compare translation files with the base file:");
 			String[] files = new File(Ctx.project.getAssetPath() + Project.MODEL_PATH).list(new FilenameFilter() {
 				@Override
@@ -61,14 +61,13 @@ public class EditorCommandExecutor extends CommandExecutor {
 					return false;
 				}
 			});
-			
-			for(String f: files) {
+
+			for (String f : files) {
 				int idx = f.indexOf('_');
 				String base = f.substring(0, idx);
 				String lang = f.substring(idx + 1, idx + 3);
 				EditorLogger.msg("Checking " + base + " LANG: " + lang);
-				I18NUtils.compare(Ctx.project.getAssetPath() + Project.MODEL_PATH, base, null,
-					lang);
+				I18NUtils.compare(Ctx.project.getAssetPath() + Project.MODEL_PATH, base, null, lang);
 			}
 		} catch (Exception e) {
 			EditorLogger.printStackTrace(e);
@@ -89,13 +88,23 @@ public class EditorCommandExecutor extends CommandExecutor {
 
 	public void importInkTSV(String tsvFile, String storyName) {
 		try {
-			I18NUtils.importTSV(Ctx.project.getAssetPath() + Project.MODEL_PATH, tsvFile,
-					storyName + "-ink", "default");
+			I18NUtils.importTSV(Ctx.project.getAssetPath() + Project.MODEL_PATH, tsvFile, storyName + "-ink",
+					"default");
 
-			EditorLogger.msg( tsvFile + " imported sucessfully.");
+			EditorLogger.msg(tsvFile + " imported sucessfully.");
 
 		} catch (IOException e) {
-			EditorLogger.error( "There was a problem importing the .tsv file.");
+			EditorLogger.error("There was a problem importing the .tsv file.");
+			EditorLogger.printStackTrace(e);
+		}
+
+		EditorLogger.msg("PROCCESS FINISHED.");
+	}
+
+	public void readableInkDialogs(String story, String lang) {
+		try {
+			ModelTools.readableInkDialogs(story, lang);
+		} catch (Exception e) {
 			EditorLogger.printStackTrace(e);
 		}
 
