@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.0] aka Johnny Bonasera 3
+
+- Ink button in editor to link Ink stories with chapters.
+- Better handling of up/down buttons when showing options.
+- Improved debug info and fix tester bot.
+- Update vis-ui lib to latest stable.
+- FIX: Show warning message when a game is playing also if not saved before.
+- FIX: Bug in edit anim spine atlas.
+- FIX: Several fixes in InkManager handling concurrency.
+- FIX: uiactors camera refresh.
+- FIX: Bug saving current dialog actor.
+- FIX: 'desktop:dist' task in template.
+
 ## [2.2.0]
 
 - Java 11 support (Gradle v4.10.2).
