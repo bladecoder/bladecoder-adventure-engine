@@ -54,14 +54,14 @@ public class TextManager implements Serializable {
 
 	private Queue<Text> fifo;
 	private Scene scene;
-	
+
 	/**
 	 * Stores the previous animation to restore it when the character ends his talk.
 	 */
 	private String previousCharacterAnim = null;
 
 	public TextManager(Scene s) {
-		fifo = new LinkedList<Text>();
+		fifo = new LinkedList<>();
 		this.scene = s;
 	}
 
@@ -152,7 +152,9 @@ public class TextManager implements Serializable {
 			CharacterActor a = (CharacterActor) scene.getActor(currentText.actorId, false);
 
 			// restore previous stand animation
-			a.startAnimation(previousCharacterAnim, Tween.Type.SPRITE_DEFINED, 0, null);
+			if (a != null && previousCharacterAnim != null)
+				a.startAnimation(previousCharacterAnim, Tween.Type.SPRITE_DEFINED, 0, null);
+
 			previousCharacterAnim = null;
 		}
 
@@ -167,8 +169,8 @@ public class TextManager implements Serializable {
 				CharacterActor a = (CharacterActor) scene.getActor(t.actorId, false);
 
 				previousCharacterAnim = ((AnimationRenderer) a.getRenderer()).getCurrentAnimationId();
-				
-				if(t.animation != null)
+
+				if (t.animation != null)
 					a.startAnimation(t.animation, Tween.Type.SPRITE_DEFINED, 0, null);
 				else
 					a.talk();
@@ -229,10 +231,10 @@ public class TextManager implements Serializable {
 		if (currentText != null)
 			json.writeValue("currentText", currentText);
 
-		json.writeValue("fifo", new ArrayList<Text>(fifo), ArrayList.class, Text.class);
+		json.writeValue("fifo", new ArrayList<>(fifo), ArrayList.class, Text.class);
 		json.writeValue("voiceManager", voiceManager);
-		
-		if(previousCharacterAnim != null)
+
+		if (previousCharacterAnim != null)
 			json.writeValue("previousAnim", previousCharacterAnim);
 	}
 
@@ -241,7 +243,7 @@ public class TextManager implements Serializable {
 	public void read(Json json, JsonValue jsonData) {
 		inScreenTime = json.readValue("inScreenTime", Float.class, jsonData);
 		currentText = json.readValue("currentText", Text.class, jsonData);
-		fifo = new LinkedList<Text>(json.readValue("fifo", ArrayList.class, Text.class, jsonData));
+		fifo = new LinkedList<>(json.readValue("fifo", ArrayList.class, Text.class, jsonData));
 		previousCharacterAnim = json.readValue("previousAnim", String.class, jsonData);
 
 		JsonValue jsonValue = jsonData.get("voiceManager");
