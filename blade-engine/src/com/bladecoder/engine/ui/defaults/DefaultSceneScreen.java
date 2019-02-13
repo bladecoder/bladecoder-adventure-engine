@@ -81,18 +81,6 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class DefaultSceneScreen implements SceneScreen {
-	public boolean isUiEnabled() {
-		return uiEnabled;
-	}
-
-	public PieMenu getPie() {
-		return pie;
-	}
-
-	public InventoryButton getInventoryButton() {
-		return inventoryButton;
-	}
-
 	private final static float LOADING_WAIT_TIME_MS = 400f;
 
 	private UI ui;
@@ -153,6 +141,18 @@ public class DefaultSceneScreen implements SceneScreen {
 	@Override
 	public UI getUI() {
 		return ui;
+	}
+
+	public boolean isUiEnabled() {
+		return uiEnabled;
+	}
+
+	public PieMenu getPie() {
+		return pie;
+	}
+
+	public InventoryButton getInventoryButton() {
+		return inventoryButton;
 	}
 
 	public boolean getDrawHotspots() {
