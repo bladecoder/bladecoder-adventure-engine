@@ -18,11 +18,9 @@ package com.bladecoder.engine.ui.defaults;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
-import java.io.IOException;
 import java.util.Locale;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
@@ -48,7 +46,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TransformDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -69,7 +66,6 @@ import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.ITextManagerUI;
 import com.bladecoder.engine.ui.InventoryButton;
 import com.bladecoder.engine.ui.InventoryUI;
-import com.bladecoder.engine.ui.InventoryUI.InventoryPos;
 import com.bladecoder.engine.ui.PieMenu;
 import com.bladecoder.engine.ui.Recorder;
 import com.bladecoder.engine.ui.SceneExtendViewport;
@@ -85,6 +81,18 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class DefaultSceneScreen implements SceneScreen {
+	public boolean isUiEnabled() {
+		return uiEnabled;
+	}
+
+	public PieMenu getPie() {
+		return pie;
+	}
+
+	public InventoryButton getInventoryButton() {
+		return inventoryButton;
+	}
+
 	private final static float LOADING_WAIT_TIME_MS = 400f;
 
 	private UI ui;
@@ -131,229 +139,9 @@ public class DefaultSceneScreen implements SceneScreen {
 
 	private final GlyphLayout textLayout = new GlyphLayout();
 
-	private final GestureDetector inputProcessor = new GestureDetector(new GestureDetector.GestureAdapter() {
-		@Override
-		public boolean touchDown(float x, float y, int pointer, int button) {
-			return true;
-		}
+	private final GestureDetector inputProcessor = new SceneGestureDetector(this);
 
-		@Override
-		public boolean tap(float x, float y, int count, int button) {
-			EngineLogger.debug("Event TAP button: " + button + " count: " + count);
-
-			World w = ui.getWorld();
-
-			if (w.getAssetState() != AssetState.LOADED || w.isPaused() || recorder.isPlaying() || testerBot.isEnabled())
-				return true;
-
-			if (pie.isVisible()) {
-				pie.hide();
-			}
-
-			if (drawHotspots)
-				drawHotspots = false;
-			else {
-				getInputUnProject(unprojectTmp);
-
-				if (w.inCutMode() || (!TextManager.AUTO_HIDE_TEXTS && textManagerUI.isVisible())) {
-
-					if (recorder.isRecording())
-						return true;
-
-					w.getCurrentScene().getTextManager().next();
-				} else if (inventoryUI.isVisible()) {
-					inventoryUI.hide();
-				} else if (!w.hasDialogOptions()) {
-					if (button == 2) {
-						// Show inventory with the middle button
-						if (!inventoryUI.isVisible()) {
-							inventoryUI.show();
-						}
-					} else {
-						sceneClick(button, count);
-					}
-				}
-			}
-
-			return true;
-		}
-
-		@Override
-		public boolean longPress(float x, float y) {
-			EngineLogger.debug("Event LONG PRESS");
-
-			if (uiEnabled && !ui.getWorld().hasDialogOptions()) {
-				drawHotspots = true;
-			}
-
-			return false;
-		}
-
-		@Override
-		public boolean pan(float x, float y, float deltaX, float deltaY) {
-			return true;
-		}
-
-		@Override
-		public boolean panStop(float x, float y, int pointer, int button) {
-			tap(x, y, 1, button);
-
-			return true;
-		}
-	}) {
-
-		@Override
-		public boolean keyUp(int keycode) {
-			switch (keycode) {
-			case Input.Keys.ESCAPE:
-			case Input.Keys.BACK:
-			case Input.Keys.MENU:
-				showMenu();
-				break;
-			case Input.Keys.D:
-				if (UIUtils.ctrl())
-					EngineLogger.toggle();
-				break;
-			case Input.Keys.SPACE:
-				if (drawHotspots)
-					drawHotspots = false;
-				break;
-			}
-
-			return true;
-		}
-
-		@Override
-		public boolean keyTyped(char character) {
-			switch (character) {
-			case '1':
-				EngineLogger.setDebugLevel(EngineLogger.DEBUG0);
-				break;
-			case '2':
-				EngineLogger.setDebugLevel(EngineLogger.DEBUG1);
-				break;
-			case 'f':
-				// ui.toggleFullScreen();
-				break;
-			case 's':
-				if (EngineLogger.debugMode()) {
-					try {
-						ui.getWorld().saveGameState();
-					} catch (IOException e) {
-						EngineLogger.error(e.getMessage());
-					}
-				}
-				break;
-			case 'l':
-				if (EngineLogger.debugMode()) {
-					try {
-						ui.getWorld().loadGameState();
-					} catch (IOException e) {
-						EngineLogger.error(e.getMessage());
-					}
-				}
-				break;
-			case 't':
-				if (EngineLogger.debugMode()) {
-					testerBot.setEnabled(!testerBot.isEnabled());
-					updateUI();
-				}
-				break;
-			case '.':
-				if (EngineLogger.debugMode()) {
-					if (recorder.isRecording())
-						recorder.setRecording(false);
-					else
-						recorder.setRecording(true);
-
-					updateUI();
-				}
-				break;
-			case ',':
-				if (EngineLogger.debugMode()) {
-					if (recorder.isPlaying())
-						recorder.setPlaying(false);
-					else {
-						recorder.load();
-						recorder.setPlaying(true);
-					}
-
-					updateUI();
-				}
-				break;
-			case 'p':
-				if (ui.getWorld().isPaused()) {
-					resume();
-				} else {
-					pause();
-				}
-				break;
-			case ' ':
-				if (uiEnabled && !ui.getWorld().hasDialogOptions()) {
-					drawHotspots = true;
-				}
-				break;
-			}
-
-			// FIXME: This is returning false even in the cases where we
-			// actually process the character
-			return false;
-		}
-
-		@Override
-		public boolean scrolled(int amount) {
-			if (uiEnabled && !ui.getWorld().hasDialogOptions() && ui.getWorld().getInventory().isVisible()) {
-
-				boolean fromDown = (inventoryUI.getInventoryPos() == InventoryPos.CENTER
-						|| inventoryUI.getInventoryPos() == InventoryPos.DOWN);
-
-				if ((amount > 0 && fromDown || amount < 0 && !fromDown) && inventoryUI.isVisible())
-					inventoryUI.hide();
-				else if ((amount > 0 && !fromDown || amount < 0 && fromDown) && !inventoryUI.isVisible()) {
-					if (uiMode == UIModes.PIE && pie.isVisible())
-						pie.hide();
-
-					inventoryUI.show();
-				}
-			}
-
-			return true;
-		}
-
-	};
-
-	private final WorldListener worldListener = new WorldListener() {
-		@Override
-		public void text(Text t) {
-			if (t != null && t.type == Text.Type.UI) {
-				showUIText(t);
-			} else {
-				((ITextManagerUI) textManagerUI).setText(t);
-			}
-		}
-
-		@Override
-		public void dialogOptions() {
-			updateUI();
-		}
-
-		@Override
-		public void cutMode(boolean value) {
-			updateUI();
-		}
-
-		@Override
-		public void inventoryEnabled(boolean value) {
-			inventoryUI.hide();
-			inventoryButton.setVisible(value);
-		}
-
-		@Override
-		public void pause(boolean value) {
-			if (ui.getWorld().getAssetState() == AssetState.LOADED)
-				updateUI();
-		}
-	};
+	private final WorldListener worldListener = new SceneWorldListener(this);
 
 	public DefaultSceneScreen() {
 		viewport = Config.getProperty(Config.EXTEND_VIEWPORT_PROP, true) ? new SceneExtendViewport()
@@ -367,7 +155,19 @@ public class DefaultSceneScreen implements SceneScreen {
 		return ui;
 	}
 
-	private void showUIText(Text t) {
+	public boolean getDrawHotspots() {
+		return drawHotspots;
+	}
+
+	public void setDrawHotspots(boolean drawHotspots) {
+		this.drawHotspots = drawHotspots;
+	}
+
+	public UIModes getUIMode() {
+		return uiMode;
+	}
+
+	void showUIText(Text t) {
 		// Type UI texts will show at the same time that TextManagerUI texts.
 
 		String style = t.style == null ? "ui-text" : t.style;
@@ -406,7 +206,7 @@ public class DefaultSceneScreen implements SceneScreen {
 				Actions.delay(t.time, sequence(fadeOut(0.4f, Interpolation.fade), Actions.removeActor()))));
 	}
 
-	private void updateUI() {
+	void updateUI() {
 		World w = ui.getWorld();
 
 		if (w.getAssetState() == null || w.getAssetState() == AssetState.LOAD_ASSETS
@@ -849,7 +649,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		inventoryUI.retrieveAssets(atlas);
 	}
 
-	private void sceneClick(int button, int count) {
+	void sceneClick(int button, int count) {
 		World w = ui.getWorld();
 
 		w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
@@ -956,7 +756,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		a.runVerb(verb, target);
 	}
 
-	private void showMenu() {
+	void showMenu() {
 		pause();
 		ui.setCurrentScreen(Screens.MENU_SCREEN);
 	}
