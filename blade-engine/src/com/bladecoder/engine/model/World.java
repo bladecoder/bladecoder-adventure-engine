@@ -663,7 +663,8 @@ public class World implements AssetConsumer {
 			currentScene.getSoundManager().pause();
 		}
 
-		listener.pause(true);
+		if (listener != null)
+			listener.pause(true);
 	}
 
 	public void resume() {
@@ -679,7 +680,8 @@ public class World implements AssetConsumer {
 			}
 		}
 
-		listener.pause(false);
+		if (listener != null)
+			listener.pause(false);
 	}
 
 	public void newGame() throws Exception {

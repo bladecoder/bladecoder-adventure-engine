@@ -42,7 +42,6 @@ public class ActionFactory {
 		a = (Action) ClassReflection.newInstance(c);
 
 		if (params != null) {
-			// a.setParams(params);
 
 			for (String key : params.keySet()) {
 				String value = params.get(key);

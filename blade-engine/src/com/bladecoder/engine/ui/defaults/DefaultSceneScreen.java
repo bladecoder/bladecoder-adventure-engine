@@ -745,10 +745,6 @@ public class DefaultSceneScreen implements SceneScreen {
 	 */
 	@Override
 	public void runVerb(InteractiveActor a, String verb, String target) {
-		// COMMENTED BECAUSE THE INVENTORY ONLY HIDES WHEN CUTMODE
-		// if (inventoryUI.isVisible())
-		// inventoryUI.hide();
-
 		if (recorder.isRecording()) {
 			recorder.add(a.getId(), verb, target);
 		}
@@ -825,7 +821,6 @@ public class DefaultSceneScreen implements SceneScreen {
 	@Override
 	public void hide() {
 		ui.getWorld().pause();
-		// dispose();
 	}
 
 	@Override
