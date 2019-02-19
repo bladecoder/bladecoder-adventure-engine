@@ -426,7 +426,7 @@ public class SpineRenderer extends AnimationRenderer {
 		try {
 			SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
 			cs.skeleton.setToSetupPose();
-			cs.skeleton.setFlipX(flipX);
+			cs.skeleton.setScaleX(flipX ? -1 : 1);
 			cs.animation.setTimeScale(currentAnimation.duration);
 			cs.animation.clearTracks();
 			cs.animation.setAnimation(0, currentAnimation.id, currentAnimationType == Tween.Type.REPEAT);
