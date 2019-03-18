@@ -180,7 +180,7 @@ public class ImageUtils {
 		settings.pot = false;
 		settings.paddingX = 2;
 		settings.paddingY = 2;
-		settings.duplicatePadding = true;
+		settings.duplicatePadding = false;
 		settings.edgePadding = true;
 		settings.rotation = false;
 		settings.minWidth = 16;
