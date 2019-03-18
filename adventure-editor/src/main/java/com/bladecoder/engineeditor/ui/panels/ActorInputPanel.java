@@ -42,25 +42,28 @@ public class ActorInputPanel extends EditableOptionsInputPanel<String> {
 	}
 
 	private static String[] getValues(boolean mandatory, Param.Type type) {
-		Map<String, BaseActor> actors = Ctx.project.getSelectedScene().getActors();
 
-		ArrayList<BaseActor> filteredActors = new ArrayList<BaseActor>();
+		ArrayList<BaseActor> filteredActors = new ArrayList<>();
 
-		for (BaseActor a : actors.values()) {
-			if (type == Param.Type.CHARACTER_ACTOR) {
-				if (a instanceof CharacterActor)
+		if (Ctx.project.getSelectedScene() != null) {
+			Map<String, BaseActor> actors = Ctx.project.getSelectedScene().getActors();
+
+			for (BaseActor a : actors.values()) {
+				if (type == Param.Type.CHARACTER_ACTOR) {
+					if (a instanceof CharacterActor)
+						filteredActors.add(a);
+				} else if (type == Param.Type.INTERACTIVE_ACTOR) {
+					if (a instanceof InteractiveActor)
+						filteredActors.add(a);
+				} else if (type == Param.Type.WALKZONE_ACTOR) {
+					if (a instanceof WalkZoneActor)
+						filteredActors.add(a);
+				} else if (type == Param.Type.SPRITE_ACTOR) {
+					if (a instanceof SpriteActor)
+						filteredActors.add(a);
+				} else {
 					filteredActors.add(a);
-			} else if (type == Param.Type.INTERACTIVE_ACTOR) {
-				if (a instanceof InteractiveActor)
-					filteredActors.add(a);
-			} else if (type == Param.Type.WALKZONE_ACTOR) {
-				if (a instanceof WalkZoneActor)
-					filteredActors.add(a);
-			} else if (type == Param.Type.SPRITE_ACTOR) {
-				if (a instanceof SpriteActor)
-					filteredActors.add(a);
-			} else {
-				filteredActors.add(a);
+				}
 			}
 		}
 
@@ -77,7 +80,7 @@ public class ActorInputPanel extends EditableOptionsInputPanel<String> {
 			}
 		} else {
 			result = new String[filteredActors.size()];
-			
+
 			for (int i = 0; i < filteredActors.size(); i++) {
 				result[i] = filteredActors.get(i).getId();
 			}
