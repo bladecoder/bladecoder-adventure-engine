@@ -51,6 +51,8 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.model.Text;
+import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.serialization.WorldSerialization;
 import com.bladecoder.engine.ui.UI.Screens;
@@ -72,7 +74,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 	private int slotHeight = 0;
 
 	// texture list for final dispose
-	private final ArrayList<Texture> textureList = new ArrayList<Texture>();
+	private final ArrayList<Texture> textureList = new ArrayList<>();
 
 	private Pointer pointer;
 
@@ -155,7 +157,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 		Table header = new Table();
 		// header.padBottom(pad);
-		Container<Button> cont = new Container<Button>(back);
+		Container<Button> cont = new Container<>(back);
 		cont.size(size);
 		header.add(cont);
 		header.add(title).fillX().expandX().left();
@@ -210,7 +212,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			removeButton.setName(s);
 			removeButton.addListener(removeClickListener);
 
-			Container<Button> container = new Container<Button>(removeButton);
+			Container<Button> container = new Container<>(removeButton);
 			container.size(DPIUtils.getPrefButtonSize() * .75f);
 			container.align(Align.topRight);
 
@@ -297,7 +299,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 	}
 
 	private List<String> getSlots() {
-		final List<String> al = new ArrayList<String>();
+		final List<String> al = new ArrayList<>();
 
 		FileHandle[] list = EngineAssetManager.getInstance().getUserFolder().list();
 
@@ -450,6 +452,9 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 			try {
 				world.getSerializer().saveGameState(filename, true);
+
+				world.getCurrentScene().getTextManager().addText("@ui.gamesaved", TextManager.POS_SUBTITLE,
+						TextManager.POS_SUBTITLE, false, Text.Type.UI, null, null, null, null, null, null);
 
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 

@@ -175,7 +175,10 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		msg.setWrap(true);
 		msg.setAlignment(Align.center, Align.center);
-		msg.setColor(t.color);
+
+		if (t.color != null)
+			msg.setColor(t.color);
+
 		msg.setSize(msg.getWidth() + DPIUtils.getMarginSize() * 2, msg.getHeight() + DPIUtils.getMarginSize() * 2);
 
 		stage.addActor(msg);
@@ -186,7 +189,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		if (t.x == TextManager.POS_CENTER) {
 			posx = (getStage().getViewport().getScreenWidth() - msg.getWidth()) / 2;
-		} else if (t.y == TextManager.POS_SUBTITLE) {
+		} else if (t.x == TextManager.POS_SUBTITLE) {
 			posx = DPIUtils.getMarginSize();
 		} else {
 			posx = unprojectTmp.x;
