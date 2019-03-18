@@ -43,6 +43,7 @@ import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.ModelTools;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.model.Project;
+import com.bladecoder.engineeditor.ui.CompileInkDialog;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooser.Mode;
 import com.kotcrab.vis.ui.widget.file.FileChooser.SelectionMode;
@@ -70,6 +71,7 @@ public class ToolsWindow extends Container<Table> {
 		TextButton exportUIImages = new TextButton("Export UI Images", skin, "no-toggled");
 		TextButton createUIAtlas = new TextButton("Create UI Atlas", skin, "no-toggled");
 		TextButton particleEditor = new TextButton("Particle Editor", skin, "no-toggled");
+		TextButton compileInk = new TextButton("Compile Ink Script", skin, "no-toggled");
 
 		table.defaults().left().expandX();
 		table.top().pad(DPIUtils.getSpacing() / 2);
@@ -111,6 +113,9 @@ public class ToolsWindow extends Container<Table> {
 
 		table.row();
 		table.add(particleEditor).expandX().fill();
+
+		table.row();
+		table.add(compileInk).expandX().fill();
 
 		// table.row();
 		// table.add(tmpButton).expandX().fill();
@@ -194,10 +199,21 @@ public class ToolsWindow extends Container<Table> {
 			}
 		});
 
+		compileInk.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				compileInk();
+			}
+		});
+
 		table.pack();
 		setActor(table);
 		prefSize(table.getWidth(), Math.max(200, table.getHeight()));
 		setSize(table.getWidth(), Math.max(200, table.getHeight()));
+	}
+
+	protected void compileInk() {
+		new CompileInkDialog(getActor().getSkin()).show(getStage());
 	}
 
 	protected void createUIAtlas() {
@@ -553,7 +569,7 @@ public class ToolsWindow extends Container<Table> {
 
 	private void particleEditor() {
 		// Open the particle editor
-		List<String> cp = new ArrayList<String>();
+		List<String> cp = new ArrayList<>();
 		cp.add(System.getProperty("java.class.path"));
 		try {
 			RunProccess.runJavaProccess("com.badlogic.gdx.tools.particleeditor.ParticleEditor", cp, null);

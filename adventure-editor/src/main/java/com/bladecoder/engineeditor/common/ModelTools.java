@@ -386,7 +386,7 @@ public class ModelTools {
 	}
 
 	public static void printUnusedSounds() {
-		ArrayList<String> unusedSounds = new ArrayList<String>(Arrays.asList(getSoundList()));
+		ArrayList<String> unusedSounds = new ArrayList<>(Arrays.asList(getSoundList()));
 
 		HashMap<String, SoundDesc> sounds = Ctx.project.getWorld().getSounds();
 
@@ -424,8 +424,7 @@ public class ModelTools {
 		return soundFiles;
 	}
 
-	public static void extractInkTexts(String story, String lang) throws IOException {
-		String file = Ctx.project.getModelPath() + "/" + story + EngineAssetManager.INK_EXT;
+	public static void extractInkTexts(String file, String lang) throws IOException {
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 		StringBuilder sb = new StringBuilder();
@@ -464,16 +463,12 @@ public class ModelTools {
 		FileUtils.writeStringToFile(new File(file + ".txt"), mdString.toString());
 
 		String json = root.toJson(OutputType.json);
-		FileUtils.writeStringToFile(new File(file + ".new"), json);
-
-		FileUtils.copyFile(new File(file), new File(file + ".old"));
-		FileUtils.copyFile(new File(file + ".new"), new File(file));
-		new File(file + ".new").delete();
+		FileUtils.writeStringToFile(new File(file), json);
 
 		try {
 			String file2 = file.substring(0, file.length() - EngineAssetManager.INK_EXT.length());
 
-			if (lang.equals("default"))
+			if (lang == null || lang.isEmpty() || lang.equals("default"))
 				file2 += "-ink.properties";
 			else
 				file2 += "-ink" + "_" + lang + ".properties";
@@ -484,8 +479,6 @@ public class ModelTools {
 		} catch (IOException e) {
 			EditorLogger.error("ERROR WRITING BUNDLE: " + file + ".properties");
 		}
-
-		// Ctx.project.setModified();
 	}
 
 	private static void extractInkTextsInternal(JsonValue v, StringBuilder sbTSV, StringBuilder sbMD,
@@ -499,8 +492,8 @@ public class ModelTools {
 					sbMD.append("\n==== " + v.name + " ====\n");
 				else if (v.name.equals("s"))
 					sbMD.append("  * ");
-//				else
-//					sbMD.append("\n-- " + v.name + " --\n");
+				// else
+				// sbMD.append("\n-- " + v.name + " --\n");
 			}
 
 			for (int i = 0; i < v.size; i++) {
@@ -511,7 +504,6 @@ public class ModelTools {
 
 		} else if (v.isString() && v.asString().charAt(0) == '^') {
 			String value = v.asString().substring(1).trim();
-			// String key = "ink." + value.hashCode();
 
 			if (value.length() == 0 || value.charAt(0) == '>')
 				return;
@@ -540,7 +532,6 @@ public class ModelTools {
 				return;
 			}
 
-			// Ctx.project.getI18N().setTranslation(key, value);
 			prop.setProperty(key, value);
 			sbTSV.append(key + "\t" + charName + "\t" + value + "\n");
 
@@ -603,8 +594,8 @@ public class ModelTools {
 					sbMD.append("\n==== " + v.name + " ====\n");
 				else if (v.name.equals("s"))
 					sbMD.append("  * ");
-//				else
-//					sbMD.append("\n-- " + v.name + " --\n");
+				// else
+				// sbMD.append("\n-- " + v.name + " --\n");
 			}
 
 			for (int i = 0; i < v.size; i++) {

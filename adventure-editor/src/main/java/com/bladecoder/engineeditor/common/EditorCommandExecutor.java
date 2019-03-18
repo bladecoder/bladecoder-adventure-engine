@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
+import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger.Levels;
 import com.bladecoder.engineeditor.model.Project;
@@ -78,7 +79,7 @@ public class EditorCommandExecutor extends CommandExecutor {
 
 	public void extractInkTexts(String story, String lang) {
 		try {
-			ModelTools.extractInkTexts(story, lang);
+			ModelTools.extractInkTexts(Ctx.project.getModelPath() + "/" + story + EngineAssetManager.INK_EXT, lang);
 		} catch (Exception e) {
 			EditorLogger.printStackTrace(e);
 		}

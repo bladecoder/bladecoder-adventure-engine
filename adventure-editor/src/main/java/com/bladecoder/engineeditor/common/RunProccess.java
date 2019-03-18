@@ -46,13 +46,13 @@ public class RunProccess {
 		return builder.toString();
 	}
 
-	public static boolean runBladeEngine(File prjFolder, String chapter,
-			String scene, boolean fullscreen) throws IOException {
-		List<String> args = new ArrayList<String>();
+	public static boolean runBladeEngine(File prjFolder, String chapter, String scene, boolean fullscreen)
+			throws IOException {
+		List<String> args = new ArrayList<>();
 		args.add(":desktop:run");
 		String appArgs = "-PappArgs=['-d'";
-		
-		if(!fullscreen)
+
+		if (!fullscreen)
 			appArgs += ",'-w'";
 
 		if (chapter != null) {
@@ -69,49 +69,45 @@ public class RunProccess {
 		return runGradle(prjFolder, args);
 	}
 
-	public static boolean runBladeEngineInternal(File prjFolder, String chapter,
-			String scene)
-			throws IOException {
-		List<String> args = new ArrayList<String>();
+	public static boolean runBladeEngineInternal(File prjFolder, String chapter, String scene) throws IOException {
+		List<String> args = new ArrayList<>();
 		args.add("-w");
 		args.add("-adv-dir");
 		args.add(prjFolder.getAbsolutePath());
-		
-		if(scene != null) {
+
+		if (scene != null) {
 			args.add("-t");
 			args.add(scene);
 		}
-		
+
 		if (chapter != null) {
 			args.add("-chapter");
 			args.add(chapter);
 		}
 
-		List<String> cp = new ArrayList<String>();
+		List<String> cp = new ArrayList<>();
 		cp.add(System.getProperty("java.class.path"));
 
 		runJavaProccess("com.bladecoder.engineeditor.utils.DesktopLauncher", cp, args);
-		
+
 		return true;
 	}
 
-	public static void runAnt(String buildFile, String target, String distDir,
-			String projectDir, Properties props) throws IOException {
+	public static void runAnt(String buildFile, String target, String distDir, String projectDir, Properties props)
+			throws IOException {
 		String packageFilesDir = "package-files/";
 
 		if (!new File(packageFilesDir).exists()) {
-			EditorLogger
-					.error("package-files folder not found. Searching folder for IDE mode.");
+			EditorLogger.error("package-files folder not found. Searching folder for IDE mode.");
 
 			packageFilesDir = "src/dist/package-files/";
 			if (!new File(packageFilesDir).exists()) {
-				EditorLogger.error(new File(packageFilesDir).getAbsolutePath()
-						+ " folder not found in IDE mode.");
+				EditorLogger.error(new File(packageFilesDir).getAbsolutePath() + " folder not found in IDE mode.");
 				return;
 			}
 		}
 
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("-f");
 		args.add(packageFilesDir + buildFile);
 		args.add("-Dproject=" + projectDir);
@@ -127,7 +123,7 @@ public class RunProccess {
 
 		args.add(target);
 
-		List<String> cp = new ArrayList<String>();
+		List<String> cp = new ArrayList<>();
 		// cp.add(System.getProperty("java.class.path") );
 		cp.add(packageFilesDir + "ant.jar");
 		cp.add(packageFilesDir + "ant-launcher.jar");
@@ -146,13 +142,12 @@ public class RunProccess {
 		}
 	}
 
-	public static Process runJavaProccess(String mainClass,
-			List<String> classpathEntries, List<String> args)
+	public static Process runJavaProccess(String mainClass, List<String> classpathEntries, List<String> args)
 			throws IOException {
 		String javaRT = System.getProperty("java.home") + "/bin/java";
 		String workingDirectory = ".";
 
-		List<String> argumentsList = new ArrayList<String>();
+		List<String> argumentsList = new ArrayList<>();
 		argumentsList.add(javaRT);
 
 		if (classpathEntries != null && classpathEntries.size() > 0) {
@@ -165,30 +160,26 @@ public class RunProccess {
 		if (args != null)
 			argumentsList.addAll(args);
 
-		ProcessBuilder processBuilder = new ProcessBuilder(
-				argumentsList.toArray(new String[argumentsList.size()]));
+		ProcessBuilder processBuilder = new ProcessBuilder(argumentsList.toArray(new String[argumentsList.size()]));
 		// processBuilder.redirectErrorStream(true);
 		processBuilder.directory(new File(workingDirectory));
 		processBuilder.inheritIO();
 
 		return processBuilder.start();
 	}
-	
-	public static boolean runGradle(File workingDir, List<String> parameters)  {
-		String exec = workingDir.getAbsolutePath()
-				+ "/"
-				+ (System.getProperty("os.name").contains("Windows") ? "gradlew.bat"
-						: "gradlew");
 
-		List<String> argumentsList = new ArrayList<String>();
+	public static boolean runGradle(File workingDir, List<String> parameters) {
+		String exec = workingDir.getAbsolutePath() + "/"
+				+ (System.getProperty("os.name").contains("Windows") ? "gradlew.bat" : "gradlew");
+
+		List<String> argumentsList = new ArrayList<>();
 		argumentsList.add(exec);
 		argumentsList.addAll(parameters);
 
 		EditorLogger.msgThreaded("Executing 'gradlew " + parameters + "'");
 
 		try {
-			final ProcessBuilder pb = new ProcessBuilder(argumentsList).directory(
-					workingDir).redirectErrorStream(true);
+			final ProcessBuilder pb = new ProcessBuilder(argumentsList).directory(workingDir).redirectErrorStream(true);
 
 			// TODO: READ OUTPUT FROM pb AND print in output stream
 			// if (System.console() != null)
@@ -196,8 +187,39 @@ public class RunProccess {
 
 			final Process process = pb.start();
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					process.getInputStream()));
+			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			while ((line = in.readLine()) != null) {
+				EditorLogger.msgThreaded(line);
+			}
+
+			process.waitFor();
+			return process.exitValue() == 0;
+		} catch (Exception e) {
+			EditorLogger.msgThreaded("ERROR: " + e.getMessage());
+			return false;
+		}
+	}
+
+	public static boolean runInklecate(File workingDir, List<String> parameters) {
+		String exec = workingDir.getAbsolutePath() + "/" + "inklecate.exe";
+
+		List<String> argumentsList = new ArrayList<>();
+		argumentsList.add(exec);
+		argumentsList.addAll(parameters);
+
+		EditorLogger.msgThreaded("Executing 'inklecate " + parameters + "'");
+
+		try {
+			final ProcessBuilder pb = new ProcessBuilder(argumentsList).directory(workingDir).redirectErrorStream(true);
+
+			// TODO: READ OUTPUT FROM pb AND print in output stream
+			// if (System.console() != null)
+			// pb.inheritIO();
+
+			final Process process = pb.start();
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line;
 			while ((line = in.readLine()) != null) {
 				EditorLogger.msgThreaded(line);
@@ -212,7 +234,7 @@ public class RunProccess {
 	}
 
 	public static boolean runGradle(File workingDir, String parameters) {
-		
+
 		String[] split = parameters.split(" ");
 
 		return runGradle(workingDir, Arrays.asList(split));
