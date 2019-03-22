@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.0]
+
+- Update Spine runtime to v3.7
+- Dialog to compile Ink stories.
+- Show 'Saved game' text when saved game to give user feedback.
+
 ## [3.0.0] aka Johnny Bonasera 3
 
 - Ink button in editor to link Ink stories with chapters.
