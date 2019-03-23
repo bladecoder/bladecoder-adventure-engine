@@ -103,7 +103,11 @@ public class ScreenPositionAction implements Action {
 			// v.y = viewport.getScreenHeight() - v.y;
 			v.y = Gdx.graphics.getHeight() - v.y;
 
-			w.getCurrentScene().getCamera().unproject(v, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
+			if (w.getUIActors().getActors().contains(a))
+				w.getUIActors().getCamera().unproject(v, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
+			else
+				w.getCurrentScene().getCamera().unproject(v, 0, 0, viewport.getScreenWidth(),
+						viewport.getScreenHeight());
 
 			a.setPosition(v.x, v.y);
 		}
