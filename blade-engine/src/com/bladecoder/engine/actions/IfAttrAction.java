@@ -30,7 +30,7 @@ public class IfAttrAction extends AbstractIfAction {
 	public static final String ENDTYPE_VALUE = "else";
 
 	public enum ActorAttribute {
-		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY, TARGET, IN_SCENE, LAYER, DIRECTION
+		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY, TARGET, IN_SCENE, LAYER, DIRECTION, IN_UI
 	}
 
 	@ActionProperty(required = true)
@@ -44,9 +44,9 @@ public class IfAttrAction extends AbstractIfAction {
 	@ActionProperty
 	@ActionPropertyDescription("The attribute value")
 	private String value;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
@@ -68,22 +68,22 @@ public class IfAttrAction extends AbstractIfAction {
 		if (attr.equals(ActorAttribute.STATE) && a instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor) a;
 			if (!ActionUtils.compareNullStr(value, ia.getState())) {
-				gotoElse((VerbRunner) cb);
+				gotoElse(cb);
 			}
 		} else if (attr.equals(ActorAttribute.VISIBLE)) {
 			boolean val = Boolean.parseBoolean(value);
 			if (val != a.isVisible()) {
-				gotoElse((VerbRunner) cb);
+				gotoElse(cb);
 			}
 		} else if (attr.equals(ActorAttribute.INTERACTIVE)) {
 			boolean val = Boolean.parseBoolean(value);
 
 			if (a instanceof InteractiveActor) {
 				if (val != ((InteractiveActor) a).getInteraction()) {
-					gotoElse((VerbRunner) cb);
+					gotoElse(cb);
 				}
 			} else if (val == true) {
-				gotoElse((VerbRunner) cb);
+				gotoElse(cb);
 			}
 		} else if (attr.equals(ActorAttribute.IN_INVENTORY)) {
 			boolean val = Boolean.parseBoolean(value);
@@ -94,12 +94,12 @@ public class IfAttrAction extends AbstractIfAction {
 				item = w.getInventory().get(a.getId());
 
 			if ((val && item == null) || (!val && item != null)) {
-				gotoElse((VerbRunner) cb);
+				gotoElse(cb);
 			}
 		} else if (attr.equals(ActorAttribute.TARGET)) {
 
 			if (!ActionUtils.compareNullStr(value, cb.getCurrentTarget())) {
-				gotoElse((VerbRunner) cb);
+				gotoElse(cb);
 			}
 		} else if (attr.equals(ActorAttribute.IN_SCENE)) {
 			boolean val = Boolean.parseBoolean(value);
@@ -107,26 +107,33 @@ public class IfAttrAction extends AbstractIfAction {
 			BaseActor a2 = s.getActor(actorId, false);
 
 			if ((val && a2 == null) || (!val && a2 != null))
-				gotoElse((VerbRunner) cb);
+				gotoElse(cb);
+		} else if (attr.equals(ActorAttribute.IN_UI)) {
+			boolean val = Boolean.parseBoolean(value);
+
+			BaseActor a2 = w.getUIActors().get(actorId);
+
+			if ((val && a2 == null) || (!val && a2 != null))
+				gotoElse(cb);
 		} else if (attr.equals(ActorAttribute.LAYER) && a instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor) a;
 			if (!ActionUtils.compareNullStr(value, ia.getLayer())) {
-				gotoElse((VerbRunner) cb);
+				gotoElse(cb);
 			}
 		} else if (attr.equals(ActorAttribute.DIRECTION) && a instanceof SpriteActor) {
 			SpriteActor sa = (SpriteActor) a;
 
 			if (sa.getRenderer() instanceof AnimationRenderer) {
 				String dir = null;
-				
-				String anim = ((AnimationRenderer)sa.getRenderer()).getCurrentAnimationId();
+
+				String anim = ((AnimationRenderer) sa.getRenderer()).getCurrentAnimationId();
 				int idx = anim.lastIndexOf('.');
-				
-				if( idx != -1)
+
+				if (idx != -1)
 					dir = anim.substring(idx + 1);
-				
+
 				if (!ActionUtils.compareNullStr(value, dir)) {
-					gotoElse((VerbRunner) cb);
+					gotoElse(cb);
 				}
 			}
 		}

@@ -3,6 +3,7 @@ package com.bladecoder.engine.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
@@ -22,6 +23,10 @@ public class UIActors implements AssetConsumer, Serializable {
 
 	public UIActors(World w) {
 		this.w = w;
+	}
+
+	public Camera getCamera() {
+		return cam;
 	}
 
 	public void addActor(InteractiveActor a) {
