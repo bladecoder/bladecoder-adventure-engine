@@ -45,6 +45,7 @@ import com.bladecoder.engine.spine.SpineRenderer;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.AlignUtils;
 import com.bladecoder.engineeditor.common.ElementUtils;
+import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
 import com.bladecoder.engineeditor.ui.panels.FilteredSelectBox;
@@ -561,7 +562,12 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 						r = (SpineRenderer) sa.getRenderer();
 					}
 
-					r.setSkin(spineSkin.getText());
+					try {
+						r.setSkin(spineSkin.getText());
+					} catch (Exception e) {
+						r.setSkin(null);
+						Message.showMsgDialog(getStage(), "Error setting skin.", e.getMessage());
+					}
 				}
 
 				boolean bbfr = Boolean.parseBoolean(bboxFromRenderer.getText());
