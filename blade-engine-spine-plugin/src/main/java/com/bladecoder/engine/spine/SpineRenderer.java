@@ -297,6 +297,8 @@ public class SpineRenderer extends AnimationRenderer {
 			} else {
 				sce.skeleton.setSkin((Skin) null);
 			}
+
+			sce.skeleton.setSlotsToSetupPose();
 		}
 
 		this.skin = skin;
