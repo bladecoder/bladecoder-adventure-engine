@@ -292,8 +292,30 @@ public class SpineRenderer extends AnimationRenderer {
 		if (currentSource != null && currentSource.refCounter > 0) {
 			SkeletonCacheEntry sce = (SkeletonCacheEntry) currentSource;
 
+			EngineLogger.debug("Setting Spine skin: " + skin);
+
 			if (skin != null) {
-				sce.skeleton.setSkin(skin);
+				SkeletonData skeletonData = sce.skeleton.getData();
+
+				if (skin.indexOf(',') == -1 || skeletonData.findSkin(skin) != null) {
+					sce.skeleton.setSkin(skin);
+				} else {
+					// we can combine several skins separated by ','
+					String[] skins = skin.split(",");
+
+					Skin combinedSkin = new Skin(skin);
+
+					for (String sk : skins) {
+
+						// Get the source skins.
+						Skin singleSkin = skeletonData.findSkin(sk.trim());
+						combinedSkin.addAttachments(singleSkin);
+
+						// Set and apply the Skin to the skeleton.
+						sce.skeleton.setSkin(combinedSkin);
+					}
+				}
+
 			} else {
 				sce.skeleton.setSkin((Skin) null);
 			}
