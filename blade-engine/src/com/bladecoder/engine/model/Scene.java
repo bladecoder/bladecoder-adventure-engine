@@ -309,11 +309,15 @@ public class Scene implements Serializable, AssetConsumer {
 		BaseActor a = id == null ? null : actors.get(id);
 
 		if (a == null && searchInventory) {
-			a = w.getInventory().get(id);
+			for (Inventory i : w.getInventories().values()) {
+				a = i.get(id);
+
+				if (a != null)
+					return a;
+			}
 
 			// Search the uiActors
-			if (a == null)
-				a = w.getUIActors().get(id);
+			a = w.getUIActors().get(id);
 		}
 
 		return a;

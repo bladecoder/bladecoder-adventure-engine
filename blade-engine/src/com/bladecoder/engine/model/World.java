@@ -418,7 +418,7 @@ public class World implements AssetConsumer {
 		return customProperties;
 	}
 
-	public Map<String, Inventory> getInvetories() {
+	public Map<String, Inventory> getInventories() {
 		return inventories;
 	}
 

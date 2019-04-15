@@ -266,7 +266,7 @@ public class WorldSerialization implements Serializable {
 			json.writeValue(Config.VERSION_PROP, Config.getProperty(Config.VERSION_PROP, null));
 			json.writeValue("scenes", w.getScenes(), w.getScenes().getClass(), Scene.class);
 			json.writeValue("currentScene", w.getCurrentScene().getId());
-			json.writeValue("inventories", w.getInvetories());
+			json.writeValue("inventories", w.getInventories());
 			json.writeValue("currentInventory", w.getCurrentInventory());
 			json.writeValue("timeOfGame", w.getTimeOfGame());
 			json.writeValue("cutmode", w.inCutMode());
@@ -379,7 +379,7 @@ public class WorldSerialization implements Serializable {
 			for (int i = 0; i < jsonInventories.size; i++) {
 				JsonValue jsonValue = jsonInventories.get(i);
 				Inventory inv = new Inventory();
-				w.getInvetories().put(jsonValue.name, inv);
+				w.getInventories().put(jsonValue.name, inv);
 				inv.read(json, jsonValue);
 			}
 
