@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.minimalcode.beans.ObjectWrapper;
 import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.Application.ApplicationType;
@@ -102,7 +101,6 @@ public class World implements AssetConsumer {
 
 	// ------------ LAZY CREATED OBJECTS ------------
 	private InkManager inkManager;
-	private ObjectWrapper wrapper;
 
 	// ------------ TRANSIENT OBJECTS ------------
 	private AssetState assetState;
@@ -737,21 +735,6 @@ public class World implements AssetConsumer {
 		} else {
 			serialization.loadChapter();
 		}
-	}
-
-	private ObjectWrapper getObjectWrapper() {
-		if (wrapper == null)
-			wrapper = new ObjectWrapper(this);
-
-		return wrapper;
-	}
-
-	public void setModelProp(String prop, String value) {
-		getObjectWrapper().setValue(prop, value);
-	}
-
-	public Object getModelProp(String prop) {
-		return getObjectWrapper().getValue(prop);
 	}
 
 	public void loadChapter(String chapter, String scene, boolean test) throws Exception {
