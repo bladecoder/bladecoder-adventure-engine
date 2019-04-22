@@ -17,8 +17,6 @@ The **Bladecoder Adventure Engine** has been developed using the [LibGDX](http:/
 ### Adventure Editor
 The **Adventure Editor** is a graphical editor to create full point and click games with minimal programming.
 
-<a href="https://flathub.org/apps/details/com.bladecoder.adventure-editor"><img width="240" alt="Download on Flathub" src="https://flathub.org/assets/badges/flathub-badge-en.png"/></a>
-
 ![adventure editor 2014-09-26](https://cloud.githubusercontent.com/assets/6229260/4420346/1d3a1b8a-4578-11e4-8eec-415f5e27c005.png)
 
 ### Blade Engine
@@ -41,11 +39,15 @@ The source of **The Goddess Robbery** can be downloaded  [here](https://github.c
 
 ### Documentation
 
-All available documentation is in the [wiki page](https://github.com/bladecoder/bladecoder-adventure-engine/wiki). The documentation is not good and needs to improve, we are working on it. Meanwhile you can download and look into the [test projects](https://github.com/bladecoder/bladecoder-adventure-tests/).
+All available documentation is in the [wiki page](https://github.com/bladecoder/bladecoder-adventure-engine/wiki). The documentation is not good enough and needs to improve, we are working on it. Meanwhile you can download and look into the [test projects](https://github.com/bladecoder/bladecoder-adventure-tests/).
 
 ### Download latest release
 
-Check the [release page](https://github.com/bladecoder/bladecoder-adventure-engine/releases) to download the latest version.
+Check the [release page](https://github.com/bladecoder/bladecoder-adventure-engine/releases/latest) to download the latest version.
+
+For Linux users, there is a Flatpack package with all the dependencies included.
+
+<a href="https://flathub.org/apps/details/com.bladecoder.adventure-editor"><img width="240" alt="Download on Flathub" src="https://flathub.org/assets/badges/flathub-badge-en.png"/></a>
 
 ### Building and running
 In order to compile, build and run the engine, the Java platform is necessary. The project uses Gradle to build and package.
