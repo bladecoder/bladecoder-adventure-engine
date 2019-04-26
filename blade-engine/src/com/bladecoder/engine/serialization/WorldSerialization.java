@@ -126,10 +126,12 @@ public class WorldSerialization implements Serializable {
 	/**
 	 * Loads a JSON chapter file.
 	 * 
-	 * @param chapterName filename without path and extension.
-	 * @param scene       the init scene. null to use the chapter defined init
-	 *                    scene.
-	 * @param initScene   false only when it comes from loading a saved game.
+	 * @param chapterName
+	 *            filename without path and extension.
+	 * @param scene
+	 *            the init scene. null to use the chapter defined init scene.
+	 * @param initScene
+	 *            false only when it comes from loading a saved game.
 	 * @throws IOException
 	 */
 	public void loadChapter(String chapterName, String scene, boolean initScene) throws IOException {
@@ -181,6 +183,8 @@ public class WorldSerialization implements Serializable {
 
 		Json json = new BladeJson(w, Mode.MODEL);
 		json.setOutputType(OutputType.javascript);
+		// TODO: New libgdx field. Waiting for release!
+		// json.setSortFields(true);
 
 		String s = null;
 
