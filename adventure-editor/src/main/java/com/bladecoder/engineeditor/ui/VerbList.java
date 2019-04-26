@@ -57,23 +57,19 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 			@Override
 			public void scopeChanged(String scope) {
 				if (WORLD_SCOPE.equals(scope)) {
-					addElements(Ctx.project.getWorld().getVerbManager(), Arrays.asList(Ctx.project.getWorld()
-							.getVerbManager().getVerbs().values().toArray(new Verb[0])));
+					addElements(Ctx.project.getWorld().getVerbManager(), Arrays
+							.asList(Ctx.project.getWorld().getVerbManager().getVerbs().values().toArray(new Verb[0])));
 				} else if (SCENE_SCOPE.equals(scope)) {
 					if (Ctx.project.getSelectedScene() != null)
-						addElements(
-								Ctx.project.getSelectedScene().getVerbManager(),
-								Arrays.asList(Ctx.project.getSelectedScene().getVerbManager().getVerbs().values()
-										.toArray(new Verb[0])));
+						addElements(Ctx.project.getSelectedScene().getVerbManager(), Arrays.asList(Ctx.project
+								.getSelectedScene().getVerbManager().getVerbs().values().toArray(new Verb[0])));
 					else
 						addElements(null, null);
 				} else if (ACTOR_SCOPE.equals(scope)) {
 					BaseActor a = Ctx.project.getSelectedActor();
 					if (a instanceof InteractiveActor) {
-						addElements(
-								((InteractiveActor) a).getVerbManager(),
-								Arrays.asList(((InteractiveActor) a).getVerbManager().getVerbs().values()
-										.toArray(new Verb[0])));
+						addElements(((InteractiveActor) a).getVerbManager(), Arrays.asList(
+								((InteractiveActor) a).getVerbManager().getVerbs().values().toArray(new Verb[0])));
 					} else {
 						addElements(null, null);
 					}
@@ -109,22 +105,16 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 			public void propertyChange(PropertyChangeEvent evt) {
 				if (evt.getNewValue() instanceof Verb && !(evt.getSource() instanceof EditVerbDialog)) {
 					if (ScopePanel.WORLD_SCOPE.equals(scopePanel.getScope())) {
-						addElements(
-								Ctx.project.getWorld().getVerbManager(),
-								Arrays.asList(Ctx.project.getWorld().getVerbManager().getVerbs().values()
-										.toArray(new Verb[0])));
+						addElements(Ctx.project.getWorld().getVerbManager(), Arrays.asList(
+								Ctx.project.getWorld().getVerbManager().getVerbs().values().toArray(new Verb[0])));
 					} else if (ScopePanel.SCENE_SCOPE.equals(scopePanel.getScope())) {
-						addElements(
-								Ctx.project.getSelectedScene().getVerbManager(),
-								Arrays.asList(Ctx.project.getSelectedScene().getVerbManager().getVerbs().values()
-										.toArray(new Verb[0])));
+						addElements(Ctx.project.getSelectedScene().getVerbManager(), Arrays.asList(Ctx.project
+								.getSelectedScene().getVerbManager().getVerbs().values().toArray(new Verb[0])));
 					} else if (ScopePanel.ACTOR_SCOPE.equals(scopePanel.getScope())) {
 						BaseActor a = Ctx.project.getSelectedActor();
 						if (a instanceof InteractiveActor) {
-							addElements(
-									((InteractiveActor) a).getVerbManager(),
-									Arrays.asList(((InteractiveActor) a).getVerbManager().getVerbs().values()
-											.toArray(new Verb[0])));
+							addElements(((InteractiveActor) a).getVerbManager(), Arrays.asList(
+									((InteractiveActor) a).getVerbManager().getVerbs().values().toArray(new Verb[0])));
 						} else {
 							addElements(null, null);
 						}
@@ -254,13 +244,16 @@ public class VerbList extends ModelList<VerbManager, Verb> {
 			String state = e.getState();
 			String target = e.getTarget();
 
-			StringBuilder sb = new StringBuilder(e.getId());
+			StringBuilder sb = new StringBuilder();
 
 			if (state != null)
-				sb.append(" when ").append(state);
+				sb.append("when ").append(state);
 
 			if (target != null)
-				sb.append(" with target '").append(target).append("'");
+				sb.append(" target: '").append(target).append("'");
+
+			if (e.getIcon() != null)
+				sb.append(" icon: '").append(e.getIcon()).append("'");
 
 			return sb.toString();
 		}
