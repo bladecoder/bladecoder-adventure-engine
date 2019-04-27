@@ -14,7 +14,7 @@
    height="2373.0876"
    id="svg2"
    version="1.1"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="icons-atlas.svg"
    inkscape:export-filename="/home/rgarcia/WORKSPACES/ENGINE/engine-editor/src/res/images/ic_goto.png"
    inkscape:export-xdpi="22.5"
@@ -27,17 +27,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70627929"
-     inkscape:cx="2258.6787"
-     inkscape:cy="874.77137"
+     inkscape:zoom="0.99882975"
+     inkscape:cx="2631.1354"
+     inkscape:cy="529.29897"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      showborder="true"
      borderlayer="true"
-     inkscape:window-width="1853"
-     inkscape:window-height="1025"
-     inkscape:window-x="67"
+     inkscape:window-width="1850"
+     inkscape:window-height="1016"
+     inkscape:window-x="70"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
      inkscape:snap-global="false"
@@ -4651,7 +4651,7 @@
        inkscape:export-xdpi="18.281246"
        inkscape:export-filename="icons/ic_player_small.png"
        id="g3991-8"
-       transform="translate(1920.8676,1543.8758)">
+       transform="translate(1891.1343,1558.0345)">
       <rect
          style="fill:none;stroke:none"
          id="rect3179-6"
@@ -4683,7 +4683,7 @@
       </g>
     </g>
     <g
-       transform="translate(1920.8676,1716.0773)"
+       transform="translate(1893.9661,1723.1567)"
        id="g1752"
        inkscape:export-filename="icons/ic_player_small_disabled.png"
        inkscape:export-xdpi="18.281248"
@@ -5184,5 +5184,43 @@
        d="m 2145.3374,2060.2106 -32.9991,10.2148 10.2147,-32.9992 7.3181,7.3177 27.2649,-27.2648 -7.3178,-7.318 32.9991,-10.2145 -10.2148,32.9988 -7.3179,-7.3175 -27.2648,27.265 z"
        id="path1533"
        inkscape:connector-curvature="0" />
+    <g
+       id="g1617"
+       inkscape:export-filename="icons/ic_reload_small.png"
+       inkscape:export-xdpi="18"
+       inkscape:export-ydpi="18">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3768-3"
+         d="m 2706.8937,2481.3644 -19.2952,15.3304 c -10.1476,-8.5095 -23.1802,-13.6783 -37.3346,-13.6783 -31.99,0 -58.2817,26.2918 -58.2817,58.2817 0,31.99 26.2917,57.687 58.2817,57.687 25.0789,0 46.6293,-15.763 54.7796,-37.9953 l -20.881,-5.0883 c -5.5881,13.1775 -18.5375,22.2686 -33.8986,22.2686 -20.562,0 -36.8722,-16.31 -36.8722,-36.872 0,-20.562 16.3102,-37.4667 36.8722,-37.4667 7.629,0 14.6388,2.3621 20.4845,6.3436 l -19.0968,15.1981 55.2421,10.2422 z"
+         style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:xx-small;line-height:normal;font-family:Sans;-inkscape-font-specification:Sans;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;baseline-shift:baseline;text-anchor:start;display:inline;overflow:visible;visibility:visible;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.11111116;marker:none;enable-background:accumulate" />
+      <rect
+         y="-2712.4534"
+         x="2477.1594"
+         height="126.03077"
+         width="126.03078"
+         id="rect1557-7"
+         style="display:inline;fill:none;stroke:none"
+         transform="rotate(90)" />
+    </g>
+    <g
+       id="g1598"
+       inkscape:export-filename="icons/ic_reload_small_disabled.png"
+       inkscape:export-xdpi="18"
+       inkscape:export-ydpi="18">
+      <path
+         style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:xx-small;line-height:normal;font-family:Sans;-inkscape-font-specification:Sans;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;baseline-shift:baseline;text-anchor:start;display:inline;overflow:visible;visibility:visible;fill:#404040;fill-opacity:1;stroke:none;stroke-width:1.11111116;marker:none;enable-background:accumulate"
+         d="m 2704.8911,2640.5506 -19.2951,15.3304 c -10.1477,-8.5095 -23.1802,-13.6784 -37.3346,-13.6784 -31.99,0 -58.2817,26.2918 -58.2817,58.2818 0,31.9899 26.2917,57.687 58.2817,57.687 25.0789,0 46.6292,-15.7631 54.7795,-37.9954 l -20.881,-5.0882 c -5.5881,13.1775 -18.5375,22.2686 -33.8985,22.2686 -20.562,0 -36.8721,-16.3101 -36.8721,-36.872 0,-20.562 16.3101,-37.4667 36.8721,-37.4667 7.6289,0 14.6388,2.3621 20.4845,6.3435 l -19.0968,15.1982 55.242,10.2421 z"
+         id="path1554"
+         inkscape:connector-curvature="0" />
+      <rect
+         y="-2710.4509"
+         x="2636.3457"
+         height="126.03077"
+         width="126.03078"
+         id="rect1557-5"
+         style="display:inline;fill:none;stroke:none"
+         transform="rotate(90)" />
+    </g>
   </g>
 </svg>

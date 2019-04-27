@@ -46,13 +46,13 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 
 	final private PathFinder<NavNodePolygonal> pathfinder = new AStarPathFinder<NavNodePolygonal>(this,
 			MAX_PATHFINDER_SEARCH_DISTANCE, new ManhattanDistance());
-	final private NavPathPolygonal resultPath = new NavPathPolygonal();
+
 	final private NavNodePolygonal startNode = new NavNodePolygonal();
 	final private NavNodePolygonal targetNode = new NavNodePolygonal();
 	final private ArrayList<NavNodePolygonal> graphNodes = new ArrayList<NavNodePolygonal>();
 
 	public ArrayList<Vector2> findPath(float sx, float sy, float tx, float ty) {
-		resultPath.clear();
+		final NavPathPolygonal resultPath = new NavPathPolygonal();
 
 		Vector2 source = new Vector2(sx, sy);
 		Vector2 target = new Vector2(tx, ty);
@@ -125,10 +125,8 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 	/**
 	 * Search the first polygon vertex inside the walkzone.
 	 * 
-	 * @param p
-	 *            the polygon
-	 * @param target
-	 *            the vertex found
+	 * @param p      the polygon
+	 * @param target the vertex found
 	 */
 	private void getFirstVertexInsideWalkzone(Polygon p, Vector2 target) {
 		float verts[] = p.getTransformedVertices();
@@ -145,12 +143,12 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 
 	public void createInitialGraph(BaseActor wz, Collection<BaseActor> actors) {
 		graphNodes.clear();
-		
-		if(wz == null) {
+
+		if (wz == null) {
 			walkZone = null;
 			return;
 		}
-		
+
 		walkZone = wz.getBBox();
 
 		// 1.- Add WalkZone convex nodes
