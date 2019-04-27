@@ -63,6 +63,7 @@ import com.bladecoder.engineeditor.undo.UndoOp;
 public class SceneList extends ModelList<World, Scene> {
 
 	private ImageButton initBtn;
+	private ImageButton reloadBtn;
 	private SelectBox<String> chapters;
 	private HashMap<String, TextureRegion> bgIconCache = new HashMap<>();
 	private boolean disposeBgCache = false;
@@ -105,6 +106,11 @@ public class SceneList extends ModelList<World, Scene> {
 
 		initBtn.setDisabled(true);
 
+		reloadBtn = new ImageButton(skin);
+		toolbar.addToolBarButton(reloadBtn, "ic_reload_small", "Reload Assets", "Reload current scene assets");
+
+		reloadBtn.setDisabled(true);
+
 		list.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
@@ -120,6 +126,7 @@ public class SceneList extends ModelList<World, Scene> {
 
 				toolbar.disableEdit(pos == -1);
 				initBtn.setDisabled(pos == -1);
+				reloadBtn.setDisabled(pos == -1);
 			}
 		});
 
@@ -129,6 +136,14 @@ public class SceneList extends ModelList<World, Scene> {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				setDefault();
+			}
+
+		});
+
+		reloadBtn.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				reloadAssets();
 			}
 
 		});
@@ -258,6 +273,10 @@ public class SceneList extends ModelList<World, Scene> {
 		String id = list.getItems().get(pos).getId();
 		Ctx.project.getWorld().setInitScene(id);
 		Ctx.project.setModified();
+	}
+
+	private void reloadAssets() {
+		Ctx.project.setSelectedScene(list.getSelected());
 	}
 
 	@Override

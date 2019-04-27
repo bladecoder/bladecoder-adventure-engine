@@ -153,7 +153,7 @@ ic_create_all
   index: -1
 ic_create_all_disabled
   rotate: false
-  xy: 861, 51
+  xy: 913, 51
   size: 15, 15
   orig: 15, 15
   offset: 0, 0
@@ -424,6 +424,20 @@ ic_quit
   orig: 45, 45
   offset: 0, 0
   index: -1
+ic_reload_small
+  rotate: false
+  xy: 651, 42
+  size: 24, 24
+  orig: 24, 24
+  offset: 0, 0
+  index: -1
+ic_reload_small_disabled
+  rotate: false
+  xy: 677, 42
+  size: 24, 24
+  orig: 24, 24
+  offset: 0, 0
+  index: -1
 ic_repeat
   rotate: false
   xy: 326, 47
@@ -433,14 +447,14 @@ ic_repeat
   index: -1
 ic_right
   rotate: false
-  xy: 651, 42
+  xy: 703, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_right_disabled
   rotate: false
-  xy: 677, 42
+  xy: 729, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -489,14 +503,14 @@ ic_text
   index: -1
 ic_up
   rotate: false
-  xy: 703, 42
+  xy: 755, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 ic_up_disabled
   rotate: false
-  xy: 729, 42
+  xy: 781, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
@@ -538,21 +552,21 @@ scn_move
   index: -1
 scn_rotate
   rotate: false
-  xy: 755, 42
+  xy: 807, 42
   size: 24, 24
   orig: 24, 24
   offset: 0, 0
   index: -1
 scn_scale
   rotate: false
-  xy: 805, 48
+  xy: 857, 48
   size: 18, 18
   orig: 18, 18
   offset: 0, 0
   index: -1
 scn_scale_lock
   rotate: false
-  xy: 781, 44
+  xy: 833, 44
   size: 22, 22
   orig: 22, 22
   offset: 0, 0
@@ -573,14 +587,14 @@ title
   index: -1
 transparent-dark
   rotate: false
-  xy: 825, 50
+  xy: 877, 50
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 transparent-light
   rotate: false
-  xy: 843, 50
+  xy: 895, 50
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
