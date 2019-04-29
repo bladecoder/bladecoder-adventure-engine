@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
@@ -119,7 +120,7 @@ public class ImageRenderer extends AnimationRenderer {
 			disposeSource(currentAnimation.source);
 
 		currentAnimation = fa;
-		currentSource = (ImageCacheEntry) sourceCache.get(fa.source);
+		currentSource = sourceCache.get(fa.source);
 
 		// If the source is not loaded. Load it.
 		if (currentSource == null || currentSource.refCounter < 1) {
@@ -128,7 +129,7 @@ public class ImageRenderer extends AnimationRenderer {
 
 			retrieveSource(fa.source);
 
-			currentSource = (ImageCacheEntry) sourceCache.get(fa.source);
+			currentSource = sourceCache.get(fa.source);
 
 			if (currentSource == null) {
 				EngineLogger.error("Could not load AnimationDesc: " + id);
@@ -210,6 +211,8 @@ public class ImageRenderer extends AnimationRenderer {
 
 			((ImageCacheEntry) entry).tex = EngineAssetManager.getInstance()
 					.getTexture(EngineAssetManager.IMAGE_DIR + source);
+
+			((ImageCacheEntry) entry).tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		}
 	}
 
