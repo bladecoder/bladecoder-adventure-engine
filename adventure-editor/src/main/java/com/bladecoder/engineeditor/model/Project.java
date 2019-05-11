@@ -41,9 +41,9 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.FolderClassLoader;
 import com.bladecoder.engineeditor.common.OrderedProperties;
+import com.bladecoder.engineeditor.common.OrderedProperties.OrderedPropertiesBuilder;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.common.Versions;
-import com.bladecoder.engineeditor.common.OrderedProperties.OrderedPropertiesBuilder;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.undo.UndoStack;
 
@@ -113,7 +113,7 @@ public class Project extends PropertyChange {
 	public Project() {
 		loadConfig();
 	}
-	
+
 	public World getWorld() {
 		return world;
 	}
@@ -254,7 +254,7 @@ public class Project extends PropertyChange {
 
 		return projectConfig.getProperty(Config.TITLE_PROP, getProjectDir().getName());
 	}
-	
+
 	public boolean isLoaded() {
 		return Ctx.project.getProjectDir() != null;
 	}
@@ -302,14 +302,14 @@ public class Project extends PropertyChange {
 			// 3.- SAVE BladeEngine.properties
 			List<String> resolutions = getResolutions();
 			StringBuilder sb = new StringBuilder();
-			
-			for(int i = 0; i < resolutions.size(); i++) {
+
+			for (int i = 0; i < resolutions.size(); i++) {
 				sb.append(resolutions.get(i));
-				
-				if(i < resolutions.size() - 1)
+
+				if (i < resolutions.size() - 1)
 					sb.append(',');
 			}
-			
+
 			projectConfig.setProperty(Config.RESOLUTIONS, sb.toString());
 			projectConfig.store(new FileOutputStream(getAssetPath() + "/" + Config.PROPERTIES_FILENAME), null);
 
@@ -341,9 +341,10 @@ public class Project extends PropertyChange {
 			// Use FolderClassLoader for loading CUSTOM actions.
 			// TODO Add 'core/bin' and '/core/out' folders???
 			FolderClassLoader folderClassLoader = null;
-			
+
 			if (new File(projectFile, "/assets").exists()) {
-				folderClassLoader = new FolderClassLoader(projectFile.getAbsolutePath() + "/core/build/classes/java/main");
+				folderClassLoader = new FolderClassLoader(
+						projectFile.getAbsolutePath() + "/core/build/classes/java/main");
 			} else {
 				folderClassLoader = new FolderClassLoader(projectFile.getAbsolutePath() + "/core/build/classes/main");
 			}
@@ -352,6 +353,10 @@ public class Project extends PropertyChange {
 			EngineAssetManager.createEditInstance(getAssetPath());
 
 			try {
+				// Clear last project to avoid reloading if the project fails.
+				getEditorConfig().remove(LAST_PROJECT_PROP);
+				saveConfig();
+
 				world.loadWorldDesc();
 			} catch (SerializationException ex) {
 				// check for not compiled custom actions
@@ -376,9 +381,7 @@ public class Project extends PropertyChange {
 			// No need to load the chapter. It's loaded by the chapter combo.
 			// loadChapter(world.getInitChapter());
 
-			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
-
-			projectConfig =  new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+			projectConfig = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 			projectConfig.load(new FileInputStream(getAssetPath() + "/" + Config.PROPERTIES_FILENAME));
 			modified = false;
 
@@ -395,8 +398,7 @@ public class Project extends PropertyChange {
 		String editorVersion = getEditorBladeEngineVersion();
 		String projectVersion = getProjectBladeEngineVersion(projectPath);
 
-		if (editorVersion.equals(projectVersion)
-				|| editorVersion.indexOf('.') == -1)
+		if (editorVersion.equals(projectVersion) || editorVersion.indexOf('.') == -1)
 			return true;
 
 		if (parseVersion(editorVersion) <= parseVersion(projectVersion))
@@ -407,12 +409,12 @@ public class Project extends PropertyChange {
 
 	private int parseVersion(String v) {
 		int number = 1; // 1 -> release, 0 -> snapshot
-		
-		if(v.endsWith("-SNAPSHOT")) {
+
+		if (v.endsWith("-SNAPSHOT")) {
 			number = 0;
 			v = v.substring(0, v.length() - "-SNAPSHOT".length());
 		}
-		
+
 		String[] split = v.split("\\.");
 
 		try {
@@ -509,13 +511,14 @@ public class Project extends PropertyChange {
 		try {
 			chapter.load(selChapter);
 			firePropertyChange(NOTIFY_CHAPTER_LOADED);
+			getEditorConfig().setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 			getEditorConfig().setProperty("project.selectedChapter", selChapter);
 		} catch (SerializationException ex) {
 			// check for not compiled custom actions
 			if (ex.getCause() != null && ex.getCause() instanceof ClassNotFoundException) {
 				EditorLogger.msg("Custom action class not found. Trying to compile...");
 				if (RunProccess.runGradle(getProjectDir(), "desktop:compileJava")) {
-					((FolderClassLoader)ActionFactory.getActionClassLoader()).reload();
+					((FolderClassLoader) ActionFactory.getActionClassLoader()).reload();
 					chapter.load(selChapter);
 				} else {
 					throw new IOException("Failed to run Gradle.");
@@ -538,7 +541,7 @@ public class Project extends PropertyChange {
 	}
 
 	public OrderedProperties getGradleProperties(File projectPath) throws FileNotFoundException, IOException {
-		OrderedProperties prop =  new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+		OrderedProperties prop = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 
 		prop.load(new FileReader(projectPath.getAbsolutePath() + "/gradle.properties"));
 
@@ -546,8 +549,7 @@ public class Project extends PropertyChange {
 	}
 
 	public void saveGradleProperties(OrderedProperties prop, File projectPath) throws IOException {
-		FileOutputStream os = new FileOutputStream(
-				projectPath.getAbsolutePath() + "/gradle.properties");
+		FileOutputStream os = new FileOutputStream(projectPath.getAbsolutePath() + "/gradle.properties");
 
 		prop.store(os, null);
 	}
