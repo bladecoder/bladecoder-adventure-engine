@@ -66,6 +66,7 @@ public class EditableSelectBox<T> extends Table {
 		add(showListButton);
 
 		addListener(new ClickListener() {
+			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				if (pointer == 0 && button != 0)
 					return false;
@@ -74,11 +75,12 @@ public class EditableSelectBox<T> extends Table {
 					return false;
 
 //				if (selectList.getStage() == null)
-					showList();
+				showList();
 
 				return true;
 			}
 
+			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
 				if (keycode == Keys.ENTER) {
 					setSelectedIndex(selectList.list.getSelectedIndex());
@@ -102,7 +104,7 @@ public class EditableSelectBox<T> extends Table {
 					if (selectList.getStage() == null && selectList.list.getItems().size > 0) {
 						showList();
 					}
-					
+
 					filterItems(input.getText());
 				}
 
@@ -177,10 +179,10 @@ public class EditableSelectBox<T> extends Table {
 	public void showList() {
 		if (selectList.list.getItems().size == 0)
 			return;
-		
-		if(selectList.list.getSelectedIndex() >= selectList.list.getItems().size)
+
+		if (selectList.list.getSelectedIndex() >= selectList.list.getItems().size)
 			selectList.list.setSelectedIndex(selectList.list.getItems().size - 1);
-		
+
 		selectList.show(getStage());
 	}
 
@@ -196,7 +198,7 @@ public class EditableSelectBox<T> extends Table {
 			setListItems(items);
 		} else {
 
-			ArrayList<T> filtered = new ArrayList<T>();
+			ArrayList<T> filtered = new ArrayList<>();
 
 			String sl = s.toLowerCase();
 
@@ -241,12 +243,14 @@ public class EditableSelectBox<T> extends Table {
 			setActor(list);
 
 			list.addListener(new ClickListener() {
+				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					selectBox.setText(list.getSelected().toString());
 					selectedIndex = list.getSelectedIndex();
 					hide();
 				}
 
+				@Override
 				public boolean mouseMoved(InputEvent event, float x, float y) {
 					list.setSelectedIndex(
 							Math.min(list.getItems().size - 1, (int) ((list.getHeight() - y) / list.getItemHeight())));
@@ -255,9 +259,10 @@ public class EditableSelectBox<T> extends Table {
 			});
 
 			addListener(new InputListener() {
+				@Override
 				public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
 					if (toActor == null || !isAscendantOf(toActor))
-						if(selectedIndex < list.getItems().size)
+						if (selectedIndex < list.getItems().size)
 							list.setSelectedIndex(selectedIndex);
 						else
 							EditorLogger.error("EditableSelectBox:exit selectedIndex outOfBounds: " + selectedIndex);
@@ -265,15 +270,22 @@ public class EditableSelectBox<T> extends Table {
 			});
 
 			hideListener = new InputListener() {
+				@Override
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 					Actor target = event.getTarget();
 					if (isAscendantOf(target))
 						return false;
-					list.setSelectedIndex(selectedIndex);
+
+					if (selectedIndex < list.getItems().size)
+						list.setSelectedIndex(selectedIndex);
+					else
+						EditorLogger.error("EditableSelectBox:touchDown selectedIndex outOfBounds: " + selectedIndex);
+
 					hide();
 					return false;
 				}
 
+				@Override
 				public boolean keyDown(InputEvent event, int keycode) {
 					if (keycode == Keys.ESCAPE)
 						hide();
@@ -332,7 +344,6 @@ public class EditableSelectBox<T> extends Table {
 				previousScrollFocus = actor;
 			stage.setScrollFocus(this);
 
-
 			list.setTouchable(Touchable.enabled);
 			clearActions();
 			// getColor().a = 0;
@@ -359,6 +370,7 @@ public class EditableSelectBox<T> extends Table {
 			addAction(sequence(fadeOut(0.15f, Interpolation.fade), Actions.removeActor()));
 		}
 
+		@Override
 		public void draw(Batch batch, float parentAlpha) {
 			selectBox.localToStageCoordinates(temp.set(0, 0));
 			if (!temp.equals(screenPosition))
@@ -366,6 +378,7 @@ public class EditableSelectBox<T> extends Table {
 			super.draw(batch, parentAlpha);
 		}
 
+		@Override
 		public void act(float delta) {
 			super.act(delta);
 			toFront();
