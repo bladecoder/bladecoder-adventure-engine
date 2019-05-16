@@ -168,6 +168,24 @@ public class RunProccess {
 		return processBuilder.start();
 	}
 
+	public static Process runJavaHomeBin(String bin, List<String> args) throws IOException {
+		String cmd = System.getProperty("java.home") + "/bin/" + bin;
+		String workingDirectory = ".";
+
+		List<String> argumentsList = new ArrayList<>();
+		argumentsList.add(cmd);
+
+		if (args != null)
+			argumentsList.addAll(args);
+
+		ProcessBuilder processBuilder = new ProcessBuilder(argumentsList.toArray(new String[argumentsList.size()]));
+		// processBuilder.redirectErrorStream(true);
+		processBuilder.directory(new File(workingDirectory));
+		processBuilder.inheritIO();
+
+		return processBuilder.start();
+	}
+
 	public static boolean runGradle(File workingDir, List<String> parameters) {
 		String exec = workingDir.getAbsolutePath() + "/"
 				+ (System.getProperty("os.name").contains("Windows") ? "gradlew.bat" : "gradlew");
