@@ -28,10 +28,15 @@ import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogicgames.packr.Packr;
 import com.badlogicgames.packr.PackrConfig;
 import com.badlogicgames.packr.PackrConfig.Platform;
@@ -55,7 +60,7 @@ public class PackageDialog extends EditDialog {
 
 	private static final String DESKTOP_LAUNCHER = "DesktopLauncher.java";
 
-	private static final String INFO = "Package the Adventure for distribution";
+	private static final String INFO = "Package the Game for distribution";
 	private static final String[] ARCHS = { "desktop", "android", "ios" };
 	private static final String[] TYPES = { "Bundle JRE", "Runnable jar" };
 	private static final String[] OSS = { "all", "windows32", "windows64", "linux64", "linux32", "macOSX" };
@@ -81,14 +86,14 @@ public class PackageDialog extends EditDialog {
 
 	private InputPanel iosSignIdentity;
 	private InputPanel iosProvisioningProfile;
-	
+
 	private InputPanel customBuildParameters;
 
 	private InputPanel[] options;
 
 	@SuppressWarnings("unchecked")
-	public PackageDialog(Skin skin) {
-		super("PACKAGE ADVENTURE", skin);
+	public PackageDialog(final Skin skin) {
+		super("PACKAGE GAME", skin);
 
 		arch = InputPanelFactory.createInputPanel(skin, "Architecture", "Select the target Architecture for the game",
 				ARCHS, true);
@@ -137,7 +142,7 @@ public class PackageDialog extends EditDialog {
 				Param.Type.BOOLEAN, true, "false");
 		androidKeyStore = new FileInputPanel(skin, "KeyStore", "Select the Key Store Location",
 				FileInputPanel.DialogType.OPEN_FILE);
-		androidKeyAlias = InputPanelFactory.createInputPanel(skin, "KeyAlias", "Select the Key Alias Location", true);
+		androidKeyAlias = InputPanelFactory.createInputPanel(skin, "KeyAlias", "Select the Key Alias", true);
 
 		androidKeyStorePassword = InputPanelFactory.createInputPanel(skin, "KeyStorePasswd", "Key Store Password",
 				true);
@@ -150,7 +155,7 @@ public class PackageDialog extends EditDialog {
 
 		iosProvisioningProfile = InputPanelFactory.createInputPanel(skin, "Provisioning Profile",
 				"Empty for auto select.", false);
-		
+
 		customBuildParameters = InputPanelFactory.createInputPanel(skin, "Custom build parameters",
 				"You can add extra build parameters for customized build scripts.", false);
 
@@ -213,14 +218,44 @@ public class PackageDialog extends EditDialog {
 			}
 		});
 
+		// Add the 'create' button to the keystore.
+		TextButton createButton = new TextButton("Create", skin, "no-toggled");
+
+		createButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				final CreateAndroidKeystoreDialog c = new CreateAndroidKeystoreDialog(skin);
+				c.show(getStage());
+
+				c.setListener(new ChangeListener() {
+					@Override
+					public void changed(ChangeEvent event, Actor actor) {
+						androidKeyStore.setText(c.getKeyStorePath());
+						androidKeyAlias.setText(c.getKeyAlias());
+						androidKeyStorePassword.setText(c.getKeyStorePassword());
+						androidKeyAliasPassword.setText(c.getKeyAliasPassword());
+
+					}
+				});
+
+			}
+		});
+
+		Table t = new Table();
+		Actor a = androidKeyStore.getField();
+		Cell<?> c = androidKeyStore.getCell(a);
+		t.add(a);
+		t.add(createButton);
+		c.setActor(t);
+
 		archChanged();
 	}
 
 	@Override
 	protected void ok() {
-		
+
 		final Stage stg = getStage();
-		
+
 		Message.showMsg(stg, "Generating package...", true);
 
 		new Thread() {
@@ -245,7 +280,7 @@ public class PackageDialog extends EditDialog {
 				} catch (Exception ex) {
 					msg = "Something went wrong while saving the project.\n\n" + ex.getClass().getSimpleName() + " - "
 							+ ex.getMessage();
-					
+
 					Message.showMsgDialog(stg, "Error", msg);
 					return;
 				}
@@ -264,15 +299,14 @@ public class PackageDialog extends EditDialog {
 					if (i.getText() != null)
 						Ctx.project.getEditorConfig().setProperty("package." + i.getTitle(), i.getText());
 				}
-				
-				
+
 				// hide message
 				Message.hideMsg();
 
 				if (msg != null) {
 					final String m = msg;
 					Message.showMsgDialog(stg, "Result", m);
-				}				
+				}
 			}
 		}.start();
 
@@ -287,8 +321,8 @@ public class PackageDialog extends EditDialog {
 
 		String versionParam = "-Pversion=" + version.getText() + " ";
 		Ctx.project.getProjectConfig().setProperty(Config.VERSION_PROP, version.getText());
-		
-		String customBuildParams = customBuildParameters.getText() == null? "": customBuildParameters.getText() + " ";
+
+		String customBuildParams = customBuildParameters.getText() == null ? "" : customBuildParameters.getText() + " ";
 
 		if (arch.getText().equals("desktop")) {
 			String jarDir = Ctx.project.getProjectDir().getAbsolutePath() + "/desktop/build/libs/";
@@ -327,10 +361,10 @@ public class PackageDialog extends EditDialog {
 				}
 			}
 		} else if (arch.getText().equals("android")) {
-			String params = versionParam + customBuildParams + "-PversionCode=" + versionCode.getText() + " " + "-Pkeystore="
-					+ androidKeyStore.getText() + " " + "-PstorePassword=" + androidKeyStorePassword.getText() + " "
-					+ "-Palias=" + androidKeyAlias.getText() + " " + "-PkeyPassword="
-					+ androidKeyAliasPassword.getText() + " ";
+			String params = versionParam + customBuildParams + "-PversionCode=" + versionCode.getText() + " "
+					+ "-Pkeystore=" + androidKeyStore.getText() + " " + "-PstorePassword="
+					+ androidKeyStorePassword.getText() + " " + "-Palias=" + androidKeyAlias.getText() + " "
+					+ "-PkeyPassword=" + androidKeyAliasPassword.getText() + " ";
 
 			// UPDATE 'local.properties' with the android SDK location.
 			if (androidSDK.getText() != null && !androidSDK.getText().trim().isEmpty()) {
@@ -341,8 +375,9 @@ public class PackageDialog extends EditDialog {
 				p.store(new FileOutputStream(
 						new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties")), null);
 			}
-			
-			if(!new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties").exists() && System.getenv("ANDROID_HOME") == null) {
+
+			if (!new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties").exists()
+					&& System.getenv("ANDROID_HOME") == null) {
 				return "You have to specify the Android SDK path or set the ANDROID_HOME environtment variable.";
 			}
 
@@ -351,16 +386,14 @@ public class PackageDialog extends EditDialog {
 					+ "/android/build/outputs/apk/full/release/android-full-release.apk";
 
 			boolean genExpansion = Boolean.parseBoolean(expansionFile.getText());
-			boolean newProjectStructure = new File(Ctx.project.getProjectDir().getAbsolutePath()
-					+ "/assets/").exists();
-			
-			if(!newProjectStructure && genExpansion)
+			boolean newProjectStructure = new File(Ctx.project.getProjectDir().getAbsolutePath() + "/assets/").exists();
+
+			if (!newProjectStructure && genExpansion)
 				return "You need to update your project to the new layout to generate expansion files.";
-			
-			if(!newProjectStructure) {
+
+			if (!newProjectStructure) {
 				task = "android:assembleRelease";
-				apk = Ctx.project.getProjectDir().getAbsolutePath()
-						+ "/android/build/outputs/apk/android-release.apk";
+				apk = Ctx.project.getProjectDir().getAbsolutePath() + "/android/build/outputs/apk/android-release.apk";
 			}
 
 			if (genExpansion) {
@@ -397,14 +430,14 @@ public class PackageDialog extends EditDialog {
 			p.store(new FileOutputStream(
 					new File(Ctx.project.getProjectDir().getAbsolutePath(), "/ios/robovm.properties")), null);
 
-			List<String> params = new ArrayList<String>();
+			List<String> params = new ArrayList<>();
 
 			if (iosSignIdentity.getText() != null)
 				params.add("-Probovm.iosSignIdentity=" + iosSignIdentity.getText());
 
 			if (iosProvisioningProfile.getText() != null)
 				params.add("-Probovm.iosProvisioningProfile=" + iosProvisioningProfile.getText());
-			
+
 			if (customBuildParameters.getText() != null)
 				params.add(customBuildParams);
 
@@ -454,7 +487,7 @@ public class PackageDialog extends EditDialog {
 			setVisible(iosSignIdentity, true);
 			setVisible(iosProvisioningProfile, true);
 		}
-		
+
 		setVisible(customBuildParameters, true);
 	}
 
@@ -562,8 +595,8 @@ public class PackageDialog extends EditDialog {
 		return ok;
 	}
 
-	private String genDesktopJar(String projectName, String versionParam, String jarDir, String jarName, String customBuildParams)
-			throws IOException {
+	private String genDesktopJar(String projectName, String versionParam, String jarDir, String jarName,
+			String customBuildParams) throws IOException {
 		String msg = null;
 
 		if (RunProccess.runGradle(Ctx.project.getProjectDir(), versionParam + customBuildParams + "desktop:dist")) {
@@ -670,15 +703,14 @@ public class PackageDialog extends EditDialog {
 	 * @return Search the desktop main class in the desktop folder
 	 */
 	private String getDesktopMainClass() {
-		
-		
+
 		File result = search(new File(Ctx.project.getProjectDir().getAbsolutePath() + "/desktop"));
 
 		String absolutePath = result.getAbsolutePath().replace('\\', '/');
 
-		int cutIdx =  absolutePath.indexOf("src/main/java/");
-		
-		if(cutIdx != -1)
+		int cutIdx = absolutePath.indexOf("src/main/java/");
+
+		if (cutIdx != -1)
 			cutIdx += 14;
 		else
 			cutIdx = absolutePath.indexOf("src/") + 4;
