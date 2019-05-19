@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.1]
+
+- Dialog to create the android keystore inside the editor.
+- Label and text to warn about legacy dialogs.
+- Added RandomPosition action.
+- Added reload assets icon to scene list.
+- Added support for combining skins in Spine.
+- Delete last_project key if loadproject fails so the editor doesn't fail forever.
+- Delete SetModelProp action and supporting library. It was not useful and make porting dificult.
+- Added IN_UI if property.
+- Fix: Now search in all inventories.
+- Fix: Set skin now updates properly.
+
 ## [3.1.0]
 
 - Update Spine runtime to v3.7
