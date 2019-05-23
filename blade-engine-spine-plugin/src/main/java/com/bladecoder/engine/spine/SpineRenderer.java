@@ -446,6 +446,16 @@ public class SpineRenderer extends AnimationRenderer {
 		}
 	}
 
+	public Skeleton getCurrentSkeleton() {
+		SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
+		return cs.skeleton;
+	}
+
+	public AnimationState getCurrentAnimationState() {
+		SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
+		return cs.animation;
+	}
+
 	private void setCurrentAnimation() {
 		try {
 			SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
