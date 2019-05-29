@@ -22,16 +22,14 @@ import com.bladecoder.engine.model.World;
 public class PropertyAction implements Action {
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("Property name")
-
 	private String prop;
 
-	@ActionProperty(required = true)
+	@ActionProperty
 	@ActionPropertyDescription("Property value")
-
 	private String value;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
