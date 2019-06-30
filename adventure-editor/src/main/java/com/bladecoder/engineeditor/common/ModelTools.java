@@ -499,6 +499,10 @@ public class ModelTools {
 			for (int i = 0; i < v.size; i++) {
 				JsonValue aValue = v.get(i);
 
+				// Ignore string declr ej. "xxx"
+				if (i > 0 && v.get(i - 1).isString() && v.get(i - 1).asString().equals("str"))
+					continue;
+
 				extractInkTextsInternal(aValue, sbTSV, sbMD, prop);
 			}
 
