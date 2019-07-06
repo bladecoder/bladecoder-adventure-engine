@@ -3,13 +3,18 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.ReadOnlySerializer;
 import com.badlogic.gdx.utils.JsonValue;
@@ -166,10 +171,59 @@ public class BladeSkin extends Skin {
 			}
 		});
 
+		json.setSerializer(AnimationDrawable.class, new ReadOnlySerializer<AnimationDrawable>() {
+			@Override
+			public AnimationDrawable read(Json json, JsonValue jsonData, @SuppressWarnings("rawtypes") Class type) {
+				String name = json.readValue("name", String.class, jsonData);
+				float frameDuration = json.readValue("frame_duration", Float.class, jsonData);
+
+				Array<AtlasRegion> regions = getAtlas().findRegions(name);
+
+				Animation<AtlasRegion> a = new Animation<AtlasRegion>(frameDuration, regions, PlayMode.LOOP);
+				AnimationDrawable drawable = new AnimationDrawable(a);
+
+				if (drawable instanceof BaseDrawable) {
+					BaseDrawable named = drawable;
+					named.setName(jsonData.name + " (" + name + ", " + frameDuration + ")");
+				}
+
+				return drawable;
+			}
+		});
+
+		json.addClassTag("AnimationDrawable", AnimationDrawable.class);
+
 		return json;
 	}
 
 	public void addStyleTag(Class<?> tag) {
 		getJsonClassTags().put(tag.getSimpleName(), tag);
+	}
+
+	@Override
+	public Drawable newDrawable(Drawable drawable) {
+		if (drawable instanceof AnimationDrawable)
+			return new AnimationDrawable((AnimationDrawable) drawable);
+		return super.newDrawable(drawable);
+	}
+
+	@Override
+	public Drawable newDrawable(Drawable drawable, Color tint) {
+		Drawable newDrawable;
+		if (drawable instanceof AnimationDrawable) {
+			newDrawable = ((AnimationDrawable) drawable).tint(tint);
+
+			if (newDrawable instanceof BaseDrawable) {
+				BaseDrawable named = (BaseDrawable) newDrawable;
+				if (drawable instanceof BaseDrawable)
+					named.setName(((BaseDrawable) drawable).getName() + " (" + tint + ")");
+				else
+					named.setName(" (" + tint + ")");
+			}
+
+			return newDrawable;
+		}
+
+		return super.newDrawable(drawable, tint);
 	}
 }
