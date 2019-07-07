@@ -7,8 +7,9 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TransformDrawable;
 
-class AnimationDrawable extends BaseDrawable {
+public class AnimationDrawable extends BaseDrawable implements TransformDrawable {
 	public final Animation<AtlasRegion> anim;
 	private float stateTime = 0;
 	private Color tint;
@@ -39,6 +40,19 @@ class AnimationDrawable extends BaseDrawable {
 			batch.setColor(tint);
 
 		batch.draw(anim.getKeyFrame(stateTime), x, y, width, height);
+
+		if (tint != null)
+			batch.setColor(Color.WHITE);
+	}
+
+	@Override
+	public void draw(Batch batch, float x, float y, float originX, float originY, float width, float height,
+			float scaleX, float scaleY, float rotation) {
+
+		if (tint != null)
+			batch.setColor(tint);
+
+		batch.draw(anim.getKeyFrame(stateTime), x, y, originX, originY, width, height, scaleX, scaleY, rotation);
 
 		if (tint != null)
 			batch.setColor(Color.WHITE);
