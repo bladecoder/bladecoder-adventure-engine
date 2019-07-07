@@ -21,13 +21,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TransformDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.ui.AnimationDrawable;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -44,10 +46,10 @@ public class ScenePointer {
 
 	private String desc = null;
 
-	private TextureRegion leaveIcon;
-	private TextureRegion pointerIcon;
-	private TextureRegion hotspotIcon;
-	private TextureRegion currentIcon;
+	private Drawable leaveIcon;
+	private Drawable pointerIcon;
+	private Drawable hotspotIcon;
+	private Drawable currentIcon;
 	private SpriteActor draggingActor;
 
 	private final Vector2 mousepos = new Vector2();
@@ -61,9 +63,9 @@ public class ScenePointer {
 	public ScenePointer(Skin skin) {
 		// this.skin = skin;
 		font = skin.getFont("desc");
-		pointerIcon = skin.getAtlas().findRegion(POINTER_ICON);
-		leaveIcon = skin.getAtlas().findRegion(LEAVE_ICON);
-		hotspotIcon = skin.getAtlas().findRegion(HOTSPOT_ICON);
+		pointerIcon = skin.getDrawable(POINTER_ICON);
+		leaveIcon = skin.getDrawable(LEAVE_ICON);
+		hotspotIcon = skin.getDrawable(HOTSPOT_ICON);
 		reset();
 	}
 
@@ -94,7 +96,7 @@ public class ScenePointer {
 		currentIcon = hotspotIcon;
 	}
 
-	public void setIcon(TextureRegion r) {
+	public void setIcon(Drawable r) {
 		currentIcon = r;
 	}
 
@@ -114,6 +116,11 @@ public class ScenePointer {
 		out.set(Gdx.input.getX(), Gdx.input.getY());
 
 		v.unproject(out);
+	}
+
+	public void update(float delta) {
+		if (pointerIcon instanceof AnimationDrawable)
+			((AnimationDrawable) pointerIcon).act(delta);
 	}
 
 	public void draw(SpriteBatch batch, Viewport v) {
@@ -142,10 +149,22 @@ public class ScenePointer {
 		if (draggingActor == null) {
 			if (!multiTouch || (currentIcon == leaveIcon && Gdx.input.isTouched())) {
 
-				batch.draw(currentIcon, mousepos.x - currentIcon.getRegionWidth() / 2,
-						mousepos.y - currentIcon.getRegionHeight() / 2, currentIcon.getRegionWidth() / 2,
-						currentIcon.getRegionHeight() / 2, currentIcon.getRegionWidth(), currentIcon.getRegionHeight(),
-						pointerScale, pointerScale, currentIcon == leaveIcon ? leaveRotation : 0);
+				if (currentIcon instanceof TransformDrawable) {
+
+					TransformDrawable i = (TransformDrawable) currentIcon;
+
+					i.draw(batch, mousepos.x - currentIcon.getMinWidth() / 2,
+							mousepos.y - currentIcon.getMinHeight() / 2, currentIcon.getMinWidth() / 2,
+							currentIcon.getMinHeight() / 2, currentIcon.getMinWidth(), currentIcon.getMinHeight(),
+							pointerScale, pointerScale, currentIcon == leaveIcon ? leaveRotation : 0);
+				} else {
+					float width = currentIcon.getMinWidth() * pointerScale;
+					float height = currentIcon.getMinHeight() * pointerScale;
+					float x = mousepos.x - width / 2;
+					float y = mousepos.y - height / 2;
+
+					currentIcon.draw(batch, x, y, width, height);
+				}
 			}
 		} else {
 			float h = (draggingActor.getHeight() > draggingActor.getWidth() ? draggingActor.getHeight()
@@ -160,7 +179,7 @@ public class ScenePointer {
 	}
 
 	public void resize(int width, int height) {
-		pointerScale = DPIUtils.getTouchMinSize() / pointerIcon.getRegionHeight() * .8f;
+		pointerScale = DPIUtils.getTouchMinSize() / pointerIcon.getMinHeight() * .8f;
 	}
 
 }

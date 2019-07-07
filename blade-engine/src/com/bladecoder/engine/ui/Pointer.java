@@ -18,11 +18,11 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.util.DPIUtils;
 
@@ -34,14 +34,14 @@ import com.bladecoder.engine.util.DPIUtils;
 public class Pointer extends Actor {
 	private static final String POINTER_ICON = "pointer";
 
-	private TextureRegion pointerIcon;
+	private Drawable pointerIcon;
 
 	private final Vector2 mousepos = new Vector2();
 
 	private float pointerScale;
 
 	public Pointer(Skin skin) {
-		pointerIcon = skin.getAtlas().findRegion(POINTER_ICON);
+		pointerIcon = skin.getDrawable(POINTER_ICON);
 		setTouchable(Touchable.disabled);
 
 		resize();
@@ -56,6 +56,10 @@ public class Pointer extends Actor {
 
 	@Override
 	public void act(float delta) {
+
+		if (pointerIcon instanceof AnimationDrawable)
+			((AnimationDrawable) pointerIcon).act(delta);
+
 		super.act(delta);
 
 		if (getStage().getActors().get(getStage().getActors().size - 1) != this)
@@ -69,12 +73,12 @@ public class Pointer extends Actor {
 
 		setPosition(mousepos.x - getWidth() / 2, mousepos.y - getHeight() / 2);
 
-		batch.draw(pointerIcon, getX(), getY(), getWidth(), getHeight());
+		pointerIcon.draw(batch, getX(), getY(), getWidth(), getHeight());
 	}
 
 	public void resize() {
-		pointerScale = DPIUtils.getTouchMinSize() / pointerIcon.getRegionHeight() * .8f;
-		setSize(pointerIcon.getRegionWidth() * pointerScale, pointerIcon.getRegionHeight() * pointerScale);
+		pointerScale = DPIUtils.getTouchMinSize() / pointerIcon.getMinHeight() * .8f;
+		setSize(pointerIcon.getMinWidth() * pointerScale, pointerIcon.getMinHeight() * pointerScale);
 	}
 
 	public void show() {

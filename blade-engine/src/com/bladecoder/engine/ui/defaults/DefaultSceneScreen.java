@@ -29,7 +29,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Interpolation;
@@ -62,6 +61,7 @@ import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.model.WorldListener;
+import com.bladecoder.engine.ui.AnimationDrawable;
 import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.ITextManagerUI;
 import com.bladecoder.engine.ui.InventoryButton;
@@ -253,8 +253,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	/**
 	 * Sets the game speed. Can be used to fastfordward
 	 *
-	 * @param s
-	 *            The multiplier speed. ej. 2.0
+	 * @param s The multiplier speed. ej. 2.0
 	 */
 	@Override
 	public void setSpeed(float s) {
@@ -304,6 +303,18 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 
 		stage.act(delta);
+		pointer.update(delta);
+
+		if (drawHotspots) {
+			Drawable hotspotDrawable = getUI().getSkin().getDrawable(Verb.LEAVE_VERB);
+			Drawable leaveDrawable = getUI().getSkin().getDrawable("hotspot");
+
+			if (hotspotDrawable != null && hotspotDrawable instanceof AnimationDrawable)
+				((AnimationDrawable) hotspotDrawable).act(delta);
+
+			if (leaveDrawable != null && leaveDrawable instanceof AnimationDrawable)
+				((AnimationDrawable) leaveDrawable).act(delta);
+		}
 
 		if (world.isPaused())
 			return;
@@ -332,11 +343,11 @@ public class DefaultSceneScreen implements SceneScreen {
 
 					Verb leaveVerb = currentActor.getVerb(Verb.LEAVE_VERB);
 
-					TextureRegion r = null;
+					Drawable r = null;
 
 					if (leaveVerb != null) {
 						if (leaveVerb.getIcon() != null
-								&& (r = getUI().getSkin().getAtlas().findRegion(leaveVerb.getIcon())) != null) {
+								&& (r = getUI().getSkin().getDrawable(leaveVerb.getIcon())) != null) {
 							pointer.setIcon(r);
 
 						} else {
@@ -346,7 +357,7 @@ public class DefaultSceneScreen implements SceneScreen {
 						Verb actionVerb = currentActor.getVerb(Verb.ACTION_VERB);
 
 						if (actionVerb != null && actionVerb.getIcon() != null
-								&& (r = getUI().getSkin().getAtlas().findRegion(actionVerb.getIcon())) != null) {
+								&& (r = getUI().getSkin().getDrawable(actionVerb.getIcon())) != null) {
 							pointer.setIcon(r);
 						} else {
 							pointer.setHotspotIcon();
