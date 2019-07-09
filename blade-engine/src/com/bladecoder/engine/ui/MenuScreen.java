@@ -292,7 +292,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		stage.addActor(menuButtonTable);
 
 		// BOTTOM-RIGHT BUTTON STACK
-		credits = new Button(skin, "credits");
+		credits = new AnimButton(skin, "credits");
 		credits.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -300,7 +300,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		help = new Button(skin, "help");
+		help = new AnimButton(skin, "help");
 		help.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -308,7 +308,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		debug = new Button(skin, "debug");
+		debug = new AnimButton(skin, "debug");
 		debug.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {

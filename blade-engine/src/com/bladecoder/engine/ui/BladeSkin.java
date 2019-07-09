@@ -175,16 +175,20 @@ public class BladeSkin extends Skin {
 			@Override
 			public AnimationDrawable read(Json json, JsonValue jsonData, @SuppressWarnings("rawtypes") Class type) {
 				String name = json.readValue("name", String.class, jsonData);
-				float frameDuration = json.readValue("frame_duration", Float.class, jsonData);
+				float duration = json.readValue("duration", Float.class, 1f, jsonData);
+				PlayMode playMode = json.readValue("play_mode", PlayMode.class, PlayMode.LOOP, jsonData);
 
 				Array<AtlasRegion> regions = getAtlas().findRegions(name);
 
-				Animation<AtlasRegion> a = new Animation<AtlasRegion>(frameDuration, regions, PlayMode.LOOP);
+				if (regions.size == 0)
+					throw new SerializationException("AnimationDrawable not found: " + name);
+
+				Animation<AtlasRegion> a = new Animation<>(duration / regions.size, regions, playMode);
 				AnimationDrawable drawable = new AnimationDrawable(a);
 
 				if (drawable instanceof BaseDrawable) {
 					BaseDrawable named = drawable;
-					named.setName(jsonData.name + " (" + name + ", " + frameDuration + ")");
+					named.setName(jsonData.name + " (" + name + ", " + duration + ")");
 				}
 
 				return drawable;

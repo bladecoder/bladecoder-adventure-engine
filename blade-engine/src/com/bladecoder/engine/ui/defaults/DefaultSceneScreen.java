@@ -46,6 +46,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TransformDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
@@ -61,6 +62,7 @@ import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.model.WorldListener;
+import com.bladecoder.engine.ui.AnimButton;
 import com.bladecoder.engine.ui.AnimationDrawable;
 import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.ITextManagerUI;
@@ -346,8 +348,7 @@ public class DefaultSceneScreen implements SceneScreen {
 					Drawable r = null;
 
 					if (leaveVerb != null) {
-						if (leaveVerb.getIcon() != null
-								&& (r = getUI().getSkin().getDrawable(leaveVerb.getIcon())) != null) {
+						if ((r = getDrawable(leaveVerb.getIcon())) != null) {
 							pointer.setIcon(r);
 
 						} else {
@@ -356,8 +357,7 @@ public class DefaultSceneScreen implements SceneScreen {
 					} else {
 						Verb actionVerb = currentActor.getVerb(Verb.ACTION_VERB);
 
-						if (actionVerb != null && actionVerb.getIcon() != null
-								&& (r = getUI().getSkin().getDrawable(actionVerb.getIcon())) != null) {
+						if (actionVerb != null && (r = getDrawable(actionVerb.getIcon())) != null) {
 							pointer.setIcon(r);
 						} else {
 							pointer.setHotspotIcon();
@@ -369,6 +369,17 @@ public class DefaultSceneScreen implements SceneScreen {
 			} else if (pie.isVisible()) {
 				currentActor = actorUnderCursor;
 			}
+		}
+	}
+
+	private Drawable getDrawable(String name) {
+		if (name == null)
+			return null;
+
+		try {
+			return getUI().getSkin().getDrawable(name);
+		} catch (GdxRuntimeException e) {
+			return null;
 		}
 	}
 
@@ -872,7 +883,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		pie = new PieMenu(this);
 		textManagerUI = new TextManagerUI(ui);
-		menuButton = new Button(ui.getSkin(), "menu");
+		menuButton = new AnimButton(ui.getSkin(), "menu");
 		dialogUI = new DialogUI(ui);
 		pointer = new ScenePointer(ui.getSkin());
 		inventoryUI = new InventoryUI(this, pointer);
