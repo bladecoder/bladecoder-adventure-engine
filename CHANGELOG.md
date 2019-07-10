@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.2]
+
+- Animated ui icons and cursors.
+- Update RoboVM to v2.3.7.
+- Don't extract string expresions from ink files for i18n.
+- Allow empty values in Property action.
+- Added public methods to the SpineRenderer to get access to the current skeleton and animation.
+
 ## [3.1.1]
 
 - Dialog to create the android keystore inside the editor.

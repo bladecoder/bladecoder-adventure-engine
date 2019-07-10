@@ -228,13 +228,6 @@ public class ToolsWindow extends Container<Table> {
 
 			@Override
 			public void selected(Array<FileHandle> files) {
-				// fileChooser.setTitle("Select the file to export the project
-				// texts");
-
-				// ImageUtils.createAtlas(files.get(0).file().getAbsolutePath(),
-				// Ctx.project.getProjectPath() + "/" + Project.UI_PATH + "/1/",
-				// "ui", 1, TextureFilter.Linear,
-				// TextureFilter.Nearest);
 
 				List<String> res = Ctx.project.getResolutions();
 
@@ -246,7 +239,7 @@ public class ToolsWindow extends Container<Table> {
 
 						ImageUtils.createAtlas(files.get(0).file().getAbsolutePath(),
 								Ctx.project.getAssetPath() + Project.UI_PATH + "/" + r, "ui" + ".atlas", scale, maxWH,
-								maxWH, TextureFilter.Linear, TextureFilter.Nearest, "png");
+								maxWH, TextureFilter.Linear, TextureFilter.Nearest, "png", false);
 					} catch (IOException e) {
 						EditorLogger.error(e.getMessage());
 						Message.showMsgDialog(getStage(), "Error creating atlas", e.getMessage());
