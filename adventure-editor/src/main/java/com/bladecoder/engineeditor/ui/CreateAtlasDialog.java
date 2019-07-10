@@ -160,7 +160,7 @@ public class CreateAtlasDialog extends EditDialog {
 
 			try {
 				ImageUtils.createAtlas(dir.getText(), outdir + "/" + r, name + ".atlas", scale, (int) (maxW * scale),
-						(int) (maxH * scale), filterMin, filterMag, outputFormat.getText());
+						(int) (maxH * scale), filterMin, filterMag, outputFormat.getText(), true);
 			} catch (IOException e) {
 				EditorLogger.error(e.getMessage());
 				Message.showMsgDialog(getStage(), "Error creating atlas", e.getMessage());

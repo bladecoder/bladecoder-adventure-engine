@@ -138,7 +138,7 @@ public class ImageUtils {
 		int maxWH = (int) (getRecommendedAtlasSize() * scale);
 
 		createAtlas(tmpDir.getAbsolutePath(), destDir.getAbsolutePath(), orgAtlas.getName(), scale, maxWH, maxWH,
-				atlasData.getPages().get(0).minFilter, atlasData.getPages().get(0).magFilter, outputFormat);
+				atlasData.getPages().get(0).minFilter, atlasData.getPages().get(0).magFilter, outputFormat, true);
 
 		DesktopUtils.removeDir(tmpDir.getAbsolutePath());
 	}
@@ -174,7 +174,8 @@ public class ImageUtils {
 	}
 
 	public static void createAtlas(String inDir, String outdir, String name, float scale, int maxWidth, int maxHeight,
-			TextureFilter filterMin, TextureFilter filterMag, String outputFormat) throws IOException {
+			TextureFilter filterMin, TextureFilter filterMag, String outputFormat, boolean stripWhiteSpace)
+			throws IOException {
 		Settings settings = new Settings();
 
 		settings.pot = false;
@@ -185,8 +186,8 @@ public class ImageUtils {
 		settings.rotation = false;
 		settings.minWidth = 16;
 		settings.minWidth = 16;
-		settings.stripWhitespaceX = true;
-		settings.stripWhitespaceY = true;
+		settings.stripWhitespaceX = stripWhiteSpace;
+		settings.stripWhitespaceY = stripWhiteSpace;
 		settings.alphaThreshold = 0;
 
 		settings.filterMin = filterMin;
