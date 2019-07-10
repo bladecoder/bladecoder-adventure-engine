@@ -119,8 +119,8 @@ public class ScenePointer {
 	}
 
 	public void update(float delta) {
-		if (pointerIcon instanceof AnimationDrawable)
-			((AnimationDrawable) pointerIcon).act(delta);
+		if (currentIcon instanceof AnimationDrawable)
+			((AnimationDrawable) currentIcon).act(delta);
 	}
 
 	public void draw(SpriteBatch batch, Viewport v) {
