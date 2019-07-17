@@ -26,7 +26,7 @@ public class ActionUtils {
 	public static String getInfo(Class<?> clazz) {
 		return clazz.getAnnotation(ActionDescription.class).value();
 	}
-	
+
 	public static boolean isDeprecated(Class<?> clazz) {
 		return clazz.getAnnotation(Deprecated.class) != null;
 	}
@@ -342,13 +342,13 @@ public class ActionUtils {
 
 	public static Action readJson(World w, Json json, JsonValue jsonData) {
 		String className = jsonData.getString("class", null);
+
 		Action action = null;
 		if (className != null) {
 			jsonData.remove("class");
 
 			try {
-				action = ActionFactory.createByClass(className, null);
-				
+				action = ActionFactory.create(className, null);
 			} catch (ClassNotFoundException | ReflectionException e1) {
 				throw new SerializationException(e1);
 			}
@@ -367,7 +367,7 @@ public class ActionUtils {
 							+ (v == null ? "null" : v.asString()));
 				}
 			}
-			
+
 			action.init(w);
 		}
 
