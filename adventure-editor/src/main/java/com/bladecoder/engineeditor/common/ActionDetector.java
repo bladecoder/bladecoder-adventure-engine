@@ -106,7 +106,7 @@ public class ActionDetector {
 		}
 
 		try {
-			return ActionFactory.createByClass(c.getName(), params);
+			return ActionFactory.create(c.getName(), params);
 		} catch (ClassNotFoundException | ReflectionException e) {
 			EditorLogger.error("Action with name '" + name + "' not found.");
 
