@@ -109,12 +109,11 @@ public class ActionFactory {
 
 		Class<?> c = tagToClass.get(tag);
 
-		if (c != null) {
-			a = (Action) ClassReflection.newInstance(c);
-		} else {
+		if (c == null) {
 			c = Class.forName(tag, true, loader);
-			a = (Action) ClassReflection.newInstance(c);
 		}
+
+		a = (Action) ClassReflection.newInstance(c);
 
 		if (params != null) {
 

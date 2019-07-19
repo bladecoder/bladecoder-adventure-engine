@@ -181,8 +181,7 @@ public class WorldSerialization implements Serializable {
 
 		Json json = new BladeJson(w, Mode.MODEL);
 		json.setOutputType(OutputType.javascript);
-		// TODO: New libgdx field. Waiting for release!
-		// json.setSortFields(true);
+		json.setSortFields(true);
 
 		String s = null;
 
@@ -512,8 +511,7 @@ public class WorldSerialization implements Serializable {
 										params.put("sound", sd.getId());
 
 										try {
-											Action a2 = ActionFactory.create(PlaySoundAction.class.getName(),
-													params);
+											Action a2 = ActionFactory.create(PlaySoundAction.class.getName(), params);
 											actions.set(i, a2);
 											a2.init(w);
 										} catch (ClassNotFoundException | ReflectionException e) {
