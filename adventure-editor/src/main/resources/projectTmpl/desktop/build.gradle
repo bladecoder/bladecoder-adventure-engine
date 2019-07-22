@@ -7,7 +7,6 @@ targetCompatibility=1.7
 
 sourceSets.main.resources.srcDirs += [ rootProject.file('assets').absolutePath ]
 mainClassName = "%PACKAGE%.desktop.DesktopLauncher"
-eclipse.project.name = appName + '-desktop'
 
 dependencies {
     implementation project(":core")
