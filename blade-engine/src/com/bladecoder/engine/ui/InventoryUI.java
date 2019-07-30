@@ -233,6 +233,10 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		}
 	}
 
+	public void setStyle(String name) {
+		style = sceneScreen.getUI().getSkin().get(name, InventoryUIStyle.class);
+	}
+
 	public void retrieveAssets(TextureAtlas atlas) {
 	}
 
@@ -268,8 +272,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			}
 
 			r.draw((SpriteBatch) batch, getX() + x * tileSize + x * rowSpace + tileSize / 2 + margin,
-					getY() + (tileSize - r.getHeight() * size) / 2 + y * tileSize + y * rowSpace + margin, size, size, 0f,
-					a.getTint());
+					getY() + (tileSize - r.getHeight() * size) / 2 + y * tileSize + y * rowSpace + margin, size, size,
+					0f, a.getTint());
 		}
 
 		super.draw(batch, alpha);
@@ -325,10 +329,10 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			bestMatch = vinv;
 		}
 
-		if (vtarget == bestMatch) {
-			sceneScreen.runVerb(targetActor, "use", invActor.getId());
-		} else {
+		if (vinv == bestMatch) {
 			sceneScreen.runVerb(invActor, "use", targetActor.getId());
+		} else {
+			sceneScreen.runVerb(targetActor, "use", invActor.getId());
 		}
 	}
 
