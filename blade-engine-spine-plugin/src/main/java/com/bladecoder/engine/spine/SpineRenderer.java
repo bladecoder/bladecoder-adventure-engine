@@ -309,11 +309,11 @@ public class SpineRenderer extends AnimationRenderer {
 
 						// Get the source skins.
 						Skin singleSkin = skeletonData.findSkin(sk.trim());
-						combinedSkin.addAttachments(singleSkin);
-
-						// Set and apply the Skin to the skeleton.
-						sce.skeleton.setSkin(combinedSkin);
+						combinedSkin.addSkin(singleSkin);
 					}
+
+					// Set and apply the Skin to the skeleton.
+					sce.skeleton.setSkin(combinedSkin);
 				}
 
 			} else {
