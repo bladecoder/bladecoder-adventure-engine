@@ -50,16 +50,17 @@ public abstract class EditDialog extends Dialog {
 		infoLbl = new Label("", skin);
 		infoLbl.setWrap(true);
 		centerPanel = new Table(skin);
-		infoCell = getContentTable().add((Widget) infoLbl).prefWidth(200);
-		getContentTable().add(new ScrollPane(centerPanel, skin))
-				.maxHeight(Gdx.graphics.getHeight() * 0.8f)
-				.maxWidth(Gdx.graphics.getWidth() * 0.7f)
-				.minHeight(Gdx.graphics.getHeight() * 0.5f)
+		infoCell = getContentTable().add((Widget) infoLbl).prefWidth(200).height(Gdx.graphics.getHeight() * 0.5f);
+		getContentTable().add(new ScrollPane(centerPanel, skin)).maxHeight(Gdx.graphics.getHeight() * 0.8f)
+				.maxWidth(Gdx.graphics.getWidth() * 0.7f).minHeight(Gdx.graphics.getHeight() * 0.5f)
 				.minWidth(Gdx.graphics.getWidth() * 0.5f);
-		
+
+		getContentTable().setHeight(Gdx.graphics.getHeight() * 0.7f);
+
 		centerPanel.addListener(new InputListener() {
 			@Override
-			public void enter(InputEvent event, float x, float y, int pointer,  com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
+			public void enter(InputEvent event, float x, float y, int pointer,
+					com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
 //				EditorLogger.debug("ENTER - X: " + x + " Y: " + y);
 				getStage().setScrollFocus(centerPanel);
 			}
@@ -75,25 +76,26 @@ public abstract class EditDialog extends Dialog {
 		padLeft(10);
 		padRight(10);
 	}
-	
+
 	public void addInputPanel(InputPanel i) {
 		getCenterPanel().row().fill().expandX();
 		getCenterPanel().add(i);
 	}
-	
+
 	public void setVisible(InputPanel i, boolean v) {
 		i.setVisible(v);
-		Cell<InputPanel> c = getCenterPanel().getCell(i);	
-		
-		if(v) {
+		Cell<InputPanel> c = getCenterPanel().getCell(i);
+
+		if (v) {
 			c.height(i.getPrefHeight());
 		} else {
 			c.height(1);
 		}
-		
-		i.invalidateHierarchy();
-	}	
 
+		i.invalidateHierarchy();
+	}
+
+	@Override
 	public Skin getSkin() {
 		return skin;
 	}
