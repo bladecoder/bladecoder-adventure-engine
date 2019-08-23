@@ -30,7 +30,7 @@ public class IfAttrAction extends AbstractIfAction {
 	public static final String ENDTYPE_VALUE = "else";
 
 	public enum ActorAttribute {
-		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY, TARGET, IN_SCENE, LAYER, DIRECTION, IN_UI
+		STATE, VISIBLE, INTERACTIVE, IN_INVENTORY, TARGET, IN_SCENE, LAYER, DIRECTION, IN_UI, INSIDE
 	}
 
 	@ActionProperty(required = true)
@@ -135,6 +135,18 @@ public class IfAttrAction extends AbstractIfAction {
 				if (!ActionUtils.compareNullStr(value, dir)) {
 					gotoElse(cb);
 				}
+			}
+		} else if (attr.equals(ActorAttribute.INSIDE)) {
+			BaseActor insideActor = w.getCurrentScene().getActor(value, false);
+			boolean inside = false;
+
+			if (a != null && insideActor != null)
+				inside = insideActor.getBBox().contains(a.getX(), a.getY());
+			else
+				EngineLogger.debug("Actor for inside test not found: " + value);
+
+			if (!inside) {
+				gotoElse(cb);
 			}
 		}
 
