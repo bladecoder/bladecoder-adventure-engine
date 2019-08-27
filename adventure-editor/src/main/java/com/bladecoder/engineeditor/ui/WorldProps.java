@@ -54,7 +54,7 @@ public class WorldProps extends PropertyTable {
 		} else if (property.equals(Config.SINGLE_ACTION_INVENTORY)) {
 			Ctx.project.getProjectConfig().setProperty(Config.SINGLE_ACTION_INVENTORY, value);
 		} else if (property.equals(Config.FAST_LEAVE)) {
-			Ctx.project.getProjectConfig().setProperty(Config.FAST_LEAVE, value);			
+			Ctx.project.getProjectConfig().setProperty(Config.FAST_LEAVE, value);
 		} else if (property.equals(Config.DEBUG_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.DEBUG_PROP, value);
 		} else if (property.equals(Config.CHARACTER_ICON_ATLAS)) {
@@ -65,6 +65,8 @@ public class WorldProps extends PropertyTable {
 			Ctx.project.getProjectConfig().setProperty(Config.AUTO_HIDE_TEXTS, value);
 		} else if (property.equals(Config.EXTEND_VIEWPORT_PROP)) {
 			Ctx.project.getProjectConfig().setProperty(Config.EXTEND_VIEWPORT_PROP, value);
+		} else if (property.equals(Config.SHOW_HOTSPOTS)) {
+			Ctx.project.getProjectConfig().setProperty(Config.SHOW_HOTSPOTS, value);
 		}
 
 		Ctx.project.setModified(); // TODO Add propertychange to Config
@@ -77,15 +79,18 @@ public class WorldProps extends PropertyTable {
 			addProperty(Project.WIDTH_PROPERTY, Ctx.project.getWorld().getWidth());
 			addProperty(Project.HEIGHT_PROPERTY, Ctx.project.getWorld().getHeight());
 			addProperty(Config.TITLE_PROP, Ctx.project.getTitle());
-			addProperty(Config.INVENTORY_POS_PROP,
-					Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH),  new String[] {"TOP", "DOWN", "LEFT", "RIGHT", "CENTER"});
+			addProperty(
+					Config.INVENTORY_POS_PROP, Ctx.project.getProjectConfig()
+							.getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH),
+					new String[] { "TOP", "DOWN", "LEFT", "RIGHT", "CENTER" });
 			addProperty(Config.INVENTORY_AUTOSIZE_PROP, Boolean
 					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.INVENTORY_AUTOSIZE_PROP, "true")));
-			addProperty(Config.UI_MODE, Ctx.project.getProjectConfig().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH), new String[] {"TWO_BUTTONS", "PIE", "SINGLE_CLICK"});
+			addProperty(Config.UI_MODE, Ctx.project.getProjectConfig().getProperty(Config.UI_MODE, "TWO_BUTTONS")
+					.toUpperCase(Locale.ENGLISH), new String[] { "TWO_BUTTONS", "PIE", "SINGLE_CLICK" });
 			addProperty(Config.SINGLE_ACTION_INVENTORY, Boolean
 					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.SINGLE_ACTION_INVENTORY, "false")));
-			addProperty(Config.FAST_LEAVE, Boolean
-					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.FAST_LEAVE, "false")));			
+			addProperty(Config.FAST_LEAVE,
+					Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.FAST_LEAVE, "false")));
 			addProperty(Config.DEBUG_PROP,
 					Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.DEBUG_PROP, "false")));
 			addProperty(Config.SHOW_DESC_PROP,
@@ -96,6 +101,8 @@ public class WorldProps extends PropertyTable {
 					Ctx.project.getProjectConfig().getProperty(Config.CHARACTER_ICON_ATLAS, ""));
 			addProperty(Config.EXTEND_VIEWPORT_PROP, Boolean
 					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.EXTEND_VIEWPORT_PROP, "true")));
+			addProperty(Config.SHOW_HOTSPOTS,
+					Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.SHOW_HOTSPOTS, "true")));
 		}
 
 		invalidateHierarchy();

@@ -117,7 +117,11 @@ public class DefaultSceneScreen implements SceneScreen {
 	// Actor under the cursor
 	private InteractiveActor currentActor = null;
 
+	// Called by the input handlers to show/hide the hotspots.
 	private boolean drawHotspots = false;
+	// Configuration to enable/disable the 'drawHotspot' feature.
+	private boolean showHotspotsFeature = true;
+
 	private final boolean showDesc;
 	private final boolean fastLeave;
 
@@ -138,6 +142,7 @@ public class DefaultSceneScreen implements SceneScreen {
 				: new SceneFitViewport();
 		showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
 		fastLeave = Config.getProperty(Config.FAST_LEAVE, false);
+		showHotspotsFeature = Config.getProperty(Config.SHOW_HOTSPOTS, true);
 	}
 
 	@Override
@@ -162,7 +167,11 @@ public class DefaultSceneScreen implements SceneScreen {
 	}
 
 	public void setDrawHotspots(boolean drawHotspots) {
-		this.drawHotspots = drawHotspots;
+		this.drawHotspots = drawHotspots && showHotspotsFeature;
+	}
+
+	public void setShowHotspotsFeature(boolean v) {
+		showHotspotsFeature = v;
 	}
 
 	public UIModes getUIMode() {
