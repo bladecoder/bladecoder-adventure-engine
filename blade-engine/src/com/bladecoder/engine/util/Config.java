@@ -20,13 +20,13 @@ import java.util.Properties;
 import com.bladecoder.engine.assets.EngineAssetManager;
 
 public class Config {
-	public static final String INVENTORY_POS_PROP="inventory_pos";
-	public static final String INVENTORY_AUTOSIZE_PROP="inventory_autosize";
+	public static final String INVENTORY_POS_PROP = "inventory_pos";
+	public static final String INVENTORY_AUTOSIZE_PROP = "inventory_autosize";
 	public static final String SINGLE_ACTION_INVENTORY = "single_action_inventory";
-	public static final String TITLE_PROP="title";
-	public static final String LOAD_GAMESTATE_PROP="load_gamestate";
-	public static final String PLAY_RECORD_PROP="play_recording";
-	public static final String TEST_SCENE_PROP="test_scene";
+	public static final String TITLE_PROP = "title";
+	public static final String LOAD_GAMESTATE_PROP = "load_gamestate";
+	public static final String PLAY_RECORD_PROP = "play_recording";
+	public static final String TEST_SCENE_PROP = "test_scene";
 	public static final String FORCE_RES_PROP = "force_res";
 	public static final String DEBUG_PROP = "debug";
 	public static final String CHAPTER_PROP = "chapter";
@@ -39,48 +39,49 @@ public class Config {
 	public static final String FAST_LEAVE = "fast_leave";
 	public static final String AUTO_HIDE_TEXTS = "auto_hide_texts";
 	public static final String RESOLUTIONS = "resolutions";
+	public static final String SHOW_HOTSPOTS = "show_hotspots";
 
 	public static final String PROPERTIES_FILENAME = "BladeEngine.properties";
 
 	private static Properties config = null;
-	
+
 	public static String getProperty(String key, String defaultValue) {
-		if(config == null) {
+		if (config == null) {
 			load();
 		}
-		
+
 		return config.getProperty(key, defaultValue);
 	}
-	
+
 	public static void load() {
 		config = new Properties();
-		
+
 		try {
 			config.load(EngineAssetManager.getInstance().getAsset(PROPERTIES_FILENAME).reader());
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING PROPERTIES: " + e.getMessage());
 		}
 	}
-	
+
 	public static boolean getProperty(String key, boolean defaultValue) {
 		boolean result = false;
-		
+
 		try {
 			result = Boolean.parseBoolean(getProperty(key, String.valueOf(defaultValue)));
 		} catch (Exception e) {
 		}
-		
+
 		return result;
 	}
-	
+
 	public static int getProperty(String key, int defaultValue) {
 		int result = 0;
-		
+
 		try {
 			result = Integer.parseInt(getProperty(key, String.valueOf(defaultValue)));
 		} catch (Exception e) {
 		}
-		
+
 		return result;
 	}
 }
