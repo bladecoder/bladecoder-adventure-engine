@@ -381,7 +381,7 @@ public class Project extends PropertyChange {
 			// No need to load the chapter. It's loaded by the chapter combo.
 			// loadChapter(world.getInitChapter());
 
-			projectConfig = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+			projectConfig = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrderingCaseSensitive().build();
 			projectConfig.load(new FileInputStream(getAssetPath() + "/" + Config.PROPERTIES_FILENAME));
 			modified = false;
 
@@ -475,7 +475,7 @@ public class Project extends PropertyChange {
 
 	public List<String> getResolutions() {
 		File atlasesPath = new File(getAssetPath() + UI_PATH);
-		ArrayList<String> l = new ArrayList<String>();
+		ArrayList<String> l = new ArrayList<>();
 
 		File[] list = atlasesPath.listFiles();
 
@@ -541,7 +541,7 @@ public class Project extends PropertyChange {
 	}
 
 	public OrderedProperties getGradleProperties(File projectPath) throws FileNotFoundException, IOException {
-		OrderedProperties prop = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+		OrderedProperties prop = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrderingCaseSensitive().build();
 
 		prop.load(new FileReader(projectPath.getAbsolutePath() + "/gradle.properties"));
 
