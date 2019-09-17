@@ -18,6 +18,8 @@ package com.bladecoder.engine.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.badlogic.gdx.graphics.Color;
@@ -699,7 +701,9 @@ public class Scene implements Serializable, AssetConsumer {
 			json.writeValue("id", id);
 			json.writeValue("layers", layers, layers.getClass(), SceneLayer.class);
 
-			json.writeValue("actors", actors);
+			SortedMap<String, BaseActor> sortedActors = new TreeMap<>();
+			sortedActors.putAll(actors);
+			json.writeValue("actors", sortedActors);
 
 			if (backgroundAtlas != null) {
 				json.writeValue("backgroundAtlas", backgroundAtlas);
@@ -718,7 +722,9 @@ public class Scene implements Serializable, AssetConsumer {
 			SceneActorRef actorRef;
 
 			json.writeObjectStart("actors");
-			for (BaseActor a : actors.values()) {
+			SortedMap<String, BaseActor> sortedActors = new TreeMap<>();
+			sortedActors.putAll(actors);
+			for (BaseActor a : sortedActors.values()) {
 				actorRef = new SceneActorRef(a.getInitScene(), a.getId());
 				json.writeValue(actorRef.toString(), a);
 			}
