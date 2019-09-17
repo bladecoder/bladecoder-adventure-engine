@@ -13,7 +13,7 @@
    height="53.66"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91+devel r"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="title.svg"
    inkscape:export-filename="images/title.png"
    inkscape:export-xdpi="108.63792"
@@ -29,17 +29,17 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="24.483251"
+     inkscape:cx="36.626108"
      inkscape:cy="-71.40974"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      showborder="true"
      borderlayer="true"
-     inkscape:window-width="1215"
-     inkscape:window-height="1000"
-     inkscape:window-x="1431"
-     inkscape:window-y="24"
+     inkscape:window-width="1920"
+     inkscape:window-height="1442"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
      inkscape:window-maximized="1"
      inkscape:snap-global="false"
      fit-margin-top="0"
@@ -80,11 +80,10 @@
      transform="translate(0.66431808,-999.6792)">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:20.5458107px;line-height:100%;font-family:'Andale Mono';-inkscape-font-specification:'Andale Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Andale Mono';-inkscape-font-specification:'Andale Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none"
        x="42.680729"
        y="1026.0645"
-       id="text810"
-       sodipodi:linespacing="100%"><tspan
+       id="text810"><tspan
          sodipodi:role="line"
          id="tspan812"
          x="42.680729"
@@ -102,11 +101,10 @@
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccscscscccccsccccccscccccscsccccccsccccccccccccccccccccccccccccccccccccccsscsccsccccsccscscccccccsccssscsccccccscsccccsccsccccsccccccccscccscsccscccccccccccsscccccccssccscsccscscsscccscscscccccsscccccscsscsccscscscccccsssccccsccccsscccccccccscccccccsssccccscccccccccscccccscscccccccsscccsccccsccssccccc" />
     <text
-       sodipodi:linespacing="100%"
        id="text4172"
        y="1088.2295"
        x="43.610382"
-       style="font-style:normal;font-weight:normal;font-size:20.5458107px;line-height:100%;font-family:'Andale Mono';-inkscape-font-specification:'Andale Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Andale Mono';-inkscape-font-specification:'Andale Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none"
        xml:space="preserve"><tspan
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:23.46589661px;line-height:100%;font-family:'Josefin Sans';-inkscape-font-specification:'Josefin Sans';text-align:start;text-anchor:start"
          y="1088.2295"
@@ -115,7 +113,7 @@
          sodipodi:role="line">Adventure</tspan><tspan
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:28.15907669px;line-height:100%;font-family:'Paytone One';-inkscape-font-specification:'Paytone One';text-align:start;text-anchor:start"
          id="tspan4170"
-         y="1116.5446"
+         y="1116.5444"
          x="43.610382"
          sodipodi:role="line">COMPOSER</tspan></text>
     <path
@@ -133,11 +131,10 @@
        inkscape:export-ydpi="108">
       <text
          xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:20.5458107px;line-height:100%;font-family:'Andale Mono';-inkscape-font-specification:'Andale Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.10236299"
+         style="font-style:normal;font-weight:normal;line-height:0%;font-family:'Andale Mono';-inkscape-font-specification:'Andale Mono';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.10236299"
          x="15.537872"
          y="977.06451"
-         id="text4180"
-         sodipodi:linespacing="100%"><tspan
+         id="text4180"><tspan
            sodipodi:role="line"
            x="15.537872"
            y="977.06451"

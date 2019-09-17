@@ -7,33 +7,19 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="128"
    height="128"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48+devel r"
-   sodipodi:docname="ic_app.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="editor-icon.svg"
    inkscape:export-filename="ic_app16.png"
    inkscape:export-xdpi="11.25"
    inkscape:export-ydpi="11.25">
   <defs
-     id="defs4">
-    <filter
-       inkscape:collect="always"
-       id="filter864"
-       x="-0.23042651"
-       width="1.460853"
-       y="-0.13367997"
-       height="1.2673599">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="3.2232277"
-         id="feGaussianBlur866" />
-    </filter>
-  </defs>
+     id="defs4" />
   <sodipodi:namedview
      id="base"
      pagecolor="#262626"
@@ -42,17 +28,17 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="1.0379446"
+     inkscape:cx="92.823659"
      inkscape:cy="49.412493"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      showborder="true"
      borderlayer="true"
-     inkscape:window-width="1215"
-     inkscape:window-height="1000"
-     inkscape:window-x="1431"
-     inkscape:window-y="24"
+     inkscape:window-width="1920"
+     inkscape:window-height="1442"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
      inkscape:window-maximized="1"
      inkscape:snap-global="false" />
   <metadata
@@ -72,14 +58,6 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-924.3622)">
-    <image
-       sodipodi:absref="/home/rgarcia/Dropbox/art/2013.Proyecto Indiana/diosa/assets/sprites/player/walk.left_18.png"
-       y="910.89111"
-       x="171.61142"
-       id="image824"
-       xlink:href="file:///home/rgarcia/Dropbox/art/2013.Proyecto%20Indiana/diosa/assets/sprites/player/walk.left_18.png"
-       height="130.70171"
-       width="85.667183" />
     <rect
        style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:11.12300014000000026;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect2986"

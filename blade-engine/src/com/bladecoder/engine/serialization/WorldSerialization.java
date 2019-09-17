@@ -181,7 +181,6 @@ public class WorldSerialization implements Serializable {
 
 		Json json = new BladeJson(w, Mode.MODEL);
 		json.setOutputType(OutputType.javascript);
-		json.setSortFields(true);
 
 		String s = null;
 

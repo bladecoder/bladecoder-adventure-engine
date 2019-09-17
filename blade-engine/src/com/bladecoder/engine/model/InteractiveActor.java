@@ -56,6 +56,8 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 	public void setLayer(String layer) {
 		this.layer = layer;
+
+		setDirtyProp(DirtyProps.LAYER);
 	}
 
 	public String getLayer() {
@@ -75,6 +77,7 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 	public void setInteraction(boolean interaction) {
 		this.interaction = interaction;
+		setDirtyProp(DirtyProps.INTERACTION);
 	}
 
 	public String getDesc() {
@@ -83,6 +86,7 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 	public void setDesc(String desc) {
 		this.desc = desc;
+		setDirtyProp(DirtyProps.DESC);
 	}
 
 	public Vector2 getRefPoint() {
@@ -164,6 +168,8 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 	public void setZIndex(float z) {
 		zIndex = z;
+
+		setDirtyProp(DirtyProps.ZINDEX);
 	}
 
 	public String getState() {
@@ -172,6 +178,7 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 	public void setState(String state) {
 		this.state = state;
+		setDirtyProp(DirtyProps.STATE);
 	}
 
 	@Override
@@ -185,23 +192,34 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 		BladeJson bjson = (BladeJson) json;
 		if (bjson.getMode() == Mode.MODEL) {
-			if(desc != null)
+			if (desc != null)
 				json.writeValue("desc", desc);
+
+			if (state != null)
+				json.writeValue("state", state);
 
 			float worldScale = EngineAssetManager.getInstance().getScale();
 			json.writeValue("refPoint", new Vector2(getRefPoint().x / worldScale, getRefPoint().y / worldScale));
 		} else {
 			json.writeValue("playerInside", playerInside);
+
+			if (isDirty(DirtyProps.DESC))
+				json.writeValue("desc", desc);
+
+			if (isDirty(DirtyProps.STATE))
+				json.writeValue("state", state);
 		}
 
 		verbs.write(json);
-		json.writeValue("interaction", interaction);
-		
-		if(state != null)
-			json.writeValue("state", state);
-		
-		json.writeValue("zIndex", zIndex);
-		json.writeValue("layer", layer);
+
+		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.INTERACTION))
+			json.writeValue("interaction", interaction);
+
+		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.ZINDEX))
+			json.writeValue("zIndex", zIndex);
+
+		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.LAYER))
+			json.writeValue("layer", layer);
 	}
 
 	@Override
@@ -210,9 +228,7 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 		BladeJson bjson = (BladeJson) json;
 		if (bjson.getMode() == Mode.MODEL) {
-			desc = json.readValue("desc", String.class, jsonData);
 			layer = json.readValue("layer", String.class, jsonData);
-
 			Vector2 r = json.readValue("refPoint", Vector2.class, jsonData);
 
 			if (r != null) {
@@ -248,8 +264,9 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 
 		verbs.read(json, jsonData);
 		interaction = json.readValue("interaction", boolean.class, interaction, jsonData);
-		state = json.readValue("state", String.class, jsonData);
+		state = json.readValue("state", String.class, state, jsonData);
 		zIndex = json.readValue("zIndex", float.class, zIndex, jsonData);
+		desc = json.readValue("desc", String.class, desc, jsonData);
 	}
 
 }

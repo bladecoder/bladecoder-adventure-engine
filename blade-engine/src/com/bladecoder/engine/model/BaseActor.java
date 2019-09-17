@@ -35,6 +35,7 @@ abstract public class BaseActor implements Serializable {
 	protected boolean visible = true;
 	protected final Polygon bbox = new Polygon();
 	private String initScene;
+	protected long dirtyProps = 0L;
 
 	public String getId() {
 		return id;
@@ -58,6 +59,7 @@ abstract public class BaseActor implements Serializable {
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+		setDirtyProp(DirtyProps.VISIBLE);
 	}
 
 	public void setScene(Scene s) {
@@ -69,6 +71,14 @@ abstract public class BaseActor implements Serializable {
 	}
 
 	abstract public void update(float delta);
+
+	protected void setDirtyProp(DirtyProps dp) {
+		dirtyProps |= (1L << dp.ordinal());
+	}
+
+	protected boolean isDirty(DirtyProps dp) {
+		return (dirtyProps & (1L << dp.ordinal())) != 0;
+	}
 
 	@Override
 	public String toString() {
@@ -93,6 +103,7 @@ abstract public class BaseActor implements Serializable {
 
 	public void setPosition(float x, float y) {
 		bbox.setPosition(x, y);
+		setDirtyProp(DirtyProps.POS);
 	}
 
 	public String getInitScene() {
@@ -110,14 +121,18 @@ abstract public class BaseActor implements Serializable {
 			json.writeValue("id", id);
 			json.writeValue("bbox", bbox.getVertices());
 		} else {
-
+			if (dirtyProps != 0L)
+				json.writeValue("dirtyProps", dirtyProps);
 		}
 
-		float worldScale = EngineAssetManager.getInstance().getScale();
-		Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
-		json.writeValue("pos", scaledPos);
+		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.POS)) {
+			float worldScale = EngineAssetManager.getInstance().getScale();
+			Vector2 scaledPos = new Vector2(bbox.getX() / worldScale, bbox.getY() / worldScale);
+			json.writeValue("pos", scaledPos);
+		}
 
-		json.writeValue("visible", visible);
+		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.VISIBLE))
+			json.writeValue("visible", visible);
 	}
 
 	@Override
@@ -130,8 +145,6 @@ abstract public class BaseActor implements Serializable {
 
 			if (verts.length > 0)
 				bbox.setVertices(verts);
-		} else {
-
 		}
 
 		Vector2 pos = json.readValue("pos", Vector2.class, jsonData);
@@ -140,8 +153,10 @@ abstract public class BaseActor implements Serializable {
 			float worldScale = EngineAssetManager.getInstance().getScale();
 			bbox.setPosition(pos.x * worldScale, pos.y * worldScale);
 			bbox.setScale(worldScale, worldScale);
-
-			visible = json.readValue("visible", boolean.class, visible, jsonData);
 		}
+
+		visible = json.readValue("visible", boolean.class, visible, jsonData);
+
+		dirtyProps = json.readValue("dirtyProps", long.class, 0L, jsonData);
 	}
 }
