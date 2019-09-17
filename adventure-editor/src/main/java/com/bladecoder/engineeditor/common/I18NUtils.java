@@ -43,10 +43,10 @@ public class I18NUtils {
 	public static final void exportTSV(String modelPath, String outFile, final String chapterId, String defaultLocale)
 			throws FileNotFoundException, IOException {
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
-		
+
 		File outputFile;
-		
-		if(outFile == null)
+
+		if (outFile == null)
 			outputFile = new File(modelPath, chapterId + TSV_EXT);
 		else
 			outputFile = new File(outFile);
@@ -63,9 +63,9 @@ public class I18NUtils {
 		});
 
 		OrderedProperties props[] = new OrderedProperties[files.length + 1];
-		
+
 		props[0] = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
-		
+
 		props[0].load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 
 		for (int i = 1; i < props.length; i++) {
@@ -92,14 +92,14 @@ public class I18NUtils {
 		}
 
 		writer.write("\n");
-		
+
 		Set<Entry<String, String>> keySet = props[0].entrySet();
 
 		for (Entry<String, String> e : keySet) {
 			writer.write(e.getKey());
 
 			for (OrderedProperties p : props) {
-				if(p.getProperty(e.getKey()) == null) {
+				if (p.getProperty(e.getKey()) == null) {
 					writer.write(SEPARATOR + "**" + props[0].getProperty(e.getKey()).replace("\n", "\\n"));
 					System.out.println("KEY NOT FOUND: " + e);
 				} else {
@@ -134,19 +134,19 @@ public class I18NUtils {
 				// get keys and texts
 				while ((line = br.readLine()) != null) {
 					String[] values = line.split(SEPARATOR);
-					
-					if(values.length != langs.length) {
+
+					if (values.length != langs.length) {
 						EditorLogger.error("Incorrect line in .tsv: " + line);
 						continue;
 					}
-					
+
 					String key = values[0];
 
 					for (int i = 0; i < props.length; i++) {
 						String value = values[i + 1];
-						if(value != null)
+						if (value != null)
 							value = value.replace("\\n", "\n");
-							
+
 						props[i].setProperty(key, value);
 					}
 				}
@@ -170,18 +170,20 @@ public class I18NUtils {
 		}
 	}
 
-	public static final void newLocale(String modelPath, final String chapterId, String defaultLocale,
-			String newLocale) throws FileNotFoundException, IOException {
+	public static final void newLocale(String modelPath, final String chapterId, String defaultLocale, String newLocale)
+			throws FileNotFoundException, IOException {
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 		File newChapter = new File(modelPath, chapterId + "_" + newLocale + PROPERTIES_EXT);
 
-		OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
-		OrderedProperties newProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+		OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
+				.build();
+		OrderedProperties newProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
+				.build();
 
 		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 
 		for (Entry<String, String> e : defaultProp.entrySet()) {
-			newProp.setProperty(e.getKey(), "**" + (String) defaultProp.getProperty(e.getKey()));
+			newProp.setProperty(e.getKey(), "**" + defaultProp.getProperty(e.getKey()));
 		}
 
 		// save new .properties
@@ -189,73 +191,79 @@ public class I18NUtils {
 		Writer out = new OutputStreamWriter(os, I18N.ENCODING);
 		newProp.store(out, newChapter.getName());
 	}
-	
-	public static final void compare(String modelPath, final String chapterId, String defaultLocale,
-			String destLocale) throws FileNotFoundException, IOException {
+
+	public static final void compare(String modelPath, final String chapterId, String defaultLocale, String destLocale)
+			throws FileNotFoundException, IOException {
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 		File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
 
-		OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
-		OrderedProperties destProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+		OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
+				.build();
+		OrderedProperties destProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
+				.build();
 
 		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 		destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
 
 		// SEARCH FOR NOT EXISTING DEST KEYS
 		for (Entry<String, String> e : defaultProp.entrySet()) {
-			if(destProp.getProperty(e.getKey()) == null) {
+			if (destProp.getProperty(e.getKey()) == null) {
 				EditorLogger.error("Key not found in '" + destLocale + "' locale: " + e.getKey());
 			}
 		}
-		
+
 		// SEARCH FOR NOT EXISTING DEFAULT CHAPTER KEYS
 		for (Entry<String, String> e : destProp.entrySet()) {
-			if(defaultProp.getProperty(e.getKey()) == null) {
+			if (defaultProp.getProperty(e.getKey()) == null) {
 				EditorLogger.error("Key not found in default locale: " + e.getKey());
 			}
 		}
 	}
-	
-	public static final void sync(String modelPath, final String chapterId, String defaultLocale,
-			String destLocale) throws FileNotFoundException, IOException {
+
+	public static final void sync(String modelPath, final String chapterId, String defaultLocale, String destLocale)
+			throws FileNotFoundException, IOException {
 		File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 		File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
 
-		OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
-		OrderedProperties destProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+		OrderedProperties defaultProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
+				.build();
+		OrderedProperties destProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
+				.build();
 
 		defaultProp.load(new InputStreamReader(new FileInputStream(defaultChapter), I18N.ENCODING));
 		destProp.load(new InputStreamReader(new FileInputStream(destChapter), I18N.ENCODING));
 
 		// SEARCH FOR NOT EXISTING DEST KEYS
 		for (String key : defaultProp.stringPropertyNames()) {
-			if(destProp.getProperty(key) == null) {
-				System.out.println("ADDING Key not found in '" + destLocale + "' locale: " + key + "=" + defaultProp.getProperty(key));
+			if (destProp.getProperty(key) == null) {
+				System.out.println("ADDING Key not found in '" + destLocale + "' locale: " + key + "="
+						+ defaultProp.getProperty(key));
 				destProp.setProperty(key, "**" + defaultProp.getProperty(key));
 			}
 		}
-		
+
 		// SEARCH FOR NOT EXISTING DEFAULT CHAPTER KEYS
 		for (String key : destProp.stringPropertyNames()) {
-			if(defaultProp.getProperty(key) == null) {
+			if (defaultProp.getProperty(key) == null) {
 				System.out.println("DELETE MANUALLY Key not found in default locale: " + key);
 			}
 		}
-		
+
 		// save dest .properties
 		FileOutputStream os = new FileOutputStream(destChapter);
 		Writer out = new OutputStreamWriter(os, I18N.ENCODING);
 		destProp.store(out, destChapter.getName());
 	}
 
-	public static final String translatePhrase(String phrase, String sourceLangCode, String destLangCode) throws UnsupportedEncodingException {
+	public static final String translatePhrase(String phrase, String sourceLangCode, String destLangCode)
+			throws UnsupportedEncodingException {
 		// String query = MessageFormat.format(GOOGLE_TRANSLATE_URL, phrase,
 		// sourceLangCode, destLangCode);
 //		String query = GOOGLE_TRANSLATE_URL + "?q=" + phrase + "&source=" + sourceLangCode + "&target=" + destLangCode
 //				+ "&key=" + GOOGLE_API_KEY;
-		
-		String query =  "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" 
-				+ sourceLangCode + "&tl=" + destLangCode + "&dt=t&q=" + URLEncoder.encode(phrase, "UTF-8");
+
+		String query = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLangCode + "&tl="
+				+ destLangCode + "&dt=t&q=" + URLEncoder.encode(phrase, "UTF-8");
 
 		System.out.println(query);
 		String result = HttpUtils.excuteHTTP(query, null);

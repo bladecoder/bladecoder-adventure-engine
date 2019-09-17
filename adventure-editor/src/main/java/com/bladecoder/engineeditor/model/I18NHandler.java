@@ -195,7 +195,7 @@ public class I18NHandler {
 			if (a instanceof SpriteActor && ((SpriteActor) a).getRenderer() instanceof TextRenderer) {
 
 				TextRenderer r = (TextRenderer) ((SpriteActor) a).getRenderer();
-				
+
 				r.setText(getTranslation(r.getText()));
 			}
 		}
@@ -379,10 +379,10 @@ public class I18NHandler {
 	public String getNotDuplicateKey(String key) {
 		// first delete all '_' at the end to avoid always growing keys
 		int idx = key.indexOf('_');
-		
-		if(idx != -1)
+
+		if (idx != -1)
 			key = key.substring(0, idx);
-		
+
 		while (i18nChapter.containsProperty(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
 			key += '_';
 
@@ -392,10 +392,10 @@ public class I18NHandler {
 	public String getNotDuplicateKeyWorld(String key) {
 		// first delete all '_' at the end
 		int idx = key.indexOf('_');
-		
-		if(idx != -1)
+
+		if (idx != -1)
 			key = key.substring(0, idx);
-		
+
 		while (i18nWorld.containsProperty(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
 			key += '_';
 
@@ -403,7 +403,7 @@ public class I18NHandler {
 	}
 
 	private void deleteUnusedKeys() {
-		ArrayList<String> usedKeys = new ArrayList<String>();
+		ArrayList<String> usedKeys = new ArrayList<>();
 
 		// SCENES
 		for (Scene s : Ctx.project.getWorld().getScenes().values())
@@ -429,7 +429,7 @@ public class I18NHandler {
 		keys = i18nWorld.propertyNames();
 
 		while (keys.hasMoreElements()) {
-			String key = (String) keys.nextElement();
+			String key = keys.nextElement();
 
 			// Doesn't remove ui keys
 			if (!usedKeys.contains(key) && !key.startsWith("ui.")) {
