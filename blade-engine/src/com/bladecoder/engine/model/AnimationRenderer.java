@@ -16,6 +16,8 @@
 package com.bladecoder.engine.model;
 
 import java.util.HashMap;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
@@ -379,7 +381,10 @@ public abstract class AnimationRenderer implements ActorRenderer {
 		BladeJson bjson = (BladeJson) json;
 		if (bjson.getMode() == Mode.MODEL) {
 
-			json.writeValue("fanims", fanims, HashMap.class, null);
+			SortedMap<String, AnimationDesc> sortedAnims = new TreeMap<>();
+			sortedAnims.putAll(fanims);
+
+			json.writeValue("fanims", sortedAnims, sortedAnims.getClass(), null);
 			json.writeValue("initAnimation", initAnimation);
 			json.writeValue("orgAlign", orgAlign);
 

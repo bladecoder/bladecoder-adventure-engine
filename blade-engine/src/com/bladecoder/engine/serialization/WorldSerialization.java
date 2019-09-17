@@ -6,6 +6,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -227,6 +229,7 @@ public class WorldSerialization implements Serializable {
 
 		Json json = new BladeJson(w, Mode.STATE);
 		json.setOutputType(OutputType.javascript);
+		json.setSortFields(true);
 
 		String s = null;
 
@@ -258,13 +261,23 @@ public class WorldSerialization implements Serializable {
 		json.writeValue(Config.BLADE_ENGINE_VERSION_PROP, Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
 
 		if (bjson.getMode() == Mode.MODEL) {
-			json.writeValue("sounds", w.getSounds(), w.getSounds().getClass(), SoundDesc.class);
-			json.writeValue("scenes", w.getScenes(), w.getScenes().getClass(), Scene.class);
+			SortedMap<String, SoundDesc> sortedSounds = new TreeMap<>();
+			sortedSounds.putAll(w.getSounds());
+			json.writeValue("sounds", sortedSounds, sortedSounds.getClass(), SoundDesc.class);
+
+			SortedMap<String, Scene> sortedScenes = new TreeMap<>();
+			sortedScenes.putAll(w.getScenes());
+			json.writeValue("scenes", sortedScenes, sortedScenes.getClass(), Scene.class);
+
 			json.writeValue("initScene", w.getInitScene());
 
 		} else {
 			json.writeValue(Config.VERSION_PROP, Config.getProperty(Config.VERSION_PROP, null));
-			json.writeValue("scenes", w.getScenes(), w.getScenes().getClass(), Scene.class);
+
+			SortedMap<String, Scene> sortedScenes = new TreeMap<>();
+			sortedScenes.putAll(w.getScenes());
+			json.writeValue("scenes", sortedScenes, sortedScenes.getClass(), Scene.class);
+
 			json.writeValue("currentScene", w.getCurrentScene().getId());
 			json.writeValue("inventories", w.getInventories());
 			json.writeValue("currentInventory", w.getCurrentInventory());
