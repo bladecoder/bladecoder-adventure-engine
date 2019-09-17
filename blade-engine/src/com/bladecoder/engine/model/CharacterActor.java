@@ -57,6 +57,8 @@ public class CharacterActor extends SpriteActor {
 
 	public void setTextColor(Color textColor) {
 		this.textColor = textColor;
+
+		setDirtyProp(DirtyProps.TEXT_COLOR);
 	}
 
 	public String getTextStyle() {
@@ -65,6 +67,7 @@ public class CharacterActor extends SpriteActor {
 
 	public void setTextStyle(String textStyle) {
 		this.textStyle = textStyle;
+		setDirtyProp(DirtyProps.TEXT_STYLE);
 	}
 
 	public String getStandAnim() {
@@ -104,6 +107,8 @@ public class CharacterActor extends SpriteActor {
 
 	public void setWalkingSpeed(float s) {
 		walkingSpeed = s;
+
+		setDirtyProp(DirtyProps.WALKING_SPEED);
 	}
 
 	public float getWalkingSpeed() {
@@ -116,6 +121,7 @@ public class CharacterActor extends SpriteActor {
 
 	public void setTalkingTextPos(Vector2 talkingTextPos) {
 		this.talkingTextPos = talkingTextPos;
+		setDirtyProp(DirtyProps.TALKING_TEXT_POS);
 	}
 
 	public void lookat(Vector2 p) {
@@ -171,10 +177,8 @@ public class CharacterActor extends SpriteActor {
 	/**
 	 * Walking Support
 	 * 
-	 * @param pf
-	 *            Final position to walk
-	 * @param cb
-	 *            The action callback
+	 * @param pf Final position to walk
+	 * @param cb The action callback
 	 */
 	public void goTo(Vector2 pf, ActionCallback cb, boolean ignoreWalkZone) {
 		EngineLogger.debug(MessageFormat.format("GOTO {0},{1}", pf.x, pf.y));
@@ -270,22 +274,40 @@ public class CharacterActor extends SpriteActor {
 		if (bjson.getMode() == Mode.MODEL) {
 			if (textStyle != null)
 				json.writeValue("textStyle", textStyle);
+
+			if (textColor != null)
+				json.writeValue("textColor", textColor);
+
+			if (talkingTextPos != null) {
+				float worldScale = EngineAssetManager.getInstance().getScale();
+				json.writeValue("talkingTextPos",
+						new Vector2(talkingTextPos.x / worldScale, talkingTextPos.y / worldScale));
+			}
 		} else {
-			json.writeValue("standAnim", standAnim);
-			json.writeValue("walkAnim", walkAnim);
-			json.writeValue("talkAnim", talkAnim);
+			if (!DEFAULT_STAND_ANIM.equals(standAnim))
+				json.writeValue("standAnim", standAnim);
+
+			if (!DEFAULT_WALK_ANIM.equals(walkAnim))
+				json.writeValue("walkAnim", walkAnim);
+
+			if (!DEFAULT_TALK_ANIM.equals(talkAnim))
+				json.writeValue("talkAnim", talkAnim);
+
+			if (isDirty(DirtyProps.TEXT_STYLE))
+				json.writeValue("textStyle", textStyle);
+
+			if (isDirty(DirtyProps.TEXT_COLOR))
+				json.writeValue("textColor", textColor);
+
+			if (isDirty(DirtyProps.TALKING_TEXT_POS)) {
+				float worldScale = EngineAssetManager.getInstance().getScale();
+				json.writeValue("talkingTextPos",
+						new Vector2(talkingTextPos.x / worldScale, talkingTextPos.y / worldScale));
+			}
 		}
 
-		json.writeValue("walkingSpeed", walkingSpeed);
-
-		if (textColor != null)
-			json.writeValue("textColor", textColor);
-
-		if (talkingTextPos != null) {
-			float worldScale = EngineAssetManager.getInstance().getScale();
-			json.writeValue("talkingTextPos",
-					new Vector2(talkingTextPos.x / worldScale, talkingTextPos.y / worldScale));
-		}
+		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.WALKING_SPEED))
+			json.writeValue("walkingSpeed", walkingSpeed);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -302,8 +324,6 @@ public class CharacterActor extends SpriteActor {
 					d.setActor(this);
 			}
 
-			textStyle = json.readValue("textStyle", String.class, jsonData);
-
 		} else {
 			if (dialogs != null) {
 				JsonValue dialogsValue = jsonData.get("dialogs");
@@ -317,14 +337,15 @@ public class CharacterActor extends SpriteActor {
 				}
 			}
 
-			standAnim = json.readValue("standAnim", String.class, jsonData);
-			walkAnim = json.readValue("walkAnim", String.class, jsonData);
-			talkAnim = json.readValue("talkAnim", String.class, jsonData);
+			standAnim = json.readValue("standAnim", String.class, DEFAULT_STAND_ANIM, jsonData);
+			walkAnim = json.readValue("walkAnim", String.class, DEFAULT_WALK_ANIM, jsonData);
+			talkAnim = json.readValue("talkAnim", String.class, DEFAULT_TALK_ANIM, jsonData);
 		}
 
+		textStyle = json.readValue("textStyle", String.class, textStyle, jsonData);
 		walkingSpeed = json.readValue("walkingSpeed", float.class, walkingSpeed, jsonData);
-		textColor = json.readValue("textColor", Color.class, jsonData);
-		talkingTextPos = json.readValue("talkingTextPos", Vector2.class, jsonData);
+		textColor = json.readValue("textColor", Color.class, textColor, jsonData);
+		talkingTextPos = json.readValue("talkingTextPos", Vector2.class, talkingTextPos, jsonData);
 
 		if (talkingTextPos != null) {
 			float worldScale = EngineAssetManager.getInstance().getScale();

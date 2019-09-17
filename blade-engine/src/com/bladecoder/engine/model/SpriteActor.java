@@ -64,6 +64,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	public void setFakeDepth(boolean fd) {
 		fakeDepth = fd;
+		setDirtyProp(DirtyProps.FAKE_DEPTH);
 	}
 
 	@Override
@@ -92,6 +93,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			renderer.updateBboxFromRenderer(bbox);
 		else
 			renderer.updateBboxFromRenderer(null);
+
+		setDirtyProp(DirtyProps.BBOX_FROM_RENDERER);
 	}
 
 	public float getWidth() {
@@ -105,11 +108,11 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	public float getScale() {
 		return scaleX;
 	}
-	
+
 	public float getScaleX() {
 		return scaleX;
 	}
-	
+
 	public float getScaleY() {
 		return scaleY;
 	}
@@ -120,12 +123,14 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	public void setTint(Color tint) {
 		this.tint = tint;
+
+		setDirtyProp(DirtyProps.TINT);
 	}
 
 	public void setScale(float scale) {
 		setScale(scale, scale);
 	}
-	
+
 	public void setScale(float scaleX, float scaleY) {
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
@@ -136,11 +141,15 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			float worldScale = EngineAssetManager.getInstance().getScale();
 			bbox.setScale(scaleX * worldScale, scaleY * worldScale);
 		}
+
+		setDirtyProp(DirtyProps.SCALEX);
+		setDirtyProp(DirtyProps.SCALEY);
 	}
 
 	public void setRot(float rot) {
 		this.rot = rot;
 		bbox.setRotation(rot);
+		setDirtyProp(DirtyProps.ROT);
 	}
 
 	public float getRot() {
@@ -271,7 +280,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	public void addTween(Tween<SpriteActor> tween) {
 		removeTween(tween.getClass());
-		
+
 		tweens.add(tween);
 	}
 
@@ -323,24 +332,37 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		} else {
 			super.write(json);
 		}
-		
+
 		if (bjson.getMode() == Mode.MODEL) {
 			json.writeValue("renderer", renderer, null);
+
+			if (tint != null)
+				json.writeValue("tint", tint);
 		} else {
 			json.writeValue("renderer", renderer);
 			json.writeValue("tweens", tweens, ArrayList.class, Tween.class);
-			json.writeValue("playingSound", playingSound);
+
+			if (playingSound != null)
+				json.writeValue("playingSound", playingSound);
+
+			if (isDirty(DirtyProps.TINT))
+				json.writeValue("tint", tint);
 		}
 
-		json.writeValue("scaleX", scaleX);
-		json.writeValue("scaleY", scaleY);
-		json.writeValue("rot", rot);
-		
-		if(tint != null)
-			json.writeValue("tint", tint);
-		
-		json.writeValue("fakeDepth", fakeDepth);
-		json.writeValue("bboxFromRenderer", bboxFromRenderer);
+		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.SCALEX))
+			json.writeValue("scaleX", scaleX);
+
+		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.SCALEY))
+			json.writeValue("scaleY", scaleY);
+
+		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.ROT))
+			json.writeValue("rot", rot);
+
+		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.FAKE_DEPTH))
+			json.writeValue("fakeDepth", fakeDepth);
+
+		if (bjson.getMode() == Mode.MODEL || isDirty(DirtyProps.BBOX_FROM_RENDERER))
+			json.writeValue("bboxFromRenderer", bboxFromRenderer);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -354,11 +376,11 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		} else {
 			tweens = json.readValue("tweens", ArrayList.class, Tween.class, jsonData);
 
-			if(tweens == null) {
+			if (tweens == null) {
 				EngineLogger.debug("Couldn't load state of actor: " + id);
 				return;
 			}
-				
+
 			for (Tween<SpriteActor> t : tweens)
 				t.setTarget(this);
 
@@ -374,7 +396,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			scaleX = json.readValue("scaleX", float.class, scaleX, jsonData);
 			scaleY = json.readValue("scaleY", float.class, scaleY, jsonData);
 		}
-		
+
 		rot = json.readValue("rot", float.class, rot, jsonData);
 		tint = json.readValue("tint", Color.class, tint, jsonData);
 
@@ -394,6 +416,9 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 		setScale(scaleX, scaleY);
 		setRot(rot);
+
+		// restore dirtyProps after rotation and scale
+		dirtyProps = json.readValue("dirtyProps", long.class, 0L, jsonData);
 	}
 
 }

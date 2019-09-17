@@ -76,6 +76,7 @@ public class ActionFactory {
 		addClassTag(SetPlayerAction.class);
 		addClassTag(SetSceneStateAction.class);
 		addClassTag(SetStateAction.class);
+		addClassTag(SetDescAction.class);
 		addClassTag(SetWalkzoneAction.class);
 		addClassTag(ShowInventoryAction.class);
 		addClassTag(SoundAction.class);

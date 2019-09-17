@@ -22,15 +22,15 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
 
-@ActionDescription(name = "ActorState", value = "Sets the actor state")
-public class SetStateAction implements Action {
+@ActionDescription(value = "Sets the actor description")
+public class SetDescAction implements Action {
 	@ActionProperty(type = Type.SCENE_INTERACTIVE_ACTOR, required = true)
 	@ActionPropertyDescription("The target actor")
 	private SceneActorRef actor;
 
 	@ActionProperty
-	@ActionPropertyDescription("The actor 'state'")
-	private String state;
+	@ActionPropertyDescription("The actor 'desc'")
+	private String text;
 
 	private World w;
 
@@ -45,18 +45,16 @@ public class SetStateAction implements Action {
 
 		String actorId = actor.getActorId();
 		if (actorId == null) {
-			// if called in a scene verb and no actor is specified, set the state of the
-			// scene
-			s.setState(state);
+			EngineLogger.error("SetDesc - Actor not set.");
 			return false;
 		}
 
 		InteractiveActor a = (InteractiveActor) s.getActor(actorId, true);
 
 		if (a != null)
-			a.setState(state);
+			a.setDesc(text);
 		else
-			EngineLogger.error("SetState - Actor not found: " + actorId);
+			EngineLogger.error("SetDesc - Actor not found: " + actorId);
 
 		return false;
 	}
