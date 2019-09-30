@@ -148,7 +148,8 @@ public class TextManager implements Serializable {
 	}
 
 	private void setCurrentText(Text t) {
-		if (currentText != null && currentText.type == Type.TALK && currentText.actorId != null) {
+		if (currentText != null && (currentText.type == Type.TALK || currentText.animation != null)
+				&& currentText.actorId != null) {
 			CharacterActor a = (CharacterActor) scene.getActor(currentText.actorId, false);
 
 			// restore previous stand animation
@@ -165,7 +166,7 @@ public class TextManager implements Serializable {
 			voiceManager.play(t.voiceId);
 
 			// Start talk animation
-			if (t.type == Type.TALK && t.actorId != null) {
+			if ((t.type == Type.TALK || t.animation != null) && t.actorId != null) {
 				CharacterActor a = (CharacterActor) scene.getActor(t.actorId, false);
 
 				previousCharacterAnim = ((AnimationRenderer) a.getRenderer()).getCurrentAnimationId();

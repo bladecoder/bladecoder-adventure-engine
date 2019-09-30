@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.0]
+
+- Say Action: Talk animation also for text types PLAIN and SUBTITLE.
+- Only save modified actor properties on savegames.
+- New SetDesc action to change the actor descriptions.
+- Added 'show_hotspots' config key to enable/disable the show hotspots feature.
+- Added INSIDE property to IfAttrProperty action to check if an actor is inside other actor.
+- Improve size of chapter files and savegames.
+- Updated libgdx to v1.9.10
+- Updated Spine to v3.8.
+- Update gradle to v5.4.1
+- 
+
 ## [3.1.2]
 
 - Animated ui icons and cursors.
