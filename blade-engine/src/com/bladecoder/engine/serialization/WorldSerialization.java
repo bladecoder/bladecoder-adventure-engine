@@ -42,7 +42,7 @@ import com.bladecoder.engine.util.EngineLogger;
 
 @SuppressWarnings("deprecation")
 public class WorldSerialization implements Serializable {
-	public static final String GAMESTATE_EXT = ".gamestate.v13";
+	public static final String GAMESTATE_EXT = ".gamestate.v14";
 
 	private static final int SCREENSHOT_DEFAULT_WIDTH = 300;
 
