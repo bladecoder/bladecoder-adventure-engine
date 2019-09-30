@@ -61,7 +61,7 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-    archives jar
+    //archives jar
     archives enginedocJar
     archives sourcesJar
 }
