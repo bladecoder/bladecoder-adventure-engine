@@ -90,7 +90,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		this.bboxFromRenderer = v;
 
 		if (v)
-			renderer.updateBboxFromRenderer(bbox);
+			renderer.updateBboxFromRenderer(getBBox());
 		else
 			renderer.updateBboxFromRenderer(null);
 
@@ -136,10 +136,10 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		this.scaleY = scaleY;
 
 		if (bboxFromRenderer)
-			bbox.setScale(scaleX, scaleY);
+			getBBox().setScale(scaleX, scaleY);
 		else {
 			float worldScale = EngineAssetManager.getInstance().getScale();
-			bbox.setScale(scaleX * worldScale, scaleY * worldScale);
+			getBBox().setScale(scaleX * worldScale, scaleY * worldScale);
 		}
 
 		setDirtyProp(DirtyProps.SCALEX);
@@ -148,7 +148,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	public void setRot(float rot) {
 		this.rot = rot;
-		bbox.setRotation(rot);
+		getBBox().setRotation(rot);
 		setDirtyProp(DirtyProps.ROT);
 	}
 
@@ -160,7 +160,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	public void update(float delta) {
 		super.update(delta);
 
-		if (visible) {
+		if (isVisible()) {
 			renderer.update(delta);
 
 			for (int i = 0; i < tweens.size(); i++) {
@@ -307,7 +307,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		renderer.retrieveAssets();
 
 		// Call setPosition to recalc fake depth and camera follow
-		setPosition(bbox.getX(), bbox.getY());
+		setPosition(getBBox().getX(), getBBox().getY());
 	}
 
 	@Override
@@ -323,12 +323,12 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 		// Reset vertices if bboxFromRenderer to save always with 0.0 value
 		if (bboxFromRenderer && bjson.getMode() == Mode.MODEL) {
-			float[] verts = bbox.getVertices();
-			bbox.setVertices(new float[8]);
+			float[] verts = getBBox().getVertices();
+			getBBox().setVertices(new float[8]);
 
 			super.write(json);
 
-			bbox.setVertices(verts);
+			getBBox().setVertices(verts);
 		} else {
 			super.write(json);
 		}
@@ -412,7 +412,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 		bboxFromRenderer = json.readValue("bboxFromRenderer", boolean.class, bboxFromRenderer, jsonData);
 
 		if (bboxFromRenderer)
-			renderer.updateBboxFromRenderer(bbox);
+			renderer.updateBboxFromRenderer(getBBox());
 
 		setScale(scaleX, scaleY);
 		setRot(rot);

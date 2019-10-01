@@ -68,7 +68,7 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 	 * @return Is visible and has interaction
 	 */
 	public boolean canInteract() {
-		return interaction && visible;
+		return interaction && isVisible();
 	}
 
 	public boolean getInteraction() {
@@ -108,7 +108,7 @@ public class InteractiveActor extends BaseActor implements Comparable<Interactiv
 		if (scene != null)
 			player = scene.getPlayer();
 
-		if (visible && player != null) {
+		if (isVisible() && player != null) {
 			boolean hit = hit(player.getX(), player.getY());
 			if (!hit && playerInside) {
 				// the player leaves

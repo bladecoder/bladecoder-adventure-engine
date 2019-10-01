@@ -31,8 +31,9 @@ public class WalkZoneActor extends BaseActor {
 	public void update(float delta) {
 	}
 
+	@Override
 	public void setPosition(float x, float y) {
-		bbox.setPosition(x, y);
+		getBBox().setPosition(x, y);
 
 		if (scene != null && id.equals(scene.getWalkZone())) {
 			scene.getPolygonalNavGraph().createInitialGraph(this, scene.getActors().values());
@@ -43,8 +44,8 @@ public class WalkZoneActor extends BaseActor {
 	public void write(Json json) {
 		BladeJson bjson = (BladeJson) json;
 		if (bjson.getMode() == Mode.MODEL) {
-			PolygonUtils.ensureClockWise(bbox.getVertices(), 0, bbox.getVertices().length);
-			bbox.dirty();
+			PolygonUtils.ensureClockWise(getBBox().getVertices(), 0, getBBox().getVertices().length);
+			getBBox().dirty();
 		}
 
 		super.write(json);

@@ -798,9 +798,9 @@ public class Scene implements Serializable, AssetConsumer {
 
 				WalkZoneActor wz = new WalkZoneActor();
 				wz.setId("walkzone");
-				wz.bbox.setVertices(walkZonePol.getVertices());
-				wz.bbox.setScale(walkZonePol.getScaleX(), walkZonePol.getScaleY());
-				wz.bbox.setPosition(walkZonePol.getX(), walkZonePol.getY());
+				wz.getBBox().setVertices(walkZonePol.getVertices());
+				wz.getBBox().setScale(walkZonePol.getScaleX(), walkZonePol.getScaleY());
+				wz.getBBox().setPosition(walkZonePol.getX(), walkZonePol.getY());
 				wz.setScene(this);
 				wz.setInitScene(id);
 
