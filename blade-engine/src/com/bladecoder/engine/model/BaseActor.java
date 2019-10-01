@@ -32,8 +32,8 @@ import com.bladecoder.engine.serialization.BladeJson.Mode;
 abstract public class BaseActor implements Serializable {
 	protected String id;
 	protected Scene scene = null;
-	protected boolean visible = true;
-	protected final Polygon bbox = new Polygon();
+	private boolean visible = true;
+	private final Polygon bbox = new Polygon();
 	private String initScene;
 	protected long dirtyProps = 0L;
 
@@ -102,8 +102,10 @@ abstract public class BaseActor implements Serializable {
 	}
 
 	public void setPosition(float x, float y) {
-		bbox.setPosition(x, y);
-		setDirtyProp(DirtyProps.POS);
+		if (x != bbox.getX() || y != bbox.getY()) {
+			bbox.setPosition(x, y);
+			setDirtyProp(DirtyProps.POS);
+		}
 	}
 
 	public String getInitScene() {

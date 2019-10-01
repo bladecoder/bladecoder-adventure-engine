@@ -27,14 +27,15 @@ import com.bladecoder.engine.util.PolygonUtils;
  */
 public class ObstacleActor extends BaseActor {
 
+	@Override
 	public void setVisible(boolean visible) {
-		this.visible = visible;
+		super.setVisible(visible);
 
 		if (scene != null && scene.getPolygonalNavGraph() != null) {
 			if (visible)
-				scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
+				scene.getPolygonalNavGraph().addDinamicObstacle(getBBox());
 			else
-				scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
+				scene.getPolygonalNavGraph().removeDinamicObstacle(getBBox());
 		}
 	}
 
@@ -42,17 +43,18 @@ public class ObstacleActor extends BaseActor {
 	public void update(float delta) {
 	}
 
+	@Override
 	public void setPosition(float x, float y) {
 		boolean inNavGraph = false;
 
 		if (scene != null && scene.getPolygonalNavGraph() != null) {
-			inNavGraph = scene.getPolygonalNavGraph().removeDinamicObstacle(bbox);
+			inNavGraph = scene.getPolygonalNavGraph().removeDinamicObstacle(getBBox());
 		}
 
-		bbox.setPosition(x, y);
+		getBBox().setPosition(x, y);
 
 		if (inNavGraph) {
-			scene.getPolygonalNavGraph().addDinamicObstacle(bbox);
+			scene.getPolygonalNavGraph().addDinamicObstacle(getBBox());
 		}
 	}
 
@@ -60,8 +62,8 @@ public class ObstacleActor extends BaseActor {
 	public void write(Json json) {
 		BladeJson bjson = (BladeJson) json;
 		if (bjson.getMode() == Mode.MODEL) {
-			PolygonUtils.ensureClockWise(bbox.getVertices(), 0, bbox.getVertices().length);
-			bbox.dirty();
+			PolygonUtils.ensureClockWise(getBBox().getVertices(), 0, getBBox().getVertices().length);
+			getBBox().dirty();
 		}
 
 		super.write(json);

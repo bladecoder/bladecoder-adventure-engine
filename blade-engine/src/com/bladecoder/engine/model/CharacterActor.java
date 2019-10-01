@@ -131,7 +131,7 @@ public class CharacterActor extends SpriteActor {
 		inAnim();
 		removeTween(SpritePosTween.class);
 		((AnimationRenderer) renderer).startAnimation(standAnim, Tween.Type.SPRITE_DEFINED, -1, null,
-				new Vector2(bbox.getX(), bbox.getY()), p);
+				new Vector2(getBBox().getX(), getBBox().getY()), p);
 		outAnim(Tween.Type.SPRITE_DEFINED);
 	}
 
@@ -183,7 +183,7 @@ public class CharacterActor extends SpriteActor {
 	public void goTo(Vector2 pf, ActionCallback cb, boolean ignoreWalkZone) {
 		EngineLogger.debug(MessageFormat.format("GOTO {0},{1}", pf.x, pf.y));
 
-		Vector2 p0 = new Vector2(bbox.getX(), bbox.getY());
+		Vector2 p0 = new Vector2(getBBox().getX(), getBBox().getY());
 
 		// stop previous movement
 		if (tweens.size() > 0) {
