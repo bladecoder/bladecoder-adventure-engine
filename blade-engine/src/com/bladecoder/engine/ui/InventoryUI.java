@@ -234,7 +234,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	}
 
 	public void setStyle(String name) {
-		style = sceneScreen.getUI().getSkin().get(name, InventoryUIStyle.class);
+		style = sceneScreen.getUI().getSkin().get(name == null ? "default" : name, InventoryUIStyle.class);
 	}
 
 	public void retrieveAssets(TextureAtlas atlas) {
