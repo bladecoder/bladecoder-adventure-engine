@@ -77,57 +77,61 @@ public class Recorder {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("RECORDER (").append(pos).append(") - ");
 
-			// while (playing && v.time < time) {
-			if (playing && v.time < time && !w.inCutMode()) {
+			// check preconditions
+			if (!playing || v.time > time || w.inCutMode())
+				return;
 
-				if (v.verb == null) {
-					if (v.pos == null) { // DIALOG OPTION
-						w.selectDialogOption(v.dialogOption);
+			if (v.verb == null) {
+				if (v.pos == null) { // DIALOG OPTION
+					if (!w.hasDialogOptions() || w.getDialogOptions().size() <= v.dialogOption) {
+						EngineLogger.error("PLAYING ERROR: No dialog options to select: " + v.dialogOption);
+					}
 
-						stringBuilder.append(" SELECT DIALOG OPTION: ").append(v.dialogOption);
-					} else { // GOTO
-						s.getPlayer().goTo(v.pos, null, false);
+					w.selectDialogOption(v.dialogOption);
 
-						stringBuilder.append(" GOTO ").append(v.pos.x).append(',').append(v.pos.y);
+					stringBuilder.append(" SELECT DIALOG OPTION: ").append(v.dialogOption);
+				} else { // GOTO
+					s.getPlayer().goTo(v.pos, null, false);
+
+					stringBuilder.append(" GOTO ").append(v.pos.x).append(',').append(v.pos.y);
+				}
+			} else {
+
+				stringBuilder.append(v.verb);
+
+				if (v.verb.equals("SAVEGAME")) {
+					// SPECIAL VERB TO SAVE THE GAME
+					stringBuilder.append(v.target);
+					try {
+						w.getSerializer().saveGameState(v.target, true);
+					} catch (IOException e) {
+						EngineLogger.error("Couldn't save game: " + v.target + " : " + e.getMessage());
 					}
 				} else {
 
-					stringBuilder.append(v.verb);
+					InteractiveActor a = (InteractiveActor) s.getActor(v.actorId, true);
 
-					if (v.verb.equals("SAVEGAME")) {
-						// SPECIAL VERB TO SAVE THE GAME
-						stringBuilder.append(v.target);
-						try {
-							w.getSerializer().saveGameState(v.target, true);
-						} catch (IOException e) {
-							EngineLogger.error("Couldn't save game: " + v.target + " : " + e.getMessage());
+					if (a != null) {
+						stringBuilder.append(' ').append(v.actorId);
+
+						if (v.target != null) {
+							stringBuilder.append(" with ").append(v.target);
 						}
-					} else {
 
-						InteractiveActor a = (InteractiveActor) s.getActor(v.actorId, true);
-
-						if (a != null) {
-							stringBuilder.append(' ').append(v.actorId);
-
-							if (v.target != null) {
-								stringBuilder.append(" with ").append(v.target);
-							}
-
-							a.runVerb(v.verb, v.target);
-						} else
-							EngineLogger.error("PLAYING ERROR: BaseActor not found: " + v.actorId);
-					}
+						a.runVerb(v.verb, v.target);
+					} else
+						EngineLogger.error("PLAYING ERROR: BaseActor not found: " + v.actorId);
 				}
+			}
 
-				EngineLogger.debug(stringBuilder.toString());
+			EngineLogger.debug(stringBuilder.toString());
 
-				time = 0;
-				pos++;
-				if (pos >= list.size()) {
-					setPlaying(false);
-				} else {
-					v = list.get(pos);
-				}
+			time = 0;
+			pos++;
+			if (pos >= list.size()) {
+				setPlaying(false);
+			} else {
+				v = list.get(pos);
 			}
 		}
 	}
