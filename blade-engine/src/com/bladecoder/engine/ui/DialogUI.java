@@ -136,6 +136,7 @@ public class DialogUI extends ScrollPane {
 		choices = ui.getWorld().getDialogOptions();
 
 		if (choices.size() == 0) {
+			setVisible(false);
 			return;
 		} else if (style.autoselect && choices.size() == 1) {
 			// If only has one option, autoselect it
@@ -150,6 +151,7 @@ public class DialogUI extends ScrollPane {
 				}
 			});
 
+			setVisible(false);
 			return;
 		}
 
