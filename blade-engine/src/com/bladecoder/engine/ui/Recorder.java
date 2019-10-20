@@ -84,12 +84,13 @@ public class Recorder {
 			if (v.verb == null) {
 				if (v.pos == null) { // DIALOG OPTION
 					if (!w.hasDialogOptions() || w.getDialogOptions().size() <= v.dialogOption) {
-						EngineLogger.error("PLAYING ERROR: No dialog options to select: " + v.dialogOption);
+						EngineLogger.error("PLAYING ERROR: No dialog options to select. Size: "
+								+ w.getDialogOptions().size() + " select: " + v.dialogOption);
+					} else {
+						w.selectDialogOption(v.dialogOption);
+
+						stringBuilder.append(" SELECT DIALOG OPTION: ").append(v.dialogOption);
 					}
-
-					w.selectDialogOption(v.dialogOption);
-
-					stringBuilder.append(" SELECT DIALOG OPTION: ").append(v.dialogOption);
 				} else { // GOTO
 					s.getPlayer().goTo(v.pos, null, false);
 
