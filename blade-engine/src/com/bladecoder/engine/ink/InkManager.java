@@ -303,6 +303,13 @@ public class InkManager implements VerbRunner, Serializable {
 				Action action;
 
 				try {
+
+					Class<?> c = ActionFactory.getClassTags().get(commandName);
+
+					if (c == null && commandName.indexOf('.') == -1) {
+						commandName = "com.bladecoder.engine.actions." + commandName + "Action";
+					}
+
 					action = ActionFactory.create(commandName, params);
 					action.init(w);
 					actions.add(action);
