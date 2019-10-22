@@ -320,7 +320,7 @@ public class SpineRenderer extends AnimationRenderer {
 				sce.skeleton.setSkin((Skin) null);
 			}
 
-			sce.skeleton.setSlotsToSetupPose();
+			// sce.skeleton.setSlotsToSetupPose();
 		}
 
 		this.skin = skin;
@@ -459,6 +459,11 @@ public class SpineRenderer extends AnimationRenderer {
 	private void setCurrentAnimation() {
 		try {
 			SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
+
+			if (skin != null && (cs.skeleton.getSkin() == null || !skin.equals(cs.skeleton.getSkin().getName()))) {
+				setSkin(skin);
+			}
+
 			cs.skeleton.setToSetupPose();
 			cs.skeleton.setScaleX(flipX ? -1 : 1);
 			cs.animation.setTimeScale(currentAnimation.duration);
@@ -670,9 +675,6 @@ public class SpineRenderer extends AnimationRenderer {
 		} else if (initAnimation != null) {
 			startAnimation(initAnimation, Tween.Type.SPRITE_DEFINED, 1, null);
 		}
-
-		setSkin(skin);
-		computeBbox();
 	}
 
 	@Override
