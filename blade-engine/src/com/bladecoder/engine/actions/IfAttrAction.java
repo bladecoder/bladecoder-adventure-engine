@@ -18,6 +18,7 @@ package com.bladecoder.engine.actions;
 import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
@@ -86,12 +87,26 @@ public class IfAttrAction extends AbstractIfAction {
 				gotoElse(cb);
 			}
 		} else if (attr.equals(ActorAttribute.IN_INVENTORY)) {
-			boolean val = Boolean.parseBoolean(value);
+			// 'value' can have the inventory name to search in
+			// or 'true/false' to search in the current inventory.
+
+			Inventory inventory = null;
+			boolean val = true;
+
+			if (value != null) {
+				inventory = w.getInventories().get(value);
+			}
+
+			if (inventory == null) {
+				// boolean mode: search in the current inventory
+				val = Boolean.parseBoolean(value);
+				inventory = w.getInventory();
+			}
 
 			SpriteActor item = null;
 
 			if (a != null)
-				item = w.getInventory().get(a.getId());
+				item = inventory.get(a.getId());
 
 			if ((val && item == null) || (!val && item != null)) {
 				gotoElse(cb);
