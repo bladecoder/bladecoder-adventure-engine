@@ -298,7 +298,7 @@ public class InkManager implements VerbRunner, Serializable {
 			}
 
 			// Some preliminar validation to see if it's an action
-			if (commandName.length() > 0 && Character.isUpperCase(commandName.charAt(0))) {
+			if (commandName.length() > 0) {
 				// Try to create action by default
 				Action action;
 

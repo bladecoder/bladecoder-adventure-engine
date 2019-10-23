@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -40,9 +41,13 @@ public class DropItemAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("Position in the scene where de actor is dropped")
 	private Vector2 pos;
-	
+
+	@ActionProperty
+	@ActionPropertyDescription("Inventory name. If empty, the active inventory is used.")
+	private String inventory;
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
@@ -57,36 +62,47 @@ public class DropItemAction implements Action {
 		else
 			ts = w.getScene(scene);
 
-		
+		Inventory inv = null;
+
+		if (inventory == null) {
+			inv = w.getInventory();
+		} else {
+			inv = w.getInventories().get(inventory);
+			if (inv == null) {
+				EngineLogger.error("Inventory not found: " + inventory);
+				return false;
+			}
+		}
+
 		BaseActor a;
-		
+
 		if (actor != null) {
-			a = w.getInventory().get(actor);
+			a = inv.get(actor);
 
 			if (a == null) {
 				EngineLogger.error(MessageFormat.format("DropItemAction -  Item not found: {0}", actor));
 				return false;
 			}
 
-			removeActor(ts, a);
+			removeActor(inv, ts, a);
 		} else {
-			int n = w.getInventory().getNumItems();
-			
-			for(int i = n - 1; i >= 0; i--) {
-				a = w.getInventory().get(i);
-				
-				removeActor(ts, a);
+			int n = inv.getNumItems();
+
+			for (int i = n - 1; i >= 0; i--) {
+				a = inv.get(i);
+
+				removeActor(inv, ts, a);
 			}
 		}
 
 		return false;
 	}
 
-	private void removeActor(Scene ts, BaseActor a) {
+	private void removeActor(Inventory inv, Scene ts, BaseActor a) {
 
 		float scale = EngineAssetManager.getInstance().getScale();
 
-		w.getInventory().removeItem(a.getId());
+		inv.removeItem(a.getId());
 
 		if (ts != w.getCurrentScene() && w.getCachedScene(ts.getId()) == null && a instanceof Disposable)
 			((Disposable) a).dispose();
