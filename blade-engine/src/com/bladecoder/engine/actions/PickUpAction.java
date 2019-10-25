@@ -19,6 +19,7 @@ import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.VerbRunner;
@@ -34,9 +35,13 @@ public class PickUpAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The animation/sprite to show while in inventory. If empty, the animation will be 'actorid.inventory'")
 	private String animation;
-	
+
+	@ActionProperty
+	@ActionPropertyDescription("Inventory name. If empty, the active inventory is used.")
+	private String inventory;
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
@@ -57,10 +62,8 @@ public class PickUpAction implements Action {
 
 		if (actor instanceof SpriteActor) {
 			SpriteActor a = (SpriteActor) actor;
-			
-			if (scn != w.getCurrentScene()  &&
-					w.getCachedScene(scn.getId()) == null
-					) {
+
+			if (scn != w.getCurrentScene() && w.getCachedScene(scn.getId()) == null) {
 				a.loadAssets();
 				EngineAssetManager.getInstance().finishLoading();
 				a.retrieveAssets();
@@ -73,7 +76,19 @@ public class PickUpAction implements Action {
 					a.startAnimation(a.getId() + ".inventory", null);
 			}
 
-			w.getInventory().addItem(a);
+			Inventory inv = null;
+
+			if (inventory == null) {
+				inv = w.getInventory();
+			} else {
+				inv = w.getInventories().get(inventory);
+				if (inv == null) {
+					EngineLogger.error("Inventory not found: " + inventory);
+					return false;
+				}
+			}
+
+			inv.addItem(a);
 		}
 
 		return false;
