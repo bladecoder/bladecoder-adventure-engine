@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.DisableActionAction;
@@ -377,29 +378,54 @@ public class I18NHandler {
 	}
 
 	public String getNotDuplicateKey(String key) {
-		// first delete all '_' at the end to avoid always growing keys
-		int idx = key.indexOf('_');
+		// first delete all numbers at the end to avoid always growing keys
+		String key2 = key.replaceAll("\\d*$", "");
 
-		if (idx != -1)
-			key = key.substring(0, idx);
+		if (key2.isEmpty())
+			key2 = key;
 
-		while (i18nChapter.containsProperty(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
-			key += '_';
+		int i = 0;
 
-		return key;
+		while (i18nChapter.containsProperty(key2.charAt(0) == I18N.PREFIX ? key2.substring(1) : key2)) {
+			i++;
+			key2 = key + i;
+		}
+
+		return key2;
 	}
 
 	public String getNotDuplicateKeyWorld(String key) {
-		// first delete all '_' at the end
-		int idx = key.indexOf('_');
+		// first delete all numbers at the end to avoid always growing keys
+		String key2 = key.replaceAll("\\d*$", "");
 
-		if (idx != -1)
-			key = key.substring(0, idx);
+		if (key2.isEmpty())
+			key2 = key;
 
-		while (i18nWorld.containsProperty(key.charAt(0) == I18N.PREFIX ? key.substring(1) : key))
-			key += '_';
+		int i = 0;
 
-		return key;
+		while (i18nWorld.containsProperty(key2.charAt(0) == I18N.PREFIX ? key2.substring(1) : key2)) {
+			i++;
+			key2 = key + i;
+		}
+
+		return key2;
+	}
+
+	public void cleanI18N() {
+		Map<String, Scene> scenes = Ctx.project.getWorld().getScenes();
+		for (Scene scn : scenes.values()) {
+			Ctx.project.getI18N().putTranslationsInElement(scn);
+		}
+
+		// i18nChapter = new
+		// OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
+		deleteUnusedKeys();
+
+		for (Scene scn : scenes.values()) {
+			Ctx.project.getI18N().extractStrings(scn);
+		}
+
+		Ctx.project.setModified();
 	}
 
 	private void deleteUnusedKeys() {

@@ -38,7 +38,12 @@ public class EditorCommandExecutor extends CommandExecutor {
 
 	public void extractDialogs() {
 		ModelTools.extractDialogs();
-		EditorLogger.msg("PROCCESS FINISHED.");
+		EditorLogger.msg("ExtractDialogs FINISHED.");
+	}
+
+	public void cleanI18N() {
+		Ctx.project.getI18N().cleanI18N();
+		EditorLogger.msg("CleanI18N FINISHED.");
 	}
 
 	public void printUnusedSounds() {
