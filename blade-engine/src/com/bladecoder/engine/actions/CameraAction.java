@@ -31,7 +31,7 @@ public class CameraAction implements Action {
 	@ActionPropertyDescription("Sets the camera position relative to this actor.")
 	@ActionProperty(type = Type.ACTOR)
 	private String target;
-	
+
 	@ActionProperty
 	@ActionPropertyDescription("The target position")
 	private Vector2 pos;
@@ -47,7 +47,7 @@ public class CameraAction implements Action {
 	@ActionPropertyDescription("Sets the actor to follow. 'none' puts no actor to follow")
 	@ActionProperty(type = Type.ACTOR)
 	private String followActor;
-	
+
 	@ActionProperty
 	@ActionPropertyDescription("The interpolation mode")
 	private InterpolationMode interpolation;
@@ -55,9 +55,9 @@ public class CameraAction implements Action {
 	@ActionProperty(defaultValue = "true", required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
@@ -65,53 +65,55 @@ public class CameraAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		
+
 		Vector2 pos2 = null;
-		
+
 		Float zoom2 = zoom;
-		
-		if(pos != null)
+
+		if (pos != null)
 			pos2 = new Vector2(pos);
 
 		float scale = EngineAssetManager.getInstance().getScale();
 
 		SceneCamera camera = w.getSceneCamera();
-		
-		if(zoom2 == null || zoom2 < 0)
+
+		if (zoom2 == null || zoom2 < 0)
 			zoom2 = camera.getZoom();
-		
-		if(pos == null && target == null) {
+
+		if (pos == null && target == null) {
 			pos2 = new Vector2(camera.getPosition());
 			pos2.x /= scale;
 			pos2.y /= scale;
 		}
-		
+
 		if (target != null) {
 			BaseActor target = w.getCurrentScene().getActor(this.target, false);
-			
+
 			float x = target.getX();
 			float y = target.getY();
-			
-			if(target instanceof InteractiveActor) {
+
+			if (target instanceof InteractiveActor) {
 				Vector2 refPoint = ((InteractiveActor) target).getRefPoint();
-				x+= refPoint.x;
-				y+= refPoint.y;
+				x += refPoint.x;
+				y += refPoint.y;
 			}
-			
-			if(pos2 != null){
+
+			if (pos2 != null) {
 				pos2.x += x;
 				pos2.y += y;
 			} else {
-				pos2 = new Vector2(x,y);
+				pos2 = new Vector2(x, y);
 			}
-		} 
+		}
+
+		camera.stopAnim();
 
 		if (followActor != null) {
 			if (followActor.equals("none"))
 				w.getCurrentScene().setCameraFollowActor(null);
 			else {
-				w.getCurrentScene().setCameraFollowActor((SpriteActor) w.getCurrentScene()
-						.getActor(followActor, false));
+				w.getCurrentScene()
+						.setCameraFollowActor((SpriteActor) w.getCurrentScene().getActor(followActor, false));
 			}
 		}
 
@@ -120,9 +122,9 @@ public class CameraAction implements Action {
 			camera.setPosition(pos2.x * scale, pos2.y * scale);
 			return false;
 		} else {
-			camera.startAnimation(pos2.x * scale, pos2.y * scale, zoom2, duration, interpolation, wait?cb:null);
+			camera.startAnimation(pos2.x * scale, pos2.y * scale, zoom2, duration, interpolation, wait ? cb : null);
 		}
-		
+
 		return wait;
 	}
 
