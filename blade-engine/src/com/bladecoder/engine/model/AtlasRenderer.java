@@ -70,7 +70,7 @@ public class AtlasRenderer extends AnimationRenderer {
 	public void update(float delta) {
 		if (faTween != null) {
 			faTween.update(delta);
-			if (faTween.isComplete()) {
+			if (faTween != null && faTween.isComplete()) {
 				faTween = null;
 				computeBbox();
 			}

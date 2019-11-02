@@ -91,7 +91,7 @@ public class SceneCamera extends OrthographicCamera implements Serializable {
 	public void update(float delta) {
 		if (cameraTween != null) {
 			cameraTween.update(delta);
-			if (cameraTween.isComplete()) {
+			if (cameraTween != null && cameraTween.isComplete()) {
 				cameraTween = null;
 			}
 		}
