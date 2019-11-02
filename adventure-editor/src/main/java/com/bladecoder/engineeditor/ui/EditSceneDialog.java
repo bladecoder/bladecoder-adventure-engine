@@ -37,7 +37,6 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ElementUtils;
-import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
 import com.bladecoder.engineeditor.ui.panels.FilteredSelectBox;
@@ -74,8 +73,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
 		super(skin);
 
-		id = InputPanelFactory.createInputPanel(skin, "Scene ID",
-				"The ID is mandatory for scenes.", true);
+		id = InputPanelFactory.createInputPanel(skin, "Scene ID", "The ID is mandatory for scenes.", true);
 		backgroundAtlas = InputPanelFactory.createInputPanel(skin, "Background Atlas",
 				"The atlas where the background for the scene is located", Type.ATLAS_ASSET, false);
 		backgroundRegion = InputPanelFactory.createInputPanel(skin, "Background Region Id",
@@ -83,16 +81,17 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 //		depthVector = InputPanelFactory.createInputPanel(skin, "Depth Vector",
 //				"X: the actor 'y' position for a 0.0 scale, Y: the actor 'y' position for a 1.0 scale.",
 //				Param.Type.VECTOR2, false);
-		
-		depthVector = InputPanelFactory.createInputPanel(skin, "Fake depth", "Change actor scale based in the 'y' axis position.", Param.Type.BOOLEAN, true,
-				"false");
-		
+
+		depthVector = InputPanelFactory.createInputPanel(skin, "Fake depth",
+				"Change actor scale based in the 'y' axis position.", Param.Type.BOOLEAN, true, "false");
+
 		state = InputPanelFactory.createInputPanel(skin, "State", "The initial state for the scene.", false);
-		music = InputPanelFactory.createInputPanel(skin, "Music Filename", "The music for the scene", Type.MUSIC_ASSET, false);
+		music = InputPanelFactory.createInputPanel(skin, "Music Filename", "The music for the scene", Type.MUSIC_ASSET,
+				false);
 		loopMusic = InputPanelFactory.createInputPanel(skin, "Loop Music", "If the music is playing in looping",
 				Param.Type.BOOLEAN, true, "true");
-		volumeMusic = InputPanelFactory.createInputPanel(skin, "Music Volume", "The volume of the music. Value is between 0 and 1.",
-				Param.Type.FLOAT, true, "1");
+		volumeMusic = InputPanelFactory.createInputPanel(skin, "Music Volume",
+				"The volume of the music. Value is between 0 and 1.", Param.Type.FLOAT, true, "1");
 		initialMusicDelay = InputPanelFactory.createInputPanel(skin, "Initial music delay",
 				"The time to wait before playing", Param.Type.FLOAT, true, "0");
 		repeatMusicDelay = InputPanelFactory.createInputPanel(skin, "Repeat music delay",
@@ -103,8 +102,9 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		sceneSize = InputPanelFactory.createInputPanel(skin, "Scene Dimension",
 				"Sets the size of the scene. If empty, the background image size is used as the scene dimension.",
 				Param.Type.DIMENSION, false);
-		
-		walkzone = InputPanelFactory.createInputPanel(skin, "Walkzone", "The initial walkzone.", Type.WALKZONE_ACTOR, false);
+
+		walkzone = InputPanelFactory.createInputPanel(skin, "Walkzone", "The initial walkzone.", Type.WALKZONE_ACTOR,
+				false);
 
 		bgImage = new Image();
 		bgImage.setScaling(Scaling.fit);
@@ -118,7 +118,8 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 				try {
 					fillBGRegions(backgroundAtlas, backgroundRegion);
 				} catch (Exception e) {
-					Message.showMsg(getStage(), "Error loading regions from selected atlas", 4);
+					EditorLogger.error("Error loading regions from selected atlas: " + backgroundAtlas.getText() + "."
+							+ backgroundRegion.getText());
 				}
 			}
 		});
@@ -133,7 +134,8 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		try {
 			fillBGRegions(backgroundAtlas, backgroundRegion);
 		} catch (Exception e2) {
-			EditorLogger.error("Error loading regions from selected atlas");
+			EditorLogger.error("Error loading regions from selected atlas: " + backgroundAtlas.getText() + "."
+					+ backgroundRegion.getText());
 		}
 
 		init(parent, e, new InputPanel[] { id, backgroundAtlas, backgroundRegion, depthVector, state, sceneSize, music,
@@ -214,19 +216,20 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 			parent.getScenes().remove(e.getId());
 		}
 
-		e.setId(ElementUtils.getCheckedId(id.getText(), Ctx.project.getWorld().getScenes().keySet().toArray(new String[0])));
+		e.setId(ElementUtils.getCheckedId(id.getText(),
+				Ctx.project.getWorld().getScenes().keySet().toArray(new String[0])));
 
 		e.setBackgroundAtlas(backgroundAtlas.getText());
 		e.setBackgroundRegionId(backgroundRegion.getText());
-		
+
 		boolean dv = Boolean.parseBoolean(depthVector.getText());
-		
-		if(dv == true && e.getDepthVector() == null) { // create depth vector
+
+		if (dv == true && e.getDepthVector() == null) { // create depth vector
 			e.setDepthVector(new Vector2(Ctx.project.getWorld().getHeight(), 0));
-		} else if(dv == false && e.getDepthVector() != null) { // Remove depth vector
+		} else if (dv == false && e.getDepthVector() != null) { // Remove depth vector
 			e.setDepthVector(null);
 		}
-		
+
 		e.setState(state.getText());
 
 		MusicDesc md = null;
@@ -245,7 +248,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		e.setMusicDesc(md);
 
 		e.setSceneSize(Param.parseVector2(sceneSize.getText()));
-		
+
 		e.setWalkZone(walkzone.getText());
 
 		parent.addScene(e);
@@ -269,12 +272,12 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 		id.setText(e.getId());
 		backgroundAtlas.setText(e.getBackgroundAtlas());
 		backgroundRegion.setText(e.getBackgroundRegionId());
-		
+
 		if (e.getDepthVector() != null)
 			depthVector.setText("true");
 		else
 			depthVector.setText("false");
-		
+
 		state.setText(e.getState());
 
 		MusicDesc md = e.getMusicDesc();
@@ -290,7 +293,7 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
 		if (e.getSceneSize() != null)
 			sceneSize.setText(Param.toStringParam(e.getSceneSize()));
-		
+
 		walkzone.setText(e.getWalkZone());
 	}
 

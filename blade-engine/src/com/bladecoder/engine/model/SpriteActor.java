@@ -123,7 +123,6 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	public void setTint(Color tint) {
 		this.tint = tint;
-
 		setDirtyProp(DirtyProps.TINT);
 	}
 

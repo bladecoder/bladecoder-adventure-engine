@@ -26,23 +26,28 @@ import com.bladecoder.engine.util.InterpolationMode;
  * Tween for SpriteActor alpha animation
  */
 public class SpriteAlphaTween extends Tween<SpriteActor> {
-	
+
 	private float startAlpha;
 	private float targetAlpha;
-	
+
 	public SpriteAlphaTween() {
 	}
 
-	public void start(SpriteActor target, Type repeatType, int count, float tAlpha, float duration, InterpolationMode interpolation, ActionCallback cb) {
-		
+	public void start(SpriteActor target, Type repeatType, int count, float tAlpha, float duration,
+			InterpolationMode interpolation, ActionCallback cb) {
+
 		setTarget(target);
-		
-		if(target.getTint() == null)
+
+		if (target.getTint() == null) {
 			target.setTint(Color.WHITE.cpy());
-		
+		} else {
+			// to set the flag dirty
+			target.setTint(target.getTint());
+		}
+
 		startAlpha = target.getTint().a;
 		targetAlpha = tAlpha;
-		
+
 		setDuration(duration);
 		setType(repeatType);
 		setCount(count);
@@ -51,7 +56,7 @@ public class SpriteAlphaTween extends Tween<SpriteActor> {
 		if (cb != null) {
 			setCb(cb);
 		}
-		
+
 		restart();
 	}
 
@@ -59,7 +64,7 @@ public class SpriteAlphaTween extends Tween<SpriteActor> {
 	public void updateTarget() {
 		target.getTint().a = startAlpha + getPercent() * (targetAlpha - startAlpha);
 	}
-	
+
 	@Override
 	public void write(Json json) {
 		super.write(json);
@@ -70,8 +75,8 @@ public class SpriteAlphaTween extends Tween<SpriteActor> {
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);	
-		
+		super.read(json, jsonData);
+
 		startAlpha = json.readValue("startAlpha", float.class, 1.0f, jsonData);
 		targetAlpha = json.readValue("targetAlpha", float.class, 1.0f, jsonData);
 	}

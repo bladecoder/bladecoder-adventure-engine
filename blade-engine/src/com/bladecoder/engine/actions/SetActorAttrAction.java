@@ -60,7 +60,7 @@ public class SetActorAttrAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor scale proportionally")
 	private Float scale;
-	
+
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor scale non proportionally")
 	private Vector2 scaleXY;
@@ -91,13 +91,13 @@ public class SetActorAttrAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("Sets the actor speed for walking. Only supported for character actors.")
 	private Float walkingSpeed;
-	
+
 	@ActionProperty
 	@ActionPropertyDescription("Sets the position of the text when talking. Relative to the character position.")
 	private Vector2 talkingTextPos;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
@@ -163,7 +163,7 @@ public class SetActorAttrAction implements Action {
 			else
 				EngineLogger.error("'scale' property not supported for actor:" + a.getId());
 		}
-		
+
 		if (scaleXY != null) {
 			if (a instanceof SpriteActor)
 				((SpriteActor) a).setScale(scaleXY.x, scaleXY.y);
@@ -180,7 +180,7 @@ public class SetActorAttrAction implements Action {
 
 		if (tint != null) {
 			if (a instanceof SpriteActor)
-				((SpriteActor) a).setTint(tint);
+				((SpriteActor) a).setTint(tint.cpy());
 			else
 				EngineLogger.error("'tint' property not supported for actor:" + a.getId());
 		}
@@ -229,7 +229,7 @@ public class SetActorAttrAction implements Action {
 			} else
 				EngineLogger.error("'uiActor' property not supported for actor:" + a.getId());
 		}
-		
+
 		if (talkingTextPos != null) {
 			if (a instanceof CharacterActor)
 				((CharacterActor) a).setTalkingTextPos(talkingTextPos);
@@ -244,8 +244,7 @@ public class SetActorAttrAction implements Action {
 
 		scn.removeActor(actor);
 
-		if (scn != w.getCurrentScene() && w.getCachedScene(scn.getId()) == null
-				&& actor instanceof AssetConsumer) {
+		if (scn != w.getCurrentScene() && w.getCachedScene(scn.getId()) == null && actor instanceof AssetConsumer) {
 			((AssetConsumer) actor).loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
 			((AssetConsumer) actor).retrieveAssets();
