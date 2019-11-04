@@ -25,6 +25,7 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.PolygonUtils;
 
 @ActionDescription(name = "IfActorAttr", value = "Execute the actions inside the If/EndIf if the attribute has the specified value.")
 public class IfAttrAction extends AbstractIfAction {
@@ -58,13 +59,12 @@ public class IfAttrAction extends AbstractIfAction {
 		Scene s = actor.getScene(w);
 
 		final String actorId = actor.getActorId();
-		if (actorId == null) {
-			// if called inside a scene verb and no actor is specified, return
-			EngineLogger.error(getClass() + ": No actor specified");
+		BaseActor a = s.getActor(actorId, true);
+
+		if (a == null) {
+			EngineLogger.error(getClass() + "- No not found: " + actorId);
 			return false;
 		}
-
-		BaseActor a = s.getActor(actorId, true);
 
 		if (attr.equals(ActorAttribute.STATE) && a instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor) a;
@@ -153,12 +153,13 @@ public class IfAttrAction extends AbstractIfAction {
 			}
 		} else if (attr.equals(ActorAttribute.INSIDE)) {
 			BaseActor insideActor = w.getCurrentScene().getActor(value, false);
-			boolean inside = false;
 
-			if (a != null && insideActor != null)
-				inside = insideActor.getBBox().contains(a.getX(), a.getY());
-			else
+			if (insideActor == null) {
 				EngineLogger.debug("Actor for inside test not found: " + value);
+				return false;
+			}
+
+			boolean inside = PolygonUtils.isPointInside(insideActor.getBBox(), a.getX(), a.getY(), true);
 
 			if (!inside) {
 				gotoElse(cb);
