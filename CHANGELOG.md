@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.1]
+
+- Added bubble positioning parameters on ui.json.
+- Better multiple inventory support in actions.
+- Better Spine skin handling.
+- Update Blade Ink to v0.7.2.
+- A lot of bugs fixed (see git log).
+
 ## [3.2.0]
 
 - Say Action: Talk animation also for text types PLAIN and SUBTITLE.
@@ -13,7 +21,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated libgdx to v1.9.10
 - Updated Spine to v3.8.
 - Update gradle to v5.4.1
-- 
 
 ## [3.1.2]
 
