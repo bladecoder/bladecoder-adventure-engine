@@ -191,11 +191,11 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 			if (style.talkBubble != null) {
 				float scale = DPIUtils.getTouchMinSize() * style.bubbleSize / 4 / style.talkBubble.getMinHeight();
 
-				float bubbleX = unprojectTmp.x - style.talkBubble.getMinWidth() * scale / 2;
+				float bubbleX = unprojectTmp.x - style.talkBubble.getMinWidth() * scale / 2 + style.bubbledx;
 				// check screen exit
 				bubbleX = Math.max(bubbleX, getX() + PADDING - style.talkBubble.getMinWidth() * scale / 2);
 				bubbleX = Math.min(bubbleX, getX() + getWidth() - PADDING - style.talkBubble.getMinWidth() * scale / 2);
-				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + 2;
+				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + style.bubbledy;
 
 				style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
 						style.talkBubble.getMinHeight() * scale);
@@ -253,6 +253,8 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 		public Color defaultColor;
 		public float subtitlePosPercent = 0.90f;
 		public float bubbleSize = 1f;
+		public float bubbledx = 0;
+		public float bubbledy = 0;
 		public int maxCharWidth = 80;
 		public int maxTalkCharWidth = 35;
 
@@ -267,6 +269,8 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 			defaultColor = style.defaultColor;
 			subtitlePosPercent = style.subtitlePosPercent;
 			bubbleSize = style.bubbleSize;
+			bubbledx = style.bubbledx;
+			bubbledy = style.bubbledy;
 			maxCharWidth = style.maxCharWidth;
 			maxTalkCharWidth = style.maxTalkCharWidth;
 		}
