@@ -40,9 +40,9 @@ public class IfSceneAttrAction extends AbstractIfAction {
 	@ActionProperty
 	@ActionPropertyDescription("The attribute value")
 	private String value;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
@@ -50,27 +50,26 @@ public class IfSceneAttrAction extends AbstractIfAction {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		Scene s = (scene != null && !scene.isEmpty()) ? w.getScene(scene) : w
-				.getCurrentScene();
+		Scene s = (scene != null && !scene.isEmpty()) ? w.getScene(scene) : w.getCurrentScene();
 
 		if (attr == SceneAttr.STATE) {
 			if (!ActionUtils.compareNullStr(value, s.getState())) {
-				gotoElse((VerbRunner) cb);
+				gotoElse(cb);
 			}
 		} else if (attr == SceneAttr.CURRENT_SCENE) {
 			String scn = w.getCurrentScene().getId();
-			
-			if (!ActionUtils.compareNullStr(value, scn)) {
-				gotoElse((VerbRunner) cb);
+
+			if (!ActionUtils.compareNullStr(value, scn) && !ActionUtils.compareNullStr(s.getId(), scn)) {
+				gotoElse(cb);
 			}
 		} else if (attr == SceneAttr.PLAYER) {
 			CharacterActor player = s.getPlayer();
-			
-			String id = player!=null?player.getId():null;
-			
+
+			String id = player != null ? player.getId() : null;
+
 			if (!ActionUtils.compareNullStr(value, id)) {
-				gotoElse((VerbRunner) cb);
-			}			
+				gotoElse(cb);
+			}
 		}
 
 		return false;
