@@ -183,6 +183,8 @@ public class InkManager implements VerbRunner, Serializable {
 		waitIfNotLoaded();
 
 		String line = null;
+		// Cancel possible pending timer
+		w.getCurrentScene().getTimers().removeTimerWithCb(this);
 		actions.clear();
 
 		HashMap<String, String> currentLineParams = new HashMap<>();
@@ -502,6 +504,9 @@ public class InkManager implements VerbRunner, Serializable {
 
 	@Override
 	public void cancel() {
+		// Cancel possible pending timer
+		w.getCurrentScene().getTimers().removeTimerWithCb(this);
+
 		ArrayList<Action> actions = getActions();
 
 		for (Action c : actions) {
