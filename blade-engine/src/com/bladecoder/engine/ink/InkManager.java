@@ -34,6 +34,7 @@ import com.bladecoder.ink.runtime.ListDefinition;
 import com.bladecoder.ink.runtime.Story;
 
 public class InkManager implements VerbRunner, Serializable {
+	public final static int KEY_SIZE = 10;
 	public final static char NAME_VALUE_TAG_SEPARATOR = ':';
 	public final static char NAME_VALUE_PARAM_SEPARATOR = '=';
 	private final static String PARAM_SEPARATOR = ",";
@@ -124,7 +125,13 @@ public class InkManager implements VerbRunner, Serializable {
 
 			for (String k : keys) {
 				try {
-					translated += i18n.getString(k);
+					// some untranslated words may follow the key
+					String k2 = k.substring(0, 10);
+					translated += i18n.getString(k2);
+					if (k.length() > 10) {
+						String trailing = k.substring(10);
+						translated += trailing;
+					}
 				} catch (Exception e) {
 					EngineLogger.error("MISSING TRANSLATION KEY: " + key);
 					return key;

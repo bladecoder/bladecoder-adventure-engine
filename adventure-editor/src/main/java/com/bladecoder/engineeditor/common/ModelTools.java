@@ -46,6 +46,7 @@ import com.bladecoder.engine.actions.SayAction;
 import com.bladecoder.engine.actions.SetCutmodeAction;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.ink.InkManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Dialog;
@@ -530,7 +531,7 @@ public class ModelTools {
 				byte[] bytes = value.getBytes(("UTF-8"));
 				md.update(bytes);
 				byte[] digest = md.digest();
-				key = Base64Coder.encodeLines(digest).substring(0, 10);
+				key = Base64Coder.encodeLines(digest).substring(0, InkManager.KEY_SIZE);
 			} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
 				EditorLogger.error("Error encoding key." + e);
 				return;
