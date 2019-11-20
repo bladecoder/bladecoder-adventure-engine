@@ -217,7 +217,7 @@ public class ImageRenderer extends AnimationRenderer {
 	}
 
 	private String getI18NSource(String source) {
-		String lang = I18N.getCurrentLocale().getLanguage();
+		String lang = world.getI18N().getCurrentLocale().getLanguage();
 
 		int pointIdx = source.lastIndexOf('.');
 		String ext = source.substring(pointIdx);

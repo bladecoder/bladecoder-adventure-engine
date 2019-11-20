@@ -43,7 +43,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.Config;
@@ -190,7 +189,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		}
 
 		if (world.savedGameExists() || world.getCurrentScene() != null) {
-			TextButton continueGame = new TextButton(I18N.getString("ui.continue"), skin, style.textButtonStyle);
+			TextButton continueGame = new TextButton(world.getI18N().getString("ui.continue"), skin,
+					style.textButtonStyle);
 			continueGame.getLabel().setAlignment(getAlign());
 
 			continueGame.addListener(new ClickListener() {
@@ -211,7 +211,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			menuButtonTable.row();
 		}
 
-		TextButton newGame = new TextButton(I18N.getString("ui.new"), skin, style.textButtonStyle);
+		TextButton newGame = new TextButton(world.getI18N().getString("ui.new"), skin, style.textButtonStyle);
 		newGame.getLabel().setAlignment(getAlign());
 		newGame.addListener(new ClickListener() {
 			@Override
@@ -236,14 +236,16 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 					d.getButtonTable().padTop(DPIUtils.getMarginSize());
 					d.getButtonTable().defaults().padLeft(DPIUtils.getMarginSize()).padRight(DPIUtils.getMarginSize());
 
-					Label l = new Label(I18N.getString("ui.override"), ui.getSkin(), "ui-dialog");
+					Label l = new Label(world.getI18N().getString("ui.override"), ui.getSkin(), "ui-dialog");
 					l.setWrap(true);
 					l.setAlignment(Align.center);
 
 					d.getContentTable().add(l).prefWidth(Gdx.graphics.getWidth() * .7f);
 
-					d.button(I18N.getString("ui.yes"), true, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
-					d.button(I18N.getString("ui.no"), false, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+					d.button(world.getI18N().getString("ui.yes"), true,
+							ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+					d.button(world.getI18N().getString("ui.no"), false,
+							ui.getSkin().get("ui-dialog", TextButtonStyle.class));
 					d.key(Keys.ENTER, true).key(Keys.ESCAPE, false);
 
 					d.show(stage);
@@ -263,7 +265,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		menuButtonTable.add(newGame);
 		menuButtonTable.row();
 
-		TextButton loadGame = new TextButton(I18N.getString("ui.load"), skin, style.textButtonStyle);
+		TextButton loadGame = new TextButton(world.getI18N().getString("ui.load"), skin, style.textButtonStyle);
 		loadGame.getLabel().setAlignment(getAlign());
 		loadGame.addListener(new ClickListener() {
 			@Override
@@ -275,7 +277,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		menuButtonTable.add(loadGame);
 		menuButtonTable.row();
 
-		TextButton quit = new TextButton(I18N.getString("ui.quit"), skin, style.textButtonStyle);
+		TextButton quit = new TextButton(world.getI18N().getString("ui.quit"), skin, style.textButtonStyle);
 		quit.getLabel().setAlignment(getAlign());
 		quit.addListener(new ClickListener() {
 			@Override

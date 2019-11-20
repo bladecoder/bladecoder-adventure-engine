@@ -24,7 +24,7 @@ import com.bladecoder.engine.util.DPIUtils;
 
 public class VerbUI extends Table {
 	private final static float MARGIN = 1;
-	
+
 	private static final List<String> VERBS = Arrays.asList("give", "pickup", "use", "open", "talkto", "push", "close",
 			"lookat", "pull");
 	private static final List<String> VERBS_DESC = Arrays.asList("Give", "Pick up", "Use", "Open", "Talk to", "Push",
@@ -35,7 +35,7 @@ public class VerbUI extends Table {
 	private static final int INVENTORY_COLS = 3;
 	private static final int INVENTORY_ROWS = 3;
 
-	private final List<ImageButton> inventorySlots = new ArrayList<ImageButton>();
+	private final List<ImageButton> inventorySlots = new ArrayList<>();
 
 	private final SceneScreen sceneScreen;
 	private final String DEFAULT_VERB = "lookat";
@@ -45,9 +45,9 @@ public class VerbUI extends Table {
 	private InteractiveActor target;
 
 	private VerbUIStyle style;
-	
+
 	private int scroll = 0;
-	
+
 	private Table arrowPanel;
 	private Table invPanel;
 
@@ -68,19 +68,19 @@ public class VerbUI extends Table {
 
 		Table verbs = createVerbPanel();
 		add(verbs).fill().expand();
-		
+
 		arrowPanel = createArrowPanel();
 		add(arrowPanel).fillY().expandY();
 
 		invPanel = createInventoryPanel();
 		add(invPanel).fill().expand();
 	}
-	
+
 	private Table createArrowPanel() {
 		Table arrows = new Table();
-		
+
 		arrows.defaults().pad(MARGIN);
-		
+
 		ImageButton.ImageButtonStyle s = new ImageButton.ImageButtonStyle(style.inventoryButtonStyle);
 		s.imageUp = style.upArrow;
 
@@ -89,14 +89,15 @@ public class VerbUI extends Table {
 		arrows.add(up).fillY().expandY();
 
 		up.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				if(scroll > 0)
+				if (scroll > 0)
 					scroll--;
 			}
 		});
-		
+
 		arrows.row();
-		
+
 		ImageButton.ImageButtonStyle s2 = new ImageButton.ImageButtonStyle(style.inventoryButtonStyle);
 		s2.imageUp = style.downArrow;
 
@@ -105,22 +106,23 @@ public class VerbUI extends Table {
 		arrows.add(down).fillY().expandY();
 
 		down.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				Inventory inv = sceneScreen.getUI().getWorld().getInventory();
-				
+
 				int itemsLeft = inv.getNumItems() - scroll * INVENTORY_COLS;
-				
-				if(itemsLeft > inventorySlots.size())
+
+				if (itemsLeft > inventorySlots.size())
 					scroll++;
 			}
 		});
-		
+
 		return arrows;
 	}
 
 	private Table createVerbPanel() {
 		Table verbs = new Table();
-		
+
 		verbs.defaults().pad(MARGIN);
 
 		for (int i = 0; i < VERBS.size(); i++) {
@@ -130,6 +132,7 @@ public class VerbUI extends Table {
 			TextButton b = new TextButton(VERBS_DESC.get(i), style.verbButtonStyle);
 			b.setName(VERBS.get(i));
 			b.addListener(new ClickListener() {
+				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					currentVerb = event.getListenerActor().getName();
 					infoLine.setText(((TextButton) event.getListenerActor()).getText());
@@ -142,16 +145,16 @@ public class VerbUI extends Table {
 
 		return verbs;
 	}
-	
+
 	@Override
 	public void sizeChanged() {
 		super.sizeChanged();
 
-		for(Actor a:arrowPanel.getChildren()) {
-			ImageButton b = (ImageButton)a;
-			float h = (getHeight() / 2)  - style.infoLineLabelStyle.font.getLineHeight() / 2 - DPIUtils.getSpacing();
+		for (Actor a : arrowPanel.getChildren()) {
+			ImageButton b = (ImageButton) a;
+			float h = (getHeight() / 2) - style.infoLineLabelStyle.font.getLineHeight() / 2 - DPIUtils.getSpacing();
 			float ih = b.getImage().getDrawable().getMinHeight();
-			float iw = b.getImage().getDrawable().getMinWidth() *  h / ih;
+			float iw = b.getImage().getDrawable().getMinWidth() * h / ih;
 			b.getImageCell().maxSize(iw, h);
 		}
 
@@ -167,22 +170,22 @@ public class VerbUI extends Table {
 		// fill inventory
 		for (int i = 0; i < inventorySlots.size(); i++) {
 			RendererDrawable r = (RendererDrawable) inventorySlots.get(i).getImage().getDrawable();
-			
+
 			int pos = scroll * INVENTORY_COLS + i;
 
 			if (pos < inv.getNumItems()) {
-				r.setRenderer(inv.get(pos).getRenderer());				
+				r.setRenderer(inv.get(pos).getRenderer());
 			} else {
 				r.setRenderer(null);
 			}
-			
+
 			inventorySlots.get(i).getImage().invalidate();
 		}
 	}
 
 	private Table createInventoryPanel() {
 		Table inventory = new Table();
-		
+
 		inventory.defaults().pad(MARGIN);
 
 		for (int i = 0; i < INVENTORY_COLS * INVENTORY_ROWS; i++) {
@@ -200,6 +203,7 @@ public class VerbUI extends Table {
 			inventorySlots.add(b);
 
 			b.addListener(new ClickListener() {
+				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					int i = (Integer) event.getListenerActor().getUserObject();
 					Inventory inv = sceneScreen.getUI().getWorld().getInventory();
@@ -216,7 +220,7 @@ public class VerbUI extends Table {
 					}
 				}
 			});
-			
+
 			b.getImageCell().pad(MARGIN).expand().fill();
 		}
 
@@ -263,7 +267,7 @@ public class VerbUI extends Table {
 			desc = actor.getDesc();
 
 			if (desc.charAt(0) == I18N.PREFIX)
-				desc = I18N.getString(desc.substring(1));
+				desc = sceneScreen.getWorld().getI18N().getString(desc.substring(1));
 		}
 
 		return desc;

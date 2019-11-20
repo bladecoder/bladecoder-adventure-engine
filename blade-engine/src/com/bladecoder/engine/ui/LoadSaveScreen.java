@@ -50,7 +50,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
@@ -144,7 +143,9 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		table.center();
 		table.pad(pad);
 
-		Label title = new Label(loadScreenMode ? I18N.getString("ui.load") : I18N.getString("ui.save"), skin, "title");
+		Label title = new Label(
+				loadScreenMode ? world.getI18N().getString("ui.load") : world.getI18N().getString("ui.save"), skin,
+				"title");
 
 		Button back = new Button(skin, "back");
 
@@ -228,7 +229,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		table.row();
 
 		if (loadScreenMode && sl.size() == 0) {
-			Label lbl = new Label(I18N.getString("ui.noSavedGames"), skin, "title");
+			Label lbl = new Label(world.getI18N().getString("ui.noSavedGames"), skin, "title");
 			lbl.setAlignment(Align.center);
 			lbl.setWrap(true);
 			table.add(lbl).expand().fill();
@@ -264,7 +265,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		final ButtonStyle style = button.getStyle();
 		style.up = style.down = skin.getDrawable("black");
 
-		String textLabel = I18N.getString("ui.newSlot");
+		String textLabel = ui.getWorld().getI18N().getString("ui.newSlot");
 		button.setSize(slotWidth, slotHeight);
 
 		if (slotExists(slot)) {
@@ -375,14 +376,16 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 				d.getButtonTable().padTop(DPIUtils.getMarginSize());
 				d.getButtonTable().defaults().padLeft(DPIUtils.getMarginSize()).padRight(DPIUtils.getMarginSize());
 
-				Label l = new Label(I18N.getString("ui.override_load"), ui.getSkin(), "ui-dialog");
+				Label l = new Label(world.getI18N().getString("ui.override_load"), ui.getSkin(), "ui-dialog");
 				l.setWrap(true);
 				l.setAlignment(Align.center);
 
 				d.getContentTable().add(l).prefWidth(Gdx.graphics.getWidth() * .7f);
 
-				d.button(I18N.getString("ui.yes"), true, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
-				d.button(I18N.getString("ui.no"), false, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+				d.button(world.getI18N().getString("ui.yes"), true,
+						ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+				d.button(world.getI18N().getString("ui.no"), false,
+						ui.getSkin().get("ui-dialog", TextButtonStyle.class));
 				d.key(Keys.ENTER, true).key(Keys.ESCAPE, false);
 
 				d.show(stage);
@@ -430,14 +433,16 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 			d.getButtonTable().padTop(DPIUtils.getMarginSize());
 			d.getButtonTable().defaults().padLeft(DPIUtils.getMarginSize()).padRight(DPIUtils.getMarginSize());
 
-			Label l = new Label(I18N.getString("ui.remove"), ui.getSkin(), "ui-dialog");
+			Label l = new Label(ui.getWorld().getI18N().getString("ui.remove"), ui.getSkin(), "ui-dialog");
 			l.setWrap(true);
 			l.setAlignment(Align.center);
 
 			d.getContentTable().add(l).prefWidth(Gdx.graphics.getWidth() * .7f);
 
-			d.button(I18N.getString("ui.yes"), true, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
-			d.button(I18N.getString("ui.no"), false, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+			d.button(ui.getWorld().getI18N().getString("ui.yes"), true,
+					ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+			d.button(ui.getWorld().getI18N().getString("ui.no"), false,
+					ui.getSkin().get("ui-dialog", TextButtonStyle.class));
 			d.key(Keys.ENTER, true).key(Keys.ESCAPE, false);
 
 			d.show(stage);

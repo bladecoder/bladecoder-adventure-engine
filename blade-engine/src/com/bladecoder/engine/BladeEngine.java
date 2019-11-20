@@ -77,20 +77,20 @@ public class BladeEngine implements ApplicationListener {
 	public UI getUI() {
 		return ui;
 	}
-	
+
 	public void loadGame(String baseFolder) {
-		if(ui != null) {
+		if (ui != null) {
 			ui.dispose();
 			world.dispose();
 		}
-		
+
 		world = new World();
-		
-		if(baseFolder != null) {
+
+		if (baseFolder != null) {
 			EngineAssetManager.setAssetFolder(baseFolder);
 			Config.load();
 		}
-		
+
 		try {
 			world.loadWorldDesc();
 		} catch (Exception e) {
@@ -98,7 +98,7 @@ public class BladeEngine implements ApplicationListener {
 			EngineLogger.error("EXITING: " + e.getMessage());
 			Gdx.app.exit();
 		}
-			
+
 		ui = new UI(world);
 	}
 
@@ -155,7 +155,7 @@ public class BladeEngine implements ApplicationListener {
 			if (restart) {
 				try {
 					world.getSerializer().loadChapter();
-					
+
 					ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 				} catch (Exception e) {
 					EngineLogger.error("ERROR LOADING GAME", e);
@@ -171,7 +171,7 @@ public class BladeEngine implements ApplicationListener {
 				ui.getRecorder().setFilename(recordName);
 				ui.getRecorder().load();
 				ui.getRecorder().setPlaying(true);
-				
+
 				ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
 			}
 		}
@@ -185,9 +185,6 @@ public class BladeEngine implements ApplicationListener {
 			EngineLogger.debug("Density: " + Gdx.graphics.getDensity());
 			EngineLogger.debug("Size Multiplier: " + DPIUtils.getSizeMultiplier());
 		}
-		
-		// Capture back key
-		Gdx.input.setCatchBackKey(true);
 	}
 
 	@Override
@@ -210,8 +207,8 @@ public class BladeEngine implements ApplicationListener {
 	@Override
 	public void resize(int width, int height) {
 		EngineLogger.debug(MessageFormat.format("GAME RESIZE {0}x{1}", width, height));
-		
-		if(ui != null)
+
+		if (ui != null)
 			ui.resize(width, height);
 	}
 
@@ -220,8 +217,7 @@ public class BladeEngine implements ApplicationListener {
 		boolean bot = ui.getTesterBot().isEnabled();
 		boolean r = ui.getRecorder().isPlaying();
 
-		if (!world.isDisposed() && 
-				((!bot && !r) || EngineLogger.lastError != null)) {
+		if (!world.isDisposed() && ((!bot && !r) || EngineLogger.lastError != null)) {
 			EngineLogger.debug("GAME PAUSE");
 			ui.pause();
 			try {

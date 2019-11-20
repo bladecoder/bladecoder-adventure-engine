@@ -30,7 +30,7 @@ import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
 public class PieMenu2 extends com.badlogic.gdx.scenes.scene2d.Group {
-	
+
 	private final static int NUM_VERBS = 10;
 
 	private BitmapFont font;
@@ -39,18 +39,18 @@ public class PieMenu2 extends com.badlogic.gdx.scenes.scene2d.Group {
 	private Vector2[] endPositions;
 
 	private float x = 0, y = 0;
-	
+
 	private float distance = 100;
-    private float minAngle = 0, maxAngle = 360, startAngle = 0;
+	private float minAngle = 0, maxAngle = 360, startAngle = 0;
 
 	private InteractiveActor iActor = null;
 
 	private final SceneScreen sceneScreen;
-	
+
 	private int viewportWidth, viewportHeight;
-	
+
 	private final GlyphLayout layout = new GlyphLayout();
-	
+
 	private String desc = null;
 
 	public PieMenu2(SceneScreen scr) {
@@ -58,13 +58,13 @@ public class PieMenu2 extends com.badlogic.gdx.scenes.scene2d.Group {
 		font = scr.getUI().getSkin().getFont("desc");
 		buttons = new Button[NUM_VERBS];
 		endPositions = new Vector2[NUM_VERBS];
-		
-		for(int i = 0; i < NUM_VERBS; i++) {
-			buttons[i] =  new Button(scr.getUI().getSkin(), "pie_lookat");
+
+		for (int i = 0; i < NUM_VERBS; i++) {
+			buttons[i] = new Button(scr.getUI().getSkin(), "pie_lookat");
 			endPositions[i] = new Vector2();
 			addActor(buttons[i]);
-			
-			buttons[i].addListener(new ChangeListener() {			
+
+			buttons[i].addListener(new ChangeListener() {
 				@Override
 				public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
 					if (iActor != null) {
@@ -85,7 +85,7 @@ public class PieMenu2 extends com.badlogic.gdx.scenes.scene2d.Group {
 		// DRAW TARGET DESCRIPTION
 		String desc = iActor.getDesc();
 
-		if (desc != null) {			
+		if (desc != null) {
 			float margin = DPIUtils.UI_SPACE;
 
 			float textX = x - layout.width / 2;
@@ -94,8 +94,8 @@ public class PieMenu2 extends com.badlogic.gdx.scenes.scene2d.Group {
 			if (textX < 0)
 				textX = 0;
 
-			RectangleRenderer.draw(batch, textX - margin, textY - layout.height - margin,
-					layout.width + margin*2, layout.height + margin*2, Color.BLACK);
+			RectangleRenderer.draw(batch, textX - margin, textY - layout.height - margin, layout.width + margin * 2,
+					layout.height + margin * 2, Color.BLACK);
 			font.draw(batch, layout, textX, textY);
 		}
 	}
@@ -110,43 +110,43 @@ public class PieMenu2 extends com.badlogic.gdx.scenes.scene2d.Group {
 		this.x = x;
 		this.y = y;
 		iActor = a;
-		
+
 		// DRAW TARGET DESCRIPTION
 		desc = iActor.getDesc();
 
 		if (desc != null) {
 
 			if (desc.charAt(0) == I18N.PREFIX)
-				desc = I18N.getString(desc.substring(1));
-					
+				desc = sceneScreen.getWorld().getI18N().getString(desc.substring(1));
+
 			layout.setText(font, desc);
 		}
-		
+
 		float margin = DPIUtils.getMarginSize();
-		
+
 		// FITS TO SCREEN
-		if(x < distance + buttons[0].getWidth() / 2 + margin)
+		if (x < distance + buttons[0].getWidth() / 2 + margin)
 			this.x = distance + buttons[0].getWidth() / 2 + margin;
-		else if(x > viewportWidth - distance - buttons[0].getWidth() / 2 - margin)
+		else if (x > viewportWidth - distance - buttons[0].getWidth() / 2 - margin)
 			this.x = viewportWidth - distance - buttons[0].getWidth() / 2 - margin;
-		
-		if(y < distance + buttons[0].getHeight() / 2 + margin)
+
+		if (y < distance + buttons[0].getHeight() / 2 + margin)
 			this.y = distance + buttons[0].getHeight() / 2 + margin;
-		else if(y > viewportHeight - distance - buttons[0].getHeight() / 2 - margin)
+		else if (y > viewportHeight - distance - buttons[0].getHeight() / 2 - margin)
 			this.y = viewportHeight - distance - buttons[0].getHeight() / 2 - margin;
-		
-		float offsetAngle = ((maxAngle - minAngle)) / (NUM_VERBS - 1);    
-	    float angle = startAngle;
-	        
-		for(int i = 0; i < NUM_VERBS; i++) {
-			
-			endPositions[i].x = (float)(Math.cos(Math.toRadians(angle))) * distance + this.x;
-			endPositions[i].y = (float)(Math.sin(Math.toRadians(angle))) * distance + this.y;
-			
+
+		float offsetAngle = ((maxAngle - minAngle)) / (NUM_VERBS - 1);
+		float angle = startAngle;
+
+		for (int i = 0; i < NUM_VERBS; i++) {
+
+			endPositions[i].x = (float) (Math.cos(Math.toRadians(angle))) * distance + this.x;
+			endPositions[i].y = (float) (Math.sin(Math.toRadians(angle))) * distance + this.y;
+
 			buttons[i].setPosition(this.x - buttons[i].getWidth() / 2, this.y - buttons[i].getHeight() / 2);
-			buttons[i].addAction(Actions
-					.moveTo(endPositions[i].x - buttons[i].getWidth() / 2, endPositions[i].y - buttons[i].getWidth() / 2, .1f));
-			
+			buttons[i].addAction(Actions.moveTo(endPositions[i].x - buttons[i].getWidth() / 2,
+					endPositions[i].y - buttons[i].getWidth() / 2, .1f));
+
 			angle += offsetAngle;
 		}
 
@@ -155,10 +155,10 @@ public class PieMenu2 extends com.badlogic.gdx.scenes.scene2d.Group {
 	public void resize(int width, int height) {
 		viewportWidth = width;
 		viewportHeight = height;
-		
+
 		setBounds(0, 0, width, height);
 	}
-	
+
 	/**
 	 * The style for the PieMenu2.
 	 * 

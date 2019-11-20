@@ -69,7 +69,7 @@ public class TextManager implements Serializable {
 			String actorId, String voiceId, String talkAnimation, ActionCallback cb) {
 
 		if (str.charAt(0) == I18N.PREFIX)
-			str = I18N.getString(str.substring(1));
+			str = scene.getWorld().getI18N().getString(str.substring(1));
 
 		String s = str.replace("\\n", "\n");
 

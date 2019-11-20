@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -31,6 +32,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.i18n.I18N;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -47,23 +49,21 @@ public class DialogUI extends ScrollPane {
 	private Button down;
 
 	private List<String> choices;
+	private final World world;
 
-	private final UI ui;
-
-	public DialogUI(UI ui) {
-		super(new Table(ui.getSkin()), ui.getSkin());
-
-		this.ui = ui;
+	public DialogUI(Skin skin, World w, Recorder recorder) {
+		super(new Table(skin), skin);
 
 		setFadeScrollBars(true);
 		setOverscroll(false, false);
 
-		up = new Button(ui.getSkin(), "dialog-up");
-		down = new Button(ui.getSkin(), "dialog-down");
+		up = new Button(skin, "dialog-up");
+		down = new Button(skin, "dialog-down");
 
 		panel = (Table) getActor();
-		style = ui.getSkin().get(DialogUIStyle.class);
-		this.recorder = ui.getRecorder();
+		style = skin.get(DialogUIStyle.class);
+		this.recorder = recorder;
+		this.world = w;
 
 		if (style.background != null)
 			panel.setBackground(style.background);
@@ -133,7 +133,7 @@ public class DialogUI extends ScrollPane {
 	}
 
 	private void show() {
-		choices = ui.getWorld().getDialogOptions();
+		choices = world.getDialogOptions();
 
 		if (choices.size() == 0) {
 			setVisible(false);
@@ -161,7 +161,7 @@ public class DialogUI extends ScrollPane {
 			String str = choices.get(i);
 
 			if (str.charAt(0) == I18N.PREFIX)
-				str = I18N.getString(str.substring(1));
+				str = world.getI18N().getString(str.substring(1));
 
 			TextButton ob = new TextButton(str, style.textButtonStyle);
 			ob.setUserObject(i);
@@ -206,7 +206,7 @@ public class DialogUI extends ScrollPane {
 			recorder.add(i);
 		}
 
-		ui.getWorld().selectDialogOption(i);
+		world.selectDialogOption(i);
 
 		setVisible(false);
 	}

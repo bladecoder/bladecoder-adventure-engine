@@ -23,7 +23,6 @@ import com.bladecoder.engine.actions.PlaySoundAction;
 import com.bladecoder.engine.actions.SoundAction;
 import com.bladecoder.engine.anim.AnimationDesc;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
@@ -90,7 +89,7 @@ public class WorldSerialization implements Serializable {
 		w.setHeight((int) (height * scale));
 		w.setInitChapter(json.readValue("initChapter", String.class, root));
 		w.getVerbManager().read(json, root);
-		I18N.loadWorld(EngineAssetManager.MODEL_DIR + EngineAssetManager.WORLD_FILENAME);
+		w.getI18N().loadWorld(EngineAssetManager.MODEL_DIR + EngineAssetManager.WORLD_FILENAME);
 	}
 
 	public void saveWorldDesc(FileHandle file) throws IOException {
@@ -160,7 +159,7 @@ public class WorldSerialization implements Serializable {
 			else
 				w.setCurrentScene(w.getScenes().get(scene), initScene);
 
-			I18N.loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
+			w.getI18N().loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
 
 			w.getCustomProperties().put(WorldProperties.CURRENT_CHAPTER.toString(), chapterName);
 			w.getCustomProperties().put(WorldProperties.PLATFORM.toString(), Gdx.app.getType().toString());
@@ -439,7 +438,7 @@ public class WorldSerialization implements Serializable {
 			w.getTransition().read(json, jsonData.get("transition"));
 			w.getMusicManager().read(json, jsonData.get("musicEngine"));
 
-			I18N.loadChapter(EngineAssetManager.MODEL_DIR + w.getCurrentChapter());
+			w.getI18N().loadChapter(EngineAssetManager.MODEL_DIR + w.getCurrentChapter());
 		}
 	}
 

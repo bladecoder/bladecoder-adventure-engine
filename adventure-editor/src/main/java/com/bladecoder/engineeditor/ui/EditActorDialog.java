@@ -570,6 +570,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 					}
 				}
 
+				sa.getRenderer().setWorld(parent.getWorld());
 				boolean bbfr = Boolean.parseBoolean(bboxFromRenderer.getText());
 
 				if (bbfr != sa.isBboxFromRenderer())

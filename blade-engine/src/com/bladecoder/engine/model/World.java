@@ -42,6 +42,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.ink.InkManager;
 import com.bladecoder.engine.serialization.WorldSerialization;
 import com.bladecoder.engine.util.EngineLogger;
@@ -70,6 +71,7 @@ public class World implements AssetConsumer {
 	private final HashMap<String, SoundDesc> sounds = new HashMap<>();
 	private final HashMap<String, Scene> scenes = new HashMap<>();
 	private final VerbManager verbs = new VerbManager();
+	private final I18N i18n = new I18N();
 
 	private Scene currentScene;
 	private Dialog currentDialog;
@@ -346,6 +348,10 @@ public class World implements AssetConsumer {
 
 	public AssetState getAssetState() {
 		return assetState;
+	}
+
+	public I18N getI18N() {
+		return i18n;
 	}
 
 	public Dialog getCurrentDialog() {
