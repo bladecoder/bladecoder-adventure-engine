@@ -111,7 +111,7 @@ public class InkManager implements VerbRunner, Serializable {
 	public void loadI18NBundle() {
 		if (getStoryName() != null
 				&& EngineAssetManager.getInstance().getModelFile(storyName + "-ink.properties").exists())
-			i18n = I18N.getBundle(EngineAssetManager.MODEL_DIR + storyName + "-ink", true);
+			i18n = w.getI18N().getBundle(EngineAssetManager.MODEL_DIR + storyName + "-ink", true);
 	}
 
 	public String translateLine(String line) {

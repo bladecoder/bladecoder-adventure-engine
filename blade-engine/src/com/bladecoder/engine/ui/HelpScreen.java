@@ -31,7 +31,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen.UIModes;
 import com.bladecoder.engine.util.Config;
@@ -51,9 +50,9 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 
 	private String localeFilename;
 	private final Viewport viewport;
-	
+
 	public HelpScreen() {
-		viewport= new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getWidth() * 9f/16f);
+		viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getWidth() * 9f / 16f);
 	}
 
 	private final InputProcessor inputProcessor = new InputAdapter() {
@@ -93,21 +92,21 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 
 	@Override
 	public void resize(int width, int height) {
-		
+
 		float aspect = width / height;
-		float bgAspect = (float)tex.getWidth() / (float)tex.getHeight();
-		
-		if(aspect < bgAspect)
-			viewport.setWorldSize(width, (int)(width / bgAspect));
+		float bgAspect = (float) tex.getWidth() / (float) tex.getHeight();
+
+		if (aspect < bgAspect)
+			viewport.setWorldSize(width, (int) (width / bgAspect));
 		else
-			viewport.setWorldSize((int)(height * bgAspect), height);
-		
+			viewport.setWorldSize((int) (height * bgAspect), height);
+
 		viewport.update(width, height, true);
 	}
 
 	@Override
 	public void dispose() {
-		if(tex != null) {
+		if (tex != null) {
 			tex.dispose();
 			tex = null;
 		}
@@ -115,7 +114,7 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 
 	@Override
 	public void show() {
-		final Locale locale = I18N.getCurrentLocale();
+		final Locale locale = ui.getWorld().getI18N().getCurrentLocale();
 		String filename = null;
 		UIModes uiMode = UIModes.valueOf(Config.getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
 

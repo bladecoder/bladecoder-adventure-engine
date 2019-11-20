@@ -24,19 +24,24 @@ import com.bladecoder.engine.assets.AssetConsumer;
 public interface ActorRenderer extends Serializable, AssetConsumer {
 
 	public void update(float delta);
+
 	public void draw(SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint);
-	
+
 	public float getWidth();
+
 	public float getHeight();
-	
+
 	public int getOrgAlign();
+
 	public void setOrgAlign(int align);
-	
+
 	/**
 	 * Compute the bbox based in the size of the animation/sprite. T
 	 * 
-	 * @param bbox The polygon to update. It will be updated when an animation starts/finishs.
+	 * @param bbox The polygon to update. It will be updated when an animation
+	 *             starts/finishes.
 	 */
 	public void updateBboxFromRenderer(Polygon bbox);
-}
 
+	public void setWorld(World world);
+}

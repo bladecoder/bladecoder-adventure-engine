@@ -43,7 +43,7 @@ public abstract class AnimationRenderer implements ActorRenderer {
 
 	private final static float DEFAULT_DIM = 200;
 
-	protected HashMap<String, AnimationDesc> fanims = new HashMap<String, AnimationDesc>();
+	protected HashMap<String, AnimationDesc> fanims = new HashMap<>();
 
 	/** Starts this anim the first time that the scene is loaded */
 	protected String initAnimation;
@@ -53,8 +53,10 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	protected CacheEntry currentSource;
 	protected boolean flipX;
 
-	protected final HashMap<String, CacheEntry> sourceCache = new HashMap<String, CacheEntry>();
+	protected final HashMap<String, CacheEntry> sourceCache = new HashMap<>();
 	protected Polygon bbox;
+
+	protected World world;
 
 	public class CacheEntry {
 		public int refCounter;
@@ -122,6 +124,7 @@ public abstract class AnimationRenderer implements ActorRenderer {
 
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(super.toString());
 
@@ -139,6 +142,7 @@ public abstract class AnimationRenderer implements ActorRenderer {
 		return sb.toString();
 	}
 
+	@Override
 	public void updateBboxFromRenderer(Polygon bbox) {
 		this.bbox = bbox;
 		computeBbox();
@@ -352,8 +356,7 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	 * FRONT, BACK) 2 -> when 2 dir animation mode (RIGHT, LEFT) 0 -> when no dirs
 	 * availables for the base animation -1 -> when base animation doesn't exists
 	 * 
-	 * @param base
-	 *            Base animation
+	 * @param base   Base animation
 	 * @param fanims
 	 * @return -1, 0, 2, 4 or 8
 	 */
@@ -421,5 +424,10 @@ public abstract class AnimationRenderer implements ActorRenderer {
 				currentAnimation = fanims.get(currentAnimationId);
 			flipX = json.readValue("flipX", Boolean.class, jsonData);
 		}
+	}
+
+	@Override
+	public void setWorld(World world) {
+		this.world = world;
 	}
 }

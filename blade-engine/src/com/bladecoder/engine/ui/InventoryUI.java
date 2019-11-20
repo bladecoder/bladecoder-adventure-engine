@@ -158,7 +158,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	public void resize(int width, int height) {
 
-		Inventory inventory = sceneScreen.getUI().getWorld().getInventory();
+		Inventory inventory = sceneScreen.getWorld().getInventory();
 
 		tileSize = (int) DPIUtils.getTouchMinSize() * 2;
 		margin = (int) DPIUtils.getMarginSize();
@@ -242,7 +242,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	@Override
 	public void draw(Batch batch, float alpha) {
-		Inventory inventory = sceneScreen.getUI().getWorld().getInventory();
+		Inventory inventory = sceneScreen.getWorld().getInventory();
 
 		if (!inventory.isVisible()) {
 			setVisible(false);
@@ -297,7 +297,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	private final Vector3 mousepos = new Vector3();
 
 	private void stopDragging(int button) {
-		sceneScreen.getUI().getWorld().getSceneCamera().getInputUnProject(sceneScreen.getViewport(), mousepos);
+		sceneScreen.getWorld().getSceneCamera().getInputUnProject(sceneScreen.getViewport(), mousepos);
 
 		InteractiveActor targetActor = sceneScreen.getCurrentActor();
 
@@ -340,7 +340,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		if (x < margin || y < margin || x >= getWidth() - margin || y >= getHeight() - margin)
 			return null;
 
-		Inventory inventory = sceneScreen.getUI().getWorld().getInventory();
+		Inventory inventory = sceneScreen.getWorld().getInventory();
 
 		int i = ((rows - 1) - ((int) (y - margin) / (tileSize + (int) rowSpace))) * cols
 				+ (int) (x - margin) / (tileSize + (int) rowSpace);

@@ -327,8 +327,7 @@ public class RetroSceneScreen implements SceneScreen {
 	/**
 	 * Sets the game speed. Can be used to fastfordward
 	 *
-	 * @param s
-	 *            The multiplier speed. ej. 2.0
+	 * @param s The multiplier speed. ej. 2.0
 	 */
 	@Override
 	public void setSpeed(float s) {
@@ -550,7 +549,7 @@ public class RetroSceneScreen implements SceneScreen {
 				BitmapFont font = getUI().getSkin().getFont("desc");
 				String desc = ia.getDesc();
 				if (desc.charAt(0) == I18N.PREFIX)
-					desc = I18N.getString(desc.substring(1));
+					desc = getWorld().getI18N().getString(desc.substring(1));
 
 				textLayout.setText(font, desc);
 
@@ -731,12 +730,17 @@ public class RetroSceneScreen implements SceneScreen {
 		recorder = ui.getRecorder();
 		testerBot = ui.getTesterBot();
 
-		textManagerUI = new TextManagerUI(ui);
+		textManagerUI = new TextManagerUI(ui.getSkin(), getWorld());
 		menuButton = new Button(ui.getSkin(), "menu");
-		dialogUI = new DialogUI(ui);
+		dialogUI = new DialogUI(ui.getSkin(), getWorld(), recorder);
 
 		verbUI = new VerbUI(this);
 
 		pointer = new Pointer(ui.getSkin());
+	}
+
+	@Override
+	public World getWorld() {
+		return ui.getWorld();
 	}
 }

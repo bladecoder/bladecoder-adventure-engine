@@ -17,6 +17,7 @@ package com.bladecoder.engine.ui;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -47,7 +48,8 @@ public class UI {
 	private final World w;
 
 	public enum Screens {
-		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN, LOAD_GAME_SCREEN, SAVE_GAME_SCREEN
+		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN, LOAD_GAME_SCREEN,
+		SAVE_GAME_SCREEN
 	}
 
 	private final BladeScreen screens[];
@@ -61,7 +63,8 @@ public class UI {
 
 		screens = new BladeScreen[Screens.values().length];
 
-		Gdx.input.setCatchMenuKey(true);
+		Gdx.input.setCatchKey(Input.Keys.MENU, true);
+		Gdx.input.setCatchKey(Input.Keys.BACK, true);
 
 		loadAssets();
 

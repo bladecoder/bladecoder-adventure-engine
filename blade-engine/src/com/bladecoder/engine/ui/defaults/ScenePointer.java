@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.AnimationDrawable;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
@@ -56,12 +57,12 @@ public class ScenePointer {
 
 	private float pointerScale;
 	private float leaveRotation = 0f;
-	// private Skin skin;
+	private final World world;
 
 	private final GlyphLayout layout = new GlyphLayout();
 
-	public ScenePointer(Skin skin) {
-		// this.skin = skin;
+	public ScenePointer(Skin skin, World w) {
+		this.world = w;
 		font = skin.getFont("desc");
 		pointerIcon = skin.getDrawable(POINTER_ICON);
 		leaveIcon = skin.getDrawable(LEAVE_ICON);
@@ -106,7 +107,7 @@ public class ScenePointer {
 		if (desc != null) {
 
 			if (desc.charAt(0) == I18N.PREFIX)
-				desc = I18N.getString(desc.substring(1));
+				desc = world.getI18N().getString(desc.substring(1));
 
 			layout.setText(font, desc);
 		}

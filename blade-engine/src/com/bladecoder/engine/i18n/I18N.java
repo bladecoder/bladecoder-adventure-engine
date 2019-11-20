@@ -25,47 +25,47 @@ public class I18N {
 	public static final String ENCODING = "UTF-8";
 	// public static final String ENCODING = "ISO-8859-1";
 
-	private static ResourceBundle i18nWorld;
-	private static ResourceBundle i18nChapter;
-	private static Locale locale = Locale.getDefault();
-	
-	private static String i18nChapterFilename = null;
-	private static String i18nWorldFilename = null;
+	private ResourceBundle i18nWorld;
+	private ResourceBundle i18nChapter;
+	private Locale locale = Locale.getDefault();
 
-	public static void loadChapter(String i18nChapterFilename) {
+	private String i18nChapterFilename = null;
+	private String i18nWorldFilename = null;
+
+	public void loadChapter(String i18nChapterFilename) {
 		try {
 			i18nChapter = getBundle(i18nChapterFilename, false);
-			I18N.i18nChapterFilename = i18nChapterFilename;
+			this.i18nChapterFilename = i18nChapterFilename;
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nChapterFilename);
 		}
 	}
 
-	public static void loadWorld(String i18nWorldFilename) {
+	public void loadWorld(String i18nWorldFilename) {
 		try {
 			i18nWorld = getBundle(i18nWorldFilename, true);
-			I18N.i18nWorldFilename = i18nWorldFilename;
+			this.i18nWorldFilename = i18nWorldFilename;
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING BUNDLE: " + i18nWorldFilename);
 		}
 	}
-	
-	public static ResourceBundle getBundle(String filename, boolean clearCache) {
+
+	public ResourceBundle getBundle(String filename, boolean clearCache) {
 		ResourceBundle rb = null;
-		
+
 		try {
-			if(clearCache)
+			if (clearCache)
 				ResourceBundle.clearCache();
-			
+
 			rb = ResourceBundle.getBundle(filename, locale, new I18NControl(ENCODING));
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING BUNDLE: " + filename);
 		}
-		
+
 		return rb;
 	}
 
-	public static void setLocale(Locale l) {
+	public void setLocale(Locale l) {
 		locale = l;
 
 		// RELOAD TRANSLATIONS
@@ -78,7 +78,7 @@ public class I18N {
 		}
 	}
 
-	public static String getString(String key) {
+	public String getString(String key) {
 		try {
 			return i18nChapter.getString(key);
 		} catch (Exception e) {
@@ -89,9 +89,9 @@ public class I18N {
 				return key;
 			}
 		}
-	}	
-	
-	public static Locale getCurrentLocale() {
+	}
+
+	public Locale getCurrentLocale() {
 		return locale;
 	}
 }

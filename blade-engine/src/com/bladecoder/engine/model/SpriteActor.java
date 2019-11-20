@@ -388,6 +388,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 			playingSound = json.readValue("playingSound", String.class, jsonData);
 		}
 
+		renderer.setWorld(bjson.getWorld());
+
 		if (jsonData.get("scale") != null) {
 			scaleX = json.readValue("scale", float.class, jsonData);
 			scaleY = scaleX;

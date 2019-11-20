@@ -55,7 +55,7 @@ public class AtlasRenderer extends AnimationRenderer {
 		TextureAtlas atlas = EngineAssetManager.getInstance().getTextureAtlas(anim.source);
 
 		Array<AtlasRegion> animations = atlas.getRegions();
-		ArrayList<String> l = new ArrayList<String>();
+		ArrayList<String> l = new ArrayList<>();
 
 		for (int i = 0; i < animations.size; i++) {
 			AtlasRegion a = animations.get(i);

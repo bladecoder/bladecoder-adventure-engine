@@ -59,6 +59,8 @@ public class TextRenderer implements ActorRenderer {
 	// with the translation is not ready.
 	private transient String editorTranslatedText;
 
+	private World world;
+
 	public TextRenderer() {
 
 	}
@@ -93,7 +95,7 @@ public class TextRenderer implements ActorRenderer {
 				String tt = text;
 
 				if (tt.charAt(0) == I18N.PREFIX)
-					tt = I18N.getString(tt.substring(1));
+					tt = world.getI18N().getString(tt.substring(1));
 
 				if (editorTranslatedText != null)
 					tt = editorTranslatedText;
@@ -318,7 +320,7 @@ public class TextRenderer implements ActorRenderer {
 		String tt = text;
 
 		if (tt.charAt(0) == I18N.PREFIX)
-			tt = I18N.getString(tt.substring(1));
+			tt = world.getI18N().getString(tt.substring(1));
 
 		if (editorTranslatedText != null)
 			tt = editorTranslatedText;
@@ -375,5 +377,10 @@ public class TextRenderer implements ActorRenderer {
 		} else {
 
 		}
+	}
+
+	@Override
+	public void setWorld(World world) {
+		this.world = world;
 	}
 }
