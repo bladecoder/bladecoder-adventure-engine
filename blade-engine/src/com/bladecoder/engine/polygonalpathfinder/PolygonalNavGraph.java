@@ -42,14 +42,14 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 	private static final Vector2 tmp2 = new Vector2();
 
 	private Polygon walkZone;
-	private final ArrayList<Polygon> obstacles = new ArrayList<Polygon>();
+	private final ArrayList<Polygon> obstacles = new ArrayList<>();
 
-	final private PathFinder<NavNodePolygonal> pathfinder = new AStarPathFinder<NavNodePolygonal>(this,
+	final private PathFinder<NavNodePolygonal> pathfinder = new AStarPathFinder<>(this,
 			MAX_PATHFINDER_SEARCH_DISTANCE, new ManhattanDistance());
 
 	final private NavNodePolygonal startNode = new NavNodePolygonal();
 	final private NavNodePolygonal targetNode = new NavNodePolygonal();
-	final private ArrayList<NavNodePolygonal> graphNodes = new ArrayList<NavNodePolygonal>();
+	final private ArrayList<NavNodePolygonal> graphNodes = new ArrayList<>();
 
 	public ArrayList<Vector2> findPath(float sx, float sy, float tx, float ty) {
 		final NavPathPolygonal resultPath = new NavPathPolygonal();
@@ -283,7 +283,7 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 		int idx = obstacles.indexOf(poly);
 
 		// CHECK TO AVOID ADDING THE ACTOR SEVERAL TIMES
-		if (idx == -1) {
+		if (idx == -1 && walkZone != null) {
 			obstacles.add(poly);
 			addObstacleToGrapth(poly);
 		}
