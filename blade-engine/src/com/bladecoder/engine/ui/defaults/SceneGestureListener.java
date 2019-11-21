@@ -38,7 +38,7 @@ public class SceneGestureListener extends GestureDetector.GestureAdapter {
 	public boolean tap(float x, float y, int count, int button) {
 		EngineLogger.debug("Event TAP button: " + button + " count: " + count);
 
-		World w = dsc.getUI().getWorld();
+		World w = dsc.getWorld();
 
 		if (w.getAssetState() != AssetState.LOADED || w.isPaused() || dsc.getUI().getRecorder().isPlaying()
 				|| dsc.getUI().getTesterBot().isEnabled())
@@ -78,7 +78,7 @@ public class SceneGestureListener extends GestureDetector.GestureAdapter {
 	public boolean longPress(float x, float y) {
 		EngineLogger.debug("Event LONG PRESS");
 
-		if (dsc.isUiEnabled() && !dsc.getUI().getWorld().hasDialogOptions()) {
+		if (dsc.isUiEnabled() && !dsc.getWorld().hasDialogOptions()) {
 			dsc.setDrawHotspots(true);
 		}
 
