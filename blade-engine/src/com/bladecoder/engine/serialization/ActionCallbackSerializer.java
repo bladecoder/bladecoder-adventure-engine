@@ -17,7 +17,7 @@ package com.bladecoder.engine.serialization;
 
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionCallback;
-import com.bladecoder.engine.ink.InkManager;
+import com.bladecoder.engine.ink.InkManager.InkVerbRunner;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
@@ -115,12 +115,18 @@ public class ActionCallbackSerializer {
 		return null;
 	}
 
-	private static String find(ActionCallback cb, InkManager im) {
+	private static String find(ActionCallback cb, InkVerbRunner im) {
 		if (im == null)
 			return null;
 
-		if (cb instanceof InkManager)
-			return INK_MANAGER_TAG;
+		if (cb instanceof InkVerbRunner) {
+			if (cb == im) {
+				return INK_MANAGER_TAG;
+			} else {
+				EngineLogger.debug("CB pointing to an old InkVerbRunner. IGNORING.");
+				return null;
+			}
+		}
 
 		int pos = 0;
 
@@ -175,8 +181,7 @@ public class ActionCallbackSerializer {
 	/**
 	 * Generates a String for serialization that allows locate the ActionCallback
 	 * 
-	 * @param cb
-	 *            The ActionCallback to serialize
+	 * @param cb The ActionCallback to serialize
 	 * @return The generated location string
 	 */
 	public static String find(World w, ActionCallback cb) {
@@ -198,7 +203,7 @@ public class ActionCallbackSerializer {
 			return id;
 
 		// search in inkManager actions
-		id = find(cb, w.getInkManager());
+		id = find(cb, w.getInkManager().getVerbRunner());
 
 		if (id != null)
 			return id;
@@ -256,10 +261,10 @@ public class ActionCallbackSerializer {
 
 		if (id.startsWith(INK_MANAGER_TAG)) {
 			if (split.length == 1)
-				return w.getInkManager();
+				return w.getInkManager().getVerbRunner();
 
 			int actionPos = Integer.parseInt(split[1]);
-			Action action = w.getInkManager().getActions().get(actionPos);
+			Action action = w.getInkManager().getVerbRunner().getActions().get(actionPos);
 
 			if (action instanceof ActionCallback)
 				return (ActionCallback) action;

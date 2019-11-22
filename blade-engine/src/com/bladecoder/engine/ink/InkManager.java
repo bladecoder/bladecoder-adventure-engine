@@ -33,7 +33,7 @@ import com.bladecoder.ink.runtime.InkList;
 import com.bladecoder.ink.runtime.ListDefinition;
 import com.bladecoder.ink.runtime.Story;
 
-public class InkManager implements VerbRunner, Serializable {
+public class InkManager implements Serializable {
 	public final static int KEY_SIZE = 10;
 	public final static char NAME_VALUE_TAG_SEPARATOR = ':';
 	public final static char NAME_VALUE_PARAM_SEPARATOR = '=';
@@ -51,22 +51,19 @@ public class InkManager implements VerbRunner, Serializable {
 	// the verbCallbacks may not exist. So, we search the Cb lazily when needed.
 	private String sCb;
 
-	private ArrayList<Action> actions;
-
 	private boolean wasInCutmode;
 
 	private String storyName;
 
-	private int ip = -1;
-
 	private final World w;
+
+	private InkVerbRunner inkVerbRunner = new InkVerbRunner();
 
 	private Thread loaderThread;
 
 	public InkManager(World w) {
 		this.w = w;
 		externalFunctions = new ExternalFunctions();
-		actions = new ArrayList<>();
 	}
 
 	public void newStory(final String name) throws Exception {
@@ -190,9 +187,11 @@ public class InkManager implements VerbRunner, Serializable {
 		waitIfNotLoaded();
 
 		String line = null;
-		// Cancel possible pending timer
-		w.getCurrentScene().getTimers().removeTimerWithCb(this);
-		actions.clear();
+
+		// We create a new InkVerbRunner every ink loop to avoid pending cb.resume() to
+		// execute in the new actions
+		inkVerbRunner.cancel();
+		inkVerbRunner = new InkVerbRunner();
 
 		HashMap<String, String> currentLineParams = new HashMap<>();
 
@@ -230,8 +229,8 @@ public class InkManager implements VerbRunner, Serializable {
 
 		}
 
-		if (actions.size() > 0) {
-			run(null, null);
+		if (inkVerbRunner.getActions().size() > 0) {
+			inkVerbRunner.run(null, null);
 		} else {
 
 			if (hasChoices()) {
@@ -321,7 +320,7 @@ public class InkManager implements VerbRunner, Serializable {
 
 					action = ActionFactory.create(commandName, params);
 					action.init(w);
-					actions.add(action);
+					inkVerbRunner.getActions().add(action);
 				} catch (ClassNotFoundException | ReflectionException e) {
 					EngineLogger.error(e.getMessage(), e);
 				}
@@ -369,34 +368,9 @@ public class InkManager implements VerbRunner, Serializable {
 			}
 
 			action.init(w);
-			actions.add(action);
+			inkVerbRunner.getActions().add(action);
 		} catch (ClassNotFoundException | ReflectionException e) {
 			EngineLogger.error(e.getMessage(), e);
-		}
-	}
-
-	private void nextStep() {
-		if (ip < 0) {
-			continueMaximally();
-		} else {
-			boolean stop = false;
-
-			while (ip < actions.size() && !stop) {
-				Action a = actions.get(ip);
-
-				try {
-					if (a.run(this))
-						stop = true;
-					else
-						ip++;
-				} catch (Exception e) {
-					EngineLogger.error("EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName(), e);
-					ip++;
-				}
-			}
-
-			if (ip >= actions.size() && !stop)
-				continueMaximally();
 		}
 	}
 
@@ -421,7 +395,7 @@ public class InkManager implements VerbRunner, Serializable {
 	public boolean hasChoices() {
 		waitIfNotLoaded();
 
-		return (story != null && actions.size() == 0 && story.getCurrentChoices().size() > 0);
+		return (story != null && inkVerbRunner.getActions().size() == 0 && story.getCurrentChoices().size() > 0);
 	}
 
 	public List<String> getChoices() {
@@ -471,12 +445,6 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 	}
 
-	@Override
-	public void resume() {
-		ip++;
-		nextStep();
-	}
-
 	public void selectChoice(int i) {
 		w.setCutMode(wasInCutmode);
 
@@ -486,47 +454,6 @@ public class InkManager implements VerbRunner, Serializable {
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage(), e);
 		}
-	}
-
-	@Override
-	public ArrayList<Action> getActions() {
-		return actions;
-	}
-
-	@Override
-	public void run(String currentTarget, ActionCallback cb) {
-		ip = 0;
-		nextStep();
-	}
-
-	@Override
-	public int getIP() {
-		return ip;
-	}
-
-	@Override
-	public void setIP(int ip) {
-		this.ip = ip;
-	}
-
-	@Override
-	public void cancel() {
-		// Cancel possible pending timer
-		w.getCurrentScene().getTimers().removeTimerWithCb(this);
-
-		ArrayList<Action> actions = getActions();
-
-		for (Action c : actions) {
-			if (c instanceof VerbRunner)
-				((VerbRunner) c).cancel();
-		}
-
-		ip = actions.size();
-	}
-
-	@Override
-	public String getCurrentTarget() {
-		return null;
 	}
 
 	public String getStoryName() {
@@ -563,6 +490,10 @@ public class InkManager implements VerbRunner, Serializable {
 		loaderThread.start();
 	}
 
+	public InkVerbRunner getVerbRunner() {
+		return inkVerbRunner;
+	}
+
 	@Override
 	public void write(Json json) {
 		BladeJson bjson = (BladeJson) json;
@@ -581,15 +512,15 @@ public class InkManager implements VerbRunner, Serializable {
 
 			// SAVE ACTIONS
 			json.writeArrayStart("actions");
-			for (Action a : actions) {
+			for (Action a : inkVerbRunner.getActions()) {
 				ActionUtils.writeJson(a, json);
 			}
 			json.writeArrayEnd();
 
-			json.writeValue("ip", ip);
+			json.writeValue("ip", inkVerbRunner.getIP());
 
 			json.writeArrayStart("actionsSer");
-			for (Action a : actions) {
+			for (Action a : inkVerbRunner.getActions()) {
 				if (a instanceof Serializable) {
 					json.writeObjectStart();
 					((Serializable) a).write(json);
@@ -631,22 +562,24 @@ public class InkManager implements VerbRunner, Serializable {
 			sCb = json.readValue("cb", String.class, jsonData);
 
 			// READ ACTIONS
-			actions.clear();
 			JsonValue actionsValue = jsonData.get("actions");
+
+			inkVerbRunner = new InkVerbRunner();
+
 			for (int i = 0; i < actionsValue.size; i++) {
 				JsonValue aValue = actionsValue.get(i);
 
 				Action a = ActionUtils.readJson(w, json, aValue);
-				actions.add(a);
+				inkVerbRunner.getActions().add(a);
 			}
 
-			ip = json.readValue("ip", Integer.class, jsonData);
+			inkVerbRunner.setIP(json.readValue("ip", Integer.class, jsonData));
 
 			actionsValue = jsonData.get("actionsSer");
 
 			int i = 0;
 
-			for (Action a : actions) {
+			for (Action a : inkVerbRunner.getActions()) {
 				if (a instanceof Serializable && i < actionsValue.size) {
 					if (actionsValue.get(i) == null)
 						break;
@@ -662,5 +595,84 @@ public class InkManager implements VerbRunner, Serializable {
 				loadThreaded(name, storyString);
 			}
 		}
+	}
+
+	public final class InkVerbRunner implements VerbRunner {
+
+		private ArrayList<Action> actions;
+		private int ip = -1;
+		private boolean cancelled = false;
+
+		public InkVerbRunner() {
+			actions = new ArrayList<>();
+		}
+
+		@Override
+		public void resume() {
+			ip++;
+
+			nextStep();
+		}
+
+		@Override
+		public ArrayList<Action> getActions() {
+			return actions;
+		}
+
+		@Override
+		public void run(String currentTarget, ActionCallback cb) {
+			ip = 0;
+			nextStep();
+		}
+
+		@Override
+		public int getIP() {
+			return ip;
+		}
+
+		@Override
+		public void setIP(int ip) {
+			this.ip = ip;
+		}
+
+		@Override
+		public void cancel() {
+			cancelled = true;
+			ip = actions.size();
+		}
+
+		@Override
+		public String getCurrentTarget() {
+			return null;
+		}
+
+		private void nextStep() {
+			if (cancelled)
+				return;
+
+			if (ip < 0) {
+				continueMaximally();
+			} else {
+				boolean stop = false;
+
+				while (ip < actions.size() && !stop && !cancelled) {
+					Action a = actions.get(ip);
+
+					try {
+						if (a.run(this))
+							stop = true;
+						else
+							ip++;
+					} catch (Exception e) {
+						EngineLogger.error("EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName(), e);
+						ip++;
+					}
+				}
+
+				if (ip >= actions.size() && !stop)
+					continueMaximally();
+			}
+		}
+
 	}
 }
