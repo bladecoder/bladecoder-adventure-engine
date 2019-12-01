@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.InventoryUI.InventoryPos;
+import com.bladecoder.engine.ui.InventoryUI.InventoryUIStyle;
 import com.bladecoder.engine.util.DPIUtils;
 
 public class InventoryButton extends AnimButton {
@@ -15,8 +16,19 @@ public class InventoryButton extends AnimButton {
 
 	private int numItems = Integer.MAX_VALUE;
 
+	private static ButtonStyle getDefaultStyle(Skin skin) {
+		InventoryUIStyle inventoryUIStyle = skin.get(InventoryUIStyle.class);
+		ButtonStyle inventoryButtonStyle = inventoryUIStyle.inventoryButtonStyle;
+
+		if (inventoryButtonStyle == null) {
+			inventoryButtonStyle = skin.get("inventory", ButtonStyle.class);
+		}
+
+		return inventoryButtonStyle;
+	}
+
 	public InventoryButton(Skin skin, World w, InventoryUI inv) {
-		super(skin, "inventory");
+		super(getDefaultStyle(skin));
 		this.inventory = inv;
 		this.world = w;
 

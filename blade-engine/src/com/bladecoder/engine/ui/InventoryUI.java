@@ -26,7 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.model.ActorRenderer;
@@ -368,7 +368,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		public Drawable background;
 		/** Optional. */
 		public Drawable itemBackground;
-		public ImageButtonStyle menuButtonStyle;
+		public ButtonStyle menuButtonStyle;
+		public ButtonStyle inventoryButtonStyle;
 
 		public InventoryUIStyle() {
 		}
@@ -377,6 +378,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			background = style.background;
 			menuButtonStyle = style.menuButtonStyle;
 			itemBackground = style.itemBackground;
+			inventoryButtonStyle = style.inventoryButtonStyle;
 		}
 	}
 }
