@@ -8,6 +8,10 @@ public class AnimButton extends Button {
 		super(skin, styleName);
 	}
 
+	public AnimButton(ButtonStyle style) {
+		super(style);
+	}
+
 	@Override
 	public void act(float delta) {
 		ButtonStyle style = getStyle();
