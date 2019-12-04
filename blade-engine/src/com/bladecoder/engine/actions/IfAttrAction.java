@@ -59,24 +59,36 @@ public class IfAttrAction extends AbstractIfAction {
 		Scene s = actor.getScene(w);
 
 		final String actorId = actor.getActorId();
-		BaseActor a = s.getActor(actorId, true);
 
-		if (a == null) {
-			EngineLogger.error(getClass() + "- No not found: " + actorId);
-			return false;
-		}
+		if (attr.equals(ActorAttribute.STATE)) {
+			BaseActor a = s.getActor(actorId, true);
+			if (a == null || !(a instanceof InteractiveActor)) {
+				EngineLogger.error(getClass() + "- No not found: " + actorId);
+				return false;
+			}
 
-		if (attr.equals(ActorAttribute.STATE) && a instanceof InteractiveActor) {
 			InteractiveActor ia = (InteractiveActor) a;
 			if (!ActionUtils.compareNullStr(value, ia.getState())) {
 				gotoElse(cb);
 			}
 		} else if (attr.equals(ActorAttribute.VISIBLE)) {
+			BaseActor a = s.getActor(actorId, true);
+			if (a == null) {
+				EngineLogger.error(getClass() + "- No not found: " + actorId);
+				return false;
+			}
+
 			boolean val = Boolean.parseBoolean(value);
 			if (val != a.isVisible()) {
 				gotoElse(cb);
 			}
 		} else if (attr.equals(ActorAttribute.INTERACTIVE)) {
+			BaseActor a = s.getActor(actorId, true);
+			if (a == null) {
+				EngineLogger.error(getClass() + "- No not found: " + actorId);
+				return false;
+			}
+
 			boolean val = Boolean.parseBoolean(value);
 
 			if (a instanceof InteractiveActor) {
@@ -105,8 +117,7 @@ public class IfAttrAction extends AbstractIfAction {
 
 			SpriteActor item = null;
 
-			if (a != null)
-				item = inventory.get(a.getId());
+			item = inventory.get(actorId);
 
 			if ((val && item == null) || (!val && item != null)) {
 				gotoElse(cb);
@@ -130,12 +141,25 @@ public class IfAttrAction extends AbstractIfAction {
 
 			if ((val && a2 == null) || (!val && a2 != null))
 				gotoElse(cb);
-		} else if (attr.equals(ActorAttribute.LAYER) && a instanceof InteractiveActor) {
+		} else if (attr.equals(ActorAttribute.LAYER)) {
+			BaseActor a = s.getActor(actorId, true);
+			if (a == null || !(a instanceof InteractiveActor)) {
+				EngineLogger.error(getClass() + "- No not found: " + actorId);
+				return false;
+			}
+
 			InteractiveActor ia = (InteractiveActor) a;
 			if (!ActionUtils.compareNullStr(value, ia.getLayer())) {
 				gotoElse(cb);
 			}
-		} else if (attr.equals(ActorAttribute.DIRECTION) && a instanceof SpriteActor) {
+		} else if (attr.equals(ActorAttribute.DIRECTION)) {
+
+			BaseActor a = s.getActor(actorId, true);
+			if (a == null || !(a instanceof SpriteActor)) {
+				EngineLogger.error(getClass() + "- No not found: " + actorId);
+				return false;
+			}
+
 			SpriteActor sa = (SpriteActor) a;
 
 			if (sa.getRenderer() instanceof AnimationRenderer) {
@@ -152,6 +176,12 @@ public class IfAttrAction extends AbstractIfAction {
 				}
 			}
 		} else if (attr.equals(ActorAttribute.INSIDE)) {
+			BaseActor a = s.getActor(actorId, true);
+			if (a == null) {
+				EngineLogger.error(getClass() + "- No not found: " + actorId);
+				return false;
+			}
+
 			BaseActor insideActor = w.getCurrentScene().getActor(value, false);
 
 			if (insideActor == null) {
