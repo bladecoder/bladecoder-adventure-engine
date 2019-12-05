@@ -5,7 +5,7 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.ink.runtime.Story.ExternalFunction;
+import com.bladecoder.ink.runtime.Story.ExternalFunction1;
 
 public class ExternalFunctions {
 
@@ -18,12 +18,10 @@ public class ExternalFunctions {
 
 		this.inkManager = ink;
 
-		inkManager.getStory().bindExternalFunction("inInventory", new ExternalFunction() {
+		inkManager.getStory().bindExternalFunction("inInventory", new ExternalFunction1<String, Boolean>() {
 
 			@Override
-			public Object call(Object[] args) throws Exception {
-				String actor = args[0].toString();
-
+			public Boolean call(String actor) throws Exception {
 				if (actor.charAt(0) == '>')
 					actor = actor.substring(1);
 
@@ -31,11 +29,11 @@ public class ExternalFunctions {
 			}
 		});
 
-		inkManager.getStory().bindExternalFunction("getActorState", new ExternalFunction() {
+		inkManager.getStory().bindExternalFunction("getActorState", new ExternalFunction1<String, String>() {
 
 			@Override
-			public Object call(Object[] args) throws Exception {
-				SceneActorRef actor = new SceneActorRef(args[0].toString());
+			public String call(String act) throws Exception {
+				SceneActorRef actor = new SceneActorRef(act);
 				final Scene s = actor.getScene(w);
 
 				String actorId = actor.getActorId();
@@ -51,11 +49,10 @@ public class ExternalFunctions {
 			}
 		});
 
-		inkManager.getStory().bindExternalFunction("getSceneState", new ExternalFunction() {
+		inkManager.getStory().bindExternalFunction("getSceneState", new ExternalFunction1<String, String>() {
 
 			@Override
-			public Object call(Object[] args) throws Exception {
-				String scene = args[0].toString();
+			public String call(String scene) throws Exception {
 				final Scene s = w.getScene(scene);
 
 				if (s == null) {
