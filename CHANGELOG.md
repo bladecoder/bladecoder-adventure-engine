@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.2]
+- Inventory button style now in the InventoryUI style. This allows to customize the inventory button by player.
+- Update Blade Ink to v0.7.3 which fixes an important bug.
+- A lot of bugs fixed (see git log).
+
 ## [3.2.1]
 
 - Added bubble positioning parameters on ui.json.
