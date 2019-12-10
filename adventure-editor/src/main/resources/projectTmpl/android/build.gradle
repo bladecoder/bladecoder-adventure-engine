@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         applicationId "%PACKAGE%"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion '%API_LEVEL%'
         versionName version
 
@@ -127,6 +127,12 @@ task copyAndroidNatives() {
                 include "*.so"
             }
         }
+    }
+}
+
+tasks.whenTaskAdded { packageTask ->
+    if (packageTask.name.contains("package")) {
+        packageTask.dependsOn 'copyAndroidNatives'
     }
 }
 
