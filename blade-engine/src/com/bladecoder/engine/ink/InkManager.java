@@ -239,7 +239,7 @@ public class InkManager implements Serializable {
 				w.getListener().dialogOptions();
 			} else if (cb != null || sCb != null) {
 				if (cb == null) {
-					cb = ActionCallbackSerializer.find(w, sCb);
+					cb = ActionCallbackSerializer.find(w, w.getCurrentScene(), sCb);
 				}
 
 				ActionCallback tmpcb = cb;
@@ -505,10 +505,10 @@ public class InkManager implements Serializable {
 			json.writeValue("wasInCutmode", wasInCutmode);
 
 			if (cb == null && sCb != null)
-				cb = ActionCallbackSerializer.find(w, sCb);
+				cb = ActionCallbackSerializer.find(w, w.getCurrentScene(), sCb);
 
 			if (cb != null)
-				json.writeValue("cb", ActionCallbackSerializer.find(w, cb));
+				json.writeValue("cb", ActionCallbackSerializer.find(w, w.getCurrentScene(), cb));
 
 			// SAVE ACTIONS
 			json.writeArrayStart("actions");

@@ -24,6 +24,8 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.CharacterActor;
+import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.serialization.ActionCallbackSerializer;
 import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.util.InterpolationMode;
@@ -64,7 +66,7 @@ public class WalkTween extends SpritePosTween implements Serializable {
 
 		float s0 = 1.0f;
 		float sf = 1.0f;
-		
+
 		if (target.getFakeDepth()) {
 			s0 = target.getScene().getFakeDepthScale(p0.y);
 			sf = target.getScene().getFakeDepthScale(pf.y);
@@ -132,8 +134,11 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		json.writeValue("currentStep", currentStep);
 		json.writeValue("speed", speed);
 
-		if(walkCb != null)
-		json.writeValue("walkCb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), walkCb));
+		if (walkCb != null) {
+			World w = ((BladeJson) json).getWorld();
+			Scene s = ((BladeJson) json).getScene();
+			json.writeValue("walkCb", ActionCallbackSerializer.find(w, s, walkCb));
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -145,7 +150,8 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		currentStep = json.readValue("currentStep", Integer.class, jsonData);
 		speed = json.readValue("speed", Float.class, jsonData);
 
-		walkCb = ActionCallbackSerializer.find(((BladeJson) json).getWorld(),
-				json.readValue("walkCb", String.class, jsonData));
+		World w = ((BladeJson) json).getWorld();
+		Scene s = ((BladeJson) json).getScene();
+		walkCb = ActionCallbackSerializer.find(w, s, json.readValue("walkCb", String.class, jsonData));
 	}
 }

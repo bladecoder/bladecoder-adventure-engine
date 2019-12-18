@@ -696,6 +696,8 @@ public class Scene implements Serializable, AssetConsumer {
 	@Override
 	public void write(Json json) {
 		BladeJson bjson = (BladeJson) json;
+		bjson.setScene(this);
+
 		if (bjson.getMode() == Mode.MODEL) {
 
 			json.writeValue("id", id);
@@ -753,12 +755,15 @@ public class Scene implements Serializable, AssetConsumer {
 			json.writeValue("player", player);
 
 		json.writeValue("walkZone", walkZone);
+		bjson.setScene(null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		BladeJson bjson = (BladeJson) json;
+		bjson.setScene(this);
+
 		if (bjson.getMode() == Mode.MODEL) {
 
 			id = json.readValue("id", String.class, jsonData);
@@ -868,5 +873,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 		if (jsonData.get("walkZone") != null)
 			walkZone = json.readValue("walkZone", String.class, jsonData);
+
+		bjson.setScene(null);
 	}
 }

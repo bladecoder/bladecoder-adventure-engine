@@ -738,7 +738,8 @@ public class Sprite3DRenderer extends AnimationRenderer {
 		} else {
 
 			if (animationCb != null)
-				json.writeValue("animationCb", ActionCallbackSerializer.find(bjson.getWorld(), animationCb));
+				json.writeValue("animationCb",
+						ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(), animationCb));
 
 			json.writeValue("currentCount", currentCount);
 			json.writeValue("currentAnimationType", currentAnimationType);
@@ -770,7 +771,7 @@ public class Sprite3DRenderer extends AnimationRenderer {
 			renderShadow = json.readValue("renderShadow", Boolean.class, jsonData);
 		} else {
 
-			animationCb = ActionCallbackSerializer.find(bjson.getWorld(),
+			animationCb = ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(),
 					json.readValue("animationCb", String.class, jsonData));
 
 			currentCount = json.readValue("currentCount", Integer.class, jsonData);

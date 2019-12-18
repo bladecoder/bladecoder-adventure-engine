@@ -97,8 +97,11 @@ public class Text implements Serializable {
 		json.writeValue("voiceId", voiceId);
 		json.writeValue("animation", animation);
 
-		if (cb != null)
-			json.writeValue("cb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), cb));
+		if (cb != null) {
+			World w = ((BladeJson) json).getWorld();
+			Scene s = ((BladeJson) json).getScene();
+			json.writeValue("cb", ActionCallbackSerializer.find(w, s, cb));
+		}
 	}
 
 	@Override
@@ -113,6 +116,8 @@ public class Text implements Serializable {
 		actorId = json.readValue("actorId", String.class, jsonData);
 		voiceId = json.readValue("voiceId", String.class, jsonData);
 		animation = json.readValue("animation", String.class, jsonData);
-		cb = ActionCallbackSerializer.find(((BladeJson) json).getWorld(), json.readValue("cb", String.class, jsonData));
+		BladeJson bjson = (BladeJson) json;
+		cb = ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(),
+				json.readValue("cb", String.class, jsonData));
 	}
 }

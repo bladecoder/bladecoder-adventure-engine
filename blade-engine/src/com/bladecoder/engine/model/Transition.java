@@ -50,7 +50,7 @@ public class Transition implements Serializable {
 			// must stay in screen even when finished
 			if (type == Type.FADE_IN)
 				reset();
-			
+
 			if (cb != null) {
 				ActionCallback tmpcb = cb;
 				cb = null;
@@ -102,9 +102,12 @@ public class Transition implements Serializable {
 		json.writeValue("time", time);
 		json.writeValue("color", c);
 		json.writeValue("type", type);
-		
-		if(cb != null)
-			json.writeValue("cb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), cb));
+
+		if (cb != null) {
+			World w = ((BladeJson) json).getWorld();
+			Scene s = ((BladeJson) json).getScene();
+			json.writeValue("cb", ActionCallbackSerializer.find(w, s, cb));
+		}
 	}
 
 	@Override
@@ -113,6 +116,8 @@ public class Transition implements Serializable {
 		time = json.readValue("time", Float.class, jsonData);
 		c = json.readValue("color", Color.class, jsonData);
 		type = json.readValue("type", Type.class, jsonData);
-		cb = ActionCallbackSerializer.find(((BladeJson) json).getWorld(), json.readValue("cb", String.class, jsonData));
+		BladeJson bjson = (BladeJson) json;
+		cb = ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(),
+				json.readValue("cb", String.class, jsonData));
 	}
 }
