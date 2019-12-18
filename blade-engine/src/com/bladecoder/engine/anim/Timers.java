@@ -23,6 +23,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.serialization.ActionCallbackSerializer;
 import com.bladecoder.engine.serialization.BladeJson;
 
@@ -42,19 +44,19 @@ public class Timers {
 	public void clear() {
 		timers.clear();
 	}
-	
+
 	public boolean isEmpty() {
 		return timers.isEmpty();
 	}
-	
+
 	public void removeTimerWithCb(ActionCallback cb) {
 		final Iterator<Timer> it = timers.iterator();
-		
+
 		while (it.hasNext()) {
 			final Timer t = it.next();
-			if(t.cb == cb) {
+			if (t.cb == cb) {
 				it.remove();
-				
+
 				return;
 			}
 		}
@@ -95,18 +97,22 @@ public class Timers {
 		public void write(Json json) {
 			json.writeValue("time", time);
 			json.writeValue("currentTime", currentTime);
-			
-			if(cb != null)
-				json.writeValue("cb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), cb));
+
+			if (cb != null) {
+				World w = ((BladeJson) json).getWorld();
+				Scene s = ((BladeJson) json).getScene();
+				json.writeValue("cb", ActionCallbackSerializer.find(w, s, cb));
+			}
 		}
 
 		@Override
 		public void read(Json json, JsonValue jsonData) {
 			time = json.readValue("time", Float.class, jsonData);
 			currentTime = json.readValue("currentTime", Float.class, jsonData);
-			
+
 			BladeJson bjson = (BladeJson) json;
-			cb = ActionCallbackSerializer.find(bjson.getWorld(), json.readValue("cb", String.class, jsonData));
+			cb = ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(),
+					json.readValue("cb", String.class, jsonData));
 		}
 	}
 }

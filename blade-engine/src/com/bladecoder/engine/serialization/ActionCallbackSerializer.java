@@ -184,7 +184,7 @@ public class ActionCallbackSerializer {
 	 * @param cb The ActionCallback to serialize
 	 * @return The generated location string
 	 */
-	public static String find(World w, ActionCallback cb) {
+	public static String find(World w, Scene s, ActionCallback cb) {
 		String id = null;
 
 		if (cb == null)
@@ -209,8 +209,6 @@ public class ActionCallbackSerializer {
 			return id;
 
 		// search in scene verbs
-		Scene s = w.getCurrentScene();
-
 		id = find(cb, s);
 
 		if (id != null)
@@ -250,12 +248,10 @@ public class ActionCallbackSerializer {
 	 * 
 	 * @param id
 	 */
-	public static ActionCallback find(World w, String id) {
+	public static ActionCallback find(World w, Scene s, String id) {
 
 		if (id == null)
 			return null;
-
-		Scene s = w.getCurrentScene();
 
 		String[] split = id.split(SEPARATION_SYMBOL);
 

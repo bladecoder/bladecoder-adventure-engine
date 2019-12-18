@@ -704,8 +704,9 @@ public class SpineRenderer extends AnimationRenderer {
 
 		} else {
 
-			if (animationCb != null)
-				json.writeValue("cb", ActionCallbackSerializer.find(bjson.getWorld(), animationCb));
+			if (animationCb != null) {
+				json.writeValue("cb", ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(), animationCb));
+			}
 
 			json.writeValue("currentCount", currentCount);
 
@@ -733,7 +734,7 @@ public class SpineRenderer extends AnimationRenderer {
 			world = bjson.getWorld();
 		} else {
 
-			animationCb = ActionCallbackSerializer.find(((BladeJson) json).getWorld(),
+			animationCb = ActionCallbackSerializer.find(((BladeJson) json).getWorld(), ((BladeJson) json).getScene(),
 					json.readValue("cb", String.class, jsonData));
 
 			currentCount = json.readValue("currentCount", Integer.class, jsonData);

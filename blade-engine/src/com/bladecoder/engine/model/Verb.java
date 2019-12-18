@@ -47,7 +47,7 @@ public class Verb implements VerbRunner, Serializable {
 	private String target;
 	private String icon;
 
-	private final ArrayList<Action> actions = new ArrayList<Action>();
+	private final ArrayList<Action> actions = new ArrayList<>();
 
 	private int ip = -1;
 	private String currentTarget;
@@ -109,14 +109,17 @@ public class Verb implements VerbRunner, Serializable {
 		actions.add(a);
 	}
 
+	@Override
 	public ArrayList<Action> getActions() {
 		return actions;
 	}
 
+	@Override
 	public String getCurrentTarget() {
 		return currentTarget;
 	}
 
+	@Override
 	public void run(String currentTarget, ActionCallback cb) {
 		this.currentTarget = currentTarget;
 		this.cb = cb;
@@ -179,14 +182,17 @@ public class Verb implements VerbRunner, Serializable {
 		nextStep();
 	}
 
+	@Override
 	public int getIP() {
 		return ip;
 	}
 
+	@Override
 	public void setIP(int ip) {
 		this.ip = ip;
 	}
 
+	@Override
 	public void cancel() {
 		ip = actions.size() + 1;
 
@@ -228,9 +234,9 @@ public class Verb implements VerbRunner, Serializable {
 			json.writeArrayEnd();
 		} else {
 			json.writeValue("ip", ip);
-			
-			if(cb != null)
-				json.writeValue("cb", ActionCallbackSerializer.find(bjson.getWorld(), cb));
+
+			if (cb != null)
+				json.writeValue("cb", ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(), cb));
 
 			if (currentTarget != null)
 				json.writeValue("currentTarget", currentTarget);
@@ -275,7 +281,8 @@ public class Verb implements VerbRunner, Serializable {
 			// MUTABLE
 			currentTarget = json.readValue("currentTarget", String.class, (String) null, jsonData);
 			ip = json.readValue("ip", Integer.class, jsonData);
-			cb = ActionCallbackSerializer.find(bjson.getWorld(), json.readValue("cb", String.class, jsonData));
+			cb = ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(),
+					json.readValue("cb", String.class, jsonData));
 
 			JsonValue actionsValue = jsonData.get("actions");
 

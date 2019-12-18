@@ -19,6 +19,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
+import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.serialization.ActionCallbackSerializer;
 import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.util.InterpolationMode;
@@ -37,7 +39,7 @@ abstract public class Tween<T> implements Serializable {
 	private int count;
 
 	private ActionCallback cb;
-	
+
 	protected T target;
 
 	public Tween() {
@@ -65,15 +67,14 @@ abstract public class Tween<T> implements Serializable {
 					reverse = !reverse;
 			}
 		}
-		
+
 		updateTarget();
 
 		if (complete) {
 			callCb();
 		}
 	}
-	
-	
+
 	/**
 	 * Called to update the target property.
 	 */
@@ -86,12 +87,11 @@ abstract public class Tween<T> implements Serializable {
 			tmpcb.resume();
 		}
 	}
-	
-	
+
 	public void setTarget(T t) {
 		target = t;
 	}
-	
+
 	public T getTarget() {
 		return target;
 	}
@@ -147,7 +147,7 @@ abstract public class Tween<T> implements Serializable {
 	public void setDuration(float duration) {
 		this.duration = duration;
 	}
-	
+
 	public void setInterpolation(InterpolationMode i) {
 		interpolation = i;
 	}
@@ -199,16 +199,19 @@ abstract public class Tween<T> implements Serializable {
 		json.writeValue("count", count);
 
 		json.writeValue("interpolation", interpolation);
-		
-		if(cb != null)
-			json.writeValue("cb", ActionCallbackSerializer.find(((BladeJson) json).getWorld(), cb));
+
+		if (cb != null) {
+			World w = ((BladeJson) json).getWorld();
+			Scene s = ((BladeJson) json).getScene();
+			json.writeValue("cb", ActionCallbackSerializer.find(w, s, cb));
+		}
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		duration = json.readValue("duration", Float.class, jsonData);
 		time = json.readValue("time", Float.class, jsonData);
-		
+
 		reverse = json.readValue("reverse", Boolean.class, jsonData);
 		began = json.readValue("began", Boolean.class, jsonData);
 		complete = json.readValue("complete", Boolean.class, jsonData);
@@ -218,6 +221,7 @@ abstract public class Tween<T> implements Serializable {
 		interpolation = json.readValue("interpolation", InterpolationMode.class, jsonData);
 
 		BladeJson bjson = (BladeJson) json;
-		cb = ActionCallbackSerializer.find(bjson.getWorld(), json.readValue("cb", String.class, jsonData));
+		cb = ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(),
+				json.readValue("cb", String.class, jsonData));
 	}
 }

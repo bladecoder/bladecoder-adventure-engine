@@ -13,6 +13,7 @@ import com.bladecoder.engine.model.ImageRenderer;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.ParticleRenderer;
+import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.Sprite3DRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.TextRenderer;
@@ -33,6 +34,9 @@ public class BladeJson extends Json {
 	private final World w;
 	private final Mode mode;
 	private boolean init;
+
+	// the scene being saved
+	private Scene scene;
 
 	public BladeJson(World w, Mode mode, boolean init) {
 		super();
@@ -84,6 +88,14 @@ public class BladeJson extends Json {
 
 	public void setInit(boolean init) {
 		this.init = init;
+	}
+
+	public Scene getScene() {
+		return scene == null ? w.getCurrentScene() : scene;
+	}
+
+	public void setScene(Scene scene) {
+		this.scene = scene;
 	}
 
 	public void addClassTag(Class<?> tag) {
