@@ -290,21 +290,18 @@ public class InkManager implements Serializable {
 			processParams(Arrays.asList(commandParams), params);
 		}
 
-		if ("leave".equals(commandName)) {
+		if ("LeaveNow".equals(commandName)) {
 			boolean init = true;
+			String initVerb = null;
 
 			if (params.get("init") != null)
 				init = Boolean.parseBoolean(params.get("init"));
 
-			w.setCurrentScene(params.get("scene"), init);
+			if (params.get("initVerb") != null)
+				initVerb = params.get("initVerb");
+
+			w.setCurrentScene(params.get("scene"), init, initVerb);
 		} else {
-
-			// for backward compatibility
-			if ("action".equals(commandName)) {
-				commandName = commandParams[0].trim();
-				params.remove(commandName);
-			}
-
 			// Some preliminar validation to see if it's an action
 			if (commandName.length() > 0) {
 				// Try to create action by default
