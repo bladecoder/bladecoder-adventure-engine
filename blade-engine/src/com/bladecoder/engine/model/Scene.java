@@ -188,10 +188,6 @@ public class Scene implements Serializable, AssetConsumer {
 
 		timers.clear();
 		textManager.reset();
-
-		// Run INIT action
-		if (getVerb("init") != null)
-			runVerb("init");
 	}
 
 	public VerbManager getVerbManager() {

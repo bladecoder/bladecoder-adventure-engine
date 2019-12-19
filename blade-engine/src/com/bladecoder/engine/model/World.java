@@ -122,6 +122,10 @@ public class World implements AssetConsumer {
 	// If true call 'initNewGame' or 'initSavedGame' verbs.
 	private boolean initGame;
 
+	// The verb to call after loading a scene. If null, the "init" verb will be
+	// called
+	private String initVerb;
+
 	private final WorldSerialization serialization = new WorldSerialization(this);
 
 	public World() {
@@ -268,6 +272,8 @@ public class World implements AssetConsumer {
 			// call 'init' verb only when arrives from setCurrentScene and not
 			// from load or restoring
 			if (initScene) {
+				currentScene.init();
+
 				// If in test mode run 'test' verb (only the first time)
 				if (testScene != null && testScene.equals(currentScene.getId())
 						&& currentScene.getVerb(Verb.TEST_VERB) != null) {
@@ -275,8 +281,17 @@ public class World implements AssetConsumer {
 					testScene = null;
 				}
 
-				currentScene.init();
+				if (initVerb == null)
+					initVerb = "init";
 			}
+
+			// Run INIT verb
+			if (initVerb != null && (currentScene.getVerb(initVerb) != null
+					|| getVerbManager().getVerb(initVerb, null, null) != null)) {
+				currentScene.runVerb(initVerb);
+			}
+
+			initVerb = null;
 
 		}
 
@@ -374,7 +389,7 @@ public class World implements AssetConsumer {
 		this.initScene = initScene;
 	}
 
-	public void setCurrentScene(Scene scene, boolean init) {
+	public void setCurrentScene(Scene scene, boolean init, String initVerb) {
 
 		initLoadingTime = System.currentTimeMillis();
 
@@ -412,6 +427,7 @@ public class World implements AssetConsumer {
 		}
 
 		currentScene = scene;
+		this.initVerb = initVerb;
 
 		musicManager.leaveScene(currentScene.getMusicDesc());
 	}
@@ -451,14 +467,14 @@ public class World implements AssetConsumer {
 			listener.cutMode(cutMode);
 	}
 
-	public void setCurrentScene(String id, boolean init) {
+	public void setCurrentScene(String id, boolean init, String initVerb) {
 		if (id.equals("$" + WorldProperties.PREVIOUS_SCENE.toString()))
 			id = getCustomProperty(WorldProperties.PREVIOUS_SCENE.toString());
 
 		Scene s = scenes.get(id);
 
 		if (s != null) {
-			setCurrentScene(s, init);
+			setCurrentScene(s, init, initVerb);
 		} else {
 			EngineLogger.error("SetCurrentScene - COULD NOT FIND SCENE: " + id);
 		}

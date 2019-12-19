@@ -155,9 +155,9 @@ public class WorldSerialization implements Serializable {
 			read(json, root);
 
 			if (scene == null)
-				w.setCurrentScene(w.getScenes().get(w.getInitScene()), initScene);
+				w.setCurrentScene(w.getScenes().get(w.getInitScene()), initScene, null);
 			else
-				w.setCurrentScene(w.getScenes().get(scene), initScene);
+				w.setCurrentScene(w.getScenes().get(scene), initScene, null);
 
 			w.getI18N().loadChapter(EngineAssetManager.MODEL_DIR + chapterName);
 

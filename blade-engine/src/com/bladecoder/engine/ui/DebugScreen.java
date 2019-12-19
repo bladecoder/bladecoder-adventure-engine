@@ -116,6 +116,7 @@ public class DebugScreen implements BladeScreen {
 		Button back = new Button(ui.getSkin(), "back");
 
 		back.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
@@ -125,7 +126,7 @@ public class DebugScreen implements BladeScreen {
 
 		Table header = new Table();
 		header.padBottom(margin);
-		Container<Button> cont = new Container<Button>(back);
+		Container<Button> cont = new Container<>(back);
 		cont.size(size);
 		header.add(cont);
 		header.add(title).fillX().expandX().left();
@@ -137,6 +138,7 @@ public class DebugScreen implements BladeScreen {
 		TextButton speedButton = new TextButton("Set Speed", ui.getSkin());
 		speedButton.addListener(new ClickListener() {
 
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				SceneScreen scnScr = (SceneScreen) ui.getScreen(Screens.SCENE_SCREEN);
 				scnScr.setSpeed(Float.parseFloat(speedText.getText()));
@@ -160,6 +162,7 @@ public class DebugScreen implements BladeScreen {
 		rec = new TextButton(r.isRecording() ? "Stop Rec" : "Rec", ui.getSkin());
 		play.addListener(new ClickListener() {
 
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				final Recorder r = ui.getRecorder();
 
@@ -177,6 +180,7 @@ public class DebugScreen implements BladeScreen {
 
 		rec.addListener(new ClickListener() {
 
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				final Recorder r = ui.getRecorder();
 
@@ -195,10 +199,10 @@ public class DebugScreen implements BladeScreen {
 			}
 		});
 
-		recordings = new SelectBox<String>(ui.getSkin());
+		recordings = new SelectBox<>(ui.getSkin());
 
 		String[] testFiles = EngineAssetManager.getInstance().listAssetFiles("tests");
-		ArrayList<String> al = new ArrayList<String>();
+		ArrayList<String> al = new ArrayList<>();
 
 		for (String file : testFiles)
 			if (file.endsWith(Recorder.RECORD_EXT))
@@ -228,24 +232,25 @@ public class DebugScreen implements BladeScreen {
 		table.row().pad(5).align(Align.left);
 		table.add(new Label("Game Recording: ", ui.getSkin(), "debug"));
 		table.add(rGroup);
-		
+
 		// ------------- LOAD CHAPTER
 		table.row().pad(5).align(Align.left);
 		table.add(new Label("Load Chapter: ", ui.getSkin(), "debug"));
-		
+
 		HorizontalGroup chGroup = new HorizontalGroup();
 		chGroup.space(10);
-		
+
 		final TextField chapter = new TextField("", ui.getSkin());
 		chGroup.addActor(chapter);
-		
+
 		TextButton loadButton = new TextButton("Load", ui.getSkin());
 		loadButton.addListener(new ClickListener() {
 
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				String c = chapter.getText();
-				
-				if(!c.isEmpty()) {
+
+				if (!c.isEmpty()) {
 					try {
 						ui.getWorld().getSerializer().loadChapter(c, null, true);
 						ui.setCurrentScreen(Screens.SCENE_SCREEN);
@@ -255,37 +260,37 @@ public class DebugScreen implements BladeScreen {
 				}
 			}
 		});
-		
+
 		chGroup.addActor(loadButton);
-		
+
 		table.add(chGroup);
 
 		// ------------- SCENES
 		final TextButton testScene = new TextButton("Run Test Verb", ui.getSkin(), "toggle");
 		final TextButton initScene = new TextButton("Init", ui.getSkin(), "toggle");
-		
+
 		initScene.setChecked(true);
-		
+
 		TextButton go = new TextButton("Go", ui.getSkin());
 		go.addListener(new ClickListener() {
 
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ui.getWorld().resume();
 				ui.getWorld().setCutMode(false);
-				
-				if(testScene.isChecked())
+
+				if (testScene.isChecked())
 					ui.getWorld().setTestScene(scenes.getSelected());
-				
-				ui.getWorld().setCurrentScene(scenes.getSelected(), initScene.isChecked());
+
+				ui.getWorld().setCurrentScene(scenes.getSelected(), initScene.isChecked(), null);
 				ui.setCurrentScreen(Screens.SCENE_SCREEN);
 			}
 		});
 
 		go.pad(2, 3, 2, 3);
 
-		scenes = new SelectBox<String>(ui.getSkin());
-		scenes.setItems(
-				ui.getWorld().getScenes().keySet().toArray(new String[ui.getWorld().getScenes().size()]));
+		scenes = new SelectBox<>(ui.getSkin());
+		scenes.setItems(ui.getWorld().getScenes().keySet().toArray(new String[ui.getWorld().getScenes().size()]));
 
 		HorizontalGroup scGroup = new HorizontalGroup();
 		scGroup.space(10);
@@ -304,6 +309,7 @@ public class DebugScreen implements BladeScreen {
 		TextButton runBot = new TextButton(bot.isEnabled() ? "Stop" : "Run", ui.getSkin());
 		runBot.addListener(new ClickListener() {
 
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				final TesterBot bot = ui.getTesterBot();
 
@@ -325,6 +331,7 @@ public class DebugScreen implements BladeScreen {
 		TextButton testerLeaveConf = new TextButton("Leave", ui.getSkin(), "toggle");
 		testerLeaveConf.addListener(new ClickListener() {
 
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				final TesterBot bot = ui.getTesterBot();
 
@@ -337,6 +344,7 @@ public class DebugScreen implements BladeScreen {
 		TextButton testerGotoConf = new TextButton("Goto", ui.getSkin(), "toggle");
 		testerGotoConf.addListener(new ClickListener() {
 
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				final TesterBot bot = ui.getTesterBot();
 
@@ -349,6 +357,7 @@ public class DebugScreen implements BladeScreen {
 		TextButton testerPassText = new TextButton("Pass Texts", ui.getSkin(), "toggle");
 		testerPassText.addListener(new ClickListener() {
 
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				final TesterBot bot = ui.getTesterBot();
 
@@ -361,6 +370,7 @@ public class DebugScreen implements BladeScreen {
 		TextButton testerWaitWhenWalking = new TextButton("Wait When Walking", ui.getSkin(), "toggle");
 		testerWaitWhenWalking.addListener(new ClickListener() {
 
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				final TesterBot bot = ui.getTesterBot();
 
