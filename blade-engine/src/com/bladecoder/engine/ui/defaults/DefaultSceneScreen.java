@@ -254,15 +254,15 @@ public class DefaultSceneScreen implements SceneScreen {
 				inventoryButton.setVisible(false);
 				dialogUI.setVisible(true);
 				inventoryUI.cancelDragging();
+				EngineLogger.debug("Updating UI: DIALOG OPTIONS.");
 			} else {
 				inventoryUI.hide();
 				dialogUI.setVisible(false);
 				inventoryButton.setVisible(w.getInventory().isVisible());
+				EngineLogger.debug("Updating UI: ENABLED.");
 			}
 
 			uiEnabled = true;
-
-			EngineLogger.debug("Updating UI: ENABLED.");
 		}
 	}
 

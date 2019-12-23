@@ -79,8 +79,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 			"Define the walkable area for characters", "Obstacle actors forbids zones for walking actors" };
 
 	private static final String TEXT_ALIGN[] = { "left", "center", "right" };
-	private static final String ORG_ALIGN[] = { "bottom", "center", "left", "right", "top", "botton-right",
-			"botton-left", "top-right", "top-left" };
+	private static final String ORG_ALIGN[] = { "bottom", "center", "left", "right", "top", "bottom-right",
+			"bottom-left", "top-right", "top-left" };
 
 	private InputPanel typePanel;
 	private InputPanel id;
