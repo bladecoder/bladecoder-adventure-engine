@@ -1,6 +1,7 @@
 package com.bladecoder.engine.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Camera;
@@ -60,7 +61,11 @@ public class UIActors implements AssetConsumer, Serializable {
 	}
 
 	public void update(float delta) {
-		for (InteractiveActor a : actors) {
+		// we use iterator because the actor can be deleted in the update.
+		Iterator<InteractiveActor> i = actors.iterator();
+
+		while (i.hasNext()) {
+			InteractiveActor a = i.next();
 			a.update(delta);
 		}
 	}

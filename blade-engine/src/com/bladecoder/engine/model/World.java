@@ -277,7 +277,9 @@ public class World implements AssetConsumer {
 				// If in test mode run 'test' verb (only the first time)
 				if (testScene != null && testScene.equals(currentScene.getId())
 						&& currentScene.getVerb(Verb.TEST_VERB) != null) {
-					currentScene.runVerb(Verb.TEST_VERB);
+
+					initVerb = Verb.TEST_VERB;
+
 					testScene = null;
 				}
 
