@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
@@ -54,7 +54,7 @@ public class MoveToSceneAction implements Action {
 			return false;
 		}
 
-		InteractiveActor a = (InteractiveActor) s.getActor(actorId, false);
+		BaseActor a = s.getActor(actorId, false);
 
 		s.removeActor(a);
 
