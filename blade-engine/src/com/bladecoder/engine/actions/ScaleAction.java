@@ -62,7 +62,7 @@ public class ScaleAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actor, false);
+		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actor, true);
 
 		SpriteScaleTween t = new SpriteScaleTween();
 		t.start(a, repeat, count, scale, scale, speed, interpolation, wait ? cb : null);

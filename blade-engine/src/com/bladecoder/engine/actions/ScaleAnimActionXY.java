@@ -24,7 +24,7 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationMode;
 
-@ActionDescription(name = "ScaleAnimXY", value= "Scale animation for sprite actors")
+@ActionDescription(name = "ScaleAnimXY", value = "Scale animation for sprite actors")
 public class ScaleAnimActionXY implements Action {
 	@ActionPropertyDescription("The target actor")
 	@ActionProperty(type = Type.SPRITE_ACTOR)
@@ -53,24 +53,23 @@ public class ScaleAnimActionXY implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The interpolation mode")
 	private InterpolationMode interpolation;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
 	}
 
 	@Override
-	public boolean run(VerbRunner cb) {				
-		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actor, false);
-		
+	public boolean run(VerbRunner cb) {
+		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actor, true);
+
 		SpriteScaleTween t = new SpriteScaleTween();
-		t.start(a, repeat, count, scale.x, scale.y, speed, interpolation,
-				wait ? cb : null);
-		
+		t.start(a, repeat, count, scale.x, scale.y, speed, interpolation, wait ? cb : null);
+
 		a.addTween(t);
-		
+
 		return wait;
 	}
 

@@ -23,7 +23,7 @@ import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.InterpolationMode;
 
-@ActionDescription(name = "RotateAnim", value= "Sets an actor Rotate animation")
+@ActionDescription(name = "RotateAnim", value = "Sets an actor Rotate animation")
 public class RotateAction implements Action {
 	@ActionPropertyDescription("The target actor")
 	@ActionProperty(type = Type.SPRITE_ACTOR)
@@ -52,24 +52,23 @@ public class RotateAction implements Action {
 	@ActionProperty
 	@ActionPropertyDescription("The interpolation mode")
 	private InterpolationMode interpolation;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
 	}
 
 	@Override
-	public boolean run(VerbRunner cb) {				
-		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actor, false);
-		
+	public boolean run(VerbRunner cb) {
+		SpriteActor a = (SpriteActor) w.getCurrentScene().getActor(actor, true);
+
 		SpriteRotateTween t = new SpriteRotateTween();
-		t.start(a, repeat, count, rotation, speed, interpolation,
-				wait ? cb : null);
-		
+		t.start(a, repeat, count, rotation, speed, interpolation, wait ? cb : null);
+
 		a.addTween(t);
-		
+
 		return wait;
 	}
 
