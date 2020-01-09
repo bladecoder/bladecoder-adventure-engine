@@ -134,9 +134,9 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 		}
 
 		// CHAR ICON CALCS
-		if (text.type == Text.Type.SUBTITLE && !Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")
+		if (text.type == Text.Type.SUBTITLE && !Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")
 				&& text.actorId != null) {
-			charIcon = EngineAssetManager.getInstance().getRegion(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null),
+			charIcon = EngineAssetManager.getInstance().getRegion(Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, null),
 					text.actorId);
 
 			if (charIcon != null) {

@@ -138,11 +138,11 @@ public class DefaultSceneScreen implements SceneScreen {
 	private final WorldListener worldListener = new SceneWorldListener(this);
 
 	public DefaultSceneScreen() {
-		viewport = Config.getProperty(Config.EXTEND_VIEWPORT_PROP, true) ? new SceneExtendViewport()
+		viewport = Config.getInstance().getProperty(Config.EXTEND_VIEWPORT_PROP, true) ? new SceneExtendViewport()
 				: new SceneFitViewport();
-		showDesc = Config.getProperty(Config.SHOW_DESC_PROP, true);
-		fastLeave = Config.getProperty(Config.FAST_LEAVE, false);
-		showHotspotsFeature = Config.getProperty(Config.SHOW_HOTSPOTS, true);
+		showDesc = Config.getInstance().getProperty(Config.SHOW_DESC_PROP, true);
+		fastLeave = Config.getInstance().getProperty(Config.FAST_LEAVE, false);
+		showHotspotsFeature = Config.getInstance().getProperty(Config.SHOW_HOTSPOTS, true);
 	}
 
 	@Override
@@ -903,7 +903,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		inventoryUI = new InventoryUI(this, pointer);
 		inventoryButton = new InventoryButton(ui.getSkin(), getWorld(), inventoryUI);
 
-		uiMode = UIModes.valueOf(Config.getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
+		uiMode = UIModes.valueOf(Config.getInstance().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
 
 		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen) && uiMode == UIModes.TWO_BUTTONS) {
 			uiMode = UIModes.PIE;

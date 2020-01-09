@@ -64,7 +64,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 
 	private final ScenePointer pointer;
 
-	private boolean singleAction = Config.getProperty(Config.SINGLE_ACTION_INVENTORY, false);
+	private boolean singleAction = Config.getInstance().getProperty(Config.SINGLE_ACTION_INVENTORY, false);
 
 	public InventoryUI(SceneScreen scr, ScenePointer pointer) {
 		style = scr.getUI().getSkin().get(InventoryUIStyle.class);
@@ -72,9 +72,9 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		this.pointer = pointer;
 
 		inventoryPos = InventoryPos
-				.valueOf(Config.getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH));
+				.valueOf(Config.getInstance().getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH));
 
-		autosize = Config.getProperty(Config.INVENTORY_AUTOSIZE_PROP, true);
+		autosize = Config.getInstance().getProperty(Config.INVENTORY_AUTOSIZE_PROP, true);
 
 		addListener(new InputListener() {
 			@Override

@@ -134,11 +134,10 @@ public class EngineAssetManager extends AssetManager {
 	/**
 	 * Creates a EngineAssetManager instance for edition. That is:
 	 * 
-	 * - Puts a PathResolver to locate the assets through an absolute path -
-	 * Puts assets scale to "1"
+	 * - Puts a PathResolver to locate the assets through an absolute path - Puts
+	 * assets scale to "1"
 	 * 
-	 * @param base
-	 *            is the project base folder
+	 * @param base is the project base folder
 	 */
 	public static void createEditInstance(String base) {
 		if (instance != null)
@@ -152,8 +151,7 @@ public class EngineAssetManager extends AssetManager {
 	/**
 	 * All assets will be searched in the selected folder.
 	 * 
-	 * @param base
-	 *            The asset base folder
+	 * @param base The asset base folder
 	 */
 	public static void setAssetFolder(String base) {
 		if (instance != null)
@@ -194,8 +192,7 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	/**
-	 * Returns a file in the asset directory SEARCHING in the resolution
-	 * directories
+	 * Returns a file in the asset directory SEARCHING in the resolution directories
 	 */
 	public FileHandle getResAsset(String filename) {
 		return resResolver.resolve(filename);
@@ -256,6 +253,7 @@ public class EngineAssetManager extends AssetManager {
 		return get(filename, Texture.class);
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		instance = null;
@@ -356,20 +354,20 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	private Resolution[] getResolutions(FileHandleResolver resolver, int worldWidth, int worldHeight) {
-		ArrayList<Resolution> rl = new ArrayList<Resolution>();
+		ArrayList<Resolution> rl = new ArrayList<>();
 
 		String list[] = null;
-		
-		String configRes = Config.getProperty(Config.RESOLUTIONS, null);
-		
-		if(configRes != null) {
+
+		String configRes = Config.getInstance().getProperty(Config.RESOLUTIONS, null);
+
+		if (configRes != null) {
 			list = configRes.split(",");
 		} else {
 			list = listAssetFiles("ui");
 		}
-		
+
 		for (String name : list) {
-			
+
 			try {
 				float scale = Float.parseFloat(name);
 
@@ -384,6 +382,7 @@ public class EngineAssetManager extends AssetManager {
 		}
 
 		Collections.sort(rl, new Comparator<Resolution>() {
+			@Override
 			public int compare(Resolution a, Resolution b) {
 				return a.portraitWidth - b.portraitWidth;
 			}
@@ -443,8 +442,8 @@ public class EngineAssetManager extends AssetManager {
 	private String[] getFilesFromJar(String base) {
 		URL dirURL = EngineAssetManager.class.getResource(base);
 
-		Set<String> result = new HashSet<String>(); // avoid duplicates in case
-													// it is a subdirectory
+		Set<String> result = new HashSet<>(); // avoid duplicates in case
+												// it is a subdirectory
 
 		if (dirURL.getProtocol().equals("jar")) {
 			/* A JAR path */
@@ -488,15 +487,21 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	public FileHandle getUserFile(String filename) {
+		String desktopFolder = Config.getInstance().getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
+		return getUserFile(filename, desktopFolder);
+	}
+
+	public FileHandle getUserFile(String filename, String desktopFolder) {
 		FileHandle file = null;
 
-		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Applet) {
-			String dir = Config.getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
+		if (Gdx.app.getType() == ApplicationType.Desktop) {
+			String dir = desktopFolder != null ? desktopFolder : DESKTOP_PREFS_DIR;
+
 			dir.replace(" ", "");
 
 			StringBuilder sb = new StringBuilder();
 			sb.append(".").append(dir).append("/").append(filename);
-			
+
 			if (System.getProperty("os.name").toLowerCase().contains("mac")
 					&& System.getenv("HOME").contains("Containers")) {
 
@@ -515,12 +520,12 @@ public class EngineAssetManager extends AssetManager {
 	public FileHandle getUserFolder() {
 		FileHandle file = null;
 
-		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Applet) {
-			String dir = Config.getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
+		if (Gdx.app.getType() == ApplicationType.Desktop) {
+			String dir = Config.getInstance().getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
 			dir.replace(" ", "");
 
 			StringBuilder sb = new StringBuilder(".");
-			
+
 			if (System.getProperty("os.name").toLowerCase().contains("mac")
 					&& System.getenv("HOME").contains("Containers")) {
 
@@ -529,7 +534,7 @@ public class EngineAssetManager extends AssetManager {
 
 				file = Gdx.files.external(sb.append(dir).toString());
 			}
-			
+
 		} else {
 			file = Gdx.files.local(NOT_DESKTOP_PREFS_DIR);
 		}

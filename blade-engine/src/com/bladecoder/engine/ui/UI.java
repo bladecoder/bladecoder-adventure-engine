@@ -104,7 +104,7 @@ public class UI {
 	}
 
 	private BladeScreen getCustomScreenInstance(String prop, Class<?> defaultClass) {
-		String clsName = Config.getProperty(prop, null);
+		String clsName = Config.getInstance().getProperty(prop, null);
 		Class<?> instanceClass = defaultClass;
 
 		if (clsName != null && !clsName.isEmpty()) {
@@ -193,8 +193,8 @@ public class UI {
 
 		skin.load(skinFile);
 
-		if (!Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")) {
-			EngineAssetManager.getInstance().loadAtlas(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null));
+		if (!Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")) {
+			EngineAssetManager.getInstance().loadAtlas(Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, null));
 			EngineAssetManager.getInstance().finishLoading();
 		}
 	}
@@ -222,8 +222,8 @@ public class UI {
 		RectangleRenderer.dispose();
 		Utils3D.dispose();
 
-		if (!Config.getProperty(Config.CHARACTER_ICON_ATLAS, "").equals(""))
-			EngineAssetManager.getInstance().disposeAtlas(Config.getProperty(Config.CHARACTER_ICON_ATLAS, null));
+		if (!Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, "").equals(""))
+			EngineAssetManager.getInstance().disposeAtlas(Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, null));
 
 		// DISPOSE ALL SCREENS
 		for (BladeScreen s : screens)

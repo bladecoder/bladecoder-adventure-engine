@@ -42,7 +42,10 @@ public class IfPropertyAction extends AbstractIfAction {
 		String valDest = w.getCustomProperty(name);
 
 		if (valDest == null)
-			valDest = Config.getProperty(name, null);
+			valDest = Config.getInstance().getProperty(name, null);
+
+		if (valDest == null)
+			valDest = Config.getInstance().getPref(name, null);
 
 		if (!ActionUtils.compareNullStr(value, valDest)) {
 			gotoElse(cb);

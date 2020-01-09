@@ -88,7 +88,7 @@ public class BladeEngine implements ApplicationListener {
 
 		if (baseFolder != null) {
 			EngineAssetManager.setAssetFolder(baseFolder);
-			Config.load();
+			Config.getInstance().load();
 		}
 
 		try {
@@ -105,7 +105,7 @@ public class BladeEngine implements ApplicationListener {
 	@Override
 	public void create() {
 		if (!debug)
-			debug = Config.getProperty(Config.DEBUG_PROP, debug);
+			debug = Config.getInstance().getProperty(Config.DEBUG_PROP, debug);
 
 		if (debug)
 			EngineLogger.setDebug();
@@ -113,7 +113,7 @@ public class BladeEngine implements ApplicationListener {
 		EngineLogger.debug("GAME CREATE");
 
 		if (forceRes == null)
-			forceRes = Config.getProperty(Config.FORCE_RES_PROP, forceRes);
+			forceRes = Config.getInstance().getProperty(Config.FORCE_RES_PROP, forceRes);
 
 		if (forceRes != null) {
 			EngineAssetManager.getInstance().forceResolution(forceRes);
@@ -123,10 +123,10 @@ public class BladeEngine implements ApplicationListener {
 
 		if (EngineLogger.debugMode()) {
 			if (chapter == null)
-				chapter = Config.getProperty(Config.CHAPTER_PROP, chapter);
+				chapter = Config.getInstance().getProperty(Config.CHAPTER_PROP, chapter);
 
 			if (testScene == null) {
-				testScene = Config.getProperty(Config.TEST_SCENE_PROP, testScene);
+				testScene = Config.getInstance().getProperty(Config.TEST_SCENE_PROP, testScene);
 			}
 
 			if (testScene != null || chapter != null) {
@@ -142,7 +142,7 @@ public class BladeEngine implements ApplicationListener {
 			}
 
 			if (gameState == null)
-				gameState = Config.getProperty(Config.LOAD_GAMESTATE_PROP, gameState);
+				gameState = Config.getInstance().getProperty(Config.LOAD_GAMESTATE_PROP, gameState);
 
 			if (gameState != null) {
 				try {
@@ -165,7 +165,7 @@ public class BladeEngine implements ApplicationListener {
 			}
 
 			if (recordName == null)
-				recordName = Config.getProperty(Config.PLAY_RECORD_PROP, recordName);
+				recordName = Config.getInstance().getProperty(Config.PLAY_RECORD_PROP, recordName);
 
 			if (recordName != null) {
 				ui.getRecorder().setFilename(recordName);
