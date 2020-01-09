@@ -62,7 +62,7 @@ public class TesterBot {
 
 	public TesterBot(World w) {
 		this.w = w;
-		inventoryAction = !Config.getProperty(Config.SINGLE_ACTION_INVENTORY, false);
+		inventoryAction = !Config.getInstance().getProperty(Config.SINGLE_ACTION_INVENTORY, false);
 	}
 
 	public void update(float d) {

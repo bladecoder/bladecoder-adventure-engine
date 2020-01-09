@@ -168,7 +168,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 		if (style.showTitle && style.titleStyle != null) {
 
-			Label title = new Label(Config.getProperty(Config.TITLE_PROP, "Adventure Blade Engine"), skin,
+			Label title = new Label(Config.getInstance().getProperty(Config.TITLE_PROP, "Adventure Blade Engine"), skin,
 					style.titleStyle);
 
 			title.setAlignment(getAlign());
@@ -338,7 +338,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		iconStackTable.pack();
 		stage.addActor(iconStackTable);
 
-		Label version = new Label("v" + Config.getProperty(Config.VERSION_PROP, " unspecified"), skin);
+		Label version = new Label("v" + Config.getInstance().getProperty(Config.VERSION_PROP, " unspecified"), skin);
 		version.setPosition(DPIUtils.getMarginSize(), DPIUtils.getMarginSize());
 		version.addListener(new ClickListener() {
 			int count = 0;

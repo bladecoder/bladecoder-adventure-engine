@@ -407,11 +407,11 @@ public class DebugScreen implements BladeScreen {
 		table.add(botGroup2);
 
 		// ------------- VERSION LABEL NOT IN TABLE
-		String versionString = Config.getProperty(Config.TITLE_PROP, "title unspecified") + " v"
-				+ Config.getProperty(Config.VERSION_PROP, "unspecified") + "\n" + "Blade Engine: v"
-				+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, "unspecified") + "\n" + "libGdx: v"
-				+ Config.getProperty("gdxVersion", "unspecified") + "\n" + "RoboVM: v"
-				+ Config.getProperty("roboVMVersion", "unspecified") + "\n";
+		String versionString = Config.getInstance().getProperty(Config.TITLE_PROP, "title unspecified") + " v"
+				+ Config.getInstance().getProperty(Config.VERSION_PROP, "unspecified") + "\n" + "Blade Engine: v"
+				+ Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, "unspecified") + "\n" + "libGdx: v"
+				+ Config.getInstance().getProperty("gdxVersion", "unspecified") + "\n" + "RoboVM: v"
+				+ Config.getInstance().getProperty("roboVMVersion", "unspecified") + "\n";
 		// + "Gdx.app.getVersion: " + Gdx.app.getVersion();
 
 		Label version = new Label(versionString, ui.getSkin(), "debug");

@@ -257,7 +257,7 @@ public class WorldSerialization implements Serializable {
 	public void write(Json json) {
 		BladeJson bjson = (BladeJson) json;
 
-		json.writeValue(Config.BLADE_ENGINE_VERSION_PROP, Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
+		json.writeValue(Config.BLADE_ENGINE_VERSION_PROP, Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
 
 		if (bjson.getMode() == Mode.MODEL) {
 			SortedMap<String, SoundDesc> sortedSounds = new TreeMap<>();
@@ -271,7 +271,7 @@ public class WorldSerialization implements Serializable {
 			json.writeValue("initScene", w.getInitScene());
 
 		} else {
-			json.writeValue(Config.VERSION_PROP, Config.getProperty(Config.VERSION_PROP, null));
+			json.writeValue(Config.VERSION_PROP, Config.getInstance().getProperty(Config.VERSION_PROP, null));
 
 			SortedMap<String, Scene> sortedScenes = new TreeMap<>();
 			sortedScenes.putAll(w.getScenes());
@@ -313,9 +313,9 @@ public class WorldSerialization implements Serializable {
 		BladeJson bjson = (BladeJson) json;
 		if (bjson.getMode() == Mode.MODEL) {
 			if (bladeVersion != null
-					&& !bladeVersion.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
+					&& !bladeVersion.equals(Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
 				EngineLogger.debug("Model Engine Version v" + bladeVersion + " differs from Current Engine Version v"
-						+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
+						+ Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
 
 			// SOUNDS
@@ -360,10 +360,10 @@ public class WorldSerialization implements Serializable {
 			cacheSounds();
 		} else {
 			if (bladeVersion != null
-					&& !bladeVersion.equals(Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
+					&& !bladeVersion.equals(Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""))) {
 				EngineLogger
 						.debug("Saved Game Engine Version v" + bladeVersion + " differs from Current Engine Version v"
-								+ Config.getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
+								+ Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, ""));
 			}
 
 			String currentChapter = json.readValue("chapter", String.class, jsonData);

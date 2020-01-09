@@ -15,11 +15,13 @@
  ******************************************************************************/
 package com.bladecoder.engine.util;
 
+import java.io.IOException;
 import java.util.Properties;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.bladecoder.engine.assets.EngineAssetManager;
 
-public class Config {
+public final class Config {
 	public static final String INVENTORY_POS_PROP = "inventory_pos";
 	public static final String INVENTORY_AUTOSIZE_PROP = "inventory_autosize";
 	public static final String SINGLE_ACTION_INVENTORY = "single_action_inventory";
@@ -42,28 +44,49 @@ public class Config {
 	public static final String SHOW_HOTSPOTS = "show_hotspots";
 
 	public static final String PROPERTIES_FILENAME = "BladeEngine.properties";
+	public static final String PREFS_FILENAME = "prefs.properties";
 
-	private static Properties config = null;
+	private static Config instance;
 
-	public static String getProperty(String key, String defaultValue) {
-		if (config == null) {
-			load();
+	private final Properties config = new Properties();
+	private final Properties prefs = new Properties();
+
+	private Config() {
+		load();
+	}
+
+	public static final Config getInstance() {
+		if (instance == null) {
+			instance = new Config();
 		}
 
+		return instance;
+	}
+
+	public String getProperty(String key, String defaultValue) {
 		return config.getProperty(key, defaultValue);
 	}
 
-	public static void load() {
-		config = new Properties();
-
+	public void load() {
 		try {
 			config.load(EngineAssetManager.getInstance().getAsset(PROPERTIES_FILENAME).reader());
 		} catch (Exception e) {
-			EngineLogger.error("ERROR LOADING PROPERTIES: " + e.getMessage());
+			EngineLogger.error("ERROR LOADING " + PROPERTIES_FILENAME + " :" + e.getMessage());
+		}
+
+		FileHandle prefsFile = EngineAssetManager.getInstance().getUserFile(PREFS_FILENAME,
+				getProperty(Config.TITLE_PROP, null));
+
+		if (prefsFile.exists()) {
+			try {
+				prefs.load(prefsFile.reader());
+			} catch (IOException e) {
+				EngineLogger.error("ERROR LOADING PREFERENCES " + PREFS_FILENAME + ": " + e.getMessage());
+			}
 		}
 	}
 
-	public static boolean getProperty(String key, boolean defaultValue) {
+	public boolean getProperty(String key, boolean defaultValue) {
 		boolean result = false;
 
 		try {
@@ -74,7 +97,7 @@ public class Config {
 		return result;
 	}
 
-	public static int getProperty(String key, int defaultValue) {
+	public int getProperty(String key, int defaultValue) {
 		int result = 0;
 
 		try {
@@ -83,5 +106,22 @@ public class Config {
 		}
 
 		return result;
+	}
+
+	public String getPref(String name, String defaultValue) {
+		return prefs.getProperty(name, defaultValue);
+	}
+
+	public void setPref(String name, String value) {
+		prefs.setProperty(name, value);
+	}
+
+	public void savePrefs() {
+		try {
+			prefs.store(EngineAssetManager.getInstance()
+					.getUserFile(PREFS_FILENAME, getProperty(Config.TITLE_PROP, null)).writer(false), null);
+		} catch (IOException e) {
+			EngineLogger.error("ERROR SAVING PREFERENCES: " + e.getMessage());
+		}
 	}
 }

@@ -46,7 +46,7 @@ public class TextManager implements Serializable {
 	public static final float RECT_MARGIN = 18f;
 	public static final float RECT_BORDER = 2f;
 
-	public static final boolean AUTO_HIDE_TEXTS = Config.getProperty(Config.AUTO_HIDE_TEXTS, true);
+	public static final boolean AUTO_HIDE_TEXTS = Config.getInstance().getProperty(Config.AUTO_HIDE_TEXTS, true);
 
 	private float inScreenTime;
 	private Text currentText = null;
