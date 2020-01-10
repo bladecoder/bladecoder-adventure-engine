@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.3]
+- Added "initVerb" param to the "Leave" action. This verb will be executed if set instead of the "init" verb.
+- Now, the "init" verb doesn't run if the "test" verb is executed.
+- Load/Save preferences support.
+- Allow to move BaseActors in MoveToSceneAction.
+- FIX: Scale and Rotate actions didn't work with ui actors.
+- Save also callbacks that are not in the current scene.
+
 ## [3.2.2]
 - Inventory button style now in the InventoryUI style. This allows to customize the inventory button by player.
 - Update Blade Ink to v0.7.3 which fixes an important bug.
