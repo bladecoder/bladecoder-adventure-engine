@@ -903,7 +903,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		inventoryUI = new InventoryUI(this, pointer);
 		inventoryButton = new InventoryButton(ui.getSkin(), getWorld(), inventoryUI);
 
-		uiMode = UIModes.valueOf(Config.getInstance().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
+		uiMode = UIModes
+				.valueOf(Config.getInstance().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
 
 		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen) && uiMode == UIModes.TWO_BUTTONS) {
 			uiMode = UIModes.PIE;
