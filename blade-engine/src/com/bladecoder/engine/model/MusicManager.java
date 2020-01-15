@@ -128,7 +128,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 			desc.setVolume(volume);
 
 		if (music != null && music.isPlaying())
-			music.setVolume(volume);
+			music.setVolume(volume * VOLUME_MULTIPLIER);
 	}
 
 	public float getVolume() {
