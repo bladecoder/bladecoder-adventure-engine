@@ -30,7 +30,7 @@ public class VoiceManager implements Serializable, AssetConsumer {
 
 	// the music volume
 	private float volume = 1.0f;
-	
+
 	// the global configurable by user volume
 	public static float VOLUME_MULTIPLIER = 1f;
 
@@ -93,7 +93,7 @@ public class VoiceManager implements Serializable, AssetConsumer {
 			// Load and play the voice file in background to avoid
 			// blocking the UI
 			loadAssets();
-			
+
 			backgroundLoadingTask.cancel();
 			Timer.schedule(backgroundLoadingTask, 0, 0);
 		}
@@ -104,6 +104,10 @@ public class VoiceManager implements Serializable, AssetConsumer {
 
 		if (voice != null)
 			voice.setVolume(volume * VOLUME_MULTIPLIER);
+	}
+
+	public float getVolume() {
+		return volume;
 	}
 
 	@Override
