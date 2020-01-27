@@ -25,6 +25,7 @@ import com.badlogic.gdx.Gdx;
 public class EngineLogger {
 	private static String TAG = "ENGINE";
 	private static int level = Application.LOG_ERROR;
+	private static final int MAX_BUFFER_SIZE = 512 * 1024;
 
 	public static final int DEBUG0 = 0;
 	public static final int DEBUG1 = 1;
@@ -44,6 +45,11 @@ public class EngineLogger {
 			Gdx.app.error(TAG, message);
 			lastError = message;
 			lastException = null;
+
+			if (errorBuffer.length() > MAX_BUFFER_SIZE) {
+				errorBuffer.setLength(0);
+			}
+
 			errorBuffer.append(message);
 		}
 	}
@@ -55,7 +61,10 @@ public class EngineLogger {
 			Gdx.app.error(TAG, message, e);
 			lastError = message;
 			lastException = e;
-			errorBuffer.append(message);
+
+			if (errorBuffer.length() > MAX_BUFFER_SIZE) {
+				errorBuffer.setLength(0);
+			}
 
 			// print stack trace to buffer
 			Writer result = new StringWriter();
