@@ -39,13 +39,13 @@ public class RunVerbAction implements VerbRunner, Action {
 	@ActionProperty
 	@ActionPropertyDescription("Aditional actor for 'use' verb")
 	private String target;
-	
+
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("If this param is 'false' the text is showed and the action continues inmediatly")
 	private boolean wait = true;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
@@ -53,19 +53,19 @@ public class RunVerbAction implements VerbRunner, Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		
-		run(cb.getCurrentTarget(),  wait?cb:null);
-		
+
+		run(cb.getCurrentTarget(), wait ? cb : null);
+
 		return wait;
 	}
 
 	private Verb getVerb() {
 		Verb v = null;
-		
+
 		Scene s = w.getCurrentScene();
 
 		if (actor != null) {
-			InteractiveActor a = (InteractiveActor)s.getActor(actor, true);
+			InteractiveActor a = (InteractiveActor) s.getActor(actor, true);
 
 			v = a.getVerbManager().getVerb(verb, a.getState(), target);
 		}
@@ -78,8 +78,9 @@ public class RunVerbAction implements VerbRunner, Action {
 			v = w.getVerbManager().getVerb(verb, null, target);
 		}
 
-		if (v == null)
+		if (v == null) {
 			EngineLogger.error("Cannot find VERB: " + verb + " for ACTOR: " + actor);
+		}
 
 		return v;
 	}
@@ -91,16 +92,15 @@ public class RunVerbAction implements VerbRunner, Action {
 
 	@Override
 	public void cancel() {
-		
+
 		// check if the actor has been moved during the execution
-		if(actor != null) {
-			InteractiveActor a = (InteractiveActor)w.getCurrentScene().getActor(actor, true);
-			
-			if(a == null)
+		if (actor != null) {
+			InteractiveActor a = (InteractiveActor) w.getCurrentScene().getActor(actor, true);
+
+			if (a == null)
 				return;
 		}
-		
-		
+
 		getVerb().cancel();
 	}
 
@@ -114,9 +114,10 @@ public class RunVerbAction implements VerbRunner, Action {
 		Verb v = getVerb();
 
 		if (v == null) {
-			if( actor != null)
-				EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found for actor ''{1}({3})'' and target ''{2}''.",
-					verb, actor, target, ((InteractiveActor)w.getCurrentScene().getActor(actor, true)).getState()));
+			if (actor != null)
+				EngineLogger.error(MessageFormat.format(
+						"Verb ''{0}'' not found for actor ''{1}({3})'' and target ''{2}''.", verb, actor, target,
+						((InteractiveActor) w.getCurrentScene().getActor(actor, true)).getState()));
 			else
 				EngineLogger.error(MessageFormat.format("Verb ''{0}'' not found.", verb));
 
@@ -129,8 +130,10 @@ public class RunVerbAction implements VerbRunner, Action {
 	@Override
 	public void run(String currentTarget, ActionCallback cb) {
 		Verb v = getVerb();
-		
-		v.run(currentTarget, cb);
+
+		if (v != null) {
+			v.run(currentTarget, cb);
+		}
 	}
 
 	@Override
@@ -141,6 +144,6 @@ public class RunVerbAction implements VerbRunner, Action {
 	@Override
 	public void setIP(int ip) {
 		getVerb().setIP(ip);
-	}	
+	}
 
 }

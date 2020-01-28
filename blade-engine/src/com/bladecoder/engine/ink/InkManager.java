@@ -661,7 +661,8 @@ public class InkManager implements Serializable {
 						else
 							ip++;
 					} catch (Exception e) {
-						EngineLogger.error("EXCEPTION EXECUTING ACTION: " + a.getClass().getSimpleName(), e);
+						EngineLogger.error("EXCEPTION EXECUTING ACTION: InkManager - " + ip + " - "
+								+ a.getClass().getSimpleName() + " - " + e.getMessage(), e);
 						ip++;
 					}
 				}
