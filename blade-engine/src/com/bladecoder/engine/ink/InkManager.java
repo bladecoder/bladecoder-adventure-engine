@@ -372,6 +372,8 @@ public class InkManager implements Serializable {
 	}
 
 	public Story getStory() {
+		waitIfNotLoaded();
+
 		return story;
 	}
 
