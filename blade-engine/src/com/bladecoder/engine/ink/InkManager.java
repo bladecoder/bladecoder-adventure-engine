@@ -43,7 +43,6 @@ public class InkManager implements Serializable {
 	private ResourceBundle i18n;
 
 	private Story story = null;
-	private ExternalFunctions externalFunctions;
 
 	private ActionCallback cb;
 
@@ -63,7 +62,6 @@ public class InkManager implements Serializable {
 
 	public InkManager(World w) {
 		this.w = w;
-		externalFunctions = new ExternalFunctions();
 	}
 
 	public void newStory(final String name) throws Exception {
@@ -80,7 +78,7 @@ public class InkManager implements Serializable {
 			String json = getJsonString(asset.read());
 			story = new Story(json);
 
-			externalFunctions.bindExternalFunctions(w, this);
+			ExternalFunctions.bindExternalFunctions(w, story);
 
 			storyName = name;
 
