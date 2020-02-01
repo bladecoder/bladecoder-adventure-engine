@@ -516,7 +516,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		sbTmp.setLength(0);
 
 		if (EngineLogger.lastError != null) {
-			sbTmp.append(EngineLogger.lastError);
+			// sbTmp.append(EngineLogger.lastError);
+			sbTmp.append(EngineLogger.errorBuffer);
 
 			color = Color.RED;
 		} else {
