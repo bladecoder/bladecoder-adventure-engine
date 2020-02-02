@@ -59,7 +59,10 @@ public class MusicManager implements Serializable, AssetConsumer {
 				// DEAL WITH OPENAL BUG
 				if (Gdx.app.getType() == ApplicationType.Desktop && e.getMessage().contains("40963")) {
 					EngineLogger.debug("!!!!!!!!!!!!!!!!!!!!!!!ERROR playing music trying again...!!!!!!!!!!!!!!!");
-					setMusic(desc);
+
+					MusicDesc desc2 = desc;
+					desc = null;
+					setMusic(desc2);
 
 					return;
 				}
