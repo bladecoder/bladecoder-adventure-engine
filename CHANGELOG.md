@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.4]
+- Added more external functions for Ink.
+- Added support to load/save game preferences.
+- Scale and Rotate actions now work with ui actors.
+- Many bugs fixed.
+
 ## [3.2.3]
 - Added "initVerb" param to the "Leave" action. This verb will be executed if set instead of the "init" verb.
 - Now, the "init" verb doesn't run if the "test" verb is executed.
