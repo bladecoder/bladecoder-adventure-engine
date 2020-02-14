@@ -507,7 +507,7 @@ public class ModelTools {
 				extractInkTextsInternal(aValue, sbTSV, sbMD, prop);
 			}
 
-		} else if (v.isString() && v.asString().charAt(0) == '^') {
+		} else if (v.isString() && !v.asString().isEmpty() && v.asString().charAt(0) == '^') {
 			String value = v.asString().substring(1).trim();
 
 			if (value.length() == 0 || value.charAt(0) == '>')
