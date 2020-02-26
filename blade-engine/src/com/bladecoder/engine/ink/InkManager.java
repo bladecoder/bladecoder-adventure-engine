@@ -32,6 +32,7 @@ import com.bladecoder.ink.runtime.InkList;
 import com.bladecoder.ink.runtime.ListDefinition;
 import com.bladecoder.ink.runtime.Story;
 
+
 public class InkManager implements VerbRunner, Serializable {
 	public final static char NAME_VALUE_TAG_SEPARATOR = ':';
 	public final static char NAME_VALUE_PARAM_SEPARATOR = '=';
@@ -219,6 +220,7 @@ public class InkManager implements VerbRunner, Serializable {
 			} else if (cb != null || sCb != null) {
 				if (cb == null) {
 					cb = ActionCallbackSerialization.find(sCb);
+					sCb = null;
 				}
 
 				ActionCallbackQueue.add(cb);
@@ -374,6 +376,7 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 
 		this.cb = cb;
+		sCb = null;
 
 		story.choosePathString(path);
 		continueMaximally();

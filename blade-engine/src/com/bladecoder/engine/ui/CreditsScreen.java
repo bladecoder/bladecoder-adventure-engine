@@ -70,8 +70,7 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 	private final InputProcessor inputProcessor = new InputAdapter() {
 		@Override
 		public boolean keyUp(int keycode) {
-			if (keycode == Input.Keys.ESCAPE
-					|| keycode == Input.Keys.BACK)
+			if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
 				ui.setCurrentScreen(Screens.MENU_SCREEN);
 
 			return true;
@@ -110,7 +109,8 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 		for (int i = stringHead; i < credits.size(); i++) {
 			String s = credits.get(i);
 
-			char type = 'c'; // types are 'c' -> credit, 't' -> title, 'i' -> image, 's' -> space, 'm' -> music
+			char type = 'c'; // types are 'c' -> credit, 't' -> title, 'i' -> image, 's' -> space, 'm' ->
+								// music
 
 			if (s.indexOf('#') != -1) {
 				type = s.charAt(0);
@@ -118,23 +118,23 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 			}
 
 			switch (type) {
-				case 't':
-					y = processCreditTitle(batch, width, height, y, i, s);
-					break;
-				case 'i':
-					y = processCreditImage(batch, width, height, y, i, s);
-					break;
-				case 's':
-					y = processCreditSpace(height, y, i, s);
-					break;
-				case 'm':
-					processCreditMusic(s);
-					credits.remove(i);
-					i--;
-					break;
-				default:
-					y = processCreditDefault(batch, width, height, y, i, s);
-					break;
+			case 't':
+				y = processCreditTitle(batch, width, height, y, i, s);
+				break;
+			case 'i':
+				y = processCreditImage(batch, width, height, y, i, s);
+				break;
+			case 's':
+				y = processCreditSpace(height, y, i, s);
+				break;
+			case 'm':
+				processCreditMusic(s);
+				credits.remove(i);
+				i--;
+				break;
+			default:
+				y = processCreditDefault(batch, width, height, y, i, s);
+				break;
 			}
 
 			if (y < 0) {
@@ -188,22 +188,33 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 	private void processCreditMusic(final String s) {
 		if (music != null)
 			music.dispose();
-		
+
 		final String sound = EngineAssetManager.getInstance().checkIOSSoundName("music/" + s);
 
 		new Thread() {
 			@Override
 			public void run() {
 				music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset(sound));
-				
+
 				try {
 					music.play();
-				} catch(Exception e) {
-					// sometimes the play method fails on desktop.
+				} catch (Exception e) {
+
+					// DEAL WITH OPENAL BUG
+					if (e.getMessage() != null && e.getMessage().contains("40963")) {
+						EngineLogger.debug("!!!!!!!!!!!!!!!!!!!!!!!ERROR playing music trying again...!!!!!!!!!!!!!!!");
+
+						music = Gdx.audio.newMusic(EngineAssetManager.getInstance().getAsset(sound));
+						music.play();
+						music.setVolume(0.5f);
+
+						return;
+					}
+
 					EngineLogger.error("Error Playing music: " + s, e);
 				}
 			}
-		}.start();	
+		}.start();
 	}
 
 	private float processCreditDefault(SpriteBatch batch, int width, int height, float y, int i, String s) {
@@ -307,7 +318,7 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 
 		layout.setText(font, str, Color.WHITE, viewportWidth, Align.center, true);
 
-		//x = (viewportWidth - layout.width)/2;
+		// x = (viewportWidth - layout.width)/2;
 
 		font.draw(batch, layout, x, y);
 	}
