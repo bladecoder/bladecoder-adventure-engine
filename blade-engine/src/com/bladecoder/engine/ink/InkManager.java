@@ -236,6 +236,7 @@ public class InkManager implements VerbRunner, Serializable {
 
 				ActionCallback tmpcb = cb;
 				cb = null;
+				sCb = null;
 				tmpcb.resume();
 			}
 		}
@@ -400,6 +401,7 @@ public class InkManager implements VerbRunner, Serializable {
 		}
 
 		this.cb = cb;
+		sCb = null;
 
 		story.choosePathString(path);
 		continueMaximally();
