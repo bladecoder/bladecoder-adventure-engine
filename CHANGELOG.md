@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.5]
+- Some validations adding/editing animations and verbs to avoid errors.
+- Fixed dealing with OpenAL bug in credits screen.
+- Fixed bug extracting ink texts.
+
 ## [3.2.4]
 - Added more external functions for Ink.
 - Added support to load/save game preferences.
