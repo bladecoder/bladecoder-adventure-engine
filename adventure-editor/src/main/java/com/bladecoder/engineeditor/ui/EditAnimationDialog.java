@@ -381,8 +381,14 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		FilteredSelectBox<String> cb = (FilteredSelectBox<String>) id.getField();
 
 		if (e == null && cb.getSelectedIndex() == 0) {
+			AnimationRenderer renderer = (AnimationRenderer) parent.getRenderer();
+
 			for (int i = 1; i < cb.getItems().size; i++) {
 				cb.setSelectedIndex(i);
+
+				if (renderer.getAnimations().get(id.getText()) != null)
+					continue;
+
 				inputsToModel(true);
 				// doc.setId(e, cb.getItems().get(i));
 
@@ -486,4 +492,17 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
 		}
 	}
 
+	@Override
+	protected boolean validateFields() {
+		AnimationRenderer renderer = (AnimationRenderer) parent.getRenderer();
+		HashMap<String, AnimationDesc> animations = renderer.getAnimations();
+
+		if ((e == null && animations.get(id.getText()) != null)
+				|| (e != null && animations.get(id.getText()) != null && !e.id.equals(id.getText()))) {
+			id.setError(true);
+			return false;
+		}
+
+		return super.validateFields();
+	}
 }

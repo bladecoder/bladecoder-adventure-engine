@@ -61,7 +61,7 @@ public abstract class ModelList<PARENT, T> extends EditList<T> {
 		if (sorted) {
 			list.sortByTitle();
 		}
-		
+
 		if (getItems().size > 0)
 			list.getSelection().choose(list.getItems().get(0));
 
@@ -81,8 +81,11 @@ public abstract class ModelList<PARENT, T> extends EditList<T> {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				T e = ((EditModelDialog<PARENT, T>) actor).getElement();
-				addItem(e);
-				
+
+				if (getItems().indexOf(e, true) == -1) {
+					addItem(e);
+				}
+
 				if (sorted) {
 					list.sortByTitle();
 				}
