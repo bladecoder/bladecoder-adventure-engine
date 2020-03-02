@@ -32,6 +32,7 @@ import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
+import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.CellRenderer;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
@@ -65,7 +66,7 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 				String id = null;
 
 				if (pos != -1)
-					id =  list.getItems().get(pos).id;
+					id = list.getItems().get(pos).id;
 
 				Ctx.project.setSelectedFA(id);
 
@@ -88,12 +89,14 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 				flipInit();
 			}
 		});
-		
+
 		Ctx.project.addPropertyChangeListener(Project.NOTIFY_ELEMENT_CREATED, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				if (evt.getNewValue() instanceof Dialog && !(evt.getSource() instanceof EditDialogDialog) && parent instanceof SpriteActor) {
-					HashMap<String, AnimationDesc> animations = ((AnimationRenderer)parent.getRenderer()).getAnimations();
+				if (evt.getNewValue() instanceof Dialog && !(evt.getSource() instanceof EditDialogDialog)
+						&& parent instanceof SpriteActor) {
+					HashMap<String, AnimationDesc> animations = ((AnimationRenderer) parent.getRenderer())
+							.getAnimations();
 					addElements(parent, Arrays.asList(animations.values().toArray(new AnimationDesc[0])));
 				}
 			}
@@ -105,14 +108,14 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 
 		if (pos == -1)
 			return;
-		
-		AnimationRenderer renderer = (AnimationRenderer)((SpriteActor) Ctx.project.getSelectedActor()).getRenderer();
+
+		AnimationRenderer renderer = (AnimationRenderer) ((SpriteActor) Ctx.project.getSelectedActor()).getRenderer();
 
 		String id = list.getItems().get(pos).id;
 		String oldId = renderer.getInitAnimation();
-				
+
 		renderer.setInitAnimation(id);
-		
+
 		Ctx.project.setModified(this, "init_animation", oldId, id);
 	}
 
@@ -121,27 +124,27 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 
 		if (pos == -1)
 			return;
-		
-		AnimationRenderer renderer = (AnimationRenderer)((SpriteActor) Ctx.project.getSelectedActor()).getRenderer();
+
+		AnimationRenderer renderer = (AnimationRenderer) ((SpriteActor) Ctx.project.getSelectedActor()).getRenderer();
 
 		String id = list.getItems().get(pos).id;
 
 		String newValue = AnimationRenderer.getFlipId(id);
 
 		renderer.setInitAnimation(newValue);
-		
+
 		Ctx.project.setModified(this, "init_animation", id, newValue);
 	}
 
 	@Override
 	protected void delete() {
 		AnimationDesc d = removeSelected();
-		
-		AnimationRenderer renderer = (AnimationRenderer)parent.getRenderer();
-		
+
+		AnimationRenderer renderer = (AnimationRenderer) parent.getRenderer();
+
 		renderer.getAnimations().remove(d.id);
-			
-		//  UNDO
+
+		// UNDO
 		Ctx.project.getUndoStack().add(new UndoDeleteAnimation(parent, d));
 
 		// delete init_animation attr if the animation to delete is the chapter
@@ -150,17 +153,17 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 			HashMap<String, AnimationDesc> animations = renderer.getAnimations();
 			String newValue = null;
 
-			if(animations.size() > 0)
+			if (animations.size() > 0)
 				newValue = animations.keySet().iterator().next();
-			
+
 			renderer.setInitAnimation(newValue);
-			
+
 			Ctx.project.setModified(this, "init_animation", d.id, newValue);
 		}
-		
+
 		Ctx.project.setModified();
 	}
-	
+
 	@Override
 	protected void copy() {
 		AnimationDesc e = list.getSelected();
@@ -168,29 +171,35 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 		if (e == null)
 			return;
 
-		clipboard = (AnimationDesc)ElementUtils.cloneElement(e);
+		clipboard = (AnimationDesc) ElementUtils.cloneElement(e);
 		toolbar.disablePaste(false);
 	}
 
 	@Override
 	protected void paste() {
-		AnimationDesc newElement = (AnimationDesc)ElementUtils.cloneElement(clipboard);
-		
+		AnimationDesc newElement = (AnimationDesc) ElementUtils.cloneElement(clipboard);
+
+		if (((AnimationRenderer) parent.getRenderer()).getAnimations().get(newElement.id) != null) {
+			Message.showMsg(getStage(), "Animation already exists.", 2);
+
+			return;
+		}
+
 		int pos = list.getSelectedIndex() + 1;
 
 		list.getItems().insert(pos, newElement);
 
-		((AnimationRenderer)parent.getRenderer()).addAnimation(newElement);
+		((AnimationRenderer) parent.getRenderer()).addAnimation(newElement);
 
 		list.setSelectedIndex(pos);
 		list.invalidateHierarchy();
-		
+
 		Ctx.project.setModified();
-	}		
+	}
 
 	@Override
 	protected EditModelDialog<SpriteActor, AnimationDesc> getEditElementDialogInstance(AnimationDesc e) {
-		 return new EditAnimationDialog(skin, parent, e);
+		return new EditAnimationDialog(skin, parent, e);
 	}
 
 	// -------------------------------------------------------------------------
@@ -202,7 +211,7 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 		protected String getCellTitle(AnimationDesc e) {
 			String name = e.id;
 			SpriteActor actor = (SpriteActor) Ctx.project.getSelectedActor();
-			AnimationRenderer renderer = (AnimationRenderer)actor.getRenderer();
+			AnimationRenderer renderer = (AnimationRenderer) actor.getRenderer();
 
 			String init = renderer.getInitAnimation();
 
