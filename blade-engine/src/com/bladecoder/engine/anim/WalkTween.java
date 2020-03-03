@@ -23,11 +23,13 @@ import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.AnimationRenderer;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.serialization.ActionCallbackSerializer;
 import com.bladecoder.engine.serialization.BladeJson;
+import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.InterpolationMode;
 
 /**
@@ -62,8 +64,6 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		Vector2 p0 = walkingPath.get(currentStep);
 		Vector2 pf = walkingPath.get(currentStep + 1);
 
-		target.startWalkAnim(p0, pf);
-
 		float s0 = 1.0f;
 		float sf = 1.0f;
 
@@ -72,24 +72,34 @@ public class WalkTween extends SpritePosTween implements Serializable {
 			sf = target.getScene().getFakeDepthScale(pf.y);
 		}
 
-		// float segmentDuration = p0.dst(pf)
-		// / (EngineAssetManager.getInstance().getScale() * speed);
+		float sdiff = Math.abs(s0 - sf);
+		if (sdiff > .05f) {
+			// cut the path in two parts if the difference in scale is big
+			Vector2 pi = new Vector2((pf.x + p0.x) / 2, (pf.y + p0.y) / 2);
+
+			if (EngineLogger.debugMode()) {
+				String debugText = String.format(
+						"WalkTween insert point: sdiff=%.2f, p0=(%.0f,%.0f), pf=(%.0f,%.0f), pi=(%.0f,%.0f)", sdiff,
+						p0.x, p0.y, pf.x, pf.y, pi.x, pi.y);
+
+				EngineLogger.debug(debugText);
+			}
+
+			walkingPath.add(currentStep + 1, pi);
+
+			walkToNextStep(target);
+			return;
+		}
+
+		if (currentStep == 0 || ((AnimationRenderer) target.getRenderer()).changeDir(p0, pf)) {
+			target.startWalkAnim(p0, pf);
+		}
 
 		// t = dst/((vf+v0)/2)
 		float segmentDuration = p0.dst(pf) / (EngineAssetManager.getInstance().getScale() * speed * (s0 + sf) / 2);
 
-		segmentDuration *= (s0 > sf ? s0 / sf : sf / s0);
-
-		InterpolationMode i = InterpolationMode.LINEAR;
-
-		if (Math.abs(s0 - sf) > .25)
-			i = s0 > sf ? InterpolationMode.POW2OUT : InterpolationMode.POW2IN;
-
-		if (currentStep == walkingPath.size() - 2 && walkCb != null) {
-			start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, InterpolationMode.LINEAR, i, walkCb);
-		} else {
-			start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, InterpolationMode.LINEAR, i, null);
-		}
+		start(target, Type.NO_REPEAT, 1, pf.x, pf.y, segmentDuration, InterpolationMode.LINEAR,
+				InterpolationMode.LINEAR, currentStep == walkingPath.size() - 2 ? walkCb : null);
 	}
 
 	private void segmentEnded(CharacterActor target) {
