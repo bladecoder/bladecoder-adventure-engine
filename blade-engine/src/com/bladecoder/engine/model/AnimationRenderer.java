@@ -124,6 +124,28 @@ public abstract class AnimationRenderer implements ActorRenderer {
 
 	}
 
+	/**
+	 * Checks if the character faces the target point to avoid changing the
+	 * animation.
+	 */
+	public boolean changeDir(Vector2 p0, Vector2 pf) {
+		int idx = getCurrentAnimationId().indexOf('.');
+
+		if (idx == -1) {
+			return true;
+		}
+
+		String id = getCurrentAnimationId().substring(0, idx);
+
+		String directionString = getDirectionString(p0, pf, getDirs(id, fanims));
+
+		if (getCurrentAnimationId().substring(idx + 1).equals(directionString)) {
+			return false;
+		}
+
+		return true;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(super.toString());
