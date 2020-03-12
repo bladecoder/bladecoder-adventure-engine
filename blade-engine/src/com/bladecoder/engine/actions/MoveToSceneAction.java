@@ -56,6 +56,11 @@ public class MoveToSceneAction implements Action {
 
 		BaseActor a = s.getActor(actorId, false);
 
+		if (a == null) {
+			EngineLogger.error(getClass() + "- Actor not found: " + actorId + " in scene: " + s.getId());
+			return false;
+		}
+
 		s.removeActor(a);
 
 		Scene ts = null;
