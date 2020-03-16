@@ -362,7 +362,7 @@ public class PackageDialog extends EditDialog {
 			}
 		} else if (arch.getText().equals("android")) {
 			String params = versionParam + customBuildParams + "-PversionCode=" + versionCode.getText() + " "
-					+ "-Pkeystore=" + androidKeyStore.getText() + " " + "-PstorePassword="
+					+ "-Pkeystore=\"" + androidKeyStore.getText() + "\" " + "-PstorePassword="
 					+ androidKeyStorePassword.getText() + " " + "-Palias=" + androidKeyAlias.getText() + " "
 					+ "-PkeyPassword=" + androidKeyAliasPassword.getText() + " ";
 
