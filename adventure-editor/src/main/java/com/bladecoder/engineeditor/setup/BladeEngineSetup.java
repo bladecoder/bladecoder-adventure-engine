@@ -43,7 +43,7 @@ import com.bladecoder.engineeditor.common.Versions;
  */
 public class BladeEngineSetup {
 	public static boolean isSdkLocationValid(String sdkLocation) {
-		return new File(sdkLocation, "tools").exists() && new File(sdkLocation, "platforms").exists();
+		return new File(sdkLocation, "platforms").exists();
 	}
 
 	public static boolean isEmptyDirectory(String destination) {
@@ -266,9 +266,12 @@ public class BladeEngineSetup {
 		project.files.add(new ProjectFile("desktop/src/DesktopLauncher",
 				"desktop/src/main/java/" + packageDir + "/desktop/DesktopLauncher.java", true));
 
-		project.files.add(new ProjectFile("desktop/src/icons/icon16.png", "desktop/src/main/resources/icons/icon16.png", false));
-		project.files.add(new ProjectFile("desktop/src/icons/icon32.png", "desktop/src/main/resources/icons/icon32.png", false));
-		project.files.add(new ProjectFile("desktop/src/icons/icon128.png", "desktop/src/main/resources/icons/icon128.png", false));
+		project.files.add(
+				new ProjectFile("desktop/src/icons/icon16.png", "desktop/src/main/resources/icons/icon16.png", false));
+		project.files.add(
+				new ProjectFile("desktop/src/icons/icon32.png", "desktop/src/main/resources/icons/icon32.png", false));
+		project.files.add(new ProjectFile("desktop/src/icons/icon128.png",
+				"desktop/src/main/resources/icons/icon128.png", false));
 
 		// Assets
 		String assetPath = "assets";
@@ -355,7 +358,6 @@ public class BladeEngineSetup {
 		project.files.add(new ProjectFile("ios/data/Default-1024w-1366h@2x~ipad.png", false));
 		project.files.add(new ProjectFile("ios/data/Default-375w-812h@3x.png", false));
 
-
 		project.files.add(new ProjectFile("ios/data/Media.xcassets/Contents.json", false));
 		project.files
 				.add(new ProjectFile("ios/data/Media.xcassets/AppIcon.appiconset/app-store-icon-1024@1x.png", false));
@@ -398,7 +400,7 @@ public class BladeEngineSetup {
 		project.files.add(new ProjectFile("ios/robovm.properties"));
 		project.files.add(new ProjectFile("ios/robovm.xml", true));
 
-		Map<String, String> values = new HashMap<String, String>();
+		Map<String, String> values = new HashMap<>();
 		values.put("%APP_NAME%", appName);
 		values.put("%APP_NAME_ESCAPED%", appName.replace("'", "\\'"));
 		values.put("%PACKAGE%", packageName);
