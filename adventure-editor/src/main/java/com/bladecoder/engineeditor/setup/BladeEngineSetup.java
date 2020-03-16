@@ -37,8 +37,6 @@ import com.bladecoder.engineeditor.common.Versions;
 /**
  * Command line tool to generate libgdx projects
  * 
- * @author badlogic
- * @author Tomski
  * @author rgarcia
  */
 public class BladeEngineSetup {
@@ -85,7 +83,7 @@ public class BladeEngineSetup {
 		}
 
 		int newestLocalApi = getLatestApi(apis);
-		if (newestLocalApi > Integer.valueOf(Versions.getAndroidAPILevel())) {
+		if (newestLocalApi > Integer.parseInt(Versions.getAndroidAPILevel())) {
 
 			// ALWAYS USE THE CURRENT API
 			Versions.setAndroidAPILevel(Integer.toString(newestLocalApi));
@@ -536,7 +534,7 @@ public class BladeEngineSetup {
 			throw new RuntimeException("Couldn't create dir '" + outFile.getAbsolutePath() + "'");
 		}
 
-		boolean isTemp = file instanceof TemporaryProjectFile ? true : false;
+		boolean isTemp = file instanceof TemporaryProjectFile;
 
 		if (file.isTemplate) {
 			String txt;

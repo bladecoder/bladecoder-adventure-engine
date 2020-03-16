@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.0]
+- Fix error when android keystore path had spaces.
+- Added scene counter in the editor ui.
+- Updated ios minosversion to 8.
+- Better calc of speed when walking and fake depth is used.
+
 ## [3.2.5]
 - Some validations adding/editing animations and verbs to avoid errors.
 - Fixed dealing with OpenAL bug in credits screen.
