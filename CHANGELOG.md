@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.1-SNAPSHOT]
+- Fix error serializing cb when not Ink library is used.
+
 ## [4.0.0]
 - Fix error when android keystore path had spaces.
 - Added scene counter in the editor ui.

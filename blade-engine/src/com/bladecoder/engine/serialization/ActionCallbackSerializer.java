@@ -203,7 +203,9 @@ public class ActionCallbackSerializer {
 			return id;
 
 		// search in inkManager actions
-		id = find(cb, w.getInkManager().getVerbRunner());
+		if (w.getInkManager() != null) {
+			id = find(cb, w.getInkManager().getVerbRunner());
+		}
 
 		if (id != null)
 			return id;
