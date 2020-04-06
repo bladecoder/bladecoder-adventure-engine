@@ -67,14 +67,6 @@ public class SceneCamera extends OrthographicCamera implements Serializable {
 		startScrollDistanceY = worldHeight * START_SCROLLY;
 	}
 
-	public float getWidth() {
-		return viewportWidth;
-	}
-
-	public float getHeight() {
-		return viewportHeight;
-	}
-
 	public float getScrollingWidth() {
 		return scrollingWidth;
 	}

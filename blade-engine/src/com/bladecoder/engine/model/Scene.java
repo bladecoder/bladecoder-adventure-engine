@@ -660,8 +660,6 @@ public class Scene implements Serializable, AssetConsumer {
 			EngineAssetManager.getInstance().disposeAtlas(backgroundAtlas);
 		}
 
-		// orderedActors.clear();
-
 		for (BaseActor a : actors.values()) {
 			if (a instanceof AssetConsumer)
 				((AssetConsumer) a).dispose();
