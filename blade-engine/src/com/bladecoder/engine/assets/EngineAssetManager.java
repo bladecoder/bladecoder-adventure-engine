@@ -87,6 +87,8 @@ public class EngineAssetManager extends AssetManager {
 
 	private EngineResolutionFileResolver resResolver;
 
+	private String desktopUserFolder;
+
 	protected EngineAssetManager() {
 		this(new InternalFileHandleResolver());
 		// getLogger().setLevel(Application.LOG_DEBUG);
@@ -129,6 +131,14 @@ public class EngineAssetManager extends AssetManager {
 		}
 
 		return instance;
+	}
+
+	public void setUserFolder(String f) {
+		desktopUserFolder = f;
+
+		if (desktopUserFolder != null) {
+			desktopUserFolder = "." + desktopUserFolder.replace(" ", "");
+		}
 	}
 
 	/**
@@ -487,52 +497,23 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	public FileHandle getUserFile(String filename) {
-		String desktopFolder = Config.getInstance().getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
-		return getUserFile(filename, desktopFolder);
-	}
-
-	public FileHandle getUserFile(String filename, String desktopFolder) {
-		FileHandle file = null;
-
-		if (Gdx.app.getType() == ApplicationType.Desktop) {
-			String dir = desktopFolder != null ? desktopFolder : DESKTOP_PREFS_DIR;
-
-			dir.replace(" ", "");
-
-			StringBuilder sb = new StringBuilder();
-			sb.append(".").append(dir).append("/").append(filename);
-
-			if (System.getProperty("os.name").toLowerCase().contains("mac")
-					&& System.getenv("HOME").contains("Containers")) {
-
-				file = Gdx.files.absolute(System.getenv("HOME") + "/" + sb.toString());
-			} else {
-
-				file = Gdx.files.external(sb.toString());
-			}
-		} else {
-			file = Gdx.files.local(NOT_DESKTOP_PREFS_DIR + filename);
-		}
-
-		return file;
+		return getUserFolder().child(filename);
 	}
 
 	public FileHandle getUserFolder() {
 		FileHandle file = null;
 
-		if (Gdx.app.getType() == ApplicationType.Desktop) {
-			String dir = Config.getInstance().getProperty(Config.TITLE_PROP, DESKTOP_PREFS_DIR);
-			dir.replace(" ", "");
+		if (Gdx.app.getType() == ApplicationType.Desktop && desktopUserFolder != null) {
 
-			StringBuilder sb = new StringBuilder(".");
+			StringBuilder sb = new StringBuilder();
 
 			if (System.getProperty("os.name").toLowerCase().contains("mac")
 					&& System.getenv("HOME").contains("Containers")) {
 
-				file = Gdx.files.absolute(System.getenv("HOME") + "/" + sb.append(dir).toString());
+				file = Gdx.files.absolute(System.getenv("HOME") + "/" + sb.append(desktopUserFolder).toString());
 			} else {
 
-				file = Gdx.files.external(sb.append(dir).toString());
+				file = Gdx.files.external(sb.append(desktopUserFolder).toString());
 			}
 
 		} else {
