@@ -72,10 +72,11 @@ public final class Config {
 			config.load(EngineAssetManager.getInstance().getAsset(PROPERTIES_FILENAME).reader());
 		} catch (Exception e) {
 			EngineLogger.error("ERROR LOADING " + PROPERTIES_FILENAME + " :" + e.getMessage());
+			return;
 		}
 
-		FileHandle prefsFile = EngineAssetManager.getInstance().getUserFile(PREFS_FILENAME,
-				getProperty(Config.TITLE_PROP, null));
+		EngineAssetManager.getInstance().setUserFolder(getProperty(Config.TITLE_PROP, null));
+		FileHandle prefsFile = EngineAssetManager.getInstance().getUserFile(PREFS_FILENAME);
 
 		if (prefsFile.exists()) {
 			try {
@@ -118,8 +119,7 @@ public final class Config {
 
 	public void savePrefs() {
 		try {
-			prefs.store(EngineAssetManager.getInstance()
-					.getUserFile(PREFS_FILENAME, getProperty(Config.TITLE_PROP, null)).writer(false), null);
+			prefs.store(EngineAssetManager.getInstance().getUserFile(PREFS_FILENAME).writer(false), null);
 		} catch (IOException e) {
 			EngineLogger.error("ERROR SAVING PREFERENCES: " + e.getMessage());
 		}

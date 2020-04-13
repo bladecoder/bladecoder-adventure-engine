@@ -785,6 +785,9 @@ public class Scene implements Serializable, AssetConsumer {
 
 			depthVector = json.readValue("depthVector", Vector2.class, jsonData);
 
+			sceneSize = json.readValue("sceneSize", Vector2.class, jsonData);
+
+			// FOR BACKWARDS COMPATIBILITY
 			if (jsonData.get("polygonalNavGraph") != null) {
 
 				JsonValue jsonValuePNG = jsonData.get("polygonalNavGraph");
@@ -806,8 +809,6 @@ public class Scene implements Serializable, AssetConsumer {
 				actors.put(wz.getId(), wz);
 				walkZone = wz.getId();
 			}
-
-			sceneSize = json.readValue("sceneSize", Vector2.class, jsonData);
 
 		} else {
 			JsonValue jsonValueActors = jsonData.get("actors");
