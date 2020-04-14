@@ -28,7 +28,7 @@ public class Dialog implements Serializable {
 
 	public final static String DEFAULT_DIALOG_VERB = "dialog";
 
-	private ArrayList<DialogOption> options = new ArrayList<DialogOption>();
+	private ArrayList<DialogOption> options = new ArrayList<>();
 
 	private int currentOption = -1;
 
@@ -60,7 +60,7 @@ public class Dialog implements Serializable {
 	 */
 	public List<String> getChoices() {
 		ArrayList<DialogOption> options = getVisibleOptions();
-		List<String> choices = new ArrayList<String>(options.size());
+		List<String> choices = new ArrayList<>(options.size());
 
 		for (DialogOption o : options) {
 			choices.add(o.getText());
@@ -106,7 +106,7 @@ public class Dialog implements Serializable {
 	}
 
 	private ArrayList<DialogOption> getVisibleOptions() {
-		ArrayList<DialogOption> visible = new ArrayList<DialogOption>();
+		ArrayList<DialogOption> visible = new ArrayList<>();
 
 		for (DialogOption o : options) {
 			if (o.isVisible())
@@ -172,6 +172,8 @@ public class Dialog implements Serializable {
 				o.read(json, jsonValue);
 				i++;
 			}
+
+			currentOption = json.readValue("currentOption", int.class, jsonData);
 		}
 	}
 }
