@@ -21,7 +21,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -71,8 +70,8 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		sceneScreen = scr;
 		this.pointer = pointer;
 
-		inventoryPos = InventoryPos
-				.valueOf(Config.getInstance().getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH));
+		inventoryPos = InventoryPos.valueOf(
+				Config.getInstance().getProperty(Config.INVENTORY_POS_PROP, "DOWN").toUpperCase(Locale.ENGLISH));
 
 		autosize = Config.getInstance().getProperty(Config.INVENTORY_AUTOSIZE_PROP, true);
 
@@ -294,10 +293,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		return draggedActor != null;
 	}
 
-	private final Vector3 mousepos = new Vector3();
-
 	private void stopDragging(int button) {
-		sceneScreen.getWorld().getSceneCamera().getInputUnProject(sceneScreen.getViewport(), mousepos);
 
 		InteractiveActor targetActor = sceneScreen.getCurrentActor();
 

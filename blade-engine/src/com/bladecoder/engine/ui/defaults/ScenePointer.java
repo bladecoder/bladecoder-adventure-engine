@@ -145,8 +145,6 @@ public class ScenePointer {
 			font.draw(batch, layout, textX, textY);
 		}
 
-		// batch.setColor(Color.WHITE);
-
 		if (draggingActor == null) {
 			if (!multiTouch || (currentIcon == leaveIcon && Gdx.input.isTouched())) {
 
