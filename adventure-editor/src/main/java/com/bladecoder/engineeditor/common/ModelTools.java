@@ -501,8 +501,15 @@ public class ModelTools {
 				JsonValue aValue = v.get(i);
 
 				// Ignore string declr ej. "xxx"
-				if (i > 0 && v.get(i - 1).isString() && v.get(i - 1).asString().equals("str"))
-					continue;
+				if (i > 0 && v.get(i - 1).isString() && v.get(i - 1).asString().equals("str")) {
+					// check if inside a choice with [xxx] text.
+					if (v.size <= i + 3)
+						continue;
+
+					JsonValue next = v.get(i + 3);
+					if (!next.isObject() || next.get("*") == null)
+						continue;
+				}
 
 				extractInkTextsInternal(aValue, sbTSV, sbMD, prop);
 			}
