@@ -151,11 +151,12 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		menuButtonTable.addListener(new InputListener() {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
-				if (keycode == Input.Keys.ESCAPE)
+				if (keycode == Input.Keys.ESCAPE) {
 					if (world.getCurrentScene() != null)
 						ui.setCurrentScreen(Screens.SCENE_SCREEN);
-					else if (keycode == Input.Keys.BACK)
-						Gdx.app.exit();
+				} else if (keycode == Input.Keys.BACK) {
+					Gdx.app.exit();
+				}
 
 				return true;
 			}
