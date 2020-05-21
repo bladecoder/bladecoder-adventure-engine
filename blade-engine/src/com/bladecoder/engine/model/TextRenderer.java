@@ -304,7 +304,8 @@ public class TextRenderer implements ActorRenderer {
 		params.fontParameters.magFilter = TextureFilter.Linear;
 		params.fontParameters.minFilter = TextureFilter.Linear;
 
-		EngineAssetManager.getInstance().load(fontName + getFontSize() + ".ttf", BitmapFont.class, params);
+		EngineAssetManager.getInstance().load(fontName + getFontSize() + EngineAssetManager.FONT_EXT, BitmapFont.class,
+				params);
 	}
 
 	@Override
