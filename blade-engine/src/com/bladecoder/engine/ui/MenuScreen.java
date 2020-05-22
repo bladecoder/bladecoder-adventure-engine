@@ -18,8 +18,8 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -103,7 +103,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 				bgTexFile.dispose();
 				bgTexFile = null;
 			}
-			
+
 			if (titleTexFile != null) {
 				titleTexFile.dispose();
 				titleTexFile = null;
@@ -130,7 +130,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 		// Image background = new Image(style.background);
 		Drawable bg = style.background;
-		
+
 		float scale = 1;
 
 		if (bg == null && style.bgFile != null) {
@@ -140,7 +140,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			scale = (float) bgTexFile.getHeight() / (float) stage.getViewport().getScreenHeight();
 
 			int width = (int) (stage.getViewport().getScreenWidth() * scale);
-			int x0 = (int) ((bgTexFile.getWidth() - width) / 2);
+			int x0 = (bgTexFile.getWidth() - width) / 2;
 
 			bg = new TextureRegionDrawable(new TextureRegion(bgTexFile, x0, 0, width, bgTexFile.getHeight()));
 		}
@@ -152,9 +152,12 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		menuButtonTable.addListener(new InputListener() {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
-				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
+				if (keycode == Input.Keys.ESCAPE) {
 					if (world.getCurrentScene() != null)
 						ui.setCurrentScreen(Screens.SCENE_SCREEN);
+				} else if (keycode == Input.Keys.BACK) {
+					Gdx.app.exit();
+				}
 
 				return true;
 			}
@@ -177,14 +180,15 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			menuButtonTable.add(title).padBottom(DPIUtils.getMarginSize() * 2);
 			menuButtonTable.row();
 		}
-		
-		if(style.titleFile != null) {
+
+		if (style.titleFile != null) {
 			titleTexFile = new Texture(EngineAssetManager.getInstance().getResAsset(style.titleFile));
 			titleTexFile.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-			
+
 			Image img = new Image(titleTexFile);
-			
-			menuButtonTable.add(img).width((float)titleTexFile.getWidth() / scale).height((float)titleTexFile.getHeight() / scale).padBottom(DPIUtils.getMarginSize() * 2);
+
+			menuButtonTable.add(img).width(titleTexFile.getWidth() / scale).height(titleTexFile.getHeight() / scale)
+					.padBottom(DPIUtils.getMarginSize() * 2);
 			menuButtonTable.row();
 		}
 
@@ -193,6 +197,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			continueGame.getLabel().setAlignment(getAlign());
 
 			continueGame.addListener(new ClickListener() {
+				@Override
 				public void clicked(InputEvent event, float x, float y) {
 					if (world.getCurrentScene() == null)
 						try {
@@ -212,9 +217,11 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		TextButton newGame = new TextButton(I18N.getString("ui.new"), skin, style.textButtonStyle);
 		newGame.getLabel().setAlignment(getAlign());
 		newGame.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (world.savedGameExists()) {
 					Dialog d = new Dialog("", skin) {
+						@Override
 						protected void result(Object object) {
 							if (((Boolean) object).booleanValue()) {
 								try {
@@ -262,6 +269,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		TextButton loadGame = new TextButton(I18N.getString("ui.load"), skin, style.textButtonStyle);
 		loadGame.getLabel().setAlignment(getAlign());
 		loadGame.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.LOAD_GAME_SCREEN);
 			}
@@ -273,6 +281,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		TextButton quit = new TextButton(I18N.getString("ui.quit"), skin, style.textButtonStyle);
 		quit.getLabel().setAlignment(getAlign());
 		quit.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				Gdx.app.exit();
 			}
@@ -288,6 +297,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		// BOTTOM-RIGHT BUTTON STACK
 		credits = new Button(skin, "credits");
 		credits.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.CREDIT_SCREEN);
 			}
@@ -295,6 +305,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 		help = new Button(skin, "help");
 		help.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ui.setCurrentScreen(Screens.HELP_SCREEN);
 			}
@@ -302,6 +313,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 		debug = new Button(skin, "debug");
 		debug.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				DebugScreen debugScr = new DebugScreen();
 				debugScr.setUI(ui);
@@ -333,6 +345,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			int count = 0;
 			long time = System.currentTimeMillis();
 
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (System.currentTimeMillis() - time < 500) {
 					count++;
@@ -363,6 +376,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 		stage.addActor(version);
 
 		debug.addListener(new ClickListener() {
+			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				DebugScreen debugScr = new DebugScreen();
 				debugScr.setUI(ui);
@@ -397,24 +411,23 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 	protected MenuScreenStyle getStyle() {
 		return ui.getSkin().get(MenuScreenStyle.class);
 	}
-	
+
 	private int getAlign() {
-		if(getStyle().align == null ||
-				"center".equals(getStyle().align))
+		if (getStyle().align == null || "center".equals(getStyle().align))
 			return Align.center;
-		
-		if("top".equals(getStyle().align))
+
+		if ("top".equals(getStyle().align))
 			return Align.top;
-		
-		if("bottom".equals(getStyle().align))
+
+		if ("bottom".equals(getStyle().align))
 			return Align.bottom;
-		
-		if("left".equals(getStyle().align))
+
+		if ("left".equals(getStyle().align))
 			return Align.left;
-		
-		if("right".equals(getStyle().align))
+
+		if ("right".equals(getStyle().align))
 			return Align.right;
-		
+
 		return Align.center;
 	}
 
