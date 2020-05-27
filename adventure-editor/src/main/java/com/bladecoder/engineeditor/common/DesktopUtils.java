@@ -34,8 +34,7 @@ public class DesktopUtils {
 	public static void browse(Component parent, String uri) {
 		boolean error = false;
 
-		if (Desktop.isDesktopSupported()
-				&& Desktop.getDesktop().isSupported(Action.BROWSE)) {
+		if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE)) {
 			try {
 				Desktop.getDesktop().browse(new URI(uri));
 			} catch (URISyntaxException ex) {
@@ -68,8 +67,13 @@ public class DesktopUtils {
 		File files[] = f.listFiles();
 
 		if (files != null)
-			for (File f2 : files)
-				Files.delete(f2.toPath());
+			for (File f2 : files) {
+				if (f2.isDirectory()) {
+					removeDir(f2.getAbsolutePath());
+				} else {
+					Files.delete(f2.toPath());
+				}
+			}
 
 		Files.deleteIfExists(f.toPath());
 	}
