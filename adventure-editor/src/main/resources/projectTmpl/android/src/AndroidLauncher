@@ -54,21 +54,20 @@ public class AndroidLauncher extends AndroidApplication {
 				if (Build.VERSION.SDK_INT >= 23) {
 					if (checkSelfPermission(
 							Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-						Log.v(TAG, "Permission is granted but .obb was not found.");
+						Log.e(TAG, "Permission is granted but .obb was not found.");
 						// TODO Download .obb
 						exit();
 					} else {
 						Log.v(TAG, "Permission is revoked, requesting...");
+						bladeEngine.setWaitingForPermissions(true);
 						ActivityCompat.requestPermissions(AndroidLauncher.this,
 								new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, 2);
 					}
 				} else { // permission is automatically granted on sdk<23 upon installation
-					Log.v(TAG, "Permission is granted in Manifest (sdk<23) but .obb was not found.");
+					Log.e(TAG, "Permission is granted in Manifest (sdk<23) but .obb was not found.");
 					// TODO Download .obb
 					exit();
 				}
-			} else {
-				bladeEngine.createWithExpansion();
 			}
 		}
 	}
@@ -85,15 +84,13 @@ public class AndroidLauncher extends AndroidApplication {
 				boolean success = ((AndroidFiles) Gdx.files).setAPKExpansion(BuildConfig.EXPANSION_FILE_VERSION, 0);
 
 				if (!success) {
-					Log.v(TAG, "Permission accepted but .obb was not found.");
+					Log.e(TAG, "Permission accepted but .obb was not found.");
 
 					// TODO Download .obb
 					exit();
-				} else {
-					bladeEngine.createWithExpansion();
-				}
+				} 
 			} else {
-				Log.v(TAG, "Permission denied by user.");
+				Log.e(TAG, "Permission denied by user.");
 				exit();
 			}
 			break;
@@ -112,17 +109,40 @@ public class AndroidLauncher extends AndroidApplication {
 	}
 
 	class AndroidEngine extends BladeEngine {
+		private boolean waitingForPermissions = false;
+
 		@Override
 		public void create() {
-			if (BuildConfig.EXPANSION_FILE_VERSION == 0) {
-				super.create();
-			}
-		}
+			if(waitingForPermissions)
+				return;
 
-		public void createWithExpansion() {
-			((AndroidFiles) Gdx.files).setAPKExpansion(BuildConfig.EXPANSION_FILE_VERSION, 0);
+			if (BuildConfig.EXPANSION_FILE_VERSION > 0) {
+				boolean success = ((AndroidFiles) Gdx.files).setAPKExpansion(BuildConfig.EXPANSION_FILE_VERSION, 0);
+
+				if(!success) {
+					Log.e(TAG, "Can not set APK expansion.");
+					Gdx.app.exit();
+				} else {
+					Log.d(TAG, "Expansion file stablish successfully!");
+				}
+			}
 
 			super.create();
+		}
+
+		@Override
+		public void resume() {
+			if(waitingForPermissions) {
+				// returns from querying permissions
+				bladeEngine.setWaitingForPermissions(false);
+				bladeEngine.create();
+			}
+
+			super.resume();
+		}
+
+		public void setWaitingForPermissions(boolean v) {
+			waitingForPermissions = v;
 		}
 	}
 }
