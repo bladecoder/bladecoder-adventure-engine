@@ -2,8 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.0.1-SNAPSHOT]
-- Fix error serializing cb when not Ink library is used.
+## [4.0.1]
+- Fix error serializing cb when Ink library is not used.
+- Fix error creating resolution when there are atlases with subfolders.
+- Fix Android launcher to make expansion files (.obb) works again.
 
 ## [4.0.0]
 - Fix error when android keystore path had spaces.
