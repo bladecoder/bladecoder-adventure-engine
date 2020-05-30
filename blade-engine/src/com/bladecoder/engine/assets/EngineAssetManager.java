@@ -135,10 +135,6 @@ public class EngineAssetManager extends AssetManager {
 
 	public void setUserFolder(String f) {
 		desktopUserFolder = f;
-
-		if (desktopUserFolder != null) {
-			desktopUserFolder = "." + desktopUserFolder.replace(" ", "");
-		}
 	}
 
 	/**

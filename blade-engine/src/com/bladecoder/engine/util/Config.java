@@ -75,7 +75,8 @@ public final class Config {
 			return;
 		}
 
-		EngineAssetManager.getInstance().setUserFolder(getProperty(Config.TITLE_PROP, null));
+		EngineAssetManager.getInstance()
+				.setUserFolder("." + getProperty(Config.TITLE_PROP, "BladeEngine").replace(" ", ""));
 		FileHandle prefsFile = EngineAssetManager.getInstance().getUserFile(PREFS_FILENAME);
 
 		if (prefsFile.exists()) {
