@@ -59,7 +59,6 @@ public class EngineLogger {
 
 		if (e != null) {
 			Gdx.app.error(TAG, message, e);
-			lastError = message;
 			lastException = e;
 
 			if (errorBuffer.length() > MAX_BUFFER_SIZE) {
