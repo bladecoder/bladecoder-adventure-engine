@@ -44,12 +44,6 @@ public class SetStateAction implements Action {
 		final Scene s = actor.getScene(w);
 
 		String actorId = actor.getActorId();
-		if (actorId == null) {
-			// if called in a scene verb and no actor is specified, set the state of the
-			// scene
-			s.setState(state);
-			return false;
-		}
 
 		InteractiveActor a = (InteractiveActor) s.getActor(actorId, true);
 
