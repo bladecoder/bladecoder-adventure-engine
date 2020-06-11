@@ -70,6 +70,7 @@ public class ActionFactory {
 		addClassTag(ScaleAction.class);
 		addClassTag(ScaleAnimActionXY.class);
 		addClassTag(ScreenPositionAction.class);
+		addClassTag(SetAchievementAction.class);
 		addClassTag(SetActorAttrAction.class);
 		addClassTag(SetCutmodeAction.class);
 		addClassTag(SetDialogOptionAttrAction.class);
