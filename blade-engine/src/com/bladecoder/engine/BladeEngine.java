@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.text.MessageFormat;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -109,6 +110,8 @@ public class BladeEngine implements ApplicationListener {
 
 		if (debug)
 			EngineLogger.setDebug();
+		else
+			EngineLogger.setDebugLevel(Application.LOG_ERROR);
 
 		EngineLogger.debug("GAME CREATE");
 

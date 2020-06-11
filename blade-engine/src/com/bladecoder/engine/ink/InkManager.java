@@ -121,10 +121,10 @@ public class InkManager implements Serializable {
 			for (String k : keys) {
 				try {
 					// some untranslated words may follow the key
-					String k2 = k.substring(0, 10);
+					String k2 = k.substring(0, KEY_SIZE);
 					translated += i18n.getString(k2);
-					if (k.length() > 10) {
-						String trailing = k.substring(10);
+					if (k.length() > KEY_SIZE) {
+						String trailing = k.substring(KEY_SIZE);
 						translated += trailing;
 					}
 				} catch (Exception e) {
