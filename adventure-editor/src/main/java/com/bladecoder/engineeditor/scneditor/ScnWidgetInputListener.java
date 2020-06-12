@@ -47,7 +47,8 @@ public class ScnWidgetInputListener extends ClickListener {
 	private final ScnWidget scnWidget;
 
 	public static enum DraggingModes {
-		NONE, DRAGGING_ACTOR, DRAGGING_BBOX_POINT, DRAGGING_MARKER_0, DRAGGING_MARKER_100, DRAGGING_REFPOINT, ROTATE_ACTOR, SCALE_LOCK_ACTOR, SCALE_ACTOR
+		NONE, DRAGGING_ACTOR, DRAGGING_BBOX_POINT, DRAGGING_MARKER_0, DRAGGING_MARKER_100, DRAGGING_REFPOINT,
+		ROTATE_ACTOR, SCALE_LOCK_ACTOR, SCALE_ACTOR
 	};
 
 	private DraggingModes draggingMode = DraggingModes.NONE;
@@ -159,11 +160,11 @@ public class ScnWidgetInputListener extends ClickListener {
 					undoOrg.set(selActor.getX(), selActor.getY());
 					return true;
 				}
-				
-				if(selActor instanceof AnchorActor) {
+
+				if (selActor instanceof AnchorActor) {
 					float orgX = selActor.getX();
 					float orgY = selActor.getY();
-					
+
 					float dst = Vector2.dst(p.x, p.y, orgX, orgY);
 
 					if (dst < Scene.ANCHOR_RADIUS) {
@@ -459,6 +460,7 @@ public class ScnWidgetInputListener extends ClickListener {
 		super.enter(event, x, y, pointer, fromActor);
 		// EditorLogger.debug("ENTER - X: " + x + " Y: " + y);
 		scnWidget.getStage().setScrollFocus(scnWidget);
+		scnWidget.getStage().setKeyboardFocus(scnWidget);
 	}
 
 }
