@@ -63,7 +63,7 @@ public class IfAttrAction extends AbstractIfAction {
 		if (attr.equals(ActorAttribute.STATE)) {
 			BaseActor a = s.getActor(actorId, true);
 			if (a == null || !(a instanceof InteractiveActor)) {
-				EngineLogger.error(getClass() + "- No not found: " + actorId);
+				EngineLogger.error(getClass() + "- Actor not found: " + actorId);
 				return false;
 			}
 
@@ -74,7 +74,7 @@ public class IfAttrAction extends AbstractIfAction {
 		} else if (attr.equals(ActorAttribute.VISIBLE)) {
 			BaseActor a = s.getActor(actorId, true);
 			if (a == null) {
-				EngineLogger.error(getClass() + "- No not found: " + actorId);
+				EngineLogger.error(getClass() + "- Actor not found: " + actorId);
 				return false;
 			}
 
@@ -85,7 +85,7 @@ public class IfAttrAction extends AbstractIfAction {
 		} else if (attr.equals(ActorAttribute.INTERACTIVE)) {
 			BaseActor a = s.getActor(actorId, true);
 			if (a == null) {
-				EngineLogger.error(getClass() + "- No not found: " + actorId);
+				EngineLogger.error(getClass() + "- Actor not found: " + actorId);
 				return false;
 			}
 
