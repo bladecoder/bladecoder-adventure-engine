@@ -503,10 +503,25 @@ public class ModelTools {
 				// Ignore string declr ej. "xxx"
 				if (i > 0 && v.get(i - 1).isString() && v.get(i - 1).asString().equals("str")) {
 					// check if inside a choice with [xxx] text.
-					if (v.size <= i + 3)
+
+					// comparison == or !=?
+					if (v.size > i + 2 && v.get(i + 2).isString()
+							&& (v.get(i + 2).asString().equals("==") || v.get(i + 2).asString().equals("!=")))
 						continue;
 
-					JsonValue next = v.get(i + 3);
+					// find "/ev"
+					boolean ev = false;
+					int j = i + 2;
+					while (j < v.size && !ev) {
+						JsonValue next = v.get(j);
+						if (!next.isObject() && next.asString().equals("/ev")) {
+							ev = true;
+						}
+
+						j++;
+					}
+
+					JsonValue next = v.get(j);
 					if (!next.isObject() || next.get("*") == null)
 						continue;
 				}

@@ -30,6 +30,9 @@ public class ExternalFunctions {
 
 			@Override
 			public String call(String act) throws Exception {
+				if (act.charAt(0) == '>')
+					act = act.substring(1);
+
 				SceneActorRef actor = new SceneActorRef(act);
 				final Scene s = actor.getScene(w);
 
@@ -50,6 +53,9 @@ public class ExternalFunctions {
 
 			@Override
 			public String call(String scene) throws Exception {
+				if (scene.charAt(0) == '>')
+					scene = scene.substring(1);
+
 				final Scene s = w.getScene(scene);
 
 				if (s == null) {
@@ -108,6 +114,9 @@ public class ExternalFunctions {
 
 			@Override
 			public String call(String p) throws Exception {
+				if (p.charAt(0) == '>')
+					p = p.substring(1);
+
 				String v = w.getCustomProperty(p);
 				return v == null ? "" : v;
 			}
@@ -117,6 +126,9 @@ public class ExternalFunctions {
 
 			@Override
 			public Boolean call(String act) throws Exception {
+				if (act.charAt(0) == '>')
+					act = act.substring(1);
+
 				SceneActorRef actor = new SceneActorRef(act);
 				final Scene s = actor.getScene(w);
 
