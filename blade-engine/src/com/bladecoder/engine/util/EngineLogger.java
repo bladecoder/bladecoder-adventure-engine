@@ -50,7 +50,7 @@ public class EngineLogger {
 				errorBuffer.setLength(0);
 			}
 
-			errorBuffer.append(message);
+			errorBuffer.append(message + "\n");
 		}
 	}
 

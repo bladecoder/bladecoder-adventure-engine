@@ -29,9 +29,9 @@ public class SoundAction implements Action {
 	@ActionPropertyDescription("The actor 'soundId' to play. If empty the current sound will be stopped.")
 	@ActionProperty(type = Type.STRING)
 	private String play;
-	
+
 	private World w;
-	
+
 	@Override
 	public void init(World w) {
 		this.w = w;
@@ -39,15 +39,17 @@ public class SoundAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		
-		if(play!= null)	{
+
+		if ("$PLAYER".equals(actor))
+			actor = w.getCurrentScene().getPlayer().getId();
+
+		if (play != null) {
 			w.getCurrentScene().getSoundManager().playSound(actor + "_" + play);
 		} else {
 			w.getCurrentScene().getSoundManager().stopCurrentSound(actor);
 		}
-		
+
 		return false;
 	}
-
 
 }

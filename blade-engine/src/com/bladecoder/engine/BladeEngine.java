@@ -87,10 +87,8 @@ public class BladeEngine implements ApplicationListener {
 
 		world = new World();
 
-		if (baseFolder != null) {
-			EngineAssetManager.setAssetFolder(baseFolder);
-			Config.getInstance().load();
-		}
+		EngineAssetManager.setAssetFolder(baseFolder);
+		Config.getInstance().load();
 
 		try {
 			world.loadWorldDesc();

@@ -100,7 +100,7 @@ public class WorldProps extends PropertyTable {
 			addProperty(Config.CHARACTER_ICON_ATLAS,
 					Ctx.project.getProjectConfig().getProperty(Config.CHARACTER_ICON_ATLAS, ""));
 			addProperty(Config.EXTEND_VIEWPORT_PROP, Boolean
-					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.EXTEND_VIEWPORT_PROP, "true")));
+					.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.EXTEND_VIEWPORT_PROP, "false")));
 			addProperty(Config.SHOW_HOTSPOTS,
 					Boolean.parseBoolean(Ctx.project.getProjectConfig().getProperty(Config.SHOW_HOTSPOTS, "true")));
 		}

@@ -138,7 +138,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	private final WorldListener worldListener = new SceneWorldListener(this);
 
 	public DefaultSceneScreen() {
-		viewport = Config.getInstance().getProperty(Config.EXTEND_VIEWPORT_PROP, true) ? new SceneExtendViewport()
+		viewport = Config.getInstance().getProperty(Config.EXTEND_VIEWPORT_PROP, false) ? new SceneExtendViewport()
 				: new SceneFitViewport();
 		showDesc = Config.getInstance().getProperty(Config.SHOW_DESC_PROP, true);
 		fastLeave = Config.getInstance().getProperty(Config.FAST_LEAVE, false);

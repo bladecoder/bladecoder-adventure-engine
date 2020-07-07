@@ -72,8 +72,7 @@ public class Project extends PropertyChange {
 	public static final String PARTICLE_RENDERER_STRING = "particle";
 	public static final String TEXT_RENDERER_STRING = "text";
 
-	public static final String NEW_ASSETS_PATH = "/assets";
-	public static final String OLD_ASSETS_PATH = "/android/assets";
+	public static final String ASSETS_PATH = "/assets";
 	public static final String MODEL_PATH = "/model";
 	public static final String ATLASES_PATH = "/atlases";
 	public static final String FONTS_PATH = "/fonts";
@@ -119,13 +118,7 @@ public class Project extends PropertyChange {
 	}
 
 	public String getAssetPath(String base) {
-		String path = base + NEW_ASSETS_PATH;
-
-		if (new File(path).exists()) {
-			return path;
-		} else {
-			return base + OLD_ASSETS_PATH;
-		}
+		return base + ASSETS_PATH;
 	}
 
 	public String getAssetPath() {
@@ -381,7 +374,8 @@ public class Project extends PropertyChange {
 			// No need to load the chapter. It's loaded by the chapter combo.
 			// loadChapter(world.getInitChapter());
 
-			projectConfig = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrderingCaseSensitive().build();
+			projectConfig = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrderingCaseSensitive()
+					.build();
 			projectConfig.load(new FileInputStream(getAssetPath() + "/" + Config.PROPERTIES_FILENAME));
 			modified = false;
 
@@ -541,7 +535,8 @@ public class Project extends PropertyChange {
 	}
 
 	public OrderedProperties getGradleProperties(File projectPath) throws FileNotFoundException, IOException {
-		OrderedProperties prop = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrderingCaseSensitive().build();
+		OrderedProperties prop = new OrderedPropertiesBuilder().withSuppressDateInComment(true)
+				.withOrderingCaseSensitive().build();
 
 		prop.load(new FileReader(projectPath.getAbsolutePath() + "/gradle.properties"));
 
