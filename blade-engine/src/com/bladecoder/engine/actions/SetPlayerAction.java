@@ -27,7 +27,7 @@ import com.bladecoder.engine.model.World;
 @ActionDescription("Sets the scene player")
 public class SetPlayerAction implements Action {
 
-	@ActionProperty(type = Type.SCENE_CHARACTER_ACTOR, required = true)
+	@ActionProperty(type = Type.SCENE_CHARACTER_ACTOR)
 	@ActionPropertyDescription("The scene player")
 	private SceneActorRef actor;
 
@@ -44,9 +44,8 @@ public class SetPlayerAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-		Scene s = actor.getScene(w);
-
-		BaseActor a = s.getActor(actor.getActorId(), true);
+		Scene s = actor == null ? w.getCurrentScene() : actor.getScene(w);
+		BaseActor a = actor == null || actor.getActorId() == null ? null : s.getActor(actor.getActorId(), true);
 
 		s.setPlayer((CharacterActor) a);
 

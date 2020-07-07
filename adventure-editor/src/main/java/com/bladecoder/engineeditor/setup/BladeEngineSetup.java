@@ -53,33 +53,12 @@ public class BladeEngineSetup {
 	}
 
 	public static boolean isSdkUpToDate(String sdkLocation) {
-		File buildTools = new File(sdkLocation, "build-tools");
-		if (!buildTools.exists()) {
-			EditorLogger.error("You have no build tools!\nUpdate your Android SDK with build tools version: "
-					+ Versions.getBuildToolsVersion());
-			return false;
-		}
 
 		File apis = new File(sdkLocation, "platforms");
 		if (!apis.exists()) {
 			EditorLogger.error("You have no Android APIs!\nUpdate your Android SDK with API level: "
 					+ Versions.getAndroidAPILevel());
 			return false;
-		}
-		String newestLocalTool = getLatestTools(buildTools);
-		int[] localToolVersion = convertTools(newestLocalTool);
-		int[] targetToolVersion = convertTools(Versions.getBuildToolsVersion());
-		if (compareVersions(targetToolVersion, localToolVersion)) {
-			// ALWAYS USE THE CURRENT BUILD TOOLS
-			Versions.setBuildToolsVersion(newestLocalTool);
-
-			EditorLogger.error("Using build tools: " + Versions.getBuildToolsVersion());
-		} else {
-			if (!hasFileInDirectory(buildTools, Versions.getBuildToolsVersion())) {
-				EditorLogger.error(
-						"Please update your Android SDK, you need build tools: " + Versions.getBuildToolsVersion());
-				return false;
-			}
 		}
 
 		int newestLocalApi = getLatestApi(apis);
@@ -117,28 +96,6 @@ public class BladeEngineSetup {
 		return apiLevel;
 	}
 
-	private static String getLatestTools(File buildTools) {
-		String version = null;
-		int[] versionSplit = new int[3];
-		int[] testSplit = new int[3];
-		for (File toolsVersion : buildTools.listFiles()) {
-			if (version == null) {
-				version = readBuildToolsVersion(toolsVersion);
-				versionSplit = convertTools(version);
-				continue;
-			}
-			testSplit = convertTools(readBuildToolsVersion(toolsVersion));
-			if (compareVersions(versionSplit, testSplit)) {
-				version = readBuildToolsVersion(toolsVersion);
-			}
-		}
-		if (version != null) {
-			return version;
-		} else {
-			return "0.0.0";
-		}
-	}
-
 	private static int readAPIVersion(File parentFile) {
 		File properties = new File(parentFile, "source.properties");
 		FileReader reader;
@@ -166,67 +123,6 @@ public class BladeEngineSetup {
 		}
 
 		return 0;
-	}
-
-	private static String readBuildToolsVersion(File parentFile) {
-		File properties = new File(parentFile, "source.properties");
-		FileReader reader;
-		BufferedReader buffer;
-		try {
-			reader = new FileReader(properties);
-			buffer = new BufferedReader(reader);
-
-			String line = null;
-
-			while ((line = buffer.readLine()) != null) {
-				if (line.contains("Pkg.Revision")) {
-
-					String versionString = line.split("\\=")[1];
-					int count = versionString.split("\\.").length;
-					for (int i = 0; i < 3 - count; i++) {
-						versionString += ".0";
-					}
-
-					buffer.close();
-					reader.close();
-
-					return versionString;
-				}
-			}
-		} catch (IOException e) {
-			EditorLogger.printStackTrace(e);
-		}
-		return "0.0.0";
-	}
-
-	private static boolean compareVersions(int[] version, int[] testVersion) {
-		if (testVersion[0] > version[0]) {
-			return true;
-		} else if (testVersion[0] == version[0]) {
-			if (testVersion[1] > version[1]) {
-				return true;
-			} else if (testVersion[1] == version[1]) {
-				return testVersion[2] > version[2];
-			}
-		}
-		return false;
-	}
-
-	private static int[] convertTools(String toolsVersion) {
-		String[] stringSplit = toolsVersion.split("\\.");
-		int[] versionSplit = new int[3];
-		if (stringSplit.length == 3) {
-			try {
-				versionSplit[0] = Integer.parseInt(stringSplit[0]);
-				versionSplit[1] = Integer.parseInt(stringSplit[1]);
-				versionSplit[2] = Integer.parseInt(stringSplit[2]);
-				return versionSplit;
-			} catch (NumberFormatException nfe) {
-				return new int[] { 0, 0, 0 };
-			}
-		} else {
-			return new int[] { 0, 0, 0 };
-		}
 	}
 
 	public void build(String outputDir, String appName, String packageName, String mainClass, String sdkLocation,
@@ -410,7 +306,6 @@ public class BladeEngineSetup {
 			values.put("%ANDROID_SDK%", sdkPath);
 
 		values.put("%ASSET_PATH%", assetPath);
-		values.put("%BUILD_TOOLS_VERSION%", Versions.getBuildToolsVersion());
 		values.put("%API_LEVEL%", Versions.getAndroidAPILevel());
 
 		values.put("%BLADE_ENGINE_VERSION%", Versions.getVersion());

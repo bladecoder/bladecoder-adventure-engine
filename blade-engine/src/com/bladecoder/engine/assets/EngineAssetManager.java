@@ -163,7 +163,10 @@ public class EngineAssetManager extends AssetManager {
 		if (instance != null)
 			instance.dispose();
 
-		instance = new EngineAssetManager(new InternalFolderResolver(base));
+		if (base != null)
+			instance = new EngineAssetManager(new InternalFolderResolver(base));
+		else
+			instance = new EngineAssetManager(new InternalFileHandleResolver());
 	}
 
 	public void forceResolution(String suffix) {

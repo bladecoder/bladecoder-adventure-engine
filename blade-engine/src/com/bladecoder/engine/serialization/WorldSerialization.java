@@ -257,7 +257,8 @@ public class WorldSerialization implements Serializable {
 	public void write(Json json) {
 		BladeJson bjson = (BladeJson) json;
 
-		json.writeValue(Config.BLADE_ENGINE_VERSION_PROP, Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
+		json.writeValue(Config.BLADE_ENGINE_VERSION_PROP,
+				Config.getInstance().getProperty(Config.BLADE_ENGINE_VERSION_PROP, null));
 
 		if (bjson.getMode() == Mode.MODEL) {
 			SortedMap<String, SoundDesc> sortedSounds = new TreeMap<>();
@@ -461,10 +462,19 @@ public class WorldSerialization implements Serializable {
 							String actor = ActionUtils.getStringValue(act, "actor");
 							String play = ActionUtils.getStringValue(act, "play");
 							if (play != null) {
+
+								if (actor.equals("$PLAYER"))
+									actor = s.getPlayer().getId();
+
 								SoundDesc sd = w.getSounds().get(actor + "_" + play);
 
-								if (sd != null)
-									s.getSoundManager().addSoundToLoad(sd);
+								if (sd == null) {
+									EngineLogger.error(
+											"Reference to sound not found: " + s.getId() + "." + actor + "." + play);
+									continue;
+								}
+
+								s.getSoundManager().addSoundToLoad(sd);
 
 								HashMap<String, String> params = new HashMap<>();
 								params.put("sound", sd.getId());
@@ -512,11 +522,20 @@ public class WorldSerialization implements Serializable {
 
 									String actor = ActionUtils.getStringValue(act, "actor");
 									String play = ActionUtils.getStringValue(act, "play");
+
 									if (play != null) {
+										if ("$PLAYER".equals(actor))
+											actor = s.getPlayer().getId();
+
 										SoundDesc sd = w.getSounds().get(actor + "_" + play);
 
-										if (sd != null)
-											s.getSoundManager().addSoundToLoad(sd);
+										if (sd == null) {
+											EngineLogger.error("Reference to sound not found: " + s.getId() + "."
+													+ actor + "." + play);
+											continue;
+										}
+
+										s.getSoundManager().addSoundToLoad(sd);
 
 										HashMap<String, String> params = new HashMap<>();
 										params.put("sound", sd.getId());
