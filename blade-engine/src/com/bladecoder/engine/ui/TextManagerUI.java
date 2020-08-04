@@ -91,9 +91,8 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 			if (color == null)
 				color = Color.BLACK;
 
-			maxWidth = Math.min(getStage().getViewport().getScreenWidth() - DPIUtils.getMarginSize() * 2,
-					style.font.getXHeight()
-							* (text.type == Text.Type.TALK ? style.maxTalkCharWidth : style.maxCharWidth));
+			maxWidth = Math.min(getStage().getViewport().getScreenWidth() - PADDING * 4, style.font.getXHeight()
+					* (text.type == Text.Type.TALK ? style.maxTalkCharWidth : style.maxCharWidth));
 
 			layout.setText(style.font, text.str, color, maxWidth, Align.center, true);
 			setSize(layout.width + PADDING * 2, layout.height + PADDING * 2);
@@ -134,10 +133,11 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 		}
 
 		// CHAR ICON CALCS
-		if (text.type == Text.Type.SUBTITLE && !Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")
+		if (text.type == Text.Type.SUBTITLE
+				&& !Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")
 				&& text.actorId != null) {
-			charIcon = EngineAssetManager.getInstance().getRegion(Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, null),
-					text.actorId);
+			charIcon = EngineAssetManager.getInstance()
+					.getRegion(Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, null), text.actorId);
 
 			if (charIcon != null) {
 				float scale = getStage().getViewport().getScreenHeight() / (float) world.getHeight();
