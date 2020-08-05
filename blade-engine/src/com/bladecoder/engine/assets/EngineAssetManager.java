@@ -56,8 +56,7 @@ public class EngineAssetManager extends AssetManager {
 
 	public static final String WORLD_FILENAME = "world";
 
-	public static final String DESKTOP_PREFS_DIR = "BladeEngine";
-	public static final String NOT_DESKTOP_PREFS_DIR = "data/";
+	public static final String DEFAULT_USER_FOLDER = "BladeEngine/";
 
 	public static final String ATLASES_DIR = "atlases/";
 	public static final String MODEL_DIR = "model/";
@@ -87,7 +86,7 @@ public class EngineAssetManager extends AssetManager {
 
 	private EngineResolutionFileResolver resResolver;
 
-	private String desktopUserFolder;
+	private String userFolder = DEFAULT_USER_FOLDER;
 
 	protected EngineAssetManager() {
 		this(new InternalFileHandleResolver());
@@ -134,7 +133,7 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	public void setUserFolder(String f) {
-		desktopUserFolder = f;
+		userFolder = f;
 	}
 
 	/**
@@ -502,21 +501,21 @@ public class EngineAssetManager extends AssetManager {
 	public FileHandle getUserFolder() {
 		FileHandle file = null;
 
-		if (Gdx.app.getType() == ApplicationType.Desktop && desktopUserFolder != null) {
+		if (Gdx.app.getType() == ApplicationType.Desktop) {
 
 			StringBuilder sb = new StringBuilder();
 
 			if (System.getProperty("os.name").toLowerCase().contains("mac")
 					&& System.getenv("HOME").contains("Containers")) {
 
-				file = Gdx.files.absolute(System.getenv("HOME") + "/" + sb.append(desktopUserFolder).toString());
+				file = Gdx.files.absolute(System.getenv("HOME") + "/" + sb.append(userFolder).toString());
 			} else {
 
-				file = Gdx.files.external(sb.append(desktopUserFolder).toString());
+				file = Gdx.files.external(sb.append(userFolder).toString());
 			}
 
 		} else {
-			file = Gdx.files.local(NOT_DESKTOP_PREFS_DIR);
+			file = Gdx.files.local(userFolder);
 		}
 
 		return file;
