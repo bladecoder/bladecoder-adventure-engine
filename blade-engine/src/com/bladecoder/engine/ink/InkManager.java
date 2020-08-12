@@ -341,8 +341,6 @@ public class InkManager implements Serializable {
 		}
 
 		if (!params.containsKey("actor") && w.getCurrentScene().getPlayer() != null) {
-			// params.put("actor", Scene.VAR_PLAYER);
-
 			if (!params.containsKey("type")) {
 				params.put("type", Type.SUBTITLE.toString());
 			}
