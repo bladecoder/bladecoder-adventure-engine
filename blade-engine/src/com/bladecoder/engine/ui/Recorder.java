@@ -51,6 +51,11 @@ public class Recorder {
 	private String fileName = DEFAULT_RECORD_FILENAME;
 	private final World w;
 
+	// TO TEST SAVEGAME FEATURE
+	private static final boolean TEST_SAVEGAME = false;
+	private static final int SAVE_EACH_SECONDS = 10;
+	private int oldt = 0;
+
 	public Recorder(World w) {
 		this.w = w;
 	}
@@ -76,6 +81,22 @@ public class Recorder {
 
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("RECORDER (").append(pos).append(") - ");
+
+			if (TEST_SAVEGAME) {
+				int t = (int) (w.getTimeOfGame() / 1000f);
+				// save and load game every 5 seconds
+				if (t % SAVE_EACH_SECONDS == 0 && oldt != t) {
+					oldt = t;
+					EngineLogger.debug(">> TESTING: SAVING AND LOADING GAMESTATE..." + t / SAVE_EACH_SECONDS);
+					try {
+						w.saveGameState();
+						w.loadGameState();
+						return;
+					} catch (Exception e) {
+						EngineLogger.error("PLAYING ERROR: Error saving/loading gamestate.", e);
+					}
+				}
+			}
 
 			// check preconditions
 			if (!playing || v.time > time || w.inCutMode())
@@ -129,11 +150,6 @@ public class Recorder {
 
 			time = 0;
 			pos++;
-			if (pos >= list.size()) {
-				setPlaying(false);
-			} else {
-				v = list.get(pos);
-			}
 		}
 	}
 

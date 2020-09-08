@@ -19,6 +19,7 @@ import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.model.WorldListener;
 import com.bladecoder.engine.ui.ITextManagerUI;
+import com.bladecoder.engine.util.UIUtils;
 
 public class SceneWorldListener implements WorldListener {
 
@@ -31,7 +32,7 @@ public class SceneWorldListener implements WorldListener {
 	@Override
 	public void text(Text t) {
 		if (t != null && t.type == Text.Type.UI) {
-			dsc.showUIText(t);
+			UIUtils.showUIText(dsc.getStage(), dsc.getUI().getSkin(), dsc.getWorld(), t);
 		} else {
 			((ITextManagerUI) dsc.getTextManagerUI()).setText(t);
 		}
