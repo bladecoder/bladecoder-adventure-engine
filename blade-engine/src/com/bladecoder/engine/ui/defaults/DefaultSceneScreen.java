@@ -15,48 +15,30 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui.defaults;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
-
 import java.util.Locale;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TransformDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.i18n.I18N;
-import com.bladecoder.engine.model.AnchorActor;
-import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
-import com.bladecoder.engine.model.Text;
-import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
@@ -64,7 +46,9 @@ import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.model.WorldListener;
 import com.bladecoder.engine.ui.AnimButton;
 import com.bladecoder.engine.ui.AnimationDrawable;
+import com.bladecoder.engine.ui.DebugDrawer;
 import com.bladecoder.engine.ui.DialogUI;
+import com.bladecoder.engine.ui.HotspotsDrawer;
 import com.bladecoder.engine.ui.ITextManagerUI;
 import com.bladecoder.engine.ui.InventoryButton;
 import com.bladecoder.engine.ui.InventoryUI;
@@ -80,7 +64,7 @@ import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.RectangleRenderer;
+import com.bladecoder.engine.util.UIUtils;
 
 public class DefaultSceneScreen implements SceneScreen {
 	private final static float LOADING_WAIT_TIME_MS = 400f;
@@ -98,6 +82,9 @@ public class DefaultSceneScreen implements SceneScreen {
 	private InventoryButton inventoryButton;
 	private Button menuButton;
 
+	private DebugDrawer debugDrawer;
+	private HotspotsDrawer hotspotsDrawer;
+
 	public static enum UIModes {
 		TWO_BUTTONS, PIE, SINGLE_CLICK
 	};
@@ -111,8 +98,6 @@ public class DefaultSceneScreen implements SceneScreen {
 
 	private final Vector3 unprojectTmp = new Vector3();
 	private final Vector2 unproject2Tmp = new Vector2();
-
-	private final StringBuilder sbTmp = new StringBuilder();
 
 	// Actor under the cursor
 	private InteractiveActor currentActor = null;
@@ -130,8 +115,6 @@ public class DefaultSceneScreen implements SceneScreen {
 	private ScenePointer pointer;
 
 	private boolean uiEnabled = true;
-
-	private final GlyphLayout textLayout = new GlyphLayout();
 
 	private final GestureDetector inputProcessor = new SceneGestureDetector(this);
 
@@ -181,48 +164,6 @@ public class DefaultSceneScreen implements SceneScreen {
 
 	public UIModes getUIMode() {
 		return uiMode;
-	}
-
-	void showUIText(Text t) {
-		// Type UI texts will show at the same time that TextManagerUI texts.
-
-		String style = t.style == null ? "ui-text" : t.style;
-		Label msg = new Label(t.str, getUI().getSkin(), style);
-
-		msg.setWrap(true);
-		msg.setAlignment(Align.center, Align.center);
-
-		if (t.color != null)
-			msg.setColor(t.color);
-
-		msg.setSize(msg.getWidth() + DPIUtils.getMarginSize() * 2, msg.getHeight() + DPIUtils.getMarginSize() * 2);
-
-		stage.addActor(msg);
-		unprojectTmp.set(t.x, t.y, 0);
-		getWorld().getSceneCamera().scene2screen(getStage().getViewport(), unprojectTmp);
-
-		float posx, posy;
-
-		if (t.x == TextManager.POS_CENTER) {
-			posx = (getStage().getViewport().getScreenWidth() - msg.getWidth()) / 2;
-		} else if (t.x == TextManager.POS_SUBTITLE) {
-			posx = DPIUtils.getMarginSize();
-		} else {
-			posx = unprojectTmp.x;
-		}
-
-		if (t.y == TextManager.POS_CENTER) {
-			posy = (getStage().getViewport().getScreenHeight() - msg.getHeight()) / 2;
-		} else if (t.y == TextManager.POS_SUBTITLE) {
-			posy = getStage().getViewport().getScreenHeight() - msg.getHeight() - DPIUtils.getMarginSize() * 3;
-		} else {
-			posy = unprojectTmp.y;
-		}
-
-		msg.setPosition(posx, posy);
-		msg.getColor().a = 0;
-		msg.addAction(sequence(Actions.fadeIn(0.4f, Interpolation.fade),
-				Actions.delay(t.time, sequence(fadeOut(0.4f, Interpolation.fade), Actions.removeActor()))));
 	}
 
 	void updateUI() {
@@ -303,7 +244,7 @@ public class DefaultSceneScreen implements SceneScreen {
 				t = System.currentTimeMillis();
 			}
 
-			if (t - t0 >= LOADING_WAIT_TIME_MS) {
+			if (!EngineAssetManager.getInstance().isFinished()) {
 				// Sets loading screen if resources are not loaded yet
 				ui.setCurrentScreen(Screens.LOADING_SCREEN);
 			} else {
@@ -366,7 +307,7 @@ public class DefaultSceneScreen implements SceneScreen {
 							pointer.setIcon(r);
 
 						} else {
-							pointer.setLeaveIcon(calcLeaveArrowRotation(currentActor));
+							pointer.setLeaveIcon(UIUtils.calcLeaveArrowRotation(viewport, currentActor));
 						}
 					} else {
 						Verb actionVerb = currentActor.getVerb(Verb.ACTION_VERB);
@@ -408,48 +349,6 @@ public class DefaultSceneScreen implements SceneScreen {
 			tolerance = 0;
 
 		return getWorld().getInteractiveActorAtInput(viewport, tolerance);
-	}
-
-	/**
-	 * Calcs the rotation based in the actor screen position
-	 */
-	private float calcLeaveArrowRotation(InteractiveActor actor) {
-		Verb verb = actor.getVerb(Verb.LEAVE_VERB);
-
-		if (verb == null || verb.getIcon() == null) {
-
-			actor.getBBox().getBoundingRectangle().getCenter(unproject2Tmp);
-
-			if (unproject2Tmp.x < stage.getViewport().getWorldWidth() / 3f) {
-				return 180; // LEFT
-			}
-
-			if (unproject2Tmp.x > stage.getViewport().getWorldWidth() / 3f * 2f) {
-				return 0; // RIGHT
-			}
-
-			if (unproject2Tmp.y < stage.getViewport().getWorldHeight() / 5f) {
-				return -90; // DOWN
-			}
-
-			return 90; // UP
-		} else {
-			String dir = verb.getIcon();
-
-			if (dir.equals("left")) {
-				return 180; // LEFT
-			}
-
-			if (dir.equals("right")) {
-				return 0; // RIGHT
-			}
-
-			if (dir.equals("down")) {
-				return -90; // DOWN
-			}
-
-			return 90; // UP
-		}
 	}
 
 	@Override
@@ -496,159 +395,14 @@ public class DefaultSceneScreen implements SceneScreen {
 		testerBot.draw(batch);
 
 		if (drawHotspots)
-			drawHotspots(batch);
+			hotspotsDrawer.draw(batch, showDesc);
 
 		// DRAW DEBUG STRING
 		if (EngineLogger.debugMode()) {
-			drawDebugText(batch);
+			debugDrawer.draw(batch);
 		}
 
 		batch.end();
-	}
-
-	private void drawDebugText(SpriteBatch batch) {
-		World w = getWorld();
-
-		w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
-
-		Color color;
-
-		sbTmp.setLength(0);
-
-		if (EngineLogger.lastError != null) {
-			// sbTmp.append(EngineLogger.lastError);
-			sbTmp.append(EngineLogger.errorBuffer);
-
-			color = Color.RED;
-		} else {
-
-			// sbTmp.append(" Density:");
-			// sbTmp.append(Gdx.graphics.getDensity());
-			// sbTmp.append(" UI Multiplier:");
-			// sbTmp.append(DPIUtils.getSizeMultiplier());
-			sbTmp.append(" ");
-
-			long millis = w.getTimeOfGame();
-			long second = (millis / 1000) % 60;
-			long minute = (millis / (1000 * 60)) % 60;
-			long hour = (millis / (1000 * 60 * 60));
-
-			String time = String.format("%02d:%02d:%02d", hour, minute, second);
-
-			sbTmp.append(time);
-
-			if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
-				if (w.inCutMode()) {
-					sbTmp.append(" CUT_MODE ");
-				} else if (w.hasDialogOptions()) {
-					sbTmp.append(" DIALOG_MODE ");
-				} else if (w.isPaused()) {
-					sbTmp.append(" PAUSED ");
-				}
-
-				sbTmp.append(" ( ");
-				sbTmp.append((int) unprojectTmp.x);
-				sbTmp.append(", ");
-				sbTmp.append((int) unprojectTmp.y);
-				sbTmp.append(") FPS:");
-				sbTmp.append(Gdx.graphics.getFramesPerSecond());
-
-				if (w.getCurrentScene().getState() != null) {
-					sbTmp.append(" Scn State: ");
-					sbTmp.append(w.getCurrentScene().getState());
-				}
-
-				if (w.getCurrentScene().getPlayer() != null) {
-					sbTmp.append(" Depth Scl: ");
-					sbTmp.append(w.getCurrentScene().getFakeDepthScale(unprojectTmp.y));
-				}
-			}
-
-			color = Color.WHITE;
-		}
-
-		String strDebug = sbTmp.toString();
-
-		textLayout.setText(ui.getSkin().getFont("debug"), strDebug, color, viewport.getScreenWidth(), Align.left, true);
-		RectangleRenderer.draw(batch, 0, viewport.getScreenHeight() - textLayout.height - 10, textLayout.width,
-				textLayout.height + 10, Color.BLACK);
-		ui.getSkin().getFont("debug").draw(batch, textLayout, 0, viewport.getScreenHeight() - 5);
-
-		// Draw actor states when debug
-		if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
-
-			for (BaseActor a : w.getCurrentScene().getActors().values()) {
-
-				if (a instanceof AnchorActor)
-					continue;
-
-				Rectangle r = a.getBBox().getBoundingRectangle();
-				sbTmp.setLength(0);
-				sbTmp.append(a.getId());
-				if (a instanceof InteractiveActor && ((InteractiveActor) a).getState() != null)
-					sbTmp.append(".").append(((InteractiveActor) a).getState());
-
-				unprojectTmp.set(r.getX(), r.getY(), 0);
-				w.getSceneCamera().scene2screen(viewport, unprojectTmp);
-				ui.getSkin().getFont("debug").draw(batch, sbTmp.toString(), unprojectTmp.x, unprojectTmp.y);
-			}
-
-		}
-	}
-
-	private void drawHotspots(SpriteBatch batch) {
-		final World world = getWorld();
-		for (BaseActor a : world.getCurrentScene().getActors().values()) {
-			if (!(a instanceof InteractiveActor) || !a.isVisible() || a == world.getCurrentScene().getPlayer())
-				continue;
-
-			InteractiveActor ia = (InteractiveActor) a;
-
-			if (!ia.canInteract())
-				continue;
-
-			Polygon p = a.getBBox();
-
-			if (p == null) {
-				EngineLogger.error("ERROR DRAWING HOTSPOT FOR: " + a.getId());
-			}
-
-			Rectangle r = a.getBBox().getBoundingRectangle();
-
-			unprojectTmp.set(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2, 0);
-			world.getSceneCamera().scene2screen(viewport, unprojectTmp);
-
-			if (!showDesc || ia.getDesc() == null) {
-
-				float size = DPIUtils.ICON_SIZE * DPIUtils.getSizeMultiplier();
-
-				if (ia.getVerb(Verb.LEAVE_VERB) != null) {
-					TransformDrawable drawable = (TransformDrawable) getUI().getSkin().getDrawable(Verb.LEAVE_VERB);
-
-					drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size / 2, size / 2, size,
-							size, 1.0f, 1.0f, calcLeaveArrowRotation(ia));
-				} else {
-					Drawable drawable = getUI().getSkin().getDrawable("hotspot");
-
-					if (drawable != null)
-						drawable.draw(batch, unprojectTmp.x - size / 2, unprojectTmp.y - size / 2, size, size);
-				}
-			} else {
-				BitmapFont font = getUI().getSkin().getFont("desc");
-				String desc = ia.getDesc();
-				if (desc.charAt(0) == I18N.PREFIX)
-					desc = getWorld().getI18N().getString(desc.substring(1));
-
-				textLayout.setText(font, desc);
-
-				float textX = unprojectTmp.x - textLayout.width / 2;
-				float textY = unprojectTmp.y + textLayout.height;
-
-				RectangleRenderer.draw(batch, textX - 8, textY - textLayout.height - 8, textLayout.width + 16,
-						textLayout.height + 16, Color.BLACK);
-				font.draw(batch, textLayout, textX, textY);
-			}
-		}
 	}
 
 	@Override
@@ -929,5 +683,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		stage.addActor(menuButton);
 		stage.addActor(inventoryUI);
 		stage.addActor(pie);
+
+		debugDrawer = new DebugDrawer(ui, viewport);
+		hotspotsDrawer = new HotspotsDrawer(ui, viewport);
 	}
 }

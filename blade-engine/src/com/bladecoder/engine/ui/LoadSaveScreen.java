@@ -109,6 +109,8 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 			for (Texture t : textureList)
 				t.dispose();
+
+			textureList.clear();
 		}
 	}
 
