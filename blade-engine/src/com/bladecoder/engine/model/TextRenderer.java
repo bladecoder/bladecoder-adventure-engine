@@ -182,13 +182,14 @@ public class TextRenderer implements ActorRenderer {
 	}
 
 	public void setText(String text) {
-		this.text = text;
-		this.editorTranslatedText = text;
+		setText(text, text);
 	}
 
 	public void setText(String text, String translatedText) {
 		this.text = text;
 		this.editorTranslatedText = translatedText;
+
+		updateLayout();
 	}
 
 	public String getFontName() {
@@ -308,6 +309,23 @@ public class TextRenderer implements ActorRenderer {
 				params);
 	}
 
+	private void updateLayout() {
+		if (font == null)
+			return;
+
+		String tt = editorTranslatedText;
+
+		if (tt == null)
+			tt = text;
+
+		if (tt.charAt(0) == I18N.PREFIX)
+			tt = world.getI18N().getString(tt.substring(1));
+
+		layout.setText(font, tt, color, 0, textAlign, false);
+
+		computeBbox();
+	}
+
 	@Override
 	public void retrieveAssets() {
 
@@ -318,17 +336,7 @@ public class TextRenderer implements ActorRenderer {
 
 		font = EngineAssetManager.getInstance().get(fontName + getFontSize() + ".ttf", BitmapFont.class);
 
-		String tt = text;
-
-		if (tt.charAt(0) == I18N.PREFIX)
-			tt = world.getI18N().getString(tt.substring(1));
-
-		if (editorTranslatedText != null)
-			tt = editorTranslatedText;
-
-		layout.setText(font, tt, color, 0, textAlign, false);
-
-		computeBbox();
+		updateLayout();
 	}
 
 	@Override

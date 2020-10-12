@@ -46,28 +46,30 @@ public class SceneGestureListener extends GestureDetector.GestureAdapter {
 
 		if (dsc.getPie().isVisible()) {
 			dsc.getPie().hide();
+			return true;
 		}
 
-		if (dsc.getDrawHotspots())
+		if (dsc.getDrawHotspots()) {
 			dsc.setDrawHotspots(false);
-		else {
-			if (w.inCutMode() || (!TextManager.AUTO_HIDE_TEXTS && dsc.getTextManagerUI().isVisible())) {
+			return true;
+		}
 
-				if (dsc.getUI().getRecorder().isRecording())
-					return true;
+		if (w.inCutMode() || (!TextManager.AUTO_HIDE_TEXTS && dsc.getTextManagerUI().isVisible())) {
 
-				w.getCurrentScene().getTextManager().next();
-			} else if (dsc.getInventoryUI().isVisible()) {
-				dsc.getInventoryUI().hide();
-			} else if (!w.hasDialogOptions()) {
-				if (button == 2) {
-					// Show inventory with the middle button
-					if (!dsc.getInventoryUI().isVisible()) {
-						dsc.getInventoryUI().show();
-					}
-				} else {
-					dsc.sceneClick(button, count);
+			if (dsc.getUI().getRecorder().isRecording())
+				return true;
+
+			w.getCurrentScene().getTextManager().next();
+		} else if (dsc.getInventoryUI().isVisible()) {
+			dsc.getInventoryUI().hide();
+		} else if (!w.hasDialogOptions()) {
+			if (button == 2) {
+				// Show inventory with the middle button
+				if (!dsc.getInventoryUI().isVisible()) {
+					dsc.getInventoryUI().show();
 				}
+			} else {
+				dsc.sceneClick(button, count);
 			}
 		}
 

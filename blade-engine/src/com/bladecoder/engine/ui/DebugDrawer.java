@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.model.AnchorActor;
@@ -17,19 +18,20 @@ import com.bladecoder.engine.util.RectangleRenderer;
 
 public class DebugDrawer {
 
-	private final UI ui;
+	private final Skin skin;
+	private final World w;
 	private final Viewport viewport;
 	private final StringBuilder sbTmp = new StringBuilder();
 	private final Vector3 unprojectTmp = new Vector3();
 	private final GlyphLayout textLayout = new GlyphLayout();
 
-	public DebugDrawer(UI ui, Viewport viewport) {
-		this.ui = ui;
+	public DebugDrawer(World w, Skin skin, Viewport viewport) {
+		this.w = w;
+		this.skin = skin;
 		this.viewport = viewport;
 	}
 
 	public void draw(SpriteBatch batch) {
-		World w = ui.getWorld();
 
 		w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
 
@@ -91,10 +93,10 @@ public class DebugDrawer {
 
 		String strDebug = sbTmp.toString();
 
-		textLayout.setText(ui.getSkin().getFont("debug"), strDebug, color, viewport.getScreenWidth(), Align.left, true);
+		textLayout.setText(skin.getFont("debug"), strDebug, color, viewport.getScreenWidth(), Align.left, true);
 		RectangleRenderer.draw(batch, 0, viewport.getScreenHeight() - textLayout.height - 10, textLayout.width,
 				textLayout.height + 10, Color.BLACK);
-		ui.getSkin().getFont("debug").draw(batch, textLayout, 0, viewport.getScreenHeight() - 5);
+		skin.getFont("debug").draw(batch, textLayout, 0, viewport.getScreenHeight() - 5);
 
 		// Draw actor states when debug
 		if (EngineLogger.getDebugLevel() == EngineLogger.DEBUG1) {
@@ -112,7 +114,7 @@ public class DebugDrawer {
 
 				unprojectTmp.set(r.getX(), r.getY(), 0);
 				w.getSceneCamera().scene2screen(viewport, unprojectTmp);
-				ui.getSkin().getFont("debug").draw(batch, sbTmp.toString(), unprojectTmp.x, unprojectTmp.y);
+				skin.getFont("debug").draw(batch, sbTmp.toString(), unprojectTmp.x, unprojectTmp.y);
 			}
 
 		}

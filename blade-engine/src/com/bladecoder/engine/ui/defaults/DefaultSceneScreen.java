@@ -281,48 +281,55 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		InteractiveActor actorUnderCursor = null;
 
-		if (uiEnabled && !world.hasDialogOptions()) {
-			if (inventoryUI.isVisible()) {
-				unproject2Tmp.set(Gdx.input.getX(), Gdx.input.getY());
-				inventoryUI.screenToLocalCoordinates(unproject2Tmp);
-				actorUnderCursor = inventoryUI.getItemAt(unproject2Tmp.x, unproject2Tmp.y);
+		if (!uiEnabled || world.hasDialogOptions()) {
+			return;
+		}
+
+		if (inventoryUI.isVisible()) {
+			unproject2Tmp.set(Gdx.input.getX(), Gdx.input.getY());
+			inventoryUI.screenToLocalCoordinates(unproject2Tmp);
+			actorUnderCursor = inventoryUI.getItemAt(unproject2Tmp.x, unproject2Tmp.y);
+		} else {
+			actorUnderCursor = getActorUnderCursor();
+		}
+
+		// UPDATE POINTER
+		if (!pie.isVisible() && actorUnderCursor != currentActor) {
+			currentActor = actorUnderCursor;
+
+			updatePointer();
+		} else if (pie.isVisible()) {
+			currentActor = actorUnderCursor;
+		}
+	}
+
+	private void updatePointer() {
+		if (currentActor == null) {
+			pointer.setDefaultIcon();
+			return;
+		}
+
+		if (showDesc)
+			pointer.setDesc(currentActor.getDesc());
+
+		Verb leaveVerb = currentActor.getVerb(Verb.LEAVE_VERB);
+
+		Drawable r = null;
+
+		if (leaveVerb != null) {
+			if ((r = getDrawable(leaveVerb.getIcon())) != null) {
+				pointer.setIcon(r);
+
 			} else {
-				actorUnderCursor = getActorUnderCursor();
+				pointer.setLeaveIcon(UIUtils.calcLeaveArrowRotation(viewport, currentActor));
 			}
+		} else {
+			Verb actionVerb = currentActor.getVerb(Verb.ACTION_VERB);
 
-			// UPDATE POINTER
-			if (!pie.isVisible() && actorUnderCursor != currentActor) {
-				currentActor = actorUnderCursor;
-
-				if (currentActor != null) {
-					if (showDesc)
-						pointer.setDesc(currentActor.getDesc());
-
-					Verb leaveVerb = currentActor.getVerb(Verb.LEAVE_VERB);
-
-					Drawable r = null;
-
-					if (leaveVerb != null) {
-						if ((r = getDrawable(leaveVerb.getIcon())) != null) {
-							pointer.setIcon(r);
-
-						} else {
-							pointer.setLeaveIcon(UIUtils.calcLeaveArrowRotation(viewport, currentActor));
-						}
-					} else {
-						Verb actionVerb = currentActor.getVerb(Verb.ACTION_VERB);
-
-						if (actionVerb != null && (r = getDrawable(actionVerb.getIcon())) != null) {
-							pointer.setIcon(r);
-						} else {
-							pointer.setHotspotIcon();
-						}
-					}
-				} else {
-					pointer.setDefaultIcon();
-				}
-			} else if (pie.isVisible()) {
-				currentActor = actorUnderCursor;
+			if (actionVerb != null && (r = getDrawable(actionVerb.getIcon())) != null) {
+				pointer.setIcon(r);
+			} else {
+				pointer.setHotspotIcon();
 			}
 		}
 	}
@@ -684,7 +691,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		stage.addActor(inventoryUI);
 		stage.addActor(pie);
 
-		debugDrawer = new DebugDrawer(ui, viewport);
+		debugDrawer = new DebugDrawer(getWorld(), ui.getSkin(), viewport);
 		hotspotsDrawer = new HotspotsDrawer(ui, viewport);
 	}
 }
