@@ -173,7 +173,6 @@ public class UIActors implements AssetConsumer, Serializable {
 		// to restore verb cb properly.
 		for (int i = 0; i < jsonValueActors.size; i++) {
 			JsonValue jsonValueAct = jsonValueActors.get(i);
-			actorRef = new SceneActorRef(jsonValueAct.name);
 
 			InteractiveActor actor = actors.get(i);
 			actor.read(json, jsonValueAct);
