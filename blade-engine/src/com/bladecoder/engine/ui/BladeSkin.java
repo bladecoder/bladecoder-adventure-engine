@@ -116,6 +116,7 @@ public class BladeSkin extends Skin {
 					FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
 					FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 					parameter.size = (int) (DPIUtils.dpToPixels(size) * DPIUtils.getSizeMultiplier());
+					parameter.color = json.readValue("color", Color.class, Color.WHITE, jsonData);
 					parameter.incremental = json.readValue("incremental", boolean.class, true, jsonData);
 					parameter.borderWidth = json.readValue("borderWidth", int.class, 0, jsonData);
 					parameter.borderColor = json.readValue("borderColor", Color.class, Color.BLACK, jsonData);
