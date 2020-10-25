@@ -640,14 +640,14 @@ public class Scene implements Serializable, AssetConsumer {
 			camera.setScrollingDimensions(sceneSize.x * scale, sceneSize.y * scale);
 		}
 
+		soundManager.retrieveAssets();
+		textManager.getVoiceManager().retrieveAssets();
+
 		// RETRIEVE ACTORS
 		for (BaseActor a : actors.values()) {
 			if (a instanceof AssetConsumer)
 				((AssetConsumer) a).retrieveAssets();
 		}
-
-		soundManager.retrieveAssets();
-		textManager.getVoiceManager().retrieveAssets();
 
 		if (getWorld().getListener() != null)
 			getWorld().getListener().text(textManager.getCurrentText());
