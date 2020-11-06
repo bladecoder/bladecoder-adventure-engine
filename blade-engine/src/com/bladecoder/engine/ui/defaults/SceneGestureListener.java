@@ -46,7 +46,6 @@ public class SceneGestureListener extends GestureDetector.GestureAdapter {
 
 		if (dsc.getPie().isVisible()) {
 			dsc.getPie().hide();
-			return true;
 		}
 
 		if (dsc.getDrawHotspots()) {

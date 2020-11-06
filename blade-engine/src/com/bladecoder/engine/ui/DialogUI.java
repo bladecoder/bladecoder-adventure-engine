@@ -19,6 +19,7 @@ import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -102,6 +103,8 @@ public class DialogUI extends ScrollPane {
 
 			if (getScrollPercentY() < 1f && down.isVisible() == false) {
 				down.setVisible(true);
+				down.addAction(
+						Actions.repeat(3, Actions.sequence(Actions.moveBy(0, 15, .08f), Actions.moveBy(0, -15, .08f))));
 			} else if (getScrollPercentY() == 1f && down.isVisible() == true) {
 				down.setVisible(false);
 			}
@@ -156,6 +159,7 @@ public class DialogUI extends ScrollPane {
 		}
 
 		panel.clear();
+		setScrollPercentY(0);
 
 		for (int i = 0; i < choices.size(); i++) {
 			String str = choices.get(i);
