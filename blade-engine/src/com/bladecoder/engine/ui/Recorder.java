@@ -106,7 +106,8 @@ public class Recorder {
 				if (v.pos == null) { // DIALOG OPTION
 					if (!w.hasDialogOptions() || w.getDialogOptions().size() <= v.dialogOption) {
 						EngineLogger.error("PLAYING ERROR: No dialog options to select. Size: "
-								+ w.getDialogOptions().size() + " select: " + v.dialogOption);
+								+ (w.hasDialogOptions() ? w.getDialogOptions().size() : 0) + " select: "
+								+ v.dialogOption);
 					} else {
 						w.selectDialogOption(v.dialogOption);
 

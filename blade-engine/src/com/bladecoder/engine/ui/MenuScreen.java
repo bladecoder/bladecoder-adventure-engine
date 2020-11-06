@@ -199,12 +199,13 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			continueGame.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
-					if (world.getCurrentScene() == null)
+					if (world.getCurrentScene() == null) {
 						try {
 							world.load();
 						} catch (Exception e) {
 							Gdx.app.exit();
 						}
+					}
 
 					ui.setCurrentScreen(Screens.SCENE_SCREEN);
 				}
@@ -220,49 +221,12 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (world.savedGameExists() || world.getCurrentScene() != null) {
-					Dialog d = new Dialog("", skin) {
-						@Override
-						protected void result(Object object) {
-							if (((Boolean) object).booleanValue()) {
-								try {
-									world.newGame();
-									ui.setCurrentScreen(Screens.SCENE_SCREEN);
-								} catch (Exception e) {
-									EngineLogger.error("IN NEW GAME", e);
-									Gdx.app.exit();
-								}
-							}
-						}
-					};
-
-					d.pad(DPIUtils.getMarginSize());
-					d.getButtonTable().padTop(DPIUtils.getMarginSize());
-					d.getButtonTable().defaults().padLeft(DPIUtils.getMarginSize()).padRight(DPIUtils.getMarginSize());
-
-					Label l = new Label(world.getI18N().getString("ui.override"), ui.getSkin(), "ui-dialog");
-					l.setWrap(true);
-					l.setAlignment(Align.center);
-
-					d.getContentTable().add(l).prefWidth(Gdx.graphics.getWidth() * .7f);
-
-					d.button(world.getI18N().getString("ui.yes"), true,
-							ui.getSkin().get("ui-dialog", TextButtonStyle.class));
-					d.button(world.getI18N().getString("ui.no"), false,
-							ui.getSkin().get("ui-dialog", TextButtonStyle.class));
-					d.key(Keys.ENTER, true).key(Keys.ESCAPE, false);
-
-					d.show(stage);
+					showConfirmDialog(skin, world);
 				} else {
-
-					try {
-						world.newGame();
-						ui.setCurrentScreen(Screens.SCENE_SCREEN);
-					} catch (Exception e) {
-						EngineLogger.error("IN NEW GAME", e);
-						Gdx.app.exit();
-					}
+					newGame(world);
 				}
 			}
+
 		});
 
 		menuButtonTable.add(newGame);
@@ -401,6 +365,43 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 				}
 			}.start();
 		}
+	}
+
+	private void newGame(final World world) {
+		try {
+			world.newGame();
+			ui.setCurrentScreen(Screens.SCENE_SCREEN);
+		} catch (Exception e) {
+			EngineLogger.error("IN NEW GAME", e);
+			Gdx.app.exit();
+		}
+	}
+
+	private void showConfirmDialog(final Skin skin, final World world) {
+		Dialog d = new Dialog("", skin) {
+			@Override
+			protected void result(Object object) {
+				if (((Boolean) object).booleanValue()) {
+					newGame(world);
+				}
+			}
+		};
+
+		d.pad(DPIUtils.getMarginSize());
+		d.getButtonTable().padTop(DPIUtils.getMarginSize());
+		d.getButtonTable().defaults().padLeft(DPIUtils.getMarginSize()).padRight(DPIUtils.getMarginSize());
+
+		Label l = new Label(world.getI18N().getString("ui.override"), ui.getSkin(), "ui-dialog");
+		l.setWrap(true);
+		l.setAlignment(Align.center);
+
+		d.getContentTable().add(l).prefWidth(Gdx.graphics.getWidth() * .7f);
+
+		d.button(world.getI18N().getString("ui.yes"), true, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+		d.button(world.getI18N().getString("ui.no"), false, ui.getSkin().get("ui-dialog", TextButtonStyle.class));
+		d.key(Keys.ENTER, true).key(Keys.ESCAPE, false);
+
+		d.show(stage);
 	}
 
 	protected Table getMenuButtonTable() {
