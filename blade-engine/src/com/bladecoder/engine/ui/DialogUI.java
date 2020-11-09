@@ -103,8 +103,6 @@ public class DialogUI extends ScrollPane {
 
 			if (getScrollPercentY() < 1f && down.isVisible() == false) {
 				down.setVisible(true);
-				down.addAction(
-						Actions.repeat(3, Actions.sequence(Actions.moveBy(0, 15, .08f), Actions.moveBy(0, -15, .08f))));
 			} else if (getScrollPercentY() == 1f && down.isVisible() == true) {
 				down.setVisible(false);
 			}
@@ -202,6 +200,11 @@ public class DialogUI extends ScrollPane {
 		layout();
 
 		setUpDownVisibility();
+
+		if (down.isVisible()) {
+			down.addAction(
+					Actions.repeat(3, Actions.sequence(Actions.moveBy(0, 15, .08f), Actions.moveBy(0, -15, .08f))));
+		}
 	}
 
 	private void select(int i) {
