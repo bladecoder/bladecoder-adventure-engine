@@ -59,7 +59,8 @@ public class IfSceneAttrAction extends AbstractIfAction {
 		} else if (attr == SceneAttr.CURRENT_SCENE) {
 			String scn = w.getCurrentScene().getId();
 
-			if (!ActionUtils.compareNullStr(value, scn) && !ActionUtils.compareNullStr(s.getId(), scn)) {
+			if (((value != null && !value.isEmpty()) && !ActionUtils.compareNullStr(value, scn))
+					|| (scene != null && !scene.isEmpty() && !ActionUtils.compareNullStr(s.getId(), scn))) {
 				gotoElse(cb);
 			}
 		} else if (attr == SceneAttr.PLAYER) {
