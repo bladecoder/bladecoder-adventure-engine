@@ -48,6 +48,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
@@ -316,6 +317,10 @@ public class EngineAssetManager extends AssetManager {
 		if (n == null)
 			return;
 
+		if (!FileUtils.exists(EngineAssetManager.getInstance().getAsset(n))) {
+			throw new GdxRuntimeException("Cannot load music file: " + n);
+		}
+
 		load(n, Music.class);
 	}
 
@@ -468,7 +473,7 @@ public class EngineAssetManager extends AssetManager {
 		URL dirURL = EngineAssetManager.class.getResource(base);
 
 		Set<String> result = new HashSet<>(); // avoid duplicates in case
-													// it is a subdirectory
+												// it is a subdirectory
 
 		if (dirURL.getProtocol().equals("jar")) {
 			/* A JAR path */

@@ -1,6 +1,7 @@
 package com.bladecoder.engine.model;
 
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
@@ -101,17 +102,17 @@ public class MusicEngine implements Serializable, AssetConsumer {
 		if (music != null && !music.isPlaying()) {
 			boolean initialTime = false;
 
-			if (currentMusicDelay < desc.getInitialDelay())
+			if (currentMusicDelay <= desc.getInitialDelay())
 				initialTime = true;
 
 			currentMusicDelay += delta;
 
 			if (initialTime) {
-				if (currentMusicDelay >= desc.getInitialDelay())
+				if (currentMusicDelay > desc.getInitialDelay())
 					playMusic();
 			} else {
 				if (desc.getRepeatDelay() >= 0 && currentMusicDelay > desc.getRepeatDelay() + desc.getInitialDelay()) {
-					currentMusicDelay = desc.getInitialDelay();
+					currentMusicDelay = desc.getInitialDelay() + delta;
 					playMusic();
 				}
 			}
@@ -134,8 +135,8 @@ public class MusicEngine implements Serializable, AssetConsumer {
 			EngineLogger.debug("LOADING MUSIC: " + desc.getFilename());
 			try {
 				EngineAssetManager.getInstance().loadMusic(desc.getFilename());
-			} catch (Exception e) {
-				EngineLogger.error("Cannot load music file: " + desc.getFilename());
+			} catch (GdxRuntimeException e) {
+				EngineLogger.error(e.getMessage());
 				desc = null;
 			}
 		}
@@ -147,6 +148,7 @@ public class MusicEngine implements Serializable, AssetConsumer {
 
 			if (!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.MUSIC_DIR + desc.getFilename())) {
 				loadAssets();
+
 				EngineAssetManager.getInstance().finishLoading();
 			}
 

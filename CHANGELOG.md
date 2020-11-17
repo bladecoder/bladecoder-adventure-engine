@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+#  [1.0.13]
+
+- Fix bug introduced in latest release.
+
 #  [1.0.12]
 
 - MusicManager doesn't fail if the music file don't exists.
