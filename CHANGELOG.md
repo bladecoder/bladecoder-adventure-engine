@@ -2,6 +2,35 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+#  [1.0.12]
+
+- MusicManager doesn't fail if the music file don't exists.
+- Editor supports new gradle compile folder structure to load custom classes.
+
+#  [1.0.11]
+
+-  Exit when back button is pressed on Android. This is a Google Play Pass requeriment.
+
+#  [1.0.10]
+
+- Nullpointer sanity check.
+
+#  [1.0.9]
+
+- Fixes for the iphone X screen.
+
+#  [1.0.8]
+
+- Pick menu screen from v2
+
+#  [1.0.7]
+
+- OSX Sandbox
+
+## [1.0.4 to 1.0.6]
+
+-  Speed Optimization: Don't pre-generate any character when loading fonts.
+
 ## [1.0.3]
 
 - FIX: error loading recordings from 'tests' folder.
