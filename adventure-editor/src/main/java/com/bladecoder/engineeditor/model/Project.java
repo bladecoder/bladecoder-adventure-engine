@@ -255,14 +255,14 @@ public class Project extends PropertyChange {
 
 		DependencyBank bank = new DependencyBank();
 		ProjectBuilder builder = new ProjectBuilder(bank);
-		List<ProjectType> projects = new ArrayList<ProjectType>();
+		List<ProjectType> projects = new ArrayList<>();
 		projects.add(ProjectType.CORE);
 		projects.add(ProjectType.DESKTOP);
 		projects.add(ProjectType.ANDROID);
 		projects.add(ProjectType.IOS);
 		// projects.add(ProjectType.HTML);
 
-		List<Dependency> dependencies = new ArrayList<Dependency>();
+		List<Dependency> dependencies = new ArrayList<>();
 		dependencies.add(bank.getDependency(ProjectDependency.GDX));
 		dependencies.add(bank.getDependency(ProjectDependency.FREETYPE));
 
@@ -287,8 +287,10 @@ public class Project extends PropertyChange {
 			chapter.save();
 
 			// 3.- SAVE BladeEngine.properties
-			projectConfig.store(new FileOutputStream(projectFile.getAbsolutePath() + "/" + ASSETS_PATH + "/"
-					+ Config.PROPERTIES_FILENAME), null);
+			projectConfig.store(
+					new FileOutputStream(
+							projectFile.getAbsolutePath() + "/" + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME),
+					null);
 
 			// 4.- SAVE I18N
 			i18n.save();
@@ -311,8 +313,14 @@ public class Project extends PropertyChange {
 
 			// Use FolderClassLoader for loading CUSTOM actions.
 			// TODO Add 'core/bin' and '/core/out' folders???
-			FolderClassLoader folderClassLoader = new FolderClassLoader(projectFile.getAbsolutePath()
-					+ "/core/build/classes/main");
+
+			String classFolder = projectFile.getAbsolutePath() + "/core/build/classes/java/main";
+
+			if (!new File(classFolder).exists()) {
+				classFolder = projectFile.getAbsolutePath() + "/core/build/classes/main";
+			}
+
+			FolderClassLoader folderClassLoader = new FolderClassLoader(classFolder);
 			ActionFactory.setActionClassLoader(folderClassLoader);
 			EngineAssetManager.createEditInstance(Ctx.project.getProjectDir().getAbsolutePath() + Project.ASSETS_PATH);
 
@@ -344,12 +352,12 @@ public class Project extends PropertyChange {
 			editorConfig.setProperty(LAST_PROJECT_PROP, projectFile.getAbsolutePath());
 
 			projectConfig = new OrderedProperties();
-			projectConfig.load(new FileInputStream(projectFile.getAbsolutePath() + ASSETS_PATH + "/"
-					+ Config.PROPERTIES_FILENAME));
+			projectConfig.load(new FileInputStream(
+					projectFile.getAbsolutePath() + ASSETS_PATH + "/" + Config.PROPERTIES_FILENAME));
 			modified = false;
-			
-			Display.setTitle( "Adventure Editor v" + Versions.getVersion() + " - " + projectFile.getAbsolutePath() );
-			
+
+			Display.setTitle("Adventure Editor v" + Versions.getVersion() + " - " + projectFile.getAbsolutePath());
+
 			firePropertyChange(NOTIFY_PROJECT_LOADED);
 		} else {
 			this.projectFile = oldProjectFile;
@@ -427,7 +435,7 @@ public class Project extends PropertyChange {
 
 	public List<String> getResolutions() {
 		File atlasesPath = new File(projectFile.getAbsolutePath() + ATLASES_PATH);
-		ArrayList<String> l = new ArrayList<String>();
+		ArrayList<String> l = new ArrayList<>();
 
 		File[] list = atlasesPath.listFiles();
 
@@ -462,11 +470,11 @@ public class Project extends PropertyChange {
 			chapter.load(selChapter);
 		} catch (SerializationException ex) {
 			// check for not compiled custom actions
-			if (ex.getCause() != null  && ex.getCause() instanceof ClassNotFoundException) {
+			if (ex.getCause() != null && ex.getCause() instanceof ClassNotFoundException) {
 				EditorLogger.debug("Custom action class not found. Trying to compile...");
 				if (RunProccess.runGradle(Ctx.project.getProjectDir(), "desktop:compileJava")) {
-					FolderClassLoader folderClassLoader = new FolderClassLoader(projectFile.getAbsolutePath()
-							+ "/core/build/classes/main");
+					FolderClassLoader folderClassLoader = new FolderClassLoader(
+							projectFile.getAbsolutePath() + "/core/build/classes/main");
 					ActionFactory.setActionClassLoader(folderClassLoader);
 					chapter.load(selChapter);
 				} else {
@@ -498,7 +506,8 @@ public class Project extends PropertyChange {
 	}
 
 	public void saveGradleProperties(Properties prop) throws IOException {
-		FileOutputStream os = new FileOutputStream(Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties");
+		FileOutputStream os = new FileOutputStream(
+				Ctx.project.getProjectDir().getAbsolutePath() + "/gradle.properties");
 
 		prop.store(os, null);
 	}
