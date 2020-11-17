@@ -178,7 +178,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 				} else {
 					if (desc.getRepeatDelay() >= 0
 							&& currentMusicDelay > desc.getRepeatDelay() + desc.getInitialDelay()) {
-						currentMusicDelay = desc.getInitialDelay();
+						currentMusicDelay = desc.getInitialDelay() + delta;
 						playMusic();
 					}
 				}
