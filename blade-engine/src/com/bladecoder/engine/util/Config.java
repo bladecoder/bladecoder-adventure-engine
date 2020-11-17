@@ -68,6 +68,8 @@ public final class Config {
 	}
 
 	public void load() {
+		config.clear();
+
 		try {
 			config.load(EngineAssetManager.getInstance().getAsset(PROPERTIES_FILENAME).reader());
 		} catch (Exception e) {
