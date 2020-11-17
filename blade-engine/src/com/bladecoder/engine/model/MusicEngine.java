@@ -68,21 +68,19 @@ public class MusicEngine implements Serializable, AssetConsumer {
 			desc = null;
 		}
 	}
-	
 
 	public void setVolume(float volume) {
-		if(desc != null)
+		if (desc != null)
 			desc.setVolume(volume);
-		
-		if(music != null)
+
+		if (music != null)
 			music.setVolume(volume);
 	}
 
-
 	public void leaveScene(MusicDesc newMusicDesc) {
 
-		if (desc != null && !desc.isStopWhenLeaving() && 
-				(newMusicDesc == null || newMusicDesc.getFilename().equals(desc.getFilename())))
+		if (desc != null && !desc.isStopWhenLeaving()
+				&& (newMusicDesc == null || newMusicDesc.getFilename().equals(desc.getFilename())))
 			return;
 
 		if (desc != null) {
@@ -103,13 +101,13 @@ public class MusicEngine implements Serializable, AssetConsumer {
 		if (music != null && !music.isPlaying()) {
 			boolean initialTime = false;
 
-			if (currentMusicDelay <= desc.getInitialDelay())
+			if (currentMusicDelay < desc.getInitialDelay())
 				initialTime = true;
 
 			currentMusicDelay += delta;
 
 			if (initialTime) {
-				if (currentMusicDelay > desc.getInitialDelay())
+				if (currentMusicDelay >= desc.getInitialDelay())
 					playMusic();
 			} else {
 				if (desc.getRepeatDelay() >= 0 && currentMusicDelay > desc.getRepeatDelay() + desc.getInitialDelay()) {
@@ -134,29 +132,34 @@ public class MusicEngine implements Serializable, AssetConsumer {
 	public void loadAssets() {
 		if (music == null && desc != null) {
 			EngineLogger.debug("LOADING MUSIC: " + desc.getFilename());
-			EngineAssetManager.getInstance().loadMusic(desc.getFilename());
+			try {
+				EngineAssetManager.getInstance().loadMusic(desc.getFilename());
+			} catch (Exception e) {
+				EngineLogger.error("Cannot load music file: " + desc.getFilename());
+				desc = null;
+			}
 		}
 	}
 
 	@Override
 	public void retrieveAssets() {
 		if (music == null && desc != null) {
-			
-			if(!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.MUSIC_DIR + desc.getFilename())) {
+
+			if (!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.MUSIC_DIR + desc.getFilename())) {
 				loadAssets();
 				EngineAssetManager.getInstance().finishLoading();
 			}
-			
+
 			EngineLogger.debug("RETRIEVING MUSIC: " + desc.getFilename());
-			
+
 			music = EngineAssetManager.getInstance().getMusic(desc.getFilename());
-			
-			if(music != null)
+
+			if (music != null)
 				music.setVolume(desc.getVolume());
 
 			if (isPlayingSer) {
 				playMusic();
-				
+
 				if (music != null) {
 					music.setPosition(musicPosSer);
 					musicPosSer = 0f;
@@ -171,8 +174,8 @@ public class MusicEngine implements Serializable, AssetConsumer {
 	public void write(Json json) {
 		json.writeValue("desc", desc);
 		json.writeValue("currentMusicDelay", currentMusicDelay);
-		json.writeValue("isPlaying", music != null && (music.isPlaying()|| isPaused));
-		json.writeValue("musicPos", music != null && (music.isPlaying()|| isPaused) ? music.getPosition() : 0f);
+		json.writeValue("isPlaying", music != null && (music.isPlaying() || isPaused));
+		json.writeValue("musicPos", music != null && (music.isPlaying() || isPaused) ? music.getPosition() : 0f);
 	}
 
 	@Override

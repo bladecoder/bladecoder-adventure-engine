@@ -129,11 +129,10 @@ public class EngineAssetManager extends AssetManager {
 	/**
 	 * Creates a EngineAssetManager instance for edition. That is:
 	 * 
-	 * - Puts a PathResolver to locate the assets through an absolute path -
-	 * Puts assets scale to "1"
+	 * - Puts a PathResolver to locate the assets through an absolute path - Puts
+	 * assets scale to "1"
 	 * 
-	 * @param base
-	 *            is the project base folder
+	 * @param base is the project base folder
 	 */
 	public static void createEditInstance(String base) {
 		if (instance != null)
@@ -147,8 +146,7 @@ public class EngineAssetManager extends AssetManager {
 	/**
 	 * All assets will be searched in the selected folder.
 	 * 
-	 * @param base
-	 *            The asset base folder
+	 * @param base The asset base folder
 	 */
 	public static void setAssetFolder(String base) {
 		if (instance != null)
@@ -228,8 +226,7 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	/**
-	 * Returns a file in the asset directory SEARCHING in the resolution
-	 * directories
+	 * Returns a file in the asset directory SEARCHING in the resolution directories
 	 */
 	public FileHandle getResAsset(String filename) {
 		return resResolver.resolve(filename);
@@ -290,6 +287,7 @@ public class EngineAssetManager extends AssetManager {
 		return get(filename, Texture.class);
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		instance = null;
@@ -303,7 +301,7 @@ public class EngineAssetManager extends AssetManager {
 			if (FileUtils.exists(EngineAssetManager.getInstance().getAsset(aac)))
 				return aac;
 
-			EngineLogger.debug("OGG files not supported in IOS: " + filename);
+			EngineLogger.error("OGG files not supported in IOS: " + filename);
 
 			return null;
 		}
@@ -390,7 +388,7 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	private Resolution[] getResolutions(FileHandleResolver resolver, int worldWidth, int worldHeight) {
-		ArrayList<Resolution> rl = new ArrayList<Resolution>();
+		ArrayList<Resolution> rl = new ArrayList<>();
 
 		String list[] = listAssetFiles("ui");
 
@@ -409,6 +407,7 @@ public class EngineAssetManager extends AssetManager {
 		}
 
 		Collections.sort(rl, new Comparator<Resolution>() {
+			@Override
 			public int compare(Resolution a, Resolution b) {
 				return a.portraitWidth - b.portraitWidth;
 			}
@@ -468,7 +467,7 @@ public class EngineAssetManager extends AssetManager {
 	private String[] getFilesFromJar(String base) {
 		URL dirURL = EngineAssetManager.class.getResource(base);
 
-		Set<String> result = new HashSet<String>(); // avoid duplicates in case
+		Set<String> result = new HashSet<>(); // avoid duplicates in case
 													// it is a subdirectory
 
 		if (dirURL.getProtocol().equals("jar")) {
@@ -521,7 +520,7 @@ public class EngineAssetManager extends AssetManager {
 
 			StringBuilder sb = new StringBuilder();
 			sb.append(".").append(dir).append("/").append(filename);
-			
+
 			if (System.getProperty("os.name").toLowerCase().contains("mac")
 					&& System.getenv("HOME").contains("Containers")) {
 
@@ -545,7 +544,7 @@ public class EngineAssetManager extends AssetManager {
 			dir.replace(" ", "");
 
 			StringBuilder sb = new StringBuilder(".");
-			
+
 			if (System.getProperty("os.name").toLowerCase().contains("mac")
 					&& System.getenv("HOME").contains("Containers")) {
 
@@ -554,7 +553,7 @@ public class EngineAssetManager extends AssetManager {
 
 				file = Gdx.files.external(sb.append(dir).toString());
 			}
-			
+
 		} else {
 			file = Gdx.files.local(NOT_DESKTOP_PREFS_DIR);
 		}
