@@ -1,5 +1,7 @@
 package com.bladecoder.engine.model;
 
+import java.io.FileNotFoundException;
+
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -209,7 +211,13 @@ public class MusicManager implements Serializable, AssetConsumer {
 	public void loadAssets() {
 		if (music == null && desc != null) {
 			EngineLogger.debug("LOADING MUSIC: " + desc.getFilename());
-			EngineAssetManager.getInstance().loadMusic(desc.getFilename());
+
+			try {
+				EngineAssetManager.getInstance().loadMusic(desc.getFilename());
+			} catch (FileNotFoundException e) {
+				EngineLogger.error("Not found: " + e.getLocalizedMessage());
+				desc = null;
+			}
 		}
 	}
 
