@@ -1,5 +1,6 @@
 package com.bladecoder.engine.model;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -45,7 +46,14 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 				s = loadedSounds.get(id);
 
 				EngineLogger.debug("LOADING SOUND: " + s.desc.getId() + " - " + s.desc.getFilename());
-				EngineAssetManager.getInstance().loadSound(s.desc.getFilename());
+
+				try {
+					EngineAssetManager.getInstance().loadSound(s.desc.getFilename());
+				} catch (FileNotFoundException e) {
+					EngineLogger.error("Sound file not found:" + e.getMessage());
+					return;
+				}
+
 				EngineAssetManager.getInstance().finishLoading();
 				s.sound = EngineAssetManager.getInstance().getSound(s.desc.getFilename());
 			}
@@ -114,8 +122,7 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	@Override
 	public void dispose() {
 		for (LoadedSound s : loadedSounds.values()) {
-			// EngineLogger.debug("DISPOSING SOUND: " + s.desc.getId() + " - " +
-			// s.desc.getFilename());
+
 			if (s.playing)
 				s.sound.stop();
 
@@ -126,9 +133,14 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	@Override
 	public void loadAssets() {
 		for (LoadedSound s : loadedSounds.values()) {
-			// EngineLogger.debug("LOADING SOUND: " + s.desc.getId() + " - " +
-			// s.desc.getFilename());
-			EngineAssetManager.getInstance().loadSound(s.desc.getFilename());
+
+			try {
+				EngineAssetManager.getInstance().loadSound(s.desc.getFilename());
+			} catch (FileNotFoundException e) {
+				loadedSounds.remove(s.desc.getId());
+				EngineLogger.error("Sound file not found:" + e.getMessage());
+			}
+
 		}
 	}
 

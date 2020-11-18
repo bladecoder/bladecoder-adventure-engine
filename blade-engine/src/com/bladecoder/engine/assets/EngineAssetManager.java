@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.bladecoder.engine.assets;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -283,12 +284,16 @@ public class EngineAssetManager extends AssetManager {
 		return filename;
 	}
 
-	public void loadMusic(String filename) {
+	public void loadMusic(String filename) throws FileNotFoundException {
 
 		String n = checkIOSSoundName(MUSIC_DIR + filename);
 
 		if (n == null)
 			return;
+
+		if (!FileUtils.exists(EngineAssetManager.getInstance().getAsset(n))) {
+			throw new FileNotFoundException(n);
+		}
 
 		load(n, Music.class);
 	}
@@ -312,11 +317,15 @@ public class EngineAssetManager extends AssetManager {
 		return get(n, Music.class);
 	}
 
-	public void loadSound(String filename) {
+	public void loadSound(String filename) throws FileNotFoundException {
 		String n = checkIOSSoundName(SOUND_DIR + filename);
 
 		if (n == null)
 			return;
+
+		if (!FileUtils.exists(EngineAssetManager.getInstance().getAsset(n))) {
+			throw new FileNotFoundException(n);
+		}
 
 		load(n, Sound.class);
 	}
