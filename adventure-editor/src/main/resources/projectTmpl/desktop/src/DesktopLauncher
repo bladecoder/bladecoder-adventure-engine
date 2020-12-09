@@ -1,4 +1,4 @@
-package %PACKAGE%.desktop;
+package com.bladecoder.engine;
 
 import java.io.IOException;
 import java.io.InputStream;

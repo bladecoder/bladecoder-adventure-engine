@@ -158,7 +158,7 @@ public class BladeEngineSetup {
 		// DESKTOP project
 		project.files.add(new ProjectFile("desktop/build.gradle"));
 		project.files.add(new ProjectFile("desktop/src/DesktopLauncher",
-				"desktop/src/main/java/" + packageDir + "/desktop/DesktopLauncher.java", true));
+				"desktop/src/main/java/com/bladecoder/engine/DesktopLauncher.java", true));
 
 		project.files.add(
 				new ProjectFile("desktop/src/icons/icon16.png", "desktop/src/main/resources/icons/icon16.png", false));
@@ -228,7 +228,7 @@ public class BladeEngineSetup {
 		project.files.add(new ProjectFile("android/res/drawable-xxhdpi/ic_launcher.png", false));
 		project.files.add(new ProjectFile("android/res/drawable-xxxhdpi/ic_launcher.png", false));
 		project.files.add(new ProjectFile("android/src/AndroidLauncher",
-				"android/src/main/java/" + packageDir + "/AndroidLauncher.java", true));
+				"android/src/main/java/com/bladecoder/engine/AndroidLauncher.java", true));
 		project.files.add(new ProjectFile("android/AndroidManifest.xml"));
 		project.files.add(new ProjectFile("android/src/expansion/AndroidManifest.xml"));
 		project.files.add(new ProjectFile("android/build.gradle", true));
@@ -240,8 +240,8 @@ public class BladeEngineSetup {
 			project.files.add(new ProjectFile("local.properties", true));
 
 		// IOS ROBOVM
-		project.files.add(
-				new ProjectFile("ios/src/IOSLauncher", "ios/src/main/java/" + packageDir + "/IOSLauncher.java", true));
+		project.files.add(new ProjectFile("ios/src/IOSLauncher",
+				"ios/src/main/java/com/bladecoder/engine/IOSLauncher.java", true));
 		project.files.add(new ProjectFile("ios/data/Default.png", false));
 		project.files.add(new ProjectFile("ios/data/Default@2x.png", false));
 		project.files.add(new ProjectFile("ios/data/Default@2x~ipad.png", false));

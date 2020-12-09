@@ -1,4 +1,4 @@
-package %PACKAGE%;
+package com.bladecoder.engine;
 
 import com.bladecoder.engine.BladeEngine;
 
