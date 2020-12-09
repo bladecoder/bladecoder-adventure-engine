@@ -6,7 +6,7 @@ targetCompatibility=1.7
 
 
 sourceSets.main.resources.srcDirs += [ rootProject.file('assets').absolutePath ]
-mainClassName = "%PACKAGE%.desktop.DesktopLauncher"
+mainClassName = "com.bladecoder.engine.DesktopLauncher"
 
 dependencies {
     implementation project(":core")

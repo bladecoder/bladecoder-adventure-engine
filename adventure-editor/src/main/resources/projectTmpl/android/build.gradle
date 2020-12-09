@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         applicationId "%PACKAGE%"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion '%API_LEVEL%'
         versionName version
 
@@ -155,7 +155,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', android.defaultConfig.applicationId + '/' + android.defaultConfig.applicationId + '.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', android.defaultConfig.applicationId + '/' +  'com.bladecoder.engine.AndroidLauncher'
 }
 
 task('packageMainExpansionFile', type: Zip) {
