@@ -132,16 +132,16 @@ public class SceneGestureDetector extends GestureDetector {
 	}
 
 	@Override
-	public boolean scrolled(int amount) {
+	public boolean scrolled(float amountX, float amountY) {
 		if (dsc.isUiEnabled() && !dsc.getUI().getWorld().hasDialogOptions()
 				&& dsc.getUI().getWorld().getInventory().isVisible()) {
 
 			boolean fromDown = (dsc.getInventoryUI().getInventoryPos() == InventoryPos.CENTER
 					|| dsc.getInventoryUI().getInventoryPos() == InventoryPos.DOWN);
 
-			if ((amount > 0 && fromDown || amount < 0 && !fromDown) && dsc.getInventoryUI().isVisible())
+			if ((amountY > 0 && fromDown || amountY < 0 && !fromDown) && dsc.getInventoryUI().isVisible())
 				dsc.getInventoryUI().hide();
-			else if ((amount > 0 && !fromDown || amount < 0 && fromDown) && !dsc.getInventoryUI().isVisible()) {
+			else if ((amountY > 0 && !fromDown || amountY < 0 && fromDown) && !dsc.getInventoryUI().isVisible()) {
 				if (dsc.getUIMode() == UIModes.PIE && dsc.getPie().isVisible())
 					dsc.getPie().hide();
 
