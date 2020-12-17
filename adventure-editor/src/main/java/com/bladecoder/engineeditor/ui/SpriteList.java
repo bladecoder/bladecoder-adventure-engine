@@ -149,7 +149,7 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 
 		// delete init_animation attr if the animation to delete is the chapter
 		// init_animation
-		if (renderer.getInitAnimation().equals(d.id)) {
+		if (d.id.equals(renderer.getInitAnimation())) {
 			HashMap<String, AnimationDesc> animations = renderer.getAnimations();
 			String newValue = null;
 
