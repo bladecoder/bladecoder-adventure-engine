@@ -52,6 +52,8 @@ public class DialogUI extends ScrollPane {
 	private List<String> choices;
 	private final World world;
 
+	private Task postponedSelect = null;
+
 	public DialogUI(Skin skin, World w, Recorder recorder) {
 		super(new Table(skin), skin);
 
@@ -144,13 +146,17 @@ public class DialogUI extends ScrollPane {
 
 			// To work properly, delay the selection one frame to avoid select it before
 			// 'talkto' finished.
-			Timer.post(new Task() {
+
+			if (postponedSelect != null)
+				postponedSelect.cancel();
+
+			postponedSelect = Timer.schedule(new Task() {
 
 				@Override
 				public void run() {
 					select(0);
 				}
-			});
+			}, 0.01f);
 
 			setVisible(false);
 			return;
