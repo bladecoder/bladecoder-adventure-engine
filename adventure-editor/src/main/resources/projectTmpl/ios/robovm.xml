@@ -34,6 +34,7 @@
     <pattern>com.android.org.bouncycastle.crypto.digests.AndroidDigestFactoryOpenSSL</pattern>
     <pattern>org.apache.harmony.security.provider.cert.DRLCertFactory</pattern>
     <pattern>org.apache.harmony.security.provider.crypto.CryptoProvider</pattern>
+    <pattern>com.badlogic.gdx.controllers.IosControllerManager</pattern>    
   </forceLinkClasses>
   <libs>
       <lib>z</lib>   
@@ -46,6 +47,7 @@
     <framework>OpenAL</framework>
     <framework>AudioToolbox</framework>
     <framework>AVFoundation</framework>
+    <framework>GameKit</framework>
   </frameworks>
 </config>
 

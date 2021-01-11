@@ -18,6 +18,8 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Peripheral;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -34,6 +36,15 @@ import com.bladecoder.engine.util.Utils3D;
 
 public class UI {
 
+	public enum Screens {
+		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN, LOAD_GAME_SCREEN,
+		SAVE_GAME_SCREEN
+	}
+
+	public enum InputMode {
+		GAMEPAD, MOUSE, TOUCHPANEL
+	}
+
 	private static final String SKIN_FILENAME = "ui/ui.json";
 
 	private final Recorder recorder;
@@ -46,11 +57,7 @@ public class UI {
 	private SpriteBatch batch;
 	private Skin skin;
 	private final World w;
-
-	public enum Screens {
-		INIT_SCREEN, SCENE_SCREEN, LOADING_SCREEN, MENU_SCREEN, HELP_SCREEN, CREDIT_SCREEN, LOAD_GAME_SCREEN,
-		SAVE_GAME_SCREEN
-	}
+	private InputMode inputMode;
 
 	private final BladeScreen screens[];
 
@@ -89,6 +96,14 @@ public class UI {
 			s.setUI(this);
 
 		setCurrentScreen(Screens.INIT_SCREEN);
+
+		if (Controllers.getControllers().size > 0) {
+			inputMode = InputMode.GAMEPAD;
+		} else if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)) {
+			inputMode = InputMode.TOUCHPANEL;
+		} else {
+			inputMode = InputMode.MOUSE;
+		}
 	}
 
 	public World getWorld() {
@@ -134,6 +149,14 @@ public class UI {
 
 	public void setScreen(Screens state, BladeScreen s) {
 		screens[state.ordinal()] = s;
+	}
+
+	public InputMode getInputMode() {
+		return inputMode;
+	}
+
+	public void setInputMode(InputMode inputMode) {
+		this.inputMode = inputMode;
 	}
 
 	public SpriteBatch getBatch() {
@@ -194,7 +217,8 @@ public class UI {
 		skin.load(skinFile);
 
 		if (!Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, "").equals("")) {
-			EngineAssetManager.getInstance().loadAtlas(Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, null));
+			EngineAssetManager.getInstance()
+					.loadAtlas(Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, null));
 			EngineAssetManager.getInstance().finishLoading();
 		}
 	}
@@ -223,7 +247,8 @@ public class UI {
 		Utils3D.dispose();
 
 		if (!Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, "").equals(""))
-			EngineAssetManager.getInstance().disposeAtlas(Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, null));
+			EngineAssetManager.getInstance()
+					.disposeAtlas(Config.getInstance().getProperty(Config.CHARACTER_ICON_ATLAS, null));
 
 		// DISPOSE ALL SCREENS
 		for (BladeScreen s : screens)

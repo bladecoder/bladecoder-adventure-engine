@@ -61,6 +61,7 @@ import com.bladecoder.engine.ui.TesterBot;
 import com.bladecoder.engine.ui.TextManagerUI;
 import com.bladecoder.engine.ui.UI;
 import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.ui.defaults.SceneGestureListener.ActionButton;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
@@ -450,7 +451,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		inventoryUI.retrieveAssets(atlas);
 	}
 
-	void sceneClick(int button, int count) {
+	void sceneClick(ActionButton button, int count) {
 		World w = getWorld();
 
 		w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
@@ -497,8 +498,8 @@ public class DefaultSceneScreen implements SceneScreen {
 	}
 
 	@Override
-	public void actorClick(InteractiveActor a, int button) {
-		final boolean lookatButton = button == 1;
+	public void actorClick(InteractiveActor a, ActionButton button) {
+		final boolean lookatButton = button == ActionButton.LOOKAT;
 
 		if (a.getVerb(Verb.LEAVE_VERB) != null) {
 			runVerb(a, Verb.LEAVE_VERB, null);

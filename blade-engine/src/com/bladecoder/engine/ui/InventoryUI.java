@@ -33,10 +33,12 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Verb;
+import com.bladecoder.engine.ui.defaults.SceneGestureListener.ActionButton;
 import com.bladecoder.engine.ui.defaults.ScenePointer;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.UIUtils;
 
 public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	public enum InventoryPos {
@@ -79,20 +81,9 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			@Override
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 
-				if (draggedActor != null) {
-					stopDragging(button);
-				} else {
-					InteractiveActor actor = getItemAt(x, y);
+				ActionButton b = UIUtils.mouseToAction(button);
 
-					if (actor != null) {
-						if (singleAction)
-							sceneScreen.runVerb(actor, "lookat", null);
-						else
-							sceneScreen.actorClick(actor, button);
-					} else {
-						hide();
-					}
-				}
+				touchedUp(x, y, b);
 
 			}
 
@@ -137,6 +128,24 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			float iconSize = DPIUtils.getPrefButtonSize();
 
 			menuButton.setSize(iconSize, iconSize);
+		}
+	}
+
+	public void touchedUp(float x, float y, ActionButton button) {
+		if (draggedActor != null) {
+			stopDragging(button);
+			return;
+		}
+
+		InteractiveActor actor = getItemAt(x, y);
+		if (actor != null) {
+			if (singleAction) {
+				sceneScreen.runVerb(actor, "lookat", null);
+			} else {
+				sceneScreen.actorClick(actor, button);
+			}
+		} else {
+			hide();
 		}
 	}
 
@@ -293,7 +302,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		return draggedActor != null;
 	}
 
-	private void stopDragging(int button) {
+	private void stopDragging(ActionButton button) {
 
 		InteractiveActor targetActor = sceneScreen.getCurrentActor();
 
