@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 import com.bladecoder.engine.ui.InventoryUI.InventoryPos;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen.UIModes;
 import com.bladecoder.engine.util.EngineLogger;
+import com.bladecoder.engine.util.UIUtils.PointerToNextType;
 
 public class SceneGestureDetector extends GestureDetector {
 
@@ -118,6 +119,14 @@ public class SceneGestureDetector extends GestureDetector {
 			} else {
 				dsc.pause();
 			}
+			break;
+		case 'z':
+			com.bladecoder.engine.util.UIUtils.pointerToActor(dsc.getWorld(), PointerToNextType.LEFT,
+					dsc.getViewport());
+			break;
+		case 'x':
+			com.bladecoder.engine.util.UIUtils.pointerToActor(dsc.getWorld(), PointerToNextType.RIGHT,
+					dsc.getViewport());
 			break;
 		case ' ':
 			if (dsc.isUiEnabled() && !dsc.getUI().getWorld().hasDialogOptions()) {

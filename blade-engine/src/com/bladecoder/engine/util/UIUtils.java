@@ -18,6 +18,11 @@ package com.bladecoder.engine.util;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -27,11 +32,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.ui.defaults.SceneGestureListener.ActionButton;
 
 public class UIUtils {
 	private final static Vector3 unprojectTmp = new Vector3();
@@ -119,5 +127,115 @@ public class UIUtils {
 
 			return 90; // UP
 		}
+	}
+
+	public static void pointerToActor(World w, PointerToNextType type, Viewport viewport) {
+
+		List<Vector2> positions = new ArrayList<>();
+
+		Vector3 unprojectV = new Vector3();
+		float scale = EngineAssetManager.getInstance().getScale();
+
+		InteractiveActor actorUnderCursor = w.getInteractiveActorAtInput(viewport, 0f);
+
+		for (InteractiveActor a : w.getUIActors().getActors()) {
+			if (!a.canInteract() || actorUnderCursor == a)
+				continue;
+
+			Vector2 pos = new Vector2();
+			a.getBBox().getBoundingRectangle().getCenter(pos);
+
+			if (w.getUIActors().getActorAt(pos.x, pos.y) == a) {
+				unprojectV.set(pos.x * scale, pos.y * scale, 0);
+				w.getUIActors().getCamera().project(unprojectV, 0, 0, viewport.getScreenWidth(),
+						viewport.getScreenHeight());
+				positions.add(pos.set(unprojectV.x, viewport.getScreenHeight() - unprojectV.y));
+			}
+		}
+
+		for (BaseActor a : w.getCurrentScene().getActors().values()) {
+			if (!(a instanceof InteractiveActor) || !((InteractiveActor) a).canInteract() || actorUnderCursor == a)
+				continue;
+
+			Vector2 pos = new Vector2();
+			a.getBBox().getBoundingRectangle().getCenter(pos);
+
+			if (w.getUIActors().getActorAt(pos.x, pos.y) == null
+					&& w.getCurrentScene().getInteractiveActorAt(pos.x, pos.y) == a) {
+				unprojectV.set(pos.x * scale, pos.y * scale, 0);
+				w.getCurrentScene().getCamera().project(unprojectV, 0, 0, viewport.getScreenWidth(),
+						viewport.getScreenHeight());
+				positions.add(pos.set(unprojectV.x, viewport.getScreenHeight() - unprojectV.y));
+			}
+		}
+
+		if (positions.isEmpty())
+			return;
+
+		if (type == PointerToNextType.RIGHT) {
+			positions.sort(new Comparator<Vector2>() {
+				@Override
+				public int compare(Vector2 o1, Vector2 o2) {
+					int val = (int) (o1.x - o2.x);
+
+					if (val == 0)
+						val = (int) (o1.y - o2.y);
+
+					return val;
+				}
+			});
+		} else {
+			positions.sort(new Comparator<Vector2>() {
+				@Override
+				public int compare(Vector2 o1, Vector2 o2) {
+					int val = (int) (o2.x - o1.x);
+
+					if (val == 0)
+						val = (int) (o2.y - o1.y);
+
+					return val;
+				}
+			});
+		}
+
+		int idx = 0;
+
+		float minD = Float.MAX_VALUE;
+		Vector2 mPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+
+		// get the nearest actor
+		for (int i = 0; i < positions.size(); i++) {
+			Vector2 actPos = positions.get(i);
+			float d = actPos.dst(mPos);
+			if (d < minD) {
+				minD = d;
+				idx = i;
+			}
+		}
+
+		idx = (idx + 1) % positions.size();
+
+		EngineLogger.debug("Next: " + positions.get(idx));
+		Gdx.input.setCursorPosition((int) positions.get(idx).x, (int) positions.get(idx).y);
+	}
+
+	public enum PointerToNextType {
+		LEFT, RIGHT
+	}
+
+	public static final ActionButton mouseToAction(int b) {
+		if (b == 0) {
+			return ActionButton.LOOKAT;
+		}
+
+		if (b == 1) {
+			return ActionButton.ACTION;
+		}
+
+		if (b == 2) {
+			return ActionButton.INVENTORY;
+		}
+
+		return ActionButton.NONE;
 	}
 }

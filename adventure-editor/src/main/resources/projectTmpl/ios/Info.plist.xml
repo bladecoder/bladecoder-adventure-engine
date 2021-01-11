@@ -49,5 +49,15 @@
     </array>
     <key>CFBundleIconName</key>
     <string>AppIcon</string>
+    
+    <key>GCSupportedGameControllers</key>
+	<array>
+    <dict>
+        <key>ProfileName</key>
+        <string>ExtendedGamepad</string>
+    </dict>
+	</array>
+	<key>GCSupportsControllerUserInteraction</key>
+	<true/>
 </dict>
 </plist>

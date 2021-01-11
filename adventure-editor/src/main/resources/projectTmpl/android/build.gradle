@@ -101,6 +101,8 @@ dependencies {
         
     // TO QUERY PERMISSIONS
     implementation "com.android.support:support-v4:23.0.0"        
+    
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
 }
 
 // called every time gradle gets executed, takes the native dependencies of

@@ -13,6 +13,8 @@ dependencies {
         implementation "com.bladecoder.ink:blade-ink:$bladeInkVersion"
         implementation "org.minimalcode:minimalcode-beans:0.5.1"
         implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+        
         
         if(project.hasProperty("spinePlugin") && project.spinePlugin.equals("true")) {
         	println "Using Spine Plugin..."

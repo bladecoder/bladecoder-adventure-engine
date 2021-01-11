@@ -18,6 +18,7 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.ui.defaults.SceneGestureListener.ActionButton;
 
 public interface SceneScreen extends BladeScreen {
 	UI getUI();
@@ -28,7 +29,7 @@ public interface SceneScreen extends BladeScreen {
 
 	InteractiveActor getCurrentActor();
 
-	void actorClick(InteractiveActor actor, int button);
+	void actorClick(InteractiveActor actor, ActionButton button);
 
 	void runVerb(InteractiveActor a, String verb, String target);
 
