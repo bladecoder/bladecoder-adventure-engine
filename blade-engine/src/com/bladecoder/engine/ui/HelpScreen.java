@@ -24,6 +24,7 @@ import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -33,6 +34,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen.UIModes;
+import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
 import com.bladecoder.engine.util.Config;
 
 public class HelpScreen extends ScreenAdapter implements BladeScreen {
@@ -50,6 +52,8 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 
 	private String localeFilename;
 	private final Viewport viewport;
+
+	private ScreenControllerHandler controller;
 
 	public HelpScreen() {
 		viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getWidth() * 9f / 16f);
@@ -88,6 +92,8 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 		batch.begin();
 		batch.draw(tex, 0, 0, viewport.getScreenWidth(), viewport.getScreenHeight());
 		batch.end();
+
+		controller.update(delta);
 	}
 
 	@Override
@@ -116,7 +122,8 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 	public void show() {
 		final Locale locale = ui.getWorld().getI18N().getCurrentLocale();
 		String filename = null;
-		UIModes uiMode = UIModes.valueOf(Config.getInstance().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
+		UIModes uiMode = UIModes
+				.valueOf(Config.getInstance().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
 
 		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen) && uiMode == UIModes.TWO_BUTTONS) {
 			uiMode = UIModes.PIE;
@@ -144,6 +151,15 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 		tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		Gdx.input.setInputProcessor(inputProcessor);
+		controller = new ScreenControllerHandler(ui, null, viewport) {
+			@Override
+			protected boolean buttonUp(Controller controller, int buttonCode) {
+
+				ui.setCurrentScreen(Screens.MENU_SCREEN);
+
+				return true;
+			}
+		};
 	}
 
 	@Override

@@ -60,11 +60,11 @@ import com.bladecoder.engine.ui.TesterBot;
 import com.bladecoder.engine.ui.TextManagerUI;
 import com.bladecoder.engine.ui.UI;
 import com.bladecoder.engine.ui.UI.Screens;
-import com.bladecoder.engine.ui.defaults.SceneGestureListener.ActionButton;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
 import com.bladecoder.engine.util.UIUtils;
+import com.bladecoder.engine.util.UIUtils.ActionButton;
 
 public class RetroSceneScreen implements SceneScreen {
 	private static final float UI_SCREEN_PERCENT = 1 - 144.0f / 200.0f; // % of

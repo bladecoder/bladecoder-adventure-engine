@@ -40,6 +40,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
@@ -61,6 +62,8 @@ public class DebugScreen implements BladeScreen {
 
 	private Pointer pointer;
 
+	private ScreenControllerHandler controller;
+
 	public DebugScreen() {
 	}
 
@@ -71,6 +74,8 @@ public class DebugScreen implements BladeScreen {
 
 		stage.act(delta);
 		stage.draw();
+
+		controller.update(delta);
 	}
 
 	@Override
@@ -112,6 +117,7 @@ public class DebugScreen implements BladeScreen {
 		});
 
 		stage.setKeyboardFocus(table);
+		controller = new ScreenControllerHandler(ui, stage, stage.getViewport());
 
 		Button back = new Button(ui.getSkin(), "back");
 

@@ -18,7 +18,6 @@ package com.bladecoder.engine.util;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -32,14 +31,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.ui.defaults.SceneGestureListener.ActionButton;
 
 public class UIUtils {
 	private final static Vector3 unprojectTmp = new Vector3();
@@ -129,46 +125,7 @@ public class UIUtils {
 		}
 	}
 
-	public static void pointerToActor(World w, PointerToNextType type, Viewport viewport) {
-
-		List<Vector2> positions = new ArrayList<>();
-
-		Vector3 unprojectV = new Vector3();
-		float scale = EngineAssetManager.getInstance().getScale();
-
-		InteractiveActor actorUnderCursor = w.getInteractiveActorAtInput(viewport, 0f);
-
-		for (InteractiveActor a : w.getUIActors().getActors()) {
-			if (!a.canInteract() || actorUnderCursor == a)
-				continue;
-
-			Vector2 pos = new Vector2();
-			a.getBBox().getBoundingRectangle().getCenter(pos);
-
-			if (w.getUIActors().getActorAt(pos.x, pos.y) == a) {
-				unprojectV.set(pos.x * scale, pos.y * scale, 0);
-				w.getUIActors().getCamera().project(unprojectV, 0, 0, viewport.getScreenWidth(),
-						viewport.getScreenHeight());
-				positions.add(pos.set(unprojectV.x, viewport.getScreenHeight() - unprojectV.y));
-			}
-		}
-
-		for (BaseActor a : w.getCurrentScene().getActors().values()) {
-			if (!(a instanceof InteractiveActor) || !((InteractiveActor) a).canInteract() || actorUnderCursor == a)
-				continue;
-
-			Vector2 pos = new Vector2();
-			a.getBBox().getBoundingRectangle().getCenter(pos);
-
-			if (w.getUIActors().getActorAt(pos.x, pos.y) == null
-					&& w.getCurrentScene().getInteractiveActorAt(pos.x, pos.y) == a) {
-				unprojectV.set(pos.x * scale, pos.y * scale, 0);
-				w.getCurrentScene().getCamera().project(unprojectV, 0, 0, viewport.getScreenWidth(),
-						viewport.getScreenHeight());
-				positions.add(pos.set(unprojectV.x, viewport.getScreenHeight() - unprojectV.y));
-			}
-		}
-
+	public static void setNextCursorPosition(List<Vector2> positions, PointerToNextType type) {
 		if (positions.isEmpty())
 			return;
 
@@ -213,14 +170,26 @@ public class UIUtils {
 			}
 		}
 
-		idx = (idx + 1) % positions.size();
+		EngineLogger.debug("Prev: " + positions.get(idx) + " IDX: " + idx + " mPos: " + mPos);
 
-		EngineLogger.debug("Next: " + positions.get(idx));
+		if ((type == PointerToNextType.RIGHT && (int) positions.get(idx).x < (int) mPos.x)
+				|| (type == PointerToNextType.LEFT && (int) positions.get(idx).x > (int) mPos.x)
+				|| (type == PointerToNextType.RIGHT && (int) positions.get(idx).x == (int) mPos.x
+						&& positions.get(idx).y < mPos.y)
+				|| (type == PointerToNextType.LEFT && (int) positions.get(idx).x == (int) mPos.x
+						&& positions.get(idx).y > mPos.y))
+			idx = (idx + 1) % positions.size();
+
+		EngineLogger.debug("Selected: " + positions.get(idx) + " IDX: " + idx);
 		Gdx.input.setCursorPosition((int) positions.get(idx).x, (int) positions.get(idx).y);
 	}
 
 	public enum PointerToNextType {
 		LEFT, RIGHT
+	}
+
+	public enum ActionButton {
+		LOOKAT, ACTION, INVENTORY, NONE
 	}
 
 	public static final ActionButton mouseToAction(int b) {

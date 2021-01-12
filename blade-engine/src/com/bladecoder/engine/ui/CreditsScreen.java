@@ -30,6 +30,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -43,6 +44,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -67,6 +69,8 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 	private Viewport viewport;
 
 	private final GlyphLayout layout = new GlyphLayout();
+
+	private ScreenControllerHandler controller;
 
 	private final InputProcessor inputProcessor = new InputAdapter() {
 		@Override
@@ -144,6 +148,8 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 		}
 
 		batch.end();
+
+		controller.update(delta);
 	}
 
 	private float processCreditTitle(SpriteBatch batch, int width, int height, float y, int i, String s) {
@@ -303,6 +309,16 @@ public class CreditsScreen extends ScreenAdapter implements BladeScreen {
 
 		stringHead = 0;
 		scrollY = 0;
+
+		controller = new ScreenControllerHandler(ui, null, viewport) {
+			@Override
+			protected boolean buttonUp(Controller controller, int buttonCode) {
+
+				ui.setCurrentScreen(Screens.MENU_SCREEN);
+
+				return true;
+			}
+		};
 	}
 
 	@Override
