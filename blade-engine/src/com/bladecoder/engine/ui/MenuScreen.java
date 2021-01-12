@@ -45,6 +45,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
@@ -67,6 +68,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 	private Music music;
 
+	private ScreenControllerHandler controller;
+
 	public MenuScreen() {
 	}
 
@@ -77,6 +80,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
 		stage.act(delta);
 		stage.draw();
+		controller.update(delta);
 	}
 
 	@Override
@@ -119,6 +123,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 	@Override
 	public void show() {
 		stage = new Stage(new ScreenViewport());
+		controller = new ScreenControllerHandler(ui, stage, stage.getViewport());
 
 		final Skin skin = ui.getSkin();
 		final World world = ui.getWorld();

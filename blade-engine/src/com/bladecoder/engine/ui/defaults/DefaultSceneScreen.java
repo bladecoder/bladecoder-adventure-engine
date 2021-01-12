@@ -39,6 +39,7 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.CharacterActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
@@ -61,11 +62,11 @@ import com.bladecoder.engine.ui.TesterBot;
 import com.bladecoder.engine.ui.TextManagerUI;
 import com.bladecoder.engine.ui.UI;
 import com.bladecoder.engine.ui.UI.Screens;
-import com.bladecoder.engine.ui.defaults.SceneGestureListener.ActionButton;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.UIUtils;
+import com.bladecoder.engine.util.UIUtils.ActionButton;
 
 public class DefaultSceneScreen implements SceneScreen {
 	private final static float LOADING_WAIT_TIME_MS = 400f;
@@ -118,6 +119,7 @@ public class DefaultSceneScreen implements SceneScreen {
 	private boolean uiEnabled = true;
 
 	private final GestureDetector inputProcessor = new SceneGestureDetector(this);
+	private SceneControllerHandler sceneController;
 
 	private final WorldListener worldListener = new SceneWorldListener(this);
 
@@ -411,6 +413,8 @@ public class DefaultSceneScreen implements SceneScreen {
 		}
 
 		batch.end();
+
+		sceneController.update(delta);
 	}
 
 	@Override
@@ -451,7 +455,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		inventoryUI.retrieveAssets(atlas);
 	}
 
-	void sceneClick(ActionButton button, int count) {
+	void sceneClick(com.bladecoder.engine.util.UIUtils.ActionButton button, int count) {
 		World w = getWorld();
 
 		w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
@@ -604,6 +608,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		multiplexer.addProcessor(stage);
 		multiplexer.addProcessor(inputProcessor);
 		Gdx.input.setInputProcessor(multiplexer);
+		sceneController = new SceneControllerHandler(this);
 
 		if (getWorld().isDisposed()) {
 			try {
@@ -694,5 +699,45 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		debugDrawer = new DebugDrawer(getWorld(), ui.getSkin(), viewport);
 		hotspotsDrawer = new HotspotsDrawer(ui, viewport);
+	}
+
+	/**
+	 * Process a tap in the scene.
+	 */
+	public void tap(ActionButton button, int count) {
+
+		World w = getWorld();
+
+		if (w.getAssetState() != AssetState.LOADED || w.isPaused() || getUI().getRecorder().isPlaying()
+				|| getUI().getTesterBot().isEnabled())
+			return;
+
+		if (getPie().isVisible()) {
+			getPie().hide();
+		}
+
+		if (getDrawHotspots()) {
+			setDrawHotspots(false);
+			return;
+		}
+
+		if (w.inCutMode() || (!TextManager.AUTO_HIDE_TEXTS && getTextManagerUI().isVisible())) {
+
+			if (getUI().getRecorder().isRecording())
+				return;
+
+			w.getCurrentScene().getTextManager().next();
+		} else if (getInventoryUI().isVisible()) {
+			getInventoryUI().hide();
+		} else if (!w.hasDialogOptions()) {
+			if (button == ActionButton.INVENTORY) {
+				// Show inventory with the middle button
+				if (!getInventoryUI().isVisible()) {
+					getInventoryUI().show();
+				}
+			} else {
+				sceneClick(button, count);
+			}
+		}
 	}
 }

@@ -33,12 +33,12 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Verb;
-import com.bladecoder.engine.ui.defaults.SceneGestureListener.ActionButton;
 import com.bladecoder.engine.ui.defaults.ScenePointer;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.UIUtils;
+import com.bladecoder.engine.util.UIUtils.ActionButton;
 
 public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	public enum InventoryPos {
@@ -81,9 +81,16 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			@Override
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 
-				ActionButton b = UIUtils.mouseToAction(button);
+				if (pointer == 11) { // pointer > 10 comes from controller
+					touchedUp(x, y, ActionButton.LOOKAT);
+				} else if (pointer == 12) {
+					startDragging(x, y);
+				} else {
 
-				touchedUp(x, y, b);
+					ActionButton b = UIUtils.mouseToAction(button);
+
+					touchedUp(x, y, b);
+				}
 
 			}
 

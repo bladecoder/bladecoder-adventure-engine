@@ -55,6 +55,7 @@ import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.serialization.WorldSerialization;
 import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -77,6 +78,8 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 	private Pointer pointer;
 
+	private ScreenControllerHandler controller;
+
 	public LoadSaveScreen() {
 	}
 
@@ -87,6 +90,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
 		stage.act(delta);
 		stage.draw();
+		controller.update(delta);
 	}
 
 	@Override
@@ -125,6 +129,8 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		loadScreenMode = world.getCurrentScene() == null;
 
 		stage = new Stage(new ScreenViewport());
+
+		controller = new ScreenControllerHandler(ui, stage, stage.getViewport());
 
 		slotWidth = (int) (stage.getViewport().getWorldWidth() / (ROW_SLOTS + 1) - 2 * pad);
 		slotHeight = slotWidth * stage.getViewport().getScreenHeight() / stage.getViewport().getScreenWidth();
