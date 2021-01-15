@@ -32,6 +32,7 @@ import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.DialogUI;
+import com.bladecoder.engine.ui.InventoryUI;
 import com.bladecoder.engine.ui.SceneScreen.ActionButton;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -83,11 +84,25 @@ public class SceneControllerHandler extends ScreenControllerHandler {
 	protected void focusNext(PointerToNextType type) {
 		if (dsc.getDialogUI().isVisible()) {
 			pointerToDialog(type);
+		} else if (dsc.getInventoryUI().isVisible()) {
+			pointerToInventory(type);
 		} else if (dsc.getPie().isVisible()) {
 			pointerToPie(type);
 		} else {
 			pointerToActor(dsc.getWorld(), type, dsc.getViewport());
 		}
+	}
+
+	private void pointerToInventory(PointerToNextType type) {
+		InventoryUI inv = dsc.getInventoryUI();
+		int i = inv.getIndexUnderCursor();
+
+		if (i == -1) {
+			inv.cursorToInventoryActor(0);
+		} else if (type == PointerToNextType.RIGHT)
+			inv.cursorToInventoryActor(++i == dsc.getWorld().getInventory().getNumItems() ? 0 : i);
+		else
+			inv.cursorToInventoryActor(--i == -1 ? dsc.getWorld().getInventory().getNumItems() - 1 : i);
 	}
 
 	private void pointerToDialog(PointerToNextType type) {
@@ -119,8 +134,7 @@ public class SceneControllerHandler extends ScreenControllerHandler {
 		} else if (idx == actors.size - 1 && dialogUI.getScrollPercentY() != 1) {
 			dialogUI.setScrollPercentY(1);
 		} else {
-			dialogUI.scrollTo(target.getX(), target.getY(), target.getWidth(),
-					target.getHeight());
+			dialogUI.scrollTo(target.getX(), target.getY(), target.getWidth(), target.getHeight());
 
 		}
 

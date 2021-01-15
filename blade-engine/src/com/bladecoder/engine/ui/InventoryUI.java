@@ -17,6 +17,7 @@ package com.bladecoder.engine.ui;
 
 import java.util.Locale;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -34,6 +35,7 @@ import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.ui.SceneScreen.ActionButton;
+import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.ui.defaults.SceneGestureListener;
 import com.bladecoder.engine.ui.defaults.ScenePointer;
 import com.bladecoder.engine.util.Config;
@@ -162,7 +164,16 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 			setVisible(true);
 			setPosition(orgPos.x, orgPos.y);
 
-			addAction(Actions.moveTo(targetPos.x, targetPos.y, .1f));
+			addAction(Actions.sequence(Actions.moveTo(targetPos.x, targetPos.y, .1f), Actions.run(new Runnable() {
+
+				@Override
+				public void run() {
+					if (sceneScreen.getUI().getInputMode() == InputMode.GAMEPAD) {
+						cursorToInventoryActor(0);
+					}
+				}
+
+			})));
 		}
 	}
 
@@ -292,6 +303,37 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		}
 
 		super.draw(batch, alpha);
+	}
+
+	public void cursorToInventoryActor(int i) {
+		float x = i % cols;
+		float y = (rows - 1) - i / cols;
+
+		Vector2 pos = new Vector2(x * tileSize + x * rowSpace + margin + tileSize / 2f,
+				y * tileSize + y * rowSpace + margin + tileSize / 2f);
+
+		localToScreenCoordinates(pos);
+
+		Gdx.input.setCursorPosition((int) pos.x, (int) pos.y);
+
+		getStage().mouseMoved(Gdx.input.getX(), Gdx.input.getY());
+	}
+
+	public int getIndexUnderCursor() {
+		Vector2 inputPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+		getStage().screenToStageCoordinates(inputPos);
+
+		if (hit(inputPos.x, inputPos.y, false) == null)
+			return -1;
+
+		int col = (int) ((inputPos.x - getX() - margin) / (tileSize + rowSpace));
+		int row = (int) ((inputPos.y - getY() - margin) / (tileSize + rowSpace));
+
+		int i = row * cols + col;
+
+		EngineLogger.debug(">> COL: " + col + " ROW: " + row + " Idx: " + i);
+
+		return i;
 	}
 
 	public void cancelDragging() {
