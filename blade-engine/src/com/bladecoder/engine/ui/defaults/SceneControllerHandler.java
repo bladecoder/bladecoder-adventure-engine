@@ -22,15 +22,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.ui.DialogUI;
+import com.bladecoder.engine.ui.SceneScreen.ActionButton;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.UIUtils;
-import com.bladecoder.engine.util.UIUtils.ActionButton;
-import com.bladecoder.engine.util.UIUtils.PointerToNextType;
 
 public class SceneControllerHandler extends ScreenControllerHandler {
 	public static final float THUMBSTICKVELOCITY = 13f * 60f;
@@ -78,11 +81,79 @@ public class SceneControllerHandler extends ScreenControllerHandler {
 
 	@Override
 	protected void focusNext(PointerToNextType type) {
-		if (type == PointerToNextType.RIGHT) {
-			pointerToActor(dsc.getWorld(), PointerToNextType.RIGHT, dsc.getViewport());
+		if (dsc.getDialogUI().isVisible()) {
+			pointerToDialog(type);
+		} else if (dsc.getPie().isVisible()) {
+			pointerToPie(type);
 		} else {
-			pointerToActor(dsc.getWorld(), PointerToNextType.LEFT, dsc.getViewport());
+			pointerToActor(dsc.getWorld(), type, dsc.getViewport());
 		}
+	}
+
+	private void pointerToDialog(PointerToNextType type) {
+
+		Button hit = getButtonUnderCursor(dsc.getStage());
+
+		DialogUI dialogUI = (DialogUI) dsc.getDialogUI();
+		Array<Actor> actors = ((Table) dialogUI.getChildren().get(0)).getChildren();
+
+		int idx = 0;
+
+		if (hit != null) {
+			idx = actors.indexOf(hit, true);
+
+			if (idx > 0 && type == PointerToNextType.LEFT) {
+				idx--;
+			} else if (idx < actors.size - 1 && type == PointerToNextType.RIGHT) {
+				idx++;
+			}
+
+		}
+
+		final Button target = (Button) actors.get(idx);
+
+		EngineLogger.debug("Final IDX: " + idx + " Button: " + target);
+
+		if (idx == 0 && hit != null && dialogUI.getScrollPercentY() != 0) {
+			dialogUI.setScrollPercentY(0);
+		} else if (idx == actors.size - 1 && dialogUI.getScrollPercentY() != 1) {
+			dialogUI.setScrollPercentY(1);
+		} else {
+			dialogUI.scrollTo(target.getX(), target.getY(), target.getWidth(),
+					target.getHeight());
+
+		}
+
+		dialogUI.updateVisualScroll();
+		dialogUI.invalidate();
+		dialogUI.layout();
+		cursorToActor(target);
+
+		dialogUI.setUpDownVisibility();
+	}
+
+	private void pointerToPie(PointerToNextType type) {
+
+		Button hit = getButtonUnderCursor(dsc.getStage());
+
+		Array<Actor> actors = dsc.getPie().getChildren();
+
+		int idx = 0;
+
+		if (hit != null) {
+			if (hit != actors.get(1) && hit != actors.get(2)) {
+				if (actors.get(1).isVisible()) {
+					idx = 1;
+				} else {
+					idx = 2;
+				}
+			}
+
+		}
+
+		Button target = (Button) actors.get(idx);
+
+		cursorToActor(target);
 	}
 
 	private void pointerToActor(World w, PointerToNextType type, Viewport viewport) {
@@ -125,6 +196,6 @@ public class SceneControllerHandler extends ScreenControllerHandler {
 			}
 		}
 
-		UIUtils.setNextCursorPosition(positions, type);
+		setNextCursorPosition(positions, type);
 	}
 }

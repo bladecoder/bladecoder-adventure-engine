@@ -16,6 +16,7 @@
 package com.bladecoder.engine.ui.defaults;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -33,11 +34,9 @@ import com.bladecoder.engine.ui.UI;
 import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.UIUtils;
-import com.bladecoder.engine.util.UIUtils.PointerToNextType;
 
 public class ScreenControllerHandler {
-	public static final float THUMBSTICKVELOCITY = 13f * 60f;
+	public static final float THUMBSTICKVELOCITY = 12f * 60f;
 
 	private Stage stage;
 	private UI ui;
@@ -53,6 +52,7 @@ public class ScreenControllerHandler {
 
 	public void update(float delta) {
 		updateAxis(delta);
+		updateDPad(delta);
 		updateButtons();
 	}
 
@@ -119,6 +119,23 @@ public class ScreenControllerHandler {
 
 		Array<Actor> actors = stage.getActors();
 
+		Button hit = getButtonUnderCursor(stage);
+
+		if (hit != null)
+			hit.getClickListener().exit(null, 0, 0, -1, null);
+
+		addActors(actors, positions, hit);
+
+		setNextCursorPosition(positions, type);
+
+		hit = getButtonUnderCursor(stage);
+
+		if (hit != null) {
+			hit.getClickListener().enter(null, 0, 0, -1, null);
+		}
+	}
+
+	protected Button getButtonUnderCursor(Stage stage) {
 		Vector2 inputPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 		stage.screenToStageCoordinates(inputPos);
 		Actor hit = stage.hit(inputPos.x, inputPos.y, true);
@@ -130,12 +147,10 @@ public class ScreenControllerHandler {
 			EngineLogger.debug("HIT!!: " + hit);
 		}
 
-		addActors(actors, positions, hit);
-
-		UIUtils.setNextCursorPosition(positions, type);
+		return (Button) hit;
 	}
 
-	private void addActors(Array<Actor> actors, List<Vector2> positions, Actor hit) {
+	protected void addActors(Array<Actor> actors, List<Vector2> positions, Actor hit) {
 		for (Actor a : actors) {
 
 			if (a == hit)
@@ -158,6 +173,74 @@ public class ScreenControllerHandler {
 				addActors(((Group) a).getChildren(), positions, hit);
 			}
 		}
+	}
+
+	public static void cursorToActor(Actor target) {
+		Vector2 pos = new Vector2(target.getWidth() / 2f, target.getHeight() / 2f);
+		target.localToScreenCoordinates(pos);
+
+		Gdx.input.setCursorPosition((int) pos.x, (int) pos.y);
+
+		target.getStage().mouseMoved(Gdx.input.getX(), Gdx.input.getY());
+	}
+
+	protected void setNextCursorPosition(List<Vector2> positions, PointerToNextType type) {
+		if (positions.isEmpty())
+			return;
+
+		if (type == PointerToNextType.RIGHT) {
+			positions.sort(new Comparator<Vector2>() {
+				@Override
+				public int compare(Vector2 o1, Vector2 o2) {
+					int val = (int) (o1.x - o2.x);
+
+					if (val == 0)
+						val = (int) (o1.y - o2.y);
+
+					return val;
+				}
+			});
+		} else {
+			positions.sort(new Comparator<Vector2>() {
+				@Override
+				public int compare(Vector2 o1, Vector2 o2) {
+					int val = (int) (o2.x - o1.x);
+
+					if (val == 0)
+						val = (int) (o2.y - o1.y);
+
+					return val;
+				}
+			});
+		}
+
+		int idx = 0;
+
+		float minD = Float.MAX_VALUE;
+		Vector2 mPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+
+		// get the nearest actor
+		for (int i = 0; i < positions.size(); i++) {
+			Vector2 actPos = positions.get(i);
+			float d = actPos.dst(mPos);
+			if (d < minD) {
+				minD = d;
+				idx = i;
+			}
+		}
+
+		EngineLogger.debug("Prev: " + positions.get(idx) + " IDX: " + idx + " mPos: " + mPos);
+
+		if ((type == PointerToNextType.RIGHT && (int) positions.get(idx).x < (int) mPos.x)
+				|| (type == PointerToNextType.LEFT && (int) positions.get(idx).x > (int) mPos.x)
+				|| (type == PointerToNextType.RIGHT && (int) positions.get(idx).x == (int) mPos.x
+						&& positions.get(idx).y < mPos.y)
+				|| (type == PointerToNextType.LEFT && (int) positions.get(idx).x == (int) mPos.x
+						&& positions.get(idx).y > mPos.y))
+			idx = (idx + 1) % positions.size();
+
+		EngineLogger.debug("Selected: " + positions.get(idx) + " IDX: " + idx);
+		Gdx.input.setCursorPosition((int) positions.get(idx).x, (int) positions.get(idx).y);
 	}
 
 	private void updateAxis(float delta) {
@@ -191,6 +274,47 @@ public class ScreenControllerHandler {
 
 			Gdx.input.setCursorPosition(MathUtils.clamp(x, 0, viewport.getScreenWidth()),
 					MathUtils.clamp(y, 0, viewport.getScreenHeight()));
+
+			if (stage != null)
+				stage.mouseMoved(Gdx.input.getX(), Gdx.input.getY());
 		}
+	}
+
+	private void updateDPad(float delta) {
+		float v = THUMBSTICKVELOCITY * delta * viewport.getScreenWidth() / 1080f;
+
+		int vx = 0, vy = 0;
+
+		for (Controller controller : Controllers.getControllers()) {
+
+			if (controller.getButton(controller.getMapping().buttonDpadRight)) {
+				vx += v;
+			} else if (controller.getButton(controller.getMapping().buttonDpadLeft)) {
+				vx -= v;
+			}
+
+			if (controller.getButton(controller.getMapping().buttonDpadUp)) {
+				vy -= v;
+			} else if (controller.getButton(controller.getMapping().buttonDpadDown)) {
+				vy += v;
+			}
+		}
+
+		if (vx != 0 || vy != 0) {
+			int x = Gdx.input.getX() + vx;
+			int y = Gdx.input.getY() + vy;
+
+			ui.setInputMode(InputMode.GAMEPAD);
+
+			Gdx.input.setCursorPosition(MathUtils.clamp(x, 0, viewport.getScreenWidth()),
+					MathUtils.clamp(y, 0, viewport.getScreenHeight()));
+
+			if (stage != null)
+				stage.mouseMoved(Gdx.input.getX(), Gdx.input.getY());
+		}
+	}
+
+	public enum PointerToNextType {
+		LEFT, RIGHT
 	}
 }

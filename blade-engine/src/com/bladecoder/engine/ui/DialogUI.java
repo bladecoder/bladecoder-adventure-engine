@@ -22,7 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -34,6 +33,8 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.ui.UI.InputMode;
+import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -54,22 +55,26 @@ public class DialogUI extends ScrollPane {
 
 	private Task postponedSelect = null;
 
-	public DialogUI(Skin skin, World w, Recorder recorder) {
-		super(new Table(skin), skin);
+	private UI ui;
+
+	public DialogUI(UI ui, Recorder recorder) {
+		super(new Table(ui.getSkin()), ui.getSkin());
+
+		this.ui = ui;
 
 		setFadeScrollBars(true);
 		setOverscroll(false, false);
 
-		up = new Button(skin, "dialog-up");
-		down = new Button(skin, "dialog-down");
+		up = new Button(ui.getSkin(), "dialog-up");
+		down = new Button(ui.getSkin(), "dialog-down");
 
 		panel = (Table) getActor();
-		style = skin.get(DialogUIStyle.class);
+		style = ui.getSkin().get(DialogUIStyle.class);
 		this.recorder = recorder;
-		this.world = w;
+		this.world = ui.getWorld();
 
 		if (style.background != null)
-			panel.setBackground(style.background);
+			getStyle().background = style.background;
 
 		panel.top().left();
 		panel.pad(DPIUtils.getMarginSize());
@@ -92,7 +97,7 @@ public class DialogUI extends ScrollPane {
 		});
 	}
 
-	private void setUpDownVisibility() {
+	public void setUpDownVisibility() {
 		EngineLogger.debug(
 				"setUpDownVisibility: " + isScrollY() + " maxY: " + getMaxY() + " Margin: " + DPIUtils.getMarginSize());
 		if (isScrollY() && getMaxY() > DPIUtils.getMarginSize()) {
@@ -126,6 +131,8 @@ public class DialogUI extends ScrollPane {
 			down.setVisible(false);
 			up.remove();
 			down.remove();
+			if (getParent() != null)
+				getStage().setScrollFocus(null);
 		}
 	}
 
@@ -211,6 +218,12 @@ public class DialogUI extends ScrollPane {
 			down.addAction(
 					Actions.repeat(3, Actions.sequence(Actions.moveBy(0, 15, .08f), Actions.moveBy(0, -15, .08f))));
 		}
+
+		if (ui.getInputMode() == InputMode.GAMEPAD) {
+			ScreenControllerHandler.cursorToActor(((Table) (getChildren().get(0))).getChildren().get(0));
+		}
+
+		getStage().setScrollFocus(this);
 	}
 
 	private void select(int i) {

@@ -18,10 +18,6 @@ package com.bladecoder.engine.util;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
-import java.util.Comparator;
-import java.util.List;
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -125,86 +121,4 @@ public class UIUtils {
 		}
 	}
 
-	public static void setNextCursorPosition(List<Vector2> positions, PointerToNextType type) {
-		if (positions.isEmpty())
-			return;
-
-		if (type == PointerToNextType.RIGHT) {
-			positions.sort(new Comparator<Vector2>() {
-				@Override
-				public int compare(Vector2 o1, Vector2 o2) {
-					int val = (int) (o1.x - o2.x);
-
-					if (val == 0)
-						val = (int) (o1.y - o2.y);
-
-					return val;
-				}
-			});
-		} else {
-			positions.sort(new Comparator<Vector2>() {
-				@Override
-				public int compare(Vector2 o1, Vector2 o2) {
-					int val = (int) (o2.x - o1.x);
-
-					if (val == 0)
-						val = (int) (o2.y - o1.y);
-
-					return val;
-				}
-			});
-		}
-
-		int idx = 0;
-
-		float minD = Float.MAX_VALUE;
-		Vector2 mPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-
-		// get the nearest actor
-		for (int i = 0; i < positions.size(); i++) {
-			Vector2 actPos = positions.get(i);
-			float d = actPos.dst(mPos);
-			if (d < minD) {
-				minD = d;
-				idx = i;
-			}
-		}
-
-		EngineLogger.debug("Prev: " + positions.get(idx) + " IDX: " + idx + " mPos: " + mPos);
-
-		if ((type == PointerToNextType.RIGHT && (int) positions.get(idx).x < (int) mPos.x)
-				|| (type == PointerToNextType.LEFT && (int) positions.get(idx).x > (int) mPos.x)
-				|| (type == PointerToNextType.RIGHT && (int) positions.get(idx).x == (int) mPos.x
-						&& positions.get(idx).y < mPos.y)
-				|| (type == PointerToNextType.LEFT && (int) positions.get(idx).x == (int) mPos.x
-						&& positions.get(idx).y > mPos.y))
-			idx = (idx + 1) % positions.size();
-
-		EngineLogger.debug("Selected: " + positions.get(idx) + " IDX: " + idx);
-		Gdx.input.setCursorPosition((int) positions.get(idx).x, (int) positions.get(idx).y);
-	}
-
-	public enum PointerToNextType {
-		LEFT, RIGHT
-	}
-
-	public enum ActionButton {
-		LOOKAT, ACTION, INVENTORY, NONE
-	}
-
-	public static final ActionButton mouseToAction(int b) {
-		if (b == 0) {
-			return ActionButton.LOOKAT;
-		}
-
-		if (b == 1) {
-			return ActionButton.ACTION;
-		}
-
-		if (b == 2) {
-			return ActionButton.INVENTORY;
-		}
-
-		return ActionButton.NONE;
-	}
 }

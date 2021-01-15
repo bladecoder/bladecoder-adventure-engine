@@ -60,11 +60,10 @@ import com.bladecoder.engine.ui.TesterBot;
 import com.bladecoder.engine.ui.TextManagerUI;
 import com.bladecoder.engine.ui.UI;
 import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.ui.defaults.SceneGestureListener;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
-import com.bladecoder.engine.util.UIUtils;
-import com.bladecoder.engine.util.UIUtils.ActionButton;
 
 public class RetroSceneScreen implements SceneScreen {
 	private static final float UI_SCREEN_PERCENT = 1 - 144.0f / 200.0f; // % of
@@ -132,7 +131,7 @@ public class RetroSceneScreen implements SceneScreen {
 				if (w.inCutMode() && !recorder.isRecording()) {
 					w.getCurrentScene().getTextManager().next();
 				} else if (!w.hasDialogOptions()) {
-					sceneClick(UIUtils.mouseToAction(button));
+					sceneClick(SceneGestureListener.mouseToAction(button));
 				}
 			}
 
@@ -734,7 +733,7 @@ public class RetroSceneScreen implements SceneScreen {
 
 		textManagerUI = new TextManagerUI(ui.getSkin(), getWorld());
 		menuButton = new Button(ui.getSkin(), "menu");
-		dialogUI = new DialogUI(ui.getSkin(), getWorld(), recorder);
+		dialogUI = new DialogUI(ui, recorder);
 
 		verbUI = new VerbUI(this);
 

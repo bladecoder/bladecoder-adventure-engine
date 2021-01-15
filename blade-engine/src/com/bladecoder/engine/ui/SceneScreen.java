@@ -18,9 +18,12 @@ package com.bladecoder.engine.ui;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.util.UIUtils.ActionButton;
 
 public interface SceneScreen extends BladeScreen {
+	public enum ActionButton {
+		LOOKAT, ACTION, INVENTORY, NONE
+	}
+
 	UI getUI();
 
 	World getWorld();
