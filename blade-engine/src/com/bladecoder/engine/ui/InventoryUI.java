@@ -33,12 +33,12 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.Verb;
+import com.bladecoder.engine.ui.SceneScreen.ActionButton;
+import com.bladecoder.engine.ui.defaults.SceneGestureListener;
 import com.bladecoder.engine.ui.defaults.ScenePointer;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.UIUtils;
-import com.bladecoder.engine.util.UIUtils.ActionButton;
 
 public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	public enum InventoryPos {
@@ -87,7 +87,7 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 					startDragging(x, y);
 				} else {
 
-					ActionButton b = UIUtils.mouseToAction(button);
+					ActionButton b = SceneGestureListener.mouseToAction(button);
 
 					touchedUp(x, y, b);
 				}

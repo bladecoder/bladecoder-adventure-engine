@@ -19,12 +19,10 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
+import com.bladecoder.engine.ui.SceneScreen.ActionButton;
 import com.bladecoder.engine.util.EngineLogger;
-import com.bladecoder.engine.util.UIUtils;
-import com.bladecoder.engine.util.UIUtils.ActionButton;
 
 public class SceneGestureListener extends GestureDetector.GestureAdapter {
-
 	private DefaultSceneScreen dsc;
 
 	public SceneGestureListener(DefaultSceneScreen dsc) {
@@ -40,7 +38,7 @@ public class SceneGestureListener extends GestureDetector.GestureAdapter {
 	public boolean tap(float x, float y, int count, int button) {
 		EngineLogger.debug("Event TAP button: " + button + " count: " + count);
 
-		ActionButton actionButton = UIUtils.mouseToAction(button);
+		ActionButton actionButton = mouseToAction(button);
 		tap(actionButton, count);
 
 		return true;
@@ -104,5 +102,21 @@ public class SceneGestureListener extends GestureDetector.GestureAdapter {
 		tap(x, y, 1, button);
 
 		return true;
+	}
+
+	public static final ActionButton mouseToAction(int b) {
+		if (b == 0) {
+			return ActionButton.LOOKAT;
+		}
+
+		if (b == 1) {
+			return ActionButton.ACTION;
+		}
+
+		if (b == 2) {
+			return ActionButton.INVENTORY;
+		}
+
+		return ActionButton.NONE;
 	}
 }

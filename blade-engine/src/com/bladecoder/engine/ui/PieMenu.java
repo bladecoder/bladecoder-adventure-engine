@@ -25,6 +25,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.ui.UI.InputMode;
+import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -171,7 +173,18 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		// lookatButton.setPosition(this.x - lookatButton.getWidth() - margin / 2,
 		// this.y + margin);
 		lookatButton.setPosition(this.x - lookatButton.getWidth() / 2, this.y - lookatButton.getHeight() / 2);
-		lookatButton.addAction(Actions.moveTo(this.x - lookatButton.getWidth() - margin / 2, this.y + margin, .1f));
+		lookatButton.addAction(
+				Actions.sequence(Actions.moveTo(this.x - lookatButton.getWidth() - margin / 2, this.y + margin, .1f),
+						Actions.run(new Runnable() {
+
+							@Override
+							public void run() {
+								if (sceneScreen.getUI().getInputMode() == InputMode.GAMEPAD) {
+									ScreenControllerHandler.cursorToActor(lookatButton);
+								}
+							}
+
+						})));
 
 		// rightButton.setPosition(this.x + margin / 2, this.y + margin);
 		rightButton.setPosition(this.x - lookatButton.getWidth() / 2, this.y - lookatButton.getHeight() / 2);

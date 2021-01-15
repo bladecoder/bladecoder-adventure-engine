@@ -61,12 +61,12 @@ import com.bladecoder.engine.ui.SceneScreen;
 import com.bladecoder.engine.ui.TesterBot;
 import com.bladecoder.engine.ui.TextManagerUI;
 import com.bladecoder.engine.ui.UI;
+import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.UIUtils;
-import com.bladecoder.engine.util.UIUtils.ActionButton;
 
 public class DefaultSceneScreen implements SceneScreen {
 	private final static float LOADING_WAIT_TIME_MS = 400f;
@@ -455,7 +455,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		inventoryUI.retrieveAssets(atlas);
 	}
 
-	void sceneClick(com.bladecoder.engine.util.UIUtils.ActionButton button, int count) {
+	void sceneClick(ActionButton button, int count) {
 		World w = getWorld();
 
 		w.getSceneCamera().getInputUnProject(viewport, unprojectTmp);
@@ -521,7 +521,7 @@ public class DefaultSceneScreen implements SceneScreen {
 				verb = Verb.LOOKAT_VERB;
 
 			runVerb(a, verb, null);
-		} else if (uiMode == UIModes.TWO_BUTTONS) {
+		} else if (uiMode == UIModes.TWO_BUTTONS || ui.getInputMode() == InputMode.GAMEPAD) {
 			String verb = Verb.LOOKAT_VERB;
 
 			if (!lookatButton) {
@@ -666,7 +666,7 @@ public class DefaultSceneScreen implements SceneScreen {
 		pie = new PieMenu(this);
 		textManagerUI = new TextManagerUI(ui.getSkin(), getWorld());
 		menuButton = new AnimButton(ui.getSkin(), "menu");
-		dialogUI = new DialogUI(ui.getSkin(), getWorld(), ui.getRecorder());
+		dialogUI = new DialogUI(ui, ui.getRecorder());
 		pointer = new ScenePointer(ui.getSkin(), getWorld());
 		inventoryUI = new InventoryUI(this, pointer);
 		inventoryButton = new InventoryButton(ui.getSkin(), getWorld(), inventoryUI);
