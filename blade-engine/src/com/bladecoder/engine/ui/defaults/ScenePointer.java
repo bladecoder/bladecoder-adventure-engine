@@ -16,13 +16,11 @@
 package com.bladecoder.engine.ui.defaults;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TransformDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -31,6 +29,8 @@ import com.bladecoder.engine.model.ActorRenderer;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.AnimationDrawable;
+import com.bladecoder.engine.ui.UI;
+import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.RectangleRenderer;
 
@@ -58,15 +58,17 @@ public class ScenePointer {
 	private float pointerScale;
 	private float leaveRotation = 0f;
 	private final World world;
+	private final UI ui;
 
 	private final GlyphLayout layout = new GlyphLayout();
 
-	public ScenePointer(Skin skin, World w) {
-		this.world = w;
-		font = skin.getFont("desc");
-		pointerIcon = skin.getDrawable(POINTER_ICON);
-		leaveIcon = skin.getDrawable(LEAVE_ICON);
-		hotspotIcon = skin.getDrawable(HOTSPOT_ICON);
+	public ScenePointer(UI ui) {
+		this.ui = ui;
+		this.world = ui.getWorld();
+		font = ui.getSkin().getFont("desc");
+		pointerIcon = ui.getSkin().getDrawable(POINTER_ICON);
+		leaveIcon = ui.getSkin().getDrawable(LEAVE_ICON);
+		hotspotIcon = ui.getSkin().getDrawable(HOTSPOT_ICON);
 		reset();
 	}
 
@@ -128,7 +130,7 @@ public class ScenePointer {
 
 		getInputUnproject(v, mousepos);
 
-		boolean multiTouch = Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen);
+		boolean multiTouch = ui.getInputMode() == InputMode.TOUCHPANEL;
 
 		// DRAW TARGET DESCRIPTION
 		if (desc != null && (!multiTouch || Gdx.input.isTouched())) {

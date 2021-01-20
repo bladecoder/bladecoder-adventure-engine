@@ -438,7 +438,7 @@ public class DebugScreen implements BladeScreen {
 		scrollPane.setFillParent(true);
 		stage.addActor(scrollPane);
 
-		pointer = new Pointer(ui.getSkin());
+		pointer = new Pointer(ui);
 		stage.addActor(pointer);
 
 		Gdx.input.setInputProcessor(stage);

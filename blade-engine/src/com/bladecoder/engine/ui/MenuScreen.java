@@ -355,7 +355,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 			}
 		});
 
-		pointer = new Pointer(skin);
+		pointer = new Pointer(ui);
 		stage.addActor(pointer);
 
 		Gdx.input.setInputProcessor(stage);

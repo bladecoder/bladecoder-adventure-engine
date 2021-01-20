@@ -21,6 +21,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 import com.bladecoder.engine.ui.InventoryUI.InventoryPos;
+import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen.UIModes;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -143,6 +144,8 @@ public class SceneGestureDetector extends GestureDetector {
 	public boolean scrolled(float amountX, float amountY) {
 		if (dsc.isUiEnabled() && !dsc.getUI().getWorld().hasDialogOptions()
 				&& dsc.getUI().getWorld().getInventory().isVisible()) {
+
+			dsc.getUI().setInputMode(InputMode.MOUSE);
 
 			boolean fromDown = (dsc.getInventoryUI().getInventoryPos() == InventoryPos.CENTER
 					|| dsc.getInventoryUI().getInventoryPos() == InventoryPos.DOWN);

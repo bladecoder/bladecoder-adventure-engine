@@ -89,7 +89,7 @@ public class SceneControllerHandler extends ScreenControllerHandler {
 		} else if (dsc.getPie().isVisible()) {
 			pointerToPie(type);
 		} else {
-			pointerToActor(dsc.getWorld(), type, dsc.getViewport());
+			pointerToSceneActor(dsc.getWorld(), type, dsc.getViewport());
 		}
 	}
 
@@ -170,7 +170,7 @@ public class SceneControllerHandler extends ScreenControllerHandler {
 		cursorToActor(target);
 	}
 
-	private void pointerToActor(World w, PointerToNextType type, Viewport viewport) {
+	private void pointerToSceneActor(World w, PointerToNextType type, Viewport viewport) {
 
 		List<Vector2> positions = new ArrayList<>();
 
@@ -206,7 +206,8 @@ public class SceneControllerHandler extends ScreenControllerHandler {
 				unprojectV.set(pos.x * scale, pos.y * scale, 0);
 				w.getCurrentScene().getCamera().project(unprojectV, 0, 0, viewport.getScreenWidth(),
 						viewport.getScreenHeight());
-				positions.add(pos.set(unprojectV.x, viewport.getScreenHeight() - unprojectV.y));
+				positions.add(pos.set(viewport.getScreenX() + unprojectV.x,
+						viewport.getScreenY() + viewport.getScreenHeight() - unprojectV.y));
 			}
 		}
 

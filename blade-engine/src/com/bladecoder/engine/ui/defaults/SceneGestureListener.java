@@ -15,11 +15,14 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui.defaults;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.input.GestureDetector;
 import com.bladecoder.engine.model.TextManager;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.ui.SceneScreen.ActionButton;
+import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class SceneGestureListener extends GestureDetector.GestureAdapter {
@@ -37,6 +40,12 @@ public class SceneGestureListener extends GestureDetector.GestureAdapter {
 	@Override
 	public boolean tap(float x, float y, int count, int button) {
 		EngineLogger.debug("Event TAP button: " + button + " count: " + count);
+
+		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)) {
+			dsc.getUI().setInputMode(InputMode.TOUCHPANEL);
+		} else {
+			dsc.getUI().setInputMode(InputMode.MOUSE);
+		}
 
 		ActionButton actionButton = mouseToAction(button);
 		tap(actionButton, count);

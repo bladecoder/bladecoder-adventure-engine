@@ -272,8 +272,9 @@ public class ScreenControllerHandler {
 
 			ui.setInputMode(InputMode.GAMEPAD);
 
-			Gdx.input.setCursorPosition(MathUtils.clamp(x, 0, viewport.getScreenWidth()),
-					MathUtils.clamp(y, 0, viewport.getScreenHeight()));
+			Gdx.input.setCursorPosition(
+					MathUtils.clamp(x, viewport.getScreenX(), viewport.getScreenWidth() + viewport.getScreenX()),
+					MathUtils.clamp(y, viewport.getScreenY(), viewport.getScreenHeight() + viewport.getScreenY()));
 
 			if (stage != null)
 				stage.mouseMoved(Gdx.input.getX(), Gdx.input.getY());
@@ -306,8 +307,9 @@ public class ScreenControllerHandler {
 
 			ui.setInputMode(InputMode.GAMEPAD);
 
-			Gdx.input.setCursorPosition(MathUtils.clamp(x, 0, viewport.getScreenWidth()),
-					MathUtils.clamp(y, 0, viewport.getScreenHeight()));
+			Gdx.input.setCursorPosition(
+					MathUtils.clamp(x, viewport.getScreenX(), viewport.getScreenWidth() + viewport.getScreenX()),
+					MathUtils.clamp(y, viewport.getScreenY(), viewport.getScreenHeight() + viewport.getScreenY()));
 
 			if (stage != null)
 				stage.mouseMoved(Gdx.input.getX(), Gdx.input.getY());

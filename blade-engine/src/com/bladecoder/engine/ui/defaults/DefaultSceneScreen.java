@@ -18,7 +18,6 @@ package com.bladecoder.engine.ui.defaults;
 import java.util.Locale;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -353,7 +352,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
 		if (inventoryUI.isDragging())
 			tolerance = DPIUtils.getTouchMinSize();
-		else if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
+		else if (ui.getInputMode() == InputMode.TOUCHPANEL)
 			tolerance = DPIUtils.getTouchMinSize() / 2;
 		else
 			tolerance = 0;
@@ -667,14 +666,14 @@ public class DefaultSceneScreen implements SceneScreen {
 		textManagerUI = new TextManagerUI(ui.getSkin(), getWorld());
 		menuButton = new AnimButton(ui.getSkin(), "menu");
 		dialogUI = new DialogUI(ui, ui.getRecorder());
-		pointer = new ScenePointer(ui.getSkin(), getWorld());
+		pointer = new ScenePointer(ui);
 		inventoryUI = new InventoryUI(this, pointer);
 		inventoryButton = new InventoryButton(ui.getSkin(), getWorld(), inventoryUI);
 
 		uiMode = UIModes
 				.valueOf(Config.getInstance().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
 
-		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen) && uiMode == UIModes.TWO_BUTTONS) {
+		if (ui.getInputMode() == InputMode.TOUCHPANEL && uiMode == UIModes.TWO_BUTTONS) {
 			uiMode = UIModes.PIE;
 		}
 

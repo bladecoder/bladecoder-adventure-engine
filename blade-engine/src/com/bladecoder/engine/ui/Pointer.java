@@ -16,14 +16,13 @@
 package com.bladecoder.engine.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.util.DPIUtils;
 
 /**
@@ -40,8 +39,11 @@ public class Pointer extends Actor {
 
 	private float pointerScale;
 
-	public Pointer(Skin skin) {
-		pointerIcon = skin.getDrawable(POINTER_ICON);
+	private UI ui;
+
+	public Pointer(UI ui) {
+		this.ui = ui;
+		pointerIcon = ui.getSkin().getDrawable(POINTER_ICON);
 		setTouchable(Touchable.disabled);
 
 		resize();
@@ -82,7 +84,7 @@ public class Pointer extends Actor {
 	}
 
 	public void show() {
-		if (!Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)) {
+		if (!(ui.getInputMode() == InputMode.TOUCHPANEL)) {
 			setVisible(true);
 		} else {
 			setVisible(false);

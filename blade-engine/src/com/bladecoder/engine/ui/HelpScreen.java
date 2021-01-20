@@ -20,7 +20,6 @@ import java.util.Locale;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
@@ -32,6 +31,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen.UIModes;
 import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
@@ -125,7 +125,7 @@ public class HelpScreen extends ScreenAdapter implements BladeScreen {
 		UIModes uiMode = UIModes
 				.valueOf(Config.getInstance().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
 
-		if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen) && uiMode == UIModes.TWO_BUTTONS) {
+		if (ui.getInputMode() == InputMode.TOUCHPANEL && uiMode == UIModes.TWO_BUTTONS) {
 			uiMode = UIModes.PIE;
 		}
 

@@ -19,7 +19,6 @@ import java.io.IOException;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -59,6 +58,7 @@ import com.bladecoder.engine.ui.SceneScreen;
 import com.bladecoder.engine.ui.TesterBot;
 import com.bladecoder.engine.ui.TextManagerUI;
 import com.bladecoder.engine.ui.UI;
+import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.ui.defaults.SceneGestureListener;
 import com.bladecoder.engine.util.DPIUtils;
@@ -369,7 +369,7 @@ public class RetroSceneScreen implements SceneScreen {
 
 			final float tolerance;
 
-			if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen))
+			if (ui.getInputMode() == InputMode.TOUCHPANEL)
 				tolerance = DPIUtils.getTouchMinSize();
 			else
 				tolerance = 0;
@@ -737,7 +737,7 @@ public class RetroSceneScreen implements SceneScreen {
 
 		verbUI = new VerbUI(this);
 
-		pointer = new Pointer(ui.getSkin());
+		pointer = new Pointer(ui);
 	}
 
 	@Override
