@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="%PACKAGE%"
+    package="com.bladecoder.engine"
 >
         
     <uses-feature android:glEsVersion="0x00020000"
@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/GdxTheme" >
         <activity
-            android:name="%PACKAGE%.AndroidLauncher"
+            android:name=".AndroidLauncher"
             android:label="@string/app_name" 
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize">

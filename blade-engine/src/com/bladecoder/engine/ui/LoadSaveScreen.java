@@ -250,7 +250,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		stage.setKeyboardFocus(table);
 		stage.addActor(table);
 
-		pointer = new Pointer(ui.getSkin());
+		pointer = new Pointer(ui);
 		stage.addActor(pointer);
 
 		Gdx.input.setInputProcessor(stage);

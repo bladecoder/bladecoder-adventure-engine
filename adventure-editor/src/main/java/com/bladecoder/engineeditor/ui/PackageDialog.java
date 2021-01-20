@@ -16,6 +16,7 @@
 package com.bladecoder.engineeditor.ui;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
@@ -62,12 +63,16 @@ public class PackageDialog extends EditDialog {
 
 	private static final String INFO = "Package the Game for distribution";
 	private static final String[] ARCHS = { "desktop", "android", "ios" };
-	private static final String[] TYPES = { "Bundle JRE", "Runnable jar" };
-	private static final String[] OSS = { "all", "windows32", "windows64", "linux64", "linux32", "macOSX" };
+	private static final String[] DESKTOP_TYPES = { "Bundle JRE", "Runnable jar" };
+	private static final String[] ANDROID_TYPES = { ".apk", ".aab" };
+	private static final String[] OSS = { "all", "windows32", "windows64", "linux64", "linux32", "macOS" };
 
 	private InputPanel arch;
 	private InputPanel dir;
-	private InputPanel type;
+
+	private InputPanel desktopType;
+	private InputPanel androidType;
+
 	private InputPanel os;
 	private FileInputPanel linux64JRE;
 	private FileInputPanel linux32JRE;
@@ -99,7 +104,8 @@ public class PackageDialog extends EditDialog {
 				ARCHS, true);
 		dir = new FileInputPanel(skin, "Output Directory", "Select the output directory to put the package",
 				FileInputPanel.DialogType.DIRECTORY);
-		type = InputPanelFactory.createInputPanel(skin, "Type", "Select the package type", TYPES, true);
+		desktopType = InputPanelFactory.createInputPanel(skin, "Type", "Select the package type", DESKTOP_TYPES, true);
+		androidType = InputPanelFactory.createInputPanel(skin, "Type", "Select the package type", ANDROID_TYPES, true);
 		os = InputPanelFactory.createInputPanel(skin, "OS", "Select the OS of the package", OSS, true);
 
 		FileTypeFilter typeFilter = new FileTypeFilter(true);
@@ -159,9 +165,9 @@ public class PackageDialog extends EditDialog {
 		customBuildParameters = InputPanelFactory.createInputPanel(skin, "Custom build parameters",
 				"You can add extra build parameters for customized build scripts.", false);
 
-		options = new InputPanel[] { type, os, linux64JRE, linux32JRE, winJRE, winJRE64, osxJRE, version, icon,
-				versionCode, androidSDK, expansionFile, androidKeyStore, androidKeyAlias, iosSignIdentity,
-				iosProvisioningProfile, customBuildParameters };
+		options = new InputPanel[] { androidType, desktopType, os, linux64JRE, linux32JRE, winJRE, winJRE64, osxJRE,
+				version, icon, versionCode, androidSDK, expansionFile, androidKeyStore, androidKeyAlias,
+				iosSignIdentity, iosProvisioningProfile, customBuildParameters };
 
 		addInputPanel(arch);
 		addInputPanel(dir);
@@ -204,10 +210,10 @@ public class PackageDialog extends EditDialog {
 			}
 		});
 
-		((FilteredSelectBox<String>) (type.getField())).addListener(new ChangeListener() {
+		((FilteredSelectBox<String>) (desktopType.getField())).addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				typeChanged();
+				desktopTypeChanged();
 			}
 		});
 
@@ -215,6 +221,13 @@ public class PackageDialog extends EditDialog {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				osChanged();
+			}
+		});
+
+		((FilteredSelectBox<String>) (androidType.getField())).addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				androidTypeChanged();
 			}
 		});
 
@@ -325,139 +338,170 @@ public class PackageDialog extends EditDialog {
 		String customBuildParams = customBuildParameters.getText() == null ? "" : customBuildParameters.getText() + " ";
 
 		if (arch.getText().equals("desktop")) {
-			String jarDir = Ctx.project.getProjectDir().getAbsolutePath() + "/desktop/build/libs/";
-			String jarName = projectName + "-desktop-" + version.getText() + ".jar";
+			String error = createDesktop(projectName, versionParam, customBuildParams);
+			return error == null ? msg : error;
+		}
 
-			String error = genDesktopJar(projectName, versionParam, jarDir, jarName, customBuildParams);
+		if (arch.getText().equals("android")) {
+			String error = createAndroid(projectName, versionParam, customBuildParams);
+			return error == null ? msg : error;
+		}
 
-			if (error != null)
-				msg = error;
-
-			if (type.getText().equals(TYPES[0])) { // BUNDLE JRE
-				String launcher = getDesktopMainClass();
-
-				if (os.getText().equals("linux64")) {
-					packr(Platform.Linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher,
-							dir.getText());
-				} else if (os.getText().equals("linux32")) {
-					packr(Platform.Linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher,
-							dir.getText());
-				} else if (os.getText().equals("windows32")) {
-					packr(Platform.Windows32, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-				} else if (os.getText().equals("windows64")) {
-					packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher,
-							dir.getText());
-				} else if (os.getText().equals("macOSX")) {
-					packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-				} else if (os.getText().equals("all")) {
-					packr(Platform.Linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher,
-							dir.getText());
-					packr(Platform.Linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher,
-							dir.getText());
-					packr(Platform.Windows32, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-					packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher,
-							dir.getText());
-					packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-				}
-			}
-		} else if (arch.getText().equals("android")) {
-			String params = versionParam + customBuildParams + "-PversionCode=" + versionCode.getText() + " "
-					+ "-Pkeystore=\"" + androidKeyStore.getText() + "\" " + "-PstorePassword="
-					+ androidKeyStorePassword.getText() + " " + "-Palias=" + androidKeyAlias.getText() + " "
-					+ "-PkeyPassword=" + androidKeyAliasPassword.getText() + " ";
-
-			// UPDATE 'local.properties' with the android SDK location.
-			if (androidSDK.getText() != null && !androidSDK.getText().trim().isEmpty()) {
-				String sdk = androidSDK.getText();
-
-				Properties p = new Properties();
-				p.setProperty("sdk.dir", sdk);
-				p.store(new FileOutputStream(
-						new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties")), null);
-			}
-
-			if (!new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties").exists()
-					&& System.getenv("ANDROID_HOME") == null) {
-				return "You have to specify the Android SDK path or set the ANDROID_HOME environtment variable.";
-			}
-
-			String task = "android:assembleFullRelease";
-			String apk = Ctx.project.getProjectDir().getAbsolutePath()
-					+ "/android/build/outputs/apk/full/release/android-full-release.apk";
-
-			boolean genExpansion = Boolean.parseBoolean(expansionFile.getText());
-			boolean newProjectStructure = new File(Ctx.project.getProjectDir().getAbsolutePath() + "/assets/").exists();
-
-			if (!newProjectStructure && genExpansion)
-				return "You need to update your project to the new layout to generate expansion files.";
-
-			if (!newProjectStructure) {
-				task = "android:assembleRelease";
-				apk = Ctx.project.getProjectDir().getAbsolutePath() + "/android/build/outputs/apk/android-release.apk";
-			}
-
-			if (genExpansion) {
-				task = "android:assembleExpansionRelease";
-				apk = Ctx.project.getProjectDir().getAbsolutePath()
-						+ "/android/build/outputs/apk/expansion/release/android-expansion-release.apk";
-			}
-
-			if (RunProccess.runGradle(Ctx.project.getProjectDir(), params + task)) {
-				File f = new File(apk);
-				FileUtils.copyFile(f, new File(dir.getText(), projectName + "-" + version.getText() + ".apk"));
-
-				if (genExpansion) {
-					File fExp = findObb(Ctx.project.getProjectDir().getAbsolutePath() + "/android/build/distributions/",
-							versionCode.getText());
-					FileUtils.copyFile(fExp, new File(dir.getText(), fExp.getName()));
-				}
-
-			} else {
-				msg = "Error Generating package";
-			}
-		} else if (arch.getText().equals("ios")) {
-
-			if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
-				return "You need a MacOSX computer with XCode installed to generate the IOS package.";
-			}
-
-			// UPDATE 'robovm.properties'
-			Properties p = new Properties();
-			p.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/ios/robovm.properties"));
-			p.setProperty("app.version", version.getText());
-			p.setProperty("app.build", versionCode.getText());
-			p.setProperty("app.name", Ctx.project.getTitle());
-			p.store(new FileOutputStream(
-					new File(Ctx.project.getProjectDir().getAbsolutePath(), "/ios/robovm.properties")), null);
-
-			List<String> params = new ArrayList<>();
-
-			if (iosSignIdentity.getText() != null)
-				params.add("-Probovm.iosSignIdentity=" + iosSignIdentity.getText());
-
-			if (iosProvisioningProfile.getText() != null)
-				params.add("-Probovm.iosProvisioningProfile=" + iosProvisioningProfile.getText());
-
-			if (customBuildParameters.getText() != null)
-				params.add(customBuildParams);
-
-			// Add clean target in IOS because the app. is not signing well if not cleaning.
-			params.add("ios:clean");
-
-			params.add("ios:createIPA");
-
-			if (RunProccess.runGradle(Ctx.project.getProjectDir(), params)) {
-
-				String apk = Ctx.project.getProjectDir().getAbsolutePath() + "/ios/build/robovm/IOSLauncher.ipa";
-
-				File f = new File(apk);
-				FileUtils.copyFile(f, new File(dir.getText(), projectName + "-" + version.getText() + ".ipa"));
-			} else {
-				msg = "Error Generating package";
-			}
+		if (arch.getText().equals("ios")) {
+			String error = createIOS(projectName, customBuildParams);
+			return error == null ? msg : error;
 		}
 
 		return msg;
+	}
+
+	private String createIOS(String projectName, String customBuildParams) throws IOException, FileNotFoundException {
+		if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
+			return "You need a MacOSX computer with XCode installed to generate the IOS package.";
+		}
+
+		// UPDATE 'robovm.properties'
+		Properties p = new Properties();
+		p.load(new FileReader(Ctx.project.getProjectDir().getAbsolutePath() + "/ios/robovm.properties"));
+		p.setProperty("app.version", version.getText());
+		p.setProperty("app.build", versionCode.getText());
+		p.setProperty("app.name", Ctx.project.getTitle());
+		p.store(new FileOutputStream(new File(Ctx.project.getProjectDir().getAbsolutePath(), "/ios/robovm.properties")),
+				null);
+
+		List<String> params = new ArrayList<>();
+
+		if (iosSignIdentity.getText() != null)
+			params.add("-Probovm.iosSignIdentity=" + iosSignIdentity.getText());
+
+		if (iosProvisioningProfile.getText() != null)
+			params.add("-Probovm.iosProvisioningProfile=" + iosProvisioningProfile.getText());
+
+		if (customBuildParameters.getText() != null)
+			params.add(customBuildParams);
+
+		// Add clean target in IOS because the app. is not signing well if not cleaning.
+		params.add("ios:clean");
+
+		params.add("ios:createIPA");
+
+		if (RunProccess.runGradle(Ctx.project.getProjectDir(), params)) {
+
+			String apk = Ctx.project.getProjectDir().getAbsolutePath() + "/ios/build/robovm/IOSLauncher.ipa";
+
+			File f = new File(apk);
+			FileUtils.copyFile(f, new File(dir.getText(), projectName + "-" + version.getText() + ".ipa"));
+		} else {
+			return "Error Generating package";
+		}
+
+		return null;
+	}
+
+	private String createAndroid(String projectName, String versionParam, String customBuildParams)
+			throws IOException, FileNotFoundException {
+		String params = versionParam + customBuildParams + "-PversionCode=" + versionCode.getText() + " "
+				+ "-Pkeystore=\"" + androidKeyStore.getText() + "\" " + "-PstorePassword="
+				+ androidKeyStorePassword.getText() + " " + "-Palias=" + androidKeyAlias.getText() + " "
+				+ "-PkeyPassword=" + androidKeyAliasPassword.getText() + " ";
+
+		// UPDATE 'local.properties' with the android SDK location.
+		if (androidSDK.getText() != null && !androidSDK.getText().trim().isEmpty()) {
+			String sdk = androidSDK.getText();
+
+			Properties p = new Properties();
+			p.setProperty("sdk.dir", sdk);
+			p.store(new FileOutputStream(new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties")),
+					null);
+		}
+
+		if (!new File(Ctx.project.getProjectDir().getAbsolutePath(), "local.properties").exists()
+				&& System.getenv("ANDROID_HOME") == null) {
+			return "You have to specify the Android SDK path or set the ANDROID_HOME environtment variable.";
+		}
+
+		boolean isAPK = androidType.getText().equals(ANDROID_TYPES[0]);
+
+		String task = "android:assembleFullRelease";
+		File pkgFile = new File(Ctx.project.getProjectDir().getAbsolutePath(),
+				"android/build/outputs/apk/full/release/android-full-release.apk");
+
+		File destPkgFile = new File(dir.getText(), projectName + "-" + version.getText() + ".apk");
+
+		boolean genExpansion = Boolean.parseBoolean(expansionFile.getText());
+
+		if (!isAPK) { // .aab
+			task = "android:bundleFullRelease";
+			pkgFile = new File(Ctx.project.getProjectDir().getAbsolutePath(),
+					"android/build/outputs/bundle/fullRelease/android-full-release.aab");
+			destPkgFile = new File(dir.getText(), projectName + "-" + version.getText() + ".aab");
+			genExpansion = false;
+		}
+
+		boolean newProjectStructure = new File(Ctx.project.getProjectDir().getAbsolutePath() + "/assets/").exists();
+
+		if (!newProjectStructure && genExpansion)
+			return "You need to update your project to the new layout to generate expansion files.";
+
+		if (!newProjectStructure) {
+			task = "android:assembleRelease";
+			pkgFile = new File(Ctx.project.getProjectDir().getAbsolutePath(),
+					"android/build/outputs/apk/android-release.apk");
+		}
+
+		if (genExpansion) {
+			task = "android:assembleExpansionRelease";
+			pkgFile = new File(Ctx.project.getProjectDir().getAbsolutePath(),
+					"android/build/outputs/apk/expansion/release/android-expansion-release.apk");
+		}
+
+		if (!RunProccess.runGradle(Ctx.project.getProjectDir(), params + task)) {
+			return "Error Generating package";
+		}
+
+		FileUtils.copyFile(pkgFile, destPkgFile);
+
+		if (genExpansion) {
+			File fExp = findObb(Ctx.project.getProjectDir().getAbsolutePath() + "/android/build/distributions/",
+					versionCode.getText());
+			FileUtils.copyFile(fExp, new File(dir.getText(), fExp.getName()));
+		}
+
+		return null;
+	}
+
+	private String createDesktop(String projectName, String versionParam, String customBuildParams) throws IOException {
+		String jarDir = Ctx.project.getProjectDir().getAbsolutePath() + "/desktop/build/libs/";
+		String jarName = projectName + "-desktop-" + version.getText() + ".jar";
+
+		String error = genDesktopJar(projectName, versionParam, jarDir, jarName, customBuildParams);
+
+		if (error != null)
+			return error;
+
+		if (desktopType.getText().equals(DESKTOP_TYPES[0])) { // BUNDLE JRE
+			String launcher = getDesktopMainClass();
+
+			if (os.getText().equals("linux64")) {
+				packr(Platform.Linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+			} else if (os.getText().equals("linux32")) {
+				packr(Platform.Linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+			} else if (os.getText().equals("windows32")) {
+				packr(Platform.Windows32, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+			} else if (os.getText().equals("windows64")) {
+				packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+			} else if (os.getText().equals("macOSX")) {
+				packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+			} else if (os.getText().equals("all")) {
+				packr(Platform.Linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+				packr(Platform.Linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+				packr(Platform.Windows32, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+				packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+				packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
+			}
+		}
+
+		return null;
 	}
 
 	private void archChanged() {
@@ -472,9 +516,10 @@ public class PackageDialog extends EditDialog {
 
 		String a = arch.getText();
 		if (a.equals("desktop")) {
-			setVisible(type, true);
-			typeChanged();
+			setVisible(desktopType, true);
+			desktopTypeChanged();
 		} else if (a.equals("android")) {
+			setVisible(androidType, true);
 			setVisible(versionCode, true);
 			setVisible(androidSDK, true);
 			setVisible(expansionFile, true);
@@ -491,8 +536,8 @@ public class PackageDialog extends EditDialog {
 		setVisible(customBuildParameters, true);
 	}
 
-	private void typeChanged() {
-		if (type.getText().equals(TYPES[0])) {
+	private void desktopTypeChanged() {
+		if (desktopType.getText().equals(DESKTOP_TYPES[0])) {
 			setVisible(os, true);
 		} else {
 			setVisible(os, false);
@@ -500,6 +545,14 @@ public class PackageDialog extends EditDialog {
 		}
 
 		osChanged();
+	}
+
+	private void androidTypeChanged() {
+		if (androidType.getText().equals(ANDROID_TYPES[0])) {
+			setVisible(expansionFile, true);
+		} else {
+			setVisible(expansionFile, false);
+		}
 	}
 
 	private void osChanged() {
@@ -531,7 +584,7 @@ public class PackageDialog extends EditDialog {
 			setVisible(linux64JRE, false);
 		}
 
-		if (os.isVisible() && (os.getText().equals("macOSX") || os.getText().equals("all"))) {
+		if (os.isVisible() && (os.getText().equals("macOS") || os.getText().equals("all"))) {
 			setVisible(osxJRE, true);
 			setVisible(icon, true);
 		} else {
