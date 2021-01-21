@@ -31,6 +31,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -42,12 +43,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.Text;
@@ -129,8 +132,6 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		loadScreenMode = world.getCurrentScene() == null;
 
 		stage = new Stage(new ScreenViewport());
-
-		controller = new ScreenControllerHandler(ui, stage, stage.getViewport());
 
 		slotWidth = (int) (stage.getViewport().getWorldWidth() / (ROW_SLOTS + 1) - 2 * pad);
 		slotHeight = slotWidth * stage.getViewport().getScreenHeight() / stage.getViewport().getScreenWidth();
@@ -254,6 +255,64 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		stage.addActor(pointer);
 
 		Gdx.input.setInputProcessor(stage);
+
+		controller = new ScreenControllerHandler(ui, stage, stage.getViewport()) {
+			@Override
+			protected void focusNext(PointerToNextType type) {
+				SnapshotArray<Actor> content = ((Table) scroll.getActor()).getChildren();
+
+				// find content cursor
+				int idx = -1;
+				for (int i = 0; i < content.size; i++) {
+					Vector2 inputPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+					content.get(i).screenToLocalCoordinates(inputPos);
+					if (content.get(i).hit(inputPos.x, inputPos.y, false) != null) {
+						idx = i;
+					}
+				}
+
+				// find the slot
+				Button b = getButtonUnderCursor(stage);
+				if (b != null && idx != -1) {
+					int find = ((Table) content.get(idx)).getChildren()
+							.indexOf(b.getParent() instanceof Stack ? b.getParent() : b, true);
+
+					if (type == PointerToNextType.LEFT) {
+						if (find == 0) {
+							EngineLogger.debug(">>>Previous page!!");
+							if (idx > 0) {
+								idx--;
+								scroll.scrollToPage(idx);
+
+								find = ((Table) content.get(idx)).getChildren().size - 1;
+							}
+						} else if (find == -1) {
+							find = 0;
+						} else {
+							find--;
+						}
+					} else if (type == PointerToNextType.RIGHT) {
+
+						if (find == ((Table) content.get(idx)).getChildren().size - 1) {
+							EngineLogger.debug(">>>Next page!!");
+							if (idx < content.size - 1) {
+								idx++;
+								scroll.scrollToPage(idx);
+								find = 0;
+							}
+						} else if (find == -1) {
+							find = 0;
+						} else {
+							find++;
+						}
+					}
+
+					cursorToActor(((Table) content.get(idx)).getChildren().get(find));
+				} else {
+					super.focusNext(type);
+				}
+			}
+		};
 	}
 
 	private boolean slotExists(String slot) {

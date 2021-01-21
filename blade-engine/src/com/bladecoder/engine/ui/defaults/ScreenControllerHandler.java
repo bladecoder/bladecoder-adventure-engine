@@ -216,31 +216,33 @@ public class ScreenControllerHandler {
 
 		int idx = 0;
 
-		float minD = Float.MAX_VALUE;
 		Vector2 mPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 
 		// get the nearest actor
 		for (int i = 0; i < positions.size(); i++) {
 			Vector2 actPos = positions.get(i);
-			float d = actPos.dst(mPos);
-			if (d < minD) {
-				minD = d;
-				idx = i;
+
+			if (type == PointerToNextType.RIGHT) {
+				if ((int) actPos.x < (int) mPos.x)
+					continue;
+
+				if ((int) actPos.x == (int) mPos.x && (int) actPos.y < (int) mPos.y)
+					continue;
+			} else {
+				if ((int) actPos.x > (int) mPos.x)
+					continue;
+
+				if ((int) actPos.x == (int) mPos.x && (int) actPos.y > (int) mPos.y)
+					continue;
 			}
+
+			idx = i;
+			break;
 		}
-
-		EngineLogger.debug("Prev: " + positions.get(idx) + " IDX: " + idx + " mPos: " + mPos);
-
-		if ((type == PointerToNextType.RIGHT && (int) positions.get(idx).x < (int) mPos.x)
-				|| (type == PointerToNextType.LEFT && (int) positions.get(idx).x > (int) mPos.x)
-				|| (type == PointerToNextType.RIGHT && (int) positions.get(idx).x == (int) mPos.x
-						&& positions.get(idx).y < mPos.y)
-				|| (type == PointerToNextType.LEFT && (int) positions.get(idx).x == (int) mPos.x
-						&& positions.get(idx).y > mPos.y))
-			idx = (idx + 1) % positions.size();
 
 		EngineLogger.debug("Selected: " + positions.get(idx) + " IDX: " + idx);
 		Gdx.input.setCursorPosition((int) positions.get(idx).x, (int) positions.get(idx).y);
+
 	}
 
 	private void updateAxis(float delta) {
