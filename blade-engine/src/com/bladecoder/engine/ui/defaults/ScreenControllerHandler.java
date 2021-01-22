@@ -202,6 +202,7 @@ public class ScreenControllerHandler {
 			});
 		} else {
 			positions.sort(new Comparator<Vector2>() {
+
 				@Override
 				public int compare(Vector2 o1, Vector2 o2) {
 					int val = (int) (o2.x - o1.x);
@@ -251,24 +252,15 @@ public class ScreenControllerHandler {
 		int vx = 0, vy = 0;
 
 		for (Controller controller : Controllers.getControllers()) {
-
-			for (int axisCode = 0; axisCode < controller.getAxisCount(); axisCode++) {
-
-				float inc = controller.getAxis(axisCode) * v;
-
-				if (axisCode == controller.getMapping().axisLeftX) {
-					vx += inc;
-				} else if (axisCode == controller.getMapping().axisLeftY) {
-					vy += inc;
-				} else if (axisCode == controller.getMapping().axisRightX) {
-					vx += inc / 2f;
-				} else if (axisCode == controller.getMapping().axisRightY) {
-					vy += inc / 2f;
-				}
-			}
+			vx += controller.getAxis(controller.getMapping().axisLeftX) * v;
+			vy += controller.getAxis(controller.getMapping().axisLeftY) * v;
+			vx += controller.getAxis(controller.getMapping().axisRightX) * v / 2f;
+			vy += controller.getAxis(controller.getMapping().axisRightY) * v / 2f;
 		}
 
-		if (vx != 0 || vy != 0) {
+		if (vx != 0 || vy != 0)
+
+		{
 			int x = Gdx.input.getX() + vx;
 			int y = Gdx.input.getY() + vy;
 
