@@ -25,7 +25,7 @@ import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 
 public class EditDialogDialog extends EditModelDialog<CharacterActor, Dialog> {
-	public static final String INFO = "Actors can have several dialogs defined. Dialogs have a list of options to choose.\nThis is the legacy option to create simple dialogs, for more complex dialogs use the *Ink* language.";
+	public static final String INFO = "[RED]DEPRECATED:[]\nActors can have several dialogs defined. Dialogs have a list of options to choose. This is the legacy option to create simple dialogs, for more complex dialogs use the *Ink* language.";
 
 	private InputPanel id;
 

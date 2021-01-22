@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.2]
+- Controller (gamepad) support.
+- .aab package generation for Android.
+- In panel showing choose options, up/down buttons now have animation.
+- Update libgdx to latest version 1.9.13.
+- Better Ink text extraction for I18N.
+- Fix: Bug deleting animation if initial animation is not set.
+
 ## [4.0.1]
 - Fix error serializing cb when Ink library is not used.
 - Fix error creating resolution when there are atlases with subfolders.
