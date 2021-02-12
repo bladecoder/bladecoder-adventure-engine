@@ -16,11 +16,11 @@
 package com.bladecoder.engine.model;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Deflater;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -827,24 +827,15 @@ public class World implements AssetConsumer {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		draw();
+
+		// TODO: Next line is deprecated, use Pixmap.createFromFrameBuffer();
 		Pixmap pixmap = ScreenUtils.getFrameBufferPixmap(0, 0, w, h);
 
 		// restore viewport
 		fbo.end(results.get(0), results.get(1), results.get(2), results.get(3));
 
-		// Flip the pixmap upside down
-		ByteBuffer pixels = pixmap.getPixels();
-		int numBytes = w * h * 4;
-		byte[] lines = new byte[numBytes];
-		int numBytesPerLine = w * 4;
-		for (int i = 0; i < h; i++) {
-			pixels.position((h - i - 1) * numBytesPerLine);
-			pixels.get(lines, i * numBytesPerLine, numBytesPerLine);
-		}
-		pixels.clear();
-		pixels.put(lines);
-
-		PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap);
+		PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap, Deflater.DEFAULT_COMPRESSION,
+				true);
 
 		fbo.dispose();
 	}
