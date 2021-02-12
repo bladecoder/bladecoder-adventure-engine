@@ -374,7 +374,7 @@ public class InkManager implements Serializable {
 		return story;
 	}
 
-	public void runPath(String path, ActionCallback cb) throws Exception {
+	public void runPath(String path, Object[] params, ActionCallback cb) throws Exception {
 		waitIfNotLoaded();
 
 		if (story == null) {
@@ -385,7 +385,7 @@ public class InkManager implements Serializable {
 		this.cb = cb;
 		sCb = null;
 
-		story.choosePathString(path);
+		story.choosePathString(path, true, params);
 		continueMaximally();
 	}
 
