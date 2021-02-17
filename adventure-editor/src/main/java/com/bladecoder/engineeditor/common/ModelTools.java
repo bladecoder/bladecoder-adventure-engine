@@ -526,6 +526,11 @@ public class ModelTools {
 						continue;
 				}
 
+				// Ignore listInt checks
+				if (v.size > i + 2 && v.get(i + 2).isString() && v.get(i + 2).asString().equals("listInt")) {
+					continue;
+				}
+
 				extractInkTextsInternal(aValue, sbTSV, sbMD, prop);
 			}
 
@@ -534,6 +539,8 @@ public class ModelTools {
 
 			if (value.length() == 0 || value.charAt(0) == '>')
 				return;
+
+			// if we are inside an expression, exit
 
 			int idx = value.indexOf('>');
 			String charName = "";
