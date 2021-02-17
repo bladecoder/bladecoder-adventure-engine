@@ -51,17 +51,17 @@ public class InkRunAction implements Action {
 				p = new Object[split.length];
 
 				for (int i = 0; i < split.length; i++) {
-					String v = split[i].trim();
+					String v =  split[i].trim();
 					Object val = v;
-
-					if (v.charAt(0) == '%') {
+					
+					if(v.charAt(0) == '%') {
 						try {
-							val = Float.parseFloat(v.substring(1));
+						val = Integer.parseInt(v.substring(1));
 						} catch (NumberFormatException e) {
 							// do nothing
 						}
 					}
-
+					
 					p[i] = val;
 				}
 			}
