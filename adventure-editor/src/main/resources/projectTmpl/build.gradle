@@ -5,7 +5,6 @@ buildscript {
         google()
     }
     dependencies {
-        classpath "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$roboVMGradlePluginVersion"
     	classpath "com.android.tools.build:gradle:$androidGradlePluginVersion"      
     }
@@ -20,6 +19,7 @@ subprojects {
     repositories {
         mavenCentral()
         google()
+        maven { url 'https://plugins.gradle.org/m2/' }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
    }
@@ -31,19 +31,4 @@ tasks.eclipse.doLast {
     delete '.settings/'
 }
 
-// Run `gradle pack` task to generate skin.atlas file at assets/ui.
-import com.badlogic.gdx.tools.texturepacker.TexturePacker
-task pack {
-	doLast {
-
-  // Note that if you need multiple atlases, you can duplicate the
-  // TexturePacker.process invocation and change paths to generate
-  // additional atlases with this task.
-  TexturePacker.process(
-    'images-raw/ui',           // Raw assets path.
-    'assets/ui/1/',        // Output directory.
-    'ui'              // Name of the generated atlas (without extension).
-  )
-  }
-}
 
