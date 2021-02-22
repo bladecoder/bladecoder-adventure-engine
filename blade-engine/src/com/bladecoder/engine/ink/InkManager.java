@@ -21,9 +21,7 @@ import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Text.Type;
-import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.serialization.ActionCallbackSerializer;
 import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.util.ActionUtils;
@@ -32,6 +30,7 @@ import com.bladecoder.ink.runtime.Choice;
 import com.bladecoder.ink.runtime.InkList;
 import com.bladecoder.ink.runtime.ListDefinition;
 import com.bladecoder.ink.runtime.Story;
+import com.bladecoder.ink.runtime.StoryState;
 
 public class InkManager implements Serializable {
 	public final static int KEY_SIZE = 10;
@@ -44,24 +43,23 @@ public class InkManager implements Serializable {
 
 	private Story story = null;
 
-	private ActionCallback cb;
-
-	// Depending on the reading order of Inventory, InkManager and Actor verbs,
-	// the verbCallbacks may not exist. So, we search the Cb lazily when needed.
-	private String sCb;
-
 	private boolean wasInCutmode;
 
 	private String storyName;
 
 	private final World w;
 
-	private InkVerbRunner inkVerbRunner = new InkVerbRunner();
-
 	private Thread loaderThread;
+
+	private final HashMap<String, InkVerbRunner> verbRunners = new HashMap<>();
 
 	public InkManager(World w) {
 		this.w = w;
+	}
+
+	public void init() {
+		wasInCutmode = false;
+		verbRunners.clear();
 	}
 
 	public void newStory(final String name) throws Exception {
@@ -181,42 +179,41 @@ public class InkManager implements Serializable {
 			story.getVariablesState().set(name, value);
 	}
 
-	private void continueMaximally() {
+	public void continueMaximally(InkVerbRunner inkVerbRunner) {
 		waitIfNotLoaded();
 
 		String line = null;
 
-		// We create a new InkVerbRunner every ink loop to avoid pending cb.resume() to
-		// execute in the new actions
-		inkVerbRunner.cancel();
-		inkVerbRunner = new InkVerbRunner();
-
 		HashMap<String, String> currentLineParams = new HashMap<>();
 
-		while (story.canContinue()) {
+		if (story.canContinue()) {
 			try {
-				line = story.Continue();
-				currentLineParams.clear();
 
-				// Remove trailing '\n'
-				if (!line.isEmpty())
-					line = line.substring(0, line.length() - 1);
+				do {
+					line = story.Continue();
+					currentLineParams.clear();
 
-				if (!line.isEmpty()) {
-					if (EngineLogger.debugMode())
-						EngineLogger.debug("INK LINE: " + translateLine(line));
+					// Remove trailing '\n'
+					if (!line.isEmpty())
+						line = line.substring(0, line.length() - 1);
 
-					processParams(story.getCurrentTags(), currentLineParams);
-
-					// PROCESS COMMANDS
-					if (line.charAt(0) == COMMAND_MARK) {
-						processCommand(currentLineParams, line);
-					} else {
-						processTextLine(currentLineParams, line);
+					if (line.isEmpty()) {
+						EngineLogger.debug("INK EMPTY LINE!");
 					}
+				} while (line.isEmpty());
+
+				if (EngineLogger.debugMode())
+					EngineLogger.debug("INK LINE: " + translateLine(line));
+
+				processParams(story.getCurrentTags(), currentLineParams);
+
+				// PROCESS COMMANDS
+				if (line.charAt(0) == COMMAND_MARK) {
+					processCommand(inkVerbRunner, currentLineParams, line);
 				} else {
-					EngineLogger.debug("INK EMPTY LINE!");
+					processTextLine(inkVerbRunner, currentLineParams, line);
 				}
+
 			} catch (Exception e) {
 				EngineLogger.error(e.getMessage(), e);
 			}
@@ -224,26 +221,18 @@ public class InkManager implements Serializable {
 			if (story.getCurrentErrors() != null && !story.getCurrentErrors().isEmpty()) {
 				EngineLogger.error(story.getCurrentErrors().get(0));
 			}
-
 		}
 
-		if (inkVerbRunner.getActions().size() > 0) {
-			inkVerbRunner.run(null, null);
+		if (!inkVerbRunner.isFinish()) {
+			inkVerbRunner.runCurrentAction();
 		} else {
 
 			if (hasChoices()) {
 				wasInCutmode = w.inCutMode();
 				w.setCutMode(false);
 				w.getListener().dialogOptions();
-			} else if (cb != null || sCb != null) {
-				if (cb == null) {
-					cb = ActionCallbackSerializer.find(w, w.getCurrentScene(), sCb);
-				}
-
-				ActionCallback tmpcb = cb;
-				cb = null;
-				sCb = null;
-				tmpcb.resume();
+			} else {
+				inkVerbRunner.callCb();
 			}
 		}
 	}
@@ -274,7 +263,7 @@ public class InkManager implements Serializable {
 		}
 	}
 
-	private void processCommand(HashMap<String, String> params, String line) {
+	private void processCommand(InkVerbRunner inkVerbRunner, HashMap<String, String> params, String line) {
 		String commandName = null;
 		String commandParams[] = null;
 
@@ -327,7 +316,7 @@ public class InkManager implements Serializable {
 		}
 	}
 
-	private void processTextLine(HashMap<String, String> params, String line) {
+	private void processTextLine(InkVerbRunner inkVerbRunner, HashMap<String, String> params, String line) {
 
 		// Get actor name from Line. Actor is separated by ':'.
 		// ej. "Johnny: Hello punks!"
@@ -374,7 +363,7 @@ public class InkManager implements Serializable {
 		return story;
 	}
 
-	public void runPath(String path, Object[] params, ActionCallback cb) throws Exception {
+	public void runPath(String path, Object[] params, String flow, ActionCallback cb) throws Exception {
 		waitIfNotLoaded();
 
 		if (story == null) {
@@ -382,17 +371,45 @@ public class InkManager implements Serializable {
 			return;
 		}
 
-		this.cb = cb;
-		sCb = null;
+		if (flow == null) {
+			story.switchToDefaultFlow();
+		} else {
+			story.switchFlow(flow);
+		}
 
 		story.choosePathString(path, true, params);
-		continueMaximally();
+		InkVerbRunner verbRunner = createVerbRunner(cb);
+		continueMaximally(verbRunner);
+	}
+
+	private InkVerbRunner createVerbRunner(ActionCallback cb) {
+
+		String f = story.getCurrentFlowName();
+
+		InkVerbRunner prev = verbRunners.put(story.getCurrentFlowName(), new InkVerbRunner(w, this, f, cb, null));
+
+		if (prev != null) {
+			// we cancel it in case there is some action executing
+			prev.cancel();
+		}
+
+		return verbRunners.get(f);
 	}
 
 	public boolean hasChoices() {
 		waitIfNotLoaded();
 
-		return (story != null && inkVerbRunner.getActions().size() == 0 && story.getCurrentChoices().size() > 0);
+		try {
+			story.switchToDefaultFlow();
+		} catch (Exception e) {
+			EngineLogger.error("InkManager: " + e.getMessage());
+			return false;
+		}
+
+		return (story != null
+				&& (!verbRunners.containsKey(StoryState.kDefaultFlowName)
+						|| verbRunners.get(StoryState.kDefaultFlowName).isFinish())
+				&& story.getCurrentChoices().size() > 0);
 	}
 
 	public List<String> getChoices() {
@@ -446,8 +463,9 @@ public class InkManager implements Serializable {
 		w.setCutMode(wasInCutmode);
 
 		try {
+			story.switchToDefaultFlow();
 			story.chooseChoiceIndex(i);
-			continueMaximally();
+			continueMaximally(verbRunners.get(StoryState.kDefaultFlowName));
 		} catch (Exception e) {
 			EngineLogger.error(e.getMessage(), e);
 		}
@@ -487,44 +505,22 @@ public class InkManager implements Serializable {
 		loaderThread.start();
 	}
 
-	public InkVerbRunner getVerbRunner() {
-		return inkVerbRunner;
+	public HashMap<String, InkVerbRunner> getVerbRunners() {
+		return verbRunners;
+	}
+
+	public InkVerbRunner getDefaultVerbRunner() {
+		return verbRunners.get(StoryState.kDefaultFlowName);
 	}
 
 	@Override
 	public void write(Json json) {
 		BladeJson bjson = (BladeJson) json;
-		World w = bjson.getWorld();
 
 		json.writeValue("storyName", storyName);
 
 		if (bjson.getMode() == Mode.STATE) {
 			json.writeValue("wasInCutmode", wasInCutmode);
-
-			if (cb == null && sCb != null)
-				cb = ActionCallbackSerializer.find(w, w.getCurrentScene(), sCb);
-
-			if (cb != null)
-				json.writeValue("cb", ActionCallbackSerializer.find(w, w.getCurrentScene(), cb));
-
-			// SAVE ACTIONS
-			json.writeArrayStart("actions");
-			for (Action a : inkVerbRunner.getActions()) {
-				ActionUtils.writeJson(a, json);
-			}
-			json.writeArrayEnd();
-
-			json.writeValue("ip", inkVerbRunner.getIP());
-
-			json.writeArrayStart("actionsSer");
-			for (Action a : inkVerbRunner.getActions()) {
-				if (a instanceof Serializable) {
-					json.writeObjectStart();
-					((Serializable) a).write(json);
-					json.writeObjectEnd();
-				}
-			}
-			json.writeArrayEnd();
 
 			// SAVE STORY
 			if (story != null) {
@@ -533,6 +529,8 @@ public class InkManager implements Serializable {
 				} catch (Exception e) {
 					EngineLogger.error(e.getMessage(), e);
 				}
+
+				json.writeValue("verbRunners", verbRunners, verbRunners.getClass(), InkVerbRunner.class);
 			}
 		}
 	}
@@ -556,121 +554,56 @@ public class InkManager implements Serializable {
 			}
 		} else {
 			wasInCutmode = json.readValue("wasInCutmode", Boolean.class, jsonData);
-			sCb = json.readValue("cb", String.class, jsonData);
-
-			// READ ACTIONS
-			JsonValue actionsValue = jsonData.get("actions");
-
-			inkVerbRunner = new InkVerbRunner();
-
-			for (int i = 0; i < actionsValue.size; i++) {
-				JsonValue aValue = actionsValue.get(i);
-
-				Action a = ActionUtils.readJson(w, json, aValue);
-				inkVerbRunner.getActions().add(a);
-			}
-
-			inkVerbRunner.setIP(json.readValue("ip", Integer.class, jsonData));
-
-			actionsValue = jsonData.get("actionsSer");
-
-			int i = 0;
-
-			for (Action a : inkVerbRunner.getActions()) {
-				if (a instanceof Serializable && i < actionsValue.size) {
-					if (actionsValue.get(i) == null)
-						break;
-
-					((Serializable) a).read(json, actionsValue.get(i));
-					i++;
-				}
-			}
 
 			// READ STORY
 			final String storyString = json.readValue("story", String.class, jsonData);
 			if (storyString != null) {
 				loadThreaded(name, storyString);
 			}
-		}
-	}
 
-	public final class InkVerbRunner implements VerbRunner {
+			// FOR BACKWARD COMPATIBILITY
+			if (jsonData.has("actions")) {
 
-		private ArrayList<Action> actions;
-		private int ip = -1;
-		private boolean cancelled = false;
+				String sCb = json.readValue("cb", String.class, jsonData);
 
-		public InkVerbRunner() {
-			actions = new ArrayList<>();
-		}
+				// READ ACTIONS
+				JsonValue actionsValue = jsonData.get("actions");
 
-		@Override
-		public void resume() {
-			ip++;
+				InkVerbRunner inkVerbRunner = new InkVerbRunner(w, this, StoryState.kDefaultFlowName, null, sCb);
+				verbRunners.put(StoryState.kDefaultFlowName, inkVerbRunner);
 
-			nextStep();
-		}
+				for (int i = 0; i < actionsValue.size; i++) {
+					JsonValue aValue = actionsValue.get(i);
 
-		@Override
-		public ArrayList<Action> getActions() {
-			return actions;
-		}
-
-		@Override
-		public void run(String currentTarget, ActionCallback cb) {
-			ip = 0;
-			nextStep();
-		}
-
-		@Override
-		public int getIP() {
-			return ip;
-		}
-
-		@Override
-		public void setIP(int ip) {
-			this.ip = ip;
-		}
-
-		@Override
-		public void cancel() {
-			cancelled = true;
-			ip = actions.size();
-		}
-
-		@Override
-		public String getCurrentTarget() {
-			return null;
-		}
-
-		private void nextStep() {
-			if (cancelled)
-				return;
-
-			if (ip < 0) {
-				continueMaximally();
-			} else {
-				boolean stop = false;
-
-				while (ip < actions.size() && !stop && !cancelled) {
-					Action a = actions.get(ip);
-
-					try {
-						if (a.run(this))
-							stop = true;
-						else
-							ip++;
-					} catch (Exception e) {
-						EngineLogger.error("EXCEPTION EXECUTING ACTION: InkManager - " + ip + " - "
-								+ a.getClass().getSimpleName() + " - " + e.getMessage(), e);
-						ip++;
-					}
+					Action a = ActionUtils.readJson(w, json, aValue);
+					inkVerbRunner.getActions().add(a);
 				}
 
-				if (ip >= actions.size() && !stop)
-					continueMaximally();
+				inkVerbRunner.setIP(json.readValue("ip", Integer.class, jsonData));
+
+				actionsValue = jsonData.get("actionsSer");
+
+				int i = 0;
+
+				for (Action a : inkVerbRunner.getActions()) {
+					if (a instanceof Serializable && i < actionsValue.size) {
+						if (actionsValue.get(i) == null)
+							break;
+
+						((Serializable) a).read(json, actionsValue.get(i));
+						i++;
+					}
+				}
+			} else {
+				for (int i = 0; i < jsonData.get("verbRunners").size; i++) {
+					JsonValue jRunner = jsonData.get("verbRunners").get(i);
+
+					InkVerbRunner inkVerbRunner = new InkVerbRunner(w, this, jRunner.name, null, null);
+					verbRunners.put(jRunner.name, inkVerbRunner);
+
+					inkVerbRunner.read(json, jRunner);
+				}
 			}
 		}
-
 	}
 }

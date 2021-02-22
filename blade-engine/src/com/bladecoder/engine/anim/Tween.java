@@ -203,7 +203,7 @@ abstract public class Tween<T> implements Serializable {
 		if (cb != null) {
 			World w = ((BladeJson) json).getWorld();
 			Scene s = ((BladeJson) json).getScene();
-			json.writeValue("cb", ActionCallbackSerializer.find(w, s, cb));
+			json.writeValue("cb", ActionCallbackSerializer.serialize(w, s, cb));
 		}
 	}
 

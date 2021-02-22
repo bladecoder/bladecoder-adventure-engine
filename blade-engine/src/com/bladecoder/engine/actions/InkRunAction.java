@@ -29,6 +29,10 @@ public class InkRunAction implements Action {
 	@ActionProperty(required = false)
 	private String params;
 
+	@ActionPropertyDescription("The conversation flow. Empty selects the default flow.")
+	@ActionProperty(required = false)
+	private String flow;
+
 	@ActionProperty(required = true)
 	@ActionPropertyDescription("Waits for the action to finish.")
 	private boolean wait = true;
@@ -51,22 +55,22 @@ public class InkRunAction implements Action {
 				p = new Object[split.length];
 
 				for (int i = 0; i < split.length; i++) {
-					String v =  split[i].trim();
+					String v = split[i].trim();
 					Object val = v;
-					
-					if(v.charAt(0) == '%') {
+
+					if (v.charAt(0) == '%') {
 						try {
-						val = Integer.parseInt(v.substring(1));
+							val = Integer.parseInt(v.substring(1));
 						} catch (NumberFormatException e) {
 							// do nothing
 						}
 					}
-					
+
 					p[i] = val;
 				}
 			}
 
-			w.getInkManager().runPath(path, p, wait ? cb : null);
+			w.getInkManager().runPath(path, p, flow, wait ? cb : null);
 		} catch (Exception e) {
 			EngineLogger.error("Cannot jump to: " + path + " " + e.getMessage());
 		}

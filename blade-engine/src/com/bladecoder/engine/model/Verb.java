@@ -236,7 +236,7 @@ public class Verb implements VerbRunner, Serializable {
 			json.writeValue("ip", ip);
 
 			if (cb != null)
-				json.writeValue("cb", ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(), cb));
+				json.writeValue("cb", ActionCallbackSerializer.serialize(bjson.getWorld(), bjson.getScene(), cb));
 
 			if (currentTarget != null)
 				json.writeValue("currentTarget", currentTarget);

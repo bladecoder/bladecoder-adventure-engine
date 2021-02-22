@@ -705,7 +705,7 @@ public class SpineRenderer extends AnimationRenderer {
 		} else {
 
 			if (animationCb != null) {
-				json.writeValue("cb", ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(), animationCb));
+				json.writeValue("cb", ActionCallbackSerializer.serialize(bjson.getWorld(), bjson.getScene(), animationCb));
 			}
 
 			json.writeValue("currentCount", currentCount);

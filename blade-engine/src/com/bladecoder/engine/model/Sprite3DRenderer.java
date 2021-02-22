@@ -739,7 +739,7 @@ public class Sprite3DRenderer extends AnimationRenderer {
 
 			if (animationCb != null)
 				json.writeValue("animationCb",
-						ActionCallbackSerializer.find(bjson.getWorld(), bjson.getScene(), animationCb));
+						ActionCallbackSerializer.serialize(bjson.getWorld(), bjson.getScene(), animationCb));
 
 			json.writeValue("currentCount", currentCount);
 			json.writeValue("currentAnimationType", currentAnimationType);

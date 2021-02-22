@@ -74,7 +74,7 @@ public abstract class BaseCallbackAction implements Action, ActionCallback, Seri
 		if (verbCb != null) {
 			World w = ((BladeJson) json).getWorld();
 			Scene s = ((BladeJson) json).getScene();
-			json.writeValue("cb", ActionCallbackSerializer.find(w, s, verbCb));
+			json.writeValue("cb", ActionCallbackSerializer.serialize(w, s, verbCb));
 		}
 	}
 

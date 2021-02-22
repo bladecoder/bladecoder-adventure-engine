@@ -184,8 +184,6 @@ public class Scene implements Serializable, AssetConsumer {
 	}
 
 	public void init() {
-		w.setCutMode(false);
-
 		timers.clear();
 		textManager.reset();
 	}

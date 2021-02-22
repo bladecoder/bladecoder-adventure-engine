@@ -84,10 +84,10 @@ public class Pointer extends Actor {
 	}
 
 	public void show() {
-		if (!(ui.getInputMode() == InputMode.TOUCHPANEL)) {
-			setVisible(true);
-		} else {
+		if (ui.getInputMode() == InputMode.TOUCHPANEL) {
 			setVisible(false);
+		} else {
+			setVisible(true);
 		}
 	}
 
