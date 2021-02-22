@@ -147,7 +147,7 @@ public class WalkTween extends SpritePosTween implements Serializable {
 		if (walkCb != null) {
 			World w = ((BladeJson) json).getWorld();
 			Scene s = ((BladeJson) json).getScene();
-			json.writeValue("walkCb", ActionCallbackSerializer.find(w, s, walkCb));
+			json.writeValue("walkCb", ActionCallbackSerializer.serialize(w, s, walkCb));
 		}
 	}
 

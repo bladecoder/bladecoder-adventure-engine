@@ -38,7 +38,7 @@ public class EditorLogger {
 
 	public static Console console;
 
-	private final static List<String> threadedMessages = new ArrayList<String>();
+	private final static List<String> threadedMessages = new ArrayList<>();
 
 	public static void debug(String message) {
 		if (level == Levels.DEBUG) {
@@ -82,6 +82,7 @@ public class EditorLogger {
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
 		console.log(sw.toString(), LogLevel.ERROR);
+		e.printStackTrace();
 	}
 
 	public static void toggle() {
@@ -125,7 +126,7 @@ public class EditorLogger {
 		actor.addListener(new InputListener() {
 			@Override
 			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-				
+
 				if (toActor == null) {
 					s.setScrollFocus(null);
 				}

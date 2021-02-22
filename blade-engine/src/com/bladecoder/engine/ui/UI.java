@@ -75,6 +75,14 @@ public class UI {
 
 		loadAssets();
 
+		if (Controllers.getControllers().size > 0) {
+			inputMode = InputMode.GAMEPAD;
+		} else if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)) {
+			inputMode = InputMode.TOUCHPANEL;
+		} else {
+			inputMode = InputMode.MOUSE;
+		}
+
 		screens[Screens.INIT_SCREEN.ordinal()] = getCustomScreenInstance(Screens.INIT_SCREEN.toString(),
 				InitScreen.class);
 		screens[Screens.SCENE_SCREEN.ordinal()] = getCustomScreenInstance(Screens.SCENE_SCREEN.toString(),
@@ -96,14 +104,6 @@ public class UI {
 			s.setUI(this);
 
 		setCurrentScreen(Screens.INIT_SCREEN);
-
-		if (Controllers.getControllers().size > 0) {
-			inputMode = InputMode.GAMEPAD;
-		} else if (Gdx.input.isPeripheralAvailable(Peripheral.MultitouchScreen)) {
-			inputMode = InputMode.TOUCHPANEL;
-		} else {
-			inputMode = InputMode.MOUSE;
-		}
 	}
 
 	public World getWorld() {

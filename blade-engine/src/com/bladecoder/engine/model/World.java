@@ -250,7 +250,7 @@ public class World implements AssetConsumer {
 
 			paused = false;
 
-			boolean initScene = (assetState == AssetState.LOADING_AND_INIT_SCENE);
+			boolean init = (assetState == AssetState.LOADING_AND_INIT_SCENE);
 
 			assetState = AssetState.LOADED;
 
@@ -269,31 +269,7 @@ public class World implements AssetConsumer {
 					verbs.runVerb(Verb.INIT_SAVED_GAME_VERB, null, null, null);
 			}
 
-			// call 'init' verb only when arrives from setCurrentScene and not
-			// from load or restoring
-			if (initScene) {
-				currentScene.init();
-
-				// If in test mode run 'test' verb (only the first time)
-				if (testScene != null && testScene.equals(currentScene.getId())
-						&& currentScene.getVerb(Verb.TEST_VERB) != null) {
-
-					initVerb = Verb.TEST_VERB;
-
-					testScene = null;
-				}
-
-				if (initVerb == null)
-					initVerb = "init";
-			}
-
-			// Run INIT verb
-			if (initVerb != null && (currentScene.getVerb(initVerb) != null
-					|| getVerbManager().getVerb(initVerb, null, null) != null)) {
-				currentScene.runVerb(initVerb);
-			}
-
-			initVerb = null;
+			startScene(init);
 
 		}
 
@@ -310,6 +286,39 @@ public class World implements AssetConsumer {
 		transition.update(delta);
 
 		musicManager.update(delta);
+	}
+
+	private void startScene(boolean initScene) {
+		// call 'init' verb only when arrives from setCurrentScene and not
+		// from load or restoring
+		if (initScene) {
+			currentScene.init();
+
+			if (inkManager != null)
+				inkManager.init();
+
+			setCutMode(false);
+
+			// If in test mode run 'test' verb (only the first time)
+			if (testScene != null && testScene.equals(currentScene.getId())
+					&& currentScene.getVerb(Verb.TEST_VERB) != null) {
+
+				initVerb = Verb.TEST_VERB;
+
+				testScene = null;
+			}
+
+			if (initVerb == null)
+				initVerb = "init";
+		}
+
+		// Run INIT verb
+		if (initVerb != null && (currentScene.getVerb(initVerb) != null
+				|| getVerbManager().getVerb(initVerb, null, null) != null)) {
+			currentScene.runVerb(initVerb);
+		}
+
+		initVerb = null;
 	}
 
 	@Override

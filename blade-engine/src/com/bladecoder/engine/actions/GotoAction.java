@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -100,43 +99,6 @@ public class GotoAction implements Action {
 		actor.goTo(new Vector2(x, y), wait ? cb : null, ignoreWalkZone);
 
 		return wait;
-	}
-
-	/**
-	 * If 'player' is far from 'actor', we bring it close. If 'player' is closed
-	 * from 'actor' do nothing.
-	 * 
-	 * TODO: DOESN'T WORK NOW
-	 * 
-	 * @param player
-	 * @param actor
-	 */
-	@SuppressWarnings("unused")
-	private void goNear(CharacterActor player, BaseActor actor, ActionCallback cb) {
-		Rectangle rdest = actor.getBBox().getBoundingRectangle();
-
-		// Vector2 p0 = new Vector2(player.getSprite().getX(),
-		// player.getSprite().getY());
-		Vector2 p0 = new Vector2(player.getX(), player.getY());
-
-		// calculamos el punto más cercano al objeto
-		Vector2 p1 = new Vector2(rdest.x, rdest.y); // izquierda
-		Vector2 p2 = new Vector2(rdest.x + rdest.width, rdest.y); // derecha
-		Vector2 p3 = new Vector2(rdest.x + rdest.width / 2, rdest.y); // centro
-		float d1 = p0.dst(p1);
-		float d2 = p0.dst(p2);
-		float d3 = p0.dst(p3);
-		Vector2 pf;
-
-		if (d1 < d2 && d1 < d3) {
-			pf = p1;
-		} else if (d2 < d1 && d2 < d3) {
-			pf = p2;
-		} else {
-			pf = p3;
-		}
-
-		player.goTo(pf, cb, ignoreWalkZone);
 	}
 
 }
