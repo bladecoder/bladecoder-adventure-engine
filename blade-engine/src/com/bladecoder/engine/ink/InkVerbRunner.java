@@ -14,8 +14,21 @@ import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.util.ActionUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
+/**
+ * This VerbRunner instead of increment the IP, it executes the current action
+ * and deletes it from the action list.
+ * 
+ * It only maintains the executed action in the action list if it is of
+ * ActionCallback type because ActionCallback actions can be called back and
+ * could be lost after save/load.
+ * 
+ * Backward compatibility note: This class can load and execute old savegames
+ * were not multiflow was implemented.
+ * 
+ * @author rgarcia
+ */
 public class InkVerbRunner implements VerbRunner, Serializable {
-	private final ArrayList<Action> actions = new ArrayList<>(2);
+	private final ArrayList<Action> actions = new ArrayList<>(1);
 	private int ip = 0;
 	private boolean cancelled = false;
 	private String flow;
