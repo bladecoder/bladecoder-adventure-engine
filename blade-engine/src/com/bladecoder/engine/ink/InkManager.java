@@ -57,8 +57,23 @@ public class InkManager implements Serializable {
 		this.w = w;
 	}
 
+	/**
+	 * This method is called when changing scene. All flows, except default, are
+	 * removed.
+	 */
 	public void init() {
 		wasInCutmode = false;
+		for (String flow : verbRunners.keySet()) {
+			try {
+				if (flow.equals(StoryState.kDefaultFlowName))
+					continue;
+
+				story.removeFlow(flow);
+			} catch (Exception e) {
+				EngineLogger.error("InkManager - Cannot remove flow: " + flow);
+			}
+		}
+
 		verbRunners.clear();
 	}
 
