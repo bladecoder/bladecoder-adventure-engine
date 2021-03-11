@@ -232,10 +232,6 @@ public class InkManager implements Serializable {
 			} catch (Exception e) {
 				EngineLogger.error(e.getMessage(), e);
 			}
-
-			if (story.getCurrentErrors() != null && !story.getCurrentErrors().isEmpty()) {
-				EngineLogger.error(story.getCurrentErrors().get(0));
-			}
 		}
 
 		if (!inkVerbRunner.isFinish()) {
