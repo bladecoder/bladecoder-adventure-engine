@@ -153,10 +153,10 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 
 		if (text.type == Text.Type.TALK) {
 			if (style.talkBubble != null) {
-				float bubbleHeight = DPIUtils.getTouchMinSize() * style.bubbleSize / 4;
-				setY(getY() + bubbleHeight + PADDING);
+				float bubbleHeight = DPIUtils.getTouchMinSize() * style.bubbleSize * .25f;
+				setY(getY() + bubbleHeight + PADDING + DPIUtils.getSpacing());
 			} else {
-				setY(getY() + PADDING);
+				setY(getY() + PADDING + DPIUtils.getSpacing());
 			}
 		}
 
@@ -191,12 +191,13 @@ public class TextManagerUI extends Actor implements ITextManagerUI {
 				return;
 
 			if (style.talkBubble != null) {
-				float scale = DPIUtils.getTouchMinSize() * style.bubbleSize / 4 / style.talkBubble.getMinHeight();
+				float scale = DPIUtils.getTouchMinSize() * style.bubbleSize * .25f / style.talkBubble.getMinHeight();
 
-				float bubbleX = unprojectTmp.x - style.talkBubble.getMinWidth() * scale / 2 + style.bubbledx;
+				float bubbleX = unprojectTmp.x - style.talkBubble.getMinWidth() * scale * .5f + style.bubbledx;
 				// check screen exit
 				bubbleX = Math.max(bubbleX, getX() + PADDING - style.talkBubble.getMinWidth() * scale / 2);
-				bubbleX = Math.min(bubbleX, getX() + getWidth() - PADDING - style.talkBubble.getMinWidth() * scale / 2);
+				bubbleX = Math.min(bubbleX,
+						getX() + getWidth() - PADDING - style.talkBubble.getMinWidth() * scale * .5f);
 				float bubbleY = getY() - style.talkBubble.getMinHeight() * scale + style.bubbledy;
 
 				style.talkBubble.draw(batch, bubbleX, bubbleY, style.talkBubble.getMinWidth() * scale,
