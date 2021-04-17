@@ -162,6 +162,7 @@ public class Verb implements VerbRunner, Serializable {
 
 		if (ip == actions.size()) {
 			EngineLogger.debug(">>> Verb FINISHED: " + id);
+			ip++; // to avoid print the finished message again
 
 			if (cb != null) {
 				ActionCallback cb2 = cb;
