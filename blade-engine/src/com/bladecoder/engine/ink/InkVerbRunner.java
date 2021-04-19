@@ -59,6 +59,9 @@ public class InkVerbRunner implements VerbRunner, Serializable {
 
 	@Override
 	public void resume() {
+		if (cancelled)
+			return;
+
 		// We store in the array only the ActionCallback actions
 		// any other can be discarded after execution
 		if (actions.get(ip) instanceof ActionCallback) {
