@@ -433,7 +433,7 @@ public class SpineRenderer extends AnimationRenderer {
 				SpineAnimationDesc fa = (SpineAnimationDesc) fanims.get(animation);
 
 				if (fa == null) {
-					EngineLogger.error("SpineRenderer:setCurrentFA Animation not found: " + animation);
+					EngineLogger.error("SpineRenderer:setSecondaryAnimation Animation not found: " + animation);
 					return;
 				}
 
@@ -442,7 +442,7 @@ public class SpineRenderer extends AnimationRenderer {
 
 			updateAnimation(0);
 		} catch (Exception e) {
-			EngineLogger.error("SpineRenderer:setCurrentFA " + e.getMessage());
+			EngineLogger.error("Error in SpineRenderer::setSecondaryAnimation", e);
 		}
 	}
 
@@ -477,7 +477,7 @@ public class SpineRenderer extends AnimationRenderer {
 			computeBbox();
 
 		} catch (Exception e) {
-			EngineLogger.error("SpineRenderer:setCurrentFA " + e.getMessage());
+			EngineLogger.error("Error in SpineRenderer::setCurrentAnimation", e);
 		}
 	}
 
@@ -705,7 +705,8 @@ public class SpineRenderer extends AnimationRenderer {
 		} else {
 
 			if (animationCb != null) {
-				json.writeValue("cb", ActionCallbackSerializer.serialize(bjson.getWorld(), bjson.getScene(), animationCb));
+				json.writeValue("cb",
+						ActionCallbackSerializer.serialize(bjson.getWorld(), bjson.getScene(), animationCb));
 			}
 
 			json.writeValue("currentCount", currentCount);

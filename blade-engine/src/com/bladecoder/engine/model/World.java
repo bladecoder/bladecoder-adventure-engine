@@ -313,8 +313,8 @@ public class World implements AssetConsumer {
 		}
 
 		// Run INIT verb
-		if (initVerb != null && (currentScene.getVerb(initVerb) != null
-				|| getVerbManager().getVerb(initVerb, null, null) != null)) {
+		if (initVerb != null
+				&& (currentScene.getVerb(initVerb) != null || getVerbManager().getVerb(initVerb, null, null) != null)) {
 			currentScene.runVerb(initVerb);
 		}
 
@@ -404,7 +404,7 @@ public class World implements AssetConsumer {
 
 		initLoadingTime = System.currentTimeMillis();
 
-		if (cachedScene == scene) {
+		if (cachedScene == scene || currentScene == scene) {
 			if (init)
 				assetState = AssetState.LOADING_AND_INIT_SCENE;
 			else
@@ -429,10 +429,13 @@ public class World implements AssetConsumer {
 
 			customProperties.put(WorldProperties.PREVIOUS_SCENE.toString(), currentScene.getId());
 
-			if (CACHE_ENABLED)
-				cachedScene = currentScene; // CACHE ENABLED
-			else
+			if (CACHE_ENABLED) {
+				if (currentScene != scene) { // Don't cache the scene if it is the same scene.
+					cachedScene = currentScene; // CACHE ENABLED
+				}
+			} else {
 				currentScene.dispose(); // CACHE DISABLED
+			}
 
 			transition.reset();
 		}
