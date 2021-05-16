@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.io.FileUtils;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -65,7 +67,7 @@ public class PackageDialog extends EditDialog {
 	private static final String[] ARCHS = { "desktop", "android", "ios" };
 	private static final String[] DESKTOP_TYPES = { "Bundle JRE", "Runnable jar" };
 	private static final String[] ANDROID_TYPES = { ".apk", ".aab" };
-	private static final String[] OSS = { "all", "windows32", "windows64", "linux64", "linux32", "macOS" };
+	private static final String[] OSS = { "all", "windows64", "linux64", "macOS" };
 
 	private InputPanel arch;
 	private InputPanel dir;
@@ -75,8 +77,6 @@ public class PackageDialog extends EditDialog {
 
 	private InputPanel os;
 	private FileInputPanel linux64JRE;
-	private FileInputPanel linux32JRE;
-	private FileInputPanel winJRE;
 	private FileInputPanel winJRE64;
 	private FileInputPanel osxJRE;
 	private InputPanel version;
@@ -115,16 +115,6 @@ public class PackageDialog extends EditDialog {
 				"Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file",
 				FileInputPanel.DialogType.OPEN_FILE);
 		linux64JRE.setFileTypeFilter(typeFilter);
-
-		linux32JRE = new FileInputPanel(skin, "JRE.Linux32",
-				"Select the 32 bits Linux JRE Location to bundle. Must be a ZIP file",
-				FileInputPanel.DialogType.OPEN_FILE);
-		linux32JRE.setFileTypeFilter(typeFilter);
-
-		winJRE = new FileInputPanel(skin, "JRE.Windows32",
-				"Select the Windows 32 bits JRE Location to bundle. Must be a ZIP file",
-				FileInputPanel.DialogType.OPEN_FILE);
-		winJRE.setFileTypeFilter(typeFilter);
 
 		winJRE64 = new FileInputPanel(skin, "JRE.Windows64",
 				"Select the Windows 64 bits JRE Location to bundle. Must be a ZIP file",
@@ -165,9 +155,9 @@ public class PackageDialog extends EditDialog {
 		customBuildParameters = InputPanelFactory.createInputPanel(skin, "Custom build parameters",
 				"You can add extra build parameters for customized build scripts.", false);
 
-		options = new InputPanel[] { androidType, desktopType, os, linux64JRE, linux32JRE, winJRE, winJRE64, osxJRE,
-				version, icon, versionCode, androidSDK, expansionFile, androidKeyStore, androidKeyAlias,
-				iosSignIdentity, iosProvisioningProfile, customBuildParameters };
+		options = new InputPanel[] { androidType, desktopType, os, linux64JRE, winJRE64, osxJRE, version, icon,
+				versionCode, androidSDK, expansionFile, androidKeyStore, androidKeyAlias, iosSignIdentity,
+				iosProvisioningProfile, customBuildParameters };
 
 		addInputPanel(arch);
 		addInputPanel(dir);
@@ -325,7 +315,7 @@ public class PackageDialog extends EditDialog {
 
 	}
 
-	private String packageAdv() throws IOException {
+	private String packageAdv() throws IOException, CompressorException, ArchiveException {
 		String msg = "Package generated SUCCESSFULLY";
 
 		String projectName = getAppName();
@@ -470,7 +460,8 @@ public class PackageDialog extends EditDialog {
 		return null;
 	}
 
-	private String createDesktop(String projectName, String versionParam, String customBuildParams) throws IOException {
+	private String createDesktop(String projectName, String versionParam, String customBuildParams)
+			throws IOException, CompressorException, ArchiveException {
 		String jarDir = Ctx.project.getProjectDir().getAbsolutePath() + "/desktop/build/libs/";
 		String jarName = projectName + "-desktop-" + version.getText() + ".jar";
 
@@ -484,18 +475,12 @@ public class PackageDialog extends EditDialog {
 
 			if (os.getText().equals("linux64")) {
 				packr(Platform.Linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-			} else if (os.getText().equals("linux32")) {
-				packr(Platform.Linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-			} else if (os.getText().equals("windows32")) {
-				packr(Platform.Windows32, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 			} else if (os.getText().equals("windows64")) {
 				packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-			} else if (os.getText().equals("macOSX")) {
+			} else if (os.getText().equals("macOS")) {
 				packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 			} else if (os.getText().equals("all")) {
 				packr(Platform.Linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-				packr(Platform.Linux32, linux32JRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-				packr(Platform.Windows32, winJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 				packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
 			}
@@ -558,24 +543,11 @@ public class PackageDialog extends EditDialog {
 	private void osChanged() {
 		setVisible(icon, false);
 
-		if (os.isVisible() && (os.getText().equals("windows32") || os.getText().equals("all"))) {
-			setVisible(winJRE, true);
-		} else {
-			setVisible(icon, false);
-			setVisible(winJRE, false);
-		}
-
 		if (os.isVisible() && (os.getText().equals("windows64") || os.getText().equals("all"))) {
 			setVisible(winJRE64, true);
 		} else {
 			setVisible(icon, false);
 			setVisible(winJRE64, false);
-		}
-
-		if (os.isVisible() && (os.getText().equals("linux32") || os.getText().equals("all"))) {
-			setVisible(linux32JRE, true);
-		} else {
-			setVisible(linux32JRE, false);
 		}
 
 		if (os.isVisible() && (os.getText().equals("linux64") || os.getText().equals("all"))) {
@@ -610,26 +582,9 @@ public class PackageDialog extends EditDialog {
 		if (androidKeyAliasPassword.isVisible() && !androidKeyAliasPassword.validateField())
 			ok = false;
 
-		// if (icon.isVisible() && !icon.getText().endsWith(".ico")) {
-		// icon.setError(true);
-		// ok = false;
-		// }
-
-		if (linux32JRE.isVisible()
-				&& (!new File(linux32JRE.getText()).exists() || !linux32JRE.getText().toLowerCase().endsWith(".zip"))) {
-			linux32JRE.setError(true);
-			ok = false;
-		}
-
 		if (linux64JRE.isVisible()
 				&& (!new File(linux64JRE.getText()).exists() || !linux64JRE.getText().toLowerCase().endsWith(".zip"))) {
 			linux64JRE.setError(true);
-			ok = false;
-		}
-
-		if (winJRE.isVisible()
-				&& (!new File(winJRE.getText()).exists() || !winJRE.getText().toLowerCase().endsWith(".zip"))) {
-			winJRE.setError(true);
 			ok = false;
 		}
 
@@ -666,13 +621,10 @@ public class PackageDialog extends EditDialog {
 	}
 
 	private void packr(Platform platform, String jdk, String exe, String jar, String mainClass, String outDir)
-			throws IOException {
+			throws IOException, CompressorException, ArchiveException {
 		String suffix = null;
 
 		switch (platform) {
-		case Linux32:
-			suffix = "lin32";
-			break;
 		case Linux64:
 			suffix = "lin64";
 			break;
@@ -682,19 +634,17 @@ public class PackageDialog extends EditDialog {
 		case Windows64:
 			suffix = "win64";
 			break;
-		case Windows32:
-			suffix = "win";
-			break;
 
 		}
 
 		PackrConfig config = new PackrConfig();
 		config.platform = platform;
 		config.jdk = jdk;
+		config.jrePath = "jre";
 		config.executable = exe;
 		config.classpath = Arrays.asList(jar);
 		config.mainClass = mainClass.replace('/', '.');
-		config.vmArgs = Arrays.asList("-Xmx1G");
+		config.vmArgs = Arrays.asList("-Xmx1G", "-Dsun.java2d.dpiaware=true");
 		config.minimizeJre = "hard";
 
 		config.outDir = new File(outDir + "/" + exe + "-" + suffix);

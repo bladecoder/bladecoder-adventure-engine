@@ -26,7 +26,6 @@ import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.PropertyTable;
-import com.eclipsesource.json.ParseException;
 
 public class ActorProps extends PropertyTable {
 
@@ -55,7 +54,7 @@ public class ActorProps extends PropertyTable {
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			EditorLogger.debug("Actor Props Listener: " + evt.getPropertyName());
-			
+
 			updateField(evt.getPropertyName());
 		}
 	};
@@ -63,29 +62,29 @@ public class ActorProps extends PropertyTable {
 	public ActorProps(Skin skin) {
 		super(skin);
 	}
-	
+
 	private void updateField(String modelProperty) {
-		
-		if(actor==null)
+
+		if (actor == null)
 			return;
-		
+
 		if (modelProperty.equals("desc")) {
-			setProperty(DESC_PROP, ((InteractiveActor)actor).getDesc());
+			setProperty(DESC_PROP, ((InteractiveActor) actor).getDesc());
 		} else if (modelProperty.equals(Project.POSITION_PROPERTY)) {
-			setProperty(POS_X_PROP, Float.toString(actor.getX()));			
+			setProperty(POS_X_PROP, Float.toString(actor.getX()));
 			setProperty(POS_Y_PROP, Float.toString(actor.getY()));
 		} else if (modelProperty.equals("visible")) {
 			setProperty(VISIBLE_PROP, Boolean.toString(actor.isVisible()));
 		} else if (modelProperty.equals("interaction")) {
-			setProperty(INTERACTION_PROP, Boolean.toString(((InteractiveActor)actor).getInteraction()));
+			setProperty(INTERACTION_PROP, Boolean.toString(((InteractiveActor) actor).getInteraction()));
 		} else if (modelProperty.equals("state")) {
-			setProperty(STATE_PROP, ((InteractiveActor)actor).getState());
+			setProperty(STATE_PROP, ((InteractiveActor) actor).getState());
 		} else if (modelProperty.equals("bbox")) {
-			
+
 			// TODO Conflict with scnwidget
-			
+
 //			boolean v = value.isEmpty();
-			
+
 //			setProperty(BBOX_FROM_RENDERER_PROP, Boolean.toString(v));
 		}
 	}
@@ -95,20 +94,21 @@ public class ActorProps extends PropertyTable {
 		clearProps();
 
 		if (a != null) {
-			addProperty(POS_X_PROP,  Float.toString(actor.getX()), Types.FLOAT);
+			addProperty(POS_X_PROP, Float.toString(actor.getX()), Types.FLOAT);
 			addProperty(POS_Y_PROP, Float.toString(actor.getY()), Types.FLOAT);
 			addProperty(VISIBLE_PROP, Boolean.toString(actor.isVisible()), Types.BOOLEAN);
 
 			if (a instanceof InteractiveActor) {
-				addProperty(DESC_PROP, ((InteractiveActor)actor).getDesc());
+				addProperty(DESC_PROP, ((InteractiveActor) actor).getDesc());
 
-				addProperty(INTERACTION_PROP, Boolean.toString(((InteractiveActor)actor).getInteraction()), Types.BOOLEAN);
-				addProperty(STATE_PROP, ((InteractiveActor)actor).getState());
+				addProperty(INTERACTION_PROP, Boolean.toString(((InteractiveActor) actor).getInteraction()),
+						Types.BOOLEAN);
+				addProperty(STATE_PROP, ((InteractiveActor) actor).getState());
 			}
-			
+
 			if (a instanceof SpriteActor) {
 				boolean v = ((SpriteActor) a).isBboxFromRenderer();
-				
+
 				addProperty(BBOX_FROM_RENDERER_PROP, Boolean.toString(v), Types.BOOLEAN);
 			}
 
@@ -121,9 +121,9 @@ public class ActorProps extends PropertyTable {
 	@Override
 	protected void updateModel(String property, String value) {
 		if (property.equals(DESC_PROP)) {
-			((InteractiveActor)actor).setDesc(value);
+			((InteractiveActor) actor).setDesc(value);
 		} else if (property.equals(POS_X_PROP)) {
-			
+
 			// TODO UNDO
 //			UndoOp undoOp = new UndoSetAttr(Ctx.project.getSelectedChapter(), Ctx.project.getSelectedActor(), XMLConstants.POS_ATTR,
 //					Param.toStringParam(pos));
@@ -147,19 +147,14 @@ public class ActorProps extends PropertyTable {
 		} else if (property.equals(VISIBLE_PROP)) {
 			actor.setVisible(Boolean.parseBoolean(value));
 		} else if (property.equals(INTERACTION_PROP)) {
-			((InteractiveActor)actor).setInteraction(Boolean.parseBoolean(value));
+			((InteractiveActor) actor).setInteraction(Boolean.parseBoolean(value));
 		} else if (property.equals(STATE_PROP)) {
-			((InteractiveActor)actor).setState(value);
+			((InteractiveActor) actor).setState(value);
 		} else if (property.equals(BBOX_FROM_RENDERER_PROP)) {
 			boolean v = true;
-			
-			try {
-				v = Boolean.parseBoolean(value);
-			} catch(ParseException e) {
-				
-			}
-			
-			((SpriteActor)actor).setBboxFromRenderer(v);
+			v = Boolean.parseBoolean(value);
+
+			((SpriteActor) actor).setBboxFromRenderer(v);
 		}
 
 	}

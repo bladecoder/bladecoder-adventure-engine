@@ -15,8 +15,8 @@ group = 'com.bladecoder.engineeditor'
 mainClassName = 'com.bladecoder.engineeditor.Main'
 
 // java
-sourceCompatibility=1.7
-targetCompatibility=1.7
+sourceCompatibility=1.8
+targetCompatibility=1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 jar {
@@ -49,8 +49,9 @@ dependencies {
   implementation "com.badlogicgames.gdx:gdx-backend-lwjgl:$libgdxVersion"
   implementation "com.badlogicgames.gdx:gdx-platform:$libgdxVersion:natives-desktop"
   implementation "com.badlogicgames.gdx:gdx-freetype-platform:$libgdxVersion:natives-desktop"
+  implementation("org.apache.commons:commons-compress:1.20")
   implementation "commons-io:commons-io:2.1"
-  implementation "com.bladecoder.packr:packr:2.1"
+  implementation "com.badlogicgames.packr:packr:4.0.0"
   implementation "eu.infomas:annotation-detector:3.0.5"
   implementation "com.strongjoshua:libgdx-inGameConsole:0.9.0"
   implementation "com.kotcrab.vis:vis-ui:1.4.2"
