@@ -410,6 +410,10 @@ public class InkManager implements Serializable {
 	public boolean hasChoices() {
 		waitIfNotLoaded();
 
+		if (story == null) {
+			return false;
+		}
+
 		try {
 			story.switchToDefaultFlow();
 		} catch (Exception e) {
@@ -417,10 +421,8 @@ public class InkManager implements Serializable {
 			return false;
 		}
 
-		return (story != null
-				&& (!verbRunners.containsKey(StoryState.kDefaultFlowName)
-						|| verbRunners.get(StoryState.kDefaultFlowName).isFinish())
-				&& story.getCurrentChoices().size() > 0);
+		return ((!verbRunners.containsKey(StoryState.kDefaultFlowName)
+				|| verbRunners.get(StoryState.kDefaultFlowName).isFinish()) && story.getCurrentChoices().size() > 0);
 	}
 
 	public List<String> getChoices() {
@@ -538,7 +540,7 @@ public class InkManager implements Serializable {
 				try {
 					json.writeValue("story", story.getState().toJson());
 				} catch (Exception e) {
-					EngineLogger.error(e.getMessage(), e);
+					EngineLogger.error("Error saving Ink state", e);
 				}
 
 				json.writeValue("verbRunners", verbRunners, verbRunners.getClass(), InkVerbRunner.class);
