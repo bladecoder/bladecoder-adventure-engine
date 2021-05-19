@@ -201,9 +201,8 @@ public class InkManager implements Serializable {
 
 		HashMap<String, String> currentLineParams = new HashMap<>();
 
-		try {
-			while (story.canContinue()) {
-
+		if (story.canContinue()) {
+			try {
 				do {
 					line = story.Continue();
 					currentLineParams.clear();
@@ -216,23 +215,23 @@ public class InkManager implements Serializable {
 						EngineLogger.debug("INK EMPTY LINE!");
 					}
 				} while (line.isEmpty() && story.canContinue());
-			}
 
-			if (line != null && !line.isEmpty()) {
-				if (EngineLogger.debugMode())
-					EngineLogger.debug("INK LINE: " + translateLine(line));
+				if (!line.isEmpty()) {
+					if (EngineLogger.debugMode())
+						EngineLogger.debug("INK LINE: " + translateLine(line));
 
-				processParams(story.getCurrentTags(), currentLineParams);
+					processParams(story.getCurrentTags(), currentLineParams);
 
-				// PROCESS COMMANDS
-				if (line.charAt(0) == COMMAND_MARK) {
-					processCommand(inkVerbRunner, currentLineParams, line);
-				} else {
-					processTextLine(inkVerbRunner, currentLineParams, line);
+					// PROCESS COMMANDS
+					if (line.charAt(0) == COMMAND_MARK) {
+						processCommand(inkVerbRunner, currentLineParams, line);
+					} else {
+						processTextLine(inkVerbRunner, currentLineParams, line);
+					}
 				}
+			} catch (Exception e) {
+				EngineLogger.error(e.getMessage(), e);
 			}
-		} catch (Exception e) {
-			EngineLogger.error(e.getMessage(), e);
 		}
 
 		if (!inkVerbRunner.isFinish()) {
