@@ -201,8 +201,8 @@ public class InkManager implements Serializable {
 
 		HashMap<String, String> currentLineParams = new HashMap<>();
 
-		if (story.canContinue()) {
-			try {
+		try {
+			while (story.canContinue()) {
 
 				do {
 					line = story.Continue();
@@ -215,8 +215,10 @@ public class InkManager implements Serializable {
 					if (line.isEmpty()) {
 						EngineLogger.debug("INK EMPTY LINE!");
 					}
-				} while (line.isEmpty());
+				} while (line.isEmpty() && story.canContinue());
+			}
 
+			if (line != null && !line.isEmpty()) {
 				if (EngineLogger.debugMode())
 					EngineLogger.debug("INK LINE: " + translateLine(line));
 
@@ -228,10 +230,9 @@ public class InkManager implements Serializable {
 				} else {
 					processTextLine(inkVerbRunner, currentLineParams, line);
 				}
-
-			} catch (Exception e) {
-				EngineLogger.error(e.getMessage(), e);
 			}
+		} catch (Exception e) {
+			EngineLogger.error(e.getMessage(), e);
 		}
 
 		if (!inkVerbRunner.isFinish()) {
