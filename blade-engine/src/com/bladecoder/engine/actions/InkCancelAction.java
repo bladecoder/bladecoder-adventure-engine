@@ -44,6 +44,12 @@ public class InkCancelAction implements Action {
 				w.getInkManager().getStory().switchToDefaultFlow();
 			} else {
 				inkVerbRunner = w.getInkManager().getVerbRunners().get(flow);
+
+				if (inkVerbRunner == null) {
+					EngineLogger.debug("Flow not found: " + flow);
+					return false;
+				}
+
 				w.getInkManager().getStory().switchFlow(flow);
 			}
 
