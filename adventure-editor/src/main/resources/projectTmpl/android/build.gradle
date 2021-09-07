@@ -135,22 +135,7 @@ tasks.whenTaskAdded { packageTask ->
 }
 
 task run(type: Exec) {
-    def path
-    def localProperties = project.file("../local.properties")
-    if (localProperties.exists()) {
-        Properties properties = new Properties()
-        localProperties.withInputStream { instr ->
-            properties.load(instr)
-        }
-        def sdkDir = properties.getProperty('sdk.dir')
-        if (sdkDir) {
-            path = sdkDir
-        } else {
-            path = "$System.env.ANDROID_HOME"
-        }
-    } else {
-        path = "$System.env.ANDROID_HOME"
-    }
+    def path = getSdkFolder()
 
     def adb = path + "/platform-tools/adb"
     commandLine "$adb", 'shell', 'am', 'start', '-n', android.defaultConfig.applicationId + '/' +  'com.bladecoder.engine.AndroidLauncher'
@@ -179,9 +164,30 @@ tasks.whenTaskAdded { task ->
    }
 }
 
+String getSdkFolder() {
+	def path
+    def localProperties = project.file("../local.properties")
+    if (localProperties.exists()) {
+        Properties properties = new Properties()
+        localProperties.withInputStream { instr ->
+            properties.load(instr)
+        }
+        def sdkDir = properties.getProperty('sdk.dir')
+        if (sdkDir) {
+            path = sdkDir
+        } else {
+            path = "$System.env.ANDROID_HOME"
+        }
+    } else {
+        path = "$System.env.ANDROID_HOME"
+    }
+    
+    return path
+}
+
 String highestSdkAvailable(String defaultSdk) {
   try {
-      def buildToolsDir = new File(android.getSdkDirectory().toString(), "platforms")
+      def buildToolsDir = new File(getSdkFolder(), "platforms")
       def sdks = buildToolsDir.list([accept:{ d, f-> f.startsWith("android-") && new File(d, f).isDirectory() }] as FilenameFilter).sort { a, b -> b <=> a }
       def highestSdk = sdks[0]
       if (highestSdk != null) {
@@ -198,3 +204,4 @@ String highestSdkAvailable(String defaultSdk) {
       defaultSdk
   }
 }
+
