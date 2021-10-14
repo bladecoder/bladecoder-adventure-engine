@@ -17,6 +17,7 @@ package com.bladecoder.engineeditor.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.MessageFormat;
 import java.util.Arrays;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -51,13 +52,32 @@ import com.bladecoder.engineeditor.undo.UndoDeleteActor;
 public class ActorList extends ModelList<Scene, BaseActor> {
 
 	private ImageButton playerBtn;
+	private ImageButton visibilityBtn;
 
 	public ActorList(Skin skin) {
 		super(skin, true);
 
+		// Eye button
+		visibilityBtn = new ImageButton(skin);
+		toolbar.addToolBarButton(visibilityBtn, "ic_eye", "Toggle Visibility", "Toggle Visibility in editor");
+		visibilityBtn.setDisabled(false);
+		visibilityBtn.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				toggleVisibility();
+			}
+		});
+
+		// Player button
 		playerBtn = new ImageButton(skin);
 		toolbar.addToolBarButton(playerBtn, "ic_player_small", "Set player", "Set player");
 		playerBtn.setDisabled(true);
+		playerBtn.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				setPlayer();
+			}
+		});
 
 		list.addListener(new ChangeListener() {
 
@@ -75,13 +95,6 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 				toolbar.disableEdit(pos == -1);
 				playerBtn.setDisabled(pos == -1);
-			}
-		});
-
-		playerBtn.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				setPlayer();
 			}
 		});
 
@@ -107,11 +120,11 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 				}
 
 				int i = list.getItems().indexOf(newActor, true);
-				
+
 				if (i >= 0) {
 					list.setSelectedIndex(i);
-					
-					container.getActor().setScrollPercentY(i/(float)list.getItems().size);
+
+					container.getActor().setScrollPercentY(i / (float) list.getItems().size);
 				}
 			}
 		});
@@ -122,17 +135,27 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 				if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_DELETED)) {
 					if (evt.getNewValue() instanceof BaseActor) {
-						addElements(Ctx.project.getSelectedScene(),
-								Arrays.asList(Ctx.project.getSelectedScene().getActors().values().toArray(new BaseActor[0])));
+						addElements(Ctx.project.getSelectedScene(), Arrays
+								.asList(Ctx.project.getSelectedScene().getActors().values().toArray(new BaseActor[0])));
 					}
 				} else if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_CREATED)) {
 					if (evt.getNewValue() instanceof BaseActor && !(evt.getSource() instanceof EditActorDialog)) {
-						addElements(Ctx.project.getSelectedScene(),
-								Arrays.asList(Ctx.project.getSelectedScene().getActors().values().toArray(new BaseActor[0])));
+						addElements(Ctx.project.getSelectedScene(), Arrays
+								.asList(Ctx.project.getSelectedScene().getActors().values().toArray(new BaseActor[0])));
 					}
 				}
 			}
 		});
+	}
+
+	private void toggleVisibility() {
+
+		BaseActor e = list.getSelected();
+
+		if (e == null)
+			return;
+
+		Ctx.project.toggleEditorVisibility(e);
 	}
 
 	@Override
@@ -145,8 +168,8 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 		if (parent.getPlayer() == a) {
 			parent.setPlayer(null);
 		}
-		
-		if(a.getId().equals(parent.getWalkZone())) {
+
+		if (a.getId().equals(parent.getWalkZone())) {
 			parent.setWalkZone(null);
 		}
 
@@ -163,7 +186,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 	protected EditModelDialog<Scene, BaseActor> getEditElementDialogInstance(BaseActor a) {
 		return new EditActorDialog(skin, parent, a);
 	}
-	
+
 	@Override
 	protected void edit() {
 		BaseActor e = list.getSelected();
@@ -173,20 +196,21 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 		EditModelDialog<Scene, BaseActor> dialog = getEditElementDialogInstance(e);
 		dialog.show(getStage());
-		
+
 		dialog.setListener(new ChangeListener() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				BaseActor e = ((EditModelDialog<Scene, BaseActor>) actor).getElement();
-				
-				// When the type is changed, a new element is created and it is needed to replace the previous element.
-				if(e != list.getSelected()) {
+
+				// When the type is changed, a new element is created and it is needed to
+				// replace the previous element.
+				if (e != list.getSelected()) {
 					int i = list.getSelectedIndex();
 					getItems().set(i, e);
 					list.setSelectedIndex(i);
-					list.invalidateHierarchy();				
-				}			
+					list.invalidateHierarchy();
+				}
 			}
 		});
 	}
@@ -233,8 +257,8 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 		parent.addActor(newElement);
 		Ctx.project.getI18N().extractStrings(parent.getId(), newElement);
-		
-		if(newElement instanceof SpriteActor) {
+
+		if (newElement instanceof SpriteActor) {
 			SpriteActor ia = (SpriteActor) newElement;
 			ia.loadAssets();
 			EngineAssetManager.getInstance().finishLoading();
@@ -254,18 +278,38 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 		@Override
 		protected String getCellTitle(BaseActor e) {
-			return e.getId();
+			boolean enabled = Ctx.project.isEditorVisible(e);
+
+			String text = e.getId();
+
+			if (!enabled) {
+				text = MessageFormat.format("[GRAY]{0}[]", text);
+			}
+
+			return text;
 		}
 
 		@Override
 		protected String getCellSubTitle(BaseActor e) {
-			if (e instanceof SpriteActor && ((SpriteActor) e).getRenderer() instanceof TextRenderer && ((TextRenderer) ((SpriteActor) e).getRenderer()).getText() != null)
-				return Ctx.project.translate(((TextRenderer) ((SpriteActor) e).getRenderer()).getText()).replace("\n", "|");
-			
-			if (e instanceof InteractiveActor)
-				return Ctx.project.translate(((InteractiveActor) e).getDesc());
+			boolean enabled = Ctx.project.isEditorVisible(e);
 
-			return "";
+			String text = "";
+
+			if (e instanceof SpriteActor && ((SpriteActor) e).getRenderer() instanceof TextRenderer
+					&& ((TextRenderer) ((SpriteActor) e).getRenderer()).getText() != null) {
+				text = Ctx.project.translate(((TextRenderer) ((SpriteActor) e).getRenderer()).getText()).replace("\n",
+						"|");
+			}
+
+			if (e instanceof InteractiveActor) {
+				text = Ctx.project.translate(((InteractiveActor) e).getDesc());
+			}
+
+			if (!enabled && text != null && !text.isEmpty()) {
+				text = MessageFormat.format("[GRAY]{0}[]", text);
+			}
+
+			return text;
 		}
 
 		@Override

@@ -285,7 +285,7 @@ public class ScnWidget extends Widget {
 					List<InteractiveActor> actors = layer.getActors();
 
 					for (InteractiveActor a : actors) {
-						if (a instanceof SpriteActor) {
+						if (a instanceof SpriteActor && Ctx.project.isEditorVisible(a)) {
 							boolean visibility = a.isVisible();
 							a.setVisible(true);
 							((SpriteActor) a).draw(sceneBatch);
