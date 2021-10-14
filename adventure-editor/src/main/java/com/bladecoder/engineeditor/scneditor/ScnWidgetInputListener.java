@@ -28,8 +28,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 import com.bladecoder.engine.model.AnchorActor;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.ObstacleActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.SceneLayer;
 import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.WalkZoneActor;
 import com.bladecoder.engine.util.PolygonUtils;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
@@ -199,7 +202,7 @@ public class ScnWidgetInputListener extends ClickListener {
 			}
 
 			// CHECK FOR CLICK INSIDE ACTOR TO CHANGE SELECTION
-			BaseActor a = scn.getActorAt(p.x, p.y);
+			BaseActor a = getActorAt(scn, p.x, p.y);
 
 			if (a != null && a != selActor) {
 				selActor = a;
@@ -461,6 +464,54 @@ public class ScnWidgetInputListener extends ClickListener {
 		// EditorLogger.debug("ENTER - X: " + x + " Y: " + y);
 		scnWidget.getStage().setScrollFocus(scnWidget);
 		scnWidget.getStage().setKeyboardFocus(scnWidget);
+	}
+
+	/**
+	 * Returns the actor at the position. Including not interactive actors.
+	 */
+	private BaseActor getActorAt(Scene s, float x, float y) {
+
+		// 1. Search for ANCHOR Actors
+		for (BaseActor a : s.getActors().values()) {
+			if (a instanceof AnchorActor && Ctx.project.isEditorVisible(a)) {
+				float dst = Vector2.dst(x, y, a.getX(), a.getY());
+
+				if (dst < Scene.ANCHOR_RADIUS)
+					return a;
+			}
+		}
+
+		// 2. Search for INTERACTIVE Actors
+		for (SceneLayer layer : s.getLayers()) {
+
+			if (!layer.isVisible())
+				continue;
+
+			// Obtain actors in reverse (close to camera)
+			for (int i = layer.getActors().size() - 1; i >= 0; i--) {
+				BaseActor a = layer.getActors().get(i);
+
+				if (a.hit(x, y) && Ctx.project.isEditorVisible(a)) {
+					return a;
+				}
+			}
+		}
+
+		// 3. Search for OBSTACLE actors
+		for (BaseActor a : s.getActors().values()) {
+			if (a instanceof ObstacleActor && a.hit(x, y) && Ctx.project.isEditorVisible(a)) {
+				return a;
+			}
+		}
+
+		// 4. Search for WALKZONE actors
+		for (BaseActor a : s.getActors().values()) {
+			if (a instanceof WalkZoneActor && a.hit(x, y) && Ctx.project.isEditorVisible(a)) {
+				return a;
+			}
+		}
+
+		return null;
 	}
 
 }

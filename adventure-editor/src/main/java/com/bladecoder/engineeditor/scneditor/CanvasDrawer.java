@@ -61,6 +61,9 @@ public class CanvasDrawer {
 
 		for (BaseActor a : scn.getActors().values()) {
 
+			if (!Ctx.project.isEditorVisible(a))
+				continue;
+
 			Polygon p = a.getBBox();
 
 			if (p == null) {
@@ -74,8 +77,8 @@ public class CanvasDrawer {
 				drawer.polygon(p.getTransformedVertices());
 			} else if (a instanceof InteractiveActor) {
 				InteractiveActor iActor = (InteractiveActor) a;
-				
-				if(a instanceof SpriteActor && !showSpriteBounds)
+
+				if (a instanceof SpriteActor && !showSpriteBounds)
 					continue;
 
 				if (!scn.getLayer(iActor.getLayer()).isVisible())
@@ -84,7 +87,7 @@ public class CanvasDrawer {
 				drawer.setColor(Scene.ACTOR_BBOX_COLOR);
 				if (p.getTransformedVertices().length > 2)
 					drawer.polygon(p.getTransformedVertices());
-			} else if (a instanceof WalkZoneActor) {				
+			} else if (a instanceof WalkZoneActor) {
 				drawer.setColor(Scene.WALKZONE_COLOR);
 				if (p.getTransformedVertices().length > 2)
 					drawer.polygon(p.getTransformedVertices());

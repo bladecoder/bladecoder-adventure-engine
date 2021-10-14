@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -108,6 +109,7 @@ public class Project extends PropertyChange {
 	private String selectedFA;
 	private boolean modified = false;
 	private final World world = new World();
+	private final HashSet<String> hidenActors = new HashSet<>();
 
 	public Project() {
 		loadConfig();
@@ -547,5 +549,21 @@ public class Project extends PropertyChange {
 		FileOutputStream os = new FileOutputStream(projectPath.getAbsolutePath() + "/gradle.properties");
 
 		prop.store(os, null);
+	}
+
+	public void toggleEditorVisibility(BaseActor a) {
+		String name = a.getInitScene() + "." + a.getId();
+
+		if (hidenActors.contains(name)) {
+			hidenActors.remove(name);
+		} else {
+			hidenActors.add(name);
+		}
+	}
+
+	public boolean isEditorVisible(BaseActor a) {
+		String name = a.getInitScene() + "." + a.getId();
+
+		return !hidenActors.contains(name);
 	}
 }
