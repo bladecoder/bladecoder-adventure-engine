@@ -18,12 +18,16 @@ package com.bladecoder.engineeditor.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.ActorRenderer;
@@ -53,6 +57,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 	private ImageButton playerBtn;
 	private ImageButton visibilityBtn;
+	private String filterText;
 
 	public ActorList(Skin skin) {
 		super(skin, true);
@@ -77,6 +82,21 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 			public void changed(ChangeEvent event, Actor actor) {
 				setPlayer();
 			}
+		});
+
+		toolbar.addFilterBox(new EventListener() {
+
+			@Override
+			public boolean handle(Event e) {
+				if (((TextField) e.getTarget()).getText() != filterText) {
+					filterText = ((TextField) e.getTarget()).getText();
+
+					addFilteredElements();
+				}
+
+				return false;
+			}
+
 		});
 
 		list.addListener(new ChangeListener() {
@@ -135,17 +155,29 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 
 				if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_DELETED)) {
 					if (evt.getNewValue() instanceof BaseActor) {
-						addElements(Ctx.project.getSelectedScene(), Arrays
-								.asList(Ctx.project.getSelectedScene().getActors().values().toArray(new BaseActor[0])));
+						addFilteredElements();
 					}
 				} else if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_CREATED)) {
 					if (evt.getNewValue() instanceof BaseActor && !(evt.getSource() instanceof EditActorDialog)) {
-						addElements(Ctx.project.getSelectedScene(), Arrays
-								.asList(Ctx.project.getSelectedScene().getActors().values().toArray(new BaseActor[0])));
+						addFilteredElements();
 					}
 				}
 			}
 		});
+	}
+
+	private void addFilteredElements() {
+
+		List<BaseActor> filtered = new ArrayList<>();
+
+		for (BaseActor a : Ctx.project.getSelectedScene().getActors().values()) {
+			if (filterText == null || filterText.isEmpty() || a.getId().contains(filterText)) {
+				filtered.add(a);
+			}
+		}
+
+		addElements(Ctx.project.getSelectedScene(), filtered);
+
 	}
 
 	private void toggleVisibility() {
