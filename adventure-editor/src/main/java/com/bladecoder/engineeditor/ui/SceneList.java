@@ -18,8 +18,9 @@ package com.bladecoder.engineeditor.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -34,6 +35,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -41,6 +44,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -67,6 +71,7 @@ public class SceneList extends ModelList<World, Scene> {
 	private SelectBox<String> chapters;
 	private HashMap<String, TextureRegion> bgIconCache = new HashMap<>();
 	private boolean disposeBgCache = false;
+	private String filterText;
 
 	public SceneList(final Skin skin) {
 		super(skin, true);
@@ -110,6 +115,21 @@ public class SceneList extends ModelList<World, Scene> {
 		toolbar.addToolBarButton(reloadBtn, "ic_reload_small", "Reload Assets", "Reload current scene assets");
 
 		reloadBtn.setDisabled(true);
+
+		toolbar.addFilterBox(new EventListener() {
+
+			@Override
+			public boolean handle(Event e) {
+				if (((TextField) e.getTarget()).getText() != filterText) {
+					filterText = ((TextField) e.getTarget()).getText();
+
+					addFilteredElements();
+				}
+
+				return false;
+			}
+
+		});
 
 		list.addListener(new ChangeListener() {
 			@Override
@@ -163,8 +183,7 @@ public class SceneList extends ModelList<World, Scene> {
 					if (evt.getNewValue() instanceof World) {
 						addChapters();
 					} else if (evt.getNewValue() instanceof Scene) {
-						addElements(Ctx.project.getWorld(),
-								Arrays.asList(Ctx.project.getWorld().getScenes().values().toArray(new Scene[0])));
+						addFilteredElements();
 					}
 				} else if (evt.getPropertyName().equals(Project.NOTIFY_PROJECT_LOADED)) {
 					toolbar.disableCreate(!Ctx.project.isLoaded());
@@ -173,8 +192,7 @@ public class SceneList extends ModelList<World, Scene> {
 					addChapters();
 				} else if (evt.getPropertyName().equals(Project.NOTIFY_ELEMENT_CREATED)) {
 					if (evt.getNewValue() instanceof Scene && !(evt.getSource() instanceof EditSceneDialog)) {
-						addElements(Ctx.project.getWorld(),
-								Arrays.asList(Ctx.project.getWorld().getScenes().values().toArray(new Scene[0])));
+						addFilteredElements();
 					}
 				}
 			}
@@ -208,8 +226,7 @@ public class SceneList extends ModelList<World, Scene> {
 					String init = Ctx.project.getEditorConfig().getProperty("project.selectedScene",
 							Ctx.project.getWorld().getInitScene());
 
-					addElements(Ctx.project.getWorld(),
-							Arrays.asList(Ctx.project.getWorld().getScenes().values().toArray(new Scene[0])));
+					addFilteredElements();
 
 					if (init != null) {
 						Scene s = Ctx.project.getWorld().getScenes().get(init);
@@ -261,6 +278,20 @@ public class SceneList extends ModelList<World, Scene> {
 		chapterListener.changed(null, null);
 
 		invalidate();
+	}
+
+	private void addFilteredElements() {
+
+		List<Scene> filtered = new ArrayList<>();
+
+		for (Scene s : Ctx.project.getWorld().getScenes().values()) {
+			if (filterText == null || filterText.isEmpty() || s.getId().contains(filterText)) {
+				filtered.add(s);
+			}
+		}
+
+		addElements(Ctx.project.getWorld(), filtered);
+
 	}
 
 	private void setDefault() {
