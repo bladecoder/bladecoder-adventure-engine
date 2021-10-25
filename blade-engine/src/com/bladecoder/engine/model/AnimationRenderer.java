@@ -317,7 +317,7 @@ public abstract class AnimationRenderer implements ActorRenderer {
 	}
 
 	private final static float DIRECTION_ASPECT_TOLERANCE = 3f;
-	private final static float DIRECTION_ASPECT_TOLERANCE_2 = 3f;
+	private final static float DIRECTION_ASPECT_TOLERANCE_2 = 1.5f;
 
 	protected String getDirectionString(Vector2 p0, Vector2 pf, int numDirs) {
 
