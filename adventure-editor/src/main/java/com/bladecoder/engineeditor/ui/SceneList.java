@@ -116,7 +116,7 @@ public class SceneList extends ModelList<World, Scene> {
 
 		reloadBtn.setDisabled(true);
 
-		toolbar.addFilterBox(new EventListener() {
+		TextField tf = toolbar.addFilterBox(new EventListener() {
 
 			@Override
 			public boolean handle(Event e) {
@@ -130,6 +130,8 @@ public class SceneList extends ModelList<World, Scene> {
 			}
 
 		});
+
+		filterText = tf.getText();
 
 		list.addListener(new ChangeListener() {
 			@Override

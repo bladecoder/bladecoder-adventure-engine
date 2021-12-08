@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.1.0]
+
+- EDITOR: Text filter for scene and actor lists.
+- EDITOR: Button to show/hide actors in the scene.
+- Ink: Support for multi flow.
+- InkRunAction can pass params to Ink paths.
+- New InkCancelAction action.
+- Updated Blade Ink to v1.0.0.
+- Updated libgdx to v1.10.0.
+- Updated packr version.
+
 ## [4.0.2]
 - Controller (gamepad) support.
 - .aab package generation for Android.
