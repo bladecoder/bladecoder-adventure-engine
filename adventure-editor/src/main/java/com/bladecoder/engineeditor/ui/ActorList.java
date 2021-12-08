@@ -84,7 +84,7 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 			}
 		});
 
-		toolbar.addFilterBox(new EventListener() {
+		TextField tf = toolbar.addFilterBox(new EventListener() {
 
 			@Override
 			public boolean handle(Event e) {
@@ -98,6 +98,8 @@ public class ActorList extends ModelList<Scene, BaseActor> {
 			}
 
 		});
+
+		filterText = tf.getText();
 
 		list.addListener(new ChangeListener() {
 

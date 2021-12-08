@@ -93,7 +93,7 @@ public class EditToolbar extends HorizontalGroup {
 		button.addListener(t);
 	}
 
-	public void addFilterBox(EventListener e) {
+	public TextField addFilterBox(EventListener e) {
 		TextField tf = new TextField("", skin);
 		addActor(tf);
 
@@ -101,6 +101,8 @@ public class EditToolbar extends HorizontalGroup {
 		tf.addListener(t);
 
 		tf.addListener(e);
+
+		return tf;
 	}
 
 	public void addCreateListener(EventListener e) {
