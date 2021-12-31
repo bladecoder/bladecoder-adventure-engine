@@ -169,6 +169,8 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
 					if (world.getCurrentScene() != null)
 						ui.setCurrentScreen(Screens.SCENE_SCREEN);
+					else
+						ui.setCurrentScreen(Screens.MENU_SCREEN);
 
 				return true;
 			}
