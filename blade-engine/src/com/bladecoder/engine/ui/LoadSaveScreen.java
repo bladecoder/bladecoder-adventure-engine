@@ -59,6 +59,7 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.serialization.WorldSerialization;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
+import com.bladecoder.engine.ui.defaults.ScreenControllerHandler.PointerToNextType;
 import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engine.util.EngineLogger;
 
@@ -179,9 +180,12 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 		table.addListener(new InputListener() {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
-				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)
+				if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK) {
 					if (world.getCurrentScene() != null)
 						ui.setCurrentScreen(Screens.SCENE_SCREEN);
+					else
+						ui.setCurrentScreen(Screens.MENU_SCREEN);
+				}
 
 				return true;
 			}
