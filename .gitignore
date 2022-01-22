@@ -6,6 +6,7 @@
 *.ipr
 *.iml
 out/
+.idea/
 
 # Eclipse
 .project

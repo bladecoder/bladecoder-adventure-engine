@@ -28,13 +28,13 @@ jar {
 		memberLevel = JavadocMemberLevel.PUBLIC
 		author true
 		setUse true
-    		encoding "UTF-8"
+        encoding "UTF-8"
 	}
     }
 
 dependencies {
   api "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  api "com.esotericsoftware.spine:spine-libgdx:3.8.55.1"
+  api "com.esotericsoftware.spine:spine-libgdx:4.0.18.1"
   
   implementation project(":blade-engine")
 }
