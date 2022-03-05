@@ -222,6 +222,15 @@ public class RunProccess {
 	public static boolean runInklecate(File workingDir, List<String> parameters) {
 		String exec = workingDir.getAbsolutePath() + "/" + "inklecate.exe";
 
+		if(!new File(exec).exists()) {
+			exec = workingDir.getAbsolutePath() + "/" + "inklecate";
+		}
+
+		if(!new File(exec).exists()) {
+			EditorLogger.msgThreaded("ERROR: Could not find inklecate.exe or inklecate in " + workingDir.getAbsolutePath());
+			return false;
+		}
+
 		List<String> argumentsList = new ArrayList<>();
 		argumentsList.add(exec);
 		argumentsList.addAll(parameters);
