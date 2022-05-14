@@ -460,6 +460,10 @@ public class SpineRenderer extends AnimationRenderer {
 		try {
 			SkeletonCacheEntry cs = (SkeletonCacheEntry) currentSource;
 
+			if(cs.skeleton == null) {
+				return;
+			}
+
 			if (skin != null && (cs.skeleton.getSkin() == null || !skin.equals(cs.skeleton.getSkin().getName()))) {
 				setSkin(skin);
 			}

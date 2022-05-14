@@ -1,28 +1,29 @@
 package com.bladecoder.engine;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.IntBuffer;
-import java.util.Properties;
-
-import com.bladecoder.engine.BladeEngine;
-import com.bladecoder.engine.util.Config;
-import com.bladecoder.engine.ui.UI.Screens;
-import com.bladecoder.engine.ui.SceneScreen;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Cursor;
-import org.lwjgl.input.Mouse;
-
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
+import com.bladecoder.engine.ui.SceneScreen;
+import com.bladecoder.engine.ui.UI.Screens;
+import com.bladecoder.engine.util.Config;
+import org.lwjgl.glfw.GLFW;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class DesktopLauncher extends BladeEngine {
 
-	private boolean fullscreen = true;
-	private LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
+	private static final int WINDOW_WIDTH = 1920 / 2;
+    private static final int WINDOW_HEIGHT = 1080 / 2;
+
+    private boolean fullscreen = true;
+    private Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
 	
 	private float speed = 1.0f;
 
@@ -37,28 +38,30 @@ public class DesktopLauncher extends BladeEngine {
 			System.out.println("Could not load properties file.");
 		}
 		
-		cfg.title = p.getProperty(Config.TITLE_PROP, "Blade Engine Adventure") + " " + p.getProperty(Config.VERSION_PROP, "");
-//		cfg.useGL30 = true;
+        cfg.setTitle(p.getProperty(Config.TITLE_PROP, "Blade Engine Adventure") + " "
+                + p.getProperty(Config.VERSION_PROP, ""));
 
-		cfg.width = 1920 / 2;
-		cfg.height = 1080 / 2;
-
-		cfg.resizable = true;
-		//cfg.samples = 2;
-		cfg.vSyncEnabled = true;
+        cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_HEIGHT);
+		cfg.setResizable(true);
+		cfg.useVsync(true);
+		cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
 	}
 
 	public void run() {
-		if(DesktopLauncher.class.getResource("/icons/icon128.png")!=null)
-			cfg.addIcon("icons/icon128.png", FileType.Internal);
-		
-		if(DesktopLauncher.class.getResource("/icons/icon32.png")!=null)
-			cfg.addIcon("icons/icon32.png", FileType.Internal);
-		
-		if(DesktopLauncher.class.getResource("/icons/icon16.png")!=null)
-			cfg.addIcon("icons/icon16.png", FileType.Internal);		
-		
-		new LwjglApplication(this, cfg);
+        List<String> iconList = new ArrayList<>();
+
+        if (DesktopLauncher.class.getResource("/icons/icon128.png") != null)
+            iconList.add("icons/icon128.png");
+
+        if (DesktopLauncher.class.getResource("/icons/icon32.png") != null)
+            iconList.add("icons/icon32.png");
+
+        if (DesktopLauncher.class.getResource("/icons/icon16.png") != null)
+            iconList.add("icons/icon16.png");
+
+        cfg.setWindowIcon(FileType.Internal, iconList.toArray(new String[0]));
+
+        new Lwjgl3Application(this, cfg);
 	}
 
 	public void parseParams(String[] args) {
@@ -100,14 +103,13 @@ public class DesktopLauncher extends BladeEngine {
 					i++;
 					String aspect = args[i];
 					
-					if(aspect.equals("16:9")) {
-						cfg.height = cfg.width * 9/16;
-					} else if(aspect.equals("4:3")) {
-						cfg.height = cfg.width * 3/4;
-					} else if(aspect.equals("16:10") || 
-							aspect.equals("8:5") ) {
-						cfg.height = cfg.width * 10/16;
-					}
+                    if (aspect.equals("16:9")) {
+                        cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_WIDTH * 9 / 16);
+                    } else if (aspect.equals("4:3")) {
+                        cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_WIDTH * 3 / 4);
+                    } else if (aspect.equals("16:10") || aspect.equals("8:5")) {
+                        cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_WIDTH * 10 / 16);
+                    }
 				}	
 			} else if (s.equals("-w")) {
 				fullscreen = false;
@@ -145,7 +147,6 @@ public class DesktopLauncher extends BladeEngine {
 
 	@Override
 	public void create() {
-		// Gdx.input.setCursorCatched(false);
 		if (fullscreen)
 			Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		
@@ -157,21 +158,10 @@ public class DesktopLauncher extends BladeEngine {
 			((SceneScreen) getUI().getScreen(Screens.SCENE_SCREEN)).setSpeed(speed);
 	}
 
-	private void hideCursor() {
-		Cursor emptyCursor;
-
-		int min = org.lwjgl.input.Cursor.getMinCursorSize();
-		IntBuffer tmp = BufferUtils.createIntBuffer(min * min);
-		try {
-			emptyCursor = new org.lwjgl.input.Cursor(min, min, min / 2,
-					min / 2, 1, tmp, null);
-
-			Mouse.setNativeCursor(emptyCursor);
-		} catch (LWJGLException e) {
-			e.printStackTrace();
-		}
-
-	}
+    private void hideCursor() {
+        Lwjgl3Window window = ((Lwjgl3Graphics) Gdx.graphics).getWindow();
+        GLFW.glfwSetInputMode(window.getWindowHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
+    }
 
 	public static void main(String[] args) {
 		DesktopLauncher game = new DesktopLauncher();

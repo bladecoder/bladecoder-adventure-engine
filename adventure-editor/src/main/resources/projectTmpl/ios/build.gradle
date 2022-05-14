@@ -2,11 +2,11 @@ apply plugin: 'java'
 apply plugin: 'robovm'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-sourceCompatibility = 1.7
-targetCompatibility=1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 ext {
-	mainClassName = "com.bladecoder.engine.IOSLauncher"
+    mainClassName = "com.bladecoder.engine.IOSLauncher"
 }
 
 launchIPhoneSimulator.dependsOn build
@@ -15,21 +15,21 @@ launchIOSDevice.dependsOn build
 createIPA.dependsOn build
 
 robovm {
-	archs = "thumbv7:arm64"
+    archs = "thumbv7:arm64"
 }
 
 eclipse.project {
-  name = appName + "-ios"
-  natures 'org.robovm.eclipse.RoboVMNature'
+    name = appName + "-ios"
+    natures 'org.robovm.eclipse.RoboVMNature'
 }
 
 dependencies {
-  compile project(':core')
-  compile "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
-  compile "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
-  compile "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
-  compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-  compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
-  
-  implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"  
+    implementation project(':core')
+    implementation "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
+    implementation "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
+    implementation "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
+    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
+
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
 }

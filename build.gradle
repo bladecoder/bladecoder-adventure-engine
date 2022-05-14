@@ -6,9 +6,7 @@ allprojects {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        
-       	 maven { url "http://artifactory.nimblygames.com/artifactory/ng-public-release/" }
-        
+        maven {url "https://artifactory.nimblygames.com/artifactory/ng-public-release/" }
     }
 }
 
@@ -27,58 +25,6 @@ tasks.eclipse.doLast {
     }
 }
 
-// UPLOADARCHIVES properties management
-def ask(title){
-	def console = System.console()
-	def string
-
-    if (console) {
-        string = console.readLine(title)
-    } else {
-        logger.error "Cannot get console."
-    }
-
-    return new String(string)
-}
-
-def askPasswd(title){
-	def console = System.console()
-	def string
-
-    if (console) {
-        string = console.readPassword(title)
-    } else {
-        logger.error "Cannot get console."
-    }
-
-    return new String(string)
-}
-
-// Set build variables based on build type (release, continuous integration, development)
-if(hasProperty("release")) {
-    ext.sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-	if(!hasProperty("sonatypeUsername"))
-		ext.sonatypeUsername = ask('\nSonatype Username: ')
-
-	if(!hasProperty("sonatypePassword"))
-		ext.sonatypePassword = askPasswd('\nSonatype Password: ')
-
-	if(!hasProperty("signing.keyId"))
-    	ext."signing.keyId" = ask('\nKey Id: ')
-
-   	if(!hasProperty("signing.secretKeyRingFile"))
-    	ext."signing.secretKeyRingFile" = ask('\nSecret Keyring file: ')
-
-    if(!hasProperty("signing.password"))
-    	ext."signing.password" = askPasswd('\nKey Password: ')
-} else if (hasProperty("ci")) {
-    if(!version.endsWith("-SNAPSHOT"))
-    	version += "-SNAPSHOT"
-
-    ext.sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-	if(!hasProperty("sonatypeUsername"))
-		ext.sonatypeUsername = ask('\nSonatype Username: ')
-
-	if(!hasProperty("sonatypePassword"))
-		ext.sonatypePassword = askPasswd('\nSonatype Password: ')
+if (hasProperty("ci") && !version.endsWith("-SNAPSHOT")) {
+    version += "-SNAPSHOT"
 }

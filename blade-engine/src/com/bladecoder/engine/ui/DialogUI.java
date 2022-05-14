@@ -195,9 +195,8 @@ public class DialogUI extends ScrollPane {
 			});
 		}
 
-		panel.pack();
 		setWidth(getStage().getViewport().getScreenWidth());
-		setHeight(Math.min(panel.getHeight(), getStage().getViewport().getScreenHeight() / 2));
+		setHeight(Math.min(panel.getPrefHeight(), getStage().getViewport().getScreenHeight() / 2f));
 
 		float size = DPIUtils.getPrefButtonSize() * .8f;
 		float margin = DPIUtils.getSpacing();

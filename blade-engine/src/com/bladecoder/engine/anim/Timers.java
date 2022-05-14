@@ -29,8 +29,8 @@ import com.bladecoder.engine.serialization.ActionCallbackSerializer;
 import com.bladecoder.engine.serialization.BladeJson;
 
 public class Timers {
-	private List<Timer> timers = new ArrayList<>(3);
-	private transient List<Timer> timersTmp = new ArrayList<>(3);
+	private final List<Timer> timers = new ArrayList<>(3);
+	private final transient List<Timer> timersTmp = new ArrayList<>(3);
 
 	public void addTimer(float time, ActionCallback cb) {
 		Timer t = new Timer();
@@ -81,7 +81,9 @@ public class Timers {
 		if (timersTmp.size() > 0) {
 			// process ended timers
 			for (Timer t : timersTmp) {
-				t.cb.resume();
+				// t.cb can be null if the cb is not found when loading. This can happen because InkManager ended the verb.
+				if(t.cb != null)
+					t.cb.resume();
 			}
 
 			timersTmp.clear();

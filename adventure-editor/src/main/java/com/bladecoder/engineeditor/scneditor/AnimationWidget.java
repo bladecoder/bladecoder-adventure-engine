@@ -67,9 +67,14 @@ public class AnimationWidget extends Widget {
 		}
 
 		renderer.setOrgAlign(Align.bottom);
-		renderer.loadAssets();
-		EngineAssetManager.getInstance().finishLoading();
-		renderer.retrieveAssets();
+
+		try {
+			renderer.loadAssets();
+			EngineAssetManager.getInstance().finishLoading();
+			renderer.retrieveAssets();
+		} catch (Exception e) {
+			EditorLogger.error("Error loading asset: " + e.getMessage());
+		}
 	}
 
 	public String[] getAnimations() {

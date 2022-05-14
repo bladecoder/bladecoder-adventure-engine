@@ -1,38 +1,45 @@
 apply plugin: 'java'
 apply plugin: 'application'
-  
-sourceCompatibility = 1.7
-targetCompatibility=1.7
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
-sourceSets.main.resources.srcDirs += [ rootProject.file('assets').absolutePath ]
+sourceSets.main.resources.srcDirs += [rootProject.file('assets').absolutePath]
 mainClassName = "com.bladecoder.engine.DesktopLauncher"
 
 dependencies {
     implementation project(":core")
-    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
     implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"    
+    implementation "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-lwjgl3-angle:$gdxVersion"
+
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+    constraints {
+        implementation('com.badlogicgames.jamepad:jamepad:2.0.20.0') {
+            because 'previous versions doesn\'t support macos arm64'
+        }
+    }
 }
 
 run {
     standardInput = System.in
     ignoreExitValue = true
-    
-    if (project.hasProperty("appArgs") ) {  
-        args Eval.me(appArgs)  
-    }     
+
+    if (project.hasProperty("appArgs")) {
+        args Eval.me(appArgs)
+    }
 }
 
 
 task dist(type: Jar) {
-    baseName =  appName + "-desktop"
-    
+    baseName = appName + "-desktop"
+
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
-    from {configurations.runtimeClasspath.collect {zipTree(it)}}
- 
+    from { configurations.runtimeClasspath.collect { zipTree(it) } }
+
     manifest {
         attributes 'Main-Class': project.mainClassName
     }
