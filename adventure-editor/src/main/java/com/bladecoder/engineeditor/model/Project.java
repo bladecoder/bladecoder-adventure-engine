@@ -27,7 +27,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
-import org.lwjgl.opengl.Display;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.SerializationException;
@@ -381,7 +383,8 @@ public class Project extends PropertyChange {
 			projectConfig.load(new FileInputStream(getAssetPath() + "/" + Config.PROPERTIES_FILENAME));
 			modified = false;
 
-			Display.setTitle("Adventure Editor v" + Versions.getVersion() + " - " + projectFile.getAbsolutePath());
+			Lwjgl3Window window = ((Lwjgl3Graphics) Gdx.graphics).getWindow();
+			window.setTitle("Adventure Editor v" + Versions.getVersion() + " - " + projectFile.getAbsolutePath());
 
 			firePropertyChange(NOTIFY_PROJECT_LOADED);
 		} else {

@@ -1,14 +1,15 @@
-apply plugin: "java"
-apply plugin: 'java-library'
-apply plugin: "signing"
-apply plugin: "maven"
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+}
 
 group = 'com.bladecoder.engine'
 
 // java
- sourceCompatibility = 1.7
- targetCompatibility=1.7
- [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+sourceCompatibility = 1.8
+targetCompatibility=1.8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 jar {
 	manifest.attributes += [
@@ -22,16 +23,6 @@ jar {
 	]
 }
 
-    javadoc {
-	title = "Bladecoder Adventure Engine Spine Plugin"
-	options {
-		memberLevel = JavadocMemberLevel.PUBLIC
-		author true
-		setUse true
-        encoding "UTF-8"
-	}
-    }
-
 dependencies {
   api "com.badlogicgames.gdx:gdx:$libgdxVersion"
   api "com.esotericsoftware.spine:spine-libgdx:4.0.18.1"
@@ -40,85 +31,81 @@ dependencies {
 }
 
 
-task enginedocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-
 task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
 }
 
-artifacts {
-    //archives jar
-    archives enginedocJar
-    archives sourcesJar
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = 'javadoc'
 }
 
-//********* artifact signing *********
-if(project.hasProperty("release")) {
-    signing {  
-        sign configurations.archives
-    }
-} else {
-    task signArchives {
-        // do nothing
-    }
-}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'blade-engine-spine-plugin'
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
 
-uploadArchives {
-    repositories {
-        if (!project.hasProperty("ci") && !project.hasProperty("release")) {
-            mavenLocal()
-        } else {
-            mavenDeployer {
-                if(project.hasProperty("release")) {
-                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
                 }
-
-                repository(url: sonatypeRepositoryUrl) {                 
-                  authentication(
-                    userName: sonatypeUsername, 
-                  	password: sonatypePassword
-                  )
+                usage('java-runtime') {
+                    fromResolutionResult()
                 }
+            }
 
-                pom.project {
-                   name 'blade-engine-spine-plugin'
-                   packaging 'jar'
-                   description 'Classic point and click adventure game engine - Spine plugin'
-                   url 'https://github.com/bladecoder/bladecoder-adventure-engine'
+            pom {
+                name = 'Blade Engine Spine Plugin'
+                description = 'Classic point and click adventure game engine - Spine plugin'
+                url = 'https://github.com/bladecoder/bladecoder-adventure-engine'
 
-                   scm {
-                       url 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
-                       connection 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
-                       developerConnection 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
-                   }
-
-                   licenses {
-                       license {
-                           name 'The Apache Software License, Version 2.0'
-                           url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                           distribution 'repo'
-                       }
-                       
-                       license {
-                           name 'Spine Runtimes Software License'
-                           url 'http://esotericsoftware.com/files/license.txt'
-                           distribution 'repo'
-                       }
-                   }
-
-                   developers {
-                       developer {
-                           id 'rgarcia'
-                           name 'Rafael Garcia'
-                       } 
-                   }
-               }
+                licenses {
+                    license {
+                        name='Spine Runtimes Software License'
+                        url='http://esotericsoftware.com/files/license.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'bladecoder'
+                        name = 'Rafael Garcia'
+                        email = 'bladecoder@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+                    developerConnection = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+                    url = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+                }
             }
         }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username findProperty("sonatypeUsername")
+                password findProperty("sonatypePassword")
+            }
+        }
+    }
+}
+
+signing {
+    if(!version.endsWith('SNAPSHOT')) {
+        sign publishing.publications.mavenJava
+    }
+}
+
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
     }
 }

@@ -137,7 +137,7 @@
 	},
 
 	com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
-		default: {label: { font: default-font, fontColor: text-dark}, background: message}
+		default: {label: { font: default-font, fontColor: text-dark}, background: message, wrapWidth: 300}
 	},
 	
 	com.bladecoder.engineeditor.ui.panels.FilteredSelectBox$FilteredSelectBoxStyle: {

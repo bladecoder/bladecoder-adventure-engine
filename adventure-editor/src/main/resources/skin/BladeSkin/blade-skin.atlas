@@ -1,8 +1,8 @@
 
-BladeSkin-ldpi.png
+blade-skin.png
 size: 332,78
 format: RGBA8888
-filter: MipMapLinearNearest,Nearest
+filter: Nearest,Nearest
 repeat: none
 btn_check_off
   rotate: false

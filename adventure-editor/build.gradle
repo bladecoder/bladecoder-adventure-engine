@@ -1,11 +1,11 @@
 buildscript {
-  repositories {
-    mavenCentral()
-  }
-  
-  dependencies {
-    classpath "com.badlogicgames.gdx:gdx-tools:$libgdxVersion"
-  }
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.badlogicgames.gdx:gdx-tools:1.10.0"
+    }
 }
 
 apply plugin: "java"
@@ -15,107 +15,113 @@ group = 'com.bladecoder.engineeditor'
 mainClassName = 'com.bladecoder.engineeditor.Main'
 
 // java
-sourceCompatibility=1.8
-targetCompatibility=1.8
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 jar {
-	manifest.attributes += [
-			'github': 'https://github.com/bladecoder/bladecoder-adventure-engine/',
-			'license': 'Apache-2.0',
-			'group': project.group,
-			'version': project.version,
-			'libgdx': libgdxVersion,
-			'java': targetCompatibility,
-			'timestamp': System.currentTimeMillis()
-	]
+    manifest.attributes += [
+            'github'   : 'https://github.com/bladecoder/bladecoder-adventure-engine/',
+            'license'  : 'Apache-2.0',
+            'group'    : project.group,
+            'version'  : project.version,
+            'libgdx'   : libgdxVersion,
+            'java'     : targetCompatibility,
+            'timestamp': System.currentTimeMillis()
+    ]
 }
 
 javadoc {
-	title = "Adventure Editor"
-	options {
-		memberLevel = JavadocMemberLevel.PUBLIC
-		author true
-		setUse true
-    	encoding "UTF-8"
-	}
+    title = "Adventure Editor"
+    options {
+        memberLevel = JavadocMemberLevel.PUBLIC
+        author true
+        setUse true
+        encoding "UTF-8"
+    }
 }
 
 dependencies {
-  implementation "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  implementation "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
-  implementation "com.badlogicgames.gdx:gdx-tools:$libgdxVersion"
-  implementation fileTree(dir: 'libs', include: '*.jar')
-  implementation "com.badlogicgames.gdx:gdx-backend-lwjgl:$libgdxVersion"
-  implementation "com.badlogicgames.gdx:gdx-platform:$libgdxVersion:natives-desktop"
-  implementation "com.badlogicgames.gdx:gdx-freetype-platform:$libgdxVersion:natives-desktop"
-  implementation("org.apache.commons:commons-compress:1.20")
-  implementation "commons-io:commons-io:2.1"
-  implementation "com.badlogicgames.packr:packr:4.0.0"
-  implementation "eu.infomas:annotation-detector:3.0.5"
-  implementation "com.strongjoshua:libgdx-inGameConsole:0.9.0"
-  implementation "com.kotcrab.vis:vis-ui:1.4.2"
-  implementation "com.bladecoder.ink:blade-ink:$bladeInkVersion"
-  implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"  
-  implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+    implementation "com.badlogicgames.gdx:gdx:$libgdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
+    implementation("com.badlogicgames.gdx:gdx-tools:1.10.0") {
+        exclude group: 'com.badlogicgames.gdx', module: 'gdx-backend-lwjgl'
+    }
+    implementation fileTree(dir: 'libs', include: '*.jar')
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$libgdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-lwjgl3-angle:$libgdxVersion"
 
-  implementation project(":blade-engine")
-  implementation project(":blade-engine-spine-plugin")
+    implementation "com.badlogicgames.gdx:gdx-platform:$libgdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$libgdxVersion:natives-desktop"
+    implementation("org.apache.commons:commons-compress:1.20")
+    implementation "commons-io:commons-io:2.1"
+    implementation "com.badlogicgames.packr:packr:4.0.0"
+    implementation "eu.infomas:annotation-detector:3.0.5"
+    implementation "com.strongjoshua:libgdx-inGameConsole:0.9.0"
+    implementation "com.kotcrab.vis:vis-ui:1.4.2"
+    implementation "com.bladecoder.ink:blade-ink:$bladeInkVersion"
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+    implementation "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$libgdxVersion"
+
+    implementation project(":blade-engine")
+    implementation project(":blade-engine-spine-plugin")
 }
 
 task setVersion(type: WriteProperties) {
 
-	def props = new Properties()
-	def propFile = project.file("./src/main/resources/versions.properties");
-	props.load(new FileReader(propFile))
+    def props = new Properties()
+    def propFile = project.file("./src/main/resources/versions.properties");
+    props.load(new FileReader(propFile))
 
-	props."version" = version
-	props."libgdxVersion" = libgdxVersion
-	props."roboVMVersion" = roboVMVersion
-	props."roboVMGradlePluginVersion" = roboVMGradlePluginVersion
-	props."androidAPILevel" = androidAPILevel
-	props."androidGradlePluginVersion" = androidGradlePluginVersion
-	props."bladeInkVersion" = bladeInkVersion
+    props."version" = version
+    props."libgdxVersion" = libgdxVersion
+    props."roboVMVersion" = roboVMVersion
+    props."roboVMGradlePluginVersion" = roboVMGradlePluginVersion
+    props."androidAPILevel" = androidAPILevel
+    props."androidGradlePluginVersion" = androidGradlePluginVersion
+    props."bladeInkVersion" = bladeInkVersion
 
-	setProperties(props);
-	setOutputFile(propFile);
-	
-	doLast {
-		println "Set version info in versions.properties"
-	}
+    setProperties(props);
+    setOutputFile(propFile);
+
+    doLast {
+        println "Set version info in versions.properties"
+    }
 }
 
 processResources.finalizedBy(setVersion)
 
 // Run `gradle pack` task to generate editor atlases
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
+
 task pack {
 
-	doLast {
-	  TexturePacker.process(
-	    'adventure-editor/assets-raw/editor/BladeSkin',           // Raw assets path.
-	    'adventure-editor/src/main/resources/skin/BladeSkin',     // Output directory.
-	    'BladeSkin-ldpi'              			 				  // Name of the generated atlas (without extension).
-	  )
-	  
-	  TexturePacker.process(
-	    'adventure-editor/assets-raw/editor/icons',
-	    'adventure-editor/src/main/resources/images', 
-	    'icons'  
-	  )
-	  
-	  TexturePacker.process(
-	    'adventure-editor/assets-raw/engine/ui-atlas', 
-	    'adventure-editor/src/main/resources/projectTmpl/assets/ui/1', 
-	    'ui'
-	  )
-  }
+    doLast {
+        TexturePacker.process(
+                'adventure-editor/assets-raw/editor/BladeSkin',           // Raw assets path.
+                'adventure-editor/src/main/resources/skin/BladeSkin',     // Output directory.
+                'blade-skin'                                          // Name of the generated atlas (without extension).
+        )
+
+        TexturePacker.process(
+                'adventure-editor/assets-raw/editor/icons',
+                'adventure-editor/src/main/resources/images',
+                'icons'
+        )
+
+        TexturePacker.process(
+                'adventure-editor/assets-raw/engine/ui-atlas',
+                'adventure-editor/src/main/resources/projectTmpl/assets/ui/1',
+                'ui'
+        )
+    }
 }
 
 // include flatpack files in .zip
 distZip {
-  into(project.name + '-' + project.version) {
-      from '.'
-      include 'desktop/*'
-  }
+    into(project.name + '-' + project.version) {
+        from '.'
+        include 'desktop/*'
+    }
 }

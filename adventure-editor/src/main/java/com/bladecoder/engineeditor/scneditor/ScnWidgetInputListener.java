@@ -346,6 +346,9 @@ public class ScnWidgetInputListener extends ClickListener {
 		super.scrolled(event, x, y, amountX, amountY);
 		// EditorLogger.debug("SCROLLED - X: " + x + " Y: " + y);
 
+		if(Math.abs(amountY) < 1)
+			amountY *= 10;
+
 		scnWidget.zoom((int) amountY);
 		return true;
 	}
@@ -444,11 +447,12 @@ public class ScnWidgetInputListener extends ClickListener {
 			break;
 
 		case Keys.PLUS:
-		case 70:
+			case 72: // '+'
 			scnWidget.zoom(-1);
 			break;
 
 		case Keys.MINUS:
+			case 76: // '-'
 			scnWidget.zoom(1);
 			break;
 
