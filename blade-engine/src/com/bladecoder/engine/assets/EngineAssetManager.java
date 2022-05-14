@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,20 +14,6 @@
  * limitations under the License.
  ******************************************************************************/
 package com.bladecoder.engine.assets;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -47,11 +33,19 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class EngineAssetManager extends AssetManager {
 
@@ -64,13 +58,11 @@ public class EngineAssetManager extends AssetManager {
 	public static final String MUSIC_DIR = "music/";
 	public static final String IMAGE_DIR = "images/";
 	public static final String SOUND_DIR = "sounds/";
-	public static final String MODEL3D_DIR = "3d/";
 	public static final String SPINE_DIR = "spine/";
 	public static final String PARTICLE_DIR = "particles/";
 	public static final String FONT_DIR = "ui/fonts/";
 	public static final String VOICE_DIR = "voices/";
 
-	public static final String MODEL3D_EXT = ".g3db";
 	public static final String SPINE_EXT = ".skel";
 	public static final String ATLAS_EXT = ".atlas";
 	public static final String INK_EXT = ".ink.json";
@@ -139,10 +131,10 @@ public class EngineAssetManager extends AssetManager {
 
 	/**
 	 * Creates a EngineAssetManager instance for edition. That is:
-	 * 
+	 * <p>
 	 * - Puts a PathResolver to locate the assets through an absolute path - Puts
 	 * assets scale to "1"
-	 * 
+	 *
 	 * @param base is the project base folder
 	 */
 	public static void createEditInstance(String base) {
@@ -156,7 +148,7 @@ public class EngineAssetManager extends AssetManager {
 
 	/**
 	 * All assets will be searched in the selected folder.
-	 * 
+	 *
 	 * @param base The asset base folder
 	 */
 	public static void setAssetFolder(String base) {
@@ -353,18 +345,6 @@ public class EngineAssetManager extends AssetManager {
 		return resResolver.baseResolve(PARTICLE_DIR + name);
 	}
 
-	public void loadModel3D(String name) {
-		load(MODEL3D_DIR + name + MODEL3D_EXT, Model.class);
-	}
-
-	public Model getModel3D(String name) {
-		return get(MODEL3D_DIR + name + MODEL3D_EXT, Model.class);
-	}
-
-	public void disposeModel3D(String name) {
-		if (isLoaded(MODEL3D_DIR + name + MODEL3D_EXT))
-			unload(MODEL3D_DIR + name + MODEL3D_EXT);
-	}
 
 	public boolean assetExists(String filename) {
 		return resResolver.exists(filename);
@@ -460,7 +440,7 @@ public class EngineAssetManager extends AssetManager {
 		URL dirURL = EngineAssetManager.class.getResource(base);
 
 		Set<String> result = new HashSet<>(); // avoid duplicates in case
-												// it is a subdirectory
+		// it is a subdirectory
 
 		if (dirURL.getProtocol().equals("jar")) {
 			/* A JAR path */
@@ -475,7 +455,7 @@ public class EngineAssetManager extends AssetManager {
 			}
 
 			Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries
-															// in jar
+			// in jar
 
 			while (entries.hasMoreElements()) {
 				String name = entries.nextElement().getName();
