@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,25 +15,12 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
-import java.awt.Desktop;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engineeditor.Ctx;
@@ -51,8 +38,20 @@ import com.kotcrab.vis.ui.widget.file.FileChooser.ViewMode;
 import com.kotcrab.vis.ui.widget.file.FileChooserListener;
 import com.kotcrab.vis.ui.widget.file.FileTypeFilter;
 
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class AssetsList extends Table {
-	private static final String[] ASSET_TYPES = { "3d models", "atlases", "music", "sounds", "images", "spine", "particles", "voices" };
+	private static final String[] ASSET_TYPES = {"3d models", "atlases", "music", "sounds", "images", "spine", "particles", "voices"};
 
 	private SelectBox<String> assetTypes;
 	protected EditToolbar toolbar;
@@ -65,18 +64,18 @@ public class AssetsList extends Table {
 	public AssetsList(Skin skin) {
 		super(skin);
 
-		assetTypes = new SelectBox<String>(skin);
+		assetTypes = new SelectBox<>(skin);
 		assetTypes.setItems(ASSET_TYPES);
 
 		this.skin = skin;
 
-		list = new CustomList<String>(skin);
+		list = new CustomList<>(skin);
 
 		Array<String> items = new Array<String>();
 		list.setItems(items);
 
 		ScrollPane scrollPane = new ScrollPane(list, skin);
-		container = new Container<ScrollPane>(scrollPane);
+		container = new Container<>(scrollPane);
 		container.fill();
 		container.prefHeight(1000);
 
@@ -151,16 +150,16 @@ public class AssetsList extends Table {
 				public boolean accept(File arg0, String arg1) {
 					String type = assetTypes.getSelected();
 
-					if (type.equals("atlases") && !arg1.endsWith(".atlas"))
-						return false;
-
-					return true;
+					return !type.equals("atlases") || arg1.endsWith(".atlas");
 				}
 			});
 
-			if (files != null)
+			if (files != null) {
+				Arrays.sort(files);
+
 				for (String f : files)
 					list.getItems().add(f);
+			}
 
 			if (list.getItems().size > 0) {
 				list.setSelectedIndex(0);
@@ -204,7 +203,7 @@ public class AssetsList extends Table {
 			new CreateAtlasDialog(skin).show(getStage());
 
 //			addAssets();
-			
+
 		} else if (type.equals("particles")) {
 			//	Open the particle editor
 			List<String> cp = new ArrayList<String>();
@@ -221,52 +220,52 @@ public class AssetsList extends Table {
 
 			fileChooser.setSelectionMode(SelectionMode.FILES);
 			fileChooser.setMultiSelectionEnabled(true);
-			
+
 			fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
 			fileChooser.setViewMode(ViewMode.LIST);
-			
+
 			getStage().addActor(fileChooser);
-			if(lastDir != null)
+			if (lastDir != null)
 				fileChooser.setDirectory(lastDir);
 //			chooser.setTitle("Select the '" + type + "' asset files");
-			
+
 
 			FileTypeFilter typeFilter = new FileTypeFilter(true); //allow "All Types" mode where all files are shown
 
 			switch (type) {
-			case "images":
-				typeFilter.addRule("Images (*.png, *.jpg, *.etc1)", "jpg", "png", "etc1");
-				break;
-			case "music":
-			case "sounds":
-			case "voices":
-				typeFilter.addRule("Sound (*.mp3, *.wav, *.ogg)", "wav", "mp3", "ogg");
-				break;
-			case "3d models":
-				typeFilter.addRule("3D Models (*.g3db, *.png)", "g3db", "png");
-				break;
-			case "spine":
-				typeFilter.addRule("Spine (*.skel, *.json)", "skel", "json");
-				break;
-			default:
-				typeFilter.addRule("All", "");
-				break;
+				case "images":
+					typeFilter.addRule("Images (*.png, *.jpg, *.etc1)", "jpg", "png", "etc1");
+					break;
+				case "music":
+				case "sounds":
+				case "voices":
+					typeFilter.addRule("Sound (*.mp3, *.wav, *.ogg)", "wav", "mp3", "ogg");
+					break;
+				case "3d models":
+					typeFilter.addRule("3D Models (*.g3db, *.png)", "g3db", "png");
+					break;
+				case "spine":
+					typeFilter.addRule("Spine (*.skel, *.json)", "skel", "json");
+					break;
+				default:
+					typeFilter.addRule("All", "");
+					break;
 			}
-			
+
 			fileChooser.setFileTypeFilter(typeFilter);
 
 			fileChooser.setListener(new FileChooserListener() {
 
 				@Override
 				public void selected(Array<FileHandle> files) {
-						
+
 					try {
 						String dirName = getAssetDir(type);
 						lastDir = files.get(0).parent().file();
-						
+
 						// Si no existe la carpeta la creamos
 						File dir = new File(dirName);
-						if(!dir.exists())
+						if (!dir.exists())
 							dir.mkdir();
 
 						for (FileHandle f : files) {
