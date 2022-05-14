@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,17 +14,6 @@
  * limitations under the License.
  ******************************************************************************/
 package com.bladecoder.engine.model;
-
-import java.io.IOException;
-import java.nio.IntBuffer;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.Deflater;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -47,808 +36,818 @@ import com.bladecoder.engine.ink.InkManager;
 import com.bladecoder.engine.serialization.WorldSerialization;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.Deflater;
 
 public class World implements AssetConsumer {
 
-	private static final String GAMESTATE_FILENAME = "default" + WorldSerialization.GAMESTATE_EXT;
-	private static final String DEFAULT_INVENTORY = "DEFAULT";
+    private static final String GAMESTATE_FILENAME = "default" + WorldSerialization.GAMESTATE_EXT;
+    private static final String DEFAULT_INVENTORY = "DEFAULT";
 
-	public static enum AssetState {
-		LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
-	};
+    public static enum AssetState {
+        LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
+    }
 
-	public static enum WorldProperties {
-		SAVED_GAME_VERSION, PREVIOUS_SCENE, CURRENT_CHAPTER, PLATFORM
-	};
+    ;
 
-	private static final boolean CACHE_ENABLED = true;
+    public static enum WorldProperties {
+        SAVED_GAME_VERSION, PREVIOUS_SCENE, CURRENT_CHAPTER, PLATFORM
+    }
 
-	// ------------ WORLD PROPERTIES ------------
-	private int width;
-	private int height;
+    ;
 
-	private String initScene;
-	private final HashMap<String, SoundDesc> sounds = new HashMap<>();
-	private final HashMap<String, Scene> scenes = new HashMap<>();
-	private final VerbManager verbs = new VerbManager();
-	private final I18N i18n = new I18N();
+    private static final boolean CACHE_ENABLED = true;
 
-	private Scene currentScene;
-	private Dialog currentDialog;
+    // ------------ WORLD PROPERTIES ------------
+    private int width;
+    private int height;
 
-	private final Map<String, Inventory> inventories = new HashMap<>();
-	private String currentInventory;
+    private String initScene;
+    private final HashMap<String, SoundDesc> sounds = new HashMap<>();
+    private final HashMap<String, Scene> scenes = new HashMap<>();
+    private final VerbManager verbs = new VerbManager();
+    private final I18N i18n = new I18N();
 
-	private UIActors uiActors;
+    private Scene currentScene;
+    private Dialog currentDialog;
 
-	private boolean paused;
-	private boolean cutMode;
+    private final Map<String, Inventory> inventories = new HashMap<>();
+    private String currentInventory;
 
-	// Keep track of the time of game in ms.
-	private long timeOfGame;
+    private UIActors uiActors;
 
-	// Add support for the use of global custom properties/variables in the game
-	// logic
-	private final HashMap<String, String> customProperties = new HashMap<>();
+    private boolean paused;
+    private boolean cutMode;
 
-	private String initChapter;
-	private String currentChapter;
+    // Keep track of the time of game in ms.
+    private long timeOfGame;
 
-	// For FADEIN/FADEOUT
-	private Transition transition;
+    // Add support for the use of global custom properties/variables in the game
+    // logic
+    private final HashMap<String, String> customProperties = new HashMap<>();
 
-	private MusicManager musicManager;
+    private String initChapter;
+    private String currentChapter;
 
-	private WorldListener listener;
+    // For FADEIN/FADEOUT
+    private Transition transition;
 
-	// ------------ LAZY CREATED OBJECTS ------------
-	private InkManager inkManager;
+    private MusicManager musicManager;
 
-	// ------------ TRANSIENT OBJECTS ------------
-	private AssetState assetState;
-	transient private SpriteBatch spriteBatch;
+    private WorldListener listener;
 
-	// for debug purposes, keep track of loading time
-	private long initLoadingTime;
+    // ------------ LAZY CREATED OBJECTS ------------
+    private InkManager inkManager;
 
-	// We not dispose the last loaded scene.
-	// Instead we cache it to improve performance when returning
-	transient private Scene cachedScene;
+    // ------------ TRANSIENT OBJECTS ------------
+    private AssetState assetState;
+    transient private SpriteBatch spriteBatch;
 
-	// If not null, this scene is set as the currentScene and the test Verb is
-	// executed
-	private String testScene;
+    // for debug purposes, keep track of loading time
+    private long initLoadingTime;
 
-	// If true call 'initNewGame' or 'initSavedGame' verbs.
-	private boolean initGame;
+    // We not dispose the last loaded scene.
+    // Instead we cache it to improve performance when returning
+    transient private Scene cachedScene;
 
-	// The verb to call after loading a scene. If null, the "init" verb will be
-	// called
-	private String initVerb;
+    // If not null, this scene is set as the currentScene and the test Verb is
+    // executed
+    private String testScene;
 
-	private final WorldSerialization serialization = new WorldSerialization(this);
+    // If true call 'initNewGame' or 'initSavedGame' verbs.
+    private boolean initGame;
 
-	public World() {
-		init();
-	}
+    // The verb to call after loading a scene. If null, the "init" verb will be
+    // called
+    private String initVerb;
 
-	private void init() {
+    private final WorldSerialization serialization = new WorldSerialization(this);
 
-		inventories.clear();
-		inventories.put(DEFAULT_INVENTORY, new Inventory());
-		setCurrentInventory(DEFAULT_INVENTORY);
+    public World() {
+        init();
+    }
 
-		scenes.clear();
-		sounds.clear();
+    private void init() {
 
-		uiActors = new UIActors(this);
+        inventories.clear();
+        inventories.put(DEFAULT_INVENTORY, new Inventory());
+        setCurrentInventory(DEFAULT_INVENTORY);
 
-		cutMode = false;
-		currentChapter = null;
-		cachedScene = null;
+        scenes.clear();
+        sounds.clear();
 
-		customProperties.clear();
+        uiActors = new UIActors(this);
 
-		spriteBatch = new SpriteBatch();
+        cutMode = false;
+        currentChapter = null;
+        cachedScene = null;
 
-		transition = new Transition();
+        customProperties.clear();
 
-		musicManager = new MusicManager();
+        spriteBatch = new SpriteBatch();
 
-		paused = false;
+        transition = new Transition();
 
-		initGame = true;
-	}
+        musicManager = new MusicManager();
 
-	public void setListener(WorldListener l) {
-		listener = l;
-	}
+        paused = false;
 
-	public WorldListener getListener() {
-		return listener;
-	}
-
-	public WorldSerialization getSerializer() {
-		return serialization;
-	}
+        initGame = true;
+    }
 
-	public InkManager getInkManager() {
-		// Lazy creation
-		if (inkManager == null) {
-			// Allow not link the Blade Ink Engine library if you don't use Ink
-			try {
-				Class.forName("com.bladecoder.ink.runtime.Story");
-				inkManager = new InkManager(this);
-			} catch (ClassNotFoundException e) {
-				EngineLogger.debug("WARNING: Blade Ink Library not found.");
-			}
-		}
+    public void setListener(WorldListener l) {
+        listener = l;
+    }
 
-		return inkManager;
-	}
+    public WorldListener getListener() {
+        return listener;
+    }
 
-	/**
-	 * Returns a scene from the cache. null if the scene is not cached.
-	 * 
-	 * Note that by now, the cache has only one Scene. In the future, the cache will
-	 * be a Hastable.
-	 */
-	public Scene getCachedScene(String id) {
+    public WorldSerialization getSerializer() {
+        return serialization;
+    }
 
-		if (cachedScene != null && cachedScene.getId().equals(id))
-			return cachedScene;
+    public InkManager getInkManager() {
+        // Lazy creation
+        if (inkManager == null) {
+            // Allow not link the Blade Ink Engine library if you don't use Ink
+            try {
+                Class.forName("com.bladecoder.ink.runtime.Story");
+                inkManager = new InkManager(this);
+            } catch (ClassNotFoundException e) {
+                EngineLogger.debug("WARNING: Blade Ink Library not found.");
+            }
+        }
 
-		return null;
-	}
+        return inkManager;
+    }
 
-	public String getCustomProperty(String name) {
-		return customProperties.get(name);
-	}
+    /**
+     * Returns a scene from the cache. null if the scene is not cached.
+     * <p>
+     * Note that by now, the cache has only one Scene. In the future, the cache will
+     * be a Hastable.
+     */
+    public Scene getCachedScene(String id) {
 
-	public void setCustomProperty(String name, String value) {
-		if (value == null)
-			customProperties.remove(name);
-		else
-			customProperties.put(name, value);
-	}
+        if (cachedScene != null && cachedScene.getId().equals(id))
+            return cachedScene;
 
-	public VerbManager getVerbManager() {
-		return verbs;
-	}
+        return null;
+    }
 
-	public MusicManager getMusicManager() {
-		return musicManager;
-	}
+    public String getCustomProperty(String name) {
+        return customProperties.get(name);
+    }
 
-	public HashMap<String, SoundDesc> getSounds() {
-		return sounds;
-	}
+    public void setCustomProperty(String name, String value) {
+        if (value == null)
+            customProperties.remove(name);
+        else
+            customProperties.put(name, value);
+    }
 
-	public void draw() {
-		if (assetState == AssetState.LOADED) {
-			getCurrentScene().draw(spriteBatch);
-			uiActors.draw(spriteBatch);
-		}
-	}
+    public VerbManager getVerbManager() {
+        return verbs;
+    }
 
-	public void update(float delta) {
-		if (assetState == AssetState.LOAD_ASSETS || assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
-			loadAssets();
+    public MusicManager getMusicManager() {
+        return musicManager;
+    }
 
-			if (assetState == AssetState.LOAD_ASSETS)
-				assetState = AssetState.LOADING;
-			else
-				assetState = AssetState.LOADING_AND_INIT_SCENE;
+    public HashMap<String, SoundDesc> getSounds() {
+        return sounds;
+    }
 
-			// initLoadingTime = System.currentTimeMillis();
-		}
+    public void draw() {
+        if (assetState == AssetState.LOADED) {
+            getCurrentScene().draw(spriteBatch);
+            uiActors.draw(spriteBatch);
+        }
+    }
 
-		if ((assetState == AssetState.LOADING || assetState == AssetState.LOADING_AND_INIT_SCENE)
-				&& !EngineAssetManager.getInstance().isLoading()) {
+    public void update(float delta) {
+        if (assetState == AssetState.LOAD_ASSETS || assetState == AssetState.LOAD_ASSETS_AND_INIT_SCENE) {
+            loadAssets();
 
-			retrieveAssets();
+            if (assetState == AssetState.LOAD_ASSETS)
+                assetState = AssetState.LOADING;
+            else
+                assetState = AssetState.LOADING_AND_INIT_SCENE;
 
-			paused = false;
+            // initLoadingTime = System.currentTimeMillis();
+        }
 
-			boolean init = (assetState == AssetState.LOADING_AND_INIT_SCENE);
+        if ((assetState == AssetState.LOADING || assetState == AssetState.LOADING_AND_INIT_SCENE)
+                && !EngineAssetManager.getInstance().isLoading()) {
 
-			assetState = AssetState.LOADED;
+            retrieveAssets();
 
-			EngineLogger.debug("ASSETS LOADING TIME (ms): " + (System.currentTimeMillis() - initLoadingTime));
+            paused = false;
 
-			if (initGame) {
-				initGame = false;
+            boolean init = (assetState == AssetState.LOADING_AND_INIT_SCENE);
 
-				// Call world init verbs. Check for SAVED_GAME_VERSION property
-				// to know if new or loaded game.
-				if (customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) == null
-						&& verbs.getVerb(Verb.INIT_NEW_GAME_VERB, null, null) != null)
-					verbs.runVerb(Verb.INIT_NEW_GAME_VERB, null, null, null);
-				else if (customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) != null
-						&& verbs.getVerb(Verb.INIT_SAVED_GAME_VERB, null, null) != null)
-					verbs.runVerb(Verb.INIT_SAVED_GAME_VERB, null, null, null);
-			}
+            assetState = AssetState.LOADED;
 
-			startScene(init);
+            EngineLogger.debug("ASSETS LOADING TIME (ms): " + (System.currentTimeMillis() - initLoadingTime));
 
-		}
+            if (initGame) {
+                initGame = false;
 
-		if (paused || assetState != AssetState.LOADED)
-			return;
+                // Call world init verbs. Check for SAVED_GAME_VERSION property
+                // to know if new or loaded game.
+                if (customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) == null
+                        && verbs.getVerb(Verb.INIT_NEW_GAME_VERB, null, null) != null)
+                    verbs.runVerb(Verb.INIT_NEW_GAME_VERB, null, null, null);
+                else if (customProperties.get(WorldProperties.SAVED_GAME_VERSION.toString()) != null
+                        && verbs.getVerb(Verb.INIT_SAVED_GAME_VERB, null, null) != null)
+                    verbs.runVerb(Verb.INIT_SAVED_GAME_VERB, null, null, null);
+            }
 
-		timeOfGame += delta * 1000f;
+            startScene(init);
 
-		getCurrentScene().update(delta);
+        }
 
-		uiActors.update(delta);
-		getInventory().update(delta);
+        if (paused || assetState != AssetState.LOADED)
+            return;
 
-		transition.update(delta);
+        timeOfGame += delta * 1000f;
 
-		musicManager.update(delta);
-	}
+        getCurrentScene().update(delta);
 
-	private void startScene(boolean initScene) {
-		// call 'init' verb only when arrives from setCurrentScene and not
-		// from load or restoring
-		if (initScene) {
-			currentScene.init();
+        uiActors.update(delta);
+        getInventory().update(delta);
 
-			if (inkManager != null)
-				inkManager.init();
+        transition.update(delta);
 
-			setCutMode(false);
+        musicManager.update(delta);
+    }
 
-			// If in test mode run 'test' verb (only the first time)
-			if (testScene != null && testScene.equals(currentScene.getId())
-					&& currentScene.getVerb(Verb.TEST_VERB) != null) {
+    private void startScene(boolean initScene) {
+        // call 'init' verb only when arrives from setCurrentScene and not
+        // from load or restoring
+        if (initScene) {
+            currentScene.init();
 
-				initVerb = Verb.TEST_VERB;
+            if (inkManager != null)
+                inkManager.init();
 
-				testScene = null;
-			}
+            setCutMode(false);
 
-			if (initVerb == null)
-				initVerb = "init";
-		}
+            // If in test mode run 'test' verb (only the first time)
+            if (testScene != null && testScene.equals(currentScene.getId())
+                    && currentScene.getVerb(Verb.TEST_VERB) != null) {
 
-		// Run INIT verb
-		if (initVerb != null
-				&& (currentScene.getVerb(initVerb) != null || getVerbManager().getVerb(initVerb, null, null) != null)) {
-			currentScene.runVerb(initVerb);
-		}
+                initVerb = Verb.TEST_VERB;
 
-		initVerb = null;
-	}
+                testScene = null;
+            }
 
-	@Override
-	public void loadAssets() {
-		currentScene.loadAssets();
+            if (initVerb == null)
+                initVerb = "init";
+        }
 
-		if (getInventory().isDisposed())
-			getInventory().loadAssets();
+        // Run INIT verb
+        if (initVerb != null
+                && (currentScene.getVerb(initVerb) != null || getVerbManager().getVerb(initVerb, null, null) != null)) {
+            currentScene.runVerb(initVerb);
+        }
 
-		if (uiActors.isDisposed())
-			uiActors.loadAssets();
+        initVerb = null;
+    }
 
-		musicManager.loadAssets();
-	}
+    @Override
+    public void loadAssets() {
+        currentScene.loadAssets();
 
-	@Override
-	public void retrieveAssets() {
-		if (getInventory().isDisposed())
-			getInventory().retrieveAssets();
+        if (getInventory().isDisposed())
+            getInventory().loadAssets();
 
-		if (uiActors.isDisposed())
-			uiActors.retrieveAssets();
+        if (uiActors.isDisposed())
+            uiActors.loadAssets();
 
-		getCurrentScene().retrieveAssets();
+        musicManager.loadAssets();
+    }
 
-		// Print loaded assets for scene
-		if (EngineLogger.debugMode()) {
-			Array<String> assetNames = EngineAssetManager.getInstance().getAssetNames();
+    @Override
+    public void retrieveAssets() {
+        if (getInventory().isDisposed())
+            getInventory().retrieveAssets();
 
-			assetNames.sort();
+        if (uiActors.isDisposed())
+            uiActors.retrieveAssets();
 
-			EngineLogger.debug("Assets loaded for SCENE: " + currentScene.getId());
+        getCurrentScene().retrieveAssets();
 
-			for (String n : assetNames) {
-				EngineLogger.debug("\t" + n);
-			}
-		}
+        // Print loaded assets for scene
+        if (EngineLogger.debugMode()) {
+            Array<String> assetNames = EngineAssetManager.getInstance().getAssetNames();
 
-		musicManager.retrieveAssets();
-	}
+            assetNames.sort();
 
-	public Transition getTransition() {
-		return transition;
-	}
+            EngineLogger.debug("Assets loaded for SCENE: " + currentScene.getId());
 
-	public long getTimeOfGame() {
-		return timeOfGame;
-	}
+            for (String n : assetNames) {
+                EngineLogger.debug("\t" + n);
+            }
+        }
 
-	public void setTimeOfGame(long t) {
-		timeOfGame = t;
-	}
+        musicManager.retrieveAssets();
+    }
 
-	public AssetState getAssetState() {
-		return assetState;
-	}
+    public Transition getTransition() {
+        return transition;
+    }
 
-	public I18N getI18N() {
-		return i18n;
-	}
+    public long getTimeOfGame() {
+        return timeOfGame;
+    }
 
-	public Dialog getCurrentDialog() {
-		return currentDialog;
-	}
+    public void setTimeOfGame(long t) {
+        timeOfGame = t;
+    }
 
-	public Scene getCurrentScene() {
-		return currentScene;
-	}
+    public AssetState getAssetState() {
+        return assetState;
+    }
 
-	public String getInitScene() {
-		return initScene;
-	}
+    public I18N getI18N() {
+        return i18n;
+    }
 
-	public String getCurrentChapter() {
-		return currentChapter;
-	}
+    public Dialog getCurrentDialog() {
+        return currentDialog;
+    }
 
-	public void setInitScene(String initScene) {
-		this.initScene = initScene;
-	}
+    public Scene getCurrentScene() {
+        return currentScene;
+    }
 
-	public void setCurrentScene(Scene scene, boolean init, String initVerb) {
+    public String getInitScene() {
+        return initScene;
+    }
 
-		initLoadingTime = System.currentTimeMillis();
+    public String getCurrentChapter() {
+        return currentChapter;
+    }
 
-		if (cachedScene == scene || currentScene == scene) {
-			if (init)
-				assetState = AssetState.LOADING_AND_INIT_SCENE;
-			else
-				assetState = AssetState.LOADING;
-		} else {
-			if (cachedScene != null) {
-				cachedScene.dispose();
-				cachedScene = null;
-			}
+    public void setInitScene(String initScene) {
+        this.initScene = initScene;
+    }
 
-			if (init)
-				assetState = AssetState.LOAD_ASSETS_AND_INIT_SCENE;
-			else
-				assetState = AssetState.LOAD_ASSETS;
-		}
+    public void setCurrentScene(Scene scene, boolean init, String initVerb) {
 
-		if (currentScene != null) {
-			currentDialog = null;
+        initLoadingTime = System.currentTimeMillis();
 
-			// Stop Sounds
-			currentScene.getSoundManager().stop();
+        if (cachedScene == scene || currentScene == scene) {
+            if (init)
+                assetState = AssetState.LOADING_AND_INIT_SCENE;
+            else
+                assetState = AssetState.LOADING;
+        } else {
+            if (cachedScene != null) {
+                cachedScene.dispose();
+                cachedScene = null;
+            }
 
-			customProperties.put(WorldProperties.PREVIOUS_SCENE.toString(), currentScene.getId());
+            if (init)
+                assetState = AssetState.LOAD_ASSETS_AND_INIT_SCENE;
+            else
+                assetState = AssetState.LOAD_ASSETS;
+        }
 
-			if (CACHE_ENABLED) {
-				if (currentScene != scene) { // Don't cache the scene if it is the same scene.
-					cachedScene = currentScene; // CACHE ENABLED
-				}
-			} else {
-				currentScene.dispose(); // CACHE DISABLED
-			}
+        if (currentScene != null) {
+            currentDialog = null;
 
-			transition.reset();
-		}
+            // Stop Sounds
+            currentScene.getSoundManager().stop();
 
-		currentScene = scene;
-		this.initVerb = initVerb;
+            customProperties.put(WorldProperties.PREVIOUS_SCENE.toString(), currentScene.getId());
 
-		musicManager.leaveScene(currentScene.getMusicDesc());
-	}
+            if (CACHE_ENABLED) {
+                if (currentScene != scene) { // Don't cache the scene if it is the same scene.
+                    cachedScene = currentScene; // CACHE ENABLED
+                }
+            } else {
+                currentScene.dispose(); // CACHE DISABLED
+            }
 
-	public Inventory getInventory() {
-		return inventories.get(currentInventory);
-	}
+            transition.reset();
+        }
 
-	public HashMap<String, String> getCustomProperties() {
-		return customProperties;
-	}
+        currentScene = scene;
+        this.initVerb = initVerb;
 
-	public Map<String, Inventory> getInventories() {
-		return inventories;
-	}
+        musicManager.leaveScene(currentScene.getMusicDesc());
+    }
 
-	public UIActors getUIActors() {
-		return uiActors;
-	}
+    public Inventory getInventory() {
+        return inventories.get(currentInventory);
+    }
 
-	public void addScene(Scene scene) {
-		scenes.put(scene.getId(), scene);
-	}
+    public HashMap<String, String> getCustomProperties() {
+        return customProperties;
+    }
 
-	public Scene getScene(String id) {
-		return scenes.get(id);
-	}
+    public Map<String, Inventory> getInventories() {
+        return inventories;
+    }
 
-	public Map<String, Scene> getScenes() {
-		return scenes;
-	}
+    public UIActors getUIActors() {
+        return uiActors;
+    }
 
-	public void setCutMode(boolean v) {
-		cutMode = v;
+    public void addScene(Scene scene) {
+        scenes.put(scene.getId(), scene);
+    }
 
-		if (listener != null)
-			listener.cutMode(cutMode);
-	}
+    public Scene getScene(String id) {
+        return scenes.get(id);
+    }
 
-	public void setCurrentScene(String id, boolean init, String initVerb) {
-		if (id.equals("$" + WorldProperties.PREVIOUS_SCENE.toString()))
-			id = getCustomProperty(WorldProperties.PREVIOUS_SCENE.toString());
+    public Map<String, Scene> getScenes() {
+        return scenes;
+    }
 
-		Scene s = scenes.get(id);
+    public void setCutMode(boolean v) {
+        cutMode = v;
 
-		if (s != null) {
-			setCurrentScene(s, init, initVerb);
-		} else {
-			EngineLogger.error("SetCurrentScene - COULD NOT FIND SCENE: " + id);
-		}
-	}
+        if (listener != null)
+            listener.cutMode(cutMode);
+    }
 
-	public void setCurrentDialog(Dialog dialog) {
-		this.currentDialog = dialog;
-		if (dialog != null) {
-			dialog.reset();
+    public void setCurrentScene(String id, boolean init, String initVerb) {
+        if (id.equals("$" + WorldProperties.PREVIOUS_SCENE.toString()))
+            id = getCustomProperty(WorldProperties.PREVIOUS_SCENE.toString());
 
-			int visibleOptions = dialog.getNumVisibleOptions();
+        Scene s = scenes.get(id);
 
-			if (visibleOptions == 0)
-				currentDialog = null;
-		}
+        if (s != null) {
+            setCurrentScene(s, init, initVerb);
+        } else {
+            EngineLogger.error("SetCurrentScene - COULD NOT FIND SCENE: " + id);
+        }
+    }
 
-		if (listener != null)
-			listener.dialogOptions();
-	}
+    public void setCurrentDialog(Dialog dialog) {
+        this.currentDialog = dialog;
+        if (dialog != null) {
+            dialog.reset();
 
-	public void setInventory(String inventory) {
-		Inventory i = inventories.get(inventory);
+            int visibleOptions = dialog.getNumVisibleOptions();
 
-		if (i == null) {
-			i = new Inventory();
-			inventories.put(inventory, i);
-		}
+            if (visibleOptions == 0)
+                currentDialog = null;
+        }
 
-		setCurrentInventory(inventory);
-	}
+        if (listener != null)
+            listener.dialogOptions();
+    }
 
-	public boolean hasDialogOptions() {
-		return currentDialog != null || (inkManager != null && inkManager.hasChoices());
-	}
+    public void setInventory(String inventory) {
+        Inventory i = inventories.get(inventory);
 
-	public void selectDialogOption(int i) {
-		if (currentDialog != null)
-			setCurrentDialog(currentDialog.selectOption(i));
-		else if (inkManager != null)
-			getInkManager().selectChoice(i);
-	}
+        if (i == null) {
+            i = new Inventory();
+            inventories.put(inventory, i);
+        }
 
-	public List<String> getDialogOptions() {
-		List<String> choices;
+        setCurrentInventory(inventory);
+    }
 
-		if (getCurrentDialog() != null) {
-			choices = getCurrentDialog().getChoices();
-		} else {
-			choices = getInkManager().getChoices();
-		}
+    public boolean hasDialogOptions() {
+        return currentDialog != null || (inkManager != null && inkManager.hasChoices());
+    }
 
-		return choices;
-	}
+    public void selectDialogOption(int i) {
+        if (currentDialog != null)
+            setCurrentDialog(currentDialog.selectOption(i));
+        else if (inkManager != null)
+            getInkManager().selectChoice(i);
+    }
 
-	// tmp vector to use in getInteractiveActorAtInput()
-	private final Vector3 unprojectTmp = new Vector3();
+    public List<String> getDialogOptions() {
+        List<String> choices;
 
-	/**
-	 * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and the
-	 * UIActors list.
-	 */
-	public InteractiveActor getInteractiveActorAtInput(Viewport v, float tolerance) {
+        if (getCurrentDialog() != null) {
+            choices = getCurrentDialog().getChoices();
+        } else {
+            choices = getInkManager().getChoices();
+        }
 
-		getSceneCamera().getInputUnProject(v, unprojectTmp);
+        return choices;
+    }
 
-		// search first in ui actors
-		InteractiveActor a = uiActors.getActorAtInput(v);
+    // tmp vector to use in getInteractiveActorAtInput()
+    private final Vector3 unprojectTmp = new Vector3();
 
-		if (a != null)
-			return a;
+    /**
+     * Obtains the actor at (x,y) with TOLERANCE. Search the current scene and the
+     * UIActors list.
+     */
+    public InteractiveActor getInteractiveActorAtInput(Viewport v, float tolerance) {
 
-		return currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
-	}
+        getSceneCamera().getInputUnProject(v, unprojectTmp);
 
-	public int getWidth() {
-		return width;
-	}
+        // search first in ui actors
+        InteractiveActor a = uiActors.getActorAtInput(v);
 
-	public void setWidth(int width) {
-		this.width = width;
-	}
+        if (a != null)
+            return a;
 
-	public int getHeight() {
-		return height;
-	}
+        return currentScene.getInteractiveActorAt(unprojectTmp.x, unprojectTmp.y, tolerance);
+    }
 
-	public void setHeight(int height) {
-		this.height = height;
-	}
+    public int getWidth() {
+        return width;
+    }
 
-	public void showInventory(boolean b) {
-		getInventory().setVisible(b);
+    public void setWidth(int width) {
+        this.width = width;
+    }
 
-		if (listener != null)
-			listener.inventoryEnabled(b);
-	}
+    public int getHeight() {
+        return height;
+    }
 
-	public String getCurrentInventory() {
-		return currentInventory;
-	}
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
-	public void setCurrentInventory(String currentInventory) {
-		this.currentInventory = currentInventory;
-	}
+    public void showInventory(boolean b) {
+        getInventory().setVisible(b);
 
-	public boolean isDisposed() {
-		return currentScene == null;
-	}
+        if (listener != null)
+            listener.inventoryEnabled(b);
+    }
 
-	@Override
-	public void dispose() {
+    public String getCurrentInventory() {
+        return currentInventory;
+    }
 
-		if (isDisposed())
-			return;
+    public void setCurrentInventory(String currentInventory) {
+        this.currentInventory = currentInventory;
+    }
 
-		try {
+    public boolean isDisposed() {
+        return currentScene == null;
+    }
 
-			currentDialog = null;
+    @Override
+    public void dispose() {
 
-			transition.reset();
+        if (isDisposed())
+            return;
 
-			// ONLY dispose currentscene because other scenes are already
-			// disposed
-			if (currentScene != null) {
-				musicManager.stopMusic();
-				currentScene.getTextManager().reset();
-				currentScene.dispose();
-				currentScene = null;
-			}
+        try {
 
-			if (cachedScene != null) {
-				cachedScene.dispose();
-				cachedScene = null;
-			}
+            currentDialog = null;
 
-			getInventory().dispose();
-			uiActors.dispose();
+            transition.reset();
 
-			spriteBatch.dispose();
+            // ONLY dispose currentscene because other scenes are already
+            // disposed
+            if (currentScene != null) {
+                musicManager.stopMusic();
+                currentScene.getTextManager().reset();
+                currentScene.dispose();
+                currentScene = null;
+            }
 
-			Sprite3DRenderer.disposeBatchs();
+            if (cachedScene != null) {
+                cachedScene.dispose();
+                cachedScene = null;
+            }
 
-			assetState = null;
+            getInventory().dispose();
+            uiActors.dispose();
 
-			musicManager.dispose();
+            spriteBatch.dispose();
 
-			inkManager = null;
+            assetState = null;
 
-		} catch (Exception e) {
-			EngineLogger.error(e.getMessage());
-		}
+            musicManager.dispose();
 
-		init();
-	}
+            inkManager = null;
 
-	public SceneCamera getSceneCamera() {
-		return currentScene.getCamera();
-	}
+        } catch (Exception e) {
+            EngineLogger.error(e.getMessage());
+        }
 
-	public void resize(float viewportWidth, float viewportHeight) {
-		if (currentScene != null) {
-			currentScene.getCamera().viewportWidth = viewportWidth;
-			currentScene.getCamera().viewportHeight = viewportHeight;
+        init();
+    }
 
-			if (currentScene.getCameraFollowActor() != null)
-				currentScene.getCamera().updatePos(currentScene.getCameraFollowActor());
+    public SceneCamera getSceneCamera() {
+        return currentScene.getCamera();
+    }
 
-			currentScene.getCamera().update();
+    public void resize(float viewportWidth, float viewportHeight) {
+        if (currentScene != null) {
+            currentScene.getCamera().viewportWidth = viewportWidth;
+            currentScene.getCamera().viewportHeight = viewportHeight;
 
-			uiActors.resize(viewportWidth, viewportHeight);
-		}
-	}
+            if (currentScene.getCameraFollowActor() != null)
+                currentScene.getCamera().updatePos(currentScene.getCameraFollowActor());
 
-	public void setChapter(String chapter) {
-		this.currentChapter = chapter;
-	}
+            currentScene.getCamera().update();
 
-	public String getInitChapter() {
-		return initChapter;
-	}
+            uiActors.resize(viewportWidth, viewportHeight);
+        }
+    }
 
-	public void setInitChapter(String initChapter) {
-		this.initChapter = initChapter;
-	}
+    public void setChapter(String chapter) {
+        this.currentChapter = chapter;
+    }
 
-	public boolean isPaused() {
-		return paused;
-	}
+    public String getInitChapter() {
+        return initChapter;
+    }
 
-	public boolean inCutMode() {
-		return cutMode;
-	}
+    public void setInitChapter(String initChapter) {
+        this.initChapter = initChapter;
+    }
 
-	public void pause() {
-		paused = true;
+    public boolean isPaused() {
+        return paused;
+    }
 
-		if (currentScene != null) {
+    public boolean inCutMode() {
+        return cutMode;
+    }
 
-			// do not pause the music when going to the loading screen.
-			if (assetState == AssetState.LOADED) {
-				musicManager.pauseMusic();
-				currentScene.getTextManager().getVoiceManager().pause();
-			}
+    public void pause() {
+        paused = true;
 
-			// Pause all sounds
-			currentScene.getSoundManager().pause();
-		}
+        if (currentScene != null) {
 
-		if (listener != null)
-			listener.pause(true);
-	}
+            // do not pause the music when going to the loading screen.
+            if (assetState == AssetState.LOADED) {
+                musicManager.pauseMusic();
+                currentScene.getTextManager().getVoiceManager().pause();
+            }
 
-	public void resume() {
-		paused = false;
+            // Pause all sounds
+            currentScene.getSoundManager().pause();
+        }
 
-		if (assetState == AssetState.LOADED) {
-			if (currentScene != null) {
-				musicManager.resumeMusic();
-				currentScene.getTextManager().getVoiceManager().resume();
+        if (listener != null)
+            listener.pause(true);
+    }
 
-				// Resume all sounds
-				currentScene.getSoundManager().resume();
-			}
-		}
+    public void resume() {
+        paused = false;
 
-		if (listener != null)
-			listener.pause(false);
-	}
+        if (assetState == AssetState.LOADED) {
+            if (currentScene != null) {
+                musicManager.resumeMusic();
+                currentScene.getTextManager().getVoiceManager().resume();
 
-	public void newGame() throws Exception {
-		timeOfGame = 0;
-		serialization.loadChapter();
-	}
+                // Resume all sounds
+                currentScene.getSoundManager().resume();
+            }
+        }
 
-	public void endGame() {
-		dispose();
+        if (listener != null)
+            listener.pause(false);
+    }
 
-		// DELETE SAVEGAME
-		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
-			EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).delete();
-		}
-	}
+    public void newGame() throws Exception {
+        timeOfGame = 0;
+        serialization.loadChapter();
+    }
 
-	// ********** SERIALIZATION **********
+    public void endGame() {
+        dispose();
 
-	public void saveGameState() throws IOException {
-		boolean takeScreenshot = false;
+        // DELETE SAVEGAME
+        if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
+            EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).delete();
+        }
+    }
 
-		// Only take screenshot for desktop. For iOs or Android is slow.
-		if (Gdx.app.getType() == ApplicationType.Desktop)
-			takeScreenshot = true;
+    // ********** SERIALIZATION **********
 
-		serialization.saveGameState(GAMESTATE_FILENAME, takeScreenshot);
-	}
+    public void saveGameState() throws IOException {
+        boolean takeScreenshot = false;
 
-	public void removeGameState(String filename) throws IOException {
-		EngineAssetManager.getInstance().getUserFile(filename).delete();
-		EngineAssetManager.getInstance().getUserFile(filename + ".png").delete();
-	}
+        // Only take screenshot for desktop. For iOs or Android is slow.
+        if (Gdx.app.getType() == ApplicationType.Desktop)
+            takeScreenshot = true;
 
-	/**
-	 * Try to load the saved game if exists. In other case, load the model.
-	 * 
-	 * @throws Exception
-	 * 
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws ParserConfigurationException
-	 */
-	public void load() throws Exception {
-		if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
-			// SAVEGAME EXISTS
-			try {
-				loadGameState();
-			} catch (Exception e) {
-				EngineLogger.error("ERROR LOADING SAVED GAME", e);
-				// Load the model if fails loading the saved game
-				serialization.loadChapter();
-			}
-		} else {
-			serialization.loadChapter();
-		}
-	}
+        serialization.saveGameState(GAMESTATE_FILENAME, takeScreenshot);
+    }
 
-	public void loadChapter(String chapter, String scene, boolean test) throws Exception {
-		if (test)
-			this.testScene = scene;
+    public void removeGameState(String filename) throws IOException {
+        EngineAssetManager.getInstance().getUserFile(filename).delete();
+        EngineAssetManager.getInstance().getUserFile(filename + ".png").delete();
+    }
 
-		serialization.loadChapter(chapter, scene, true);
-	}
+    /**
+     * Try to load the saved game if exists. In other case, load the model.
+     *
+     * @throws Exception
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     */
+    public void load() throws Exception {
+        if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
+            // SAVEGAME EXISTS
+            try {
+                loadGameState();
+            } catch (Exception e) {
+                EngineLogger.error("ERROR LOADING SAVED GAME", e);
+                // Load the model if fails loading the saved game
+                serialization.loadChapter();
+            }
+        } else {
+            serialization.loadChapter();
+        }
+    }
 
-	public void setTestScene(String s) {
-		testScene = s;
-	}
+    public void loadChapter(String chapter, String scene, boolean test) throws Exception {
+        if (test)
+            this.testScene = scene;
 
-	/**
-	 * Load the world description in 'world.json'.
-	 * 
-	 * @throws IOException
-	 */
-	public void loadWorldDesc() throws IOException {
-		serialization.loadWorldDesc();
-	}
+        serialization.loadChapter(chapter, scene, true);
+    }
 
-	public void saveWorldDesc(FileHandle file) throws IOException {
-		serialization.saveWorldDesc(file);
-	}
+    public void setTestScene(String s) {
+        testScene = s;
+    }
 
-	public boolean savedGameExists() {
-		return savedGameExists(GAMESTATE_FILENAME);
-	}
+    /**
+     * Load the world description in 'world.json'.
+     *
+     * @throws IOException
+     */
+    public void loadWorldDesc() throws IOException {
+        serialization.loadWorldDesc();
+    }
 
-	public boolean savedGameExists(String filename) {
-		return EngineAssetManager.getInstance().getUserFile(filename).exists()
-				|| FileUtils.exists(EngineAssetManager.getInstance().getAsset("tests/" + filename));
-	}
+    public void saveWorldDesc(FileHandle file) throws IOException {
+        serialization.saveWorldDesc(file);
+    }
 
-	public void loadGameState() throws IOException {
-		long initTime = System.currentTimeMillis();
-		loadGameState(GAMESTATE_FILENAME);
-		EngineLogger.debug("GAME STATE LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
-	}
+    public boolean savedGameExists() {
+        return savedGameExists(GAMESTATE_FILENAME);
+    }
 
-	public void loadGameState(String filename) throws IOException {
-		FileHandle savedFile = null;
+    public boolean savedGameExists(String filename) {
+        return EngineAssetManager.getInstance().getUserFile(filename).exists()
+                || FileUtils.exists(EngineAssetManager.getInstance().getAsset("tests/" + filename));
+    }
 
-		if (EngineAssetManager.getInstance().getUserFile(filename).exists())
-			savedFile = EngineAssetManager.getInstance().getUserFile(filename);
-		else
-			savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
+    public void loadGameState() throws IOException {
+        long initTime = System.currentTimeMillis();
+        loadGameState(GAMESTATE_FILENAME);
+        EngineLogger.debug("GAME STATE LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+    }
 
-		serialization.loadGameState(savedFile);
+    public void loadGameState(String filename) throws IOException {
+        FileHandle savedFile = null;
 
-		assetState = AssetState.LOAD_ASSETS;
-	}
+        if (EngineAssetManager.getInstance().getUserFile(filename).exists())
+            savedFile = EngineAssetManager.getInstance().getUserFile(filename);
+        else
+            savedFile = EngineAssetManager.getInstance().getAsset("tests/" + filename);
 
-	public void takeScreenshot(String filename, int w) {
+        serialization.loadGameState(savedFile);
 
-		// get viewport
-		IntBuffer results = BufferUtils.newIntBuffer(16);
-		Gdx.gl20.glGetIntegerv(GL20.GL_VIEWPORT, results);
+        assetState = AssetState.LOAD_ASSETS;
+    }
 
-		int h = (int) (w * getSceneCamera().viewportHeight / getSceneCamera().viewportWidth);
+    public void takeScreenshot(String filename, int w) {
 
-		FrameBuffer fbo = new FrameBuffer(Format.RGB565, w, h, false);
+        // get viewport
+        IntBuffer results = BufferUtils.newIntBuffer(16);
+        Gdx.gl20.glGetIntegerv(GL20.GL_VIEWPORT, results);
 
-		fbo.begin();
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		draw();
+        int h = (int) (w * getSceneCamera().viewportHeight / getSceneCamera().viewportWidth);
 
-		// TODO: Next line is deprecated, use Pixmap.createFromFrameBuffer();
-		Pixmap pixmap = ScreenUtils.getFrameBufferPixmap(0, 0, w, h);
+        FrameBuffer fbo = new FrameBuffer(Format.RGB565, w, h, false);
 
-		// restore viewport
-		fbo.end(results.get(0), results.get(1), results.get(2), results.get(3));
+        fbo.begin();
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        draw();
 
-		PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap, Deflater.DEFAULT_COMPRESSION,
-				true);
+        // TODO: Next line is deprecated, use Pixmap.createFromFrameBuffer();
+        Pixmap pixmap = ScreenUtils.getFrameBufferPixmap(0, 0, w, h);
 
-		fbo.dispose();
-	}
+        // restore viewport
+        fbo.end(results.get(0), results.get(1), results.get(2), results.get(3));
+
+        PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap, Deflater.DEFAULT_COMPRESSION,
+                true);
+
+        fbo.dispose();
+    }
 }
