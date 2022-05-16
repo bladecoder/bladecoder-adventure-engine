@@ -426,7 +426,6 @@ public class Project extends PropertyChange {
         prop.setProperty("gdxVersion", Versions.getLibgdxVersion());
         prop.setProperty("roboVMVersion", Versions.getRoboVMVersion());
 
-        prop.setProperty("roboVMGradlePluginVersion", Versions.getROBOVMGradlePluginVersion());
         prop.setProperty("androidGradlePluginVersion", Versions.getAndroidGradlePluginVersion());
         prop.setProperty("bladeInkVersion", Versions.getBladeInkVersion());
 

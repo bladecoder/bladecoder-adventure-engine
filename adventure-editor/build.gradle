@@ -77,7 +77,6 @@ task setVersion(type: WriteProperties) {
     props."version" = version
     props."libgdxVersion" = libgdxVersion
     props."roboVMVersion" = roboVMVersion
-    props."roboVMGradlePluginVersion" = roboVMGradlePluginVersion
     props."androidAPILevel" = androidAPILevel
     props."androidGradlePluginVersion" = androidGradlePluginVersion
     props."bladeInkVersion" = bladeInkVersion
