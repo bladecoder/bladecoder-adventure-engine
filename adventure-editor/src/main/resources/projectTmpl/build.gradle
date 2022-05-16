@@ -5,14 +5,13 @@ buildscript {
         google()
     }
     dependencies {
-        classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$roboVMGradlePluginVersion"
-    	classpath "com.android.tools.build:gradle:$androidGradlePluginVersion"      
+        classpath "com.android.tools.build:gradle:$androidGradlePluginVersion"
     }
 }
 
 allprojects {
-  apply plugin: 'eclipse'
-  apply plugin: 'idea'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
 }
 
 subprojects {
@@ -22,7 +21,7 @@ subprojects {
         maven { url 'https://plugins.gradle.org/m2/' }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-   }
+    }
 }
 
 tasks.eclipse.doLast {

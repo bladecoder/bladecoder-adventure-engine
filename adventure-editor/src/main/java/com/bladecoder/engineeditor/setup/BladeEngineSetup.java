@@ -302,7 +302,6 @@ public class BladeEngineSetup {
         values.put("%ROBOVM_VERSION%", Versions.getRoboVMVersion());
 
         values.put("%ANDROID_GRADLE_PLUGIN_VERSION%", Versions.getAndroidGradlePluginVersion());
-        values.put("%ROBOVM_GRADLE_PLUGIN_VERSION%", Versions.getROBOVMGradlePluginVersion());
 
         values.put("%BLADE_INK_VERSION%", Versions.getBladeInkVersion());
 
