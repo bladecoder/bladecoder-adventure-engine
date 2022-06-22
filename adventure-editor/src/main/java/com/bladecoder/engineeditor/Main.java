@@ -21,6 +21,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.EditorLogger.Levels;
 import com.bladecoder.engineeditor.common.Versions;
+import org.lwjgl.system.Configuration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,6 +30,10 @@ import java.util.List;
 public class Main extends Lwjgl3Application {
 
     public static void main(final String[] args) {
+
+        if(System.getProperty("os.name").contains("Mac"))
+            Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
+
         Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
 
         cfg.setTitle("Adventure Editor v" + Versions.getVersion());

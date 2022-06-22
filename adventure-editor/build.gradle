@@ -62,7 +62,6 @@ dependencies {
     implementation "com.bladecoder.ink:blade-ink:$bladeInkVersion"
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
-    implementation "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$libgdxVersion"
 
     implementation project(":blade-engine")
     implementation project(":blade-engine-spine-plugin")
