@@ -1,4 +1,4 @@
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'application'
 
 sourceCompatibility = 1.8
@@ -13,13 +13,7 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
     implementation "com.badlogicgames.gdx:gdx-lwjgl3-angle:$gdxVersion"
-
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
-    constraints {
-        implementation('com.badlogicgames.jamepad:jamepad:2.0.20.0') {
-            because 'previous versions doesn\'t support macos arm64'
-        }
-    }
 }
 
 run {
@@ -33,15 +27,15 @@ run {
 
 
 task dist(type: Jar) {
-    baseName = appName + "-desktop"
-
-    from files(sourceSets.main.output.classesDirs)
-    from files(sourceSets.main.output.resourcesDir)
-    from { configurations.runtimeClasspath.collect { zipTree(it) } }
-
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     manifest {
         attributes 'Main-Class': project.mainClassName
     }
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
 }
 
 dist.dependsOn classes

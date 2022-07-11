@@ -1,27 +1,18 @@
 allprojects {
-    apply plugin: "eclipse"
-    apply plugin: "idea"
-
     repositories {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        maven {url "https://artifactory.nimblygames.com/artifactory/ng-public-release/" }
+        maven { url "https://artifactory.nimblygames.com/artifactory/ng-public-release/" }
     }
 }
 
-tasks.eclipse.doLast {
-    delete ".project"
-    delete '.classpath'
-    delete '.settings/'
-}
-
 // DISABLES JAVADOC ULTRACHECKS IN JDK8
- if (JavaVersion.current().isJava8Compatible()) {
+if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
-      tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none', '-quiet')
-      }
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
     }
 }
 
