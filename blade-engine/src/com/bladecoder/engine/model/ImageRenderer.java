@@ -111,9 +111,7 @@ public class ImageRenderer extends AnimationRenderer {
 		}
 
 		if (cb != null) {
-			ActionCallback tmpcb = cb;
-			cb = null;
-			tmpcb.resume();
+			cb.resume();
 		}
 
 		if (currentAnimation != null && currentAnimation.disposeWhenPlayed)

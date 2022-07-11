@@ -7,7 +7,7 @@ buildscript {
     }
 }
 
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'robovm'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -34,11 +34,10 @@ eclipse.project {
 
 dependencies {
     implementation project(':core')
-    implementation "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
-    implementation "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
-    implementation "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
-    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
-
-    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
+    api "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
+    api "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
+    api "com.badlogicgames.gdx:gdx-backend-robovm-metalangle:$gdxVersion"
+    api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
+    api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
+    api "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
 }

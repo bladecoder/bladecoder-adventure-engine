@@ -6,25 +6,25 @@ android {
     defaultConfig {
         applicationId "%PACKAGE%"
         minSdkVersion 21
-        targetSdkVersion '%API_LEVEL%'
+        targetSdkVersion %API_LEVEL%
         versionName version
 
-        if(project.hasProperty('versionCode'))
-          versionCode project.versionCode.toInteger()
+        if (project.hasProperty('versionCode'))
+            versionCode project.versionCode.toInteger()
         else
-          versionCode 1
+            versionCode 1
 
-	    buildConfigField "int", "EXPANSION_FILE_VERSION", "0"
+        buildConfigField "int", "EXPANSION_FILE_VERSION", "0"
     }
-    
+
     flavorDimensions "default"
 
     productFlavors {
-	    full {
-	    }
+        full {
+        }
 
         expansion {
-		    buildConfigField "int", "EXPANSION_FILE_VERSION",  String.valueOf(android.defaultConfig.versionCode)
+            buildConfigField "int", "EXPANSION_FILE_VERSION", String.valueOf(android.defaultConfig.versionCode)
         }
     }
 
@@ -38,69 +38,70 @@ android {
             jniLibs.srcDirs = ['libs']
         }
 
-	full.assets.srcDirs = ['../assets']
- 	expansion.assets.srcDirs = ['../base-assets']
+        full.assets.srcDirs = ['../assets']
+        expansion.assets.srcDirs = ['../base-assets']
     }
-    
-  packagingOptions {
-    // Preventing from license violations (more or less):
-    pickFirst 'META-INF/LICENSE.txt'
-    pickFirst 'META-INF/LICENSE'
-    pickFirst 'META-INF/license.txt'
-    pickFirst 'META-INF/LGPL2.1'
-    pickFirst 'META-INF/NOTICE.txt'
-    pickFirst 'META-INF/NOTICE'
-    pickFirst 'META-INF/notice.txt'
-    // Excluding unnecessary meta-data:
-    exclude 'META-INF/robovm/ios/robovm.xml'
-    exclude 'META-INF/DEPENDENCIES.txt'
-    exclude 'META-INF/DEPENDENCIES'
-    exclude 'META-INF/dependencies.txt'
-  }    
 
-    if(project.hasProperty('keystore')) {
-          signingConfigs {
-            release {
-              storeFile file(project.keystore)
-              storePassword project.storePassword
-              keyAlias project.alias
-              keyPassword project.keyPassword
-            }
-          }
+    packagingOptions {
+        // Preventing from license violations (more or less):
+        pickFirst 'META-INF/LICENSE.txt'
+        pickFirst 'META-INF/LICENSE'
+        pickFirst 'META-INF/license.txt'
+        pickFirst 'META-INF/LGPL2.1'
+        pickFirst 'META-INF/NOTICE.txt'
+        pickFirst 'META-INF/NOTICE'
+        pickFirst 'META-INF/notice.txt'
+        // Excluding unnecessary meta-data:
+        exclude 'META-INF/robovm/ios/robovm.xml'
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/dependencies.txt'
+    }
 
-          buildTypes {
+    if (project.hasProperty('keystore')) {
+        signingConfigs {
             release {
-            	  signingConfig signingConfigs.release
+                storeFile file(project.keystore)
+                storePassword project.storePassword
+                keyAlias project.alias
+                keyPassword project.keyPassword
             }
-          }
+        }
+
+        buildTypes {
+            release {
+                signingConfig signingConfigs.release
+            }
+        }
     }
 
     buildTypes {
-          release {
+        release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-           }
+        }
     }
 }
 
 configurations { natives }
 
 dependencies {
-   	implementation project(":core")
+    implementation project(":core")
     api "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
     natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
+    api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi-v7a"
     natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a"
     natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
     natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
-        
+
     // TO QUERY PERMISSIONS
-    implementation "com.android.support:support-v4:23.0.0"        
-    
-    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
+    api "com.android.support:support-v4:23.0.0"
+
+    api "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
 }
 
 // called every time gradle gets executed, takes the native dependencies of
@@ -114,11 +115,11 @@ task copyAndroidNatives() {
 
     configurations.natives.files.each { jar ->
         def outputDir = null
-        if(jar.name.endsWith("natives-arm64-v8a.jar")) outputDir = file("libs/arm64-v8a")
-        if(jar.name.endsWith("natives-armeabi-v7a.jar")) outputDir = file("libs/armeabi-v7a")
-        if(jar.name.endsWith("natives-x86_64.jar")) outputDir = file("libs/x86_64")
-        if(jar.name.endsWith("natives-x86.jar")) outputDir = file("libs/x86")
-        if(outputDir != null) {
+        if (jar.name.endsWith("natives-arm64-v8a.jar")) outputDir = file("libs/arm64-v8a")
+        if (jar.name.endsWith("natives-armeabi-v7a.jar")) outputDir = file("libs/armeabi-v7a")
+        if (jar.name.endsWith("natives-x86_64.jar")) outputDir = file("libs/x86_64")
+        if (jar.name.endsWith("natives-x86.jar")) outputDir = file("libs/x86")
+        if (outputDir != null) {
             copy {
                 from zipTree(jar)
                 into outputDir
@@ -138,34 +139,34 @@ task run(type: Exec) {
     def path = getSdkFolder()
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', android.defaultConfig.applicationId + '/' +  'com.bladecoder.engine.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', android.defaultConfig.applicationId + '/' + 'com.bladecoder.engine.AndroidLauncher'
 }
 
 task('packageMainExpansionFile', type: Zip) {
 
-   FileTree tree = fileTree(dir: '../assets')
+    FileTree tree = fileTree(dir: '../assets')
 
-   from tree
-   //into 'assets'
+    from tree
+    //into 'assets'
 
-   // Expansion file name format: main.versionCode.packageName.obb
-   entryCompression = ZipEntryCompression.STORED
-   archiveName = 'main.' + android.defaultConfig.versionCode + "." + android.defaultConfig.applicationId + ".obb"
-   
-   doLast {
-   	println "Generating expansion file:" + archiveName
-   }
+    // Expansion file name format: main.versionCode.packageName.obb
+    entryCompression = ZipEntryCompression.STORED
+    archiveName = 'main.' + android.defaultConfig.versionCode + "." + android.defaultConfig.applicationId + ".obb"
+
+    doLast {
+        println "Generating expansion file:" + archiveName
+    }
 
 }
 
 tasks.whenTaskAdded { task ->
-   if(task.name == 'generateExpansionReleaseBuildConfig') {
-       task.dependsOn packageMainExpansionFile
-   }
+    if (task.name == 'generateExpansionReleaseBuildConfig') {
+        task.dependsOn packageMainExpansionFile
+    }
 }
 
 String getSdkFolder() {
-	def path
+    def path
     def localProperties = project.file("../local.properties")
     if (localProperties.exists()) {
         Properties properties = new Properties()
@@ -181,27 +182,27 @@ String getSdkFolder() {
     } else {
         path = "$System.env.ANDROID_HOME"
     }
-    
+
     return path
 }
 
 String highestSdkAvailable(String defaultSdk) {
-  try {
-      def buildToolsDir = new File(getSdkFolder(), "platforms")
-      def sdks = buildToolsDir.list([accept:{ d, f-> f.startsWith("android-") && new File(d, f).isDirectory() }] as FilenameFilter).sort { a, b -> b <=> a }
-      def highestSdk = sdks[0]
-      if (highestSdk != null) {
-          println "Using highest found SDK: " + highestSdk
-          highestSdk
-      } else {
-          println "No installed SDKs found. Using default SDK: " + defaultSdk
-          
-          defaultSdk
-      }
-  } catch (any) {
-      println "Exception while determining highest SDK. Using default SDK: " + defaultSdk
-      
-      defaultSdk
-  }
+    try {
+        def buildToolsDir = new File(getSdkFolder(), "platforms")
+        def sdks = buildToolsDir.list([accept: { d, f -> f.startsWith("android-") && new File(d, f).isDirectory() }] as FilenameFilter).sort { a, b -> b <=> a }
+        def highestSdk = sdks[0]
+        if (highestSdk != null) {
+            println "Using highest found SDK: " + highestSdk
+            highestSdk
+        } else {
+            println "No installed SDKs found. Using default SDK: " + defaultSdk
+
+            defaultSdk
+        }
+    } catch (any) {
+        println "Exception while determining highest SDK. Using default SDK: " + defaultSdk
+
+        defaultSdk
+    }
 }
 
