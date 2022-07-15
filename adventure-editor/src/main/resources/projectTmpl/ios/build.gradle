@@ -27,17 +27,12 @@ robovm {
     archs = "thumbv7:arm64"
 }
 
-eclipse.project {
-    name = appName + "-ios"
-    natures 'org.robovm.eclipse.RoboVMNature'
-}
-
 dependencies {
     implementation project(':core')
-    api "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
-    api "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
-    api "com.badlogicgames.gdx:gdx-backend-robovm-metalangle:$gdxVersion"
-    api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-    api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
-    api "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
+    implementation "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
+    implementation "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
+    implementation "com.badlogicgames.gdx:gdx-backend-robovm-metalangle:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
+    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
 }
