@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
+import com.bladecoder.engine.util.DPIUtils;
 
 public abstract class InputPanel extends Table {
 	private static final boolean USE_TOOLTIPS = true;
@@ -58,6 +59,7 @@ public abstract class InputPanel extends Table {
 
 		if (USE_TOOLTIPS) {
 			TextTooltip t = new TextTooltip(desc, skin);
+			t.getContainer().pad(DPIUtils.getSpacing() / 2);
 			this.title.addListener(t);
 			this.field.addListener(t);
 		} else {

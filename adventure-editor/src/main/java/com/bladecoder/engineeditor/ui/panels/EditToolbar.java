@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engineeditor.Ctx;
 
 public class EditToolbar extends HorizontalGroup {
@@ -90,6 +91,7 @@ public class EditToolbar extends HorizontalGroup {
 		addActor(button);
 		button.setDisabled(true);
 		TextTooltip t = new TextTooltip(tooltip, skin);
+		t.getContainer().pad(DPIUtils.getSpacing() / 2);
 		button.addListener(t);
 	}
 
@@ -98,6 +100,7 @@ public class EditToolbar extends HorizontalGroup {
 		addActor(tf);
 
 		TextTooltip t = new TextTooltip("Filter list", skin);
+		t.getContainer().pad(DPIUtils.getSpacing() / 2);
 		tf.addListener(t);
 
 		tf.addListener(e);
