@@ -38,6 +38,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.util.DPIUtils;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.EditorUtils;
@@ -212,6 +213,7 @@ public class ProjectToolbar extends Table {
 		add(button);
 		button.setDisabled(true);
 		TextTooltip t = new TextTooltip(tooltip, skin);
+		t.getContainer().pad(DPIUtils.getSpacing() / 2);
 		button.addListener(t);
 	}
 

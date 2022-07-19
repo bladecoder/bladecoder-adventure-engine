@@ -84,6 +84,7 @@ public class SceneList extends ModelList<World, Scene> {
 		TextButton inkBtn = new TextButton("Ink", skin, "no-toggled");
 
 		TextTooltip t = new TextTooltip("Sets the Ink Story file", skin);
+		t.getContainer().pad(DPIUtils.getSpacing() / 2);
 		inkBtn.addListener(t);
 
 		inkBtn.addListener(new ClickListener() {
