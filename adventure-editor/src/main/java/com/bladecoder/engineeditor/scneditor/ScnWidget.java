@@ -248,7 +248,8 @@ public class ScnWidget extends Widget {
 			Vector3 v = tmpV3Draw.set(getX(), getY(), 0);
 			v = v.prj(batch.getTransformMatrix());
 
-			batch.end();
+			if(batch.isDrawing())
+				batch.end();
 
 			HdpiUtils.glViewport((int) v.x, (int) v.y, (int) getWidth(), (int) (getHeight()));
 
