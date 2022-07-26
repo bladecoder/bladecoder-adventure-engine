@@ -407,7 +407,11 @@ public class SceneList extends ModelList<World, Scene> {
 
 		if (icon == null) {
 			Batch batch = getStage().getBatch();
-			batch.end();
+
+			boolean wasDrawing = batch.isDrawing();
+
+			if(batch.isDrawing())
+				batch.end();
 
 			try {
 				icon = createBgIcon(atlas, region);
@@ -422,8 +426,8 @@ public class SceneList extends ModelList<World, Scene> {
 
 			bgIconCache.put(s, icon);
 
-			batch.begin();
-
+			if(wasDrawing)
+				batch.begin();
 		}
 
 		return icon;
