@@ -99,6 +99,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
     private InputPanel font;
     private InputPanel size;
     private InputPanel textAlign;
+
+    private InputPanel textMaxWidth;
     private InputPanel borderWidth;
     private InputPanel borderColor;
     private InputPanel borderStraight;
@@ -184,6 +186,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
         size = InputPanelFactory.createInputPanel(skin, "Size", "The size of the text.", Type.INTEGER, true, "20");
         textAlign = InputPanelFactory.createInputPanel(skin, "Text Align", "The alignment of the text.", TEXT_ALIGN,
                 true);
+        textMaxWidth = InputPanelFactory.createInputPanel(skin, "Max Width", "The max width of the text block.", Type.INTEGER,
+                true, "0");
         borderWidth = InputPanelFactory.createInputPanel(skin, "Border Width", "Zero for no border.", Type.INTEGER,
                 true, "0");
         borderColor = InputPanelFactory.createInputPanel(skin, "Border Color", "The Border Color.", Type.COLOR, true,
@@ -217,7 +221,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
         init(parent, e,
                 new InputPanel[]{typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction,
-                        desc, state, fakeDepth, pos, refPoint, scale, rot, tint, text, font, size, textAlign,
+                        desc, state, fakeDepth, pos, refPoint, scale, rot, tint, text, font, size, textAlign, textMaxWidth,
                         borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY, shadowColor,
                         bboxFromRenderer, zIndex, orgAlign, walkingSpeed, talkingTextPos, spineSkin, textColor, textStyle});
 
@@ -292,6 +296,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
         setVisible(font, false);
         setVisible(size, false);
         setVisible(textAlign, false);
+        setVisible(textMaxWidth, false);
         setVisible(borderWidth, false);
         setVisible(borderColor, false);
         setVisible(borderStraight, false);
@@ -310,6 +315,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
                 setVisible(font, true);
                 setVisible(size, true);
                 setVisible(textAlign, true);
+                setVisible(textMaxWidth, true);
                 setVisible(borderWidth, true);
                 setVisible(borderColor, true);
                 setVisible(borderStraight, true);
@@ -490,6 +496,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
                     r.setFontSize(Integer.parseInt(size.getText()));
                     r.setFontName(font.getText());
                     r.setAlign(AlignUtils.getAlign(textAlign.getText()));
+                    r.setMaxWidth(Integer.parseInt(textMaxWidth.getText()));
                     r.setBorderWidth(Integer.parseInt(borderWidth.getText()));
                     r.setBorderColor(Param.parseColor(borderColor.getText()));
                     r.setBorderStraight(Boolean.parseBoolean(borderStraight.getText()));
@@ -613,6 +620,7 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
                     font.setText(tr.getFontName());
                     borderWidth.setText(Integer.toString(tr.getBorderWidth()));
                     textAlign.setText(AlignUtils.getAlign(tr.getAlign()));
+                    textMaxWidth.setText(Integer.toString(tr.getMaxWidth()));
                     borderColor.setText(tr.getBorderColor().toString());
                     borderStraight.setText(Boolean.toString(tr.isBorderStraight()));
                     shadowOffsetX.setText(Integer.toString(tr.getShadowOffsetX()));

@@ -53,6 +53,8 @@ public class TextRenderer implements ActorRenderer {
 	private int textAlign = Align.left;
 	private int orgAlign = Align.bottom;
 
+	private int maxWidth = 0;
+
 	private final Color color = new Color(Color.WHITE);
 
 	// Translated Text shown in the editor. When editing the text, the .properties
@@ -100,7 +102,7 @@ public class TextRenderer implements ActorRenderer {
 				if (editorTranslatedText != null)
 					tt = editorTranslatedText;
 
-				layout.setText(font, tt, color, 0, textAlign, false);
+				layout.setText(font, tt, color, maxWidth, textAlign, maxWidth > 0);
 			}
 
 			Matrix4 tm = batch.getTransformMatrix();
@@ -264,6 +266,14 @@ public class TextRenderer implements ActorRenderer {
 		this.textAlign = align;
 	}
 
+	public int getMaxWidth() {
+		return maxWidth;
+	}
+
+	public void setMaxWidth(int maxWidth) {
+		this.maxWidth = maxWidth;
+	}
+
 	public static float getAlignDx(float width, int align) {
 		if ((align & Align.left) != 0)
 			return 0;
@@ -321,7 +331,7 @@ public class TextRenderer implements ActorRenderer {
 		if (tt.charAt(0) == I18N.PREFIX)
 			tt = world.getI18N().getString(tt.substring(1));
 
-		layout.setText(font, tt, color, 0, textAlign, false);
+		layout.setText(font, tt, color, maxWidth, textAlign, maxWidth > 0);
 
 		computeBbox();
 	}
@@ -363,8 +373,7 @@ public class TextRenderer implements ActorRenderer {
 			json.writeValue("shadowColor", shadowColor);
 			json.writeValue("align", textAlign);
 			json.writeValue("orgAlign", orgAlign);
-		} else {
-
+			json.writeValue("maxWidth", maxWidth);
 		}
 	}
 
@@ -383,8 +392,7 @@ public class TextRenderer implements ActorRenderer {
 			shadowColor = json.readValue("shadowColor", Color.class, jsonData);
 			textAlign = json.readValue("align", int.class, Align.left, jsonData);
 			orgAlign = json.readValue("orgAlign", int.class, Align.bottom, jsonData);
-		} else {
-
+			maxWidth = json.readValue("maxWidth", int.class, 0, jsonData);
 		}
 	}
 
