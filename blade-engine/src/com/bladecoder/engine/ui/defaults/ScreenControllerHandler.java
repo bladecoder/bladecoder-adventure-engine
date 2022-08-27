@@ -38,9 +38,9 @@ import com.bladecoder.engine.util.EngineLogger;
 public class ScreenControllerHandler {
 	public static final float THUMBSTICKVELOCITY = 12f * 60f;
 
-	private Stage stage;
-	private UI ui;
-	private Viewport viewport;
+	private final Stage stage;
+	private final UI ui;
+	private final Viewport viewport;
 
 	private int pressed = -1;
 

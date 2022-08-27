@@ -243,7 +243,6 @@ public class CharacterActor extends SpriteActor {
 			if (t instanceof WalkTween) {
 				WalkTween wt = (WalkTween) t;
 				wt.completeNow(this);
-				wt = null;
 				break;
 			}
 		}
@@ -255,12 +254,9 @@ public class CharacterActor extends SpriteActor {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(super.toString());
 
-		sb.append("  Walking Speed: ").append(walkingSpeed);
-		sb.append("\nText Color: ").append(textColor);
-
-		return sb.toString();
+		return super.toString() + "  Walking Speed: " + walkingSpeed +
+				"\nText Color: " + textColor;
 	}
 
 	@Override

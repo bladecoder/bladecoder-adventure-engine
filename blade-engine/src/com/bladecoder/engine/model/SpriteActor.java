@@ -248,8 +248,6 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 	/**
 	 * Actions to do when setting an animation: - play animation sound - add 'in'
 	 * distance
-	 * 
-	 * @param repeatType
 	 */
 	protected void outAnim(Type repeatType) {
 		AnimationDesc fa = ((AnimationRenderer) renderer).getCurrentAnimation();
@@ -285,13 +283,8 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(super.toString());
-
-		sb.append("  Sprite Bbox: ").append(getBBox().toString());
-
-		sb.append(renderer);
-
-		return sb.toString();
+		return super.toString() + "  Sprite Bbox: " + getBBox().toString() +
+				renderer;
 	}
 
 	@Override

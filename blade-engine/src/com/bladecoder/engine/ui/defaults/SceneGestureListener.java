@@ -26,7 +26,7 @@ import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.util.EngineLogger;
 
 public class SceneGestureListener extends GestureDetector.GestureAdapter {
-	private DefaultSceneScreen dsc;
+	private final DefaultSceneScreen dsc;
 
 	public SceneGestureListener(DefaultSceneScreen dsc) {
 		this.dsc = dsc;
@@ -113,7 +113,7 @@ public class SceneGestureListener extends GestureDetector.GestureAdapter {
 		return true;
 	}
 
-	public static final ActionButton mouseToAction(int b) {
+	public static ActionButton mouseToAction(int b) {
 		if (b == 0) {
 			return ActionButton.LOOKAT;
 		}
