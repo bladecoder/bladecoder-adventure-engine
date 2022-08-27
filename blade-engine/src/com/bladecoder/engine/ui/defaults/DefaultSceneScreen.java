@@ -482,12 +482,20 @@ public class DefaultSceneScreen implements SceneScreen {
 			}
 
 			actorClick(currentActor, button);
-		} else if (player != null) {
-			if (count > 1)
-				return;
+		} else if (player != null && count < 2) {
 
+			// -- GOTO HANDLING --
+			// - if the PLAYER has a 'goto' verb, run it
+			// - else if the SCENE has a 'goto' verb, run it
+			// - else run PLAYER goto method
 			if (s.getPlayer().getVerb(Verb.GOTO_VERB) != null) {
 				runVerb(s.getPlayer(), Verb.GOTO_VERB, null);
+			} else if (s.getVerb(Verb.GOTO_VERB) != null) {
+				if (recorder.isRecording()) {
+					recorder.add(null, Verb.GOTO_VERB, null);
+				}
+
+				s.runVerb(Verb.GOTO_VERB);
 			} else {
 				Vector2 pos = new Vector2(unprojectTmp.x, unprojectTmp.y);
 

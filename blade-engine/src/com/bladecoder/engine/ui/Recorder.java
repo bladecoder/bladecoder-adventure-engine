@@ -130,8 +130,9 @@ public class Recorder {
 					} catch (IOException e) {
 						EngineLogger.error("Couldn't save game: " + v.target + " : " + e.getMessage());
 					}
+				} else if(v.actorId == null) {
+					s.runVerb(v.verb);
 				} else {
-
 					InteractiveActor a = (InteractiveActor) s.getActor(v.actorId, true);
 
 					if (a != null) {
