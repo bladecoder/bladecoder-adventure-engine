@@ -27,6 +27,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -61,7 +64,7 @@ import com.bladecoder.engineeditor.common.OrderedProperties.OrderedPropertiesBui
 import com.bladecoder.engineeditor.model.Project;
 
 public class ModelTools {
-	public static final void extractDialogs() {
+	public static void extractDialogs() {
 		Map<String, Scene> scenes = Ctx.project.getWorld().getScenes();
 
 		BufferedWriter writer = null;
@@ -427,7 +430,7 @@ public class ModelTools {
 
 	public static void extractInkTexts(String file, String lang) throws IOException {
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 		StringBuilder sb = new StringBuilder();
 
 		try {
@@ -537,13 +540,17 @@ public class ModelTools {
 		} else if (v.isString() && !v.asString().isEmpty() && v.asString().charAt(0) == '^') {
 			String value = v.asString().substring(1).trim();
 
-			if (value.length() == 0 || value.charAt(0) == '>')
+			if (value.length() == 0 || value.charAt(0) == InkManager.COMMAND_MARK)
 				return;
 
 			// if we are inside an expression, exit
 
-			int idx = value.indexOf('>');
+
 			String charName = "";
+			int idx = value.indexOf(InkManager.COMMAND_MARK);
+
+			if(idx == -1)
+				idx = value.indexOf(InkManager.CHAR_SEPARATOR_MARK);
 
 			if (idx != -1) {
 				charName = value.substring(0, idx).trim();
@@ -557,19 +564,20 @@ public class ModelTools {
 
 			try {
 				MessageDigest md = MessageDigest.getInstance("SHA-1");
-				byte[] bytes = value.getBytes(("UTF-8"));
+				byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
 				md.update(bytes);
 				byte[] digest = md.digest();
 				key = Base64Coder.encodeLines(digest).substring(0, InkManager.KEY_SIZE);
-			} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+			} catch (NoSuchAlgorithmException e) {
 				EditorLogger.error("Error encoding key." + e);
 				return;
 			}
 
 			prop.setProperty(key, value);
-			sbTSV.append(key + "\t" + charName + "\t" + value + "\n");
+			sbTSV.append(key).append("\t").append(charName).append("\t").append(value).append("\n");
 
-			sbMD.append(charName + (charName.isEmpty() ? "" : ": ") + value + " (" + key + ")\n");
+			sbMD.append(charName).append(charName.isEmpty() ? "" : ": ").append(value).append(" (").append(key)
+					.append(")\n");
 
 			if (charName.isEmpty())
 				v.set("^" + I18N.PREFIX + key);
@@ -581,7 +589,7 @@ public class ModelTools {
 	public static void readableInkDialogs(String story, String lang) throws IOException {
 		String file = Ctx.project.getModelPath() + "/" + story + EngineAssetManager.INK_EXT;
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+		BufferedReader br = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(file)), StandardCharsets.UTF_8));
 		StringBuilder sb = new StringBuilder();
 
 		try {
@@ -608,7 +616,7 @@ public class ModelTools {
 		OrderedProperties langProp = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering()
 				.build();
 
-		langProp.load(new InputStreamReader(new FileInputStream(propFile), I18N.ENCODING));
+		langProp.load(new InputStreamReader(Files.newInputStream(propFile.toPath()), I18N.ENCODING));
 
 		// .md generation to have a better readable document of texts
 		StringBuilder mdString = new StringBuilder();
@@ -625,7 +633,7 @@ public class ModelTools {
 				if (v.name.contains("-"))
 					sbMD.append('\n');
 				else if (v.parent.parent.parent.parent == null)
-					sbMD.append("\n==== " + v.name + " ====\n");
+					sbMD.append("\n==== ").append(v.name).append(" ====\n");
 				else if (v.name.equals("s"))
 					sbMD.append("  * ");
 				// else
@@ -659,7 +667,8 @@ public class ModelTools {
 
 			String value = prop.getProperty(key);
 
-			sbMD.append(charName + (charName.isEmpty() ? "" : ": ") + value + " (" + key + ")\n");
+			sbMD.append(charName).append(charName.isEmpty() ? "" : ": ").append(value).append(" (").append(key)
+					.append(")\n");
 		}
 	}
 
