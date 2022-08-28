@@ -54,6 +54,7 @@ public class Scene implements Serializable, AssetConsumer {
 	public static final float ANCHOR_RADIUS = 14f;
 
 	public static final String VAR_PLAYER = "$PLAYER";
+	public static final String VAR_PLAYER_2 = "$P";
 
 	/**
 	 * All actors in the scene
@@ -99,13 +100,13 @@ public class Scene implements Serializable, AssetConsumer {
 	/** internal state. Can be used for actions to maintain a state machine */
 	private String state;
 
-	private VerbManager verbs = new VerbManager();
+	private final VerbManager verbs = new VerbManager();
 
 	private final SceneSoundManager soundManager;
 
 	private final TextManager textManager;
 
-	private World w;
+	private final World w;
 
 	/** The current walkzone actor */
 	private String walkZone;
@@ -299,7 +300,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 	public BaseActor getActor(String id, boolean searchInventory) {
 
-		if (VAR_PLAYER.equals(id) && player != null)
+		if ((VAR_PLAYER.equals(id) || VAR_PLAYER_2.equals(id)) && player != null)
 			return actors.get(player);
 
 		BaseActor a = id == null ? null : actors.get(id);
@@ -376,7 +377,7 @@ public class Scene implements Serializable, AssetConsumer {
 		return null;
 	}
 
-	private Rectangle tmpToleranceRect = new Rectangle();
+	private final Rectangle tmpToleranceRect = new Rectangle();
 
 	/**
 	 * Obtains the actor at (x,y) with TOLERANCE.
@@ -530,7 +531,7 @@ public class Scene implements Serializable, AssetConsumer {
 
 	public void removeActor(BaseActor a) {
 
-		if (player != null && a.getId().equals(player)) {
+		if (a.getId().equals(player)) {
 			player = null;
 		}
 
@@ -695,8 +696,7 @@ public class Scene implements Serializable, AssetConsumer {
 			json.writeValue("id", id);
 			json.writeValue("layers", layers, layers.getClass(), SceneLayer.class);
 
-			SortedMap<String, BaseActor> sortedActors = new TreeMap<>();
-			sortedActors.putAll(actors);
+			SortedMap<String, BaseActor> sortedActors = new TreeMap<>(actors);
 			json.writeValue("actors", sortedActors);
 
 			if (backgroundAtlas != null) {
@@ -716,8 +716,7 @@ public class Scene implements Serializable, AssetConsumer {
 			SceneActorRef actorRef;
 
 			json.writeObjectStart("actors");
-			SortedMap<String, BaseActor> sortedActors = new TreeMap<>();
-			sortedActors.putAll(actors);
+			SortedMap<String, BaseActor> sortedActors = new TreeMap<>(actors);
 			for (BaseActor a : sortedActors.values()) {
 				actorRef = new SceneActorRef(a.getInitScene(), a.getId());
 				json.writeValue(actorRef.toString(), a);
