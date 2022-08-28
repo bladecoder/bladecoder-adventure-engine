@@ -39,6 +39,8 @@ public class InkManager implements Serializable {
 	private final static String PARAM_SEPARATOR = ",";
 	public final static char COMMAND_MARK = '>';
 
+	public final static char CHAR_SEPARATOR_MARK = ':';
+
 	private ResourceBundle i18n;
 
 	private Story story = null;
@@ -205,7 +207,6 @@ public class InkManager implements Serializable {
 			try {
 				do {
 					line = story.Continue();
-					currentLineParams.clear();
 
 					// Remove trailing '\n'
 					if (!line.isEmpty())
@@ -275,8 +276,8 @@ public class InkManager implements Serializable {
 	}
 
 	private void processCommand(InkVerbRunner inkVerbRunner, HashMap<String, String> params, String line) {
-		String commandName = null;
-		String commandParams[] = null;
+		String commandName;
+		String[] commandParams;
 
 		int i = line.indexOf(NAME_VALUE_TAG_SEPARATOR);
 
@@ -329,10 +330,14 @@ public class InkManager implements Serializable {
 
 	private void processTextLine(InkVerbRunner inkVerbRunner, HashMap<String, String> params, String line) {
 
-		// Get actor name from Line. Actor is separated by ':'.
+		// Get actor name from Line. Actor is separated by '>' or ':'.
 		// ej. "Johnny: Hello punks!"
 		if (!params.containsKey("actor")) {
 			int idx = line.indexOf(COMMAND_MARK);
+
+			if(idx == -1) {
+				idx = line.indexOf(CHAR_SEPARATOR_MARK);
+			}
 
 			if (idx != -1) {
 				params.put("actor", line.substring(0, idx).trim());
