@@ -443,7 +443,11 @@ public class InkManager implements Serializable {
 			if (line.isEmpty())
 				continue;
 
-			int idx = line.indexOf(InkManager.COMMAND_MARK);
+			int idx = line.indexOf(COMMAND_MARK);
+
+			if(idx == -1) {
+				idx = line.indexOf(CHAR_SEPARATOR_MARK);
+			}
 
 			if (idx != -1) {
 				line = line.substring(idx + 1).trim();
