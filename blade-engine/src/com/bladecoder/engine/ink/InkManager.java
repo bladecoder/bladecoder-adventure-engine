@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -456,9 +457,7 @@ public class InkManager implements Serializable {
 
 	private String getJsonString(InputStream is) throws IOException {
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-
-		try {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 			StringBuilder sb = new StringBuilder();
 			String line = br.readLine();
 
@@ -472,8 +471,6 @@ public class InkManager implements Serializable {
 				line = br.readLine();
 			}
 			return sb.toString();
-		} finally {
-			br.close();
 		}
 	}
 
