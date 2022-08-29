@@ -224,7 +224,7 @@ public class ModelTools {
 		Ctx.project.setModified();
 	}
 
-	public static final void fixSaySubtitleActor() {
+	public static void fixSaySubtitleActor() {
 		Map<String, Scene> scenes = Ctx.project.getWorld().getScenes();
 
 		for (Scene scn : scenes.values()) {
@@ -549,18 +549,24 @@ public class ModelTools {
 			String charName = "";
 			int idx = value.indexOf(InkManager.COMMAND_MARK);
 
-			if(idx == -1)
+			if(idx == -1) {
 				idx = value.indexOf(InkManager.CHAR_SEPARATOR_MARK);
-
-			if (idx != -1) {
-				charName = value.substring(0, idx).trim();
-				value = value.substring(idx + 1).trim();
-
-				if (value.length() == 0)
-					return;
 			}
 
-			String key = null;
+			if (idx != -1) {
+				String charNameTmp = value.substring(0, idx).trim();
+
+				if(charNameTmp.indexOf(' ') == -1) {
+					// charName shouldn't contain spaces, if found means that intentional ':' is used in line.
+					charName = charNameTmp;
+					value = value.substring(idx + 1).trim();
+
+					if (value.length() == 0)
+						return;
+				}
+			}
+
+			String key;
 
 			try {
 				MessageDigest md = MessageDigest.getInstance("SHA-1");
@@ -582,17 +588,17 @@ public class ModelTools {
 			if (charName.isEmpty())
 				v.set("^" + I18N.PREFIX + key);
 			else
-				v.set("^" + charName + '>' + I18N.PREFIX + key);
+				v.set("^" + charName + InkManager.CHAR_SEPARATOR_MARK + I18N.PREFIX + key);
 		}
 	}
 
 	public static void readableInkDialogs(String story, String lang) throws IOException {
 		String file = Ctx.project.getModelPath() + "/" + story + EngineAssetManager.INK_EXT;
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(file)), StandardCharsets.UTF_8));
 		StringBuilder sb = new StringBuilder();
 
-		try {
+		try (BufferedReader br = new BufferedReader(
+				new InputStreamReader(Files.newInputStream(Paths.get(file)), StandardCharsets.UTF_8))) {
 			String line = br.readLine();
 
 			// Replace the BOM mark
@@ -605,8 +611,6 @@ public class ModelTools {
 				line = br.readLine();
 			}
 
-		} finally {
-			br.close();
 		}
 
 		JsonValue root = new JsonReader().parse(sb.toString());
