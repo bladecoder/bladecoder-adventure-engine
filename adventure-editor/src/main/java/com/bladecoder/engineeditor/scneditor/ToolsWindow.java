@@ -111,8 +111,9 @@ public class ToolsWindow extends Container<Table> {
 		table.row();
 		table.add(createUIAtlas).expandX().fill();
 
-		table.row();
-		table.add(particleEditor).expandX().fill();
+		// TODO: Enable particle editor when ported to LWJGL3
+		//table.row();
+		//table.add(particleEditor).expandX().fill();
 
 		table.row();
 		table.add(compileInk).expandX().fill();
