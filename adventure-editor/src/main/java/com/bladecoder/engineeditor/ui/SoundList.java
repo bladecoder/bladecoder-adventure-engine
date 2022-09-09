@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,10 +14,6 @@
  * limitations under the License.
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Arrays;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
@@ -32,157 +28,167 @@ import com.bladecoder.engine.model.SoundDesc;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.ElementUtils;
+import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.CellRenderer;
 import com.bladecoder.engineeditor.ui.panels.ModelList;
 import com.bladecoder.engineeditor.undo.UndoDeleteSound;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Arrays;
+
 public class SoundList extends ModelList<World, SoundDesc> {
 
-	private ImageButton playBtn;
-	private Sound playingSound = null;
+    private ImageButton playBtn;
+    private Sound playingSound = null;
 
-	public SoundList(Skin skin) {
-		super(skin, true);
+    public SoundList(Skin skin) {
+        super(skin, true);
 
-		playBtn = new ImageButton(skin);
-		toolbar.addToolBarButton(playBtn, "ic_check", "Play Sound", "Plays the selected sound");
-		playBtn.setDisabled(true);
+        playBtn = new ImageButton(skin);
+        toolbar.addToolBarButton(playBtn, "ic_check", "Play Sound", "Plays the selected sound");
+        playBtn.setDisabled(true);
 
-		setCellRenderer(listCellRenderer);
+        setCellRenderer(listCellRenderer);
 
-		Ctx.project.addPropertyChangeListener(Project.NOTIFY_CHAPTER_LOADED, new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				addElements(Ctx.project.getWorld(),
-						Arrays.asList(Ctx.project.getWorld().getSounds().values().toArray(new SoundDesc[0])));
-			}
-		});
+        Ctx.project.addPropertyChangeListener(Project.NOTIFY_CHAPTER_LOADED, new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                addElements(Ctx.project.getWorld(),
+                        Arrays.asList(Ctx.project.getWorld().getSounds().values().toArray(new SoundDesc[0])));
+            }
+        });
 
-		list.addListener(new ChangeListener() {
+        list.addListener(new ChangeListener() {
 
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				int pos = list.getSelectedIndex();
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                int pos = list.getSelectedIndex();
 
-				toolbar.disableEdit(pos == -1);
-				playBtn.setDisabled(pos == -1);
-			}
-		});
+                toolbar.disableEdit(pos == -1);
+                playBtn.setDisabled(pos == -1);
+            }
+        });
 
-		playBtn.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				SoundDesc selected = list.getSelected();
+        playBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                SoundDesc selected = list.getSelected();
 
-				if (playingSound != null) {
-					playingSound.stop();
-					playingSound.dispose();
-					playingSound = null;
-				}
+                if (playingSound != null) {
+                    playingSound.stop();
+                    playingSound.dispose();
+                    playingSound = null;
+                }
 
-				playingSound = Gdx.audio.newSound(
-						new FileHandle(Ctx.project.getAssetPath() + Project.SOUND_PATH + "/" + selected.getFilename()));
+                try {
+                    playingSound = Gdx.audio.newSound(
+                            new FileHandle(
+                                    Ctx.project.getAssetPath() + Project.SOUND_PATH + "/" + selected.getFilename()));
 
-				playingSound.play(selected.getVolume(), 1, selected.getPan());
+                    playingSound.play(selected.getVolume(), 1, selected.getPan());
 
-				Timer.schedule(new Task() {
+                    Timer.schedule(new Task() {
 
-					@Override
-					public void run() {
-						if (playingSound != null) {
-							playingSound.stop();
-							playingSound.dispose();
-							playingSound = null;
-						}
-					}
-				}, 5);
-			}
-		});
-	}
+                        @Override
+                        public void run() {
+                            if (playingSound != null) {
+                                playingSound.stop();
+                                playingSound.dispose();
+                                playingSound = null;
+                            }
+                        }
+                    }, 5);
+                } catch (Exception e) {
+                    Message.showMsg(getStage(), "Could not play sound: " + e.getMessage(), 4);
+                }
+            }
+        });
+    }
 
-	@Override
-	protected EditSoundDialog getEditElementDialogInstance(SoundDesc s) {
-		return new EditSoundDialog(skin, parent, s);
-	}
+    @Override
+    protected EditSoundDialog getEditElementDialogInstance(SoundDesc s) {
+        return new EditSoundDialog(skin, parent, s);
+    }
 
-	@Override
-	protected void delete() {
+    @Override
+    protected void delete() {
 
-		SoundDesc s = removeSelected();
+        SoundDesc s = removeSelected();
 
-		parent.getSounds().remove(s.getId());
+        parent.getSounds().remove(s.getId());
 
-		// UNDO
-		Ctx.project.getUndoStack().add(new UndoDeleteSound(s));
-		Ctx.project.setModified();
-	}
+        // UNDO
+        Ctx.project.getUndoStack().add(new UndoDeleteSound(s));
+        Ctx.project.setModified();
+    }
 
-	@Override
-	protected void copy() {
-		SoundDesc e = list.getSelected();
+    @Override
+    protected void copy() {
+        SoundDesc e = list.getSelected();
 
-		if (e == null)
-			return;
+        if (e == null)
+            return;
 
-		clipboard = (SoundDesc) ElementUtils.cloneElement(e);
-		toolbar.disablePaste(false);
-	}
+        clipboard = (SoundDesc) ElementUtils.cloneElement(e);
+        toolbar.disablePaste(false);
+    }
 
-	@Override
-	protected void paste() {
-		SoundDesc newElement = (SoundDesc) ElementUtils.cloneElement(clipboard);
+    @Override
+    protected void paste() {
+        SoundDesc newElement = (SoundDesc) ElementUtils.cloneElement(clipboard);
 
-		int pos = list.getSelectedIndex() + 1;
+        int pos = list.getSelectedIndex() + 1;
 
-		list.getItems().insert(pos, newElement);
+        list.getItems().insert(pos, newElement);
 
-		String id = newElement.getId();
+        String id = newElement.getId();
 
-		if (parent.getSounds() != null)
-			id = ElementUtils.getCheckedId(newElement.getId(),
-					parent.getSounds().keySet().toArray(new String[parent.getSounds().size()]));
+        if (parent.getSounds() != null)
+            id = ElementUtils.getCheckedId(newElement.getId(),
+                    parent.getSounds().keySet().toArray(new String[parent.getSounds().size()]));
 
-		newElement.setId(id);
+        newElement.setId(id);
 
-		parent.getSounds().put(newElement.getId(), newElement);
+        parent.getSounds().put(newElement.getId(), newElement);
 
-		list.setSelectedIndex(pos);
-		list.invalidateHierarchy();
+        list.setSelectedIndex(pos);
+        list.invalidateHierarchy();
 
-		Ctx.project.setModified();
-	}
+        Ctx.project.setModified();
+    }
 
-	// -------------------------------------------------------------------------
-	// ListCellRenderer
-	// -------------------------------------------------------------------------
-	private static final CellRenderer<SoundDesc> listCellRenderer = new CellRenderer<SoundDesc>() {
+    // -------------------------------------------------------------------------
+    // ListCellRenderer
+    // -------------------------------------------------------------------------
+    private static final CellRenderer<SoundDesc> listCellRenderer = new CellRenderer<SoundDesc>() {
 
-		@Override
-		protected String getCellTitle(SoundDesc e) {
-			return e.getId();
-		}
+        @Override
+        protected String getCellTitle(SoundDesc e) {
+            return e.getId();
+        }
 
-		StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-		@Override
-		protected String getCellSubTitle(SoundDesc e) {
-			sb.setLength(0);
+        @Override
+        protected String getCellSubTitle(SoundDesc e) {
+            sb.setLength(0);
 
-			String filename = e.getFilename();
-			if (filename != null && !filename.isEmpty())
-				sb.append("filename: ").append(filename);
+            String filename = e.getFilename();
+            if (filename != null && !filename.isEmpty())
+                sb.append("filename: ").append(filename);
 
-			sb.append(" loop: ").append(e.getLoop());
-			sb.append(" volume: ").append(e.getVolume());
+            sb.append(" loop: ").append(e.getLoop());
+            sb.append(" volume: ").append(e.getVolume());
 
-			return sb.toString();
-		}
+            return sb.toString();
+        }
 
-		@Override
-		protected boolean hasSubtitle() {
-			return true;
-		}
-	};
+        @Override
+        protected boolean hasSubtitle() {
+            return true;
+        }
+    };
 
 }

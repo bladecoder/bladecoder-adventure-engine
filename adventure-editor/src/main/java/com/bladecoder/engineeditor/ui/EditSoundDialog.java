@@ -29,7 +29,9 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.model.SoundDesc;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.ElementUtils;
+import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.ModelTools;
 import com.bladecoder.engineeditor.model.Project;
 import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
@@ -83,11 +85,16 @@ public class EditSoundDialog extends EditModelDialog<World, SoundDesc> {
 				}
 
 				if (filename.getText() != null && !filename.getText().isEmpty()) {
-					s = Gdx.audio.newSound(
-							new FileHandle(Ctx.project.getAssetPath() + Project.SOUND_PATH + "/" + filename.getText()));
+					try {
+						s = Gdx.audio.newSound(
+								new FileHandle(
+										Ctx.project.getAssetPath() + Project.SOUND_PATH + "/" + filename.getText()));
 
-					s.play(Float.parseFloat(volume.getText()), Float.parseFloat(pitch.getText()),
-							Float.parseFloat(pan.getText()));
+						s.play(Float.parseFloat(volume.getText()), Float.parseFloat(pitch.getText()),
+								Float.parseFloat(pan.getText()));
+					} catch (Exception e) {
+						Message.showMsg(getStage(), "Could not play sound: " + e.getMessage(), 4);
+					}
 				}
 
 			}
