@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,10 +14,6 @@
  * limitations under the License.
  ******************************************************************************/
 package com.bladecoder.engine.model;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Json;
@@ -29,16 +25,18 @@ import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.model.Text.Type;
 import com.bladecoder.engine.util.Config;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * TextManager maintains a fifo for the character subtitles.
- * 
+ * <p>
  * For now, only one subtitle is displayed in the screen.
- * 
+ * <p>
  * A subtitle is cut in pieces and quee. Each piece has is own time in screen.
- * 
- * 
+ *
  * @author rgarcia
- * 
  */
 public class TextManager implements Serializable {
 	public static final float POS_CENTER = -1f;
@@ -66,7 +64,7 @@ public class TextManager implements Serializable {
 	}
 
 	public void addText(String str, float x, float y, boolean queue, Text.Type type, Color color, String font,
-			String actorId, String voiceId, String talkAnimation, ActionCallback cb) {
+						String actorId, String voiceId, String talkAnimation, ActionCallback cb) {
 
 		if (str.charAt(0) == I18N.PREFIX)
 			str = scene.getWorld().getI18N().getString(str.substring(1));
@@ -145,6 +143,10 @@ public class TextManager implements Serializable {
 
 	public Text getCurrentText() {
 		return currentText;
+	}
+
+	public float getInScreenTime() {
+		return inScreenTime;
 	}
 
 	private void setCurrentText(Text t) {
