@@ -36,9 +36,7 @@ import com.bladecoder.engine.ink.InkManager;
 import com.bladecoder.engine.serialization.WorldSerialization;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.HashMap;
@@ -51,17 +49,13 @@ public class World implements AssetConsumer {
     private static final String GAMESTATE_FILENAME = "default" + WorldSerialization.GAMESTATE_EXT;
     private static final String DEFAULT_INVENTORY = "DEFAULT";
 
-    public static enum AssetState {
+    public enum AssetState {
         LOADED, LOADING, LOADING_AND_INIT_SCENE, LOAD_ASSETS, LOAD_ASSETS_AND_INIT_SCENE
     }
 
-    ;
-
-    public static enum WorldProperties {
+    public enum WorldProperties {
         SAVED_GAME_VERSION, PREVIOUS_SCENE, CURRENT_CHAPTER, PLATFORM
     }
-
-    ;
 
     private static final boolean CACHE_ENABLED = true;
 
@@ -114,7 +108,7 @@ public class World implements AssetConsumer {
     private long initLoadingTime;
 
     // We not dispose the last loaded scene.
-    // Instead we cache it to improve performance when returning
+    // Instead, we cache it to improve performance when returning
     transient private Scene cachedScene;
 
     // If not null, this scene is set as the currentScene and the test Verb is
@@ -484,7 +478,7 @@ public class World implements AssetConsumer {
     }
 
     public void setCurrentScene(String id, boolean init, String initVerb) {
-        if (id.equals("$" + WorldProperties.PREVIOUS_SCENE.toString()))
+        if (id.equals("$" + WorldProperties.PREVIOUS_SCENE))
             id = getCustomProperty(WorldProperties.PREVIOUS_SCENE.toString());
 
         Scene s = scenes.get(id);
@@ -735,11 +729,8 @@ public class World implements AssetConsumer {
     // ********** SERIALIZATION **********
 
     public void saveGameState() throws IOException {
-        boolean takeScreenshot = false;
-
         // Only take screenshot for desktop. For iOs or Android is slow.
-        if (Gdx.app.getType() == ApplicationType.Desktop)
-            takeScreenshot = true;
+        boolean takeScreenshot = Gdx.app.getType() == ApplicationType.Desktop;
 
         serialization.saveGameState(GAMESTATE_FILENAME, takeScreenshot);
     }
@@ -751,11 +742,6 @@ public class World implements AssetConsumer {
 
     /**
      * Try to load the saved game if exists. In other case, load the model.
-     *
-     * @throws Exception
-     * @throws IOException
-     * @throws SAXException
-     * @throws ParserConfigurationException
      */
     public void load() throws Exception {
         if (EngineAssetManager.getInstance().getUserFile(GAMESTATE_FILENAME).exists()) {
@@ -785,8 +771,6 @@ public class World implements AssetConsumer {
 
     /**
      * Load the world description in 'world.json'.
-     *
-     * @throws IOException
      */
     public void loadWorldDesc() throws IOException {
         serialization.loadWorldDesc();
@@ -812,7 +796,7 @@ public class World implements AssetConsumer {
     }
 
     public void loadGameState(String filename) throws IOException {
-        FileHandle savedFile = null;
+        FileHandle savedFile;
 
         if (EngineAssetManager.getInstance().getUserFile(filename).exists())
             savedFile = EngineAssetManager.getInstance().getUserFile(filename);

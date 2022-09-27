@@ -15,45 +15,45 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import java.util.List;
-
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
 
+import java.util.List;
+
 @ActionDescription("Marks the end of a block for a control action")
 public class EndAction extends AbstractControlAction {
-	
-	@Override
-	public void init(World w) {
-	}
 
-	@Override
-	public boolean run(VerbRunner cb) {
-		// FIXME: This is now more generic than before, but also less optimized (we always get our "parent")
-		final VerbRunner v = (VerbRunner) cb;
-		final List<Action> actions = v.getActions();
-		final int ip = v.getIP();
+    @Override
+    public void init(World w) {
+    }
 
-		final int parentIp = getParentControlAction(caID, actions, ip);
-		final AbstractControlAction parent = (AbstractControlAction) actions.get(parentIp);
+    @Override
+    public boolean run(VerbRunner cb) {
+        // FIXME: This is now more generic than before, but also less optimized (we always get our "parent")
+        final List<Action> actions = cb.getActions();
+        final int ip = cb.getIP();
 
-		if (parent instanceof RepeatAction) {
-			v.setIP(parentIp - 1);
-		} else if (parent instanceof AbstractIfAction) {
-			int newIp = skipControlIdBlock(actions, parentIp); // goto Else
-			newIp = skipControlIdBlock(actions, newIp); // goto EndIf
+        final int parentIp = getParentControlAction(caID, actions, ip);
+        final AbstractControlAction parent = (AbstractControlAction) actions.get(parentIp);
 
-			v.setIP(newIp);
-		}
+        if (parent instanceof RepeatAction) {
+            cb.setIP(parentIp - 1);
+        } else if (parent instanceof AbstractIfAction) {
+            int newIp = skipControlIdBlock(actions, parentIp); // goto Else
+            newIp = skipControlIdBlock(actions, newIp); // goto EndIf
 
-		return false;
-	}
+            cb.setIP(newIp);
+        }
 
-	private int getParentControlAction(String caID, List<Action> actions, int ip) {
-		do {
-			ip--;
-		} while (!(actions.get(ip) instanceof AbstractControlAction) || !((AbstractControlAction) actions.get(ip)).getControlActionID().equals(caID));
-		
-		return ip;
-	}
+        return false;
+    }
+
+    private int getParentControlAction(String caID, List<Action> actions, int ip) {
+        do {
+            ip--;
+        } while (!(actions.get(ip) instanceof AbstractControlAction) || !((AbstractControlAction) actions.get(
+                ip)).getControlActionID().equals(caID));
+
+        return ip;
+    }
 }
