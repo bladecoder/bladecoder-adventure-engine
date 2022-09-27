@@ -1,9 +1,13 @@
 package com.bladecoder.engine.model;
 
 public interface WorldListener {
-	public void cutMode(boolean value);
-	public void text(Text t);
-	public void dialogOptions();
-	public void inventoryEnabled(boolean value);
-	public void pause(boolean value);	
+    void cutMode(boolean value);
+
+    void text(Text t);
+
+    void dialogOptions();
+
+    void inventoryEnabled(boolean value);
+
+    void pause(boolean value);
 }
