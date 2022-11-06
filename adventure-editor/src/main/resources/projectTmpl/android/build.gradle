@@ -6,8 +6,8 @@ android {
     defaultConfig {
         applicationId "%PACKAGE%"
         minSdkVersion 21
-        targetSdkVersion %API_LEVEL%
-        versionName version
+        targetSdkVersion % API_LEVEL %
+                versionName version
 
         if (project.hasProperty('versionCode'))
             versionCode project.versionCode.toInteger()
@@ -129,10 +129,8 @@ task copyAndroidNatives() {
     }
 }
 
-tasks.whenTaskAdded { packageTask ->
-    if (packageTask.name.contains("package")) {
-        packageTask.dependsOn 'copyAndroidNatives'
-    }
+tasks.matching { it.name.contains("merge") && it.name.contains("JniLibFolders") }.configureEach { packageTask ->
+    packageTask.dependsOn 'copyAndroidNatives'
 }
 
 task run(type: Exec) {
