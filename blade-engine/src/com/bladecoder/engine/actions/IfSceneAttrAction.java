@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ import com.bladecoder.engine.util.ActionUtils;
 public class IfSceneAttrAction extends AbstractIfAction {
 
 	public enum SceneAttr {
-		STATE, CURRENT_SCENE, PLAYER
+		STATE, CURRENT_SCENE, PLAYER, IN_CUTMODE
 	}
 
 	@ActionPropertyDescription("The scene to check its attribute")
@@ -69,6 +69,12 @@ public class IfSceneAttrAction extends AbstractIfAction {
 			String id = player != null ? player.getId() : null;
 
 			if (!ActionUtils.compareNullStr(value, id)) {
+				gotoElse(cb);
+			}
+		} else if (attr == SceneAttr.IN_CUTMODE) {
+			boolean val = Boolean.parseBoolean(value);
+
+			if (val != w.inCutMode()) {
 				gotoElse(cb);
 			}
 		}
