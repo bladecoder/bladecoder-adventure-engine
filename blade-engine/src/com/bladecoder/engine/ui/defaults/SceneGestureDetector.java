@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,151 +15,163 @@
  ******************************************************************************/
 package com.bladecoder.engine.ui.defaults;
 
-import java.io.IOException;
-
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.utils.UIUtils;
 import com.bladecoder.engine.ui.InventoryUI.InventoryPos;
+import com.bladecoder.engine.ui.SceneScreen;
 import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen.UIModes;
 import com.bladecoder.engine.util.EngineLogger;
 
+import java.io.IOException;
+
 public class SceneGestureDetector extends GestureDetector {
 
-	private DefaultSceneScreen dsc;
+    private DefaultSceneScreen dsc;
+    private SceneControllerHandler sceneControllerHandler;
 
-	public SceneGestureDetector(DefaultSceneScreen dsc) {
-		super(new SceneGestureListener(dsc));
-		this.dsc = dsc;
-	}
+    public SceneGestureDetector(DefaultSceneScreen dsc, SceneControllerHandler sceneControllerHandler) {
+        super(new SceneGestureListener(dsc));
+        this.dsc = dsc;
+        this.sceneControllerHandler = sceneControllerHandler;
+    }
 
-	@Override
-	public boolean keyUp(int keycode) {
-		switch (keycode) {
-		case Input.Keys.ESCAPE:
-		case Input.Keys.BACK:
-		case Input.Keys.MENU:
-			dsc.showMenu();
-			break;
-		case Input.Keys.D:
-			if (UIUtils.ctrl())
-				EngineLogger.toggle();
-			break;
-		case Input.Keys.SPACE:
-			if (dsc.getDrawHotspots())
-				dsc.setDrawHotspots(false);
-			break;
-		}
+    @Override
+    public boolean keyUp(int keycode) {
+        switch (keycode) {
+            case Input.Keys.ESCAPE:
+            case Input.Keys.BACK:
+            case Input.Keys.MENU:
+                dsc.showMenu();
+                break;
+            case Input.Keys.D:
+                if (UIUtils.ctrl())
+                    EngineLogger.toggle();
+                break;
+            case Input.Keys.SPACE:
+                if (dsc.getDrawHotspots())
+                    dsc.setDrawHotspots(false);
+                break;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean keyTyped(char character) {
-		switch (character) {
-		case '1':
-			EngineLogger.setDebugLevel(EngineLogger.DEBUG0);
-			break;
-		case '2':
-			EngineLogger.setDebugLevel(EngineLogger.DEBUG1);
-			break;
-		case 'f':
-			// ui.toggleFullScreen();
-			break;
-		case 's':
-			if (EngineLogger.debugMode()) {
-				try {
-					dsc.getUI().getWorld().saveGameState();
-				} catch (IOException e) {
-					EngineLogger.error(e.getMessage());
-				}
-			}
-			break;
-		case 'l':
-			if (EngineLogger.debugMode()) {
-				try {
-					dsc.getUI().getWorld().loadGameState();
-				} catch (IOException e) {
-					EngineLogger.error(e.getMessage());
-				}
-			}
-			break;
-		case 't':
-			if (EngineLogger.debugMode()) {
-				dsc.getUI().getTesterBot().setEnabled(!dsc.getUI().getTesterBot().isEnabled());
-				dsc.updateUI();
-			}
-			break;
-		case '.':
-			if (EngineLogger.debugMode()) {
-				if (dsc.getUI().getRecorder().isRecording())
-					dsc.getUI().getRecorder().setRecording(false);
-				else
-					dsc.getUI().getRecorder().setRecording(true);
+    @Override
+    public boolean keyTyped(char character) {
+        switch (character) {
+            case Input.Keys.F1:
+                EngineLogger.setDebugLevel(EngineLogger.DEBUG0);
+                break;
+            case Input.Keys.F2:
+                EngineLogger.setDebugLevel(EngineLogger.DEBUG1);
+                break;
+            case '1':
+                break;
+            case 'f':
+                // ui.toggleFullScreen();
+                break;
+            case 'i':
+                dsc.tap(SceneScreen.ActionButton.INVENTORY, 1);
+                break;
+            case 'q':
+                dsc.tap(SceneScreen.ActionButton.LOOKAT, 1);
+                break;
+            case 'e':
+                dsc.tap(SceneScreen.ActionButton.ACTION, 1);
+                break;
+            case 's':
+                if (EngineLogger.debugMode()) {
+                    try {
+                        dsc.getUI().getWorld().saveGameState();
+                    } catch (IOException e) {
+                        EngineLogger.error(e.getMessage());
+                    }
+                }
+                break;
+            case 'l':
+                if (EngineLogger.debugMode()) {
+                    try {
+                        dsc.getUI().getWorld().loadGameState();
+                    } catch (IOException e) {
+                        EngineLogger.error(e.getMessage());
+                    }
+                }
+                break;
+            case 't':
+                if (EngineLogger.debugMode()) {
+                    dsc.getUI().getTesterBot().setEnabled(!dsc.getUI().getTesterBot().isEnabled());
+                    dsc.updateUI();
+                }
+                break;
+            case '.':
+                if (EngineLogger.debugMode()) {
+                    if (dsc.getUI().getRecorder().isRecording())
+                        dsc.getUI().getRecorder().setRecording(false);
+                    else
+                        dsc.getUI().getRecorder().setRecording(true);
 
-				dsc.updateUI();
-			}
-			break;
-		case ',':
-			if (EngineLogger.debugMode()) {
-				if (dsc.getUI().getRecorder().isPlaying())
-					dsc.getUI().getRecorder().setPlaying(false);
-				else {
-					dsc.getUI().getRecorder().load();
-					dsc.getUI().getRecorder().setPlaying(true);
-				}
+                    dsc.updateUI();
+                }
+                break;
+            case ',':
+                if (EngineLogger.debugMode()) {
+                    if (dsc.getUI().getRecorder().isPlaying())
+                        dsc.getUI().getRecorder().setPlaying(false);
+                    else {
+                        dsc.getUI().getRecorder().load();
+                        dsc.getUI().getRecorder().setPlaying(true);
+                    }
 
-				dsc.updateUI();
-			}
-			break;
-		case 'p':
-			if (dsc.getUI().getWorld().isPaused()) {
-				dsc.resume();
-			} else {
-				dsc.pause();
-			}
-			break;
-		case 'z':
-//			com.bladecoder.engine.util.UIUtils.pointerToActor(dsc.getWorld(), PointerToNextType.LEFT,
-//					dsc.getViewport());
-			break;
-		case 'x':
-//			com.bladecoder.engine.util.UIUtils.pointerToActor(dsc.getWorld(), PointerToNextType.RIGHT,
-//					dsc.getViewport());
-			break;
-		case ' ':
-			if (dsc.isUiEnabled() && !dsc.getUI().getWorld().hasDialogOptions()) {
-				dsc.setDrawHotspots(true);
-			}
-			break;
-		}
+                    dsc.updateUI();
+                }
+                break;
+            case 'p':
+                if (dsc.getUI().getWorld().isPaused()) {
+                    dsc.resume();
+                } else {
+                    dsc.pause();
+                }
+                break;
+            case 'z':
+                sceneControllerHandler.focusNext(ScreenControllerHandler.PointerToNextType.LEFT);
+                break;
+            case 'x':
+                sceneControllerHandler.focusNext(ScreenControllerHandler.PointerToNextType.RIGHT);
+                break;
+            case ' ':
+                if (dsc.isUiEnabled() && !dsc.getUI().getWorld().hasDialogOptions()) {
+                    dsc.setDrawHotspots(true);
+                }
+                break;
+        }
 
-		// FIXME: This is returning false even in the cases where we
-		// actually process the character
-		return false;
-	}
+        // FIXME: This is returning false even in the cases where we
+        // actually process the character
+        return false;
+    }
 
-	@Override
-	public boolean scrolled(float amountX, float amountY) {
-		if (dsc.isUiEnabled() && !dsc.getUI().getWorld().hasDialogOptions()
-				&& dsc.getUI().getWorld().getInventory().isVisible()) {
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        if (dsc.isUiEnabled() && !dsc.getUI().getWorld().hasDialogOptions()
+                && dsc.getUI().getWorld().getInventory().isVisible()) {
 
-			dsc.getUI().setInputMode(InputMode.MOUSE);
+            dsc.getUI().setInputMode(InputMode.MOUSE);
 
-			boolean fromDown = (dsc.getInventoryUI().getInventoryPos() == InventoryPos.CENTER
-					|| dsc.getInventoryUI().getInventoryPos() == InventoryPos.DOWN);
+            boolean fromDown = (dsc.getInventoryUI().getInventoryPos() == InventoryPos.CENTER
+                    || dsc.getInventoryUI().getInventoryPos() == InventoryPos.DOWN);
 
-			if ((amountY > 0 && fromDown || amountY < 0 && !fromDown) && dsc.getInventoryUI().isVisible())
-				dsc.getInventoryUI().hide();
-			else if ((amountY > 0 && !fromDown || amountY < 0 && fromDown) && !dsc.getInventoryUI().isVisible()) {
-				if (dsc.getUIMode() == UIModes.PIE && dsc.getPie().isVisible())
-					dsc.getPie().hide();
+            if ((amountY > 0 && fromDown || amountY < 0 && !fromDown) && dsc.getInventoryUI().isVisible())
+                dsc.getInventoryUI().hide();
+            else if ((amountY > 0 && !fromDown || amountY < 0 && fromDown) && !dsc.getInventoryUI().isVisible()) {
+                if (dsc.getUIMode() == UIModes.PIE && dsc.getPie().isVisible())
+                    dsc.getPie().hide();
 
-				dsc.getInventoryUI().show();
-			}
-		}
+                dsc.getInventoryUI().show();
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 }
