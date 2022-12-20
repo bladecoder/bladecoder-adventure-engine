@@ -33,8 +33,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
-import com.bladecoder.engine.model.*;
+import com.bladecoder.engine.model.CharacterActor;
+import com.bladecoder.engine.model.InteractiveActor;
+import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.TextManager;
+import com.bladecoder.engine.model.Transition;
+import com.bladecoder.engine.model.Verb;
+import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
+import com.bladecoder.engine.model.WorldListener;
 import com.bladecoder.engine.ui.*;
 import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.ui.UI.Screens;
@@ -47,7 +54,7 @@ import java.util.Locale;
 
 public class DefaultSceneScreen implements SceneScreen {
     private final static float LOADING_WAIT_TIME_MS = 400f;
-    private static final float MIN_TEXT_SCREEN_TIME = 0.5f;
+    private static final float MIN_TEXT_SCREEN_TIME = 0.3f;
 
     private UI ui;
 
@@ -98,7 +105,7 @@ public class DefaultSceneScreen implements SceneScreen {
 
     private boolean uiEnabled = true;
 
-    private final GestureDetector inputProcessor = new SceneGestureDetector(this);
+    private GestureDetector inputProcessor;
     private SceneControllerHandler sceneController;
 
     private final WorldListener worldListener = new SceneWorldListener(this);
@@ -596,7 +603,6 @@ public class DefaultSceneScreen implements SceneScreen {
         multiplexer.addProcessor(stage);
         multiplexer.addProcessor(inputProcessor);
         Gdx.input.setInputProcessor(multiplexer);
-        sceneController = new SceneControllerHandler(this);
 
         if (getWorld().isDisposed()) {
             try {
@@ -650,6 +656,9 @@ public class DefaultSceneScreen implements SceneScreen {
 
         recorder = ui.getRecorder();
         testerBot = ui.getTesterBot();
+
+        sceneController = new SceneControllerHandler(this);
+        inputProcessor = new SceneGestureDetector(this, sceneController);
 
         pie = new PieMenu(this);
         textManagerUI = new TextManagerUI(ui.getSkin(), getWorld());

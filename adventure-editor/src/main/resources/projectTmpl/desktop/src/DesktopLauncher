@@ -41,7 +41,6 @@ public class DesktopLauncher extends BladeEngine {
         cfg.setTitle(p.getProperty(Config.TITLE_PROP, "Blade Engine Adventure") + " "
                 + p.getProperty(Config.VERSION_PROP, ""));
 
-        cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_HEIGHT);
 		cfg.setResizable(true);
 		cfg.useVsync(true);
 		cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
@@ -126,6 +125,9 @@ public class DesktopLauncher extends BladeEngine {
 				usage();
 			}
 		}
+
+        if(!fullscreen)
+            cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
 	
 	public void usage() {

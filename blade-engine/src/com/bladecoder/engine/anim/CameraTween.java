@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 Rafael Garcia Moreno.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,63 +27,64 @@ import com.bladecoder.engine.util.InterpolationMode;
  */
 public class CameraTween extends Tween<SceneCamera> {
 
-	private float startX, startY, startZoom;
-	private float targetX, targetY, targetZoom;
+    private float startX, startY, startZoom;
+    private float targetX, targetY, targetZoom;
 
-	public CameraTween() {
-	}
+    public CameraTween() {
+    }
 
-	public void start(SceneCamera camera, Tween.Type repeatType, int count, float targetX, float targetY,
-			float targetZoom, float duration, InterpolationMode interpolation, ActionCallback cb) {
+    public void start(SceneCamera camera, Tween.Type repeatType, int count, float targetX, float targetY,
+                      float targetZoom, float duration, InterpolationMode interpolation, ActionCallback cb) {
 
-		this.target = camera;
-		
-		Vector2 currentPos = camera.getPosition();
+        this.target = camera;
 
-		startX = currentPos.x;
-		startY = currentPos.y;
-		startZoom = camera.getZoom();
-		this.targetX = targetX;
-		this.targetY = targetY;
-		this.targetZoom = targetZoom;
+        Vector2 currentPos = camera.getPosition();
 
-		setDuration(duration);
-		setType(repeatType);
-		setCount(count);
-		setInterpolation(interpolation);
+        startX = currentPos.x;
+        startY = currentPos.y;
+        startZoom = camera.getZoom();
+        this.targetX = targetX;
+        this.targetY = targetY;
+        this.targetZoom = targetZoom;
 
-		if (cb != null) {
-			setCb(cb);
-		}
-	}
+        setDuration(duration);
+        setType(repeatType);
+        setCount(count);
+        setInterpolation(interpolation);
 
-	@Override
-	public void updateTarget() {
-		target.setZoom(startZoom + getPercent() * (targetZoom - startZoom));
-		target.setPosition(startX + getPercent() * (targetX - startX), startY + getPercent() * (targetY - startY));
-	}
+        if (cb != null) {
+            setCb(cb);
+        }
+    }
 
-	@Override
-	public void write(Json json) {
-		super.write(json);
+    @Override
+    public void updateTarget() {
+        target.setZoom(startZoom + getPercent() * (targetZoom - startZoom));
+        target.setPosition(startX + getPercent() * (targetX - startX),
+                startY + getPercent() * (targetY - startY));
+    }
 
-		json.writeValue("startX", startX);
-		json.writeValue("startY", startY);
-		json.writeValue("startZoom", startZoom);
-		json.writeValue("targetX", targetX);
-		json.writeValue("targetY", targetY);
-		json.writeValue("targetZoom", targetZoom);
-	}
+    @Override
+    public void write(Json json) {
+        super.write(json);
 
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		super.read(json, jsonData);
+        json.writeValue("startX", startX);
+        json.writeValue("startY", startY);
+        json.writeValue("startZoom", startZoom);
+        json.writeValue("targetX", targetX);
+        json.writeValue("targetY", targetY);
+        json.writeValue("targetZoom", targetZoom);
+    }
 
-		startX = json.readValue("startX", Float.class, jsonData);
-		startY = json.readValue("startY", Float.class, jsonData);
-		startZoom = json.readValue("startZoom", Float.class, jsonData);
-		targetX = json.readValue("targetX", Float.class, jsonData);
-		targetY = json.readValue("targetY", Float.class, jsonData);
-		targetZoom = json.readValue("targetZoom", Float.class, jsonData);
-	}
+    @Override
+    public void read(Json json, JsonValue jsonData) {
+        super.read(json, jsonData);
+
+        startX = json.readValue("startX", Float.class, jsonData);
+        startY = json.readValue("startY", Float.class, jsonData);
+        startZoom = json.readValue("startZoom", Float.class, jsonData);
+        targetX = json.readValue("targetX", Float.class, jsonData);
+        targetY = json.readValue("targetY", Float.class, jsonData);
+        targetZoom = json.readValue("targetZoom", Float.class, jsonData);
+    }
 }
