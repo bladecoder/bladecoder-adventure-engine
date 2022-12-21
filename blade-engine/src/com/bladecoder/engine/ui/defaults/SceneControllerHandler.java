@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SceneControllerHandler extends ScreenControllerHandler {
-    public static final float THUMBSTICKVELOCITY = 13f * 60f;
 
     private DefaultSceneScreen dsc;
 
@@ -87,7 +86,7 @@ public class SceneControllerHandler extends ScreenControllerHandler {
         } else if (dsc.getInventoryUI().isVisible()) {
             pointerToInventory(type);
         } else if (dsc.getPie().isVisible()) {
-            pointerToPie(type);
+            pointerToPie();
         } else {
             pointerToSceneActor(dsc.getWorld(), type, dsc.getViewport());
         }
@@ -146,7 +145,7 @@ public class SceneControllerHandler extends ScreenControllerHandler {
         dialogUI.setUpDownVisibility();
     }
 
-    private void pointerToPie(PointerToNextType type) {
+    private void pointerToPie() {
 
         Button hit = getButtonUnderCursor(dsc.getStage());
 
