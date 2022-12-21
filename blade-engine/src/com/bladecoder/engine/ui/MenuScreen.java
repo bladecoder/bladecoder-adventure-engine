@@ -165,6 +165,8 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
                     controller.focusNext(ScreenControllerHandler.PointerToNextType.LEFT);
                 } else if (keycode == Input.Keys.X) {
                     controller.focusNext(ScreenControllerHandler.PointerToNextType.RIGHT);
+                } else if (keycode == Keys.ENTER || keycode == Keys.Q) {
+                    controller.clickOnUI();
                 }
 
                 return true;

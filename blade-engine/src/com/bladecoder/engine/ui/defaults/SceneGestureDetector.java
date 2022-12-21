@@ -28,8 +28,8 @@ import java.io.IOException;
 
 public class SceneGestureDetector extends GestureDetector {
 
-    private DefaultSceneScreen dsc;
-    private SceneControllerHandler sceneControllerHandler;
+    private final DefaultSceneScreen dsc;
+    private final SceneControllerHandler sceneControllerHandler;
 
     public SceneGestureDetector(DefaultSceneScreen dsc, SceneControllerHandler sceneControllerHandler) {
         super(new SceneGestureListener(dsc));
@@ -75,11 +75,21 @@ public class SceneGestureDetector extends GestureDetector {
             case 'i':
                 dsc.tap(SceneScreen.ActionButton.INVENTORY, 1);
                 break;
+            case '\n':
+            case '\r':
             case 'q':
-                dsc.tap(SceneScreen.ActionButton.LOOKAT, 1);
+                dsc.getUI().setInputMode(InputMode.GAMEPAD);
+
+                if (!sceneControllerHandler.clickOnUI()) {
+                    dsc.tap(SceneScreen.ActionButton.LOOKAT, 1);
+                }
                 break;
             case 'e':
-                dsc.tap(SceneScreen.ActionButton.ACTION, 1);
+                dsc.getUI().setInputMode(InputMode.GAMEPAD);
+
+                if (!sceneControllerHandler.clickOnUI()) {
+                    dsc.tap(SceneScreen.ActionButton.ACTION, 1);
+                }
                 break;
             case 's':
                 if (EngineLogger.debugMode()) {
@@ -107,10 +117,7 @@ public class SceneGestureDetector extends GestureDetector {
                 break;
             case '.':
                 if (EngineLogger.debugMode()) {
-                    if (dsc.getUI().getRecorder().isRecording())
-                        dsc.getUI().getRecorder().setRecording(false);
-                    else
-                        dsc.getUI().getRecorder().setRecording(true);
+                    dsc.getUI().getRecorder().setRecording(!dsc.getUI().getRecorder().isRecording());
 
                     dsc.updateUI();
                 }

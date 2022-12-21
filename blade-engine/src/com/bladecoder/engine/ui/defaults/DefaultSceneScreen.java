@@ -657,6 +657,7 @@ public class DefaultSceneScreen implements SceneScreen {
         recorder = ui.getRecorder();
         testerBot = ui.getTesterBot();
 
+        stage = new Stage(viewport);
         sceneController = new SceneControllerHandler(this);
         inputProcessor = new SceneGestureDetector(this, sceneController);
 
@@ -686,7 +687,6 @@ public class DefaultSceneScreen implements SceneScreen {
 
         retrieveAssets(ui.getUIAtlas());
 
-        stage = new Stage(viewport);
         stage.addActor(textManagerUI);
         stage.addActor(dialogUI);
         stage.addActor(inventoryButton);

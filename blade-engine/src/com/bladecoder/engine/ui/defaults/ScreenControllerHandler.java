@@ -16,6 +16,7 @@
 package com.bladecoder.engine.ui.defaults;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.math.MathUtils;
@@ -101,8 +102,7 @@ public class ScreenControllerHandler {
             stage.touchDown(x, y, pointer, 0);
             boolean handled = stage.touchUp(x, y, pointer, 0);
 
-            if (handled)
-                return true;
+            return handled;
         } else if (buttonCode == controller.getMapping().buttonR1 || buttonCode == controller.getMapping().buttonR2) {
             focusNext(PointerToNextType.RIGHT);
             return true;
@@ -112,6 +112,17 @@ public class ScreenControllerHandler {
         }
 
         return false;
+    }
+
+    public boolean clickOnUI() {
+        // Simulate click on UI
+        int x = Gdx.input.getX();
+        int y = Gdx.input.getY();
+
+        int pointer = 11;
+
+        stage.touchDown(x, y, pointer, 0);
+        return stage.touchUp(x, y, pointer, 0);
     }
 
     public void focusNext(PointerToNextType type) {
@@ -246,18 +257,7 @@ public class ScreenControllerHandler {
 
     }
 
-    private void updateAxis(float delta) {
-        float v = THUMBSTICKVELOCITY * delta * viewport.getScreenWidth() / 1080f;
-
-        int vx = 0, vy = 0;
-
-        for (Controller controller : Controllers.getControllers()) {
-            vx += controller.getAxis(controller.getMapping().axisLeftX) * v;
-            vy += controller.getAxis(controller.getMapping().axisLeftY) * v;
-            vx += controller.getAxis(controller.getMapping().axisRightX) * v / 2f;
-            vy += controller.getAxis(controller.getMapping().axisRightY) * v / 2f;
-        }
-
+    private void updateAxis(int vx, int vy) {
         if (vx != 0 || vy != 0) {
             int x = Gdx.input.getX() + vx;
             int y = Gdx.input.getY() + vy;
@@ -273,8 +273,27 @@ public class ScreenControllerHandler {
         }
     }
 
+    private float getVelocity(float delta) {
+        return THUMBSTICKVELOCITY * delta * viewport.getScreenWidth() / 1080f;
+    }
+
+    private void updateAxis(float delta) {
+        float v = getVelocity(delta);
+
+        int vx = 0, vy = 0;
+
+        for (Controller controller : Controllers.getControllers()) {
+            vx += controller.getAxis(controller.getMapping().axisLeftX) * v;
+            vy += controller.getAxis(controller.getMapping().axisLeftY) * v;
+            vx += controller.getAxis(controller.getMapping().axisRightX) * v / 2f;
+            vy += controller.getAxis(controller.getMapping().axisRightY) * v / 2f;
+        }
+
+        updateAxis(vx, vy);
+    }
+
     private void updateDPad(float delta) {
-        float v = THUMBSTICKVELOCITY * delta * viewport.getScreenWidth() / 1080f;
+        float v = getVelocity(delta);
 
         int vx = 0, vy = 0;
 
@@ -293,19 +312,19 @@ public class ScreenControllerHandler {
             }
         }
 
-        if (vx != 0 || vy != 0) {
-            int x = Gdx.input.getX() + vx;
-            int y = Gdx.input.getY() + vy;
-
-            ui.setInputMode(InputMode.GAMEPAD);
-
-            Gdx.input.setCursorPosition(
-                    MathUtils.clamp(x, viewport.getScreenX(), viewport.getScreenWidth() + viewport.getScreenX()),
-                    MathUtils.clamp(y, viewport.getScreenY(), viewport.getScreenHeight() + viewport.getScreenY()));
-
-            if (stage != null)
-                stage.mouseMoved(Gdx.input.getX(), Gdx.input.getY());
+        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            vx += v;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            vx -= v;
         }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            vy -= v;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            vy += v;
+        }
+
+        updateAxis(vx, vy);
     }
 
     public enum PointerToNextType {
