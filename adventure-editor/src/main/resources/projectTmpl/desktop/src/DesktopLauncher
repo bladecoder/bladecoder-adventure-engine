@@ -10,6 +10,7 @@ import com.bladecoder.engine.ui.SceneScreen;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.Config;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.system.Configuration;
 
 import java.io.IOException;
 import java.io.InputStream;
