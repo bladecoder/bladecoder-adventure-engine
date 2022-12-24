@@ -29,12 +29,12 @@ import java.util.List;
 
 public class Main extends Lwjgl3Application {
 
+    private final static Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
+
     public static void main(final String[] args) {
 
-        if(System.getProperty("os.name").contains("Mac"))
+        if (System.getProperty("os.name").contains("Mac"))
             Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
-
-        Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
 
         cfg.setTitle("Adventure Editor v" + Versions.getVersion());
 
@@ -53,7 +53,7 @@ public class Main extends Lwjgl3Application {
             iconList.add("images/ic_app16.png");
 
         cfg.setWindowIcon(FileType.Internal, iconList.toArray(new String[0]));
-        cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
+        cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL20, 0, 0);
 
         parseArgs(args);
 
@@ -71,6 +71,10 @@ public class Main extends Lwjgl3Application {
                 }
             } else if (args[i].equals("-d")) {
                 EditorLogger.setDebugLevel(Levels.DEBUG);
+            } else if (args[i].equals("-opengl")) {
+                cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL20, 0, 0);
+            } else if (args[i].equals("-angle")) {
+                cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
             }
         }
     }
