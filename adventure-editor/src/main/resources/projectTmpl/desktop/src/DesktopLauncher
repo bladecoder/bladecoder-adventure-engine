@@ -30,7 +30,8 @@ public class DesktopLauncher extends BladeEngine {
 
 	DesktopLauncher() {
 		Properties p = new Properties();
-		
+
+
 		try {
 			InputStream s = DesktopLauncher.class.getResourceAsStream("/" + Config.PROPERTIES_FILENAME);
 			if(s!=null)
@@ -44,7 +45,7 @@ public class DesktopLauncher extends BladeEngine {
 
 		cfg.setResizable(true);
 		cfg.useVsync(true);
-		cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
+        cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL20, 0, 0);
 	}
 
 	public void run() {
@@ -120,7 +121,11 @@ public class DesktopLauncher extends BladeEngine {
 				}
 			} else if (s.equals("-h")) {
 				usage();
-			} else {
+            } else if (s.equals("-opengl")) {
+                cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL20, 0, 0);
+            } else if (s.equals("-angle")) {
+                cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
+            } else {
 				if(i == 0 && !s.startsWith("-")) continue; // When embeded JRE the 0 parameter is the app name
 				System.out.println("Unrecognized parameter: " + s);
 				usage();
