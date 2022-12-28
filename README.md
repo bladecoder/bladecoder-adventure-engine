@@ -15,7 +15,7 @@ The **Bladecoder Adventure Engine** is composed of the following subprojects:
 * **adventure-editor**: the graphical editor for creating point and click games.
 * **blade-engine**: the engine to run the games created with `adventure-editor`.
 
-The **Bladecoder Adventure Engine** has been developed using the [LibGDX](http://libgdx.badlogicgames.com/) framework
+The **Bladecoder Adventure Engine** has been developed using the [LibGDX](https://libgdx.com) framework
 and the project generates a layout similar to any LibGDX project. This lowers the learning curve and eases development
 and deploy on several platforms.
 
