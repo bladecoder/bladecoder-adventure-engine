@@ -30,7 +30,11 @@ import com.bladecoder.engineeditor.common.AlignUtils;
 import com.bladecoder.engineeditor.common.ElementUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.model.Project;
-import com.bladecoder.engineeditor.ui.panels.*;
+import com.bladecoder.engineeditor.ui.panels.EditModelDialog;
+import com.bladecoder.engineeditor.ui.panels.FilteredSelectBox;
+import com.bladecoder.engineeditor.ui.panels.InputPanel;
+import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
+import com.bladecoder.engineeditor.ui.panels.OptionsInputPanel;
 
 import java.util.HashMap;
 
@@ -53,7 +57,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
             Project.TEXT_RENDERER_STRING};
 
     private static final String TYPES_INFO[] = {
-            "Background actors don't have sprites or animations. They are used to interact with objects drawn in the background",
+            "Background actors don't have sprites or animations. They are used to interact with objects drawn in the " +
+                    "background",
             "Sprite actors have one or several sprites or animations",
             "Character actors have dialogs and stand, walk and talk animations",
             "Anchor actors are used as reference for positioning other actors",
@@ -167,7 +172,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
                 "The text color (RRGGBBAA) when the actor talks.", Param.Type.COLOR, false);
 
         textStyle = InputPanelFactory.createInputPanel(skin, "Text Style",
-                "The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui.TextManagerUI$TextManagerUIStyle` section).",
+                "The style to use (an entry in your `ui.json` in the `com.bladecoder.engine.ui" +
+                        ".TextManagerUI$TextManagerUIStyle` section).",
                 Param.Type.STRING, false);
 
         talkingTextPos = InputPanelFactory.createInputPanel(skin, "Talking Text Pos",
@@ -186,7 +192,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
         size = InputPanelFactory.createInputPanel(skin, "Size", "The size of the text.", Type.INTEGER, true, "20");
         textAlign = InputPanelFactory.createInputPanel(skin, "Text Align", "The alignment of the text.", TEXT_ALIGN,
                 true);
-        textMaxWidth = InputPanelFactory.createInputPanel(skin, "Max Width", "The max width of the text block.", Type.INTEGER,
+        textMaxWidth = InputPanelFactory.createInputPanel(skin, "Max Width", "The max width of the text block.",
+                Type.INTEGER,
                 true, "0");
         borderWidth = InputPanelFactory.createInputPanel(skin, "Border Width", "Zero for no border.", Type.INTEGER,
                 true, "0");
@@ -221,9 +228,11 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
 
         init(parent, e,
                 new InputPanel[]{typePanel, id, renderer, particleName, particleAtlas, layer, visible, interaction,
-                        desc, state, fakeDepth, pos, refPoint, scale, rot, tint, text, font, size, textAlign, textMaxWidth,
+                        desc, state, fakeDepth, pos, refPoint, scale, rot, tint, text, font, size, textAlign,
+                        textMaxWidth,
                         borderWidth, borderColor, borderStraight, shadowOffsetX, shadowOffsetY, shadowColor,
-                        bboxFromRenderer, zIndex, orgAlign, walkingSpeed, talkingTextPos, spineSkin, textColor, textStyle});
+                        bboxFromRenderer, zIndex, orgAlign, walkingSpeed, talkingTextPos, spineSkin, textColor,
+                        textStyle});
 
         typeChanged();
 
@@ -445,7 +454,15 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
                 ia.setDesc(null);
 
             ia.setState(state.getText());
-            ia.setZIndex(Float.parseFloat(zIndex.getText()));
+
+            float zi = 0f;
+
+            try {
+                zi = Float.parseFloat(zIndex.getText() == null ? "0" : zIndex.getText());
+            } catch (NumberFormatException e) {
+            }
+
+            ia.setZIndex(zi);
 
             if (e instanceof SpriteActor) {
                 SpriteActor sa = (SpriteActor) e;
