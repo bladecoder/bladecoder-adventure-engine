@@ -74,6 +74,7 @@ public class Main extends Lwjgl3Application {
             } else if (args[i].equals("-opengl")) {
                 cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL20, 0, 0);
             } else if (args[i].equals("-angle")) {
+                System.out.println("Activating OpenGL emulation through ANGLE.");
                 cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
             }
         }
