@@ -19,6 +19,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
+applicationDefaultJvmArgs = ['-Djava.awt.headless=true']
+
 jar {
     manifest.attributes += [
             'github'   : 'https://github.com/bladecoder/bladecoder-adventure-engine/',
