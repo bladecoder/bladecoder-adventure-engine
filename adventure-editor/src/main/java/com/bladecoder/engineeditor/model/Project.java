@@ -28,13 +28,22 @@ import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.common.*;
+import com.bladecoder.engineeditor.common.EditorLogger;
+import com.bladecoder.engineeditor.common.FolderClassLoader;
+import com.bladecoder.engineeditor.common.OrderedProperties;
 import com.bladecoder.engineeditor.common.OrderedProperties.OrderedPropertiesBuilder;
+import com.bladecoder.engineeditor.common.RunProccess;
+import com.bladecoder.engineeditor.common.Versions;
 import com.bladecoder.engineeditor.setup.BladeEngineSetup;
 import com.bladecoder.engineeditor.undo.UndoStack;
 
 import java.beans.PropertyChangeEvent;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -500,12 +509,16 @@ public class Project extends PropertyChange {
                 EditorLogger.msg("Custom action class not found. Trying to compile...");
                 if (RunProccess.runGradle(getProjectDir(), "desktop:compileJava")) {
                     ((FolderClassLoader) ActionFactory.getActionClassLoader()).reload();
-                    chapter.load(selChapter);
+                    try {
+                        chapter.load(selChapter);
+                    } catch (SerializationException e) {
+                        throw new IOException("Couldn't load project.");
+                    }
                 } else {
                     throw new IOException("Failed to run Gradle.");
                 }
             } else {
-                throw ex;
+                throw new IOException(ex.getMessage());
             }
         }
 
