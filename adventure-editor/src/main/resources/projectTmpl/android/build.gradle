@@ -1,13 +1,15 @@
 apply plugin: 'android'
 
+// @formatter:off
 android {
     compileSdkVersion highestSdkAvailable("android-%API_LEVEL%")
 
     defaultConfig {
         applicationId "%PACKAGE%"
         minSdkVersion 21
-        targetSdkVersion % API_LEVEL %
-                versionName version
+
+        targetSdkVersion %API_LEVEL%
+        versionName version
 
         if (project.hasProperty('versionCode'))
             versionCode project.versionCode.toInteger()

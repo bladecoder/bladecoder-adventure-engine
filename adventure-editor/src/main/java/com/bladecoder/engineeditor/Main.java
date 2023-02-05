@@ -18,10 +18,12 @@ package com.bladecoder.engineeditor;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.EditorLogger.Levels;
 import com.bladecoder.engineeditor.common.Versions;
 import org.lwjgl.system.Configuration;
+import org.lwjgl.system.macosx.LibC;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,8 +35,10 @@ public class Main extends Lwjgl3Application {
 
     public static void main(final String[] args) {
 
-        if (System.getProperty("os.name").contains("Mac"))
+        if (SharedLibraryLoader.isMac && !"1".equals(System.getenv("JAVA_STARTED_ON_FIRST_THREAD_" + LibC.getpid()))) {
+            System.out.println("MacOs detected. Running in async mode.");
             Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
+        }
 
         cfg.setTitle("Adventure Editor v" + Versions.getVersion());
 
