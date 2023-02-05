@@ -6,6 +6,7 @@ targetCompatibility = 1.8
 
 sourceSets.main.resources.srcDirs += [rootProject.file('assets').absolutePath]
 mainClassName = "com.bladecoder.engine.DesktopLauncher"
+applicationDefaultJvmArgs = ["-XstartOnFirstThread"]
 
 dependencies {
     implementation project(":core")
