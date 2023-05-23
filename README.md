@@ -33,6 +33,7 @@ The Engine has the following features:
 * Several animation techniques: sprite/atlas animation and Spine (cutout) animation
 * Multiresolution to deal with different densities and screen sizes
 * Multilanguage support
+* Use of the [Ink](https://www.inklestudios.com/ink/) language to create dialogs and puzzles easily.
 
 ### The Goddess Robbery
 
