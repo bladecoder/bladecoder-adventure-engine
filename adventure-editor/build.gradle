@@ -57,7 +57,7 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$libgdxVersion:natives-desktop"
     implementation("org.apache.commons:commons-compress:1.20")
     implementation "commons-io:commons-io:2.1"
-    implementation "com.badlogicgames.packr:packr:4.0.0"
+    implementation "com.bladecoder.packr:packr:4.1.0"
     implementation "eu.infomas:annotation-detector:3.0.5"
     implementation "com.strongjoshua:libgdx-inGameConsole:0.9.0"
     implementation "com.kotcrab.vis:vis-ui:1.4.2"
