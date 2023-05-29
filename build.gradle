@@ -4,7 +4,6 @@ allprojects {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        maven { url "https://artifactory.nimblygames.com/artifactory/ng-public-release/" }
     }
 }
 
