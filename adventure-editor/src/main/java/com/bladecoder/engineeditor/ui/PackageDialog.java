@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.bladecoder.engineeditor.ui;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -25,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogicgames.packr.Packr;
 import com.badlogicgames.packr.PackrConfig;
 import com.badlogicgames.packr.PackrConfig.Platform;
@@ -32,14 +35,16 @@ import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engine.actions.Param.Type;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engineeditor.Ctx;
+import com.bladecoder.engineeditor.common.HttpUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.OrderedProperties;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.ui.panels.EditDialog;
 import com.bladecoder.engineeditor.ui.panels.FileInputPanel;
-import com.bladecoder.engineeditor.ui.panels.FilteredSelectBox;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
+import com.kotcrab.vis.ui.widget.file.FileChooser;
+import com.kotcrab.vis.ui.widget.file.FileChooserListener;
 import com.kotcrab.vis.ui.widget.file.FileTypeFilter;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.compressors.CompressorException;
@@ -51,8 +56,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -66,36 +74,35 @@ public class PackageDialog extends EditDialog {
     private static final String[] ARCHS = {"desktop", "android", "ios"};
     private static final String[] DESKTOP_TYPES = {"Bundle JRE", "Runnable jar"};
     private static final String[] ANDROID_TYPES = {".apk", ".aab"};
-    private static final String[] OSS = {"all", "windows64", "linux64", "macOS-x86"};
+    private static final String[] OSS = {"windows64", "linux64", "macOS-x86"};
 
-    private InputPanel arch;
-    private InputPanel dir;
+    private final InputPanel arch;
+    private final InputPanel dir;
 
-    private InputPanel desktopType;
-    private InputPanel androidType;
+    private final InputPanel desktopType;
+    private final InputPanel androidType;
 
-    private InputPanel os;
-    private FileInputPanel linux64JRE;
-    private FileInputPanel winJRE64;
-    private FileInputPanel osxJRE;
-    private InputPanel version;
-    private InputPanel icon;
-    private InputPanel versionCode;
-    private InputPanel androidSDK;
-    private InputPanel expansionFile;
-    private InputPanel androidKeyStore;
-    private InputPanel androidKeyAlias;
-    private InputPanel androidKeyStorePassword;
-    private InputPanel androidKeyAliasPassword;
+    private final InputPanel os;
+    private final FileInputPanel linux64JRE;
+    private final FileInputPanel winJRE64;
+    private final FileInputPanel osxJRE;
+    private final InputPanel version;
+    private final InputPanel icon;
+    private final InputPanel versionCode;
+    private final InputPanel androidSDK;
+    private final InputPanel expansionFile;
+    private final InputPanel androidKeyStore;
+    private final InputPanel androidKeyAlias;
+    private final InputPanel androidKeyStorePassword;
+    private final InputPanel androidKeyAliasPassword;
 
-    private InputPanel iosSignIdentity;
-    private InputPanel iosProvisioningProfile;
+    private final InputPanel iosSignIdentity;
+    private final InputPanel iosProvisioningProfile;
 
-    private InputPanel customBuildParameters;
+    private final InputPanel customBuildParameters;
 
-    private InputPanel[] options;
+    private final InputPanel[] options;
 
-    @SuppressWarnings("unchecked")
     public PackageDialog(final Skin skin) {
         super("PACKAGE GAME", skin);
 
@@ -110,18 +117,18 @@ public class PackageDialog extends EditDialog {
         FileTypeFilter typeFilter = new FileTypeFilter(true);
         typeFilter.addRule("Compressed files", "zip", "tar.gz");
 
-        linux64JRE = new FileInputPanel(skin, "JRE.Linux64",
-                "Select the 64 bits Linux JRE Location to bundle. Must be a ZIP file",
+        linux64JRE = new FileInputPanel(skin, "JRE",
+                "Select the 64 bits Linux JRE Location to bundle. Must be a .zip or a .tar.gz file",
                 FileInputPanel.DialogType.OPEN_FILE);
         linux64JRE.setFileTypeFilter(typeFilter);
 
-        winJRE64 = new FileInputPanel(skin, "JRE.Windows64",
-                "Select the Windows 64 bits JRE Location to bundle. Must be a ZIP file",
+        winJRE64 = new FileInputPanel(skin, "JRE",
+                "Select the Windows 64 bits JRE Location to bundle. Must be a .zip or a .tar.gz file",
                 FileInputPanel.DialogType.OPEN_FILE);
         winJRE64.setFileTypeFilter(typeFilter);
 
-        osxJRE = new FileInputPanel(skin, "JRE.MACOS",
-                "Select the MacOS-x86 JRE Location to bundle. Must be a ZIP file",
+        osxJRE = new FileInputPanel(skin, "JRE",
+                "Select the MacOS-x86 JRE Location to bundle. Must be a .zip or a .tar.gz file",
                 FileInputPanel.DialogType.OPEN_FILE);
         osxJRE.setFileTypeFilter(typeFilter);
 
@@ -198,28 +205,28 @@ public class PackageDialog extends EditDialog {
 
         setInfo(INFO);
 
-        ((FilteredSelectBox<String>) (arch.getField())).addListener(new ChangeListener() {
+        arch.getField().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 archChanged();
             }
         });
 
-        ((FilteredSelectBox<String>) (desktopType.getField())).addListener(new ChangeListener() {
+        desktopType.getField().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 desktopTypeChanged();
             }
         });
 
-        ((FilteredSelectBox<String>) (os.getField())).addListener(new ChangeListener() {
+        os.getField().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 osChanged();
             }
         });
 
-        ((FilteredSelectBox<String>) (androidType.getField())).addListener(new ChangeListener() {
+        androidType.getField().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 androidTypeChanged();
@@ -256,7 +263,96 @@ public class PackageDialog extends EditDialog {
         t.add(createButton);
         c.setActor(t);
 
+        // Add the 'download' button to the OS combo.
+        TextButton downloadButton = new TextButton("Download JRE", skin, "no-toggled");
+
+        downloadButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+
+                if ("windows64".equals(os.getText())) {
+                    downloadFile(
+                            "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.3%2B7/OpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.tar.gz",
+                            "jdk17_windows64.tar.gz");
+                } else if ("linux64".equals(os.getText())) {
+                    downloadFile("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.3%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.3_7.tar.gz",
+                            "jdk17_linux64.tar.gz");
+                } else if ("macOS-x86".equals(os.getText())) {
+                    downloadFile("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.3%2B7/OpenJDK17U-jdk_x64_mac_hotspot_17.0.3_7.tar.gz",
+                            "jdk17_macos64_x86.tar.gz");
+                }
+            }
+        });
+
+        Table t2 = new Table();
+        Actor a2 = os.getField();
+        Cell<?> c2 = os.getCell(a2);
+        t2.add(a2);
+        t2.add(downloadButton);
+        c2.setActor(t2);
+
         archChanged();
+    }
+
+    private void downloadFile(String url, String fileName) {
+        FileChooser fileChooser = new FileChooser(FileChooser.Mode.OPEN);
+        fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
+        fileChooser.setViewMode(FileChooser.ViewMode.LIST);
+
+        fileChooser.setSelectionMode(FileChooser.SelectionMode.DIRECTORIES);
+        getStage().addActor(fileChooser);
+
+        fileChooser.setListener(new FileChooserListener() {
+
+            @Override
+            public void selected(Array<FileHandle> files) {
+                try {
+                    File outputFile = new File(files.get(0).file(), fileName);
+                    HttpUtils.downloadAsync(new URL(url), new FileOutputStream(outputFile), new HttpUtils.Callback() {
+                        @Override
+                        public void updated(int length, int totalLength) {
+                            final int progress = ((int) (((double) length / (double) totalLength) * 100));
+                            Message.showMsg(getStage(), "Downloading JDK... " + progress + "%", true);
+                        }
+
+                        @Override
+                        public void completed() {
+                            Gdx.app.postRunnable(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Message.hideMsg();
+
+                                    if ("windows64".equals(os.getText())) {
+                                        winJRE64.setText(outputFile.getAbsolutePath());
+                                    } else if ("linux64".equals(os.getText())) {
+                                        linux64JRE.setText(outputFile.getAbsolutePath());
+                                    } else if ("macOS-x86".equals(os.getText())) {
+                                        osxJRE.setText(outputFile.getAbsolutePath());
+                                    }
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void canceled() {
+                            Message.showMsgDialog(getStage(), "Error", "Download cancelled.");
+                        }
+
+                        @Override
+                        public void error(IOException ex) {
+                            Message.showMsgDialog(getStage(), "Error", "Download error: " + ex.getMessage());
+                        }
+                    });
+                } catch (FileNotFoundException | MalformedURLException e) {
+                    Message.showMsgDialog(getStage(), "Error", "Download error: " + e.getMessage());
+                }
+            }
+
+            @Override
+            public void canceled() {
+
+            }
+        });
     }
 
     @Override
@@ -311,10 +407,8 @@ public class PackageDialog extends EditDialog {
                 // hide message
                 Message.hideMsg();
 
-                if (msg != null) {
-                    final String m = msg;
-                    Message.showMsgDialog(stg, "Result", m);
-                }
+                final String m = msg;
+                Message.showMsgDialog(stg, "Result", m);
             }
         }.start();
 
@@ -350,7 +444,7 @@ public class PackageDialog extends EditDialog {
         return msg;
     }
 
-    private String createIOS(String projectName, String customBuildParams) throws IOException, FileNotFoundException {
+    private String createIOS(String projectName, String customBuildParams) throws IOException {
         if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
             return "You need a MacOSX computer with XCode installed to generate the IOS package.";
         }
@@ -394,7 +488,7 @@ public class PackageDialog extends EditDialog {
     }
 
     private String createAndroid(String projectName, String versionParam, String customBuildParams)
-            throws IOException, FileNotFoundException {
+            throws IOException {
         String params = versionParam + customBuildParams + "-PversionCode=" + versionCode.getText() + " "
                 + "-Pkeystore=\"" + androidKeyStore.getText() + "\" " + "-PstorePassword="
                 + androidKeyStorePassword.getText() + " " + "-Palias=" + androidKeyAlias.getText() + " "
@@ -484,10 +578,6 @@ public class PackageDialog extends EditDialog {
                 packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher, dir.getText());
             } else if (os.getText().equals("macOS-x86")) {
                 packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-            } else if (os.getText().equals("all")) {
-                packr(Platform.Linux64, linux64JRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-                packr(Platform.Windows64, winJRE64.getText(), projectName, jarDir + jarName, launcher, dir.getText());
-                packr(Platform.MacOS, osxJRE.getText(), projectName, jarDir + jarName, launcher, dir.getText());
             }
         }
 
@@ -538,30 +628,22 @@ public class PackageDialog extends EditDialog {
     }
 
     private void androidTypeChanged() {
-        if (androidType.getText().equals(ANDROID_TYPES[0])) {
-            setVisible(expansionFile, true);
-        } else {
-            setVisible(expansionFile, false);
-        }
+        setVisible(expansionFile, androidType.getText().equals(ANDROID_TYPES[0]));
     }
 
     private void osChanged() {
         setVisible(icon, false);
 
-        if (os.isVisible() && (os.getText().equals("windows64") || os.getText().equals("all"))) {
+        if (os.isVisible() && (os.getText().equals("windows64"))) {
             setVisible(winJRE64, true);
         } else {
             setVisible(icon, false);
             setVisible(winJRE64, false);
         }
 
-        if (os.isVisible() && (os.getText().equals("linux64") || os.getText().equals("all"))) {
-            setVisible(linux64JRE, true);
-        } else {
-            setVisible(linux64JRE, false);
-        }
+        setVisible(linux64JRE, os.isVisible() && (os.getText().equals("linux64")));
 
-        if (os.isVisible() && (os.getText().equals("macOS-x86") || os.getText().equals("all"))) {
+        if (os.isVisible() && (os.getText().equals("macOS-x86"))) {
             setVisible(osxJRE, true);
             setVisible(icon, true);
         } else {
@@ -571,10 +653,7 @@ public class PackageDialog extends EditDialog {
 
     @Override
     protected boolean validateFields() {
-        boolean ok = true;
-
-        if (!dir.validateField())
-            ok = false;
+        boolean ok = dir.validateField();
 
         for (InputPanel i : options) {
             if (i.isVisible() && !i.validateField())
@@ -650,7 +729,7 @@ public class PackageDialog extends EditDialog {
         config.jdk = jdk;
         config.jrePath = "jre";
         config.executable = exe;
-        config.classpath = Arrays.asList(jar);
+        config.classpath = Collections.singletonList(jar);
         config.mainClass = mainClass.replace('/', '.');
         config.vmArgs = Arrays.asList("-Xmx1G", "-Dsun.java2d.dpiaware=true");
         config.minimizeJre = "hard";
@@ -759,11 +838,7 @@ public class PackageDialog extends EditDialog {
 
             @Override
             public boolean accept(File arg0, String arg) {
-                if (arg.startsWith("main." + versionCode + ".") && arg.endsWith(".obb")) {
-                    return true;
-                }
-
-                return false;
+                return arg.startsWith("main." + versionCode + ".") && arg.endsWith(".obb");
             }
 
         });
