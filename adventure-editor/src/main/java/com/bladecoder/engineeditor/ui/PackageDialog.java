@@ -117,17 +117,17 @@ public class PackageDialog extends EditDialog {
         FileTypeFilter typeFilter = new FileTypeFilter(true);
         typeFilter.addRule("Compressed files", "zip", "tar.gz");
 
-        linux64JRE = new FileInputPanel(skin, "JRE",
+        linux64JRE = new FileInputPanel(skin, "JRE lin64",
                 "Select the 64 bits Linux JRE Location to bundle. Must be a .zip or a .tar.gz file",
                 FileInputPanel.DialogType.OPEN_FILE);
         linux64JRE.setFileTypeFilter(typeFilter);
 
-        winJRE64 = new FileInputPanel(skin, "JRE",
+        winJRE64 = new FileInputPanel(skin, "JRE win64",
                 "Select the Windows 64 bits JRE Location to bundle. Must be a .zip or a .tar.gz file",
                 FileInputPanel.DialogType.OPEN_FILE);
         winJRE64.setFileTypeFilter(typeFilter);
 
-        osxJRE = new FileInputPanel(skin, "JRE",
+        osxJRE = new FileInputPanel(skin, "JRE mac-x86",
                 "Select the MacOS-x86 JRE Location to bundle. Must be a .zip or a .tar.gz file",
                 FileInputPanel.DialogType.OPEN_FILE);
         osxJRE.setFileTypeFilter(typeFilter);
@@ -272,13 +272,13 @@ public class PackageDialog extends EditDialog {
 
                 if ("windows64".equals(os.getText())) {
                     downloadFile(
-                            "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.3%2B7/OpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.tar.gz",
+                            "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_windows_hotspot_17.0.7_7.zip",
                             "jdk17_windows64.tar.gz");
                 } else if ("linux64".equals(os.getText())) {
-                    downloadFile("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.3%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.3_7.tar.gz",
+                    downloadFile("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.7_7.tar.gz",
                             "jdk17_linux64.tar.gz");
                 } else if ("macOS-x86".equals(os.getText())) {
-                    downloadFile("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.3%2B7/OpenJDK17U-jdk_x64_mac_hotspot_17.0.3_7.tar.gz",
+                    downloadFile("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_mac_hotspot_17.0.7_7.tar.gz",
                             "jdk17_macos64_x86.tar.gz");
                 }
             }
