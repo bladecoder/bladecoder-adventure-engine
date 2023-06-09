@@ -172,10 +172,10 @@ public class DesktopLauncher extends BladeEngine {
     }
 
 	public static void main(String[] args) {
-        if (SharedLibraryLoader.isMac && !"1".equals(System.getenv("JAVA_STARTED_ON_FIRST_THREAD_" + LibC.getpid()))) {
-            System.out.println("MacOs detected. Running in async mode.");
-            Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
-        }
+//        if (SharedLibraryLoader.isMac && !"1".equals(System.getenv("JAVA_STARTED_ON_FIRST_THREAD_" + LibC.getpid()))) {
+//            System.out.println("MacOs detected. Running in async mode.");
+//            Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
+//        }
 
 		DesktopLauncher game = new DesktopLauncher();
 		game.parseParams(args);

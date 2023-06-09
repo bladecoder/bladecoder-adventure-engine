@@ -731,7 +731,13 @@ public class PackageDialog extends EditDialog {
         config.executable = exe;
         config.classpath = Collections.singletonList(jar);
         config.mainClass = mainClass.replace('/', '.');
-        config.vmArgs = Arrays.asList("-Xmx1G", "-Dsun.java2d.dpiaware=true");
+
+        if (platform.equals(Platform.MacOS)) {
+            config.vmArgs = Arrays.asList("-Xmx1G", "-Dsun.java2d.dpiaware=true", "-XstartOnFirstThread");
+        } else {
+            config.vmArgs = Arrays.asList("-Xmx1G", "-Dsun.java2d.dpiaware=true");
+        }
+
         config.minimizeJre = "hard";
 
         config.outDir = new File(outDir + "/" + exe + "-" + suffix);
