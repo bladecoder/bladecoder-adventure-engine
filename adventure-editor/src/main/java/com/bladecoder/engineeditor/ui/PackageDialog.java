@@ -271,14 +271,14 @@ public class PackageDialog extends EditDialog {
             public void clicked(InputEvent event, float x, float y) {
 
                 if ("windows64".equals(os.getText())) {
-                    downloadFile(
+                    downloadJDK(
                             "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_windows_hotspot_17.0.7_7.zip",
                             "jdk17_windows64.tar.gz");
                 } else if ("linux64".equals(os.getText())) {
-                    downloadFile("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.7_7.tar.gz",
+                    downloadJDK("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.7_7.tar.gz",
                             "jdk17_linux64.tar.gz");
                 } else if ("macOS-x86".equals(os.getText())) {
-                    downloadFile("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_mac_hotspot_17.0.7_7.tar.gz",
+                    downloadJDK("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_mac_hotspot_17.0.7_7.tar.gz",
                             "jdk17_macos64_x86.tar.gz");
                 }
             }
@@ -294,7 +294,7 @@ public class PackageDialog extends EditDialog {
         archChanged();
     }
 
-    private void downloadFile(String url, String fileName) {
+    private void downloadJDK(String url, String fileName) {
         FileChooser fileChooser = new FileChooser(FileChooser.Mode.OPEN);
         fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
         fileChooser.setViewMode(FileChooser.ViewMode.LIST);
