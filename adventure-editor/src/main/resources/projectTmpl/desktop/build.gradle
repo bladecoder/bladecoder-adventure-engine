@@ -6,7 +6,7 @@ targetCompatibility = 1.8
 
 sourceSets.main.resources.srcDirs += [rootProject.file('assets').absolutePath]
 mainClassName = "com.bladecoder.engine.DesktopLauncher"
-applicationDefaultJvmArgs = ["-XstartOnFirstThread"]
+//applicationDefaultJvmArgs = ["-XstartOnFirstThread"]
 
 dependencies {
     implementation project(":core")
@@ -17,12 +17,18 @@ dependencies {
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
 }
 
+def os = System.properties['os.name'].toLowerCase()
+
 run {
     standardInput = System.in
     ignoreExitValue = true
 
     if (project.hasProperty("appArgs")) {
         args Eval.me(appArgs)
+    }
+
+    if (os.contains('mac')) {
+        jvmArgs = ["-XstartOnFirstThread"]
     }
 }
 
