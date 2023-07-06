@@ -1,6 +1,24 @@
 # Change Log
+
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [4.2.0]
+
+- EDITOR: Latest Inklecate and build JDK can be downloaded from the editor.
+- EDITOR: Disable Particle Editor button. It doesn't support LWJGL3.
+- LWJGL3 backend for desktop. That means support for JDK 17 and ARM architectures.
+- TextRenderer now supports maxWidth.
+- Smooth animation to center camera after finishing walking.
+- Show text in screen at least for 0.5secs before skipping it.
+- Delete 3D support.
+- Now we can use ':' in Ink to indicate the actor talking. '>' is still supported.
+- Updated Blade Ink to v1.1.2.
+- Minimum supported iOS version to 11.0.
+- Bump spine runtimes to v4.1.0.
+- Updated libgdx to v1.12.0.
+- Updated packr version.
+- A lot of bugs fixed (see git log).
 
 ## [4.1.0]
 
@@ -14,6 +32,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated packr version.
 
 ## [4.0.2]
+
 - Controller (gamepad) support.
 - .aab package generation for Android.
 - In panel showing choose options, up/down buttons now have animation.
@@ -22,28 +41,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Fix: Bug deleting animation if initial animation is not set.
 
 ## [4.0.1]
+
 - Fix error serializing cb when Ink library is not used.
 - Fix error creating resolution when there are atlases with subfolders.
 - Fix Android launcher to make expansion files (.obb) works again.
 
 ## [4.0.0]
+
 - Fix error when android keystore path had spaces.
 - Added scene counter in the editor ui.
 - Updated ios minosversion to 8.
 - Better calc of speed when walking and fake depth is used.
 
 ## [3.2.5]
+
 - Some validations adding/editing animations and verbs to avoid errors.
 - Fixed dealing with OpenAL bug in credits screen.
 - Fixed bug extracting ink texts.
 
 ## [3.2.4]
+
 - Added more external functions for Ink.
 - Added support to load/save game preferences.
 - Scale and Rotate actions now work with ui actors.
 - Many bugs fixed.
 
 ## [3.2.3]
+
 - Added "initVerb" param to the "Leave" action. This verb will be executed if set instead of the "init" verb.
 - Now, the "init" verb doesn't run if the "test" verb is executed.
 - Load/Save preferences support.
@@ -52,6 +76,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Save also callbacks that are not in the current scene.
 
 ## [3.2.2]
+
 - Inventory button style now in the InventoryUI style. This allows to customize the inventory button by player.
 - Update Blade Ink to v0.7.3 which fixes an important bug.
 - A lot of bugs fixed (see git log).
@@ -130,7 +155,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Now the editor works without having the Android SDK installed.
 - FIX: Bug when moving target actor.
-- FIX: Bug in 'Transition' action.  
+- FIX: Bug in 'Transition' action.
 - FIX:'actorTextPosition' property in 'SetActorAttr' action wasn't working.
 
 ## [2.1.3]
@@ -144,7 +169,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - FIX: Reset pointer always when updating UI to avoid showing last pointer when changing scene.
 - FIX: Bad bubble alignment showing small texts.
 - FIX: Bug creating/deleting chapters in editor.
-- FIX: The current scene was setting twice when loading a saved game triggering an error. 
+- FIX: The current scene was setting twice when loading a saved game triggering an error.
 - FIX: The dialog option was showing for 1 frame when autoselected enabled.
 
 ## [2.1.2]
@@ -156,14 +181,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.1.1]
 
--  Fix several UI bugs: inventory button doesn't hide, dialog not working well when autoselect one option and text doesn't show when returning to a scene without init.
--  Add -s parameter to DestkopLauncher.
+- Fix several UI bugs: inventory button doesn't hide, dialog not working well when autoselect one option and text
+  doesn't show when returning to a scene without init.
+- Add -s parameter to DestkopLauncher.
 
 ## [2.1.0]
 
 - TextManager now sets the talk animation for characters. This ease characters to have conversations in the background.
 - Code refactor to get rid of the 'World' singleton. This breaks custom action backwards compatibility.
-- Leave action have the param 'init' to avoid call the init verb when false. This allows to change between scenes without worrying about losing the state.
+- Leave action have the param 'init' to avoid call the init verb when false. This allows to change between scenes
+  without worrying about losing the state.
 - Update blade-ink lib to v0.5.0.
 - Upgrade to gradle 2.6. Maybe it needs some more tweaks.
 - Added new text type 'UI' to show debug or ui messages.
@@ -207,6 +234,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - FIX: bug when saving ink cb.
 
 ## [1.3.5]
+
 - Added Spine's skins support.
 - Choose the best matching 'use' verb when target and inventory actor have it.
 - Added pitch parameter to sounds.
@@ -225,6 +253,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - FIX: particles and bboxfromrenderer for resolutions other than 1.
 
 ## [1.3.4]
+
 - Added currentTarget to verbs.
 - Null checks in SoundManager before pause/resume sounds.
 - Fix loading callbacks from saved inventories.
@@ -233,6 +262,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Fix: toString() instead of casting in getModelProp.
 
 ## [1.3.3]
+
 - Added 'textStyle' attribute to character actors.
 - Added basic QA rules/metrics of project.
 - EDITOR: Understand SNAPSHOT versions when checking for updating versions.
@@ -245,6 +275,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Fix crash when screenshot of a savegame doesn't exists.
 
 ## [1.3.2]
+
 - Added Google Play expansion file support.
 - Added 64 and 32 bit support when generating package for windows. Previously only 64 bits was supported.
 - Bigger edit toolbar icons.
@@ -256,13 +287,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - EDITOR: Fix nullpointer error when disabled imagen not exists.
 - EDITOR: Fix bug when undo bbox points.
 
-
 ## [1.3.1]
+
 - Asset folder is created now in the project root.
 - Updated Gradle to v4.0.2
 - FIX sound error preventing to save the game.
 
 ## [1.3.0]
+
 - New Sound System. Now adding sounds is more usable. Backwards compatibility preserved.
 - World properties can also be set in BladeEngine.properties.
 - Added PLATFORM property.
@@ -283,6 +315,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - And many fixes Fixes.
 
 ## [1.2.7]
+
 - Added secondary animation support for Spine actors.
 - Added 'keepDirection' param to Animation action.
 - Added 'target' actor to position in Camera action.
@@ -295,7 +328,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.2.6]
 
 - Actors in inventory can be animated now.
-- Added UI actors: Actors that stays in all scenes not affected by scrolling nor any other scene camera effect. Normally used to create UI buttons.
+- Added UI actors: Actors that stays in all scenes not affected by scrolling nor any other scene camera effect. Normally
+  used to create UI buttons.
 - Multiline texts can have a voice file per line using a '#' mark in each line.
 - Check for Ink engine errors after each line.
 - FIX: SpineRenderer serialization error when loading.
@@ -329,7 +363,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - FIX: bad rotation in Spine actors.
 - FIX: Error disposing source in getInternalAnimations.
 - FIX: Add WHITE tint to Sprite actor in anim if the actor doesn't have
-    it.
+  it.
 
 ## [1.2.2]
 
@@ -373,7 +407,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added autoselect style property to the DialogUI.
 - Ink support cleanup.
 - FIX: music was stopped changing from scene when a change to the
-loading screen was needed.
+  loading screen was needed.
 
 ## [1.1.0]
 
@@ -419,13 +453,14 @@ loading screen was needed.
 - FIX: DisableAction must not be visible in the action combo.
 - FIX: The editor was losing the scroll focus when the log console was shown.
 
-
 ## [0.9.18]
 
-- EDITOR: The Action list now supports multiple selection to copy, paste, show... use Shift and Ctrl keys to multiselect.
+- EDITOR: The Action list now supports multiple selection to copy, paste, show... use Shift and Ctrl keys to
+  multiselect.
 - EDITOR: Added console log. Use F1 key to show/hide.
 - EDITOR: Better scrollbars. Always showing now.
-- Now the editor generates IOS packages ready to submit to the Apple Store. Fixed several config parameters related to this problem.
+- Now the editor generates IOS packages ready to submit to the Apple Store. Fixed several config parameters related to
+  this problem.
 - Added "Comment" action.
 - Updated packr to v2.0. Better desktop packages are generated now.
 - Dialog option UI now shows buttons to scroll add and down when necessary. New styles added to ui.json.
@@ -453,7 +488,7 @@ loading screen was needed.
 - EDITOR: Save/Restore version in package dialog.
 - EDITOR: Save/Restore selected scene.
 - EDITOR: Show verb panel when no actor is selected to allow adding scene and
-world verbs.
+  world verbs.
 
 - FIX: Reset UI when changing scene.
 - FIX: CameraAction animation params not mandatory.
@@ -495,7 +530,6 @@ world verbs.
 - Delete unused 'delay' field in AnimationDesc.
 - Fix: bug in yoyo animatinons.
 
-
 ## [0.9.12]
 
 - Added Refpoint to interactive actors.
@@ -505,22 +539,22 @@ world verbs.
 
 ## [0.9.11]
 
-  - Unicode character support. Previously only ISO-8859-1 character set was supported.
-  - Shadow and outline font support.
-  - Editor fonts are now .ttf
-  - Added "Single Action" support to inventory.
-  - FIX: Hide inventory in cutmode
-  - EDITOR: Avoid dragging object by mistake when clicked to select it.
-  - FIX: Multiply position by scale for multiresolution support in TextAction.
-  - Better tolerance handling when dragging inventory objects.
-  - FIX: Use screen height instead of world height for size calculation in InventoryUI.
+- Unicode character support. Previously only ISO-8859-1 character set was supported.
+- Shadow and outline font support.
+- Editor fonts are now .ttf
+- Added "Single Action" support to inventory.
+- FIX: Hide inventory in cutmode
+- EDITOR: Avoid dragging object by mistake when clicked to select it.
+- FIX: Multiply position by scale for multiresolution support in TextAction.
+- Better tolerance handling when dragging inventory objects.
+- FIX: Use screen height instead of world height for size calculation in InventoryUI.
 
 ## [0.9.10]
 
-  - FIX: Bad width calculation in DialogUI.
-  - Change help screen language in runtime.
-  - Sets Ctrl+d to toggle debug mode.
-  - Catch 'BACK' key in android.
+- FIX: Bad width calculation in DialogUI.
+- Change help screen language in runtime.
+- Sets Ctrl+d to toggle debug mode.
+- Catch 'BACK' key in android.
 
 ## [0.9.9]
 
@@ -536,13 +570,13 @@ world verbs.
 - FIX: Pass debug flag when testing scene.
 - FIX: In EditableSelectBox, check empty list before setting default value.
 
-
 ## [0.9.8]
 
 - Show only ui state and time in screen debug text
 - Add 'id' attribute to SoundFX.
 - FIX: Pausing sounds when show menu.
-- Support new properties in 'if' actions: in_inventory, interactive, current scene, previous scene and target actor in 'use' verbs
+- Support new properties in 'if' actions: in_inventory, interactive, current scene, previous scene and target actor in '
+  use' verbs
 - FIX: It was cleaning sound list when disposing sounds.
 - FIX: bug when disposing Spine and sound assets.
 - SoundAction: Delete stop parameter. Now the current sound stops if the play parameter is empty.
@@ -565,7 +599,6 @@ world verbs.
 - FIX: added hotspot image
 - 'Remove Savegame' button size depends on dpi
 
-
 ## [0.9.7]
 
 - Better Load/Save game screen.
@@ -575,7 +608,8 @@ world verbs.
 - Updated to libgdx 1.9.1
 - Android SDK not mandatory when creating a project.
 - More fault tolerant when loading saved games. Good for patches.
-- Saved games can be stored in 'tests' folder inside game. These games are distributed with the game and in debug mode these saved games can be loaded. Good for testing.
+- Saved games can be stored in 'tests' folder inside game. These games are distributed with the game and in debug mode
+  these saved games can be loaded. Good for testing.
 - When creating a verb an icon can be specified. This icon will be showed in the UI.
 - Add movement to the inventory button when picking an object.
 - Doesn't hide inventory when running a verb.
@@ -597,7 +631,6 @@ world verbs.
 - EDITOR: fixed NullPointer error when creating 3d sprite actor.
 - Drop XML Loader
 
-
 ## [0.9.5]
 
 - ENGINE: Added infinity text duration when duration < 0.
@@ -612,18 +645,17 @@ world verbs.
 - EDITOR: fix bug when paste IfAttr actions.
 - EDITOR: Fix generated build.gradle BladeEngine.properties path reference when updating versions.
 
-
 ## [0.9.4]
 
 - Compile custom classes when not found in loading project.
 - Fix issue #23: Edit an existing actor
 - Sets editor window size to 0.9 * screen size
 - Better version control:
-  - Extract version strings from build.gradle to gradle.properties in games.
-  - Put versions in BladeEngine.properties when compiling games.
-  - Show versions in DebugScreen
-  - Added version to game model and saved games for further checks.
-  - Put version variables in game gradle.properties
+    - Extract version strings from build.gradle to gradle.properties in games.
+    - Put versions in BladeEngine.properties when compiling games.
+    - Show versions in DebugScreen
+    - Added version to game model and saved games for further checks.
+    - Put version variables in game gradle.properties
 - Bug fix adding assets because of bad filter strings.
 - Get appName from gradle.properties
 - fix little bug when loading project and the custom actions are not compiled
@@ -655,15 +687,17 @@ world verbs.
 - Action refactor. VerbRunner parameter instead of ActionCallback.
 
 ## [0.9.0]
+
 - Game model and saved games are now in JSON format.
-  * XML is deprecated. Backward compatibility broken.
-  * Saved games are patch friendly.
+    * XML is deprecated. Backward compatibility broken.
+    * Saved games are patch friendly.
 - EDITOR: Big refactor. Editor uses engine model objects now.
 - Change I18N file encoding from ISO-889-1 to UTF-8
 
 ## [0.8.10]
 
 ### Added
+
 - Change to TEXT_INPUT for Lookat and Say actions text fields.
 
 ### Fixed
@@ -673,25 +707,28 @@ world verbs.
 ## [0.8.9]
 
 ### Added
+
 - EDITOR: Added input panels for text input.
 - Better aspect ratio support. Correct support for 4:3, 16:9 and 16:10.
 - Pause the game when an exception/error is thrown and debug mode is
-activated.
+  activated.
 - Updated to libgdx v0.6.4
 - Text from dialog ui wrap to screen size.
 
 ### Fixed
-- fix: stop processing ActionCallbackQueue when changing scene
 
+- fix: stop processing ActionCallbackQueue when changing scene
 
 ## [0.8.8]
 
 ### Added
+
 - Interpolation support for position and scale actions
 - Update to libgdx v1.6.2. WARNING: Projects have to be modified in order to work the IOS version.
-	More info: http://www.badlogicgames.com/wordpress/?p=3694
+  More info: http://www.badlogicgames.com/wordpress/?p=3694
 
 ### Fixed
+
 - Compute BBox in renderer Refactor to allow recompute bbox when animation complete.
 - Fix animationTime when reverse animation in SpineRenderer
 - Fix save/game screen slot size
@@ -700,6 +737,7 @@ activated.
 ## [0.8.7]
 
 ### Fixed
+
 - Fix: use scale factor for speed in PositionAction
 - Added ui missing translations for menu screen
 - Spine RT updated to latest version
@@ -707,6 +745,7 @@ activated.
 ## [0.8.6]
 
 ### Fixed
+
 - Fix fakeDepthScale() calc: added world scale factor
 - Change 'assets/test' folder name for 'assets/tests' when creating a project
 - Some debugscreen changes
@@ -732,18 +771,17 @@ activated.
 ### Added
 
 - UI Fixes
-  - Inventory ui over inventory icon
-  - Edit verbs dialog improvement
-  - Custom autosize button
-
+    - Inventory ui over inventory icon
+    - Edit verbs dialog improvement
+    - Custom autosize button
 
 ## [0.8.2]
 
 ### Added
 
 - Inventory improved
-	- Added configurable align (top, down, left, right, center)
-	- Added configurable autosize behaviour
+    - Added configurable align (top, down, left, right, center)
+    - Added configurable autosize behaviour
 - Added arrow icon for exits when showing hotspots
 - EDITOR: Added several config properties in the Game Properties tab
 
@@ -754,20 +792,26 @@ activated.
 ## [0.8.1]
 
 ### Fixed
+
 - Tester Bot fixes
 - Dialog render fixes when character position is not inside the screen
 - Dialog nullpointer fix when playing recorded files
 
 ## [0.8.0]
+
 ### Added
+
 - Added a Tester Bot that plays the game randomly
 - Spine atlas in animations
 
 ### Fixed
+
 - EDITOR: Dialog editing fix
 
 ## [0.7.2]
+
 ### Added
+
 - libgdx v1.5.6 update
 - update to the latest spine libgdx runtime
 - EDITOR: Enable/disable actions
@@ -780,6 +824,7 @@ activated.
 - PositionAction now works with BaseActors (no animation)
 
 ### Fixed
+
 - EDITOR: fixes to inputpanels
 - fix OptionInputPanel when mandatory
 - Reset testScene when changing current scene
@@ -789,6 +834,7 @@ activated.
 - fill animation/actor list when setText()
 
 ## [0.7.1]
+
 - Action refactor
 - EDITOR: Undo support
 - EDITOR: Fake depth vector can be setting dragging ui markers
@@ -800,54 +846,65 @@ activated.
 - Scene layer support
 
 ## [0.6.9]
+
 - libgdx updated to v1.5.4
 - Sprite Actor Scale support
 - Added scene state handling
 
 ### Fixed
+
 - javadoc fixes for jdk 1.8
 
 ## [0.6.8]
 
 ### Fixed
+
 - Editor only release: Fix bug when saving project
 
 ## [0.6.7]
 
 ### Added
+
 - Load/Save game screens
 - libgdx updated to v1.5.3.
 
 ### Fixed
+
 - fixed fillanimations combo bug. set selection to the first element
 - Fix for windows gradle exec
 
 ## [0.6.6]
+
 - creditscreen: set scroll speed resolution independent
 - creditscreen: added background style. Style now obtained from skin
 
 ### Fixed
+
 - fixed textureunpacker bug when image was rotated in atlas
 
 ## [0.6.5]
+
 - better text size management for small screens
 - text bubble smaller and better management
 
 ### Fixed
+
 - fix ActionCallbackQueue serialization
 
-
 ## [0.6.4]
+
 - ActionCallbackQueue serialization
 - world defaultverbs serialization
 - i18n UI support
 
 ## [0.6.3]
+
 - Updated libgdx to 1.5.2 version
 - Menu Screen Refactor
 - Transition moved to World
 
 ## [0.6.2]
+
 - i18n workflow in Editor working
 - Added event handling in Spine plugin
 - Editor dialog tree: edit and delete fixes
@@ -858,40 +915,50 @@ activated.
 - fix RunVerb action in repeat
 
 ## [0.6.1]
+
 - fix show assets folder
 - fix when packaging android release (build.gradle bug)
 
 ## [0.6.0]
+
 - Created Spine plugin and set as optional when creating a project.
 - Refactor: FrameAnimation -> AnimationDesc, SpriteRenderer -> ActorRenderer
 - EDITOR: fix several IOS related bugs. IOS Ipad/Iphone testing and working fine.
 - EDITOR: fix create resolution. Now atlas upacking/packing is supported
 
 ## [0.5.0]
+
 - Updated to libgdx 1.4.1
 - ENGINE: Debug screen with speed control, record/play games and go to any scene in runtime
 - ENGINE: Material style buttons in engine UI. Better look and feel for inventory and pie menu.
 
 ## [0.4.0]
+
 - ENGINE: Custom game UI Screen support
 
 ## [0.3.2]
+
 - EDITOR: Fixed bug when running project without console
 
 ## [0.3.1]
+
 - EDITOR: Fixed accessing opengl context issue when creating project in the new thread.
 
 ## [0.3.0]
+
 - ENGINE: Action refactoring. WARNING: Names have changed. All previous games are not compatible.
 - ENGINE: New DebugScreen (Work in progress)
 - ENGINE: Change speed support for fastforward.
-- ENGINE: The blade-engine.jar are now in Maven Central. When creating a new game, the Maven dependency is added instead of adding the engine jar in libs folder.
+- ENGINE: The blade-engine.jar are now in Maven Central. When creating a new game, the Maven dependency is added instead
+  of adding the engine jar in libs folder.
 
 ## [0.2.0]
+
 - EDITOR: Fixed NullPointer error when creating project
 - EDITOR: Threads for long tasks to show UI message status
 - EDITOR: FIXED packaging with embedded JRE.
 - ENGINE: CreditsScreen fonts now obtained from Skin
 
 ## [0.1.0]
+
 - Initial release
