@@ -55,12 +55,12 @@ dependencies {
 
     implementation "com.badlogicgames.gdx:gdx-platform:$libgdxVersion:natives-desktop"
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$libgdxVersion:natives-desktop"
-    implementation("org.apache.commons:commons-compress:1.20")
+    implementation("org.apache.commons:commons-compress:1.21")
     implementation "commons-io:commons-io:2.1"
     implementation "com.bladecoder.packr:packr:4.1.0"
     implementation "eu.infomas:annotation-detector:3.0.5"
     implementation "com.strongjoshua:libgdx-inGameConsole:0.9.0"
-    implementation "com.kotcrab.vis:vis-ui:1.4.2"
+    implementation "com.kotcrab.vis:vis-ui:1.5.2"
     implementation "com.bladecoder.ink:blade-ink:$bladeInkVersion"
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
