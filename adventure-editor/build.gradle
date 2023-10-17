@@ -90,7 +90,7 @@ task setVersion(type: WriteProperties) {
     }
 }
 
-processResources.finalizedBy(setVersion)
+processResources.dependsOn 'setVersion'
 
 // Run `gradle pack` task to generate editor atlases
 import com.badlogic.gdx.tools.texturepacker.TexturePacker

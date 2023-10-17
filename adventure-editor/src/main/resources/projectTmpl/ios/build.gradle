@@ -22,6 +22,7 @@ launchIPhoneSimulator.dependsOn build
 launchIPadSimulator.dependsOn build
 launchIOSDevice.dependsOn build
 createIPA.dependsOn build
+processResources.dependsOn ':core:setVersion'
 
 robovm {
     archs = "arm64"
