@@ -135,6 +135,8 @@ tasks.matching { it.name.contains("merge") && it.name.contains("JniLibFolders") 
     packageTask.dependsOn 'copyAndroidNatives'
 }
 
+build.dependsOn ':core:setVersion'
+
 task run(type: Exec) {
     def path = getSdkFolder()
 

@@ -47,3 +47,4 @@ task dist(type: Jar) {
 
 dist.dependsOn classes
 dist.dependsOn ':core:jar'
+processResources.dependsOn ':core:setVersion'
