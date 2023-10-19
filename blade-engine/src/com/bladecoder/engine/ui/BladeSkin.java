@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class BladeSkin extends Skin {
 
-    private final List<FreeTypeFontGenerator> fontGenerators = new ArrayList<>();
+    private List<FreeTypeFontGenerator> fontGenerators;
 
     public BladeSkin(FileHandle skinFile) {
         super(skinFile);
@@ -172,6 +172,9 @@ public class BladeSkin extends Skin {
 
                     EngineLogger.debug(path + " TIME (ms): " + (System.currentTimeMillis() - initTime));
 
+                    if (fontGenerators == null)
+                        fontGenerators = new ArrayList<>();
+
                     fontGenerators.add(generator);
 
                 } else {
@@ -266,6 +269,9 @@ public class BladeSkin extends Skin {
     public void dispose() {
         super.dispose();
 
+        if (fontGenerators == null)
+            return;
+        
         for (FreeTypeFontGenerator generator : fontGenerators) {
             generator.dispose();
         }
