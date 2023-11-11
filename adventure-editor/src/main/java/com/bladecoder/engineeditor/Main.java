@@ -22,12 +22,17 @@ import com.badlogic.gdx.utils.SharedLibraryLoader;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.EditorLogger.Levels;
 import com.bladecoder.engineeditor.common.Versions;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.macosx.LibC;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
 
 public class Main extends Lwjgl3Application {
 
@@ -58,6 +63,11 @@ public class Main extends Lwjgl3Application {
 
         cfg.setWindowIcon(FileType.Internal, iconList.toArray(new String[0]));
         cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL20, 0, 0);
+
+        GLFW.glfwInit();
+        GLFWVidMode glfwGetVideoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        cfg.setWindowedMode(Math.max((int) (glfwGetVideoMode.width() * 0.9), 1920 / 2),
+                Math.max((int) (glfwGetVideoMode.height() * 0.9), 1080 / 2));
 
         parseArgs(args);
 
