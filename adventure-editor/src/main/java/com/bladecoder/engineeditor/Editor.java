@@ -58,9 +58,6 @@ public class Editor implements ApplicationListener {
             EngineLogger.setDebug();
         }
 
-        Gdx.graphics.setWindowedMode(Math.max((int) (Gdx.graphics.getDisplayMode().width * 0.9), 1920 / 2),
-                Math.max((int) (Gdx.graphics.getDisplayMode().height * 0.9), 1080 / 2));
-
         skin = new BladeSkin(Gdx.files.internal(SKIN));
         VisUI.load();
         FileChooser.setDefaultPrefsName("com.bladecoder.engineeditor.filechooser");
