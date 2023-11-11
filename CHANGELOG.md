@@ -3,13 +3,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.3.1]
+
+- Bugfix small font size.
+- Update libgdx v1.12.1.
+
 ## [4.3.0]
 
 - Fallback fonts/multiple fonts files to support dynamic font changing needed for Chinese and other logographic
   languages.
 - Upgrade gradle + robovm + android plugin to latest versions.
 - Bugfix when adding a new item to a Ink list.
--
 
 ## [4.2.0]
 
