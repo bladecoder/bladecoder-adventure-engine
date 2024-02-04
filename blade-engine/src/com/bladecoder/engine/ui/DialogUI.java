@@ -102,15 +102,15 @@ public class DialogUI extends ScrollPane {
                 "setUpDownVisibility: " + isScrollY() + " maxY: " + getMaxY() + " Margin: " + DPIUtils.getMarginSize());
         if (isScrollY() && getMaxY() > DPIUtils.getMarginSize()) {
 
-            if (getScrollPercentY() > 0f && up.isVisible() == false) {
+            if (getScrollPercentY() > 0f && !up.isVisible()) {
                 up.setVisible(true);
-            } else if (getScrollPercentY() == 0f && up.isVisible() == true) {
+            } else if (getScrollPercentY() == 0f && up.isVisible()) {
                 up.setVisible(false);
             }
 
-            if (getScrollPercentY() < 1f && down.isVisible() == false) {
+            if (getScrollPercentY() < 1f && !down.isVisible()) {
                 down.setVisible(true);
-            } else if (getScrollPercentY() == 1f && down.isVisible() == true) {
+            } else if (getScrollPercentY() == 1f && down.isVisible()) {
                 down.setVisible(false);
             }
         } else {
@@ -145,7 +145,7 @@ public class DialogUI extends ScrollPane {
     private void show() {
         choices = world.getDialogOptions();
 
-        if (choices.size() == 0) {
+        if (choices.isEmpty()) {
             setVisible(false);
             return;
         } else if (style.autoselect && choices.size() == 1) {
