@@ -67,7 +67,6 @@ dependencies {
 
     implementation project(":blade-engine")
     implementation project(":blade-engine-spine-plugin")
-    implementation files('libs/gdx-particle-editor.jar')
 }
 
 task setVersion(type: WriteProperties) {
@@ -123,6 +122,7 @@ task pack {
 distZip {
     into(project.name + '-' + project.version) {
         from '.'
-        include 'desktop/*'
+        // include desktop and thirdparty folders
+        include('desktop/*', 'thirdparty/*')
     }
 }

@@ -563,7 +563,32 @@ public class ToolsWindow extends Container<Table> {
     private void particleEditor() {
         // Open the particle editor
         List<String> cp = new ArrayList<>();
-        cp.add(System.getProperty("java.class.path"));
+        // check that particle editor exists
+        String[] particleEditorPaths = {
+                "../thirdparty/gdx-particle-editor.jar",
+                "./adventure-editor/thirdparty/gdx-particle-editor.jar",
+                "./thirdparty/gdx-particle-editor.jar"
+        };
+
+        String particleEditorPath = null;
+
+        boolean found = false;
+
+        for (String path : particleEditorPaths) {
+            File f = new File(path);
+            if (f.exists()) {
+                particleEditorPath = path;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            Message.showMsgDialog(getStage(), "Error", "Particle Editor not found.");
+            return;
+        }
+
+        cp.add(particleEditorPath);
         try {
             RunProccess.runJavaProccess("com.ray3k.gdxparticleeditor.lwjgl3.Lwjgl3Launcher", cp, null);
         } catch (IOException e) {
