@@ -166,7 +166,7 @@ public class InkManager implements Serializable {
         waitIfNotLoaded();
 
         if (story.getVariablesState().get(name) instanceof InkList) {
-            return ((InkList) story.getVariablesState().get(name)).ContainsItemNamed(value);
+            return ((InkList) story.getVariablesState().get(name)).containsItemNamed(value);
         } else {
             return story.getVariablesState().get(name).toString().equals(value == null ? "" : value);
         }
