@@ -233,7 +233,8 @@ public class SpineRenderer extends AnimationRenderer {
 
 		cs.animation.update(time);
 		cs.animation.apply(cs.skeleton);
-		cs.skeleton.updateWorldTransform();
+
+		cs.skeleton.updateWorldTransform(Skeleton.Physics.none);
 	}
 
 	private static final Matrix4 tmp = new Matrix4();
@@ -515,7 +516,7 @@ public class SpineRenderer extends AnimationRenderer {
 		}
 
 		cs.skeleton.setPosition(0, 0);
-		cs.skeleton.updateWorldTransform();
+		cs.skeleton.updateWorldTransform(Skeleton.Physics.none);
 		bounds.update(cs.skeleton, true);
 
 		if (bounds.getWidth() > 0 && bounds.getHeight() > 0) {
