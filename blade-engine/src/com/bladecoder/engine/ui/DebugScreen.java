@@ -23,15 +23,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Container;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -129,7 +121,7 @@ public class DebugScreen implements BladeScreen {
             }
         });
 
-        Label title = new Label("DEBUG SCREEN", ui.getSkin(), "title");
+        Label title = new Label("DEBUG", ui.getSkin(), "title");
 
         Table header = new Table();
         header.padBottom(margin);
@@ -414,6 +406,57 @@ public class DebugScreen implements BladeScreen {
         table.row().pad(5).align(Align.left);
         table.add();
         table.add(botGroup2);
+
+        // ------------- LOAD INK STORY FROM STRING
+        TextArea externalInkString = new TextArea("", ui.getSkin());
+        externalInkString.setPrefRows(2);
+        TextButton externalInkStringButton = new TextButton("Load",ui.getSkin());
+        externalInkStringButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                try {
+                    ui.getWorld().getInkManager().newStory("test-story", externalInkString.getText());
+                    ui.setCurrentScreen(Screens.SCENE_SCREEN);
+                } catch (Exception e) {
+                    EngineLogger.error("Error loading story: " + e.getMessage());
+                }
+            }
+        });
+
+        externalInkStringButton.pad(2, 3, 2, 3);
+
+        table.row().pad(5).align(Align.left);
+        table.add(new Label("External Story", ui.getSkin(), "debug"));
+        table.add(externalInkString).expandX().fillX();
+        table.add(externalInkStringButton);
+
+        // ------------- GO TO KNOT
+        TextField knot = new TextField("", ui.getSkin());
+        TextField flow = new TextField("", ui.getSkin());
+        TextButton knotButton = new TextButton("Go", ui.getSkin());
+        knotButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                try {
+                    String flowName = flow.getText().isEmpty() ? null : flow.getText();
+
+                    ui.getWorld().getInkManager().runPath(knot.getText(), null, flowName, null);
+                    ui.setCurrentScreen(Screens.SCENE_SCREEN);
+                } catch (Exception e) {
+                    EngineLogger.error("Error going to knot/stich: " + e.getMessage());
+                }
+            }
+        });
+
+        knotButton.pad(2, 3, 2, 3);
+
+        table.row().pad(5).align(Align.left);
+        table.add(new Label("Go to knot/stich", ui.getSkin(), "debug"));
+        table.add(knot).expandX().fillX();
+        table.add(new Label("Flow", ui.getSkin(), "debug"));
+        table.add(flow).expandX().fillX();
+        table.add(knotButton);
+
 
         // ------------- VERSION LABEL NOT IN TABLE
         String versionString = Config.getInstance().getProperty(Config.TITLE_PROP, "title unspecified") + " v"

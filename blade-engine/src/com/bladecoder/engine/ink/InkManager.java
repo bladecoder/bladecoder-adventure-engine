@@ -84,6 +84,27 @@ public class InkManager implements Serializable {
         loadThreaded(name, null);
     }
 
+    public void newStory(final String storyName, final String json) throws Exception {
+        try {
+            long initTime = System.currentTimeMillis();
+
+            story = new Story(json);
+
+            ExternalFunctions.bindExternalFunctions(w, story);
+
+            this.storyName = storyName;
+
+            loadI18NBundle();
+
+            EngineLogger.debug("INK STORY LOADING TIME (ms): " + (System.currentTimeMillis() - initTime));
+
+        } catch (Exception e) {
+            EngineLogger.error("Cannot load Ink Story: " + storyName + " " + e.getMessage());
+            story = null;
+            this.storyName = null;
+        }
+    }
+
     private void loadStory(String name) {
         try {
             FileHandle asset = EngineAssetManager.getInstance()
