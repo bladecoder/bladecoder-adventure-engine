@@ -6,7 +6,6 @@ plugins {
 
 group = 'com.bladecoder.engine'
 
-// java
 sourceCompatibility=1.8
 targetCompatibility=1.8
 
@@ -96,12 +95,12 @@ publishing {
     }
     repositories {
         maven {
-            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            def releasesRepoUrl = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://central.sonatype.com/repository/maven-snapshots/"
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             credentials {
-                username findProperty("sonatypeUsername")
-                password findProperty("sonatypePassword")
+                username project.hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : "$System.env.NEXUS_USERNAME"
+                password project.hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : "$System.env.NEXUS_PASSWORD"
             }
         }
     }
@@ -109,6 +108,7 @@ publishing {
 
 signing {
     if(!version.endsWith('SNAPSHOT')) {
+        useGpgCmd()
         sign publishing.publications.mavenJava
     }
 }

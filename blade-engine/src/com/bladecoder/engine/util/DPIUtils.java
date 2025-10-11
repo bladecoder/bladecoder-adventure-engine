@@ -1,5 +1,6 @@
 package com.bladecoder.engine.util;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 
 public class DPIUtils {
@@ -107,8 +108,10 @@ public class DPIUtils {
 //	}
 
 	public static float getSizeMultiplier() {
-		float inches = pixelsToInches(Gdx.graphics.getWidth());
-		float s = inches / 6f;
+        // FIX: In Wayland, the Gdx.graphics.getWidth() does not return the correct value in the first call.
+        int width = Gdx.graphics.isFullscreen() && Gdx.app.getType() == Application.ApplicationType.Desktop ? Gdx.graphics.getDisplayMode().width : Gdx.graphics.getWidth();
+        float inches = pixelsToInches(width);
+        float s = inches / 6f;
 
 		return Math.max(1.0f, s);
 
