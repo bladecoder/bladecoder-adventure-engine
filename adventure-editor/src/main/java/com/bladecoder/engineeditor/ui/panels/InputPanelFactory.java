@@ -162,7 +162,7 @@ public class InputPanelFactory extends Table {
 
 	private static String[] getAssetList(Param.Type type) {
 		String path = null;
-		final String exts[];
+		final String[] exts;
 		boolean cutExt = false;
 
 		if (type == Type.ATLAS_ASSET) {
@@ -194,7 +194,7 @@ public class InputPanelFactory extends Table {
 
 		File f = new File(path);
 
-		String list[] = f.list(new FilenameFilter() {
+		String[] list = f.list(new FilenameFilter() {
 
 			@Override
 			public boolean accept(File arg0, String arg1) {

@@ -8,5 +8,5 @@ public interface BladeScreen extends Screen {
 	 * 
 	 * @param ui
 	 */
-	public void setUI(UI ui);
+    void setUI(UI ui);
 }

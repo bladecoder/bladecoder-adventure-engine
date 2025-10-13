@@ -16,5 +16,5 @@
 package com.bladecoder.engine.actions;
 
 public interface ActionCallback {	
-	public void resume();
+	void resume();
 }

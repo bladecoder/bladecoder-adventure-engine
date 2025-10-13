@@ -24,9 +24,9 @@ package com.bladecoder.engine.pathfinder;
  * @author hneuer */
 public interface NavGraph<N extends NavNode<N>> {
 	/** Check if the given location is blocked, i.e. blocks movement of the supplied mover. */
-	public boolean blocked (NavContext<N> context, N targetNode);
+    boolean blocked(NavContext<N> context, N targetNode);
 
 	/** Get the cost of moving to the target node. This can be used to make certain areas more desirable. A simple and valid
 	 * implementation of this method would be to return 1 in all cases. */
-	public float getCost (NavContext<N> context, N targetNode);
+    float getCost(NavContext<N> context, N targetNode);
 }

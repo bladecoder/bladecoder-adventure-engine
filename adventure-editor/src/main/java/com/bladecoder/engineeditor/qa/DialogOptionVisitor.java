@@ -5,5 +5,5 @@ import com.bladecoder.engine.model.Dialog;
 import com.bladecoder.engine.model.DialogOption;
 
 public interface DialogOptionVisitor extends Visitor {
-	public void visit(CharacterActor a, Dialog d, DialogOption o);
+	void visit(CharacterActor a, Dialog d, DialogOption o);
 }

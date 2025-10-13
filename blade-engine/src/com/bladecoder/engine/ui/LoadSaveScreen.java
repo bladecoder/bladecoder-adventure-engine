@@ -240,7 +240,7 @@ public class LoadSaveScreen extends ScreenAdapter implements BladeScreen {
 
         table.row();
 
-        if (loadScreenMode && sl.size() == 0) {
+        if (loadScreenMode && sl.isEmpty()) {
             Label lbl = new Label(world.getI18N().getString("ui.noSavedGames"), skin, "title");
             lbl.setAlignment(Align.center);
             lbl.setWrap(true);

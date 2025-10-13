@@ -51,7 +51,7 @@ public class DPIUtils {
     public final static float XLARGE_MULTIPLIER = 2f; // 8-10"
     public final static float XXLARGE_MULTIPLIER = 2.5f; // > 10"
 
-    public static final float getLogicalDensity() {
+    public static float getLogicalDensity() {
         return Gdx.graphics.getDensity() / Gdx.graphics.getBackBufferScale();
     }
 

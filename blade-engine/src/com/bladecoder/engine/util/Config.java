@@ -55,7 +55,7 @@ public final class Config {
 		load();
 	}
 
-	public static final Config getInstance() {
+	public static Config getInstance() {
 		if (instance == null) {
 			instance = new Config();
 		}

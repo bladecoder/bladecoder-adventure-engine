@@ -85,7 +85,8 @@ public class UIUtils {
 	public static float calcLeaveArrowRotation(Viewport viewport, InteractiveActor actor) {
 		Verb verb = actor.getVerb(Verb.LEAVE_VERB);
 
-		if (verb == null || verb.getIcon() == null) {
+        // UP
+        if (verb == null || verb.getIcon() == null) {
 
 			actor.getBBox().getBoundingRectangle().getCenter(unproject2Tmp);
 
@@ -101,8 +102,7 @@ public class UIUtils {
 				return -90; // DOWN
 			}
 
-			return 90; // UP
-		} else {
+        } else {
 			String dir = verb.getIcon();
 
 			if (dir.equals("left")) {
@@ -117,8 +117,8 @@ public class UIUtils {
 				return -90; // DOWN
 			}
 
-			return 90; // UP
-		}
-	}
+        }
+        return 90; // UP
+    }
 
 }

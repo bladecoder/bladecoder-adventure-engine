@@ -19,7 +19,7 @@ public class UndoBboxPointPos implements UndoOp {
 	@Override
 	public void undo() {
 		
-		float verts[] = a.getBBox().getVertices();
+		float[] verts = a.getBBox().getVertices();
 		verts[i] = pos.x;
 		verts[i + 1] = pos.y;
 		a.getBBox().dirty();

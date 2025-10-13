@@ -25,7 +25,7 @@ public interface Action {
 	 * 
 	 * @param w The world to inject
 	 */
-	public void init(World w);
+    void init(World w);
 	
 	
 	/**
@@ -35,5 +35,5 @@ public interface Action {
 	 * @return If 'true', the verb must stops the execution and wait
 	 * for the action to call the cb.resume()
 	 */
-	public boolean run(VerbRunner cb);
+    boolean run(VerbRunner cb);
 }

@@ -25,13 +25,13 @@ public class PolygonUtils {
 	private static final Vector2 tmp2 = new Vector2();
 
 	public static void addPoint(Polygon poly, float x, float y, int index) {
-		float verts[] = poly.getVertices();
+		float[] verts = poly.getVertices();
 
 		x -= poly.getX();
 		y -= poly.getY();
 
 		int length = verts.length;
-		float destination[] = new float[length + 2];
+		float[] destination = new float[length + 2];
 
 		System.arraycopy(verts, 0, destination, 0, index);
 		destination[index] = x;
@@ -43,13 +43,13 @@ public class PolygonUtils {
 
 	public static void deletePoint(Polygon poly, int index) {
 
-		float verts[] = poly.getVertices();
+		float[] verts = poly.getVertices();
 
 		if (verts.length < 8)
 			return;
 
 		int length = verts.length;
-		float destination[] = new float[length - 2];
+		float[] destination = new float[length - 2];
 
 //		index = index * 2;
 
@@ -62,7 +62,7 @@ public class PolygonUtils {
 
 	public static boolean deletePoint(Polygon poly, float x, float y,
 			float tolerance) {
-		float verts[] = poly.getTransformedVertices();
+		float[] verts = poly.getTransformedVertices();
 
 		for (int i = 0; i < verts.length; i += 2) {
 			if (Vector2.dst(x, y, verts[i], verts[i + 1]) < tolerance) {
@@ -103,7 +103,7 @@ public class PolygonUtils {
 	 */
 	public static int getClampedPoint(Polygon poly, float x, float y,
 			Vector2 dest) {
-		float verts[] = poly.getTransformedVertices();
+		float[] verts = poly.getTransformedVertices();
 		float dTmp;
 
 		Intersector.nearestSegmentPoint(verts[0], verts[1], verts[2], verts[3],
@@ -166,7 +166,7 @@ public class PolygonUtils {
 	}
 
 	public static boolean isVertexConcave(Polygon poly, int index) {
-		float verts[] = poly.getTransformedVertices();
+		float[] verts = poly.getTransformedVertices();
 
 		float currentX = verts[index];
 		float currentY = verts[index + 1];
@@ -189,7 +189,7 @@ public class PolygonUtils {
 
 	public static boolean isPointInside(Polygon polygon, float x, float y,
 			boolean toleranceOnOutside) {
-		float verts[] = polygon.getTransformedVertices();
+		float[] verts = polygon.getTransformedVertices();
 
 		boolean inside = false;
 
@@ -237,7 +237,7 @@ public class PolygonUtils {
 		tmp.set(p1);
 		tmp2.set(p2);
 
-		float verts[] = polygon.getTransformedVertices();
+		float[] verts = polygon.getTransformedVertices();
 
 		for (int i = 0; i < verts.length; i += 2) {
 			if (lineSegmentsCross(tmp.x, tmp.y, tmp2.x, tmp2.y, verts[i],

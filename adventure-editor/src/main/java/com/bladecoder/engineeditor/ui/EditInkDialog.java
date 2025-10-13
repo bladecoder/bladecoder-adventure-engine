@@ -61,7 +61,7 @@ public class EditInkDialog extends EditDialog {
 
 		File f = new File(path);
 
-		String inkFiles[] = f.list(new FilenameFilter() {
+		String[] inkFiles = f.list(new FilenameFilter() {
 
 			@Override
 			public boolean accept(File arg0, String arg1) {

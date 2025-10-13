@@ -78,7 +78,7 @@ public class Timers {
 			}
 		}
 
-		if (timersTmp.size() > 0) {
+		if (!timersTmp.isEmpty()) {
 			// process ended timers
 			for (Timer t : timersTmp) {
 				// t.cb can be null if the cb is not found when loading. This can happen because InkManager ended the verb.

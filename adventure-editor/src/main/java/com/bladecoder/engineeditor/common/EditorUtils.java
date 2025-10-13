@@ -14,7 +14,7 @@ import com.bladecoder.engineeditor.Ctx;
 
 public final class EditorUtils {
 	public static void checkVersionAndLoadProject(final File projectToLoad, final Stage stage, Skin skin)
-			throws FileNotFoundException, IOException {
+			throws IOException {
 
 		if (!Ctx.project.checkVersion(projectToLoad)) {
 			new Dialog("Update Engine", skin) {

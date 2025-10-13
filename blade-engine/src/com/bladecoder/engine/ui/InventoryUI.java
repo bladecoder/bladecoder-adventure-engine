@@ -45,9 +45,9 @@ import com.bladecoder.engine.util.EngineLogger;
 public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 	public enum InventoryPos {
 		TOP, DOWN, LEFT, RIGHT, CENTER
-	};
+	}
 
-	private int tileSize;
+    private int tileSize;
 	private int margin;
 	private float rowSpace;
 	private int cols, rows;

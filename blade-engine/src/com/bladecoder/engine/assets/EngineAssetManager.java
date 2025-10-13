@@ -103,7 +103,7 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	public void setScale(int worldWidth, int worldHeight) {
-		Resolution r[] = getResolutions(resResolver.getBaseResolver(), worldWidth, worldHeight);
+		Resolution[] r = getResolutions(resResolver.getBaseResolver(), worldWidth, worldHeight);
 
 		if (r == null || r.length == 0) {
 			EngineLogger.error("No resolutions defined. Maybe your 'assets' folder doesn't exists or it's empty");
@@ -353,7 +353,7 @@ public class EngineAssetManager extends AssetManager {
 	private Resolution[] getResolutions(FileHandleResolver resolver, int worldWidth, int worldHeight) {
 		ArrayList<Resolution> rl = new ArrayList<>();
 
-		String list[] = null;
+		String[] list = null;
 
 		String configRes = Config.getInstance().getProperty(Config.RESOLUTIONS, null);
 
@@ -391,7 +391,7 @@ public class EngineAssetManager extends AssetManager {
 	public String[] listAssetFiles(String base) {
 		FileHandleResolver resolver = resResolver.getBaseResolver();
 
-		String list[] = null;
+		String[] list = null;
 
 		if (Gdx.app.getType() != ApplicationType.Desktop) {
 

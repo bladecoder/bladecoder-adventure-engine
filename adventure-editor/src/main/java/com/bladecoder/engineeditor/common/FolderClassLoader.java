@@ -53,7 +53,7 @@ public class FolderClassLoader extends ClassLoader {
 	}
 
 	private void loadClassesInFolder(File folder, String classPackage) throws IOException, NoClassDefFoundError {
-		byte classByte[];
+		byte[] classByte;
 
 		File[] list = folder.listFiles();
 

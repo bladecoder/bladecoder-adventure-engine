@@ -129,7 +129,7 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 	 * @param target the vertex found
 	 */
 	private void getFirstVertexInsideWalkzone(Polygon p, Vector2 target) {
-		float verts[] = p.getTransformedVertices();
+		float[] verts = p.getTransformedVertices();
 
 		for (int i = 0; i < verts.length; i += 2) {
 			if (PolygonUtils.isPointInside(walkZone, verts[i], verts[i + 1], true)) {
@@ -152,7 +152,7 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 		walkZone = wz.getBBox();
 
 		// 1.- Add WalkZone convex nodes
-		float verts[] = walkZone.getTransformedVertices();
+		float[] verts = walkZone.getTransformedVertices();
 
 		for (int i = 0; i < verts.length; i += 2) {
 			if (!PolygonUtils.isVertexConcave(walkZone, i)) {
@@ -258,7 +258,7 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 	}
 
 	private void addObstacleToGrapth(Polygon poly) {
-		float verts[] = poly.getTransformedVertices();
+		float[] verts = poly.getTransformedVertices();
 		for (int i = 0; i < verts.length; i += 2) {
 			if (PolygonUtils.isVertexConcave(poly, i)
 					&& PolygonUtils.isPointInside(walkZone, verts[i], verts[i + 1], false)) {
@@ -295,7 +295,7 @@ public class PolygonalNavGraph implements NavGraph<NavNodePolygonal> {
 		if (!exists)
 			return false;
 
-		float verts[] = poly.getTransformedVertices();
+		float[] verts = poly.getTransformedVertices();
 
 		for (int i = 0; i < verts.length; i += 2) {
 			if (PolygonUtils.isVertexConcave(poly, i)

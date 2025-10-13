@@ -58,7 +58,7 @@ public class UI {
     private final World w;
     private InputMode inputMode;
 
-    private final BladeScreen screens[];
+    private final BladeScreen[] screens;
 
     public UI(World w) {
         this.w = w;

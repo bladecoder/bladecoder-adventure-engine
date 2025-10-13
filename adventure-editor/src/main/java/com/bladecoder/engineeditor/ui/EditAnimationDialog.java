@@ -47,7 +47,7 @@ import java.util.HashMap;
 
 public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationDesc> {
 
-    public static final String ANIMATION_TYPES[] = {Tween.Type.NO_REPEAT.toString(), Tween.Type.REPEAT.toString(),
+    public static final String[] ANIMATION_TYPES = {Tween.Type.NO_REPEAT.toString(), Tween.Type.REPEAT.toString(),
             Tween.Type.YOYO.toString(), Tween.Type.REVERSE.toString()};
 
     public static final String INFO = "Define sprites and animations";
@@ -168,7 +168,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
         } else {
             // If the actor has some animation, set the same source.
             HashMap<String, AnimationDesc> animations = ((AnimationRenderer) p.getRenderer()).getAnimations();
-            if (animations.size() > 0) {
+            if (!animations.isEmpty()) {
                 source.setText(animations.values().iterator().next().source);
             } else {
                 // set the background source it atlas type
@@ -435,7 +435,7 @@ public class EditAnimationDialog extends EditModelDialog<SpriteActor, AnimationD
         ((AnimationRenderer) parent.getRenderer()).addAnimation(e);
 
         if (renderer instanceof ImageRenderer && Boolean.parseBoolean(localizable.getText()) && e.source != null
-                && e.source.length() > 0) {
+                && !e.source.isEmpty()) {
             e.source = I18N.PREFIX + e.source;
         }
 

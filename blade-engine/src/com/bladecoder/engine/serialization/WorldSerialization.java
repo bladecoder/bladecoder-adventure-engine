@@ -344,7 +344,7 @@ public class WorldSerialization implements Serializable {
 
 			w.setInitScene(json.readValue("initScene", String.class, jsonData));
 
-			if (w.getInitScene() == null && w.getScenes().size() > 0) {
+			if (w.getInitScene() == null && !w.getScenes().isEmpty()) {
 				w.setInitScene(w.getScenes().keySet().toArray(new String[0])[0]);
 			}
 

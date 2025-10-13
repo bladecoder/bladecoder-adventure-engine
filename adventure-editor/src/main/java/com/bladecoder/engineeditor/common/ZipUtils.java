@@ -44,12 +44,12 @@ public class ZipUtils {
         }
     }
 
-    public static void mergeZIPs(String f[], String dest) throws Exception {
+    public static void mergeZIPs(String[] f, String dest) throws Exception {
         // Needed to avoid appending repeated entries.
         HashMap<String, String> destEntries = new HashMap<String, String>();
 
         // read the org zips
-        ZipFile fZip[] = new ZipFile[f.length];
+        ZipFile[] fZip = new ZipFile[f.length];
 
         for (int i = 0; i < fZip.length; i++)
             fZip[i] = new ZipFile(f[i]);

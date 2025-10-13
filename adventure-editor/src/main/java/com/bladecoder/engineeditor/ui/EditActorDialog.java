@@ -49,14 +49,14 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
     private final static String ANCHOR_TYPE_STR = "anchor";
     private final static String WALKZONE_TYPE_STR = "walkzone";
 
-    private static final String ACTOR_TYPES[] = {BACKGROUND_TYPE_STR, SPRITE_TYPE_STR, CHARACTER_TYPE_STR,
+    private static final String[] ACTOR_TYPES = {BACKGROUND_TYPE_STR, SPRITE_TYPE_STR, CHARACTER_TYPE_STR,
             ANCHOR_TYPE_STR, WALKZONE_TYPE_STR, OBSTACLE_TYPE_STR};
 
-    private static final String ACTOR_RENDERERS[] = {Project.ATLAS_RENDERER_STRING, Project.SPINE_RENDERER_STRING,
+    private static final String[] ACTOR_RENDERERS = {Project.ATLAS_RENDERER_STRING, Project.SPINE_RENDERER_STRING,
             Project.IMAGE_RENDERER_STRING, Project.PARTICLE_RENDERER_STRING,
             Project.TEXT_RENDERER_STRING};
 
-    private static final String TYPES_INFO[] = {
+    private static final String[] TYPES_INFO = {
             "Background actors don't have sprites or animations. They are used to interact with objects drawn in the " +
                     "background",
             "Sprite actors have one or several sprites or animations",
@@ -64,8 +64,8 @@ public class EditActorDialog extends EditModelDialog<Scene, BaseActor> {
             "Anchor actors are used as reference for positioning other actors",
             "Define the walkable area for characters", "Obstacle actors forbids zones for walking actors"};
 
-    private static final String TEXT_ALIGN[] = {"left", "center", "right"};
-    private static final String ORG_ALIGN[] = {"bottom", "center", "left", "right", "top", "bottom-right",
+    private static final String[] TEXT_ALIGN = {"left", "center", "right"};
+    private static final String[] ORG_ALIGN = {"bottom", "center", "left", "right", "top", "bottom-right",
             "bottom-left", "top-right", "top-left"};
 
     private InputPanel typePanel;

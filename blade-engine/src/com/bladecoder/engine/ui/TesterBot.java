@@ -103,7 +103,7 @@ public class TesterBot {
 					// Select scene or actor inventory
 					boolean chooseSceneActor = MathUtils.randomBoolean();
 
-					if (chooseSceneActor && s.getActors().size() > 0) {
+					if (chooseSceneActor && !s.getActors().isEmpty()) {
 						// SCENE ACTOR
 						int pos = MathUtils.random(s.getActors().size() - 1);
 						BaseActor a = (BaseActor) (s.getActors().values().toArray()[pos]);
@@ -213,7 +213,7 @@ public class TesterBot {
 				// DIALOG MODE
 				List<String> visibleOptions = w.getDialogOptions();
 
-				if (visibleOptions.size() > 0) {
+				if (!visibleOptions.isEmpty()) {
 					int pos = MathUtils.random(visibleOptions.size() - 1);
 					EngineLogger.debug("<TESTERBOT> SELECT OPTION: " + pos);
 					w.selectDialogOption(pos);

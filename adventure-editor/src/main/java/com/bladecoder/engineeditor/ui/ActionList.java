@@ -284,7 +284,7 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	@Override
 	protected void copy() {
-		if (parent == null || list.getSelection().size() == 0)
+		if (parent == null || list.getSelection().isEmpty())
 			return;
 
 		multiClipboard.clear();
@@ -309,7 +309,7 @@ public class ActionList extends ModelList<Verb, Action> {
 	@Override
 	protected void paste() {
 
-		if (parent == null || multiClipboard.size() == 0)
+		if (parent == null || multiClipboard.isEmpty())
 			return;
 
 		Array<Action> sel = new Array<Action>();
@@ -356,7 +356,7 @@ public class ActionList extends ModelList<Verb, Action> {
 
 	@Override
 	protected void delete() {
-		if (list.getSelection().size() == 0)
+		if (list.getSelection().isEmpty())
 			return;
 
 		multiClipboard.clear();
@@ -448,7 +448,7 @@ public class ActionList extends ModelList<Verb, Action> {
 	}
 
 	private void up() {
-		if (parent == null || list.getSelection().size() == 0)
+		if (parent == null || list.getSelection().isEmpty())
 			return;
 
 		Array<Action> sel = new Array<Action>();
@@ -486,7 +486,7 @@ public class ActionList extends ModelList<Verb, Action> {
 	}
 
 	private void down() {
-		if (parent == null || list.getSelection().size() == 0)
+		if (parent == null || list.getSelection().isEmpty())
 			return;
 
 		Array<Action> sel = new Array<Action>();

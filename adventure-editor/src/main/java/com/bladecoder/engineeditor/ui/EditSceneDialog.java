@@ -224,9 +224,9 @@ public class EditSceneDialog extends EditModelDialog<World, Scene> {
 
 		boolean dv = Boolean.parseBoolean(depthVector.getText());
 
-		if (dv == true && e.getDepthVector() == null) { // create depth vector
+		if (dv && e.getDepthVector() == null) { // create depth vector
 			e.setDepthVector(new Vector2(Ctx.project.getWorld().getHeight(), 0));
-		} else if (dv == false && e.getDepthVector() != null) { // Remove depth vector
+		} else if (!dv && e.getDepthVector() != null) { // Remove depth vector
 			e.setDepthVector(null);
 		}
 

@@ -23,11 +23,11 @@ package com.bladecoder.engine.pathfinder;
  * @author hneuer */
 public interface NavContext<N extends NavNode<N>> {
 	/** Get the object being moved along the path if any */
-	public Object getMover ();
+    Object getMover();
 
 	/** Get the source node */
-	public N getSourceNode ();
+    N getSourceNode();
 
 	/** Get the distance that has been searched to reach this point */
-	public float getSearchDistance ();
+    float getSearchDistance();
 }

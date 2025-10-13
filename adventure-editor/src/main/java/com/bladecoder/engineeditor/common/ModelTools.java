@@ -143,7 +143,7 @@ public class ModelTools {
                         for (Dialog d : dialogs.values()) {
                             ArrayList<DialogOption> options = d.getOptions();
 
-                            if (options.size() > 0)
+                            if (!options.isEmpty())
                                 writer.write("\n**" + ca.getId().toUpperCase() + " - " + d.getId() + "**\n\n");
 
                             for (DialogOption o : options) {
@@ -174,7 +174,7 @@ public class ModelTools {
         }
     }
 
-    public static final void addCutMode() {
+    public static void addCutMode() {
         Map<String, Scene> scenes = Ctx.project.getWorld().getScenes();
 
         for (Scene scn : scenes.values()) {
@@ -282,7 +282,7 @@ public class ModelTools {
         Ctx.project.setModified();
     }
 
-    public static final void checkI18NMissingKeys()
+    public static void checkI18NMissingKeys()
             throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Map<String, Scene> scenes = Ctx.project.getWorld().getScenes();
 
@@ -407,7 +407,7 @@ public class ModelTools {
 
         File f = new File(path);
 
-        String soundFiles[] = f.list(new FilenameFilter() {
+        String[] soundFiles = f.list(new FilenameFilter() {
 
             @Override
             public boolean accept(File arg0, String arg1) {
@@ -544,7 +544,7 @@ public class ModelTools {
         } else if (v.isString() && !v.asString().isEmpty() && v.asString().charAt(0) == '^') {
             String value = v.asString().substring(1).trim();
 
-            if (value.length() == 0 || value.charAt(0) == InkManager.COMMAND_MARK)
+            if (value.isEmpty() || value.charAt(0) == InkManager.COMMAND_MARK)
                 return;
 
             // if we are inside an expression, exit
@@ -565,7 +565,7 @@ public class ModelTools {
                     charName = charNameTmp;
                     value = value.substring(idx + 1).trim();
 
-                    if (value.length() == 0)
+                    if (value.isEmpty())
                         return;
                 }
             }
@@ -657,7 +657,7 @@ public class ModelTools {
         } else if (v.isString() && v.asString().charAt(0) == '^') {
             String key = v.asString().substring(1).trim();
 
-            if (key.length() == 0 || key.charAt(0) == '>')
+            if (key.isEmpty() || key.charAt(0) == '>')
                 return;
 
             int idx = key.indexOf('>');

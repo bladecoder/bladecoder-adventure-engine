@@ -104,8 +104,7 @@ public class CellRenderer<T> {
 
 		if (hasSubtitle()) {
 			itemHeight += style.subtitleFont.getCapHeight() - style.subtitleFont.getDescent() * 2;
-			;
-		}
+        }
 
 		itemHeight += selectedDrawable.getTopHeight() + selectedDrawable.getBottomHeight();
 	}

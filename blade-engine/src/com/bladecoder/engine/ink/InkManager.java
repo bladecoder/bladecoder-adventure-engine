@@ -329,7 +329,7 @@ public class InkManager implements Serializable {
             w.setCurrentScene(params.get("scene"), init, initVerb);
         } else {
             // Some preliminar validation to see if it's an action
-            if (commandName.length() > 0) {
+            if (!commandName.isEmpty()) {
                 // Try to create action by default
                 Action action;
 
@@ -453,7 +453,7 @@ public class InkManager implements Serializable {
         }
 
         return ((!verbRunners.containsKey(StoryState.kDefaultFlowName)
-                || verbRunners.get(StoryState.kDefaultFlowName).isFinish()) && story.getCurrentChoices().size() > 0);
+                || verbRunners.get(StoryState.kDefaultFlowName).isFinish()) && !story.getCurrentChoices().isEmpty());
     }
 
     public List<String> getChoices() {

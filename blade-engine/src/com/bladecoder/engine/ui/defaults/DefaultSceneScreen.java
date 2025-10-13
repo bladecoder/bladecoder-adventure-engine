@@ -72,11 +72,9 @@ public class DefaultSceneScreen implements SceneScreen {
     private DebugDrawer debugDrawer;
     private HotspotsDrawer hotspotsDrawer;
 
-    public static enum UIModes {
+    public enum UIModes {
         TWO_BUTTONS, PIE, SINGLE_CLICK
     }
-
-    ;
 
     private UIModes uiMode = UIModes.TWO_BUTTONS;
 

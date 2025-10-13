@@ -32,5 +32,5 @@ public interface PathFinder<N extends NavNode<N>> {
 	 * @param targetNode the target node
 	 * @param out out-parameter for the navigation path. Will only be filled if a path is found, otherwise it won't get touched.
 	 * @return True if a path was found. */
-	public boolean findPath (Object mover, N startNode, N targetNode, NavPath<N> out);
+    boolean findPath(Object mover, N startNode, N targetNode, NavPath<N> out);
 }

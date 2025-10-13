@@ -35,14 +35,14 @@ import com.bladecoder.engineeditor.ui.panels.OptionsInputPanel;
 import com.bladecoder.engineeditor.ui.panels.ScopePanel;
 
 public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
-	private static final String VERBS[] = { "lookat", "pickup", "talkto", "use", "leave", "action", "enter", "exit" };
+	private static final String[] VERBS = { "lookat", "pickup", "talkto", "use", "leave", "action", "enter", "exit" };
 
-	private static final String SCENE_VERBS[] = { "init", "test" };
+	private static final String[] SCENE_VERBS = { "init", "test" };
 
 	private static final String DEFAULT_DESC = "Verbs are used to create the game interaction. Select or write the verb to create";
 	private static final String CUSTOM_VERB_DESC = "User defined verbs can be called\n from dialogs or inside other verbs using \nthe 'run_verb' action";
 
-	private static final String VERBS_INFO[] = {
+	private static final String[] VERBS_INFO = {
 			"Called when the user clicks\n in the 'lookat' icon\n over a object in scene",
 			"Called when the user clicks\n in the 'pickup' icon\n over a object in scene",
 			"Called when the user clicks\n in the 'talkto' icon\n over a character in scene",
@@ -52,7 +52,7 @@ public class EditVerbDialog extends EditModelDialog<VerbManager, Verb> {
 			"Called when the player enters\n in the object bounding box",
 			"Called when the player exits\n the object bounding box" };
 
-	private static final String SCENE_VERBS_INFO[] = { "Called every time\n that the scene is loaded",
+	private static final String[] SCENE_VERBS_INFO = { "Called every time\n that the scene is loaded",
 			"Called every time\n that the scene is loaded in test mode.\n'test' verb is called before the 'init' verb" };
 
 	private InputPanel id;

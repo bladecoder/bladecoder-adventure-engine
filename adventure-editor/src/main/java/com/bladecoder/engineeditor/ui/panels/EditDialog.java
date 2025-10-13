@@ -123,7 +123,7 @@ public abstract class EditDialog extends Dialog {
 
 	@Override
 	protected void result(Object object) {
-		if (((boolean) object) == true) {
+		if (((boolean) object)) {
 			if (validateFields()) {
 				ok();
 			} else {

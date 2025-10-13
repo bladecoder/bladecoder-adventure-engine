@@ -153,7 +153,7 @@ public class AStarPathFinder<N extends NavNode<N>> implements NavContext<N>, Pat
 	/** The description of a class providing a cost for a given tile based on a target location and entity being moved. This
 	 * heuristic controls what priority is placed on different tiles during the search for a path */
 	public interface AStarHeuristicCalculator<N extends NavNode<N>> {
-		public float getCost (NavContext<N> map, Object mover, N startNode, N targetNode);
+		float getCost(NavContext<N> map, Object mover, N startNode, N targetNode);
 	}
 
 	class AStarAlgoData extends BinaryHeap.Node {

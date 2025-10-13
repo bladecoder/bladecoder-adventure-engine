@@ -25,7 +25,7 @@ public class StringOptionsInputPanel extends InputPanel implements OptionsInputP
 		
 		int l = options.length;
 		if(!mandatory) l++;
-		String values[] = new String[l];
+		String[] values = new String[l];
 		
 		if(!mandatory) {
 			values[0] = "";

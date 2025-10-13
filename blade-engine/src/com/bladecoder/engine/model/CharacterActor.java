@@ -186,7 +186,7 @@ public class CharacterActor extends SpriteActor {
         Vector2 p0 = new Vector2(getBBox().getX(), getBBox().getY());
 
         // stop previous movement
-        if (tweens.size() > 0) {
+        if (!tweens.isEmpty()) {
             removeTween(SpritePosTween.class);
             stand();
         }
@@ -213,7 +213,7 @@ public class CharacterActor extends SpriteActor {
             walkingPath.add(new Vector2(pf));
         }
 
-        if (walkingPath == null || walkingPath.size() == 0) {
+        if (walkingPath == null || walkingPath.isEmpty()) {
             // call the callback even when the path is empty
             if (cb != null) {
                 cb.resume();

@@ -159,7 +159,7 @@ public class EditableSelectBox<T> extends Table {
 		setListItems(items);
 	}
 
-	private final void setListItems(T[] newItems) {
+	private void setListItems(T[] newItems) {
 		if (newItems == null)
 			throw new IllegalArgumentException("newItems cannot be null.");
 

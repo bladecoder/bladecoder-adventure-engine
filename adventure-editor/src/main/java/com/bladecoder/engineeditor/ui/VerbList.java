@@ -40,7 +40,7 @@ import com.bladecoder.engineeditor.undo.UndoDeleteVerb;
 
 public class VerbList extends ModelList<VerbManager, Verb> {
 
-	public static final String VERBS[] = { "lookat", "pickup", "talkto", "use", "leave", "enter", "exit", "init",
+	public static final String[] VERBS = { "lookat", "pickup", "talkto", "use", "leave", "enter", "exit", "init",
 			"test", "custom" };
 
 	private ActionList actionList;

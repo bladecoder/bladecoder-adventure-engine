@@ -74,7 +74,7 @@ public class ActorAnimationInputPanel extends InputPanel {
 		Arrays.sort(array);
 		actor.setItems(array);
 
-		if (values.size() > 0) {
+		if (!values.isEmpty()) {
 			if (defaultValue != null)
 				setText(defaultValue);
 			else
@@ -119,7 +119,7 @@ public class ActorAnimationInputPanel extends InputPanel {
 		Arrays.sort(array);
 		animation.setItems(array);
 
-		if (values.size() > 0)
+		if (!values.isEmpty())
 			animation.setSelected("");
 
 	}

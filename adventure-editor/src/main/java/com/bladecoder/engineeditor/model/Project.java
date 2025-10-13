@@ -385,7 +385,7 @@ public class Project extends PropertyChange {
         }
     }
 
-    public boolean checkVersion(File projectPath) throws FileNotFoundException, IOException {
+    public boolean checkVersion(File projectPath) throws IOException {
         String editorVersion = getEditorBladeEngineVersion();
         String projectVersion = getProjectBladeEngineVersion(projectPath);
 
@@ -418,7 +418,7 @@ public class Project extends PropertyChange {
         return number;
     }
 
-    public String getProjectBladeEngineVersion(File projectPath) throws FileNotFoundException, IOException {
+    public String getProjectBladeEngineVersion(File projectPath) throws IOException {
         OrderedProperties properties = getGradleProperties(projectPath);
 
         return properties.getProperty(Config.BLADE_ENGINE_VERSION_PROP, "default");
@@ -428,7 +428,7 @@ public class Project extends PropertyChange {
         return Versions.getVersion();
     }
 
-    public void updateEngineVersion(File projectPath) throws FileNotFoundException, IOException {
+    public void updateEngineVersion(File projectPath) throws IOException {
         OrderedProperties prop = getGradleProperties(projectPath);
 
         prop.setProperty(Config.BLADE_ENGINE_VERSION_PROP, Versions.getVersion());
@@ -534,7 +534,7 @@ public class Project extends PropertyChange {
         firePropertyChange(NOTIFY_MODEL_MODIFIED);
     }
 
-    public OrderedProperties getGradleProperties(File projectPath) throws FileNotFoundException, IOException {
+    public OrderedProperties getGradleProperties(File projectPath) throws IOException {
         OrderedProperties prop = new OrderedPropertiesBuilder().withSuppressDateInComment(true)
                 .withOrderingCaseSensitive().build();
 

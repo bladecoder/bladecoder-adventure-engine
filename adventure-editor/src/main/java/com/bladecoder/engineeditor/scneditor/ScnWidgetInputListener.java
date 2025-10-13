@@ -49,12 +49,12 @@ import com.bladecoder.engineeditor.undo.UndoScale;
 public class ScnWidgetInputListener extends ClickListener {
 	private final ScnWidget scnWidget;
 
-	public static enum DraggingModes {
+	public enum DraggingModes {
 		NONE, DRAGGING_ACTOR, DRAGGING_BBOX_POINT, DRAGGING_MARKER_0, DRAGGING_MARKER_100, DRAGGING_REFPOINT,
 		ROTATE_ACTOR, SCALE_LOCK_ACTOR, SCALE_ACTOR
-	};
+	}
 
-	private DraggingModes draggingMode = DraggingModes.NONE;
+    private DraggingModes draggingMode = DraggingModes.NONE;
 	private BaseActor selActor = null;
 	private Vector2 org = new Vector2();
 	private Vector2 undoOrg = new Vector2();
@@ -143,13 +143,13 @@ public class ScnWidgetInputListener extends ClickListener {
 						&& !(scnWidget.getSelectedActor() instanceof AnchorActor)) {
 
 					Polygon bbox = selActor.getBBox();
-					float verts[] = bbox.getTransformedVertices();
+					float[] verts = bbox.getTransformedVertices();
 					for (int i = 0; i < verts.length; i += 2) {
 						if (p.dst(verts[i], verts[i + 1]) < CanvasDrawer.CORNER_DIST) {
 							draggingMode = DraggingModes.DRAGGING_BBOX_POINT;
 							vertIndex = i;
 
-							float v[] = bbox.getVertices();
+							float[] v = bbox.getVertices();
 							undoOrg.set(v[i], v[i + 1]);
 							return true;
 						}
@@ -302,7 +302,7 @@ public class ScnWidgetInputListener extends ClickListener {
 			} else if (draggingMode == DraggingModes.DRAGGING_BBOX_POINT) {
 				Polygon poly = selActor.getBBox();
 
-				float verts[] = poly.getVertices();
+				float[] verts = poly.getVertices();
 				verts[vertIndex] += d.x;
 				verts[vertIndex + 1] += d.y;
 				poly.dirty();

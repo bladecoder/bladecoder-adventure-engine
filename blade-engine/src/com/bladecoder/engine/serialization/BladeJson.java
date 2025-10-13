@@ -19,8 +19,6 @@ public class BladeJson extends Json {
         MODEL, STATE
     }
 
-    ;
-
     private final World w;
     private final Mode mode;
     private boolean init;

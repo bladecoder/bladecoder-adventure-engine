@@ -19,7 +19,6 @@ import com.bladecoder.engine.util.InterpolationMode;
 
 /**
  * Simple music engine.
- *
  * Plays a music file, if another music is playing, stops it before playing the
  * new music.
  *
@@ -170,12 +169,9 @@ public class MusicManager implements Serializable, AssetConsumer {
 		if (music != null) {
 			if (!music.isPlaying()) {
 
-				boolean initialTime = false;
+				boolean initialTime = currentMusicDelay <= desc.getInitialDelay();
 
-				if (currentMusicDelay <= desc.getInitialDelay())
-					initialTime = true;
-
-				currentMusicDelay += delta;
+                currentMusicDelay += delta;
 
 				if (initialTime) {
 					if (currentMusicDelay > desc.getInitialDelay())

@@ -61,7 +61,7 @@ public class CheckInteractionVerbs implements ActorVisitor {
 							AtlasRenderer r = (AtlasRenderer)sa.getRenderer();
 							HashMap<String, AnimationDesc> animations = r.getAnimations();
 							
-							if(animations.size() == 0) {
+							if(animations.isEmpty()) {
 								EditorLogger.error("CheckInteractionVerbs: Actor with no animations! - "  + sa.getScene().getId() + "." + sa.getId());
 							}
 														

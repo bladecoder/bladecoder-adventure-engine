@@ -27,7 +27,7 @@ import com.bladecoder.engine.util.InterpolationMode;
 
 abstract public class Tween<T> implements Serializable {
     public enum Type {
-        NO_REPEAT, REPEAT, YOYO, REVERSE, REVERSE_REPEAT, SPRITE_DEFINED;
+        NO_REPEAT, REPEAT, YOYO, REVERSE, REVERSE_REPEAT, SPRITE_DEFINED
     }
 
     public final static int INFINITY = -1;

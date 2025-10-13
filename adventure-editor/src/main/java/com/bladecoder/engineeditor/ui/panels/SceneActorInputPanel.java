@@ -59,7 +59,7 @@ public class SceneActorInputPanel extends InputPanel {
 		
 		int l = scenes.length + 1;
 		
-		String values[] = new String[l];
+		String[] values = new String[l];
 
 		values[0] = "";
 

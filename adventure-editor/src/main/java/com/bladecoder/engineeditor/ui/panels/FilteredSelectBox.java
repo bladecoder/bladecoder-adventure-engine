@@ -528,7 +528,7 @@ public class FilteredSelectBox<T> extends Widget implements Disableable {
 //				showList();
 		}
 
-		private final void setListItems(T[] newItems) {
+		private void setListItems(T[] newItems) {
 			if (newItems == null)
 				throw new IllegalArgumentException("newItems cannot be null.");
 

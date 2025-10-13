@@ -22,7 +22,7 @@ public class CheckCutmodeEnd implements VerbVisitor {
 	public void visit(Scene s, InteractiveActor a, Verb v) {
 		ArrayList<Action> actions = v.getActions();
 		
-		if(actions.size() > 0) {
+		if(!actions.isEmpty()) {
 			Action action = actions.get(actions.size() - 1);
 			
 			if (action instanceof SetCutmodeAction) {

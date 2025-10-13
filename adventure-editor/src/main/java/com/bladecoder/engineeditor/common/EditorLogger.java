@@ -30,11 +30,11 @@ import com.strongjoshua.console.Console;
 import com.strongjoshua.console.LogLevel;
 
 public class EditorLogger {
-	public static enum Levels {
+	public enum Levels {
 		DEBUG, ERROR
-	};
+	}
 
-	public static Levels level = Levels.ERROR;
+    public static Levels level = Levels.ERROR;
 
 	public static Console console;
 
@@ -56,7 +56,7 @@ public class EditorLogger {
 
 	public static synchronized void drawConsole() {
 
-		if (threadedMessages.size() > 0) {
+		if (!threadedMessages.isEmpty()) {
 			for (String msg : threadedMessages)
 				msg(msg);
 

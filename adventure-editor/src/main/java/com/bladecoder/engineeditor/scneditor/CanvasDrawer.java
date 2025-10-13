@@ -159,7 +159,7 @@ public class CanvasDrawer {
 			// DRAW SELECTION BOUNDS
 			if ((!(selectedActor instanceof SpriteActor) || !((SpriteActor) selectedActor).isBboxFromRenderer())
 					&& !(selectedActor instanceof AnchorActor)) {
-				float verts[] = selectedActor.getBBox().getTransformedVertices();
+				float[] verts = selectedActor.getBBox().getTransformedVertices();
 				for (int i = 0; i < verts.length; i += 2)
 					drawer.rect(verts[i] - CORNER_DIST / 2, verts[i + 1] - CORNER_DIST / 2, CORNER_DIST, CORNER_DIST);
 			}
@@ -192,7 +192,7 @@ public class CanvasDrawer {
 	}
 
 	public void drawPolygonVertices(Polygon p, Color c) {
-		float verts[] = p.getTransformedVertices();
+		float[] verts = p.getTransformedVertices();
 
 		drawer.setProjectionMatrix(camera.combined);
 		drawer.setTransformMatrix(new Matrix4());

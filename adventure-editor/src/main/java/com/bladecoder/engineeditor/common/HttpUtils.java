@@ -120,7 +120,7 @@ public class HttpUtils {
                 if (callback != null) {
                     if (ex != null)
                         callback.error(ex);
-                    else if (run == true)
+                    else if (run)
                         callback.completed();
                     else
                         callback.canceled();

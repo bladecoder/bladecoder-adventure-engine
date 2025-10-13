@@ -112,7 +112,7 @@ public class Param {
 		if (vs.length < 6)
 			return;
 
-		float verts[] = new float[vs.length];
+		float[] verts = new float[vs.length];
 
 		for (int i = 0; i < vs.length; i++) {
 			verts[i] = Float.parseFloat(vs[i]);

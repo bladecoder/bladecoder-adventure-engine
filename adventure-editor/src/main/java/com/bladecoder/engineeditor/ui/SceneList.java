@@ -328,7 +328,7 @@ public class SceneList extends ModelList<World, Scene> {
 		// delete init_scene attr if the scene to delete is the chapter
 		// init_scene
 		if (parent.getInitScene() != null && parent.getInitScene().equals(s.getId())) {
-			if (parent.getScenes().size() > 0)
+			if (!parent.getScenes().isEmpty())
 				parent.setInitScene(parent.getScenes().values().iterator().next().getId());
 			else
 				parent.setInitScene(null);

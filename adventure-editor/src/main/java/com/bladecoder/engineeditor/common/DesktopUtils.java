@@ -64,7 +64,7 @@ public class DesktopUtils {
 	public static void removeDir(String dir) throws IOException {
 		File f = new File(dir);
 
-		File files[] = f.listFiles();
+		File[] files = f.listFiles();
 
 		if (files != null)
 			for (File f2 : files) {

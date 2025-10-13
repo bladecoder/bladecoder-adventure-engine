@@ -156,7 +156,7 @@ public class ChapterList extends EditList<String> {
 		if (Ctx.project.isLoaded()) {
 			toolbar.disableCreate(false);
 
-			String nl[] = Ctx.project.getChapter().getChapters();
+			String[] nl = Ctx.project.getChapter().getChapters();
 
 			for (int i = 0; i < nl.length; i++) {
 				addItem(nl[i]);

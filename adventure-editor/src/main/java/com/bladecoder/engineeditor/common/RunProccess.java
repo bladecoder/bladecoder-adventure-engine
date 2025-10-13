@@ -100,7 +100,7 @@ public class RunProccess {
         List<String> argumentsList = new ArrayList<>();
         argumentsList.add(javaRT);
 
-        if (classpathEntries != null && classpathEntries.size() > 0) {
+        if (classpathEntries != null && !classpathEntries.isEmpty()) {
             argumentsList.add("-classpath");
             argumentsList.add(getClasspath(classpathEntries));
         }

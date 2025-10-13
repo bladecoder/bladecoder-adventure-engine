@@ -24,5 +24,5 @@ import com.bladecoder.engine.model.Text;
  * 
  */
 public interface ITextManagerUI {
-	public void setText(Text t);
+	void setText(Text t);
 }

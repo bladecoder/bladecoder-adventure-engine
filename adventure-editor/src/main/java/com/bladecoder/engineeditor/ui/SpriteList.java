@@ -153,7 +153,7 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 			HashMap<String, AnimationDesc> animations = renderer.getAnimations();
 			String newValue = null;
 
-			if (animations.size() > 0)
+			if (!animations.isEmpty())
 				newValue = animations.keySet().iterator().next();
 
 			renderer.setInitAnimation(newValue);
@@ -216,7 +216,7 @@ public class SpriteList extends ModelList<SpriteActor, AnimationDesc> {
 			String init = renderer.getInitAnimation();
 
 			if (init == null || init.isEmpty()) {
-				if (renderer.getAnimations().values().size() > 0)
+				if (!renderer.getAnimations().values().isEmpty())
 					init = renderer.getAnimations().values().iterator().next().id;
 				else
 					init = "";

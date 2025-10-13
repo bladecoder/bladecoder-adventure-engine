@@ -20,7 +20,7 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.World;
 
 public interface SceneScreen extends BladeScreen {
-	public enum ActionButton {
+	enum ActionButton {
 		LOOKAT, ACTION, INVENTORY, NONE
 	}
 

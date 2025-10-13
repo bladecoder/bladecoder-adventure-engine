@@ -38,8 +38,8 @@ public class I18NUtils {
     private static final String TSV_EXT = ".tsv";
     private static final String PROPERTIES_EXT = ".properties";
 
-    public static final void exportTSV(String modelPath, String outFile, final String chapterId, String defaultLocale)
-            throws FileNotFoundException, IOException {
+    public static void exportTSV(String modelPath, String outFile, final String chapterId, String defaultLocale)
+            throws IOException {
         File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
 
         File outputFile;
@@ -60,7 +60,7 @@ public class I18NUtils {
             }
         });
 
-        OrderedProperties props[] = new OrderedProperties[files.length + 1];
+        OrderedProperties[] props = new OrderedProperties[files.length + 1];
 
         props[0] = new OrderedPropertiesBuilder().withSuppressDateInComment(true).withOrdering().build();
 
@@ -111,8 +111,8 @@ public class I18NUtils {
         writer.close();
     }
 
-    public static final void importTSV(String modelPath, String tsvFile, String chapterId, String defaultLocale)
-            throws FileNotFoundException, IOException {
+    public static void importTSV(String modelPath, String tsvFile, String chapterId, String defaultLocale)
+            throws IOException {
         File inputFile = new File(tsvFile);
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF8"))) {
@@ -121,7 +121,7 @@ public class I18NUtils {
 
             if (line != null) {
                 String[] langs = line.split(SEPARATOR);
-                OrderedProperties props[] = new OrderedProperties[langs.length - 1];
+                OrderedProperties[] props = new OrderedProperties[langs.length - 1];
 
                 for (int i = 0; i < props.length; i++) {
                     OrderedPropertiesBuilder builder = new OrderedPropertiesBuilder();
@@ -168,8 +168,8 @@ public class I18NUtils {
         }
     }
 
-    public static final void newLocale(String modelPath, final String chapterId, String defaultLocale, String newLocale)
-            throws FileNotFoundException, IOException {
+    public static void newLocale(String modelPath, final String chapterId, String defaultLocale, String newLocale)
+            throws IOException {
         File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
         File newChapter = new File(modelPath, chapterId + "_" + newLocale + PROPERTIES_EXT);
 
@@ -190,8 +190,8 @@ public class I18NUtils {
         newProp.store(out, newChapter.getName());
     }
 
-    public static final void compare(String modelPath, final String chapterId, String defaultLocale, String destLocale)
-            throws FileNotFoundException, IOException {
+    public static void compare(String modelPath, final String chapterId, String defaultLocale, String destLocale)
+            throws IOException {
         File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
         File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
 
@@ -218,8 +218,8 @@ public class I18NUtils {
         }
     }
 
-    public static final void sync(String modelPath, final String chapterId, String defaultLocale, String destLocale)
-            throws FileNotFoundException, IOException {
+    public static void sync(String modelPath, final String chapterId, String defaultLocale, String destLocale)
+            throws IOException {
         File defaultChapter = new File(modelPath, chapterId + PROPERTIES_EXT);
         File destChapter = new File(modelPath, chapterId + "_" + destLocale + PROPERTIES_EXT);
 

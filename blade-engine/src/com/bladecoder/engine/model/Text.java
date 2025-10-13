@@ -30,9 +30,9 @@ public class Text implements Serializable {
 
 	public enum Type {
 		PLAIN, SUBTITLE, TALK, UI
-	};
+	}
 
-	public String str;
+    public String str;
 	public float x;
 	public float y;
 	public float time;

@@ -8,8 +8,11 @@ buildscript {
     }
 }
 
-apply plugin: "java"
-apply plugin: 'application'
+plugins {
+    id 'java'
+    id 'application'
+    id "com.diffplug.spotless" version "7.2.1"
+}
 
 group = 'com.bladecoder.engineeditor'
 mainClassName = 'com.bladecoder.engineeditor.Main'

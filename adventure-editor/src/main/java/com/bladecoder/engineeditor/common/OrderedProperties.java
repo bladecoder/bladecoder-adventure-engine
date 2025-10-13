@@ -175,7 +175,7 @@ public final class OrderedProperties implements Serializable {
 	/**
 	 * See {@link Properties#loadFromXML(InputStream)}.
 	 */
-	public void loadFromXML(InputStream stream) throws IOException, InvalidPropertiesFormatException {
+	public void loadFromXML(InputStream stream) throws IOException {
 		CustomProperties customProperties = new CustomProperties(this.properties);
 		customProperties.loadFromXML(stream);
 	}
