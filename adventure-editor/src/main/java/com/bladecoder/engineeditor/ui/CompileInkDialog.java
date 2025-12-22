@@ -37,6 +37,9 @@ import com.bladecoder.engineeditor.ui.panels.EditDialog;
 import com.bladecoder.engineeditor.ui.panels.FileInputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
+import com.bladecoder.ink.compiler.Compiler;
+import com.bladecoder.ink.compiler.IFileHandler;
+import com.bladecoder.ink.runtime.Story;
 import com.kotcrab.vis.ui.widget.file.FileChooser;
 import com.kotcrab.vis.ui.widget.file.FileChooserListener;
 
@@ -56,18 +59,14 @@ public class CompileInkDialog extends EditDialog {
     private static final String LANG_PROP = "compileink.lang";
     private static final String EXTRACT_TEXTS_PROP = "compileink.extractTexts";
 
-    private static final String INFO = "Compile the ink script using Inklecate.\n Inklecate must be installed in your computer.";
+    private static final String INFO = "Compile the Ink script.";
 
-    private InputPanel inklecatePath;
-    private InputPanel file;
-    private InputPanel extractTexts;
-    private InputPanel lang;
+    private final InputPanel file;
+    private final InputPanel extractTexts;
+    private final InputPanel lang;
 
     public CompileInkDialog(Skin skin) {
         super("COMPILE INK SCRIPT", skin);
-
-        inklecatePath = new FileInputPanel(skin, "Select the inklecate folder",
-                "Select the folder where the inklecate is installed", FileInputPanel.DialogType.DIRECTORY);
 
         file = new FileInputPanel(skin, "Select the Ink script", "Select the Ink source script for your chapter",
                 FileInputPanel.DialogType.OPEN_FILE);
@@ -78,7 +77,6 @@ public class CompileInkDialog extends EditDialog {
         lang = InputPanelFactory.createInputPanel(skin, "Lang code",
                 "The languaje code (ex. 'fr') where the texts are extracted. Empty for default.", false);
 
-        addInputPanel(inklecatePath);
         addInputPanel(file);
         addInputPanel(extractTexts);
         addInputPanel(lang);
@@ -88,41 +86,10 @@ public class CompileInkDialog extends EditDialog {
         if (Ctx.project.getEditorConfig().getProperty(FILE_PROP) != null)
             file.setText(Ctx.project.getEditorConfig().getProperty(FILE_PROP));
 
-        if (Ctx.project.getEditorConfig().getProperty(INKLECATE_PROP) != null)
-            inklecatePath.setText(Ctx.project.getEditorConfig().getProperty(INKLECATE_PROP));
-
         lang.setText(Ctx.project.getEditorConfig().getProperty(LANG_PROP));
 
         if (Ctx.project.getEditorConfig().getProperty(EXTRACT_TEXTS_PROP) != null)
             extractTexts.setText(Ctx.project.getEditorConfig().getProperty(EXTRACT_TEXTS_PROP));
-
-        // Add the 'download' button to the Path field.
-        TextButton downloadButton = new TextButton("Download Inklecate", skin, "no-toggled");
-
-        downloadButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-
-                if (SharedLibraryLoader.isWindows) {
-                    download(
-                            "https://github.com/inkle/ink/releases/download/v1.1.1/inklecate_windows.zip",
-                            "inklecate.zip");
-                } else if (SharedLibraryLoader.isLinux) {
-                    download("https://github.com/inkle/ink/releases/download/v1.1.1/inklecate_linux.zip",
-                            "inklecate.zip");
-                } else if (SharedLibraryLoader.isMac) {
-                    download("https://github.com/inkle/ink/releases/download/v1.1.1/inklecate_mac.zip",
-                            "inklecate.zip");
-                }
-            }
-        });
-
-        Table t2 = new Table();
-        Actor a2 = inklecatePath.getField();
-        Cell<?> c2 = inklecatePath.getCell(a2);
-        t2.add(a2);
-        t2.add(downloadButton);
-        c2.setActor(t2);
     }
 
     @Override
@@ -130,7 +97,6 @@ public class CompileInkDialog extends EditDialog {
         compileInk();
 
         Ctx.project.getEditorConfig().setProperty(FILE_PROP, file.getText());
-        Ctx.project.getEditorConfig().setProperty(INKLECATE_PROP, inklecatePath.getText());
 
         if (lang.getText() != null)
             Ctx.project.getEditorConfig().setProperty(LANG_PROP, lang.getText());
@@ -140,27 +106,49 @@ public class CompileInkDialog extends EditDialog {
 
     @Override
     protected boolean validateFields() {
-        boolean ok = true;
-
-        if (!inklecatePath.validateField())
-            ok = false;
-
-        if (!file.validateField())
-            ok = false;
+        boolean ok = file.validateField();
 
         return ok;
     }
 
     private void compileInk() {
-        String outfile = Ctx.project.getModelPath() + "/" + new File(file.getText()).getName() + ".json";
-        List<String> params = new ArrayList<>();
-        params.add("-o");
-        params.add(outfile);
-        params.add(file.getText());
-        boolean ok = RunProccess.runInklecate(new File(inklecatePath.getText()), params);
+        FileHandle inFile = Gdx.files.absolute(file.getText());
+        String outfile = Ctx.project.getModelPath() + "/" + inFile.name() + ".json";
 
-        if (!ok) {
-            Message.showMsgDialog(getStage(), "Error", "Error compiling Ink script.");
+        // read inFile content as String
+        String inkContent;
+        try {
+            inkContent = inFile.readString("UTF-8");
+
+            Compiler.Options options = new Compiler.Options();
+            options.sourceFilename = "main.ink";
+            options.fileHandler = new IFileHandler() {
+                @Override
+                public String resolveInkFilename(String includeName) {
+                    return inFile.parent() + "/" + includeName;
+                }
+
+                @Override
+                public String loadInkFileContents(String fullFilename) {
+                    return Gdx.files.absolute(fullFilename).readString("UTF-8");
+                }
+            };
+
+            Compiler compiler = new Compiler(inkContent, options);
+            Story story = compiler.compile();
+
+            if (story == null) {
+                Message.showMsgDialog(getStage(), "Error", "Error compiling Ink script.");
+                return;
+            }
+
+            String outString = story.toJson();
+
+            FileHandle outFile = Gdx.files.absolute(outfile);
+            outFile.writeString(outString, false);
+
+        } catch (Exception e) {
+            Message.showMsgDialog(getStage(), "Error", "Error compiling Ink script: " + e.getMessage());
             return;
         }
 
@@ -174,75 +162,5 @@ public class CompileInkDialog extends EditDialog {
         }
 
         Message.showMsg(getStage(), "Ink script compiled successfully", 2);
-    }
-
-    private void download(String url, String fileName) {
-        FileChooser fileChooser = new FileChooser(FileChooser.Mode.OPEN);
-        fileChooser.setSize(Gdx.graphics.getWidth() * 0.7f, Gdx.graphics.getHeight() * 0.7f);
-        fileChooser.setViewMode(FileChooser.ViewMode.LIST);
-
-        fileChooser.setSelectionMode(FileChooser.SelectionMode.DIRECTORIES);
-        getStage().addActor(fileChooser);
-
-        fileChooser.setListener(new FileChooserListener() {
-
-            @Override
-            public void selected(Array<FileHandle> files) {
-                try {
-                    File zipFile = new File(files.get(0).file(), fileName);
-                    HttpUtils.downloadAsync(new URL(url), new FileOutputStream(zipFile), new HttpUtils.Callback() {
-                        @Override
-                        public void updated(int length, int totalLength) {
-                            final int progress = ((int) (((double) length / (double) totalLength) * 100));
-                            Message.showMsg(getStage(), "Downloading JDK... " + progress + "%", true);
-                        }
-
-                        @Override
-                        public void completed() {
-                            File outputFolder = new File(files.get(0).file(), "inklecate");
-                            try {
-                                // create output folder
-                                outputFolder.mkdirs();
-
-                                ZipUtils.unzip(zipFile, outputFolder.toPath());
-                                zipFile.delete();
-                                // add execution permission to the inklecate file
-                                if (SharedLibraryLoader.isLinux || SharedLibraryLoader.isMac) {
-                                    File inklecateFile = new File(outputFolder, "inklecate");
-                                    inklecateFile.setExecutable(true);
-                                }
-                            } catch (IOException e) {
-                                Message.showMsg(getStage(), "Error uncompressing .zip: " + e.getMessage(), true);
-                                return;
-                            }
-                            Gdx.app.postRunnable(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Message.hideMsg();
-                                    inklecatePath.setText(outputFolder.getAbsolutePath());
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void canceled() {
-                            Message.showMsgDialog(getStage(), "Error", "Download cancelled.");
-                        }
-
-                        @Override
-                        public void error(IOException ex) {
-                            Message.showMsgDialog(getStage(), "Error", "Download error: " + ex.getMessage());
-                        }
-                    });
-                } catch (FileNotFoundException | MalformedURLException e) {
-                    Message.showMsgDialog(getStage(), "Error", "Download error: " + e.getMessage());
-                }
-            }
-
-            @Override
-            public void canceled() {
-
-            }
-        });
     }
 }

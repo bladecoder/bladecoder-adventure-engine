@@ -65,6 +65,7 @@ dependencies {
     implementation "com.strongjoshua:libgdx-inGameConsole:0.9.0"
     implementation "com.kotcrab.vis:vis-ui:1.5.2"
     implementation "com.bladecoder.ink:blade-ink:$bladeInkVersion"
+    implementation "com.bladecoder.ink:blade-ink-compiler:$bladeInkVersion"
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
 
