@@ -1,11 +1,16 @@
 apply plugin: 'java-library'
 apply plugin: 'application'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 sourceSets.main.resources.srcDirs += [rootProject.file('assets').absolutePath]
-mainClassName = "com.bladecoder.engine.DesktopLauncher"
+
+application {
+    mainClass = "com.bladecoder.engine.DesktopLauncher"
+}
 //applicationDefaultJvmArgs = ["-XstartOnFirstThread"]
 
 dependencies {
@@ -36,7 +41,7 @@ run {
 task dist(type: Jar) {
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     manifest {
-        attributes 'Main-Class': project.mainClassName
+        attributes 'Main-Class': application.mainClass.get()
     }
     dependsOn configurations.runtimeClasspath
     from {

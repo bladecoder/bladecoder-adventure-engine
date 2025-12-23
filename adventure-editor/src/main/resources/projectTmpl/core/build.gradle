@@ -1,8 +1,10 @@
 apply plugin: 'java'
 apply plugin: 'java-library'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
@@ -32,8 +34,8 @@ task setVersion(type: WriteProperties) {
     props."gdxVersion" = gdxVersion
     props."roboVMVersion" = roboVMVersion
 
-    setProperties(props);
-    setOutputFile(propFile);
+    properties = props
+    destinationFile = propFile
 
     doLast {
         println "Set version info in versions.properties"

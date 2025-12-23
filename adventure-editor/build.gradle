@@ -15,14 +15,18 @@ plugins {
 }
 
 group = 'com.bladecoder.engineeditor'
-mainClassName = 'com.bladecoder.engineeditor.Main'
+
+application {
+    mainClass = 'com.bladecoder.engineeditor.Main'
+    applicationDefaultJvmArgs = ['-Djava.awt.headless=true']
+}
 
 // java
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-
-applicationDefaultJvmArgs = ['-Djava.awt.headless=true']
 
 jar {
     manifest.attributes += [
@@ -31,7 +35,7 @@ jar {
             'group'    : project.group,
             'version'  : project.version,
             'libgdx'   : libgdxVersion,
-            'java'     : targetCompatibility,
+            'java'     : java.targetCompatibility,
             'timestamp': System.currentTimeMillis()
     ]
 }
@@ -86,8 +90,8 @@ task setVersion(type: WriteProperties) {
     props."androidGradlePluginVersion" = androidGradlePluginVersion
     props."bladeInkVersion" = bladeInkVersion
 
-    setProperties(props);
-    setOutputFile(propFile);
+    properties = props
+    destinationFile = propFile
 
     doLast {
         println "Set version info in versions.properties"
