@@ -112,7 +112,7 @@ public class ScnEditor extends Table {
 
 			@Override
 			public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-				test();
+				runTest();
 			}
 		});
 
@@ -133,7 +133,7 @@ public class ScnEditor extends Table {
 		return scnWidget;
 	}
 
-	private void test() {
+	void runTest() {
 
 		if (Ctx.project.getSelectedScene() == null) {
 			String msg = "There are no scenes in this chapter.";

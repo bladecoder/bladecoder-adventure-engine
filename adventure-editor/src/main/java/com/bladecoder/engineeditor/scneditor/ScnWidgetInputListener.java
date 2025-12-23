@@ -434,6 +434,11 @@ public class ScnWidgetInputListener extends ClickListener {
 				}
 			}
 			break;
+		case Keys.T:
+			if (UIUtils.ctrl() && scnWidget.getParent() instanceof ScnEditor) {
+				((ScnEditor) scnWidget.getParent()).runTest();
+			}
+			break;
 
 		case Keys.UP:
 		case Keys.DOWN:
