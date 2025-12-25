@@ -55,7 +55,6 @@ import java.util.List;
 public class CompileInkDialog extends EditDialog {
 
     private static final String FILE_PROP = "compileink.file";
-    private static final String INKLECATE_PROP = "compileink.inklecate";
     private static final String LANG_PROP = "compileink.lang";
     private static final String EXTRACT_TEXTS_PROP = "compileink.extractTexts";
 
