@@ -439,6 +439,16 @@ public class ScnWidgetInputListener extends ClickListener {
 				((ScnEditor) scnWidget.getParent()).runTest();
 			}
 			break;
+		case Keys.F5:
+			if (scnWidget.getParent() instanceof ScnEditor) {
+				((ScnEditor) scnWidget.getParent()).runTestWithInkCompileFromShortcut();
+			}
+			break;
+		case Keys.I:
+			if (UIUtils.ctrl() && scnWidget.getParent() instanceof ScnEditor) {
+				((ScnEditor) scnWidget.getParent()).compileInkFromShortcut();
+			}
+			break;
 
 		case Keys.UP:
 		case Keys.DOWN:

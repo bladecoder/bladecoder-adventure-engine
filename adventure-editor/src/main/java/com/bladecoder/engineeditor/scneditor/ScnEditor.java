@@ -28,11 +28,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bladecoder.engine.util.Config;
+import com.bladecoder.engine.ink.InkManager;
 import com.bladecoder.engineeditor.Ctx;
 import com.bladecoder.engineeditor.common.EditorLogger;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.RunProccess;
 import com.bladecoder.engineeditor.model.Project;
+import com.bladecoder.engineeditor.ui.CompileInkDialog;
 
 public class ScnEditor extends Table {
 
@@ -176,5 +178,21 @@ public class ScnEditor extends Table {
 
 	public void dispose() {
 		scnWidget.dispose();
+	}
+
+	public void compileInkFromShortcut() {
+		CompileInkDialog.compileInkFromConfig(getStage(), getSkin());
+	}
+
+	public void runTestWithInkCompileFromShortcut() {
+		InkManager inkManager = Ctx.project.getWorld().getInkManager();
+		String storyName = inkManager == null ? null : inkManager.getStoryName();
+		String filePath = Ctx.project.getEditorConfig().getProperty("compileink.file");
+
+		if (storyName != null && filePath != null && !filePath.trim().isEmpty()) {
+			CompileInkDialog.compileInkFromConfig(getStage(), getSkin());
+		}
+
+		runTest();
 	}
 }

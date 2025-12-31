@@ -17,22 +17,12 @@ package com.bladecoder.engineeditor.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.SharedLibraryLoader;
 import com.bladecoder.engine.actions.Param;
 import com.bladecoder.engineeditor.Ctx;
-import com.bladecoder.engineeditor.common.HttpUtils;
 import com.bladecoder.engineeditor.common.Message;
 import com.bladecoder.engineeditor.common.ModelTools;
-import com.bladecoder.engineeditor.common.RunProccess;
-import com.bladecoder.engineeditor.common.ZipUtils;
 import com.bladecoder.engineeditor.ui.panels.EditDialog;
 import com.bladecoder.engineeditor.ui.panels.FileInputPanel;
 import com.bladecoder.engineeditor.ui.panels.InputPanel;
@@ -40,17 +30,8 @@ import com.bladecoder.engineeditor.ui.panels.InputPanelFactory;
 import com.bladecoder.ink.compiler.Compiler;
 import com.bladecoder.ink.compiler.IFileHandler;
 import com.bladecoder.ink.runtime.Story;
-import com.kotcrab.vis.ui.widget.file.FileChooser;
-import com.kotcrab.vis.ui.widget.file.FileChooserListener;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CompileInkDialog extends EditDialog {
 
@@ -93,7 +74,7 @@ public class CompileInkDialog extends EditDialog {
 
     @Override
     protected void ok() {
-        compileInk();
+        compileInk(file.getText(), lang.getText(), "true".equals(extractTexts.getText()), getStage());
 
         Ctx.project.getEditorConfig().setProperty(FILE_PROP, file.getText());
 
@@ -110,8 +91,28 @@ public class CompileInkDialog extends EditDialog {
         return ok;
     }
 
-    private void compileInk() {
-        FileHandle inFile = Gdx.files.absolute(file.getText());
+    public static void compileInkFromConfig(Stage stage, Skin skin) {
+        String filePath = Ctx.project.getEditorConfig().getProperty(FILE_PROP);
+
+        if (filePath == null || filePath.trim().isEmpty()) {
+            new CompileInkDialog(skin).show(stage);
+            return;
+        }
+
+        String lang = Ctx.project.getEditorConfig().getProperty(LANG_PROP, "");
+        boolean extractTexts = Boolean.parseBoolean(Ctx.project.getEditorConfig().getProperty(EXTRACT_TEXTS_PROP, "true"));
+
+        compileInk(filePath, lang, extractTexts, stage);
+    }
+
+    private static void compileInk(String filePath, String lang, boolean extractTexts, Stage stage) {
+        FileHandle inFile = Gdx.files.absolute(filePath);
+
+        if (!inFile.exists()) {
+            Message.showMsgDialog(stage, "Error", "Ink source file not found: " + filePath);
+            return;
+        }
+
         String outfile = Ctx.project.getModelPath() + "/" + inFile.name() + ".json";
 
         // read inFile content as String
@@ -137,7 +138,7 @@ public class CompileInkDialog extends EditDialog {
             Story story = compiler.compile();
 
             if (story == null) {
-                Message.showMsgDialog(getStage(), "Error", "Error compiling Ink script.");
+                Message.showMsgDialog(stage, "Error", "Error compiling Ink script.");
                 return;
             }
 
@@ -147,19 +148,19 @@ public class CompileInkDialog extends EditDialog {
             outFile.writeString(outString, false);
 
         } catch (Exception e) {
-            Message.showMsgDialog(getStage(), "Error", "Error compiling Ink script: " + e.getMessage());
+            Message.showMsgDialog(stage, "Error", "Error compiling Ink script: " + e.getMessage());
             return;
         }
 
-        if (extractTexts.getText().equals("true")) {
+        if (extractTexts) {
             try {
-                ModelTools.extractInkTexts(outfile, lang.getText());
+                ModelTools.extractInkTexts(outfile, lang);
             } catch (IOException e) {
-                Message.showMsgDialog(getStage(), "Error extracting Ink texts.", e.getMessage());
+                Message.showMsgDialog(stage, "Error extracting Ink texts.", e.getMessage());
                 return;
             }
         }
 
-        Message.showMsg(getStage(), "Ink script compiled successfully", 2);
+        Message.showMsg(stage, "Ink script compiled successfully", 2);
     }
 }
