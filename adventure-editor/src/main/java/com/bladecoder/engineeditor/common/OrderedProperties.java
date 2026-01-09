@@ -15,7 +15,6 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.InvalidPropertiesFormatException;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;

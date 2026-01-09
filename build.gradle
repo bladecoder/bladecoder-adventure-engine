@@ -1,8 +1,24 @@
+plugins {
+    id "com.diffplug.spotless" version "7.2.1" apply false
+}
+
 allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
         maven { url "https://central.sonatype.com/repository/maven-snapshots/" }
+    }
+}
+
+subprojects {
+    apply plugin: "com.diffplug.spotless"
+
+    spotless {
+        java {
+            target 'src/**/*.java'
+            removeUnusedImports()
+            //importOrder()
+        }
     }
 }
 

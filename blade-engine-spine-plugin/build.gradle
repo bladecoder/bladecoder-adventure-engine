@@ -2,7 +2,6 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'signing'
-    id "com.diffplug.spotless" version "7.2.1"
 }
 
 group = 'com.bladecoder.engine'
