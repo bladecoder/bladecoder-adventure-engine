@@ -49,6 +49,7 @@ public class Recorder {
 	private float time;
 	private int pos;
 	private String fileName = DEFAULT_RECORD_FILENAME;
+	private final UI ui;
 	private final World w;
 
 	// TO TEST SAVEGAME FEATURE
@@ -56,8 +57,9 @@ public class Recorder {
 	private static final int SAVE_EACH_SECONDS = 10;
 	private int oldt = 0;
 
-	public Recorder(World w) {
-		this.w = w;
+	public Recorder(UI ui) {
+		this.ui = ui;
+		this.w = ui.getWorld();
 	}
 
 	public void update(float delta) {
@@ -130,6 +132,10 @@ public class Recorder {
 					} catch (IOException e) {
 						EngineLogger.error("Couldn't save game: " + v.target + " : " + e.getMessage());
 					}
+				} else if (v.verb.equals("SCREENSHOT")) {
+					// SPECIAL VERB TO TAKE A SCREENSHOT
+					stringBuilder.append(v.target);
+					ui.takeScreenshot(v.target, 1920, true);
 				} else if(v.actorId == null) {
 					s.runVerb(v.verb);
 				} else {

@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
+import com.bladecoder.engine.BladeEngine;
 import com.bladecoder.engine.actions.Action;
 import com.bladecoder.engine.actions.ActionFactory;
 import com.bladecoder.engine.actions.PlaySoundAction;
@@ -250,7 +251,7 @@ public class WorldSerialization implements Serializable {
 
 		// Save Screenshot
 		if (screenshot)
-			w.takeScreenshot(filename + ".png", SCREENSHOT_DEFAULT_WIDTH);
+			BladeEngine.getAppUI().takeScreenshot(filename + ".png", SCREENSHOT_DEFAULT_WIDTH, false);
 	}
 
 	@Override

@@ -18,16 +18,9 @@ package com.bladecoder.engine.model;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.BufferUtils;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bladecoder.engine.assets.AssetConsumer;
 import com.bladecoder.engine.assets.EngineAssetManager;
@@ -38,11 +31,9 @@ import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.FileUtils;
 
 import java.io.IOException;
-import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Deflater;
 
 public class World implements AssetConsumer {
 
@@ -808,30 +799,4 @@ public class World implements AssetConsumer {
         assetState = AssetState.LOAD_ASSETS;
     }
 
-    public void takeScreenshot(String filename, int w) {
-
-        // get viewport
-        IntBuffer results = BufferUtils.newIntBuffer(16);
-        Gdx.gl20.glGetIntegerv(GL20.GL_VIEWPORT, results);
-
-        int h = (int) (w * getSceneCamera().viewportHeight / getSceneCamera().viewportWidth);
-
-        FrameBuffer fbo = new FrameBuffer(Format.RGB565, w, h, false);
-
-        fbo.begin();
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        draw();
-
-        // TODO: Next line is deprecated, use Pixmap.createFromFrameBuffer();
-        Pixmap pixmap = ScreenUtils.getFrameBufferPixmap(0, 0, w, h);
-
-        // restore viewport
-        fbo.end(results.get(0), results.get(1), results.get(2), results.get(3));
-
-        PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap, Deflater.DEFAULT_COMPRESSION,
-                true);
-
-        fbo.dispose();
-    }
 }

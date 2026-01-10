@@ -21,9 +21,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.BufferUtils;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
@@ -32,6 +39,9 @@ import com.bladecoder.engine.ui.retro.VerbUI;
 import com.bladecoder.engine.util.Config;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
+
+import java.nio.IntBuffer;
+import java.util.zip.Deflater;
 
 public class UI {
 
@@ -62,7 +72,7 @@ public class UI {
 
     public UI(World w) {
         this.w = w;
-        recorder = new Recorder(w);
+        recorder = new Recorder(this);
         testerBot = new TesterBot(w);
 
         batch = new SpriteBatch();
@@ -235,6 +245,35 @@ public class UI {
             Gdx.graphics.setWindowedMode(w.getWidth(), w.getHeight());
             fullscreen = false;
         }
+    }
+
+    public void takeScreenshot(String filename, int width, boolean includeUI) {
+        // get viewport
+        IntBuffer results = BufferUtils.newIntBuffer(16);
+        Gdx.gl20.glGetIntegerv(GL20.GL_VIEWPORT, results);
+
+        int height = (int) (width * w.getSceneCamera().viewportHeight / w.getSceneCamera().viewportWidth);
+
+        FrameBuffer fbo = new FrameBuffer(Format.RGB888, width, height, false);
+
+        fbo.begin();
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        w.draw();
+        BladeScreen sceneScreen = screens[Screens.SCENE_SCREEN.ordinal()];
+        if (includeUI && sceneScreen instanceof DefaultSceneScreen) {
+            ((DefaultSceneScreen) sceneScreen).getStage().draw();
+        }
+
+        Pixmap pixmap = Pixmap.createFromFrameBuffer(0, 0, width, height);
+
+        // restore viewport
+        fbo.end(results.get(0), results.get(1), results.get(2), results.get(3));
+
+        PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap,
+                Deflater.DEFAULT_COMPRESSION, true);
+
+        fbo.dispose();
     }
 
     public void dispose() {
