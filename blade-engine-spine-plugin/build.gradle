@@ -1,32 +1,31 @@
 plugins {
     id 'java-library'
-    id 'maven-publish'
-    id 'signing'
+    id("com.vanniktech.maven.publish") version "0.35.0"
 }
 
 group = 'com.bladecoder.engine'
 
 sourceCompatibility = 1.8
-targetCompatibility=1.8
+targetCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 jar {
-	manifest.attributes += [
-			'github': 'https://github.com/bladecoder/bladecoder-adventure-engine/',
-			'license': 'Apache-2.0, Spine Runtimes Software License',
-			'group': project.group,
-			'version': project.version,
-			'libgdx': libgdxVersion,
-			'java': targetCompatibility,
-			'timestamp': System.currentTimeMillis()
-	]
+    manifest.attributes += [
+            'github'   : 'https://github.com/bladecoder/bladecoder-adventure-engine/',
+            'license'  : 'Apache-2.0, Spine Runtimes Software License',
+            'group'    : project.group,
+            'version'  : project.version,
+            'libgdx'   : libgdxVersion,
+            'java'     : targetCompatibility,
+            'timestamp': System.currentTimeMillis()
+    ]
 }
 
 dependencies {
-  implementation "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  implementation "com.esotericsoftware.spine:spine-libgdx:4.1.0"
-  
-  implementation project(":blade-engine")
+    implementation "com.badlogicgames.gdx:gdx:$libgdxVersion"
+    implementation "com.esotericsoftware.spine:spine-libgdx:4.1.0"
+
+    implementation project(":blade-engine")
 }
 
 
@@ -40,49 +39,46 @@ task javadocJar(type: Jar) {
     archiveClassifier = 'javadoc'
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId = 'blade-engine-spine-plugin'
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
+mavenPublishing {
+    publishToMavenCentral(true, false)
+    signAllPublications()
 
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
+    coordinates(project.group, "blade-engine-spine-plugin", project.version)
 
-            pom {
-                name = 'Blade Engine Spine Plugin'
-                description = 'Classic point and click adventure game engine - Spine plugin'
-                url = 'https://github.com/bladecoder/bladecoder-adventure-engine'
+    pom {
+        name = 'Blade Engine Spine Plugin'
+        description = 'Classic point and click adventure game engine - Spine plugin'
+        url = 'https://github.com/bladecoder/bladecoder-adventure-engine'
 
-                licenses {
-                    license {
-                        name='Spine Runtimes Software License'
-                        url='http://esotericsoftware.com/files/license.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'bladecoder'
-                        name = 'Rafael Garcia'
-                        email = 'bladecoder@gmail.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
-                    developerConnection = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
-                    url = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
-                }
+        licenses {
+            license {
+                name = 'Spine Runtimes Software License'
+                url = 'http://esotericsoftware.com/files/license.txt'
             }
         }
+        developers {
+            developer {
+                id = 'bladecoder'
+                name = 'Rafael Garcia'
+                email = 'bladecoder@gmail.com'
+            }
+        }
+        scm {
+            connection = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+            developerConnection = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+            url = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+        }
     }
+}
+
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+publishing {
     repositories {
         maven {
             def releasesRepoUrl = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
@@ -93,19 +89,5 @@ publishing {
                 password project.hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : "$System.env.NEXUS_PASSWORD"
             }
         }
-    }
-}
-
-signing {
-    if(!version.endsWith('SNAPSHOT')) {
-        useGpgCmd()
-        sign publishing.publications.mavenJava
-    }
-}
-
-
-javadoc {
-    if(JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
     }
 }

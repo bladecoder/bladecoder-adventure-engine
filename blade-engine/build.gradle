@@ -1,42 +1,41 @@
 plugins {
     id 'java-library'
-    id 'maven-publish'
-    id 'signing'
+    id("com.vanniktech.maven.publish") version "0.35.0"
 }
 
 group = 'com.bladecoder.engine'
 
-sourceCompatibility=1.8
-targetCompatibility=1.8
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 sourceSets {
-	main {
-		java.srcDirs = ['src']
-		resources.srcDirs = ['resources']
-	}
+    main {
+        java.srcDirs = ['src']
+        resources.srcDirs = ['resources']
+    }
 }
 
 
 jar {
-	manifest.attributes += [
-			'github': 'https://github.com/bladecoder/bladecoder-adventure-engine/',
-			'license': 'Apache-2.0',
-			'group': project.group,
-			'version': project.version,
-			'libgdx': libgdxVersion,
-			'java': targetCompatibility,
-			'timestamp': System.currentTimeMillis()
-	]
+    manifest.attributes += [
+            'github'   : 'https://github.com/bladecoder/bladecoder-adventure-engine/',
+            'license'  : 'Apache-2.0',
+            'group'    : project.group,
+            'version'  : project.version,
+            'libgdx'   : libgdxVersion,
+            'java'     : targetCompatibility,
+            'timestamp': System.currentTimeMillis()
+    ]
 }
 
 dependencies {
-  implementation "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
-  implementation "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
-  implementation "com.bladecoder.ink:blade-ink:$bladeInkVersion"
-  implementation fileTree(dir: 'libs', include: '*.jar')
+    implementation "com.badlogicgames.gdx:gdx:$libgdxVersion"
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+    implementation "com.badlogicgames.gdx:gdx-freetype:$libgdxVersion"
+    implementation "com.bladecoder.ink:blade-ink:$bladeInkVersion"
+    implementation fileTree(dir: 'libs', include: '*.jar')
 }
 
 
@@ -50,49 +49,46 @@ task javadocJar(type: Jar) {
     archiveClassifier = 'javadoc'
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId = 'blade-engine'
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
+mavenPublishing {
+    publishToMavenCentral(true, false)
+    signAllPublications()
 
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
+    coordinates(project.group, "blade-engine", project.version)
 
-            pom {
-                name = 'Blade Engine'
-                description = 'Classic point and click adventure game engine'
-                url = 'https://github.com/bladecoder/bladecoder-adventure-engine'
+    pom {
+        name = 'Blade Engine'
+        description = 'Classic point and click adventure game engine'
+        url = 'https://github.com/bladecoder/bladecoder-adventure-engine'
 
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'bladecoder'
-                        name = 'Rafael Garcia'
-                        email = 'bladecoder@gmail.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
-                    developerConnection = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
-                    url = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
-                }
+        licenses {
+            license {
+                name = 'The Apache License, Version 2.0'
+                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
             }
         }
+        developers {
+            developer {
+                id = 'bladecoder'
+                name = 'Rafael Garcia'
+                email = 'bladecoder@gmail.com'
+            }
+        }
+        scm {
+            connection = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+            developerConnection = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+            url = 'scm:git@github.com:bladecoder/bladecoder-adventure-engine.git'
+        }
     }
+}
+
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+publishing {
     repositories {
         maven {
             def releasesRepoUrl = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
@@ -103,19 +99,5 @@ publishing {
                 password project.hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : "$System.env.NEXUS_PASSWORD"
             }
         }
-    }
-}
-
-signing {
-    if(!version.endsWith('SNAPSHOT')) {
-        useGpgCmd()
-        sign publishing.publications.mavenJava
-    }
-}
-
-
-javadoc {
-    if(JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
     }
 }
