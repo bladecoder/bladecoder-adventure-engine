@@ -1,15 +1,11 @@
 package com.bladecoder.engine.model;
 
-import java.io.FileNotFoundException;
-
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Json.Serializable;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 import com.bladecoder.engine.actions.ActionCallback;
 import com.bladecoder.engine.anim.MusicVolumeTween;
 import com.bladecoder.engine.assets.AssetConsumer;
@@ -17,271 +13,260 @@ import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.InterpolationMode;
 
+import java.io.FileNotFoundException;
+
 /**
  * Simple music engine.
- *
+ * <p>
  * Plays a music file, if another music is playing, stops it before playing the
  * new music.
  *
  * @author rgarcia
  */
 public class MusicManager implements Serializable, AssetConsumer {
-	private MusicDesc desc = null;
+    private MusicDesc desc = null;
 
-	private Music music = null;
+    private Music music = null;
 
-	private float currentMusicDelay = 0;
-	private boolean isPlayingSer = false;
-	private float musicPosSer = 0;
-	transient private boolean isPaused = false;
-	private MusicVolumeTween volumeTween;
+    private float currentMusicDelay = 0;
+    private boolean isPlayingSer = false;
+    private float musicPosSer = 0;
+    transient private boolean isPaused = false;
+    private MusicVolumeTween volumeTween;
 
-	// the global configurable by user volume
-	public static float VOLUME_MULTIPLIER = 1f;
+    // the global configurable by user volume
+    public static float VOLUME_MULTIPLIER = 1f;
 
-	private final Task backgroundLoadingTask = new Task() {
-		@Override
-		public void run() {
-			if (!EngineAssetManager.getInstance().isLoading()) {
-				cancel();
-				retrieveAssets();
-			}
-		}
-	};
+    public void playMusic() {
+        if (music != null && !music.isPlaying()) {
 
-	public void playMusic() {
-		if (music != null && !music.isPlaying()) {
+            try {
+                music.play();
+                music.setLooping(desc.isLoop());
+                music.setVolume(desc.getVolume() * VOLUME_MULTIPLIER);
+            } catch (Exception e) {
 
-			try {
-				music.play();
-				music.setLooping(desc.isLoop());
-				music.setVolume(desc.getVolume() * VOLUME_MULTIPLIER);
-			} catch (Exception e) {
+                // DEAL WITH OPENAL BUG
+                if (Gdx.app.getType() == ApplicationType.Desktop && e.getMessage().contains("40963")) {
+                    EngineLogger.debug("!!!!!!!!!!!!!!!!!!!!!!!ERROR playing music trying again...!!!!!!!!!!!!!!!");
 
-				// DEAL WITH OPENAL BUG
-				if (Gdx.app.getType() == ApplicationType.Desktop && e.getMessage().contains("40963")) {
-					EngineLogger.debug("!!!!!!!!!!!!!!!!!!!!!!!ERROR playing music trying again...!!!!!!!!!!!!!!!");
+                    MusicDesc desc2 = desc;
+                    desc = null;
+                    setMusic(desc2);
 
-					MusicDesc desc2 = desc;
-					desc = null;
-					setMusic(desc2);
+                    return;
+                }
 
-					return;
-				}
+                EngineLogger.error("Error Playing music: " + desc.getFilename(), e);
+            }
+        }
+    }
 
-				EngineLogger.error("Error Playing music: " + desc.getFilename(), e);
-			}
-		}
-	}
+    public void pauseMusic() {
+        if (music != null && music.isPlaying()) {
+            music.pause();
+            isPaused = true;
+        }
+    }
 
-	public void pauseMusic() {
-		if (music != null && music.isPlaying()) {
-			music.pause();
-			isPaused = true;
-		}
-	}
+    public void resumeMusic() {
+        if (music != null && isPaused) {
+            music.play();
+            isPaused = false;
+        }
+    }
 
-	public void resumeMusic() {
-		if (music != null && isPaused) {
-			music.play();
-			isPaused = false;
-		}
-	}
+    public void stopMusic() {
+        if (music != null)
+            music.stop();
+    }
 
-	public void stopMusic() {
-		if (music != null)
-			music.stop();
-	}
+    public void setMusic(MusicDesc d) {
+        if (desc != null && d != null && d.getFilename() != null && d.getFilename().equals(desc.getFilename())) {
 
-	public void setMusic(MusicDesc d) {
-		if (desc != null && d != null && d.getFilename() != null && d.getFilename().equals(desc.getFilename())) {
+            EngineLogger.debug(">>>NOT SETTING MUSIC: This music file is already playing.");
+            return;
+        }
 
-			EngineLogger.debug(">>>NOT SETTING MUSIC: This music file is already playing.");
-			return;
-		}
+        EngineLogger.debug(">>>SETTING MUSIC.");
+        stopMusic();
+        volumeTween = null;
+        currentMusicDelay = 0;
 
-		EngineLogger.debug(">>>SETTING MUSIC.");
-		stopMusic();
-		volumeTween = null;
-		currentMusicDelay = 0;
+        if (d != null) {
+            if (desc != null) {
+                dispose();
+            }
 
-		if (d != null) {
-			if (desc != null) {
-				dispose();
-			}
+            desc = new MusicDesc(d);
 
-			desc = new MusicDesc(d);
+            // Load the music file in background to avoid
+            // blocking the UI
+            loadTask();
+        } else {
+            dispose();
+            desc = null;
+        }
+    }
 
-			// Load the music file in background to avoid
-			// blocking the UI
-			loadTask();
-		} else {
-			dispose();
-			desc = null;
-		}
-	}
+    private void loadTask() {
+        loadAssets();
 
-	private void loadTask() {
-		loadAssets();
+        EngineAssetManager.getInstance().finishLoading();
+        retrieveAssets();
+    }
 
-		backgroundLoadingTask.cancel();
-		Timer.schedule(backgroundLoadingTask, 0, 0);
-	}
-
-	public void setVolume(float volume) {
-        if(volume < 0f)
+    public void setVolume(float volume) {
+        if (volume < 0f)
             volume = 0;
 
-		if (desc != null)
-			desc.setVolume(volume);
+        if (desc != null)
+            desc.setVolume(volume);
 
-		if (music != null && music.isPlaying())
-			music.setVolume(volume * VOLUME_MULTIPLIER);
-	}
+        if (music != null && music.isPlaying())
+            music.setVolume(volume * VOLUME_MULTIPLIER);
+    }
 
-	public float getVolume() {
-		if (desc != null)
-			return desc.getVolume();
+    public float getVolume() {
+        if (desc != null)
+            return desc.getVolume();
 
-		return 1f;
-	}
+        return 1f;
+    }
 
-	public void leaveScene(MusicDesc newMusicDesc) {
+    public void leaveScene(MusicDesc newMusicDesc) {
 
-		if (desc != null && !desc.isStopWhenLeaving()
-				&& (newMusicDesc == null || newMusicDesc.getFilename().equals(desc.getFilename())))
-			return;
+        if (desc != null && !desc.isStopWhenLeaving()
+                && (newMusicDesc == null || newMusicDesc.getFilename().equals(desc.getFilename())))
+            return;
 
-		if (desc != null) {
-			currentMusicDelay = 0f;
-			stopMusic();
-			dispose();
-		}
+        if (desc != null) {
+            currentMusicDelay = 0f;
+            stopMusic();
+            dispose();
+        }
 
-		if (newMusicDesc != null) {
-			desc = new MusicDesc(newMusicDesc);
-		} else {
-			desc = null;
-		}
-	}
+        if (newMusicDesc != null) {
+            desc = new MusicDesc(newMusicDesc);
+        } else {
+            desc = null;
+        }
+    }
 
-	public void update(float delta) {
-		// music delay update
-		if (music != null) {
-			if (!music.isPlaying()) {
+    public void update(float delta) {
+        // music delay update
+        if (music != null) {
+            if (!music.isPlaying()) {
 
-				boolean initialTime = false;
+                boolean initialTime = currentMusicDelay <= desc.getInitialDelay();
 
-				if (currentMusicDelay <= desc.getInitialDelay())
-					initialTime = true;
+                currentMusicDelay += delta;
 
-				currentMusicDelay += delta;
+                if (initialTime) {
+                    if (currentMusicDelay > desc.getInitialDelay())
+                        playMusic();
+                } else {
+                    if (desc.getRepeatDelay() >= 0
+                            && currentMusicDelay > desc.getRepeatDelay() + desc.getInitialDelay()) {
+                        currentMusicDelay = desc.getInitialDelay() + delta;
+                        playMusic();
+                    }
+                }
+            }
 
-				if (initialTime) {
-					if (currentMusicDelay > desc.getInitialDelay())
-						playMusic();
-				} else {
-					if (desc.getRepeatDelay() >= 0
-							&& currentMusicDelay > desc.getRepeatDelay() + desc.getInitialDelay()) {
-						currentMusicDelay = desc.getInitialDelay() + delta;
-						playMusic();
-					}
-				}
-			}
+            if (volumeTween != null) {
+                volumeTween.update(delta);
 
-			if (volumeTween != null) {
-				volumeTween.update(delta);
+                if (volumeTween != null && volumeTween.isComplete()) {
+                    volumeTween = null;
+                }
+            }
+        }
+    }
 
-				if (volumeTween != null && volumeTween.isComplete()) {
-					volumeTween = null;
-				}
-			}
-		}
-	}
+    @Override
+    public void dispose() {
+        if (music != null) {
+            EngineLogger.debug("DISPOSING MUSIC: " + desc.getFilename());
+            EngineAssetManager.getInstance().disposeMusic(desc.getFilename());
+            music = null;
+            desc = null;
+            volumeTween = null;
+        }
+    }
 
-	@Override
-	public void dispose() {
-		if (music != null) {
-			EngineLogger.debug("DISPOSING MUSIC: " + desc.getFilename());
-			EngineAssetManager.getInstance().disposeMusic(desc.getFilename());
-			music = null;
-			desc = null;
-			volumeTween = null;
-		}
-	}
+    @Override
+    public void loadAssets() {
+        if (music == null && desc != null) {
+            EngineLogger.debug("LOADING MUSIC: " + desc.getFilename());
 
-	@Override
-	public void loadAssets() {
-		if (music == null && desc != null) {
-			EngineLogger.debug("LOADING MUSIC: " + desc.getFilename());
+            try {
+                EngineAssetManager.getInstance().loadMusic(desc.getFilename());
+            } catch (FileNotFoundException e) {
+                EngineLogger.error("Not found: " + e.getLocalizedMessage());
+                desc = null;
+            }
+        }
+    }
 
-			try {
-				EngineAssetManager.getInstance().loadMusic(desc.getFilename());
-			} catch (FileNotFoundException e) {
-				EngineLogger.error("Not found: " + e.getLocalizedMessage());
-				desc = null;
-			}
-		}
-	}
+    @Override
+    public void retrieveAssets() {
+        if (music == null && desc != null) {
+            // Check if not loaded, this happens when setting a cached scene
+            if (!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.MUSIC_DIR + desc.getFilename())) {
+                // Load the music file in background to avoid
+                // blocking the UI
+                loadTask();
+                return;
+            }
 
-	@Override
-	public void retrieveAssets() {
-		if (music == null && desc != null) {
-			// Check if not loaded, this happens when setting a cached scene
-			if (!EngineAssetManager.getInstance().isLoaded(EngineAssetManager.MUSIC_DIR + desc.getFilename())) {
-				// Load the music file in background to avoid
-				// blocking the UI
-				loadTask();
-				return;
-			}
+            EngineLogger.debug("RETRIEVING MUSIC: " + desc.getFilename());
 
-			EngineLogger.debug("RETRIEVING MUSIC: " + desc.getFilename());
+            music = EngineAssetManager.getInstance().getMusic(desc.getFilename());
 
-			music = EngineAssetManager.getInstance().getMusic(desc.getFilename());
+            if (isPlayingSer) {
+                playMusic();
 
-			if (isPlayingSer) {
-				playMusic();
+                if (music != null) {
+                    music.setPosition(musicPosSer);
+                    musicPosSer = 0f;
+                }
 
-				if (music != null) {
-					music.setPosition(musicPosSer);
-					musicPosSer = 0f;
-				}
+                isPlayingSer = false;
+            }
+        }
+    }
 
-				isPlayingSer = false;
-			}
-		}
-	}
+    public void fade(float volume, float duration, ActionCallback cb) {
+        if (music != null) {
+            volumeTween = new MusicVolumeTween();
+            volumeTween.start(this, volume, duration, InterpolationMode.FADE, cb);
+        } else if (cb != null) {
+            cb.resume();
+        }
+    }
 
-	public void fade(float volume, float duration, ActionCallback cb) {
-		if (music != null) {
-			volumeTween = new MusicVolumeTween();
-			volumeTween.start(this, volume, duration, InterpolationMode.FADE, cb);
-		} else if (cb != null) {
-			cb.resume();
-		}
-	}
+    @Override
+    public void write(Json json) {
+        json.writeValue("desc", desc);
+        json.writeValue("currentMusicDelay", currentMusicDelay);
+        json.writeValue("isPlaying", music != null && (music.isPlaying() || isPaused));
+        json.writeValue("musicPos", music != null && (music.isPlaying() || isPaused) ? music.getPosition() : 0f);
 
-	@Override
-	public void write(Json json) {
-		json.writeValue("desc", desc);
-		json.writeValue("currentMusicDelay", currentMusicDelay);
-		json.writeValue("isPlaying", music != null && (music.isPlaying() || isPaused));
-		json.writeValue("musicPos", music != null && (music.isPlaying() || isPaused) ? music.getPosition() : 0f);
+        if (volumeTween != null)
+            json.writeValue("volumeTween", volumeTween);
+    }
 
-		if (volumeTween != null)
-			json.writeValue("volumeTween", volumeTween);
-	}
+    @Override
+    public void read(Json json, JsonValue jsonData) {
+        desc = json.readValue("desc", MusicDesc.class, jsonData);
+        currentMusicDelay = json.readValue("currentMusicDelay", float.class, jsonData);
+        isPlayingSer = json.readValue("isPlaying", boolean.class, jsonData);
+        musicPosSer = json.readValue("musicPos", float.class, jsonData);
 
-	@Override
-	public void read(Json json, JsonValue jsonData) {
-		desc = json.readValue("desc", MusicDesc.class, jsonData);
-		currentMusicDelay = json.readValue("currentMusicDelay", float.class, jsonData);
-		isPlayingSer = json.readValue("isPlaying", boolean.class, jsonData);
-		musicPosSer = json.readValue("musicPos", float.class, jsonData);
-
-		volumeTween = json.readValue("volumeTween", MusicVolumeTween.class, jsonData);
-		if (volumeTween != null) {
-			volumeTween.setTarget(this);
-		}
-	}
+        volumeTween = json.readValue("volumeTween", MusicVolumeTween.class, jsonData);
+        if (volumeTween != null) {
+            volumeTween.setTarget(this);
+        }
+    }
 }
