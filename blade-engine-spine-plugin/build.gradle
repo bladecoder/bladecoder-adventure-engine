@@ -26,7 +26,7 @@ jar {
 
 dependencies {
   implementation "com.badlogicgames.gdx:gdx:$libgdxVersion"
-  implementation "com.esotericsoftware.spine:spine-libgdx:4.2.7"
+  implementation "com.esotericsoftware.spine:spine-libgdx:4.3.2"
   
   implementation project(":blade-engine")
 }

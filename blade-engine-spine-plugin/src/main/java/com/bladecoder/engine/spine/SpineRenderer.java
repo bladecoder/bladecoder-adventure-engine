@@ -44,18 +44,10 @@ import com.bladecoder.engine.serialization.BladeJson.Mode;
 import com.bladecoder.engine.spine.SkeletonDataLoader.SkeletonDataLoaderParameter;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.engine.util.RectangleRenderer;
-import com.esotericsoftware.spine.Animation;
-import com.esotericsoftware.spine.AnimationState;
+import com.esotericsoftware.spine.*;
 import com.esotericsoftware.spine.AnimationState.AnimationStateAdapter;
 import com.esotericsoftware.spine.AnimationState.AnimationStateListener;
 import com.esotericsoftware.spine.AnimationState.TrackEntry;
-import com.esotericsoftware.spine.AnimationStateData;
-import com.esotericsoftware.spine.Event;
-import com.esotericsoftware.spine.Skeleton;
-import com.esotericsoftware.spine.SkeletonBounds;
-import com.esotericsoftware.spine.SkeletonData;
-import com.esotericsoftware.spine.SkeletonRenderer;
-import com.esotericsoftware.spine.Skin;
 
 public class SpineRenderer extends AnimationRenderer {
 
@@ -234,7 +226,7 @@ public class SpineRenderer extends AnimationRenderer {
 		cs.animation.update(time);
 		cs.animation.apply(cs.skeleton);
 
-		cs.skeleton.updateWorldTransform(Skeleton.Physics.none);
+		cs.skeleton.updateWorldTransform(Physics.none);
 	}
 
 	private static final Matrix4 tmp = new Matrix4();
@@ -248,8 +240,8 @@ public class SpineRenderer extends AnimationRenderer {
 			Matrix4 tm = batch.getTransformMatrix();
 			tmp.set(tm);
 
-			float originX = cs.skeleton.getRootBone().getX();
-			float originY = cs.skeleton.getRootBone().getY();
+			float originX = cs.skeleton.getRootBone().getAppliedPose().getX();
+			float originY = cs.skeleton.getRootBone().getAppliedPose().getX();
 			tm.translate(x, y, 0).rotate(0, 0, 1, rotation).scale(scaleX, scaleY, 1).translate(originX, originY, 0);
 
 			// cs.skeleton.setX(x / scale);
@@ -469,7 +461,7 @@ public class SpineRenderer extends AnimationRenderer {
 				setSkin(skin);
 			}
 
-			cs.skeleton.setToSetupPose();
+			cs.skeleton.setupPose();
 			cs.skeleton.setScaleX(flipX ? -1 : 1);
 			cs.animation.setTimeScale(currentAnimation.duration);
 			cs.animation.clearTracks();
@@ -516,7 +508,7 @@ public class SpineRenderer extends AnimationRenderer {
 		}
 
 		cs.skeleton.setPosition(0, 0);
-		cs.skeleton.updateWorldTransform(Skeleton.Physics.none);
+		cs.skeleton.updateWorldTransform(Physics.none);
 		bounds.update(cs.skeleton, true);
 
 		if (bounds.getWidth() > 0 && bounds.getHeight() > 0) {
