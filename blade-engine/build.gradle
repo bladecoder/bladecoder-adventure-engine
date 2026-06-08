@@ -110,7 +110,15 @@ publishing {
 
 signing {
     if(!version.endsWith('SNAPSHOT')) {
-        useGpgCmd()
+        def signingKey = findProperty('signingInMemoryKey')
+        def signingPassword = findProperty('signingInMemoryKeyPassword')
+
+        if (signingKey) {
+            useInMemoryPgpKeys(signingKey, signingPassword)
+        } else {
+            useGpgCmd()
+        }
+
         sign publishing.publications.mavenJava
     }
 }
