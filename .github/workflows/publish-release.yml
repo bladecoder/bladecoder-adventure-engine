@@ -57,3 +57,56 @@ jobs:
             :blade-engine-spine-plugin:publish \
             -Pversion="$RELEASE_VERSION" \
             --no-configuration-cache
+
+      - name: Release Maven Central deployment
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        shell: bash
+        run: |
+          authorization="$(printf '%s:%s' "$NEXUS_USERNAME" "$NEXUS_PASSWORD" | base64 -w0)"
+          staging_api="https://ossrh-staging-api.central.sonatype.com"
+
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Authorization: Bearer $authorization" \
+            "$staging_api/manual/upload/defaultRepository/com.bladecoder?publishing_type=automatic"
+
+          deployment_id="$(
+            curl --fail-with-body --silent --show-error \
+              --header "Authorization: Bearer $authorization" \
+              "$staging_api/manual/search/repositories?ip=client&profile_id=com.bladecoder" \
+              | jq -r '.repositories[] | select(.portal_deployment_id != null) | .portal_deployment_id' \
+              | tail -1
+          )"
+
+          if [[ -z "$deployment_id" ]]; then
+            echo "Sonatype did not return a deployment ID." >&2
+            exit 1
+          fi
+
+          for attempt in {1..60}; do
+            status="$(
+              curl --fail-with-body --silent --show-error \
+                --request POST \
+                --header "Authorization: Bearer $authorization" \
+                "https://central.sonatype.com/api/v1/publisher/status?id=$deployment_id"
+            )"
+            state="$(jq -r '.deploymentState' <<< "$status")"
+            echo "Maven Central deployment state: $state"
+
+            case "$state" in
+              PUBLISHED)
+                exit 0
+                ;;
+              FAILED)
+                jq '.errors' <<< "$status"
+                exit 1
+                ;;
+            esac
+
+            sleep 10
+          done
+
+          echo "Timed out waiting for Maven Central publication." >&2
+          exit 1
