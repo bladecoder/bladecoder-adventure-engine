@@ -97,7 +97,7 @@ public class WorldSerialization implements Serializable {
 		float scale = EngineAssetManager.getInstance().getScale();
 
 		Json json = new BladeJson(w, Mode.MODEL);
-		json.setOutputType(OutputType.javascript);
+		json.setOutputType(OutputType.json);
 
 		json.setWriter(new StringWriter());
 
@@ -181,7 +181,7 @@ public class WorldSerialization implements Serializable {
 			return;
 
 		Json json = new BladeJson(w, Mode.MODEL);
-		json.setOutputType(OutputType.javascript);
+		json.setOutputType(OutputType.json);
 
 		String s = null;
 
@@ -227,7 +227,7 @@ public class WorldSerialization implements Serializable {
 			return;
 
 		Json json = new BladeJson(w, Mode.STATE);
-		json.setOutputType(OutputType.javascript);
+		json.setOutputType(OutputType.json);
 		json.setSortFields(true);
 
 		String s = null;
