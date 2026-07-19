@@ -33,6 +33,14 @@ final class RemoteCommandParser {
             return RemoteCommand.saveGame(requiredString(value, "target"));
         if ("screenshot".equals(type))
             return RemoteCommand.screenshot(requiredString(value, "target"));
+        if ("newGame".equals(type))
+            return RemoteCommand.newGame();
+        if ("loadGame".equals(type))
+            return RemoteCommand.loadGame(requiredString(value, "target"));
+        if ("continue".equals(type))
+            return RemoteCommand.continueGame();
+        if ("pause".equals(type))
+            return RemoteCommand.pause();
 
         throw new RemoteBadRequestException("Unknown command type: " + type);
     }

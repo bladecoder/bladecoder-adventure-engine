@@ -58,9 +58,32 @@ curl -X POST http://127.0.0.1:8080/command \
 curl -X POST http://127.0.0.1:8080/command \
   -H 'Content-Type: application/json' \
   -d '{"type":"screenshot","target":"agent-screenshot.png"}'
+
+curl -X POST http://127.0.0.1:8080/command \
+  -H 'Content-Type: application/json' \
+  -d '{"type":"newGame"}'
+
+curl -X POST http://127.0.0.1:8080/command \
+  -H 'Content-Type: application/json' \
+  -d '{"type":"loadGame","target":"agent-save"}'
+
+curl -X POST http://127.0.0.1:8080/command \
+  -H 'Content-Type: application/json' \
+  -d '{"type":"continue"}'
+
+curl -X POST http://127.0.0.1:8080/command \
+  -H 'Content-Type: application/json' \
+  -d '{"type":"pause"}'
 ```
 
 `actorVerb` accepts an optional string `target`. Invalid request schemas return
 `400`; unknown routes return `404`; unsupported methods return `405`.
 
 `screenshot` writes a 1920-pixel-wide PNG to the game's user-data directory.
+`newGame` starts the initial chapter, `loadGame` loads its saved-game target,
+and `continue` resumes the latest saved game (or loads the initial chapter if
+there is no save). `pause` toggles the game's pause state.
+
+Except for `newGame`, `loadGame`, and `continue`, commands require an active
+game. A paused game only accepts `pause`; use it again to resume before sending
+another command. State endpoints remain available in either condition.

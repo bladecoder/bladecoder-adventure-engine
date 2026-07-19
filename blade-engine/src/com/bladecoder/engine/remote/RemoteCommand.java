@@ -2,7 +2,7 @@ package com.bladecoder.engine.remote;
 
 final class RemoteCommand {
     enum Type {
-        ACTOR_VERB, SCENE_VERB, DIALOG_OPTION, GOTO, SAVE_GAME, SCREENSHOT
+        ACTOR_VERB, SCENE_VERB, DIALOG_OPTION, GOTO, SAVE_GAME, SCREENSHOT, NEW_GAME, LOAD_GAME, CONTINUE, PAUSE
     }
 
     final Type type;
@@ -45,5 +45,21 @@ final class RemoteCommand {
 
     static RemoteCommand screenshot(String target) {
         return new RemoteCommand(Type.SCREENSHOT, null, null, target, 0, 0, 0);
+    }
+
+    static RemoteCommand newGame() {
+        return new RemoteCommand(Type.NEW_GAME, null, null, null, 0, 0, 0);
+    }
+
+    static RemoteCommand loadGame(String target) {
+        return new RemoteCommand(Type.LOAD_GAME, null, null, target, 0, 0, 0);
+    }
+
+    static RemoteCommand continueGame() {
+        return new RemoteCommand(Type.CONTINUE, null, null, null, 0, 0, 0);
+    }
+
+    static RemoteCommand pause() {
+        return new RemoteCommand(Type.PAUSE, null, null, null, 0, 0, 0);
     }
 }

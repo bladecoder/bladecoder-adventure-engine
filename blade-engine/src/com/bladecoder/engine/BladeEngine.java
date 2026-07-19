@@ -224,10 +224,14 @@ public class BladeEngine implements ApplicationListener {
 
     @Override
     public void pause() {
+
+        if(world.isDisposed())
+            return;
+
         boolean bot = ui.getTesterBot().isEnabled();
         boolean r = ui.getRecorder().isPlaying();
 
-        if (!world.isDisposed() && ((!bot && !r) || EngineLogger.lastError != null)) {
+        if (((!bot && !r) || EngineLogger.lastError != null)) {
             EngineLogger.debug("GAME PAUSE");
             ui.pause();
             try {

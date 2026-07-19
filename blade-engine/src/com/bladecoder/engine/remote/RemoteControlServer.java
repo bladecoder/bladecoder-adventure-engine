@@ -37,7 +37,7 @@ public class RemoteControlServer implements RemoteServerStatus, RemoteErrorRepor
     public RemoteControlServer(UI ui, World world) {
         this.ui = ui;
         this.world = world;
-        commandExecutor = new RemoteCommandExecutor(world, this);
+        commandExecutor = new RemoteCommandExecutor(ui, world, this);
         requestHandler = new RemoteHttpHandler(commandQueue, new RemoteGameStateProvider(ui, world, this), this);
     }
 
@@ -111,8 +111,7 @@ public class RemoteControlServer implements RemoteServerStatus, RemoteErrorRepor
 
     /** Called once per frame by {@link com.bladecoder.engine.BladeEngine}. */
     public void update() {
-        if (!running || world.isPaused() || world.inCutMode() || ui.getRecorder().isPlaying()
-                || ui.getTesterBot().isEnabled()) {
+        if (!running || world.inCutMode() || ui.getRecorder().isPlaying() || ui.getTesterBot().isEnabled()) {
             return;
         }
 
