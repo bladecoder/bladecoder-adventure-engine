@@ -54,7 +54,13 @@ curl -X POST http://127.0.0.1:8080/command \
 curl -X POST http://127.0.0.1:8080/command \
   -H 'Content-Type: application/json' \
   -d '{"type":"saveGame","target":"agent-save"}'
+
+curl -X POST http://127.0.0.1:8080/command \
+  -H 'Content-Type: application/json' \
+  -d '{"type":"screenshot","target":"agent-screenshot.png"}'
 ```
 
 `actorVerb` accepts an optional string `target`. Invalid request schemas return
 `400`; unknown routes return `404`; unsupported methods return `405`.
+
+`screenshot` writes a 1920-pixel-wide PNG to the game's user-data directory.
