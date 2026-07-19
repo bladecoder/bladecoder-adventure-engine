@@ -38,6 +38,7 @@ public class BladeEngine implements ApplicationListener {
     private String testScene;
     private String recordName;
     private String forceRes;
+    private Integer remoteControlPort;
     private boolean debug = false;
     private boolean restart = false;
     private UI ui;
@@ -73,6 +74,10 @@ public class BladeEngine implements ApplicationListener {
 
     public void forceResolution(String forceRes) {
         this.forceRes = forceRes;
+    }
+
+    public void setRemoteControlPort(int port) {
+        remoteControlPort = port;
     }
 
     public UI getUI() {
@@ -121,6 +126,9 @@ public class BladeEngine implements ApplicationListener {
         }
 
         loadGame(null);
+
+        if (remoteControlPort != null)
+            ui.getRemoteControlServer().start(remoteControlPort);
 
         if (EngineLogger.debugMode()) {
             if (chapter == null)
@@ -190,6 +198,7 @@ public class BladeEngine implements ApplicationListener {
     @Override
     public void dispose() {
         EngineLogger.debug("GAME DISPOSE");
+        ui.getRemoteControlServer().stop();
         world.dispose();
         ui.dispose();
     }
@@ -197,6 +206,7 @@ public class BladeEngine implements ApplicationListener {
     @Override
     public void render() {
         ui.render();
+        ui.getRemoteControlServer().update();
 
         // Pause the game when an error is found in debug mode
         if (EngineLogger.lastError != null && EngineLogger.debugMode() && !world.isPaused()) {

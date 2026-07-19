@@ -119,6 +119,22 @@ public class DesktopLauncher extends BladeEngine {
 					i++;
 					loadGameState(args[i]);
 				}
+			} else if (s.equals("-http")) {
+				int port = 8080;
+				if (i + 1 < args.length && !args[i + 1].startsWith("-")) {
+					i++;
+					try {
+						port = Integer.parseInt(args[i]);
+					} catch (NumberFormatException e) {
+						System.out.println("Invalid HTTP control port: " + args[i]);
+						usage();
+					}
+				}
+				if (port < 1 || port > 65535) {
+					System.out.println("Invalid HTTP control port: " + port);
+					usage();
+				}
+				setRemoteControlPort(port);
 			} else if (s.equals("-h")) {
 				usage();
             } else if (s.equals("-opengl")) {
@@ -146,6 +162,7 @@ public class DesktopLauncher extends BladeEngine {
 				+ "-d\tShow debug messages\n"
 				+ "-res width\tForce the resolution width\n" 
 				+ "-l game_state\tLoad the previusly saved game state\n"
+				+ "-http [port]\tEnable localhost HTTP remote control (default: 8080)\n"
 				+ "-r\tRun the game from the begining\n"
 				+ "-s speed\tSets the game speed\n"
 				+ "-aspect aspect_ratio\tSets the specified screen aspect (16:9, 4:3, 16:10)\n");

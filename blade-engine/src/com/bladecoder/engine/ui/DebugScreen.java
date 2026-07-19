@@ -28,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bladecoder.engine.assets.EngineAssetManager;
+import com.bladecoder.engine.remote.RemoteControlServer;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.ui.defaults.ScreenControllerHandler;
 import com.bladecoder.engine.util.Config;
@@ -48,6 +49,7 @@ public class DebugScreen implements BladeScreen {
     private SelectBox<String> scenes;
     private TextField recFilename;
     private TextButton rec;
+    private TextButton remoteControl;
 
     private TextField testerTimeConf;
     private TextField inSceneTimeConf;
@@ -231,6 +233,26 @@ public class DebugScreen implements BladeScreen {
         table.row().pad(5).align(Align.left);
         table.add(new Label("Game Recording: ", ui.getSkin(), "debug"));
         table.add(rGroup);
+
+        // ------------- REMOTE CONTROL
+        final RemoteControlServer server = ui.getRemoteControlServer();
+        remoteControl = new TextButton("", ui.getSkin());
+        updateRemoteControlButton(server);
+        remoteControl.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (server.isRunning())
+                    server.stop();
+                else
+                    server.start(server.getConfiguredPort());
+
+                updateRemoteControlButton(server);
+            }
+        });
+
+        table.row().pad(5).align(Align.left);
+        table.add(new Label("HTTP Remote Control: ", ui.getSkin(), "debug"));
+        table.add(remoteControl);
 
         // ------------- LOAD CHAPTER
         table.row().pad(5).align(Align.left);
@@ -488,6 +510,16 @@ public class DebugScreen implements BladeScreen {
         stage.addActor(pointer);
 
         Gdx.input.setInputProcessor(stage);
+    }
+
+    private void updateRemoteControlButton(RemoteControlServer server) {
+        if (server.isRunning()) {
+            remoteControl.setText("Stop HTTP (" + server.getConfiguredPort() + ")");
+        } else if (server.getLastError() != null) {
+            remoteControl.setText("Start HTTP (error)");
+        } else {
+            remoteControl.setText("Start HTTP (" + server.getConfiguredPort() + ")");
+        }
     }
 
     @Override

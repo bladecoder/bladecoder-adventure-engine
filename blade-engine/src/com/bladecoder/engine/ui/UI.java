@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.bladecoder.engine.assets.EngineAssetManager;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.remote.RemoteControlServer;
 import com.bladecoder.engine.ui.defaults.DefaultSceneScreen;
 import com.bladecoder.engine.ui.retro.VerbUI;
 import com.bladecoder.engine.util.Config;
@@ -48,6 +49,7 @@ public class UI {
 
     private final Recorder recorder;
     private final TesterBot testerBot;
+    private final RemoteControlServer remoteControlServer;
 
     private boolean fullscreen = false;
 
@@ -64,6 +66,7 @@ public class UI {
         this.w = w;
         recorder = new Recorder(w);
         testerBot = new TesterBot(w);
+        remoteControlServer = new RemoteControlServer(this, w);
 
         batch = new SpriteBatch();
 
@@ -115,6 +118,10 @@ public class UI {
 
     public TesterBot getTesterBot() {
         return testerBot;
+    }
+
+    public RemoteControlServer getRemoteControlServer() {
+        return remoteControlServer;
     }
 
     private BladeScreen getCustomScreenInstance(String prop, Class<?> defaultClass) {
@@ -238,6 +245,7 @@ public class UI {
     }
 
     public void dispose() {
+        remoteControlServer.dispose();
         screen.hide();
         batch.dispose();
         skin.dispose();
