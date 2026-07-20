@@ -613,13 +613,13 @@ public class DefaultSceneScreen implements SceneScreen {
             }
         }
 
-        getWorld().addEventListener(worldListener);
+        getWorld().getEvents().addListener(worldListener);
         getWorld().resume();
     }
 
     @Override
     public void hide() {
-        getWorld().removeEventListener(worldListener);
+        getWorld().getEvents().removeListener(worldListener);
         getWorld().pause();
     }
 

@@ -15,12 +15,10 @@
  ******************************************************************************/
 package com.bladecoder.engine.actions;
 
-import com.bladecoder.engine.BladeEngine;
 import com.bladecoder.engine.model.VerbRunner;
 import com.bladecoder.engine.model.World;
-import com.bladecoder.engine.ui.UI;
 
-@ActionDescription("Ends the game and show the credits.")
+@ActionDescription("Ends the game.")
 public class EndGameAction implements Action {
 	
 	private World w;
@@ -32,9 +30,6 @@ public class EndGameAction implements Action {
 
 	@Override
 	public boolean run(VerbRunner cb) {
-
-		UI ui = BladeEngine.getAppUI();
-		ui.setCurrentScreen(UI.Screens.CREDIT_SCREEN);
 
 		w.endGame();
 

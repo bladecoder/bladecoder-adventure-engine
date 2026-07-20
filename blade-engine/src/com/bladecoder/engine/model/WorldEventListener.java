@@ -28,4 +28,7 @@ public interface WorldEventListener {
 
     default void animationStarted(String actorId, String animationId, boolean finite) {
     }
+
+    default void gameEnded() {
+    }
 }

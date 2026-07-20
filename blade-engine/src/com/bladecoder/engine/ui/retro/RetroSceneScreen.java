@@ -272,6 +272,11 @@ public class RetroSceneScreen implements SceneScreen {
 		public void pause(boolean value) {
 			updateUI();
 		}
+
+		@Override
+		public void gameEnded() {
+			ui.setCurrentScreen(UI.Screens.CREDIT_SCREEN);
+		}
 	};
 
 	public RetroSceneScreen() {
@@ -690,7 +695,7 @@ public class RetroSceneScreen implements SceneScreen {
 			}
 		}
 
-		ui.getWorld().addEventListener(worldListener);
+		ui.getWorld().getEvents().addListener(worldListener);
 		ui.getWorld().resume();
 
 		textManagerUI.setText(ui.getWorld().getCurrentScene().getTextManager().getCurrentText());
@@ -700,7 +705,7 @@ public class RetroSceneScreen implements SceneScreen {
 
 	@Override
 	public void hide() {
-		ui.getWorld().removeEventListener(worldListener);
+		ui.getWorld().getEvents().removeListener(worldListener);
 		ui.getWorld().pause();
 		currentActor = null;
 		dispose();

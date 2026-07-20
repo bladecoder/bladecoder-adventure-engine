@@ -40,7 +40,6 @@ import com.bladecoder.engine.util.FileUtils;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.Deflater;
@@ -96,7 +95,7 @@ public class World implements AssetConsumer {
 
     private MusicManager musicManager;
 
-    private final List<WorldEventListener> eventListeners = new ArrayList<WorldEventListener>();
+    private final WorldEventDispatcher events = new WorldEventDispatcher();
 
     // ------------ LAZY CREATED OBJECTS ------------
     private InkManager inkManager;
@@ -157,28 +156,8 @@ public class World implements AssetConsumer {
         initGame = true;
     }
 
-    public void addEventListener(WorldEventListener listener) {
-        if (listener != null && !eventListeners.contains(listener))
-            eventListeners.add(listener);
-    }
-
-    public void removeEventListener(WorldEventListener listener) {
-        eventListeners.remove(listener);
-    }
-
-    public void notifyText(Text text) {
-        for (WorldEventListener eventListener : eventListeners)
-            eventListener.text(text);
-    }
-
-    public void notifyDialogOptionsChanged() {
-        for (WorldEventListener eventListener : eventListeners)
-            eventListener.dialogOptionsChanged();
-    }
-
-    public void notifyAnimationStarted(String actorId, String animationId, boolean finite) {
-        for (WorldEventListener eventListener : eventListeners)
-            eventListener.animationStarted(actorId, animationId, finite);
+    public WorldEventDispatcher getEvents() {
+        return events;
     }
 
     public WorldSerialization getSerializer() {
@@ -457,8 +436,7 @@ public class World implements AssetConsumer {
         this.initVerb = initVerb;
 
         musicManager.leaveScene(currentScene.getMusicDesc());
-        for (WorldEventListener eventListener : eventListeners)
-            eventListener.sceneChanged(currentScene.getId());
+        events.sceneChanged(currentScene.getId());
     }
 
     public Inventory getInventory() {
@@ -492,8 +470,7 @@ public class World implements AssetConsumer {
     public void setCutMode(boolean v) {
         cutMode = v;
 
-        for (WorldEventListener eventListener : eventListeners)
-            eventListener.cutMode(cutMode);
+        events.cutMode(cutMode);
     }
 
     public void setCurrentScene(String id, boolean init, String initVerb) {
@@ -520,7 +497,7 @@ public class World implements AssetConsumer {
                 currentDialog = null;
         }
 
-        notifyDialogOptionsChanged();
+        events.dialogOptionsChanged();
     }
 
     public void setInventory(String inventory) {
@@ -532,8 +509,7 @@ public class World implements AssetConsumer {
         }
 
         setCurrentInventory(inventory);
-        for (WorldEventListener eventListener : eventListeners)
-            eventListener.inventoryChanged();
+        events.inventoryChanged();
     }
 
     public boolean hasDialogOptions() {
@@ -598,8 +574,7 @@ public class World implements AssetConsumer {
     public void showInventory(boolean b) {
         getInventory().setVisible(b);
 
-        for (WorldEventListener eventListener : eventListeners)
-            eventListener.inventoryChanged();
+        events.inventoryChanged();
     }
 
     public String getCurrentInventory() {
@@ -711,8 +686,7 @@ public class World implements AssetConsumer {
             currentScene.getSoundManager().pause();
         }
 
-        for (WorldEventListener eventListener : eventListeners)
-            eventListener.pause(true);
+        events.pause(true);
     }
 
     public void resume() {
@@ -728,8 +702,7 @@ public class World implements AssetConsumer {
             }
         }
 
-        for (WorldEventListener eventListener : eventListeners)
-            eventListener.pause(false);
+        events.pause(false);
     }
 
     public void newGame() throws Exception {
@@ -738,6 +711,7 @@ public class World implements AssetConsumer {
     }
 
     public void endGame() {
+        events.gameEnded();
         dispose();
 
         // DELETE SAVEGAME

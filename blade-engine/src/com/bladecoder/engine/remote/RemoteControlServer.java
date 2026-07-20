@@ -38,7 +38,7 @@ public class RemoteControlServer implements RemoteServerStatus, RemoteErrorRepor
     public RemoteControlServer(UI ui, World world) {
         this.ui = ui;
         this.world = world;
-        world.addEventListener(eventLog);
+        world.getEvents().addListener(eventLog);
         commandExecutor = new RemoteCommandExecutor(ui, world, this, eventLog);
         requestHandler = new RemoteHttpHandler(commandQueue, new RemoteGameStateProvider(ui, world, this), eventLog, this);
     }

@@ -19,6 +19,7 @@ import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.World.AssetState;
 import com.bladecoder.engine.model.WorldEventListener;
 import com.bladecoder.engine.ui.ITextManagerUI;
+import com.bladecoder.engine.ui.UI;
 import com.bladecoder.engine.util.UIUtils;
 
 public class SceneWorldEventListener implements WorldEventListener {
@@ -59,5 +60,10 @@ public class SceneWorldEventListener implements WorldEventListener {
     public void pause(boolean value) {
         if (dsc.getUI().getWorld().getAssetState() == AssetState.LOADED)
             dsc.updateUI();
+    }
+
+    @Override
+    public void gameEnded() {
+        dsc.getUI().setCurrentScreen(UI.Screens.CREDIT_SCREEN);
     }
 }

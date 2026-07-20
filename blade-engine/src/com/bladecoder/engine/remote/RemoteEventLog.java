@@ -93,6 +93,11 @@ final class RemoteEventLog implements WorldEventListener {
         event.put("animation", animationId);
     }
 
+    @Override
+    public synchronized void gameEnded() {
+        add("gameEnded");
+    }
+
     private Map<String, Object> add(String type) {
         if (events.size() == MAX_EVENTS) {
             events.remove(0);

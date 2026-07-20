@@ -202,7 +202,7 @@ public class SpriteActor extends InteractiveActor implements AssetConsumer {
 
 		((AnimationRenderer) renderer).startAnimation(id, repeatType, count, cb);
 		if (scene != null)
-			scene.getWorld().notifyAnimationStarted(this.id, id, count != Tween.INFINITY);
+			scene.getWorld().getEvents().animationStarted(this.id, id, count != Tween.INFINITY);
 
 		outAnim(repeatType);
 	}

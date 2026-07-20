@@ -75,7 +75,7 @@ public class TextManager implements Serializable {
 
 			Text t = new Text(s, x, y, 0, type, color, font, actorId, voiceId, talkAnimation, null);
 
-			scene.getWorld().notifyText(t);
+			scene.getWorld().getEvents().text(t);
 
 			if (cb != null) {
 				ActionCallback tmpcb = cb;
@@ -182,7 +182,7 @@ public class TextManager implements Serializable {
 			voiceManager.stop();
 		}
 
-		scene.getWorld().notifyText(t);
+		scene.getWorld().getEvents().text(t);
 	}
 
 	public void update(float delta) {

@@ -35,7 +35,8 @@ curl http://127.0.0.1:8080/events
 with their available verbs, inventory items, dialogue options and automation
 state. `GET /events` returns the player-visible text, scene, dialogue,
 cut-mode, pause, inventory and finite-animation events since the last successful
-gameplay command. Reading events does not clear them.
+gameplay command. A `gameEnded` event unambiguously marks completion. Reading
+events does not clear them.
 
 Send commands to `POST /command` with `Content-Type: application/json`:
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Adventure Player"
+  short_description: "Play Bladecoder adventures through HTTP"
+  default_prompt: "Use $adventure-player to complete this Bladecoder adventure through its HTTP controller."
