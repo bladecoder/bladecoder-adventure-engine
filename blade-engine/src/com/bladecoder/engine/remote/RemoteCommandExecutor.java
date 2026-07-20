@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.model.BaseActor;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.SceneScreen;
 import com.bladecoder.engine.ui.UI;
@@ -128,11 +129,57 @@ final class RemoteCommandExecutor {
         InteractiveActor actor = (InteractiveActor) baseActor;
         if (!actor.canInteract())
             throw new CommandRejectedException("Remote command actor cannot be interacted with: " + command.actorId);
-        if (actor.getVerb(command.verb, command.target) == null
-                && world.getVerbManager().getVerb(command.verb, null, null) == null) {
+        if (Verb.USE_VERB.equals(command.verb)) {
+            executeUseVerb(scene, command, actor);
+            return;
+        }
+
+        if (!RemoteActorVerbResolver.canRun(actor, isInventoryItem(actor), command.verb)) {
             throw new CommandRejectedException("Remote command verb is not available: " + command.verb);
         }
+
         actor.runVerb(command.verb, command.target);
+    }
+
+    private void executeUseVerb(Scene scene, RemoteCommand command, InteractiveActor sourceActor)
+            throws CommandRejectedException {
+        if (command.target == null)
+            throw new CommandRejectedException("Remote use command requires a target actor");
+
+        BaseActor targetBaseActor = scene.getActor(command.target, true);
+        if (!(targetBaseActor instanceof InteractiveActor))
+            throw new CommandRejectedException("Remote command target actor not found: " + command.target);
+        InteractiveActor targetActor = (InteractiveActor) targetBaseActor;
+
+        if (sourceActor == targetActor || (!isInventoryItem(sourceActor) && !isInventoryItem(targetActor))) {
+            throw new CommandRejectedException(
+                    "Remote use command requires an inventory item and cannot be used between two scene actors");
+        }
+
+        runUseVerb(sourceActor, targetActor);
+    }
+
+    /** Matches the inventory UI selection algorithm for use verbs. */
+    private void runUseVerb(InteractiveActor sourceActor, InteractiveActor targetActor) {
+        Verb targetVerb = targetActor.getVerb(Verb.USE_VERB, sourceActor.getId());
+        Verb sourceVerb = sourceActor.getVerb(Verb.USE_VERB, targetActor.getId());
+        Verb bestMatch = sourceVerb;
+
+        if (bestMatch == null) {
+            bestMatch = targetVerb;
+        } else if (targetVerb != null && sourceVerb != null && targetActor.getId().equals(sourceVerb.getTarget())
+                && !sourceActor.getId().equals(targetVerb.getTarget())) {
+            bestMatch = targetVerb;
+        }
+
+        if (bestMatch == sourceVerb)
+            sourceActor.runVerb(Verb.USE_VERB, targetActor.getId());
+        else
+            targetActor.runVerb(Verb.USE_VERB, sourceActor.getId());
+    }
+
+    private boolean isInventoryItem(InteractiveActor actor) {
+        return world.getInventory() != null && world.getInventory().get(actor.getId()) == actor;
     }
 
     private boolean canRunWhenDisposed(RemoteCommand command) {

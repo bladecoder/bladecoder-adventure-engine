@@ -13,16 +13,12 @@ import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
-import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI;
 
 /** Builds remote state responses, marshalling game-state reads to the render thread. */
 final class RemoteGameStateProvider {
     private static final long STATE_TIMEOUT_MS = 2000;
-    private static final String[] ACTOR_VERBS = { Verb.LOOKAT_VERB, Verb.PICKUP_VERB, Verb.ACTION_VERB,
-            Verb.LEAVE_VERB, Verb.TALKTO_VERB };
-
     private final UI ui;
     private final World world;
     private final RemoteServerStatus serverStatus;
@@ -99,7 +95,7 @@ final class RemoteGameStateProvider {
                 Map<String, Object> actorState = new LinkedHashMap<String, Object>();
                 actorState.put("id", interactiveActor.getId());
                 actorState.put("description", interactiveActor.getDesc());
-                actorState.put("verbs", getAvailableActorVerbs(interactiveActor));
+                actorState.put("verbs", RemoteActorVerbResolver.getAvailableVerbs(interactiveActor, false));
                 actors.add(actorState);
             }
         }
@@ -108,15 +104,6 @@ final class RemoteGameStateProvider {
         state.put("dialogOptions", world.hasDialogOptions() ? new ArrayList<String>(world.getDialogOptions())
                 : new ArrayList<String>());
         return state;
-    }
-
-    private List<String> getAvailableActorVerbs(InteractiveActor actor) {
-        List<String> verbs = new ArrayList<String>();
-        for (String verb : ACTOR_VERBS) {
-            if (actor.getVerb(verb) != null || world.getVerbManager().getVerb(verb, null, null) != null)
-                verbs.add(verb);
-        }
-        return verbs;
     }
 
     private List<Map<String, Object>> getInventoryState() {
@@ -130,10 +117,7 @@ final class RemoteGameStateProvider {
             Map<String, Object> itemState = new LinkedHashMap<String, Object>();
             itemState.put("id", item.getId());
             itemState.put("description", item.getDesc());
-            List<String> verbs = getAvailableActorVerbs(item);
-            if (!verbs.contains(Verb.USE_VERB))
-                verbs.add(Verb.USE_VERB);
-            itemState.put("verbs", verbs);
+            itemState.put("verbs", RemoteActorVerbResolver.getAvailableVerbs(item, true));
             items.add(itemState);
         }
         return items;
