@@ -163,10 +163,10 @@ final class RemoteCommandExecutor {
     private void runUseVerb(InteractiveActor sourceActor, InteractiveActor targetActor) {
         Verb targetVerb = targetActor.getVerb(Verb.USE_VERB, sourceActor.getId());
         Verb sourceVerb = sourceActor.getVerb(Verb.USE_VERB, targetActor.getId());
-        Verb bestMatch = sourceVerb;
+        Verb bestMatch = targetVerb;
 
         if (bestMatch == null) {
-            bestMatch = targetVerb;
+            bestMatch = sourceVerb;
         } else if (targetVerb != null && sourceVerb != null && targetActor.getId().equals(sourceVerb.getTarget())
                 && !sourceActor.getId().equals(targetVerb.getTarget())) {
             bestMatch = targetVerb;

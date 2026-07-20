@@ -9,6 +9,12 @@ Play as a player, not as an editor or a model inspector. Use `/state` to choose 
 
 ## Start
 
+Start the desktop game with the localhost controller enabled by passing these game arguments:
+
+`-http [port]` enables the controller; omit the port to use `8080`. Add `-w` to start the game windowed when that is useful.
+
+Use these arguments whether the game is launched through Gradle, Java, or a generated executable.
+
 1. Confirm the controller is live with `GET /health`.
 2. Read `GET /state` and `GET /events` before acting.
 3. If there is no active scene, send `{"type":"continue"}`. If that does not start an active game, send `{"type":"newGame"}`.
