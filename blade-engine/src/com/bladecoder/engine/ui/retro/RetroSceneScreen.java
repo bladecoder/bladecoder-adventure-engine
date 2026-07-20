@@ -49,7 +49,7 @@ import com.bladecoder.engine.model.Text;
 import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
-import com.bladecoder.engine.model.WorldListener;
+import com.bladecoder.engine.model.WorldEventListener;
 import com.bladecoder.engine.ui.DialogUI;
 import com.bladecoder.engine.ui.Pointer;
 import com.bladecoder.engine.ui.Recorder;
@@ -243,14 +243,14 @@ public class RetroSceneScreen implements SceneScreen {
 		}
 	};
 
-	private final WorldListener worldListener = new WorldListener() {
+	private final WorldEventListener worldListener = new WorldEventListener() {
 		@Override
 		public void text(Text t) {
 			textManagerUI.setText(t);
 		}
 
 		@Override
-		public void dialogOptions() {
+		public void dialogOptionsChanged() {
 			updateUI();
 		}
 
@@ -260,7 +260,8 @@ public class RetroSceneScreen implements SceneScreen {
 		}
 
 		@Override
-		public void inventoryEnabled(boolean value) {
+		public void inventoryChanged() {
+			boolean value = ui.getWorld().getInventory().isVisible();
 			if (value)
 				verbUI.show();
 			else
@@ -689,7 +690,7 @@ public class RetroSceneScreen implements SceneScreen {
 			}
 		}
 
-		ui.getWorld().setListener(worldListener);
+		ui.getWorld().addEventListener(worldListener);
 		ui.getWorld().resume();
 
 		textManagerUI.setText(ui.getWorld().getCurrentScene().getTextManager().getCurrentText());
@@ -699,6 +700,7 @@ public class RetroSceneScreen implements SceneScreen {
 
 	@Override
 	public void hide() {
+		ui.getWorld().removeEventListener(worldListener);
 		ui.getWorld().pause();
 		currentActor = null;
 		dispose();

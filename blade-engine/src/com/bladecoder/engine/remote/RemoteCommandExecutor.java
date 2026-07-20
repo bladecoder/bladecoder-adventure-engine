@@ -1,6 +1,5 @@
 package com.bladecoder.engine.remote;
 
-import java.io.IOException;
 
 import com.badlogic.gdx.math.Vector2;
 import com.bladecoder.engine.model.BaseActor;
@@ -17,77 +16,133 @@ final class RemoteCommandExecutor {
     private final UI ui;
     private final World world;
     private final RemoteErrorReporter errorReporter;
+    private final RemoteEventLog eventLog;
 
-    RemoteCommandExecutor(UI ui, World world, RemoteErrorReporter errorReporter) {
+    RemoteCommandExecutor(UI ui, World world, RemoteErrorReporter errorReporter, RemoteEventLog eventLog) {
         this.ui = ui;
         this.world = world;
         this.errorReporter = errorReporter;
+        this.eventLog = eventLog;
     }
 
-    void execute(RemoteCommand command) {
-        if (world.isDisposed() && !canRunWhenDisposed(command)) {
-            errorReporter.reportError("Remote command requires an active game. Start a new game, load a saved game, or continue first.");
-            return;
-        }
+    RemoteCommandResult execute(RemoteCommand command) {
+        String preconditionError = validatePreconditions(command);
+        if (preconditionError != null)
+            return reject(preconditionError);
+
+        if (world.isPaused() && command.type != RemoteCommand.Type.PAUSE)
+            return reject("Remote command cannot run while the game is paused. Use the pause command to resume it first.");
 
         showSceneScreen();
 
-        if (world.isPaused() && command.type != RemoteCommand.Type.PAUSE) {
-            errorReporter.reportError("Remote command cannot run while the game is paused. Use the pause command to resume it first.");
-            return;
-        }
+        boolean resetEvents = resetsEvents(command);
+        if (resetEvents)
+            eventLog.beginAction();
 
+        try {
+            executeCommand(command);
+            if (resetEvents)
+                eventLog.commitAction();
+            if (resetEvents)
+                eventLog.recordInventoryChanged();
+            return RemoteCommandResult.success();
+        } catch (CommandRejectedException e) {
+            if (resetEvents)
+                eventLog.rollbackAction();
+            return reject(e.getMessage());
+        } catch (Exception e) {
+            if (resetEvents)
+                eventLog.rollbackAction();
+            String message = "Remote command failed: " + e.getMessage();
+            errorReporter.reportError(message, e);
+            return RemoteCommandResult.failed(message);
+        }
+    }
+
+    private String validatePreconditions(RemoteCommand command) {
+        if (world.isDisposed() && !canRunWhenDisposed(command))
+            return "Remote command requires an active game. Start a new game, load a saved game, or continue first.";
+        return null;
+    }
+
+    private void executeCommand(RemoteCommand command) throws Exception {
         switch (command.type) {
         case NEW_GAME:
-            executeNewGame();
+            world.newGame();
+            ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
             return;
         case LOAD_GAME:
-            executeLoadGame(command);
+            world.loadGameState(command.target);
+            ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
             return;
         case CONTINUE:
-            executeContinue();
+            world.load();
+            ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
             return;
         case PAUSE:
-            togglePause();
+            if (world.isPaused())
+                world.resume();
+            else
+                world.pause();
             return;
         default:
             break;
         }
 
         Scene scene = world.getCurrentScene();
-        if (scene == null) {
-            errorReporter.reportError("No current scene available for remote command");
-            return;
-        }
+        if (scene == null)
+            throw new CommandRejectedException("No current scene available for remote command");
 
         switch (command.type) {
         case ACTOR_VERB:
             executeActorVerb(scene, command);
-            break;
+            return;
         case SCENE_VERB:
             scene.runVerb(command.verb);
-            break;
+            return;
         case DIALOG_OPTION:
-            executeDialogOption(command);
-            break;
+            if (!world.hasDialogOptions() || command.option < 0 || command.option >= world.getDialogOptions().size())
+                throw new CommandRejectedException("Remote command dialog option is not available: " + command.option);
+            world.selectDialogOption(command.option);
+            return;
         case GOTO:
-            executeGoto(scene, command);
-            break;
+            if (scene.getPlayer() == null)
+                throw new CommandRejectedException("Remote goto command requires a scene player");
+            scene.getPlayer().goTo(new Vector2(command.x, command.y), null, false);
+            return;
         case SAVE_GAME:
-            executeSaveGame(command);
-            break;
+            world.getSerializer().saveGameState(command.target, true);
+            return;
         case SCREENSHOT:
             world.takeScreenshot(command.target, SCREENSHOT_WIDTH);
-            break;
+            return;
         default:
-            errorReporter.reportError("Unknown remote command");
-            break;
+            throw new CommandRejectedException("Unknown remote command");
         }
+    }
+
+    private void executeActorVerb(Scene scene, RemoteCommand command) throws CommandRejectedException {
+        BaseActor baseActor = scene.getActor(command.actorId, true);
+        if (!(baseActor instanceof InteractiveActor))
+            throw new CommandRejectedException("Remote command actor not found: " + command.actorId);
+        InteractiveActor actor = (InteractiveActor) baseActor;
+        if (!actor.canInteract())
+            throw new CommandRejectedException("Remote command actor cannot be interacted with: " + command.actorId);
+        if (actor.getVerb(command.verb, command.target) == null
+                && world.getVerbManager().getVerb(command.verb, null, null) == null) {
+            throw new CommandRejectedException("Remote command verb is not available: " + command.verb);
+        }
+        actor.runVerb(command.verb, command.target);
     }
 
     private boolean canRunWhenDisposed(RemoteCommand command) {
         return command.type == RemoteCommand.Type.NEW_GAME || command.type == RemoteCommand.Type.LOAD_GAME
                 || command.type == RemoteCommand.Type.CONTINUE;
+    }
+
+    private boolean resetsEvents(RemoteCommand command) {
+        return command.type != RemoteCommand.Type.PAUSE && command.type != RemoteCommand.Type.CONTINUE
+                && command.type != RemoteCommand.Type.SCREENSHOT && command.type != RemoteCommand.Type.SAVE_GAME;
     }
 
     private void showSceneScreen() {
@@ -99,70 +154,16 @@ final class RemoteCommandExecutor {
         }
     }
 
-    private void executeNewGame() {
-        try {
-            world.newGame();
-            ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
-        } catch (Exception e) {
-            errorReporter.reportError("Remote new game failed: " + e.getMessage(), e);
-        }
+    private RemoteCommandResult reject(String message) {
+        errorReporter.reportError(message);
+        return RemoteCommandResult.rejected(message);
     }
 
-    private void executeLoadGame(RemoteCommand command) {
-        try {
-            world.loadGameState(command.target);
-            ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
-        } catch (IOException e) {
-            errorReporter.reportError("Remote load game failed: " + e.getMessage(), e);
-        }
-    }
+    private static class CommandRejectedException extends Exception {
+        private static final long serialVersionUID = 1L;
 
-    private void executeContinue() {
-        try {
-            world.load();
-            ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
-        } catch (Exception e) {
-            errorReporter.reportError("Remote continue failed: " + e.getMessage(), e);
-        }
-    }
-
-    private void togglePause() {
-        if (world.isPaused())
-            world.resume();
-        else
-            world.pause();
-    }
-
-    private void executeActorVerb(Scene scene, RemoteCommand command) {
-        BaseActor baseActor = scene.getActor(command.actorId, true);
-        if (baseActor instanceof InteractiveActor) {
-            ((InteractiveActor) baseActor).runVerb(command.verb, command.target);
-        } else {
-            errorReporter.reportError("Remote command actor not found: " + command.actorId);
-        }
-    }
-
-    private void executeDialogOption(RemoteCommand command) {
-        if (!world.hasDialogOptions() || command.option < 0 || command.option >= world.getDialogOptions().size()) {
-            errorReporter.reportError("Remote command dialog option is not available: " + command.option);
-        } else {
-            world.selectDialogOption(command.option);
-        }
-    }
-
-    private void executeGoto(Scene scene, RemoteCommand command) {
-        if (scene.getPlayer() == null) {
-            errorReporter.reportError("Remote goto command requires a scene player");
-        } else {
-            scene.getPlayer().goTo(new Vector2(command.x, command.y), null, false);
-        }
-    }
-
-    private void executeSaveGame(RemoteCommand command) {
-        try {
-            world.getSerializer().saveGameState(command.target, true);
-        } catch (IOException e) {
-            errorReporter.reportError("Remote save game failed: " + e.getMessage());
+        CommandRejectedException(String message) {
+            super(message);
         }
     }
 }

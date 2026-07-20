@@ -7,15 +7,18 @@ import java.util.Map;
 
 /** Routes HTTP requests without owning the server socket lifecycle. */
 final class RemoteHttpHandler {
+    private static final long COMMAND_TIMEOUT_MS = 2000;
     private final RemoteCommandParser commandParser = new RemoteCommandParser();
     private final RemoteCommandQueue commandQueue;
     private final RemoteGameStateProvider stateProvider;
+    private final RemoteEventLog eventLog;
     private final RemoteErrorReporter errorReporter;
 
-    RemoteHttpHandler(RemoteCommandQueue commandQueue, RemoteGameStateProvider stateProvider,
+    RemoteHttpHandler(RemoteCommandQueue commandQueue, RemoteGameStateProvider stateProvider, RemoteEventLog eventLog,
             RemoteErrorReporter errorReporter) {
         this.commandQueue = commandQueue;
         this.stateProvider = stateProvider;
+        this.eventLog = eventLog;
         this.errorReporter = errorReporter;
     }
 
@@ -47,12 +50,30 @@ final class RemoteHttpHandler {
                     : new RemoteHttpResponse(200, state);
         }
 
+        if ("GET".equals(request.method) && "/events".equals(request.path))
+            return new RemoteHttpResponse(200, RemoteJson.toJson(eventLog.getEventsState()));
+
         if ("POST".equals(request.method) && "/command".equals(request.path)) {
-            commandQueue.add(commandParser.parse(request.body));
+            RemoteCommandRequest commandRequest = new RemoteCommandRequest(commandParser.parse(request.body));
+            commandQueue.add(commandRequest);
+            RemoteCommandResult commandResult;
+            try {
+                commandResult = commandRequest.await(COMMAND_TIMEOUT_MS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                commandRequest.cancel();
+                return new RemoteHttpResponse(503, RemoteHttpProtocol.errorJson("Interrupted while waiting for game thread"));
+            }
+            if (commandResult == null) {
+                commandRequest.cancel();
+                return new RemoteHttpResponse(504, RemoteHttpProtocol.errorJson("Game thread did not process the command in time"));
+            }
+            if (!commandResult.successful)
+                return new RemoteHttpResponse(commandResult.status, RemoteHttpProtocol.errorJson(commandResult.message));
             Map<String, Object> result = new LinkedHashMap<String, Object>();
-            result.put("status", "queued");
+            result.put("status", "executed");
             result.put("queueLength", commandQueue.size());
-            return new RemoteHttpResponse(202, RemoteJson.toJson(result));
+            return new RemoteHttpResponse(200, RemoteJson.toJson(result));
         }
 
         if (!"GET".equals(request.method) && !"POST".equals(request.method))

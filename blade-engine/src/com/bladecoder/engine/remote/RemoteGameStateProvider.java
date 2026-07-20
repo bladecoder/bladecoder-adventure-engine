@@ -9,14 +9,19 @@ import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.Gdx;
 import com.bladecoder.engine.model.BaseActor;
+import com.bladecoder.engine.model.Inventory;
 import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
+import com.bladecoder.engine.model.SpriteActor;
+import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.ui.UI;
 
 /** Builds remote state responses, marshalling game-state reads to the render thread. */
 final class RemoteGameStateProvider {
     private static final long STATE_TIMEOUT_MS = 2000;
+    private static final String[] ACTOR_VERBS = { Verb.LOOKAT_VERB, Verb.PICKUP_VERB, Verb.ACTION_VERB,
+            Verb.LEAVE_VERB, Verb.TALKTO_VERB };
 
     private final UI ui;
     private final World world;
@@ -77,14 +82,11 @@ final class RemoteGameStateProvider {
 
         Map<String, Object> sceneState = new LinkedHashMap<String, Object>();
         sceneState.put("id", scene.getId());
-        sceneState.put("state", scene.getState());
         state.put("scene", sceneState);
 
         if (scene.getPlayer() != null) {
             Map<String, Object> player = new LinkedHashMap<String, Object>();
             player.put("id", scene.getPlayer().getId());
-            player.put("x", scene.getPlayer().getX());
-            player.put("y", scene.getPlayer().getY());
             state.put("player", player);
         }
 
@@ -92,21 +94,48 @@ final class RemoteGameStateProvider {
         for (BaseActor actor : scene.getActors().values()) {
             if (actor instanceof InteractiveActor) {
                 InteractiveActor interactiveActor = (InteractiveActor) actor;
+                if (!interactiveActor.canInteract())
+                    continue;
                 Map<String, Object> actorState = new LinkedHashMap<String, Object>();
                 actorState.put("id", interactiveActor.getId());
                 actorState.put("description", interactiveActor.getDesc());
-                actorState.put("state", interactiveActor.getState());
-                actorState.put("visible", interactiveActor.isVisible());
-                actorState.put("canInteract", interactiveActor.canInteract());
-                actorState.put("x", interactiveActor.getX());
-                actorState.put("y", interactiveActor.getY());
-                actorState.put("verbs", new ArrayList<String>(interactiveActor.getVerbManager().getVerbs().keySet()));
+                actorState.put("verbs", getAvailableActorVerbs(interactiveActor));
                 actors.add(actorState);
             }
         }
         state.put("actors", actors);
+        state.put("inventory", getInventoryState());
         state.put("dialogOptions", world.hasDialogOptions() ? new ArrayList<String>(world.getDialogOptions())
                 : new ArrayList<String>());
         return state;
+    }
+
+    private List<String> getAvailableActorVerbs(InteractiveActor actor) {
+        List<String> verbs = new ArrayList<String>();
+        for (String verb : ACTOR_VERBS) {
+            if (actor.getVerb(verb) != null || world.getVerbManager().getVerb(verb, null, null) != null)
+                verbs.add(verb);
+        }
+        return verbs;
+    }
+
+    private List<Map<String, Object>> getInventoryState() {
+        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        Inventory inventory = world.getInventory();
+        if (inventory == null)
+            return items;
+
+        for (int i = 0; i < inventory.getNumItems(); i++) {
+            SpriteActor item = inventory.get(i);
+            Map<String, Object> itemState = new LinkedHashMap<String, Object>();
+            itemState.put("id", item.getId());
+            itemState.put("description", item.getDesc());
+            List<String> verbs = getAvailableActorVerbs(item);
+            if (!verbs.contains(Verb.USE_VERB))
+                verbs.add(Verb.USE_VERB);
+            itemState.put("verbs", verbs);
+            items.add(itemState);
+        }
+        return items;
     }
 }

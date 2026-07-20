@@ -40,6 +40,7 @@ import com.bladecoder.engine.util.FileUtils;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.Deflater;
@@ -95,7 +96,7 @@ public class World implements AssetConsumer {
 
     private MusicManager musicManager;
 
-    private WorldListener listener;
+    private final List<WorldEventListener> eventListeners = new ArrayList<WorldEventListener>();
 
     // ------------ LAZY CREATED OBJECTS ------------
     private InkManager inkManager;
@@ -156,12 +157,28 @@ public class World implements AssetConsumer {
         initGame = true;
     }
 
-    public void setListener(WorldListener l) {
-        listener = l;
+    public void addEventListener(WorldEventListener listener) {
+        if (listener != null && !eventListeners.contains(listener))
+            eventListeners.add(listener);
     }
 
-    public WorldListener getListener() {
-        return listener;
+    public void removeEventListener(WorldEventListener listener) {
+        eventListeners.remove(listener);
+    }
+
+    public void notifyText(Text text) {
+        for (WorldEventListener eventListener : eventListeners)
+            eventListener.text(text);
+    }
+
+    public void notifyDialogOptionsChanged() {
+        for (WorldEventListener eventListener : eventListeners)
+            eventListener.dialogOptionsChanged();
+    }
+
+    public void notifyAnimationStarted(String actorId, String animationId, boolean finite) {
+        for (WorldEventListener eventListener : eventListeners)
+            eventListener.animationStarted(actorId, animationId, finite);
     }
 
     public WorldSerialization getSerializer() {
@@ -440,6 +457,8 @@ public class World implements AssetConsumer {
         this.initVerb = initVerb;
 
         musicManager.leaveScene(currentScene.getMusicDesc());
+        for (WorldEventListener eventListener : eventListeners)
+            eventListener.sceneChanged(currentScene.getId());
     }
 
     public Inventory getInventory() {
@@ -473,8 +492,8 @@ public class World implements AssetConsumer {
     public void setCutMode(boolean v) {
         cutMode = v;
 
-        if (listener != null)
-            listener.cutMode(cutMode);
+        for (WorldEventListener eventListener : eventListeners)
+            eventListener.cutMode(cutMode);
     }
 
     public void setCurrentScene(String id, boolean init, String initVerb) {
@@ -501,8 +520,7 @@ public class World implements AssetConsumer {
                 currentDialog = null;
         }
 
-        if (listener != null)
-            listener.dialogOptions();
+        notifyDialogOptionsChanged();
     }
 
     public void setInventory(String inventory) {
@@ -514,6 +532,8 @@ public class World implements AssetConsumer {
         }
 
         setCurrentInventory(inventory);
+        for (WorldEventListener eventListener : eventListeners)
+            eventListener.inventoryChanged();
     }
 
     public boolean hasDialogOptions() {
@@ -578,8 +598,8 @@ public class World implements AssetConsumer {
     public void showInventory(boolean b) {
         getInventory().setVisible(b);
 
-        if (listener != null)
-            listener.inventoryEnabled(b);
+        for (WorldEventListener eventListener : eventListeners)
+            eventListener.inventoryChanged();
     }
 
     public String getCurrentInventory() {
@@ -691,8 +711,8 @@ public class World implements AssetConsumer {
             currentScene.getSoundManager().pause();
         }
 
-        if (listener != null)
-            listener.pause(true);
+        for (WorldEventListener eventListener : eventListeners)
+            eventListener.pause(true);
     }
 
     public void resume() {
@@ -708,8 +728,8 @@ public class World implements AssetConsumer {
             }
         }
 
-        if (listener != null)
-            listener.pause(false);
+        for (WorldEventListener eventListener : eventListeners)
+            eventListener.pause(false);
     }
 
     public void newGame() throws Exception {

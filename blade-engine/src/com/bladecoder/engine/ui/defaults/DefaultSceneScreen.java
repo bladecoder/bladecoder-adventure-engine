@@ -41,7 +41,7 @@ import com.bladecoder.engine.model.Transition;
 import com.bladecoder.engine.model.Verb;
 import com.bladecoder.engine.model.World;
 import com.bladecoder.engine.model.World.AssetState;
-import com.bladecoder.engine.model.WorldListener;
+import com.bladecoder.engine.model.WorldEventListener;
 import com.bladecoder.engine.ui.*;
 import com.bladecoder.engine.ui.UI.InputMode;
 import com.bladecoder.engine.ui.UI.Screens;
@@ -106,7 +106,7 @@ public class DefaultSceneScreen implements SceneScreen {
     private GestureDetector inputProcessor;
     private SceneControllerHandler sceneController;
 
-    private final WorldListener worldListener = new SceneWorldListener(this);
+    private final WorldEventListener worldListener = new SceneWorldEventListener(this);
 
     public DefaultSceneScreen() {
         viewport = Config.getInstance().getProperty(Config.EXTEND_VIEWPORT_PROP, false) ? new SceneExtendViewport()
@@ -613,12 +613,13 @@ public class DefaultSceneScreen implements SceneScreen {
             }
         }
 
-        getWorld().setListener(worldListener);
+        getWorld().addEventListener(worldListener);
         getWorld().resume();
     }
 
     @Override
     public void hide() {
+        getWorld().removeEventListener(worldListener);
         getWorld().pause();
     }
 

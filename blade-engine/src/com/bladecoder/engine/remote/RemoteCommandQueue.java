@@ -4,13 +4,13 @@ import java.util.ArrayDeque;
 
 /** Thread-safe FIFO queue between HTTP request threads and the render thread. */
 final class RemoteCommandQueue {
-    private final ArrayDeque<RemoteCommand> commands = new ArrayDeque<RemoteCommand>();
+    private final ArrayDeque<RemoteCommandRequest> commands = new ArrayDeque<RemoteCommandRequest>();
 
-    synchronized void add(RemoteCommand command) {
+    synchronized void add(RemoteCommandRequest command) {
         commands.add(command);
     }
 
-    synchronized RemoteCommand poll() {
+    synchronized RemoteCommandRequest poll() {
         return commands.poll();
     }
 

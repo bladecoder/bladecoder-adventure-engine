@@ -268,7 +268,7 @@ public class InkManager implements Serializable {
             if (hasChoices()) {
                 wasInCutmode = w.inCutMode();
                 w.setCutMode(false);
-                w.getListener().dialogOptions();
+                w.notifyDialogOptionsChanged();
             } else {
                 inkVerbRunner.callCb();
             }

@@ -648,8 +648,7 @@ public class Scene implements Serializable, AssetConsumer {
 				((AssetConsumer) a).retrieveAssets();
 		}
 
-		if (getWorld().getListener() != null)
-			getWorld().getListener().text(textManager.getCurrentText());
+		getWorld().notifyText(textManager.getCurrentText());
 	}
 
 	@Override

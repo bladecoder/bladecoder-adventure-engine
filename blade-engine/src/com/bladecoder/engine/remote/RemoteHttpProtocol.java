@@ -104,6 +104,10 @@ final class RemoteHttpProtocol {
             return "Not Found";
         case 405:
             return "Method Not Allowed";
+        case 409:
+            return "Conflict";
+        case 504:
+            return "Gateway Timeout";
         case 503:
             return "Service Unavailable";
         default:

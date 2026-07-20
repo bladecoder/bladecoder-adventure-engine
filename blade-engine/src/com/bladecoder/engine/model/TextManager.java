@@ -71,11 +71,11 @@ public class TextManager implements Serializable {
 
 		String s = str.replace("\\n", "\n");
 
-		if (type == Text.Type.UI && scene.getWorld().getListener() != null) {
+		if (type == Text.Type.UI) {
 
 			Text t = new Text(s, x, y, 0, type, color, font, actorId, voiceId, talkAnimation, null);
 
-			scene.getWorld().getListener().text(t);
+			scene.getWorld().notifyText(t);
 
 			if (cb != null) {
 				ActionCallback tmpcb = cb;
@@ -182,8 +182,7 @@ public class TextManager implements Serializable {
 			voiceManager.stop();
 		}
 
-		if (scene.getWorld().getListener() != null)
-			scene.getWorld().getListener().text(t);
+		scene.getWorld().notifyText(t);
 	}
 
 	public void update(float delta) {

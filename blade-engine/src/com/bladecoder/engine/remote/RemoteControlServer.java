@@ -26,6 +26,7 @@ public class RemoteControlServer implements RemoteServerStatus, RemoteErrorRepor
     private final UI ui;
     private final World world;
     private final RemoteCommandQueue commandQueue = new RemoteCommandQueue();
+    private final RemoteEventLog eventLog = new RemoteEventLog();
     private final RemoteCommandExecutor commandExecutor;
     private final RemoteHttpHandler requestHandler;
 
@@ -37,8 +38,9 @@ public class RemoteControlServer implements RemoteServerStatus, RemoteErrorRepor
     public RemoteControlServer(UI ui, World world) {
         this.ui = ui;
         this.world = world;
-        commandExecutor = new RemoteCommandExecutor(ui, world, this);
-        requestHandler = new RemoteHttpHandler(commandQueue, new RemoteGameStateProvider(ui, world, this), this);
+        world.addEventListener(eventLog);
+        commandExecutor = new RemoteCommandExecutor(ui, world, this, eventLog);
+        requestHandler = new RemoteHttpHandler(commandQueue, new RemoteGameStateProvider(ui, world, this), eventLog, this);
     }
 
     public synchronized boolean start(int port) {
@@ -115,9 +117,9 @@ public class RemoteControlServer implements RemoteServerStatus, RemoteErrorRepor
             return;
         }
 
-        RemoteCommand command = commandQueue.poll();
-        if (command != null)
-            commandExecutor.execute(command);
+        RemoteCommandRequest request = commandQueue.poll();
+        if (request != null && !request.isCancelled())
+            request.complete(commandExecutor.execute(request.getCommand()));
     }
 
     @Override

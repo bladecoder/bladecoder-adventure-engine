@@ -20,17 +20,22 @@ from the development machine.
 
 ## API
 
-Every response is JSON. Commands are accepted into a FIFO queue and return
-`202`; one command is executed per rendered frame once the world is not paused,
-in cut mode, replaying a recording, or running the tester bot.
+Every response is JSON. Commands are accepted into a FIFO queue and the request
+waits until the render thread accepts or rejects the command. A command returns
+`200` when dispatched, `409` when its game-state preconditions are not met, and
+`504` if it cannot be processed within two seconds.
 
 ```sh
 curl http://127.0.0.1:8080/health
 curl http://127.0.0.1:8080/state
+curl http://127.0.0.1:8080/events
 ```
 
-`GET /state` contains the current scene, player, interactive actors, configured
-verbs, dialogue options and automation state.
+`GET /state` contains the current scene, player, currently interactable actors
+with their available verbs, inventory items, dialogue options and automation
+state. `GET /events` returns the player-visible text, scene, dialogue,
+cut-mode, pause, inventory and finite-animation events since the last successful
+gameplay command. Reading events does not clear them.
 
 Send commands to `POST /command` with `Content-Type: application/json`:
 
