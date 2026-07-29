@@ -17,7 +17,7 @@ Use these arguments whether the game is launched through Gradle, Java, or a gene
 
 1. Confirm the controller is live with `GET /health`.
 2. Read `GET /state` and `GET /events` before acting.
-3. If there is no active scene, send `{"type":"continue"}`. If that does not start an active game, send `{"type":"newGame"}`.
+3. If there is no active scene, send `{"type":"newGame"}` by default. Send `{"type":"continue"}` or `{"type":"loadGame","target":"..."}` only when the user explicitly asks to continue or load a saved game.
 4. Record the initial scene, interactable actors, inventory, dialogue options, and events as the first observation.
 
 Use `curl -sS` or an equivalent HTTP client. Send JSON with `Content-Type: application/json`.
@@ -30,6 +30,9 @@ Repeat until the game gives an unambiguous completion outcome.
 2. If `cutMode` is true, do not send a gameplay command. Poll `/events` and `/state` until it becomes false.
 3. If `dialogOptions` is non-empty, choose one option with `dialogOption`. Prefer options that advance a stated goal or reveal new information; record rejected or unproductive choices to avoid loops.
 4. Otherwise inspect the available actors and verbs. Prefer this order when applicable: `lookat`, `talkto`, `pickup`, `action`, `leave`. Read the resulting events before choosing another action.
+
+Treat `pickup` as an interaction verb as well as a way to collect an item; it can advance the game like `action` even when nothing is added to the inventory.
+
 5. Use inventory items only after their text or the current puzzle provides a reason. Send `actorVerb` with the inventory item as `actorId`, `verb:"use"`, and an interactable scene actor as `target`.
 6. Save a named checkpoint before a risky branch or a puzzle experiment: `{"type":"saveGame","target":"agent-checkpoint"}`. It does not clear `/events`.
 7. Maintain a compact exploration ledger keyed by scene, inventory IDs, actor IDs, their available verbs, and dialogue choices. Do not repeat an action from an unchanged ledger entry unless new text or inventory explains why.
@@ -39,10 +42,10 @@ Repeat until the game gives an unambiguous completion outcome.
 Use these bodies with `POST /command`:
 
 ```json
-{"type":"actorVerb","actorId":"door","verb":"action"}
+{"type":"newGame"}
+{"type":"actorVerb","actorId":"door","verb":"pickup"}
 {"type":"actorVerb","actorId":"key","verb":"use","target":"door"}
 {"type":"dialogOption","option":0}
-{"type":"newGame"}
 {"type":"loadGame","target":"agent-checkpoint"}
 {"type":"continue"}
 {"type":"pause"}

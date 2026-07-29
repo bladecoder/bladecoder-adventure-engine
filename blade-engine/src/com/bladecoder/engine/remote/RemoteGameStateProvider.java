@@ -14,6 +14,7 @@ import com.bladecoder.engine.model.InteractiveActor;
 import com.bladecoder.engine.model.Scene;
 import com.bladecoder.engine.model.SpriteActor;
 import com.bladecoder.engine.model.World;
+import com.bladecoder.engine.i18n.I18N;
 import com.bladecoder.engine.ui.UI;
 
 /** Builds remote state responses, marshalling game-state reads to the render thread. */
@@ -94,15 +95,14 @@ final class RemoteGameStateProvider {
                     continue;
                 Map<String, Object> actorState = new LinkedHashMap<String, Object>();
                 actorState.put("id", interactiveActor.getId());
-                actorState.put("description", interactiveActor.getDesc());
+                actorState.put("description", getTranslatedDescription(interactiveActor));
                 actorState.put("verbs", RemoteActorVerbResolver.getAvailableVerbs(interactiveActor, false));
                 actors.add(actorState);
             }
         }
         state.put("actors", actors);
         state.put("inventory", getInventoryState());
-        state.put("dialogOptions", world.hasDialogOptions() ? new ArrayList<String>(world.getDialogOptions())
-                : new ArrayList<String>());
+        state.put("dialogOptions", getTranslatedDialogOptions());
         return state;
     }
 
@@ -116,10 +116,29 @@ final class RemoteGameStateProvider {
             SpriteActor item = inventory.get(i);
             Map<String, Object> itemState = new LinkedHashMap<String, Object>();
             itemState.put("id", item.getId());
-            itemState.put("description", item.getDesc());
+            itemState.put("description", getTranslatedDescription(item));
             itemState.put("verbs", RemoteActorVerbResolver.getAvailableVerbs(item, true));
             items.add(itemState);
         }
         return items;
+    }
+
+    private String getTranslatedDescription(InteractiveActor actor) {
+        return getTranslatedText(actor.getDesc());
+    }
+
+    private List<String> getTranslatedDialogOptions() {
+        List<String> options = new ArrayList<String>();
+        if (world.hasDialogOptions()) {
+            for (String option : world.getDialogOptions())
+                options.add(getTranslatedText(option));
+        }
+        return options;
+    }
+
+    private String getTranslatedText(String text) {
+        if (text != null && !text.isEmpty() && text.charAt(0) == I18N.PREFIX)
+            return world.getI18N().getString(text.substring(1));
+        return text;
     }
 }
