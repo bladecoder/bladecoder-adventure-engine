@@ -1,0 +1,4 @@
+interface:
+  display_name: "Adventure Editor"
+  short_description: "Edit Bladecoder adventure chapter models"
+  default_prompt: "Use $adventure-editor to edit this Bladecoder game model directly from its project folder."
