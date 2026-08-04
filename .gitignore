@@ -21,3 +21,7 @@ build/
 *.log
 
 .DS_Store
+
+.agents
+.codex
+
