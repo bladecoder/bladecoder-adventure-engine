@@ -8,6 +8,9 @@ import com.bladecoder.engine.assets.AssetConsumer;
 
 public interface ActorRenderer extends Serializable, AssetConsumer {
 
+    /** Optional read-only diagnostics, queried on the game thread by the debug controller. */
+    default java.util.Map<String,Object> getDebugState() {return java.util.Collections.emptyMap();}
+
 	void update(float delta);
 
 	void draw(SpriteBatch batch, float x, float y, float scaleX, float scaleY, float rotation, Color tint);

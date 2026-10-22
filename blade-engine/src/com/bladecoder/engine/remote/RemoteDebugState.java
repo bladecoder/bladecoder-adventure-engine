@@ -149,6 +149,7 @@ final class RemoteDebugState {
                     render.put("regions",regions);
                 }
             }
+            if(renderer!=null)render.put("details",renderer.getDebugState());
             data.put("renderer",render);
         }
         return data;

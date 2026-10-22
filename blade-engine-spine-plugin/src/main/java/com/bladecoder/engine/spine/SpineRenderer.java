@@ -75,6 +75,40 @@ public class SpineRenderer extends AnimationRenderer {
 
 	}
 
+    private static java.util.Map<String,Object> debugMap(Object... pairs) {
+        java.util.Map<String,Object> result=new java.util.LinkedHashMap<String,Object>();
+        for(int i=0;i<pairs.length;i+=2)result.put((String)pairs[i],pairs[i+1]);return result;
+    }
+
+    @Override
+    public java.util.Map<String,Object> getDebugState() {
+        SkeletonCacheEntry cs=(SkeletonCacheEntry)currentSource;
+        if(cs==null || cs.skeleton==null || cs.animation==null)return debugMap("loaded",false);
+        Skeleton skeleton=cs.skeleton;
+        java.util.List<Object> bones=new java.util.ArrayList<Object>();
+        for(Bone bone:skeleton.getBones()) {
+            BonePose pose=bone.getAppliedPose();
+            bones.add(debugMap("name",bone.getData().getName(),"x",pose.getX(),"y",pose.getY(),
+                "rotation",pose.getRotation(),"world_x",pose.getWorldX(),"world_y",pose.getWorldY()));
+        }
+        java.util.List<Object> slots=new java.util.ArrayList<Object>();
+        for(Slot slot:skeleton.getDrawOrder().getAppliedPose()) {
+            com.esotericsoftware.spine.attachments.Attachment attachment=slot.getAppliedPose().getAttachment();
+            slots.add(debugMap("name",slot.getData().getName(),"attachment",attachment==null?null:attachment.getName()));
+        }
+        java.util.List<Object> tracks=new java.util.ArrayList<Object>();
+        for(TrackEntry track:cs.animation.getTracks())if(track!=null)tracks.add(debugMap("index",track.getTrackIndex(),
+            "animation",track.getAnimation().getName(),"time",track.getTrackTime(),"animation_time",track.getAnimationTime(),
+            "duration",track.getAnimation().getDuration(),"loop",track.getLoop(),"complete",track.isComplete()));
+        java.util.List<String> animations=new java.util.ArrayList<String>();
+        for(Animation animation:skeleton.getData().getAnimations())animations.add(animation.getName());
+        return debugMap("loaded",true,"source",currentAnimation==null?null:currentAnimation.source,"atlas",cs.atlas,
+            "version",skeleton.getData().getVersion(),"coordinate_space","skeleton; actor transform is separate",
+            "skin",skeleton.getSkin()==null?null:skeleton.getSkin().getName(),"scale_x",skeleton.getScaleX(),
+            "scale_y",skeleton.getScaleY(),"animations",animations,"bones",bones,"slots",slots,"tracks",tracks,
+            "premultiplied_alpha",false,"events_enabled",eventsEnabled);
+    }
+
 	public void enableEvents(boolean v) {
 		eventsEnabled = v;
 	}

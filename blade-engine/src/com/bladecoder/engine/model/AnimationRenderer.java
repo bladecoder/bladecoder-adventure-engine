@@ -211,6 +211,13 @@ public abstract class AnimationRenderer implements ActorRenderer {
 		orgAlign = align;
 	}
 
+    /** Includes supported directional mirroring without changing the current direction. */
+    public boolean hasAnimation(String id) {
+        boolean previous=flipX;
+        try {return getAnimation(id)!=null;}
+        finally {flipX=previous;}
+    }
+
 	protected AnimationDesc getAnimation(String id) {
 		AnimationDesc fa = fanims.get(id);
 		flipX = false;

@@ -222,7 +222,7 @@ final class RemoteDebugSession {
             BaseActor actor=actor(a);
             if(!(actor instanceof SpriteActor) || !(((SpriteActor)actor).getRenderer() instanceof AnimationRenderer))throw new IllegalArgumentException("No animation renderer");
             AnimationRenderer renderer=(AnimationRenderer)((SpriteActor)actor).getRenderer();String animation=a.getString("animation");
-            if(!renderer.getAnimations().containsKey(animation))throw new IllegalArgumentException("Animation not found");
+            if(!renderer.hasAnimation(animation))throw new IllegalArgumentException("Animation not found");
             renderer.startAnimation(animation,Tween.Type.SPRITE_DEFINED,-1,null);job.done(state.actor(actor));return;
         }
         if("dialogue.advance".equals(job.operation)) {

@@ -219,3 +219,22 @@ player/debug isolation and assertion/hang/crash evidence from a standalone JAR.
 Desktop verification does not establish Android/iOS, UI pointer hit-testing,
 full deterministic replay, audio listening or persistent content patches.
 The in-game inspector and validated external content overrides are later work.
+
+
+## Renderer-specific pose diagnostics
+
+`ActorRenderer.getDebugState()` is an optional read-only game-thread hook. The
+full debug snapshot places its result under each actor's `renderer.details`;
+legacy player DTOs do not expose it. The core engine does not import plugin
+classes. The Spine plugin reports loaded skeleton version/source/atlas, skin,
+original animation names, skeleton-space bone positions/rotations, slot
+attachments in applied drawing order, track times/durations/loop/completion,
+mirroring and the current alpha convention. Unloaded skeletons report
+`loaded: false`. Actor/camera transforms remain separate from skeleton space.
+
+The animation command now uses the renderer's supported directional lookup,
+including its existing right/left mirroring. Pose diagnostics and animation
+availability checks do not change the selected direction while observing.
+Bonasera's phase 5 suite uses these shared hooks for a template-derived character,
+real movement/Say actions, timed captures and save/load; no editor or reflection
+is involved in runtime observation.
