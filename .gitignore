@@ -25,3 +25,7 @@ build/
 .codex
 .agents
 .claude
+
+# Python verification tools
+__pycache__/
+*.py[cod]

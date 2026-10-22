@@ -10,7 +10,6 @@ import com.bladecoder.engine.ui.SceneScreen;
 import com.bladecoder.engine.ui.UI.Screens;
 import com.bladecoder.engine.util.Config;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.system.Configuration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,8 +23,9 @@ public class DesktopLauncher extends BladeEngine {
     private static final int WINDOW_HEIGHT = 1080 / 2;
 
     private boolean fullscreen = true;
+    private boolean automationWindow;
     private Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
-	
+
 	private float speed = 1.0f;
 
 	DesktopLauncher() {
@@ -39,7 +39,7 @@ public class DesktopLauncher extends BladeEngine {
 		} catch (IOException e) {
 			System.out.println("Could not load properties file.");
 		}
-		
+
         cfg.setTitle(p.getProperty(Config.TITLE_PROP, "Blade Engine Adventure") + " "
                 + p.getProperty(Config.VERSION_PROP, ""));
 
@@ -66,6 +66,9 @@ public class DesktopLauncher extends BladeEngine {
 	}
 
 	public void parseParams(String[] args) {
+        boolean httpEnabled = false, httpOptions = false;
+        int httpPort = 8080;
+        String httpMode = "player";
 		for (int i = 0; i < args.length; i++) {
 			String s = args[i];
 			if (s.equals("-t")) {
@@ -82,18 +85,18 @@ public class DesktopLauncher extends BladeEngine {
 				if (i + 1 < args.length) {
 					i++;
 					speed = Float.parseFloat(args[i]);
-				}				
+				}
 			} else if (s.equals("-chapter")) {
 				if (i + 1 < args.length) {
 					i++;
 					setChapter(args[i]);
-				}							
+				}
 			} else if (s.equals("-f")) {
 				fullscreen = true;
 			} else if (s.equals("-d")) {
 				setDebugMode();
 			} else if (s.equals("-r")) {
-				setRestart();				
+				setRestart();
 			} else if (s.equals("-res")) {
 				if (i + 1 < args.length) {
 					i++;
@@ -103,7 +106,7 @@ public class DesktopLauncher extends BladeEngine {
 				if (i + 1 < args.length) {
 					i++;
 					String aspect = args[i];
-					
+
                     if (aspect.equals("16:9")) {
                         cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_WIDTH * 9 / 16);
                     } else if (aspect.equals("4:3")) {
@@ -111,7 +114,7 @@ public class DesktopLauncher extends BladeEngine {
                     } else if (aspect.equals("16:10") || aspect.equals("8:5")) {
                         cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_WIDTH * 10 / 16);
                     }
-				}	
+				}
 			} else if (s.equals("-w")) {
 				fullscreen = false;
 			} else if (s.equals("-l")) {
@@ -119,22 +122,27 @@ public class DesktopLauncher extends BladeEngine {
 					i++;
 					loadGameState(args[i]);
 				}
-			} else if (s.equals("-http")) {
-				int port = 8080;
-				if (i + 1 < args.length && !args[i + 1].startsWith("-")) {
-					i++;
-					try {
-						port = Integer.parseInt(args[i]);
-					} catch (NumberFormatException e) {
-						System.out.println("Invalid HTTP control port: " + args[i]);
-						usage();
-					}
-				}
-				if (port < 1 || port > 65535) {
-					System.out.println("Invalid HTTP control port: " + port);
-					usage();
-				}
-				setRemoteControlPort(port);
+            } else if (s.equals("-automation-window")) {
+                automationWindow = true;
+            } else if (s.equals("-content-overrides")) {
+                setContentOverrideDirectory(value(args, ++i, s));
+            } else if (s.equals("-http-mode")) {
+                httpOptions = true;
+                httpMode = value(args, ++i, s);
+                setRemoteControlMode(httpMode);
+            } else if (s.equals("-http-info")) {
+                httpOptions = true;
+                setRemoteControlDiscoveryFile(value(args, ++i, s));
+            } else if (s.equals("-http")) {
+                httpEnabled = true;
+                int port = 8080;
+                if (i + 1 < args.length && !args[i + 1].startsWith("-")) {
+                    try { port = Integer.parseInt(args[++i]); }
+                    catch (NumberFormatException error) { throw new IllegalArgumentException("Invalid HTTP port", error); }
+                }
+                if (port < 0 || port > 65535) throw new IllegalArgumentException("HTTP port must be 0–65535");
+                httpPort = port;
+                setRemoteControlPort(port);
 			} else if (s.equals("-h")) {
 				usage();
             } else if (s.equals("-opengl")) {
@@ -143,26 +151,47 @@ public class DesktopLauncher extends BladeEngine {
                 cfg.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
             } else {
 				if(i == 0 && !s.startsWith("-")) continue; // When embeded JRE the 0 parameter is the app name
-				System.out.println("Unrecognized parameter: " + s);
-				usage();
+				throw new IllegalArgumentException("Unrecognized parameter: " + s);
 			}
 		}
 
+        if (httpOptions && !httpEnabled) throw new IllegalArgumentException("HTTP mode/discovery options require -http");
+        if (httpEnabled && httpPort == 0 && !httpMode.equals("debug"))
+            throw new IllegalArgumentException("Port 0 requires explicit debug mode");
+        if (automationWindow) {
+            fullscreen = false;
+            cfg.setInitialVisible(false);
+            cfg.setPauseWhenLostFocus(false);
+            cfg.setPauseWhenMinimized(false);
+            cfg.setIdleFPS(60);
+            cfg.setForegroundFPS(60);
+            cfg.useVsync(false);
+        }
         if(!fullscreen)
             cfg.setWindowedMode(WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
-	
+
+    private static String value(String[] args, int index, String flag) {
+        if (index >= args.length || args[index].isEmpty() || args[index].startsWith("-"))
+            throw new IllegalArgumentException("Missing value for " + flag);
+        return args[index];
+    }
+
 	public void usage() {
-		System.out.println("Usage:\n" 
+		System.out.println("Usage:\n"
 				+ "-chapter chapter\tLoads the selected chapter\n"
-				+ "-t scene_name\tStart test mode for the scene\n" 
+				+ "-t scene_name\tStart test mode for the scene\n"
 				+ "-p record_name\tPlay previusly recorded games\n"
 				+ "-f\tSet fullscreen mode\n"
-				+ "-w\tSet windowed mode\n" 
+				+ "-w\tSet windowed mode\n"
 				+ "-d\tShow debug messages\n"
-				+ "-res width\tForce the resolution width\n" 
+				+ "-res width\tForce the resolution width\n"
 				+ "-l game_state\tLoad the previusly saved game state\n"
-				+ "-http [port]\tEnable localhost HTTP remote control (default: 8080)\n"
+				+ "-http [port]\tEnable localhost HTTP remote control (default: 8080; 0 selects an available port in debug mode)\n"
+                + "-http-mode player|debug\tSelect HTTP capabilities (default: player)\n"
+                + "-http-info path\tWrite a new private discovery file\n"
+                + "-content-overrides path\tEnable an explicit external content store (restart boundary)\n"
+                + "-automation-window\tUse an invisible continuously rendered GL window for unattended tests\n"
 				+ "-r\tRun the game from the begining\n"
 				+ "-s speed\tSets the game speed\n"
 				+ "-aspect aspect_ratio\tSets the specified screen aspect (16:9, 4:3, 16:10)\n");
@@ -174,11 +203,11 @@ public class DesktopLauncher extends BladeEngine {
 	public void create() {
 		if (fullscreen)
 			Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-		
+
 		hideCursor();
-		
+
 		super.create();
-		
+
 		if(getUI().getScreen(Screens.SCENE_SCREEN) instanceof SceneScreen)
 			((SceneScreen) getUI().getScreen(Screens.SCENE_SCREEN)).setSpeed(speed);
 	}
@@ -189,11 +218,6 @@ public class DesktopLauncher extends BladeEngine {
     }
 
 	public static void main(String[] args) {
-//        if (SharedLibraryLoader.isMac && !"1".equals(System.getenv("JAVA_STARTED_ON_FIRST_THREAD_" + LibC.getpid()))) {
-//            System.out.println("MacOs detected. Running in async mode.");
-//            Configuration.GLFW_LIBRARY_NAME.set("glfw_async");
-//        }
-
 		DesktopLauncher game = new DesktopLauncher();
 		game.parseParams(args);
 		game.run();

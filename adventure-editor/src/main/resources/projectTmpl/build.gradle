@@ -11,11 +11,11 @@ buildscript {
 
 subprojects {
     repositories {
+        mavenLocal()
         mavenCentral()
         google()
         gradlePluginPortal()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://central.sonatype.com/repository/maven-snapshots/" }
     }
 }
 

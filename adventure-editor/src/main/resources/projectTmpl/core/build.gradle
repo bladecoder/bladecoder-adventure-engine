@@ -12,7 +12,6 @@ dependencies {
     api "com.badlogicgames.gdx:gdx:$gdxVersion"
     api "com.bladecoder.engine:blade-engine:$bladeEngineVersion"
     implementation "com.bladecoder.ink:blade-ink:$bladeInkVersion"
-    implementation "org.minimalcode:minimalcode-beans:0.5.1"
     implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
 
