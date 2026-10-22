@@ -5,6 +5,10 @@ import java.util.List;
 
 /** Dispatches player-visible events for one {@link World}. */
 public class WorldEventDispatcher {
+    public void diagnostic(String type, java.util.Map<String,Object> data) {
+        for (WorldEventListener listener : snapshot()) listener.diagnostic(type, data);
+    }
+
     private final List<WorldEventListener> listeners = new ArrayList<WorldEventListener>();
 
     public void addListener(WorldEventListener listener) {

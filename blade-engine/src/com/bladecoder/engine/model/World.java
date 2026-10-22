@@ -808,9 +808,12 @@ public class World implements AssetConsumer {
         // restore viewport
         fbo.end(results.get(0), results.get(1), results.get(2), results.get(3));
 
-        PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap, Deflater.DEFAULT_COMPRESSION,
-                true);
-
-        fbo.dispose();
+        try {
+            PixmapIO.writePNG(EngineAssetManager.getInstance().getUserFile(filename), pixmap, Deflater.DEFAULT_COMPRESSION,
+                    true);
+        } finally {
+            pixmap.dispose();
+            fbo.dispose();
+        }
     }
 }

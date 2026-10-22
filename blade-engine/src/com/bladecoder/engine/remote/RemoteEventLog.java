@@ -11,6 +11,9 @@ import com.bladecoder.engine.model.WorldEventListener;
 /** Bounded, non-destructive event history exposed to a remote player. */
 final class RemoteEventLog implements WorldEventListener {
     private static final int MAX_EVENTS = 1000;
+    private final com.bladecoder.engine.model.World world;
+    RemoteEventLog(com.bladecoder.engine.model.World world) { this.world = world; }
+
 
     private final List<Map<String, Object>> events = new ArrayList<Map<String, Object>>();
     private List<Map<String, Object>> previousEvents;
@@ -86,8 +89,10 @@ final class RemoteEventLog implements WorldEventListener {
 
     @Override
     public synchronized void animationStarted(String actorId, String animationId, boolean finite) {
-        if (!finite)
-            return;
+        if (!finite) return;
+        com.bladecoder.engine.model.Scene scene = world.getCurrentScene();
+        com.bladecoder.engine.model.BaseActor actor = scene == null ? null : scene.getActor(actorId, false);
+        if (actor == null || !actor.isVisible()) return;
         Map<String, Object> event = add("animationStarted");
         event.put("actorId", actorId);
         event.put("animation", animationId);

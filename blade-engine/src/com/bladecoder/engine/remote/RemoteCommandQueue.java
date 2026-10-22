@@ -6,8 +6,11 @@ import java.util.ArrayDeque;
 final class RemoteCommandQueue {
     private final ArrayDeque<RemoteCommandRequest> commands = new ArrayDeque<RemoteCommandRequest>();
 
-    synchronized void add(RemoteCommandRequest command) {
+    synchronized boolean add(RemoteCommandRequest command) {
+        commands.removeIf(request -> request.isCancelled());
+        if(commands.size() >= 128)return false;
         commands.add(command);
+        return true;
     }
 
     synchronized RemoteCommandRequest poll() {

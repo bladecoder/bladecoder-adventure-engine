@@ -134,10 +134,11 @@ public class Verb implements VerbRunner, Serializable {
 				EngineLogger.debug(ip + ". " + a.getClass().getSimpleName());
 
 			try {
-				if (a.run(this))
-					stop = true;
-				else
-					ip++;
+                EngineLogger.diagnostic("action.started", "runner_id",Integer.toHexString(System.identityHashCode(this)),"verb", getHashKey(), "ip", ip, "action", a.getClass().getName());
+                boolean pending = a.run(this);
+                EngineLogger.diagnostic(pending ? "action.awaiting" : "action.completed", "runner_id",Integer.toHexString(System.identityHashCode(this)),"verb", getHashKey(), "ip", ip, "action", a.getClass().getName());
+                if (pending) stop = true;
+                else ip++;
 			} catch (Exception e) {
 				EngineLogger.error("EXCEPTION EXECUTING ACTION: " + id + " - " + ip + " - "
 						+ a.getClass().getSimpleName() + " - " + e.getMessage(), e);

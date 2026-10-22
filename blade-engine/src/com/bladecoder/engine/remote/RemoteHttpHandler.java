@@ -13,9 +13,11 @@ final class RemoteHttpHandler {
     private final RemoteGameStateProvider stateProvider;
     private final RemoteEventLog eventLog;
     private final RemoteErrorReporter errorReporter;
+    private final RemoteControlServer server;
 
     RemoteHttpHandler(RemoteCommandQueue commandQueue, RemoteGameStateProvider stateProvider, RemoteEventLog eventLog,
-            RemoteErrorReporter errorReporter) {
+            RemoteErrorReporter errorReporter, RemoteControlServer server) {
+        this.server = server;
         this.commandQueue = commandQueue;
         this.stateProvider = stateProvider;
         this.eventLog = eventLog;
@@ -24,8 +26,11 @@ final class RemoteHttpHandler {
 
     void handle(Socket socket) {
         try {
+            socket.setSoTimeout(5000);
             RemoteHttpRequest request = RemoteHttpProtocol.readRequest(socket.getInputStream());
             RemoteHttpProtocol.writeResponse(socket.getOutputStream(), route(request));
+        } catch (IllegalArgumentException e) {
+            writeQuietly(socket, new RemoteHttpResponse(400, RemoteHttpProtocol.errorJson("Invalid request arguments")));
         } catch (RemoteBadRequestException e) {
             writeQuietly(socket, new RemoteHttpResponse(400, RemoteHttpProtocol.errorJson(e.getMessage())));
         } catch (Exception e) {
@@ -40,7 +45,9 @@ final class RemoteHttpHandler {
         }
     }
 
-    private RemoteHttpResponse route(RemoteHttpRequest request) throws RemoteBadRequestException {
+    RemoteHttpResponse route(RemoteHttpRequest request) throws Exception {
+        if (request.path.startsWith("/debug/")) return server.debugRoute(request);
+
         if ("GET".equals(request.method) && "/health".equals(request.path))
             return new RemoteHttpResponse(200, RemoteJson.toJson(stateProvider.getHealthState()));
 
@@ -55,7 +62,7 @@ final class RemoteHttpHandler {
 
         if ("POST".equals(request.method) && "/command".equals(request.path)) {
             RemoteCommandRequest commandRequest = new RemoteCommandRequest(commandParser.parse(request.body));
-            commandQueue.add(commandRequest);
+            if(!commandQueue.add(commandRequest))return new RemoteHttpResponse(429,RemoteHttpProtocol.errorJson("Command queue is full"));
             RemoteCommandResult commandResult;
             try {
                 commandResult = commandRequest.await(COMMAND_TIMEOUT_MS);

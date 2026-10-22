@@ -141,8 +141,10 @@ public class InkVerbRunner implements VerbRunner, Serializable {
             Action a = actions.get(ip);
 
             try {
-                if (a.run(this))
-                    stop = true;
+                EngineLogger.diagnostic("ink.action.started", "runner_id",Integer.toHexString(System.identityHashCode(this)),"flow", flow, "ip", ip, "action", a.getClass().getName());
+                boolean pending = a.run(this);
+                EngineLogger.diagnostic(pending ? "ink.action.awaiting" : "ink.action.completed", "runner_id",Integer.toHexString(System.identityHashCode(this)),"flow", flow, "ip", ip, "action", a.getClass().getName());
+                if (pending) stop = true;
                 else {
                     // We store in the array only the ActionCallback actions
                     // any other can be discarded after execution

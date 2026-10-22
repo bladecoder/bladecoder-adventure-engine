@@ -27,6 +27,10 @@ final class RemoteCommandExecutor {
     }
 
     RemoteCommandResult execute(RemoteCommand command) {
+        if (command.type == RemoteCommand.Type.LOAD_GAME || command.type == RemoteCommand.Type.SAVE_GAME || command.type == RemoteCommand.Type.SCREENSHOT) {
+            if (command.target == null || !command.target.matches("[A-Za-z0-9][A-Za-z0-9_.-]{0,100}") || command.target.contains(".."))
+                return reject("Use a plain save or screenshot basename");
+        }
         String preconditionError = validatePreconditions(command);
         if (preconditionError != null)
             return reject(preconditionError);
@@ -99,6 +103,7 @@ final class RemoteCommandExecutor {
             executeActorVerb(scene, command);
             return;
         case SCENE_VERB:
+            if (!Verb.GOTO_VERB.equals(command.verb)) throw new CommandRejectedException("Scene internals are not player actions");
             scene.runVerb(command.verb);
             return;
         case DIALOG_OPTION:
@@ -122,13 +127,19 @@ final class RemoteCommandExecutor {
         }
     }
 
+    private BaseActor resolvePlayerActor(Scene scene, String id) {
+        // A picked-up item's hidden scene origin may retain the inventory ID.
+        BaseActor item = world.getInventory() == null ? null : world.getInventory().get(id);
+        return item != null ? item : scene.getActor(id, false);
+    }
+
     private void executeActorVerb(Scene scene, RemoteCommand command) throws CommandRejectedException {
-        BaseActor baseActor = scene.getActor(command.actorId, true);
+        BaseActor baseActor = resolvePlayerActor(scene, command.actorId);
         if (!(baseActor instanceof InteractiveActor))
-            throw new CommandRejectedException("Remote command actor not found: " + command.actorId);
+            throw new CommandRejectedException("Actor or action is not available");
         InteractiveActor actor = (InteractiveActor) baseActor;
         if (!actor.canInteract())
-            throw new CommandRejectedException("Remote command actor cannot be interacted with: " + command.actorId);
+            throw new CommandRejectedException("Actor or action is not available");
         if (Verb.USE_VERB.equals(command.verb)) {
             executeUseVerb(scene, command, actor);
             return;
@@ -146,10 +157,11 @@ final class RemoteCommandExecutor {
         if (command.target == null)
             throw new CommandRejectedException("Remote use command requires a target actor");
 
-        BaseActor targetBaseActor = scene.getActor(command.target, true);
+        BaseActor targetBaseActor = resolvePlayerActor(scene, command.target);
         if (!(targetBaseActor instanceof InteractiveActor))
-            throw new CommandRejectedException("Remote command target actor not found: " + command.target);
+            throw new CommandRejectedException("Actor or action is not available");
         InteractiveActor targetActor = (InteractiveActor) targetBaseActor;
+        if (!targetActor.canInteract()) throw new CommandRejectedException("Actor or action is not available");
 
         if (sourceActor == targetActor || (!isInventoryItem(sourceActor) && !isInventoryItem(targetActor))) {
             throw new CommandRejectedException(

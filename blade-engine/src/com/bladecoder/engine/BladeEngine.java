@@ -24,6 +24,11 @@ public class BladeEngine implements ApplicationListener {
     private String recordName;
     private String forceRes;
     private Integer remoteControlPort;
+    private com.bladecoder.engine.remote.RemoteControlMode remoteControlMode = com.bladecoder.engine.remote.RemoteControlMode.PLAYER;
+    private String remoteDiscoveryFile;
+    public void setRemoteControlMode(String mode) { remoteControlMode = com.bladecoder.engine.remote.RemoteControlMode.parse(mode); }
+    public void setRemoteControlDiscoveryFile(String path) { remoteDiscoveryFile = path; }
+
     private boolean debug = false;
     private boolean restart = false;
     private UI ui;
@@ -113,7 +118,9 @@ public class BladeEngine implements ApplicationListener {
         loadGame(null);
 
         if (remoteControlPort != null)
-            ui.getRemoteControlServer().start(remoteControlPort);
+            ui.getRemoteControlServer().start(remoteControlPort, remoteControlMode);
+        if (remoteControlPort != null && remoteDiscoveryFile != null)
+            ui.getRemoteControlServer().writeDiscovery(remoteDiscoveryFile);
 
         if (EngineLogger.debugMode()) {
             if (chapter == null)

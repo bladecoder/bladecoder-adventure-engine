@@ -232,7 +232,12 @@ public class InkManager implements Serializable {
         if (story.canContinue()) {
             try {
                 do {
+                    String sourcePath=story.getState().getCurrentPathString();
                     line = story.Continue();
+                    java.util.Map<String,Object> trace = new java.util.LinkedHashMap<String,Object>();
+                    trace.put("line",line);trace.put("path",sourcePath);
+                    trace.put("flow",story.getCurrentFlowName());trace.put("tags",story.getCurrentTags());
+                    w.getEvents().diagnostic("ink.line",trace);
 
                     // Remove trailing '\n'
                     if (!line.isEmpty())
@@ -315,6 +320,11 @@ public class InkManager implements Serializable {
 
             processParams(Arrays.asList(commandParams), params);
         }
+
+        java.util.Map<String,Object> commandTrace=new java.util.LinkedHashMap<String,Object>();
+        commandTrace.put("name",commandName);commandTrace.put("arguments",new HashMap<String,String>(params));
+        commandTrace.put("flow",story.getCurrentFlowName());
+        w.getEvents().diagnostic("ink.command",commandTrace);
 
         if ("LeaveNow".equals(commandName)) {
             boolean init = true;

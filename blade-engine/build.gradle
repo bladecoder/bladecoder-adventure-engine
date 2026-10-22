@@ -129,3 +129,30 @@ javadoc {
         options.addBooleanOption('html5', true)
     }
 }
+
+// Embed identity of the actual engine sources, including local snapshot changes.
+def automationIdentityDir = layout.buildDirectory.dir('generated/automation-identity')
+tasks.register('generateAutomationIdentity') {
+    inputs.files(fileTree('src') { include '**/*.java' })
+    inputs.property('engineVersion', project.version.toString())
+    outputs.dir(automationIdentityDir)
+    doLast {
+        def digest = java.security.MessageDigest.getInstance('SHA-256')
+        fileTree('src').matching { include '**/*.java' }.files.sort { it.path }.each { source ->
+            digest.update(project.relativePath(source).getBytes('UTF-8'))
+            digest.update(source.bytes)
+        }
+        def target = automationIdentityDir.get().file('blade-engine-build.properties').asFile
+        target.parentFile.mkdirs()
+        target.text = "engine_version=${project.version}\nsource_sha256=${digest.digest().encodeHex()}\n"
+    }
+}
+sourceSets.main.resources.srcDir(automationIdentityDir)
+processResources.dependsOn tasks.named('generateAutomationIdentity')
+
+sourceSets.test.java.srcDirs = ['test-src']
+tasks.register('remoteProtocolTest', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.bladecoder.engine.remote.RemoteProtocolTest'
+}

@@ -62,6 +62,8 @@ public class AtlasRenderer extends AnimationRenderer {
 		}
 	}
 
+	public int getCurrentFrameIndex() { return currentFrameIndex; }
+
 	public void setFrame(int i) {
 		currentFrameIndex = i;
 		tex = ((AtlasAnimationDesc) currentAnimation).regions.get(i);

@@ -8,6 +8,23 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 
 public class EngineLogger {
+    public interface Listener {
+        void log(String level, String message, Throwable failure);
+        default void diagnostic(String type, java.util.Map<String,Object> data) { }
+    }
+    private static final java.util.concurrent.CopyOnWriteArrayList<Listener> listeners = new java.util.concurrent.CopyOnWriteArrayList<Listener>();
+    public static void diagnostic(String type, Object... fields) {
+        if (listeners.isEmpty()) return;
+        java.util.Map<String,Object> data = new java.util.LinkedHashMap<String,Object>();
+        for (int i=0;i<fields.length;i+=2) data.put((String)fields[i],fields[i+1]);
+        for (Listener listener : listeners) { try { listener.diagnostic(type,data); } catch (RuntimeException ignored) { } }
+    }
+    public static void addListener(Listener listener) { listeners.addIfAbsent(listener); }
+    public static void removeListener(Listener listener) { listeners.remove(listener); }
+    private static void emit(String level, String message, Throwable error) {
+        for (Listener listener : listeners) { try { listener.log(level, message, error); } catch (RuntimeException ignored) { } }
+    }
+
 	private static String TAG = "ENGINE";
 	private static int level = Application.LOG_ERROR;
 	private static final int MAX_BUFFER_SIZE = 512 * 1024;
@@ -22,11 +39,13 @@ public class EngineLogger {
 	public static StringBuilder errorBuffer = new StringBuilder();
 
 	public static void debug(String message) {
+		emit("debug", message, null);
 		Gdx.app.debug(TAG, message);
 	}
 
 	public static void error(String message) {
 		if (message != null) {
+			emit("error", message, null);
 			Gdx.app.error(TAG, message);
 			lastError = message;
 			lastException = null;
@@ -43,6 +62,7 @@ public class EngineLogger {
 		error(message);
 
 		if (e != null) {
+			emit("exception", message, e);
 			Gdx.app.error(TAG, message, e);
 			lastException = e;
 

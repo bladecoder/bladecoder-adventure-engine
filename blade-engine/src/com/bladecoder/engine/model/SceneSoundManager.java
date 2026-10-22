@@ -65,6 +65,7 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 			else
 				s.sound.play(s.desc.getVolume() * VOLUME_MULTIPLIER, s.desc.getPitch(), s.desc.getPan());
 
+            EngineLogger.diagnostic("audio.sfx.requested", "id", id, "resource", s.desc.getFilename(), "loop", s.desc.getLoop(), "volume", s.desc.getVolume()*VOLUME_MULTIPLIER);
 			s.playing = true;
 		} else {
 			EngineLogger.error("Sound Not Found: " + id);
@@ -91,6 +92,7 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 		LoadedSound s = loadedSounds.get(id);
 
 		if (s != null) {
+            EngineLogger.diagnostic("audio.sfx.stopped", "id", s.desc.getId());
 			s.sound.stop();
 			s.playing = false;
 		} else {
@@ -124,7 +126,8 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 		for (LoadedSound s : loadedSounds.values()) {
 
 			if (s.playing)
-				s.sound.stop();
+	            EngineLogger.diagnostic("audio.sfx.stopped", "id", s.desc.getId());
+			s.sound.stop();
 
 			EngineAssetManager.getInstance().disposeSound(s.desc.getFilename());
 		}

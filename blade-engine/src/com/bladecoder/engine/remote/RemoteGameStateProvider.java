@@ -34,9 +34,12 @@ final class RemoteGameStateProvider {
         Map<String, Object> state = new LinkedHashMap<String, Object>();
         state.put("status", serverStatus.isRunning() ? "running" : "stopped");
         state.put("port", serverStatus.getConfiguredPort());
+        state.put("mode", serverStatus.getMode());
+        state.put("session_id", serverStatus.getSessionId());
+        state.put("protocol", 1);
         state.put("queueLength", serverStatus.getQueueLength());
         if (serverStatus.getLastError() != null)
-            state.put("lastError", serverStatus.getLastError());
+            state.put("lastError", "A remote request failed; details require debug mode");
         return state;
     }
 

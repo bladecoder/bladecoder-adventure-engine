@@ -52,6 +52,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 		if (music != null && !music.isPlaying()) {
 
 			try {
+                EngineLogger.diagnostic("audio.music.start_requested", "resource", desc.getFilename(), "loop", desc.isLoop(), "volume", desc.getVolume()*VOLUME_MULTIPLIER);
 				music.play();
 				music.setLooping(desc.isLoop());
 				music.setVolume(desc.getVolume() * VOLUME_MULTIPLIER);
@@ -92,7 +93,8 @@ public class MusicManager implements Serializable, AssetConsumer {
 			music.stop();
 	}
 
-	public void setMusic(MusicDesc d) {
+    public void setMusic(MusicDesc d) {
+        EngineLogger.diagnostic("audio.music.requested", "resource", d==null?null:d.getFilename());
 		if (desc != null && d != null && d.getFilename() != null && d.getFilename().equals(desc.getFilename())) {
 
 			EngineLogger.debug(">>>NOT SETTING MUSIC: This music file is already playing.");

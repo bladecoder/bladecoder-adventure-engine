@@ -188,7 +188,7 @@ public class UI {
         // for long processing frames, limit delta to 1/30f to avoid skipping animations
         float delta = Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f);
 
-        screen.render(delta);
+        screen.render(getRemoteControlServer().adjustDelta(delta));
     }
 
     private void loadAssets() {
