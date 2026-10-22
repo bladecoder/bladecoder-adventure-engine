@@ -12,10 +12,34 @@ import com.bladecoder.ink.runtime.Story.ExternalFunction1;
 import com.bladecoder.ink.runtime.Story.ExternalFunction2;
 
 public class ExternalFunctions {
+    private static final java.util.concurrent.atomic.AtomicLong traceIds=new java.util.concurrent.atomic.AtomicLong();
+    /** Bind without changing argument/result types or the runtime's default lookahead contract. */
+    public static <R> void bind(final Story story,final String name,final Story.ExternalFunction<R> function) throws Exception {
+        story.bindExternalFunction(name,traced(story,name,function));
+    }
+    public static <R> Story.ExternalFunction<R> traced(final Story story,final String name,final Story.ExternalFunction<R> function) {
+        return new Story.ExternalFunction<R>() {
+            public R call(Object... arguments) throws Exception {
+                if(!EngineLogger.hasListeners())return function.call(arguments);
+                long call=traceIds.incrementAndGet();
+                String path=story.getState().getCurrentPathString(),flow=story.getCurrentFlowName();
+                EngineLogger.diagnostic("ink.external.call","call_id",call,"name",name,"arguments",java.util.Arrays.asList(arguments.clone()),"path",path,"flow",flow,"scope","actual_engine_binding");
+                try {
+                    R result=function.call(arguments);
+                    EngineLogger.diagnostic("ink.external.result","call_id",call,"name",name,"result",result,"path",path,"flow",flow,"scope","actual_engine_binding");
+                    return result;
+                } catch(Exception failure) {
+                    EngineLogger.diagnostic("ink.external.failed","call_id",call,"name",name,"exception",failure.toString(),"path",path,"flow",flow,"scope","actual_engine_binding");
+                    throw failure;
+                }
+            }
+        };
+    }
+
 
 	public static void bindExternalFunctions(final World w, Story story) throws Exception {
 
-		story.bindExternalFunction("inInventory", new ExternalFunction1<String, Boolean>() {
+		bind(story,"inInventory", new ExternalFunction1<String, Boolean>() {
 
 			@Override
 			public Boolean call(String actor) throws Exception {
@@ -26,7 +50,7 @@ public class ExternalFunctions {
 			}
 		});
 
-		story.bindExternalFunction("getActorState", new ExternalFunction1<String, String>() {
+		bind(story,"getActorState", new ExternalFunction1<String, String>() {
 
 			@Override
 			public String call(String act) throws Exception {
@@ -49,7 +73,7 @@ public class ExternalFunctions {
 			}
 		});
 
-		story.bindExternalFunction("getSceneState", new ExternalFunction1<String, String>() {
+		bind(story,"getSceneState", new ExternalFunction1<String, String>() {
 
 			@Override
 			public String call(String scene) throws Exception {
@@ -67,7 +91,7 @@ public class ExternalFunctions {
 			}
 		});
 
-		story.bindExternalFunction("getPlayer", new ExternalFunction0<String>() {
+		bind(story,"getPlayer", new ExternalFunction0<String>() {
 
 			@Override
 			public String call() throws Exception {
@@ -75,7 +99,7 @@ public class ExternalFunctions {
 			}
 		});
 
-		story.bindExternalFunction("inInventory2", new ExternalFunction2<String, String, Boolean>() {
+		bind(story,"inInventory2", new ExternalFunction2<String, String, Boolean>() {
 
 			@Override
 			public Boolean call(String actor, String inventory) throws Exception {
@@ -94,7 +118,7 @@ public class ExternalFunctions {
 			}
 		});
 
-		story.bindExternalFunction("getCurrentScene", new ExternalFunction0<String>() {
+		bind(story,"getCurrentScene", new ExternalFunction0<String>() {
 
 			@Override
 			public String call() throws Exception {
@@ -102,7 +126,7 @@ public class ExternalFunctions {
 			}
 		});
 
-		story.bindExternalFunction("isDebug", new ExternalFunction0<Boolean>() {
+		bind(story,"isDebug", new ExternalFunction0<Boolean>() {
 
 			@Override
 			public Boolean call() throws Exception {
@@ -110,7 +134,7 @@ public class ExternalFunctions {
 			}
 		});
 
-		story.bindExternalFunction("getProperty", new ExternalFunction1<String, String>() {
+		bind(story,"getProperty", new ExternalFunction1<String, String>() {
 
 			@Override
 			public String call(String p) throws Exception {
@@ -122,7 +146,7 @@ public class ExternalFunctions {
 			}
 		});
 
-		story.bindExternalFunction("isVisible", new ExternalFunction1<String, Boolean>() {
+		bind(story,"isVisible", new ExternalFunction1<String, Boolean>() {
 
 			@Override
 			public Boolean call(String act) throws Exception {

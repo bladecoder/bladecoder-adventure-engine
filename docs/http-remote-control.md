@@ -240,3 +240,127 @@ availability checks do not change the selected direction while observing.
 Bonasera's phase 5 suite uses these shared hooks for a template-derived character,
 real movement/Say actions, timed captures and save/load; no editor or reflection
 is involved in runtime observation.
+
+## Input and repeatability fixtures (phase 7)
+
+These capabilities are debug-only and run on the game thread. `input.event`
+accepts `mouseMoved`, `touchDown`, `touchDragged`, `touchUp` (integer `x`,`y`,
+with `button` 0–2 for down/up), `keyDown`/`keyUp` (`keycode`), `keyTyped`
+(one `character`), `scrolled` (`amountX`,`amountY`), or `reset`.
+Coordinates are logical window pixels, top-left origin. One synthetic pointer
+is supported. A down is required before dragging/up; invalid coordinates and
+held-state transitions are rejected before mutation. The session input adapter
+routes events through the active InputProcessor, including Stage and gesture
+hit-testing, and matches Gdx.input polling state. It does not move the OS cursor.
+Real input takes over, and stopping debug restores the current backend processor.
+This tests application input routing, not native OS input delivery. Handled input
+is recorded separately from assertions about game effects.
+
+The snapshot's `ui` domain includes active screen, actual locale, logical window
+size, widget names/paths/text/visibility/bounds/hit centers, current widget/scene
+hit, projected actor bounds, inventory tile bounds and current dragged item.
+Widget paths are diagnostic hierarchy indices; stock control names are preferable
+selectors across layouts/locales. Geometry can change after scrolling/animation;
+re-read and verify the intended effect. Focused `/state?path=/ui` queries avoid
+full-world serialization. Widget snapshots are capped at 800 rows with explicit
+truncation. Unsupported custom UI details are not synthesized.
+
+`fixture.seed {seed: INT}` reseeds MathUtils and the loaded Ink story through its
+public save-state API; a subsequent fixture.scene applies the declared seed to
+the new story. `ink.random` reports the actual story seed/previous random value.
+`fixture.locale {locale: IETF_TAG}` changes the game's bundle locale; set it before
+entering a route and reopen menus to rebuild their translated widgets.
+`fixture.viewport {width: INT,height: INT}` resizes a desktop window and completes
+only after the requested logical dimensions are observed. These are explicit
+setup operations. World stepping/seeds do not fix native audio, resource IO or
+OS timers. Save/load retains saved Ink RNG state; it is not silently reseeded.
+
+## Explicit content store and runtime inspector (phase 7 in progress)
+
+A custom launcher can call `setContentOverrideDirectory(PATH)` before creation;
+Bonasera supplies `-content-overrides PATH`. No store is scanned by default.
+The resolver loads one validated external generation. Version-1 manifests declare
+an id and files with packaged base/replacement SHA-256 hashes. Initial supported
+resources are existing actor scalar model fields in chapter JSON and compatible
+compiled Ink JSON. Structural/identifier/action-graph edits, translation-key
+changes and arbitrary media/code are rejected. Preview returns explicit scalar
+diffs; Ink compatibility uses the actual declared Story loader.
+
+Debug commands `content.status`, `content.preview {directory: ABSOLUTE_PATH}`,
+`content.activate {directory: ABSOLUTE_PATH}`, `content.export`, `content.rollback`
+and `content.reset` manage this store. Activation copies/validates a complete
+immutable generation and atomically selects it. Activation/reset/rollback are
+restart boundaries; they do not mutate the current live resources or preserve
+flows across reload. Status separates loaded and next-start generation. Invalid
+startup selection is reported and uses the packaged base without partial load.
+Generations/selection are separate from packaged content and savegames.
+
+`inspector.open` opens the shipped RuntimeInspectorScreen; the debug menu exposes
+an equivalent control. A running player controller must be stopped before a
+user explicitly starts debug inspection. The in-game facade reads snapshots on
+the game thread and submits commands through the same validation/queue used by
+HTTP, without a blocking loopback call. Its views cover state, events, dialogue,
+active actions and content; capture and command receipts remain asynchronous.
+Menu navigation may have paused gameplay; the actual paused state is visible.
+
+`inspector.export` or the UI Export button writes session-owned evidence and
+returns a ZIP artifact id, SHA-256, length and media type. The existing artifact
+endpoint now returns `application/zip` for these exports. The archive retains
+state, events, command arguments/results, build/session identity and indexed
+captures, without discovery tokens or personal saves. PNG retention is capped at
+64 MiB with retained/skipped entries; total exported input is capped at 80 MiB.
+The UI display has an explicit text limit, separate from exported evidence.
+Broader source-trace/workflow coverage remains phase 7 work; shared scenario replay is described below.
+
+
+## Shared scenario replay and visual context
+
+`scenario.run {scenario: VERSION_1_OBJECT}` accepts the same declarative scenario
+used by the project client and the inspector Replay filename control. Validate
+all fields/step IDs before setup; one replay is active per session. Setup declares
+chapter/scene/seed/locale/viewport. Steps support commands, typed assertions,
+condition waits, captures, real input clicks/keys, controlled frames and offered
+text-selected choices. JSON-pointer predicates distinguish missing from null;
+`all`/`any` combine 1–32 predicates at up to four nesting levels.
+
+The ordinary command queue owns parent and child jobs. Request deduplication
+covers setup, partial results retain failed step/assertions and exports retain
+the exact scenario. Parent cancellation/deadline cancels child observation and
+remaining steps without rolling back gameplay. The existing 60-second parent
+limit and 1,024-command session bound still apply; chunk long routes/checkpoints.
+Interactive actor verbs should use dispatch followed by explicit waits/choices;
+completion-waiting a conversation before selecting a choice can hit its deadline.
+
+UI snapshots/capture states now include `render_environment`: backend/application,
+GL version/vendor/renderer, backbuffer dimensions/scale, density/PPI and buffer
+format. `fonts` lists registered skin font metrics/source where available; project
+visual tooling also pins packaged source-font hashes. Scene capture dimensions
+can differ from logical window dimensions. These fields support explicit
+compatible-environment comparisons, not universal pixel equivalence.
+
+LWJGL window resizing can restore the backend's original global `Gdx.input`.
+The debug session restores its adapter before UI rendering, adopts direct backend
+processor changes and reinstalls physical-event forwarding. Normal inactive/player
+sessions do not install this adapter. Synthetic coordinates remain independent of
+the OS cursor. The regression includes resize/reset routing and restoration.
+
+
+Capture completion also persists an adjacent JSON receipt containing hash, byte
+length, frame/cursor and full captured state in the session-owned artifact
+folder. This allows a local supervisor to recover prior evidence if the render
+thread exits before HTTP download. It is not a personal-save search or a promise
+that a crashed process can provide a fresh screenshot. Project recovery must
+validate the owned isolated profile, exact session UUID, bounded files and hash,
+and preserve the original error when final observation is unavailable.
+InkRunAction retains the caught runtime exception alongside its existing error
+message, so bad Ink-path diagnostics include the actual exception stack.
+
+
+The packaged runtime inspector includes a JSON-pointer field relative to the
+selected state/events/dialogue/actions/content/scenarios view. Refresh applies
+that read-only selection before display truncation; an empty pointer shows the
+whole view. Missing paths, malformed escapes and invalid array indices report
+errors; explicit null values remain valid. Export retains the complete backend
+snapshot regardless of the displayed selection. Current Ink runner snapshots
+include runtime action source references where available; legacy save-restored
+actions without recorded source metadata remain unmapped.

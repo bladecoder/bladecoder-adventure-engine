@@ -239,6 +239,14 @@ public class DebugScreen implements BladeScreen {
         table.add(new Label("HTTP Remote Control: ", ui.getSkin(), "debug"));
         table.add(remoteControl);
 
+        TextButton inspector=new TextButton("Runtime inspector (debug)",ui.getSkin());inspector.setName("debug.inspector");
+        inspector.addListener(new ClickListener(){public void clicked(InputEvent event,float x,float y){
+            if(server.isRunning() && !"debug".equals(server.getMode())) {EngineLogger.error("Stop the player controller before opening debug inspection");return;}
+            if(!server.isRunning() && !server.start(0,com.bladecoder.engine.remote.RemoteControlMode.DEBUG))return;
+            RuntimeInspectorScreen screen=new RuntimeInspectorScreen();screen.setUI(ui);ui.setCurrentScreen(screen);
+        }});
+        table.row().pad(5);table.add(new Label("Runtime diagnostics: ",ui.getSkin(),"debug"));table.add(inspector);
+
         // ------------- LOAD CHAPTER
         table.row().pad(5).align(Align.left);
         table.add(new Label("Load Chapter: ", ui.getSkin(), "debug"));

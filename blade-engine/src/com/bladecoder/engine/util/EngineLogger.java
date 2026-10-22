@@ -19,6 +19,7 @@ public class EngineLogger {
         for (int i=0;i<fields.length;i+=2) data.put((String)fields[i],fields[i+1]);
         for (Listener listener : listeners) { try { listener.diagnostic(type,data); } catch (RuntimeException ignored) { } }
     }
+    public static boolean hasListeners(){return !listeners.isEmpty();}
     public static void addListener(Listener listener) { listeners.addIfAbsent(listener); }
     public static void removeListener(Listener listener) { listeners.remove(listener); }
     private static void emit(String level, String message, Throwable error) {

@@ -26,6 +26,7 @@ final class RemoteDebugEvents implements WorldEventListener, EngineLogger.Listen
         Map<String,Object> event=new LinkedHashMap<String,Object>();
         event.put("sequence",++sequence);event.put("frame",frame);event.put("simulation_time",simulationTime);
         event.put("type",type);event.put("command_id",command);event.put("data",data);
+        if(world!=null){event.put("chapter",world.getCurrentChapter());event.put("scene",world.getCurrentScene()==null?null:world.getCurrentScene().getId());}
         if(history.size()==LIMIT)history.remove(0);
         history.add(event);notifyAll();return event;
     }
@@ -53,7 +54,14 @@ final class RemoteDebugEvents implements WorldEventListener, EngineLogger.Listen
     public void inventoryChanged() {add("inventory.changed",null);}
     public void animationStarted(String actor,String animation,boolean finite) {add("animation.started",RemoteDebugState.map("actor",actor,"animation",animation,"finite",finite));}
     public void gameEnded() {add("game.ended",null);}
-    public void diagnostic(String type,Map<String,Object> data) {add(type,data);}
+    public void diagnostic(String type,Map<String,Object> data) {
+        Map<String,Object> enriched=new LinkedHashMap<String,Object>(data);
+        if(state!=null && (type.startsWith("action.") || type.startsWith("verb.")) && data.get("runner_id") instanceof String && data.get("ip") instanceof Number) {
+            Map<String,Object> source=state.sourceForRunner((String)data.get("runner_id"),((Number)data.get("ip")).intValue());
+            enriched.put("source_ref",source);enriched.put("source",source==null?null:source.get("source"));
+        }
+        add(type,enriched);
+    }
     public void log(String level,String message,Throwable failure) {
         String text=message==null?"":message;
         add("log",RemoteDebugState.map("level",level,"message",text.length()>8192?text.substring(0,8192):text,

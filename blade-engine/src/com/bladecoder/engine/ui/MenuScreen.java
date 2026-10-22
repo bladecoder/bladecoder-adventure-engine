@@ -191,6 +191,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
             TextButton continueGame = new TextButton(world.getI18N().getString("ui.continue"), skin,
                     style.textButtonStyle);
             continueGame.getLabel().setAlignment(getAlign());
+            continueGame.setName("menu.continue");
 
             continueGame.addListener(new ClickListener() {
                 @Override
@@ -213,6 +214,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
         TextButton newGame = new TextButton(world.getI18N().getString("ui.new"), skin, style.textButtonStyle);
         newGame.getLabel().setAlignment(getAlign());
+            newGame.setName("menu.new");
         newGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -230,6 +232,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
         TextButton loadGame = new TextButton(world.getI18N().getString("ui.load"), skin, style.textButtonStyle);
         loadGame.getLabel().setAlignment(getAlign());
+            loadGame.setName("menu.load");
         loadGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -242,6 +245,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
         TextButton quit = new TextButton(world.getI18N().getString("ui.quit"), skin, style.textButtonStyle);
         quit.getLabel().setAlignment(getAlign());
+            quit.setName("menu.quit");
         quit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -258,6 +262,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
 
         // BOTTOM-RIGHT BUTTON STACK
         credits = new AnimButton(skin, "credits");
+        credits.setName("menu.credits");
         credits.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -266,6 +271,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
         });
 
         help = new AnimButton(skin, "help");
+        help.setName("menu.help");
         help.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -274,6 +280,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
         });
 
         debug = new AnimButton(skin, "debug");
+        debug.setName("menu.debug");
         debug.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -288,7 +295,7 @@ public class MenuScreen extends ScreenAdapter implements BladeScreen {
                 DPIUtils.getPrefButtonSize());
         iconStackTable.pad(DPIUtils.getMarginSize() * 2);
 
-        if (EngineLogger.debugMode() && world.getCurrentScene() != null) {
+        if ((EngineLogger.debugMode() || (ui.getRemoteControlServer().isRunning() && "debug".equals(ui.getRemoteControlServer().getMode()))) && world.getCurrentScene() != null) {
             iconStackTable.add(debug);
             iconStackTable.row();
         }

@@ -120,6 +120,7 @@ public class Verb implements VerbRunner, Serializable {
 		}
 
 		ip = 0;
+        EngineLogger.diagnostic("verb.started","runner_id",Integer.toHexString(System.identityHashCode(this)),"verb",getHashKey(),"ip",ip,"target",currentTarget);
 		nextStep();
 	}
 
@@ -129,14 +130,15 @@ public class Verb implements VerbRunner, Serializable {
 
 		while (!isFinished() && !stop) {
 			Action a = actions.get(ip);
+            int executingIP=ip;
 
 			if (EngineLogger.debugMode())
 				EngineLogger.debug(ip + ". " + a.getClass().getSimpleName());
 
 			try {
-                EngineLogger.diagnostic("action.started", "runner_id",Integer.toHexString(System.identityHashCode(this)),"verb", getHashKey(), "ip", ip, "action", a.getClass().getName());
+                EngineLogger.diagnostic("action.started", "runner_id",Integer.toHexString(System.identityHashCode(this)),"verb", getHashKey(), "ip", executingIP, "action", a.getClass().getName());
                 boolean pending = a.run(this);
-                EngineLogger.diagnostic(pending ? "action.awaiting" : "action.completed", "runner_id",Integer.toHexString(System.identityHashCode(this)),"verb", getHashKey(), "ip", ip, "action", a.getClass().getName());
+                EngineLogger.diagnostic(pending ? (ip==executingIP?"action.awaiting":"action.returned") : "action.completed", "runner_id",Integer.toHexString(System.identityHashCode(this)),"verb", getHashKey(), "ip", executingIP, "action", a.getClass().getName());
                 if (pending) stop = true;
                 else ip++;
 			} catch (Exception e) {
@@ -148,6 +150,7 @@ public class Verb implements VerbRunner, Serializable {
 
 		if (ip == actions.size()) {
 			EngineLogger.debug(">>> Verb FINISHED: " + id);
+        EngineLogger.diagnostic("verb.completed","runner_id",Integer.toHexString(System.identityHashCode(this)),"verb",getHashKey(),"ip",ip);
 			ip++; // to avoid print the finished message again
 
 			if (cb != null) {
@@ -165,6 +168,7 @@ public class Verb implements VerbRunner, Serializable {
 
 	@Override
 	public void resume() {
+        if(ip>=0 && ip<actions.size())EngineLogger.diagnostic("action.completed","runner_id",Integer.toHexString(System.identityHashCode(this)),"verb",getHashKey(),"ip",ip,"action",actions.get(ip).getClass().getName(),"completion","callback");
 		ip++;
 		nextStep();
 	}
@@ -181,6 +185,7 @@ public class Verb implements VerbRunner, Serializable {
 
 	@Override
 	public void cancel() {
+        EngineLogger.diagnostic("verb.cancelled","runner_id",Integer.toHexString(System.identityHashCode(this)),"verb",getHashKey(),"ip",ip);
 		ip = actions.size() + 1;
 
 		for (Action c : actions) {

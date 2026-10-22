@@ -40,6 +40,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		font = scr.getUI().getSkin().getFont("desc");
 
 		lookatButton = new AnimButton(scr.getUI().getSkin(), "pie_lookat");
+        lookatButton.setName("pie.lookat");
 		addActor(lookatButton);
 		lookatButton.addListener(new ChangeListener() {
 			@Override
@@ -53,6 +54,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		});
 
 		talktoButton = new AnimButton(scr.getUI().getSkin(), "pie_talkto");
+        talktoButton.setName("pie.talkto");
 		addActor(talktoButton);
 		talktoButton.addListener(new ChangeListener() {
 			@Override
@@ -66,6 +68,7 @@ public class PieMenu extends com.badlogic.gdx.scenes.scene2d.Group {
 		});
 
 		pickupButton = new AnimButton(scr.getUI().getSkin(), "pie_pickup");
+        pickupButton.setName("pie.pickup");
 		addActor(pickupButton);
 		pickupButton.addListener(new ChangeListener() {
 			@Override

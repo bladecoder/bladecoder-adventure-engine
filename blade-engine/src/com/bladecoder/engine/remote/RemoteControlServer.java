@@ -125,6 +125,9 @@ public class RemoteControlServer implements RemoteServerStatus, RemoteErrorRepor
         return commandQueue.size();
     }
 
+    /** Restore debug polling/routing before scene input is processed. */
+    public void prepareInput(){if(debugSession!=null)debugSession.prepareInput();}
+
     /** Called once per frame by {@link com.bladecoder.engine.BladeEngine}. */
     public void update() {
         if (debugSession != null) debugSession.update();
@@ -145,6 +148,35 @@ public class RemoteControlServer implements RemoteServerStatus, RemoteErrorRepor
         if (session == null) return new RemoteHttpResponse(404, RemoteHttpProtocol.errorJson("Endpoint unavailable"));
         return session.route(request);
     }
+    /** Game-thread inspector facade. Shares the HTTP session/backend without loopback requests. */
+    public java.util.Map<String,Object> inspectDebug() throws Exception {return requireDebug().snapshot();}
+    public java.util.Map<String,Object> inspectEvents() throws Exception {return requireDebug().events.read(0,0);}
+    public String debugJson(Object value){return RemoteJson.toJson(value);}
+    private RemoteDebugSession requireDebug() {
+        if(debugSession==null || !running)throw new IllegalStateException("An explicit debug session is required");return debugSession;
+    }
+    public java.util.Map<String,Object> submitInspectorCommand(String operation,String arguments) throws Exception {
+        RemoteDebugSession session=requireDebug();
+        com.badlogic.gdx.utils.JsonValue parsedJson=new com.badlogic.gdx.utils.JsonReader().parse(arguments);
+        if("scenario.run".equals(operation))RemoteScenario.validate(parsedJson.require("scenario"));
+        Object parsed=RemoteDebugState.value(parsedJson);
+        if(!(parsed instanceof java.util.Map))throw new IllegalArgumentException("Command arguments must be an object");
+        String body=RemoteJson.toJson(RemoteDebugState.map("request_id",java.util.UUID.randomUUID().toString(),"operation",operation,"arguments",parsed,"timeout_ms",30000));
+        if(body.getBytes(java.nio.charset.StandardCharsets.UTF_8).length>65536)throw new IllegalArgumentException("Command body exceeds the shared protocol limit");
+        return inspectorRequest(session,new RemoteHttpRequest("POST","/debug/v1/commands",body));
+    }
+    public java.util.Map<String,Object> inspectCommand(String id) throws Exception {
+        if(id==null || !id.matches("[a-f0-9-]{36}"))throw new IllegalArgumentException("Invalid command id");
+        return inspectorRequest(requireDebug(),new RemoteHttpRequest("GET","/debug/v1/commands/"+id,""));
+    }
+    @SuppressWarnings("unchecked")
+    private java.util.Map<String,Object> inspectorRequest(RemoteDebugSession session,RemoteHttpRequest request) throws Exception {
+        request.headers.put("authorization","Bearer "+session.token);
+        RemoteHttpResponse response=session.route(request);
+        java.util.Map<String,Object> result=(java.util.Map<String,Object>)RemoteDebugState.value(new com.badlogic.gdx.utils.JsonReader().parse(response.body));
+        if(response.status>=400)throw new IllegalArgumentException(RemoteJson.toJson(result));return result;
+    }
+    public java.util.Map<String,Object> exportInspectorEvidence() throws Exception {return requireDebug().exportInspectorEvidence();}
     public void writeDiscovery(String filename) {
         if (!running) return;
         java.util.Map<String,Object> info = RemoteDebugState.map("protocol",1,"mode",getMode(),"session_id",getSessionId(),

@@ -26,6 +26,7 @@ public class BladeEngine implements ApplicationListener {
     private Integer remoteControlPort;
     private com.bladecoder.engine.remote.RemoteControlMode remoteControlMode = com.bladecoder.engine.remote.RemoteControlMode.PLAYER;
     private String remoteDiscoveryFile;
+    public void setContentOverrideDirectory(String path) { EngineAssetManager.configureContentOverrides(path); }
     public void setRemoteControlMode(String mode) { remoteControlMode = com.bladecoder.engine.remote.RemoteControlMode.parse(mode); }
     public void setRemoteControlDiscoveryFile(String path) { remoteDiscoveryFile = path; }
 

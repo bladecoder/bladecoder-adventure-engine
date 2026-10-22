@@ -226,13 +226,14 @@ public class InkManager implements Serializable {
         waitIfNotLoaded();
 
         String line = null;
+        String sourcePath = null;
 
         HashMap<String, String> currentLineParams = new HashMap<>();
 
         if (story.canContinue()) {
             try {
                 do {
-                    String sourcePath=story.getState().getCurrentPathString();
+                    sourcePath=story.getState().getCurrentPathString();
                     line = story.Continue();
                     java.util.Map<String,Object> trace = new java.util.LinkedHashMap<String,Object>();
                     trace.put("line",line);trace.put("path",sourcePath);
@@ -256,9 +257,9 @@ public class InkManager implements Serializable {
 
                     // PROCESS COMMANDS
                     if (line.charAt(0) == COMMAND_MARK) {
-                        processCommand(inkVerbRunner, currentLineParams, line);
+                        processCommand(inkVerbRunner, currentLineParams, line, sourcePath);
                     } else {
-                        processTextLine(inkVerbRunner, currentLineParams, line);
+                        processTextLine(inkVerbRunner, currentLineParams, line, sourcePath);
                     }
                 }
             } catch (Exception e) {
@@ -306,7 +307,7 @@ public class InkManager implements Serializable {
         }
     }
 
-    private void processCommand(InkVerbRunner inkVerbRunner, HashMap<String, String> params, String line) {
+    private void processCommand(InkVerbRunner inkVerbRunner, HashMap<String, String> params, String line, String sourcePath) {
         String commandName;
         String[] commandParams;
 
@@ -324,6 +325,7 @@ public class InkManager implements Serializable {
         java.util.Map<String,Object> commandTrace=new java.util.LinkedHashMap<String,Object>();
         commandTrace.put("name",commandName);commandTrace.put("arguments",new HashMap<String,String>(params));
         commandTrace.put("flow",story.getCurrentFlowName());
+        commandTrace.put("path",sourcePath);commandTrace.put("resource","model/"+storyName+".ink.json");
         w.getEvents().diagnostic("ink.command",commandTrace);
 
         if ("LeaveNow".equals(commandName)) {
@@ -353,7 +355,7 @@ public class InkManager implements Serializable {
 
                     action = ActionFactory.create(commandName, params);
                     action.init(w);
-                    inkVerbRunner.getActions().add(action);
+                    inkVerbRunner.addAction(action,sourcePath);
                 } catch (ClassNotFoundException | ReflectionException e) {
                     EngineLogger.error(e.getMessage(), e);
                 }
@@ -364,7 +366,7 @@ public class InkManager implements Serializable {
         }
     }
 
-    private void processTextLine(InkVerbRunner inkVerbRunner, HashMap<String, String> params, String line) {
+    private void processTextLine(InkVerbRunner inkVerbRunner, HashMap<String, String> params, String line, String sourcePath) {
 
         // Get actor name from Line. Actor is separated by '>' or ':'.
         // ej. "Johnny: Hello punks!"
@@ -403,7 +405,7 @@ public class InkManager implements Serializable {
             }
 
             action.init(w);
-            inkVerbRunner.getActions().add(action);
+            inkVerbRunner.addAction(action,sourcePath);
         } catch (ClassNotFoundException | ReflectionException e) {
             EngineLogger.error(e.getMessage(), e);
         }

@@ -57,7 +57,7 @@ public class InkRunAction implements Action {
 
 			w.getInkManager().runPath(path, p, flow, wait ? cb : null);
 		} catch (Exception e) {
-			EngineLogger.error("Cannot jump to: " + path + " " + e.getMessage());
+			EngineLogger.error("Cannot jump to: " + path + " " + e.getMessage(), e);
 		}
 
 		return wait;

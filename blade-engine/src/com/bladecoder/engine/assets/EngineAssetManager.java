@@ -59,6 +59,22 @@ public class EngineAssetManager extends AssetManager {
 	private static final String AAC_EXT = ".m4a";
 
 	private static EngineAssetManager instance = null;
+    private static String contentOverrideDirectory;
+    private static ContentOverrides contentOverrides;
+
+    /** Explicit activation; call before application creation. No directory is scanned by default. */
+    public static void configureContentOverrides(String directory) {
+        if(directory==null || directory.trim().isEmpty())throw new IllegalArgumentException("Override directory is required");
+        contentOverrideDirectory=java.nio.file.Paths.get(directory).toAbsolutePath().normalize().toString();
+    }
+    public static ContentOverrides getContentOverrides(){return contentOverrides;}
+    private static FileHandleResolver contentResolver(FileHandleResolver packaged) {
+        contentOverrides=null;
+        if(contentOverrideDirectory==null)return packaged;
+        try {
+            contentOverrides=new ContentOverrides(java.nio.file.Paths.get(contentOverrideDirectory),packaged);return contentOverrides;
+        } catch(java.io.IOException failure){throw new com.badlogic.gdx.utils.GdxRuntimeException("Cannot open explicit content override store",failure);}
+    }
 
 	private float scale = 1;
 
@@ -72,7 +88,8 @@ public class EngineAssetManager extends AssetManager {
 	}
 
 	protected EngineAssetManager(FileHandleResolver resolver) {
-		super(resolver);
+		super(contentResolver(resolver));
+        resolver=getFileHandleResolver();
 
 		resResolver = new EngineResolutionFileResolver(resolver);
 		setLoader(Texture.class, new TextureLoader(resResolver));

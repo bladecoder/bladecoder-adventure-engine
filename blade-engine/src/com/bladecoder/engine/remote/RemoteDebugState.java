@@ -15,10 +15,77 @@ import com.bladecoder.engine.serialization.BladeJson;
 import com.bladecoder.engine.util.EngineLogger;
 import com.bladecoder.ink.runtime.Story;
 
-/** Game-thread snapshots. No reflection, raw model reads, or observer side effects. */
+/** Game-thread snapshots and bounded selected-resource lookups for verified source identities. */
 final class RemoteDebugState {
     final World world;
     private long choicesRevision;
+    private final Map<String,JsonValue> sourceDocuments=new LinkedHashMap<String,JsonValue>();
+    private final Map<String,Object> sourceDocumentStatus=new LinkedHashMap<String,Object>();
+    static JsonValue sourceDefinition(JsonValue root,String pointer) {
+        if(root==null)return null;
+        JsonValue value=root;
+        for(String part:pointer.substring(1).split("/")) {
+            if(value==null || !value.isObject())return null;
+            value=value.get(part.replace("~1","/").replace("~0","~"));
+        }
+        return value;
+    }
+    private JsonValue sourceDocument(String resource) {
+        if(sourceDocumentStatus.containsKey(resource))return sourceDocuments.get(resource);
+        try {
+            byte[] bytes=com.bladecoder.engine.assets.EngineAssetManager.getInstance().getAsset(resource).readBytes();
+            if(bytes.length>16*1024*1024)throw new IllegalArgumentException("Source lookup exceeds 16 MiB");
+            JsonValue parsed=new JsonReader().parse(new String(bytes,java.nio.charset.StandardCharsets.UTF_8));
+            byte[] digest=java.security.MessageDigest.getInstance("SHA-256").digest(bytes);
+            StringBuilder hash=new StringBuilder();for(byte b:digest)hash.append(String.format("%02x",b&255));
+            sourceDocuments.put(resource,parsed);sourceDocumentStatus.put(resource,map("sha256",hash.toString(),"verified",true));return parsed;
+        } catch(Exception failure) {sourceDocumentStatus.put(resource,map("verified",false,"error",failure.toString()));return null;}
+    }
+    private Scene indexedScene;
+    private String indexedChapter;
+    private final Map<String,List<Map<String,Object>>> sourceIndex=new LinkedHashMap<String,List<Map<String,Object>>>();
+    private final List<Map<String,Object>> sourceCatalogue=new ArrayList<Map<String,Object>>();
+    static String pointerPart(String value){return value.replace("~","~0").replace("/","~1");}
+    static Map<String,Object> sourceRef(String chapter,String scene,String actor,String verb,int actionCount) {
+        String resource=scene==null?"model/world":"model/"+chapter+".chapter.json";
+        String pointer=scene==null?"/verbs/"+pointerPart(verb):"/scenes/"+pointerPart(scene)+(actor==null?"":"/actors/"+pointerPart(actor))+"/verbs/"+pointerPart(verb);
+        return map("source",resource+"#"+pointer,"resource",resource,"json_pointer",pointer,
+            "chapter",chapter,"scene",scene,"actor",actor,"verb",verb,"action_count",actionCount,"mapping","runtime_model_identity");
+    }
+    private void indexManager(VerbManager manager,String chapter,String scene,String actor) {
+        for(Map.Entry<String,Verb> entry:manager.getVerbs().entrySet()) {
+            Verb verb=entry.getValue();String id=Integer.toHexString(System.identityHashCode(verb));
+            Map<String,Object> ref=sourceRef(chapter,scene,actor,entry.getKey(),verb.getActions().size());
+            JsonValue definition=sourceDefinition(sourceDocument((String)ref.get("resource")),(String)ref.get("json_pointer"));
+            if(definition==null || !definition.isObject() || !definition.has("actions"))continue;
+            ref.put("mapping","verified_model_definition");
+            ref.put("resource_sha256",((Map<?,?>)sourceDocumentStatus.get(ref.get("resource"))).get("sha256"));
+            ref.put("declared_action_count",definition.get("actions").size);
+            ref.put("runtime_action_count",verb.getActions().size());ref.put("action_count",definition.get("actions").size);
+            List<Map<String,Object>> refs=sourceIndex.get(id);
+            if(refs==null){refs=new ArrayList<Map<String,Object>>();sourceIndex.put(id,refs);}
+            refs.add(ref);sourceCatalogue.add(ref);
+        }
+    }
+    private void rebuildSources() {
+        indexedScene=world.getCurrentScene();indexedChapter=world.getCurrentChapter();
+        sourceIndex.clear();sourceCatalogue.clear();sourceDocuments.clear();sourceDocumentStatus.clear();
+        indexManager(world.getVerbManager(),indexedChapter,null,null);
+        for(Scene scene:world.getScenes().values()) {
+            indexManager(scene.getVerbManager(),indexedChapter,scene.getId(),null);
+            for(BaseActor actor:scene.getActors().values())if(actor instanceof InteractiveActor)
+                indexManager(((InteractiveActor)actor).getVerbManager(),indexedChapter,scene.getId(),actor.getId());
+        }
+    }
+    private void ensureSources(){if(sourceIndex.isEmpty() || indexedScene!=world.getCurrentScene() || !java.util.Objects.equals(indexedChapter,world.getCurrentChapter()))rebuildSources();}
+    Map<String,Object> sourceForRunner(String runner,int ip) {
+        ensureSources();List<Map<String,Object>> refs=sourceIndex.get(runner);
+        if(refs==null || refs.size()!=1)return null; // Missing/ambiguous identities remain explicit.
+        Map<String,Object> ref=new LinkedHashMap<String,Object>(refs.get(0));
+        int count=((Number)ref.get("action_count")).intValue();
+        if(ip>=0 && ip<count && ip<((Number)ref.get("declared_action_count")).intValue())ref.put("action_pointer",ref.get("json_pointer")+"/actions/"+ip);
+        return ref;
+    }
     private String lastChoices="";
     RemoteDebugState(World world) {this.world=world;}
 
@@ -46,6 +113,7 @@ final class RemoteDebugState {
             "sfx",current == null ? null : current.getSoundManager().getDebugState());
     }
     Map<String,Object> snapshot() throws Exception {
+        ensureSources();
         Map<String,Object> result=map("disposed",world.isDisposed(),"paused",world.isPaused(),"cutMode",world.inCutMode(),
                 "assetState",String.valueOf(world.getAssetState()),"chapter",world.getCurrentChapter(),
                 "properties",new LinkedHashMap<String,String>(world.getCustomProperties()),"time_of_game_ms",world.getTimeOfGame());
@@ -57,6 +125,8 @@ final class RemoteDebugState {
             scenes.add(map("id",scene.getId(),"current",scene==current,"state",scene.getState(),"actors",actors));
         }
         result.put("scenes",scenes);
+        result.put("source_catalogue",new ArrayList<Map<String,Object>>(sourceCatalogue));
+        result.put("source_document_status",new LinkedHashMap<String,Object>(sourceDocumentStatus));
         List<Object> sceneVerbs=new ArrayList<Object>();
         if(current!=null)for(Map.Entry<String,Verb> entry:current.getVerbManager().getVerbs().entrySet())
             sceneVerbs.add(runner(entry.getValue(),"scene/"+current.getId()+"/"+entry.getKey()));
@@ -89,7 +159,8 @@ final class RemoteDebugState {
             for(Map.Entry<String,InkVerbRunner> entry:ink.getVerbRunners().entrySet())runners.add(runner(entry.getValue(),"ink/"+entry.getKey()));
             result.put("ink",map("story",ink.getStoryName(),"path",story.getState().getCurrentPathString(),
                     "flow",story.getCurrentFlowName(),"tags",story.getCurrentTags(),"variables",variables,"runners",runners,
-                    "errors",story.getCurrentErrors(),"warnings",story.getCurrentWarnings()));
+                    "errors",story.getCurrentErrors(),"warnings",story.getCurrentWarnings(),
+                    "random",inkRandom(story)));
         } else result.put("ink",null);
         if(current!=null && world.getAssetState()==World.AssetState.LOADED && current.getBackgroundAtlas()!=null) {
             List<Object> regions=new ArrayList<Object>();
@@ -104,6 +175,11 @@ final class RemoteDebugState {
         result.put("graphics",map("width",Gdx.graphics.getWidth(),"height",Gdx.graphics.getHeight(),"fps",Gdx.graphics.getFramesPerSecond()));
         return result;
     }
+    static Map<String,Object> inkRandom(Story story) throws Exception {
+        JsonValue saved=new JsonReader().parse(story.getState().toJson());
+        return map("story_seed",saved.has("storySeed")?saved.getLong("storySeed"):null,
+            "previous_random",saved.has("previousRandom")?saved.getLong("previousRandom"):null);
+    }
     static Object primitive(Object raw) {
         if(raw==null || raw instanceof String || raw instanceof Boolean || raw instanceof Number)return raw;
         if(raw instanceof Map) {
@@ -113,9 +189,9 @@ final class RemoteDebugState {
         }
         return raw.toString();
     }
-    static Map<String,Object> runner(VerbRunner runner,String source) {
+    Map<String,Object> runner(VerbRunner runner,String source) {
         int ip=runner.getIP();
-        return map("source",source,"ip",ip,"runner_id",Integer.toHexString(System.identityHashCode(runner)),"target",runner.getCurrentTarget(),"action_count",runner.getActions().size(),
+        return map("source",source,"source_ref",runner instanceof Verb?sourceForRunner(Integer.toHexString(System.identityHashCode(runner)),ip):runner instanceof InkVerbRunner && ip>=0 && ip<runner.getActions().size()?((InkVerbRunner)runner).getActionSource(runner.getActions().get(ip)):null,"ip",ip,"runner_id",Integer.toHexString(System.identityHashCode(runner)),"target",runner.getCurrentTarget(),"action_count",runner.getActions().size(),
                 "active",ip>=0 && ip<runner.getActions().size(),
                 "action",ip>=0 && ip<runner.getActions().size()?runner.getActions().get(ip).getClass().getName():null);
     }

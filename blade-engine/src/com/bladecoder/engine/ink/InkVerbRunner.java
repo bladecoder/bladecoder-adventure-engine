@@ -29,6 +29,15 @@ import java.util.ArrayList;
  */
 public class InkVerbRunner implements VerbRunner, Serializable {
     private final ArrayList<Action> actions = new ArrayList<>(1);
+    private final java.util.IdentityHashMap<Action,java.util.Map<String,Object>> actionSources=new java.util.IdentityHashMap<Action,java.util.Map<String,Object>>();
+    public void addAction(Action action,String path) {
+        actions.add(action);
+        java.util.Map<String,Object> source=new java.util.LinkedHashMap<String,Object>();
+        source.put("resource","model/"+inkManager.getStoryName()+".ink.json");source.put("ink_path",path);source.put("flow",flow);source.put("mapping","runtime_line_boundary");
+        actionSources.put(action,source);
+    }
+    public java.util.Map<String,Object> getActionSource(Action action){return actionSources.get(action);}
+    private void removeCurrentAction(){actionSources.remove(actions.remove(ip));}
     private int ip = 0;
     private boolean cancelled = false;
     private final String flow;
@@ -62,12 +71,13 @@ public class InkVerbRunner implements VerbRunner, Serializable {
         if (cancelled)
             return;
 
+        EngineLogger.diagnostic("ink.action.completed","runner_id",Integer.toHexString(System.identityHashCode(this)),"flow",flow,"ip",ip,"action",actions.get(ip).getClass().getName(),"source_ref",getActionSource(actions.get(ip)),"completion","callback");
         // We store in the array only the ActionCallback actions
         // any other can be discarded after execution
         if (actions.get(ip) instanceof ActionCallback) {
             ip++;
         } else {
-            actions.remove(ip);
+            removeCurrentAction();
         }
 
         nextStep();
@@ -101,6 +111,7 @@ public class InkVerbRunner implements VerbRunner, Serializable {
     @Override
     public void cancel() {
         cancelled = true;
+        actionSources.clear();
         ip = actions.size();
         cb = null;
         sCb = null;
@@ -139,11 +150,12 @@ public class InkVerbRunner implements VerbRunner, Serializable {
 
         while (ip < actions.size() && !stop && !cancelled) {
             Action a = actions.get(ip);
+            int executingIP=ip;java.util.Map<String,Object> source=getActionSource(a);
 
             try {
-                EngineLogger.diagnostic("ink.action.started", "runner_id",Integer.toHexString(System.identityHashCode(this)),"flow", flow, "ip", ip, "action", a.getClass().getName());
+                EngineLogger.diagnostic("ink.action.started", "runner_id",Integer.toHexString(System.identityHashCode(this)),"flow", flow, "ip", executingIP, "action", a.getClass().getName(),"source_ref",source);
                 boolean pending = a.run(this);
-                EngineLogger.diagnostic(pending ? "ink.action.awaiting" : "ink.action.completed", "runner_id",Integer.toHexString(System.identityHashCode(this)),"flow", flow, "ip", ip, "action", a.getClass().getName());
+                EngineLogger.diagnostic(pending ? (ip==executingIP && actions.contains(a)?"ink.action.awaiting":"ink.action.returned") : "ink.action.completed", "runner_id",Integer.toHexString(System.identityHashCode(this)),"flow", flow, "ip", executingIP, "action", a.getClass().getName(),"source_ref",source);
                 if (pending) stop = true;
                 else {
                     // We store in the array only the ActionCallback actions
@@ -151,7 +163,7 @@ public class InkVerbRunner implements VerbRunner, Serializable {
                     if (a instanceof ActionCallback) {
                         ip++;
                     } else {
-                        actions.remove(ip);
+                        removeCurrentAction();
                     }
                 }
             } catch (Exception e) {

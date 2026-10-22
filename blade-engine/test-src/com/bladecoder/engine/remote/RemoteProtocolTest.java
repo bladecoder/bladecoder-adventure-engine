@@ -47,6 +47,10 @@ public class RemoteProtocolTest {
         Map<String,Object> tail=events.read(2049,0);
         check(!((Boolean)tail.get("lost")) && ((List<?>)tail.get("events")).size()==1,"incremental non-destructive read");
         check(events.read(2049,0).equals(tail),"second observer does not consume events");
+        checks+=RemoteDebugInputTest.run();
+        checks+=ContentOverridesTest.run();
+        checks+=RemoteScenarioTest.run();
+        checks+=RemoteSourceTraceTest.run();
         System.out.println("REMOTE_PROTOCOL_PASS checks="+checks);
     }
 }

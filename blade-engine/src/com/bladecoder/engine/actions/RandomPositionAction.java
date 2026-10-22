@@ -42,8 +42,8 @@ public class RandomPositionAction implements Action {
 		float x = a.getX();
 		float y = a.getY();
 
-		float rx = (float) (minPosition.x + Math.random() * (maxPosition.x - minPosition.x));
-		float ry = (float) (minPosition.y + Math.random() * (maxPosition.y - minPosition.y));
+		float rx = (float) (minPosition.x + com.badlogic.gdx.math.MathUtils.random() * (maxPosition.x - minPosition.x));
+		float ry = (float) (minPosition.y + com.badlogic.gdx.math.MathUtils.random() * (maxPosition.y - minPosition.y));
 
 		if (target != null) {
 			Scene ts = target.getScene(w);

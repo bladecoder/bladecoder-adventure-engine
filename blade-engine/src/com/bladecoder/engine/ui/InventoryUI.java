@@ -290,6 +290,14 @@ public class InventoryUI extends com.badlogic.gdx.scenes.scene2d.Group {
 		super.draw(batch, alpha);
 	}
 
+    /** Geometry of an existing displayed tile, in inventory-local coordinates. */
+    public com.badlogic.gdx.math.Rectangle getItemBounds(int i) {
+        if(i<0 || i>=sceneScreen.getWorld().getInventory().getNumItems() || cols<=0)throw new IllegalArgumentException("Invalid inventory item index");
+        return new com.badlogic.gdx.math.Rectangle((i%cols)*(tileSize+rowSpace)+margin,
+            ((rows-1)-i/cols)*(tileSize+rowSpace)+margin,tileSize,tileSize);
+    }
+    public SpriteActor getDraggedActor(){return draggedActor;}
+
 	public void cursorToInventoryActor(int i) {
 		float x = i % cols;
 		float y = (rows - 1) - i / cols;

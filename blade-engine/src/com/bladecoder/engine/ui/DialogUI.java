@@ -165,6 +165,7 @@ public class DialogUI extends ScrollPane {
 
             TextButton ob = new TextButton("- " + str, style.textButtonStyle);
             ob.setUserObject(i);
+            ob.setName("dialogue.choice."+i);
             panel.row();
             panel.add(ob);
             ob.getLabel().setWrap(true);

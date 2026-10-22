@@ -653,6 +653,13 @@ public class DefaultSceneScreen implements SceneScreen {
         inventoryUI = new InventoryUI(this, pointer);
         inventoryButton = new InventoryButton(ui.getSkin(), getWorld(), inventoryUI);
 
+        menuButton.setName("scene.menu");
+        inventoryButton.setName("inventory.toggle");
+        inventoryUI.setName("inventory.panel");
+        dialogUI.setName("dialogue.panel");
+        textManagerUI.setName("dialogue.text");
+        pie.setName("pie.panel");
+
         uiMode = UIModes
                 .valueOf(Config.getInstance().getProperty(Config.UI_MODE, "TWO_BUTTONS").toUpperCase(Locale.ENGLISH));
 
