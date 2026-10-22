@@ -34,6 +34,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 	private float musicPosSer = 0;
 	transient private boolean isPaused = false;
 	private MusicVolumeTween volumeTween;
+    private float observedPosition = -1;
 
 	// the global configurable by user volume
 	public static float VOLUME_MULTIPLIER = 1f;
@@ -53,9 +54,13 @@ public class MusicManager implements Serializable, AssetConsumer {
 
 			try {
                 EngineLogger.diagnostic("audio.music.start_requested", "resource", desc.getFilename(), "loop", desc.isLoop(), "volume", desc.getVolume()*VOLUME_MULTIPLIER);
-				music.play();
 				music.setLooping(desc.isLoop());
-				music.setVolume(desc.getVolume() * VOLUME_MULTIPLIER);
+                music.setVolume(desc.getVolume() * VOLUME_MULTIPLIER);
+                music.play();
+                isPaused = false;
+                EngineLogger.diagnostic("audio.music.backend_state", "bus", "music", "resource", desc.getFilename(),
+                    "playing", music.isPlaying(), "loop", music.isLooping(), "volume", music.getVolume(),
+                    "position", music.getPosition(), "audible_output_verified", false);
 			} catch (Exception e) {
 
 				// DEAL WITH OPENAL BUG
@@ -78,6 +83,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 		if (music != null && music.isPlaying()) {
 			music.pause();
 			isPaused = true;
+            EngineLogger.diagnostic("audio.music.paused", "bus", "music", "resource", desc.getFilename(), "position", music.getPosition());
 		}
 	}
 
@@ -85,12 +91,17 @@ public class MusicManager implements Serializable, AssetConsumer {
 		if (music != null && isPaused) {
 			music.play();
 			isPaused = false;
+            EngineLogger.diagnostic("audio.music.resumed", "bus", "music", "resource", desc.getFilename(), "playing", music.isPlaying());
 		}
 	}
 
 	public void stopMusic() {
-		if (music != null)
-			music.stop();
+		if (music != null) {
+            music.stop();
+            EngineLogger.diagnostic("audio.music.stopped", "bus", "music", "resource", desc == null ? null : desc.getFilename());
+        }
+        isPaused = false;
+        observedPosition = -1;
 	}
 
     public void setMusic(MusicDesc d) {
@@ -136,8 +147,9 @@ public class MusicManager implements Serializable, AssetConsumer {
 		if (desc != null)
 			desc.setVolume(volume);
 
-		if (music != null && music.isPlaying())
-			music.setVolume(volume * VOLUME_MULTIPLIER);
+		if (music != null) music.setVolume(volume * VOLUME_MULTIPLIER);
+        EngineLogger.diagnostic("audio.music.level", "bus", "music", "resource", desc == null ? null : desc.getFilename(),
+            "volume", volume, "bus_multiplier", VOLUME_MULTIPLIER, "effective_volume", volume * VOLUME_MULTIPLIER);
 	}
 
 	public float getVolume() {
@@ -169,7 +181,7 @@ public class MusicManager implements Serializable, AssetConsumer {
 	public void update(float delta) {
 		// music delay update
 		if (music != null) {
-			if (!music.isPlaying()) {
+			if (!music.isPlaying() && !isPaused) {
 
 				boolean initialTime = currentMusicDelay <= desc.getInitialDelay();
 
@@ -187,6 +199,13 @@ public class MusicManager implements Serializable, AssetConsumer {
 				}
 			}
 
+            if (music.isPlaying()) {
+                float position = music.getPosition();
+                if (music.isLooping() && observedPosition > position + 1f)
+                    EngineLogger.diagnostic("audio.music.position_wrapped", "bus", "music", "resource", desc.getFilename(),
+                        "previous_position", observedPosition, "position", position);
+                observedPosition = position;
+            }
 			if (volumeTween != null) {
 				volumeTween.update(delta);
 
@@ -203,6 +222,8 @@ public class MusicManager implements Serializable, AssetConsumer {
 			EngineLogger.debug("DISPOSING MUSIC: " + desc.getFilename());
 			EngineAssetManager.getInstance().disposeMusic(desc.getFilename());
 			music = null;
+            observedPosition = -1;
+            isPaused = false;
 			desc = null;
 			volumeTween = null;
 		}
@@ -258,6 +279,24 @@ public class MusicManager implements Serializable, AssetConsumer {
 			cb.resume();
 		}
 	}
+
+    /** Live backend reports; these are not a loopback capture or proof of audibility. */
+    public java.util.Map<String,Object> getDebugState() {
+        java.util.Map<String,Object> state = new java.util.LinkedHashMap<>();
+        state.put("bus", "music");
+        state.put("resource", desc == null ? null : desc.getFilename());
+        state.put("loaded", music != null);
+        state.put("backend", music == null ? null : music.getClass().getName());
+        state.put("playing", music != null && music.isPlaying());
+        state.put("paused", isPaused);
+        state.put("loop", music != null && music.isLooping());
+        state.put("position", music == null ? null : music.getPosition());
+        state.put("volume", getVolume());
+        state.put("bus_multiplier", VOLUME_MULTIPLIER);
+        state.put("effective_volume", music == null ? null : music.getVolume());
+        state.put("audible_output_verified", false);
+        return state;
+    }
 
 	@Override
 	public void write(Json json) {

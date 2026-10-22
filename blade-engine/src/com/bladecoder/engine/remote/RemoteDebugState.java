@@ -40,6 +40,11 @@ final class RemoteDebugState {
     static Object serialized(Object object,World world) {
         return value(new JsonReader().parse(new BladeJson(world,BladeJson.Mode.STATE).toJson(object)));
     }
+    Map<String,Object> audio() {
+        Scene current = world.getCurrentScene();
+        return map("music",world.getMusicManager().getDebugState(),
+            "sfx",current == null ? null : current.getSoundManager().getDebugState());
+    }
     Map<String,Object> snapshot() throws Exception {
         Map<String,Object> result=map("disposed",world.isDisposed(),"paused",world.isPaused(),"cutMode",world.inCutMode(),
                 "assetState",String.valueOf(world.getAssetState()),"chapter",world.getCurrentChapter(),
@@ -93,6 +98,7 @@ final class RemoteDebugState {
             result.put("background_regions",regions);
         }
         result.put("music",serialized(world.getMusicManager(),world));
+        result.put("audio",audio());
         result.put("serialized_state",current==null?null:serialized(world.getSerializer(),world));
         result.put("diagnostics",map("last_error",EngineLogger.lastError,"exception",EngineLogger.lastException==null?null:EngineLogger.lastException.toString(),"error_trace_tail",EngineLogger.errorBuffer.substring(Math.max(0,EngineLogger.errorBuffer.length()-16384))));
         result.put("graphics",map("width",Gdx.graphics.getWidth(),"height",Gdx.graphics.getHeight(),"fps",Gdx.graphics.getFramesPerSecond()));

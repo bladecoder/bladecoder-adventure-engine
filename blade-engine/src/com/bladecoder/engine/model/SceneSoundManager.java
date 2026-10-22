@@ -60,13 +60,17 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 		}
 
 		if (s != null && s.sound != null) {
-			if (s.desc.getLoop())
-				s.sound.loop(s.desc.getVolume() * VOLUME_MULTIPLIER, s.desc.getPitch(), s.desc.getPan());
-			else
-				s.sound.play(s.desc.getVolume() * VOLUME_MULTIPLIER, s.desc.getPitch(), s.desc.getPan());
+            EngineLogger.diagnostic("audio.sfx.requested", "bus", "sfx", "id", id, "resource", s.desc.getFilename(),
+                "loop", s.desc.getLoop(), "volume", s.desc.getVolume(), "bus_multiplier", VOLUME_MULTIPLIER,
+                "effective_volume", s.desc.getVolume()*VOLUME_MULTIPLIER, "pitch", s.desc.getPitch(), "pan", s.desc.getPan());
+            s.lastInstance = s.desc.getLoop()
+                ? s.sound.loop(s.desc.getVolume()*VOLUME_MULTIPLIER,s.desc.getPitch(),s.desc.getPan())
+                : s.sound.play(s.desc.getVolume()*VOLUME_MULTIPLIER,s.desc.getPitch(),s.desc.getPan());
+            s.playing = s.lastInstance >= 0;
+            s.paused = false;
+            EngineLogger.diagnostic("audio.sfx.backend_start", "bus", "sfx", "id", id, "resource", s.desc.getFilename(),
+                "instance", s.lastInstance, "accepted", s.playing, "audible_output_verified", false);
 
-            EngineLogger.diagnostic("audio.sfx.requested", "id", id, "resource", s.desc.getFilename(), "loop", s.desc.getLoop(), "volume", s.desc.getVolume()*VOLUME_MULTIPLIER);
-			s.playing = true;
 		} else {
 			EngineLogger.error("Sound Not Found: " + id);
 		}
@@ -91,10 +95,11 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	public void stopSound(String id) {
 		LoadedSound s = loadedSounds.get(id);
 
-		if (s != null) {
+		if (s != null && s.sound != null) {
             EngineLogger.diagnostic("audio.sfx.stopped", "id", s.desc.getId());
 			s.sound.stop();
 			s.playing = false;
+            s.paused = false;
 		} else {
 			EngineLogger.debug("Sound Not Found: " + id);
 		}
@@ -109,15 +114,21 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 
 	public void resume() {
 		for (LoadedSound s : loadedSounds.values()) {
-			if (s.playing && s.sound != null)
-				s.sound.resume();
+			if (s.playing && s.sound != null) {
+                s.sound.resume();
+                s.paused = false;
+                EngineLogger.diagnostic("audio.sfx.resumed", "bus", "sfx", "id", s.desc.getId());
+            }
 		}
 	}
 
 	public void pause() {
 		for (LoadedSound s : loadedSounds.values()) {
-			if (s.playing && s.sound != null)
-				s.sound.pause();
+			if (s.playing && s.sound != null) {
+                s.sound.pause();
+                s.paused = true;
+                EngineLogger.diagnostic("audio.sfx.paused", "bus", "sfx", "id", s.desc.getId());
+            }
 		}
 	}
 
@@ -125,9 +136,7 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	public void dispose() {
 		for (LoadedSound s : loadedSounds.values()) {
 
-			if (s.playing)
-	            EngineLogger.diagnostic("audio.sfx.stopped", "id", s.desc.getId());
-			s.sound.stop();
+            if (s.sound != null) stopSound(s.desc.getId());
 
 			EngineAssetManager.getInstance().disposeSound(s.desc.getFilename());
 		}
@@ -135,12 +144,13 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 
 	@Override
 	public void loadAssets() {
-		for (LoadedSound s : loadedSounds.values()) {
-
+        java.util.Iterator<LoadedSound> iterator = loadedSounds.values().iterator();
+        while (iterator.hasNext()) {
+            LoadedSound s = iterator.next();
 			try {
 				EngineAssetManager.getInstance().loadSound(s.desc.getFilename());
 			} catch (FileNotFoundException e) {
-				loadedSounds.remove(s.desc.getId());
+				iterator.remove();
 				EngineLogger.error("Sound file not found:" + e.getMessage());
 			}
 
@@ -162,6 +172,35 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 
 		}
 	}
+
+    /** Sound has no isPlaying API. A successful start cannot establish natural completion. */
+    public java.util.Map<String,Object> getDebugState() {
+        java.util.Map<String,Object> state = new java.util.LinkedHashMap<>();
+        state.put("bus", "sfx");
+        state.put("bus_multiplier", VOLUME_MULTIPLIER);
+        state.put("completion_observable", false);
+        state.put("audible_output_verified", false);
+        java.util.List<Object> sounds = new java.util.ArrayList<>();
+        for (LoadedSound s : loadedSounds.values()) {
+            java.util.Map<String,Object> item = new java.util.LinkedHashMap<>();
+            item.put("id", s.desc.getId());
+            item.put("resource", s.desc.getFilename());
+            item.put("loaded", s.sound != null);
+            item.put("backend", s.sound == null ? null : s.sound.getClass().getName());
+            item.put("instance", s.lastInstance);
+            item.put("start_accepted", s.lastInstance >= 0);
+            item.put("restore_loop_requested", s.playing && s.desc.getLoop());
+            item.put("paused", s.paused);
+            item.put("loop", s.desc.getLoop());
+            item.put("volume", s.desc.getVolume());
+            item.put("effective_volume", s.desc.getVolume()*VOLUME_MULTIPLIER);
+            item.put("pitch", s.desc.getPitch());
+            item.put("pan", s.desc.getPan());
+            sounds.add(item);
+        }
+        state.put("sounds", sounds);
+        return state;
+    }
 
 	@Override
 	public void write(Json json) {
@@ -185,6 +224,8 @@ public class SceneSoundManager implements Serializable, AssetConsumer {
 	public static class LoadedSound {
 		transient SoundDesc desc;
 		transient Sound sound;
+        transient long lastInstance = -1;
+        transient boolean paused = false;
 
 		// flag to restore the sound when looping.
 		boolean playing = false;

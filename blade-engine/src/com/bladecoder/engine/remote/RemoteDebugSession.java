@@ -72,7 +72,7 @@ final class RemoteDebugSession {
                 "save_directory",EngineAssetManager.getInstance().getUserFile("").file().getAbsolutePath(),
                 "capabilities",Arrays.asList("state.full","state.typed-ink","events.cursor","events.ink","logs","commands.async","commands.cancel",
                         "capture.scene","capture.ui","fixture.scene","fixture.actor","fixture.variables","animation.atlas",
-                        "clock.world-step","wait.conditions","save.load","events.actions","events.audio"),
+                        "clock.world-step","wait.conditions","save.load","events.actions","events.audio","audio.music.control","audio.sfx.control"),
                 "limits",RemoteDebugState.map("commands",1024,"events",2048,"artifacts",128,"long_poll_ms",20000,
                         "clock_scope","world/UI delta only; asynchronous IO and platform timers use real time"));
     }
@@ -176,6 +176,32 @@ final class RemoteDebugSession {
             int n=a.getInt("frames",1);float dt=a.getFloat("delta",1f/60f);
             if(n<1 || n>600 || !Float.isFinite(dt) || dt<=0 || dt>.1f)throw new IllegalArgumentException("Invalid bounded step");
             steps=n;stepDelta=dt;return;
+        }
+        if("audio.music".equals(job.operation)) {
+            String action=a.getString("action");
+            if("pause".equals(action))world.getMusicManager().pauseMusic();
+            else if("resume".equals(action))world.getMusicManager().resumeMusic();
+            else if("play".equals(action))world.getMusicManager().playMusic();
+            else if("stop".equals(action))world.getMusicManager().stopMusic();
+            else if("volume".equals(action)) {
+                float volume=a.getFloat("volume");
+                if(!Float.isFinite(volume) || volume<0 || volume>1)throw new IllegalArgumentException("Volume must be finite and between zero and one");
+                world.getMusicManager().setVolume(volume);
+            } else throw new IllegalArgumentException("Unknown music control");
+            job.done(world.getMusicManager().getDebugState());return;
+        }
+        if("audio.sfx".equals(job.operation)) {
+            if(world.getCurrentScene()==null || world.getAssetState()!=World.AssetState.LOADED)throw new IllegalStateException("Scene assets must be loaded");
+            String action=a.getString("action");
+            if("stop_all".equals(action))world.getCurrentScene().getSoundManager().stop();
+            else {
+                String sound=a.getString("id");
+                if(!world.getSounds().containsKey(sound))throw new IllegalArgumentException("Unknown sound ID");
+                if("play".equals(action))world.getCurrentScene().getSoundManager().playSound(sound);
+                else if("stop".equals(action))world.getCurrentScene().getSoundManager().stopSound(sound);
+                else throw new IllegalArgumentException("Unknown sound control");
+            }
+            job.done(world.getCurrentScene().getSoundManager().getDebugState());return;
         }
         if("fixture.scene".equals(job.operation)) {
             world.getSerializer().loadChapter(a.getString("chapter"),a.getString("scene"),false);
@@ -294,10 +320,14 @@ final class RemoteDebugSession {
         if("GET".equals(request.method) && "/session".equals(path))return response(200,session());
         if("GET".equals(request.method) && "/state".equals(path)) {
             final Object[] result=new Object[1];final Exception[] failure=new Exception[1];final CountDownLatch ready=new CountDownLatch(1);
-            Gdx.app.postRunnable(new Runnable(){public void run(){try{result[0]=snapshot();}catch(Exception e){failure[0]=e;}finally{ready.countDown();}}});
+            final String pointer=request.query.get("path");
+            // Audio polling must not serialize the entire world on the render thread.
+            Gdx.app.postRunnable(new Runnable(){public void run(){try{
+                result[0]=pointer!=null && (pointer.equals("/audio") || pointer.startsWith("/audio/"))
+                    ? RemoteDebugState.map("audio",state.audio()) : snapshot();
+            }catch(Exception e){failure[0]=e;}finally{ready.countDown();}}});
             if(!ready.await(2,TimeUnit.SECONDS))return error(503,"unresponsive","Render thread did not answer");
             if(failure[0]!=null)throw failure[0];
-            String pointer=request.query.get("path");
             return response(200,pointer==null?result[0]:RemoteDebugState.map("path",pointer,"value",pointer(result[0],pointer)));
         }
         if("GET".equals(request.method) && "/events".equals(path)) {
