@@ -213,7 +213,9 @@ retention/cleanup belongs to the managed profile or caller. Debug access grants
 internal control to its local token holder; protect discovery files.
 
 Run `./gradlew :blade-engine:remoteProtocolTest` for the standalone parser/mode/
-event-buffer checks. Java changes also require `./gradlew spotlessApply`.
+event-buffer checks. They use a dedicated `remoteProtocol` source set rather
+than JUnit discovery, and run automatically through `check` and `build`.
+Java changes also require `./gradlew spotlessApply`.
 Bonasera's shared HTTP client/scenarios verify real desktop rendering, P01,
 player/debug isolation and assertion/hang/crash evidence from a standalone JAR.
 Desktop verification does not establish Android/iOS, UI pointer hit-testing,

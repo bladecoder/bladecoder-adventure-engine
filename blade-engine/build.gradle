@@ -150,9 +150,29 @@ tasks.register('generateAutomationIdentity') {
 sourceSets.main.resources.srcDir(automationIdentityDir)
 processResources.dependsOn tasks.named('generateAutomationIdentity')
 
-sourceSets.test.java.srcDirs = ['test-src']
+// Standalone main-based checks are not JUnit tests. Keep them out of Gradle's
+// test discovery, but execute them as part of every check/build.
+sourceSets {
+    remoteProtocol {
+        java.srcDirs = ['test-src']
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+configurations {
+    remoteProtocolImplementation.extendsFrom implementation
+    remoteProtocolRuntimeOnly.extendsFrom runtimeOnly
+}
+tasks.named('compileRemoteProtocolJava') {
+    options.encoding = 'UTF-8'
+}
 tasks.register('remoteProtocolTest', JavaExec) {
-    dependsOn testClasses
-    classpath = sourceSets.test.runtimeClasspath
+    group = 'verification'
+    description = 'Runs standalone HTTP protocol, mode and event-buffer checks.'
+    dependsOn tasks.named('remoteProtocolClasses')
+    classpath = sourceSets.remoteProtocol.runtimeClasspath
     mainClass = 'com.bladecoder.engine.remote.RemoteProtocolTest'
+}
+tasks.named('check') {
+    dependsOn tasks.named('remoteProtocolTest')
 }
