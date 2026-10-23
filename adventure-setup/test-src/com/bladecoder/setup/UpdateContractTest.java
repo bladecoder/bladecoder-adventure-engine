@@ -31,49 +31,49 @@ public final class UpdateContractTest {
             AdventureSetup generator=new AdventureSetup();SetupSpec spec=new SetupSpec();Path root=parent.resolve("project");generator.generate(spec,root,false,null);SetupUpdate update=new SetupUpdate();
             Map<String,String> pristine=snapshot(root);Map<String,Object> plan=update.plan(root);
             check(pristine.equals(snapshot(root)),"planning writes no project files");
-            check(row(plan,"tools/ink_links.py").get("status").equals("unchanged"),"matching bundle is unchanged");
-            check(!SetupUpdate.managed("docs/brief.md") && !SetupUpdate.managed("docs/work-log.md") && !SetupUpdate.managed("tools/runtime-scenarios/custom.json") && !SetupUpdate.managed("assets/model/00.chapter.json") && !SetupUpdate.managed("raw/ink/main.ink") && !SetupUpdate.managed("adventure.json") && !SetupUpdate.managed("tools/local.json") && !SetupUpdate.managed("tools/asset-manifests/custom.json"),"authored game/configuration excluded from updates");
-            Files.write(root.resolve("tools/ink_links.py"),bytes("local improvement"));
-            check(row(update.plan(root),"tools/ink_links.py").get("status").equals("authored"),"local change retained when upstream unchanged");
-            old(root,"tools/project.py","old generic helper");
-            boolean executable=root.resolve("tools/project.py").toFile().setExecutable(true);
-            old(root,"tools/retired.py","old removed helper");
+            check(row(plan,"ai-toolkit/tools/ink_links.py").get("status").equals("unchanged"),"matching bundle is unchanged");
+            check(!SetupUpdate.managed("docs/brief.md") && !SetupUpdate.managed("docs/work-log.md") && !SetupUpdate.managed("automation/runtime-scenarios/custom.json") && !SetupUpdate.managed("assets/model/00.chapter.json") && !SetupUpdate.managed("raw/ink/main.ink") && !SetupUpdate.managed("adventure.json") && !SetupUpdate.managed("ai-toolkit/tools/local.json") && !SetupUpdate.managed("automation/asset-manifests/custom.json"),"authored game/configuration excluded from updates");
+            Files.write(root.resolve("ai-toolkit/tools/ink_links.py"),bytes("local improvement"));
+            check(row(update.plan(root),"ai-toolkit/tools/ink_links.py").get("status").equals("authored"),"local change retained when upstream unchanged");
+            old(root,"ai-toolkit/tools/project.py","old generic helper");
+            boolean executable=root.resolve("ai-toolkit/tools/project.py").toFile().setExecutable(true);
+            old(root,"ai-toolkit/tools/retired.py","old removed helper");
             Files.write(root.resolve("docs/brief.md"),bytes("My authored game"));
-            plan=update.plan(root);check(row(plan,"tools/project.py").get("status").equals("update"),"pristine older helper can update");
+            plan=update.plan(root);check(row(plan,"ai-toolkit/tools/project.py").get("status").equals("update"),"pristine older helper can update");
             Map<String,Object> result=update.apply(root,plan);
             check(Boolean.TRUE.equals(result.get("passed")),"reviewed update applied");
-            if(executable)check(Files.isExecutable(root.resolve("tools/project.py")),"update preserves executable permission");
-            check(!Files.exists(root.resolve("tools/retired.py")),"pristine retired managed helper removed");
-            check(new String(Files.readAllBytes(root.resolve("tools/ink_links.py")),StandardCharsets.UTF_8).equals("local improvement"),"authored helper preserved");
+            if(executable)check(Files.isExecutable(root.resolve("ai-toolkit/tools/project.py")),"update preserves executable permission");
+            check(!Files.exists(root.resolve("ai-toolkit/tools/retired.py")),"pristine retired managed helper removed");
+            check(new String(Files.readAllBytes(root.resolve("ai-toolkit/tools/ink_links.py")),StandardCharsets.UTF_8).equals("local improvement"),"authored helper preserved");
             check(new String(Files.readAllBytes(root.resolve("docs/brief.md")),StandardCharsets.UTF_8).equals("My authored game"),"creative brief preserved");
             check(Boolean.TRUE.equals(result.get("partial")),"kept authored toolkit edits disclosed");
             Map<String,Object> collisionManifest=read(root.resolve("setup-manifest.json"));
-            ((Map<String,Object>)collisionManifest.get("generated_files")).remove("tools/project.py");
+            ((Map<String,Object>)collisionManifest.get("generated_files")).remove("ai-toolkit/tools/project.py");
             Files.write(root.resolve("setup-manifest.json"),bytes(AdventureSetup.json(collisionManifest)));
-            Files.write(root.resolve("tools/project.py"),bytes("untracked project helper"));
-            check(row(update.plan(root),"tools/project.py").get("status").equals("conflict"),"new bundle helper colliding with untracked local file is conflict");
-            old(root,"tools/project.py","old baseline");Files.write(root.resolve("tools/project.py"),bytes("both changed"));
-            plan=update.plan(root);check(row(plan,"tools/project.py").get("status").equals("conflict"),"both changed is conflict");
+            Files.write(root.resolve("ai-toolkit/tools/project.py"),bytes("untracked project helper"));
+            check(row(update.plan(root),"ai-toolkit/tools/project.py").get("status").equals("conflict"),"new bundle helper colliding with untracked local file is conflict");
+            old(root,"ai-toolkit/tools/project.py","old baseline");Files.write(root.resolve("ai-toolkit/tools/project.py"),bytes("both changed"));
+            plan=update.plan(root);check(row(plan,"ai-toolkit/tools/project.py").get("status").equals("conflict"),"both changed is conflict");
             Map<String,String> before=snapshot(root);
             try{update.apply(root,plan);throw new AssertionError("unresolved conflict accepted");}catch(IOException expected){checks++;}
             check(before.equals(snapshot(root)),"unresolved plan leaves project byte-identical");
-            row(plan,"tools/project.py").put("resolution","keep-project");update.apply(root,plan);
-            check(new String(Files.readAllBytes(root.resolve("tools/project.py")),StandardCharsets.UTF_8).equals("both changed"),"explicit keep conflict resolution honored");
-            old(root,"tools/project.py","old baseline");Files.delete(root.resolve("tools/project.py"));
-            plan=update.plan(root);check(row(plan,"tools/project.py").get("status").equals("conflict"),"local deletion conflicts with changed upstream");
-            row(plan,"tools/project.py").put("resolution","use-bundle");update.apply(root,plan);
-            check(Files.isRegularFile(root.resolve("tools/project.py")),"reviewed restore honored");
+            row(plan,"ai-toolkit/tools/project.py").put("resolution","keep-project");update.apply(root,plan);
+            check(new String(Files.readAllBytes(root.resolve("ai-toolkit/tools/project.py")),StandardCharsets.UTF_8).equals("both changed"),"explicit keep conflict resolution honored");
+            old(root,"ai-toolkit/tools/project.py","old baseline");Files.delete(root.resolve("ai-toolkit/tools/project.py"));
+            plan=update.plan(root);check(row(plan,"ai-toolkit/tools/project.py").get("status").equals("conflict"),"local deletion conflicts with changed upstream");
+            row(plan,"ai-toolkit/tools/project.py").put("resolution","use-bundle");update.apply(root,plan);
+            check(Files.isRegularFile(root.resolve("ai-toolkit/tools/project.py")),"reviewed restore honored");
             plan=update.plan(root);Files.write(root.resolve(".adventure-setup-update.lock"),bytes("owned by another updater"));
             try{update.apply(root,plan);throw new AssertionError("active update lock ignored");}catch(IOException expected){checks++;}
             check(Files.exists(root.resolve(".adventure-setup-update.lock")),"other updater lock is preserved");Files.delete(root.resolve(".adventure-setup-update.lock"));
-            Files.write(root.resolve("tools/project.py"),bytes("changed after review"));
+            Files.write(root.resolve("ai-toolkit/tools/project.py"),bytes("changed after review"));
             try{update.apply(root,plan);throw new AssertionError("stale plan accepted");}catch(IOException expected){checks++;}
-            plan=update.plan(root);row(plan,"tools/project.py").put("path","../escape");
+            plan=update.plan(root);row(plan,"ai-toolkit/tools/project.py").put("path","../escape");
             try{update.apply(root,plan);throw new AssertionError("tampered path accepted");}catch(IOException expected){checks++;}
-            Files.delete(root.resolve("tools/project.py"));Files.createSymbolicLink(root.resolve("tools/project.py"),parent.resolve("outside"));
+            Files.delete(root.resolve("ai-toolkit/tools/project.py"));Files.createSymbolicLink(root.resolve("ai-toolkit/tools/project.py"),parent.resolve("outside"));
             try{update.plan(root);throw new AssertionError("managed symlink accepted");}catch(IOException expected){checks++;}
-            Files.delete(root.resolve("tools/project.py"));old(root,"tools/project.py","restore pristine older helper");
-            old(root,"tools/ink_links.py","restore second older helper");plan=update.plan(root);before=snapshot(root);
+            Files.delete(root.resolve("ai-toolkit/tools/project.py"));old(root,"ai-toolkit/tools/project.py","restore pristine older helper");
+            old(root,"ai-toolkit/tools/ink_links.py","restore second older helper");plan=update.plan(root);before=snapshot(root);
             SetupUpdate failing=new SetupUpdate(new SetupUpdate.MutationHook(){int n;public void installed(String path)throws IOException{if(++n==2)throw new IOException("injected write failure");}});
             try{failing.apply(root,plan);throw new AssertionError("injected update failure ignored");}catch(IOException expected){checks++;}
             check(before.equals(snapshot(root)),"failed multi-file update rolls back all installed files and provenance");

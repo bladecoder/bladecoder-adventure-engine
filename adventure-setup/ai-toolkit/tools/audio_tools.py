@@ -15,6 +15,8 @@ import tempfile
 import wave
 
 from music_score import validate, write_midi, render
+from project_config import toolkit_path
+from project_config import toolkit_path
 
 
 def sha(path):
@@ -47,7 +49,7 @@ def workspace(root, keep=None):
     if keep:
         path = Path(keep).expanduser().resolve()
         # Explicit retention may use an ignored project folder, never runtime assets/sources.
-        if any(path == root/p or (root/p) in path.parents for p in ('assets', 'raw', 'tools', 'skills')):
+        if any(path == root/p or (root/p) in path.parents for p in ('assets', 'raw', 'tools', 'skills', 'ai-toolkit', 'automation', 'docs')):
             raise ValueError('Retained intermediates must be separate from assets and source folders.')
         path.mkdir(parents=True, exist_ok=False)
         yield path
@@ -231,8 +233,8 @@ def music(root, config, cue, keep=None):
             run([ffmpeg,'-v','error','-y','-stream_loop','1','-i',master,'-c:a','libmp3lame','-b:a','192k',scratch/'listening-two-loops.mp3'])
         report = dict(schema_version=1,cue=cue,notes=count,source_sha256=sha(folder/'compose.py'),
                       recipe_sha256=sha(folder/'render.json'),soundfont_sha256=sha(sf),
-                      renderer_sha256=sha(root/'tools/music_score.py'),gain_db=gain,
-                      pipeline_sha256=sha(root/'tools/audio_tools.py'),
+                      renderer_sha256=sha(toolkit_path(root, "music_score.py")),gain_db=gain,
+                      pipeline_sha256=sha(toolkit_path(root, "audio_tools.py")),
                       fluidsynth_version=fluid_version,renderer_settings=values,
                       ffmpeg_version=run([ffmpeg,'-version']).stdout.decode().splitlines()[0],
                       output_sha256=sha(final),metrics=checked,
@@ -314,7 +316,7 @@ def sfx(root, config, family, keep=None):
         for name in outputs:
             publish(scratch/(name+'.wav'),root/'assets/sounds'/(name+'.wav'))
     result = dict(schema_version=1,family=family,recipe_sha256=sha(recipe_path),
-                  generator_sha256=sha(root/'tools/audio_tools.py'),provenance=recipe['provenance'],outputs=outputs)
+                  generator_sha256=sha(toolkit_path(root, "audio_tools.py")),provenance=recipe['provenance'],outputs=outputs)
     dump(root/'raw/sounds'/(family+'.verification.json'),result)
     return result
 

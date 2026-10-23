@@ -20,8 +20,8 @@ class AtlasRotationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             folder=Path(temp);(folder/'page.png').write_bytes(b'page existence is sufficient for metadata reader')
             atlas=folder/'rotated.atlas';atlas.write_text('page.png\nsize: 12, 8\nformat: RGBA8888\nfilter: Linear, Linear\nrepeat: none\narm\n  rotate: true\n  xy: 2, 2\n  size: 4, 10\n  orig: 4, 10\n  offset: 0, 0\n  index: -1\n')
-            result=run([java,'-cp',os.pathsep.join(map(str,jars)),root/'tools/java/AtlasVerifier.java',atlas])
+            result=run([java,'-cp',os.pathsep.join(map(str,jars)),root/'ai-toolkit/tools/java/AtlasVerifier.java',atlas])
             region=json.loads(result.split('ATLAS_DATA=',1)[1])['regions'][0]
             self.assertTrue(region['rotate']);self.assertEqual((region['originalWidth'],region['originalHeight']),(4,10))
             atlas.write_text(atlas.read_text().replace('xy: 2, 2','xy: 3, 2'))
-            with self.assertRaisesRegex(ValueError,'Invalid region bounds'):run([java,'-cp',os.pathsep.join(map(str,jars)),root/'tools/java/AtlasVerifier.java',atlas])
+            with self.assertRaisesRegex(ValueError,'Invalid region bounds'):run([java,'-cp',os.pathsep.join(map(str,jars)),root/'ai-toolkit/tools/java/AtlasVerifier.java',atlas])

@@ -2,7 +2,7 @@
 
 Selecting Spine adds the runtime plugin and a tiny original two-bone envelope rig
 with `idle` and `wave` animations, its editable project/JSON/PNG, runtime skeleton
-and atlas, and `tools/spine-recipes/neutral-rig.json`. The scene's optional `courier`
+and atlas, and `automation/spine-recipes/neutral-rig.json`. The scene's optional `courier`
 actor exercises the rig; the note interaction stays independent. This is a small
 replaceable example, not a production humanoid animation library.
 
@@ -12,9 +12,9 @@ family 4.3. Use an explicitly compatible editor/runtime pair for another templat
 Canonical sources default to `raw/art`, or the selected external art root.
 
 ```sh
-python3 -B tools/project.py spine export tools/spine-recipes/neutral-rig.json --out /new/spine-preview --json
-python3 -B tools/project.py spine test /new/spine-preview/report.json --out /new/spine-runtime --json
-python3 -B tools/project.py spine apply /new/spine-preview/report.json --json
+python3 -B ai-toolkit/tools/project.py spine export automation/spine-recipes/neutral-rig.json --out /new/spine-preview --json
+python3 -B ai-toolkit/tools/project.py spine test /new/spine-preview/report.json --out /new/spine-runtime --json
+python3 -B ai-toolkit/tools/project.py spine apply /new/spine-preview/report.json --json
 ```
 
 Review preview images and runtime captures before applying. Export-only recipes
@@ -41,15 +41,15 @@ approve animation artistry, full character behavior or mobile device rendering.
 
 ## Derive another rig without changing the template
 
-Spine-capable output includes `tools/spine-recipes/derived-courier.json`, its
+Spine-capable output includes `automation/spine-recipes/derived-courier.json`, its
 edits and an explicit SVG pieces manifest. This original example shifts one bone
 and adds `salute`, preserving `idle` and `wave`. It produces a different editable
 project under `characters/derived-courier` in the selected art root:
 
 ```sh
-python3 -B tools/project.py spine preview tools/spine-recipes/derived-courier.json --out /new/derived-preview --json
-python3 -B tools/project.py spine test /new/derived-preview/report.json --out /new/derived-runtime --json
-python3 -B tools/project.py spine apply /new/derived-preview/report.json --json
+python3 -B ai-toolkit/tools/project.py spine preview automation/spine-recipes/derived-courier.json --out /new/derived-preview --json
+python3 -B ai-toolkit/tools/project.py spine test /new/derived-preview/report.json --out /new/derived-runtime --json
+python3 -B ai-toolkit/tools/project.py spine apply /new/derived-preview/report.json --json
 ```
 
 Review the piece/contact images and actual renderer captures before apply. The

@@ -139,7 +139,7 @@ class RenderTests(unittest.TestCase):
 class PackerLockTests(unittest.TestCase):
     def test_wrong_binary_rejected_even_if_filename_matches(self):
         with tempfile.TemporaryDirectory() as temporary:
-            root=Path(temporary);settings=root/'tools/asset-settings';settings.mkdir(parents=True)
+            root=Path(temporary);settings=root/'ai-toolkit/tools/asset-settings';settings.mkdir(parents=True)
             (settings/'packer-lock.json').write_text(json.dumps({'group':'test','jars':[{'artifact':'gdx','version':'1','sha256':'wrong'}]}))
             jar=root/'gdx.jar';jar.write_bytes(b'wrong binary')
             with self.assertRaisesRegex(ValueError,'Pinned'):
@@ -158,9 +158,9 @@ class PackerIntegrationTests(unittest.TestCase):
             self.skipTest('JDK and ImageMagick required')
         with tempfile.TemporaryDirectory(prefix='adventure-pack-test-') as temporary:
             root=Path(temporary)/'repo';root.mkdir()
-            shutil.copytree(tools/'asset-settings',root/'tools/asset-settings')
-            (root/'tools/java').mkdir()
-            shutil.copyfile(tools/'java/AtlasVerifier.java',root/'tools/java/AtlasVerifier.java')
+            shutil.copytree(tools/'asset-settings',root/'ai-toolkit/tools/asset-settings')
+            (root/'ai-toolkit/tools/java').mkdir(parents=True)
+            shutil.copyfile(tools/'java/AtlasVerifier.java',root/'ai-toolkit/tools/java/AtlasVerifier.java')
             source=root/'raw/images/test';source.mkdir(parents=True)
             for index,color in [(0,'red'),(1,'blue')]:
                 run(['magick','-size','20x20','xc:none','-fill',color,'-draw','rectangle 5,5 14,14',source/f'pulse_{index}.png'])

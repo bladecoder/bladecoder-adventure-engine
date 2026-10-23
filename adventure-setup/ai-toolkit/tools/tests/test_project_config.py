@@ -38,7 +38,7 @@ class ProjectDeclarations(unittest.TestCase):
 
     def test_valid_neutral_catalogue(self):
         data = {"schema_version": 1, "capabilities": {"ink": False}, "art_storage": "external",
-                "tests": {"suites": {"smoke": {"scenario": "tools/runtime-scenarios/smoke.json", "engine_replay": True}}}}
+                "tests": {"suites": {"smoke": {"scenario": "automation/runtime-scenarios/smoke.json", "engine_replay": True}}}}
         self.assertEqual(data, self.load(data))
 
     def test_duplicate_keys_rejected(self):

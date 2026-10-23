@@ -69,8 +69,8 @@ public final class AdventureSetup {
                 Files.createDirectories(file.getParent());Files.write(file,entry.getValue(),StandardOpenOption.CREATE_NEW);
             }
             Path agents=staging.resolve(".agents");Files.createDirectories(agents);
-            try{Files.createSymbolicLink(agents.resolve("skills"),Paths.get("../skills"));}
-            catch(IOException | UnsupportedOperationException error){throw new IOException("Cannot create required relative symlink .agents/skills -> ../skills; enable symbolic-link support and retry.",error);}
+            try{Files.createSymbolicLink(agents.resolve("skills"),Paths.get("../ai-toolkit/skills"));}
+            catch(IOException | UnsupportedOperationException error){throw new IOException("Cannot create required relative symlink .agents/skills -> ../ai-toolkit/skills; enable symbolic-link support and retry.",error);}
             if(!staging.resolve("gradlew").toFile().setExecutable(true,false) && !System.getProperty("os.name").startsWith("Windows"))throw new IOException("Cannot mark Gradle wrapper executable");
             Files.createDirectories(staging.resolve("core/src/main/java/"+spec.packageName.replace('.','/')));
             Files.move(staging,destination);
@@ -86,9 +86,9 @@ public final class AdventureSetup {
         replacements.put("%GDX_CONTROLLERS_VERSION%",versions.getProperty("gdxControllersVersion"));replacements.put("%BLADE_INK_VERSION%",versions.getProperty("bladeInkVersion"));replacements.put("%API_LEVEL%",versions.getProperty("androidAPILevel"));
         for(String source:new String(read(resource("setup-templates.txt")),StandardCharsets.UTF_8).split("\n")) {
             if(source.isEmpty() || source.equals("local.properties"))continue;
-            if(!spec.spine && (source.startsWith("raw/art/characters/neutral-rig/") || source.startsWith("assets/spine/neutral-rig.") || source.startsWith("assets/atlases/1/neutral-rig.") || (source.startsWith("tools/spine-recipes/") || source.equals("tools/asset-manifests/derived-courier.json"))))continue;
+            if(!spec.spine && (source.startsWith("raw/art/characters/neutral-rig/") || source.startsWith("assets/spine/neutral-rig.") || source.startsWith("assets/atlases/1/neutral-rig.") || (source.startsWith("automation/spine-recipes/") || source.equals("automation/asset-manifests/derived-courier.json"))))continue;
             if(!spec.audio && (source.startsWith("raw/music/") || source.startsWith("raw/sounds/") || source.startsWith("assets/music/") || source.startsWith("assets/sounds/")))continue;
-            if(!spec.ink && (source.startsWith("raw/ink/") || source.equals("assets/model/main.ink.json") || source.startsWith("tools/ink-scenarios/")))continue;
+            if(!spec.ink && (source.startsWith("raw/ink/") || source.equals("assets/model/main.ink.json") || source.startsWith("automation/ink-scenarios/")))continue;
             String platform=source.split("/")[0];
             if(Arrays.asList("desktop","android","ios").contains(platform) && !spec.platforms.contains(platform))continue;
             byte[] bytes=read(resource("projectTmpl/"+source));String target=source;
@@ -161,13 +161,15 @@ public final class AdventureSetup {
                         content=contract.toJson(JsonWriter.OutputType.json).getBytes(StandardCharsets.UTF_8);
                     }
                 }
-                if(outputs.put(source,content)!=null)throw new IOException("Duplicate toolkit output: "+source);
+                String target=source;
+                if(!source.equals("AGENTS.md") && !source.equals("docs/brief.md") && !source.equals("docs/work-log.md"))target="ai-toolkit/"+source;
+                if(outputs.put(target,content)!=null)throw new IOException("Duplicate toolkit output: "+target);
             }
         }
         Map<String,Object> project=spec.toMap();project.put("setup_schema",1);
         Map<String,Object> capabilities=new LinkedHashMap<String,Object>();capabilities.put("ink",spec.ink);capabilities.put("spine",spec.spine);capabilities.put("audio",spec.audio);project.put("capabilities",capabilities);
         if(spec.ink){Map<String,Object> ink=new LinkedHashMap<String,Object>();ink.put("source","raw/ink/main.ink");ink.put("output","assets/model/main.ink.json");project.put("ink",ink);}else project.put("ink",null);
-        Map<String,Object> suite=new LinkedHashMap<String,Object>();suite.put("scenario","tools/runtime-scenarios/smoke.json");suite.put("engine_replay",true);
+        Map<String,Object> suite=new LinkedHashMap<String,Object>();suite.put("scenario","automation/runtime-scenarios/smoke.json");suite.put("engine_replay",true);
         Map<String,Object> suites=new LinkedHashMap<String,Object>();suites.put("smoke",suite);
         Map<String,Object> tests=new LinkedHashMap<String,Object>();tests.put("suites",suites);
         Map<String,Object> profiles=new LinkedHashMap<String,Object>();
@@ -177,7 +179,7 @@ public final class AdventureSetup {
         fast.add(qaTask("fast-formats","formats",null));if(spec.ink)fast.add(qaTask("fast-ink-links","cli","ink-links"));
         profiles.put("fast",fast);profiles.put("desktop",Arrays.asList(qaTask("desktop-smoke","suite","smoke")));
         if(spec.audio) {
-            Map<String,Object> audio=new LinkedHashMap<String,Object>();audio.put("chapter","00");audio.put("scene","scene-1");audio.put("music","starter-loop.mp3");audio.put("capture_seconds",14);audio.put("min_music_wraps",2);audio.put("scenario","tools/runtime-scenarios/smoke.json");
+            Map<String,Object> audio=new LinkedHashMap<String,Object>();audio.put("chapter","00");audio.put("scene","scene-1");audio.put("music","starter-loop.mp3");audio.put("capture_seconds",14);audio.put("min_music_wraps",2);audio.put("scenario","automation/runtime-scenarios/smoke.json");
             List<Object> sounds=new ArrayList<Object>();for(String id:Arrays.asList("starter-pickup","starter-signal")){Map<String,Object> sound=new LinkedHashMap<String,Object>();sound.put("id",id);sound.put("resource",id+".wav");sounds.add(sound);}audio.put("sounds",sounds);
             Map<String,Object> audioProfiles=new LinkedHashMap<String,Object>();audioProfiles.put("starter",audio);tests.put("audio",audioProfiles);
             media.add(qaTask("media-audio","audio","starter"));
@@ -207,7 +209,7 @@ public final class AdventureSetup {
             }
             smoke.addChild("steps",adapted);
         }
-        outputs.put("tools/runtime-scenarios/smoke.json",smoke.toJson(JsonWriter.OutputType.json).getBytes(StandardCharsets.UTF_8));
+        outputs.put("automation/runtime-scenarios/smoke.json",smoke.toJson(JsonWriter.OutputType.json).getBytes(StandardCharsets.UTF_8));
         return outputs;
     }
     private static Map<String,Object> qaTask(String id,String kind,String value) {

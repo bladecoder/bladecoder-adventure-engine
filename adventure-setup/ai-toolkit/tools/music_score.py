@@ -1,7 +1,7 @@
 """Editable MIDI score helpers and offline FluidSynth rendering (stdlib only).
 
 MIDI/renderer adapted from musicgen's intro-vapores; see audio-workflow.md
-and tools/licenses/compose-game-music-MIT.txt for upstream helper attribution.
+and ai-toolkit/tools/licenses/compose-game-music-MIT.txt for upstream helper attribution.
 """
 import ctypes as C
 import ctypes.util

@@ -27,6 +27,6 @@ that need actual human or platform evidence.
 Develop this adventure from this brief using `AGENTS.md`, `adventure.json` and the
 local `$develop-adventure` workflow. Inspect current implementation and work log
 first. Implement and verify a small playable slice before expanding. Use the
-project's local tools/skills, preserve authoritative state ownership and retain
+project's local ai-toolkit tools and skills, preserve authoritative state ownership and retain
 runtime evidence. Record unfinished work and the next concrete action; do not
 claim the full game from successful compilation or the starter smoke alone.

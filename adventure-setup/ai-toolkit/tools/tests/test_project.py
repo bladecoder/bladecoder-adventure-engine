@@ -36,14 +36,14 @@ class ProjectToolsTests(unittest.TestCase):
         self.write("gradlew", "not executed")
         self.write("gradle/wrapper/gradle-wrapper.jar", "not executed")
         self.write("gradle/wrapper/gradle-wrapper.properties", "distributionUrl=unused")
-        self.write("skills/example/SKILL.md", "---\nname: example\ndescription: Example\n---\n")
+        self.write("ai-toolkit/skills/example/SKILL.md", "---\nname: example\ndescription: Example\n---\n")
         (self.root / ".agents").mkdir()
-        (self.root / ".agents/skills").symlink_to("../skills", target_is_directory=True)
-        self.write("tools/project.py", SCRIPT.read_text())
+        (self.root / ".agents/skills").symlink_to("../ai-toolkit/skills", target_is_directory=True)
+        self.write("ai-toolkit/tools/project.py", SCRIPT.read_text())
         for helper in ("skill_tools.py", "model_contract.py", "project_config.py", "art_sources.py", "asset_manifest.py", "chapter_validate.py", "model_json.py", "ink_tools.py", "ink_links.py", "engine_tests.py", "art_pipeline.py", "atlas_tools.py"):
-            self.write("tools/" + helper, (SCRIPT.parent / helper).read_text())
+            self.write("ai-toolkit/tools/" + helper, (SCRIPT.parent / helper).read_text())
 
-        shutil.copytree(SCRIPT.parent / "model-contract", self.root / "tools/model-contract")
+        shutil.copytree(SCRIPT.parent / "model-contract", self.root / "ai-toolkit/tools/model-contract")
 
     def write(self, name, content):
         path = self.root / name
@@ -60,7 +60,7 @@ class ProjectToolsTests(unittest.TestCase):
         environment = {k: v for k, v in os.environ.items() if not k.startswith("ADVENTURE_")}
         if env:
             environment.update(env)
-        return subprocess.run([sys.executable, "-B", str(self.root / "tools/project.py"), *args],
+        return subprocess.run([sys.executable, "-B", str(self.root / "ai-toolkit/tools/project.py"), *args],
                               cwd=cwd or self.root, env=environment, capture_output=True, text=True, timeout=15)
 
     def snapshot(self):
@@ -106,7 +106,7 @@ class ProjectToolsTests(unittest.TestCase):
         self.assertTrue(any(c["id"] == "legacy.packall" for c in json.loads(result.stdout)["checks"]))
 
     def test_config_precedence_and_root_relative_paths(self):
-        self.write("tools/local.json", json.dumps({"paths": {"java": "default-java"}}))
+        self.write("ai-toolkit/tools/local.json", json.dumps({"paths": {"java": "default-java"}}))
         self.write("custom.json", json.dumps({"paths": {"java": "file-java"}}))
         with patch.dict(os.environ, {}, clear=True):
             self.assertEqual(project.load_config(self.root)["java"], "default-java")
@@ -115,7 +115,7 @@ class ProjectToolsTests(unittest.TestCase):
                 self.assertEqual(project.load_config(self.root, "custom.json")["java"], "environment-java")
             with patch.dict(os.environ, {"ADVENTURE_TOOLS_CONFIG": "custom.json"}):
                 self.assertEqual(project.load_config(self.root)["java"], "file-java")
-                self.assertEqual(project.load_config(self.root, "tools/local.json")["java"], "default-java")
+                self.assertEqual(project.load_config(self.root, "ai-toolkit/tools/local.json")["java"], "default-java")
         path = self.fake_tool("inkscape", "print('Inkscape 1.4.3')")
         config = self.write("custom.json", json.dumps({"paths": {
             "inkscape": path.relative_to(self.root).as_posix(),

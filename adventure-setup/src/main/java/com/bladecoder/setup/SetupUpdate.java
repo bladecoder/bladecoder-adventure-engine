@@ -16,15 +16,22 @@ public final class SetupUpdate {
     SetupUpdate(MutationHook hook) throws IOException { setup=new AdventureSetup();this.hook=hook; }
 
     static boolean managed(String path) {
+        // Legacy locations remain managed so reviewed updates can remove pristine toolkit files.
         if(path.startsWith("skills/") || path.startsWith(".agents/skills/"))return true;
         if(Arrays.asList("AGENTS.md","README.md","tools/skills-discovery.json").contains(path))return true;
         if(path.startsWith("docs/") && path.endsWith("-workflow.md"))return true;
         if(path.equals("docs/chapter-format.md"))return true;
-        // Explicit extensions/directories; never treat project data as generic toolkit content.
-        if(!path.startsWith("tools/"))return false;
-        String tail=path.substring(6);
-        if(!tail.contains("/"))return tail.endsWith(".py") || tail.equals("README.md") || tail.equals("automation.gradle") || tail.equals("requirements-visual.txt") || tail.equals("local.example.json");
-        return path.startsWith("tools/java/") || path.startsWith("tools/tests/") || path.startsWith("tools/optional-tests/") || path.startsWith("tools/licenses/") || path.startsWith("tools/model-contract/");
+        if(path.startsWith("tools/")) {
+            String legacy=path.substring("tools/".length());
+            if(!legacy.contains("/"))return legacy.endsWith(".py") || legacy.equals("README.md") || legacy.equals("automation.gradle") || legacy.equals("requirements-visual.txt") || legacy.equals("local.example.json");
+            if(path.startsWith("tools/java/") || path.startsWith("tools/tests/") || path.startsWith("tools/optional-tests/") || path.startsWith("tools/licenses/") || path.startsWith("tools/model-contract/"))return true;
+        }
+        if(path.startsWith("ai-toolkit/skills/") || path.startsWith("ai-toolkit/docs/"))return true;
+        if(Arrays.asList("ai-toolkit/README.md","ai-toolkit/tools/skills-discovery.json").contains(path))return true;
+        if(!path.startsWith("ai-toolkit/tools/"))return false;
+        String toolkit=path.substring("ai-toolkit/tools/".length());
+        if(!toolkit.contains("/"))return toolkit.endsWith(".py") || toolkit.equals("README.md") || toolkit.equals("automation.gradle") || toolkit.equals("requirements-visual.txt") || toolkit.equals("local.example.json");
+        return path.startsWith("ai-toolkit/tools/java/") || path.startsWith("ai-toolkit/tools/tests/") || path.startsWith("ai-toolkit/tools/optional-tests/") || path.startsWith("ai-toolkit/tools/licenses/") || path.startsWith("ai-toolkit/tools/model-contract/") || path.startsWith("ai-toolkit/tools/asset-settings/");
     }
     private static Path safe(Path root,String name) throws IOException {
         if(name.isEmpty() || name.contains("\\") || name.contains(":") || name.startsWith("/") || !Paths.get(name).normalize().toString().replace('\\','/').equals(name) || name.equals(".") || name.startsWith("../"))throw new IOException("Unsafe managed path: "+name);

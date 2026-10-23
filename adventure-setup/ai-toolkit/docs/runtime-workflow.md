@@ -6,11 +6,11 @@ internal observation, fixtures and mutations. Logging `-d` does not elevate mode
 Private discovery identifies a session, loopback endpoint and bearer token.
 
 ```sh
-python3 -B tools/project.py runtime start --jar /absolute/game.jar --out /new/session --json
-python3 -B tools/project.py runtime state --session /new/session --path /scene --json
-python3 -B tools/project.py runtime events --session /new/session --after 0 --json
-python3 -B tools/project.py runtime capture --session /new/session --out /new/capture --json
-python3 -B tools/project.py runtime stop --session /new/session --json
+python3 -B ai-toolkit/tools/project.py runtime start --jar /absolute/game.jar --out /new/session --json
+python3 -B ai-toolkit/tools/project.py runtime state --session /new/session --path /scene --json
+python3 -B ai-toolkit/tools/project.py runtime events --session /new/session --after 0 --json
+python3 -B ai-toolkit/tools/project.py runtime capture --session /new/session --out /new/capture --json
+python3 -B ai-toolkit/tools/project.py runtime stop --session /new/session --json
 ```
 
 Managed starts isolate saves and retain process/build identity; stop requires
@@ -36,8 +36,8 @@ unloaded resource state. Event cursors report loss explicitly. Keep command,
 frame/source/action, dialogue, input and capture evidence together.
 
 ```sh
-python3 -B tools/project.py runtime run --suite smoke --jar /absolute/game.jar --out /new/smoke --json
-python3 -B tools/project.py runtime run --scenario tools/runtime-scenarios/smoke.json --engine-replay --jar /absolute/game.jar --out /new/replay --json
+python3 -B ai-toolkit/tools/project.py runtime run --suite smoke --jar /absolute/game.jar --out /new/smoke --json
+python3 -B ai-toolkit/tools/project.py runtime run --scenario automation/runtime-scenarios/smoke.json --engine-replay --jar /absolute/game.jar --out /new/replay --json
 ```
 
 Suites come from `adventure.json`. Version-1 scenarios declare chapter/scene,

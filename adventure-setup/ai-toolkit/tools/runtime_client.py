@@ -13,6 +13,8 @@ from urllib.request import Request, urlopen
 import uuid
 
 from ink_tools import java_program
+from project_config import toolkit_path
+from project_config import toolkit_path
 
 
 class RuntimeFailure(RuntimeError):
@@ -173,7 +175,7 @@ def start_runtime(root, config, directory, mode='debug', scene=None, jar=None, a
         arguments = ['-jar', str(jar)]
         identity = {'jar': str(jar), 'sha256': hashlib.sha256(jar.read_bytes()).hexdigest()}
     else:
-        result = subprocess.run([str(root/'gradlew'),'--offline','--console=plain','-I',str(root/'tools/automation.gradle'),
+        result = subprocess.run([str(root/'gradlew'),'--offline','--console=plain','-I',str(toolkit_path(root, "automation.gradle")),
                                  ':desktop:classes',':desktop:automationClasspath'], cwd=root, capture_output=True,text=True,timeout=60)
         match = re.search(r'^AUTOMATION_CP=(.+)$', result.stdout, re.M)
         if result.returncode or not match:
@@ -203,7 +205,7 @@ def start_runtime(root, config, directory, mode='debug', scene=None, jar=None, a
     if hidden:command += ['-automation-window']
     if overrides:
         override_path=Path(overrides).expanduser().resolve()
-        if any(override_path.is_relative_to(root/folder) for folder in ('assets','raw','tools','skills')):
+        if any(override_path.is_relative_to(root/folder) for folder in ('assets','raw','tools','skills','ai-toolkit','automation','docs')):
             raise RuntimeFailure('Persistent overrides must stay outside packaged/source/tool directories.')
         command += ['-content-overrides',str(override_path)]
     log = (out/'process.log').open('wb')

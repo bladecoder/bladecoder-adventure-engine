@@ -9,7 +9,7 @@ gradle.projectsEvaluated {
 // Explicit opt-in resolution for the graphics toolchain; hashes checked by Python.
 gradle.projectsEvaluated {
     def desktop = gradle.rootProject.project(':desktop')
-    def lock = new groovy.json.JsonSlurper().parse(gradle.rootProject.file('tools/asset-settings/packer-lock.json'))
+    def lock = new groovy.json.JsonSlurper().parse(gradle.rootProject.file('ai-toolkit/tools/asset-settings/packer-lock.json'))
     def packer = desktop.configurations.create('automationPacker')
     lock.jars.each { entry ->
         desktop.dependencies.add(packer.name, "${lock.group}:${entry.artifact}:${entry.version}") { transitive = false }

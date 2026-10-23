@@ -7,6 +7,7 @@ import re
 import xml.etree.ElementTree as ET
 
 from art_sources import read_svg, relative_path, roots_for, within
+from project_config import toolkit_path, automation_path
 
 
 class ContractError(ValueError):
@@ -60,7 +61,7 @@ def json_file(path):
 def shared_path(root, value):
     portable(value)
     path = (root / value).resolve()
-    require(within(path, [(root / "tools/asset-settings").resolve()]), "Shared settings must be under tools/asset-settings/.")
+    require(within(path, [toolkit_path(root, "asset-settings").resolve()]), "Shared settings must be under ai-toolkit/tools/asset-settings/.")
     require(path.suffix == ".json" and path.is_file(), "Shared settings JSON file is missing.")
     return path
 
@@ -213,7 +214,7 @@ def validate_one(data, root, config, outputs, manifest_ids, structure_only):
 
 
 def validate_manifests(root, config, filenames=None, structure_only=False):
-    paths = [Path(value) if Path(value).is_absolute() else root / value for value in filenames] if filenames else sorted((root / "tools/asset-manifests").glob("*.json"))
+    paths = [Path(value) if Path(value).is_absolute() else root / value for value in filenames] if filenames else sorted(automation_path(root, "asset-manifests").glob("*.json"))
     checks = []
     outputs, identifiers = set(), set()
     for path in paths:

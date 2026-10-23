@@ -7,12 +7,12 @@ are included. The external SoundFont is identified by hash and attribution; it i
 not distributed. No existing game's melody or sound recording is included.
 
 ```sh
-python3 -B tools/project.py audio music starter-loop --json
-python3 -B tools/project.py audio sfx starter --json
+python3 -B ai-toolkit/tools/project.py audio music starter-loop --json
+python3 -B ai-toolkit/tools/project.py audio sfx starter --json
 ```
 
 Regeneration needs FFmpeg/FFprobe; music also requires FluidSynth and the pinned
-SoundFont. Set installations in ignored `tools/local.json`. The rendering recipe
+SoundFont. Set installations in ignored `ai-toolkit/tools/local.json`. The rendering recipe
 pins the source SoundFont hash, synthesis settings and encoding. Imported files
 can use `normalize-music` or `normalize-sfx`; SFX preserve the source channel count
 unless `--channels mono|stereo` is explicit. Procedural SFX use recipe channel counts.
@@ -24,7 +24,7 @@ and include it in the `media` QA profile:
 
 ```sh
 ./gradlew :desktop:dist
-python3 -B tools/project.py qa --profile media --jar desktop/build/libs/desktop-0.1.0.jar --out /new/media-evidence --json
+python3 -B ai-toolkit/tools/project.py qa --profile media --jar desktop/build/libs/desktop-0.1.0.jar --out /new/media-evidence --json
 ```
 
 Or select an audio profile directly with `audio test starter --jar GAME.jar
@@ -51,9 +51,9 @@ mobile device behavior. Keep those reviews separate and visible.
 
 ## Optional authoring integration checks
 
-Core helper contracts run with `python3 -B -m unittest discover -s tools/tests -v`.
+Core helper contracts run with `python3 -B -m unittest discover -s ai-toolkit/tools/tests -v`.
 Real encoder/renderer/atlas-reader checks are separate:
-`python3 -B -m unittest discover -s tools/optional-tests -v`. They use synthetic
+`python3 -B -m unittest discover -s ai-toolkit/tools/optional-tests -v`. They use synthetic
 sources and require the corresponding installed authoring tools, cached pinned
 packer/reader JARs and JDK. Missing prerequisites produce explicit skips; a skipped
 integration is unavailable coverage, not a verified export. Selecting the minimal

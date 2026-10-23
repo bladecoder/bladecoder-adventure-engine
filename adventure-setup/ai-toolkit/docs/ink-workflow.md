@@ -6,10 +6,10 @@ chapter uses `inkManager: {storyName: "main"}` to select `model/main.ink.json`;
 is not a production menu. Dependency versions are in `gradle.properties`.
 
 ```sh
-python3 -B tools/project.py ink-compile --json
-python3 -B tools/project.py ink-compile --check --json
-python3 -B tools/project.py ink-links --json
-python3 -B tools/project.py ink-test --json
+python3 -B ai-toolkit/tools/project.py ink-compile --json
+python3 -B ai-toolkit/tools/project.py ink-compile --check --json
+python3 -B ai-toolkit/tools/project.py ink-links --json
+python3 -B ai-toolkit/tools/project.py ink-test --json
 ```
 
 Compilation prefers the matching cached Java compiler unless an explicit
@@ -33,7 +33,7 @@ mistaken for a speaker prefix. Inspect delimiters/tags before embedding vectors,
 commas, `#`, `:` or `=` in commands. Consult the bundled action contract and actual
 bindings when changing integration, rather than assuming C# hosting examples.
 
-Narrative JSON cases live in `tools/ink-scenarios`. They select a compiled `story`,
+Narrative JSON cases live in `automation/ink-scenarios`. They select a compiled `story`,
 explicit simulated `world` answers and steps (`path`, `choose`, typed `set`/`lists`,
 `save_load`, `assert`). Assertions can check text, choices, variables, list members
 and recorded command counts. `ink-test` executes the real Ink runtime but records

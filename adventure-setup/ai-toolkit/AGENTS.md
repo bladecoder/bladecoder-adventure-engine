@@ -12,19 +12,19 @@ a previous plan overrides implemented behavior or the user's current request.
   regenerate; never fix only compiled story JSON. Engine inventory/location/actor
   state and Ink narrative knowledge have separate authoritative owners.
 - Editable art defaults to `raw/art` or the explicitly selected external root;
-  `tools/local.json` holds ignored machine paths. Use explicit SVG/Spine recipes.
+  `ai-toolkit/tools/local.json` holds ignored machine paths. Use explicit SVG/Spine recipes.
 - `raw/music` and `raw/sounds` hold selected audio sources/recipes. Final music is
   MP3; effects are PCM16 WAV with mono/stereo chosen per effect.
 - `core/src/main/java/` is available for project code under the declared package.
   The engine is a dependency; ordinary development/debugging needs no editor.
-- `skills/` is canonical. `.agents/skills` is a relative symlink to `../skills`,
+- `ai-toolkit/skills/` is canonical. `.agents/skills` is a relative symlink to `../ai-toolkit/skills`,
   so agents discover the canonical files directly. Edit skills only under
-  `skills/`; no discovery copy needs synchronization.
+  `ai-toolkit/skills/`; no discovery copy needs synchronization.
 
 ## Work and verification
 
-Use the relevant local skill and `tools/project.py --help`. Follow
-`docs/agent-workflow.md`. Write player-facing content and narrative design in the
+Use the relevant local skill and `ai-toolkit/tools/project.py --help`. Follow
+`ai-toolkit/docs/agent-workflow.md`. Write player-facing content and narrative design in the
 brief's chosen language; write programming documentation in English. Do not
 impose an example game's tone, puzzle policy, locale or visual style.
 

@@ -9,10 +9,11 @@ import tempfile
 from art_pipeline import sha, run, create_output, fingerprints, image_info, program, local_config
 from asset_manifest import json_file
 from ink_tools import java_program
+from project_config import toolkit_path, automation_path
 
 
 def packer_classpath(root, config):
-    lock_path = root / 'tools/asset-settings/packer-lock.json'
+    lock_path = toolkit_path(root, "asset-settings", "packer-lock.json")
     lock = json_file(lock_path)
     cache = Path(config.get('gradle_cache', os.environ.get('GRADLE_USER_HOME', str(Path.home()/'.gradle')) + '/caches/modules-2/files-2.1')).expanduser()
     if not cache.is_absolute():
@@ -24,7 +25,7 @@ def packer_classpath(root, config):
             (cache / lock['group'] / artifact['artifact'] / artifact['version']).glob('*/*.jar'))
         matching = [p for p in choices if p.is_file() and sha(p) == artifact['sha256']]
         if not matching:
-            raise ValueError(f"Pinned {artifact['artifact']} {artifact['version']} unavailable; resolve :desktop:automationPackerClasspath with tools/automation.gradle or configure the exact JAR.")
+            raise ValueError(f"Pinned {artifact['artifact']} {artifact['version']} unavailable; resolve :desktop:automationPackerClasspath with ai-toolkit/tools/automation.gradle or configure the exact JAR.")
         jars.append(matching[0])
     return jars, lock_path
 
@@ -37,10 +38,10 @@ def pack_preview(root, config, group, output):
         if not source.is_dir() or source.is_symlink():
             raise ValueError('Pack group must be an existing raw/images subdirectory.')
         out = create_output(output, root)
-        settings = root / ('tools/asset-settings/atlas-ui.json' if group == 'ui' else 'tools/asset-settings/atlas-scene.json')
+        settings = toolkit_path(root, "asset-settings", "atlas-ui.json" if group == "ui" else "atlas-scene.json")
         # Production recipe settings are authoritative. A group may span several source SVGs.
         presets = set()
-        for path in (root / 'tools/asset-manifests').glob('*.json'):
+        for path in automation_path(root, "asset-manifests").glob("*.json"):
             for export in json_file(path)['exports']:
                 destination = export['destination']
                 if destination.get('kind') == 'atlas' and destination['group'] == group and destination.get('pack_settings'):
@@ -56,7 +57,7 @@ def pack_preview(root, config, group, output):
         inputs = sorted(source.glob('*.png'))
         if not inputs or any(p.is_symlink() for p in inputs):
             raise ValueError('Packing needs flat, regular PNG inputs; linked inputs are not accepted.')
-        verifier = root / 'tools/java/AtlasVerifier.java'
+        verifier = toolkit_path(root, "java", "AtlasVerifier.java")
         captured = fingerprints([*inputs, settings, lock, verifier, *jars])
         # Copy inputs to avoid legacy pack.json inheritance, nested settings and source mutation.
         with tempfile.TemporaryDirectory(prefix='adventure-pack-') as temporary:

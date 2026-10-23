@@ -1,14 +1,14 @@
 # Project-declared verification
 
 `adventure.json` declares runtime `tests.suites`, ordered QA `tests.profiles` and
-optional media profiles. The generated `fast` profile validates tools/models,
+optional media profiles. The generated `fast` profile validates the toolkit and game models,
 formats and selected Ink references. `desktop` exercises the starter's actual
 input/dialogue/inventory/save-load scenario; optional `media` selects original
 audio/Spine examples. These are initial coverage, not full-game certification.
 
 ```sh
-python3 -B tools/project.py qa --profile fast --out /new/fast --json
-python3 -B tools/project.py qa --profile desktop --jar /absolute/game.jar --out /new/desktop --json
+python3 -B ai-toolkit/tools/project.py qa --profile fast --out /new/fast --json
+python3 -B ai-toolkit/tools/project.py qa --profile desktop --jar /absolute/game.jar --out /new/desktop --json
 ```
 
 Build first and use the actual JAR/version. A run records its hash and engine

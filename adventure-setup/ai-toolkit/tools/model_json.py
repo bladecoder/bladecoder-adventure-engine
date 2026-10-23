@@ -17,7 +17,7 @@ class ModelJSON:
     """Quoted strings, bare keys/values, comments, trailing commas; duplicate-safe.
 
     This is a bounded subset, not a replacement for LibGDX JsonReader. Explicit
-    commas are required between members. See docs/chapter-format.md for limits.
+    commas are required between members. See ai-toolkit/docs/chapter-format.md for limits.
     """
     def __init__(self, text):
         self.text, self.pos, self.lines = text, 0, {}

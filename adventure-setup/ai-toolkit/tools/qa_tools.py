@@ -13,6 +13,8 @@ import zipfile
 
 from runtime_client import RuntimeFailure, save_json
 from qa_artifacts import export_evidence
+from project_config import toolkit_path
+from project_config import toolkit_path
 
 def plan(root, profile):
     from project_config import load_project
@@ -37,7 +39,7 @@ def plan(root, profile):
 
 def cli_check(root, out, arguments, tests=False):
     out.mkdir(parents=True)
-    command = [sys.executable, '-B', '-m', 'unittest', 'discover', '-s', 'tools/tests', '-v'] if tests else [sys.executable, '-B', str(root / 'tools/project.py'), *arguments, '--json']
+    command = [sys.executable, '-B', '-m', 'unittest', 'discover', '-s', str(toolkit_path(root, 'tests')), '-v'] if tests else [sys.executable, '-B', str(toolkit_path(root, "project.py")), *arguments, '--json']
     result = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=300)
     (out / 'output.log').write_text(result.stdout + result.stderr)
     if tests:
@@ -107,7 +109,7 @@ def run_task(root, config, private, identifier, kind, value, jar, baseline):
 
 def run_qa(root, config, profile, output, jar=None, baseline=None, allow_unavailable=False):
     root = Path(root).resolve(); out = Path(output).expanduser().resolve(); tasks = plan(root, profile)
-    if out.exists() or any(out.is_relative_to(root / p) for p in ('assets', 'raw', 'tools', 'skills', '.git')):
+    if out.exists() or any(out.is_relative_to(root / p) for p in ('assets', 'raw', 'tools', 'skills', 'ai-toolkit', 'automation', 'docs', '.git')):
         raise RuntimeFailure('QA evidence requires a new directory outside project sources/assets/tools.')
     jar = Path(jar).resolve() if jar else None
     jar_hash = hashlib.sha256(jar.read_bytes()).hexdigest() if jar else None

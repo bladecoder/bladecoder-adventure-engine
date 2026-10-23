@@ -65,6 +65,6 @@ build/
 .DS_Store
 
 ## Local automation settings and evidence
-tools/local.json
+ai-toolkit/tools/local.json
 __pycache__/
 *.pyc

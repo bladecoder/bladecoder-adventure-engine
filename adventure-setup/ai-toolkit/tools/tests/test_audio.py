@@ -86,7 +86,7 @@ class AudioTests(unittest.TestCase):
             self.assertFalse(out.exists())
 
     def test_audio_paths_resolve_from_project_and_keep_bare_programs(self):
-        self.assertEqual(program(Path('/project'),{'ffmpeg':'tools/bin/ffmpeg'},'ffmpeg'),'/project/tools/bin/ffmpeg')
+        self.assertEqual(program(Path('/project'),{'ffmpeg':'ai-toolkit/tools/bin/ffmpeg'},'ffmpeg'),'/project/ai-toolkit/tools/bin/ffmpeg')
         self.assertEqual(program(Path('/project'),{},'ffmpeg'),'ffmpeg')
 
     def test_normalization_input_is_never_overwritten(self):
@@ -147,7 +147,7 @@ class AudioTests(unittest.TestCase):
     def test_keep_cannot_contaminate_sources_or_runtime_resources(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
-            for part in ('raw','assets/music','tools/intermediates','skills/demo'):
+            for part in ('raw','assets/music','ai-toolkit/tools/intermediates','automation/intermediates','ai-toolkit/skills/demo'):
                 with self.subTest(part=part),self.assertRaises(ValueError):
                     with workspace(root,root/part):pass
 

@@ -28,7 +28,7 @@ class OverridePreparationTests(unittest.TestCase):
         self.assertIn('preview',result['boundary'])
     def test_existing_or_source_destinations_are_left_untouched(self):
         out=self.base/'bundle';out.mkdir();(out/'original').write_text('keep')
-        for path in [out,self.root/'assets/new',self.root/'raw/new',self.root/'tools/new']:
+        for path in [out,self.root/'assets/new',self.root/'raw/new',self.root/'automation/new',self.root/'ai-toolkit/tools/new']:
             with self.assertRaises(RuntimeFailure):prepare_bundle(self.root,self.spec,path)
         self.assertEqual((out/'original').read_text(),'keep')
         self.assertEqual(self.chapter.read_bytes(),self.original)

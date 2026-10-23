@@ -1,9 +1,9 @@
 # Project automation tools
 
-Run `python3 -B tools/project.py --help` from any working directory using the
+Run `python3 -B ai-toolkit/tools/project.py --help` from any working directory using the
 script's actual path. Python 3.10+ is required. Project declarations live in
 `adventure.json`; personal authoring-tool and art-root paths belong in ignored
-`tools/local.json`, based on `local.example.json`. Environment overrides use
+`ai-toolkit/tools/local.json`, based on `local.example.json`. Environment overrides use
 `ADVENTURE_` prefixes. No specific Drive directory is assumed.
 
 `chapters`, `ink-links`, `ink-compile`, SVG preview/apply and atlas commands reuse

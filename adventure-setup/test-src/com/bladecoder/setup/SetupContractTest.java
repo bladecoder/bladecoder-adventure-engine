@@ -23,17 +23,17 @@ public final class SetupContractTest {
             Map<String,Object> dry=generator.generate(spec,target,true,null);
             check(!Files.exists(target),"dry run creates no project");check(((List<?>)dry.get("files")).contains("setup-manifest.json"),"dry run reports manifest");check(((List<?>)dry.get("files")).contains(".agents/skills"),"dry run reports agent discovery symlink");
             generator.generate(spec,target,false,null);
-            check(Files.exists(target.resolve("gradlew")),"wrapper generated");
-            JsonValue actionContract=new JsonReader().parse(new String(Files.readAllBytes(target.resolve("tools/model-contract/actions.json")),"UTF-8"));
+            check(Files.exists(target.resolve("gradlew")),"wrapper generated");check(!Files.exists(target.resolve("tools")),"no ambiguous root tools directory is generated");
+            JsonValue actionContract=new JsonReader().parse(new String(Files.readAllBytes(target.resolve("ai-toolkit/tools/model-contract/actions.json")),"UTF-8"));
             check(actionContract.getString("engine_version").equals(spec.engineVersion),"action metadata targets the exact paired bundle engine, retaining reviewed-source identity on version rebinding");
             Path discovery=target.resolve(".agents/skills");
-            check(Files.isSymbolicLink(discovery) && Files.readSymbolicLink(discovery).equals(Paths.get("../skills")),"agent discovery is a relative symlink to canonical skills");
-            check(!Files.exists(target.resolve("tools/skills-discovery.json")),"generated project does not include obsolete discovery-copy manifest");
-            String playerSkill=new String(Files.readAllBytes(target.resolve("skills/adventure-player/SKILL.md")),"UTF-8");
+            check(Files.isSymbolicLink(discovery) && Files.readSymbolicLink(discovery).equals(Paths.get("../ai-toolkit/skills")),"agent discovery is a relative symlink to canonical skills");
+            check(!Files.exists(target.resolve("ai-toolkit/tools/skills-discovery.json")),"generated project does not include obsolete discovery-copy manifest");
+            String playerSkill=new String(Files.readAllBytes(target.resolve("ai-toolkit/skills/adventure-player/SKILL.md")),"UTF-8");
             String playerDiscovery=new String(Files.readAllBytes(target.resolve(".agents/skills/adventure-player/SKILL.md")),"UTF-8");
             check(playerSkill.contains("Do not inspect story/model files") && !playerSkill.contains("canonical skill"),"player skill remains canonical and player-only");
             check(playerDiscovery.equals(playerSkill),"agent discovery reads the canonical skill without a copied wrapper");
-            check(Files.exists(target.resolve("AGENTS.md")) && Files.exists(target.resolve("docs/brief.md")) && Files.exists(target.resolve("docs/work-log.md")),"agent handoff is generated with actual repository paths");
+            check(Files.exists(target.resolve("AGENTS.md")) && Files.exists(target.resolve("ai-toolkit/docs/agent-workflow.md")) && Files.exists(target.resolve("docs/brief.md")) && Files.exists(target.resolve("docs/work-log.md")),"toolkit, project docs and agent handoff use their intended paths");
 
             check(!Files.exists(target.resolve("android")) && !Files.exists(target.resolve("ios")),"only selected platforms generated");
             String build=new String(Files.readAllBytes(target.resolve("build.gradle")),"UTF-8");
@@ -64,7 +64,7 @@ public final class SetupContractTest {
             for(String mode:Arrays.asList("pie","single_click")) {
                 SetupSpec variant=SetupSpec.parse("{schema_version:1,interaction_mode:"+mode+"}");
                 Path output=parent.resolve(mode);generator.generate(variant,output,false,null);
-                JsonValue scenario=new JsonReader().parse(new String(Files.readAllBytes(output.resolve("tools/runtime-scenarios/smoke.json")),"UTF-8"));
+                JsonValue scenario=new JsonReader().parse(new String(Files.readAllBytes(output.resolve("automation/runtime-scenarios/smoke.json")),"UTF-8"));
                 JsonValue chapter=new JsonReader().parse(new String(Files.readAllBytes(output.resolve("assets/model/00.chapter.json")),"UTF-8"));
                 if(mode.equals("pie"))check(scenario.toString().contains("pie.lookat") && scenario.toString().contains("pie.pickup"),"pie smoke selects actual menu widgets");
                 else {

@@ -39,9 +39,9 @@ class ArtToolsTests(unittest.TestCase):
         self.art.mkdir()
         self.linked.mkdir()
         self.source = self.write(self.art, "backgrounds/office/office.svg", SVG_TEXT)
-        self.write(self.root, "tools/asset-settings/svg-transparent-96.json", (TOOLS / "asset-settings/svg-transparent-96.json").read_text())
+        self.write(self.root, "ai-toolkit/tools/asset-settings/svg-transparent-96.json", (TOOLS / "asset-settings/svg-transparent-96.json").read_text())
         self.manifest = {"schema_version": 1, "id": "office", "source": "backgrounds/office/office.svg",
-                         "settings": "tools/asset-settings/svg-transparent-96.json", "exports": [
+                         "settings": "ai-toolkit/tools/asset-settings/svg-transparent-96.json", "exports": [
             {"id": "background", "selection": {"include": ["background"], "exclude": ["guides"]},
              "crop": {"mode": "page"}, "output": "raw/images/office/background.png",
              "destination": {"kind": "atlas", "group": "office"}}]}
@@ -53,7 +53,7 @@ class ArtToolsTests(unittest.TestCase):
         return path
 
     def validate(self, data=None, config=None, structure_only=False):
-        path = self.write(self.root, "tools/asset-manifests/office.json", json.dumps(data if data is not None else self.manifest))
+        path = self.write(self.root, "automation/asset-manifests/office.json", json.dumps(data if data is not None else self.manifest))
         return validate_manifests(self.root, config if config is not None else {"art_root": str(self.art)}, [str(path)], structure_only)
 
     def assert_invalid(self, data, fragment):
@@ -76,11 +76,11 @@ class ArtToolsTests(unittest.TestCase):
 
     def test_manifest_cli_accepts_explicit_files_from_another_directory(self):
         for helper in ("skill_tools.py", "model_contract.py", "project_config.py", "project.py", "art_sources.py", "asset_manifest.py", "chapter_validate.py", "model_json.py", "ink_tools.py", "ink_links.py", "engine_tests.py", "art_pipeline.py", "atlas_tools.py"):
-            self.write(self.root, "tools/" + helper, (TOOLS / helper).read_text())
+            self.write(self.root, "ai-toolkit/tools/" + helper, (TOOLS / helper).read_text())
         manifest = self.write(self.base, "recipe with spaces.json", json.dumps(self.manifest))
         config = self.write(self.base, "local config.json", json.dumps({"paths": {"art_root": str(self.art)}}))
         env = {k: v for k, v in os.environ.items() if not k.startswith("ADVENTURE_")}
-        run = subprocess.run([sys.executable, "-B", str(self.root / "tools/project.py"), "manifests", str(manifest),
+        run = subprocess.run([sys.executable, "-B", str(self.root / "ai-toolkit/tools/project.py"), "manifests", str(manifest),
                               "--config", str(config), "--json"], cwd=self.base, env=env, capture_output=True, text=True, timeout=10)
         self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
         self.assertFalse(run.stderr)
@@ -88,7 +88,7 @@ class ArtToolsTests(unittest.TestCase):
         self.assertFalse((self.root / "raw").exists())
 
     def test_config_root_precedence_and_named_linked_locations(self):
-        self.write(self.root, "tools/local.json", json.dumps({"paths": {"art_root": "../art with spaces"}, "linked_roots": {"older-game": str(self.linked)}}))
+        self.write(self.root, "ai-toolkit/tools/local.json", json.dumps({"paths": {"art_root": "../art with spaces"}, "linked_roots": {"older-game": str(self.linked)}}))
         with patch.dict(os.environ, {}, clear=True):
             config = project.load_config(self.root)
             self.assertEqual(config["art_root"], "../art with spaces")
@@ -98,19 +98,19 @@ class ArtToolsTests(unittest.TestCase):
 
     def test_missing_art_fails_only_when_source_profile_is_requested(self):
         for helper in ("skill_tools.py", "model_contract.py", "project_config.py", "project.py", "art_sources.py", "asset_manifest.py", "chapter_validate.py", "model_json.py", "ink_tools.py", "ink_links.py", "engine_tests.py", "art_pipeline.py", "atlas_tools.py"):
-            self.write(self.root, "tools/" + helper, (TOOLS / helper).read_text())
-        shutil.copytree(TOOLS / "model-contract", self.root / "tools/model-contract")
+            self.write(self.root, "ai-toolkit/tools/" + helper, (TOOLS / helper).read_text())
+        shutil.copytree(TOOLS / "model-contract", self.root / "ai-toolkit/tools/model-contract")
         self.write(self.root,"assets/model/00.chapter.json",'{"scenes":{}}')
         for name in ("gradlew", "gradle/wrapper/gradle-wrapper.jar", "gradle/wrapper/gradle-wrapper.properties"):
             self.write(self.root, name, "fixture")
         self.write(self.root, "assets/model/world", '{"width":1920,"height":1080,"initChapter":"00","verbs":{}}')
-        self.write(self.root, "skills/example/SKILL.md", "---\nname: example\ndescription: Example\n---")
+        self.write(self.root, "ai-toolkit/skills/example/SKILL.md", "---\nname: example\ndescription: Example\n---")
         (self.root / ".agents").mkdir()
-        (self.root / ".agents/skills").symlink_to("../skills")
+        (self.root / ".agents/skills").symlink_to("../ai-toolkit/skills")
         env = {k: v for k, v in os.environ.items() if not k.startswith("ADVENTURE_")}
         env["ADVENTURE_ART_ROOT"] = str(self.base / "missing")
         for args, code in ((["doctor", "--profile", "art"], 1), (["validate"], 0), (["inventory"], 0)):
-            run = subprocess.run([sys.executable, "-B", str(self.root / "tools/project.py"), *args, "--json"],
+            run = subprocess.run([sys.executable, "-B", str(self.root / "ai-toolkit/tools/project.py"), *args, "--json"],
                                  cwd=self.base, env=env, capture_output=True, text=True, timeout=10)
             self.assertEqual(run.returncode, code, run.stdout + run.stderr)
             self.assertFalse(run.stderr)
@@ -167,12 +167,12 @@ class ArtToolsTests(unittest.TestCase):
         self.assertEqual(self.validate()[0]["status"], "ok")
         other = copy.deepcopy(self.manifest)
         other["id"] = "second"
-        self.write(self.root, "tools/asset-manifests/second.json", json.dumps(other))
+        self.write(self.root, "automation/asset-manifests/second.json", json.dumps(other))
         checks = validate_manifests(self.root, {"art_root": str(self.art)})
         self.assertTrue(any(c["status"] == "error" and "Duplicate output" in c["message"] for c in checks))
         data = copy.deepcopy(self.manifest)
         data["settings"] = "assets/ui/ui.json"
-        self.assert_invalid(data, "tools/asset-settings")
+        self.assert_invalid(data, "ai-toolkit/tools/asset-settings")
 
     def test_version_dimensions_opacity_and_output_validation(self):
         cases = []

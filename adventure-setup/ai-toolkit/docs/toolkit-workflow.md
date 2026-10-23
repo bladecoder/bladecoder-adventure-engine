@@ -1,6 +1,6 @@
 # Reviewable toolkit updates
 
-The project's `tools/` and `skills/` sources are local and reviewable. Obtain an
+The project's `ai-toolkit/tools/` and `ai-toolkit/skills/` sources are local and reviewable. Obtain an
 explicit compatible setup bundle, verify its checksum, and keep that same JAR
 through planning and application. No global skill installation is required.
 
@@ -43,7 +43,7 @@ features separately if you need to adopt them.
 The manifest retains original generation provenance and records the latest
 bundle's expected managed-file hashes plus kept local edits. A partial result is
 explicit; it does not certify a fully compatible upgrade. Run `skills-check` and
-keep custom skill content under `skills/`, where the discovery symlink exposes it
+keep custom skill content under `ai-toolkit/skills/`, where the discovery symlink exposes it
 directly, and run `skills-check` after edits. Then run the relevant project QA
 profiles and actual authored playthroughs.
 Generation, building, Git initialization, remote publication and launching an

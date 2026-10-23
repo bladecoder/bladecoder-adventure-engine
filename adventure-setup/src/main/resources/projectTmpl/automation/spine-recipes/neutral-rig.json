@@ -10,9 +10,9 @@
     "images": "characters/neutral-rig/images"
   },
   "settings": {
-    "json": "tools/asset-settings/spine-json-4.3.json",
-    "binary": "tools/asset-settings/spine-binary-4.3.json",
-    "atlas": "tools/asset-settings/spine-atlas-straight.json"
+    "json": "ai-toolkit/tools/asset-settings/spine-json-4.3.json",
+    "binary": "ai-toolkit/tools/asset-settings/spine-binary-4.3.json",
+    "atlas": "ai-toolkit/tools/asset-settings/spine-atlas-straight.json"
   },
   "output": {
     "name": "neutral-rig",

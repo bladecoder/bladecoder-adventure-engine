@@ -17,7 +17,7 @@ def prepare_bundle(root, spec, output):
         raise RuntimeFailure('Invalid version-1 override preparation specification.')
     if not isinstance(spec.get('id'), str) or not re.fullmatch('[a-z0-9][a-z0-9-]{0,63}', spec['id']):
         raise RuntimeFailure('Invalid override id.')
-    if out.exists() or any((out.is_relative_to(root / v) for v in ('assets', 'raw', 'tools', 'skills'))):
+    if out.exists() or any((out.is_relative_to(root / v) for v in ('assets', 'raw', 'tools', 'skills', 'ai-toolkit', 'automation', 'docs'))):
         raise RuntimeFailure('Override output must be new and outside packaged/source/tool directories.')
     changes = spec.get('chapter_changes', [])
     resources = spec.get('resources', [])

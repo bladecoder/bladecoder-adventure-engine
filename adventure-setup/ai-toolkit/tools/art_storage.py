@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
+from project_config import toolkit_path
 
 
 def configure_art_root(root, selected, seed=False, dry_run=False):
@@ -14,7 +15,7 @@ def configure_art_root(root, selected, seed=False, dry_run=False):
         raise ValueError('Seeding cannot replace a symlink art root.')
     destination = selected_path.resolve()
     source = root / 'raw/art'
-    local = root / 'tools/local.json'
+    local = toolkit_path(root, "local.json")
     if local.is_symlink():
         raise ValueError('Local configuration must be a regular file, not a symlink.')
     data = json.loads(local.read_text(encoding='utf-8')) if local.exists() else {}
@@ -22,7 +23,7 @@ def configure_art_root(root, selected, seed=False, dry_run=False):
         raise ValueError('Local configuration accepts only paths and linked_roots.')
     if not isinstance(data.get('paths', {}), dict) or not isinstance(data.get('linked_roots', {}), dict):
         raise ValueError('Local paths and linked_roots must be objects.')
-    if destination == root or any(destination.is_relative_to(root / name) for name in ('assets', 'tools', 'skills', '.git', '.agents', 'build')):
+    if destination == root or any(destination.is_relative_to(root / name) for name in ('assets', 'tools', 'skills', 'ai-toolkit', 'automation', 'docs', '.git', '.agents', 'build')):
         raise ValueError('Art root must not overlap project runtime, tooling or build directories.')
     files = []
     if seed:
@@ -42,7 +43,7 @@ def configure_art_root(root, selected, seed=False, dry_run=False):
     elif not destination.is_dir():
         raise ValueError('Art directory does not exist; use --seed-starter to initialize a new root.')
     result = {'schema_version': 1, 'dry_run': dry_run, 'root': str(destination),
-              'seeded_files': [p.as_posix() for p in files], 'configuration': 'tools/local.json',
+              'seeded_files': [p.as_posix() for p in files], 'configuration': 'ai-toolkit/tools/local.json',
               'source_policy': 'No release source archives; raw/art starter sources are retained until explicitly removed.'}
     if dry_run:
         return result
@@ -71,7 +72,7 @@ def configure_art_root(root, selected, seed=False, dry_run=False):
             json.dump(data, output, indent=2); output.write('\n')
         os.replace(temporary, local)
     except Exception as error:
-        raise ValueError('Art sources were preserved, but local configuration could not be saved; configure tools/local.json manually.') from error
+        raise ValueError('Art sources were preserved, but local configuration could not be saved; configure ai-toolkit/tools/local.json manually.') from error
     finally:
         if os.path.exists(temporary): os.unlink(temporary)
     return result

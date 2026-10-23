@@ -5,6 +5,28 @@ from pathlib import Path
 from art_sources import relative_path
 
 
+def toolkit_dir(root):
+    root = Path(root)
+    modern = root / "ai-toolkit" / "tools"
+    return modern if modern.is_dir() or (root / "ai-toolkit").exists() else root / "tools"
+
+
+def toolkit_path(root, *parts):
+    return toolkit_dir(root).joinpath(*parts)
+
+
+def automation_path(root, *parts):
+    root = Path(root)
+    base = root / "automation" if (root / "ai-toolkit").exists() else root / "tools"
+    return base.joinpath(*parts)
+
+
+def skills_dir(root):
+    root = Path(root)
+    modern = root / "ai-toolkit" / "skills"
+    return modern if modern.is_dir() or (root / "ai-toolkit").exists() else root / "skills"
+
+
 def _unique_object(pairs):
     result = {}
     for key, value in pairs:

@@ -3,7 +3,7 @@ name: develop-adventure
 description: Develop or extend a Blade Engine adventure from its project brief, using local authoring tools and a resumable verification workflow.
 ---
 
-Read `adventure.json`, `AGENTS.md`, [the brief](../../docs/brief.md) and [the work log](../../docs/work-log.md). The brief owns creative choices, scope and acceptance criteria; project metadata owns paths, language and selected capabilities. Existing implementation and evidence take precedence over an old plan's status text.
+Read `adventure.json`, `AGENTS.md`, [the brief](../../../docs/brief.md) and [the work log](../../../docs/work-log.md). The brief owns creative choices, scope and acceptance criteria; project metadata owns paths, language and selected capabilities. Existing implementation and evidence take precedence over an old plan's status text.
 
 Use [the agent workflow](../../docs/agent-workflow.md) to discover available tools, design a small playable slice, implement it and verify it before expanding. Record unresolved decisions and the next concrete action in the work log. Do useful independent work when an optional tool is unavailable; keep dependent checks pending.
 

@@ -79,7 +79,7 @@ def run_exploration(root, config, filename, output, jar=None):
     if type(spec['stall_actions']) is not int or not 2 <= spec['stall_actions'] <= 40:
         raise RuntimeFailure('stall_actions must be 2–40.')
     root = Path(root).resolve(); out = Path(output).expanduser().resolve()
-    if out.exists() or any(out.is_relative_to(root / f) for f in ('assets', 'raw', 'tools', 'skills', '.git')):
+    if out.exists() or any(out.is_relative_to(root / f) for f in ('assets', 'raw', 'tools', 'skills', 'ai-toolkit', 'automation', 'docs', '.git')):
         raise RuntimeFailure('Exploration output must be new and outside project source/assets/tools.')
     client = recorder = None
     errors = []; failure = None; finding = None; decisions = []; visited = set(); all_candidates = set()

@@ -7,6 +7,8 @@ import re
 import shutil
 import subprocess
 import tempfile
+from project_config import toolkit_path, automation_path
+from project_config import toolkit_path, automation_path
 
 
 def local_path(value, root):
@@ -70,7 +72,7 @@ def compile_ink(root,config,source=None,output=None,check_only=False):
     if source.resolve()==output.resolve():
         emit('paths','error','Compiler output cannot replace its editable Ink source.')
         return checks
-    command=([java,'-cp',os.pathsep.join(map(str,[jars[0],compiler_jars[0]])),str(root/'tools/java/InkCompiler.java')]
+    command=([java,'-cp',os.pathsep.join(map(str,[jars[0],compiler_jars[0]])),str(toolkit_path(root, "java", "InkCompiler.java"))]
              if cached_compiler else [java,'-jar',compiler] if compiler.endswith('.jar') else [compiler])
     emit('compiler','ok',f'Using cached blade-ink compiler {version}.' if cached_compiler else 'Using the explicitly configured or PATH Ink compiler; output ordering may differ.',
          compiler_sha256=hashlib.sha256((compiler_jars[0] if cached_compiler else Path(compiler)).read_bytes()).hexdigest())
@@ -87,7 +89,7 @@ def compile_ink(root,config,source=None,output=None,check_only=False):
             compiled=json.loads(data.decode('utf-8-sig'))
             if not isinstance(compiled,dict) or type(compiled.get('inkVersion')) is not int or not isinstance(compiled.get('root'),list):
                 raise ValueError('Compiler did not emit a supported Ink envelope')
-            probe=subprocess.run([java,'-cp',str(jars[0]),str(root/'tools/java/InkProbe.java'),str(generated)],
+            probe=subprocess.run([java,'-cp',str(jars[0]),str(toolkit_path(root, "java", "InkProbe.java")),str(generated)],
                                  cwd=root,stdin=subprocess.DEVNULL,capture_output=True,text=True,timeout=30)
             if probe.returncode:
                 emit('compatibility','error',f'Compiled Ink version {compiled["inkVersion"]} cannot load in blade-ink {version}; existing output was preserved.',diagnostics=probe.stdout+probe.stderr)
@@ -128,13 +130,13 @@ def test_ink(root,config,files=None):
     java=java_program(config,root)
     if not runtime or not gdx or not java:
         return [{'id':'ink.test-dependencies','status':'error','message':'Narrative tests need the declared blade-ink/gdx binary JARs in the configured cache and a JDK 11+.'}]
-    paths=[local_path(f,root) for f in files] if files else sorted((root/'tools/ink-scenarios').glob('*.json'))
+    paths=[local_path(f,root) for f in files] if files else sorted(automation_path(root, "ink-scenarios").glob("*.json"))
     if not paths:return [{'id':'ink.tests-missing','status':'error','message':'No narrative scenarios found.'}]
     for file in paths:
         try:
             data=json.loads(file.read_text(encoding='utf-8'))
             story=local_path(data['story'],root)
-            result=subprocess.run([java,'-cp',os.pathsep.join(map(str,[runtime,gdx])),str(root/'tools/java/InkScenarioRunner.java'),str(story),str(file)],
+            result=subprocess.run([java,'-cp',os.pathsep.join(map(str,[runtime,gdx])),str(toolkit_path(root, "java", "InkScenarioRunner.java")),str(story),str(file)],
                                   cwd=root,stdin=subprocess.DEVNULL,capture_output=True,text=True,timeout=40)
             checks.append({'id':'ink.narrative-test','status':'ok' if result.returncode==0 else 'error',
                            'path':str(file),'message':'Narrative scenarios passed (engine commands recorded, not executed).' if result.returncode==0 else 'Narrative scenario failed.',

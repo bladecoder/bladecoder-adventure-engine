@@ -85,7 +85,7 @@ def reduce_scenario(root, config, filename, output, jar=None, max_trials=12, bud
         raise RuntimeFailure('Reduction requires 1–128 candidate trials.')
     if type(budget_seconds) is not int or not 1 <= budget_seconds <= 7200:
         raise RuntimeFailure('Reduction budget must be 1–7200 seconds.')
-    for directory in ('assets', 'raw', 'tools', 'skills', '.git'):
+    for directory in ('assets', 'raw', 'tools', 'skills', 'ai-toolkit', 'automation', 'docs', '.git'):
         protected = root / directory
         if out == protected or protected in out.parents:
             raise RuntimeFailure('Reduction evidence must be outside project source/assets/tool directories.')

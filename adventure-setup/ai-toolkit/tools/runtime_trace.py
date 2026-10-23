@@ -27,7 +27,7 @@ def normalize(events):
 
 def compare_traces(root, reference, candidate, output):
     root = Path(root).resolve(); a = Path(reference).resolve(); b = Path(candidate).resolve(); out = Path(output).resolve()
-    if out.exists() or any(out.is_relative_to(root / p) for p in ('assets', 'raw', 'tools', 'skills', '.git')):
+    if out.exists() or any(out.is_relative_to(root / p) for p in ('assets', 'raw', 'tools', 'skills', 'ai-toolkit', 'automation', 'docs', '.git')):
         raise RuntimeFailure('Trace comparison output must be new and outside project source/assets/tools.')
     def load(folder):
         result = json.loads((folder / 'result.json').read_text())

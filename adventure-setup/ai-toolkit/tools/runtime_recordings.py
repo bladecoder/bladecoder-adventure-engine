@@ -7,6 +7,8 @@ import re
 import subprocess
 from ink_tools import java_program
 from runtime_client import RuntimeFailure
+from project_config import toolkit_path
+from project_config import toolkit_path
 
 
 def assess_entries(root,source,entries):
@@ -52,7 +54,7 @@ def decode_recording(root,config,source):
     root=Path(root).resolve();source=Path(source).expanduser().resolve()
     if not source.is_file() or source.stat().st_size>4*1024*1024:raise RuntimeFailure('Missing/oversized recording.')
     java,jar,version=recording_runtime(root,config)
-    parsed=subprocess.run([java,'--class-path',str(jar),str(root/'tools/java/RecordingInspector.java'),str(source)],capture_output=True,text=True,timeout=30)
+    parsed=subprocess.run([java,'--class-path',str(jar),str(toolkit_path(root, "java", "RecordingInspector.java")),str(source)],capture_output=True,text=True,timeout=30)
     if parsed.returncode:raise RuntimeFailure('Actual LibGDX recording parser rejected '+source.name+': '+parsed.stderr[-6000:])
     return json.loads(parsed.stdout)
 
@@ -77,7 +79,7 @@ def migrate_recording(root,config,spec,output):
     from runtime_scenario import validate,validate_condition
     from runtime_client import save_json
     root=Path(root).resolve();out=Path(output).expanduser().resolve()
-    if out.exists() or any(out.is_relative_to(root/f) for f in ('assets','raw','tools','skills')):raise RuntimeFailure('Migration output must be a new directory outside source/assets/tools.')
+    if out.exists() or any(out.is_relative_to(root/f) for f in ('assets','raw','tools','skills','ai-toolkit','automation','docs')):raise RuntimeFailure('Migration output must be a new directory outside project source directories.')
     if not isinstance(spec,dict) or set(spec)!={'schema_version','id','source','setup','selected'} or type(spec['schema_version']) is not int or spec['schema_version']!=1:
         raise RuntimeFailure('Migration needs schema_version 1, id, source, setup and explicit selected mappings.')
     if not isinstance(spec['source'],str):raise RuntimeFailure('Migration source must be a filename.')

@@ -20,7 +20,7 @@ def image_library():
     try:
         from PIL import Image, ImageChops, ImageDraw
     except ImportError as exc:
-        raise RuntimeFailure('Visual pixel checks unavailable: install tools/requirements-visual.txt in the Python environment running this command.') from exc
+        raise RuntimeFailure('Visual pixel checks unavailable: install ai-toolkit/tools/requirements-visual.txt in the Python environment running this command.') from exc
     return Image, ImageChops, ImageDraw
 
 
@@ -98,7 +98,7 @@ def contained(base, name):
 
 def new_output(root, output):
     out = Path(output).expanduser().resolve(); root = Path(root).resolve()
-    if out.exists() or any(out.is_relative_to(root / v) for v in ('assets', 'raw', '.git', 'skills')):
+    if out.exists() or any(out.is_relative_to(root / v) for v in ('assets', 'raw', '.git', 'skills', 'ai-toolkit', 'automation', 'docs')):
         raise RuntimeFailure('Visual output must be new and outside source/assets directories.')
     out.mkdir(parents=True)
     return out

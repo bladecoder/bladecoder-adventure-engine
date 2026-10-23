@@ -20,11 +20,19 @@ from chapter_validate import validate_chapters
 from ink_tools import compile_ink, test_ink
 from ink_links import validate_ink_links
 from engine_tests import test_puzzle, test_art
-from project_config import load_project
+from project_config import load_project, toolkit_path, automation_path
 from art_pipeline import export_preview, apply_preview
 from atlas_tools import pack_preview
 
-ROOT = Path(__file__).resolve().parent.parent
+def find_project_root():
+    tool_dir = Path(__file__).resolve().parent
+    for candidate in (tool_dir, *tool_dir.parents):
+        if (candidate / "adventure.json").is_file():
+            return candidate
+    return tool_dir.parents[1] if tool_dir.parent.name == "ai-toolkit" else tool_dir.parent
+
+
+ROOT = find_project_root()
 PATH_KEYS = {
     "java", "inklecate", "inkscape", "spine", "ffmpeg", "ffprobe", "sox",
     "magick", "fluidsynth_library", "soundfont", "gradle_cache", "gdx_jar",
@@ -44,7 +52,7 @@ def project_path(value, root):
 
 def load_config(root, filename=None):
     explicit = filename or os.environ.get("ADVENTURE_TOOLS_CONFIG")
-    path = project_path(explicit, root) if explicit else root / "tools/local.json"
+    path = project_path(explicit, root) if explicit else toolkit_path(root, "local.json")
     data = {}
     if explicit or path.exists():
         try:
@@ -56,7 +64,7 @@ def load_config(root, filename=None):
             raise ConfigurationError("Configuration may contain only 'paths' and 'linked_roots' objects.")
     paths = data.get("paths", {})
     if not isinstance(paths, dict) or set(paths) - PATH_KEYS:
-        raise ConfigurationError("Unknown path setting; see tools/local.example.json for supported keys.")
+        raise ConfigurationError("Unknown path setting; see ai-toolkit/tools/local.example.json for supported keys.")
     if any(value is not None and (not isinstance(value, str) or not value.strip()) for value in paths.values()):
         raise ConfigurationError("Path settings must be nonempty strings or null.")
     result = {}
@@ -133,7 +141,7 @@ def probe(command, root):
 def tool_check(checks, key, config, root, profile, required_by, names, args, pattern, candidates=(), java=None):
     path, origin = executable(key, config, root, names, candidates)
     severity = unavailable(profile, *required_by)
-    remedy = f"Install the tool or set ADVENTURE_{key.upper()} (or paths.{key} in tools/local.json)."
+    remedy = f"Install the tool or set ADVENTURE_{key.upper()} (or paths.{key} in ai-toolkit/tools/local.json)."
     if path is None or not path.is_file():
         check(checks, f"tool.{key}", severity, f"{key}: executable not found.", remedy=remedy,
               path=str(path) if path else None)
@@ -235,7 +243,7 @@ def jar_check(root, config, checks, profile):
               remedy="Configure matching, versioned gdx and gdx-tools binary JARs.")
     elif len(found_versions) == 2 and found_versions[0] != game_version:
         check(checks, "resource.packer-game-version", "warning", f"Packing JARs use {found_versions[0]}; the game declares LibGDX {game_version}.",
-              remedy="The maintained packer deliberately pins 1.10.0; atlas-preview verifies exact binary hashes and output geometry. See docs/graphics-workflow.md.")
+              remedy="The maintained packer deliberately pins 1.10.0; atlas-preview verifies exact binary hashes and output geometry. See ai-toolkit/docs/graphics-workflow.md.")
 
 
 def audio_resources(root, config, checks, profile):
@@ -304,7 +312,7 @@ def doctor(root, config, profile):
                            r"inklecate(?: version)?\s+(\d+\.\d+[^\s]*)", java=java)
                 if not environment['runtime']:
                     check(checks, "tool.ink.runtime", unavailable(profile, "ink"), "Matching Ink runtime is not cached.",
-                          remedy="Resolve :desktop:automationInkCompilerClasspath explicitly with -I tools/automation.gradle, then retry.")
+                          remedy="Resolve :desktop:automationInkCompilerClasspath explicitly with -I ai-toolkit/tools/automation.gradle, then retry.")
     if profile in ("all", "graphics"):
         tool_check(checks, "inkscape", config, root, profile, ("graphics",), ("inkscape",), ("--version",), r"Inkscape\s+(\S+)")
         tool_check(checks, "magick", config, root, profile, (), ("magick",), ("-version",), r"ImageMagick\s+(\S+)")
@@ -323,11 +331,11 @@ def doctor(root, config, profile):
 # This is an inventory of existing workflows, not a build graph or a guarantee
 # that every output has a source. Keep manual/imported assets explicit.
 PIPELINES = (
-    ("ink", ("raw/ink/*.ink",), ("assets/model/*.ink.json",), ("tools/project.py",), "Compile the entrypoint declared in adventure.json; source and compiled output remain distinct."),
-    ("graphics", ("raw/art/**/*.svg", "raw/images/**/*.png"), ("assets/images/**/*.png", "assets/atlases/**/*.atlas", "assets/atlases/**/*.png"), ("tools/project.py",), "Explicit SVG manifests and atlas groups define exports; external originals use ignored local roots."),
-    ("spine", ("raw/art/**/*.spine",), ("assets/spine/*.skel",), ("tools/project.py",), "Optional character recipes declare editable sources, versions and export-only or derived workflows."),
-    ("sfx", ("raw/sounds/**/*",), ("assets/sounds/*.wav",), ("tools/project.py",), "Procedural or imported PCM16 WAV; channel selection is explicit."),
-    ("music", ("raw/music/**/*",), ("assets/music/*.mp3",), ("tools/project.py",), "Programmatic MIDI composition and final MP3; large intermediates are temporary by default."),
+    ("ink", ("raw/ink/*.ink",), ("assets/model/*.ink.json",), ("ai-toolkit/tools/project.py",), "Compile the entrypoint declared in adventure.json; source and compiled output remain distinct."),
+    ("graphics", ("raw/art/**/*.svg", "raw/images/**/*.png"), ("assets/images/**/*.png", "assets/atlases/**/*.atlas", "assets/atlases/**/*.png"), ("ai-toolkit/tools/project.py",), "Explicit SVG manifests and atlas groups define exports; external originals use ignored local roots."),
+    ("spine", ("raw/art/**/*.spine",), ("assets/spine/*.skel",), ("ai-toolkit/tools/project.py",), "Optional character recipes declare editable sources, versions and export-only or derived workflows."),
+    ("sfx", ("raw/sounds/**/*",), ("assets/sounds/*.wav",), ("ai-toolkit/tools/project.py",), "Procedural or imported PCM16 WAV; channel selection is explicit."),
+    ("music", ("raw/music/**/*",), ("assets/music/*.mp3",), ("ai-toolkit/tools/project.py",), "Programmatic MIDI composition and final MP3; large intermediates are temporary by default."),
     ("model", ("assets/model/world", "assets/model/*.chapter.json", "assets/model/*.properties"), (), (), "Authored model and localization resources."),
     ("ui", ("assets/ui/*.json", "assets/ui/**/*.ttf", "assets/ui/**/*.txt"), (), (), "Maintained/imported skin, font and attribution resources."),
     ("recordings", ("assets/tests/*.rec",), (), (), "Recordings require explicit compatibility/migration checks; file presence is not playback coverage."),
@@ -355,7 +363,7 @@ def inventory(root):
         pipelines.append({"id": name, "source_patterns": list(sources), "output_patterns": list(outputs),
                           "sources": source_files, "outputs": glob_files(root, outputs),
                           "scripts": list(scripts), "note": note})
-    scripts = glob_files(root, ("*.sh", "raw/**/*.sh", "raw/images/pack", "gradlew", "gradlew.bat", "tools/*.py", "*.gradle", "*/build.gradle"))
+    scripts = glob_files(root, ("*.sh", "raw/**/*.sh", "raw/images/pack", "gradlew", "gradlew.bat", "ai-toolkit/tools/*.py", "*.gradle", "*/build.gradle"))
     return {"groups": groups, "scripts": scripts, "pipelines": pipelines,
             "build_note": "Gradle builds desktop/Android/iOS outputs. core:setVersion rewrites assets/BladeEngine.properties. release.sh changes versions and can publish; diagnostics never run it."}
 
@@ -373,7 +381,7 @@ def inventory_checks(root, external_art=None):
         match = re.search(r"^VERSION=(\S+)", text, re.MULTILINE)
         if match and match.group(1) != version:
             check(checks, "legacy." + name, "warning", f"raw/images/{name} pins LibGDX {match.group(1)}; game declares {version}.",
-                  remedy="Version and reproduce the packing toolchain in phase 4; tools/local.json does not change legacy scripts.")
+                  remedy="Version and reproduce the packing toolchain in phase 4; ai-toolkit/tools/local.json does not change legacy scripts.")
     compile_script = root / "raw/ink/compile.sh"
     if compile_script.is_file() and "$HOME/apps/inklecate/inklecate" in compile_script.read_text():
         present = (Path.home() / "apps/inklecate/inklecate").is_file()
@@ -539,7 +547,7 @@ def main(argv=None):
             sub.add_argument("group")
             sub.add_argument("--out", required=True)
         if name == "manifests":
-            sub.add_argument("files", nargs="*", help="Manifest JSON paths, default: tools/asset-manifests/*.json.")
+            sub.add_argument("files", nargs="*", help="Manifest JSON paths, default: automation/asset-manifests/*.json.")
             sub.add_argument("--structure-only", action="store_true", help="Validate recipes without reading external SVG sources.")
         if name == 'chapters':
             sub.add_argument('files', nargs='*', help='Chapter paths relative to project root; default: assets/model/*.chapter.json.')
@@ -548,7 +556,7 @@ def main(argv=None):
             sub.add_argument('--output')
             sub.add_argument('--check', action='store_true', help='Compile/verify freshness without replacing packaged output.')
         if name == 'ink-test':
-            sub.add_argument('files', nargs='*', help='Narrative scenario JSON files; defaults to tools/ink-scenarios/*.json.')
+            sub.add_argument('files', nargs='*', help='Narrative scenario JSON files; defaults to automation/ink-scenarios/*.json.')
         if name == 'puzzle-test':
             sub.add_argument('puzzle', help='Project-declared scenario/suite ID.')
     args = parser.parse_args(argv)
@@ -608,7 +616,7 @@ def main(argv=None):
             check(checks, "skills.sync", "error" if conflicts else "ok", "Discovery conflicts preserved: " + ", ".join(conflicts) if conflicts else "Skill discovery previewed." if args.dry_run else "Skill discovery synchronized.")
         if args.command == "art-root":
             if args.config or os.environ.get("ADVENTURE_TOOLS_CONFIG") or os.environ.get("ADVENTURE_ART_ROOT"):
-                raise ConfigurationError("art-root writes tools/local.json; unset alternate configuration/art-root environment overrides first.")
+                raise ConfigurationError("art-root writes ai-toolkit/tools/local.json; unset alternate configuration/art-root environment overrides first.")
             from art_storage import configure_art_root
             extra["art_root"] = configure_art_root(ROOT, args.path, args.seed_starter, args.dry_run)
             check(checks, "art.root", "ok", "Art-root configuration previewed." if args.dry_run else "Local art root configured; portable recipes preserved.")

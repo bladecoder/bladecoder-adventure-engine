@@ -4,10 +4,10 @@
 `assets/model/<chapter>.chapter.json` declares scenes, actors, layers, renderers,
 resources and verb/action sequences. The runtime consumes Blade MODEL JSON,
 including its existing relaxed syntax; do not reformat every model during edits.
-`tools/model-contract/chapter.schema.json` describes structure and
-`tools/chapter_validate.py` verifies references and runtime-sensitive constraints.
+`ai-toolkit/tools/model-contract/chapter.schema.json` describes structure and
+`ai-toolkit/tools/chapter_validate.py` verifies references and runtime-sensitive constraints.
 
-Run `python3 -B tools/project.py chapters --json` after model edits. Findings
+Run `python3 -B ai-toolkit/tools/project.py chapters --json` after model edits. Findings
 identify resource, JSON pointer and source line. Dynamic identifiers and unknown
 custom actions remain explicit warnings; successful static validation does not
 prove runtime effects. Run the relevant declared HTTP scenario against the built
@@ -15,7 +15,7 @@ package to verify actual behavior and retain state, events and screenshots.
 
 The shared action contract was reviewed against the Blade Engine 4.5.0 source
 line and contains only engine actions, including the optional Spine plugin's action metadata. Its source
-hashes and engine revision are recorded in `tools/model-contract/actions.json`.
+hashes and engine revision are recorded in `ai-toolkit/tools/model-contract/actions.json`.
 Its `engine_version` targets the exact engine paired with this bundle; a release
 version rebinding retains `source_engine_version` and the original reviewed
 source hashes. This is artifact version binding, not an engine migration.
@@ -27,7 +27,7 @@ Editor `required` annotations alone are hints, not proof of a runtime error.
 Declare custom actions explicitly in `adventure.json`:
 
 ```json
-{"model_contract":"tools/model-contract/project-actions.json"}
+{"model_contract":"ai-toolkit/tools/model-contract/project-actions.json"}
 ```
 
 That extension has `schema_version: 1`, optional matching `engine_version`, and an
@@ -42,7 +42,7 @@ When maintaining custom Java actions and an explicit engine source checkout is
 available, refresh reviewable metadata without executing Java or downloading:
 
 ```sh
-python3 -B tools/engine_contract.py --engine /local/bladecoder-adventure-engine --project . --custom-only --output tools/model-contract/project-actions.json
+python3 -B ai-toolkit/tools/engine_contract.py --engine /local/bladecoder-adventure-engine --project . --custom-only --output ai-toolkit/tools/model-contract/project-actions.json
 ```
 
 Review the extracted contract before committing it. Ordinary validation reads

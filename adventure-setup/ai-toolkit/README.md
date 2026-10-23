@@ -2,29 +2,29 @@
 
 Project identity, language and selected capabilities are in `adventure.json`.
 The generated starter is a replaceable example; write the intended game's
-premise, style and acceptance criteria in [the brief](docs/brief.md).
+premise, style and acceptance criteria in [the brief](../docs/brief.md).
 
 ```sh
-python3 -B tools/project.py doctor --profile foundation --json
-python3 -B tools/project.py qa --profile fast --out /new/fast-evidence --json
+python3 -B ai-toolkit/tools/project.py doctor --profile foundation --json
+python3 -B ai-toolkit/tools/project.py qa --profile fast --out /new/fast-evidence --json
 ./gradlew :desktop:dist
-python3 -B tools/project.py qa --profile desktop --jar desktop/build/libs/desktop-0.1.0.jar --out /new/desktop-evidence --json
+python3 -B ai-toolkit/tools/project.py qa --profile desktop --jar desktop/build/libs/desktop-0.1.0.jar --out /new/desktop-evidence --json
 ```
 
 Use the actual generated game version in the JAR filename. First build may need
 Maven network access; generation itself needs only the setup bundle/Java and
 invokes no build, editor or authoring app. JDK 21 and Python 3.10+ are the normal
 development prerequisites. Optional visual tests need the pinned Pillow version
-in `tools/requirements-visual.txt`; do not confuse a skipped test with coverage.
+in `ai-toolkit/tools/requirements-visual.txt`; do not confuse a skipped test with coverage.
 
 For Ink compiler/graphics dependencies, explicitly prepare the matching tools:
 
 ```sh
-./gradlew -I tools/automation.gradle :desktop:automationInkCompilerClasspath
-./gradlew -I tools/automation.gradle :desktop:automationPackerClasspath
+./gradlew -I ai-toolkit/tools/automation.gradle :desktop:automationInkCompilerClasspath
+./gradlew -I ai-toolkit/tools/automation.gradle :desktop:automationPackerClasspath
 ```
 
-Configure authoring applications/art roots in ignored `tools/local.json`.
+Configure authoring applications/art roots in ignored `ai-toolkit/tools/local.json`.
 [Graphics](docs/graphics-workflow.md), [Spine](docs/spine-workflow.md),
 [audio](docs/audio-workflow.md), [Ink](docs/ink-workflow.md) and
 [model](docs/chapter-format.md) guides describe actual commands and limitations.
@@ -37,7 +37,7 @@ Mobile scaffolding does not certify device execution.
 
 Canonical agent workflows live in `skills/`; `.agents/skills` is a relative
 symlink to that directory for agent discovery.
-Use [the agent workflow](docs/agent-workflow.md) and [work log](docs/work-log.md)
+Use [the agent workflow](docs/agent-workflow.md) and [work log](../docs/work-log.md)
 to implement a brief in verified slices. `setup-manifest.json` records initial
 provenance; do not regenerate an existing developed game over its directory.
 Toolkit update planning/distribution work may require a newer setup release.

@@ -1,6 +1,6 @@
 # Developing an adventure from a brief
 
-Read `../AGENTS.md`, `../adventure.json`, the brief and work log. Inspect current
+Read `../../AGENTS.md`, `../../adventure.json`, the brief and work log. Inspect current
 models/Ink/assets before assuming work is missing. Resolve identity, primary
 language, controls and capability availability from project data. The default
 neutral story/art/music are small replaceable examples, not creative constraints.
@@ -30,6 +30,5 @@ Resume by inspecting that state; do not infer completion from a checkbox or inte
 Expand only within the requested scope and acceptance criteria. A completed slice
 is progress toward the game, not proof that the whole brief is fulfilled.
 
-Skills are canonical in `../skills/`; `../.agents/skills` is a relative symlink
-to that directory. Edit skills and references under `../skills/` and validate
+Skills are canonical in `../skills/`; `../../.agents/skills` is a relative symlink from the project root to `../ai-toolkit/skills`. Edit skills and references under `../skills/` and validate
 them with `skills-check`. Discovery reads the same files directly.

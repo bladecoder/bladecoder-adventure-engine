@@ -131,7 +131,7 @@ def inspect_art(config, root, required=False):
     if art is None or not art.is_dir():
         data["status"] = "not-configured" if art is None else "missing"
         issue("art.root", "External art root is not configured." if art is None else "Configured external art root is unavailable.",
-              remedy="Set paths.art_root in tools/local.json or ADVENTURE_ART_ROOT. Packaged-content validation does not require it.")
+              remedy="Set paths.art_root in ai-toolkit/tools/local.json or ADVENTURE_ART_ROOT. Packaged-content validation does not require it.")
         return data, checks
     data["status"] = "available"
     allowed = [art, *linked.values()]

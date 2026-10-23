@@ -14,6 +14,8 @@ from asset_manifest import fields, require, json_file, shared_path
 from art_pipeline import sha, fingerprints, create_output, export_preview, run, program, local_config
 from atlas_tools import packer_classpath
 from ink_tools import java_program
+from project_config import toolkit_path
+from project_config import toolkit_path
 
 
 def plain(value):
@@ -232,7 +234,7 @@ def preview(root,config,filename,output):
     cli(root,config,recipe['editor_version'],['-i',project,'-o',runtime/'spine','-e',root/recipe['settings']['binary']],out/'binary-export.log')
     # Pack only explicit used images, with no inherited historical pack.json.
     cli(root,config,recipe['editor_version'],['-i',editable/'images','-o',runtime/'atlases','-n',name,'-p',root/recipe['settings']['atlas']],out/'atlas-pack.log')
-    jars,lock=packer_classpath(root,config);verifier=root/'tools/java/AtlasVerifier.java'
+    jars,lock=packer_classpath(root,config);verifier=toolkit_path(root, "java", "AtlasVerifier.java")
     captured.update(fingerprints([*jars,lock,verifier]))
     metadata=run([java_program(config,root),'-cp',os.pathsep.join(map(str,jars)),verifier,runtime/'atlases'/(name+'.atlas')])
     atlas=json.loads(metadata.split('ATLAS_DATA=',1)[1]);require({r['name'] for r in atlas['regions']}==available,'Atlas regions differ from attachment images.')
@@ -270,7 +272,7 @@ def export_existing(root,config,filename,output):
         for image in image_names(data):
             target=staging/(image+'.png');target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(images/(image+'.png'),target)
         cli(root,config,recipe['editor_version'],['-i',staging,'-o',runtime/'atlases','-n',name,'-p',root/recipe['settings']['atlas']],out/'atlas-pack.log')
-    jars,lock=packer_classpath(root,config);verifier=root/'tools/java/AtlasVerifier.java';captured.update(fingerprints([*jars,lock,verifier]))
+    jars,lock=packer_classpath(root,config);verifier=toolkit_path(root, "java", "AtlasVerifier.java");captured.update(fingerprints([*jars,lock,verifier]))
     metadata=run([java_program(config,root),'-cp',os.pathsep.join(map(str,jars)),verifier,runtime/'atlases'/(name+'.atlas')])
     atlas=json.loads(metadata.split('ATLAS_DATA=',1)[1]);require({r['name'] for r in atlas['regions']}==image_names(data),'Packed regions differ from maintained project images.')
     require(all(r['index']==-1 for r in atlas['regions']),'Attachment names must not become frame indices.')

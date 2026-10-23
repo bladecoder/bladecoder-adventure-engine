@@ -59,19 +59,19 @@ class ChapterTests(unittest.TestCase):
     def test_project_actions_are_explicit_and_type_checked(self):
         action={'class':'org.example.adventure.actions.SignalAction','enabled':True}
         self.assert_code(self.run_model([action]),'action-class','warning')
-        declaration={'schema_version':1,'capabilities':{},'model_contract':'tools/project-actions.json'}
+        declaration={'schema_version':1,'capabilities':{},'model_contract':'ai-toolkit/tools/project-actions.json'}
         self.write('adventure.json',json.dumps(declaration))
         extension={'schema_version':1,'engine_version':'4.5.0-SNAPSHOT','actions':{
             action['class']:{'class':action['class'],'fields':{
                 'enabled':{'java_type':'boolean','semantic_type':'NOT_SET','required_hint':False,'initializer':'false'}}}}}
-        self.write('tools/project-actions.json',json.dumps(extension))
+        self.write('ai-toolkit/tools/project-actions.json',json.dumps(extension))
         checks=self.run_model([action]);self.assertFalse(self.errors(checks),checks)
         self.assertFalse(any(row['id']=='chapter.action-class' for row in checks))
         self.assert_code(self.run_model([{**action,'enabled':27}]),'action-type')
 
     def test_project_contract_cannot_replace_engine_actions(self):
-        self.write('adventure.json',json.dumps({'schema_version':1,'model_contract':'tools/project-actions.json'}))
-        self.write('tools/project-actions.json',json.dumps({'schema_version':1,'actions':{'Wait':{'class':'org.example.Wait','fields':{}}}}))
+        self.write('adventure.json',json.dumps({'schema_version':1,'model_contract':'ai-toolkit/tools/project-actions.json'}))
+        self.write('ai-toolkit/tools/project-actions.json',json.dumps({'schema_version':1,'actions':{'Wait':{'class':'org.example.Wait','fields':{}}}}))
         checks=self.run_model([{'class':'Wait','time':'invalid'}])
         self.assert_code(checks,'contract');self.assert_code(checks,'action-type')
 
@@ -191,8 +191,8 @@ class ChapterTests(unittest.TestCase):
         self.assert_code(report['checks'],'scene-ref')
         # Real independent-directory invocation against this project's read-only command.
         import shutil
-        shutil.copytree(Path(__file__).resolve().parents[1],self.root/'tools',dirs_exist_ok=True,ignore=shutil.ignore_patterns('tests','__pycache__'))
-        script=self.root/'tools/project.py'
+        shutil.copytree(Path(__file__).resolve().parents[1],self.root/'ai-toolkit/tools',dirs_exist_ok=True,ignore=shutil.ignore_patterns('tests','__pycache__'))
+        script=self.root/'ai-toolkit/tools/project.py'
         run=subprocess.run([sys.executable,'-B',str(script),'chapters','--json'],cwd=self.root.parent,capture_output=True,text=True,timeout=15)
         self.assertFalse(run.stderr);self.assertIn(run.returncode,(0,1));self.assertEqual(json.loads(run.stdout)['command'],'chapters')
 
