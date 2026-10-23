@@ -6,8 +6,10 @@ on `controller-srv`; the setup implementation is on the
 starter, project-local tools and skills, optional media examples, safe updater,
 and local bundle are implemented. Local acceptance includes five native fresh
 consumers, packaged HTTP contracts, an independent brief-driven game and
-representative Bonasera compatibility. Remote CI, hosted publication and
-device-specific builds have not been executed.
+representative Bonasera compatibility. Both GitHub workflows passed for
+`4a84bf22`: [consumer validation](https://github.com/bladecoder/bladecoder-adventure-engine/actions/runs/39958487264)
+and [Gradle build](https://github.com/bladecoder/bladecoder-adventure-engine/actions/runs/39958487302).
+Hosted publication and device certification have not been executed.
 
 ## Generation contract (version 1)
 
