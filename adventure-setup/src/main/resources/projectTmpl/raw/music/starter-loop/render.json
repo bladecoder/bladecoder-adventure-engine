@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "soundfont": "TimGM6mb",
+  "soundfont_sha256": "c5378b62028c920cb11e4803327983fee2f2cdff5dc89c708e39da417e51c854",
+  "target_peak_dbfs": -9,
+  "warmup_cycles": 2,
+  "output_cycle": 3,
+  "renderer_settings": {
+    "sample_rate": 44100,
+    "gain": 0.45,
+    "reverb_room_size": 0.3,
+    "reverb_damp": 0.5,
+    "reverb_width": 55,
+    "reverb_level": 0.15,
+    "chorus": false
+  },
+  "provenance": "Original neutral starter composition. External TimGM6mb SoundFont: 2004 Tim Brechbill / 2010 David Bolton; GPL-2 per installed package copyright. SoundFont is not distributed in the setup bundle.",
+  "format": "mp3",
+  "mp3_bitrate": "192k"
+}

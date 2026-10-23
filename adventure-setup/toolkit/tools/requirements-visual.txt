@@ -1,0 +1,2 @@
+# Optional, isolated visual-comparison environment; core tools remain stdlib-only.
+Pillow==12.3.0

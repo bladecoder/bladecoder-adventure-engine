@@ -1,0 +1,3 @@
+interface:
+  display_name: "Create Game Art"
+  short_description: "Export explicit SVG units and review game art"

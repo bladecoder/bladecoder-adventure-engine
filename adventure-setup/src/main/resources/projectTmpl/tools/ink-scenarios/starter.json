@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "story": "assets/model/main.ink.json",
+  "scenarios": [
+    {
+      "id": "read-note-and-preserve-narrative-state",
+      "world": {
+        "inventory": [],
+        "player": "",
+        "scene": "scene-1",
+        "debug": false,
+        "visible": {
+          "note": true
+        },
+        "actor_states": {},
+        "scene_states": {},
+        "properties": {}
+      },
+      "steps": [
+        {
+          "assert": {
+            "variables": {
+              "inspected": false
+            }
+          }
+        },
+        {
+          "path": "inspect_note",
+          "assert": {
+            "variables": {
+              "inspected": true
+            },
+            "choices_present": [
+              "Read the rest",
+              "Close the note"
+            ]
+          }
+        },
+        {
+          "choose": "Read the rest",
+          "assert": {
+            "text_contains": [
+              "space for a new story"
+            ]
+          }
+        },
+        {
+          "save_load": true
+        },
+        {
+          "path": "inspect_note",
+          "assert": {
+            "variables": {
+              "inspected": true
+            },
+            "choices_present": [
+              "Read the rest",
+              "Close the note"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "close-note-without-consuming-repeat",
+      "world": {
+        "inventory": [],
+        "player": "",
+        "scene": "scene-1",
+        "debug": false,
+        "visible": {
+          "note": true
+        },
+        "actor_states": {},
+        "scene_states": {},
+        "properties": {}
+      },
+      "steps": [
+        {
+          "path": "inspect_note"
+        },
+        {
+          "save_load": true,
+          "assert": {
+            "choices_present": [
+              "Close the note"
+            ]
+          }
+        },
+        {
+          "choose": "Close the note"
+        },
+        {
+          "path": "inspect_note",
+          "assert": {
+            "choices_present": [
+              "Close the note"
+            ],
+            "variables": {
+              "inspected": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

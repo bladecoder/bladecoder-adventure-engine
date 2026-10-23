@@ -17,7 +17,7 @@ from urllib.request import Request, urlopen
 import uuid
 
 
-def verify(jar, output):
+def verify(jar, output, playable=False):
     jar=Path(jar).resolve();digest=hashlib.sha256(jar.read_bytes()).hexdigest()
     out=Path(output).resolve();out.mkdir(parents=True,exist_ok=False)
     assertions=[];processes=[];failure=None
@@ -34,7 +34,10 @@ def verify(jar, output):
         end=time.monotonic()+13
         while row['status'] in ('accepted','running','cancelling') and time.monotonic()<end:
             time.sleep(.03);row=request(info,'/debug/v1/commands/'+row['command_id'])
-        check(row['status']=='completed','command completed: '+operation)
+        if row['status']!='completed':
+            (folder/'failed-command.json').write_text(json.dumps(row,indent=2))
+            raise AssertionError('Command '+operation+': '+json.dumps(row.get('error')))
+        check(True,'command completed: '+operation)
         return row['result']
     def start(name,flags,discovery=True):
         folder=out/name;folder.mkdir();profile=folder/'profile';profile.mkdir()
@@ -85,6 +88,34 @@ def verify(jar, output):
         check(focused['value']=='scene-1','neutral generated scene through focused query')
         state=request(info,'/debug/v1/state');(folder/'state.json').write_text(json.dumps(state,indent=2))
         status=command(info,'content.status');check('content_overrides' in state,'explicit content store visible in full state')
+        if playable:
+            check(any(actor['id']=='note' for actor in state['scene']['actors']),'playable note actor loaded')
+            command(info,'gameplay',{'type':'actorVerb','actorId':'note','verb':'lookat'})
+            for _ in range(30):
+                command(info,'clock.step',{'frames':4,'delta':.05})
+                state=request(info,'/debug/v1/state')
+                if state['choices']:break
+                if state.get('text'):command(info,'dialogue.advance')
+            check('Close the note' in state['choices'],'actual compiled Ink offers the declared choice')
+            check(state['ink']['variables']['inspected']['value'] is True,'actual Ink state is typed and changed by interaction')
+            command(info,'dialogue.choose',{'choice_set':state['choice_set'],'option':state['choices'].index('Close the note')})
+            for _ in range(20):
+                command(info,'clock.step',{'frames':4,'delta':.05});state=request(info,'/debug/v1/state')
+                if not state.get('text') and not state['choices'] and not state['cutMode']:break
+                if state.get('text'):command(info,'dialogue.advance')
+            check(not state['cutMode'] and not state['choices'] and not state.get('text'),'starter dialogue returns control')
+            command(info,'gameplay',{'type':'actorVerb','actorId':'note','verb':'pickup'})
+            command(info,'clock.step',{'frames':4,'delta':.05});state=request(info,'/debug/v1/state')
+            check(any(actor['id']=='note' for actor in state['inventory']),'real note acquisition updates inventory')
+            session=request(info,'/debug/v1/session');save=Path(session['save_directory'])/'starter-smoke.gamestate'
+            check(save.resolve().is_relative_to((folder/'profile').resolve()),'starter checkpoint is isolated')
+            command(info,'gameplay',{'type':'saveGame','target':save.name});check(save.is_file(),'starter checkpoint file written')
+            command(info,'gameplay',{'type':'loadGame','target':save.name})
+            command(info,'wait',{'conditions':[{'path':'/assetState','equals':'LOADED'}]})
+            state=request(info,'/debug/v1/state')
+            check(any(actor['id']=='note' for actor in state['inventory']) and state['ink']['variables']['inspected']['value'] is True,'inventory and narrative state survive reload')
+            check(not state['diagnostics'].get('last_error') and not state['diagnostics'].get('exception'),'playable starter has no runtime diagnostic error')
+            (folder/'playable-state.json').write_text(json.dumps(state,indent=2))
         receipt=command(info,'capture',{'kind':'ui'})
         png=request(info,'/debug/v1/artifacts/'+receipt['artifact_id'],binary=True)
         check(hashlib.sha256(png).hexdigest()==receipt['sha256'] and png.startswith(b'\x89PNG'),'rendered capture and receipt hash')
@@ -117,5 +148,5 @@ def verify(jar, output):
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--jar',required=True);parser.add_argument('--out',required=True)
-    args=parser.parse_args();result=verify(args.jar,args.out);print(json.dumps(result,indent=2));raise SystemExit(0 if result['passed'] else 1)
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--jar',required=True);parser.add_argument('--out',required=True);parser.add_argument('--playable',action='store_true')
+    args=parser.parse_args();result=verify(args.jar,args.out,args.playable);print(json.dumps(result,indent=2));raise SystemExit(0 if result['passed'] else 1)

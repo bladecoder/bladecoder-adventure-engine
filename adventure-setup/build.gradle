@@ -1,0 +1,161 @@
+plugins {
+    id 'java-library'
+    id 'application'
+}
+group = 'com.bladecoder.setup'
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+application { mainClass = 'com.bladecoder.setup.SetupMain' }
+dependencies { implementation "com.badlogicgames.gdx:gdx:$libgdxVersion" }
+def metadata = layout.buildDirectory.dir('generated/setup-resources')
+def starterResources = layout.buildDirectory.dir('generated/starter-resources')
+sourceSets {
+    starterCompiler { java.srcDirs = ['compiler-src'] }
+}
+dependencies {
+    starterCompilerImplementation "com.bladecoder.ink:blade-ink:$bladeInkVersion"
+    starterCompilerImplementation "com.bladecoder.ink:blade-ink-compiler:$bladeInkVersion"
+}
+tasks.register('compileStarter', JavaExec) {
+    dependsOn starterCompilerClasses
+    classpath = sourceSets.starterCompiler.runtimeClasspath
+    mainClass = 'com.bladecoder.setup.StarterCompiler'
+    def source = file('src/main/resources/projectTmpl/raw/ink/main.ink')
+    def target = starterResources.map { it.file('projectTmpl/assets/model/main.ink.json') }
+    inputs.file(source)
+    inputs.property('compilerVersion', bladeInkVersion)
+    outputs.file(target)
+    args source.absolutePath, target.get().asFile.absolutePath
+}
+sourceSets.main.resources.srcDir(starterResources)
+processResources.dependsOn tasks.named('compileStarter')
+tasks.register('setupMetadata') {
+    inputs.files(fileTree('src/main/resources'))
+    inputs.files(fileTree('compiler-src'))
+    inputs.file(rootProject.file('gradle.properties'))
+    inputs.files(fileTree('src/main/java'))
+    inputs.file(file('build.gradle'))
+    inputs.properties([setupVersion: project.version.toString(), gdxVersion: libgdxVersion, roboVMVersion: roboVMVersion, androidGradlePluginVersion: androidGradlePluginVersion, androidAPILevel: androidAPILevel, bladeInkVersion: bladeInkVersion, gdxControllersVersion: gdxControllersVersion])
+    inputs.files(fileTree('toolkit') { exclude '**/__pycache__/**', '**/*.pyc' })
+    outputs.dir(metadata)
+    doLast {
+        def dir = metadata.get().asFile
+        dir.mkdirs()
+        def base = file('src/main/resources/projectTmpl')
+        new File(dir, 'setup-templates.txt').text = fileTree(base).files.collect { base.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.sort().join('\n') + '\nassets/model/main.ink.json\n'
+        def sourceDigest = java.security.MessageDigest.getInstance('SHA-256')
+        (fileTree('src/main').files + fileTree('compiler-src').files + fileTree('toolkit').matching { exclude '**/__pycache__/**', '**/*.pyc' }.files + [file('build.gradle'), rootProject.file('gradle.properties')]).sort { it.path }.each { source ->
+            sourceDigest.update(project.relativePath(source).replace('\\', '/').getBytes('UTF-8'))
+            sourceDigest.update(source.bytes)
+        }
+        def componentHash = { sources ->
+            def digest = java.security.MessageDigest.getInstance('SHA-256')
+            sources.sort { it.path }.each { source ->
+                digest.update(project.relativePath(source).replace('\\', '/').getBytes('UTF-8'))
+                digest.update(source.bytes)
+            }
+            digest.digest().encodeHex().toString()
+        }
+        def generatorHash = componentHash(fileTree('src/main/java').files + fileTree('compiler-src').files + [file('build.gradle')])
+        def templateHash = componentHash(fileTree('src/main/resources/projectTmpl').files)
+        def toolkitHash = componentHash(fileTree('toolkit').matching { exclude '**/__pycache__/**', '**/*.pyc' }.files)
+        def toolkitBase = file('toolkit')
+        new File(dir, 'setup-toolkit.txt').text = fileTree(toolkitBase).matching { exclude '**/__pycache__/**', '**/*.pyc' }.files.collect { toolkitBase.toPath().relativize(it.toPath()).toString().replace('\\','/') }.sort().join('\n') + '\n'
+        new File(dir, 'setup-versions.properties').text = """setupVersion=${project.version}
+setupSourceSha256=${sourceDigest.digest().encodeHex()}
+generatorSourceSha256=${generatorHash}
+templateSourceSha256=${templateHash}
+toolkitSourceSha256=${toolkitHash}
+engineVersion=${project.version}
+gdxVersion=${libgdxVersion}
+roboVMVersion=${roboVMVersion}
+androidGradlePluginVersion=${androidGradlePluginVersion}
+androidAPILevel=${androidAPILevel}
+bladeInkVersion=${bladeInkVersion}
+gdxControllersVersion=${gdxControllersVersion}
+"""
+    }
+}
+sourceSets.main.resources.srcDir(metadata)
+processResources.dependsOn tasks.named('setupMetadata')
+processResources { from('toolkit') { into 'toolkit'; exclude '**/__pycache__/**', '**/*.pyc' } }
+tasks.register('dist', Jar) {
+    dependsOn classes
+    archiveClassifier = 'all'
+    reproducibleFileOrder = true
+    preserveFileTimestamps = false
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest { attributes 'Main-Class': application.mainClass.get() }
+    from sourceSets.main.output
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+sourceSets {
+    setupContract {
+        java.srcDirs = ['test-src']
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+configurations {
+    setupContractImplementation.extendsFrom implementation
+    setupContractRuntimeOnly.extendsFrom runtimeOnly
+}
+tasks.register('setupContractTest', JavaExec) {
+    dependsOn setupContractClasses
+    classpath = sourceSets.setupContract.runtimeClasspath
+    mainClass = 'com.bladecoder.setup.SetupContractTest'
+}
+tasks.named('check') { dependsOn tasks.named('setupContractTest') }
+
+// The portable bundle needs only Java for generation/update; build dependencies are separate.
+def bundleDirectory = layout.buildDirectory.dir('setup-bundle')
+tasks.register('bundleMetadata') {
+    dependsOn tasks.named('dist')
+    inputs.file(tasks.named('dist', Jar).flatMap { it.archiveFile })
+    inputs.dir(metadata)
+    inputs.file(rootProject.file('docs/adventure-setup-compatibility.md'))
+    outputs.dir(bundleDirectory)
+    doLast {
+        def directory = bundleDirectory.get().asFile
+        delete directory
+        directory.mkdirs()
+        def jar = tasks.named('dist', Jar).get().archiveFile.get().asFile
+        copy { from jar; into directory }
+        def checksum = java.security.MessageDigest.getInstance('SHA-256').digest(jar.bytes).encodeHex().toString()
+        new File(directory, 'SHA256SUMS').text = "${checksum}  ${jar.name}\n"
+        def identity = new Properties()
+        new File(metadata.get().asFile, 'setup-versions.properties').withInputStream { identity.load(it) }
+        new File(directory, 'setup-bundle.json').text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson([
+            schema_version: 1, artifact: jar.name, sha256: checksum, identity: identity,
+            generation_requires: 'Java 8+', tooling_requires: 'Python 3.10+; Pillow for visual assertions',
+            build_dependencies: 'Resolve the paired engine and Gradle dependencies separately; generation performs no downloads.',
+            compatibility: 'See adventure-setup-compatibility.md for executed and unavailable environments.'
+        ])) + '\n'
+        copy { from rootProject.file('docs/adventure-setup-compatibility.md'); into directory }
+        new File(directory, 'README.txt').text = """Blade Engine adventure setup ${project.version}
+Verify SHA256SUMS before use. All CLI paths are explicit.
+java -jar ${jar.name} --help
+java -jar ${jar.name} create --spec SPEC.json --out NEW_DIRECTORY --json
+java -jar ${jar.name} plan-update --project EXISTING_DIRECTORY --out NEW_PLAN.json --json
+Review the complete plan; resolve conflicts before applying with the same bundle.
+java -jar ${jar.name} apply-update --project EXISTING_DIRECTORY --plan REVIEWED_PLAN.json --json
+Generation does not build, publish, initialize Git, or launch an agent.
+"""
+    }
+}
+tasks.register('bundle', Zip) {
+    dependsOn tasks.named('bundleMetadata')
+    archiveBaseName = 'adventure-setup'
+    destinationDirectory = layout.buildDirectory.dir('distributions')
+    from bundleDirectory
+    reproducibleFileOrder = true
+    preserveFileTimestamps = false
+    outputs.file { new File(archiveFile.get().asFile.path + '.sha256') }
+    doLast {
+        def archive = archiveFile.get().asFile
+        def digest = java.security.MessageDigest.getInstance('SHA-256').digest(archive.bytes).encodeHex().toString()
+        new File(archive.path + '.sha256').text = "${digest}  ${archive.name}\n"
+    }
+}

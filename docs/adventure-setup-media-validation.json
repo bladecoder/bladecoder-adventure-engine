@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "branch": "feat/adventure-setup",
+  "status": "media_integration_verified_remaining_plan_open",
+  "generated_consumer": "/tmp/adventure-final-media-consumer",
+  "qa": {
+    "result": "/tmp/adventure-final-media-native-qa/result.json",
+    "passed": true,
+    "complete": true,
+    "jar_sha256": "efa02aa2b425369f73f179a2ca0e43ab6478025e0e51883fcddfcd7efec5bd03",
+    "tasks": [
+      {
+        "id": "media-audio",
+        "status": "passed"
+      },
+      {
+        "id": "media-spine",
+        "status": "passed"
+      }
+    ]
+  },
+  "audio": {
+    "assertions": 21,
+    "native_music_wraps": 3,
+    "music_metrics": {
+      "frames": 672211,
+      "sample_rate": 48000,
+      "channels": 2,
+      "seconds": 14.004395833333334,
+      "bits_per_sample": 16,
+      "stereo_nonidentical_frames": 654136,
+      "peak_dbfs": -20.464969671343564,
+      "rms_dbfs": -35.01025533313267,
+      "clipped_samples": 0,
+      "longest_silence_seconds": 0.1,
+      "seam_delta": 0.008758544921875
+    },
+    "sounds": [
+      {
+        "id": "starter-pickup",
+        "source_channels": 1,
+        "source_bits_per_sample": 16,
+        "waveform_correlation": 0.9999999833109141
+      },
+      {
+        "id": "starter-signal",
+        "source_channels": 2,
+        "source_bits_per_sample": 16,
+        "waveform_correlation": 0.9999999977723787
+      }
+    ],
+    "evidence_errors": [],
+    "perceptual_review": "pending; measurements do not approve listening quality"
+  },
+  "spine": {
+    "assertions": 45,
+    "evidence_errors": [],
+    "preview_result": "/tmp/adventure-neutral-spine-runtime-verbs/result.json",
+    "derived_result": "/tmp/adventure-derived-courier-runtime/result.json",
+    "derivation": {
+      "schema_version": 1,
+      "passed": true,
+      "checks": {
+        "source_template_unchanged": true,
+        "new_project_created": true,
+        "runtime_export_created": true,
+        "animation_library_preserved": true
+      },
+      "native_evidence": "/tmp/adventure-derived-courier-runtime/result.json"
+    }
+  },
+  "external_art": {
+    "schema_version": 1,
+    "passed": true,
+    "checks": {
+      "selected_external_root": true,
+      "editable_project_available": true,
+      "attachment_images_available": true
+    }
+  },
+  "tests": {
+    "python": 87,
+    "skipped": 0,
+    "log": "/tmp/adventure-media-final-verified-tests.log",
+    "setup_contract_checks": 147,
+    "build_log": "/tmp/adventure-media-final-verified-build.log"
+  },
+  "bonasera_compatibility": {
+    "scope": "read-only static model check, without project custom action extension",
+    "errors": 0,
+    "warnings": 413,
+    "evidence": "/tmp/adventure-bonasera-model-compatibility.json",
+    "native_regression": "pending"
+  },
+  "limits": [
+    "Linux Pulse/PipeWire native audio capture only; absent backends remain unavailable.",
+    "SFX waveform probe supports bounded normal-pitch one-shots; other cases need project-specific probes.",
+    "Region cutouts supported; mesh/constraint adapters are not implemented.",
+    "Artistic/listening/mobile review remains separate.",
+    "Remaining toolkit review, skills, updates/distribution/CI and bounded agent pilot are incomplete."
+  ]
+}

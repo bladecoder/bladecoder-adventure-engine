@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "derived-courier",
+  "source": "starter.svg",
+  "settings": "tools/asset-settings/svg-transparent-96.json",
+  "exports": [
+    {
+      "id": "note",
+      "selection": {
+        "include": [
+          "note"
+        ],
+        "exclude": []
+      },
+      "crop": {
+        "mode": "canvas",
+        "x": 426,
+        "y": 272,
+        "width": 128,
+        "height": 80
+      },
+      "render": {
+        "scale": {
+          "mode": "pixels",
+          "width": 128,
+          "height": 80
+        }
+      },
+      "output": "raw/images/spine-derived-courier/note.png",
+      "destination": {
+        "kind": "spine-piece",
+        "character": "derived-courier"
+      }
+    }
+  ]
+}

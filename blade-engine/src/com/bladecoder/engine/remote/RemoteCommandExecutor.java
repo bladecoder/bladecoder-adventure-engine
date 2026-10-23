@@ -110,6 +110,10 @@ final class RemoteCommandExecutor {
             if (!world.hasDialogOptions() || command.option < 0 || command.option >= world.getDialogOptions().size())
                 throw new CommandRejectedException("Remote command dialog option is not available: " + command.option);
             world.selectDialogOption(command.option);
+            // A real DialogUI click hides its own panel. Semantic selection has no
+            // widget callback, so refresh listeners from the resulting model state.
+            // This also preserves a newly offered choice set instead of blindly hiding it.
+            world.getEvents().dialogOptionsChanged();
             return;
         case GOTO:
             if (scene.getPlayer() == null)

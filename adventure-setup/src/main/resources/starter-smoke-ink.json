@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "id": "starter-smoke",
+  "description": "Neutral actual-input/dialogue/inventory/save-load smoke from a declared fixture; not a full playthrough.",
+  "setup": {
+    "chapter": "00",
+    "scene": "scene-1",
+    "seed": 1701,
+    "locale": "en",
+    "viewport": [
+      960,
+      540
+    ]
+  },
+  "steps": [
+    {
+      "id": "loaded-entry",
+      "type": "assert",
+      "condition": {
+        "all": [
+          {
+            "path": "/scene/id",
+            "equals": "scene-1"
+          },
+          {
+            "path": "/scene/actors",
+            "has_id": "note"
+          }
+        ]
+      }
+    },
+    {
+      "id": "inspect-note",
+      "type": "click",
+      "actor": "note",
+      "button": 0
+    },
+    {
+      "id": "input-deferred",
+      "type": "frames",
+      "count": 4
+    },
+    {
+      "id": "offered-dialogue",
+      "type": "wait",
+      "condition": {
+        "path": "/choices",
+        "contains": "Close the note"
+      },
+      "advance_text": true,
+      "timeout_ms": 15000
+    },
+    {
+      "id": "inspected-state",
+      "type": "assert",
+      "condition": {
+        "path": "/ink/variables/inspected/value",
+        "equals": true
+      }
+    },
+    {
+      "id": "close-note",
+      "type": "choose",
+      "text": "Close the note"
+    },
+    {
+      "id": "dialogue-ready",
+      "type": "wait",
+      "condition": {
+        "all": [
+          {
+            "path": "/assetState",
+            "equals": "LOADED"
+          },
+          {
+            "path": "/paused",
+            "equals": false
+          },
+          {
+            "path": "/cutMode",
+            "equals": false
+          },
+          {
+            "path": "/text",
+            "equals": null
+          },
+          {
+            "path": "/choices",
+            "equals": []
+          }
+        ]
+      },
+      "advance_text": true,
+      "timeout_ms": 15000
+    },
+    {
+      "id": "take-note",
+      "type": "click",
+      "actor": "note",
+      "button": 1
+    },
+    {
+      "id": "pickup-deferred",
+      "type": "frames",
+      "count": 4
+    },
+    {
+      "id": "inventory-note",
+      "type": "assert",
+      "condition": {
+        "path": "/inventory",
+        "has_id": "note"
+      }
+    },
+    {
+      "id": "save-checkpoint",
+      "type": "command",
+      "operation": "gameplay",
+      "arguments": {
+        "type": "saveGame",
+        "target": "starter-smoke.gamestate"
+      }
+    },
+    {
+      "id": "load-checkpoint",
+      "type": "command",
+      "operation": "gameplay",
+      "arguments": {
+        "type": "loadGame",
+        "target": "starter-smoke.gamestate"
+      }
+    },
+    {
+      "id": "reloaded-assets",
+      "type": "wait",
+      "condition": {
+        "path": "/assetState",
+        "equals": "LOADED"
+      },
+      "timeout_ms": 15000
+    },
+    {
+      "id": "reloaded-state",
+      "type": "assert",
+      "condition": {
+        "all": [
+          {
+            "path": "/inventory",
+            "has_id": "note"
+          },
+          {
+            "path": "/ink/variables/inspected/value",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-runtime-error",
+      "type": "assert",
+      "condition": {
+        "all": [
+          {
+            "path": "/diagnostics/last_error",
+            "equals": null
+          },
+          {
+            "path": "/diagnostics/exception",
+            "equals": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "final-ui",
+      "type": "capture",
+      "kind": "ui"
+    }
+  ]
+}

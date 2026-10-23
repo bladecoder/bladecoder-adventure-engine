@@ -1,0 +1,1552 @@
+{
+  "schema_version": 1,
+  "source_revision": "bonasera5@f34713cf1293a1dbaa81e5eef3a71a9813bcda01",
+  "status": "reviewed; selected generic contracts and local consumers verified; project-specific content retained in Bonasera",
+  "modules": [
+    {
+      "source": "tools/art_sources.py",
+      "destination": "tools/art_sources.py",
+      "status": "neutral_consumer_verified",
+      "evidence": "docs/adventure-setup-art-validation.json"
+    },
+    {
+      "source": "tools/asset_manifest.py",
+      "destination": "tools/asset_manifest.py",
+      "status": "neutral_consumer_verified",
+      "evidence": "docs/adventure-setup-art-validation.json"
+    },
+    {
+      "source": "tools/art_pipeline.py",
+      "destination": "tools/art_pipeline.py",
+      "status": "neutral_consumer_verified",
+      "evidence": "docs/adventure-setup-art-validation.json"
+    },
+    {
+      "source": "tools/atlas_tools.py",
+      "destination": "tools/atlas_tools.py",
+      "status": "neutral_consumer_verified",
+      "evidence": "docs/adventure-setup-art-validation.json"
+    },
+    {
+      "source": "tools/audio_capture.py",
+      "destination": "tools/audio_capture.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/audio_match.py",
+      "destination": "tools/audio_match.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/audio_tools.py",
+      "destination": "tools/audio_tools.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/chapter_validate.py",
+      "destination": "tools/chapter_validate.py",
+      "status": "neutral_consumer_verified",
+      "evidence": "docs/adventure-setup-art-validation.json"
+    },
+    {
+      "source": "tools/ink_links.py",
+      "destination": "tools/ink_links.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/ink_tools.py",
+      "destination": "tools/ink_tools.py",
+      "status": "neutral_consumer_verified",
+      "evidence": "docs/adventure-setup-art-validation.json"
+    },
+    {
+      "source": "tools/model_json.py",
+      "destination": "tools/model_json.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/music_score.py",
+      "destination": "tools/music_score.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/runtime_client.py",
+      "destination": "tools/runtime_client.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/runtime_scenario.py",
+      "destination": "tools/runtime_scenario.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/runtime_explore.py",
+      "destination": "tools/runtime_explore.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/runtime_reduce.py",
+      "destination": "tools/runtime_reduce.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/runtime_recovery.py",
+      "destination": "tools/runtime_recovery.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/runtime_recordings.py",
+      "destination": "tools/runtime_recordings.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/runtime_trace.py",
+      "destination": "tools/runtime_trace.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/runtime_visual.py",
+      "destination": "tools/runtime_visual.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/runtime_tools.py",
+      "destination": "tools/runtime_tools.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/spine_tools.py",
+      "destination": "tools/spine_tools.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "tools/qa_artifacts.py",
+      "destination": "tools/qa_artifacts.py",
+      "status": "generic_source_reviewed_selected_contracts_verified",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    },
+    {
+      "source": "new_or_generalized/art_storage.py",
+      "destination": "tools/art_storage.py",
+      "status": "neutral_consumer_verified",
+      "evidence": "docs/adventure-setup-art-validation.json"
+    },
+    {
+      "source": "new_or_generalized/project_config.py",
+      "destination": "tools/project_config.py",
+      "status": "neutral_consumer_verified",
+      "evidence": "docs/adventure-setup-art-validation.json"
+    },
+    {
+      "source": "new_or_generalized/model_contract.py",
+      "destination": "tools/model_contract.py",
+      "status": "neutral_consumer_verified",
+      "evidence": "docs/adventure-setup-art-validation.json"
+    },
+    {
+      "source": "new_or_generalized/qa_tools.py",
+      "destination": "tools/qa_tools.py",
+      "status": "catalogue_profiles_verified",
+      "evidence": "docs/adventure-setup-starter-validation.json"
+    },
+    {
+      "source": "new_or_generalized/engine_contract.py",
+      "destination": "tools/engine_contract.py",
+      "status": "neutral_consumer_verified",
+      "evidence": "docs/adventure-setup-art-validation.json"
+    },
+    {
+      "source": "new_generic_adapter/audio_runtime.py",
+      "destination": "tools/audio_runtime.py",
+      "status": "neutral_preview_and_package_verified",
+      "evidence": "docs/adventure-setup-media-validation.json"
+    },
+    {
+      "source": "new_generic_adapter/spine_runtime.py",
+      "destination": "tools/spine_runtime.py",
+      "status": "neutral_preview_and_package_verified",
+      "evidence": "docs/adventure-setup-media-validation.json"
+    },
+    {
+      "source": "new_generic_helper/skill_tools.py",
+      "destination": "tools/skill_tools.py",
+      "status": "verified_contracts_and_generated_consumers",
+      "evidence": "docs/adventure-setup-toolkit-validation.json"
+    }
+  ],
+  "excluded_game_data": [
+    "P01/office/bank scenarios and recordings",
+    "Johnny/DUMMY2 recipes and character projects",
+    "bank music and production SFX recipes",
+    "AMD visual baseline",
+    "Bonasera story/design and validation reports"
+  ],
+  "specialized_adapters_pending": [],
+  "notes": "Every tracked source tool/helper/test/reference is classified individually. Classification is provenance, not a claim that every possible runtime branch or platform is covered.",
+  "tracked_source_files": [
+    {
+      "source": ".agents/skills",
+      "source_git_blob": "42c5394a18a882778ebf50eb940fb5a96bc4a6d9",
+      "disposition": "replaced-discovery",
+      "destinations": [
+        ".agents/skills/<skill>/SKILL.md"
+      ],
+      "reason": "Portable generated thin entries route to canonical skills; no copied personal symlink."
+    },
+    {
+      "source": "skills/animate-spine/SKILL.md",
+      "source_git_blob": "781aa675d771ab92e8a5b2d714952f3e22696744",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/animate-spine/SKILL.md"
+      ],
+      "reason": "Rewritten around project brief/metadata and local tools; no inherited game humor, style, language or identifiers."
+    },
+    {
+      "source": "skills/compose-game-music/SKILL.md",
+      "source_git_blob": "d80a5c3a790ee296626760b60909bbdc7cf75b40",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/compose-game-music/SKILL.md"
+      ],
+      "reason": "Rewritten around project brief/metadata and local tools; no inherited game humor, style, language or identifiers."
+    },
+    {
+      "source": "skills/create-game-art/SKILL.md",
+      "source_git_blob": "07841cb759f2dcbae120c910c06bfbbe6aa87774",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/create-game-art/SKILL.md"
+      ],
+      "reason": "Rewritten around project brief/metadata and local tools; no inherited game humor, style, language or identifiers."
+    },
+    {
+      "source": "skills/create-sfx/SKILL.md",
+      "source_git_blob": "7c34e0c047a61ca3552280541bba565289c713d2",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/create-sfx/SKILL.md"
+      ],
+      "reason": "Rewritten around project brief/metadata and local tools; no inherited game humor, style, language or identifiers."
+    },
+    {
+      "source": "skills/debug-game/SKILL.md",
+      "source_git_blob": "77ff631fd9c4fb9be4b18522a6ecd9bd9f03196f",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/debug-game/SKILL.md"
+      ],
+      "reason": "Rewritten around project brief/metadata and local tools; no inherited game humor, style, language or identifiers."
+    },
+    {
+      "source": "skills/edit-scenes/SKILL.md",
+      "source_git_blob": "41b4bfc6f8a1e006a686d6334d0751cf22d4ae78",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/edit-scenes/SKILL.md"
+      ],
+      "reason": "Rewritten around project brief/metadata and local tools; no inherited game humor, style, language or identifiers."
+    },
+    {
+      "source": "skills/implement-puzzle/SKILL.md",
+      "source_git_blob": "d34fe2f3c8148e934f73db3406a0550217e57a5c",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/implement-puzzle/SKILL.md"
+      ],
+      "reason": "Rewritten around project brief/metadata and local tools; no inherited game humor, style, language or identifiers."
+    },
+    {
+      "source": "skills/localize-game/SKILL.md",
+      "source_git_blob": "1f0dfcc119cbaa15db8b8bd2155daed9328cc014",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/localize-game/SKILL.md"
+      ],
+      "reason": "Rewritten around project brief/metadata and local tools; no inherited game humor, style, language or identifiers."
+    },
+    {
+      "source": "skills/puzzle-designer/SKILL.md",
+      "source_git_blob": "55936ccf40be8fb133771817db8b836033b2a880",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/puzzle-designer/SKILL.md"
+      ],
+      "reason": "Rewritten around project brief/metadata and local tools; no inherited game humor, style, language or identifiers."
+    },
+    {
+      "source": "skills/write-game-ink/SKILL.md",
+      "source_git_blob": "0899e0be8c1375bfb73d8855b6d35800b2f55913",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/SKILL.md"
+      ],
+      "reason": "Rewritten around project brief/metadata and local tools; no inherited game humor, style, language or identifiers."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/1-1-content.md",
+      "source_git_blob": "0f828dca1fd90d1a93aa6d07e604169d4592bc59",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/1-1-content.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/1-2-choices.md",
+      "source_git_blob": "391dedda21cb4e601d55e657bacb12795331babe",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/1-2-choices.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/1-3-knots.md",
+      "source_git_blob": "b7ab29565898d841a000f86f33cfd2d196fd53ad",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/1-3-knots.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/1-4-diverts.md",
+      "source_git_blob": "d605d96cead354d4c62524f05b4c29e8d37cb704",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/1-4-diverts.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/1-5-branching-the-flow.md",
+      "source_git_blob": "d01959a8b99f4cc277da414510cd26f132ecd582",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/1-5-branching-the-flow.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/1-6-includes-and-stitches.md",
+      "source_git_blob": "34819455e27116c99fd45b9499960abfd54229f4",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/1-6-includes-and-stitches.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/1-7-varying-choices.md",
+      "source_git_blob": "7275dafc5d1f0af1d272b690bb32a81dbd74633d",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/1-7-varying-choices.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/1-8-variable-text.md",
+      "source_git_blob": "454ade429559d70d847b210da27e393de0cc72ce",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/1-8-variable-text.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/1-9-game-queries-and-functions.md",
+      "source_git_blob": "ec7c5c96cf7734686128ecefd7767b7c9ada0d1d",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/1-9-game-queries-and-functions.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/1-the-basics.md",
+      "source_git_blob": "ab48e92e8acf1f5d050a170a64fca78a0563247a",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/1-the-basics.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/2-1-gathers.md",
+      "source_git_blob": "d18b51ed71d0f0edfaf444ebb91ca803accd951e",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/2-1-gathers.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/2-2-nested-flow.md",
+      "source_git_blob": "f7f48226f2c56e634273c08b06a8b3bd13dbe0e8",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/2-2-nested-flow.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/2-3-tracking-a-weave.md",
+      "source_git_blob": "0ecbdacc33cab8b23c89e8637a0c1d9d1f7de067",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/2-3-tracking-a-weave.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/2-weave.md",
+      "source_git_blob": "4d1ec14b48482118bbf6c7fa81f46e38a8259b6e",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/2-weave.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/3-1-global-variables.md",
+      "source_git_blob": "7db530a9dd55e60d4284abc36d1586fe999546bf",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/3-1-global-variables.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/3-2-logic.md",
+      "source_git_blob": "056be4b2bb7b73e17c011571215ab4f400f2bdd1",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/3-2-logic.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/3-3-conditional-blocks.md",
+      "source_git_blob": "fe22a93d1b880181919e65b8d0336db5ea977a7f",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/3-3-conditional-blocks.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/3-4-temporary-variables.md",
+      "source_git_blob": "58b425c924e13a0a7ea29ef01fbe6cbe91d2c966",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/3-4-temporary-variables.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/3-5-functions.md",
+      "source_git_blob": "21330aec4c6f7e864cc3fd118d304a7bfcbe11f3",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/3-5-functions.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/3-6-constants.md",
+      "source_git_blob": "735d8b46b2468ebf03bbff9880c487609fab8128",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/3-6-constants.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/3-7-advanced-game-side-logic.md",
+      "source_git_blob": "3d147ef2c175e6c3a67286c82f468db0dd02f093",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/3-7-advanced-game-side-logic.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/3-variables-and-logic.md",
+      "source_git_blob": "27acc7dc445f8222cf1f0451a7ec3ff56a5f4549",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/3-variables-and-logic.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/4-1-tunnels.md",
+      "source_git_blob": "af60eb174ab3a0565b665e6643c738f220e212ce",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/4-1-tunnels.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/4-2-threads.md",
+      "source_git_blob": "a1feebb687d30debb13a364af7f67c6bd5d1518f",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/4-2-threads.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/4-advanced-flow-control.md",
+      "source_git_blob": "8b05b4e095957ac786de72ff0bcb0b275afb0766",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/4-advanced-flow-control.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/5-1-basic-lists.md",
+      "source_git_blob": "ba645404f5abb7ea879b7266d17b5705674703f7",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/5-1-basic-lists.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/5-2-reusing-lists.md",
+      "source_git_blob": "621d258384a529d12dc478e750d8d0f5fab4b32b",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/5-2-reusing-lists.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/5-3-list-values.md",
+      "source_git_blob": "5bda5a84f02ac30aa1385d8e2dd41366a61f8047",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/5-3-list-values.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/5-4-multivalued-lists.md",
+      "source_git_blob": "6997380fa207fd6f624fbd53acccf98b5309018a",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/5-4-multivalued-lists.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/5-5-advanced-list-operations.md",
+      "source_git_blob": "f7ff053ac0b9a82cad7230f230168747b9d09c7d",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/5-5-advanced-list-operations.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/5-6-multi-list-lists.md",
+      "source_git_blob": "3a34ef2267b4632ebb88ab8052d4f1404ecbf4ec",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/5-6-multi-list-lists.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/5-7-long-example-crime-scene.md",
+      "source_git_blob": "6adbc8b67953971c56752bff3f2c2cd7a601d3cb",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/5-7-long-example-crime-scene.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/5-8-summary.md",
+      "source_git_blob": "e460a05352730730536680ee8c260dc465714448",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/5-8-summary.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/5-advanced-state-tracking.md",
+      "source_git_blob": "ef6ac4ec6e8b62bca3dd85259253175a9208f8b3",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/5-advanced-state-tracking.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/6-international-character-support-in-identifiers.md",
+      "source_git_blob": "d4283863da64fdc251845043fba6ee3759ae21f2",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/6-international-character-support-in-identifiers.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/LICENSE-inkle.txt",
+      "source_git_blob": "25f347be37007f41e1003e4a0862b8ab83615c30",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/LICENSE-inkle.txt"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/LICENSE-narrative-skills.txt",
+      "source_git_blob": "6218ab7ce333ac012513c331f9df84b8550982dd",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/LICENSE-narrative-skills.txt"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/index.md",
+      "source_git_blob": "8e4b1ecedcded0bc83f9745241d32e4cf692b74c",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/index.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "skills/write-game-ink/references/ink/introduction.md",
+      "source_git_blob": "4a7f7197492285dd52adb330a1838df4c17c4be3",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "skills/write-game-ink/references/ink/introduction.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/README.md",
+      "source_git_blob": "4a6e43ebbe4453d4b20d23d491a55ec1cf1183bd",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/README.md"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/art_pipeline.py",
+      "source_git_blob": "f57d26d634d777ca96f97fd4e50d1d4a56b97009",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/art_pipeline.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/art_sources.py",
+      "source_git_blob": "bb1bafa57e46c7b62a551e36257984149accd29a",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/art_sources.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/asset-manifests/README.md",
+      "source_git_blob": "ed33b5177e132147a9c015a7a7bc65b334ceab61",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/asset-manifests/bank-objects.json",
+      "source_git_blob": "6e837c3b6fc334f5eaec8eeb72e4b2f46ff43469",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/asset-manifests/dummy2-pieces.json",
+      "source_git_blob": "938176f27eddce92d7960393714ffc4e759b8188",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/asset-manifests/help-pie-en.json",
+      "source_git_blob": "c59d9f925c05c3f53acb642535e198e0a2f8df3e",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/asset-manifests/help-pie-es.json",
+      "source_git_blob": "ef03d32c53afc84bd52eaef4fa47b89305a59424",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/asset-manifests/inventory.json",
+      "source_git_blob": "b3673986a134851c3c6788429ab0089e3fb7b1e8",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/asset-manifests/office-pilot.md",
+      "source_git_blob": "c104a420c5755b252c3392b6271233d6adccce22",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/asset-manifests/office-vaho.json",
+      "source_git_blob": "dde0818c76b070ea091aa7acf715494b2d94ec7b",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/asset-manifests/office.json",
+      "source_git_blob": "c1a8d31d2a39a4cb7e4aab1d9629bb30d89b329d",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/asset-manifests/ui-controls.json",
+      "source_git_blob": "c061d0025ee62ce168527daf39146c3c7ae7b944",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/asset-settings/atlas-scene.json",
+      "source_git_blob": "4516587b3f620221fc1f049d4b44fbaeff80e7a2",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/asset-settings/atlas-scene.json"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/asset-settings/atlas-ui.json",
+      "source_git_blob": "2387d4758d497396c0e4ef931ca8d9a99d2cefc0",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/asset-settings/atlas-ui.json"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/asset-settings/packer-lock.json",
+      "source_git_blob": "939de5454b5b41bdd4553f03637d93d9d305a908",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/asset-settings/packer-lock.json"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/asset-settings/spine-atlas-straight.json",
+      "source_git_blob": "ffa417edcf50a8f1703c69af3822f97ea3fc96d2",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/asset-settings/spine-atlas-straight.json"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/asset-settings/spine-binary-4.3.json",
+      "source_git_blob": "d01009c5bbfc45ae1275cdfb6cf34d1e51dbe101",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/asset-settings/spine-binary-4.3.json"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/asset-settings/spine-json-4.3.json",
+      "source_git_blob": "6dc74c7be3aab0150c056a1a5ff01e4122f3809c",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/asset-settings/spine-json-4.3.json"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/asset-settings/svg-transparent-96.json",
+      "source_git_blob": "f50e12026b1faeacbb270277cd9bd6dd1265ce72",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/asset-settings/svg-transparent-96.json"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/asset_manifest.py",
+      "source_git_blob": "074d30db32dcb186ecb0662e26180fe497748855",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/asset_manifest.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/atlas_tools.py",
+      "source_git_blob": "1ee76bbefe54be7c4459b473951fc4c608515b2a",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/atlas_tools.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/audio_capture.py",
+      "source_git_blob": "53fdc280770c079510493c8a3e72ba235403c221",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/audio_capture.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/audio_match.py",
+      "source_git_blob": "97916a20c060c592b7abd427b172825481027b7f",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/audio_match.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/audio_runtime.py",
+      "source_git_blob": "2cf2514d621b753b927483ec38298a0303698e09",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/audio_runtime.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/audio_tools.py",
+      "source_git_blob": "242216c293ffb90ac4b441b0e070d7e6826ff88d",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/audio_tools.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/automation.gradle",
+      "source_git_blob": "1395d842a46bfcd221cb58028f89f112e6775b2f",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/automation.gradle"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/chapter_validate.py",
+      "source_git_blob": "d95d53efb79408d8102f6db847fb1dfbcbfbe476",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/chapter_validate.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/check_model_parser.py",
+      "source_git_blob": "16ed0b2eb16a85214bf0758cbc6dcf71a4cd5093",
+      "disposition": "reworked-or-split",
+      "destinations": [
+        "tools/model_json.py",
+        "tools/tests/test_chapters.py"
+      ],
+      "reason": "Project maintenance audit wrapper is replaced by reusable syntax contracts and actual packaged model loading."
+    },
+    {
+      "source": "tools/engine_contract.py",
+      "source_git_blob": "fd8861f890b0a51ee092dc5b019572674a1ddf94",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/engine_contract.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/engine_tests.py",
+      "source_git_blob": "816fe789cefd5c3d5b90657216705b006ad9342e",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/engine_tests.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/ink-scenarios/p01.json",
+      "source_git_blob": "fd64d6c9f2dbadc62f7d8409c6aee4e088b66905",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/ink_links.py",
+      "source_git_blob": "fe880414a2d362c052ab2a90ce51b6006f7e8923",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/ink_links.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/ink_tools.py",
+      "source_git_blob": "79e591110781454d304aabbeff35159d8c89b6d3",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/ink_tools.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/java/AtlasVerifier.java",
+      "source_git_blob": "eb9814ed5e7b9566c874313b4f99c2c45f88ddcf",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/java/AtlasVerifier.java"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/java/InkCompiler.java",
+      "source_git_blob": "2b0d76bc68dd78a4cccee28d7a9773e48e000dcc",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/java/InkCompiler.java"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/java/InkProbe.java",
+      "source_git_blob": "0084e648d9b0b37154500928192a836394a5a158",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/java/InkProbe.java"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/java/InkScenarioRunner.java",
+      "source_git_blob": "dae4818f3ab4a8b59efcc641cdbf6ba9ec671482",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/java/InkScenarioRunner.java"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/java/RecordingInspector.java",
+      "source_git_blob": "dcfa84e83913ad9291f3b70b41bd6c816b316226",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/java/RecordingInspector.java"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/licenses/compose-game-music-MIT.txt",
+      "source_git_blob": "2e459bfd67da5a0021cbfb9472c9de56c30d1749",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/licenses/compose-game-music-MIT.txt"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/local.example.json",
+      "source_git_blob": "ebb868b652fa3071d72e21c0fff862c12d707420",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/local.example.json"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/model-contract/actions.json",
+      "source_git_blob": "5e02998853f0e12f24f0642e147962381fe61cf6",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/model-contract/actions.json"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/model-contract/chapter.schema.json",
+      "source_git_blob": "f53448fb2063c9f7bb68638498a3e4cfdc028a57",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/model-contract/chapter.schema.json"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/model_json.py",
+      "source_git_blob": "6fa8bce74d2a1b59ed7c1de32a7aa27c39f1b2fd",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/model_json.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/music_score.py",
+      "source_git_blob": "ce2de152d17e392b154198cc35d3f96acfd643a6",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/music_score.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/project.py",
+      "source_git_blob": "867d6aa716eac08a5abd7ac3fc4b1c36b4ce9bd2",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/project.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/qa_artifacts.py",
+      "source_git_blob": "091a9304a11f47e4548004cca6f49c859f810329",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/qa_artifacts.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/qa_media.py",
+      "source_git_blob": "d5a7bda3278f4e7121c68bc024efb12505ff4648",
+      "disposition": "reworked-or-split",
+      "destinations": [
+        "tools/audio_runtime.py",
+        "tools/spine_runtime.py"
+      ],
+      "reason": "Project media adapters replaced with explicitly configured generic probes."
+    },
+    {
+      "source": "tools/qa_tools.py",
+      "source_git_blob": "e55494b4cb6f74d65ba0a55718505a1c9ebd2985",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/qa_tools.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/requirements-visual.txt",
+      "source_git_blob": "cd915611b6641c41e1167c12e468912a8303d334",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/requirements-visual.txt"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime-baselines/bank-linux-amd/bank-visual-en-960/menu-capture.png",
+      "source_git_blob": "0165c6c4df5a0dd1195ee267d85ca94483571727",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-baselines/bank-linux-amd/bank-visual-en-960/scene-capture.png",
+      "source_git_blob": "41b1f2fe8a32f854bb69da7a794dc09ecded2f46",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-baselines/bank-linux-amd/bank-visual-es-1280/menu-capture.png",
+      "source_git_blob": "cfb480bc87f449cc25dc889c5a70bc7a6199a728",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-baselines/bank-linux-amd/bank-visual-es-1280/scene-capture.png",
+      "source_git_blob": "41b1f2fe8a32f854bb69da7a794dc09ecded2f46",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-baselines/bank-linux-amd/bank-visual-es-960/menu-capture.png",
+      "source_git_blob": "479ed83b6dc77cef12dbaf57bdbf699a191af284",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-baselines/bank-linux-amd/bank-visual-es-960/scene-capture.png",
+      "source_git_blob": "41b1f2fe8a32f854bb69da7a794dc09ecded2f46",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-baselines/bank-linux-amd/baseline.json",
+      "source_git_blob": "9e1250c95270d2bab943bdf0859fae98381a5438",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-recordings/joe-dialogue.migration.json",
+      "source_git_blob": "2a10921486bef382b3dbb0833fb1b9d4133b5d1f",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-recordings/joe-dialogue.verbs.rec",
+      "source_git_blob": "e2703ca3edf1bd6e3150e00923cfa6a34da5d6ab",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-scenarios/bank-exploration-long.json",
+      "source_git_blob": "b9039427cf55b2f851a892e719f1df66e3c3c7b2",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-scenarios/bank-exploration.json",
+      "source_git_blob": "3b0a5b82aed5054417ebae49d8fe79b63070d69e",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-scenarios/bank-ui-menu.json",
+      "source_git_blob": "dc87f122928d4a79b10b807c94be817680ed65c1",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-scenarios/bank-visual-en-960.json",
+      "source_git_blob": "d76f8a73a621aad60680062f077241d5472d182a",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-scenarios/bank-visual-es-1280.json",
+      "source_git_blob": "bf4d8c9e53103cee69cb2c3a6d9bf82cab610378",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-scenarios/bank-visual-es-960.json",
+      "source_git_blob": "8ca9244865d16d6beba3d4556930048fbbea55b0",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime-scenarios/office-bank-transition.json",
+      "source_git_blob": "3395f95a5b11e5946c291ecff56887cbba302a51",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/runtime_client.py",
+      "source_git_blob": "0641553d8e2cb7718000ff2eb26900239135e022",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_client.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime_explore.py",
+      "source_git_blob": "c71ce1c45b1eba1e416ad6cbe249a288b9dd77f6",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_explore.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime_faults.py",
+      "source_git_blob": "6aee8510309e304b4ce30ff304eee7f4de24a681",
+      "disposition": "reworked-or-split",
+      "destinations": [
+        "tools/runtime_scenario.py",
+        "tools/tests/test_runtime_scenario.py"
+      ],
+      "reason": "Hardcoded bank/office content-fault adapter remains in the game; generic rejection/evidence/cleanup contracts retained."
+    },
+    {
+      "source": "tools/runtime_overrides.py",
+      "source_git_blob": "b541e175c30f0d3317529a76813f7628be7a8953",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_overrides.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime_recordings.py",
+      "source_git_blob": "5381e7182629f754a09a749b4a9543b1e9f6d42b",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_recordings.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime_recovery.py",
+      "source_git_blob": "027f632fb1a5a84bf90f4077703b0b3f5dac8e66",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_recovery.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime_reduce.py",
+      "source_git_blob": "c3a26d2555a268248e04d75ebe9be856c394174b",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_reduce.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime_replay.py",
+      "source_git_blob": "1344e2d9d3f0abeb641297f2064b698c578dfc53",
+      "disposition": "reworked-or-split",
+      "destinations": [
+        "tools/runtime_scenario.py"
+      ],
+      "reason": "Game P01/office replay adapter remains in the game; generic engine replay uses explicit project scenarios."
+    },
+    {
+      "source": "tools/runtime_scenario.py",
+      "source_git_blob": "c55d606b0f921adb9b96e6be41122e9f48c81f52",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_scenario.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime_scenarios.py",
+      "source_git_blob": "0e448f2f466c12cd7108099670648c5c1e4470e2",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_scenarios.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime_tools.py",
+      "source_git_blob": "2a7f044f999e3cb9c929343f60c226e3f66b8296",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_tools.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime_trace.py",
+      "source_git_blob": "0af3ae47154df4e32eb8ec48333fccc1f446f2b4",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_trace.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime_ui.py",
+      "source_git_blob": "2c7ca6d45e1f468833b2096c25ebe6bef9e9eb48",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_ui.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/runtime_visual.py",
+      "source_git_blob": "a572f41c9c7f52e58e5bfd24e8c697a41ce61b3a",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/runtime_visual.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/spine-recipes/dummy2-pilot-edits.json",
+      "source_git_blob": "d776a12f815414a477ea911b557384f75b27ae47",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/spine-recipes/dummy2-pilot-export.json",
+      "source_git_blob": "508e4e7a2a6c73348a9ace3b2202dda2f8a72b00",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/spine-recipes/dummy2-pilot.json",
+      "source_git_blob": "756a8b0d54b86fd67389b59dbedad1079b4b7c6f",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    },
+    {
+      "source": "tools/spine_runtime.py",
+      "source_git_blob": "ca3beaddeb98b6b4368aa072f7a1ff672e73325c",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/spine_runtime.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/spine_tools.py",
+      "source_git_blob": "ab44c4f44d401f0d6ed4b27ac883829d454f7167",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/spine_tools.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_art.py",
+      "source_git_blob": "25209db07ef43e398c15b6f038982994b1e899a0",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_art.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_art_pipeline.py",
+      "source_git_blob": "097783fb9d89366f74541f6a7575ad42512f2508",
+      "disposition": "reworked-or-split",
+      "destinations": [
+        "tools/optional-tests/test_art_pipeline.py",
+        "tools/tests/test_atlas_lock.py"
+      ],
+      "reason": "Actual renderer integration is opt-in; pinned binary rejection remains core."
+    },
+    {
+      "source": "tools/tests/test_audio.py",
+      "source_git_blob": "e2e5694ade1e6e8a6d0d8f099d5494c211f331f3",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_audio.py",
+        "tools/optional-tests/test_audio_encoding.py"
+      ],
+      "reason": "Core DSP/format/transaction contracts use original synthetic neutral fixtures; real FFmpeg imports opt-in."
+    },
+    {
+      "source": "tools/tests/test_chapters.py",
+      "source_git_blob": "28bbd0fb03859a46ef26d2f5e6f36fe84338f159",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_chapters.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_ink.py",
+      "source_git_blob": "c736e8f52b5021b7a4bb28124a5c147da95ba338",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_ink.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_project.py",
+      "source_git_blob": "363ff2a23cdccd707a04807d1157291aacbbfb56",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_project.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_qa.py",
+      "source_git_blob": "30055d369a57dc3efbc69f5e2c8c892772dfcc08",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_qa.py",
+        "tools/tests/test_qa_catalogue.py"
+      ],
+      "reason": "Privacy/hash/failure contracts retained; hardcoded all-profile list replaced by project catalogue validation."
+    },
+    {
+      "source": "tools/tests/test_runtime.py",
+      "source_git_blob": "9931cb03bc39b2062d266ea32beb836b55bd9882",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_runtime.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_runtime_coverage.py",
+      "source_git_blob": "0961c559a1b2c1431c48dd5d13ca0b2b93108fbf",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_runtime_coverage.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_runtime_explore.py",
+      "source_git_blob": "096f92d324ffa343493e27ffbd29b34bc1524785",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_runtime_explore.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_runtime_faults.py",
+      "source_git_blob": "5ba9481bc4bbba227c5c80fe1418d9a1a9ba80a8",
+      "disposition": "reworked-or-split",
+      "destinations": [
+        "tools/tests/test_runtime_scenario.py",
+        "tools/tests/test_runtime.py"
+      ],
+      "reason": "Tests require game-specific fault injection; generic failure/evidence/ownership boundaries retained separately."
+    },
+    {
+      "source": "tools/tests/test_runtime_overrides.py",
+      "source_git_blob": "d56799e1802b4586d0c6a955d0218c7c9045adf6",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_runtime_overrides.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_runtime_recordings.py",
+      "source_git_blob": "1cfab5fdc2e0ddb4423b11fc2a3d07d12551a076",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_runtime_recordings.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_runtime_recovery.py",
+      "source_git_blob": "531afdf5d12cb2faad05e74c87a3fc125780ea5c",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_runtime_recovery.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_runtime_reduce.py",
+      "source_git_blob": "1e17ec6e137cee0f8f0229953b67abd72b6cb314",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_runtime_reduce.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_runtime_scenario.py",
+      "source_git_blob": "3ec5c943ecfc972678a70b1638bbaabaf0a7a463",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_runtime_scenario.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_runtime_trace.py",
+      "source_git_blob": "57342bde351b07415176a61e0ed2b5a6ffc97fef",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_runtime_trace.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_runtime_visual.py",
+      "source_git_blob": "60d472dceefe5ff6832f5d7f91b9655180ea33f4",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_runtime_visual.py"
+      ],
+      "reason": "Neutral contracts/configuration or attributed reference; generated-consumer and selected integration evidence define coverage."
+    },
+    {
+      "source": "tools/tests/test_spine.py",
+      "source_git_blob": "631323698cd597f8365c23f7e1c97a1e23ab340d",
+      "disposition": "retained-or-generalized",
+      "destinations": [
+        "tools/tests/test_spine.py",
+        "tools/tests/test_spine_runtime.py",
+        "tools/optional-tests/test_atlas_rotation.py"
+      ],
+      "reason": "Generic cutout invariants retained; game-specific fixture replaced by metadata fixture tests; actual atlas reader optional."
+    },
+    {
+      "source": "tools/visual-matrices/bank.json",
+      "source_git_blob": "fb59ea71ec3c1d948100f06e083d56a015486fc0",
+      "disposition": "project-data-retained-in-game",
+      "destinations": [],
+      "reason": "Authored game recipes, examples, cases, captures or baselines are not universal defaults; starter uses original neutral equivalents."
+    }
+  ],
+  "tracked_source_file_count": 155,
+  "coverage_limits": [
+    "Core tests are separate from optional installed renderer/encoder/reader integrations.",
+    "Linux native execution is verified; macOS/Windows native ownership/capture and device builds are unverified.",
+    "Specific Bonasera fixtures remain in that game; representative integration uses project-owned configuration/adapters in a temporary copy."
+  ]
+}

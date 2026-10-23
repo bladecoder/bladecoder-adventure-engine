@@ -1,0 +1,4370 @@
+{
+  "actions": {
+    "ActorState": {
+      "class": "com.bladecoder.engine.actions.SetStateAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "SCENE_INTERACTIVE_ACTOR"
+        },
+        "state": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "AlphaAnim": {
+      "class": "com.bladecoder.engine.actions.AlphaAnimAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "alpha": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "count": {
+          "default_hint": null,
+          "initializer": "1",
+          "java_type": "int",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "NO_REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.NO_REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Animation": {
+      "class": "com.bladecoder.engine.actions.AnimationAction",
+      "fields": {
+        "animation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "ActorAnimationRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "count": {
+          "default_hint": "-1",
+          "initializer": "-1",
+          "java_type": "int",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "keepDirection": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "SPRITE_DEFINED",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.SPRITE_DEFINED",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Camera": {
+      "class": "com.bladecoder.engine.actions.CameraAction",
+      "fields": {
+        "duration": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "followActor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "pos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "wait": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "zoom": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "CancelVerb": {
+      "class": "com.bladecoder.engine.actions.CancelVerbAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "verb": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Choose": {
+      "class": "com.bladecoder.engine.actions.ChooseAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "chooseCriteria": {
+          "default_hint": "CYCLE",
+          "enum": [
+            "ITERATE",
+            "RANDOM",
+            "CYCLE"
+          ],
+          "initializer": "ChooseCriteria.CYCLE",
+          "java_type": "ChooseCriteria",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Comment": {
+      "class": "com.bladecoder.engine.actions.CommentAction",
+      "fields": {
+        "comment": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SMALL_TEXT"
+        },
+        "debug": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Cutmode": {
+      "class": "com.bladecoder.engine.actions.SetCutmodeAction",
+      "fields": {
+        "value": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "DisableAction": {
+      "class": "com.bladecoder.engine.actions.DisableActionAction",
+      "fields": {
+        "serializedAction": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "DropItem": {
+      "class": "com.bladecoder.engine.actions.DropItemAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "inventory": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "pos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": "null",
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SCENE"
+        }
+      }
+    },
+    "End": {
+      "class": "com.bladecoder.engine.actions.EndAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "EndGame": {
+      "class": "com.bladecoder.engine.actions.EndGameAction",
+      "fields": {}
+    },
+    "Goto": {
+      "class": "com.bladecoder.engine.actions.GotoAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "CHARACTER_ACTOR"
+        },
+        "ignoreWalkZone": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "pos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "wait": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "IfActorAttr": {
+      "class": "com.bladecoder.engine.actions.IfAttrAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "attr": {
+          "default_hint": "STATE",
+          "enum": [
+            "STATE",
+            "VISIBLE",
+            "INTERACTIVE",
+            "IN_INVENTORY",
+            "TARGET",
+            "IN_SCENE",
+            "LAYER",
+            "DIRECTION",
+            "IN_UI",
+            "INSIDE"
+          ],
+          "initializer": null,
+          "java_type": "ActorAttribute",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "IfInkVariable": {
+      "class": "com.bladecoder.engine.actions.IfInkVariableAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "name": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "IfProperty": {
+      "class": "com.bladecoder.engine.actions.IfPropertyAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "name": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "IfSceneAttr": {
+      "class": "com.bladecoder.engine.actions.IfSceneAttrAction",
+      "fields": {
+        "attr": {
+          "default_hint": "state",
+          "enum": [
+            "STATE",
+            "CURRENT_SCENE",
+            "PLAYER",
+            "IN_CUTMODE"
+          ],
+          "initializer": null,
+          "java_type": "SceneAttr",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SCENE"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "InkNewStory": {
+      "class": "com.bladecoder.engine.actions.InkNewStoryAction",
+      "fields": {
+        "storyName": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "InkRun": {
+      "class": "com.bladecoder.engine.actions.InkRunAction",
+      "fields": {
+        "flow": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "params": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "path": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "InkVariable": {
+      "class": "com.bladecoder.engine.actions.InkVariable",
+      "fields": {
+        "name": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Leave": {
+      "class": "com.bladecoder.engine.actions.LeaveAction",
+      "fields": {
+        "init": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "initVerb": {
+          "default_hint": null,
+          "initializer": "null",
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SCENE"
+        }
+      }
+    },
+    "LoadChapter": {
+      "class": "com.bladecoder.engine.actions.LoadChapterAction",
+      "fields": {
+        "chapter": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "CHAPTER"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "STRING"
+        }
+      }
+    },
+    "LookAt": {
+      "class": "com.bladecoder.engine.actions.LookAtAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "direction": {
+          "default_hint": null,
+          "enum": [
+            "FRONT",
+            "BACK",
+            "LEFT",
+            "RIGHT",
+            "FRONTLEFT",
+            "FRONTRIGHT",
+            "BACKLEFT",
+            "BACKRIGHT"
+          ],
+          "initializer": null,
+          "java_type": "Direction",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "text": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SMALL_TEXT"
+        },
+        "voiceId": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "VOICE"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "MoveToScene": {
+      "class": "com.bladecoder.engine.actions.MoveToSceneAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SCENE"
+        }
+      }
+    },
+    "Music": {
+      "class": "com.bladecoder.engine.actions.MusicAction",
+      "fields": {
+        "filename": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "initialDelay": {
+          "default_hint": "0",
+          "initializer": "0",
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "loop": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "repeatDelay": {
+          "default_hint": "-1",
+          "initializer": "-1",
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "stopWhenLeaving": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "volume": {
+          "default_hint": "1.0",
+          "initializer": "1.0f",
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "MusicVolume": {
+      "class": "com.bladecoder.engine.actions.MusicVolumeAction",
+      "fields": {
+        "duration": {
+          "default_hint": "0.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "volume": {
+          "default_hint": "1.0",
+          "initializer": "1.0f",
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "OpenURL": {
+      "class": "com.bladecoder.engine.actions.OpenURLAction",
+      "fields": {
+        "url": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "PickUp": {
+      "class": "com.bladecoder.engine.actions.PickUpAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "SCENE_SPRITE_ACTOR"
+        },
+        "animation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "inventory": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "PlaySound": {
+      "class": "com.bladecoder.engine.actions.PlaySoundAction",
+      "fields": {
+        "sound": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SOUND"
+        },
+        "stop": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Position": {
+      "class": "com.bladecoder.engine.actions.PositionAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "position": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "PositionAnim": {
+      "class": "com.bladecoder.engine.actions.PositionAnimAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "count": {
+          "default_hint": "-1",
+          "initializer": "-1",
+          "java_type": "int",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "mode": {
+          "default_hint": null,
+          "enum": [
+            "DURATION",
+            "SPEED"
+          ],
+          "initializer": null,
+          "java_type": "Mode",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "pos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "NO_REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.NO_REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Property": {
+      "class": "com.bladecoder.engine.actions.PropertyAction",
+      "fields": {
+        "prop": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "RandomPosition": {
+      "class": "com.bladecoder.engine.actions.RandomPositionAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "maxPosition": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "minPosition": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "RemoveInventoryItem": {
+      "class": "com.bladecoder.engine.actions.RemoveInventoryItemAction",
+      "fields": {
+        "id": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SCENE"
+        }
+      }
+    },
+    "Repeat": {
+      "class": "com.bladecoder.engine.actions.RepeatAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "1",
+          "initializer": "1",
+          "java_type": "int",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "RotateAnim": {
+      "class": "com.bladecoder.engine.actions.RotateAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "count": {
+          "default_hint": null,
+          "initializer": "1",
+          "java_type": "int",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "rotation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "RunOnce": {
+      "class": "com.bladecoder.engine.actions.RunOnceAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "RunVerb": {
+      "class": "com.bladecoder.engine.actions.RunVerbAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "INTERACTIVE_ACTOR"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "verb": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Say": {
+      "class": "com.bladecoder.engine.actions.SayAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "CHARACTER_ACTOR"
+        },
+        "animation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "queue": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "style": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "TEXT_STYLE"
+        },
+        "text": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SMALL_TEXT"
+        },
+        "type": {
+          "default_hint": "SUBTITLE",
+          "enum": [
+            "PLAIN",
+            "SUBTITLE",
+            "TALK",
+            "UI"
+          ],
+          "initializer": "Text.Type.SUBTITLE",
+          "java_type": "Text.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "voiceId": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "VOICE"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "SayDialog": {
+      "class": "com.bladecoder.engine.actions.SayDialogAction",
+      "fields": {
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "ScaleAnim": {
+      "class": "com.bladecoder.engine.actions.ScaleAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "count": {
+          "default_hint": null,
+          "initializer": "-1",
+          "java_type": "int",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "NO_REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.NO_REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "scale": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "ScaleAnimXY": {
+      "class": "com.bladecoder.engine.actions.ScaleAnimActionXY",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "count": {
+          "default_hint": null,
+          "initializer": "1",
+          "java_type": "int",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "scale": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "SceneState": {
+      "class": "com.bladecoder.engine.actions.SetSceneStateAction",
+      "fields": {
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SCENE"
+        },
+        "state": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "ScreenPosition": {
+      "class": "com.bladecoder.engine.actions.ScreenPositionAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "anchor": {
+          "default_hint": "NONE",
+          "enum": [
+            "NONE",
+            "CENTER",
+            "TOP_LEFT",
+            "TOP_RIGHT",
+            "BOTTOM_LEFT",
+            "BOTTOM_RIGHT",
+            "TOP",
+            "BOTTOM",
+            "LEFT",
+            "RIGHT"
+          ],
+          "initializer": "Anchor.NONE",
+          "java_type": "Anchor",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "position": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "SetAchievement": {
+      "class": "com.bladecoder.engine.actions.SetAchievementAction",
+      "fields": {
+        "name": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "SetActorAttr": {
+      "class": "com.bladecoder.engine.actions.SetActorAttrAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "fakeDepth": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interaction": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "layer": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "LAYER"
+        },
+        "rotation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "scale": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "scaleXY": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "standAnimation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "talkAnimation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "talkingTextPos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "tint": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Color",
+          "required_hint": false,
+          "semantic_type": "COLOR"
+        },
+        "uiActor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "visible": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "walkAnimation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "walkingSpeed": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "zIndex": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "SetDesc": {
+      "class": "com.bladecoder.engine.actions.SetDescAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "SCENE_INTERACTIVE_ACTOR"
+        },
+        "text": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "SetDialogOptionAttr": {
+      "class": "com.bladecoder.engine.actions.SetDialogOptionAttrAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "SCENE_CHARACTER_ACTOR"
+        },
+        "dialog": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "option": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "int",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "visible": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "SetPlayer": {
+      "class": "com.bladecoder.engine.actions.SetPlayerAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": false,
+          "semantic_type": "SCENE_CHARACTER_ACTOR"
+        },
+        "inventory": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "SetWalkzone": {
+      "class": "com.bladecoder.engine.actions.SetWalkzoneAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": false,
+          "semantic_type": "SCENE_WALKZONE_ACTOR"
+        }
+      }
+    },
+    "ShowInventory": {
+      "class": "com.bladecoder.engine.actions.ShowInventoryAction",
+      "fields": {
+        "value": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Sound": {
+      "class": "com.bladecoder.engine.actions.SoundAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "INTERACTIVE_ACTOR"
+        },
+        "play": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "STRING"
+        }
+      }
+    },
+    "Talkto": {
+      "class": "com.bladecoder.engine.actions.TalktoAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "CHARACTER_ACTOR"
+        },
+        "dialog": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Text": {
+      "class": "com.bladecoder.engine.actions.TextAction",
+      "fields": {
+        "color": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Color",
+          "required_hint": false,
+          "semantic_type": "COLOR"
+        },
+        "pos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "queue": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "style": {
+          "default_hint": "default",
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "TEXT_STYLE"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "text": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SMALL_TEXT"
+        },
+        "type": {
+          "default_hint": "SUBTITLE",
+          "enum": [
+            "PLAIN",
+            "SUBTITLE",
+            "TALK",
+            "UI"
+          ],
+          "initializer": "Text.Type.PLAIN",
+          "java_type": "Text.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "voiceId": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "VOICE"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "TintAnim": {
+      "class": "com.bladecoder.engine.actions.TintAnimAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "color": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Color",
+          "required_hint": true,
+          "semantic_type": "COLOR"
+        },
+        "count": {
+          "default_hint": null,
+          "initializer": "1",
+          "java_type": "int",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "NO_REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.NO_REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Transition": {
+      "class": "com.bladecoder.engine.actions.TransitionAction",
+      "fields": {
+        "color": {
+          "default_hint": "black",
+          "initializer": "new Color(0,0,0,1)",
+          "java_type": "Color",
+          "required_hint": true,
+          "semantic_type": "COLOR"
+        },
+        "time": {
+          "default_hint": "1.0",
+          "initializer": "1",
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "type": {
+          "default_hint": "FADE_IN",
+          "enum": [
+            "NONE",
+            "FADE_IN",
+            "FADE_OUT"
+          ],
+          "initializer": "Transition.Type.FADE_IN",
+          "java_type": "Transition.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "Wait": {
+      "class": "com.bladecoder.engine.actions.WaitAction",
+      "fields": {
+        "time": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.AddValueToProperty": {
+      "class": "com.bladecoder.engine.actions.AddValueToProperty",
+      "fields": {
+        "prop": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "int",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.AlphaAnimAction": {
+      "class": "com.bladecoder.engine.actions.AlphaAnimAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "alpha": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "count": {
+          "default_hint": null,
+          "initializer": "1",
+          "java_type": "int",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "NO_REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.NO_REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.AnimationAction": {
+      "class": "com.bladecoder.engine.actions.AnimationAction",
+      "fields": {
+        "animation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "ActorAnimationRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "count": {
+          "default_hint": "-1",
+          "initializer": "-1",
+          "java_type": "int",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "keepDirection": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "SPRITE_DEFINED",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.SPRITE_DEFINED",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.CameraAction": {
+      "class": "com.bladecoder.engine.actions.CameraAction",
+      "fields": {
+        "duration": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "followActor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "pos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "wait": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "zoom": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.CancelVerbAction": {
+      "class": "com.bladecoder.engine.actions.CancelVerbAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "verb": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.ChooseAction": {
+      "class": "com.bladecoder.engine.actions.ChooseAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "chooseCriteria": {
+          "default_hint": "CYCLE",
+          "enum": [
+            "ITERATE",
+            "RANDOM",
+            "CYCLE"
+          ],
+          "initializer": "ChooseCriteria.CYCLE",
+          "java_type": "ChooseCriteria",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.CommentAction": {
+      "class": "com.bladecoder.engine.actions.CommentAction",
+      "fields": {
+        "comment": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SMALL_TEXT"
+        },
+        "debug": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.DisableActionAction": {
+      "class": "com.bladecoder.engine.actions.DisableActionAction",
+      "fields": {
+        "serializedAction": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.DropItemAction": {
+      "class": "com.bladecoder.engine.actions.DropItemAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "inventory": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "pos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": "null",
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SCENE"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.EndAction": {
+      "class": "com.bladecoder.engine.actions.EndAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.EndGameAction": {
+      "class": "com.bladecoder.engine.actions.EndGameAction",
+      "fields": {}
+    },
+    "com.bladecoder.engine.actions.GotoAction": {
+      "class": "com.bladecoder.engine.actions.GotoAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "CHARACTER_ACTOR"
+        },
+        "ignoreWalkZone": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "pos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "wait": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.IfAttrAction": {
+      "class": "com.bladecoder.engine.actions.IfAttrAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "attr": {
+          "default_hint": "STATE",
+          "enum": [
+            "STATE",
+            "VISIBLE",
+            "INTERACTIVE",
+            "IN_INVENTORY",
+            "TARGET",
+            "IN_SCENE",
+            "LAYER",
+            "DIRECTION",
+            "IN_UI",
+            "INSIDE"
+          ],
+          "initializer": null,
+          "java_type": "ActorAttribute",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.IfInkVariableAction": {
+      "class": "com.bladecoder.engine.actions.IfInkVariableAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "name": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.IfPropertyAction": {
+      "class": "com.bladecoder.engine.actions.IfPropertyAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "name": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.IfSceneAttrAction": {
+      "class": "com.bladecoder.engine.actions.IfSceneAttrAction",
+      "fields": {
+        "attr": {
+          "default_hint": "state",
+          "enum": [
+            "STATE",
+            "CURRENT_SCENE",
+            "PLAYER",
+            "IN_CUTMODE"
+          ],
+          "initializer": null,
+          "java_type": "SceneAttr",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SCENE"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.InkCancelAction": {
+      "class": "com.bladecoder.engine.actions.InkCancelAction",
+      "fields": {
+        "flow": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.InkNewStoryAction": {
+      "class": "com.bladecoder.engine.actions.InkNewStoryAction",
+      "fields": {
+        "storyName": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.InkRunAction": {
+      "class": "com.bladecoder.engine.actions.InkRunAction",
+      "fields": {
+        "flow": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "params": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "path": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.InkVariable": {
+      "class": "com.bladecoder.engine.actions.InkVariable",
+      "fields": {
+        "name": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.LeaveAction": {
+      "class": "com.bladecoder.engine.actions.LeaveAction",
+      "fields": {
+        "init": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "initVerb": {
+          "default_hint": null,
+          "initializer": "null",
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SCENE"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.LoadChapterAction": {
+      "class": "com.bladecoder.engine.actions.LoadChapterAction",
+      "fields": {
+        "chapter": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "CHAPTER"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "STRING"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.LookAtAction": {
+      "class": "com.bladecoder.engine.actions.LookAtAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "direction": {
+          "default_hint": null,
+          "enum": [
+            "FRONT",
+            "BACK",
+            "LEFT",
+            "RIGHT",
+            "FRONTLEFT",
+            "FRONTRIGHT",
+            "BACKLEFT",
+            "BACKRIGHT"
+          ],
+          "initializer": null,
+          "java_type": "Direction",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "text": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SMALL_TEXT"
+        },
+        "voiceId": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "VOICE"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.MoveToSceneAction": {
+      "class": "com.bladecoder.engine.actions.MoveToSceneAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SCENE"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.MusicAction": {
+      "class": "com.bladecoder.engine.actions.MusicAction",
+      "fields": {
+        "filename": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "initialDelay": {
+          "default_hint": "0",
+          "initializer": "0",
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "loop": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "repeatDelay": {
+          "default_hint": "-1",
+          "initializer": "-1",
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "stopWhenLeaving": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "volume": {
+          "default_hint": "1.0",
+          "initializer": "1.0f",
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.MusicVolumeAction": {
+      "class": "com.bladecoder.engine.actions.MusicVolumeAction",
+      "fields": {
+        "duration": {
+          "default_hint": "0.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "volume": {
+          "default_hint": "1.0",
+          "initializer": "1.0f",
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.OpenURLAction": {
+      "class": "com.bladecoder.engine.actions.OpenURLAction",
+      "fields": {
+        "url": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.PickUpAction": {
+      "class": "com.bladecoder.engine.actions.PickUpAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "SCENE_SPRITE_ACTOR"
+        },
+        "animation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "inventory": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.PlaySoundAction": {
+      "class": "com.bladecoder.engine.actions.PlaySoundAction",
+      "fields": {
+        "sound": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SOUND"
+        },
+        "stop": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.PositionAction": {
+      "class": "com.bladecoder.engine.actions.PositionAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "position": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.PositionAnimAction": {
+      "class": "com.bladecoder.engine.actions.PositionAnimAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "count": {
+          "default_hint": "-1",
+          "initializer": "-1",
+          "java_type": "int",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "mode": {
+          "default_hint": null,
+          "enum": [
+            "DURATION",
+            "SPEED"
+          ],
+          "initializer": null,
+          "java_type": "Mode",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "pos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "NO_REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.NO_REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.PropertyAction": {
+      "class": "com.bladecoder.engine.actions.PropertyAction",
+      "fields": {
+        "prop": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "value": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.RandomPositionAction": {
+      "class": "com.bladecoder.engine.actions.RandomPositionAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "maxPosition": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "minPosition": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.RemoveInventoryItemAction": {
+      "class": "com.bladecoder.engine.actions.RemoveInventoryItemAction",
+      "fields": {
+        "id": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "ACTOR"
+        },
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SCENE"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.RepeatAction": {
+      "class": "com.bladecoder.engine.actions.RepeatAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "1",
+          "initializer": "1",
+          "java_type": "int",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.RotateAction": {
+      "class": "com.bladecoder.engine.actions.RotateAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "count": {
+          "default_hint": null,
+          "initializer": "1",
+          "java_type": "int",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "rotation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.RunOnceAction": {
+      "class": "com.bladecoder.engine.actions.RunOnceAction",
+      "fields": {
+        "caID": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.RunVerbAction": {
+      "class": "com.bladecoder.engine.actions.RunVerbAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "INTERACTIVE_ACTOR"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "verb": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SayAction": {
+      "class": "com.bladecoder.engine.actions.SayAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "CHARACTER_ACTOR"
+        },
+        "animation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "queue": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "style": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "TEXT_STYLE"
+        },
+        "text": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SMALL_TEXT"
+        },
+        "type": {
+          "default_hint": "SUBTITLE",
+          "enum": [
+            "PLAIN",
+            "SUBTITLE",
+            "TALK",
+            "UI"
+          ],
+          "initializer": "Text.Type.SUBTITLE",
+          "java_type": "Text.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "voiceId": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "VOICE"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SayDialogAction": {
+      "class": "com.bladecoder.engine.actions.SayDialogAction",
+      "fields": {
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.ScaleAction": {
+      "class": "com.bladecoder.engine.actions.ScaleAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "count": {
+          "default_hint": null,
+          "initializer": "-1",
+          "java_type": "int",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "NO_REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.NO_REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "scale": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.ScaleAnimActionXY": {
+      "class": "com.bladecoder.engine.actions.ScaleAnimActionXY",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "count": {
+          "default_hint": null,
+          "initializer": "1",
+          "java_type": "int",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "scale": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.ScreenPositionAction": {
+      "class": "com.bladecoder.engine.actions.ScreenPositionAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "anchor": {
+          "default_hint": "NONE",
+          "enum": [
+            "NONE",
+            "CENTER",
+            "TOP_LEFT",
+            "TOP_RIGHT",
+            "BOTTOM_LEFT",
+            "BOTTOM_RIGHT",
+            "TOP",
+            "BOTTOM",
+            "LEFT",
+            "RIGHT"
+          ],
+          "initializer": "Anchor.NONE",
+          "java_type": "Anchor",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "position": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SetAchievementAction": {
+      "class": "com.bladecoder.engine.actions.SetAchievementAction",
+      "fields": {
+        "name": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SetActorAttrAction": {
+      "class": "com.bladecoder.engine.actions.SetActorAttrAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "fakeDepth": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interaction": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "layer": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "LAYER"
+        },
+        "rotation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "scale": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "scaleXY": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "standAnimation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "talkAnimation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "talkingTextPos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "tint": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Color",
+          "required_hint": false,
+          "semantic_type": "COLOR"
+        },
+        "uiActor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "visible": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "walkAnimation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "walkingSpeed": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "zIndex": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Float",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SetCutmodeAction": {
+      "class": "com.bladecoder.engine.actions.SetCutmodeAction",
+      "fields": {
+        "value": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SetDescAction": {
+      "class": "com.bladecoder.engine.actions.SetDescAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "SCENE_INTERACTIVE_ACTOR"
+        },
+        "text": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SetDialogOptionAttrAction": {
+      "class": "com.bladecoder.engine.actions.SetDialogOptionAttrAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "SCENE_CHARACTER_ACTOR"
+        },
+        "dialog": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "option": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "int",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "visible": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SetPlayerAction": {
+      "class": "com.bladecoder.engine.actions.SetPlayerAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": false,
+          "semantic_type": "SCENE_CHARACTER_ACTOR"
+        },
+        "inventory": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SetSceneStateAction": {
+      "class": "com.bladecoder.engine.actions.SetSceneStateAction",
+      "fields": {
+        "scene": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SCENE"
+        },
+        "state": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SetStateAction": {
+      "class": "com.bladecoder.engine.actions.SetStateAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "SCENE_INTERACTIVE_ACTOR"
+        },
+        "state": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SetWalkzoneAction": {
+      "class": "com.bladecoder.engine.actions.SetWalkzoneAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": false,
+          "semantic_type": "SCENE_WALKZONE_ACTOR"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.ShowInventoryAction": {
+      "class": "com.bladecoder.engine.actions.ShowInventoryAction",
+      "fields": {
+        "value": {
+          "default_hint": "true",
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SoundAction": {
+      "class": "com.bladecoder.engine.actions.SoundAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "INTERACTIVE_ACTOR"
+        },
+        "play": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "STRING"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SpineSecondaryAnimationAction": {
+      "class": "com.bladecoder.engine.actions.SpineSecondaryAnimationAction",
+      "fields": {
+        "animation": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "ActorAnimationRef",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.SpineSkinAction": {
+      "class": "com.bladecoder.engine.actions.SpineSkinAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "skin": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.TalktoAction": {
+      "class": "com.bladecoder.engine.actions.TalktoAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "CHARACTER_ACTOR"
+        },
+        "dialog": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.TextAction": {
+      "class": "com.bladecoder.engine.actions.TextAction",
+      "fields": {
+        "color": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Color",
+          "required_hint": false,
+          "semantic_type": "COLOR"
+        },
+        "pos": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Vector2",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "queue": {
+          "default_hint": "false",
+          "initializer": "false",
+          "java_type": "boolean",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "style": {
+          "default_hint": "default",
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "TEXT_STYLE"
+        },
+        "target": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "SceneActorRef",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "text": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "SMALL_TEXT"
+        },
+        "type": {
+          "default_hint": "SUBTITLE",
+          "enum": [
+            "PLAIN",
+            "SUBTITLE",
+            "TALK",
+            "UI"
+          ],
+          "initializer": "Text.Type.PLAIN",
+          "java_type": "Text.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "voiceId": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": false,
+          "semantic_type": "VOICE"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.TintAnimAction": {
+      "class": "com.bladecoder.engine.actions.TintAnimAction",
+      "fields": {
+        "actor": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "String",
+          "required_hint": true,
+          "semantic_type": "SPRITE_ACTOR"
+        },
+        "color": {
+          "default_hint": null,
+          "initializer": null,
+          "java_type": "Color",
+          "required_hint": true,
+          "semantic_type": "COLOR"
+        },
+        "count": {
+          "default_hint": null,
+          "initializer": "1",
+          "java_type": "int",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "interpolation": {
+          "default_hint": null,
+          "enum": [
+            "LINEAR",
+            "FADE",
+            "POW2",
+            "POW2IN",
+            "POW2OUT",
+            "POW2ININVERSE",
+            "POW2OUTINVERSE",
+            "POW3",
+            "POW3IN",
+            "POW3OUT",
+            "POW3ININVERSE",
+            "POW3OUTINVERSE",
+            "POW4",
+            "POW4IN",
+            "POW4OUT",
+            "POW5",
+            "POW5IN",
+            "POW5OUT",
+            "SINE",
+            "SINEIN",
+            "SINEOUT",
+            "EXP10",
+            "EXP10EIN",
+            "EXP10OUT",
+            "CIRCLE",
+            "CIRCLEIN",
+            "CIRCLEOUT",
+            "ELASTIC",
+            "ELASTICIN",
+            "ELASTICOUT",
+            "SWING",
+            "SWINGIN",
+            "SWINGOUT",
+            "BOUNCE",
+            "BOUNCEIN",
+            "BOUNCEOUT"
+          ],
+          "initializer": null,
+          "java_type": "InterpolationMode",
+          "required_hint": false,
+          "semantic_type": "NOT_SET"
+        },
+        "repeat": {
+          "default_hint": "NO_REPEAT",
+          "enum": [
+            "NO_REPEAT",
+            "REPEAT",
+            "YOYO",
+            "REVERSE",
+            "REVERSE_REPEAT",
+            "SPRITE_DEFINED"
+          ],
+          "initializer": "Tween.Type.NO_REPEAT",
+          "java_type": "Tween.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "speed": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.TransitionAction": {
+      "class": "com.bladecoder.engine.actions.TransitionAction",
+      "fields": {
+        "color": {
+          "default_hint": "black",
+          "initializer": "new Color(0,0,0,1)",
+          "java_type": "Color",
+          "required_hint": true,
+          "semantic_type": "COLOR"
+        },
+        "time": {
+          "default_hint": "1.0",
+          "initializer": "1",
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "type": {
+          "default_hint": "FADE_IN",
+          "enum": [
+            "NONE",
+            "FADE_IN",
+            "FADE_OUT"
+          ],
+          "initializer": "Transition.Type.FADE_IN",
+          "java_type": "Transition.Type",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        },
+        "wait": {
+          "default_hint": null,
+          "initializer": "true",
+          "java_type": "boolean",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    },
+    "com.bladecoder.engine.actions.WaitAction": {
+      "class": "com.bladecoder.engine.actions.WaitAction",
+      "fields": {
+        "time": {
+          "default_hint": "1.0",
+          "initializer": null,
+          "java_type": "float",
+          "required_hint": true,
+          "semantic_type": "NOT_SET"
+        }
+      }
+    }
+  },
+  "engine_revision": "b9f10d86799b3d8985c4c245eaeaaf1be3ad6799",
+  "engine_version": "4.5.0-SNAPSHOT",
+  "notes": "required_hint is editor metadata, not a runtime presence rule; primitive initializers remain valid when omitted.",
+  "schema_version": 1,
+  "source_sha256": {
+    "engine/blade-engine-spine-plugin/src/main/java/com/bladecoder/engine/actions/SpineSecondaryAnimationAction.java": "7a6c1739f4271ee930d18c8f191388716fa78bb5948784c021f4ced70632020d",
+    "engine/blade-engine-spine-plugin/src/main/java/com/bladecoder/engine/actions/SpineSkinAction.java": "ab70f4344942b364dd67b5729e057cd8aef8b25902e96ef6a77374e1648b6b95",
+    "engine/blade-engine-spine-plugin/src/main/java/com/bladecoder/engine/spine/SkeletonDataLoader.java": "b284c81944d8648a5d483a927cdf48980dbbf026eeb12411438692a50a0965f1",
+    "engine/blade-engine-spine-plugin/src/main/java/com/bladecoder/engine/spine/SpineRenderer.java": "1720a01ac0994345890365f0e3b2696931a43c423011d5ddcc2e1ad5a24cd0ce",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/AbstractControlAction.java": "9e555ade63c8ec125086881b027471e12e2cbd2a9cb82baeb8cdc5521f42b5a0",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/ActionFactory.java": "46391c267256f83b63b76342a3f6f4612e2a490a5fd20c613f3c6219a96efd51",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/ActorAnimationRef.java": "e58db254fc90fe7aac8efb7c0ebf1f66cc200f4e114fc2dd489a46932111ae9f",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/AddValueToProperty.java": "21b5c24b3b56ae2ea131281a2cb6da29b1e2cf273fe701e29a40adfd5d0f5b3e",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/AlphaAnimAction.java": "bdf833b5d7fce2a354f6bfdf58a7241f421314729fb7d44a2bbc8a94d476f86e",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/AnimationAction.java": "a787ea6cf5c281003db466f19bc427ffedd391ab8139c061bcb02a175f8277d8",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/BaseCallbackAction.java": "010c99e3e576217133ed287713ddea1deeeca08f9ed8a15286e0565cb03da0f1",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/CameraAction.java": "c907abde95e09987a24b88ec36b95b306167e0fb8ce4357bb8bb862121247297",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/CancelVerbAction.java": "d546be3eaf9aa48a0b1b8eba95dbaf000eea4e02daa4510aad047a0f0a42ef70",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/ChooseAction.java": "3e1de6ab36f1d5f0e5c240187c145d849b4591a048b13a78faebbfd90cfc201c",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/CommentAction.java": "09c6c466b7f5f603b2a268724072d4a6362d41bdb7f1f31ae6839dc7cc3864b7",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/DisableActionAction.java": "1e11f9dc1eea2e00ca87a602997e4b5cb4ea885108f8e04804d8007a78290f4e",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/DropItemAction.java": "9389e6616c6d17a2e45226ace963a8c8732f7a945ac0ece0d02afcf5de83102d",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/EndAction.java": "d7442092cf98a64f59e6ac8bcf737645347c2f55ca861753a5e906dd22fc2c0e",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/EndGameAction.java": "fdc516780f9228457a6b050c808b1722e22ba65f83499e40b0428549cac9d022",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/GotoAction.java": "e733a2966d605e8eab4ccec45ff0cd1d31614d149d179b27df1142b39cf681e4",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/IfAttrAction.java": "3277934a83f65f687d224b64519278ef080593a88a27f9eeba493b7b9f938c87",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/IfInkVariableAction.java": "472448ed61ad9f2650593ba92ec94a03dcd569fbbf18a4ef40a8e3d68d2f3ade",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/IfPropertyAction.java": "7cc1d62c8733a5355ef52ad910525514f52dafda9e95a72ab6ae472df2b34655",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/IfSceneAttrAction.java": "e9d2b7a2a63a5f942f2d7a447f7c9ab57260e294c1d9891fcfb064827c24cfc2",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/InkCancelAction.java": "dd2c0c81a69954360ebc68240b62bb3e8e4a70dd0952f4763f2c6b7f6385f919",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/InkNewStoryAction.java": "f92b197e70bd55ffbaa0e9497fae00a553c1f8d6f49e64d581a987fbdf1756b9",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/InkRunAction.java": "a670d7e454b41ddf49971bb22b5f4c3a1aa20714cd14128d33efdc094bcbe16b",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/InkVariable.java": "7562ea858b195f052229fd92881dfd25dbe0c62f79ec6e0e3f9061c0a8eaff73",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/LeaveAction.java": "53bdcf40ebf0499e8bbed2bbb9dbca03220cc5312282d76fc319350bb9e34192",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/LoadChapterAction.java": "11658de86c3fa8c11e22bf931d6ece8e44e5a8cbcaeef78fb9f2543698dc07ba",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/LookAtAction.java": "92d48b55a02570bb1fa183da9adc0d18d8b21ce2a9c8b082bfccc983bf67b9b6",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/MoveToSceneAction.java": "831d2a1cd188ff4af845382e6101dd052e98e1e9885ffb8ac5c6af2705fe851c",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/MusicAction.java": "b199bd523a9b33758a6d3a6207e30bf2e50d33574f9d53b7e9bc33c10b1b1403",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/MusicVolumeAction.java": "2ba6b9da1b229387acf7112721dd53f653342d5813b1e76b87ac8b6e431b4d3d",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/OpenURLAction.java": "387e2490d2ddea8c2f178efbda49d07e3e1a35c60740a966b07992f34a062ba4",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/Param.java": "1953a6edbe40e61577cb4a10dcaf1a3569dfe42f47f1880a5cc4ae6b5eb50959",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/PickUpAction.java": "56a01f8d024ba5b5f3cb061b8f9377499f870999fbecc81e064510acf75efcbf",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/PlaySoundAction.java": "1bf06cea57f6c28805c7f4209ff57a04d71a56bbe24c02dfb7fd8ef422d6c726",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/PositionAction.java": "76ee49b0a5a57b8665ecffa811502873bc8afbc80693beab67840ec322a992c0",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/PositionAnimAction.java": "dde0725bdf5487628814af50cc8199497dd868160f7feccd2aa7b2efbaa50ffc",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/PropertyAction.java": "0f7746d18d38a6d9dfd1f79a7a51109fec6920dead1b16a87c68c18d4d34cc12",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/RandomPositionAction.java": "42e8bfd08ba7232377845808dc2a53bb7b18d8100345ff11e368b0971a0828ce",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/RemoveInventoryItemAction.java": "d750c1add5a9a0bc9a593019e029325f093f3d40c9e8876f05f995b087956174",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/RepeatAction.java": "ae310b929ccbcf1691cac0d30dcf8e73785bffdbf50b0ea0509ed0fece87a6d3",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/RotateAction.java": "ac9fb4417677c61e3f6639abeccd03b755aa2fc57022b92462f79866cabcec68",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/RunOnceAction.java": "d853da18f1a383a131b64638359e60d4cc5cbb42cc03278b709e9a70e612ca84",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/RunVerbAction.java": "5b2fe921344feb952d232a5ec7b4b05659fa6a9cdb925219c32fa32b26c3aa34",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SayAction.java": "12a3618cb46aac41041e8769b7ab5f2c30872f0a12187b359b92f6b8b573a310",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SayDialogAction.java": "3e40d8f42e151e67359a1beae010935ecf5e70f24ad3bad3b68dd45a758e8da5",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/ScaleAction.java": "a6803ad9aa16dc40825c0629cedd26551802b3641d10d701cbd1662b7b0431a9",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/ScaleAnimActionXY.java": "6880bad35805898190aeddf75ce4b87f09a44c2cf7a56de3c763fce088f60de1",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SceneActorRef.java": "c30db16f893342f6fcc21588c6310184837f6b265a9fed4ae464e9fc6257b85a",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/ScreenPositionAction.java": "bf9d345477d055312a6d5844087b9205dad7ccfcfa8c2d398158afa3c39a740c",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SetAchievementAction.java": "25e5c146c49df99fa1913181290f7b1c4a6469cd509230d8d62179e36e9ad683",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SetActorAttrAction.java": "19749bf0591bc901576449fe5836696fa8f71cef16025c03313cc560204660c8",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SetCutmodeAction.java": "73577dd0ac1349d4a89b2ecaa242175598fa410bc732b83c7b3ce67db406a03e",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SetDescAction.java": "8c58b1bd5d9025a3f2c4227ec22ac0aa678b134932680bb0707b890819bc197a",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SetDialogOptionAttrAction.java": "30ab341360c34f1f05df2b7a118f1946cedc8d9d2298842e98866f1cd28dcea1",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SetPlayerAction.java": "b6d20c6140e0329edd1b5e346b39f92ca6656e6acb6628150cd0533aadba2c52",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SetSceneStateAction.java": "d4f16bdfdd2750cd58447fe88f4b84930742b616401b38821c5fc7f567e90346",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SetStateAction.java": "3a916c36c1e4bfd1b481660887113772628de69a6b416c0cb0df147f0e5c3ebe",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SetWalkzoneAction.java": "feff5e771106f50942b2d3d75400c377287446db7db582ecacd40f8700355f95",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/ShowInventoryAction.java": "a53f17b99a59649e40d441155ba405024fed2ff8b78e0b5d3a91b40a65070d11",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/SoundAction.java": "ea75aafd34e3cbdd602bc9f547065c1e3696241d868d6aa017b2f37a0905fb1d",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/TalktoAction.java": "343755be9467aad57ef46eba3b98258ead661d514c2957a6fb00c7586cbe0222",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/TextAction.java": "2ad43608c2116a7c38c822bc1f0fd3a437e9d6a4fc51496ea603e6f7ed8d77ff",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/TintAnimAction.java": "0f0421aedf840e23d7ff82efaf8a2a0e43e81f72eb5625e012269d98589b5430",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/TransitionAction.java": "76934c50fe3ea021d9f5ce68aad4ba1140534719e8fb25716fe492d78a2ee60c",
+    "engine/blade-engine/src/com/bladecoder/engine/actions/WaitAction.java": "608f12acfa4c27e847ef36df36e450bd444427c83c17dc9664e8e7a33ba45528",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/AnimationDesc.java": "8eab2f711977a448326a84ca72661e10e611672bbf21229541b44392a34073df",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/AtlasAnimationDesc.java": "f14d481f127993fafb90bbf6a691d0eab122f63072d753d12857fdea404e08df",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/CameraTween.java": "982f09ca7210c127594fcc2b1213de0638619cd1c2d88ef66c0bb993ac83087b",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/FATween.java": "b470d2bd14d99c174a56bbb5356a635a00e887a9ee07c3b6be3ca33f0ae7f30c",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/MusicVolumeTween.java": "2d2571028599c04f12209367e023fb17d77fcf30f2dc800dc741daa0f31f5c57",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/SpineAnimationDesc.java": "18440c85e18cb0c5cd6c0b37021c2056f3db7a448c1d01e1470a41febc442e19",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/SpriteAlphaTween.java": "f789f6871bfb65587d929f647a9dddaadb9d3c580200d47ee7db25d61cbca00a",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/SpritePosTween.java": "dbec1862d4e9a26423019e57e538eeaa6f00adea6a7173c868bba44bb66dbe1a",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/SpriteRotateTween.java": "a455e18684bd6695978acf63bfbc9fb5928a5df6e63baacb3c6fe52f0592e415",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/SpriteScaleTween.java": "38665326db6db1634a5e12d0f3b614df92cd51dd2fa1cb63cdb272eb57906089",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/SpriteTintTween.java": "489a2dc2cf804d9976fdf14f18b4539fa747ba4641308c59bd01977510cc9c3c",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/Timers.java": "064c95773c1a6dcf81532a4a2ae4994cf6a6d0e45d5440b71dcf3039503be799",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/Tween.java": "b1847d336cc8be59bcfe98ba7fb93de7f2c90ccc7c7381ae2b933ee5dd8feb6c",
+    "engine/blade-engine/src/com/bladecoder/engine/anim/WalkTween.java": "8f3256e8bccfab2df174659588097ec849ff10d62f1a2f6dd1741f4245e4d28b",
+    "engine/blade-engine/src/com/bladecoder/engine/ink/ExternalFunctions.java": "655d0edd6f29cc45be394c1a597e691167e686ae55936e195fa9f19e06adc62e",
+    "engine/blade-engine/src/com/bladecoder/engine/ink/InkManager.java": "d970144191722c08f6175206740d292aa7b407a10cf1280d6cc4ec470b821988",
+    "engine/blade-engine/src/com/bladecoder/engine/ink/InkVerbRunner.java": "05cb1ec5bc66b4d672eec80318b21b3a42a2612d81c1ddf28abbc101a2fd6c86",
+    "engine/blade-engine/src/com/bladecoder/engine/model/ActorRenderer.java": "375469471a27e1226ed24288db79b1d22a742e23e4fad3ed2bbce7564890a69a",
+    "engine/blade-engine/src/com/bladecoder/engine/model/AnchorActor.java": "67a8694b32ff15573f6714b07c120d0dffe5f0192421aa18228311b6b7d91bc5",
+    "engine/blade-engine/src/com/bladecoder/engine/model/AnimationRenderer.java": "797c468325312106eedfe5393e35a03bc4fc7703378c8a4bbb5ca0008a32e57a",
+    "engine/blade-engine/src/com/bladecoder/engine/model/AtlasRenderer.java": "795790a41332c02a14d7416e8042918b32bf2a461c4f25f40217f8e84cb8404e",
+    "engine/blade-engine/src/com/bladecoder/engine/model/BaseActor.java": "35d924be1ceb9e5867afdff4fe14ffeb8f8c781eb7edd0de69008881bc656efa",
+    "engine/blade-engine/src/com/bladecoder/engine/model/CharacterActor.java": "1a9f4e08763dc27ab73a1a66739645f72b1b9156d825d505a6c2ed41f4692fce",
+    "engine/blade-engine/src/com/bladecoder/engine/model/Dialog.java": "0615f16f15c9fb81039210c1c6a79613bb88e481be7389f60b9ce384f84d4aa7",
+    "engine/blade-engine/src/com/bladecoder/engine/model/DialogOption.java": "dd2546591c7987c957f4b6e6b472e29db411f3f65307b97948d311c9f4a6f58e",
+    "engine/blade-engine/src/com/bladecoder/engine/model/DirtyProps.java": "d02439b0945519b1468230181b79bb65e77755c8bb32532daef6f176d0eac88c",
+    "engine/blade-engine/src/com/bladecoder/engine/model/ImageRenderer.java": "74e1c80a0bdbb2bf105f9d04aee308e7da110e9a01a6ebcb8d9fa46a80c8ed93",
+    "engine/blade-engine/src/com/bladecoder/engine/model/InteractiveActor.java": "a866219998e37dbd197b64caf454a86728a4c891b1a4d90f06e2ea82b3ba9fe7",
+    "engine/blade-engine/src/com/bladecoder/engine/model/Inventory.java": "9e14edb1b7367552a1b2578126a5d5fb635191acb7d4b7092f87fa5afe179ba7",
+    "engine/blade-engine/src/com/bladecoder/engine/model/MusicDesc.java": "064cdd832f8b5b74f6cea6a0cd788ce0f99f26871898aa22c3a3af91f9dbcc34",
+    "engine/blade-engine/src/com/bladecoder/engine/model/MusicManager.java": "349bba713bb3d0363556d49b78547fcfc136e57e174790aadc2f13910a3c4079",
+    "engine/blade-engine/src/com/bladecoder/engine/model/ObstacleActor.java": "b35dcc1bbdde2722e07aceaa22e35adced6130caa9303477e75caa6645a555ba",
+    "engine/blade-engine/src/com/bladecoder/engine/model/ParticleRenderer.java": "30924e98771afcf27b2c385f4e8c0d159cd267d6283e6650a1eaee9fb889d234",
+    "engine/blade-engine/src/com/bladecoder/engine/model/Scene.java": "ae49fe26dbf51d405c0d2adb2733a14df71318c5b37c38e58fd05172350f1056",
+    "engine/blade-engine/src/com/bladecoder/engine/model/SceneCamera.java": "3db1ee631dc01ff18569f11e7a07b2859b35ba2ce531690e10be67e2c274fb91",
+    "engine/blade-engine/src/com/bladecoder/engine/model/SceneLayer.java": "196eaa4b2803a6ad155ca34bf3a5245e3ea55d0603d55da456dd7dee4845e756",
+    "engine/blade-engine/src/com/bladecoder/engine/model/SceneSoundManager.java": "4cefb83545f974bdd10ff7c42949230e1133c8c360e7545c53090ddd8b0d119a",
+    "engine/blade-engine/src/com/bladecoder/engine/model/SoundDesc.java": "e35a7aa3d277748a6573474de2cb2f653ea19f0b6dc55f30c713355d8a8caf8a",
+    "engine/blade-engine/src/com/bladecoder/engine/model/SpriteActor.java": "463377ed0eedf22b384239378f1cc7300efcec620398d77ba3e11006e85f0b3a",
+    "engine/blade-engine/src/com/bladecoder/engine/model/Text.java": "34647edeb55ca6419c44605a1b401bd94fb21569fb56418ab0e9e314cf42e5d6",
+    "engine/blade-engine/src/com/bladecoder/engine/model/TextManager.java": "223c82f6f7a370b85c75a0ae92758fd0539b7d2af3dc0844bd4f6c0642b72a84",
+    "engine/blade-engine/src/com/bladecoder/engine/model/TextRenderer.java": "9105f9617549393e08a7c42f4997fa6ff1215478354bac5ee83f719fce2a10c5",
+    "engine/blade-engine/src/com/bladecoder/engine/model/Transition.java": "a4073f2402ea6dc79f12b55616ebf055a5444d7bdfe8410d18d11a24752baa40",
+    "engine/blade-engine/src/com/bladecoder/engine/model/UIActors.java": "4dd92bddedbd13abf17f291346b91f900896cb677dfb8281fb5a253082a59616",
+    "engine/blade-engine/src/com/bladecoder/engine/model/Verb.java": "dca3b3d83f750fb79d88b2f43e4596405fc80c58970b50b371cb62b15a6ce863",
+    "engine/blade-engine/src/com/bladecoder/engine/model/VerbManager.java": "882a3c85229e7b11b02862cb228e8cbceb1776fd80da338b0a2d310bf4bf5cab",
+    "engine/blade-engine/src/com/bladecoder/engine/model/VerbRunner.java": "49885bf544bf466085e4b017bff7dfb7dbc7bf6b6aa5263a29d4f961c5aea1c4",
+    "engine/blade-engine/src/com/bladecoder/engine/model/VoiceManager.java": "b1cf171fffdccc3f4f08948f53b3ebba6e8ce7dfa60658e132636ef44dfa1519",
+    "engine/blade-engine/src/com/bladecoder/engine/model/WalkZoneActor.java": "98e41af6c71d48f29a4531e54144d32ac17008cab208a601e7bbfd277050ad4e",
+    "engine/blade-engine/src/com/bladecoder/engine/model/World.java": "4550b3d790b3af8f6c0e891e08fdee076e37c3e6db5f4c62e920627508da14b8",
+    "engine/blade-engine/src/com/bladecoder/engine/model/WorldEventDispatcher.java": "a9186816fa0e91751c604d346d3f844a6791d86b4b07dd3e709b1baf36ca5b11",
+    "engine/blade-engine/src/com/bladecoder/engine/model/WorldEventListener.java": "ec06f59e1b4560f226c832c16b0a6a6becc183ba3cad31225eff852456d5d261",
+    "engine/blade-engine/src/com/bladecoder/engine/serialization/ActionCallbackSerializer.java": "2852029c739708b4a79695e554968407965106a286f91cc6b4cd1f4f2648b31c",
+    "engine/blade-engine/src/com/bladecoder/engine/serialization/BladeJson.java": "2f113e362c1589c2368ffcb0ad5085efe9f64b143ed4512a3cda6fd8d9abc81e",
+    "engine/blade-engine/src/com/bladecoder/engine/serialization/WorldSerialization.java": "656fd3783279cd370421e374ab136cead096ee9ebeb4a26a76e419f4ddb0a7e8",
+    "engine/blade-engine/src/com/bladecoder/engine/util/ActionUtils.java": "baa2ea27b026c93ba08ca54f9e970533ca24851e785cb7da593d858d943ecc4b",
+    "engine/gradle.properties": "ffc76497854beda6ac11cb254abf9a1585787392f3c17380089a7663fc6b27a8"
+  }
+}

@@ -1,0 +1,78 @@
+name: Independent adventure consumers
+
+'on':
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  consumer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 21
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install native verification prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgl1-mesa-dri pulseaudio pulseaudio-utils ffmpeg
+          python -m pip install -r adventure-setup/toolkit/tools/requirements-visual.txt
+      - name: Build shared setup and paired engine
+        run: |
+          ./gradlew :adventure-setup:check :adventure-setup:bundle :adventure-editor:compileJava :blade-engine:publishToMavenLocal :blade-engine-spine-plugin:publishToMavenLocal --console=plain
+      - name: Verify editor create and load through shared generator
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a ./gradlew :adventure-editor:verifySetupFlow -PsetupFlowOutput="$RUNNER_TEMP/setup-editor" --console=plain > "$RUNNER_TEMP/setup-editor.log" 2>&1
+      - name: Verify complete fresh consumer matrix
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          pulseaudio --start --exit-idle-time=-1
+          pactl load-module module-null-sink sink_name=setup_ci
+          export PULSE_SINK=setup_ci
+          bundle_path=$(find adventure-setup/build/distributions -name 'adventure-setup-*.zip' -print -quit)
+          test -n "$bundle_path"
+          xvfb-run -a -s '-screen 0 1600x1000x24' python tools/verify_setup_consumer.py --bundle "$bundle_path" --out "$RUNNER_TEMP/setup-consumer" --native
+      - name: Verify packaged HTTP player and debug contracts
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          xvfb-run -a -s '-screen 0 1600x1000x24' python tools/verify_template_http.py --jar "$RUNNER_TEMP/setup-consumer/desktop café game/desktop/build/libs/desktop-0.1.0.jar" --out "$RUNNER_TEMP/setup-consumer/protocol" --playable
+      - name: Retain bundle and bounded consumer reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-adventure-consumer
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            adventure-setup/build/distributions/adventure-setup-*.zip
+            adventure-setup/build/distributions/adventure-setup-*.zip.sha256
+            ${{ runner.temp }}/setup-editor/result.json
+            ${{ runner.temp }}/setup-editor.log
+            ${{ runner.temp }}/setup-consumer/result.json
+            ${{ runner.temp }}/setup-consumer/protocol/result.json
+            ${{ runner.temp }}/setup-consumer/protocol/*/*.png
+            ${{ runner.temp }}/setup-consumer/*.log
+            ${{ runner.temp }}/setup-consumer/*-fast/result.json
+            ${{ runner.temp }}/setup-consumer/*-fast/report.md
+            ${{ runner.temp }}/setup-consumer/*-fast/artifacts/**
+            ${{ runner.temp }}/setup-consumer/*-native/result.json
+            ${{ runner.temp }}/setup-consumer/*-native/report.md
+            ${{ runner.temp }}/setup-consumer/*-native/artifacts/**
+            ${{ runner.temp }}/setup-consumer/*-media/result.json
+            ${{ runner.temp }}/setup-consumer/*-media/report.md
+            ${{ runner.temp }}/setup-consumer/*-media/artifacts/**

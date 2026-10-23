@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "starter",
+  "source": "starter.svg",
+  "settings": "tools/asset-settings/svg-transparent-96.json",
+  "exports": [
+    {
+      "id": "room",
+      "selection": {
+        "include": [
+          "room"
+        ],
+        "exclude": []
+      },
+      "crop": {
+        "mode": "page"
+      },
+      "render": {
+        "scale": {
+          "mode": "pixels",
+          "width": 960,
+          "height": 540
+        }
+      },
+      "output": "assets/images/1/starter-room.png",
+      "destination": {
+        "kind": "standalone"
+      }
+    },
+    {
+      "id": "note",
+      "selection": {
+        "include": [
+          "note"
+        ],
+        "exclude": []
+      },
+      "crop": {
+        "mode": "canvas",
+        "x": 426,
+        "y": 272,
+        "width": 128,
+        "height": 80
+      },
+      "render": {
+        "scale": {
+          "mode": "pixels",
+          "width": 128,
+          "height": 80
+        }
+      },
+      "output": "assets/images/1/starter-note.png",
+      "destination": {
+        "kind": "standalone"
+      }
+    }
+  ]
+}

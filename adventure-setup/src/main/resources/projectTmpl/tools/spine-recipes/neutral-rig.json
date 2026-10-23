@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "id": "neutral-rig",
+  "workflow": "export",
+  "editor_version": "4.3.23",
+  "runtime_family": "4.3",
+  "skeleton": "neutral-rig",
+  "source": {
+    "project": "characters/neutral-rig/neutral-rig.spine",
+    "images": "characters/neutral-rig/images"
+  },
+  "settings": {
+    "json": "tools/asset-settings/spine-json-4.3.json",
+    "binary": "tools/asset-settings/spine-binary-4.3.json",
+    "atlas": "tools/asset-settings/spine-atlas-straight.json"
+  },
+  "output": {
+    "name": "neutral-rig",
+    "skeleton": "assets/spine/neutral-rig.skel",
+    "atlas": "assets/atlases/1/neutral-rig.atlas"
+  },
+  "required_animations": [
+    "idle",
+    "wave"
+  ]
+}

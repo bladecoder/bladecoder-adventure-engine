@@ -1,0 +1,133 @@
+{
+  "bladeEngineVersion": "4.5.0-SNAPSHOT",
+  "sounds": {},
+  "scenes": {
+    "scene-1": {
+      "id": "scene-1",
+      "layers": [
+        {
+          "name": "background"
+        },
+        {
+          "name": "dynamic",
+          "dynamic": true
+        },
+        {
+          "name": "foreground"
+        }
+      ],
+      "actors": {
+        "room": {
+          "class": "SpriteActor",
+          "id": "room",
+          "visible": true,
+          "interaction": false,
+          "layer": "background",
+          "pos": {
+            "x": 0,
+            "y": 0
+          },
+          "renderer": {
+            "class": "ImageRenderer",
+            "fanims": {
+              "default": {
+                "class": "com.bladecoder.engine.anim.AnimationDesc",
+                "id": "default",
+                "source": "starter-room.png",
+                "duration": 1,
+                "animationType": "NO_REPEAT",
+                "count": -1,
+                "preload": true
+              }
+            },
+            "initAnimation": "default",
+            "orgAlign": 12
+          },
+          "bboxFromRenderer": true,
+          "scaleX": 1,
+          "scaleY": 1,
+          "zIndex": 0,
+          "verbs": {},
+          "bbox": [
+            0,
+            0,
+            960,
+            0,
+            960,
+            540,
+            0,
+            540
+          ]
+        },
+        "note": {
+          "class": "SpriteActor",
+          "id": "note",
+          "visible": true,
+          "interaction": true,
+          "layer": "dynamic",
+          "pos": {
+            "x": 490,
+            "y": 235
+          },
+          "renderer": {
+            "class": "ImageRenderer",
+            "fanims": {
+              "default": {
+                "class": "com.bladecoder.engine.anim.AnimationDesc",
+                "id": "default",
+                "source": "starter-note.png",
+                "duration": 1,
+                "animationType": "NO_REPEAT",
+                "count": -1,
+                "preload": true
+              }
+            },
+            "initAnimation": "default",
+            "orgAlign": 4
+          },
+          "bboxFromRenderer": true,
+          "scaleX": 1,
+          "scaleY": 1,
+          "zIndex": 0,
+          "verbs": {
+            "lookat": {
+              "id": "lookat",
+              "actions": [
+                {
+                  "class": "com.bladecoder.engine.actions.InkRunAction",
+                  "path": "inspect_note",
+                  "wait": true
+                }
+              ]
+            },
+            "pickup": {
+              "id": "pickup",
+              "actions": [
+                {
+                  "class": "com.bladecoder.engine.actions.PickUpAction",
+                  "actor": "note"
+                }
+              ]
+            }
+          },
+          "desc": "@starter.note.desc",
+          "bbox": [
+            -64,
+            0,
+            64,
+            0,
+            64,
+            80,
+            -64,
+            80
+          ]
+        }
+      },
+      "verbs": {}
+    }
+  },
+  "initScene": "scene-1",
+  "inkManager": {
+    "storyName": "main"
+  }
+}

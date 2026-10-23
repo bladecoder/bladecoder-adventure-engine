@@ -1,0 +1,13 @@
+
+neutral-rig.png
+size: 132, 84
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+note
+  rotate: false
+  xy: 2, 2
+  size: 128, 80
+  orig: 128, 80
+  offset: 0, 0
+  index: -1

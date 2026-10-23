@@ -37,13 +37,16 @@ jobs:
           fi
           echo "RELEASE_VERSION=$release_version" >> "$GITHUB_ENV"
 
-      - name: Build adventure editor distribution
-        run: ./gradlew clean :adventure-editor:distZip -Pversion="$RELEASE_VERSION"
+      - name: Build editor and standalone setup distributions
+        run: ./gradlew clean :adventure-editor:distZip :adventure-setup:check :adventure-setup:bundle -Pversion="$RELEASE_VERSION"
 
       - name: Upload adventure editor to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: adventure-editor/build/distributions/adventure-editor-${{ env.RELEASE_VERSION }}.zip
+          files: |
+            adventure-editor/build/distributions/adventure-editor-${{ env.RELEASE_VERSION }}.zip
+            adventure-setup/build/distributions/adventure-setup-${{ env.RELEASE_VERSION }}.zip
+            adventure-setup/build/distributions/adventure-setup-${{ env.RELEASE_VERSION }}.zip.sha256
 
       - name: Publish engine artifacts to Maven Central
         env:

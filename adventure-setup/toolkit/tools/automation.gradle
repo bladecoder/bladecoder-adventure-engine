@@ -1,0 +1,30 @@
+// Opt-in test support; no distribution or resource generation tasks are invoked.
+gradle.projectsEvaluated {
+    def desktop = gradle.rootProject.project(':desktop')
+    desktop.tasks.register('automationClasspath') {
+        doLast { println 'AUTOMATION_CP=' + desktop.sourceSets.main.runtimeClasspath.asPath }
+    }
+}
+
+// Explicit opt-in resolution for the graphics toolchain; hashes checked by Python.
+gradle.projectsEvaluated {
+    def desktop = gradle.rootProject.project(':desktop')
+    def lock = new groovy.json.JsonSlurper().parse(gradle.rootProject.file('tools/asset-settings/packer-lock.json'))
+    def packer = desktop.configurations.create('automationPacker')
+    lock.jars.each { entry ->
+        desktop.dependencies.add(packer.name, "${lock.group}:${entry.artifact}:${entry.version}") { transitive = false }
+    }
+    desktop.tasks.register('automationPackerClasspath') {
+        doLast { println 'AUTOMATION_PACKER_CP=' + packer.asPath }
+    }
+}
+
+// Explicit preparation of the matching Java Ink compiler used by shared checks.
+gradle.projectsEvaluated {
+    def desktop = gradle.rootProject.project(':desktop')
+    def compiler = desktop.configurations.create('automationInkCompiler')
+    desktop.dependencies.add(compiler.name, "com.bladecoder.ink:blade-ink-compiler:${gradle.rootProject.property('bladeInkVersion')}")
+    desktop.tasks.register('automationInkCompilerClasspath') {
+        doLast { println 'AUTOMATION_INK_COMPILER_CP=' + compiler.asPath }
+    }
+}

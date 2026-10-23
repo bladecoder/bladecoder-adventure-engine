@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "derived-courier",
+  "workflow": "derive",
+  "editor_version": "4.3.23",
+  "runtime_family": "4.3",
+  "skeleton": "neutral-rig",
+  "source": {
+    "project": "characters/neutral-rig/neutral-rig.spine",
+    "images": "characters/neutral-rig/images"
+  },
+  "settings": {
+    "json": "tools/asset-settings/spine-json-4.3.json",
+    "binary": "tools/asset-settings/spine-binary-4.3.json",
+    "atlas": "tools/asset-settings/spine-atlas-straight.json"
+  },
+  "output": {
+    "name": "derived-courier",
+    "editable": "characters/derived-courier/derived-courier.spine",
+    "skeleton": "assets/spine/derived-courier.skel",
+    "atlas": "assets/atlases/1/derived-courier.atlas"
+  },
+  "required_animations": [
+    "idle",
+    "wave"
+  ],
+  "pieces_manifest": "tools/asset-manifests/derived-courier.json",
+  "edits": "tools/spine-recipes/derived-courier-edits.json"
+}

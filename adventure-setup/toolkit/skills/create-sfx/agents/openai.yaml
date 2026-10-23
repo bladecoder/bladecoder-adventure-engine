@@ -1,0 +1,3 @@
+interface:
+  display_name: "Create Sfx"
+  short_description: "Generate and verify procedural PCM16 sound effects"

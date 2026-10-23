@@ -1,0 +1,80 @@
+{
+  "skeleton": {
+    "spine": "4.3.23",
+    "x": -64,
+    "y": 0,
+    "width": 128,
+    "height": 80,
+    "images": "./images/"
+  },
+  "bones": [
+    {
+      "name": "root"
+    },
+    {
+      "name": "envelope",
+      "parent": "root",
+      "y": 40
+    }
+  ],
+  "slots": [
+    {
+      "name": "paper",
+      "bone": "envelope",
+      "attachment": "note"
+    }
+  ],
+  "skins": [
+    {
+      "name": "default",
+      "attachments": {
+        "paper": {
+          "note": {
+            "width": 128,
+            "height": 80
+          }
+        }
+      }
+    }
+  ],
+  "animations": {
+    "idle": {
+      "bones": {
+        "root": {
+          "translate": [
+            {
+              "y": 0
+            },
+            {
+              "time": 0.5,
+              "y": 4
+            },
+            {
+              "time": 1,
+              "y": 0
+            }
+          ]
+        }
+      }
+    },
+    "wave": {
+      "bones": {
+        "envelope": {
+          "rotate": [
+            {
+              "value": -10
+            },
+            {
+              "time": 0.5,
+              "value": 10
+            },
+            {
+              "time": 1,
+              "value": -10
+            }
+          ]
+        }
+      }
+    }
+  }
+}

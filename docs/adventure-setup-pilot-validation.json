@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "pilot_project": "/tmp/adventure-brief-pilot",
+  "brief": "/tmp/adventure-brief-pilot/docs/brief.md",
+  "independent_agent_delivery": "/tmp/adventure-brief-pilot/docs/work-log.md",
+  "original_game_commit": "f34713cf1293a1dbaa81e5eef3a71a9813bcda01",
+  "normal_entry": {
+    "evidence": "/tmp/adventure-brief-pilot-evidence/play4/play-result.json",
+    "assertions": 19,
+    "passed": true,
+    "scope": "Actual normal New Game, input clicks, dialogue, real engine inventory gate, returns and save/load; semantic commands are identified separately."
+  },
+  "actual_inventory_gesture": "/tmp/adventure-brief-pilot-evidence/inventory-probe/events-used-state.json",
+  "replay": {
+    "evidence": "/tmp/adventure-brief-pilot-evidence/lantern-controller-fix/result.json",
+    "steps": 68,
+    "assertions": 10,
+    "passed": true,
+    "complete": true,
+    "game_jar_sha256": "27c66ee7b2285a657e754855b41f59cc06477134cf177d529691510f9e1ae09f",
+    "engine_source_sha256": "517e9f931dd2715dfcc9416d4ab7df6e06ef8aa3340565bdd8e379af2663ce2c",
+    "owned_process_terminal_verified": true
+  },
+  "observed_workflow_fixes": [
+    "Ink entry now follows project metadata",
+    "Layer order and actual compositing documented",
+    "Interactive verb completion and displayed-text paths documented",
+    "Actual controller bug fixed: semantic dialogue selection now refreshes UI listeners; same failed replay passes after package rebuild"
+  ],
+  "visual_review": [
+    "Pavilion capture reviewed by parent; brooch and return door visible",
+    "Independent pilot inspected court and pavilion after layer order fix"
+  ],
+  "limits": [
+    "Debug replay establishes explicit starting conditions; separate normal-entry route is retained",
+    "No mobile, listening or artistic certification",
+    "Earlier failed attempts and prior package retained; no real hosted repository created"
+  ]
+}

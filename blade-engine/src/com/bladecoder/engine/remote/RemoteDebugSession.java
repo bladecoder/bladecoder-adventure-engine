@@ -295,7 +295,8 @@ final class RemoteDebugSession {
         }
         if("fixture.scene".equals(job.operation)) {
             world.getSerializer().loadChapter(a.getString("chapter"),a.getString("scene"),false);
-            world.getInkManager().newStory(a.getString("chapter"));
+            String storyName=world.getInkManager().getStoryName();
+            if(storyName!=null)world.getInkManager().newStory(storyName);
             if(randomSeed!=null){seedStory(world.getInkManager().getStory(),randomSeed);com.badlogic.gdx.math.MathUtils.random.setSeed(randomSeed);}
             ui.setCurrentScreen(UI.Screens.SCENE_SCREEN);
             events.add("fixture.scene",RemoteDebugState.value(a));job.done(RemoteDebugState.map("loading",true));return;

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Localize Game"
+  short_description: "Localize dialogue and inspect actual game layout"
