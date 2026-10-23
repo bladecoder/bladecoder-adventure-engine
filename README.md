@@ -44,15 +44,13 @@ The source of **The Goddess Robbery** can be
 downloaded  [here](https://github.com/bladecoder/bladecoder-adventure-tests/tree/master/venus) and it's useful to learn
 how to use the **Adventure Editor**.
 
-**The Goddess Robbery** is also available for Android devices at the Google Play Store.
-
-[![The Goddess Robbery on Google Play](http://i.imgur.com/yn6RYuX.png)](https://play.google.com/store/apps/details?id=org.bladecoder.engine)
-
 ### Documentation
 
-All available documentation is in the [wiki page](https://github.com/bladecoder/bladecoder-adventure-engine/wiki). The
-documentation is not good enough and needs to improve, we are working on it. Meanwhile you can download and look into
-the [test projects](https://github.com/bladecoder/bladecoder-adventure-tests/).
+See the [adventure setup guide](docs/adventure-setup.md) to create a new game
+from the command line, and the [HTTP remote-control guide](docs/http-remote-control.md)
+for the runtime controller. The broader engine documentation is in the
+[wiki](https://github.com/bladecoder/bladecoder-adventure-engine/wiki); example
+games are available in the [test projects](https://github.com/bladecoder/bladecoder-adventure-tests/).
 
 ### Download latest release
 

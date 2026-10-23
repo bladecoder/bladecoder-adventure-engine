@@ -1,16 +1,9 @@
 # Independent adventure setup
 
-Implementation status: the HTTP template baseline is committed as `b9f10d86`
-on `controller-srv`; the setup implementation is on the
-`feat/adventure-setup` stack. The shared generator, editor integration, neutral
-starter, project-local tools and skills, optional media examples, safe updater,
-and local bundle are implemented. Local acceptance includes five native fresh
-consumers, packaged HTTP contracts, an independent brief-driven game and
-representative Bonasera compatibility. The phase 1 Gradle build passed for
-`b9f10d86` ([CI run](https://github.com/bladecoder/bladecoder-adventure-engine/actions/runs/39959816579)).
-Both workflows passed for setup commit `4a84bf22`: [consumer validation](https://github.com/bladecoder/bladecoder-adventure-engine/actions/runs/39958487264)
-and [Gradle build](https://github.com/bladecoder/bladecoder-adventure-engine/actions/runs/39958487302).
-Hosted publication and device certification have not been executed.
+This guide describes how to generate a new game from the command line and how
+the editor shares the same project generator. The setup bundle contains the
+starter project, portable tools and skills. Its supported environments and
+capability boundaries are listed in the [compatibility matrix](adventure-setup-compatibility.md).
 
 ## Generation contract (version 1)
 
@@ -89,9 +82,8 @@ project loading/UI lifecycle. Its existing all-platform creation adapter selects
 desktop/Android/iOS; desktop-only CLI output does not include Android plugin or
 SDK configuration. Platform scaffolding is not device verification.
 
-See [implementation evidence](adventure-setup-validation.md) for executed checks
-and temporary artifact locations. The standalone contract harness is attached
-to `:adventure-setup:check`, separate from JUnit discovery.
+The standalone contract harness is attached to `:adventure-setup:check`, separate
+from JUnit discovery.
 
 
 ## Generated project QA catalogue
@@ -129,17 +121,14 @@ profile with their selected examples; authoring and probe limitations remain
 explicit in the generated workflow guides.
 
 The default two-button starter uses left click to examine and right click to pick
-up the note, following `SceneGestureListener.mouseToAction`. Both operations reach
-the actual input processor in the smoke scenario. Ink-enabled output also checks
-a real dialogue choice and typed story state; no-Ink output uses an engine text
-action. Save/load and final UI capture are verified for both configurations.
+up the note, following `SceneGestureListener.mouseToAction`. Ink-enabled output
+also checks a dialogue choice and typed story state; no-Ink output uses an engine
+text action. Save/load and final UI capture are part of the generated QA profiles.
 The radial-menu starter adds clicks on `pie.lookat` and `pie.pickup`; the
 single-click starter initially exposes examination, then enables pickup after
-reading through an actor state. Both alternate modes pass packaged native smoke
-through their own generated QA catalogue. External-art initialization, starter
-SVG recipes, optional audio/Spine examples and native probes have local
-verification evidence. The brief-driven pilot and representative Bonasera
-compatibility run are recorded in their separate evidence files.
+reading through an actor state. External-art initialization, starter SVG recipes,
+and optional audio/Spine examples are available through the generated project
+tools and workflow guides.
 
 
 ## Art sources and project action extensions
@@ -165,18 +154,18 @@ editable project/JSON and `idle`/`wave` animations, plus a separate derivation
 example adding `salute`. Selected capabilities are combined in the generated
 `media` QA profile. Minimal output omits these sources/assets when disabled.
 
-Packaged Spine verification uses the runtime plugin and never opens the editor.
-Native audio capture uses a private Linux Pulse/PipeWire sink; unavailable capture
-prerequisites cannot be treated as complete coverage. See the generated workflow
-guides and [executed media checks](adventure-setup-media-validation.json).
+Spine QA uses the runtime plugin and never opens the editor. Native audio capture
+uses an available audio backend; unavailable prerequisites are reported by the
+QA tools. See the generated audio and Spine workflow guides for authoring
+requirements and probe limits.
 
 
 ## Local distribution and toolkit updates
 
 Build `:adventure-setup:bundle` to obtain
 `adventure-setup/build/distributions/adventure-setup-VERSION.zip`. It contains the
-standalone JAR, `SHA256SUMS`, bundle identity metadata and the tested/unavailable
-[compatibility matrix](adventure-setup-compatibility.md). Generation and updates
+standalone JAR, `SHA256SUMS`, bundle identity metadata and the supported
+[capability matrix](adventure-setup-compatibility.md). Generation and updates
 perform no downloads. First consumer builds need their own dependency resolution.
 A local artifact is not a published release or a remote CI result.
 
@@ -205,5 +194,5 @@ are rejected. Push requires a committed clean tree; no commit is implicit.
 A report outside the repository journals preparation, potential remote mutation
 and success/failure. Partial remote state remains visible for deliberate recovery;
 there is no automatic remote deletion. Generated projects include
-`docs/repository-workflow.md`. No real hosted repository was created to test the
-interface; its fault tests use an injected command transport.
+`docs/repository-workflow.md`. Remote creation requires GitHub CLI authentication;
+the report records preparation and partial remote state for deliberate recovery.
