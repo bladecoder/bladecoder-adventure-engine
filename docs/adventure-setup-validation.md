@@ -33,7 +33,7 @@ Engine/editor checks and local engine publication pass
 `:core:compileJava :desktop:dist` passes offline
 (`/tmp/adventure-template-phase1-fixed-package.log`). Running the packaged game
 from isolated directories outside its checkout passes all 32 launcher/controller
-checks in `tools/verify_template_http.py`: documented flags, invalid arguments,
+checks in `.github/scripts/verify_template_http.py`: documented flags, invalid arguments,
 player mode despite logging, hidden debug routes, explicit authenticated debug,
 available-port discovery, neutral scene loading/focused query, content-store
 observation, hash-checked native capture and normal startup with no listening
@@ -47,7 +47,7 @@ This is desktop smoke, not mobile or native OS input verification.
 Reproduce the package smoke with a freshly generated template project:
 
 ```sh
-python3 -B tools/verify_template_http.py --jar /absolute/path/to/desktop.jar --out /new/evidence/directory
+python3 -B .github/scripts/verify_template_http.py --jar /absolute/path/to/desktop.jar --out /new/evidence/directory
 ```
 
 A real desktop/virtual GL context is required. The script uses private isolated

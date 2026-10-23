@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from skill_tools import check_skills, sync_skills
+from skill_tools import check_skills, discovery_files, files, sync_skills
 
 
 class SkillDiscovery(unittest.TestCase):
@@ -20,6 +20,17 @@ class SkillDiscovery(unittest.TestCase):
     def skill(self, root, name):
         folder = root / 'skills' / name; folder.mkdir(parents=True)
         (folder / 'SKILL.md').write_text('---\nname: ' + name + '\ndescription: Author a small verified interaction.\n---\n\nRead [the guide](../../docs/guide.md).\n')
+
+    def test_discovery_copy_links_to_canonical_skill_without_development_workflow(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = self.project(Path(directory)); self.skill(root, 'adventure-player')
+            canonical = root / 'skills/adventure-player/SKILL.md'
+            original = canonical.read_bytes()
+            copy = discovery_files(files(root / 'skills', root))['adventure-player/SKILL.md'].decode()
+            self.assertEqual(canonical.read_bytes(), original)
+            self.assertIn('../../../skills/adventure-player/SKILL.md', copy)
+            self.assertNotIn('canonical project workflow', copy)
+            self.assertNotIn('before acting', copy)
 
     def test_discovery_routes_to_existing_canonical_file(self):
         with tempfile.TemporaryDirectory() as directory:

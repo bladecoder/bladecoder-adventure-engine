@@ -206,13 +206,13 @@ public final class AdventureSetup {
         outputs.put("tools/runtime-scenarios/smoke.json",smoke.toJson(JsonWriter.OutputType.json).getBytes(StandardCharsets.UTF_8));
         Map<String,Object> skillHashes=new LinkedHashMap<String,Object>();
         for(String path:new ArrayList<String>(outputs.keySet()))if(path.startsWith("skills/")) {
-            String relative=path.substring("skills/".length());String[] parts=relative.split("/");byte[] content=outputs.get(path);
+            String relative=path.substring("skills/".length());String[] parts=relative.split("/");byte[] content=outputs.get(path),discoveryContent=content;
             if(parts.length==2 && parts[1].equals("SKILL.md")) {
                 String text=new String(content,StandardCharsets.UTF_8).replace("\r\n","\n").replace("\r","\n");int end=text.indexOf("\n---",4);
                 if(!text.startsWith("---\n") || end<0)throw new IOException("Invalid canonical skill frontmatter: "+path);
-                content=(text.substring(0,end+4)+"\n\nRead [the canonical project workflow](../../../skills/"+parts[0]+"/SKILL.md) before acting. Its references resolve from that canonical file; edit skills/, then run skills-sync to refresh discovery.\n").getBytes(StandardCharsets.UTF_8);
+                discoveryContent=(text.substring(0,end+4)+"\n\nSee the [canonical skill](../../../skills/"+parts[0]+"/SKILL.md) for its source and any referenced resources; references resolve relative to that file.\n").getBytes(StandardCharsets.UTF_8);
             } else if(parts.length<3 || !(parts[1].equals("agents") || parts[1].equals("assets")))continue;
-            outputs.put(".agents/"+path,content);skillHashes.put(relative,sha(content));
+            outputs.put(".agents/"+path,discoveryContent);skillHashes.put(relative,sha(discoveryContent));
         }
         Map<String,Object> discovery=new LinkedHashMap<String,Object>();discovery.put("schema_version",1);discovery.put("source","skills");discovery.put("discovery",".agents/skills");discovery.put("files",skillHashes);
         outputs.put("tools/skills-discovery.json",(json(discovery)+"\n").getBytes(StandardCharsets.UTF_8));

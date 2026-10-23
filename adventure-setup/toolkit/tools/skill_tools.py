@@ -32,7 +32,7 @@ def discovery_files(source):
         if len(parts) == 2 and parts[1] == 'SKILL.md':
             text = data.decode('utf-8').replace('\r\n', '\n').replace('\r', '\n'); end = text.find('\n---', 4)
             if not text.startswith('---\n') or end < 0: raise ValueError('Invalid canonical skill frontmatter: ' + name)
-            body = text[:end + 4] + '\n\nRead [the canonical project workflow](../../../skills/' + parts[0] + '/SKILL.md) before acting. Its references resolve from that canonical file; edit skills/, then run skills-sync to refresh discovery.\n'
+            body = text[:end + 4] + '\n\nSee the [canonical skill](../../../skills/' + parts[0] + '/SKILL.md) for its source and any referenced resources; references resolve relative to that file.\n'
             result[name] = body.encode('utf-8')
         elif len(parts) > 2 and parts[1] in ('agents', 'assets'):
             result[name] = data

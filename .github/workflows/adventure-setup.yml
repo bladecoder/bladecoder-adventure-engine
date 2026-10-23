@@ -58,13 +58,13 @@ jobs:
           fi
           bundle_path=$(find adventure-setup/build/distributions -name 'adventure-setup-*.zip' -print -quit)
           test -n "$bundle_path"
-          xvfb-run -a -s '-screen 0 1600x1000x24' python tools/verify_setup_consumer.py --bundle "$bundle_path" --out "$RUNNER_TEMP/setup-consumer" --native "${media_args[@]}"
+          xvfb-run -a -s '-screen 0 1600x1000x24' python .github/scripts/verify_setup_consumer.py --bundle "$bundle_path" --out "$RUNNER_TEMP/setup-consumer" --native "${media_args[@]}"
       - name: Verify packaged HTTP player and debug contracts
         shell: bash
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: |
-          xvfb-run -a -s '-screen 0 1600x1000x24' python tools/verify_template_http.py --jar "$RUNNER_TEMP/setup-consumer/desktop café game/desktop/build/libs/desktop-0.1.0.jar" --out "$RUNNER_TEMP/setup-consumer/protocol" --playable
+          xvfb-run -a -s '-screen 0 1600x1000x24' python .github/scripts/verify_template_http.py --jar "$RUNNER_TEMP/setup-consumer/desktop café game/desktop/build/libs/desktop-0.1.0.jar" --out "$RUNNER_TEMP/setup-consumer/protocol" --playable
       - name: Retain bundle and bounded consumer reports
         if: always()
         uses: actions/upload-artifact@v4
