@@ -4,6 +4,12 @@ name: Independent adventure consumers
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      media:
+        description: Run native audio and Spine capture checks (installs FFmpeg and PulseAudio).
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -22,11 +28,13 @@ jobs:
         with:
           python-version: '3.12'
       - uses: gradle/actions/setup-gradle@v4
-      - name: Install native verification prerequisites
+      - name: Install Python visual verification dependency
+        run: python -m pip install -r adventure-setup/toolkit/tools/requirements-visual.txt
+      - name: Install audio capture prerequisites
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.media }}
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb libgl1-mesa-dri pulseaudio pulseaudio-utils ffmpeg
-          python -m pip install -r adventure-setup/toolkit/tools/requirements-visual.txt
+          sudo apt-get install -y pulseaudio pulseaudio-utils ffmpeg
       - name: Build shared setup and paired engine
         run: |
           ./gradlew :adventure-setup:check :adventure-setup:bundle :adventure-editor:compileJava :blade-engine:publishToMavenLocal :blade-engine-spine-plugin:publishToMavenLocal --console=plain
@@ -34,17 +42,23 @@ jobs:
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: xvfb-run -a ./gradlew :adventure-editor:verifySetupFlow -PsetupFlowOutput="$RUNNER_TEMP/setup-editor" --console=plain > "$RUNNER_TEMP/setup-editor.log" 2>&1
-      - name: Verify complete fresh consumer matrix
+      - name: Verify generated consumers and native desktop smoke
         shell: bash
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
+          ALSOFT_DRIVERS: ${{ github.event_name == 'workflow_dispatch' && inputs.media && 'pulse' || 'null' }}
+          VERIFY_MEDIA: ${{ github.event_name == 'workflow_dispatch' && inputs.media }}
         run: |
-          pulseaudio --start --exit-idle-time=-1
-          pactl load-module module-null-sink sink_name=setup_ci
-          export PULSE_SINK=setup_ci
+          media_args=()
+          if [[ "$VERIFY_MEDIA" == "true" ]]; then
+            pulseaudio --start --exit-idle-time=-1
+            pactl load-module module-null-sink sink_name=setup_ci
+            export PULSE_SINK=setup_ci
+            media_args+=(--media)
+          fi
           bundle_path=$(find adventure-setup/build/distributions -name 'adventure-setup-*.zip' -print -quit)
           test -n "$bundle_path"
-          xvfb-run -a -s '-screen 0 1600x1000x24' python tools/verify_setup_consumer.py --bundle "$bundle_path" --out "$RUNNER_TEMP/setup-consumer" --native
+          xvfb-run -a -s '-screen 0 1600x1000x24' python tools/verify_setup_consumer.py --bundle "$bundle_path" --out "$RUNNER_TEMP/setup-consumer" --native "${media_args[@]}"
       - name: Verify packaged HTTP player and debug contracts
         shell: bash
         env:

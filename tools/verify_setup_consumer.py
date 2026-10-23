@@ -15,7 +15,9 @@ def write(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8')
 
 
-def verify(bundle, output, native=False, offline=False):
+def verify(bundle, output, native=False, offline=False, media=False):
+    if media and not native:
+        raise ValueError('--media requires --native.')
     bundle = Path(bundle).resolve()
     output = Path(output).absolute()
     if output.exists() or output.is_symlink():
@@ -24,7 +26,7 @@ def verify(bundle, output, native=False, offline=False):
     checks = []
     report = {'schema_version': 1, 'passed': False, 'complete': False,
               'bundle_sha256': hashlib.sha256(bundle.read_bytes()).hexdigest(),
-              'native_selected': native, 'status': 'running', 'checks': checks,
+              'native_selected': native, 'media_selected': media, 'status': 'running', 'checks': checks,
               'limits': ['Device and artistic/listening reviews are separate.',
                          'Local consumption is not remote CI or publication evidence.']}
     def command(name, arguments, cwd=output, env=None, timeout=600):
@@ -80,6 +82,9 @@ def verify(bundle, output, native=False, offline=False):
                  ('single-noink', {'ink': False, 'interaction_mode': 'single_click', 'viewport': [1280, 720]}),
                  ('pie-external', {'interaction_mode': 'pie', 'art_storage': 'external', 'platforms': ['desktop', 'android', 'ios']}),
                  ('audio', {'audio': True}), ('spine', {'spine': True})]
+        report['media_required'] = any(options.get('audio') or options.get('spine') for _, options in cases)
+        if report['media_required'] and not media:
+            report['limits'].append('Audio and Spine runtime capture checks were not selected.')
         headless = dict(os.environ)
         for key in ('DISPLAY', 'WAYLAND_DISPLAY', 'ANDROID_HOME', 'ANDROID_SDK_ROOT'):
             headless.pop(key, None)
@@ -103,11 +108,11 @@ def verify(bundle, output, native=False, offline=False):
             game = project / 'desktop/build/libs/desktop-0.1.0.jar'
             if native:
                 command(identifier + '-native', [*cli, 'qa', '--profile', 'desktop', '--jar', game, '--out', output / (identifier + '-native'), '--json'], cwd=project)
-                if options.get('audio') or options.get('spine'):
+                if media and (options.get('audio') or options.get('spine')):
                     command(identifier + '-media', [*cli, 'qa', '--profile', 'media', '--jar', game, '--out', output / (identifier + '-media'), '--json'], cwd=project)
         report['status'] = 'completed'
         report['passed'] = True
-        report['complete'] = native
+        report['complete'] = native and (media or not report.get('media_required', False))
         if not native:
             report['limits'].append('Native execution was not selected; builds/static checks do not certify gameplay.')
     except Exception as error:
@@ -123,10 +128,11 @@ def main():
     parser.add_argument('--bundle', required=True)
     parser.add_argument('--out', required=True)
     parser.add_argument('--native', action='store_true')
+    parser.add_argument('--media', action='store_true', help='Run the optional audio and Spine capture QA; requires --native and its system prerequisites.')
     parser.add_argument('--offline', action='store_true', help='Build from already resolved dependencies; generation is always offline.')
     args = parser.parse_args()
     try:
-        result = verify(args.bundle, args.out, args.native, args.offline)
+        result = verify(args.bundle, args.out, args.native, args.offline, args.media)
     except Exception as error:
         result = {'passed': False, 'complete': False, 'error': str(error)}
     print(json.dumps(result, indent=2))
