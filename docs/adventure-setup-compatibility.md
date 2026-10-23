@@ -8,6 +8,7 @@ migrate engine dependencies, launchers, game sources or project recipes.
 | Capability | Behavior | Boundary |
 | --- | --- | --- |
 | Desktop generation | Produces a runnable desktop project without requiring a display, editor installation or Android SDK | The generated project resolves its own build dependencies |
+| Agent skill discovery | `.agents/skills` is a relative symlink to the canonical `skills/` directory | The destination filesystem must allow symbolic-link creation |
 | Interaction modes | Supports two-button, radial-menu and single-click starters | Starter behavior does not certify arbitrary game content |
 | Ink | Can be enabled or omitted; viewport and language are configurable | Ink story behavior is project-specific |
 | External art | Supports an explicitly selected local art root and starter SVG export recipes | The artist's storage root must be configured on each workstation |

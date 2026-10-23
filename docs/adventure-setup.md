@@ -58,7 +58,9 @@ The API is `AdventureSetup.generate(SetupSpec, Path, dryRun, optionalSdk)`.
 Generation requires a Java runtime but no display, GL backend, editor installation
 or Android SDK. The only parser library is LibGDX core; the standalone JAR has no
 engine/editor or native-backend dependency. It copies the canonical bundled
-resources without resolving Maven dependencies or invoking Gradle. Optional
+resources and creates `.agents/skills` as a relative symlink to `skills/`, without
+resolving Maven dependencies or invoking Gradle. The destination filesystem must
+allow symbolic-link creation. Optional
 `--sdk PATH` is valid only when Android is selected, writes ignored
 `local.properties`, and does not enter the portable manifest.
 
