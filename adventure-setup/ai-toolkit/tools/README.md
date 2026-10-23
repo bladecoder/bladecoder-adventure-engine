@@ -32,8 +32,6 @@ and declared native `media` QA profiles; see [audio](../docs/audio-workflow.md)
 and [Spine](../docs/spine-workflow.md). Native audio capture currently requires
 Linux Pulse/PipeWire. Packaged Spine QA needs no editor installation.
 
-This toolkit is being extracted. Canonical skills and portable discovery entries are included. Use `skills-check`
-and `skills-sync --dry-run` after workflow changes; independently edited entries
-are conflicts and stay untouched. Environment bootstrap/distribution and remaining
-copied-module compatibility reviews are still unfinished.
-Commands that rely on those unfinished parts are not accepted as operational yet.
+Canonical skills are exposed directly through `.agents/skills`, a relative
+symlink to `skills/`. Use `skills-check` after workflow changes. `skills-sync`
+remains available for projects that still have the older copied-discovery layout.

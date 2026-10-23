@@ -30,7 +30,6 @@ Resume by inspecting that state; do not infer completion from a checkbox or inte
 Expand only within the requested scope and acceptance criteria. A completed slice
 is progress toward the game, not proof that the whole brief is fulfilled.
 
-Skills are canonical in `../skills/`; discovery copies under `../.agents/skills/`
-are generated from them. After a canonical skill/reference edit, run
-`skills-sync --dry-run`, then `skills-sync`. Independently changed discovery files
-are conflicts and must be reconciled explicitly; sync does not discard them.
+Skills are canonical in `../skills/`; `../.agents/skills` is a relative symlink
+to that directory. Edit skills and references under `../skills/` and validate
+them with `skills-check`. Discovery reads the same files directly.

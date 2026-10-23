@@ -21,6 +21,17 @@ class SkillDiscovery(unittest.TestCase):
         folder = root / 'skills' / name; folder.mkdir(parents=True)
         (folder / 'SKILL.md').write_text('---\nname: ' + name + '\ndescription: Author a small verified interaction.\n---\n\nRead [the guide](../../docs/guide.md).\n')
 
+    def test_discovery_symlink_uses_canonical_skills_without_sync(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = self.project(Path(directory)); link = root / '.agents/skills'
+            link.parent.mkdir(parents=True)
+            link.symlink_to('../skills', target_is_directory=True)
+            self.assertEqual((link / 'author/SKILL.md').read_bytes(), (root / 'skills/author/SKILL.md').read_bytes())
+            self.assertFalse(any(row['status'] == 'error' for row in check_skills(root)))
+            result = sync_skills(root)
+            self.assertTrue(result['linked']); self.assertEqual(result['changed'], [])
+            self.assertFalse((root / 'tools/skills-discovery.json').exists())
+
     def test_discovery_copy_links_to_canonical_skill_without_development_workflow(self):
         with tempfile.TemporaryDirectory() as directory:
             root = self.project(Path(directory)); self.skill(root, 'adventure-player')

@@ -1,4 +1,4 @@
-"""Canonical project skills and portable, conflict-aware discovery copies."""
+"""Canonical project skills, symlink discovery, and legacy-copy synchronization."""
 import hashlib
 import json
 import re

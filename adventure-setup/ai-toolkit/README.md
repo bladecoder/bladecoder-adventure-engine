@@ -35,7 +35,8 @@ and [QA](docs/qa-workflow.md) for isolated sessions and evidence. Ordinary deskt
 play: `java -jar desktop/build/libs/desktop-0.1.0.jar -w` (use the built filename).
 Mobile scaffolding does not certify device execution.
 
-Canonical agent workflows live in `skills/`, exposed through `.agents/skills/`.
+Canonical agent workflows live in `skills/`; `.agents/skills` is a relative
+symlink to that directory for agent discovery.
 Use [the agent workflow](docs/agent-workflow.md) and [work log](docs/work-log.md)
 to implement a brief in verified slices. `setup-manifest.json` records initial
 provenance; do not regenerate an existing developed game over its directory.

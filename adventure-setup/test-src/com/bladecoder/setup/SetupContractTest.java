@@ -21,17 +21,18 @@ public final class SetupContractTest {
             check(!Files.exists(unsupported),"incompatible engine leaves no project output");
             Path target=parent.resolve("space and café");
             Map<String,Object> dry=generator.generate(spec,target,true,null);
-            check(!Files.exists(target),"dry run creates no project");check(((List<?>)dry.get("files")).contains("setup-manifest.json"),"dry run reports manifest");
+            check(!Files.exists(target),"dry run creates no project");check(((List<?>)dry.get("files")).contains("setup-manifest.json"),"dry run reports manifest");check(((List<?>)dry.get("files")).contains(".agents/skills"),"dry run reports agent discovery symlink");
             generator.generate(spec,target,false,null);
             check(Files.exists(target.resolve("gradlew")),"wrapper generated");
             JsonValue actionContract=new JsonReader().parse(new String(Files.readAllBytes(target.resolve("tools/model-contract/actions.json")),"UTF-8"));
             check(actionContract.getString("engine_version").equals(spec.engineVersion),"action metadata targets the exact paired bundle engine, retaining reviewed-source identity on version rebinding");
-            String discoveryEntry=new String(Files.readAllBytes(target.resolve(".agents/skills/develop-adventure/SKILL.md")),"UTF-8");
-            check(discoveryEntry.contains("../../../skills/develop-adventure/SKILL.md"),"discovery entry routes to canonical skill");
+            Path discovery=target.resolve(".agents/skills");
+            check(Files.isSymbolicLink(discovery) && Files.readSymbolicLink(discovery).equals(Paths.get("../skills")),"agent discovery is a relative symlink to canonical skills");
+            check(!Files.exists(target.resolve("tools/skills-discovery.json")),"generated project does not include obsolete discovery-copy manifest");
             String playerSkill=new String(Files.readAllBytes(target.resolve("skills/adventure-player/SKILL.md")),"UTF-8");
             String playerDiscovery=new String(Files.readAllBytes(target.resolve(".agents/skills/adventure-player/SKILL.md")),"UTF-8");
             check(playerSkill.contains("Do not inspect story/model files") && !playerSkill.contains("canonical skill"),"player skill remains canonical and player-only");
-            check(playerDiscovery.contains("../../../skills/adventure-player/SKILL.md") && !playerDiscovery.contains("before acting"),"player discovery copy links to source without development instructions");
+            check(playerDiscovery.equals(playerSkill),"agent discovery reads the canonical skill without a copied wrapper");
             check(Files.exists(target.resolve("AGENTS.md")) && Files.exists(target.resolve("docs/brief.md")) && Files.exists(target.resolve("docs/work-log.md")),"agent handoff is generated with actual repository paths");
 
             check(!Files.exists(target.resolve("android")) && !Files.exists(target.resolve("ios")),"only selected platforms generated");

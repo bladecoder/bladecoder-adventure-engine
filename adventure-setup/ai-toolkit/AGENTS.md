@@ -17,9 +17,9 @@ a previous plan overrides implemented behavior or the user's current request.
   MP3; effects are PCM16 WAV with mono/stereo chosen per effect.
 - `core/src/main/java/` is available for project code under the declared package.
   The engine is a dependency; ordinary development/debugging needs no editor.
-- `skills/` is canonical. `.agents/skills/` contains generated discovery copies;
-  after editing canonical skills run `skills-sync`. Independently edited copies
-  are conflicts, not instructions to overwrite authored content.
+- `skills/` is canonical. `.agents/skills` is a relative symlink to `../skills`,
+  so agents discover the canonical files directly. Edit skills only under
+  `skills/`; no discovery copy needs synchronization.
 
 ## Work and verification
 

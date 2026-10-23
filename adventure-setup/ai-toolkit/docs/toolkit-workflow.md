@@ -33,7 +33,7 @@ concurrently with application. An existing `.adventure-setup-update.lock` must b
 investigated before retrying, rather than removed while an updater is running.
 
 Managed content is reusable Python/Java helpers, tests/licenses/model contracts,
-canonical skills and discovery entries, technical workflow guides and project
+canonical skills and their discovery symlink, technical workflow guides and project
 instructions. Game assets, raw sources, scene/Ink files, build modules/launchers,
 `adventure.json`, personal settings, the brief/work log and project recipes or
 runtime/narrative scenarios are excluded. Updating this toolkit does not migrate
@@ -43,7 +43,8 @@ features separately if you need to adopt them.
 The manifest retains original generation provenance and records the latest
 bundle's expected managed-file hashes plus kept local edits. A partial result is
 explicit; it does not certify a fully compatible upgrade. Run `skills-check` and
-review `skills-sync --dry-run` after retaining custom skills/discovery entries,
-then run the relevant project QA profiles and actual authored playthroughs.
+keep custom skill content under `skills/`, where the discovery symlink exposes it
+directly, and run `skills-check` after edits. Then run the relevant project QA
+profiles and actual authored playthroughs.
 Generation, building, Git initialization, remote publication and launching an
 agent remain separate operations.

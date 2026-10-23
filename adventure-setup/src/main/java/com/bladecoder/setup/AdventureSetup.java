@@ -58,7 +58,8 @@ public final class AdventureSetup {
         for(Map.Entry<String,byte[]> entry:outputs.entrySet())if(!entry.getKey().equals("local.properties"))hashes.put(entry.getKey(),sha(entry.getValue()));
         Map<String,Object> manifest=new LinkedHashMap<String,Object>();manifest.put("schema_version",1);manifest.put("setup_version",versions.getProperty("setupVersion"));manifest.put("setup_source_sha256",versions.getProperty("setupSourceSha256"));manifest.put("spec",spec.toMap());manifest.put("bundle_identity",identity());manifest.put("generated_files",hashes);
         outputs.put("setup-manifest.json",(json(manifest)+"\n").getBytes(StandardCharsets.UTF_8));
-        Map<String,Object> result=new LinkedHashMap<String,Object>();result.put("schema_version",1);result.put("destination",destination.toString());result.put("dry_run",dryRun);result.put("files",new ArrayList<String>(outputs.keySet()));result.put("setup_version",versions.getProperty("setupVersion"));
+        List<String> generated=new ArrayList<String>(outputs.keySet());generated.add(".agents/skills");Collections.sort(generated);
+        Map<String,Object> result=new LinkedHashMap<String,Object>();result.put("schema_version",1);result.put("destination",destination.toString());result.put("dry_run",dryRun);result.put("files",generated);result.put("setup_version",versions.getProperty("setupVersion"));
         if(dryRun)return result;
         Path parent=destination.getParent();if(parent==null)throw new IOException("Destination needs a parent directory");Files.createDirectories(parent);
         Path staging=Files.createTempDirectory(parent,"."+spec.id+"-setup-");
@@ -67,6 +68,9 @@ public final class AdventureSetup {
                 Path file=staging.resolve(entry.getKey()).normalize();if(!file.startsWith(staging))throw new IOException("Invalid generated path");
                 Files.createDirectories(file.getParent());Files.write(file,entry.getValue(),StandardOpenOption.CREATE_NEW);
             }
+            Path agents=staging.resolve(".agents");Files.createDirectories(agents);
+            try{Files.createSymbolicLink(agents.resolve("skills"),Paths.get("../skills"));}
+            catch(IOException | UnsupportedOperationException error){throw new IOException("Cannot create required relative symlink .agents/skills -> ../skills; enable symbolic-link support and retry.",error);}
             if(!staging.resolve("gradlew").toFile().setExecutable(true,false) && !System.getProperty("os.name").startsWith("Windows"))throw new IOException("Cannot mark Gradle wrapper executable");
             Files.createDirectories(staging.resolve("core/src/main/java/"+spec.packageName.replace('.','/')));
             Files.move(staging,destination);
@@ -204,18 +208,6 @@ public final class AdventureSetup {
             smoke.addChild("steps",adapted);
         }
         outputs.put("tools/runtime-scenarios/smoke.json",smoke.toJson(JsonWriter.OutputType.json).getBytes(StandardCharsets.UTF_8));
-        Map<String,Object> skillHashes=new LinkedHashMap<String,Object>();
-        for(String path:new ArrayList<String>(outputs.keySet()))if(path.startsWith("skills/")) {
-            String relative=path.substring("skills/".length());String[] parts=relative.split("/");byte[] content=outputs.get(path),discoveryContent=content;
-            if(parts.length==2 && parts[1].equals("SKILL.md")) {
-                String text=new String(content,StandardCharsets.UTF_8).replace("\r\n","\n").replace("\r","\n");int end=text.indexOf("\n---",4);
-                if(!text.startsWith("---\n") || end<0)throw new IOException("Invalid canonical skill frontmatter: "+path);
-                discoveryContent=(text.substring(0,end+4)+"\n\nSee the [canonical skill](../../../skills/"+parts[0]+"/SKILL.md) for its source and any referenced resources; references resolve relative to that file.\n").getBytes(StandardCharsets.UTF_8);
-            } else if(parts.length<3 || !(parts[1].equals("agents") || parts[1].equals("assets")))continue;
-            outputs.put(".agents/"+path,discoveryContent);skillHashes.put(relative,sha(discoveryContent));
-        }
-        Map<String,Object> discovery=new LinkedHashMap<String,Object>();discovery.put("schema_version",1);discovery.put("source","skills");discovery.put("discovery",".agents/skills");discovery.put("files",skillHashes);
-        outputs.put("tools/skills-discovery.json",(json(discovery)+"\n").getBytes(StandardCharsets.UTF_8));
         return outputs;
     }
     private static Map<String,Object> qaTask(String id,String kind,String value) {
