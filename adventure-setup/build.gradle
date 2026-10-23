@@ -38,7 +38,7 @@ tasks.register('setupMetadata') {
     inputs.files(fileTree('src/main/java'))
     inputs.file(file('build.gradle'))
     inputs.properties([setupVersion: project.version.toString(), gdxVersion: libgdxVersion, roboVMVersion: roboVMVersion, androidGradlePluginVersion: androidGradlePluginVersion, androidAPILevel: androidAPILevel, bladeInkVersion: bladeInkVersion, gdxControllersVersion: gdxControllersVersion])
-    inputs.files(fileTree('toolkit') { exclude '**/__pycache__/**', '**/*.pyc' })
+    inputs.files(fileTree('ai-toolkit') { exclude '**/__pycache__/**', '**/*.pyc' })
     outputs.dir(metadata)
     doLast {
         def dir = metadata.get().asFile
@@ -46,7 +46,7 @@ tasks.register('setupMetadata') {
         def base = file('src/main/resources/projectTmpl')
         new File(dir, 'setup-templates.txt').text = fileTree(base).files.collect { base.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.sort().join('\n') + '\nassets/model/main.ink.json\n'
         def sourceDigest = java.security.MessageDigest.getInstance('SHA-256')
-        (fileTree('src/main').files + fileTree('compiler-src').files + fileTree('toolkit').matching { exclude '**/__pycache__/**', '**/*.pyc' }.files + [file('build.gradle'), rootProject.file('gradle.properties')]).sort { it.path }.each { source ->
+        (fileTree('src/main').files + fileTree('compiler-src').files + fileTree('ai-toolkit').matching { exclude '**/__pycache__/**', '**/*.pyc' }.files + [file('build.gradle'), rootProject.file('gradle.properties')]).sort { it.path }.each { source ->
             sourceDigest.update(project.relativePath(source).replace('\\', '/').getBytes('UTF-8'))
             sourceDigest.update(source.bytes)
         }
@@ -60,8 +60,8 @@ tasks.register('setupMetadata') {
         }
         def generatorHash = componentHash(fileTree('src/main/java').files + fileTree('compiler-src').files + [file('build.gradle')])
         def templateHash = componentHash(fileTree('src/main/resources/projectTmpl').files)
-        def toolkitHash = componentHash(fileTree('toolkit').matching { exclude '**/__pycache__/**', '**/*.pyc' }.files)
-        def toolkitBase = file('toolkit')
+        def toolkitHash = componentHash(fileTree('ai-toolkit').matching { exclude '**/__pycache__/**', '**/*.pyc' }.files)
+        def toolkitBase = file('ai-toolkit')
         new File(dir, 'setup-toolkit.txt').text = fileTree(toolkitBase).matching { exclude '**/__pycache__/**', '**/*.pyc' }.files.collect { toolkitBase.toPath().relativize(it.toPath()).toString().replace('\\','/') }.sort().join('\n') + '\n'
         new File(dir, 'setup-versions.properties').text = """setupVersion=${project.version}
 setupSourceSha256=${sourceDigest.digest().encodeHex()}
@@ -80,7 +80,7 @@ gdxControllersVersion=${gdxControllersVersion}
 }
 sourceSets.main.resources.srcDir(metadata)
 processResources.dependsOn tasks.named('setupMetadata')
-processResources { from('toolkit') { into 'toolkit'; exclude '**/__pycache__/**', '**/*.pyc' } }
+processResources { from('ai-toolkit') { into 'ai-toolkit'; exclude '**/__pycache__/**', '**/*.pyc' } }
 tasks.register('dist', Jar) {
     dependsOn classes
     archiveClassifier = 'all'

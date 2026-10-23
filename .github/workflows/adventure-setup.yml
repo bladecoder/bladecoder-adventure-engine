@@ -29,7 +29,7 @@ jobs:
           python-version: '3.12'
       - uses: gradle/actions/setup-gradle@v4
       - name: Install Python visual verification dependency
-        run: python -m pip install -r adventure-setup/toolkit/tools/requirements-visual.txt
+        run: python -m pip install -r adventure-setup/ai-toolkit/tools/requirements-visual.txt
       - name: Install audio capture prerequisites
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.media }}
         run: |

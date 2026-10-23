@@ -126,7 +126,7 @@ actors and targets are unavailable to gameplay commands, internal scene verbs
 are rejected (scene `goto` remains supported), save/screenshot names must be
 plain basenames, and health failures do not expose internal exception text.
 Inventory commands prefer an acquired item over its same-ID hidden scene origin.
-The portable player-only workflow is `adventure-setup/toolkit/skills/adventure-player`.
+The portable player-only workflow is `adventure-setup/ai-toolkit/skills/adventure-player`.
 
 ### Debug resources
 

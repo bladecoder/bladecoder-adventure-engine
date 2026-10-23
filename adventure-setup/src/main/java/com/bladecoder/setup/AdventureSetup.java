@@ -148,7 +148,7 @@ public final class AdventureSetup {
         }
         for(String source:new String(read(resource("setup-toolkit.txt")),StandardCharsets.UTF_8).split("\n")) {
             if(!source.isEmpty()) {
-                byte[] content=read(resource("toolkit/"+source));
+                byte[] content=read(resource("ai-toolkit/"+source));
                 if(source.equals("tools/model-contract/actions.json")) {
                     com.badlogic.gdx.utils.JsonValue contract=new com.badlogic.gdx.utils.JsonReader().parse(new String(content,StandardCharsets.UTF_8));
                     String reviewed=contract.getString("engine_version");
