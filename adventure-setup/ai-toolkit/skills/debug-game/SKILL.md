@@ -3,6 +3,12 @@ name: debug-game
 description: Observe, diagnose and test a Blade Engine adventure through its shared HTTP controller, state, events and captures.
 ---
 
+Follow the [opt-in QA policy](../../docs/qa-workflow.md): execute test suites,
+narrative tests, runtime scenarios/playthroughs and media/device probes only
+when explicitly requested by the user. Authoring previews, compilation, static
+reference validation and package generation remain normal production work.
+Report omitted QA as not_run; an implementation request alone does not select QA.
+
 Read [the runtime workflow](../../docs/runtime-workflow.md) and [QA workflow](../../docs/qa-workflow.md). Use `ai-toolkit/tools/project.py runtime`; the server ships in the engine, without the editor. Inspect actual mode, build identity and capabilities before relying on an endpoint. Keep discovery tokens private.
 
 Start owned isolated sessions or explicitly attach to a private discovery file. State/focused JSON pointers, event transcripts and scene/UI captures provide different evidence. Commands acknowledge acceptance separately from completion; poll jobs and use bounded deadlines. Preserve the first failure and collect evidence instead of blindly repeating a mutation. Cancellation does not roll back effects; a stale identity requires an explicit reconnect. Stop only owned sessions.

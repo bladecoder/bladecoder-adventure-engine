@@ -1,5 +1,18 @@
 # Scene model validation and project actions
 
+Apply [scene authoring patterns](scene-authoring-patterns.md) for scene atlases,
+background properties, scene-level player identity, bottom origins, inventory
+support actors, reusable pickups and ground/navigation references. Use the
+[canonical project layout](project-layout.md) for sources and outputs.
+
+Player-facing verbs use Cutmode true/false around their complete awaited action
+sequence. Apply the shared [ownership/exit rules](scene-authoring-patterns.md#player-facing-verbs-and-cut-mode)
+to avoid premature unlock by nested helpers or unreachable cleanup after Leave.
+
+The editor background actor type is a renderer-less `InteractiveActor`, separate
+from its `layer`. Use it over painted exits with a `leave` verb; the UI supplies
+the arrow. See [passage, door and arrival sequences](scene-authoring-patterns.md#scene-exits-background-hotspots-and-doors).
+
 `assets/model/world` selects the initial chapter and global verbs. Each
 `assets/model/<chapter>.chapter.json` declares scenes, actors, layers, renderers,
 resources and verb/action sequences. The runtime consumes Blade MODEL JSON,

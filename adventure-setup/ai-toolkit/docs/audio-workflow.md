@@ -1,5 +1,10 @@
 # Music, SFX and actual audio verification
 
+Use [the canonical layout](project-layout.md): editable music and sound sources
+belong in `raw/music/` and `raw/sounds/`. Runtime probes and all QA/test commands
+below execute only on explicit user request under [the QA policy](qa-workflow.md).
+Rendering, encoding and source/format inspection remain authoring operations.
+
 Music uses stereo MP3; SFX use PCM16 WAV with per-effect mono/stereo selection.
 The optional audio starter includes an original quiet two-bar cue and two seeded
 procedural effects. Source code, score, MIDI, rendering recipe and measured outputs

@@ -6,8 +6,20 @@ premise, style and acceptance criteria in [the brief](../docs/brief.md).
 
 ```sh
 python3 -B ai-toolkit/tools/project.py doctor --profile foundation --json
-python3 -B ai-toolkit/tools/project.py qa --profile fast --out /new/fast-evidence --json
 ./gradlew :desktop:dist
+```
+
+Use [the canonical project layout](docs/project-layout.md) and
+[scene/inventory/character patterns](docs/scene-authoring-patterns.md).
+QA is opt-in: run tests, runtime scenarios, playthroughs and media/device probes
+only when the user explicitly requests that verification. Compilation and
+static source/reference validation remain normal authoring work. See the
+[QA policy](docs/qa-workflow.md); omitted QA is recorded as `not_run`.
+
+For explicitly requested QA, select the relevant profile:
+
+```sh
+python3 -B ai-toolkit/tools/project.py qa --profile fast --out /new/fast-evidence --json
 python3 -B ai-toolkit/tools/project.py qa --profile desktop --jar desktop/build/libs/desktop-0.1.0.jar --out /new/desktop-evidence --json
 ```
 
@@ -38,6 +50,6 @@ Mobile scaffolding does not certify device execution.
 Canonical agent workflows live in `skills/`; `.agents/skills` is a relative
 symlink to that directory for agent discovery.
 Use [the agent workflow](docs/agent-workflow.md) and [work log](../docs/work-log.md)
-to implement a brief in verified slices. `setup-manifest.json` records initial
+to implement a brief in small slices with explicit QA status. `setup-manifest.json` records initial
 provenance; do not regenerate an existing developed game over its directory.
 Toolkit update planning/distribution work may require a newer setup release.

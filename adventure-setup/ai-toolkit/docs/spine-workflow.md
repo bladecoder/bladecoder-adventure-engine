@@ -1,5 +1,16 @@
 # Optional Spine cutout workflow
 
+Use [the canonical layout](project-layout.md) for editable character projects and
+attachments. All runtime `spine test`, QA profiles and regression scenarios below
+are opt-in under [the QA policy](qa-workflow.md). Export/preview can proceed
+without runtime QA; keep runtime approval pending and do not bypass an apply
+operation's required evidence.
+
+Each character has its own atlas with every cutout attachment image used by its
+skeleton/skins. Export it with that character's rig and reference it from all
+scenes using the character. Do not share an atlas with scene props, inventory
+icons or another character by default.
+
 Selecting Spine adds the runtime plugin and a tiny original two-bone envelope rig
 with `idle` and `wave` animations, its editable project/JSON/PNG, runtime skeleton
 and atlas, and `automation/spine-recipes/neutral-rig.json`. The scene's optional `courier`

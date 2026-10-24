@@ -3,6 +3,12 @@ name: adventure-player
 description: Play a Bladecoder Adventure Engine game through its localhost HTTP controller and finish the adventure using only player-visible textual state and events. Use when asked to autonomously play, solve, explore, test-complete, or verify completion of a Bladecoder adventure exposed with -http.
 ---
 
+Follow the [opt-in QA policy](../../docs/qa-workflow.md): execute test suites,
+narrative tests, runtime scenarios/playthroughs and media/device probes only
+when explicitly requested by the user. Authoring previews, compilation, static
+reference validation and package generation remain normal production work.
+Report omitted QA as not_run; an implementation request alone does not select QA.
+
 # Bladecoder HTTP Adventure Player
 
 Play as a player, not as an editor or a model inspector. Use `/state` to choose legal actions and `/events` to read what the player has seen since the last successful gameplay action. Do not inspect story/model files, custom properties, saves, or screenshots to discover puzzle answers.
@@ -27,7 +33,15 @@ Use `curl -sS` or an equivalent HTTP client. Send JSON with `Content-Type: appli
 Repeat until the game gives an unambiguous completion outcome.
 
 1. Read `/events`, then `/state`. Treat event text, dialogue and scene transitions as the narrative evidence for the next decision.
-2. If `cutMode` is true, do not send a gameplay command. Poll `/events` and `/state` until it becomes false.
+2. If `cutMode` is true, do not dispatch another actor verb or save/load to
+   interrupt it. Poll `/events` and `/state` with a bounded wait. A protected verb
+   can be waiting for text advancement, not merely an animation; use only a
+   continuation explicitly exposed by the player controller. If no text-advance
+   operation is exposed, report that controller limitation instead of polling
+   forever, disabling cut mode or using lookat as a competing verb. Actual-input
+   or debug dialogue advancement belongs to explicitly selected runtime QA.
+   Ink choices temporarily leave cut mode: choose the offered dialog option,
+   then continue observing the same interaction.
 3. If `dialogOptions` is non-empty, choose one option with `dialogOption`. Prefer options that advance a stated goal or reveal new information; record rejected or unproductive choices to avoid loops.
 4. Otherwise inspect the available actors and verbs. Prefer this order when applicable: `lookat`, `talkto`, `pickup`, `action`, `leave`. Read the resulting events before choosing another action.
 

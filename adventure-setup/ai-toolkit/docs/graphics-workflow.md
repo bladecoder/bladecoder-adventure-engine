@@ -1,10 +1,26 @@
 # Editable art and packaged graphics
 
-The starter has one original SVG, staged at `raw/art/starter.svg`, with explicit
+The legacy starter may have an original SVG at `raw/art/starter.svg`, with explicit
 `room` and `note` export groups. `automation/asset-manifests/starter.json` selects each
 group, its page/canvas bounds, pixel dimensions and standalone runtime destination.
 No inference from an SVG's visible layers or old Inkscape export hints is needed.
-The scene uses those standalone images; atlas groups are available for new content.
+When adopting the canonical layout, move that shared sheet to
+`raw/art/shared/starter.svg` and update its manifest source together.
+The starter uses standalone images only as a minimal bootstrap. New scenes use
+scene atlas groups by default; the bootstrap is not the production convention.
+Follow [project layout](project-layout.md) and [scene/inventory
+patterns](scene-authoring-patterns.md). Pack a scene's background and local props
+together, use scene background properties, and pack inventory icons separately.
+Each character owns its own atlas containing all frame animations and reuses it
+across scenes. Spine characters likewise own a cutout atlas paired with their
+skeleton. Scene atlases contain the background and local props, not character
+regions; inventory icons have their own atlas.
+
+A passage painted into the background normally needs only a renderer-less
+InteractiveActor hotspot with `leave`, not a separate sign/arrow sprite. A door
+that opens needs matching SpriteActor frames in the scene atlas. Coordinate
+thresholds, reach points and open/closed states with the
+[exit/door patterns](scene-authoring-patterns.md#scene-exits-background-hotspots-and-doors).
 
 With repository art storage, tools default to `raw/art`. With external storage,
 select an existing root explicitly, or initialize a new root from staged sources:
@@ -55,6 +71,10 @@ are supplied by the starter.
 
 
 ## Optional authoring integration checks
+
+Execute the following test suites only when the user explicitly selects QA,
+according to the [execution policy](qa-workflow.md). Export previews, manifest
+validation and atlas packing/parser checks remain normal authoring operations.
 
 Core helper contracts run with `python3 -B -m unittest discover -s ai-toolkit/tools/tests -v`.
 Real encoder/renderer/atlas-reader checks are separate:

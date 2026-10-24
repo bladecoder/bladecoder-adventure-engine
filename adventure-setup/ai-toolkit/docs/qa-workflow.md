@@ -1,5 +1,24 @@
 # Project-declared verification
 
+## Execution policy
+
+QA is opt-in. Run QA suites/profiles, tooling test suites, `ink-test`,
+`puzzle-test`, runtime scenarios, player playthroughs, visual matrices, device
+checks and audio/Spine runtime probes only when the user explicitly asks for
+those tests or that verification. A request to implement, fix or refactor a game
+does not authorize an automatic QA cycle. An explicit play/test/debug request
+authorizes the relevant bounded checks, not every profile. Until this phase is
+refined, omit unrequested QA and report it as `not_run`.
+
+Routine authoring operations remain part of producing usable outputs: compile
+Ink and load its generated JSON, validate MODEL/references and manifests, pack
+atlases with parser checks, inspect source/export previews, and build the
+requested package. These are not a reason to launch a game or test suite. Keep
+them focused; do not relabel their success as gameplay verification. Existing
+QA evidence remains historical when its source/package changes.
+
+The procedures below apply after explicit QA selection.
+
 `adventure.json` declares runtime `tests.suites`, ordered QA `tests.profiles` and
 optional media profiles. The generated `fast` profile validates the toolkit and game models,
 formats and selected Ink references. `desktop` exercises the starter's actual

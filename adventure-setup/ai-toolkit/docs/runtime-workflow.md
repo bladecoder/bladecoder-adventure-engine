@@ -1,5 +1,9 @@
 # Shared runtime controller
 
+Follow the [opt-in QA policy](qa-workflow.md). Start runtime verification,
+scenarios or playthroughs only for an explicit user request to test, play,
+debug or verify. Implementation/refactoring does not imply runtime QA.
+
 The controller is part of Blade Engine and works from a packaged game without the
 editor. Player mode exposes player-visible state; debug mode explicitly enables
 internal observation, fixtures and mutations. Logging `-d` does not elevate mode.
@@ -53,6 +57,14 @@ separate explicitly enabled external store and preview/activate/restart boundary
 they do not replace canonical source edits. Preserve rollback/reset evidence.
 
 ## Interactive command completion
+
+Player-facing verbs normally own an outer Cutmode true/false pair. While locked,
+advance displayed text/choices using supported continuation or actual-input
+controls, not another actor verb. Debug `dialogue.advance` is a semantic control;
+it does not prove player-controller reachability. A player API without text
+advancement has a capability gap; do not weaken game locking to make it pass.
+See [cut-mode ownership](scene-authoring-patterns.md#player-facing-verbs-and-cut-mode)
+for nested RunVerb helpers, Ink's modal choices and terminal Leave handoff.
 
 `verb.run` observes a verb until it finishes. If the verb waits for displayed text
 or a dialogue choice, a scenario's synchronous command step cannot proceed to

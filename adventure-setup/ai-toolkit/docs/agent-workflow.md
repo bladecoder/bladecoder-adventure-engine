@@ -14,12 +14,23 @@ Design a bounded first slice with observable acceptance criteria and state owner
 A useful slice connects a scene interaction, appropriate feedback/dialogue,
 progression state and an observable result. Follow the brief's puzzle policy.
 Keep dependencies, wrong/premature attempts, repeated use and persistence visible.
-Write design under `design/`; code/model/Ink files are implementation authority.
+Use [the canonical project layout](project-layout.md): design belongs in
+`docs/story/` and `docs/design/`, executable Ink in `raw/ink/`, and editable art
+in `raw/art/`. Code/model/Ink files are implementation authority. Before the first
+slice, apply [scene and inventory patterns](scene-authoring-patterns.md), including
+scene atlases/backgrounds, explicit player, bottom origins and inventory icons.
+
+Declare each exit with the native `leave` verb, a background hotspot/real door,
+a reachable threshold and an awaited approach. Select a destination entry when
+arrival placement or door motion is needed; follow the shared
+[exit patterns](scene-authoring-patterns.md#scene-exits-background-hotspots-and-doors).
 
 Implement through the relevant local skills and shared `../tools/project.py`
 commands. Use reviewed art/Spine preview/apply reports. Compile/load source Ink,
-validate models/references and run focused narrative cases. Build a concrete
-package, then run declared runtime scenarios and inspect evidence. Keep simulated
+validate models/references. Build the requested concrete package. Follow the
+[opt-in QA policy](qa-workflow.md): run narrative tests, runtime scenarios,
+playthroughs and other suites only when explicitly requested by the user.
+Otherwise record QA as not_run; do not launch a game to verify each edit. Keep simulated
 commands distinct from real effects, and debug preconditions distinct from a
 reachable player route. Extend catalogue coverage rather than replacing an
 existing test just to obtain a pass.

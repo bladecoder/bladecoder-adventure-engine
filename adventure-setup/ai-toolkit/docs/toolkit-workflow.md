@@ -44,7 +44,8 @@ The manifest retains original generation provenance and records the latest
 bundle's expected managed-file hashes plus kept local edits. A partial result is
 explicit; it does not certify a fully compatible upgrade. Run `skills-check` and
 keep custom skill content under `ai-toolkit/skills/`, where the discovery symlink exposes it
-directly, and run `skills-check` after edits. Then run the relevant project QA
-profiles and actual authored playthroughs.
+directly, and run `skills-check` after edits. Follow the [opt-in QA
+policy](qa-workflow.md): run project QA profiles and authored playthroughs only
+when explicitly requested by the user. Otherwise record runtime QA as not_run.
 Generation, building, Git initialization, remote publication and launching an
 agent remain separate operations.
